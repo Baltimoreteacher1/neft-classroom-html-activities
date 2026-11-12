@@ -805,11 +805,14 @@ function drawGraph(){
     const x = margin + (w-margin*2) * i/6;
     ctx.fillText(i, x-4, h-margin+18);
   }
-  for(let i=0;i<=6;i++){
+  // y numbers right-aligned beside the y-axis; the x-axis 0 is the single origin label
+  ctx.textAlign = 'right';
+  for(let i=1;i<=6;i++){
     const value = Math.round(maxY * i/6);
     const y = h-margin - (h-margin*2) * i/6;
-    ctx.fillText(value, 8, y+4);
+    ctx.fillText(value, margin-6, y+4);
   }
+  ctx.textAlign = 'start';
 
   ctx.fillText(cap(dist.inputName), w/2-18, h-8);
   ctx.save();

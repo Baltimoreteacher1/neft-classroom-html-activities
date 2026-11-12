@@ -899,16 +899,6 @@
               <text x="104" y="100" class="ax-qlabel">II</text>
               <text x="104" y="266" class="ax-qlabel">III</text>
               <text x="250" y="266" class="ax-qlabel">IV</text>
-              <!-- a few axis numbers -->
-              <text x="216" y="176" class="ax-tick">2</text>
-              <text x="256" y="176" class="ax-tick">4</text>
-              <text x="296" y="176" class="ax-tick">6</text>
-              <text x="132" y="176" class="ax-tick">-2</text>
-              <text x="92" y="176" class="ax-tick">-4</text>
-              <text x="184" y="146" class="ax-tick">2</text>
-              <text x="184" y="106" class="ax-tick">4</text>
-              <text x="184" y="226" class="ax-tick">-2</text>
-              <text x="184" y="266" class="ax-tick">-4</text>
               <!-- Green Park (-5, 4) → x=180-100=80, y=180-80=100 -->
               <circle cx="80" cy="100" r="7" class="pt pt-a" />
               <text x="90" y="96" class="pt-label">Park</text>
@@ -1247,11 +1237,6 @@
               <polygon points="180,20 175,30 185,30" class="ax-arrow" />
               <text x="332" y="172" class="ax-tick">x</text>
               <text x="186" y="32" class="ax-tick">y</text>
-              <text x="216" y="176" class="ax-tick">2</text>
-              <text x="296" y="176" class="ax-tick">6</text>
-              <text x="92" y="176" class="ax-tick">-4</text>
-              <text x="184" y="106" class="ax-tick">4</text>
-              <text x="184" y="246" class="ax-tick">-3</text>
               <!-- North (-4, 6): x=180-80=100, y=180-120=60 -->
               <!-- East (5, 6):  x=180+100=280, y=60  (same y) -->
               <!-- South (5, -3): x=280, y=180+60=240 (same x as East) -->
@@ -1746,6 +1731,26 @@
               '"/>';
           }
           g.innerHTML = parts;
+          // Number every gridline on the axes: x below the x-axis, y left of
+          // the y-axis, and the origin 0 once, below-left.
+          var NS = "http://www.w3.org/2000/svg";
+          var nums = document.createElementNS(NS, "g");
+          var tick = function (x, y, label, anchor) {
+            var tx = document.createElementNS(NS, "text");
+            tx.setAttribute("x", x);
+            tx.setAttribute("y", y);
+            tx.setAttribute("class", "ax-tick");
+            tx.setAttribute("text-anchor", anchor);
+            tx.textContent = label;
+            nums.appendChild(tx);
+          };
+          for (var v = -8; v <= 8; v++) {
+            if (v === 0) continue;
+            tick(180 + v * 20, 192, String(v), "middle");
+            tick(176, 180 - v * 20 + 3, String(v), "end");
+          }
+          tick(176, 192, "0", "end");
+          g.parentNode.insertBefore(nums, g.nextSibling);
         }
         ["gridLines1", "gridLines3", "gridLines4"].forEach(buildGrid);
 

@@ -1455,9 +1455,14 @@
           `;
           const ox = 320, oy = 95, sp = 16;
           let inner = '';
-          for (let x = 60; x <= 580; x += sp) inner += `<line x1="${x}" y1="15" x2="${x}" y2="175" stroke="#f1f5f9" stroke-width="1"/>`;
+          // Vertical gridlines start from the origin so every x gridline is a whole number (-16..16).
+          for (let x = ox - 16 * sp; x <= ox + 16 * sp; x += sp) inner += `<line x1="${x}" y1="15" x2="${x}" y2="175" stroke="#f1f5f9" stroke-width="1"/>`;
           for (let y = 15; y <= 175; y += sp) inner += `<line x1="60" y1="${y}" x2="580" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
           inner += `<line x1="60" y1="${oy}" x2="580" y2="${oy}" stroke="#64748b" stroke-width="1.8"/><line x1="${ox}" y1="15" x2="${ox}" y2="175" stroke="#64748b" stroke-width="1.8"/>`;
+          // Number every gridline on the axes; the origin is labelled 0 once, below-left.
+          for (let v = -16; v <= 16; v++) if (v) inner += `<text x="${ox + v * sp}" y="${oy + 11}" font-size="8" text-anchor="middle" fill="#475569">${v}</text>`;
+          for (let v = -5; v <= 5; v++) if (v) inner += `<text x="${ox - 3}" y="${oy - v * sp + 3}" font-size="8" text-anchor="end" fill="#475569">${v}</text>`;
+          inner += `<text x="${ox - 3}" y="${oy + 11}" font-size="8" text-anchor="end" fill="#475569">0</text>`;
           const polyStr = pts.map(p => `${ox + p.x * sp},${oy - p.y * sp}`).join(' ');
           inner += `<polygon points="${polyStr}" fill="rgba(37, 99, 235, 0.18)" stroke="#2563eb" stroke-width="2"/>`;
           pts.forEach(p => {

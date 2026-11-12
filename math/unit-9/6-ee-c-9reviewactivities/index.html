@@ -719,7 +719,8 @@ function initFlip(){
    ACTIVITY 5 — GRAPH
 ============================================================ */
 function buildSVG(coef){
-  const W=160,H=130,ox=28,oy=H-18,xS=28,yS=Math.min(28,80/coef);
+  // y scale fits all four points (x = 1..4) inside the 130px-tall card
+  const W=160,H=130,ox=28,oy=H-18,xS=28,yS=90/(4*coef);
   const pts=[1,2,3,4].map(x=>({x:ox+x*xS,y:oy-x*coef*yS}));
   const poly=pts.map(p=>`${p.x},${p.y}`).join(' ');
   const dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#22c55e" stroke="white" stroke-width="1.5"/>`).join('');
@@ -727,9 +728,11 @@ function buildSVG(coef){
     <line x1="${ox}" y1="8" x2="${ox}" y2="${oy}" stroke="#c8e6c9" stroke-width="1.5"/>
     <line x1="${ox}" y1="${oy}" x2="${W-8}" y2="${oy}" stroke="#c8e6c9" stroke-width="1.5"/>
     ${[1,2,3,4].map(x=>`<text x="${ox+x*xS}" y="${oy+12}" font-size="9" fill="#888" text-anchor="middle">${x}</text>`).join('')}
+    ${[1,2,3,4].map(x=>`<line x1="${ox-3}" y1="${oy-x*coef*yS}" x2="${ox}" y2="${oy-x*coef*yS}" stroke="#c8e6c9" stroke-width="1.5"/><text x="${ox-5}" y="${oy-x*coef*yS+3}" font-size="9" fill="#888" text-anchor="end">${x*coef}</text>`).join('')}
+    <text x="${ox-5}" y="${oy+12}" font-size="9" fill="#888" text-anchor="end">0</text>
     <polyline points="${ox},${oy} ${poly}" stroke="#22c55e" stroke-width="2" fill="none"/>
     ${dots}
-    <text x="${ox-4}" y="${oy-40}" font-size="8" fill="#888" transform="rotate(-90,${ox-4},${oy-40})">output</text>
+    <text x="${ox-20}" y="${oy-40}" font-size="8" fill="#888" transform="rotate(-90,${ox-20},${oy-40})">output</text>
     <text x="${W/2+12}" y="${H-2}" font-size="8" fill="#888" text-anchor="middle">input →</text>
   </svg>`;
 }

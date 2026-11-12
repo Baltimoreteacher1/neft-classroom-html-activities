@@ -53,7 +53,8 @@
     const cell = (S - 2 * pad) / N;
     const X = (/** @type {number} */ x) => Math.round((pad + (x + r) * cell) * 10) / 10;
     const Y = (/** @type {number} */ y) => Math.round((pad + (r - y) * cell) * 10) / 10;
-    const every = r > 8 ? 2 : 1;
+    // Every gridline is numbered; wide grids shrink the numerals (>= 8px) instead of skipping.
+    const fs = Math.max(8, Math.min(10, Math.floor(cell * 0.55)));
     const el = A.el("div", "ak-svg u7-grid", "", {
       tabindex: c.solved ? "-1" : "0",
       role: "application",
@@ -78,9 +79,12 @@
       for (let k = -r; k <= r; k++)
         s += `<line class="u7-gl" x1="${X(k)}" y1="${Y(-r)}" x2="${X(k)}" y2="${Y(r)}"/><line class="u7-gl" x1="${X(-r)}" y1="${Y(k)}" x2="${X(r)}" y2="${Y(k)}"/>`;
       s += `<line class="u7-ax" x1="${X(-r)}" y1="${Y(0)}" x2="${X(r)}" y2="${Y(0)}"/><line class="u7-ax" x1="${X(0)}" y1="${Y(-r)}" x2="${X(0)}" y2="${Y(r)}"/>`;
+      const tk = (/** @type {number} */ x, /** @type {number} */ y, /** @type {number} */ k, end = false) =>
+        `<text class="u7-tk" x="${x}" y="${y}" style="font-size:${fs}px${end ? ";text-anchor:end" : ""}">${k < 0 ? "−" : ""}${Math.abs(k)}</text>`;
+      s += tk(X(0) - 5, Y(0) + 13, 0, true);
       for (let k = -r; k <= r; k++) {
-        if (!k || k % every) continue;
-        s += `<text class="u7-tk" x="${X(k)}" y="${Y(0) + 13}">${k < 0 ? "−" : ""}${Math.abs(k)}</text><text class="u7-tk" x="${X(0) - 9}" y="${Y(k) + 3.5}">${k < 0 ? "−" : ""}${Math.abs(k)}</text>`;
+        if (!k) continue;
+        s += tk(X(k), Y(0) + 13, k) + tk(X(0) - 5, Y(k) + 3.5, k, true);
       }
       s += `<text class="u7-an" x="${X(r) - 4}" y="${Y(0) - 7}" text-anchor="end">x</text><text class="u7-an" x="${X(0) + 8}" y="${Y(r) + 12}">y</text>`;
       return s;

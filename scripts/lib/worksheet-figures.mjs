@@ -97,15 +97,16 @@ export function renderCoordPlaneSvg(cfg) {
     cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
-  const stride = m > 6 ? 2 : 1;
+  // Every gridline is numbered (large planes shrink the numerals, never below 7.5); 0 once at the origin.
+  const fs = Math.max(7.5, Math.min(8.5, Math.floor(unit * 0.5 * 2) / 2));
 
-  let grid = "";
+  let grid = `<text x="${cx - 4}" y="${cy + 12}" text-anchor="end" font-size="${fs}" fill="#64748b" font-family="'Hanken Grotesk',Arial,sans-serif">0</text>`;
   for (let i = -m; i <= m; i++) {
     grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="#e2e8f0" stroke-width="1"/>`;
     grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="#e2e8f0" stroke-width="1"/>`;
-    if (i !== 0 && i % stride === 0) {
-      grid += `<text x="${X(i)}" y="${cy + 12}" text-anchor="middle" font-size="8.5" fill="#64748b" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
-      grid += `<text x="${cx - 4}" y="${Y(i) + 3}" text-anchor="end" font-size="8.5" fill="#64748b" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
+    if (i !== 0) {
+      grid += `<text x="${X(i)}" y="${cy + 12}" text-anchor="middle" font-size="${fs}" fill="#64748b" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
+      grid += `<text x="${cx - 4}" y="${Y(i) + 3}" text-anchor="end" font-size="${fs}" fill="#64748b" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
     }
   }
 
@@ -637,21 +638,30 @@ export function renderFirstQuadrantGridSvg(cfg, points = []) {
   const font = "font-family=\"'Hanken Grotesk',Arial,sans-serif\"";
 
   let grid = "";
-  const xLabelEvery = Math.ceil(xSpan / xStep / 10) * xStep;
-  const yLabelEvery = Math.ceil(ySpan / yStep / 10) * yStep;
+  // Axes run through 0 when 0 is in range (a four-quadrant grid), else along the left/bottom edge. Every gridline
+  // is numbered on the axes: a dense grid shrinks its numerals (>= 8px) instead of skipping gridlines, and the
+  // origin is labelled 0 exactly once, below-left of it.
+  const axX = xMin <= 0 && xMax >= 0 ? X(0) : padL;
+  const axY = yMin <= 0 && yMax >= 0 ? Y(0) : padT + plotH;
+  const originShown = xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0;
+  const fsX = Math.max(8, Math.min(9.5, Math.floor(((plotW * xStep) / xSpan) * 0.55 * 2) / 2));
+  const fsY = Math.max(8, Math.min(9.5, Math.floor(((plotH * yStep) / ySpan) * 0.8 * 2) / 2));
+  const near0 = (v) => Math.abs(v) < 1e-9;
+  if (originShown)
+    grid += `<text x="${axX - 6}" y="${axY + 14}" text-anchor="end" font-size="${Math.min(fsX, fsY)}" fill="#334155" ${font}>0</text>`;
   for (let x = xMin; x <= xMax + 1e-9; x += xStep) {
     grid += `<line x1="${X(x).toFixed(1)}" y1="${padT}" x2="${X(x).toFixed(1)}" y2="${padT + plotH}" stroke="#dbe3ea" stroke-width="1"/>`;
-    if (Math.abs(((x - xMin) / xLabelEvery) % 1) < 1e-6)
-      grid += `<text x="${X(x).toFixed(1)}" y="${padT + plotH + 14}" text-anchor="middle" font-size="9.5" fill="#334155" ${font}>${+x.toFixed(2)}</text>`;
+    if (!(originShown && near0(x)))
+      grid += `<text x="${X(x).toFixed(1)}" y="${axY + 14}" text-anchor="middle" font-size="${fsX}" fill="#334155" ${font}>${+x.toFixed(2)}</text>`;
   }
   for (let y = yMin; y <= yMax + 1e-9; y += yStep) {
     grid += `<line x1="${padL}" y1="${Y(y).toFixed(1)}" x2="${padL + plotW}" y2="${Y(y).toFixed(1)}" stroke="#dbe3ea" stroke-width="1"/>`;
-    if (Math.abs(((y - yMin) / yLabelEvery) % 1) < 1e-6)
-      grid += `<text x="${padL - 6}" y="${(Y(y) + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#334155" ${font}>${+y.toFixed(2)}</text>`;
+    if (!(originShown && near0(y)))
+      grid += `<text x="${axX - 6}" y="${(Y(y) + 3.5).toFixed(1)}" text-anchor="end" font-size="${fsY}" fill="#334155" ${font}>${+y.toFixed(2)}</text>`;
   }
   const axes =
-    `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="1.8"/>` +
-    `<line x1="${padL}" y1="${padT + plotH}" x2="${padL + plotW}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="1.8"/>` +
+    `<line x1="${axX}" y1="${padT}" x2="${axX}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="1.8"/>` +
+    `<line x1="${padL}" y1="${axY}" x2="${padL + plotW}" y2="${axY}" stroke="#1e293b" stroke-width="1.8"/>` +
     (cfg.xLabel
       ? `<text x="${padL + plotW / 2}" y="${H - 8}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1e293b" ${font}>${esc(cfg.xLabel)}</text>`
       : "") +

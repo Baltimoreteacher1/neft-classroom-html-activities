@@ -227,8 +227,8 @@
     for (var x = -N; x <= N; x++)
       for (var y = -N; y <= N; y++)
         g += '<circle cx="' + cx(x) + '" cy="' + cy(y) + '" r="1.4" fill="#b7c0d6"/>';
-    // axis number labels (every 2, skip origin duplicate)
-    for (var k = -N; k <= N; k += 2) {
+    // axis number labels (every gridline; the origin's 0 is drawn once below)
+    for (var k = -N; k <= N; k++) {
       if (k === 0) continue;
       g +=
         '<text x="' +

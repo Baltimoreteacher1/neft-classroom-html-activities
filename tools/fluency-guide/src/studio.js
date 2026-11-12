@@ -2666,11 +2666,12 @@ window.FluencyStudio = (() => {
       container.innerHTML = '<p role="status">Enter x and y between −8 and 8.</p>';
       return;
     }
-    let grid = "";
+    // Every gridline is numbered; the origin is labelled 0 once, below-left.
+    let grid = '<text x="166" y="197" text-anchor="end">0</text>';
     for (let i = -8; i <= 8; i++) {
       const pos = 180 + i * 18;
       grid += `<path d="M${pos} 36V324 M36 ${pos}H324" stroke="${i === 0 ? "#152c40" : "#c5d4da"}" stroke-width="${i === 0 ? 2 : 1}"/>`;
-      if (i && i % 2 === 0)
+      if (i)
         grid += `<text x="${pos}" y="197" text-anchor="middle">${i}</text><text x="166" y="${180 - i * 18 + 4}" text-anchor="end">${i}</text>`;
     }
     container.innerHTML = `<svg viewBox="0 0 360 360" style="max-width:100%;width:360px;background:white;font:12px system-ui;fill:#152c40" role="img" aria-label="Coordinate plane from negative 8 to 8${hasPoint ? `, point at (${x}, ${y})` : ""}">${grid}<text x="337" y="184">x</text><text x="176" y="22">y</text>${hasPoint ? `<circle cx="${180 + x * 18}" cy="${180 - y * 18}" r="6" fill="#075e60"/><text x="180" y="346" text-anchor="middle">(${x}, ${y})</text>` : ""}</svg>`;

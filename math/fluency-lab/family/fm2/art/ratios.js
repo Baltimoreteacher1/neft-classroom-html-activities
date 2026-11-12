@@ -189,7 +189,7 @@ export function coordGraph({
     body += `<line x1="${px(v)}" y1="${T}" x2="${px(v)}" y2="${H - B}" stroke="${PALETTE.line}" stroke-width="1"/>${label(px(v), H - B + 20, String(v), 16)}`;
   }
   for (let v = 0; v <= yMax; v += tick(yMax)) {
-    body += `<line x1="${L}" y1="${py(v)}" x2="${W - R}" y2="${py(v)}" stroke="${PALETTE.line}" stroke-width="1"/>${label(L - 6, py(v) + 5, String(v), 16, INK, "end")}`;
+    body += `<line x1="${L}" y1="${py(v)}" x2="${W - R}" y2="${py(v)}" stroke="${PALETTE.line}" stroke-width="1"/>${v === 0 ? "" : label(L - 6, py(v) + 5, String(v), 16, INK, "end")}`;
   }
   body += line(L, H - B, W - R, H - B, INK, 3) + line(L, H - B, L, T, INK, 3);
   body +=

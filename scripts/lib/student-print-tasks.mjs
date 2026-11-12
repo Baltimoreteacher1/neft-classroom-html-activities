@@ -263,17 +263,27 @@ function renderCoordGrid(item) {
   const inner = size - 2 * pad;
   const sx = (v) => pad + ((v - xMin) / (xMax - xMin || 1)) * inner;
   const sy = (v) => size - pad - ((v - yMin) / (yMax - yMin || 1)) * inner;
+  // Numbers sit on the axes (through 0 when 0 is in range): x just below the x-axis, y just left of the
+  // y-axis, every gridline numbered, and the origin labelled 0 exactly once.
+  const axisX = sx(Math.max(xMin, Math.min(0, xMax)));
+  const axisY = sy(Math.max(yMin, Math.min(0, yMax)));
+  const originShown = xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0;
+  const fsX = Math.max(8, Math.min(11, Math.floor(((inner * xStep) / (xMax - xMin)) * 0.6)));
+  const fsY = Math.max(8, Math.min(11, Math.floor(((inner * yStep) / (yMax - yMin)) * 0.8)));
+  const isZero = (v) => Math.abs(v) < 1e-9;
   let lines = "";
+  if (originShown)
+    lines += `<text x="${axisX - 8}" y="${axisY + 18}" font-size="${Math.min(fsX, fsY)}" text-anchor="end" fill="#333">0</text>`;
   for (let v = xMin; v <= xMax + 1e-9; v += xStep) {
     lines += `<line x1="${sx(v)}" y1="${pad}" x2="${sx(v)}" y2="${size - pad}" stroke="#ddd"/>`;
-    lines += `<text x="${sx(v)}" y="${size - pad + 18}" font-size="11" text-anchor="middle" fill="#333">${+v.toFixed(6)}</text>`;
+    if (!(originShown && isZero(v)))
+      lines += `<text x="${sx(v)}" y="${axisY + 18}" font-size="${fsX}" text-anchor="middle" fill="#333">${+v.toFixed(6)}</text>`;
   }
   for (let v = yMin; v <= yMax + 1e-9; v += yStep) {
     lines += `<line x1="${pad}" y1="${sy(v)}" x2="${size - pad}" y2="${sy(v)}" stroke="#ddd"/>`;
-    lines += `<text x="${pad - 8}" y="${sy(v) + 3}" font-size="11" text-anchor="end" fill="#333">${+v.toFixed(6)}</text>`;
+    if (!(originShown && isZero(v)))
+      lines += `<text x="${axisX - 8}" y="${sy(v) + 3}" font-size="${fsY}" text-anchor="end" fill="#333">${+v.toFixed(6)}</text>`;
   }
-  const axisX = sx(Math.max(xMin, Math.min(0, xMax)));
-  const axisY = sy(Math.max(yMin, Math.min(0, yMax)));
   const axes = `<line data-axis="y" x1="${axisX}" y1="${pad}" x2="${axisX}" y2="${size - pad}" stroke="#333" stroke-width="2"/><line data-axis="x" x1="${pad}" y1="${axisY}" x2="${size - pad}" y2="${axisY}" stroke="#333" stroke-width="2"/>`;
   const labels = `<text x="${size / 2}" y="${size - 6}" font-size="12" text-anchor="middle" fill="#333">${esc(item.xLabel || "x")}</text><text x="13" y="${size / 2}" font-size="12" text-anchor="middle" fill="#333" transform="rotate(-90 13 ${size / 2})">${esc(item.yLabel || "y")}</text>`;
   const pointTasks = item.studentPrint?.pointTasks ?? targets;

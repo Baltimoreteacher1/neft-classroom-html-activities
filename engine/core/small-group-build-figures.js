@@ -222,8 +222,15 @@ function coordGrid(f) {
   const Y = (v) => top + ((f.yMax - v) / f.yStep) * cell;
   const ax = f.yMin <= 0 && f.yMax >= 0 ? Y(0) : Y(f.yMin);
   const ay = f.xMin <= 0 && f.xMax >= 0 ? X(0) : X(f.xMin);
-  const everyX = Math.max(1, Math.ceil(nx / 12));
-  const everyY = Math.max(1, Math.ceil(ny / 12));
+  // Every gridline is numbered; on a dense grid the numerals shrink (>= 9px)
+  // instead of skipping gridlines. The origin is labelled 0 exactly once.
+  const numPx = Math.max(9, Math.min(13, Math.floor(cell * 0.6)));
+  const num = (x, y, v, anchor) =>
+    text(x, y, fmt(v), "sgf-t sgf-num sgf-small", anchor).replace(
+      "<text ",
+      numPx < 13 ? `<text style="font-size:${numPx}px" ` : "<text ",
+    );
+  const originShown = f.xMin <= 0 && f.xMax >= 0 && f.yMin <= 0 && f.yMax >= 0;
   let body = "";
   for (let i = 0; i <= nx; i++)
     body += `<line class="sgf-grid" x1="${X(f.xMin + i * f.xStep)}" y1="${top}" x2="${X(f.xMin + i * f.xStep)}" y2="${top + ny * cell}"/>`;
@@ -231,15 +238,16 @@ function coordGrid(f) {
     body += `<line class="sgf-grid" x1="${left}" y1="${Y(f.yMin + j * f.yStep)}" x2="${left + nx * cell}" y2="${Y(f.yMin + j * f.yStep)}"/>`;
   body += `<line class="sgf-axis" x1="${left}" y1="${ax}" x2="${left + nx * cell}" y2="${ax}"/>`;
   body += `<line class="sgf-axis" x1="${ay}" y1="${top}" x2="${ay}" y2="${top + ny * cell}"/>`;
-  for (let i = 0; i <= nx; i += everyX) {
+  if (originShown) body += num(ay - 8, ax + 20, 0, "end");
+  for (let i = 0; i <= nx; i++) {
     const v = f.xMin + i * f.xStep;
-    if (v === 0 && f.yMin < 0) continue;
-    body += text(X(v), ax + 20, fmt(v), "sgf-t sgf-num sgf-small");
+    if (v === 0 && originShown) continue;
+    body += num(X(v), ax + 20, v, "middle");
   }
-  for (let j = 0; j <= ny; j += everyY) {
+  for (let j = 0; j <= ny; j++) {
     const v = f.yMin + j * f.yStep;
-    if (v === 0 && f.xMin < 0) continue;
-    body += text(ay - 8, Y(v) + 5, fmt(v), "sgf-t sgf-num sgf-small", "end");
+    if (v === 0 && originShown) continue;
+    body += num(ay - 8, Y(v) + 5, v, "end");
   }
   if (f.xLabel) body += text(left + (nx * cell) / 2, H - 8, f.xLabel, "sgf-t sgf-axis-title");
   if (f.yLabel)

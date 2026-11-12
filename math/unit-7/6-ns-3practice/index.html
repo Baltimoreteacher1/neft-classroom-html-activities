@@ -927,13 +927,20 @@
         labelLayer.appendChild(tx);
 
         const ty = document.createElementNS("http://www.w3.org/2000/svg","text");
-        ty.setAttribute("x",164); ty.setAttribute("y",planePos(-i)+4);
-        ty.setAttribute("text-anchor","middle");
+        ty.setAttribute("x",173); ty.setAttribute("y",planePos(-i)+4);
+        ty.setAttribute("text-anchor","end");
         ty.setAttribute("font-size","11"); ty.setAttribute("font-weight","800"); ty.setAttribute("fill","#475569");
         ty.textContent = i;
         labelLayer.appendChild(ty);
       }
     }
+    // Origin: one 0, below-left of the origin
+    const t0 = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t0.setAttribute("x",174); t0.setAttribute("y",198);
+    t0.setAttribute("text-anchor","end");
+    t0.setAttribute("font-size","11"); t0.setAttribute("font-weight","800"); t0.setAttribute("fill","#475569");
+    t0.textContent = "0";
+    labelLayer.appendChild(t0);
   }
 
   function plotPoint(p){

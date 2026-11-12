@@ -3016,9 +3016,7 @@
           const x = 50 + (g / 12) * 440;
           const isMajor = g % 2 === 0;
           gridHtml += `<line x1="${x}" y1="30" x2="${x}" y2="280" stroke="${isMajor ? "#e2e7ec" : "#f1f3f5"}" stroke-width="${isMajor ? 1 : 0.5}" />`;
-          if (isMajor) {
-            labelHtml += `<text x="${x}" y="296" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">${g}</text>`;
-          }
+          labelHtml += `<text x="${x}" y="296" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">${g}</text>`;
         }
 
         // Horizontal grid lines (every 10 Dollars)
@@ -3026,7 +3024,8 @@
           const y = 280 - (C / 150) * 250;
           const isMajor = C % 30 === 0;
           gridHtml += `<line x1="50" y1="${y}" x2="490" y2="${y}" stroke="${isMajor ? "#e2e7ec" : "#f1f3f5"}" stroke-width="${isMajor ? 1 : 0.5}" />`;
-          if (isMajor) {
+          // every gridline is numbered; the x-axis 0 is the single origin label
+          if (C > 0) {
             labelHtml += `<text x="42" y="${y + 3}" text-anchor="end" font-size="10" fill="#5e6e7e" font-weight="bold">$${C}</text>`;
           }
         }

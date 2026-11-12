@@ -5316,6 +5316,9 @@
               if (Math.abs(vy) < 1e-9) continue;
               this.layer.add(this.add.text(axX - 8, yToPx(vy), lbl(vy), lblStyle).setOrigin(1, 0.5));
             }
+            // The origin is numbered once, below-left of where the axes cross.
+            if (r.xMin <= 0 && r.xMax >= 0 && r.yMin <= 0 && r.yMax >= 0)
+              this.layer.add(this.add.text(axX - 6, axY + 10, lbl(0), lblStyle).setOrigin(1, 0));
             const axisStyle = { ...lblStyle, fontSize: "13px", fontStyle: "bold", color: "#e0e7ff" };
             if (r.xLabel && r.xLabel !== "x")
               this.layer.add(this.add.text(bx1, by1 + 8, r.xLabel + " →", axisStyle).setOrigin(1, 0));

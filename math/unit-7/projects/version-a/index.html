@@ -3394,14 +3394,15 @@
         html += `<text x="142" y="8" font-size="10" font-weight="bold" fill="var(--navy)">y</text>`;
 
         // Ticks
-        for (let i = -10; i <= 10; i += 2) {
+        // Every gridline is numbered (font sized so -10..10 fit at 11 units apart)
+        for (let i = -10; i <= 10; i++) {
           if (i === 0) continue;
           const pos = center + i * scale;
-          html += `<text x="${pos}" y="163" font-size="9" fill="var(--muted)" text-anchor="middle">${i}</text>`;
+          html += `<text x="${pos}" y="161" font-size="7.5" fill="var(--muted)" text-anchor="middle">${i}</text>`;
           const yPos = center - i * scale;
-          html += `<text x="135" y="${yPos + 3}" font-size="9" fill="var(--muted)" text-anchor="end">${i}</text>`;
+          html += `<text x="146" y="${yPos + 2.5}" font-size="7.5" fill="var(--muted)" text-anchor="end">${i}</text>`;
         }
-        html += `<text x="138" y="163" font-size="9" fill="var(--muted)" text-anchor="end">0</text>`;
+        html += `<text x="147" y="161" font-size="7.5" fill="var(--muted)" text-anchor="end">0</text>`;
 
         // Plotted points
         const colors = ["#1a6fb5", "#a8442a", "#0c6f6b", "#6d3fc0", "#1e7d40"];
@@ -3893,6 +3894,13 @@
         html += `<path d="M 146 280 L 150 288 L 154 280 Z" fill="var(--navy)" />`;
         html += `<text x="290" y="162" font-size="10" font-weight="bold" fill="var(--navy)">x</text>`;
         html += `<text x="142" y="8" font-size="10" font-weight="bold" fill="var(--navy)">y</text>`;
+        // Every gridline is numbered (same scale as the plot grid)
+        for (let i = -10; i <= 10; i++) {
+          if (i === 0) continue;
+          html += `<text x="${center + i * scale}" y="161" font-size="7.5" fill="var(--muted)" text-anchor="middle">${i}</text>`;
+          html += `<text x="146" y="${center - i * scale + 2.5}" font-size="7.5" fill="var(--muted)" text-anchor="end">${i}</text>`;
+        }
+        html += `<text x="147" y="161" font-size="7.5" fill="var(--muted)" text-anchor="end">0</text>`;
 
         if (!isNaN(x) && !isNaN(y)) {
           const isEs = document.body.classList.contains("es");

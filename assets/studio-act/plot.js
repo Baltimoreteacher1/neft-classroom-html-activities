@@ -1166,19 +1166,20 @@
       );
       if (g.x0 < 0) s.push(`<path class="sp-arrow" d="M${X(g.x0) - 16} ${Y(0)} l9 -5 v10z"/>`);
       if (g.y0 < 0) s.push(`<path class="sp-arrow" d="M${X(0)} ${Y(g.y0) + 16} l-5 -9 h10z"/>`);
-      const lx = ux >= 22 ? 1 : 2;
-      const ly = uy >= 20 ? 1 : 2;
+      // Every gridline is numbered; a narrow plane shrinks the numerals (>= 8px) instead of skipping.
+      const fx = ux >= 22 ? "" : ` style="font-size:${Math.max(8, Math.min(11, Math.floor(ux * 0.55)))}px"`;
+      const fy = uy >= 20 ? "" : ` style="font-size:${Math.max(8, Math.min(11, Math.floor(uy * 0.55)))}px"`;
       for (let x = Math.ceil(g.x0); x <= g.x1; x++)
-        if (x !== 0 && x % lx === 0)
+        if (x !== 0)
           s.push(
-            `<text class="sp-lab" x="${X(x)}" y="${Y(0) + 15}" text-anchor="middle">${mn(x)}</text>`,
+            `<text class="sp-lab" x="${X(x)}" y="${Y(0) + 15}" text-anchor="middle"${fx}>${mn(x)}</text>`,
           );
       for (let y = Math.ceil(g.y0); y <= g.y1; y++)
-        if (y !== 0 && y % ly === 0)
+        if (y !== 0)
           s.push(
-            `<text class="sp-lab" x="${X(0) - 6}" y="${Y(y) + 4}" text-anchor="end">${mn(y)}</text>`,
+            `<text class="sp-lab" x="${X(0) - 6}" y="${Y(y) + 4}" text-anchor="end"${fy}>${mn(y)}</text>`,
           );
-      s.push(`<text class="sp-lab" x="${X(0) - 6}" y="${Y(0) + 15}" text-anchor="end">0</text>`);
+      s.push(`<text class="sp-lab" x="${X(0) - 6}" y="${Y(0) + 15}" text-anchor="end"${fx}>0</text>`);
       if (titles) {
         s.push(
           `<text class="sp-title" x="${r1(ML + (spanX * ux) / 2)}" y="${H - 8}" text-anchor="middle">${es() ? spec.ax.xEs : spec.ax.x}</text>`,

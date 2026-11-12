@@ -6,7 +6,8 @@ import { pair } from "./coordinate-grid-text.js";
 
 export function drawGrid(parts, { state, px, py, unit }) {
   const { xmin, xmax, ymin, ymax } = state.range;
-  const every = [1, 2, 5, 10].find((n) => n * unit >= 26) || 10;
+  // Label every gridline like a textbook plane; only skip-count once a unit is too narrow to read.
+  const every = [1, 2, 5, 10].find((n) => n * unit >= 22) || 10;
   const left = px(rat(xmin));
   const right = px(rat(xmax));
   const top = py(rat(ymax));

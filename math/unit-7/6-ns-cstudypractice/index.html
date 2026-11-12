@@ -1460,105 +1460,6 @@
                     y
                   </text>
                   <!-- Tick labels -->
-                  <text
-                    x="162"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    1
-                  </text>
-                  <text
-                    x="190"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    2
-                  </text>
-                  <text
-                    x="218"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    3
-                  </text>
-                  <text
-                    x="108"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    -1
-                  </text>
-                  <text
-                    x="78"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    -2
-                  </text>
-                  <text
-                    x="48"
-                    y="152"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    -3
-                  </text>
-                  <text
-                    x="144"
-                    y="117"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    1
-                  </text>
-                  <text
-                    x="144"
-                    y="89"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    2
-                  </text>
-                  <text
-                    x="144"
-                    y="61"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    3
-                  </text>
-                  <text
-                    x="144"
-                    y="173"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    -1
-                  </text>
-                  <text
-                    x="144"
-                    y="201"
-                    font-size="8"
-                    fill="#7a6248"
-                    font-family="DM Mono"
-                  >
-                    -2
-                  </text>
                   <!-- Example: A(-3,4) B(-3,-2) vertical -->
                   <line
                     x1="84"
@@ -1672,6 +1573,20 @@
                   >
                     IV
                   </text>
+            <!-- axis numbers: every gridline, one 0 at the origin -->
+            <text x="56" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">-3</text>
+            <text x="84" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">-2</text>
+            <text x="112" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">-1</text>
+            <text x="168" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">1</text>
+            <text x="196" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">2</text>
+            <text x="224" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="middle">3</text>
+            <text x="136" y="226.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">-3</text>
+            <text x="136" y="198.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">-2</text>
+            <text x="136" y="170.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">-1</text>
+            <text x="136" y="114.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">1</text>
+            <text x="136" y="86.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">2</text>
+            <text x="136" y="58.8" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">3</text>
+            <text x="136" y="151" font-size="8" fill="#7a6248" font-family="DM Mono" text-anchor="end">0</text>
                 </svg>
               </div>
             </div>
@@ -2621,11 +2536,13 @@
         ctx.fillStyle = "#7a6248";
         ctx.font = "10px DM Mono,monospace";
         ctx.textAlign = "center";
-        for (let i = -9; i <= 10; i++) {
+        for (let i = -10; i <= 10; i++) {
           if (i === 0) continue;
           const px = ORIGIN + i * CELL,
             py = ORIGIN;
-          ctx.fillText(i, px, py + 18);
+          // edge gridlines: keep the number inside the canvas
+          ctx.textAlign = i === -10 ? "left" : i === 10 ? "right" : "center";
+          ctx.fillText(i, i === -10 ? px + 1 : i === 10 ? px - 1 : px, py + 18);
           ctx.beginPath();
           ctx.moveTo(px, py - 3);
           ctx.lineTo(px, py + 3);
@@ -2634,16 +2551,18 @@
           ctx.stroke();
         }
         ctx.textAlign = "right";
-        for (let j = -9; j <= 10; j++) {
+        for (let j = -10; j <= 10; j++) {
           if (j === 0) continue;
           const px = ORIGIN,
             py = ORIGIN - j * CELL;
-          ctx.fillText(j, px - 6, py + 4);
+          // edge gridlines: keep the number inside the canvas
+          ctx.fillText(j, px - 6, j === 10 ? py + 10 : j === -10 ? py - 2 : py + 4);
           ctx.beginPath();
           ctx.moveTo(px - 3, py);
           ctx.lineTo(px + 3, py);
           ctx.stroke();
         }
+        ctx.fillText(0, ORIGIN - 6, ORIGIN + 18); // origin: one 0, below-left
         ctx.fillStyle = "#2c1a0e";
         ctx.textAlign = "right";
         ctx.font = "bold 11px DM Mono,monospace";

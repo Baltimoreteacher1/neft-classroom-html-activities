@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "694c29d60c24";
+const BUILD_HASH = "eea71cb62cc0";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=dde5b4a738a3",
   "/access-practice-lab/home.css?v=567acc7b4b89",
@@ -66,7 +66,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/comfort.js?v=750da0271342",
   "/access-practice-lab/src/nav.js?v=14094c388093",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
-  "/access-practice-lab/src/sitemap.js?v=116163e12b78",
+  "/access-practice-lab/src/sitemap.js?v=77fe9b710ba9",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
   "/access-practice-lab/src/wayfinding.js?v=dc0db13df91e",
@@ -93,7 +93,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/engagement.js?v=6b7a0c435f9a",
   "/access-practice-lab/src/lang/unlocks.js?v=dbfd283714f1",
   "/access-practice-lab/src/family/plan.js?v=fe5c5c1669b6",
-  "/access-practice-lab/src/home-registry.js?v=445f056464fd",
+  "/access-practice-lab/src/home-registry.js?v=cd93129c8ffa",
   "/access-practice-lab/src/views/home-panels.js?v=4da141951ca0",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",
   "/access-practice-lab/src/views/home-start.js?v=76fe203b9561",

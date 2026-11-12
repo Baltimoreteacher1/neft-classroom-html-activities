@@ -313,11 +313,22 @@ function coordFigure(points, opts = {}) {
   const px = (x) => CX + x * s;
   const py = (y) => CY - y * s;
   const grid = [];
+  // Every gridline is numbered on the axes (x below, y to the left); the 0 at the origin is drawn once below.
+  // Only when unit gridlines are packed tighter than a numeral (under 10px apart, where they read as a wash
+  // rather than countable lines) do the numbers fall on a 1-2-5 step instead.
+  const tick = Math.max(9, Math.min(13, Math.floor(s * 0.6)));
+  const tickOpts = (anchor) => ({ anchor, size: tick, color: MUTED, weight: 700 });
+  const every = s >= 10 ? 1 : [2, 5, 10, 20, 25, 50, 100, 200, 250, 500].find((k) => k * s >= 20) || 1000;
   for (let v = -Math.floor(lim); v <= Math.floor(lim); v++) {
     if (v === 0) continue;
+    const n = v < 0 ? `−${-v}` : String(v);
     grid.push(
       `<line x1="${px(v)}" y1="${CY - R}" x2="${px(v)}" y2="${CY + R}" stroke="${LINE}" stroke-width="1" opacity=".55" />` +
-        `<line x1="${CX - R}" y1="${py(v)}" x2="${CX + R}" y2="${py(v)}" stroke="${LINE}" stroke-width="1" opacity=".55" />`,
+        `<line x1="${CX - R}" y1="${py(v)}" x2="${CX + R}" y2="${py(v)}" stroke="${LINE}" stroke-width="1" opacity=".55" />` +
+        (v % every === 0
+          ? label(px(v), CY + tick + 5, n, tickOpts("middle")) +
+            label(CX - 6, py(v) + tick / 3, n, tickOpts("end"))
+          : ""),
     );
   }
   // Push each label into the quadrant it points away from, so a label never
@@ -377,7 +388,7 @@ function coordFigure(points, opts = {}) {
       <line x1="${CX}" y1="${CY - R - 14}" x2="${CX}" y2="${CY + R + 14}" stroke="${NAVY}" stroke-width="2.5" />
       ${label(CX + R + 26, CY + 6, "x", { size: 16 })}
       ${label(CX, CY - R - 22, "y", { size: 16 })}
-      ${label(CX - 10, CY + 19, "0", { anchor: "end", size: 14, color: MUTED, weight: 700 })}
+      ${label(CX - 6, CY + tick + 5, "0", tickOpts("end"))}
       ${connector}${ghosts}${dots}${note}`,
   };
 }

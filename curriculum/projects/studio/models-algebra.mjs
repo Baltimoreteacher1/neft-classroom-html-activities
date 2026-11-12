@@ -69,7 +69,7 @@ function graphSvg(project, v, ctx, mine) {
   let body = "";
   const stepX = g.X > 12 ? 4 : g.X > 8 ? 2 : 1, stepY = (() => { const raw = g.Y / 5, p = 10 ** Math.floor(Math.log10(raw)); const n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; })();
   for (let x = 0; x <= g.X; x += stepX) body += line(gx(x), g.top, gx(x), g.top + g.h, "#d5dfda", 'stroke-width="1"') + text(gx(x), g.top + g.h + 14, f2(x), { anchor: "middle", size: 10, fill: MUTED });
-  for (let y = 0; y <= g.Y; y += stepY) body += line(g.left, gy(y), g.left + g.w, gy(y), "#d5dfda", 'stroke-width="1"') + text(g.left - 5, gy(y) + 4, f2(y), { anchor: "end", size: 10, fill: MUTED });
+  for (let y = 0; y <= g.Y; y += stepY) body += line(g.left, gy(y), g.left + g.w, gy(y), "#d5dfda", 'stroke-width="1"') + (y ? text(g.left - 5, gy(y) + 4, f2(y), { anchor: "end", size: 10, fill: MUTED }) : "");
   body += line(g.left, g.top + g.h, g.left + g.w, g.top + g.h, INK) + line(g.left, g.top, g.left, g.top + g.h, INK);
   const roles = ROLES[project.id];
   body += text(g.left + g.w, g.top + g.h + 28, `x: ${roles.x}`, { anchor: "end", size: 11, bold: true }) + text(g.left - 36, 12, `y: ${roles.y}`, { size: 11, bold: true });

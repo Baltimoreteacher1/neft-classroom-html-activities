@@ -4499,11 +4499,13 @@
           (h - 11) +
           '" fill="#14223a"/>';
         // integer labels along axes (skip 0 spot label handled once)
-        const lab = (x, y, t) =>
+        const lab = (x, y, t, anchor) =>
           '<text x="' +
           x +
           '" y="' +
           y +
+          '" text-anchor="' +
+          (anchor || "middle") +
           '" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="11" font-weight="700" fill="#33485f">' +
           t +
           "</text>";
@@ -4511,15 +4513,15 @@
         const minX = -Math.floor(cx / u);
         for (let n = minX; n <= maxX; n++) {
           if (n === 0) continue;
-          g += lab(cx + n * u - 3, cy + 15, n);
+          g += lab(cx + n * u, cy + 15, n);
         }
         const maxY = Math.floor(cy / u);
         const minY = -Math.floor((h - cy) / u);
         for (let n = minY; n <= maxY; n++) {
           if (n === 0) continue;
-          g += lab(cx + 6, cy - n * u + 4, n);
+          g += lab(cx - 6, cy - n * u + 4, n, "end");
         }
-        g += lab(cx + 6, cy + 15, "0");
+        g += lab(cx - 6, cy + 15, "0", "end");
         // Lock the plane to the first screenful (explicit px size) so it is not
         // stretched down the full multi-page sheet by the 100%-sized #bgLayer.
         bgLayer.innerHTML =
@@ -5511,20 +5513,22 @@
           "," +
           (h - pad - 1) +
           '" fill="#14223a"/>';
-        const lab = (x, y, t) =>
+        const lab = (x, y, t, anchor) =>
           '<text x="' +
           x +
           '" y="' +
           y +
+          '" text-anchor="' +
+          (anchor || "middle") +
           '" font-family="Nunito,sans-serif" font-size="10" font-weight="700" fill="#33485f">' +
           t +
           "</text>";
         for (let v = min; v <= max; v++) {
           if (v === 0) continue;
-          g += lab(ox + v * u - 3, oy + 13, v);
-          g += lab(ox + 5, oy - v * u + 4, v);
+          g += lab(ox + v * u, oy + 13, v);
+          g += lab(ox - 5, oy - v * u + 4, v, "end");
         }
-        g += lab(ox + 5, oy + 13, "0");
+        g += lab(ox - 5, oy + 13, "0", "end");
         // Quadrant labels (6.NOS.6) when all four quadrants are visible.
         if (min < 0 && max > 0) {
           const qlab = (x, y, t) =>

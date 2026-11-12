@@ -2836,6 +2836,14 @@
             linesHtml += `<line x1="${200 - i * 25}" y1="30" x2="${200 - i * 25}" y2="270" stroke="#cbd5e1" stroke-width="0.5" />`;
           }
 
+          // Number every gridline on the axes; the origin is labelled 0 once, below-left.
+          for (let n = -5; n <= 5; n++) {
+            if (n === 0) continue;
+            linesHtml += `<text x="${200 + n * 25}" y="163" text-anchor="middle" font-size="10" font-weight="700" fill="var(--slate-muted)">${n}</text>`;
+            linesHtml += `<text x="195" y="${150 - n * 25 + 4}" text-anchor="end" font-size="10" font-weight="700" fill="var(--slate-muted)">${n}</text>`;
+          }
+          linesHtml += `<text x="195" y="163" text-anchor="end" font-size="10" font-weight="700" fill="var(--slate-muted)">0</text>`;
+
           return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);" onclick="clickGridAxes(event)">
           <!-- Background grids -->
           ${linesHtml}

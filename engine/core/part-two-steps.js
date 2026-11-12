@@ -251,12 +251,24 @@ function coords(v) {
   const sx = (n) => P + ((n - lo) / (hi - lo)) * (S - 2 * P);
   const sy = (n) => S - P - ((n - lo) / (hi - lo)) * (S - 2 * P);
   const grid = [];
+  // Number every gridline on the axes; 0 once, below-left of the origin.
+  const unit = (S - 2 * P) / (hi - lo);
+  const fs = Math.max(8, Math.min(10, Math.floor(unit * 0.6)));
+  const num = (x, y, n, anchor) =>
+    `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" class="ws-tick" style="font-size:${fs}px;text-anchor:${anchor}">${String(n).replace("-", "\u2212")}</text>`;
+  const labels = [num(sx(0) - 3, sy(0) + fs + 1, 0, "end")];
   for (let n = Math.ceil(lo); n <= hi; n += 1) {
     grid.push(
       `<line x1="${sx(n)}" y1="${sy(lo)}" x2="${sx(n)}" y2="${sy(hi)}" class="ws-grid${n === 0 ? " is-axis" : ""}"/>`,
       `<line x1="${sx(lo)}" y1="${sy(n)}" x2="${sx(hi)}" y2="${sy(n)}" class="ws-grid${n === 0 ? " is-axis" : ""}"/>`,
     );
+    if (n !== 0)
+      labels.push(
+        num(sx(n), sy(0) + fs + 1, n, "middle"),
+        num(sx(0) - 3, sy(n) + fs / 3, n, "end"),
+      );
   }
+  grid.push(...labels);
   const path = v.connect
     ? `<polyline points="${v.points.map((p) => `${sx(p.x)},${sy(p.y)}`).join(" ")}" class="ws-jump"/>`
     : "";

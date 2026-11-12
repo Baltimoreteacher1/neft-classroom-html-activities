@@ -61,7 +61,8 @@
         svg.appendChild(
           S("line", { x1: 70, y1: py(v), x2: 560, y2: py(v), class: "lens-grid-line" }),
         );
-        svg.appendChild(Lens.U.text(62, py(v) + 4, round(v), "lens-tiny", "end"));
+        // The corner's 0 is printed once, by the x-axis loop above.
+        if (v > 0) svg.appendChild(Lens.U.text(62, py(v) + 4, round(v), "lens-tiny", "end"));
       }
       svg.appendChild(S("line", { x1: 70, y1: 244, x2: 560, y2: 244, class: "lens-axis" }));
       svg.appendChild(S("line", { x1: 70, y1: 32, x2: 70, y2: 244, class: "lens-axis" }));

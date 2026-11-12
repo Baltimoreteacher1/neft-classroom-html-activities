@@ -111,15 +111,27 @@
           (major ? 1.6 : 1) +
           '"/>';
       }
-      var stride = R > 12 ? 5 : R > 6 ? 2 : 1;
-      for (var t = -R; t <= R; t += stride) {
+      // Every gridline is numbered; dense planes shrink the numerals (>= 8px)
+      // instead of skipping. The origin is labelled 0 once, below-left.
+      var fs = Math.max(8, Math.min(11, Math.floor(((SZ - 2 * PAD) / (2 * R)) * 0.6)));
+      g +=
+        '<text x="' +
+        (sx(0) - 6) +
+        '" y="' +
+        (sy(0) + 14) +
+        '" font-size="' +
+        fs +
+        '" font-weight="600" fill="#64748b" text-anchor="end">0</text>';
+      for (var t = -R; t <= R; t++) {
         if (t === 0) continue;
         g +=
           '<text x="' +
           sx(t) +
           '" y="' +
           (sy(0) + 14) +
-          '" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">' +
+          '" font-size="' +
+          fs +
+          '" font-weight="600" fill="#64748b" text-anchor="middle">' +
           t +
           "</text>";
         g +=
@@ -127,7 +139,9 @@
           (sx(0) - 6) +
           '" y="' +
           (sy(t) + 4) +
-          '" font-size="11" font-weight="600" fill="#64748b" text-anchor="end">' +
+          '" font-size="' +
+          fs +
+          '" font-weight="600" fill="#64748b" text-anchor="end">' +
           t +
           "</text>";
       }

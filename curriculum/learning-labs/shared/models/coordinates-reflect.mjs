@@ -50,8 +50,9 @@ export default {
     let body = '';
     for (let i = -R; i <= R; i++) {
       body += line(sx(i), sy(-R), sx(i), sy(R), i === 0 ? 'heavy' : 'gridline') + line(sx(-R), sy(i), sx(R), sy(i), i === 0 ? 'heavy' : 'gridline');
-      if (i !== 0 && i % 2 === 0) body += t(sx(i), 166, signed(i)) + t(283, sy(i) + 5, signed(i));
+      if (i !== 0) body += t(sx(i), sy(0) + 16, signed(i), 'middle', 13) + t(sx(0) - 5, sy(i) + 5, signed(i), 'end', 13);
     }
+    body += t(sx(0) - 5, sy(0) + 16, '0', 'end', 13);
     // distance-to-axis bars for both points: across to the y-axis, down or up to the x-axis
     for (const [x, y, cls] of [[a, b, 'solution'], [c, d, 'dashed']]) {
       if (x !== 0) body += line(sx(x), sy(y), CX, sy(y), cls);

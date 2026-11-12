@@ -84,6 +84,12 @@ export function coordinatePlane(fig) {
         { x: X(0) - 6, y: Y(y) + 4, class: "sgm-num", "text-anchor": "end" },
         box,
       ).textContent = minus(y);
+  if (xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0)
+    svgEl(
+      "text",
+      { x: X(0) - 6, y: Y(0) + 15, class: "sgm-num", "text-anchor": "end" },
+      box,
+    ).textContent = "0";
   const layer = svgEl("g", {}, box);
   const cursor = svgEl("circle", { r: 9, class: "sgm-cursor" }, box);
   const points = [];

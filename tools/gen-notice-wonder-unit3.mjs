@@ -86,7 +86,9 @@ function tableAndGrid(title, subtitle, colA, colB, pairs) {
   for (let j = 0; j <= maxY; j += 2) {
     const y = gy + gh - (j / maxY) * gh;
     grid += `<line x1="${gx}" y1="${y}" x2="${gx + gw}" y2="${y}" stroke="#dbe6ec" stroke-width="1"/>`;
-    grid += `<text x="${gx - 10}" y="${y + 5}" font-size="12" font-weight="700" fill="${MUTED}" text-anchor="end">${j}</text>`;
+    // The corner's 0 is printed once, by the x-axis numbers.
+    if (j > 0)
+      grid += `<text x="${gx - 10}" y="${y + 5}" font-size="12" font-weight="700" fill="${MUTED}" text-anchor="end">${j}</text>`;
   }
   grid += `<line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy + gh}" stroke="${NAVY}" stroke-width="2"/>`;
   grid += `<line x1="${gx}" y1="${gy + gh}" x2="${gx + gw}" y2="${gy + gh}" stroke="${NAVY}" stroke-width="2"/>`;

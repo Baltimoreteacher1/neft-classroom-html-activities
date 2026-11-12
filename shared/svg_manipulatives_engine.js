@@ -254,6 +254,26 @@
           }),
         );
       }
+      // Axis numbers on every gridline; 0 once, below-left of the origin.
+      const { px: ox, py: oy } = this.toSvgCoord(0, 0);
+      const num = (x, y, n, anchor) => {
+        const t = createSvgElement("text", {
+          x,
+          y,
+          "font-size": "10",
+          "font-weight": "600",
+          fill: "#64748b",
+          "text-anchor": anchor,
+        });
+        t.textContent = String(n);
+        this.gridGroup.appendChild(t);
+      };
+      num(ox - 5, oy + 13, 0, "end");
+      for (let i = -this.gridRange; i <= this.gridRange; i++) {
+        if (i === 0) continue;
+        num(this.toSvgCoord(i, 0).px, oy + 13, i, "middle");
+        num(ox - 5, this.toSvgCoord(0, i).py + 4, i, "end");
+      }
     }
 
     drawPolygon() {

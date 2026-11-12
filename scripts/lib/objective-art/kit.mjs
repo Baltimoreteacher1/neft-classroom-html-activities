@@ -255,7 +255,6 @@ export function coordPlane(opts) {
     min = -5,
     max = 5,
     labelSize = 22,
-    labelEvery = 1,
     grid = C.line,
     axis = C.navy,
     axisNames = true,
@@ -278,7 +277,7 @@ export function coordPlane(opts) {
   s += poly(`${X(0)},${top - 22} ${X(0) - 9},${top - 4} ${X(0) + 9},${top - 4}`, { fill: axis });
   s += poly(`${X(0)},${bot + 22} ${X(0) - 9},${bot + 4} ${X(0) + 9},${bot + 4}`, { fill: axis });
   for (let v = min; v <= max; v += 1) {
-    if (v === 0 || v % labelEvery !== 0) continue;
+    if (v === 0) continue; // every gridline is numbered; the origin's single 0 is drawn below
     const label = String(v).replace("-", "\u2212");
     s += T(X(v), Y(0) + labelSize + 12, labelSize, C.muted, label, { weight: 700, halo: 5 });
     s += T(X(0) - 16, Y(v) + labelSize * 0.36, labelSize, C.muted, label, {

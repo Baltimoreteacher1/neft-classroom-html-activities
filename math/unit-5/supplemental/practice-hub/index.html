@@ -1988,14 +1988,16 @@
 
           // Labels
           addText(svg, pos, padding + size + 16, i, "var(--navy)", "9px");
-          addText(
-            svg,
-            padding - 12,
-            padding + size - i * step + 3,
-            i,
-            "var(--navy)",
-            "9px",
-          );
+          // the x-axis 0 is the single origin label
+          if (i > 0)
+            addText(
+              svg,
+              padding - 12,
+              padding + size - i * step + 3,
+              i,
+              "var(--navy)",
+              "9px",
+            );
         }
 
         // Draw Trapezoid: A(2,2) B(8,2) C(5,7) D(2,7)

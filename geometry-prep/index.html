@@ -1954,15 +1954,16 @@
             "http://www.w3.org/2000/svg",
             "text",
           );
-          yLbl.setAttribute("x", padding - 12);
+          yLbl.setAttribute("x", padding - 6);
           yLbl.setAttribute("y", padding + size - i * step + 3);
-          yLbl.setAttribute("text-anchor", "middle");
+          yLbl.setAttribute("text-anchor", "end");
           yLbl.setAttribute("font-size", "9");
           yLbl.setAttribute("font-family", "Atkinson Hyperlegible Mono");
           yLbl.setAttribute("font-weight", "800");
           yLbl.setAttribute("fill", "var(--navy)");
           yLbl.textContent = i;
-          svg.appendChild(yLbl);
+          // The origin's 0 is printed once, by the x-axis label.
+          if (i > 0) svg.appendChild(yLbl);
         }
 
         // 2. Draw shaded area if shape is complete

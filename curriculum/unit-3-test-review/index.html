@@ -3082,7 +3082,6 @@
                 xMax: 6,
                 yMax: 24,
                 yStep: 2,
-                yLabelStep: 4,
                 xLabel: "Weeks",
                 xLabelEs: "Semanas",
                 yLabel: "Dollars saved",
@@ -4150,7 +4149,7 @@
                '<text x="' + px(q, x) + '" y="' + (py(q, 0) + 18) + '" text-anchor="middle" font-size="12" font-weight="800" fill="#465d71">' + x + '</text>';
         for (let y = 0; y <= P.yMax; y += P.yStep)
           g += '<line x1="' + px(q, 0) + '" y1="' + py(q, y) + '" x2="' + px(q, P.xMax) + '" y2="' + py(q, y) + '" stroke="#dbe5ea"/>' +
-               (y % P.yLabelStep === 0
+               (y > 0 // every gridline is numbered; the origin's 0 comes from the x-axis
                  ? '<text x="' + (px(q, 0) - 8) + '" y="' + (py(q, y) + 4) + '" text-anchor="end" font-size="12" font-weight="800" fill="#465d71">' + y + '</text>'
                  : "");
         g += '<line x1="' + px(q, 0) + '" y1="' + py(q, 0) + '" x2="' + px(q, P.xMax) + '" y2="' + py(q, 0) + '" stroke="#18324a" stroke-width="2"/>' +

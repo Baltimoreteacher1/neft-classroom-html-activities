@@ -258,11 +258,16 @@ window.FluencyModels = (() => {
       py = (y) => 205 - ((y - yMin) / (yMax - yMin)) * 155;
     const sx = m.signed ? 2 : Math.max(1, Math.ceil(xMax / 6)),
       sy = m.signed ? 2 : Math.max(1, Math.ceil(yMax / 5));
-    let body = "";
+    // Numbers sit on the axes (x below the x-axis, y left of the y-axis), one per gridline; 0 once at the origin.
+    let body = text(px(0) - 15, py(0) + 23, 0, 'text-anchor="end"');
     for (let x = xMin; x <= xMax; x += sx)
-      body += line(px(x), 50, px(x), 205, "flm-grid") + text(px(x), 228, x, 'text-anchor="middle"');
+      body +=
+        line(px(x), 50, px(x), 205, "flm-grid") +
+        (x === 0 ? "" : text(px(x), py(0) + 23, x, 'text-anchor="middle"'));
     for (let y = yMin; y <= yMax; y += sy)
-      body += line(70, py(y), 500, py(y), "flm-grid") + text(55, py(y) + 5, y, 'text-anchor="end"');
+      body +=
+        line(70, py(y), 500, py(y), "flm-grid") +
+        (y === 0 ? "" : text(px(0) - 15, py(y) + 5, y, 'text-anchor="end"'));
     body +=
       line(70, py(0), 500, py(0)) +
       line(px(0), 50, px(0), 205) +

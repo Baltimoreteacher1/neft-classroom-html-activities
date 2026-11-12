@@ -109,14 +109,27 @@ export function renderCoordinatePlane(
       "stroke-width": 2,
     }),
   );
-  // Axis number labels at every other tick to avoid clutter
-  const labelStep = (max - min) / step > 12 ? step * 2 : step;
-  for (let v = min; v <= max; v += labelStep) {
+  // Axis number labels on every gridline; the font shrinks (never below 9px)
+  // on dense grids instead of skipping gridlines. The origin gets one 0.
+  const unitPx = (plot / (max - min)) * step;
+  const labelSize = `${Math.max(9, Math.min(13, Math.floor(unitPx * 0.55)))}px`;
+  const origin = svgEl("text", {
+    x: toX(0) - 8,
+    y: toY(0) + 15,
+    "font-size": labelSize,
+    fill: "#1f2d3d",
+    "font-weight": "600",
+    "text-anchor": "end",
+    "font-family": "Calibri, sans-serif",
+  });
+  origin.textContent = "0";
+  svg.append(origin);
+  for (let v = min; v <= max; v += step) {
     if (v === 0) continue;
     const tx = svgEl("text", {
       x: toX(v),
       y: toY(0) + 15,
-      "font-size": "13px",
+      "font-size": labelSize,
       fill: "#1f2d3d",
       "font-weight": "600",
       "text-anchor": "middle",
@@ -127,7 +140,7 @@ export function renderCoordinatePlane(
     const ty = svgEl("text", {
       x: toX(0) - 8,
       y: toY(v) + 4,
-      "font-size": "13px",
+      "font-size": labelSize,
       fill: "#1f2d3d",
       "font-weight": "600",
       "text-anchor": "end",

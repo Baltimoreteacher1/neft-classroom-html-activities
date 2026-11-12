@@ -62,11 +62,18 @@ function planeSvg(s) {
     const major = n % 3 === 0;
     grid.push(`<line class="coord-gridline${major ? " is-major" : ""}" x1="${X(n)}" y1="${TOP}" x2="${X(n)}" y2="${BOTTOM}" />`);
     grid.push(`<line class="coord-gridline${major ? " is-major" : ""}" x1="${LEFT}" y1="${Y(n)}" x2="${RIGHT}" y2="${Y(n)}" />`);
-    if (n !== 0 && n % 3 === 0) {
-      grid.push(`<text class="coord-tick" x="${X(n)}" y="${Y(0) + 19}" text-anchor="middle">${n}</text>`);
-      grid.push(`<text class="coord-tick" x="${X(0) - 10}" y="${Y(n) + 4}" text-anchor="end">${n}</text>`);
-    }
   }
+  // Number every unit like a textbook plane: x values under the x-axis, y values left of the
+  // y-axis, a tick mark at each, and a single 0 at the origin.
+  const ticks = [];
+  for (let n = MIN; n <= MAX; n += 1) {
+    if (n === 0) continue;
+    ticks.push(`<line class="coord-tick-mark" x1="${X(n)}" y1="${Y(0) - 4}" x2="${X(n)}" y2="${Y(0) + 4}" />`);
+    ticks.push(`<line class="coord-tick-mark" x1="${X(0) - 4}" y1="${Y(n)}" x2="${X(0) + 4}" y2="${Y(n)}" />`);
+    ticks.push(`<text class="coord-tick" x="${X(n)}" y="${Y(0) + 14}" text-anchor="middle">${n}</text>`);
+    ticks.push(`<text class="coord-tick" x="${X(0) - 7}" y="${Y(n) + 3.5}" text-anchor="end">${n}</text>`);
+  }
+  ticks.push(`<text class="coord-tick" x="${X(0) - 5}" y="${Y(0) + 12}" text-anchor="end">0</text>`);
 
   // Active quadrant subtle tint
   const activePt = s.active === "B" && !s.singlePoint ? p2 : p1;
@@ -156,6 +163,7 @@ function planeSvg(s) {
       <line class="coord-axis" x1="${X(0)}" y1="${BOTTOM}" x2="${X(0)}" y2="${TOP - 8}"/>
       <path class="coord-arrowhead" d="M${X(0)},${TOP - 8} l-4,7 h8 z"/>
       <text class="coord-axis-label" x="${RIGHT + 12}" y="${Y(0) + 4}">x</text><text class="coord-axis-label" x="${X(0) + 7}" y="${TOP - 9}">y</text>
+      ${ticks.join("")}
       ${absProjections}${sharedAxisDistance}${reflectionVisual}
       ${s.showConnector ? line : ""}${slopeTriangle}${references}${targetPoint}${point("A", p1, s.active === "A", "#1463c5")}${s.singlePoint ? "" : point("B", p2, s.active === "B", "#087f65")}
     </g>

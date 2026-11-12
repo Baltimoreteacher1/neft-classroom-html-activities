@@ -265,6 +265,12 @@ export function renderCoordinatePlaneSVG(
       `<line x1="${gx}" y1="${yEnd}" x2="${gx}" y2="${yStart}" stroke="var(--fm-m-whole)" stroke-width="1"/>`,
       `<line x1="${xStart}" y1="${gy}" x2="${xEnd}" y2="${gy}" stroke="var(--fm-m-whole)" stroke-width="1"/>`,
     );
+    // Number every gridline on the axes (x below, y to the left); the origin's 0 is drawn once below.
+    if (i !== 0)
+      gridLines.push(
+        `<text x="${gx}" y="${cy + 14}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="10" font-weight="700" fill="var(--fm-text-muted)">${fmtMinus(i)}</text>`,
+        `<text x="${cx - 5}" y="${gy + 4}" text-anchor="end" font-family="Outfit, system-ui, sans-serif" font-size="10" font-weight="700" fill="var(--fm-text-muted)">${fmtMinus(i)}</text>`,
+      );
   }
 
   const [axX1] = toPx(minVal, 0);
@@ -300,7 +306,7 @@ export function renderCoordinatePlaneSVG(
   <line x1="${cx}" y1="${axY1}" x2="${cx}" y2="${axY2 - 8}" stroke="var(--fm-primary)" stroke-width="2"/>
   <text x="${axX2 + 12}" y="${cy + 4}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-primary)">x</text>
   <text x="${cx + 6}" y="${axY2 - 8}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-primary)">y</text>
-  <text x="${cx - 12}" y="${cy + 14}" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="var(--fm-m-whole)">0</text>
+  <text x="${cx - 5}" y="${cy + 14}" text-anchor="end" font-family="Outfit, system-ui, sans-serif" font-size="10" font-weight="700" fill="var(--fm-text-muted)">0</text>
   ${segSvg}
   ${ptSvg}
 </svg>`;

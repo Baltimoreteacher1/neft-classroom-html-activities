@@ -42,7 +42,7 @@ export function visualMarkup(m) {
       y = (n) => 120 - n * 9;
     for (let n = -10; n <= 10; n += 2) {
       shapes += line(x(n), 25, x(n), 215, "#ccd8d2");
-      shapes += text(x(n) - 7, 236, n);
+      shapes += text(n === 0 ? x(n) - 11 : x(n) - 7, y(0) + 18, n);
     }
     shapes += line(65, 120, 500, 120) + line(280, 15, 280, 218);
     shapes += line(x(v[0]), y(v[1]), x(v[2]), y(v[1]), "#b53e20");

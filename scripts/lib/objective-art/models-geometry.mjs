@@ -105,7 +105,6 @@ function planeWithQuadrants() {
     min: -5,
     max: 5,
     labelSize: 20,
-    labelEvery: 2,
   });
   let s = p.svg;
   for (const [qx, qy, label] of QUADRANTS) {

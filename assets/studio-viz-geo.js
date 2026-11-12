@@ -112,8 +112,14 @@
       const longX = xl.length > 2;
       const longY = yl.length > 2;
       const stride = (u, px) => MULT.find((m) => m * u >= px) || 1000;
-      const gx = stride(ux, 26);
-      const gy = stride(uy, 22);
+      // Gridlines fall on every unit once a unit is 14px wide, and every gridline is numbered: a dense
+      // grid shrinks its numerals (to no less than 9px) instead of skipping gridlines.
+      const gridOn = s.grid !== false;
+      const gx = gridOn && ux >= 14 ? 1 : stride(ux, 26);
+      const gy = gridOn && uy >= 14 ? 1 : stride(uy, 22);
+      const zx = Math.max(9, Math.min(13, Math.floor(gx * ux * 0.6)));
+      const zy = Math.max(9, Math.min(13, Math.floor(gy * uy * 0.75)));
+      const z0 = Math.min(zx, zy);
       const ml = 14 + Math.max(tw(fmt(ymin), 13), tw(fmt(ymax), 13)) + (longY ? 24 : 0);
       const mt = longY ? 30 : 34;
       const X = (v) => ml + (v - xmin) * ux;
@@ -129,11 +135,9 @@
         return out;
       };
       let body = "";
-      if (s.grid !== false) {
-        for (const v of steps(xmin, xmax, ux >= 14 ? 1 : gx))
-          body += L(X(v), mt, X(v), mt + ph, "sg");
-        for (const v of steps(ymin, ymax, uy >= 14 ? 1 : gy))
-          body += L(ml, Y(v), ml + pw, Y(v), "sg");
+      if (gridOn) {
+        for (const v of steps(xmin, xmax, gx)) body += L(X(v), mt, X(v), mt + ph, "sg");
+        for (const v of steps(ymin, ymax, gy)) body += L(ml, Y(v), ml + pw, Y(v), "sg");
       }
       body += Rc(ml, mt, pw, ph, "fn sg");
       body += L(xmin < 0 ? ml - 12 : ml, ay, ml + pw + 12, ay, "ax");
@@ -145,14 +149,14 @@
       for (const t of steps(xmin, xmax, gx)) {
         if (origin && t === 0) continue;
         body += L(X(t), ay - 3.5, X(t), ay + 3.5, "tk");
-        body += T(X(t), ay + 19, fmt(t), { a: "middle", z: 13, c: "hl" });
+        body += T(X(t), ay + 19, fmt(t), { a: "middle", z: zx, c: "hl" });
       }
       for (const t of steps(ymin, ymax, gy)) {
         if (origin && t === 0) continue;
         body += L(ax - 3.5, Y(t), ax + 3.5, Y(t), "tk");
-        body += T(ax - 9, Y(t), fmt(t), { a: "end", z: 13, m: 1, c: "hl" });
+        body += T(ax - 9, Y(t), fmt(t), { a: "end", z: zy, m: 1, c: "hl" });
       }
-      if (origin) body += T(ax - 8, ay + 18, "0", { a: "end", z: 13, c: "hl" });
+      if (origin) body += T(ax - 8, ay + 18, "0", { a: "end", z: z0, c: "hl" });
       if (longX) body += T(ml + pw / 2, mt + ph + 56, xl, { a: "middle", z: 15, c: "bd" });
       else body += T(ml + pw + 30, ay + 5, xl, { z: 16, c: "bd" });
       if (longY) body += T(14, mt + ph / 2, yl, { a: "middle", z: 15, c: "bd", r: -90 });

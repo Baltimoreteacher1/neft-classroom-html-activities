@@ -355,9 +355,27 @@
         hLine.setAttribute('x2', 400);
         hLine.setAttribute('y2', pos);
         gridG.appendChild(hLine);
+
+        // Axis numbers: x below the x-axis, y left of the y-axis
+        gridG.appendChild(axisNumber(pos, 214, i, 'middle'));
+        gridG.appendChild(axisNumber(194, 400 - pos + 3.5, i, 'end'));
       }
+      gridG.appendChild(axisNumber(194, 214, 0, 'end'));
 
       pickNewTarget();
+    }
+
+    function axisNumber(x, y, value, anchor) {
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', x);
+      t.setAttribute('y', y);
+      t.setAttribute('text-anchor', anchor);
+      t.setAttribute('stroke', 'none');
+      t.setAttribute('fill', 'rgba(0, 240, 255, 0.75)');
+      t.setAttribute('font-size', '10');
+      t.setAttribute('font-family', 'Share Tech Mono');
+      t.textContent = String(value);
+      return t;
     }
 
     function drawTelemetry() {

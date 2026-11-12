@@ -27,6 +27,9 @@ function coordinatePlaneSVG({ quadrants = 4, points = [], showGrid = true } = {}
   let grid = ""; if (showGrid) for (let i = 0; i <= 10; i++) { const z = left + i * step; grid += `<path d="M${z} ${top}V${bottom}M${left} ${top + i * step}H${left + size}" stroke="#e5edf0"/>`; }
   const axes = quadrants === 1 ? `<path d="M${left} ${bottom}H${left + size}M${left} ${bottom}V${top}" stroke="#29485c" stroke-width="2"/>` : `<path d="M${mid} ${top}V${bottom}M${left} ${top + size / 2}H${left + size}" stroke="#29485c" stroke-width="2"/>`;
   const dots = points.slice(0, 24).map((p) => { const px = quadrants === 1 ? left + Number(p.x) * step : mid + Number(p.x) * step; const py = quadrants === 1 ? bottom - Number(p.y) * step : top + size / 2 - Number(p.y) * step; if (!Number.isFinite(px + py) || px < left || px > left + size || py < top || py > bottom) return ""; return `<circle cx="${px}" cy="${py}" r="6" fill="${p.isError ? "#c05246" : "#147c78"}"/><text x="${px + 9}" y="${py - 8}" font-size="13">${esc(p.label || `(${p.x}, ${p.y})`)}</text>`; }).join("");
-  return shell(440, 360, `${grid}${axes}${dots}<text x="${left + size + 12}" y="${mid + 5}" font-size="14">x</text><text x="${mid + 6}" y="${top - 8}" font-size="14">y</text>`, "Coordinate plane");
+  const ox = quadrants === 1 ? left : mid, oy = quadrants === 1 ? bottom : top + size / 2, lo = quadrants === 1 ? 0 : -5;
+  let nums = `<text x="${ox - 6}" y="${oy + 16}" text-anchor="end" font-size="12">0</text>`;
+  for (let v = lo; v <= lo + 10; v++) if (v !== 0) nums += `<text x="${ox + v * step}" y="${oy + 16}" text-anchor="middle" font-size="12">${v}</text><text x="${ox - 6}" y="${oy - v * step + 4}" text-anchor="end" font-size="12">${v}</text>`;
+  return shell(440, 360, `${grid}${axes}${nums}${dots}<text x="${left + size + 12}" y="${mid + 5}" font-size="14">x</text><text x="${mid + 6}" y="${top - 8}" font-size="14">y</text>`, "Coordinate plane");
 }
 export const MathSVGService = Object.freeze({ makeNumberLineSVG: numberLineSVG, makeDoubleNumberLineSVG: doubleNumberLineSVG, makeFractionTapeSVG: fractionTapeSVG, makeCoordinatePlaneSVG: coordinatePlaneSVG });

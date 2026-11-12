@@ -106,6 +106,12 @@ function foldedMap() {
     grid += `<line x1="${px(i)}" y1="${py(hi)}" x2="${px(i)}" y2="${py(lo)}" stroke="#dbe6ec" stroke-width="1"/>`;
     grid += `<line x1="${px(lo)}" y1="${py(i)}" x2="${px(hi)}" y2="${py(i)}" stroke="#dbe6ec" stroke-width="1"/>`;
   }
+  // Every gridline numbered on the axes (x below, y to the left); the origin's 0 once, below-left.
+  const num = (x, y, v, anchor) =>
+    `<text x="${x}" y="${y}" font-size="12" font-weight="700" fill="${MUTED}" text-anchor="${anchor}">${v < 0 ? `−${-v}` : v}</text>`;
+  grid += num(cx - 6, cy + 17, 0, "end");
+  for (let i = lo; i <= hi; i++)
+    if (i !== 0) grid += num(px(i), cy + 17, i, "middle") + num(cx - 6, py(i) + 4, i, "end");
   const axes =
     `<line x1="${px(lo)}" y1="${cy}" x2="${px(hi)}" y2="${cy}" stroke="${NAVY}" stroke-width="2.4"/>` +
     `<line x1="${cx}" y1="${py(hi)}" x2="${cx}" y2="${py(lo)}" stroke="${NAVY}" stroke-width="2.4"/>` +

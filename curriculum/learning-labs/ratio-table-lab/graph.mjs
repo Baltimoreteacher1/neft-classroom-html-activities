@@ -61,7 +61,7 @@ export function coordGraph({
   }
   for (let y = 0; y <= yMax; y += yStep) {
     parts.push(
-      `<path class="grid" d="M${px(0)} ${py(y)}H${px(xMax)}"/><text x="${px(0) - 10}" y="${py(y) + 6}" text-anchor="end">${y}</text>`,
+      `<path class="grid" d="M${px(0)} ${py(y)}H${px(xMax)}"/>${y === 0 ? "" : `<text x="${px(0) - 10}" y="${py(y) + 6}" text-anchor="end">${y}</text>`}`,
     );
   }
   parts.push(

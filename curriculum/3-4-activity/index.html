@@ -2130,8 +2130,9 @@
           const grid = sv("g", {}, svg);
           const nx = Math.round(o.xMax / o.xStep),
             ny = Math.round(o.yMax / o.yStep);
-          const lx = nx > 16 ? 2 : 1,
-            ly = ny > 16 ? 2 : 1;
+          // Every gridline is numbered; dense axes shrink the numerals instead of skipping.
+          const xFont = nx > 16 ? "font-size:10px" : "",
+            yFont = ny > 16 ? "font-size:10px" : "";
           for (let i = 0; i <= nx; i++) {
             const x = X(i * o.xStep);
             sv(
@@ -2139,12 +2140,11 @@
               { class: "gl" + (i % 5 === 0 ? " major" : ""), x1: x, y1: m.t, x2: x, y2: m.t + ph },
               grid,
             );
-            if (i % lx === 0)
-              sv(
-                "text",
-                { class: "tick", x, y: m.t + ph + 18, "text-anchor": "middle" },
-                grid,
-              ).textContent = fmt(i * o.xStep);
+            sv(
+              "text",
+              { class: "tick", x, y: m.t + ph + 18, "text-anchor": "middle", style: xFont },
+              grid,
+            ).textContent = fmt(i * o.xStep);
           }
           for (let j = 0; j <= ny; j++) {
             const y = Y(j * o.yStep);
@@ -2153,10 +2153,10 @@
               { class: "gl" + (j % 5 === 0 ? " major" : ""), x1: m.l, y1: y, x2: m.l + pw, y2: y },
               grid,
             );
-            if (j % ly === 0 && j > 0)
+            if (j > 0)
               sv(
                 "text",
-                { class: "tick", x: m.l - 8, y: y + 4, "text-anchor": "end" },
+                { class: "tick", x: m.l - 8, y: y + 4, "text-anchor": "end", style: yFont },
                 grid,
               ).textContent = fmt(j * o.yStep);
           }

@@ -167,15 +167,16 @@ export function renderCoordPlaneSvg(cfg = {}) {
     cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
-  const stride = m > 6 ? 2 : 1;
+  // Every gridline is numbered (large planes shrink the numerals, never below 7.5); 0 once, below-left of the origin.
+  const fs = Math.max(7.5, Math.min(8, Math.floor(unit * 0.5 * 2) / 2));
 
-  let grid = "";
+  let grid = `<text x="${cx - 4}" y="${cy + 12}" text-anchor="end" font-size="${fs}" fill="${BRAND.gray}" font-family="'Hanken Grotesk',Arial,sans-serif">0</text>`;
   for (let i = -m; i <= m; i++) {
     grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="${BRAND.grayLight}" stroke-width="1"/>`;
     grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="${BRAND.grayLight}" stroke-width="1"/>`;
-    if (i !== 0 && i % stride === 0) {
-      grid += `<text x="${X(i)}" y="${cy + 12}" text-anchor="middle" font-size="8" fill="${BRAND.gray}" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
-      grid += `<text x="${cx - 4}" y="${Y(i) + 3}" text-anchor="end" font-size="8" fill="${BRAND.gray}" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
+    if (i !== 0) {
+      grid += `<text x="${X(i)}" y="${cy + 12}" text-anchor="middle" font-size="${fs}" fill="${BRAND.gray}" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
+      grid += `<text x="${cx - 4}" y="${Y(i) + 3}" text-anchor="end" font-size="${fs}" fill="${BRAND.gray}" font-family="'Hanken Grotesk',Arial,sans-serif">${i}</text>`;
     }
   }
 

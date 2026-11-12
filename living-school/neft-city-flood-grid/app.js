@@ -900,6 +900,14 @@
         if (x === 0 && y === 0) cell.classList.add("origin");
         cell.setAttribute("role", "gridcell");
         cell.setAttribute("aria-label", `x ${x}, y ${y}`);
+        // Number every unit along the axes (the origin once, as 0); the cell's aria-label already names it.
+        if (x === 0 || y === 0) {
+          const num = document.createElement("span");
+          num.className = "axis-num";
+          num.setAttribute("aria-hidden", "true");
+          num.textContent = fmtInt(y === 0 ? x : y);
+          cell.appendChild(num);
+        }
         cell.addEventListener("click", () => onCellClick(x, y));
         plane.appendChild(cell);
       }

@@ -232,6 +232,12 @@ export default {
         grid.group.add(ly);
         labels.push(ly);
       }
+      // Origin: one 0, below-left of the origin
+      const l0 = makeLabel("0", { scale: 1.1, fontSize: 96, color: "#eaf4ff" });
+      const w0 = coordToWorld(0, 0);
+      l0.position.set(w0.x - 0.5, 0.6, w0.z + 0.5);
+      grid.group.add(l0);
+      labels.push(l0);
       const ox = makeLabel("x", { scale: 1.0, color: "#9fd0ff" });
       const wox = coordToWorld(cfg.maxCoord, 0);
       ox.position.set(wox.x + 0.7, 0.6, wox.z);

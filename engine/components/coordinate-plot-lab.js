@@ -63,14 +63,17 @@ export function renderCoordinatePlot(host, cfg) {
   const unit = plot / span;
   const X = (x) => pad + (x - lo) * unit;
   const Y = (y) => pad + (hi - y) * unit;
-  const stride = span > 12 ? 2 : 1;
-  const tick = 'style="font-size:13px;fill:#4a5668;font-weight:500"';
+  // Every gridline is numbered; dense grids shrink the numerals (>= 9px)
+  // rather than skipping gridlines.
+  const tickSize = Math.max(9, Math.min(13, Math.floor(unit * 0.6)));
+  const tick = `style="font-size:${tickSize}px;fill:#4a5668;font-weight:500"`;
+  const axisName = 'style="font-size:13px;fill:#4a5668;font-weight:500"';
 
   let grid = "";
   for (let i = lo; i <= hi; i++) {
     grid += `<line x1="${X(i).toFixed(1)}" y1="${pad}" x2="${X(i).toFixed(1)}" y2="${(W - pad).toFixed(1)}" stroke="rgba(0,0,0,0.06)"/>`;
     grid += `<line x1="${pad}" y1="${Y(i).toFixed(1)}" x2="${(W - pad).toFixed(1)}" y2="${Y(i).toFixed(1)}" stroke="rgba(0,0,0,0.06)"/>`;
-    if (i !== 0 && i % stride === 0) {
+    if (i !== 0) {
       grid += `<text x="${X(i).toFixed(1)}" y="${(Y(0) + 13).toFixed(1)}" text-anchor="middle" ${tick}>${i}</text>`;
       grid += `<text x="${(X(0) - 6).toFixed(1)}" y="${(Y(i) + 4).toFixed(1)}" text-anchor="end" ${tick}>${i}</text>`;
     }
@@ -79,8 +82,8 @@ export function renderCoordinatePlot(host, cfg) {
   const axes =
     `<line x1="${pad}" y1="${Y(0).toFixed(1)}" x2="${(W - pad).toFixed(1)}" y2="${Y(0).toFixed(1)}" stroke="${C.ink}" stroke-width="2"/>` +
     `<line x1="${X(0).toFixed(1)}" y1="${pad}" x2="${X(0).toFixed(1)}" y2="${(W - pad).toFixed(1)}" stroke="${C.ink}" stroke-width="2"/>` +
-    `<text x="${(W - pad + 4).toFixed(1)}" y="${(Y(0) + 4).toFixed(1)}" ${tick}>x</text>` +
-    `<text x="${(X(0) + 5).toFixed(1)}" y="${pad.toFixed(1)}" ${tick}>y</text>`;
+    `<text x="${(W - pad + 4).toFixed(1)}" y="${(Y(0) + 4).toFixed(1)}" ${axisName}>x</text>` +
+    `<text x="${(X(0) + 5).toFixed(1)}" y="${pad.toFixed(1)}" ${axisName}>y</text>`;
 
   const wrap = document.createElement("div");
   wrap.className = "cpl-wrap";

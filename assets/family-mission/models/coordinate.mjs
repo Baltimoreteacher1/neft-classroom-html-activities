@@ -409,15 +409,22 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const g = ui.body;
     clear(g);
     const u = unit(d);
-    const skip = Math.ceil(d.range / 5);
+    // Every gridline is numbered; a wide range shrinks the numerals (>= 9px) instead of skipping.
+    const fs = u >= 26 ? "" : `font-size:${Math.max(9, Math.floor(u * 0.6))}px`;
+    const tick = (x, y, v, anchor) => {
+      const el = stext(x, y, num(frac(v)), "fm-svg-text fm-tick-label", anchor);
+      if (fs) el.setAttribute("style", fs);
+      return el;
+    };
     for (let k = -d.range; k <= d.range; k++) {
       const p = W / 2 + k * u;
       g.append(s("line", { class: "fm-grid-line", x1: p, x2: p, y1: W / 2 - HALF, y2: W / 2 + HALF }), s("line", { class: "fm-grid-line", y1: p, y2: p, x1: W / 2 - HALF, x2: W / 2 + HALF }));
     }
     g.append(s("line", { class: `fm-axis${d.reflect === "x" ? " fm-mirror" : ""}`, x1: W / 2 - HALF - 6, x2: W / 2 + HALF + 6, y1: W / 2, y2: W / 2 }), s("line", { class: `fm-axis${d.reflect === "y" ? " fm-mirror" : ""}`, y1: W / 2 - HALF - 6, y2: W / 2 + HALF + 6, x1: W / 2, x2: W / 2 }));
-    for (let k = skip; k <= d.range; k += skip) {
+    g.append(tick(W / 2 - 6, W / 2 + 18, 0, "end"));
+    for (let k = 1; k <= d.range; k++) {
       for (const sg of [1, -1]) {
-        g.append(stext(W / 2 + sg * k * u, W / 2 + 18, num(frac(sg * k)), "fm-svg-text fm-tick-label", "middle"), stext(W / 2 - 6, W / 2 - sg * k * u + 5, num(frac(sg * k)), "fm-svg-text fm-tick-label", "end"));
+        g.append(tick(W / 2 + sg * k * u, W / 2 + 18, sg * k, "middle"), tick(W / 2 - 6, W / 2 - sg * k * u + 5, sg * k, "end"));
       }
     }
     g.append(stext(W - 8, W / 2 - 8, "x", "fm-svg-text fm-svg-strong", "end"), stext(W / 2 + 10, 14, "y", "fm-svg-text fm-svg-strong"));

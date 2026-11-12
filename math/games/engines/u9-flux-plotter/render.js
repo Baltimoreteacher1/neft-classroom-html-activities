@@ -173,7 +173,7 @@ export function buildGraphLayer(top) {
     for (let i = 0; i <= X_MAX; i++) g.fillText(String(i), GX0 + i * GXU, GY0 + 18);
     g.textAlign = "right";
     for (let j = 1; j <= 10; j++) {
-      if (top > 50 && j % 2 === 1) continue;
+      // every horizontal gridline is numbered (rows are 39px apart, no skipping)
       const y = GY0 - ((GY0 - GY1) * j) / 10;
       g.fillText(String((top * j) / 10), GX0 - 6, y + 4);
     }

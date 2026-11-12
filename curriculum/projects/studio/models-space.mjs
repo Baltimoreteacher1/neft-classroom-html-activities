@@ -92,7 +92,8 @@ function planeSvg(v, ctx) {
   let body = "";
   for (let k = -10; k <= 10; k++) body += line(px(k), 20, px(k), 340, "#d5dfda", 'stroke-width="1"') + line(20, py(k), 340, py(k), "#d5dfda", 'stroke-width="1"');
   body += line(20, py(0), 340, py(0), INK, 'stroke-width="2"') + line(px(0), 20, px(0), 340, INK, 'stroke-width="2"');
-  for (let k = -10; k <= 10; k += 2) if (k) body += text(px(k), py(0) + 14, sg(k), { anchor: "middle", size: 10, fill: MUTED }) + text(px(0) - 5, py(k) + 4, sg(k), { anchor: "end", size: 10, fill: MUTED });
+  for (let k = -10; k <= 10; k++) if (k) body += text(px(k), py(0) + 13, sg(k), { anchor: "middle", size: 9, fill: MUTED }) + text(px(0) - 4, py(k) + 3, sg(k), { anchor: "end", size: 9, fill: MUTED });
+  body += text(px(0) - 4, py(0) + 13, "0", { anchor: "end", size: 9, fill: MUTED });
   body += text(330, py(0) - 6, "x", { anchor: "end", bold: true }) + text(px(0) + 8, 30, "y", { bold: true });
   body += text(300, 46, "I", { size: 14, fill: "#aab8b1", bold: true }) + text(60, 46, "II", { size: 14, fill: "#aab8b1", bold: true }) + text(60, 330, "III", { size: 14, fill: "#aab8b1", bold: true }) + text(300, 330, "IV", { size: 14, fill: "#aab8b1", bold: true });
   body += line(px(a), py(b), px(c), py(b), ORANGE, 'stroke-width="4"');

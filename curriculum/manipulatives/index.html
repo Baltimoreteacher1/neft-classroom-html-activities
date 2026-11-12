@@ -245,14 +245,15 @@
           line(s, p, pad, p, H - pad, i === n / 2 ? 2 : 0.6);
           line(s, pad, p, W - pad, p, i === n / 2 ? 2 : 0.6);
         }
-        // axis labels every 2
-        for (var k = -10; k <= 10; k += 2) {
+        // axis labels on every gridline; the origin is labelled 0 once, below-left
+        for (var k = -10; k <= 10; k++) {
           if (k === 0) continue;
           var xx = pad + (k + 10) * step;
           txt(s, xx, H / 2 + 16, String(k), 11);
           var yy = pad + (10 - k) * step;
-          txt(s, W / 2 - 14, yy + 4, String(k), 11);
+          txt(s, W / 2 - 5, yy + 4, String(k), 11, "end");
         }
+        txt(s, W / 2 - 5, H / 2 + 16, "0", 11, "end");
         txt(s, W - 16, H / 2 - 6, "x", 14);
         txt(s, W / 2 + 12, 20, "y", 14);
         return s;

@@ -275,15 +275,18 @@ export function renderCoord(d, { lang }) {
   for (let j = 0; j <= ny; j++) g += `M${left} ${n1(top + j * py)}h${n1(nx * px)}`;
   out.push(`<path class="m-gr" d="${g}"/>`);
   out.push(`<path class="m-ln" d="M${left} ${n1(y0)}H${n1(left + nx * px + 8)}M${n1(x0)} ${top + ny * py}V${top - 8}"/>${head(left + nx * px + 12, y0, "r")}${head(x0, top - 12, "u")}`);
-  const stepX = Math.ceil(nx / 10);
-  const stepY = Math.ceil(ny / 10);
-  for (let i = 0; i <= nx; i += stepX) {
+  // Every gridline is numbered on the axes (x just below the x-axis, y just left of the y-axis); a dense grid
+  // shrinks the numerals instead of skipping gridlines. The origin is labelled 0 exactly once, below-left.
+  const fx = px >= 20 ? "" : ` style="font-size:${Math.max(9, Math.floor(px * 0.7))}px"`;
+  const fy = py >= 16 ? "" : ` style="font-size:${Math.max(9, Math.floor(py * 0.85))}px"`;
+  out.push(text(x0 - 6, y0 + 18, "0", { anchor: "end", extra: fx || fy }));
+  for (let i = 0; i <= nx; i++) {
     const v = lx + i;
-    if (v !== 0 || !quad) out.push(text(left + i * px, top + ny * py + 22, minus(String(v))));
+    if (v !== 0) out.push(text(left + i * px, y0 + 18, minus(String(v)), { extra: fx }));
   }
-  for (let j = 0; j <= ny; j += stepY) {
+  for (let j = 0; j <= ny; j++) {
     const v = ly + j;
-    if (v !== 0 || !quad) out.push(text(left - 8, top + (ny - j) * py + 5, minus(String(v)), { anchor: "end" }));
+    if (v !== 0) out.push(text(x0 - 8, top + (ny - j) * py + 5, minus(String(v)), { anchor: "end", extra: fy }));
   }
   const pts = d.points ?? [];
   const pd = [];

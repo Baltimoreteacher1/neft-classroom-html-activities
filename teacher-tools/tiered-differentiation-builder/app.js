@@ -627,6 +627,14 @@
     svg += `<line x1="150" y1="20" x2="150" y2="220" stroke="#0f172a" stroke-width="2"/>`; // Y axis
     svg += `<line x1="30" y1="120" x2="270" y2="120" stroke="#0f172a" stroke-width="2"/>`; // X axis
 
+    // Axis numbers: every gridline, x below the x-axis, y left of the y-axis, origin 0 once
+    for (let v = -4; v <= 4; v++) {
+      if (v === 0) continue;
+      svg += `<text x="${150 + v * 30}" y="132" font-size="9" text-anchor="middle" fill="#334155">${v}</text>`;
+      svg += `<text x="145" y="${120 - v * 25 + 3}" font-size="9" text-anchor="end" fill="#334155">${v}</text>`;
+    }
+    svg += `<text x="145" y="132" font-size="9" text-anchor="end" fill="#334155">0</text>`;
+
     // Labels
     svg += `<text x="260" y="115" font-size="10" font-weight="bold" fill="#0f172a">x</text>`;
     svg += `<text x="155" y="30" font-size="10" font-weight="bold" fill="#0f172a">y</text>`;

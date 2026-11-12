@@ -1840,14 +1840,17 @@
           // Y-axis lines (horizontal dividers)
           svg.innerHTML += `<line x1="0" y1="${gridPos}" x2="400" y2="${gridPos}" stroke="${stroke}" stroke-width="${width}" />`;
 
-          // Add grid tick text labels
-          if (i !== 0 && i % 2 === 0) {
+          // Add grid tick text labels (every gridline; origin gets a single 0 below)
+          if (i !== 0) {
             // X tick labels
             svg.innerHTML += `<text x="${gridPos}" y="${cy + 12}" class="tick-label" text-anchor="middle">${i}</text>`;
             // Y tick labels
             svg.innerHTML += `<text x="${cx - 12}" y="${cx - i * scale + 3}" class="tick-label" text-anchor="end">${i}</text>`;
           }
         }
+
+        // Origin label: one 0, below-left of the origin
+        svg.innerHTML += `<text x="${cx - 4}" y="${cy + 12}" class="tick-label" text-anchor="end">0</text>`;
 
         // Central Axis Arrows & Labels
         svg.innerHTML += `

@@ -163,7 +163,8 @@ export function visual(model, values, result) {
     body += text(300, 280, result.equation);
   } else if (k === 'coordinates') {
     const sx = n => 300 + n * 19, sy = n => 146 - n * 19;
-    for (let i = -6; i <= 6; i++) { body += line(sx(i), sy(-6), sx(i), sy(6), i === 0 ? 'heavy' : 'gridline') + line(sx(-6), sy(i), sx(6), sy(i), i === 0 ? 'heavy' : 'gridline'); if (i !== 0 && i % 2 === 0) body += text(sx(i), 166, i) + text(283, sy(i) + 5, i); }
+    for (let i = -6; i <= 6; i++) { body += line(sx(i), sy(-6), sx(i), sy(6), i === 0 ? 'heavy' : 'gridline') + line(sx(-6), sy(i), sx(6), sy(i), i === 0 ? 'heavy' : 'gridline'); if (i !== 0) body += `<text x="${sx(i)}" y="${sy(0) + 16}" text-anchor="middle" font-size="13">${i}</text><text x="${sx(0) - 5}" y="${sy(i) + 5}" text-anchor="end" font-size="13">${i}</text>`; }
+    body += `<text x="${sx(0) - 5}" y="${sy(0) + 16}" text-anchor="end" font-size="13">0</text>`;
     if (model.mode === 'rectangle') body += rect(sx(Math.min(a, c)), sy(Math.max(b, d)), Math.abs(c - a) * 19, Math.abs(d - b) * 19, 'shape-light');
     if (model.mode === 'distance') body += line(sx(a), sy(b), sx(c), sy(b), 'solution') + line(sx(c), sy(b), sx(c), sy(d), 'solution');
     body += dot(sx(a), sy(b), `A(${a},${b})`) + dot(sx(c), sy(d), `B(${c},${d})`, 'point-alt') + text(445, 150, 'x') + text(300, 14, 'y');

@@ -470,6 +470,8 @@
           `Plano de coordenadas de ${-n} a ${n}. Las flechas mueven el cursor, Enter marca o quita un punto.`,
         ),
       });
+      // Every gridline is numbered; the widest range shrinks the numerals instead of skipping.
+      const tickFont = n > 10 ? 8 : 9;
       for (let i = -n; i <= n; i++) {
         s.appendChild(
           svg("line", {
@@ -491,7 +493,7 @@
             "stroke-width": i === 0 ? 2.4 : 1,
           }),
         );
-        if (i !== 0 && (n <= 8 || i % 2 === 0)) {
+        if (i !== 0) {
           s.appendChild(
             svg(
               "text",
@@ -499,7 +501,7 @@
                 x: sx(i),
                 y: sy(0) + 13,
                 "text-anchor": "middle",
-                "font-size": 9,
+                "font-size": tickFont,
                 "font-weight": 700,
                 fill: "#33485f",
               },
@@ -513,7 +515,7 @@
                 x: sx(0) - 5,
                 y: sy(i) + 3,
                 "text-anchor": "end",
-                "font-size": 9,
+                "font-size": tickFont,
                 "font-weight": 700,
                 fill: "#33485f",
               },
@@ -522,6 +524,9 @@
           );
         }
       }
+      s.appendChild(
+        svg("text", { x: sx(0) - 5, y: sy(0) + 13, "text-anchor": "end", "font-size": tickFont, "font-weight": 700, fill: "#33485f" }, "0"),
+      );
       if (o.func.on) {
         const m = M.parseRate(o.func.m);
         if (Number.isFinite(m)) {

@@ -153,13 +153,16 @@
     const cx = size / 2;
     const px = (v) => cx + v * u;
     const py = (v) => cx - v * u;
-    let body = "";
+    // Every gridline is numbered; large ranges shrink the numerals (>= 8)
+    // rather than skipping. The origin is labelled 0 once, below-left.
+    const fs = Math.max(8, Math.min(10, Math.floor(u * 0.6)));
+    let body = text(cx - 8, cx + 14, "0", { size: fs, anchor: "end" });
     for (let i = -range; i <= range; i++) {
       body += `<line x1="${px(i)}" y1="${pad}" x2="${px(i)}" y2="${size - pad}" stroke="#d1d5db" stroke-width="1"/>`;
       body += `<line x1="${pad}" y1="${py(i)}" x2="${size - pad}" y2="${py(i)}" stroke="#d1d5db" stroke-width="1"/>`;
       if (i !== 0) {
-        body += text(px(i), cx + 14, num(i), { size: 10 });
-        body += text(cx - 8, py(i) + 4, num(i), { size: 10, anchor: "end" });
+        body += text(px(i), cx + 14, num(i), { size: fs });
+        body += text(cx - 8, py(i) + 4, num(i), { size: fs, anchor: "end" });
       }
     }
     body += line(pad, cx, size - pad, cx) + line(cx, pad, cx, size - pad);

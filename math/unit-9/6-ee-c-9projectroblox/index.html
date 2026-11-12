@@ -6613,9 +6613,10 @@
           ctx.fillText(x, cx, (H - PB + 16) * sy);
         }
         ctx.textAlign = "right";
-        for (let y = 0; y <= YMAX; y += g.YSTEP) {
+        // y numbers sit on their gridlines; the origin keeps the single 0 from the x-axis
+        for (let y = g.YSTEP; y <= YMAX; y += g.YSTEP) {
           const [, cy] = tC(0, y);
-          ctx.fillText("$" + y, (PL - 6) * sx, (cy + 4) * sy);
+          ctx.fillText("$" + y, (PL - 6) * sx, cy + 4 * sy);
         }
         ctx.fillStyle = "#333";
         ctx.font = `bold ${11 * sy}px DM Sans,sans-serif`;

@@ -270,6 +270,14 @@ const SCENES = {
         out += `<line class="at-grid" x1="${ox - shift}" y1="${yy}" x2="${ox + size * max - shift}" y2="${yy}"/>`;
       }
       const at = (x, y) => [ox + x * size - (60 * y) / max, oy - y * size * 0.95];
+      // Number both edges of the floor: x along the front, y up the left side, one 0 at the corner.
+      for (let i = 0; i <= max; i += 1) {
+        const [nx, ny] = at(i, 0);
+        out += `<text class="at-axis-num" x="${nx}" y="${ny + 16}" text-anchor="middle">${i}</text>`;
+        if (i === 0) continue;
+        const [lx, ly] = at(0, i);
+        out += `<text class="at-axis-num" x="${lx - 6}" y="${ly + 4}" text-anchor="end">${i}</text>`;
+      }
       const [ex, ey] = at(pts.at(-1).x, pts.at(-1).y);
       out += `<line class="at-ray" x1="${ox}" y1="${oy}" x2="${ex}" y2="${ey}"/>`;
       pts.slice(1).forEach((pt, i) => {
@@ -365,6 +373,13 @@ const SCENES = {
         out += `<line class="at-grid${i === 0 ? " is-axis" : ""}" x1="${X(i)}" y1="${Y(-range)}" x2="${X(i)}" y2="${Y(range)}"/>`;
         out += `<line class="at-grid${i === 0 ? " is-axis" : ""}" x1="${X(-range)}" y1="${Y(i)}" x2="${X(range)}" y2="${Y(i)}"/>`;
       }
+      // Number the axes like a textbook plane: every unit, one 0 at the origin.
+      for (let i = -range; i <= range; i += 1) {
+        if (i === 0) continue;
+        out += `<text class="at-axis-num" x="${X(i)}" y="${Y(0) + 15}" text-anchor="middle">${i}</text>`;
+        out += `<text class="at-axis-num" x="${X(0) - 5}" y="${Y(i) + 4}" text-anchor="end">${i}</text>`;
+      }
+      out += `<text class="at-axis-num" x="${X(0) - 5}" y="${Y(0) + 15}" text-anchor="end">0</text>`;
       // The line is drawn as a lit ribbon: a soft cast shadow, then a bright core.
       const yAt = (x) => (rise * x) / run + s.b;
       const x1 = -range;

@@ -1744,7 +1744,11 @@
         '" stroke-width="' +
         (isAxis ? 2.5 : 1) +
         '"/>';
-      if (i !== 0 && i % 2 === 0) {
+      // Every gridline is numbered; the origin is labelled 0 once, below-left.
+      if (i === 0)
+        content +=
+          '<text x="-4" y="16" font-size="10" text-anchor="end" fill="var(--ink-3)" font-family="var(--font-mono)">0</text>';
+      if (i !== 0) {
         content +=
           '<text x="' +
           p +
@@ -1752,7 +1756,7 @@
           i +
           "</text>";
         content +=
-          '<text x="-12" y="' +
+          '<text x="-4" y="' +
           (-p + 4) +
           '" font-size="10" text-anchor="end" fill="var(--ink-3)" font-family="var(--font-mono)">' +
           i +

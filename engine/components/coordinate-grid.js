@@ -97,18 +97,24 @@ export function renderCoordinateGrid(container, config = {}) {
 
   // Tick labels — sit just beside the axes through the origin when those axes
   // are in view (so a 4-quadrant grid reads naturally), otherwise fall back to
-  // the outer border for single-quadrant grids. The 0 is omitted to avoid a
-  // collision at the origin.
+  // the outer border for single-quadrant grids. When the origin is in view it
+  // is labelled 0 exactly once, below-left of the origin, instead of twice.
   const xLabelY = yMin <= 0 && yMax >= 0 ? toSvgY(0) + 14 : PAD.top + plotH + 16;
   const yLabelX = xMin <= 0 && xMax >= 0 ? toSvgX(0) - 7 : PAD.left - 10;
+  const originShown = xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0;
+  if (originShown) {
+    const t = svgText(svg, yLabelX, xLabelY, "0", "13px", "#1f2d3d");
+    t.setAttribute("text-anchor", "end");
+    t.setAttribute("font-weight", "600");
+  }
   for (let x = xMin; x <= xMax; x += xStep) {
-    if (x === 0) continue;
+    if (x === 0 && originShown) continue;
     const t = svgText(svg, toSvgX(x), xLabelY, String(x), "13px", "#1f2d3d");
     t.setAttribute("text-anchor", "middle");
     t.setAttribute("font-weight", "600");
   }
   for (let y = yMin; y <= yMax; y += yStep) {
-    if (y === 0) continue;
+    if (y === 0 && originShown) continue;
     const t = svgText(svg, yLabelX, toSvgY(y) + 4, String(y), "13px", "#1f2d3d");
     t.setAttribute("text-anchor", "end");
     t.setAttribute("font-weight", "600");

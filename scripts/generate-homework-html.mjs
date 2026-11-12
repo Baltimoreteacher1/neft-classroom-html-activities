@@ -3167,6 +3167,14 @@ function drawCoordGrid() {
   }
   content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="var(--fm-primary)" stroke-width="2" />';
   content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="var(--fm-primary)" stroke-width="2" />';
+  // Every gridline numbered on the axes; the origin's 0 once, below-left.
+  const tick = (x, y, v, anchor) =>
+    '<text x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-size="10" font-weight="700" fill="var(--fm-text-muted)">' + (v < 0 ? "−" + -v : v) + "</text>";
+  content += tick(-4, 13, 0, "end");
+  for (let i = -5; i <= 5; i++) {
+    if (!i) continue;
+    content += tick(i * 20, 13, i, "middle") + tick(-4, -i * 20 + 4, i, "end");
+  }
   content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="var(--fm-m-unknown)" />';
   svg.innerHTML = content;
 }
@@ -4090,10 +4098,11 @@ var NeftGraph = (function () {
         var shade = i === 0 ? "var(--fm-primary)" : "var(--fm-m-whole-tint)";
         svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
         svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
-        var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
+        // x numbers just below the x-axis, y numbers just left of the y-axis; the origin's 0 once, below-left.
+        var label = el("text", {x:i ? sx(i) : O-4, y:O+14, "class":"ng-tick-lbl", "text-anchor":i ? "middle" : "end"});
         label.textContent = i; svg.insertBefore(label,hitLayer);
         if (i) {
-          var yLabel = el("text", {x:O+4,y:sy(i)-3,"class":"ng-tick-lbl"});
+          var yLabel = el("text", {x:O-4,y:sy(i)+4,"class":"ng-tick-lbl","text-anchor":"end"});
           yLabel.textContent=i; svg.insertBefore(yLabel,hitLayer);
         }
         for (var j=MIN; j<=MAX; j+=tickStep) {

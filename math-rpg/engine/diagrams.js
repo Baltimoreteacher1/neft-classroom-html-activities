@@ -42,11 +42,13 @@
       g += '<line x1="' + pad + '" y1="' + py(i) + '" x2="' + (size - pad) + '" y2="' + py(i) +
         '" stroke="#94a3b8" stroke-opacity="' + op + '" stroke-width="' + sw + '"/>';
     }
-    // axis ticks (labels at ±5)
-    [-5, 5].forEach(function (t) {
-      g += '<text x="' + px(t) + '" y="' + (py(0) + 14) + '" font-size="9" fill="#64748b" text-anchor="middle">' + t + "</text>";
-      g += '<text x="' + (px(0) - 12) + '" y="' + (py(t) + 3) + '" font-size="9" fill="#64748b" text-anchor="middle">' + t + "</text>";
-    });
+    // axis numbers on every gridline (8px so -10..10 fit at 11px per unit); origin 0 once, below-left
+    for (var t = min; t <= max; t++) {
+      if (t === 0) continue;
+      g += '<text x="' + px(t) + '" y="' + (py(0) + 10) + '" font-size="8" fill="#64748b" text-anchor="middle">' + t + "</text>";
+      g += '<text x="' + (px(0) - 3) + '" y="' + (py(t) + 3) + '" font-size="8" fill="#64748b" text-anchor="end">' + t + "</text>";
+    }
+    g += '<text x="' + (px(0) - 3) + '" y="' + (py(0) + 10) + '" font-size="8" fill="#64748b" text-anchor="end">0</text>';
     // connect points if a segment
     var pts = d.points || [];
     if (d.segment && pts.length === 2) {

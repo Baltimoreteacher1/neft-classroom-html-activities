@@ -100,19 +100,22 @@ export function buildLayers() {
     g.lineTo(OX, MAP_Y1);
     g.stroke();
     g.fillStyle = "#e8eefc";
-    g.font = "13px system-ui";
+    // Every tick is numbered (11px so -10..10 fit at 22px apart); one 0 below-left of the origin.
+    g.font = "11px system-ui";
     for (let i = -RANGE; i <= RANGE; i++) {
       const x = OX + i * UNIT;
       const y = OY - i * UNIT;
       g.fillRect(x - 1, OY - (i % 2 === 0 ? 6 : 4), 2, i % 2 === 0 ? 12 : 8);
       g.fillRect(OX - (i % 2 === 0 ? 6 : 4), y - 1, i % 2 === 0 ? 12 : 8, 2);
-      if (i !== 0 && i % 2 === 0) {
+      if (i !== 0) {
         g.textAlign = "center";
-        g.fillText(num(i), x, OY + 20);
+        g.fillText(num(i), x, OY + 19);
         g.textAlign = "right";
         g.fillText(num(i), OX - 9, y + 4);
       }
     }
+    g.textAlign = "right";
+    g.fillText(num(0), OX - 7, OY + 19);
     g.textAlign = "left";
     g.font = "700 15px system-ui";
     g.fillText("x", MAP_X1 - 14, OY - 10);

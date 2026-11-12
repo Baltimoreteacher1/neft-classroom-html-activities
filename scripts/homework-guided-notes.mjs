@@ -1287,8 +1287,8 @@ function conceptVisual(config) {
 
         <!-- Ticks on x-axis -->
         ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox + i * u}" y="${oy + 18}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-text-muted)">${i}</text>`).join("")}
-        <!-- Ticks on y-axis (0, 3, 6, 9, 12 cups) -->
-        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="var(--fm-text-muted)">${i * 3}</text>`).join("")}
+        <!-- Ticks on y-axis (3, 6, 9, 12 cups; the corner's 0 is the x-axis 0) -->
+        ${[1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="var(--fm-text-muted)">${i * 3}</text>`).join("")}
 
         <!-- Straight Ray through Origin -->
         <line x1="${ox}" y1="${oy}" x2="${ox + 3.8 * u}" y2="${oy - 3.8 * u}" stroke="var(--fm-m-part)" stroke-width="4"/>
@@ -2579,7 +2579,8 @@ function conceptVisual(config) {
         (v) =>
           `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text>`,
       )
-      .join("");
+      .join("") +
+      `<text x="${ox - 12}" y="${oy + 26}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">0</text>`;
     return {
       svg: conceptFrame({
         label: "Plotting the point 3 comma 4 by moving right 3 then up 4 on a coordinate grid",

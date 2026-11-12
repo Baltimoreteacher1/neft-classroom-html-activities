@@ -709,9 +709,9 @@ const UI = {
     this.drawSvgText(canvas, mid, offset + size + 16, "-Y", "10", "#12355b", "bold");
     this.drawSvgText(canvas, offset - 14, mid + 4, "-X", "10", "#12355b", "bold");
     
-    // Draw major ticks along X and Y axes
+    // Draw ticks and numbers at every gridline along X and Y axes
     for (let i = -10; i <= 10; i++) {
-      if (i === 0 || i % 2 !== 0) continue;
+      if (i === 0) continue;
       const px = STATE.getPxCoord(i, "X");
       const py = STATE.getPxCoord(i, "Y");
       
@@ -721,8 +721,10 @@ const UI = {
       
       // Y axis ticks
       this.drawSvgLine(canvas, mid - 4, py, mid + 4, py, "#12355b", "1.5");
-      this.drawSvgText(canvas, mid - 14, py + 3, i, "8", "#12355b");
+      this.drawSvgText(canvas, mid - 6, py + 3, i, "8", "#12355b").setAttribute("text-anchor", "end");
     }
+    // Origin: one 0, below-left of the origin
+    this.drawSvgText(canvas, mid - 4, mid + 14, 0, "8", "#12355b").setAttribute("text-anchor", "end");
     
     // Draw glowing Port B target island Port
     const targetPxX = STATE.getPxCoord(q.targetX, "X");
@@ -840,6 +842,7 @@ const UI = {
     t.setAttribute("text-anchor", "middle");
     t.textContent = text;
     parent.appendChild(t);
+    return t;
   }
 };
 

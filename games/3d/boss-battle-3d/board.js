@@ -68,19 +68,27 @@ export function createBoard(THREE, scene) {
   }
   lines(0xffffff, 0.9, ticks);
 
+  // Every gridline is numbered: x just below the x-axis, y just left of the
+  // y-axis (right edge aligned). Compact outlined numerals so -10..10 fit at
+  // one unit apart; one 0 (centered on the number line, below-left on the grid).
   const labels = [];
   const yLabels = [];
-  for (const v of [-10, -5, 0, 5, 10]) {
-    const lx = makeLabel(String(v), { scale: 0.22, background: "rgba(11,22,40,0.75)" });
-    lx.position.copy(boardPoint(THREE, v, -1.3));
+  const NUM = { scale: 0.15, background: null, border: null, padding: 4 };
+  const leftOfAxis = (sprite) => -(0.3 + sprite.scale.x / (2 * BOARD.unit));
+  let zero = null;
+  for (let v = -BOARD.half; v <= BOARD.half; v++) {
+    const lx = makeLabel(String(v), NUM);
+    lx.position.copy(boardPoint(THREE, v, -0.75));
     group.add(lx);
     labels.push(lx);
-    if (v !== 0) {
-      const ly = makeLabel(String(v), { scale: 0.22, background: "rgba(11,22,40,0.75)" });
-      ly.position.copy(boardPoint(THREE, -1.4, v));
-      group.add(ly);
-      yLabels.push(ly);
+    if (v === 0) {
+      zero = lx;
+      continue;
     }
+    const ly = makeLabel(String(v), NUM);
+    ly.position.copy(boardPoint(THREE, leftOfAxis(ly), v));
+    group.add(ly);
+    yLabels.push(ly);
   }
   const xName = makeLabel("x", { scale: 0.26 });
   xName.position.copy(boardPoint(THREE, BOARD.half + 1.2, 0));
@@ -114,6 +122,7 @@ export function createBoard(THREE, scene) {
       yAxis.visible = gridMode;
       yName.visible = gridMode;
       for (const l of yLabels) l.visible = gridMode;
+      zero.position.copy(boardPoint(THREE, gridMode ? leftOfAxis(zero) : 0, -0.75));
       shadow.visible = !!shadowXY;
       if (shadowXY) shadow.position.copy(boardPoint(THREE, shadowXY[0], shadowXY[1]));
       mark.visible = false;
