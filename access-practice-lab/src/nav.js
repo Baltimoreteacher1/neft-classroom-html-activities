@@ -109,11 +109,12 @@ export function navHTML(ctx, I) {
     >`;
   const focused = view === "test" || view === "assess";
   const accessPrepLink = html`<a class="top-link top-access-prep is-featured" data-tier="prep" href="${BASE}/access-prep?grades=${band}" ${current === "access-prep" ? raw('aria-current="page"') : ""}><span>${icon("tests")} ${T("Access Prep", "Preparación ACCESS")}</span></a>`;
-  // Teachers and Families are labelled audience doors on the top row at every width (families are mostly on phones).
+  // Teachers, Families and the Site Guide are labelled doors on the top row at every width (families are mostly on phones).
   const teachersLink = isEarlyBand(band) ? "" : html`<a class="top-link top-expedition top-teachers" href="${BASE}/start?grades=${band}" ${current === "teachers" ? raw('aria-current="page"') : ""}>${icon("teacher")}<span>${T("Teachers", "Docentes")}</span></a>`;
   // The learner row stays four destinations (tools/access-journey-pages.test.mjs); Families is its own labelled link.
   const familiesLink = html`<a class="top-link top-expedition top-family" href="${BASE}/practice-together?grades=${band}" ${current === "family" ? raw('aria-current="page"') : ""}>${icon("families")}<span>${T("Families", "Familias")}</span></a>`;
-  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${teachersLink}${familiesLink}
+  const siteGuideLink = html`<a class="top-link top-expedition top-guide" href="${BASE}/site-guide?grades=${band}" ${view === "site-guide" ? raw('aria-current="page"') : ""}>${icon("help")}<span>${T("Site Guide", "Guía del sitio")}</span></a>`;
+  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${teachersLink}${familiesLink}${siteGuideLink}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">

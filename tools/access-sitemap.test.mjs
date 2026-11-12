@@ -125,7 +125,7 @@ test("the section bar shows siblings in one skill and the explore view filters",
   );
 });
 
-test("navigation reads the site map: four learner links, audience doors, one current link", async () => {
+test("navigation reads the site map: four learner links, audience doors, site guide, one current link", async () => {
   const { navHTML, currentTop } = await import(new URL("src/nav.js", LAB));
   const { makeI18n } = await import(new URL("src/i18n.js", LAB));
   const I = makeI18n("en", "en");
@@ -141,6 +141,7 @@ test("navigation reads the site map: four learner links, audience doors, one cur
     "My Progress",
     "Teachers",
     "Families",
+    "Site Guide",
   ]);
   assert.equal(doc.querySelectorAll('nav > a[aria-current="page"]').length, 1);
   assert.match(doc.querySelector('nav > a[aria-current="page"]').textContent, /Practice/);
