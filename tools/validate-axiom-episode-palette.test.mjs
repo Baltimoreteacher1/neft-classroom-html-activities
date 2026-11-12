@@ -100,8 +100,8 @@ for (const name of BUILT_EPISODES) {
 const episodeFiles = walkHtml(EPISODES);
 assert.equal(
   episodeFiles.length,
-  29,
-  `expected 29 shipped Axiom episode pages, found ${episodeFiles.length}`,
+  31,
+  `expected 31 shipped Axiom episode pages, found ${episodeFiles.length}`,
 );
 const unit2Aliases = readdirSync(UNIT2)
   .filter((name) => /^axiom-city-u2-e\d+-.+\.html$/.test(name))

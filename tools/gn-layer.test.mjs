@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =============================================================================
- * gn-layer.test.mjs — the shared Axiom City layer is wired into all 39 books, and its data is true.
+ * gn-layer.test.mjs — the shared Axiom City layer is wired into all 41 books, and its data is true.
  * -----------------------------------------------------------------------------
  * graphic-novels/_shared/gn-layer.js adds vocabulary pop-ups, an Easy read switch and formatting fixes
  * to every book from ONE script plus a per-book sentinel block (tools/inject-gn-layer.mjs). What can go
@@ -29,7 +29,7 @@ import {
 } from "./lib/gn-layer.mjs";
 
 const books = listBooks();
-assert.equal(books.length, 39, "expected 39 Axiom City books");
+assert.equal(books.length, 41, "expected 41 Axiom City books");
 const layerSrc = readFileSync(LAYER_FILE, "utf8");
 const layer = loadLayer();
 

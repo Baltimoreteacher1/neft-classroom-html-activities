@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City Lesson 6-3 — The Power Dial | Interactive Graphic Novel | Exponents: Base, Exponent and Powers</title>
+<meta name="description" content="Interactive Grade 6 math graphic novel for lesson 6-3: reading, writing and evaluating powers with whole-number exponents. Free-read, gates coach but never block. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--navy);border-color:#1FA6A2;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES — U6·E2 "The Power Ring" (accent amber, matches Vol 6 story world) ================= */
+:root{--accent:var(--amber)}
+/* contrast fixes: amber surfaces need NAVY text for AA (vol-06 set) */
+.gatebox header{color:var(--navy)}
+.gatebox header .gicon{color:var(--navy)}
+.hudbtn[aria-pressed="true"]{color:var(--navy)}
+#coverTitle .vol{color:var(--navy)}
+.workedsteps .st b.n{color:var(--navy)}
+.navarrow:hover{color:var(--navy)}
+.balloon .who{color:#8a6a1c}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#b78a2e}
+.beaker .cnt{color:#8a6a1c}
+.gatebox{background:linear-gradient(180deg,#ffffff,#fdf6e7)}
+.rt-table td.given{background:#fdf6e7}
+.choicebtn:hover{background:#fdf6e7}
+</style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FA6A2"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#e11d48" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="45" r="24" fill="#f2c29b" stroke="#17324D" stroke-width="4"/><path d="M26 44 Q26 18 50 18 Q74 18 74 44 Q66 28 50 28 Q34 28 26 44Z" fill="#0f172a" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="45" r="2.6" fill="#17324D"/><circle cx="58" cy="45" r="2.6" fill="#17324D"/><path d="M43 56 q7 6 14 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#1d4ed8" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="45" r="24" fill="#693b1e" stroke="#17324D" stroke-width="4"/><path d="M28 38 Q30 16 50 16 Q70 16 72 38 Z" fill="#0f172a" stroke="#17324D" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 4 14 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#059669" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="22" r="14" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#d89668" stroke="#17324D" stroke-width="4"/><path d="M27 42 Q50 26 73 42 Q66 28 50 28 Q34 28 27 42Z" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- DEV: teal tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#b45309" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="46" r="24" fill="#c68453" stroke="#17324D" stroke-width="4"/><path d="M27 42 L32 22 L43 30 L50 18 L57 30 L68 22 L73 42 Z" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- u6·e2 additions: the glitch (signature lie retuned to this episode's 2⁶=12), Ada's vault dial, power + tile sigils (vol 6), order-of-operations sigil, the second ring -->
+<g id="sym-glitch"><path d="M30 78 Q18 70 24 56 Q12 52 22 40 Q14 28 30 28 Q32 14 46 22 Q56 10 64 24 Q80 18 76 36 Q90 42 80 54 Q88 66 72 70 Q74 84 58 78 Q48 90 38 78 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="3" opacity=".92"/><g stroke="#E2674A" stroke-width="2.5" stroke-linecap="round"><path d="M28 44 l10 -5 M62 39 l10 5"/></g><circle cx="40" cy="50" r="4.2" fill="#F2C15B"/><circle cx="62" cy="50" r="4.2" fill="#F2C15B"/><circle cx="40" cy="50" r="1.7" fill="#17324D"/><circle cx="62" cy="50" r="1.7" fill="#17324D"/><path d="M42 64 q9 6 18 -2" fill="none" stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round"/><g font-family="Consolas,monospace" font-weight="700" font-size="9" fill="#7CF2EC"><text x="28" y="22">2⁶=12?</text></g><g stroke="#7CF2EC" stroke-width="1.5" opacity=".7" stroke-linecap="round"><line x1="18" y1="60" x2="8" y2="64"/><line x1="84" y1="58" x2="94" y2="62"/><line x1="50" y1="10" x2="50" y2="3"/></g></g>
+<g id="sym-vault"><circle cx="50" cy="50" r="44" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="33" fill="#17324D" stroke="#F2C15B" stroke-width="3"/><circle cx="50" cy="50" r="12" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g stroke="#F2C15B" stroke-width="4" stroke-linecap="round"><line x1="50" y1="38" x2="50" y2="22"/><line x1="50" y1="62" x2="50" y2="78"/><line x1="38" y1="50" x2="22" y2="50"/><line x1="62" y1="50" x2="78" y2="50"/></g><g fill="#7CF2EC" font-family="Consolas,monospace" font-weight="700" font-size="10"><text x="32" y="32">3n</text><text x="58" y="32">+5</text><text x="30" y="76">x²</text><text x="58" y="76">12</text></g></g>
+<g id="sig-pow"><text x="34" y="64" font-family="Arial Black,Arial" font-weight="900" font-size="44" fill="#17324D" text-anchor="middle">3</text><text x="62" y="40" font-family="Arial Black,Arial" font-weight="900" font-size="26" fill="#E2674A" text-anchor="middle">4</text><path d="M22 76 q28 14 56 0" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-tile"><rect x="14" y="30" width="32" height="32" rx="5" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><rect x="54" y="30" width="32" height="32" rx="5" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><text x="30" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#17324D">3n</text><text x="70" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#fff">+5</text><rect x="34" y="64" width="32" height="22" rx="5" fill="#fff" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-ops"><circle cx="24" cy="44" r="15" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="44" r="15" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><circle cx="76" cy="44" r="15" fill="#fff" stroke="#17324D" stroke-width="4"/><text x="24" y="49" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">( )</text><text x="50" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#fff">x²</text><text x="76" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#17324D">+−</text><path d="M18 72 H76 l-7 -7 M76 72 l-7 7" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sym-powring"><circle cx="50" cy="50" r="46" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="35" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC"><text x="50" y="24" text-anchor="middle">2⁶</text><text x="79" y="55" text-anchor="middle">5³</text><text x="50" y="89" text-anchor="middle">3²</text><text x="21" y="55" text-anchor="middle">10³</text></g><circle cx="50" cy="50" r="11" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><line x1="50" y1="40" x2="50" y2="27" stroke="#F2C15B" stroke-width="4" stroke-linecap="round"/><g stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round" opacity=".8"><line x1="50" y1="4" x2="50" y2="11"/><line x1="50" y1="89" x2="50" y2="96"/><line x1="4" y1="50" x2="11" y2="50"/><line x1="89" y1="50" x2="96" y2="50"/></g></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Lesson 6-3, The Power Dial. Andre, Mateo and Layla stand at the bottom of a lantern-lit stone vault, smiling up at a giant glowing stone dial, while VEX, a small teal robot with one golden eye, floats above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE POWER<br><em>DIAL</em></h1>
+      <span class="vol">LESSON 6-3 · EXPONENTS</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · LESSON 6-3<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>L6-3 · THE POWER DIAL</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — Lesson 6-3</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 6031,
+  slug: "l63",
+  title: "The Power Dial",
+  unit: "Lesson 6-3 · Exponents",
+  accent: "#F2C15B",
+  nextTeaser: "LESSON 6-4 — THE ORDER LOCK",
+};
+
+const BADGES = [
+  { id: "g1", icon: "#sig-pow", label: "Power Reader — Base &amp; Exponent" },
+  { id: "g2", icon: "#sig-tile", label: "Power Evaluator — Squared &amp; Cubed" },
+  { id: "boss", icon: "#sig-boss", label: "Dial Turner — Boss Gate" },
+];
+
+function mkfeed(el, msg, ok) {
+  el.textContent = msg;
+  el.className = "gatefeedback " + (ok ? "good" : "bad");
+}
+
+/* two-or-more choice groups per gate: one pick per group, data-q names the group */
+function wirePicks(body, api) {
+  const picks = {};
+  body.querySelectorAll("[data-q]").forEach((b) =>
+    b.addEventListener("click", () => {
+      body
+        .querySelectorAll(`[data-q="${b.dataset.q}"]`)
+        .forEach((x) => x.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      picks[b.dataset.q] = b.dataset.v;
+      api.sound("blip");
+    }),
+  );
+  return picks;
+}
+const LBL = "font:900 1.05rem 'Arial Black',Arial;color:var(--navy)";
+const ROW = "display:flex;align-items:center;gap:10px;flex-wrap:wrap";
+
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/l6-3 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-l6-3-the-power-dial.webp?v=5ae06b757f","w":2994,"h":2013,"f":{"cover":[0,0,544,762,"Andre, Mateo and Layla stand together at the bottom of a tall stone vault lit by brass lanterns, smiling up at a giant round stone dial whose cyan lights all glow, while VEX, the small teal robot with one golden eye, floats above them.",[[18,62,14,10],[40,60,14,11],[64,60,14,11]]],"p1-ring":[0,762,870,490,"A giant stone dial ringed with glowing cyan lights fills the lantern-lit vault wall. The glitch, a grinning teal creature with yellow eyes, perches on the upper rim beside a burst of fresh chalk streaks.",[[60,2,22,25]]],"p1-dev":[544,0,490,653,"Close-up of Mateo, in his orange shirt, staring up in wonder with his mouth open.",[[30,34,44,30]]],"p1-theo":[1034,0,490,653,"Close-up of Andre, in his blue hoodie, studying the wall with one hand on his chin.",[[27,34,50,28]]],"p2-board":[0,1252,870,435,"Andre stands at the left, chalk in hand, beside a big blank chalkboard on an easel; Mateo holds up a glowing brass lantern at the right.",[[16,46,10,17],[84,56,10,16]]],"p2-glitch":[1524,0,490,653,"Close-up of the glitch, a lumpy teal cloud creature with yellow eyes and coral eyebrows, grinning smugly with one arm raised.",[[26,40,42,24]]],"p2-vex":[1740,1252,870,381,"VEX, the small teal robot with one big golden eye, hovers in a soft glow at the edge of the dark panel.",[[63,25,24,50]]],"p3-tiles":[870,1252,870,435,"In the lantern-lit vault, a flat square stone tile with a brass edge lies on the floor beside a big cube-shaped wooden crate with brass corners.",[]],"p3-zara":[2504,0,490,653,"Close-up of Layla, in her green sweatshirt, pointing sideways with a bright, clever smile.",[[27,34,50,28]]],"p3-maya":[2014,0,490,653,"Close-up of Keiko, in her red jacket, counting on her fingers with a focused, determined look.",[[27,34,50,28]]],"p4-swap":[870,762,870,490,"In front of the great dial the glitch floats in the middle, cackling and juggling two blank brass plaques, one in each hand. Andre, in his blue hoodie, and Layla, in her green sweatshirt, watch with their arms crossed.",[[40,30,22,28],[12,55,10,17],[78,55,10,17]]],"p4-dev":[0,1687,870,326,"Mateo turns to the reader with a confident grin and a thumbs up.",[[11,20,14,34]]],"p5-turn":[1740,762,870,490,"The great dial swings open with every light glowing, and golden light pours from a doorway at the top of a short flight of stone steps.",[]],"p4-vex":[870,1687,870,326,"VEX glows bright in front of the great golden dial, sparks swirling around it, ready for the last challenge.",[[8,10,22,70]]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
+const PAGES = [
+  /* p1 — title + the problem */
+  {
+    ch: "Lesson 6-3 · The Power Dial",
+    html: `
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE POWER <em>DIAL</em></h2>
+  <div class="caption" style="display:inline-block">Lesson 6-3 — exponents. Three reader gates stand between the crew and the vault's second ring, and every one is about powers: the base, the exponent and repeated multiplication. Nothing else.</div></div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p1-ring")}
+      <div class="sfx" style="top:8px;left:14px">SKRRT!</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:76%;top:44%">3⁴ = 12!!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p1-dev")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Ring two: a giant dial made of powers. Little numbers riding on bigger numbers. I have a lot of questions.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p1-theo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>The glitch just chalked "3⁴ = 12" on a notch. The notch went dark. It's feeding the dial wrong answers.</div>
+    </div>
+    <div class="caption">Each notch on the dial shows a <b>power</b> — a small expression like 3⁴ or 7³ — and only glows when it is given its true value. The glitch has one trick, and it is about to get caught.</div>
+  </div>`,
+  },
+
+  /* p2 — lesson: reading a power */
+  {
+    ch: "Chapter 1 · Reading Powers",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p2-board")}
+      <div class="caption loc">Andre unrolls chalk and a plan. Mateo holds the lantern. The glitch heckles from the dark.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:65%;top:44%">3⁴ = 3 × 3 × 3 × 3<br>= 81</div>
+      <div class="balloon" style="bottom:8px;left:28%;max-width:36%;--tx:12px"><span class="who">ANDRE</span>Practice chip: 3⁴. Base 3, exponent 4 — so four 3s multiplied together. Eighty-one.</div>
+    </div>
+    <div class="panel gn-panel gn-third">${globalThis.ART("p2-glitch")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">GLITCH</span>WRONG. three times four!! TWELVE. tiny number. very efficient.</div>
+    </div>
+    <div class="panel gn-panel gn-two-thirds">${globalThis.ART("p2-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:72%"><span class="who">VEX</span>A <b>power</b> has two parts: the <b>base</b> — the number being copied — and the <b>exponent</b> — how many copies get multiplied. That is <b>repeated multiplication</b>. Writing every copy out, 3 × 3 × 3 × 3, is the <b>expanded form</b>. The glitch just did base times exponent. That is not a thing.</div>
+    </div>
+    <div class="caption">Say 3⁴ "three to the fourth power." The exponent counts factors, not a multiplication partner: 3 × 3 × 3 × 3 = 81, while the glitch's 3 × 4 = 12 is nowhere near it.</div>
+  </div>`,
+  },
+
+  /* p3 — GATE g1 */
+  {
+    ch: "Chapter 1 · Reader Gate",
+    gate: "g1",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel">${globalThis.ART("p4-dev")}
+      <div class="balloon" style="top:6px;right:6px;max-width:66%;--tx:10px"><span class="who">MATEO</span>Reader — two notches need reading before they can be fed. Name the parts of one, then write the other the short way.</div>
+    </div>
+  </div>`,
+  },
+
+  /* p4 — lesson: evaluating, squared, cubed */
+  {
+    ch: "Chapter 2 · Squares and Cubes",
+    html: `
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">SQUARES &amp; <em>CUBES</em></h2>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p3-tiles")}
+      <div class="caption loc">Two clicks later the dial wants VALUES. Layla spots two props the vault keeps for exactly this.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p3-zara")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>A square tile five long and five wide holds 5 × 5 little squares. That is why 5² is said "five squared" — 25.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p3-maya")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>And a cube crate, three by three by three, holds 3 × 3 × 3 blocks. So 3³ is "three cubed" — 27.</div>
+    </div>
+    <div class="caption"><b>Evaluate</b> a power by multiplying it all the way out. Keep a running product: 2⁴ is 2 × 2 = 4, × 2 = 8, × 2 = 16. <b>Squared</b> means an exponent of 2; <b>cubed</b> means an exponent of 3.</div>
+  </div>`,
+  },
+
+  /* p5 — GATE g2 */
+  {
+    ch: "Chapter 2 · Reader Gate",
+    gate: "g2",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel">${globalThis.ART("p2-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:60%"><span class="who">VEX</span>Three notches, three true values. Multiply each one all the way out.</div>
+    </div>
+  </div>`,
+  },
+
+  /* p6 — glitch counterattack: the swap */
+  {
+    ch: "Chapter 3 · The Swap",
+    html: `
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE <em>SWAP</em></h2>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p4-swap")}
+      <div class="caption loc">The glitch has a new trick: two brass plaques, and a very proud grin.</div>
+      <div class="balloon" style="top:8px;left:6px;max-width:42%;--tx:30px"><span class="who">GLITCH</span>2⁵ and 5²! Same two numbers! SAME ANSWER! I am a genius!</div>
+    </div>
+    <div class="caption">The glitch claims that swapping the base and the exponent makes no difference. Reader, you are about to find out whether 2⁵ and 5² are twins.</div>
+  </div>`,
+  },
+
+  /* p7 — BOSS */
+  {
+    ch: "Boss Gate · Turn the Dial",
+    gate: "boss",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel">${globalThis.ART("p4-vex")}
+      <div class="balloon vex gn-side" style="top:6px;right:6px;max-width:62%"><span class="who">VEX</span>BOSS GATE. Three locks. Feed the dial the truth and it turns; feed it glitch math and we live in a vault now.</div>
+    </div>
+  </div>`,
+  },
+
+  /* p8 — victory + link onward */
+  {
+    ch: "Chapter 4 · The Dial Turns",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p5-turn")}
+      <div class="sfx" style="top:8px;left:14px">KRRRUNNK!</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b> — the dial's last notch reads whole lines of math, and it only turns when they are read in the right order.<br><a href="/graphic-novels/axiom-city/episodes/axiom-city-l6-4-the-order-lock.html">Read The Order Lock (Lesson 6-4)</a> · <a href="/graphic-novels/axiom-city/episodes/axiom-city-u6-e2-the-power-ring.html">Read the full Power Ring episode (Lessons 6-3, 6-4 and 6-5)</a></div>
+  </div>`,
+  },
+
+  /* p9 — journal */
+  {
+    ch: "End Matter · Ada Vex's Journal",
+    html: `
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Lesson 6-3 — what the power dial taught us</h4>
+    <div class="jrow"><b>Power.</b><span>A base and an exponent. The base is the number being copied; the exponent counts the copies being MULTIPLIED. 3⁴ = 3 × 3 × 3 × 3 = 81 — never 3 × 4.</span></div>
+    <div class="jrow"><b>Expanded form.</b><span>Writing every copy of the base with × between them: 7³ = 7 × 7 × 7. Repeated multiplication is what a power means.</span></div>
+    <div class="jrow"><b>Squared &amp; cubed.</b><span>An exponent of 2 is "squared" and an exponent of 3 is "cubed" — a square tile and a cube crate. 5² = 25 and 3³ = 27.</span></div>
+    <div class="jrow"><b>Base and exponent are not twins.</b><span>2⁵ = 32 but 5² = 25. Swapping them changes the number, because the base is what gets copied.</span></div>
+  </div>
+  <div class="caption">"A power is a promise of repeated multiplication. Keep count, and nothing can inflate on you." — A.V.</div>`,
+  },
+
+  /* p10 — certificate */
+  {
+    ch: "End Matter · Certificate",
+    html: `
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Lesson 6-3: The Power Dial</b> and proved mastery over reading, writing and evaluating powers.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Lesson 6-4 — The Order Lock — is waiting at the next notch.</div>`,
+  },
+];
+
+const GATES = {
+  g1: {
+    title: "Gate 1 · Read the Dial",
+    icon: "#sig-pow",
+    prompt: `Two notches need reading. The first shows the power <b>4⁵</b>. The second is a row of three 7s: <b>7 × 7 × 7</b>.`,
+    hints: [
+      "Conceptual: in a power, the big number is the BASE — what gets copied. The small raised number is the EXPONENT — how many copies get multiplied.",
+      "Procedural: for the row of 7s, name the number being copied, then count how many 7s there are. That count goes up high.",
+    ],
+    worked: {
+      steps: [
+        "Andre's practice chip: 3⁴. The 3 is the base, the raised 4 is the exponent.",
+        "The exponent says four 3s are multiplied: 3 × 3 × 3 × 3. That row of copies is the expanded form.",
+        "Going the other way works too: a row of four 3s is written 3⁴ — base 3, exponent 4.",
+      ],
+      q: "Write 5 × 5 × 5 × 5 as a power. What is the exponent?",
+      a: "4",
+    },
+    render(body, api) {
+      body.innerHTML = `<div style="font:600 .9rem 'Segoe UI'">In <b>4⁵</b>, which number is the <b>exponent</b>?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-q="exp" data-v="4" aria-pressed="false">4</button>
+        <button class="choicebtn" data-q="exp" data-v="5" aria-pressed="false">5</button>
+        <button class="choicebtn" data-q="exp" data-v="20" aria-pressed="false">20</button>
+        <button class="choicebtn" data-q="exp" data-v="9" aria-pressed="false">9</button></div>
+      <div style="font:600 .9rem 'Segoe UI';margin-top:8px">Which power says <b>7 × 7 × 7</b>?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-q="pow" data-v="right" aria-pressed="false">7³</button>
+        <button class="choicebtn" data-q="pow" data-v="swap" aria-pressed="false">3⁷</button>
+        <button class="choicebtn" data-q="pow" data-v="times" aria-pressed="false">7 × 3</button>
+        <button class="choicebtn" data-q="pow" data-v="count" aria-pressed="false">7²</button></div>`;
+      const picks = wirePicks(body, api);
+      api.onCheck(() => {
+        if (!picks.exp || !picks.pow)
+          return api.fail("Answer both notches — pick the exponent, then pick the power.");
+        if (picks.exp !== "5") {
+          if (picks.exp === "4")
+            return api.fail(
+              "4 is the BASE — the number being copied. The exponent is the small raised number.",
+            );
+          if (picks.exp === "20")
+            return api.fail(
+              "20 is 4 × 5 — the glitch's move. An exponent is a count of copies, never a multiplication partner.",
+            );
+          return api.fail(
+            "9 is 4 + 5, but a power is not an addition. Find the small number raised up high.",
+          );
+        }
+        if (picks.pow !== "right") {
+          if (picks.pow === "swap")
+            return api.fail(
+              "3⁷ would be seven 3s. Here the 7 is what gets copied — it is the base — and it appears three times.",
+            );
+          if (picks.pow === "times")
+            return api.fail(
+              "7 × 3 is the glitch's favorite. A power writes the repeated factor once, with a count raised beside it.",
+            );
+          return api.fail("7² is only two 7s. Count the 7s in the row: there are three.");
+        }
+        api.pass(
+          "Exponent 5, and 7 × 7 × 7 = 7³ — both notches flare cyan. The dial grinds one click!",
+        );
+      });
+    },
+  },
+  g2: {
+    title: "Gate 2 · Feed the Notches",
+    icon: "#sig-tile",
+    prompt: `Three dark notches want their true values: <b>2⁵</b>, <b>six squared</b> (6²) and <b>four cubed</b> (4³). Multiply each one all the way out.`,
+    hints: [
+      "Conceptual: evaluate a power by writing out the copies and multiplying. Squared means two copies; cubed means three copies.",
+      "Procedural: keep a running product — multiply the first two copies, then multiply that result by the next copy, and keep going until the copies run out.",
+    ],
+    worked: {
+      steps: [
+        "Mateo's practice chip: 2⁴. The base is 2 and there are four copies: 2 × 2 × 2 × 2.",
+        "Keep a running product: 2 × 2 = 4, then 4 × 2 = 8, then 8 × 2 = 16.",
+        "So 2⁴ = 16. Not 2 × 4 = 8 — that is the glitch's number.",
+      ],
+      q: "What is 2⁴?",
+      a: "16",
+    },
+    render(body, api) {
+      body.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="${ROW}"><span style="${LBL}">2⁵ =</span><input class="numin" id="a" inputmode="numeric" aria-label="value of 2 to the 5th power"></div>
+      <div style="${ROW}"><span style="${LBL}">6² =</span><input class="numin" id="b" inputmode="numeric" aria-label="value of 6 squared"></div>
+      <div style="${ROW}"><span style="${LBL}">4³ =</span><input class="numin" id="c" inputmode="numeric" aria-label="value of 4 cubed"></div></div>`;
+      api.onCheck(() => {
+        const A = body.querySelector("#a"),
+          B = body.querySelector("#b"),
+          C = body.querySelector("#c");
+        const a = parseFloat(A.value),
+          b = parseFloat(B.value),
+          c = parseFloat(C.value);
+        A.className = "numin " + (a === 32 ? "ok" : "no");
+        B.className = "numin " + (b === 36 ? "ok" : "no");
+        C.className = "numin " + (c === 64 ? "ok" : "no");
+        if (a !== 32) {
+          if (a === 10)
+            return api.fail(
+              "That's 2 × 5 — the glitch's signature move. 2⁵ is five 2s multiplied: 2 × 2 × 2 × 2 × 2.",
+            );
+          if (a === 25)
+            return api.fail(
+              "That's 5² — base and exponent swapped. In 2⁵ the 2 is the base being copied.",
+            );
+          return api.fail(
+            "Notch I stays dark. Write five 2s with × between them and keep a running product.",
+          );
+        }
+        if (b !== 36) {
+          if (b === 12)
+            return api.fail("That's 6 × 2. Squared means two copies of 6 MULTIPLIED: 6 × 6.");
+          return api.fail("Notch II stays dark. Six squared is 6 × 6.");
+        }
+        if (c !== 64) {
+          if (c === 12)
+            return api.fail(
+              "That's 4 × 3. Cubed means three copies of 4 multiplied together: 4 × 4 × 4.",
+            );
+          if (c === 81)
+            return api.fail(
+              "That's 3⁴ — the base and exponent traded places. Four cubed is three 4s: 4 × 4 = 16, then 16 × 4.",
+            );
+          return api.fail(
+            "Notch III stays dark. Four cubed is 4 × 4 × 4 — keep a running product.",
+          );
+        }
+        api.pass(
+          "2⁵ = 32, 6² = 36 and 4³ = 64 — all three notches blaze gold and the glitch's smears burn off!",
+        );
+      });
+    },
+  },
+  boss: {
+    title: "BOSS GATE · Turn the Dial",
+    icon: "#sig-boss",
+    prompt: `The glitch throws everything it has at the final alignment. Three locks stand between the crew and the second ring:`,
+    hints: [
+      "Conceptual: swapping the base and the exponent builds a different power. The base is what gets copied; the exponent only counts the copies.",
+      "Procedural: Lock 1 — multiply three 6s with a running product. Lock 2 — evaluate BOTH powers before comparing. Lock 3 — eight squared is two 8s multiplied.",
+    ],
+    worked: {
+      steps: [
+        "Night-watch drill: which is greater, 3⁴ or 4³? Evaluate both first.",
+        "3⁴ = 3 × 3 × 3 × 3 = 81. And 4³ = 4 × 4 × 4 = 64.",
+        "81 is greater than 64, so 3⁴ wins — the two powers are not twins, even though they use the same two numbers.",
+      ],
+      q: "What is 3⁴ − 4³?",
+      a: "17",
+    },
+    render(body, api) {
+      body.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="${ROW}"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">The core: 6³ =</span><input class="numin" id="L1" inputmode="numeric" aria-label="value of 6 cubed"></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><div style="font:600 .88rem 'Segoe UI';margin:4px 0">The glitch says 2⁵ and 5² are twins. Which is greater?</div>
+        <div class="choicebtns">
+          <button class="choicebtn" data-q="cmp" data-v="a" aria-pressed="false">2⁵ is greater</button>
+          <button class="choicebtn" data-q="cmp" data-v="b" aria-pressed="false">5² is greater</button>
+          <button class="choicebtn" data-q="cmp" data-v="eq" aria-pressed="false">They are equal — swapping changes nothing</button></div></div>
+      <div style="${ROW}"><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><span style="font:600 .88rem 'Segoe UI'">The glitch scrawls "8² = 16." The true value is</span><input class="numin" id="L3" inputmode="numeric" aria-label="value of 8 squared"></div></div>`;
+      const picks = wirePicks(body, api);
+      api.onCheck(() => {
+        const e1 = body.querySelector("#L1"),
+          v1 = parseFloat(e1.value);
+        e1.className = "numin " + (v1 === 216 ? "ok" : "no");
+        if (v1 !== 216) {
+          if (v1 === 18)
+            return api.fail(
+              "Lock 1 holds. That's 6 × 3 — glitch math. Cubed means three 6s multiplied: 6 × 6 × 6.",
+            );
+          if (v1 === 36)
+            return api.fail("Lock 1 holds. 36 is 6 × 6 — only two copies. A cube needs a third 6.");
+          return api.fail("Lock 1 holds. 6 × 6 = 36, then 36 × 6.");
+        }
+        if (!picks.cmp)
+          return api.fail("Lock 2 waits. Evaluate both powers, then pick the greater one.");
+        if (picks.cmp !== "a") {
+          if (picks.cmp === "eq")
+            return api.fail(
+              "Lock 2 holds. 2⁵ is 32 and 5² is 25 — same numbers, different powers. The base is what gets copied.",
+            );
+          return api.fail(
+            "Lock 2 holds. 5² is only 5 × 5 = 25. Evaluate 2⁵ — five 2s — and compare.",
+          );
+        }
+        const e3 = body.querySelector("#L3"),
+          v3 = parseFloat(e3.value);
+        e3.className = "numin " + (v3 === 64 ? "ok" : "no");
+        if (v3 !== 64) {
+          if (v3 === 16)
+            return api.fail(
+              "Lock 3 holds. 16 is 8 × 2 — the glitch's lie again. Squared means 8 × 8.",
+            );
+          return api.fail("Lock 3 holds. Eight squared is two 8s multiplied together.");
+        }
+        api.pass(
+          "ALL LOCKS OPEN. 6³ = 216, 2⁵ beats 5², and 8² = 64 — the glitch's lies burn off the wall. The dial TURNS!",
+        );
+      });
+    },
+  },
+};
+
+const TEACHER = {
+  suggested:
+    "Use during or after lesson 6-3 (Explore Numerical Expressions with Exponents) as a single focused read. Whole-class on a projector, pairs on devices, or independent practice. The book covers only this lesson: base, exponent, power, repeated multiplication, expanded form, squared and cubed. Order of operations belongs to lesson 6-4 (The Order Lock). Progress saves on the device.",
+  standards: [
+    [
+      "6.AT.5",
+      "Write and evaluate numerical expressions involving whole-number exponents",
+      "Gate 1, Gate 2, Boss",
+    ],
+  ],
+  answers: [
+    [
+      "Gate 1",
+      "The exponent of 4⁵ is 5 (traps: 4 is the base; 20 is 4 × 5; 9 is 4 + 5). 7 × 7 × 7 = 7³ (traps: 3⁷ swaps base and exponent; 7 × 3 is the glitch's move; 7² is only two copies).",
+    ],
+    [
+      "Gate 2",
+      "2⁵ = 32 (traps: 10 = 2 × 5; 25 = 5²). 6² = 36 (trap: 12 = 6 × 2). 4³ = 64 (traps: 12 = 4 × 3; 81 = 3⁴).",
+    ],
+    [
+      "Boss",
+      "Lock 1: 6³ = 216 (traps: 18 = 6 × 3; 36 = 6²). Lock 2: 2⁵ = 32 is greater than 5² = 25. Lock 3: 8² = 64 (trap: 16 = 8 × 2).",
+    ],
+  ],
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask VEX worked examples, but never block turning the page (Neft 2026-06-11) */}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+<!-- ac-holopad-injected:begin -->
+<style>
+#holopadBtn{background:#f2b705;color:#0f172a;border:2.5px solid #0f172a;border-radius:8px;padding:6px 12px;font:900 .78rem 'Arial Black',sans-serif;cursor:pointer;box-shadow:2px 2px 0 #0f172a;letter-spacing:.04em}
+#holopadBtn:hover{background:#38bdf8;color:#0f172a}
+.hp-tabs{display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap}
+.hp-tab{background:#f1f5f9;color:#0f172a;border:2.5px solid #0f172a;border-radius:8px;padding:7px 14px;font:900 .78rem 'Arial Black',sans-serif;cursor:pointer;box-shadow:2px 2px 0 #0f172a}
+.hp-tab.active{background:#f2b705}
+.hp-pane{display:none;background:#f8fafc;border:2.5px solid #0f172a;border-radius:10px;padding:14px}
+.hp-pane.active{display:block}
+.hp-ctrl-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0;font:700 .85rem 'Segoe UI',sans-serif}
+.hp-readout{background:#0f172a;color:#f8fafc;border-radius:8px;padding:10px 12px;font:700 .86rem 'Segoe UI',sans-serif;margin-top:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.hp-readout code{color:#f2b705;font-weight:900}
+.hp-crew-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:12px}
+.hp-crew-card{background:#fff;border:2.5px solid #0f172a;border-radius:10px;padding:12px;box-shadow:3px 3px 0 #0f172a;text-align:center}
+.hp-crew-av{width:76px;height:76px;margin:0 auto 8px;border:2.5px solid #0f172a;border-radius:10px;background:#eff6ff;overflow:hidden}
+.hp-crew-av svg{width:100%;height:100%;display:block}
+.hp-canvas{width:100%;height:190px;background:#fff;border:2.5px solid #0f172a;border-radius:8px;touch-action:none;cursor:crosshair;display:block}
+</style>
+<script>
+(function(){
+  if(document.getElementById("holopadModal")) return;
+  var volUnit = (typeof VOLUME !== "undefined" && VOLUME.unit) ? String(VOLUME.unit) : document.title;
+  var m = volUnit.match(/Unit\s*(\d+)/i) || location.pathname.match(/(?:vol-0|u)(\d)/i);
+  var unitNum = m ? +m[1] : 2;
+
+  var ctrls = document.querySelector("#hud .ctrls");
+  if(ctrls){
+    var btn = document.createElement("button");
+    btn.id = "holopadBtn";
+    btn.type = "button";
+    btn.innerHTML = "&#129517; Math Holopad";
+    btn.title = "Open Interactive District Math Sandbox, Scratchpad & Crew Dossiers";
+    ctrls.insertBefore(btn, ctrls.firstChild);
+  }
+
+  var modal = document.createElement("div");
+  modal.id = "holopadModal";
+  modal.className = "modal";
+  modal.setAttribute("role","dialog");
+  modal.setAttribute("aria-modal","true");
+  modal.setAttribute("aria-label","District Math Holopad");
+  modal.innerHTML =
+    '<div class="sheet" style="max-width:780px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:3px solid #0f172a;padding-bottom:8px">' +
+        '<h2 style="margin:0;font:900 1.15rem \'Arial Black\',sans-serif;letter-spacing:.04em">&#129517; AXIOM DISTRICT HOLOPAD // UNIT ' + unitNum + ' LAB &amp; CREW</h2>' +
+        '<button type="button" class="btn" data-hp-close style="padding:5px 12px">Close &#10005;</button>' +
+      '</div>' +
+      '<div class="hp-tabs">' +
+        '<button type="button" class="hp-tab active" data-hp-tab="lab">&#129514; Interactive Topic Math Lab</button>' +
+        '<button type="button" class="hp-tab" data-hp-tab="pad">&#127912; Holographic Scratchpad</button>' +
+        '<button type="button" class="hp-tab" data-hp-tab="crew">&#127917; District Crew Dossiers</button>' +
+      '</div>' +
+      '<div class="hp-pane active" data-hp-pane="lab" id="hpLabHost"></div>' +
+      '<div class="hp-pane" data-hp-pane="pad">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">' +
+          '<div style="display:flex;gap:6px;align-items:center;font:800 .78rem \'Segoe UI\',sans-serif">Ink: ' +
+            '<button type="button" data-hp-ink="#0f172a" style="width:26px;height:26px;border-radius:50%;background:#0f172a;border:2px solid #0f172a;cursor:pointer"></button>' +
+            '<button type="button" data-hp-ink="#1d4ed8" style="width:26px;height:26px;border-radius:50%;background:#1d4ed8;border:2px solid #0f172a;cursor:pointer"></button>' +
+            '<button type="button" data-hp-ink="#b42318" style="width:26px;height:26px;border-radius:50%;background:#b42318;border:2px solid #0f172a;cursor:pointer"></button>' +
+            '<button type="button" data-hp-ink="#047857" style="width:26px;height:26px;border-radius:50%;background:#047857;border:2px solid #0f172a;cursor:pointer"></button>' +
+          '</div>' +
+          '<div style="display:flex;gap:6px">' +
+            '<button type="button" class="hp-tab" data-hp-bg="grid">&#128208; Grid</button>' +
+            '<button type="button" class="hp-tab" data-hp-bg="axes">&#129517; 4-Quad Axes</button>' +
+            '<button type="button" class="hp-tab" data-hp-bg="clear">&#129529; Clear</button>' +
+          '</div>' +
+        '</div>' +
+        '<canvas class="hp-canvas" id="hpCanvas" width="700" height="190"></canvas>' +
+      '</div>' +
+      '<div class="hp-pane" data-hp-pane="crew" id="hpCrewHost"></div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  function openHolopad(){ modal.classList.add("open"); renderLab(); renderCrew(); initCanvas(); }
+  if(document.getElementById("holopadBtn")){
+    document.getElementById("holopadBtn").addEventListener("click", openHolopad);
+  }
+  modal.querySelector("[data-hp-close]").addEventListener("click", function(){ modal.classList.remove("open"); });
+  modal.addEventListener("click", function(e){
+    if(e.target === modal) modal.classList.remove("open");
+    var tb = e.target.closest("[data-hp-tab]");
+    if(tb){
+      Array.prototype.slice.call(modal.querySelectorAll("[data-hp-tab]")).forEach(function(b){ b.classList.toggle("active", b===tb); });
+      Array.prototype.slice.call(modal.querySelectorAll("[data-hp-pane]")).forEach(function(p){ p.classList.toggle("active", p.dataset.hpPane===tb.dataset.hpTab); });
+    }
+  });
+
+  function renderCrew(){
+    var host = document.getElementById("hpCrewHost");
+    if(!host || host.dataset.built) return;
+    host.dataset.built = "1";
+    var castObj = (typeof CAST !== "undefined") ? CAST : {};
+    var syms = { maya:"#sym-maya", theo:"#sym-theo", zara:"#sym-zara", dev:"#sym-dev" };
+    var roles = {
+      maya: "Lead Field Investigator · Models problems visually before computing",
+      theo: "Systems Engineer · Verifies unit rates, alignment, and table rules",
+      zara: "Tactical Specialist · Tests edge cases and inverse operations",
+      dev: "Companion Synthesis Unit · Flags classic math traps before lock-in"
+    };
+    var html = '<div class="hp-crew-grid">';
+    ["maya","theo","zara","dev"].forEach(function(k){
+      var c = castObj[k] || { name: k.toUpperCase(), color: "#1d4ed8" };
+      html += '<div class="hp-crew-card">' +
+        '<div class="hp-crew-av"><svg viewBox="0 0 120 140"><use href="' + syms[k] + '"/></svg></div>' +
+        '<div style="font:900 .9rem \'Arial Black\',sans-serif;color:#0f172a">' + c.name + '</div>' +
+        '<div style="font:700 .76rem/1.35 \'Segoe UI\',sans-serif;color:#475569;margin-top:4px">' + roles[k] + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    host.innerHTML = html;
+  }
+
+  function renderLab(){
+    var host = document.getElementById("hpLabHost");
+    if(!host || host.dataset.built) return;
+    host.dataset.built = "1";
+    var a = 6, b = 4, c = 2;
+    host.innerHTML =
+      '<div style="font:800 .86rem \'Segoe UI\',sans-serif;color:#0f172a;margin-bottom:6px">' +
+        'Adjust quantities <b>A</b>, <b>B</b>, and <b>Scale / Input X</b> below to test Unit ' + unitNum + ' relationships live:' +
+      '</div>' +
+      '<div id="hpSvgStage"></div>' +
+      '<div class="hp-ctrl-row">' +
+        '<label>Value A: <input type="range" min="1" max="24" value="6" data-hpa/> <b data-hpa-v>6</b></label>' +
+        '<label>Value B: <input type="range" min="1" max="24" value="4" data-hpb/> <b data-hpb-v>4</b></label>' +
+        '<label>Multiplier / X: <input type="range" min="-8" max="12" value="2" data-hpc/> <b data-hpc-v>2</b></label>' +
+      '</div>' +
+      '<div class="hp-readout" id="hpReadout"></div>';
+
+    function update(){
+      var stage = document.getElementById("hpSvgStage");
+      var ro = document.getElementById("hpReadout");
+      var k = Math.max(1, Math.abs(c));
+      var w1 = Math.min(280, a * 11), w2 = Math.min(280, b * 11);
+      stage.innerHTML =
+        '<svg viewBox="0 0 640 110" style="width:100%;height:auto;background:#fff;border:2px solid #0f172a;border-radius:8px">' +
+          '<rect x="20" y="18" width="' + w1 + '" height="28" rx="4" fill="#38bdf8" stroke="#0f172a" stroke-width="2"/>' +
+          '<text x="' + (28 + w1) + '" y="37" font-size="13" font-weight="900" fill="#0f172a">A = ' + a + ' (Scaled ×' + k + ' = ' + (a*k) + ')</text>' +
+          '<rect x="20" y="62" width="' + w2 + '" height="28" rx="4" fill="#f2b705" stroke="#0f172a" stroke-width="2"/>' +
+          '<text x="' + (28 + w2) + '" y="81" font-size="13" font-weight="900" fill="#0f172a">B = ' + b + ' (Scaled ×' + k + ' = ' + (b*k) + ')</text>' +
+        '</svg>';
+      var ratioTxt = "Ratio A:B = " + a + ":" + b + " · Unit Rate (A/B) = " + (a/b).toFixed(2);
+      var algTxt = "Linear Rule y = A·x + B at x=" + c + " → y = " + (a*c + b);
+      var geomTxt = "Rect Area = " + (a*b) + " · Tri Area = " + (0.5*a*b) + " · Prism Vol (×" + k + ") = " + (a*b*k);
+      ro.innerHTML =
+        '<span><b>Proportional / Fraction:</b> <code>' + ratioTxt + '</code></span>' +
+        '<span><b>Algebraic / Linear:</b> <code>' + algTxt + '</code></span>' +
+        '<span><b>Geometric:</b> <code>' + geomTxt + '</code></span>';
+    }
+    ["a","b","c"].forEach(function(k){
+      host.querySelector("[data-hp" + k + "]").addEventListener("input", function(e){
+        if(k==="a") a = +e.target.value;
+        if(k==="b") b = +e.target.value;
+        if(k==="c") c = +e.target.value;
+        host.querySelector("[data-hp" + k + "-v]").textContent = e.target.value;
+        update();
+      });
+    });
+    update();
+  }
+
+  function initCanvas(){
+    var cv = document.getElementById("hpCanvas");
+    if(!cv || cv.dataset.wired) return;
+    cv.dataset.wired = "1";
+    var ctx = cv.getContext("2d");
+    var ink = "#0f172a", drawing = false, lx = 0, ly = 0;
+    function bg(mode){
+      ctx.clearRect(0,0,cv.width,cv.height);
+      ctx.save();
+      ctx.strokeStyle = "#e2e8f0"; ctx.lineWidth = 1;
+      for(var x=0;x<cv.width;x+=20){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,cv.height); ctx.stroke(); }
+      for(var y=0;y<cv.height;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cv.width,y); ctx.stroke(); }
+      if(mode==="axes"){
+        ctx.strokeStyle = "#64748b"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cv.width/2,0); ctx.lineTo(cv.width/2,cv.height);
+        ctx.moveTo(0,cv.height/2); ctx.lineTo(cv.width,cv.height/2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    bg("grid");
+    function pos(e){
+      var r = cv.getBoundingClientRect();
+      var cx = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+      var cy = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
+      return { x: ((cx - r.left)/(r.width||1))*cv.width, y: ((cy - r.top)/(r.height||1))*cv.height };
+    }
+    cv.addEventListener("mousedown", function(e){ drawing=true; var p=pos(e); lx=p.x; ly=p.y; });
+    cv.addEventListener("mousemove", function(e){
+      if(!drawing) return;
+      var p=pos(e); ctx.strokeStyle=ink; ctx.lineWidth=2.8; ctx.lineCap="round";
+      ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke();
+      lx=p.x; ly=p.y;
+    });
+    window.addEventListener("mouseup", function(){ drawing=false; });
+    Array.prototype.slice.call(modal.querySelectorAll("[data-hp-ink]")).forEach(function(b){
+      b.addEventListener("click", function(){ ink = b.dataset.hpInk; });
+    });
+    Array.prototype.slice.call(modal.querySelectorAll("[data-hp-bg]")).forEach(function(b){
+      b.addEventListener("click", function(){ bg(b.dataset.hpBg); });
+    });
+  }
+})();
+</script>
+<!-- ac-holopad-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+  <script src="/assets/formula-popup.js" defer></script>
+<!-- nt-gn-teacher-gate:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
+<script>(function(){function hide(){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}try{var asked=new URLSearchParams(location.search).get("teacher")==="1";var unlocked=localStorage.getItem("nt-teacher-mode")==="1";if(!(asked&&unlocked)){hide();}}catch(e){hide();}})();</script>
+<!-- nt-gn-teacher-gate:end -->
+<!-- gn-layer:begin (shared layer: vocabulary pop-ups, Easy read switch, formatting; vocabulary from named 6-3 — tools/inject-gn-layer.mjs) -->
+<script type="application/json" id="gn-vocab">[{"term":"Powers and Exponents","termEs":"Potencias y exponentes","definition":"A power uses a base and an exponent to show repeated multiplication.","definitionEs":"Una potencia usa una base y un exponente para mostrar multiplicación repetida.","visual":"2⁴ = 2 × 2 × 2 × 2 = 16","role":"concept","img":"/assets/vocab-images/concept-powers-and-exponents.svg","lesson":"6-3"},{"term":"Exponent","termEs":"Exponente","definition":"A small number that tells how many times to multiply a number by itself.","definitionEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","visual":"In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"},{"term":"Base","termEs":"Base","definition":"The number that gets multiplied by itself.","definitionEs":"El número que se multiplica por sí mismo.","visual":"In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25","img":"/assets/vocab-images/exponent-base.svg","lesson":"6-3"},{"term":"Power","termEs":"Potencia","definition":"A number written with a base and an exponent, like 2³.","definitionEs":"Un número escrito con una base y un exponente, como 2³.","visual":"10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"},{"term":"Evaluate","termEs":"Evaluar","definition":"To find the value by putting numbers in for the letters.","definitionEs":"Encontrar el valor poniendo números en lugar de las letras.","visual":"Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81","img":"/assets/vocab-images/expression.svg","lesson":"6-3"},{"term":"Repeated multiplication","termEs":"Multiplicación repetida","definition":"Multiplying the same factor again and again.","definitionEs":"Multiplicar el mismo factor una y otra vez.","visual":"9 × 9 × 9 × 9","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"},{"term":"Expanded form","termEs":"Forma desarrollada","definition":"A power written out as a product of its factors.","definitionEs":"Una potencia escrita como el producto de sus factores.","visual":"2^3 = 2 × 2 × 2","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"},{"term":"Squared","termEs":"Al cuadrado","definition":"A base used as a factor two times.","definitionEs":"Una base usada como factor dos veces.","visual":"4^2 = 4 × 4","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"},{"term":"Cubed","termEs":"Al cubo","definition":"A base used as a factor three times.","definitionEs":"Una base usada como factor tres veces.","visual":"4^3 = 4 × 4 × 4","img":"/assets/vocab-images/exponent.svg","lesson":"6-3"}]</script>
+<script type="application/json" id="gn-easy">{"v":1,"map":{}}</script>
+<script src="/graphic-novels/_shared/gn-layer.js" defer></script>
+<!-- gn-layer:end -->
+</body>
+</html>
