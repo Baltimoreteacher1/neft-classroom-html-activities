@@ -88,8 +88,8 @@ export const subKeptTen = mis(
       isNum(raw, subNoDecrement(p[0], p[2]))
     );
   },
-  "You regrouped but did not take the 1 away from the place you borrowed from. Cross it out and write one less there.",
-  "Reagrupaste pero no quitaste el 1 del lugar de donde lo tomaste. Táchalo y escribe uno menos ahí.",
+  "You traded but did not take the 1 away from the place you traded from. Cross it out and write one less there.",
+  "Cambiaste pero no quitaste el 1 del lugar de donde lo tomaste. Táchalo y escribe uno menos ahí.",
 );
 
 export const G4 = {
@@ -180,8 +180,8 @@ export const G4 = {
   "4:add-large": {
     title: L("Add large numbers", "Suma números grandes"),
     concept: L(
-      "Line up the places and add from the right. Whenever a place reaches 10 or more, carry 1 to the next place to the left.",
-      "Alinea los lugares y suma desde la derecha. Cada vez que un lugar llega a 10 o más, lleva 1 al lugar siguiente de la izquierda.",
+      "Line up the places and add from the right. Whenever a place reaches 10 or more, trade 10 for 1 in the next place to the left.",
+      "Alinea los lugares y suma desde la derecha. Cada vez que un lugar llega a 10 o más, cambia 10 por 1 en el lugar siguiente de la izquierda.",
     ),
     reasons: [
       L(
@@ -198,8 +198,8 @@ export const G4 = {
       ),
     ],
     misconception: L(
-      "Do not drop a carried 1. If a column adds to 10 or more, the 1 must be added to the next column.",
-      "No pierdas el 1 que llevas. Si una columna suma 10 o más, el 1 se suma en la columna siguiente.",
+      "Do not drop a traded 1. If a column adds to 10 or more, trade 10 for 1 and add that 1 to the next column.",
+      "No pierdas el 1 que cambiaste. Si una columna suma 10 o más, cambia 10 por 1 y suma ese 1 en la columna siguiente.",
     ),
     misconceptions: [
       noRegroupAdd,
@@ -211,8 +211,8 @@ export const G4 = {
           const s = p[0] + p[2];
           return [10, 100, 1000, 10000, 100000].some((k) => isNum(raw, s - k));
         },
-        "Off by exactly one place value: one carried 1 was not added. Check each column for a carry.",
-        "Te falta exactamente un valor posicional: no sumaste un 1 que llevabas. Revisa cada columna.",
+        "Off by exactly one place value: one traded 1 was not added. Check each column for a trade.",
+        "Te falta exactamente un valor posicional: no sumaste un 1 que cambiaste. Revisa cada columna.",
       ),
     ],
     transfer: {
@@ -235,17 +235,17 @@ export const G4 = {
   "4:subtract-large": {
     title: L("Subtract large numbers", "Resta números grandes"),
     concept: L(
-      "Line up the places and subtract from the right. If a top digit is too small, regroup: take 1 from the next place to the left, which gives 10 more here.",
-      "Alinea los lugares y resta desde la derecha. Si un dígito de arriba es muy pequeño, reagrupa: toma 1 del lugar siguiente a la izquierda, que da 10 más aquí.",
+      "Line up the places and subtract from the right. If a top digit is too small, trade: take 1 from the next place to the left for 10 more here.",
+      "Alinea los lugares y resta desde la derecha. Si un dígito de arriba es muy pequeño, cambia: toma 1 del lugar siguiente a la izquierda por 10 más aquí.",
     ),
     reasons: [
       L(
-        "Regrouping renames the number without changing it: 4 thousands = 3 thousands and 10 hundreds.",
-        "Reagrupar cambia el nombre del número sin cambiarlo: 4 millares = 3 millares y 10 centenas.",
+        "A trade renames the number without changing it: 4 thousands = 3 thousands and 10 hundreds.",
+        "Un cambio renombra el número sin cambiar su valor: 4 millares = 3 millares y 10 centenas.",
       ),
       L(
-        "Across a zero, regroup from the next nonzero place and pass the 10 down.",
-        "Cuando hay un cero, reagrupa desde el siguiente lugar que no sea cero y pasa el 10 hacia abajo.",
+        "Across a zero, trade from the next place that is not zero and pass the 10 down.",
+        "Cuando hay un cero, cambia desde el siguiente lugar que no sea cero y pasa el 10 hacia abajo.",
       ),
       L(
         "Check by adding: difference + the number subtracted = the starting number.",
@@ -253,8 +253,8 @@ export const G4 = {
       ),
     ],
     misconception: L(
-      "Never subtract the top digit from the bottom digit. Regroup instead, and remember to write one less in the place you took from.",
-      "Nunca restes el dígito de arriba del de abajo. Mejor reagrupa, y recuerda escribir uno menos en el lugar de donde tomaste.",
+      "Never subtract the top digit from the bottom digit. Trade instead, and remember to write one less in the place you took from.",
+      "Nunca restes el dígito de arriba del de abajo. Mejor cambia, y recuerda escribir uno menos en el lugar de donde tomaste.",
     ),
     misconceptions: [flipSub, subKeptTen],
     transfer: {

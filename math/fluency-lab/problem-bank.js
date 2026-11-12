@@ -2,6 +2,8 @@ import { detailSteps } from "./detail-steps.js";
 import { HINT as DIVIDE_FRACTIONS_HINT, LEARN_STEPS as DIVIDE_FRACTIONS_STEPS, MISTAKE as DIVIDE_FRACTIONS_MISTAKE, RULE as DIVIDE_FRACTIONS_RULE, SIGNED_STEP as DIVIDE_SIGNED_STEP } from "./fraction-division-copy.js";
 import { applyKidLearn } from "./kid-learn.js";
 import { kidSteps } from "./kid-steps.js";
+import { columnHint, columnSteps } from "./regroup-plan.js";
+import { multiplySteps } from "./multiply-plan.js";
 import { leakCap } from "./step-leak.js";
 import { longDivisionSteps, needsLongDivision } from "./long-division-work.js";
 import { workedSteps } from "./step-builders.js";
@@ -1685,7 +1687,10 @@ function drawProblem(skill, generator, rng) {
   }
   // The trail and games record answers by generator, so the tutor can credit the matching skill.
   item.generator = skill.generator;
-  item.steps = kidSteps(item, skill) || detailSteps(item) || item.steps;
+  // A place-value sum or difference is explained by the same regrouping plan its pictures and column boxes use.
+  item.steps =
+    columnSteps(item) || multiplySteps(item) || kidSteps(item, skill) || detailSteps(item) || item.steps;
+  item.hint = columnHint(item) || item.hint;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.
   if (item.steps.length < 2) item.steps = workedSteps(item) || [...(skill.learn?.steps || []), ...item.steps];

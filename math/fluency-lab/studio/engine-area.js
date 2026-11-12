@@ -3,6 +3,7 @@
 // can check that the partial products always add to the product.
 import { COLORS, L, clean, esc, keyed, num, txt } from "./core.js";
 import { frames, grid, wrap } from "./engine-area-frames.js";
+import { multiplyPlan } from "../multiply-plan.js";
 
 export { frames };
 
@@ -18,9 +19,12 @@ export function parse(question) {
     const [a, b] = [Number(m[1]), Number(m[2])];
     if (a === 0 || b === 0) return null;
     if (Math.max(a, b) <= 12) return { engine: "area", kind: "array", a, b, total: a * b };
-    const [pa, pb] = [place(a), place(b)];
-    if (String(a).length > 4 || String(b).length > 4 || pa.length * pb.length > 9) return null;
-    return { engine: "area", kind: "model", a, b, pa, pb, total: a * b };
+    if (String(a).length > 4 || String(b).length > 4) return null;
+    // The same split the written steps use (multiply-plan.js): one factor by place value, the other whole.
+    const plan = multiplyPlan(a, b);
+    const pa = plan.kind === "place" && plan.splitA ? plan.parts : [a];
+    const pb = plan.kind === "place" && !plan.splitA ? plan.parts : [b];
+    return { engine: "area", kind: "model", a, b, pa, pb, total: a * b, ...(plan.kind === "zeros" ? { zeros: plan } : {}) };
   }
   m = q.match(/^(\d+) ÷ (\d+) = \?$/);
   if (m) {

@@ -8,13 +8,13 @@ import {
   clean,
   decimals,
   esc,
-  fmt,
   frame,
   keyed,
   num,
   svgWrap,
   txt,
 } from "./core.js";
+import { digitsOf, formatLike, parseColumns, regroupPlan } from "../regroup-plan.js";
 
 const NAMES = [
   ["ones", "unidades"],
@@ -41,25 +41,19 @@ const placeName = (e) => {
   return L(pair[0], pair[1]);
 };
 const unitName = (e) => (e >= 0 && e < 4 ? L(SINGLE[e][0], SINGLE[e][1]) : placeName(e));
+// "1 one" / "1 unidad", "13 ones" / "13 unidades": a count of one names the place in the singular (as the written
+// steps in regroup-plan.js do), with the Spanish verb agreeing ("no alcanza" / "no alcanzan").
+const SINGULAR_ES = ["unidad", "decena", "centena", "millar", "decena de millar", "centena de millar", "millón"];
+const SINGULAR_ES_FRAC = ["décimo", "centésimo", "milésimo"];
+const counted = (n, e) =>
+  n === 1
+    ? L(`1 ${unitName(e).en}`, `1 ${e >= 0 ? SINGULAR_ES[e] : SINGULAR_ES_FRAC[-e - 1]}`)
+    : L(`${n} ${placeName(e).en}`, `${n} ${placeName(e).es}`);
 
-const digitsOf = (n, len) => Array.from({ length: len }, (_, i) => Math.floor(n / 10 ** i) % 10);
 export const value = (cols) => cols.reduce((sum, count, i) => sum + count * 10 ** i, 0);
 
-export function parse(question) {
-  const m = clean(question).match(/^(\d+(?:\.\d+)?) ([+−-]) (\d+(?:\.\d+)?) = \?$/);
-  if (!m) return null;
-  const d = Math.max(decimals(m[1]), decimals(m[3]));
-  const A = Math.round(num(m[1]) * 10 ** d);
-  const B = Math.round(num(m[3]) * 10 ** d);
-  const op = m[2] === "+" ? "+" : "-";
-  if (op === "-" && A < B) return null;
-  const result = op === "+" ? A + B : A - B;
-  const len =
-    Math.max(String(A).length, String(B).length, String(result).length, d + 1) +
-    (op === "+" ? 0 : 0);
-  if (len > 7) return null;
-  return { engine: "place", op, d, A, B, result, len, a: m[1], b: m[3] };
-}
+// One parser and one regrouping plan for the pictures, the Build panel, the column boxes and the written steps.
+export const parse = (question) => parseColumns(question);
 
 function draw(spec, cols, { ring = -1, owe = null, note = null, hide = false } = {}) {
   const n = spec.len;
@@ -108,7 +102,7 @@ const alt = (spec, cols) => {
     `Fichas de valor posicional: ${es.join(", ")}.`,
   );
 };
-const shown = (spec, n) => fmt(n / 10 ** spec.d);
+const shown = (spec, n) => formatLike(spec, n).replace("-", "−");
 const eqText = (spec, tail = "") => `${spec.a} ${spec.op === "+" ? "+" : "−"} ${spec.b}${tail}`;
 
 function mk(spec, id, cols, cap, easy, opts = {}, tail = "") {
@@ -144,7 +138,8 @@ export function frames(spec) {
         L(`Show ${spec.a} with chips.`, `Muestra ${spec.a} con fichas.`),
       ),
     );
-    const cols = a.map((x, i) => x + b[i]);
+    const plan = regroupPlan(spec);
+    const cols = plan.joined;
     out.push(
       mk(
         spec,
@@ -157,33 +152,33 @@ export function frames(spec) {
         L(`Add ${spec.b}'s chips place by place.`, `Suma las fichas de ${spec.b} lugar por lugar.`),
       ),
     );
-    for (let i = 0; i < len - 1; i += 1) {
-      if (cols[i] < 10) continue;
+    let shownCols = cols;
+    for (const e of plan.events) {
+      const i = e.from;
       const name = placeName(i - spec.d);
       const up = unitName(i + 1 - spec.d);
       out.push(
         mk(
           spec,
           `ring${i}`,
-          cols,
+          shownCols,
           L(
-            `${cols[i]} ${name.en} is 10 or more. Ten ${name.en} chips can be traded.`,
-            `${cols[i]} ${name.es} son 10 o más. Diez fichas de ${name.es} se pueden cambiar.`,
+            `${e.had} ${name.en} is 10 or more. Ten ${name.en} chips can be traded for 1 ${up.en}.`,
+            `${e.had} ${name.es} son 10 o más. Diez fichas de ${name.es} se pueden cambiar por 1 ${up.es}.`,
           ),
-          L(`${cols[i]} is 10 or more. Trade.`, `${cols[i]} es 10 o más. Cambia.`),
+          L(`${e.had} is 10 or more. Trade.`, `${e.had} es 10 o más. Cambia.`),
           { ring: i },
         ),
       );
-      cols[i] -= 10;
-      cols[i + 1] += 1;
+      shownCols = e.cols;
       out.push(
         mk(
           spec,
           `trade${i}`,
-          cols,
+          shownCols,
           L(
-            `Trade 10 ${name.en} for 1 ${up.en}. The total value stays the same.`,
-            `Cambia 10 ${name.es} por 1 ${up.es}. El valor total no cambia.`,
+            `Trade 10 ${name.en} for 1 ${up.en}: ${name.en} ${e.cols[i]}, ${placeName(i + 1 - spec.d).en} ${e.cols[i + 1]}. The total value stays the same.`,
+            `Cambia 10 ${name.es} por 1 ${up.es}: ${name.es} ${e.cols[i]}, ${placeName(i + 1 - spec.d).es} ${e.cols[i + 1]}. El valor total no cambia.`,
           ),
           L(`10 ${name.en} = 1 ${up.en}.`, `10 ${name.es} = 1 ${up.es}.`),
         ),
@@ -193,7 +188,7 @@ export function frames(spec) {
       mk(
         spec,
         "done",
-        cols,
+        shownCols,
         L(
           `Read each place: ${shown(spec, spec.result)}.`,
           `Lee cada lugar: ${shown(spec, spec.result)}.`,
@@ -218,50 +213,46 @@ export function frames(spec) {
       { owe: b },
     ),
   );
-  const cols = [...a];
-  for (let i = 0; i < len; i += 1) {
-    if (cols[i] < b[i]) {
-      let j = i + 1;
-      while (j < len && cols[j] === 0) j += 1;
-      for (let k = j; k > i; k -= 1) {
-        const name = placeName(k - spec.d);
-        const down = placeName(k - 1 - spec.d);
-        out.push(
-          mk(
-            spec,
-            `ring${i}-${k}`,
-            cols,
-            L(
-              `${cols[i]} ${placeName(i - spec.d).en} is not enough to take away ${b[i]}. Break 1 ${unitName(k - spec.d).en} into 10 ${down.en}.`,
-              `${cols[i]} ${placeName(i - spec.d).es} no alcanzan para quitar ${b[i]}. Descompón 1 ${unitName(k - spec.d).es} en 10 ${down.es}.`,
-            ),
-            L(
-              `Not enough ${placeName(i - spec.d).en}. Break one from the next place.`,
-              `No alcanzan. Descompón uno del lugar siguiente.`,
-            ),
-            { ring: k, owe: b },
-          ),
-        );
-        cols[k] -= 1;
-        cols[k - 1] += 10;
-        out.push(
-          mk(
-            spec,
-            `break${i}-${k}`,
-            cols,
-            L(
-              `Now ${name.en} has 1 less and ${down.en} has 10 more. The total value is the same.`,
-              `Ahora ${name.es} tiene 1 menos y ${down.es} tiene 10 más. El valor total es el mismo.`,
-            ),
-            L(
-              `1 ${unitName(k - spec.d).en} became 10 ${down.en}.`,
-              `1 ${unitName(k - spec.d).es} se volvió 10 ${down.es}.`,
-            ),
-            { owe: b },
-          ),
-        );
-      }
-    }
+  const plan = regroupPlan(spec);
+  let cols = [...a];
+  for (const e of plan.events) {
+    const i = e.need;
+    const k = e.from;
+    const name = placeName(k - spec.d);
+    const down = placeName(k - 1 - spec.d);
+    out.push(
+      mk(
+        spec,
+        `ring${i}-${k}`,
+        cols,
+        L(
+          `${counted(e.had, i - spec.d).en} is not enough to take away ${b[i]}. Trade 1 ${unitName(k - spec.d).en} for 10 ${down.en}.`,
+          `${counted(e.had, i - spec.d).es} no ${e.had === 1 ? "alcanza" : "alcanzan"} para quitar ${b[i]}. Cambia 1 ${unitName(k - spec.d).es} por 10 ${down.es}.`,
+        ),
+        L(
+          `Not enough ${placeName(i - spec.d).en}. Trade one from the next place.`,
+          "No alcanzan. Cambia uno del lugar siguiente.",
+        ),
+        { ring: k, owe: b },
+      ),
+    );
+    cols = e.cols;
+    out.push(
+      mk(
+        spec,
+        `break${i}-${k}`,
+        cols,
+        L(
+          `Now ${name.en} has ${cols[k]} and ${down.en} has ${cols[k - 1]}: 1 less and 10 more. The total value is the same.`,
+          `Ahora ${name.es} tiene ${cols[k]} y ${down.es} tiene ${cols[k - 1]}: 1 menos y 10 más. El valor total es el mismo.`,
+        ),
+        L(
+          `1 ${unitName(k - spec.d).en} became 10 ${down.en}.`,
+          `1 ${unitName(k - spec.d).es} se volvió 10 ${down.es}.`,
+        ),
+        { owe: b },
+      ),
+    );
   }
   const left = [...cols];
   out.push(
@@ -418,7 +409,7 @@ export function predicts(spec) {
             ),
           },
           {
-            t: L("No, we must break a chip.", "No, hay que descomponer una ficha."),
+            t: L("No, we must trade a chip.", "No, hay que cambiar una ficha."),
             ok: false,
             why: L(
               "Compare each pair of digits: none needs more than it has.",
@@ -440,8 +431,8 @@ export function predicts(spec) {
       choices: [
         {
           t: L(
-            "Break 1 chip from the next place into 10 here.",
-            "Descomponer 1 ficha del lugar siguiente en 10 aquí.",
+            "Trade 1 chip from the next place for 10 here.",
+            "Cambiar 1 ficha del lugar siguiente por 10 aquí.",
           ),
           ok: true,
           why: L(
@@ -513,8 +504,8 @@ export function hints(spec) {
           "Empieza en las unidades: ¿cuántas fichas hay juntas? Si son 10 o más, cambia.",
         )
       : L(
-          "Start at the ones place: can you take away the bottom digit? If not, break one from the next place.",
-          "Empieza en las unidades: ¿puedes quitar el dígito de abajo? Si no, descompón una del lugar siguiente.",
+          "Start at the ones place: can you take away the bottom digit? If not, trade one from the next place.",
+          "Empieza en las unidades: ¿puedes quitar el dígito de abajo? Si no, cambia una del lugar siguiente.",
         );
   return [
     {
@@ -567,15 +558,15 @@ export const tags = {
   smallFromBig: {
     label: L("Subtracted the smaller digit from the bigger", "Restó el dígito menor del mayor"),
     tip: L(
-      "Subtraction starts from the top number. Break a chip from the next place when you need more.",
-      "La resta empieza con el número de arriba. Descompón una ficha del lugar siguiente cuando necesites más.",
+      "Subtraction starts from the top number. Trade a chip from the next place when you need more.",
+      "La resta empieza con el número de arriba. Cambia una ficha del lugar siguiente cuando necesites más.",
     ),
   },
   forgotReduce: {
-    label: L("Broke a chip but did not take it away", "Descompuso una ficha pero no la quitó"),
+    label: L("Traded a chip but did not take it away", "Cambió una ficha pero no la quitó"),
     tip: L(
-      "When you break a chip, the place you broke it from has one less.",
-      "Cuando descompones una ficha, el lugar de donde salió tiene una menos.",
+      "When you trade a chip, the place you took it from has one less.",
+      "Cuando cambias una ficha, el lugar de donde salió tiene una menos.",
     ),
   },
 };
@@ -589,8 +580,8 @@ export const build = {
           "Cambia 10 fichas por 1 del lugar siguiente donde un lugar tenga 10 o más.",
         )
       : L(
-          "Take away the bottom number place by place. Break a chip when a place does not have enough.",
-          "Quita el número de abajo lugar por lugar. Descompón una ficha cuando un lugar no alcance.",
+          "Take away the bottom number place by place. Trade a chip when a place does not have enough.",
+          "Quita el número de abajo lugar por lugar. Cambia una ficha cuando un lugar no alcance.",
         ),
   init(spec) {
     const a = digitsOf(spec.A, spec.len);
@@ -618,7 +609,7 @@ export const build = {
           controls.push({
             id: "break",
             arg: i,
-            label: L(`Break 1 ${name}`, `Descomponer 1 ${placeName(i - spec.d).es}`),
+            label: L(`Trade 1 ${name}`, `Cambiar 1 ${placeName(i - spec.d).es}`),
           });
         if (state.owe[i])
           controls.push({
@@ -669,8 +660,8 @@ export const build = {
           state,
           ok: false,
           msg: L(
-            "There is no chip to break here. Try the next place up.",
-            "No hay ficha para descomponer aquí. Prueba el lugar siguiente.",
+            "There is no chip to trade here. Try the next place up.",
+            "No hay ficha para cambiar aquí. Prueba el lugar siguiente.",
           ),
           tag: "empty",
         };
@@ -684,8 +675,8 @@ export const build = {
           state,
           ok: false,
           msg: L(
-            "Not enough chips here yet. Break one from the next place first.",
-            "Todavía no hay suficientes fichas. Primero descompón una del lugar siguiente.",
+            "Not enough chips here yet. Trade one from the next place first.",
+            "Todavía no hay suficientes fichas. Primero cambia una del lugar siguiente.",
           ),
           tag: "notEnough",
         };

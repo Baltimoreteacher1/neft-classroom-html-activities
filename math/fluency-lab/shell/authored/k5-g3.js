@@ -383,8 +383,8 @@ export const G3 = {
     ),
     reasons: [
       L(
-        "Regrouping changes how a number is written, never how much it is.",
-        "Reagrupar cambia cómo se escribe un número, nunca cuánto vale.",
+        "Trading 10 for 1 changes how a number is written, never how much it is.",
+        "Cambiar 10 por 1 cambia cómo se escribe un número, nunca cuánto vale.",
       ),
       L(
         "Subtraction and addition check each other: difference + the number you took away = the start.",

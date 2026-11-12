@@ -27,8 +27,8 @@ export const noRegroupAdd = mis(
       isNum(raw, addNoCarry(p[0], p[2]))
     );
   },
-  "A column added up to 10 or more, and the extra ten was lost. When a column makes 10 or more, trade 10 of them for 1 of the next place and carry it over.",
-  "Una columna sumó 10 o más y se perdió la decena extra. Cuando una columna llega a 10 o más, cambia 10 de ellas por 1 del lugar siguiente y llévala.",
+  "A column added up to 10 or more, and the extra ten was lost. When a column makes 10 or more, trade 10 of them for 1 of the next place and write it above that place.",
+  "Una columna sumó 10 o más y se perdió la decena extra. Cuando una columna llega a 10 o más, cambia 10 de ellas por 1 del lugar siguiente y escríbelo sobre ese lugar.",
 );
 export const flipSub = mis(
   "smaller-from-larger",
@@ -41,8 +41,8 @@ export const flipSub = mis(
       isNum(raw, subFlip(p[0], p[2]))
     );
   },
-  "In one column you took the top digit from the bottom digit. You cannot flip a subtraction. If the top digit is smaller, regroup: take 1 from the next place and make 10 more.",
-  "En una columna restaste el dígito de arriba del de abajo. No puedes voltear una resta. Si el dígito de arriba es menor, reagrupa: toma 1 del lugar siguiente y forma 10 más.",
+  "In one column you took the top digit from the bottom digit. You cannot flip a subtraction. If the top digit is smaller, trade: take 1 from the next place for 10 more here.",
+  "En una columna restaste el dígito de arriba del de abajo. No puedes voltear una resta. Si el dígito de arriba es menor, cambia: toma 1 del lugar siguiente por 10 más aquí.",
 );
 
 const coinValue = (q, d, n, p) => 25 * q + 10 * d + 5 * n + p;
@@ -397,8 +397,8 @@ export const G2 = {
       ),
     ],
     misconception: L(
-      "Carry the new ten or hundred into the next place. If a column reaches 10 or more, it is never written as one digit with nothing carried.",
-      "Lleva la decena o centena nueva al lugar siguiente. Si una columna llega a 10 o más, nunca se escribe como un dígito sin llevar nada.",
+      "Trade 10 for 1 of the next place and write the new ten or hundred there. A column of 10 or more is never written as one digit with nothing traded.",
+      "Cambia 10 por 1 del lugar siguiente y escribe allí la decena o centena nueva. Una columna de 10 o más nunca se escribe como un dígito sin cambiar nada.",
     ),
     misconceptions: [
       noRegroupAdd,
@@ -413,8 +413,8 @@ export const G2 = {
             (w) => w !== nc && w > 0 && isNum(raw, w),
           );
         },
-        "Off by exactly 10 or 100: one regrouped ten or hundred was not added. Check each column for a carry.",
-        "Te falta exactamente 10 o 100: no sumaste una decena o centena que llevabas. Revisa cada columna.",
+        "Off by exactly 10 or 100: one traded ten or hundred was not added. Check each column for a trade.",
+        "Te falta exactamente 10 o 100: no sumaste una decena o centena que cambiaste. Revisa cada columna.",
       ),
     ],
     transfer: {

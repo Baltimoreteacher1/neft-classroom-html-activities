@@ -6,6 +6,7 @@
 // A finished board raises `vc-complete` (bubbling) with the result; `opened` is true when a miss-open supplied a
 // digit, and callers copy the result into the answer field only when it is false.
 import { t } from "./i18n.js";
+import { parseColumns, regroupPlan } from "./regroup-plan.js";
 
 const esc = (value) =>
   String(value)
@@ -75,15 +76,13 @@ export function expectations(spec) {
       else lead = carry;
     }
   } else {
-    let lent = 0;
+    // The same plan the chip pictures and the written steps use (regroup-plan.js): a box above a column
+    // holds that place's new top digit after every trade, the answer box what is left after taking away.
+    const plan = regroupPlan(parseColumns(`${spec.terms[0]} - ${spec.terms[1]} = ?`, { maxLen: 15 }));
     for (let c = width - 1; c >= 0; c -= 1) {
-      const effective = digit(rows[0], c) - lent;
-      const bottom = digit(rows[1], c);
-      const borrow = effective < bottom;
-      const top = borrow ? effective + 10 : effective;
-      result[c] = top - bottom;
-      regroup[c] = top !== digit(rows[0], c) ? String(top) : "";
-      lent = borrow ? 1 : 0;
+      const i = width - 1 - c;
+      result[c] = plan.result[i];
+      regroup[c] = plan.before[i] !== digit(rows[0], c) ? String(plan.before[i]) : "";
     }
   }
   // Leading zeros of the answer are not written (but the ones place always is).
@@ -113,8 +112,8 @@ export function verticalHtml(spec, { caption = "" } = {}) {
       : spec.op === "+"
         ? c === width - 1
           ? ""
-          : box("carry", c, t("Regrouping box above column {n}", { n: c + 1 }))
-        : box("regroup", c, t("Regrouping box above column {n}", { n: c + 1 }));
+          : box("carry", c, t("Trading box above column {n}", { n: c + 1 }))
+        : box("regroup", c, t("Trading box above column {n}", { n: c + 1 }));
   const numbers = rows
     .map((row, i) => {
       const sign = i === rows.length - 1 ? (spec.op === "+" ? "+" : "−") : "";
@@ -140,7 +139,7 @@ export function verticalHtml(spec, { caption = "" } = {}) {
     <div class="vc-scroll"><div class="vertical-algorithm-grid vc-grid">
       <div class="algo-carry-row vc-row">${across(above)}</div>${numbers}<div class="algo-divider"></div><div class="algo-ans-row vc-row">${answer}</div>
     </div></div>
-    <p class="vc-note tool-note" role="status" aria-live="polite">${esc(spec.op === "+" ? t("Add one column at a time from the right. Write a regrouped ten in the box above the next column.") : t("Subtract one column at a time from the right. Regroup first when the top digit is too small."))}</p>
+    <p class="vc-note tool-note" role="status" aria-live="polite">${esc(spec.op === "+" ? t("Add one column at a time from the right. When a column makes ten or more, trade ten for one and write it in the box above the next column.") : t("Subtract one column at a time from the right. When the top digit is too small, first trade one from the next column for ten."))}</p>
   </div>`;
 }
 

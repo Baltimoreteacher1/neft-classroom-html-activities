@@ -2,6 +2,7 @@
 // moving decimal point, standard-algorithm long division (DMSB: Divide, Multiply, Subtract, Bring Down), dividing fractions by counting equal pieces, and
 // unit-fraction word problems. All the arithmetic is done on whole numbers, so every frame can be recomputed.
 import { COLORS, L, choiceBuild, clean, frameOf, gcd, num, predictOf, svgWrap, txt } from "./core.js";
+import { longDivisionWork } from "../long-division-work.js";
 
 const A = (en, es) => L(en, es);
 const places = (t) => (String(t).split(".")[1] || "").length;
@@ -46,18 +47,21 @@ export function parse(question) {
   if (m) {
     const [n, d] = [Number(m[1]), Number(m[2])];
     if (d < 2 || d > 99 || n > 99999 || n % d !== 0 || (d <= 12 && n / d <= 12)) return null;
+    // The chunks ARE the long-division cycles (long-division-work.js, the same computation as the written steps and
+    // the lab's bracket): a quotient digit q in a place worth 10^k is the chunk q × 10^k of the divisor.
+    const work = longDivisionWork(n, d);
     const chunks = [];
     let rem = n;
-    while (rem > 0 && chunks.length < 6) {
-      let k = 0;
-      while (d * 10 ** (k + 1) <= rem) k += 1;
-      let c = 9;
-      while (d * c * 10 ** k > rem) c -= 1;
-      const piece = c * 10 ** k;
-      chunks.push({ piece, take: d * piece, before: rem, after: rem - d * piece });
+    for (const cycle of work.cycles) {
+      const piece = cycle.qDigit * 10 ** (work.digits.length - 1 - cycle.index);
+      if (!piece) {
+        if (chunks.length) chunks.at(-1).zeros.push(cycle);
+        continue;
+      }
+      chunks.push({ piece, take: d * piece, before: rem, after: rem - d * piece, cycle, zeros: [] });
       rem -= d * piece;
     }
-    return rem === 0 ? { engine: "decimal", mode: "long", n, d, chunks, result: n / d } : null;
+    return rem === 0 && chunks.length <= 6 ? { engine: "decimal", mode: "long", n, d, chunks, result: n / d } : null;
   }
   m = q.match(/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/);
   if (m) {
@@ -124,6 +128,19 @@ export function frames(s) {
     ];
   }
   if (s.mode === "long") {
+    // One caption per quotient digit: the long-division cycle (divide, multiply, subtract, bring down) and the
+    // place-value chunk it stands for, so the written steps and this picture name the same numbers.
+    const cycleCap = (s, c) => {
+      const { cycle } = c;
+      const word = (en, es) => ({ en, es });
+      const zero = c.zeros.map((z) => word(` ${s.d} does not fit into ${z.current}: write 0.${z.next === null ? "" : ` Bring down the ${z.next}.`}`, ` ${s.d} no cabe en ${z.current}: escribe 0.${z.next === null ? "" : ` Baja el ${z.next}.`}`));
+      const down = cycle.next === null ? word("", "") : word(` Bring down the ${cycle.next}: ${cycle.remainder * 10 + cycle.next}.`, ` Baja el ${cycle.next}: ${cycle.remainder * 10 + cycle.next}.`);
+      const lead = c === s.chunks[0] && cycle.index > 0 ? word(`${s.d} does not go into ${String(cycle.current).slice(0, -1).split("").map((_, i, all) => all.slice(0, i + 1).join("")).join(" or ")}, so start with ${cycle.current}. `, `${s.d} no cabe en ${String(cycle.current).slice(0, -1).split("").map((_, i, all) => all.slice(0, i + 1).join("")).join(" ni en ")}, así que empieza con ${cycle.current}. `) : word("", "");
+      return A(
+        `${lead.en}Divide: ${cycle.current} ÷ ${s.d} → ${cycle.qDigit}. Multiply: ${cycle.qDigit} × ${s.d} = ${cycle.product}. Subtract: ${cycle.current} − ${cycle.product} = ${cycle.remainder}. In place value: ${s.d} × ${comma(c.piece)} = ${comma(c.take)}, ${comma(c.before)} − ${comma(c.take)} = ${comma(c.after)} left.${down.en}${zero.map((z) => z.en).join("")}`,
+        `${lead.es}Divide: ${cycle.current} ÷ ${s.d} → ${cycle.qDigit}. Multiplica: ${cycle.qDigit} × ${s.d} = ${cycle.product}. Resta: ${cycle.current} − ${cycle.product} = ${cycle.remainder}. En valor posicional: ${s.d} × ${comma(c.piece)} = ${comma(c.take)}, ${comma(c.before)} − ${comma(c.take)} = ${comma(c.after)} restante.${down.es}${zero.map((z) => z.es).join("")}`,
+      );
+    };
     const alt = A(`${comma(s.n)} ÷ ${s.d} in chunks.`, `${comma(s.n)} ÷ ${s.d} en partes.`);
     const body = (upto) => {
       let out = tag(280, 40, `${comma(s.n)} ÷ ${s.d}`, 32);
@@ -139,8 +156,8 @@ export function frames(s) {
       return out;
     };
     const h = 140 + s.chunks.length * 44;
-    const out = [frameOf({ id: "start", cap: A(`Divide in friendly chunks: take the biggest chunk of ${s.d} that fits, subtract it, and repeat.`, `Divide en partes cómodas: toma la parte más grande de ${s.d} que quepa, réstala y repite.`), easy: A("Take chunks.", "Toma partes."), eq: `${comma(s.n)} ÷ ${s.d}`, body: body(0), alt, meta: { n: s.n }, h })];
-    s.chunks.forEach((c, i) => out.push(frameOf({ id: `c${i}`, cap: A(`${s.d} × ${comma(c.piece)} = ${comma(c.take)}. ${comma(c.before)} − ${comma(c.take)} = ${comma(c.after)} left.`, `${s.d} × ${comma(c.piece)} = ${comma(c.take)}. ${comma(c.before)} − ${comma(c.take)} = ${comma(c.after)} restante.`), easy: A(`${comma(c.after)} left.`, `Quedan ${comma(c.after)}.`), eq: `${comma(s.n)} ÷ ${s.d}`, body: body(i + 1), alt, meta: { piece: c.piece, take: c.take, before: c.before, after: c.after, d: s.d, sum: s.chunks.slice(0, i + 1).reduce((x, y) => x + y.piece, 0) }, h })));
+    const out = [frameOf({ id: "start", cap: A(`Long division: divide, multiply, subtract, bring down, one digit at a time. Each quotient digit is a chunk of ${s.d}s in its place.`, `División larga: divide, multiplica, resta y baja, un dígito a la vez. Cada dígito del cociente es una parte de ${s.d} en su lugar.`), easy: A("Take chunks.", "Toma partes."), eq: `${comma(s.n)} ÷ ${s.d}`, body: body(0), alt, meta: { n: s.n }, h })];
+    s.chunks.forEach((c, i) => out.push(frameOf({ id: `c${i}`, cap: cycleCap(s, c), easy: A(`${comma(c.after)} left.`, `Quedan ${comma(c.after)}.`), eq: `${comma(s.n)} ÷ ${s.d}`, body: body(i + 1), alt, meta: { piece: c.piece, take: c.take, before: c.before, after: c.after, d: s.d, sum: s.chunks.slice(0, i + 1).reduce((x, y) => x + y.piece, 0) }, h })));
     out[out.length - 1] = Object.assign(out[out.length - 1], { meta: { ...out.at(-1).meta, result: s.result, final: true } });
     return out;
   }

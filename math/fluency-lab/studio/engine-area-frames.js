@@ -2,6 +2,7 @@
 // Split from engine-area.js to keep each file short. A split never changes the whole: frames record `parts` and
 // `total` so the tests can check that the partial products always add to the product.
 import { COLORS, PLACE_COLORS, L, esc, frame, keyed, svgWrap, txt } from "./core.js";
+import { countBy, factSplit } from "../multiply-plan.js";
 
 export function grid(
   rows,
@@ -75,8 +76,8 @@ const KINDS = {
           { total, parts: [total] },
         ),
       );
-      if (b >= 6) {
-        const sp = 5;
+      const sp = factSplit(b);
+      if (sp) {
         const g = gl(sp);
         const [p1, p2] = [a * sp, a * (b - sp)];
         out.push(
@@ -108,8 +109,12 @@ const KINDS = {
         mk(
           "total",
           L(
-            `${a} × ${b} = ${total}. The parts always add up to the whole array.`,
-            `${a} × ${b} = ${total}. Las partes siempre suman el arreglo completo.`,
+            sp
+              ? `${a} × ${b} = ${total}. The parts always add up to the whole array.`
+              : `Count by ${b}s, one row at a time: ${countBy(b, a).join(", ")}. ${a} × ${b} = ${total}.`,
+            sp
+              ? `${a} × ${b} = ${total}. Las partes siempre suman el arreglo completo.`
+              : `Cuenta de ${b} en ${b}, una fila a la vez: ${countBy(b, a).join(", ")}. ${a} × ${b} = ${total}.`,
           ),
           L(`${total} in all.`, `${total} en total.`),
           `${a} × ${b} = ${total}`,
@@ -198,12 +203,31 @@ const KINDS = {
           { total, parts: [total] },
         ),
       );
+      const cut = pa.length > 1 ? { n: a, parts: pa, keep: b } : { n: b, parts: pb, keep: a };
+      if (s.zeros) {
+        const z = s.zeros;
+        out.push(
+          mk(
+            "fact",
+            L(
+              `Basic fact first: ${z.basicA} × ${z.basicB} = ${z.fact}. ${a} × ${b} has ${z.zeros} zero${z.zeros === 1 ? "" : "s"} in all, so the area is ${z.fact} with ${z.zeros} zero${z.zeros === 1 ? "" : "s"}: ${total}.`,
+              `Primero el dato básico: ${z.basicA} × ${z.basicB} = ${z.fact}. ${a} × ${b} tiene ${z.zeros} cero${z.zeros === 1 ? "" : "s"} en total, así que el área es ${z.fact} con ${z.zeros} cero${z.zeros === 1 ? "" : "s"}: ${total}.`,
+            ),
+            L("Basic fact, then the zeros.", "Dato básico y luego los ceros."),
+            `${z.basicA} × ${z.basicB} = ${z.fact}`,
+            draw(-1).svg,
+            alt(0),
+            { total, parts: [total] },
+          ),
+        );
+        return out;
+      }
       out.push(
         mk(
           "split",
           L(
-            `Split each side by place value: ${pa.join(" + ")} and ${pb.join(" + ")}. Each small rectangle has an easier product.`,
-            `Divide cada lado por valor posicional: ${pa.join(" + ")} y ${pb.join(" + ")}. Cada rectángulo pequeño tiene un producto más fácil.`,
+            `Split ${cut.n} by place value: ${cut.parts.join(" + ")}. Keep ${cut.keep} whole. Each smaller rectangle has an easier product.`,
+            `Divide ${cut.n} por valor posicional: ${cut.parts.join(" + ")}. Deja ${cut.keep} entero. Cada rectángulo más pequeño tiene un producto más fácil.`,
           ),
           L("Split by place value.", "Divide por valor posicional."),
           `(${pa.join(" + ")}) × (${pb.join(" + ")})`,
@@ -277,8 +301,8 @@ const KINDS = {
         mk(
           "rows",
           L(
-            `Put ${d} squares in each row. Count the rows: that is how many groups of ${d} fit in ${n}.`,
-            `Pon ${d} cuadros en cada fila. Cuenta las filas: eso es cuántos grupos de ${d} caben en ${n}.`,
+            `Put ${d} squares in each row. Count by ${d}s until you reach ${n}: ${countBy(d, n / d).join(", ")}. Count the rows: that is how many groups of ${d} fit in ${n}.`,
+            `Pon ${d} cuadros en cada fila. Cuenta de ${d} en ${d} hasta llegar a ${n}: ${countBy(d, n / d).join(", ")}. Cuenta las filas: eso es cuántos grupos de ${d} caben en ${n}.`,
           ),
           L(`Rows of ${d}.`, `Filas de ${d}.`),
           `${n} ÷ ${d}`,
