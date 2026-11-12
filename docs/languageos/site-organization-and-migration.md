@@ -6,4 +6,4 @@
 - eduwonderlab.com keeps serving every existing URL. No old-origin redirects are added until the new origin is verified, and the old site is not deactivated.
 - localStorage does not cross origins. Progress moves by user-initiated export/import at `/access-practice-lab/move` (`src/transfer.js`).
 - Rollback: remove the custom domain in Cloudflare Pages (Custom domains tab) and delete its CNAME; eduwonderlab.com is unaffected.
-- Open: public sections `/learn /worlds /practice /growth /teacher /families` are aliases to be added without removing existing routes.
+- Sections are defined once in `access-practice-lab/src/sitemap.js` and browsable at `/access-practice-lab/explore/<section>` (2026-11-11, see `navigation-audit-2026-11.md`); every existing route is unchanged.

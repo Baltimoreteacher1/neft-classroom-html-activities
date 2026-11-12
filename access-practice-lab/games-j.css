@@ -1,0 +1,282 @@
+/* ACCESS Practice Lab — Language Game Studio game styles (games-j). */
+/* Direction Dash: a guide bubble with the play button, transcript and word-help cards, then a 4 x 3 board drawn as
+   science-lab shelves (wood ledges) or a classroom map (desks, board at the front). A held object is lifted with a
+   gold ring and a pattern change (not color alone); the right/revealed objects carry a check/dashed outline. */
+.dd-board {
+  display: grid;
+  gap: 0.85rem;
+  --dd-ink: #17324d;
+  --dd-gold: #f2c15b;
+  --dd-wood: #b9814a;
+  --dd-teal: #126e6c;
+}
+.dd-call {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+.dd-guide {
+  filter: drop-shadow(0 3px 4px rgb(20 38 61 / 25%));
+}
+.dd-bubble {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+  border-radius: var(--gs-r, 18px);
+  background: #fffdf6;
+  border: var(--gs-line, 2px solid #17324d);
+}
+.dd-head {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  color: var(--dd-ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.dd-head:focus-visible {
+  outline: 3px solid var(--dd-gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.dd-kind {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: #fde1d8;
+  color: #8a2f1f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.dd-play {
+  justify-self: start;
+  min-height: 48px;
+}
+.dd-tx-btn {
+  justify-self: start;
+}
+.dd-transcript {
+  display: grid;
+  gap: 0.35rem;
+}
+.dd-say {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.3vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--dd-ink);
+  overflow-wrap: anywhere;
+}
+.dd-plays {
+  margin: 0;
+}
+.dd-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dd-term {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.35rem;
+  border-radius: 12px;
+  background: #f6e9cc;
+  font-weight: 700;
+  color: var(--dd-ink);
+}
+.dd-term-art {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: none;
+}
+.dd-term .gs-gloss-tap summary {
+  font-size: 0.8rem;
+}
+
+.dd-scene {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  border-radius: 20px;
+  background: #fbf4e2;
+  border: 2px solid var(--dd-ink);
+}
+.dd-row {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+.dd-rowname {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--dd-ink);
+  overflow-wrap: anywhere;
+}
+.dd-cells {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0 0 0.45rem;
+  list-style: none;
+}
+.dd-scene-lab .dd-cells {
+  border-bottom: 8px solid var(--dd-wood);
+  border-radius: 0 0 4px 4px;
+}
+.dd-scene-lab .dd-row:last-child .dd-cells {
+  border-bottom-color: #6d7e90;
+}
+.dd-scene-class .dd-scene {
+  background: #e6f6f4;
+}
+.dd-whiteboard {
+  margin: 0 0 0.2rem;
+  padding: 0.35rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 3px solid #6d7e90;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--dd-ink);
+}
+
+.dd-cell {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.1rem;
+  width: 100%;
+  min-height: 4.6rem;
+  padding: 0.3rem 0.2rem;
+  border-radius: 12px;
+  border: 2px dashed #9aa9b8;
+  background: #fffdf8;
+  color: var(--dd-ink);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.dd-scene-class .dd-cell {
+  background: #fff;
+  border-style: solid;
+  border-color: #bfd6d4;
+}
+.dd-cell:hover:not(:disabled) {
+  border-color: var(--dd-teal);
+}
+.dd-cell:focus-visible {
+  outline: 4px solid var(--dd-gold);
+  outline-offset: 2px;
+}
+.dd-cell:disabled {
+  cursor: default;
+}
+.dd-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #c9d4de;
+}
+.dd-cell.has-obj {
+  border: 2px solid var(--dd-ink);
+  background: #fff;
+}
+.dd-obj-art {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+.dd-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+.dd-name-es {
+  font-size: 0.7rem;
+  line-height: 1.1;
+  color: #0e5a2b;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.dd-cell.is-held {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 4px var(--dd-gold),
+    0 8px 14px rgb(20 38 61 / 22%);
+  background: repeating-linear-gradient(45deg, #fff, #fff 6px, #fff6dc 6px, #fff6dc 12px);
+}
+.dd-cell.is-right {
+  border-color: var(--dd-teal);
+  background: #e5f5f1;
+  box-shadow: 0 0 0 3px #bfe9e6;
+}
+.dd-cell.is-reveal {
+  border: 3px dashed #c94f3b;
+  background: #fff0e8;
+}
+.dd-note {
+  margin: 0;
+  min-height: 1.4em;
+  font-weight: 700;
+  color: #385267;
+}
+.dd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-cell.is-held {
+    transform: none;
+  }
+}
+@media (max-width: 600px) {
+  .dd-call {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dd-guide {
+    display: none;
+  }
+  .dd-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+  }
+  .dd-scene {
+    padding: 0.4rem;
+  }
+  .dd-cells {
+    gap: 0.25rem;
+  }
+  .dd-cell {
+    min-height: 4rem;
+    padding: 0.2rem 0.1rem;
+  }
+  .dd-obj-art {
+    width: 2rem;
+    height: 2rem;
+  }
+  .dd-name {
+    font-size: 0.68rem;
+  }
+  .dd-name-es {
+    font-size: 0.62rem;
+  }
+}

@@ -102,6 +102,7 @@ const VIEW_LOADERS = {
   units: () => import("./views/units.js"),
   warmup: () => import("./views/warmup.js"),
   search: () => import("./views/search.js"),
+  explore: () => import("./views/explore.js"),
   portfolio: () => import("./views/portfolio.js"),
   collection: () => import("./views/collection.js"),
   start: () => import("./intro/start.js"),
@@ -168,7 +169,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "explore"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")

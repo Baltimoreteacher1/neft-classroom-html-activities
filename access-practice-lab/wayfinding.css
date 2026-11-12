@@ -1,0 +1,474 @@
+/* Wayfinding: the section bar under the header (src/wayfinding.js) and the Explore directory and section hubs
+   (src/views/explore.js). Both read src/sitemap.js. Tokens come from ds.css. */
+
+/* ── section bar ─────────────────────────────────────────────────────────── */
+.section-bar {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.sb-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 0.4rem clamp(1rem, 3vw, 2rem);
+}
+.sb-where {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sb-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  color: var(--brand-deep);
+  text-decoration: none;
+}
+.sb-section:hover span {
+  text-decoration: underline;
+}
+.sb-section .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.sb-sep {
+  color: var(--ink-3);
+}
+.sb-skill {
+  color: var(--ink-2);
+}
+.sb-links {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.35rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.15rem 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+.sb-links li {
+  flex: none;
+  scroll-snap-align: start;
+}
+.sb-links a,
+.sb-all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sb-links a:hover {
+  border-color: var(--line-control);
+  background: var(--surface);
+}
+.sb-links a[aria-current="page"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+}
+.sb-all {
+  flex: none;
+  color: var(--brand-deep);
+}
+.sb-all:hover {
+  text-decoration: underline;
+}
+@media (max-width: 720px) {
+  .sb-inner {
+    flex-wrap: wrap;
+    gap: 0 var(--s-2);
+    padding-inline: 1rem;
+  }
+  .sb-where {
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    min-width: 0;
+    font-size: 0.95rem;
+    white-space: normal;
+  }
+  .sb-section {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .sb-all {
+    margin-inline-start: auto;
+    padding-inline: 0.4rem;
+  }
+  .sb-links {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+/* ── Explore directory and section hubs ──────────────────────────────────── */
+.xp-head h1 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+}
+.xp-lead {
+  max-width: 62ch;
+  margin: 0 0 var(--s-4);
+  color: var(--ink-2);
+  font-size: 1.1rem;
+}
+.xp-sections {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0 0 var(--s-4);
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+.xp-sections a {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  color: var(--ink-2);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.xp-sections a:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+.xp-sections a[aria-current="page"] {
+  color: var(--brand-deep);
+  box-shadow: inset 0 -3px 0 var(--brand);
+}
+.xp-sections .ico {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.xp-filters {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
+}
+.xp-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 34rem;
+  padding: 0 0.9rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.xp-search:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.xp-search .ico {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--ink-3);
+}
+.xp-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+}
+.xp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.xp-chips .chip {
+  min-height: 2.5rem;
+  font-size: 0.925rem;
+}
+.xp-chips .chip .ico {
+  width: 1rem;
+  height: 1rem;
+}
+.xp-count {
+  margin: 0 0 var(--s-2);
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.xp-group {
+  margin-bottom: var(--s-5);
+}
+.xp-group-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 var(--s-3);
+  font-size: 1.3rem;
+}
+.xp-group-title .ico {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--brand);
+}
+.xp-group-all {
+  margin-left: auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.xp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.xp-card-link {
+  display: flex;
+  gap: 0.8rem;
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+.xp-card-link:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+.xp-card-link:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.xp-card-ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+.xp-card-ico .ico {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+.xp-card-body {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+}
+.xp-card-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+.xp-card-text {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.xp-ext {
+  color: var(--ink-3);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.xp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+.xp-tag {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.xp-empty {
+  padding: var(--s-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.menu-group a.menu-all {
+  color: var(--brand-deep);
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: reduce) {
+  .xp-card-link {
+    transition: none;
+  }
+  .xp-card-link:hover {
+    transform: none;
+  }
+}
+
+/* ── site-map blocks: home "Find your way", teacher and family start pages (src/sitemap-ui.js) ─ */
+.sm-tiles,
+.sm-audience {
+  margin: var(--s-5) 0;
+}
+.sm-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: var(--s-3);
+}
+.sm-head h2 {
+  margin: 0;
+}
+.sm-all {
+  font-weight: 800;
+}
+.sm-lead {
+  max-width: 62ch;
+  margin: 0 0 var(--s-3);
+  color: var(--ink-2);
+}
+.sm-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sm-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.sm-tile:hover {
+  border-color: var(--brand);
+}
+.sm-tile:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.sm-tile-ico {
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+.sm-tile-ico .ico {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+.sm-tile-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.sm-tile-text {
+  color: var(--ink-2);
+  font-size: 0.925rem;
+  line-height: 1.4;
+}
+.sm-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--s-4);
+}
+.sm-group {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.sm-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+}
+.sm-group h3 .ico {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--brand);
+}
+.sm-group ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sm-group li a {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+}
+.sm-group li a:hover {
+  background: var(--surface-2);
+}
+.sm-group li a strong {
+  color: var(--brand-deep);
+}
+.sm-group li a span {
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+/* Teachers and Families are two equal audience doors on narrow headers (`.top-teachers`, `.top-family`). */
+@media (max-width: 1199px) {
+  .lab-tools > .top-family,
+  .lab-tools > .top-teachers {
+    flex: 1 1 32%;
+    min-width: 7.5rem;
+  }
+}
+@media (max-width: 559px) {
+  .lab-tools > .top-family,
+  .lab-tools > .top-teachers {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+  }
+  .lab-utilities {
+    order: 3;
+  }
+}

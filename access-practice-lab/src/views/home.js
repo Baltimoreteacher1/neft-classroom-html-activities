@@ -45,6 +45,7 @@ export { nextActivity, tierFor };
 import { cardHref, continueTarget, pickBand, recentRoom, startHTML } from "./home-start.js";
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
 import { latestModuleResume } from "../home-resume.js";
+import { sectionTilesHTML } from "../sitemap-ui.js";
 
 const reviewHref = (item, plan, band, ctx) => {
   const row = plan.find((r) => r.review?.key === item.key);
@@ -285,6 +286,8 @@ export async function render(ctx) {
             </aside>`
           : ""
       }
+
+      ${sectionTilesHTML(I, band)}
 
       <section class="ll-hero" id="today" aria-labelledby="exploreHeroTitle">
         <div class="ll-hero-copy">

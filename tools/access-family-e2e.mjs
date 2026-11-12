@@ -161,7 +161,7 @@ try {
       .locator("nav.lab-tools a.top-link:not([data-tier])")
       .allInnerTexts();
     ok(
-      ["Continuar", "Practicar", "Crear y explorar", "Mi crecimiento"].every((label, index) =>
+      ["Inicio", "Practicar", "Juegos y mundos", "Mi progreso"].every((label, index) =>
         topLinks[index]?.includes(label),
       ),
       `L: header nav is Spanish (${topLinks.map((t) => t.trim()).join(" | ")})`,

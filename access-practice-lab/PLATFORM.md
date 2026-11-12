@@ -12,6 +12,7 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Surface | Route | Source |
 | --- | --- | --- |
 | Grade focus (6, 7, 8 inside the 6-8 band) | `?gradeFocus=6`, `7`, `8` or `all`, saved as `prefs.gradeFocus`; control on rooms, `/library` and the home picker | `src/grade-focus.js`, `src/grade-focus-ui.js`, `CONTENT.md` "Grade tags for 6-8"; `tools/access-grade-focus.test.mjs` |
+| Site map, section bar and Explore (one registry for nav, "More" menu, section bar, footer, home "Find your way", teacher/family start maps) | `/explore`, `/explore/<practice|play|prep|progress|teach|family|help>` (`?for=`, `?skill=`, `?kind=`, `?q=`) | `src/sitemap.js` (a new destination is one entry), `src/wayfinding.js`, `src/sitemap-ui.js`, `src/views/explore.js`, `wayfinding.css`; `tools/access-sitemap.test.mjs`; audit `docs/languageos/navigation-audit-2026-11.md` |
 | Lab home (start screen) | `/` (thelanguagepage.com `/` → `/access-practice-lab/`) | `src/views/home.js`, `src/views/home-start.js`, `home-start.css`; grade ruler `src/grade-bands.js`; every explore/teacher/family card `src/home-registry.js` (a new feature is one entry); `tools/access-home-start.test.mjs` |
 | Academic missions | `/missions`, `/missions/<id>` | `content/missions/*.json`, `src/views/missions.js` |
 | Speaking Studio | `/speak`, `/speak/<task>` | `content/studio/speaking.json`, `src/views/speak.js` |

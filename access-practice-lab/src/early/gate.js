@@ -7,6 +7,7 @@ import { ART, BASE, html } from "../util.js";
 /** Route views that work for an early band. Everything else renders the gate panel below. */
 export const EARLY_VIEWS = new Set([
   "home",
+  "explore",
   "early",
   "activity",
   "play",

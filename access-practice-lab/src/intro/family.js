@@ -27,6 +27,7 @@ import { mountRead, onReadClick, readButtonHTML, unmountRead } from "./family-re
 import { bindGuide, guideHTML } from "./guide.js";
 import { withReturn } from "./return-bar.js";
 import { loadIntro, updateIntro } from "./state.js";
+import { audienceMapHTML } from "../sitemap-ui.js";
 
 const GUIDE_CHIPS = ["what", "account", "mic", "saved", "sound", "language"];
 /** Domain colour and studio picture for each card: Let's Talk is Speaking, Let's Write is Writing. */
@@ -253,6 +254,12 @@ export async function render(ctx) {
         ${I.mode === "en" ? "" : html`<p class="fine">${I.TO(FAMILY.spanishNote)}</p>`}
       </section>
       <section class="tg-extras">${helpHTML(I)}${moreHTML(I)}</section>
+      ${audienceMapHTML(I, ctx.band, "family", {
+        id: "familyMap",
+        limit: 4,
+        title: ["Everything for families", "Todo para las familias"],
+        lead: ["Every part of the site you can use at home, grouped the same way as the menu at the top.", "Cada parte del sitio que pueden usar en casa, agrupada igual que el menú de arriba."],
+      })}
       <footer class="tg-foot">
         <p class="fine">${I.TO(FAMILY.privacy)}</p>
         ${printHTML(I, band)}

@@ -38,7 +38,7 @@ export function frameHTML({ g, I, band, session, content, stage, progress, ctxBu
   const ob = g.obj[band];
   return html`<div class="gs gs-${g.id} gs-band-${band}" data-game="${g.id}" data-support="${session.support}" data-phase="${session.phase}">
     <header class="gs-top">
-      <nav class="crumbs" aria-label="${I.S("Breadcrumb", "Ruta de navegación")}"><ol><li><a href="${BASE}/games?grades=${band}">${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</a></li><li><span aria-current="page">${pair(I, g.title)}</span></li></ol></nav>
+      <nav class="crumbs" aria-label="${I.S("Breadcrumb", "Ruta de navegación")}"><ol><li><a href="${BASE}/?grades=${band}">${I.S("Home", "Inicio")}</a></li><li><a href="${BASE}/games?grades=${band}">${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</a></li><li><span aria-current="page">${pair(I, g.title)}</span></li></ol></nav>
       <div class="gs-top-right">
         <span class="gs-progress-t" aria-hidden="true">${progress.done}/${progress.total}</span>
         ${supportSwitch(I, session.support, { inline: true })}
@@ -48,7 +48,7 @@ export function frameHTML({ g, I, band, session, content, stage, progress, ctxBu
       <p class="gs-goal"><strong>${I.T("Language goal:", "Meta de lenguaje:")}</strong> ${pair(I, ob)}</p>
       ${rulesHTML(content, band, I)}
     </section>
-    <section class="gs-stage" aria-label="${pair(I, g.title)}">${stage}</section>
+    <section class="gs-stage" aria-label="${I.S(g.title[0], g.title[1])}">${stage}</section>
     <p class="gs-note fine">${I.T("Support modes are a classroom choice, not a WIDA level. Game results show practice, not an ACCESS score.", "Los modos de apoyo son una opción del aula, no un nivel de WIDA. Los resultados del juego muestran práctica, no una puntuación ACCESS.")}</p>
   </div>`;
 }
@@ -56,7 +56,7 @@ export function frameHTML({ g, I, band, session, content, stage, progress, ctxBu
 export function startHTML({ g, I, band, content, session, saved, len }) {
   const resumeable = saved && ["play", "transfer"].includes(saved.phase);
   return html`<div class="gs gs-${g.id} gs-band-${band} gs-start-wrap" data-game="${g.id}" data-phase="start">
-    <nav class="crumbs" aria-label="${I.S("Breadcrumb", "Ruta de navegación")}"><ol><li><a href="${BASE}/games?grades=${band}">${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</a></li><li><span aria-current="page">${pair(I, g.title)}</span></li></ol></nav>
+    <nav class="crumbs" aria-label="${I.S("Breadcrumb", "Ruta de navegación")}"><ol><li><a href="${BASE}/?grades=${band}">${I.S("Home", "Inicio")}</a></li><li><a href="${BASE}/games?grades=${band}">${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</a></li><li><span aria-current="page">${pair(I, g.title)}</span></li></ol></nav>
     <section class="gs-start">
       <div class="gs-start-art">${scene(g.art, band)}<div class="gs-start-guide">${mascot(band === "3-5" ? "pip" : "juno", band, "hi", 96)}</div></div>
       <div class="gs-start-copy">

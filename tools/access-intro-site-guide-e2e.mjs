@@ -400,8 +400,9 @@ if (AxeBuilder) {
       ]) {
         const page = await fresh(1280, 900, { lang });
         await go(page, path);
-        for (const summary of await page.$$("details > summary"))
-          await summary.click().catch(() => {});
+        // Open every disclosure on the page itself, hidden ones included. Clicking each summary stalled: the header
+        // "More" menu covered them and cards in hidden sections never become clickable (30 s wait each).
+        await page.$$eval("#app details", (all) => all.forEach((d) => (d.open = true)));
         const result = await new AxeBuilder({ page })
           .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
           .analyze();

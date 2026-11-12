@@ -6,6 +6,7 @@ import { footerHTML, navHTML } from "./nav.js";
 import { installShortcuts } from "./shortcuts.js";
 import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
+import { sectionBarHTML } from "./wayfinding.js";
 
 let I = i18nFor({ prefs: {}, route: {} });
 let watching = false;
@@ -95,6 +96,22 @@ function mountLangBanner(ctx) {
   document.getElementById("labStorageWarning")?.before(banner);
 }
 
+/** The section bar (src/wayfinding.js) sits between the header notices and the page; empty pages remove it. */
+function mountSectionBar(ctx) {
+  let bar = document.getElementById("labSectionBar");
+  const markup = toHtml(sectionBarHTML(ctx, I));
+  if (!markup.trim()) return bar?.remove();
+  if (!bar) {
+    bar = document.createElement("nav");
+    bar.id = "labSectionBar";
+    bar.className = "section-bar no-print";
+    document.getElementById("app")?.before(bar);
+  }
+  bar.setAttribute("aria-label", I.S("This section", "Esta sección"));
+  if (bar.innerHTML !== markup) bar.innerHTML = markup;
+  bar.querySelector('[aria-current="page"]')?.scrollIntoView?.({ block: "nearest", inline: "center" });
+}
+
 export function mountShell(ctx) {
   I = i18nFor(ctx);
   const T = I.S;
@@ -138,6 +155,7 @@ export function mountShell(ctx) {
     if (node) tagEs ? node.setAttribute("lang", "es") : node.removeAttribute("lang");
   }
   mountLangBanner(ctx);
+  mountSectionBar(ctx);
   const footer = document.querySelector(".lab-footer");
   if (footer) {
     const build = footer.querySelector("#labBuild")?.dataset.build || "";

@@ -4,6 +4,8 @@
 //   /start/explore  Try It. Adapt It. Use It.   /start/guide     quick guide (printable)
 //   /start/lesson   featured lesson             (the presenter view was taken down 2026-11-11; PD files live off-site)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
+import { i18nFor } from "../i18n.js";
+import { audienceMapHTML } from "../sitemap-ui.js";
 import { html, icon } from "../util.js";
 import { bandPickerHTML, onBandClick, pickName, teacherPick } from "./band.js";
 import { START_CHOICES } from "./data.js";
@@ -58,6 +60,11 @@ function hubHTML(ctx) {
       </ul>
     </div>
     ${overviewHTML(pick)}
+    ${audienceMapHTML(i18nFor(ctx), ctx.band, "teacher", {
+      id: "teacherToolkit",
+      title: ["Your teacher toolkit: every part of the site", "Su caja de herramientas: cada parte del sitio"],
+      lead: ["Grouped the same way as the menu at the top. Each section opens its own page with filters.", "Agrupado igual que el menú de arriba. Cada sección abre su propia página con filtros."],
+    })}
   </article>`;
 }
 

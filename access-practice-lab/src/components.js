@@ -552,10 +552,13 @@ export function ringHTML(done, total, { size = 56, color = "currentColor", label
 }
 
 export const domainGlyph = (d) => icon(DOMAIN_META[d]?.icon || "star");
+// Every trail starts at the same root: a first crumb that links to the lab home is always called "Home", whatever the
+// view passed ("Lab", "My Home"…), so the breadcrumb never names the home page two ways.
+const LAB_HOME = new RegExp(`^${BASE}/?(\\?|$)`);
 export const crumbsHTML = (items, { i18n = null } = {}) =>
   html`<nav class="crumbs" aria-label="${(i18n || I).S("Breadcrumb", "Ruta de navegación")}">
     <ol>
-      ${items.map(([label, href]) => html`<li>${href ? html`<a href="${href}">${label}</a>` : html`<span aria-current="page">${label}</span>`}</li>`)}
+      ${items.map(([label, href], i) => (i === 0 && href && LAB_HOME.test(href) ? [(i18n || I).S("Home", "Inicio"), href] : [label, href])).map(([label, href]) => html`<li>${href ? html`<a href="${href}">${label}</a>` : html`<span aria-current="page">${label}</span>`}</li>`)}
     </ol>
   </nav>`;
 export { BASE };

@@ -77,7 +77,7 @@ export function guideHTML({ say, chips = [], context = {}, lang = "en", talking 
     <div class="pg-avatar">${raw(guideArtSVG({ talking }))}</div>
     <div class="pg-main">
       <p class="pg-name" id="pgName">
-        <strong>${GUIDE.name}</strong><span>${pair(COPY.role, lang)}</span>
+        <strong>${GUIDE.name}</strong><span>${raw(esc(pair(COPY.role, lang)).replace("The Language Page", '<span lang="en">The Language Page</span>'))}</span>
       </p>
       <div class="pg-bubble" data-pg-say><p>${say}</p>${raw(hearButton(lang))}</div>
       ${

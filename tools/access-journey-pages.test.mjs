@@ -410,7 +410,7 @@ test("navigation: four learner destinations keep the journey and adult tools in 
   const I = makeI18n("en", "en");
   const nav = dom(navHTML({ band: "6-8", route: { view: "journey" } }, I));
   const current = nav.querySelector('a[aria-current="page"]');
-  assert.match(current.textContent, /Continue/);
+  assert.match(current.textContent, /Home/);
   const menu = all(nav, ".lab-utilities-body a").map((a) => [
     a.textContent.trim(),
     a.getAttribute("href"),
@@ -418,7 +418,7 @@ test("navigation: four learner destinations keep the journey and adult tools in 
   assert.ok(menu.some(([t, h]) => /My Journey Map/.test(t) && h.includes("/journey/map")));
   assert.ok(menu.some(([t, h]) => /Journey teacher guide/.test(t) && h.includes("/journey/guide")));
   const home = dom(navHTML({ band: "6-8", route: { view: "home" } }, I));
-  assert.match(home.querySelector('a[aria-current="page"]').textContent, /Continue/);
+  assert.match(home.querySelector('a[aria-current="page"]').textContent, /Home/);
   const main = await read("src/main.js");
   assert.doesNotMatch(main, /import \* as journeyView/);
   assert.match(main, /journey: \(\) => import\("\.\/views\/journey\.js"\)/);

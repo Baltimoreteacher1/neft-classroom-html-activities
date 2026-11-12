@@ -1,0 +1,257 @@
+/* ACCESS Practice Lab — Language Game Studio game styles (games-l). */
+/* Connector Climb: an illustrated cliff beside the work area. Connector cards carry their relationship
+   as a colored left edge AND a text label (never color alone). Climber moves are instant under
+   prefers-reduced-motion. */
+.gs-connector-climb {
+  --cc-ink: #17324d;
+  --cc-cause: #c94f3b;
+  --cc-result: #b07a12;
+  --cc-contrast: #126e6c;
+  --cc-sequence: #2a6496;
+  --cc-example: #2b7447;
+  --cc-addition: #8a5a2f;
+}
+.gs-connector-climb .cc-wall {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.gs-connector-climb .cc-cliff {
+  position: sticky;
+  top: 0.75rem;
+  border-radius: var(--gs-r, 18px);
+  overflow: hidden;
+  border: var(--gs-line, 2px solid #17324d);
+  background: #d6ecf8;
+}
+.gs-connector-climb .cc-cliff-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gs-connector-climb .cc-climber {
+  transition: transform 0.45s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.gs-connector-climb .cc-work {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+.gs-connector-climb .cc-work h2 {
+  margin: 0;
+  color: var(--cc-ink);
+}
+.gs-connector-climb .cc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #126e6c;
+}
+.gs-connector-climb .cc-step {
+  margin: 0;
+  font-weight: 700;
+  color: var(--cc-ink);
+}
+.gs-connector-climb .cc-pair {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  padding: 0.85rem 1rem;
+  border-radius: var(--gs-r, 18px);
+  background: #fffdf6;
+  border: var(--gs-line, 2px solid #17324d);
+}
+.gs-connector-climb .cc-clauses {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  line-height: 1.7;
+  color: var(--cc-ink);
+  overflow-wrap: anywhere;
+}
+.gs-connector-climb .cc-gap {
+  display: inline-block;
+  min-width: 4.5rem;
+  padding: 0 0.45rem;
+  border-bottom: 3px dashed #d99a22;
+  background: #fff7df;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 800;
+}
+.gs-connector-climb .cc-gap.is-filled {
+  border-bottom-style: solid;
+  background: #fdf0c9;
+}
+.gs-connector-climb .cc-rack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.gs-connector-climb .cc-rack.is-grouped {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+.gs-connector-climb .cc-group {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  padding: 0.55rem;
+  border-radius: 12px;
+  background: #fbf4e2;
+  border-top: 5px solid var(--cc-c, #6d7e90);
+}
+.gs-connector-climb .cc-group-h {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cc-c, var(--cc-ink));
+}
+.gs-connector-climb .cc-card-wrap {
+  display: inline-grid;
+  gap: 0.2rem;
+  justify-items: start;
+}
+.gs-connector-climb .cc-card {
+  min-width: 7.5rem;
+  font-weight: 800;
+  border-left: 6px solid var(--cc-c, var(--line-strong, #9aa9b8));
+}
+.gs-connector-climb .cc-gloss {
+  font-size: 0.9rem;
+}
+.gs-connector-climb .cc-rel-cause {
+  --cc-c: var(--cc-cause);
+}
+.gs-connector-climb .cc-rel-result {
+  --cc-c: var(--cc-result);
+}
+.gs-connector-climb .cc-rel-contrast {
+  --cc-c: var(--cc-contrast);
+}
+.gs-connector-climb .cc-rel-sequence {
+  --cc-c: var(--cc-sequence);
+}
+.gs-connector-climb .cc-rel-example {
+  --cc-c: var(--cc-example);
+}
+.gs-connector-climb .cc-rel-addition {
+  --cc-c: var(--cc-addition);
+}
+.gs-connector-climb .cc-punct .gs-choice {
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.gs-connector-climb .cc-rule {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+  margin: 0;
+}
+.gs-connector-climb .cc-say {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #e5f5f1;
+  border: 2px dashed #1fa6a2;
+}
+.gs-connector-climb .cc-say p {
+  margin: 0;
+}
+.gs-connector-climb .cc-joined {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cc-ink);
+  overflow-wrap: anywhere;
+}
+.gs-connector-climb .cc-slots {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.6rem;
+}
+.gs-connector-climb .cc-slot {
+  min-height: 3rem;
+  padding: 0.35rem;
+  border-radius: 10px;
+  border: 2px dashed #9aa9b8;
+  background: #fff;
+  line-height: 1.5;
+}
+.gs-connector-climb .cc-slot.is-filled {
+  border-style: solid;
+  border-color: var(--cc-ink);
+}
+.gs-connector-climb .cc-slot-empty {
+  color: #6d7e90;
+  font-style: italic;
+}
+.gs-connector-climb .cc-placed {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.gs-connector-climb .cc-placed:focus-visible {
+  outline: 3px solid #f2c15b;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.gs-connector-climb .cc-bank {
+  display: grid;
+  gap: 0.5rem;
+}
+.gs-connector-climb .cc-line {
+  overflow-wrap: anywhere;
+}
+.gs-connector-climb .cc-line:disabled {
+  opacity: 0.45;
+}
+.gs-connector-climb .cc-mark {
+  padding: 0 0.2rem;
+  border-radius: 4px;
+  background: #fdf0c9;
+  color: inherit;
+  font-weight: 800;
+  box-shadow: inset 0 -3px 0 var(--cc-c, #d99a22);
+}
+.gs-connector-climb .cc-guide {
+  justify-self: start;
+}
+.gs-connector-climb .cc-wall.is-top .cc-work {
+  align-content: center;
+  min-height: 12rem;
+}
+@media (max-width: 640px) {
+  .gs-connector-climb .cc-wall {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gs-connector-climb .cc-cliff {
+    position: static;
+    max-width: 9rem;
+    justify-self: center;
+  }
+  .gs-connector-climb .cc-card {
+    min-width: 6rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gs-connector-climb .cc-climber {
+    transition: none;
+  }
+}

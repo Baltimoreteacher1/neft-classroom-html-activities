@@ -1,4 +1,4 @@
-// The 18 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
+// The 21 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
 // teacher view need to know without loading the game: its language objective, skill, WIDA 2020 Key
 // Language Use, grade-band objectives and which module and content file drive it.
 //
@@ -117,6 +117,93 @@ export const GAMES = [
     title: ["Mystery Word", "Palabra misteriosa"], tag: ["Use clues and letter feedback to crack the mystery word in six guesses.", "Usa pistas y las señales de las letras para descubrir la palabra misteriosa en seis intentos."],
     obj: { "3-5": ["I can use a meaning clue and letter patterns to spell a school word.", "Puedo usar una pista de significado y patrones de letras para deletrear una palabra escolar."], "6-8": ["I can use morphology, spelling patterns and context to work out an academic word.", "Puedo usar la morfología, los patrones de ortografía y el contexto para descubrir una palabra académica."] },
     minutes: 8, difficulty: 2, home: true, art: "mystery", module: "mystery-word", mechanic: "letter-feedback",
+  },
+  {
+    id: "connector-climb",
+    n: 19,
+    inspired: "original",
+    skill: "Writing",
+    skills: ["Writing", "Speaking"],
+    klu: ["Explain", "Argue", "Narrate"],
+    title: ["Connector Climb", "Escalada de conectores"],
+    tag: [
+      "Scale the cliff by joining ideas with the connector and punctuation that fit.",
+      "Escala el acantilado uniendo ideas con el conector y la puntuación que encajan.",
+    ],
+    obj: {
+      "3-5": [
+        "I can join two ideas with because, so, but, and then, first or also to show how they connect.",
+        "Puedo unir dos ideas con because, so, but, and then, first o also para mostrar cómo se relacionan.",
+      ],
+      "6-8": [
+        "I can choose connectors such as however, although, therefore and for example to show cause, contrast, sequence and examples, and punctuate them correctly.",
+        "Puedo elegir conectores como however, although, therefore y for example para mostrar causa, contraste, secuencia y ejemplos, y puntuarlos correctamente.",
+      ],
+    },
+    minutes: 7,
+    difficulty: 2,
+    home: false,
+    art: "expedition",
+    module: "connector-climb",
+    mechanic: "cliff-connectors",
+  },
+  {
+    id: "direction-dash",
+    n: 20,
+    inspired: "original",
+    skill: "Listening",
+    skills: ["Listening", "Reading"],
+    klu: ["Inform"],
+    title: ["Direction Dash", "Carrera de instrucciones"],
+    tag: [
+      "Hear a direction, then act it out: move lab tools and classroom objects to exactly where it says.",
+      "Escucha una instrucción y represéntala: mueve materiales del laboratorio y objetos del salón justo adonde dice.",
+    ],
+    obj: {
+      "3-5": [
+        "I can listen to a one-step direction and put an object where it says, using next to, under, above and between.",
+        "Puedo escuchar una instrucción de un paso y poner un objeto donde dice, usando al lado de, debajo de, encima de y entre.",
+      ],
+      "6-8": [
+        "I can follow two-step and conditional spoken directions that use academic verbs such as place, position and transfer.",
+        "Puedo seguir instrucciones orales de dos pasos y condicionales que usan verbos académicos como colocar, ubicar y trasladar.",
+      ],
+    },
+    minutes: 6,
+    difficulty: 2,
+    home: false,
+    art: "quest",
+    module: "direction-dash",
+    mechanic: "listen-and-place",
+  },
+  {
+    id: "evidence-hunt",
+    n: 21,
+    inspired: "original",
+    skill: "Reading",
+    skills: ["Reading", "Writing"],
+    klu: ["Argue", "Explain"],
+    title: ["Evidence Hunt", "Cacería de evidencia"],
+    tag: [
+      "Open a case file, find the one sentence that proves the claim and explain how it proves it.",
+      "Abre un expediente, encuentra la oración que prueba la afirmación y explica cómo la prueba.",
+    ],
+    obj: {
+      "3-5": [
+        "I can find the sentence that proves a claim and tell why, using “This shows … because …”.",
+        "Puedo encontrar la oración que prueba una afirmación y decir por qué, usando “This shows … because …”.",
+      ],
+      "6-8": [
+        "I can cite the most relevant text evidence for a claim and explain how it supports the claim in writing.",
+        "Puedo citar la evidencia del texto más pertinente para una afirmación y explicar por escrito cómo la apoya.",
+      ],
+    },
+    minutes: 8,
+    difficulty: 3,
+    home: false,
+    art: "detective",
+    module: "evidence-hunt",
+    mechanic: "evidence-case-file",
   },
 ];
 
