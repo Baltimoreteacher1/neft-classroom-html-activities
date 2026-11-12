@@ -2574,12 +2574,13 @@ function conceptVisual(config) {
       const gy = oy - i * u;
       return `<line x1="${gx}" y1="${oy - 6 * u}" x2="${gx}" y2="${oy}" stroke="var(--fm-m-whole)" stroke-width="1.5"/><line x1="${ox}" y1="${gy}" x2="${ox + 6 * u}" y2="${gy}" stroke="var(--fm-m-whole)" stroke-width="1.5"/>`;
     }).join("");
-    const nums = [1, 2, 3, 4, 5, 6]
-      .map(
-        (v) =>
-          `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text>`,
-      )
-      .join("") +
+    const nums =
+      [1, 2, 3, 4, 5, 6]
+        .map(
+          (v) =>
+            `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text>`,
+        )
+        .join("") +
       `<text x="${ox - 12}" y="${oy + 26}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">0</text>`;
     return {
       svg: conceptFrame({

@@ -318,7 +318,8 @@ function coordFigure(points, opts = {}) {
   // rather than countable lines) do the numbers fall on a 1-2-5 step instead.
   const tick = Math.max(9, Math.min(13, Math.floor(s * 0.6)));
   const tickOpts = (anchor) => ({ anchor, size: tick, color: MUTED, weight: 700 });
-  const every = s >= 10 ? 1 : [2, 5, 10, 20, 25, 50, 100, 200, 250, 500].find((k) => k * s >= 20) || 1000;
+  const every =
+    s >= 10 ? 1 : [2, 5, 10, 20, 25, 50, 100, 200, 250, 500].find((k) => k * s >= 20) || 1000;
   for (let v = -Math.floor(lim); v <= Math.floor(lim); v++) {
     if (v === 0) continue;
     const n = v < 0 ? `−${-v}` : String(v);
