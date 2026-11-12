@@ -10,9 +10,9 @@
  *   history   up to 3 earlier { q, a } turns, so a follow-up question has its context
  *
  * The model is grounded: the system prompt is GUIDE_RULES plus guideContext(), built from the same verified data the
- * pages render (access-practice-lab/src/intro/guide-knowledge.js). callModel() uses Claude Haiku when
- * ANTHROPIC_API_KEY is bound, else the Workers AI binding, else nothing: then this answers 503 { offline: true } and
- * the page shows answers from the Site Guide instead. No student data is asked for.
+ * pages render (access-practice-lab/src/intro/guide-knowledge.js). callModel() uses Gemini when GEMINI_API_KEY is
+ * bound, else Claude Haiku when ANTHROPIC_API_KEY is bound, else the Workers AI binding, else nothing: then this
+ * answers 503 { offline: true } and the page shows answers from the Site Guide instead. No student data is asked for.
  *
  * Guards (language-guide/guard.js): the shared per-isolate limiter below, plus a per-IP hourly cap and a site-wide
  * daily cap kept in the Workers Cache API. Over a cap the answer is 429 { ok: false, limited: true } and the page
@@ -55,7 +55,7 @@ export const onRequest = handler({
 
     if (await overCap(request)) return limitedResponse();
 
-    const reply = await callModel(env, { system, user, maxTokens: 320 });
+    const reply = await callModel(env, { system, user, maxTokens: 320, allowGemini: true });
     const logged = logQuestion(env, {
       question,
       page,

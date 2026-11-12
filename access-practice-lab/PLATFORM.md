@@ -113,7 +113,7 @@ stored. Opening any help marks the work supported. Help items are written so the
    walkthrough use a scripted coach that sends nothing;
    `src/intro/guide.js`). A question an adult TYPES into the guide is sent, with the page name, tour step, grade choice
    and language, to this site's own `/api/language-guide` (`functions/api/language-guide.js`), which asks a model
-   (Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`) to answer only from
+   (Gemini when `GEMINI_API_KEY` is bound, else Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`; Gemini is opt-in per call and only this endpoint opts in, so the class platform's student-writing helpers never reach it) to answer only from
    `src/intro/guide-knowledge.js`. Nothing else is sent: no student work, no recordings, no progress, no identifiers.
    **Question log, decided by Joel on 2026-11-11 ("Build out all of these", the item "Optional anonymous question
    log ... to see what teachers ask")**: the endpoint keeps each typed question for 90 days in the existing `PLAN_DOCS`

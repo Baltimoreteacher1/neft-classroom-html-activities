@@ -302,3 +302,97 @@ test("the guide says on screen that typed questions are kept, and the host serve
   const host = readFileSync(new URL("../functions/_lib/language-page.js", import.meta.url), "utf8");
   assert.match(host, /"\/api\/language-guide\/questions"/);
 });
+
+test("Gemini answers first when allowed and keyed, falls through on failure, and stays opt-in", async () => {
+  const { callModel } = await import("../functions/_lib/model-call.js");
+  const realFetch = globalThis.fetch;
+  const calls = [];
+  const geminiOk = {
+    candidates: [
+      {
+        content: {
+          parts: [{ text: "hidden", thought: true }, { text: "Answer " }, { text: "from Gemini." }],
+        },
+      },
+    ],
+  };
+  const claudeOk = { content: [{ type: "text", text: "Answer from Claude." }] };
+  let geminiReply = () => new Response(JSON.stringify(geminiOk));
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), init });
+    return String(url).includes("generativelanguage.googleapis.com")
+      ? geminiReply()
+      : new Response(JSON.stringify(claudeOk));
+  };
+  try {
+    const env = { GEMINI_API_KEY: "g-key", ANTHROPIC_API_KEY: "c-key" };
+    const args = { system: "SYS", user: "USR", maxTokens: 50, allowGemini: true };
+
+    const first = await callModel(env, args);
+    assert.deepEqual(first, { text: "Answer from Gemini.", source: "gemini" });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].init.headers["x-goog-api-key"], "g-key");
+    assert.ok(!calls[0].url.includes("g-key"), "the key travels in a header, never the URL");
+    const sent = JSON.parse(calls[0].init.body);
+    assert.equal(sent.systemInstruction.parts[0].text, "SYS");
+    assert.equal(sent.contents[0].parts[0].text, "USR");
+    assert.equal(sent.generationConfig.maxOutputTokens, 50);
+    assert.equal(sent.generationConfig.thinkingConfig.thinkingLevel, "minimal");
+    assert.match(calls[0].url, /models\/gemini-3\.1-flash-lite:generateContent$/);
+
+    // Not opted in: Gemini is never called, even with the key bound.
+    calls.length = 0;
+    const optedOut = await callModel(env, { ...args, allowGemini: false });
+    assert.equal(optedOut.source, "claude");
+    assert.ok(calls.every((c) => !c.url.includes("generativelanguage")));
+
+    // Opted in but no key: Claude answers.
+    assert.equal((await callModel({ ANTHROPIC_API_KEY: "c" }, args)).source, "claude");
+
+    // Gemini errors (HTTP failure, empty answer, thrown fetch): the next backend answers.
+    for (const failing of [
+      () => new Response("{}", { status: 429 }),
+      () => new Response(JSON.stringify({ candidates: [{ content: { parts: [] } }] })),
+      () => {
+        throw new Error("network");
+      },
+    ]) {
+      geminiReply = failing;
+      assert.equal((await callModel(env, args)).source, "claude");
+    }
+    const workers = { ...MODEL, GEMINI_API_KEY: "g-key" };
+    geminiReply = () => new Response("{}", { status: 500 });
+    assert.equal((await callModel(workers, args)).source, "workers-ai");
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test("POST /api/language-guide opts in to Gemini and reports its source", async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({ candidates: [{ content: { parts: [{ text: "Gemini says hi." }] } }] }),
+    );
+  try {
+    const res = await post(
+      { question: "Do I need an account?" },
+      { GEMINI_API_KEY: "g" },
+      "198.51.100.40",
+    );
+    assert.equal(res.status, 200);
+    const out = await res.json();
+    assert.equal(out.source, "gemini");
+    assert.equal(out.answer, "Gemini says hi.");
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test("the class platform's student-writing helpers never opt in to Gemini", () => {
+  const src = readFileSync(
+    new URL("../functions/_lib/class-platform/ai.js", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(src, /allowGemini/);
+});

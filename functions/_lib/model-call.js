@@ -2,9 +2,17 @@
 // (functions/api/tutor) and the reasoning reviewer: Claude Haiku when ANTHROPIC_API_KEY is set, otherwise the
 // Workers AI binding `AI`, otherwise nothing, and every caller then falls back to its authored, rule-based path.
 // The helpers that use this only ever ask the model to SELECT among authored ids, never to write learner-facing text.
+//
+// Gemini is opt-in per call (`allowGemini: true`) and, when allowed and GEMINI_API_KEY is bound, is tried first.
+// Only a caller whose payload PLATFORM.md already lets leave the device may opt in (Mr. Neft, the typed-question guide);
+// the class platform's student-writing helpers never do, so student text never reaches Gemini.
 
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
+// Cheapest Stable Gemini text model (ai.google.dev pricing, 2026-11-12: $0.25 in / $1.50 out per 1M tokens).
+// gemini-2.5-flash-lite is cheaper but limited to accounts that already used 2.5, so a new key may not reach it.
+const GEMINI_MODEL = "gemini-3.1-flash-lite";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
 export const modelAvailable = (env) => ({
@@ -39,6 +47,33 @@ async function viaClaude(env, { system, user, maxTokens }) {
   return text || null;
 }
 
+async function viaGemini(env, { system, user, maxTokens }) {
+  const res = await fetch(GEMINI_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user }] }],
+      // "minimal" is this model's default and cheapest level; thought tokens bill as output.
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        thinkingConfig: { thinkingLevel: "minimal" },
+      },
+    }),
+  });
+  if (!res.ok) return null;
+  const data = await res.json().catch(() => null);
+  const parts = data?.candidates?.[0]?.content?.parts;
+  const text = Array.isArray(parts)
+    ? parts
+        .filter((p) => typeof p?.text === "string" && !p.thought)
+        .map((p) => p.text)
+        .join("")
+        .trim()
+    : "";
+  return text || null;
+}
+
 async function viaWorkersAi(env, { system, user, maxTokens }) {
   const out = await env.AI.run(WORKERS_AI_MODEL, {
     messages: [
@@ -51,9 +86,15 @@ async function viaWorkersAi(env, { system, user, maxTokens }) {
   return text || null;
 }
 
-/** @returns {Promise<{ text: string, source: "claude" | "workers-ai" } | null>} null when no backend answered. */
-export async function callModel(env, { system, user, maxTokens = 120 }) {
+/** @returns {Promise<{ text: string, source: "gemini" | "claude" | "workers-ai" } | null>} null when no backend answered. */
+export async function callModel(env, { system, user, maxTokens = 120, allowGemini = false }) {
   const args = { system, user, maxTokens };
+  if (allowGemini && env?.GEMINI_API_KEY) {
+    try {
+      const text = await viaGemini(env, args);
+      if (text) return { text, source: "gemini" };
+    } catch {}
+  }
   if (env?.ANTHROPIC_API_KEY) {
     try {
       const text = await viaClaude(env, args);
