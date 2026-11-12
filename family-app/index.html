@@ -27,9 +27,15 @@ h1{margin:0 0 6px;font-size:clamp(1.9rem,8vw,2.6rem);line-height:1.08;color:var(
 .card{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;min-height:104px;padding:14px 16px;border-radius:18px;background:#fff;border:2px solid #d6dee5;text-decoration:none;color:inherit;box-shadow:0 2px 0 #d6dee5}
 .card:active{transform:translateY(1px);box-shadow:none}
 .mark{width:76px;height:76px;border-radius:18px;display:grid;place-items:center;color:#fff;font:700 2rem Georgia,serif}
-.m1{background:#17345f}.m2{background:#1f766f}.m3{background:#b45309}
+.m1{background:#17345f}.m2{background:#1f766f}.m3{background:#b45309}.m4{background:#5b3f8c}
 .card strong{display:block;font-size:1.2rem;color:var(--navy)}
 .card span span,.card small{color:var(--muted);font-size:.95rem}
+.today{margin:0 0 22px;padding:16px;border-radius:18px;background:#fff;border:2px solid #d6dee5}
+.today[hidden]{display:none}
+.today h2{margin:0 0 8px;font-size:1.25rem;color:var(--navy)}
+.today p{margin:0 0 6px;font-size:1rem}
+.today small{display:block;margin-top:10px;color:var(--muted);font-size:.85rem}
+.today .next{display:flex;align-items:center;min-height:48px;margin-top:10px;padding:10px 16px;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;text-decoration:none}
 .tip{margin:26px 0 0;padding:14px 16px;border-radius:14px;background:#e3f4f1;color:#0b5e57;font-size:.95rem}
 .tip[hidden]{display:none}
 </style>
@@ -41,11 +47,13 @@ h1{margin:0 0 6px;font-size:clamp(1.9rem,8vw,2.6rem);line-height:1.08;color:var(
 </div>
 <main id="main">
   <h1><span class="en">Practice at home</span><span class="es">Práctica en casa</span></h1>
-  <p class="lede"><span class="en">Pick one. No accounts, no grades. Works without Wi-Fi after your first visit.</span><span class="es">Elige una. Sin cuentas, sin calificaciones. Funciona sin Wi-Fi después de la primera visita.</span></p>
+  <p class="lede"><span class="en">Pick one. No accounts, no grades. The practice apps work without Wi-Fi after your first visit.</span><span class="es">Elige una. Sin cuentas, sin calificaciones. Las apps de práctica funcionan sin Wi-Fi después de la primera visita.</span></p>
+  <section class="today" id="today" aria-labelledby="today-h" hidden></section>
   <ul class="cards">
     <li><a class="card" href="/math/fluency-lab/"><span class="mark m1" aria-hidden="true">8×</span><span><strong><span class="en">Math Fluency Lab</span><span class="es">Laboratorio de fluidez</span></strong><small><span class="en">Quick math practice, grades 1–8.</span><span class="es">Práctica rápida de matemáticas, grados 1–8.</span></small></span></a></li>
-    <li><a class="card" href="/access-practice-lab/"><span class="mark m2" aria-hidden="true">A</span><span><strong><span class="en">English Practice Lab</span><span class="es">Práctica de inglés</span></strong><small><span class="en">Listening, reading, speaking, writing, grades 3–8.</span><span class="es">Escuchar, leer, hablar y escribir, grados 3–8.</span></small></span></a></li>
+    <li><a class="card" href="/access-practice-lab/"><span class="mark m2" aria-hidden="true">A</span><span><strong><span>The Language Page</span></strong><small><span class="en">English practice: listening, reading, speaking, writing, grades 3–8.</span><span class="es">Práctica de inglés: escuchar, leer, hablar y escribir, grados 3–8.</span></small></span></a></li>
     <li><a class="card" href="/curriculum/family-connections/"><span class="mark m3" aria-hidden="true">6</span><span><strong><span class="en">Homework &amp; Family Math</span><span class="es">Tarea y matemáticas en familia</span></strong><small><span class="en">This week’s Grade 6 homework, with answers to check together.</span><span class="es">La tarea de 6.º grado de esta semana, con respuestas para revisar juntos.</span></small></span></a></li>
+    <li><a class="card" href="/curriculum/"><span class="mark m4" aria-hidden="true">Σ</span><span><strong><span class="en">Curriculum Hub</span><span class="es">Centro del currículo</span></strong><small><span class="en">Grade 6 units, lessons and resources. Needs Wi-Fi.</span><span class="es">Unidades, lecciones y recursos de 6.º grado. Necesita Wi-Fi.</span></small></span></a></li>
   </ul>
   <p class="tip" id="install-tip" hidden>
     <span class="en">Add this app to your home screen: tap Share, then “Add to Home Screen”.</span>
@@ -64,9 +72,11 @@ h1{margin:0 0 6px;font-size:clamp(1.9rem,8vw,2.6rem);line-height:1.08;color:var(
   try { saved = localStorage.getItem("ewl-family-lang") || ((navigator.language || "").slice(0, 2) === "es" ? "es" : "en"); } catch (e) {}
   setLang(saved);
   document.querySelector(".bar").addEventListener("click", function (e) { if (e.target.dataset.lang) setLang(e.target.dataset.lang); });
-  if (!window.matchMedia("(display-mode: standalone)").matches && !navigator.standalone) document.getElementById("install-tip").hidden = false;
+  var nativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (!window.matchMedia("(display-mode: standalone)").matches && !navigator.standalone && !nativeApp) document.getElementById("install-tip").hidden = false;
   if ("serviceWorker" in navigator && !navigator.webdriver) navigator.serviceWorker.register("/family-app/sw.js", { scope: "/family-app/" }).catch(function () {});
 })();
 </script>
+<script type="module" src="/family-app/today.js"></script>
 </body>
 </html>

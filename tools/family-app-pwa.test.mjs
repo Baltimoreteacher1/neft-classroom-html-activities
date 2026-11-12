@@ -60,7 +60,7 @@ test("family home: every card points at a page that exists", () => {
   const hrefs = [...read("family-app/index.html").matchAll(/class="card" href="([^"]+)"/g)].map(
     (m) => m[1],
   );
-  assert.equal(hrefs.length, 3);
+  assert.equal(hrefs.length, 4);
   for (const h of hrefs) assert.ok(onDisk(`${h}index.html`), `${h} has an index.html`);
 });
 

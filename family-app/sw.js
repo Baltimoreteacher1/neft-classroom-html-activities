@@ -2,10 +2,12 @@
    Keeps the family home screen openable offline. The three practice areas each own their own worker:
    /math/fluency-lab/sw.js, /access-practice-lab/sw.js, /curriculum/family-connections/sw.js.
    Network-first, so a deploy shows up as soon as the network answers; bump CACHE only when this file changes. */
-const CACHE = "ewl-family-v1";
+const CACHE = "ewl-family-v2";
 const CORE = [
   "/family-app/",
   "/family-app/manifest.webmanifest",
+  "/family-app/progress.js",
+  "/family-app/today.js",
   "/family-app/icons/icon-192.png",
   "/family-app/icons/icon-512.png",
   "/assets/favicon.svg",
