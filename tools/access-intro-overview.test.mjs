@@ -66,7 +66,7 @@ test("the page renders for every grade choice with one h1, ordered headings and 
   }
 });
 
-test("every domain card link carries grades=, and the tour link carries the grade and the domain's stop", async () => {
+test("every domain card link carries grades=, and the tour link opens Part 3 with that card's skill", async () => {
   for (const pick of PICKS) {
     const { d } = await renderStart(pick);
     const cards = [...d.querySelectorAll(".tb-domain")];
@@ -78,11 +78,13 @@ test("every domain card link carries grades=, and the tour link carries the grad
       assert.equal(links.length, 2, pick);
       for (const u of links) assert.equal(u.searchParams.get("grades"), pick, u.href);
       const tour = links.find((u) => u.pathname.endsWith("/start/tour"));
+      assert.equal(tour.searchParams.get("part"), "3", `${pick}: card ${i + 1} opens Part 3`);
       assert.equal(
-        tour.searchParams.get("stop"),
-        String(i + 2),
-        `${pick}: card ${i + 1} opens tour stop ${i + 2}`,
+        tour.searchParams.get("skill"),
+        ["listening", "speaking", "reading", "writing"][i],
+        `${pick}: card ${i + 1} chooses its skill`,
       );
+      assert.equal(tour.searchParams.get("stop"), null, "no legacy ?stop= links");
       const open = links.find((u) => !u.pathname.endsWith("/start/tour"));
       assert.equal(
         open.searchParams.get("intro"),
@@ -96,14 +98,12 @@ test("every domain card link carries grades=, and the tour link carries the grad
     );
     assert.equal(tourChoice.searchParams.get("grades"), pick);
   }
-  assert.deepEqual(O.DOMAIN_STOP, {
-    start: 1,
-    listening: 2,
-    speaking: 3,
-    reading: 4,
-    writing: 5,
-    tomorrow: 6,
-  });
+  assert.equal(O.DOMAIN_STOP, undefined);
+  assert.equal(
+    O.tourHref("4-5", "reading"),
+    "/access-practice-lab/start/tour?part=3&skill=reading&grades=4-5",
+  );
+  assert.equal(O.tourHref("K"), "/access-practice-lab/start/tour?grades=K");
 });
 
 test("families: the family page link carries the grade, copy and preview agree, both handouts are linked", async () => {
@@ -171,13 +171,18 @@ test("no on-site link to /start/present or presenter notes: /start, teacher nav,
   assert.ok(present.html);
 });
 
-test("Pick up where you left off follows the six-stop tour and keeps the grade", () => {
-  assert.equal(D.TOUR_STOPS.length, 6);
-  const [item] = O.progressItems({ tour: { stop: 3, pick: "2-3", tried: { listening: true } } });
-  assert.equal(item.text, "Guided Tour: Step 4 of 6, 1 tried");
-  assert.match(item.href, /\/start\/tour\?stop=4&grades=2-3$/);
-  const [last] = O.progressItems({ tour: { stop: 9 } });
-  assert.match(last.text, /Step 6 of 6/);
+test("Pick up where you left off follows the four-part teacher tour", () => {
+  const [item] = O.progressItems({ guided: { part: 3, pick: "2-3", goal: "show" } });
+  assert.equal(item.text, "Teacher tour: Part 3 of 4, Prepare practice");
+  assert.match(item.href, /\/start\/tour$/);
+  assert.equal(item.cta, "Resume the tour");
+  assert.deepEqual(O.progressItems({ guided: { part: 1 } }), [], "Part 1 is not progress");
+  assert.deepEqual(O.progressItems({ guided: { part: 4, done: true } }), [], "a finished tour");
+  assert.deepEqual(
+    O.progressItems({ tour: { stop: 3 } }),
+    [],
+    "the old six-stop record is ignored",
+  );
   assert.deepEqual(O.progressItems({}), []);
-  intro.clearIntro?.("tour");
+  intro.clearIntro?.("guided");
 });

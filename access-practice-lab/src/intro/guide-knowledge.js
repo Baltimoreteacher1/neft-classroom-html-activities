@@ -78,8 +78,8 @@ export const QUICK = {
   time: {
     q: ["How long does the tour take?", "¿Cuánto dura el recorrido?"],
     a: () => [
-      "About 20 minutes: four short activities, one for each language domain, then a plan for one class. Your place is saved on this device, so you can stop and come back.",
-      "Unos 20 minutos: cuatro actividades cortas, una por cada destreza, y luego un plan para una clase. Su lugar se guarda en este dispositivo, así que pueden parar y volver.",
+      "About 8 minutes in four parts: choose a goal, try one real activity as a student, set one up for your class, and leave with a student link. Your place is saved on this device, so you can stop and come back.",
+      "Unos 8 minutos en cuatro partes: elegir una meta, probar una actividad real como estudiante, preparar una para su clase y salir con un enlace para estudiantes. Su lugar se guarda en este dispositivo, así que pueden parar y volver.",
     ],
   },
   students: {
@@ -97,8 +97,8 @@ export const QUICK = {
   families: {
     q: ["How do families practice at home?", "¿Cómo practican las familias en casa?"],
     a: () => [
-      `Send families one link: ${absUrl(ROUTES.together)}. They choose their child’s grade, then Let’s Talk or Let’s Write, in English or Spanish, for 5 to 10 minutes.`,
-      `Envíen a las familias un enlace: ${absUrl(ROUTES.together)}. Eligen el grado de su hijo o hija y luego «Hablemos» o «Escribamos», en inglés o en español, de 5 a 10 minutos.`,
+      `Send families one link: ${absUrl(ROUTES.together)}. They choose their child’s grade and the language for the directions, then a short guide walks them through one real activity together, in English or Spanish. Then they get the next activity to practice.`,
+      `Envíen a las familias un enlace: ${absUrl(ROUTES.together)}. Eligen el grado de su hijo o hija y el idioma de las instrucciones, y una guía corta los acompaña en una actividad real, en inglés o en español. Luego reciben la próxima actividad para practicar.`,
     ],
   },
 };
@@ -171,7 +171,7 @@ export function guideContext({ pick = "6-8", page = "tour", step = "" } = {}) {
     [
       "TEACHER PAGES:",
       line(`Start here: ${absUrl(ROUTES.start)}`),
-      line(`Guided Tour: ${absUrl(ROUTES.tour)}`),
+      line(`Teacher Tour: ${absUrl(ROUTES.tour)}`),
       line(`Activity Guide: ${absUrl(ROUTES.activities)}`),
       line(`Quick Guide (printable): ${absUrl(ROUTES.guide)}`),
       line(`Site Guide (every part of the site, with search): ${absUrl(ROUTES.siteGuide)}`),

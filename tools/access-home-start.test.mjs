@@ -253,6 +253,34 @@ test("home keeps every destination the previous home linked, for both bands", as
   }
 });
 
+test("the teacher card follows the tour on this device: start, continue, take it again", async () => {
+  const KEY = "accessPracticeLab:v1:intro";
+  const card = async () => {
+    const doc = await renderHome("6-8", "en");
+    const btn = doc.querySelector(".lph-start.is-teacher > .btn");
+    return [btn.textContent.trim(), btn.getAttribute("href")];
+  };
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 3, goal: "show" } }));
+    assert.deepEqual(await card(), [
+      "Continue the Teacher Tour",
+      "/access-practice-lab/start/tour",
+    ]);
+    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 4, done: true } }));
+    assert.deepEqual(await card(), [
+      "Take the Teacher Tour again",
+      "/access-practice-lab/start/tour?part=1&grades=6-8",
+    ]);
+    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 1 } }));
+    assert.deepEqual(await card(), [
+      "Start the Teacher Tour",
+      "/access-practice-lab/start/tour?part=1&grades=6-8",
+    ]);
+  } finally {
+    localStorage.removeItem(KEY);
+  }
+});
+
 test("start screen: landmarks, one h1, a labelled ruler, the language choice, four skills, two doors", async () => {
   const doc = await renderHome("6-8", "en");
   const lph = doc.querySelector("section.lph");
@@ -292,16 +320,20 @@ test("start screen: landmarks, one h1, a labelled ruler, the language choice, fo
   );
   assert.equal(
     lph.querySelector(".lph-start.is-teacher > .btn").getAttribute("href"),
-    "/access-practice-lab/start/tour?grades=6-8",
+    "/access-practice-lab/start/tour?part=1&grades=6-8",
   );
   assert.match(lph.querySelector(".lph-start.is-teacher h2").textContent, /Teachers: Start Here/);
+  assert.match(
+    lph.querySelector(".lph-start.is-teacher").textContent,
+    /Learn the lab by using it:/,
+  );
   assert.match(
     lph.querySelector(".lph-start.is-teacher > .btn").textContent,
     /Start the Teacher Tour/,
   );
   assert.match(
     lph.querySelector(".lph-start.is-family > .btn").textContent,
-    /Start Family Practice/,
+    /Practice English Together/,
   );
   assert.ok(
     lph.querySelector(".lph-start.is-family a[href*='/family?']"),

@@ -1,0 +1,1206 @@
+/* guided.css — the teacher tour (/start/tour, gt-*), the family walkthrough (/practice-together, ft-*) and the coach
+   they share (gc-*: one ring on a real control inside the activity frame, one card beside it, docked on phones).
+   Tokens come from ds.css; skill colour comes from the d-* classes (--room, --room-ink, --room-soft). */
+
+/* ── Page frame ── */
+.gt-page {
+  --gt-gap: clamp(1rem, 2.5vw, 1.75rem);
+  display: grid;
+  gap: var(--gt-gap);
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-block: var(--s-4) var(--s-7);
+}
+.gt-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+}
+.gt-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--brand-ink);
+}
+.gt-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.gt-exit:hover {
+  background: var(--brand-soft);
+}
+.gt-progress {
+  grid-column: 1 / -1;
+}
+.gt-progress ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.gt-progress li > a,
+.gt-progress li > span {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.35rem 0.7rem 0.55rem;
+  border-bottom: 4px solid var(--line);
+  color: var(--ink-2, #4a5470);
+  font-weight: 600;
+  text-decoration: none;
+}
+.gt-progress .is-done > a {
+  border-color: var(--brand);
+  color: var(--ink);
+}
+.gt-progress .is-done > a:hover {
+  background: var(--brand-soft);
+}
+.gt-progress .is-now > span {
+  border-color: var(--brand);
+  color: var(--ink);
+  font-weight: 800;
+}
+.gt-progress-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.gt-progress .is-done .gt-progress-n,
+.gt-progress .is-now .gt-progress-n {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.gt-progress .ico {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.gt-part {
+  display: grid;
+  gap: var(--s-4);
+}
+.gt-part h1 {
+  margin: 0;
+  font: 600 clamp(1.75rem, 3.6vw, 2.6rem) / 1.12 var(--font-display);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.gt-part h1:focus {
+  outline: none;
+}
+.gt-lead {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--ink-2, #3d4664);
+}
+.gt-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--s-3) var(--s-5);
+}
+.gt-head-row > div {
+  flex: 1 1 28rem;
+  display: grid;
+  gap: var(--s-2);
+}
+.gt-back-note,
+.gt-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--ink);
+  line-height: 1.45;
+}
+.gt-note .ico,
+.gt-back-note .ico {
+  flex: none;
+  margin-top: 0.15rem;
+}
+.gt-note.is-alert {
+  background: var(--wrong-soft);
+}
+
+/* ── Part 1: goals ── */
+.gt-goals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gt-goals-first {
+  grid-template-columns: 1fr;
+}
+.gt-goal {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+  height: 100%;
+  padding: var(--s-4) var(--s-4);
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-press);
+}
+.gt-goal:hover {
+  border-color: var(--brand);
+}
+.gt-goal:active {
+  transform: translateY(1px);
+}
+.gt-goal-ic {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.gt-goal-ic .ico {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.gt-goal-text {
+  display: grid;
+  gap: 0.25rem;
+}
+.gt-goal-text strong {
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+.gt-goal-text > span:last-child {
+  color: var(--ink-2, #3d4664);
+  line-height: 1.4;
+}
+.gt-goal-go {
+  color: var(--brand-ink);
+}
+.gt-goal.is-recommended {
+  padding: var(--s-5);
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.gt-goal.is-recommended:hover {
+  background: var(--brand-deep);
+}
+.gt-goal.is-recommended .gt-goal-ic {
+  background: rgb(255 255 255 / 16%);
+  color: var(--on-brand);
+}
+.gt-goal.is-recommended .gt-goal-text strong {
+  font: 600 clamp(1.35rem, 2.4vw, 1.7rem) / 1.2 var(--font-display);
+}
+.gt-goal.is-recommended .gt-goal-text > span:last-child,
+.gt-goal.is-recommended .gt-goal-go {
+  color: var(--on-brand);
+}
+.gt-badge {
+  justify-self: start;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--ivory);
+  color: var(--brand-ink);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.gt-or {
+  margin: var(--s-2) 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-2, #3d4664);
+}
+
+/* ── Grade switch ── */
+.gt-grades {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.gt-grades-label {
+  margin-right: 0.25rem;
+  font-weight: 700;
+}
+.gt-seg {
+  min-width: 3rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.7rem;
+  border: 2px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gt-seg:hover {
+  border-color: var(--brand);
+}
+.gt-seg[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.gt-activity-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  margin: 0;
+}
+.gt-activity-line > span {
+  color: var(--ink-2, #3d4664);
+}
+
+/* ── Stage: activity frame + coach column ── */
+.gt-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: var(--s-4);
+  align-items: start;
+}
+.gt-frame-slot {
+  position: relative;
+  min-height: 24rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  overflow: hidden;
+}
+.gc-frame {
+  display: block;
+  width: 100%;
+  height: 40rem;
+  border: 0;
+  background: var(--bg);
+}
+.gt-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--ink-2, #3d4664);
+}
+.gt-coach {
+  position: relative;
+  align-self: stretch;
+  min-height: 1px;
+}
+
+/* ── Coach ── */
+.gc-ring {
+  position: absolute;
+  z-index: 3;
+  border-radius: 14px;
+  outline: 3px solid var(--accent-ink, #b4581e);
+  outline-offset: 0;
+  box-shadow:
+    0 0 0 6px rgb(210 139 88 / 28%),
+    0 0 0 1px #fff inset;
+  pointer-events: none;
+  transition:
+    left var(--dur-3) var(--ease-out),
+    top var(--dur-3) var(--ease-out),
+    width var(--dur-3) var(--ease-out),
+    height var(--dur-3) var(--ease-out);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gc-ring {
+    animation: gc-pulse 2.2s var(--ease-in-out) infinite;
+  }
+}
+@keyframes gc-pulse {
+  50% {
+    box-shadow:
+      0 0 0 11px rgb(210 139 88 / 14%),
+      0 0 0 1px #fff inset;
+  }
+}
+.gc-card {
+  position: relative;
+  display: grid;
+  gap: 0.6rem;
+  margin-top: var(--gc-top, 0);
+  padding: 1rem 1.1rem 1.05rem;
+  border: 2px solid var(--brand);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  transition: margin-top var(--dur-3) var(--ease-out);
+}
+@media (min-width: 960px) {
+  /* Level with its target, and never scrolled out of view under the lab's top bar. */
+  .gc-card,
+  .gc-pill {
+    position: sticky;
+    top: 9rem;
+  }
+}
+.gc-card::before {
+  content: "";
+  position: absolute;
+  top: 1.6rem;
+  left: -0.6rem;
+  width: 1rem;
+  height: 1rem;
+  border-left: 2px solid var(--brand);
+  border-bottom: 2px solid var(--brand);
+  background: var(--surface);
+  transform: rotate(45deg);
+}
+.gc-card.is-complete {
+  border-color: var(--right);
+}
+.gc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.gc-count {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--brand-ink);
+}
+.gc-dots {
+  display: flex;
+  flex: 1;
+  gap: 0.25rem;
+}
+.gc-dots span {
+  flex: 1;
+  max-width: 1.4rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--line);
+}
+.gc-dots .is-done {
+  background: var(--brand);
+}
+.gc-dots .is-now {
+  background: var(--accent);
+}
+.gc-x {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.75rem;
+  padding: 0.2rem 0.55rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gc-x:hover {
+  background: var(--brand-soft);
+}
+.gc-title {
+  margin: 0;
+  font: 600 1.25rem/1.25 var(--font-display);
+}
+.gc-title:focus {
+  outline: none;
+}
+.gc-body {
+  margin: 0;
+  line-height: 1.5;
+}
+.gc-wait {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--hint);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.gc-card.is-complete .gc-wait {
+  background: var(--right-soft);
+  color: var(--right);
+}
+.gc-why summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--brand-ink);
+  cursor: pointer;
+}
+.gc-why p {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--ink-2, #3d4664);
+}
+.gc-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+.gc-foot .btn {
+  min-height: 2.75rem;
+}
+.gc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--brand);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand-ink);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+}
+.gc-pill:hover {
+  background: var(--brand-soft);
+}
+
+/* Phones and small tablets: the activity is full width and the card docks to the bottom of the screen. */
+@media (max-width: 959px) {
+  .gt-stage {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: 15rem;
+  }
+  .gt-coach {
+    position: fixed;
+    z-index: 40;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .gt-coach > * {
+    pointer-events: auto;
+  }
+  .gc-card {
+    width: min(36rem, 100%);
+    max-height: 48vh;
+    overflow: auto;
+    margin-top: 0;
+    padding: 0.85rem 0.95rem 0.9rem;
+  }
+  .gc-card::before {
+    display: none;
+  }
+  .gc-title {
+    font-size: 1.1rem;
+  }
+  .gt-coach:not(.is-open) {
+    justify-content: flex-end;
+  }
+}
+
+/* ── Part 3: skill and support ── */
+.gt-choice-set {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.gt-choice-set legend,
+.gt-preview h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  font: 600 1.35rem/1.25 var(--font-display);
+  color: var(--ink);
+}
+.gt-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 800 0.95rem/1 var(--font);
+}
+.gt-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--s-3);
+}
+.gt-skill,
+.gt-support {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  min-height: 3rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-2) var(--ease-out);
+}
+.gt-skill strong,
+.gt-support strong {
+  font-size: 1.08rem;
+}
+.gt-skill > span:last-child,
+.gt-support > span {
+  color: var(--ink-2, #3d4664);
+  line-height: 1.4;
+}
+.gt-skill:hover,
+.gt-support:hover {
+  border-color: var(--room, var(--brand));
+}
+.gt-skill[aria-pressed="true"] {
+  border-color: var(--room);
+  background: var(--room-soft);
+  box-shadow: inset 0 0 0 1px var(--room);
+}
+.gt-support[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  box-shadow: inset 0 0 0 1px var(--brand);
+}
+.gt-skill[aria-pressed="true"]::after,
+.gt-support[aria-pressed="true"]::after {
+  content: "Selected";
+  justify-self: start;
+  margin-top: 0.2rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.gt-skill-ic {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+}
+.gt-support-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-3);
+}
+.gt-preview {
+  display: grid;
+  gap: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.gt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+.gt-actions .fine {
+  margin: 0;
+}
+
+/* ── Tour footer ── */
+.gt-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.gt-saved {
+  margin: 0;
+  max-width: 70ch;
+}
+
+/* ── Part 4 ── */
+.gt-class-card {
+  display: grid;
+  gap: var(--s-4);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 2px solid var(--room);
+  border-top-width: 8px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.gt-class-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.gt-class-head h2 {
+  margin: 0;
+  font: 600 1.5rem/1.2 var(--font-display);
+}
+.gt-class-head p {
+  margin: 0.2rem 0 0;
+  color: var(--ink-2, #3d4664);
+}
+.gt-use {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--room-soft);
+  line-height: 1.5;
+}
+.gt-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-4);
+}
+.gt-link svg {
+  flex: none;
+  width: 8rem;
+  height: 8rem;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+.gt-link-text {
+  flex: 1 1 18rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.gt-link-text label {
+  font-weight: 700;
+}
+.gt-link-input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.7rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font:
+    600 0.95rem/1.3 ui-monospace,
+    "SF Mono",
+    Menlo,
+    monospace;
+}
+.gt-link-text .fine {
+  margin: 0;
+}
+.gt-secondary {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.gt-ready {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--right-soft);
+  color: var(--ink);
+}
+.gt-ready h2 {
+  margin: 0;
+  font: 600 clamp(1.3rem, 2.4vw, 1.6rem) / 1.2 var(--font-display);
+}
+.gt-ready p {
+  margin: 0.25rem 0 0;
+}
+.gt-ready-mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--right);
+  color: #fff;
+}
+.gt-ready-go {
+  border-color: var(--right);
+  color: var(--ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gt-ready-mark {
+    animation: gt-pop var(--dur-4) var(--ease-press) both;
+  }
+}
+@keyframes gt-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+.gt-show {
+  max-width: min(36rem, calc(100vw - 2rem));
+  padding: var(--s-5);
+  border: 0;
+  border-radius: var(--r-lg);
+  text-align: center;
+}
+.gt-show::backdrop {
+  background: rgb(8 14 37 / 60%);
+}
+.gt-show svg {
+  width: min(24rem, 70vw);
+  height: auto;
+}
+.gt-show-url {
+  font:
+    700 1.1rem/1.3 ui-monospace,
+    Menlo,
+    monospace;
+  word-break: break-all;
+}
+
+/* ── Help ── */
+.gt-help {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.gt-help > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.gt-help dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-3) var(--s-5);
+  margin: 0;
+  padding: 0 1rem 0.5rem;
+}
+.gt-help dt {
+  font-weight: 700;
+}
+.gt-help dd {
+  margin: 0.2rem 0 0;
+  line-height: 1.45;
+  color: var(--ink-2, #3d4664);
+}
+.gt-help-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  margin: 0;
+  padding: 0.5rem 1rem 1rem;
+}
+.gt-help-links a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .gt-page {
+    --gt-gap: 0.9rem;
+    padding-top: var(--s-2);
+  }
+  .gt-progress li > a,
+  .gt-progress li > span {
+    min-height: 2.5rem;
+  }
+  .gt-progress-n {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .gt-progress-name {
+    font-size: 0.8rem;
+    line-height: 1.15;
+  }
+  .gt-progress li > a,
+  .gt-progress li > span {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding-inline: 0.2rem;
+  }
+  .gt-goal {
+    grid-template-columns: auto 1fr;
+  }
+  .gt-goal-go {
+    display: none;
+  }
+  .gt-ready {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .gt-nav .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Print this card: only the Part 4 card prints. */
+@media print {
+  html.gt-print-card body * {
+    visibility: hidden;
+  }
+  html.gt-print-card .gt-class-card,
+  html.gt-print-card .gt-class-card * {
+    visibility: visible;
+  }
+  html.gt-print-card .gt-class-card {
+    position: absolute;
+    inset: 0 0 auto;
+    box-shadow: none;
+  }
+  html.gt-print-card .gt-class-actions,
+  html.gt-print-card .gt-copy-note {
+    display: none;
+  }
+}
+
+/* The activity frame grows to its content, so nothing inside it may size itself to the frame's height. */
+html.is-framed,
+html.is-framed body,
+html.is-framed .lab-main,
+html.is-framed #app {
+  min-height: 0 !important; /* a vh-based min-height would grow the auto-sized frame forever */
+  height: auto !important;
+}
+
+/* Inside a guide's frame the activity stands alone: no section bar, breadcrumb or links to other activities, so a
+   learner cannot wander off the example (the coach still offers "Bring the example back" if they do). */
+html.is-framed .section-bar,
+html.is-framed .crumbs,
+html.is-framed .act-return,
+html.is-framed .act-nav {
+  display: none !important; /* frame mode hides navigation the example does not need */
+}
+
+/* ── Family walkthrough (/practice-together) ── */
+.gt-progress ol.is-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.ft-page .gt-part h1 {
+  font-size: clamp(1.7rem, 4.2vw, 2.9rem);
+}
+.ft-reassure {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  max-width: 60ch;
+  padding: 0.8rem 1rem;
+  border-left: 5px solid var(--right);
+  border-radius: var(--radius-sm);
+  background: var(--right-soft);
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+.ft-reassure .ico {
+  flex: none;
+  margin-top: 0.2rem;
+  color: var(--right);
+}
+.ft-card {
+  display: grid;
+  gap: var(--s-5);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.ft-field {
+  display: grid;
+  gap: var(--s-2);
+}
+.ft-field .fine {
+  margin: 0;
+}
+.ft-label {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.ft-bands {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.ft-band {
+  min-height: 3.5rem;
+  padding: 0.5rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ft-band:hover {
+  border-color: var(--brand);
+}
+.ft-band[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.ft-go {
+  justify-self: start;
+}
+.ft-how h2,
+.ft-keep h2,
+.ft-more h2 {
+  margin: 0 0 var(--s-3);
+  font: 600 1.35rem/1.25 var(--font-display);
+}
+.ft-how ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ft-how li {
+  display: grid;
+  gap: 0.3rem;
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+}
+.ft-how li > span:last-child {
+  color: var(--ink-2, #3d4664);
+}
+.ft-how-ic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.3rem;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--brand-ink);
+}
+.ft-how-ic b {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.4rem;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: 0.8rem;
+}
+.ft-quiet {
+  margin: 0;
+}
+.ft-quiet a,
+.ft-again,
+.ft-print a,
+.ft-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.ft-print {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin: 0;
+}
+.ft-ready h1 {
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem) !important; /* the step heading sits inside the celebration band */
+}
+.ft-next-card {
+  justify-items: start;
+  gap: var(--s-3);
+}
+.ft-next-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.15rem;
+}
+.ft-keep ul,
+.ft-more ul {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ft-keep li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.ft-keep li .ico {
+  flex: none;
+  margin-top: 0.25rem;
+  color: var(--right);
+}
+.ft-more a {
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.ft-more a span {
+  display: grid;
+}
+.ft-more a:hover {
+  border-color: var(--brand);
+}
+.ft-qs {
+  display: grid;
+  gap: var(--s-2);
+}
+.ft-q {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.ft-q summary {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ft-q p {
+  margin: 0;
+  padding: 0 1rem 1rem;
+  line-height: 1.5;
+}
+.ft-foot .fine {
+  margin: 0;
+}
+.ft-lang {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 640px) {
+  .ft-card {
+    gap: var(--s-4);
+  }
+  .ft-band {
+    min-height: 3rem;
+    font-size: 0.98rem;
+  }
+  .ft-go {
+    justify-self: stretch;
+    justify-content: center;
+  }
+}
+.gc-foot .gc-hear {
+  margin-inline: auto;
+}
+@media (max-width: 959px) {
+  .gc-wait {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.85rem;
+  }
+  .gc-card {
+    gap: 0.45rem;
+  }
+}
+.ft-next-desc {
+  margin: 0;
+  max-width: 60ch;
+  line-height: 1.5;
+}
+.ft-next-steps {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-left: 1.4rem;
+  line-height: 1.45;
+}
+.ft-label-sub {
+  margin-top: var(--s-2);
+  font-size: 1rem;
+}
+.ft-bands.is-sub .ft-band {
+  min-height: 3rem;
+  font-size: 0.98rem;
+}

@@ -6,7 +6,7 @@ import { ROUTES } from "./data.js";
 
 export const TEACHER_NAV = [
   { id: "overview", label: "Overview", route: ROUTES.start, icon: "home" },
-  { id: "tour", label: "Guided Tour", route: ROUTES.tour, icon: "flag" },
+  { id: "tour", label: "Teacher Tour", route: ROUTES.tour, icon: "flag" },
   { id: "explore", label: "Explore", route: ROUTES.explore, icon: "clock" },
   { id: "activities", label: "Activity Guide", route: ROUTES.activities, icon: "library" },
   { id: "lesson", label: "Lesson", route: ROUTES.lesson, icon: "conversation" },

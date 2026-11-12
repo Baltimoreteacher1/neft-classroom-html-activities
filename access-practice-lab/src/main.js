@@ -29,7 +29,7 @@ import { mountReturnBar } from "./intro/return-bar.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
-// Inside the Guided Tour's live panel (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
+// Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
 // language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
 try {
   if (window.self !== window.top && new URLSearchParams(location.search).get("frame") === "1")
@@ -174,8 +174,19 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   }
   if (a === "class")
     return { ...r, view: b === "quiz" ? "class-quiz" : b === "teacher" ? "class-teacher" : "class", id: b || "" };
-  if (a === "start") return { ...r, view: "start", id: b || "", stop: q.get("stop") || "", focus: q.get("focus") || "" };
-  if (a === "practice-together") return { ...r, view: "practice-together", id: b || "" };
+  if (a === "start")
+    return {
+      ...r,
+      view: "start",
+      id: b || "",
+      stop: q.get("stop") || "",
+      focus: q.get("focus") || "",
+      part: q.get("part") || "",
+      goal: q.get("goal") || "",
+      skill: q.get("skill") || "",
+      support: q.get("support") || "",
+    };
+  if (a === "practice-together") return { ...r, view: "practice-together", id: b || "", step: q.get("step") || "" };
   if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };
   if (a === "arena") return { ...r, view: "arena", id: b || "" };
   if (a === "mentor") return { ...r, view: "mentor", id: b || "", sub: c || "" };
@@ -408,7 +419,9 @@ async function render({ keepFocus = false, scroll = false } = {}) {
     target?.focus({ preventScroll: true });
   } else if (!keepFocus) {
     if (scroll) window.scrollTo({ top: 0 });
-    root.querySelector("h1")?.focus({ preventScroll: true });
+    // Inside a guide's activity frame, focusing the heading on load would pull the page's focus into the frame.
+    const framed = document.documentElement.classList.contains("is-framed");
+    if (!framed || document.hasFocus()) root.querySelector("h1")?.focus({ preventScroll: true });
   }
 }
 

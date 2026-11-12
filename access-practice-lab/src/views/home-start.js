@@ -11,6 +11,7 @@ import { ctaLabel, headline } from "../journey/ui/pages-hero.js";
 import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
+import { loadIntro } from "../intro/state.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon } from "../util.js";
 
 const SKILL_ES = {
@@ -236,13 +237,31 @@ function startCardHTML(I, { id, ic, who, text, cta, href, more }) {
   </section>`;
 }
 
+/**
+ * The teacher card follows the tour on this device: start it, continue where it stopped, or take it again. It never
+ * opens by itself.
+ */
+function teacherCard(I, band) {
+  const tour = loadIntro().guided || {};
+  const going = tour.part > 1 && !tour.done;
+  return {
+    id: "teacher",
+    ic: "teacher",
+    who: I.T("Teachers: Start Here", "Docentes: Empiecen aquí"),
+    text: I.T("Learn the lab by using it: try one activity as a student, then set one up for your class. About 8 minutes.", "Aprendan a usar el laboratorio usándolo: prueben una actividad como estudiante y luego preparen una para su clase. Unos 8 minutos."),
+    cta: going ? I.T("Continue the Teacher Tour", "Continuar el recorrido para docentes") : tour.done ? I.T("Take the Teacher Tour again", "Repetir el recorrido para docentes") : I.T("Start the Teacher Tour", "Empezar el recorrido para docentes"),
+    href: going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`,
+    more: { href: `${BASE}/start?grades=${band}`, label: I.T("All teacher resources", "Todos los recursos para docentes") },
+  };
+}
+
 /** The start screen. `data` carries what home.js already loaded so nothing is read twice. */
 export function startHTML(I, ctx, data) {
   const { band, available, focusCounts, domains, tierFor, target } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
     <div class="lph-starts">
-      ${startCardHTML(I, { id: "teacher", ic: "teacher", who: I.T("Teachers: Start Here", "Docentes: Empiecen aquí"), text: I.T("Choose your grades and try one activity in each skill: listening, speaking, reading and writing. Mr. Neft guides you.", "Elijan sus grados y prueben una actividad de cada destreza: escuchar, hablar, leer y escribir. Mr. Neft los guía."), cta: I.T("Start the Teacher Tour", "Empezar el recorrido para docentes"), href: `${BASE}/start/tour?grades=${band}`, more: { href: `${BASE}/start?grades=${band}`, label: I.T("All ways to start", "Todas las formas de empezar") } })}
-      ${startCardHTML(I, { id: "family", ic: "families", who: I.T("Families: Start Here", "Familias: Empiecen aquí"), text: I.T("Choose one activity. Practice together for 5–10 minutes.", "Elijan una actividad. Practiquen juntos de 5 a 10 minutos."), cta: I.T("Start Family Practice", "Empezar a practicar en familia"), href: `${BASE}/practice-together?grades=${band}`, more: { href: `${BASE}/family?grades=${band}`, label: I.T("Family Corner", "Rincón de la familia") } })}
+      ${startCardHTML(I, teacherCard(I, band))}
+      ${startCardHTML(I, { id: "family", ic: "families", who: I.T("Families: Start Here", "Familias: Empiecen aquí"), text: I.T("Practice English together in 10 minutes. A short guide shows you how to help, even if you are still learning English.", "Practiquen inglés juntos en 10 minutos. Una guía corta les muestra cómo ayudar, aunque todavía estén aprendiendo inglés."), cta: I.T("Practice English Together", "Practicar inglés juntos"), href: `${BASE}/practice-together?grades=${band}`, more: { href: `${BASE}/family?grades=${band}`, label: I.T("Family Corner", "Rincón de la familia") } })}
     </div>
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">

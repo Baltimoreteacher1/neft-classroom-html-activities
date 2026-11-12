@@ -196,16 +196,14 @@ const cardVisible = await page.locator(".lph-start.is-teacher > .btn").isVisible
 ok(cardVisible, "first screen shows the teacher card without scrolling");
 await page.locator(".lph-start.is-teacher > .btn").click();
 clicks++;
-await page.waitForSelector(".in-tour");
-await page.getByRole("link", { name: /^Start with Listening/ }).click();
+await page.waitForSelector(".gt-part-goal");
+await page.locator(".gt-goal.is-recommended").click();
 clicks++;
-await page.locator("[data-tr-launch]").click();
-clicks++;
-await page.waitForSelector("iframe.tr-frame");
-const frameSrc = await page.locator("iframe.tr-frame").getAttribute("src");
+await page.waitForSelector("iframe.gc-frame");
+const frameSrc = await page.locator("iframe.gc-frame").getAttribute("src");
 const secs = (Date.now() - t0) / 1000;
 ok(
-  /\/(Listening|voice|scaffold)\//.test(frameSrc || "") && clicks <= 3,
+  /\/(Listening|Reading)\//.test(frameSrc || "") && clicks <= 2,
   `home to a real activity, running in the tour, in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
 );
 await page.close();

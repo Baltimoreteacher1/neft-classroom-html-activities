@@ -20,6 +20,7 @@ const { checkUpgrade } = await import("../access-practice-lab/src/lang/scaffold-
 const { checkResponse } = await import("../access-practice-lab/src/intro/lesson.js");
 const { curatedHere } = await import("../access-practice-lab/src/intro/return-bar.js");
 const { BAND_TOUR } = await import("../access-practice-lab/src/intro/tour-bands.js");
+const { PARTS } = await import("../access-practice-lab/src/intro/tour-data.js");
 const { PLAN_SAMPLES } = await import("../access-practice-lab/src/intro/explore-data.js");
 const { build } = await import("./generate-intro-curated-list.mjs");
 
@@ -133,9 +134,14 @@ test("pacing tables match the brief exactly", () => {
     D.EXPLORE_SEQUENCE.map((r) => r.range),
     ["0–2", "2–9", "9–14", "14–18", "18–20"],
   );
+  assert.equal(
+    D.TOUR_STOPS,
+    undefined,
+    "the six-stop tour is gone; the parts live in tour-data.js",
+  );
   assert.deepEqual(
-    D.TOUR_STOPS.map((s) => s.name),
-    ["Choose your grades", "Listening", "Speaking", "Reading", "Writing", "Plan one class"],
+    PARTS.map((p) => p.name),
+    ["Choose a goal", "Try an activity", "Prepare practice", "Take it to class"],
   );
 });
 

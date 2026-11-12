@@ -150,7 +150,7 @@ export const SHARING = [
 ];
 
 export const PD_LINKS = [
-  { route: ROUTES.tour, label: "Take the Guided Tour" },
+  { route: ROUTES.tour, label: "Take the Teacher Tour" },
   { route: ROUTES.explore, label: "Explore for 20 Minutes" },
   { route: ROUTES.guide, label: "Open the Quick Guide" },
   { route: ROUTES.lesson, label: "See the Featured Lesson" },

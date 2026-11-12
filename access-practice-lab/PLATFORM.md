@@ -109,7 +109,8 @@ stored. Opening any help marks the work supported. Help items are written so the
    teacher's browser only (sections, per-student removal, "Remove everything" also clears saved scores, a visible
    warning when storage is nearly full or a save fails).
    **Second exception, decided by Joel on 2026-11-11 ("you can use the ai chat", "full permission to change site
-   rules"): Mr. Neft, the AI guide** on the adult pages (teacher Start pages and Guided Tour, family page, Site Guide;
+   rules"): Mr. Neft, the AI guide** on the teacher Start pages (overview, exploration, quick guide, activity guide, lesson; the Teacher Tour and the family
+   walkthrough use a scripted coach that sends nothing;
    `src/intro/guide.js`). A question an adult TYPES into the guide is sent, with the page name, tour step, grade choice
    and language, to this site's own `/api/language-guide` (`functions/api/language-guide.js`), which asks a model
    (Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`) to answer only from

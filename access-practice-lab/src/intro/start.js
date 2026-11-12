@@ -1,6 +1,6 @@
 // Teacher start (/start and its pages). One stable, shareable place that answers "where do I start?" with three
 // choices, then hands each choice to its own page:
-//   /start          grade picker + three choices /start/tour      guided tour (6 stops, grade-aware)
+//   /start          grade picker + three choices /start/tour      teacher tour (4 parts, learn by doing)
 //   /start/explore  Try It. Adapt It. Use It.   /start/guide     quick guide (printable)
 //   /start/lesson   featured lesson             (the presenter view was taken down 2026-11-11; PD files live off-site)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
@@ -26,8 +26,8 @@ const PAGES = {
 let current = null;
 
 function choiceHTML(c, resume, pick) {
-  const label = c.id === "tour" && resume ? `Resume the tour at Step ${resume}` : c.name;
-  const href = c.id === "tour" ? tourHref(pick, resume) : labHref(c.route);
+  const label = c.id === "tour" && resume ? `Resume the tour at Part ${resume}` : c.name;
+  const href = c.id === "tour" ? tourHref(pick) : labHref(c.route);
   return html`<li>
     <a class="in-choice is-${c.id}" href="${href}">
       <span class="in-ic" aria-hidden="true">${icon(c.icon)}</span>
@@ -42,8 +42,8 @@ const TITLE = "Start here: The Language Page for teachers";
 
 function hubHTML(ctx) {
   const pick = teacherPick(ctx);
-  const saved = loadIntro().tour;
-  const resume = saved && Number.isInteger(saved.stop) && saved.stop > 0 ? saved.stop + 1 : 0;
+  const saved = loadIntro().guided;
+  const resume = saved && !saved.done && saved.part > 1 ? saved.part : 0;
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
     ${teacherBand({
       active: "overview",

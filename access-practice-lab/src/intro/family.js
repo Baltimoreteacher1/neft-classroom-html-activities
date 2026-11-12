@@ -1,45 +1,43 @@
-// Practice Together (/practice-together): the family starting page. First screen: a warm welcome from Mr. Neft (the
-// guide panel), the language switch, the grade choice (a teacher's ?grades= link opens the right grade; the family's
-// own choice is remembered on this device) and ONE next action, "Let's begin". Then the tonight flow (choose, practice
-// 5–10 minutes, celebrate), the two choices (Let's Talk = Speaking, Let's Write = Writing, each with three steps, one
-// labeled example and a large Start button), quick answers, a language note, two closed sections and a quiet link to
-// the printable one-page guide. Grades K–2 get one picture-talk routine instead (family-k2.js) and the K–2 handout.
-// Each card has a "Hear the steps" button (family-read.js). All copy lives in family-data.js and family-k2-data.js
-// as { en, es } pairs. The page is fully localized (docLang "es" in Español), so English names and examples carry
-// lang="en".
+// Practice Together (/practice-together): the family walkthrough, in three steps, in the family's language.
+//   1. Get started        "Let's practice English together": what this is, the directions language, the child's grade,
+//                         and one action. A three-picture "how it works" strip shows the routine before it starts.
+//   2. Practice together  one short, real activity in a frame with the coach (coach/coach.js) speaking to the adult:
+//                         hear the directions, let the child answer in English, check, read the message, try again.
+//   3. What to do next    one action, "Start practicing" (the next real activity for this grade), how to keep going,
+//                         and answers about sharing a device and saving, shown only on this step.
+// The step is in the address (?step=) and the family's grade on this device (state.js "family"), so a reload, Back or a
+// teacher's ?grades= link lands in the right place. Words live in family-guide-data.js as { en, es } pairs; the English
+// practice itself is never translated.
+import { normalizeBand } from "../bands.js";
+import { activityFrame, createCoach } from "../coach/coach.js";
+import { loopSteps } from "../coach/activity-steps.js";
 import { i18nFor, langSwitchHTML } from "../i18n.js";
-import { disclosure, trackDisclosures } from "../studio-ui.js";
-import { ART, BASE, html, icon } from "../util.js";
+import { BASE, html, icon } from "../util.js";
 import {
-  FAMILY,
   FAMILY_BANDS,
-  FAMILY_GRADE,
   FAMILY_HANDOUT,
-  FAMILY_MORE,
-  FAMILY_WELCOME,
-  TONIGHT,
-  TONIGHT_ONE,
   familyActivitiesFor,
   familyBandFromGrades,
 } from "./family-data.js";
-import { earlyCardHTML, earlyPick, earlySteps } from "./family-k2.js";
-import { EARLY_CARD, FAMILY_HANDOUT_K2 } from "./family-k2-data.js";
-import { mountRead, onReadClick, readButtonHTML, unmountRead } from "./family-read.js";
-import { bindGuide, guideHTML } from "./guide.js";
+import { EARLY_PICKS, FAMILY_HANDOUT_K2 } from "./family-k2-data.js";
+import {
+  COACH_COPY,
+  FAMILY_HELP,
+  FAMILY_SAY,
+  PAGE,
+  STEPS,
+  resolveLang,
+} from "./family-guide-data.js";
 import { withReturn } from "./return-bar.js";
 import { loadIntro, updateIntro } from "./state.js";
-import { audienceMapHTML } from "../sitemap-ui.js";
+import { BAND_TOUR, DOMAIN_BY_ID } from "./tour-bands.js";
+import { helpHTML } from "./tour-help.js";
 
-const GUIDE_CHIPS = ["what", "account", "mic", "saved", "sound", "language"];
-/** Domain colour and studio picture for each card: Let's Talk is Speaking, Let's Write is Writing. */
-const DOMAIN = {
-  talk: { cls: "d-speaking", art: "domain-speaking.svg", icon: "speaking" },
-  write: { cls: "d-writing", art: "domain-writing.svg", icon: "writing" },
-};
+let coach = null;
+let view = null;
 
-const en = (text) => html`<span lang="en">${text}</span>`;
-const startHref = (route, band) =>
-  withReturn(`${BASE}${route}${route.includes("?") ? "&" : "?"}grades=${band}`, "together");
+/** The language the guide speaks: Spanish in Español and in English + Español (the page itself shows both). */
+const guideLang = (I) => (I.mode === "en" ? "en" : "es");
 
 /**
  * The grade to show: a teacher's shared link (?grades=) first, then the family's own choice on this device, else the
@@ -54,299 +52,371 @@ function chosenBand(ctx) {
   return ["K", "1", "2-3"].includes(ctx.band) ? "k-2" : "6-8";
 }
 
-function bandHTML(I, band, ctx) {
-  const early = earlyPick(ctx);
-  return html`<div class="tg-band">
-    <p class="tg-label" id="tgBandLabel">${I.TO(FAMILY_GRADE.heading)}</p>
-    <div class="tg-band-btns" role="group" aria-labelledby="tgBandLabel">
-      ${FAMILY_BANDS.map((b) => html`<button type="button" class="in-seg" data-tg-band="${b.id}" aria-pressed="${String(b.id === band)}">${I.TO(b.label)}</button>`)}
+/**
+ * K–2 activities come in three grade picks: the link's ?grades=, then the family's own exact choice, then the lab's
+ * grade when it is K–3, then the grade a teacher chose on this device, else Kindergarten.
+ */
+function earlyPick(ctx) {
+  const g = String(ctx.route?.grades || "").toUpperCase();
+  if (EARLY_PICKS.includes(g)) return g;
+  const intro = loadIntro();
+  for (const p of [intro.family?.early, ctx.band, intro.band?.pick]) if (EARLY_PICKS.includes(p)) return p;
+  return "K";
+}
+
+/** Make the family's grade the lab's grade too, so the menu, the directory and every activity agree with it. */
+function syncLabBand(ctx, plan) {
+  const band = normalizeBand(plan.pick);
+  if (ctx.bands?.includes(band)) ctx.setBand(band);
+}
+
+/** K–2's next activity is a picture-talk page; its words for the family (the steps match early/player.js). */
+const K2_TALK = {
+  description: {
+    en: "Look at a picture together. Your child says what they see, out loud, in English.",
+    es: "Miren juntos una imagen. Su hijo o hija dice en voz alta, en inglés, lo que ve.",
+  },
+  steps: [
+    { en: "Listen to the model answer first.", es: "Primero escuchen la respuesta modelo." },
+    { en: "Your child says their own sentence out loud.", es: "Su hijo o hija dice su propia oración en voz alta." },
+    { en: "Press the button that says the answer was said. Recording is never needed.", es: "Toquen el botón que dice que ya respondió. Nunca hace falta grabar." },
+  ],
+};
+
+/** The practice activity (step 2) and the next ones (step 3) for a family grade. */
+export function familyPlan(band, pick = "K") {
+  if (band === "k-2") {
+    const t = BAND_TOUR[pick];
+    return {
+      pick,
+      practice: { ...t.listening, pick, domain: DOMAIN_BY_ID.listening },
+      next: { route: t.speaking.route, name: t.speaking.title, pick, description: K2_TALK.description, steps: K2_TALK.steps },
+      more: [{ route: t.reading.route, name: t.reading.title, icon: "reading" }],
+    };
+  }
+  const pick35 = band === "3-5" ? "4-5" : "6-8";
+  const [talk, write] = familyActivitiesFor(band);
+  return {
+    pick: pick35,
+    practice: { ...BAND_TOUR[pick35].reading, pick: pick35, domain: DOMAIN_BY_ID.reading },
+    next: {
+      route: talk.route,
+      name: talk.activityName,
+      pick: pick35,
+      title: talk.title,
+      description: talk.description,
+      steps: talk.steps.map((x) => x.body),
+    },
+    more: [{ route: write.route, name: write.activityName, title: write.title, icon: "writing" }],
+  };
+}
+
+const withGrades = (route, pick, extra = "") =>
+  `${BASE}${route}${route.includes("?") ? "&" : "?"}grades=${encodeURIComponent(pick)}${extra}`;
+/** A step's address. `grades` carries the plan's grade pick, which also names the family grade (K–2, 3–5, 6–8). */
+const stepHref = (n, plan) => `${BASE}/practice-together?step=${n}&grades=${encodeURIComponent(plan?.pick || "6-8")}`;
+
+function readStep(ctx) {
+  const n = Number.parseInt(ctx.route?.step || "1", 10);
+  return [1, 2, 3].includes(n) ? n : 1;
+}
+
+/* ── Shared frame ── */
+function topHTML(I, n, plan) {
+  return html`<header class="gt-top ft-top">
+    <p class="gt-eyebrow">
+      ${icon("families")}${I.TO(PAGE.eyebrow)} · ${I.TO(PAGE.stepOf)} ${n} ${I.TO(PAGE.of)} 3
+    </p>
+    <a
+      class="gt-exit"
+      href="${BASE}/?grades=${plan.pick}"
+      >${icon("close")}${I.TO(PAGE.exit)}</a
+    >
+    <nav class="gt-progress" aria-label="${I.S(PAGE.progressLabel.en, PAGE.progressLabel.es)}">
+      <ol class="is-three">
+        ${STEPS.map((s) => {
+          const label = html`<span class="gt-progress-n" aria-hidden="true"
+              >${s.n < n ? icon("check") : s.n}</span
+            ><span class="gt-progress-name">${I.TO(s.name)}</span>`;
+          return html`<li
+            class="${s.n < n ? "is-done" : s.n === n ? "is-now" : ""}"
+            ${s.n === n ? html`aria-current="step"` : ""}
+          >
+            ${s.n < n ? html`<a href="${stepHref(s.n, plan)}">${label}</a>` : html`<span>${label}</span>`}
+          </li>`;
+        })}
+      </ol>
+    </nav>
+  </header>`;
+}
+
+function bandHTML(I, band, early) {
+  return html`<div class="ft-field">
+    <p class="ft-label" id="ftBandLabel">${I.TO(PAGE.gradeLabel)}</p>
+    <div class="ft-bands" role="group" aria-labelledby="ftBandLabel">
+      ${FAMILY_BANDS.map(
+        (b) =>
+          html`<button
+            type="button"
+            class="ft-band"
+            data-ft-band="${b.id}"
+            aria-pressed="${String(b.id === band)}"
+          >
+            ${I.TO(b.label)}
+          </button>`,
+      )}
     </div>
     ${
       band === "k-2"
-        ? html`<p class="tg-label tg-label-sub" id="tgEarlyLabel">${I.TO(FAMILY_GRADE.early)}</p>
-            <div class="tg-band-btns is-sub" role="group" aria-labelledby="tgEarlyLabel">
-              ${FAMILY_GRADE.earlyPicks.map((p) => html`<button type="button" class="in-seg" data-tg-early="${p.id}" aria-pressed="${String(p.id === early)}">${I.TO(p.label)}</button>`)}
+        ? html`<p class="ft-label ft-label-sub" id="ftEarlyLabel">${I.TO(PAGE.early)}</p>
+            <div class="ft-bands is-sub" role="group" aria-labelledby="ftEarlyLabel">
+              ${PAGE.earlyPicks.map(
+                (p) =>
+                  html`<button type="button" class="ft-band" data-ft-early="${p.id}" aria-pressed="${String(p.id === early)}">
+                    ${I.TO(p.label)}
+                  </button>`,
+              )}
             </div>`
         : ""
     }
   </div>`;
 }
 
-/** The studio picture with the domain word on it (colour is never the only signal). */
-function artHTML(I, id) {
-  const d = DOMAIN[id];
-  return html`<div class="tg-art">
-    <img src="${ART}/${d.art}" alt="" width="480" height="360" loading="lazy" decoding="async" />
-    <span class="tg-tag">${icon(d.icon)}${I.TO(FAMILY_WELCOME.tags[id])}</span>
-  </div>`;
-}
-
-function exampleHTML(I, a) {
-  const ex = a.example;
-  if (ex.plain) {
-    return html`<div class="tg-example" role="group" aria-labelledby="tgEx-${a.id}">
-      <p class="tg-label" id="tgEx-${a.id}">${I.TO(ex.label)}</p>
-      <dl class="tg-pair">
-        <dt>${I.TO(ex.plainLabel)}</dt>
-        <dd lang="en">${ex.plain}</dd>
-        <dt>${I.TO(ex.betterLabel)}</dt>
-        <dd lang="en" class="is-better">${ex.better}</dd>
-      </dl>
-    </div>`;
-  }
-  return html`<div class="tg-example" role="group" aria-labelledby="tgEx-${a.id}">
-    <p class="tg-label" id="tgEx-${a.id}">${I.TO(ex.label)}</p>
-    <p class="tg-quote" lang="en">“${ex.text}”</p>
-  </div>`;
-}
-
-function cardHTML(I, a, band) {
-  return html`<article class="tg-card is-${a.id} ${DOMAIN[a.id].cls}" aria-labelledby="tgCard-${a.id}">
-    ${artHTML(I, a.id)}
-    <header class="tg-card-head">
-      <span class="tg-ic" aria-hidden="true">${icon(a.icon)}</span>
-      <div>
-        <h3 id="tgCard-${a.id}">${I.TO(a.title)}</h3>
-        <p class="tg-activity">${en(a.activityName)}</p>
-      </div>
-    </header>
-    <p class="tg-desc">${I.TO(a.description)}</p>
-    ${readButtonHTML(I, a.id, a.title)}
-    <ol class="tg-steps">
-      ${a.steps.map(
-        (s) => html`<li><strong>${I.TO(s.head)}</strong><span>${I.TO(s.body)}</span></li>`,
-      )}
-    </ol>
-    ${exampleHTML(I, a)}
-    <p class="fine tg-note">${I.TO(a.note)}</p>
-    <a class="btn btn-primary tg-start" href="${startHref(a.route, band)}"
-      >${I.TO(FAMILY.start)}<span class="visually-hidden">: ${I.TO(a.title)}</span>
-      ${icon("arrow-right")}</a
-    >
-  </article>`;
-}
-
-function tonightHTML(I, band) {
-  const steps = band === "k-2" ? TONIGHT.map((t, i) => (i === 0 ? { ...t, ...TONIGHT_ONE } : t)) : TONIGHT;
-  return html`<section class="tg-tonight" aria-labelledby="tgTonight">
-    <h2 id="tgTonight">${I.TO(FAMILY_WELCOME.tonightHeading)}</h2>
-    <ol class="tg-flow">
-      ${steps.map(
-        (t) =>
-          html`<li class="tg-flow-${t.id}">
-            <span class="tg-flow-ic" aria-hidden="true">${icon(t.icon)}</span>
-            <strong>${I.TO(t.head)}</strong><span>${I.TO(t.body)}</span>
-          </li>`,
-      )}
-    </ol>
-  </section>`;
-}
-
-/** Mr. Neft welcomes the family; Spanish mode gets the Spanish panel, English and both-languages the English one. */
-function guidePanel(I, band) {
-  const lang = I.mode === "es" ? "es" : "en";
-  const pick = (o) => (lang === "es" ? o.es : o.en);
-  return guideHTML({
-    say: `${pick(FAMILY_WELCOME.hello)} ${pick(FAMILY.welcome)}`,
-    chips: GUIDE_CHIPS,
-    context: { page: "family", pick: band },
-    lang,
-  });
-}
-
-/**
- * "Print a one-page guide": the file in the page's language; both files in English + Español. Grades K–2 get the
- * K–2 handout.
- */
 function printHTML(I, band) {
   const langs = I.mode === "bi" ? ["en", "es"] : [I.mode === "es" ? "es" : "en"];
   const files = band === "k-2" ? FAMILY_HANDOUT_K2 : FAMILY_HANDOUT;
-  return html`<p class="tg-print">
-    ${langs.map((l) => {
-      const f = files[l];
-      const label = FAMILY_WELCOME.print[l];
-      const word = FAMILY_WELCOME.printWord[l];
-      return html`<span lang="${l}">
-        <a href="${f.pdf}" target="_blank" rel="noopener">${icon("print")}${label} (PDF)</a>
-        <a href="${f.docx}" download>${word}</a>
-      </span>`;
-    })}
+  return html`<p class="ft-print">
+    ${langs.map(
+      (l) =>
+        html`<a href="${files[l].pdf}" target="_blank" rel="noopener" lang="${l}"
+          >${icon("print")}${PAGE.print[l]} (PDF)</a
+        >`,
+    )}
   </p>`;
 }
 
-/** Quick answers; with K–2 chosen, "Where do we start?" names the one routine instead of the two choices. */
-function answersHTML(I, band) {
-  return html`<section class="tg-answers" aria-labelledby="tgAnswers">
-    <h2 id="tgAnswers">${I.TO(FAMILY.answersHeading)}</h2>
-    <dl>
-      ${FAMILY.answers.map(
-        (x) =>
-          html`<div>
-            <dt>${I.TO(x.q)}</dt>
-            <dd>${I.TO(band === "k-2" && x.id === "where" ? EARLY_CARD.where : x.a)}</dd>
-          </div>`,
-      )}
-    </dl>
+/* ── Step 1 ── */
+function startHTML(I, band, plan) {
+  return html`<section class="gt-part ft-start" aria-labelledby="ftTitle">
+    <h1 id="ftTitle" tabindex="-1">${I.TO(PAGE.title)}</h1>
+    <p class="gt-lead">${I.TO(PAGE.lead)}</p>
+    <div class="ft-card">
+      ${bandHTML(I, band, plan.pick)}
+      <a class="btn btn-primary btn-big ft-go" href="${stepHref(2, plan)}">${I.TO(PAGE.start)}${icon("arrow-right")}</a>
+      <div class="ft-field ft-lang">
+        <p class="ft-label" id="ftLangLabel">${I.TO(PAGE.langLabel)}</p>
+        ${langSwitchHTML(I.mode, { idPrefix: "ftLang" })}
+        <p class="fine">${I.TO(PAGE.langNote)}</p>
+      </div>
+    </div>
+    <p class="ft-reassure">${icon("families")}<span>${I.TO(PAGE.noEnglish)}</span></p>
+    <section class="ft-how" aria-labelledby="ftHow">
+      <h2 id="ftHow">${I.TO(PAGE.how)}</h2>
+      <ol>
+        ${PAGE.howSteps.map(
+          (s, i) =>
+            html`<li>
+              <span class="ft-how-ic" aria-hidden="true">${icon(s.icon)}<b>${i + 1}</b></span>
+              <strong>${I.TO(s.head)}</strong><span>${I.TO(s.body)}</span>
+            </li>`,
+        )}
+      </ol>
+    </section>
+    <p class="ft-quiet">
+      <a href="${withReturn(withGrades(plan.next.route, plan.next.pick), "together")}"
+        >${I.TO(PAGE.skip)}${icon("arrow-right")}</a
+      >
+    </p>
+    ${printHTML(I, band)}
   </section>`;
 }
 
-function helpHTML(I) {
-  const body = html`<dl class="tg-help">
-    ${FAMILY.help.items.map(
-      (x) =>
-        html`<div>
-          <dt>${I.TO(x.q)}</dt>
-          <dd>
-            ${I.TO(x.a)}
-            ${x.link ? html` <a href="${BASE}${x.link.route}">${I.TO(x.link.label)}</a>` : ""}
-          </dd>
-        </div>`,
-    )}
-  </dl>`;
-  return disclosure("tg-help", html`${icon("help")} ${I.TO(FAMILY.help.heading)}`, body, {
-    cls: "tg-details",
-  });
+/* ── Step 2 ── */
+function practiceHTML(I, band, plan) {
+  const a = plan.practice;
+  const path = a.route.split("?")[0];
+  return html`<section class="gt-part ft-practice" aria-labelledby="ftTitle">
+    <h1 id="ftTitle" tabindex="-1">${I.TO(PAGE.practiceTitle)}</h1>
+    <p class="gt-lead">${I.TO(PAGE.practiceLead)}</p>
+    <p class="gt-activity-line">${icon(a.domain.icon)}<strong lang="en">${a.title}</strong></p>
+    <div
+      class="gt-stage"
+      data-gt-stage
+      data-src="${withGrades(a.route, a.pick, "&frame=1")}"
+      data-path="${BASE}${path}"
+      data-title="${a.title}"
+    >
+      <div class="gt-frame-slot" data-gt-frame>
+        <p class="gt-loading" role="status">
+          ${icon("clock")}${I.S("Opening the activity…", "Abriendo la actividad…")}
+        </p>
+      </div>
+      <div class="gt-coach" data-coach-slot></div>
+    </div>
+    <nav class="gt-nav" aria-label="${I.S("Steps", "Pasos")}">
+      <a class="btn ghost" href="${stepHref(1, plan)}">${icon("arrow-left")}${I.TO(PAGE.back)}</a>
+      <a class="btn" href="${stepHref(3, plan)}">${I.TO(PAGE.skipToNext)}${icon("arrow-right")}</a>
+    </nav>
+  </section>`;
 }
 
-function moreHTML(I) {
-  const body = html`<p class="fine">${I.TO(FAMILY.more.lead)}</p>
-    <ul class="tg-more">
-      ${FAMILY_MORE.map(
-        (m) =>
-          html`<li>
-            <span class="tg-ic small" aria-hidden="true">${icon(m.icon)}</span>
-            <div>
-              <p>
-                <strong>${en(m.name)}</strong>
-                <span class="fine">${en(m.where)} · ${en(m.time)}</span>
-              </p>
-              <p>${I.TO(m.description)}</p>
-            </div>
-            <a class="btn" href="${startHref(m.route)}"
-              >${I.TO(FAMILY.more.open)}<span class="visually-hidden">: ${en(m.name)}</span></a
-            >
-          </li>`,
-      )}
-    </ul>`;
-  return disclosure("tg-more", html`${icon("reading")} ${I.TO(FAMILY.more.heading)}`, body, {
-    cls: "tg-details",
-  });
+/* ── Step 3 ── */
+function nextHTML(I, band, plan) {
+  const disclosure = (x) =>
+    html`<details class="ft-q">
+      <summary>${I.TO(x.q)}</summary>
+      <p>${I.TO(x.a)}</p>
+    </details>`;
+  return html`<section class="gt-part ft-next" aria-labelledby="ftTitle">
+    <div class="gt-ready ft-ready">
+      <span class="gt-ready-mark" aria-hidden="true">${icon("check")}</span>
+      <div>
+        <h1 id="ftTitle" tabindex="-1">${I.TO(PAGE.nextTitle)}</h1>
+        <p>${I.TO(PAGE.nextLead)}</p>
+      </div>
+    </div>
+    <div class="ft-card ft-next-card">
+      <p class="ft-next-name">${icon("speaking")}<strong lang="en">${plan.next.name}</strong></p>
+      <p class="ft-next-desc">${I.TO(plan.next.description)}</p>
+      <ol class="ft-next-steps">
+        ${plan.next.steps.map((x) => html`<li>${I.TO(x)}</li>`)}
+      </ol>
+      <a
+        class="btn btn-primary btn-big"
+        href="${withReturn(withGrades(plan.next.route, plan.next.pick), "together")}"
+        >${I.TO(PAGE.startPracticing)}${icon("arrow-right")}</a
+      >
+      <a class="ft-again" href="${stepHref(2, plan)}">${icon("retry")}${I.TO(PAGE.again)}</a>
+    </div>
+    <section class="ft-keep" aria-labelledby="ftKeep">
+      <h2 id="ftKeep">${I.TO(PAGE.keepGoing)}</h2>
+      <ul>
+        ${PAGE.keep.map((k) => html`<li>${icon("check")}<span>${I.TO(k)}</span></li>`)}
+      </ul>
+    </section>
+    <section class="ft-more" aria-labelledby="ftMore">
+      <h2 id="ftMore">${I.TO(PAGE.moreTitle)}</h2>
+      <ul>
+        ${plan.more.map(
+          (m) =>
+            html`<li>
+              <a href="${withReturn(withGrades(m.route, plan.pick), "together")}"
+                >${icon(m.icon)}<span
+                  >${m.title ? I.TO(m.title) : ""}<strong lang="en">${m.name}</strong></span
+                ></a
+              >
+            </li>`,
+        )}
+      </ul>
+    </section>
+    <div class="ft-qs">${disclosure(PAGE.sharing)}${disclosure(PAGE.saving)}</div>
+    ${printHTML(I, band)}
+  </section>`;
 }
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
   const band = chosenBand(ctx);
-  const title = I.S(FAMILY.title.en, FAMILY.title.es);
+  const n = readStep(ctx);
+  const plan = familyPlan(band, earlyPick(ctx));
+  view = { n, band, plan, lang: guideLang(I), mode: I.mode };
+  updateIntro("family", (f) => ({ ...f, step: n }));
+  const lang = guideLang(I);
+  const help = resolveLang(FAMILY_HELP, lang);
+  const body =
+    n === 1
+      ? startHTML(I, band, plan)
+      : n === 2
+        ? practiceHTML(I, band, plan)
+        : nextHTML(I, band, plan);
   return {
-    title,
-    html: html`<article class="tg-page" aria-labelledby="tgTitle">
-      <header class="tg-hero">
-        <div class="tg-hero-main">
-          <p class="eyebrow">${I.TO(FAMILY.eyebrow)}</p>
-          <h1 id="tgTitle" tabindex="-1">${I.TO(FAMILY.title)}</h1>
-          <p class="lead">${I.TO(FAMILY.lead)}</p>
-          <div class="tg-lang">${langSwitchHTML(I.mode, { large: true, idPrefix: "tgLang" })}</div>
-          ${bandHTML(I, band, ctx)}
-          <button type="button" class="btn btn-primary btn-big tg-go" data-tg-go>
-            ${I.TO(FAMILY_WELCOME.go)}${icon("chevron-down")}
-          </button>
-        </div>
-        <div class="tg-hero-guide">${guidePanel(I, band)}</div>
-      </header>
-      ${tonightHTML(I, band)}
-      <section class="tg-choices" aria-labelledby="tgChoose">
-        <h2 id="tgChoose" tabindex="-1">${I.TO(band === "k-2" ? FAMILY.chooseHeadingOne : FAMILY.chooseHeading)}</h2>
-        <div class="tg-cards${band === "k-2" ? " is-single" : ""}">${band === "k-2" ? earlyCardHTML(I, ctx, { tag: FAMILY_WELCOME.tags.talk, start: FAMILY.start }) : familyActivitiesFor(band).map((a) => cardHTML(I, a, band))}</div>
-      </section>
-      ${answersHTML(I, band)}
-      <section class="tg-language" aria-labelledby="tgLangHead">
-        <h2 id="tgLangHead">${I.TO(FAMILY.languageHeading)}</h2>
-        <p>${I.TO(band === "k-2" ? FAMILY.languageNoteOne : FAMILY.languageNote)}</p>
-        ${I.mode === "en" ? "" : html`<p class="fine">${I.TO(FAMILY.spanishNote)}</p>`}
-      </section>
-      <section class="tg-extras">${helpHTML(I)}${moreHTML(I)}</section>
-      ${audienceMapHTML(I, labBandFor(band, ctx), "family", {
-        id: "familyMap",
-        limit: 4,
-        title: ["Everything for families", "Todo para las familias"],
-        lead: ["Every part of the site you can use at home, grouped the same way as the menu at the top.", "Cada parte del sitio que pueden usar en casa, agrupada igual que el menú de arriba."],
+    title: I.S(STEPS[n - 1].name.en, STEPS[n - 1].name.es),
+    html: html`<article class="gt-page ft-page" aria-labelledby="ftTitle">
+      ${topHTML(I, n, plan)} ${body}
+      ${helpHTML({
+        say: {
+          ...help,
+          links: [
+            {
+              href: `${BASE}/family?grades=${plan.pick}`,
+              label: I.S("More family help", "Más ayuda para familias"),
+            },
+          ],
+        },
+        restart: true,
+        restartAttr: "data-ft-restart",
+        lang,
       })}
-      <footer class="tg-foot">
-        <p class="fine">${I.TO(FAMILY.privacy)}</p>
-        ${printHTML(I, band)}
-        <p class="tg-links">
-          <a href="${BASE}${FAMILY.links.siteGuide.route}">${I.TO(FAMILY.links.siteGuide.label)}</a>
-          <a href="${BASE}${FAMILY.links.familyCorner.route}"
-            >${I.TO(FAMILY.links.familyCorner.label)}</a
-          >
-        </p>
+      <footer class="ft-foot">
+        <p class="fine">${I.TO(PAGE.privacy)}</p>
+        ${I.mode === "en" ? "" : html`<p class="fine">${I.TO(PAGE.machine)}</p>`}
       </footer>
     </article>`,
   };
 }
 
-/** The lab's content band for the family's grade, so every link on the page (and after it) opens that grade. */
-function labBandFor(band, ctx) {
-  if (band === "k-2") return earlyPick(ctx);
-  return band;
+export function mount(root, ctx) {
+  coach?.destroy();
+  coach = null;
+  const stage = document.querySelector("[data-gt-stage]");
+  if (!stage || !view) return;
+  const lang = view.lang;
+  const frame = activityFrame(stage.dataset.src, stage.dataset.title);
+  const slot = stage.querySelector("[data-gt-frame]");
+  frame.addEventListener("load", () => slot.querySelector(".gt-loading")?.remove(), { once: true });
+  slot.append(frame);
+  const path = stage.dataset.path;
+  const copy = resolveLang(COACH_COPY, lang);
+  copy.stepOf = (a, b) => (lang === "es" ? `Paso ${a} de ${b}` : `Step ${a} of ${b}`);
+  copy.lang = lang === "es" ? "es-US" : "en-US";
+  coach = createCoach({
+    stage,
+    frame,
+    // In Español the directions already show in Spanish, so the "directions in Spanish" step is left out.
+    steps: loopSteps({ ...resolveLang(FAMILY_SAY, lang), ...(view.mode === "es" ? { spanish: null } : {}) }),
+    copy,
+    isHome: (win) => {
+      try {
+        return win.location.pathname === path || win.location.href === "about:blank";
+      } catch {
+        return true;
+      }
+    },
+    onFinish: () => ctx.navigate(stepHref(3, view.plan)),
+  });
 }
 
-/** Make the family's grade the lab's grade too: the menu, the directory and every activity then agree with it. */
-function syncLabBand(ctx, band) {
-  const target = labBandFor(band, ctx);
-  if (ctx.bands.includes(target)) ctx.setBand(target);
-}
-
-/** "Let's begin": bring the two choices into view and put focus on their heading. */
-function goToChoices() {
-  const target = document.getElementById("tgChoose");
-  if (!target) return;
-  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  target.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
-  target.focus({ preventScroll: true });
-}
-
-/** The three steps a "Hear the steps" button reads: the K–2 routine, or Let's Talk / Let's Write for the grade. */
-function stepsFor(ctx, id) {
-  if (id === "early") return earlySteps(ctx);
-  return familyActivitiesFor(chosenBand(ctx)).find((a) => a.id === id)?.steps || [];
+export function unmount() {
+  coach?.destroy();
+  coach = null;
 }
 
 export function onClick(e, ctx) {
-  if (onReadClick(e, i18nFor(ctx).mode, (id) => stepsFor(ctx, id))) return true;
-  if (e.target.closest?.("[data-tg-go]")) {
-    goToChoices();
+  if (e.target.closest?.("[data-ft-restart]")) {
+    updateIntro("family", (f) => ({ ...f, step: 1 }));
+    ctx.navigate(stepHref(1, view?.plan));
     return true;
   }
-  const early = e.target.closest?.("[data-tg-early]");
+  const early = e.target.closest?.("[data-ft-early]");
   if (early) {
-    updateIntro("family", (f) => ({ ...f, band: "k-2", early: early.dataset.tgEarly }));
-    dropLinkedGrade();
-    syncLabBand(ctx, "k-2");
-    ctx.rerender();
-    return true;
+    const pick = early.dataset.ftEarly;
+    updateIntro("family", (f) => ({ ...f, band: "k-2", early: pick }));
+    return chooseGrade(ctx, "k-2", `[data-ft-early="${pick}"]`);
   }
-  const b = e.target.closest?.("[data-tg-band]");
+  const b = e.target.closest?.("[data-ft-band]");
   if (!b) return false;
-  updateIntro("family", (f) => ({ ...f, band: b.dataset.tgBand }));
-  dropLinkedGrade();
-  syncLabBand(ctx, b.dataset.tgBand);
-  ctx.rerender();
+  const id = b.dataset.ftBand;
+  updateIntro("family", (f) => ({ ...f, band: id }));
+  return chooseGrade(ctx, id, `[data-ft-band="${id}"]`);
+}
+
+/** After a grade choice: a teacher link's ?grades= leaves the address (the family's choice now wins), the lab takes
+ * the same grade, and the page re-renders with focus kept on the pressed button. */
+function chooseGrade(ctx, band, focus) {
+  const url = new URL(location.href);
+  url.searchParams.delete("grades");
+  history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+  syncLabBand(ctx, familyPlan(band, earlyPick({ ...ctx, route: { ...ctx.route, grades: "" } })));
+  Promise.resolve(ctx.rerender()).then(() => document.querySelector(focus)?.focus({ preventScroll: true }));
   return true;
 }
-
-/** The family's own choice now wins over a teacher's link, so the link's ?grades= leaves the address. */
-function dropLinkedGrade() {
-  const url = new URL(location.href);
-  if (url.searchParams.has("grades")) {
-    url.searchParams.delete("grades");
-    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
-  }
-}
-
-export function mount(root) {
-  trackDisclosures(root);
-  bindGuide();
-  mountRead(root);
-}
-export const unmount = () => unmountRead();

@@ -4,7 +4,7 @@
 //
 // Spanish is machine-written and addresses adults as "ustedes" (docs/family-homework-v3/es-style-guide.md).
 // Activity names and example sentences stay English: the activities are English practice.
-import { ACTIVITY_BY_ID, FACTS, ROUTES, SUPPLEMENTAL } from "./data.js";
+import { ACTIVITY_BY_ID, FACTS, ROUTES } from "./data.js";
 
 /** The four bullets of "practice at home". Shared with the Site Guide. */
 export const practiceAtHome = [
@@ -125,28 +125,6 @@ export const FAMILY_ACTIVITIES = [
   },
 ];
 
-/** One-line family descriptions for the optional extras. Names, places and times come from data.js. */
-const MORE_DESCRIPTIONS = {
-  seasons: {
-    en: "Read a short text about the seasons. You can hear it read aloud.",
-    es: "Lean un texto corto sobre las estaciones. Pueden escucharlo en voz alta.",
-  },
-  morphemes: {
-    en: "Snap word parts together to build a word. Nothing is timed.",
-    es: "Unan partes de palabras para formar una palabra. Nada tiene límite de tiempo.",
-  },
-};
-
-export const FAMILY_MORE = SUPPLEMENTAL.map((s) => ({
-  id: s.id,
-  icon: s.icon,
-  route: s.route,
-  name: s.name,
-  where: s.where,
-  time: s.time,
-  description: MORE_DESCRIPTIONS[s.id],
-}));
-
 /** All other page copy. `answers` are the "Where? What? How long? Then what?" quick answers. */
 export const FAMILY = {
   eyebrow: { en: "For families", es: "Para familias" },
@@ -160,8 +138,6 @@ export const FAMILY = {
     es: "Hablen de sus ideas en el idioma que usan en casa. Los adultos no necesitan un inglés perfecto para ayudar. Escuchar y hacer preguntas es suficiente.",
   },
   chooseHeading: { en: "Choose one", es: "Elijan una" },
-  /** Grades K–2 have one routine, so the heading names it instead of asking for a choice. */
-  chooseHeadingOne: { en: "Tonight’s activity", es: "La actividad de hoy" },
   stepsHeading: { en: "Three steps", es: "Tres pasos" },
   start: { en: "Start", es: "Empezar" },
   startsActivity: { en: "Opens", es: "Abre" },
@@ -198,11 +174,6 @@ export const FAMILY = {
   languageNote: {
     en: "This page is in English and Español. The activities practice English: the pictures, questions and sentences stay in English. When you choose Español, the buttons and directions in these two activities also show in Spanish.",
     es: "Esta página está en inglés y en español. Las actividades practican inglés: las imágenes, las preguntas y las oraciones quedan en inglés. Si eligen Español, los botones y las instrucciones de estas dos actividades también se muestran en español.",
-  },
-  /** Grades K–2: one activity, and its directions are not claimed to switch language. */
-  languageNoteOne: {
-    en: "This page is in English and Español. The activity practices English: the pictures, questions and sentences stay in English.",
-    es: "Esta página está en inglés y en español. La actividad practica inglés: las imágenes, las preguntas y las oraciones quedan en inglés.",
   },
   spanishNote: {
     en: "The Spanish on this page is machine-assisted and has not been reviewed by a human translator.",
@@ -284,27 +255,12 @@ export const FAMILY = {
   },
 };
 
-/** The grade choice at the top of the page. K–2 shows the in-page routine of family-k2-data.js. */
+/** The grade choice on the family walkthrough's first step. */
 export const FAMILY_BANDS = [
   { id: "k-2", label: { en: "Grades K–2", es: "Grados K a 2" } },
   { id: "3-5", label: { en: "Grades 3–5", es: "Grados 3 a 5" } },
   { id: "6-8", label: { en: "Grades 6–8", es: "Grados 6 a 8" } },
 ];
-export const FAMILY_GRADE = {
-  heading: { en: "Your child’s grade", es: "El grado de su hijo o hija" },
-  /** Grades K–2: the exact grade picks the routine's picture, model child and activity. */
-  early: { en: "Which grade exactly?", es: "¿Qué grado exactamente?" },
-  earlyPicks: [
-    { id: "K", label: { en: "Kindergarten", es: "Kínder" } },
-    { id: "1", label: { en: "Grade 1", es: "1.º grado" } },
-    { id: "2-3", label: { en: "Grade 2", es: "2.º grado" } },
-  ],
-};
-/** Step 1 of tonight's flow when the grade has a single routine (K–2). */
-export const TONIGHT_ONE = {
-  head: { en: "Start", es: "Empiecen" },
-  body: { en: "Use the activity below.", es: "Usen la actividad de abajo." },
-};
 
 const [talk68, write68] = FAMILY_ACTIVITIES;
 /** Grades 3–5: the same two routines on that band's own picture and sentence (checked in a browser 2026-11-10). */
@@ -394,20 +350,6 @@ export const TONIGHT = [
     },
   },
 ];
-
-/** First-screen copy: Mr. Neft's welcome, the one next action, the flow heading, card tags and the print link. */
-export const FAMILY_WELCOME = {
-  hello: { en: "Welcome! I am Mr. Neft.", es: "¡Bienvenidos! Soy Mr. Neft." },
-  go: { en: "Let’s begin", es: "Empecemos" },
-  tonightHeading: { en: "Tonight, in three steps", es: "Esta noche, en tres pasos" },
-  tags: {
-    talk: { en: "Speaking", es: "Hablar" },
-    write: { en: "Writing", es: "Escribir" },
-    early: { en: "Listening and reading", es: "Escuchar y leer" },
-  },
-  print: { en: "Print a one-page guide", es: "Imprimir una guía de una página" },
-  printWord: { en: "Word file", es: "Archivo de Word" },
-};
 
 /** The family handout files (scripts/generate-intro-guide.mjs --only=family writes them). */
 export const FAMILY_HANDOUT = {

@@ -12,7 +12,7 @@ import { ROUTES } from "./data.js";
 import { GUIDE } from "./site-guide-data.js";
 import { linkHTML } from "./site-guide-cards.js";
 import { withReturn } from "./return-bar.js";
-import { DOMAIN_STOP, tourHref } from "./start-overview.js";
+import { tourHref } from "./start-overview.js";
 import { tourActivities, tourRoute } from "./tour-bands.js";
 
 const DOMAIN_ES = {
@@ -101,7 +101,7 @@ const actions = (I, pick, a) =>
         >: <span lang="en">${a.title}</span></span
       >${icon("arrow-right")}</a
     >
-    <a class="btn small ghost" href="${tourHref(pick, DOMAIN_STOP[a.domain.id])}"
+    <a class="btn small ghost" href="${tourHref(pick, a.domain.id)}"
       >${I.T("Try it in the tour", "Probarla en el recorrido")}<span class="visually-hidden"
         >: ${I.T(a.domain.name, DOMAIN_ES[a.domain.id])}</span
       ></a

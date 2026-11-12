@@ -11,9 +11,9 @@ Single entrance for the whole PD: **https://thelanguagepage.com/access-practice-
 
 | Activity | Where | Lab route | Time | Appears in |
 | --- | --- | --- | --- | --- |
-| The Busy Hallway | Voice Lab · Picture speaking ladder | `/voice/ladder/school-hallway` | 5–8 min | Start page overview; Guided tour, Grades 6–8: Speaking step and plan; Exploration (Speaking); Quick guide page 1; Featured lesson anchor and Use This Lesson; Presenter segment 3–8; Family page: Let’s Talk; Site Guide; Activity Guide (page and handout) |
+| The Busy Hallway | Voice Lab · Picture speaking ladder | `/voice/ladder/school-hallway` | 5–8 min | Start page overview; Exploration (Speaking); Quick guide page 1; Featured lesson anchor and Use This Lesson; Presenter segment 3–8; Family walkthrough, Grades 6–8: next activity; Site Guide; Activity Guide (page and handout) |
 | Speak at the School Board Meeting | Speaking Studio | `/speak/spk-startime-argue` | 7 min | Start page overview; Exploration (Speaking); Quick guide page 1; Site Guide; Activity Guide (page and handout) |
-| Language Upgrade Lab | Language builders | `/scaffold/language-upgrade?item=lu68-argue-phones` | 5 min | Start page overview; Guided tour, Grades 6–8: Writing step and plan; Exploration (Writing); Quick guide page 1; Presenter segment 8–13; Family page: Let’s Write; Site Guide; Activity Guide (page and handout) |
+| Language Upgrade Lab | Language builders | `/scaffold/language-upgrade?item=lu68-argue-phones` | 5 min | Start page overview; Exploration (Writing); Quick guide page 1; Presenter segment 8–13; Family walkthrough, Grades 6–8: other ways to practice; Site Guide; Activity Guide (page and handout) |
 | Should School Start Later? | Writing Studio | `/write/wrt-school-start-paragraph` | 20 min | Start page overview; Exploration (Writing); Quick guide page 1; Site Guide; Activity Guide (page and handout) |
 
 ## Explore Later (2)

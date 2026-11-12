@@ -13,7 +13,6 @@ import {
   LOOP,
   PATHWAYS,
   ROUTES,
-  TOUR_STOPS,
   USE_LESSON,
   WORDS,
   absUrl,
@@ -24,12 +23,12 @@ import { ROUTINES, SHARING } from "./site-guide-more.js";
 import { familiesHTML, resourcesHTML } from "./start-resources.js";
 import { loadIntro } from "./state.js";
 import { tourRoute } from "./tour-bands.js";
+import { PARTS } from "./tour-data.js";
 import { activityHref, copyWithNote, labHref } from "./ui.js";
 
-/** Tour stop (1-based, as in ?stop=) for each domain: stop 1 is "Choose your grades". */
-export const DOMAIN_STOP = Object.fromEntries(TOUR_STOPS.map((s, i) => [s.id, i + 1]));
-export const tourHref = (pick, stop) =>
-  `${labHref(ROUTES.tour)}?grades=${pick}${stop ? `&stop=${stop}` : ""}`;
+/** The teacher tour: a skill opens Part 3 with that skill chosen; no skill opens the tour where the teacher left it. */
+export const tourHref = (pick, skill) =>
+  `${labHref(ROUTES.tour)}?${skill ? `part=3&skill=${skill}&` : ""}grades=${pick}`;
 
 const sections = (pick) => [
   ["ov-domains", "Your grades"],
@@ -43,14 +42,11 @@ const sections = (pick) => [
 /** What this device remembers about the tour, the exploration and the lesson. Shown only when something is saved. */
 export function progressItems(intro) {
   const items = [];
-  const t = intro.tour;
-  if (t && (Number.isInteger(t.stop) || t.tried)) {
-    const tried = Object.values(t.tried || {}).filter(Boolean).length;
-    const step = Math.min((t.stop ?? 0) + 1, TOUR_STOPS.length);
-    const grades = t.pick ? `&grades=${t.pick}` : "";
+  const t = intro.guided;
+  if (t && t.part > 1 && !t.done) {
     items.push({
-      text: `Guided Tour: Step ${step} of ${TOUR_STOPS.length}${tried ? `, ${tried} tried` : ""}`,
-      href: `${labHref(ROUTES.tour)}?stop=${step}${grades}`,
+      text: `Teacher tour: Part ${t.part} of ${PARTS.length}, ${PARTS[t.part - 1].name}`,
+      href: labHref(ROUTES.tour),
       cta: "Resume the tour",
     });
   }
@@ -89,7 +85,7 @@ function progressHTML() {
 /** The two buttons on each domain card: try it inside the tour, or open the real activity. */
 const cardActions = (pick) => (a) =>
   html`<p class="ov-card-actions">
-    <a class="btn small btn-primary" href="${tourHref(pick, DOMAIN_STOP[a.domain.id])}"
+    <a class="btn small btn-primary" href="${tourHref(pick, a.domain.id)}"
       >Try it in the tour<span class="visually-hidden">: ${a.domain.name}</span></a
     >
     <a class="btn small ghost" href="${withReturn(labHref(tourRoute(a)), "start")}"
@@ -103,8 +99,8 @@ function domainsHTML(pick) {
       <p class="eyebrow">${pickName(pick)}</p>
       <h2 id="ovDomTitle">Your grades at a glance</h2>
       <p>
-        One real activity in each language domain. Try it inside the tour with directions beside it,
-        or open it the way students see it.
+        One real activity in each language domain. Try it in the tour with a guide beside it, or open
+        it the way students see it.
       </p>
     </div>
     ${domainCardsHTML(pick, cardActions(pick))}

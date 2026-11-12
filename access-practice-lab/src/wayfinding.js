@@ -1,7 +1,7 @@
 // The section bar: one slim strip under the header on every page that belongs to a section, so a learner always sees
 // where they are (section › skill) and the places next to it, and can move sideways without going back home.
 // It reads src/sitemap.js, the same registry as the navigation and /explore, so every page names the same section
-// everywhere. Hidden on the home page, inside focused test mode, inside the Guided Tour frame and in the K–3 band
+// everywhere. Hidden on the home page, inside focused test mode, inside a guided-experience frame and in the K–3 band
 // (which has its own picture-first home).
 import { isEarlyBand } from "./bands.js";
 import { SECTION_BY_ID, SKILLS, locate, siblings } from "./sitemap.js";

@@ -1,4 +1,4 @@
-// The grade-band Guided Tour and Mr. Neft, the guide: every tour activity is the real activity (id, title, level,
+// The grade-band Teacher Tour activities and Mr. Neft, the guide: every tour activity is the real activity (id, title, level,
 // minutes against content/index.json; voice ladders and Language Upgrade items against their own data), every
 // route opens in the grade it names, the guide's quick answers come from verified text, and /api/language-guide is
 // grounded in that same data, refuses bad input and says "offline" (never an invented answer) with no model bound.
@@ -21,7 +21,7 @@ const { normalizeBand } = await import("../access-practice-lab/src/bands.js");
 const { BAND_TOUR, DOMAINS, tourActivities, tourRoute } = await import(
   "../access-practice-lab/src/intro/tour-bands.js"
 );
-const { TOUR_STOPS } = await import("../access-practice-lab/src/intro/data.js");
+const { PARTS } = await import("../access-practice-lab/src/intro/tour-data.js");
 const { LADDERS } = await import("../access-practice-lab/src/content/voice-lab.js");
 const { itemById } = await import("../access-practice-lab/src/content/scaffold-items.js");
 const { checkUpgrade } = await import("../access-practice-lab/src/lang/scaffold-check.js");
@@ -115,10 +115,15 @@ test("every tour route opens in its own grade, and ?grades= values resolve to a 
   assert.equal(pickFromParam("nope"), "");
 });
 
-test("the tour has six stops: grades, the four domains, a plan", () => {
+test("the tour has four parts: goal, try, prepare, classroom", () => {
   assert.deepEqual(
-    TOUR_STOPS.map((s) => s.id),
-    ["start", "listening", "speaking", "reading", "writing", "tomorrow"],
+    PARTS.map((p) => [p.n, p.id]),
+    [
+      [1, "goal"],
+      [2, "try"],
+      [3, "prepare"],
+      [4, "classroom"],
+    ],
   );
 });
 

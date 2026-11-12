@@ -1088,8 +1088,8 @@ export const DESTINATIONS = Object.freeze([
     icon: "families",
     title: P("Families: Practice Together", "Familias: Practicar juntos"),
     text: P(
-      "Choose one activity. Practice together for 5–10 minutes.",
-      "Elijan una actividad. Practiquen juntos de 5 a 10 minutos.",
+      "A short guide shows you how to help your child practice English, even if you are still learning English.",
+      "Una guía corta les muestra cómo ayudar a su hijo o hija a practicar inglés, aunque todavía estén aprendiendo inglés.",
     ),
   },
   {

@@ -1,5 +1,5 @@
 // Practice Together, grades K–2: the one in-page routine for tonight ("Let’s Talk About a Picture") and the K–2
-// handout copy. Pure data, no DOM; family-k2.js renders the card and scripts/lib/intro-family-k2-handout.mjs prints the
+// handout copy. Pure data, no DOM; the family walkthrough (family.js) reads the grade picks and scripts/lib/intro-family-k2-handout.mjs prints the
 // handout. The activity (title, route, grade) comes from tour-bands.js BAND_TOUR, so it is named and linked once.
 //
 // Checked in a browser on 2026-11-11 against /Speaking/A/gk-s-a-garden-see, /Speaking/A/g1-s-a-garden-name and
@@ -64,30 +64,6 @@ export function earlyRoutine(pick) {
     ],
   };
 }
-
-/** The K–2 card's own copy. */
-export const EARLY_CARD = {
-  title: { en: "Let’s Talk About a Picture", es: "Hablemos de una imagen" },
-  description: {
-    en: "Look at a garden picture together. Your child hears a child their own age answer first, then says one thing they see.",
-    es: "Miren juntos una imagen de un huerto. Su hijo o hija escucha primero la respuesta de un niño o una niña de su edad y luego dice una cosa que ve.",
-  },
-  exampleLabel: { en: "What the model student says", es: "Lo que dice el estudiante modelo" },
-  role: {
-    en: "Your role: sit beside your child, tap the buttons and point to the picture. Repeat your child’s words back in a full sentence.",
-    es: "Su papel: siéntense al lado de su hijo o hija, toquen los botones y señalen la imagen. Repitan las palabras de su hijo o hija en una oración completa.",
-  },
-  /** The quick answer "Where do we start?" when K–2 is chosen. */
-  where: {
-    en: "Press Start on Let’s Talk About a Picture.",
-    es: "Toquen Empezar en Hablemos de una imagen.",
-  },
-  more: { en: "More practice for grades K–2", es: "Más práctica para los grados K a 2" },
-  moreText: {
-    en: "The page for younger children also has a picture story read aloud, sounds, word cards and short games.",
-    es: "La página para niños más pequeños también tiene un cuento con imágenes leído en voz alta, sonidos, tarjetas de palabras y juegos cortos.",
-  },
-};
 
 /** The K–2 handout files (scripts/generate-intro-guide.mjs --only=family writes them). */
 export const FAMILY_HANDOUT_K2 = {

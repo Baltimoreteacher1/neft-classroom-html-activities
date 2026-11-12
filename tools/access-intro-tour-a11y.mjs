@@ -1,26 +1,33 @@
 #!/usr/bin/env node
-import { BAND_TOUR } from "../access-practice-lab/src/intro/tour-bands.js";
 /**
- * Guided Tour accessibility sweep (/start/tour): every grade choice (K, 1, 2-3, 4-5, 6-8) x all six steps, at 1280
- * and 390 px, with the live activity panel opened on the four domain steps and the "Show to the class" view opened on
- * the plan step. Each state must have:
- *   - axe (wcag2a/aa, 21a/aa, 22aa) serious + critical = 0 on the tour page. The live panel's inner document is a lab
- *     activity page and is excluded here (`iframe.tr-frame`): those pages have their own browser gates
- *     (access-lab-sweep, access-early-e2e, access-lesson-frame-e2e). Its <iframe> element itself (title) is checked.
- *   - 44 x 44 px targets on every tour control (links inside a sentence are exempt, WCAG 2.5.8);
- *   - no horizontal scroll; no console error from the tour page or the panel.
- * At 1280 it also proves auto-tick: for each domain step it presses, inside the live panel, a real control each step
- * names and checks that the step's checkbox ticked itself.
+ * Teacher Tour accessibility sweep (/start/tour, four parts): every grade choice (K, 1, 2-3, 4-5, 6-8) at 1280 and
+ * 390 px, in each part — 1 the goals, 2 a live activity with the coach card, 3 a chosen skill and support with the
+ * live preview, 4 the classroom card and its "Show the QR code to the class" dialog. Each state must have:
+ *   - axe (wcag2a/aa, 21a/aa, 22aa) serious + critical = 0 on the tour page. The activity frame's inner document is a
+ *     lab activity page and is excluded (`iframe.gc-frame`): those pages have their own browser gates
+ *     (access-lab-sweep, access-early-e2e, access-lesson-frame-e2e). The <iframe> element itself (title) is checked.
+ *   - 44 x 44 px targets on every tour and coach control (links inside a sentence are exempt, WCAG 2.5.8);
+ *   - no horizontal scroll; no console error from the tour page or the frame;
+ *   - at phone width (< 960 px) the coach card is docked: position:fixed at the bottom of the screen.
+ * The Show dialog must close on Escape and return focus to its button.
  *   node tools/access-intro-tour-a11y.mjs [--picks=K,1] [--widths=390]
  * A missing browser is a SKIP locally and a FAIL in CI.
  */
+import { BAND_TOUR } from "../access-practice-lab/src/intro/tour-bands.js";
 import { serveAccess } from "./lib/access-serve.mjs";
 
 const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
 const PICKS = arg("picks")?.split(",") || Object.keys(BAND_TOUR);
 const WIDTHS = (arg("widths")?.split(",") || ["1280", "390"]).map(Number);
-const STEPS = 6;
 const SHOTS = process.env.TOUR_A11Y_SHOTS || "";
+// Part 3 shows each grade choice a different skill, so all four skills are swept across the five picks.
+const PREP_SKILL = {
+  K: "speaking",
+  1: "writing",
+  "2-3": "listening",
+  "4-5": "writing",
+  "6-8": "speaking",
+};
 
 let chromium;
 let AxeBuilder;
@@ -51,18 +58,19 @@ const ok = (cond, msg) => {
   else failures.push(msg);
   if (!cond) console.log(`FAIL ${msg}`);
 };
+// web-vitals is a bare npm specifier resolved at build time; the source-tree server cannot serve it.
 const NOISE = /web-vitals|favicon|Failed to load resource/;
 
-/** Controls under 44 x 44 px on the tour page (inline links in running text are exempt). */
+/** Controls under 44 x 44 px on the tour page and the coach card (inline links in running text are exempt). */
 const smallTargets = (page) =>
   page.evaluate(() => {
     const sel =
-      ".tr-page a, .tr-page button, .tr-page summary, .tr-page input[type=text], .tr-page textarea, .tr-page label.in-opt, .tr-check label, .tr-show button";
+      ".gt-page a, .gt-page button, .gt-page summary, .gt-page input[type=text], .gc-card button, .gc-pill, .gt-show button";
     const inline = (el) =>
       el.tagName === "A" &&
       !el.classList.contains("btn") &&
-      el.closest("p, li")?.textContent.trim() !== el.textContent.trim();
-    return [...document.querySelectorAll(sel)]
+      el.closest("p, li, dd")?.textContent.trim() !== el.textContent.trim();
+    return [...new Set(document.querySelectorAll(sel))]
       .filter((el) => el.offsetParent || el.getClientRects().length)
       .filter((el) => !inline(el))
       .map((el) => [el, el.getBoundingClientRect()])
@@ -76,7 +84,7 @@ const smallTargets = (page) =>
 async function check(page, label, errors) {
   const res = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .exclude("iframe.tr-frame")
+    .exclude("iframe.gc-frame")
     .analyze();
   const bad = res.violations.filter((v) => ["serious", "critical"].includes(v.impact));
   ok(
@@ -101,71 +109,31 @@ async function check(page, label, errors) {
   errors.length = 0;
 }
 
-/** Press, inside the live panel, one control each step names, and expect its checkbox to tick itself. */
-const CLICK_FOR_STEP = {
-  "K:listening": [
-    "button:has-text('Hear it again')",
-    [".early-pick", "button:has-text('Check')"],
-    "[aria-label^='Hear: ']",
-  ],
-  "1:listening": [
-    "button:has-text('Hear it again')",
-    [".early-pick", "button:has-text('Check')"],
-    "button:has-text('Hear the story again')",
-  ],
-  "2-3:reading": [".early-sentence", ".early-pick", "button:has-text('Check')"],
-  // Step 3 ("Check my answer") needs an answer and a confidence first; steps 1-2 prove this activity.
-  "4-5:reading": ["button:has-text('Got it, let me try')", "button:has-text('Highlight')", null],
-  "6-8:speaking": [
-    null,
-    "button:has-text('Hear Lina first')",
-    "summary:has-text('Show a sentence frame')",
-  ],
-};
-
-async function autoTick(page, key) {
-  const plan = CLICK_FOR_STEP[key];
-  if (!plan) return;
-  const frame = page.frameLocator("iframe.tr-frame");
-  for (const [i, step] of plan.entries()) {
-    if (!step) continue;
-    // A step may need a choice first (Check stays disabled until a picture is chosen); the last selector is the one
-    // the step names.
-    const sels = [step].flat();
-    for (const pre of sels.slice(0, -1))
-      await frame
-        .locator(pre)
-        .first()
-        .click({ timeout: 5000 })
-        .catch(() => {});
-    const sel = sels.at(-1);
-    const target = frame.locator(sel).first();
-    await target.waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
-    if (!(await target.isVisible())) {
-      ok(false, `auto-tick ${key} step ${i + 1}: "${sel}" not visible in the panel`);
-      continue;
-    }
-    const clicked = await target.click({ timeout: 5000 }).then(
-      () => true,
-      () => false,
-    );
-    if (!clicked) {
-      ok(false, `auto-tick ${key} step ${i + 1}: could not press "${sel}"`);
-      continue;
-    }
-    await page
-      .waitForFunction((n) => document.querySelector(`[data-tr-tick="${n}"]`)?.checked, i, {
-        timeout: 3000,
-      })
-      .catch(() => {});
-    ok(
-      await page.locator(`[data-tr-tick="${i}"]`).isChecked(),
-      `auto-tick ${key} step ${i + 1} from "${sel}"`,
-    );
-  }
-  const count = await page.locator("[data-tr-count]").innerText();
-  ok(/ticked for you|All three done/.test(count), `auto-tick ${key} is announced ("${count}")`);
+/** Wait for the activity frame to render and the coach card to show. */
+async function stageReady(page) {
+  await page.waitForSelector("iframe.gc-frame", { timeout: 60000 });
+  await page
+    .frameLocator("iframe.gc-frame")
+    .locator("#app h1")
+    .first()
+    .waitFor({ state: "attached", timeout: 60000 });
+  await page.waitForSelector(".gc-card", { timeout: 30000 });
+  await page.waitForTimeout(400);
 }
+
+/** On phones the coach card docks: its slot (or the card) is position:fixed and sits at the bottom of the screen. */
+const docked = (page) =>
+  page.evaluate(() => {
+    const card = document.querySelector(".gc-card");
+    if (!card) return "no card";
+    let el = card;
+    while (el && getComputedStyle(el).position !== "fixed") el = el.parentElement;
+    if (!el) return "not fixed";
+    const r = card.getBoundingClientRect();
+    return Math.abs(innerHeight - r.bottom) <= 24
+      ? ""
+      : `bottom ${Math.round(r.bottom)} of ${innerHeight}`;
+  });
 
 for (const width of WIDTHS) {
   const context = await browser.newContext({
@@ -178,46 +146,54 @@ for (const width of WIDTHS) {
   const errors = [];
   page.on("pageerror", (e) => !NOISE.test(e.message) && errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && !NOISE.test(m.text()) && errors.push(m.text()));
+  const go = (q) =>
+    page
+      .goto(`${LAB}/start/tour?${q}`, { waitUntil: "domcontentloaded" })
+      .then(() => page.waitForSelector(".gt-page"));
   for (const pick of PICKS) {
+    const g = encodeURIComponent(pick);
+    const shot = async (n) =>
+      SHOTS && page.screenshot({ path: `${SHOTS}/tour-${pick}-${n}-${width}.png`, fullPage: true });
     await page.goto(`${LAB}/start`, { waitUntil: "domcontentloaded" });
     await page.evaluate(() => localStorage.removeItem("accessPracticeLab:v1:intro"));
-    for (let stop = 1; stop <= STEPS; stop++) {
-      const label = `${pick} step ${stop} @${width}`;
-      await page.goto(`${LAB}/start/tour?grades=${encodeURIComponent(pick)}&stop=${stop}`, {
-        waitUntil: "domcontentloaded",
-      });
-      await page.waitForSelector(".tr-page");
-      if (await page.locator("[data-tr-launch]").count()) {
-        const domain = await page
-          .locator("[data-tr-stop][aria-current=step]")
-          .getAttribute("data-tr-stop");
-        await page.locator("[data-tr-launch]").click();
-        const frame = page.frameLocator("iframe.tr-frame");
-        await frame
-          .locator("#app > :not(.boot):not(.route-loading)")
-          .first()
-          .waitFor({ timeout: 60000 });
-        await page.waitForTimeout(400);
-        await check(page, `${label} (live panel open)`, errors);
-        if (width >= 1000) await autoTick(page, `${pick}:${domain}`);
-      } else if (stop === STEPS) {
-        await page.locator('input[name="tour-pick"]').first().check();
-        await page.waitForSelector(".tr-plan-act");
-        await check(page, `${label} (plan card)`, errors);
-        await page.locator("[data-tr-show]").click();
-        await page.waitForSelector("[data-tr-show-dialog][open]");
-        await check(page, `${label} (Show to the class)`, errors);
-        await page.keyboard.press("Escape");
-        ok(
-          await page.evaluate(() => document.activeElement?.matches("[data-tr-show]")),
-          `Escape closes Show to the class and focus returns: ${label}`,
-        );
-      } else await check(page, label, errors);
-      if (SHOTS)
-        await page.screenshot({
-          path: `${SHOTS}/tour-${pick}-${stop}-${width}.png`,
-          fullPage: true,
-        });
+
+    await go(`part=1&grades=${g}`);
+    await check(page, `${pick} part 1 @${width}`, errors);
+    await shot(1);
+
+    await go(`part=2&goal=show&grades=${g}`);
+    await stageReady(page);
+    await check(page, `${pick} part 2 (coach + live activity) @${width}`, errors);
+    if (width < 960) {
+      const where = await docked(page);
+      ok(where === "", `coach card docked at the bottom @${width} ${pick}: ${where}`);
+    }
+    await shot(2);
+
+    const skill = PREP_SKILL[pick] || "reading";
+    await go(`part=3&goal=show&grades=${g}&skill=${skill}&support=A`);
+    await stageReady(page);
+    ok(
+      (await page.locator("[data-gt-use]").count()) === 1,
+      `${pick} part 3 ${skill}: Use this activity`,
+    );
+    await check(page, `${pick} part 3 (${skill}, preview) @${width}`, errors);
+    await shot(3);
+
+    await go(`part=4&goal=share&grades=${g}&skill=${skill}&support=A`);
+    await page.waitForSelector(".gt-class-card");
+    await check(page, `${pick} part 4 @${width}`, errors);
+    await shot(4);
+    if (await page.locator("[data-gt-show]").count()) {
+      await page.locator("[data-gt-show]").click();
+      await page.waitForSelector("[data-gt-show-dialog][open]");
+      await check(page, `${pick} part 4 (Show the QR code) @${width}`, errors);
+      await page.keyboard.press("Escape");
+      ok(
+        (await page.locator("[data-gt-show-dialog][open]").count()) === 0 &&
+          (await page.evaluate(() => document.activeElement?.matches("[data-gt-show]"))),
+        `Escape closes Show the QR code and focus returns: ${pick} @${width}`,
+      );
     }
   }
   await context.close();

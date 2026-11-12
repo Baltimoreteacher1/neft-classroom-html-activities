@@ -1,5 +1,5 @@
 // The grade-band tour: for each grade choice the teacher can make, one real activity per language domain, with the
-// directions a teacher follows to try it. Read by the Guided Tour, the Start overview, the Site Guide and the family
+// directions a teacher follows to try it. Read by the Teacher Tour, the Start overview, the Site Guide and the family
 // page, so an activity is named, linked and described once.
 //
 // Pure data: no DOM. Every route was opened in a real browser on 2026-11-11 and its buttons and prompt text are the

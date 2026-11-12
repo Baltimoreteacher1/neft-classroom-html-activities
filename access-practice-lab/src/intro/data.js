@@ -286,23 +286,13 @@ export const FEATURED_LESSON = {
   ],
 };
 
-/** Stable order and names for the six tour stops (the tour, the Start overview and the guide use these). */
-export const TOUR_STOPS = [
-  { id: "start", icon: "flag", name: "Choose your grades" },
-  { id: "listening", icon: "listening", name: "Listening" },
-  { id: "speaking", icon: "speaking", name: "Speaking" },
-  { id: "reading", icon: "reading", name: "Reading" },
-  { id: "writing", icon: "writing", name: "Writing" },
-  { id: "tomorrow", icon: "calendar", name: "Plan one class" },
-];
-
 /** The three ways in on the teacher start page. */
 export const START_CHOICES = [
   {
     id: "tour",
     icon: "flag",
-    name: "Take the Guided Tour",
-    detail: "Choose your grades, try one activity in each domain, about 20 minutes.",
+    name: "Take the Teacher Tour",
+    detail: "Try one activity as a student, then set one up for your class. About 8 minutes.",
     route: ROUTES.tour,
   },
   {
@@ -484,9 +474,9 @@ export const ENTRANCE = { route: ROUTES.start, url: absUrl(ROUTES.start), short:
  * set, edit ACTIVITIES / SUPPLEMENTAL deliberately, update this map, and run `node tools/generate-intro-curated-list.mjs`.
  */
 export const APPEARANCES = {
-  hallway: ["Start page overview", "Guided tour, Grades 6–8: Speaking step and plan", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide", "Activity Guide (page and handout)"],
+  hallway: ["Start page overview", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family walkthrough, Grades 6–8: next activity", "Site Guide", "Activity Guide (page and handout)"],
   board: ["Start page overview", "Exploration (Speaking)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
-  upgrade: ["Start page overview", "Guided tour, Grades 6–8: Writing step and plan", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide", "Activity Guide (page and handout)"],
+  upgrade: ["Start page overview", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family walkthrough, Grades 6–8: other ways to practice", "Site Guide", "Activity Guide (page and handout)"],
   paragraph: ["Start page overview", "Exploration (Writing)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
   seasons: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],
   morphemes: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],

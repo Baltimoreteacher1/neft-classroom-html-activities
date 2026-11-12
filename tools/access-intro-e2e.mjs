@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * The teacher introduction in a real browser: home cards -> guided tour -> activity -> return -> resume; exploration
+ * The teacher introduction in a real browser: home cards -> Teacher Tour (goal, coach in a real activity, prepare,
+ * classroom card, restart, resume); exploration
  * (four domains, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view gone; the next-step strip
  * and return bar on curated activities only; Spanish home cards; keyboard path; axe WCAG 2.2 AA; 375px overflow.
  *   node tools/access-intro-e2e.mjs        (serves this working tree)
@@ -63,7 +64,6 @@ async function landingView(href) {
   await p.close();
   return h;
 }
-const heading = (p) => p.locator("#app h1").first().innerText();
 const path = (p) =>
   new URL(p.url()).pathname.replace("/access-practice-lab", "") + new URL(p.url()).search;
 async function axe(page, label) {
@@ -90,7 +90,9 @@ ok(
   "teacher card title",
 );
 ok(
-  (await page.locator(".lph-start.is-family > .btn").innerText()).includes("Start Family Practice"),
+  (await page.locator(".lph-start.is-family > .btn").innerText()).includes(
+    "Practice English Together",
+  ),
   "family card button",
 );
 const topY = await page
@@ -107,200 +109,198 @@ ok(
 );
 await axe(page, "home");
 await page.locator(".lph-start.is-teacher > .btn").click();
-await page.waitForSelector(".in-tour");
-ok(path(page).startsWith("/start/tour"), "Start the Teacher Tour opens the tour");
-ok((await page.locator(".tr-steps li").count()) === 6, "the tour has six steps");
-ok((await page.locator(".tb-pick").count()) === 5, "five grade choices");
-
-// ── guided tour: grade choice, live activity, checklist, Mr. Neft ─────────
-await page.locator('[data-tb-pick="2-3"]').click();
-await page.waitForFunction(() => location.search.includes("grades=2-3"));
+await page.waitForSelector(".gt-part-goal");
 ok(
-  (await page.locator('[data-tb-pick="2-3"]').getAttribute("aria-pressed")) === "true" &&
-    (await page.locator(".tb-domain").count()) === 4 &&
-    (await page.locator(".tb-domains").innerText()).includes("Who Waters the Garden?"),
-  "choosing Grades 2–3 shows that grade's four domain activities",
+  path(page).startsWith("/start/tour?part=1") && /grades=/.test(path(page)),
+  "Start the Teacher Tour opens Part 1 in the home's grades",
 );
-await page.getByRole("link", { name: /^Start with Listening/ }).click();
-await page.waitForSelector(".tr-work");
-ok((await heading(page)) === "Listening", "Start with Listening opens the Listening step");
-await page.locator("[data-tr-launch]").click();
-const frameEl = page.locator("iframe.tr-frame");
-await frameEl.waitFor();
+
+// ── Teacher Tour: Part 1 goal, Part 2 coach in a real activity, Part 3 prepare, Part 4 classroom ─────────
+const coachTitle = () => page.locator(".gc-title").innerText();
+const coachSays = async (re, label) => {
+  await page
+    .waitForFunction(
+      (s) => new RegExp(s).test(document.querySelector(".gc-title")?.textContent || ""),
+      re.source,
+      {
+        timeout: 10000,
+      },
+    )
+    .catch(() => {});
+  const t = await coachTitle().catch(() => "");
+  ok(re.test(t), `${label} (card: "${t}")`);
+};
+await page.goto(`${LAB}/start/tour?part=1&grades=6-8`, { waitUntil: "load" });
+await page.waitForSelector(".gt-part-goal");
+ok((await page.locator("[data-gt-goal]").count()) === 4, "Part 1: four goals");
+ok((await page.locator(".gt-goal.is-recommended").count()) === 1, "Part 1: one recommended goal");
+ok((await page.locator(".gt-exit").innerText()).includes("Exit tour"), "Exit tour link is present");
+await page.locator(".gt-goal.is-recommended").click();
+await page.waitForSelector(".gc-card", { timeout: 60000 });
+ok(/part=2/.test(path(page)) && /goal=show/.test(path(page)), "the recommended goal opens Part 2");
+const frameEl = page.locator("iframe.gc-frame");
 const frameSrc = await frameEl.getAttribute("src");
 ok(
-  /frame=1/.test(frameSrc) && /grades=2-3/.test(frameSrc),
-  "the live panel opens the activity in its grade",
+  /frame=1/.test(frameSrc) && /grades=6-8/.test(frameSrc),
+  "Part 2 frames the activity in its grade",
 );
-const inner = page.frameLocator("iframe.tr-frame");
-await inner.locator("#app h1").waitFor();
+const inner = page.frameLocator("iframe.gc-frame");
+await inner.locator("#app h1").first().waitFor({ state: "attached", timeout: 60000 });
+ok(!(await inner.locator(".lab-top").isVisible()), "the lab's top bar is hidden inside the frame");
 ok(
-  (await inner.locator("#app h1").innerText()).includes("Who Waters the Garden?"),
-  "the real activity runs in the panel",
+  /Step 1 of/.test(await page.locator(".gc-count").innerText()),
+  "the coach card appears at step 1",
 );
-ok(!(await inner.locator(".lab-top").isVisible()), "the lab's top bar is hidden inside the panel");
-await inner.getByRole("button", { name: "Hear the story again" }).click();
-await page
-  .waitForFunction(() => document.querySelector('[data-tr-tick="0"]')?.checked, null, {
-    timeout: 5000,
-  })
-  .catch(() => {});
-ok(
-  (await page.locator('[data-tr-tick="0"]').isChecked()) &&
-    (await page.locator("[data-tr-count]").innerText()).startsWith("Step 1 ticked for you"),
-  "pressing the button step 1 names inside the activity ticks step 1 and says so",
-);
-await page.locator('[data-tr-tick="0"]').uncheck();
-ok(
-  !(await page.locator('[data-tr-tick="0"]').isChecked()),
-  "an automatic tick can still be undone by hand",
-);
-await frameEl.evaluate((f) => {
-  f.dataset.marker = "kept";
+// Keyboard: Tab from the top of the page reaches the coach card's buttons.
+await page.evaluate(() => document.activeElement?.blur());
+let tabbed = false;
+for (let i = 0; i < 80 && !tabbed; i++) {
+  await page.keyboard.press("Tab");
+  tabbed = await page.evaluate(() => Boolean(document.activeElement?.closest(".gc-card button")));
+}
+ok(tabbed, "keyboard Tab reaches the coach card's buttons");
+await page.locator(".gc-foot [data-gc=next]").click();
+await coachSays(/skill lesson/, "Next moves the coach to the skill lesson step");
+await page.waitForTimeout(300);
+const ringOver = await page.evaluate(() => {
+  const ring = document.querySelector(".gc-ring");
+  const frame = document.querySelector("iframe.gc-frame");
+  const el = frame?.contentDocument?.querySelector("[data-frame-ready]");
+  if (!ring || ring.hidden || !el) return false;
+  const r = ring.getBoundingClientRect();
+  const f = frame.getBoundingClientRect();
+  const t = el.getBoundingClientRect();
+  const cx = f.left + t.left + t.width / 2;
+  const cy = f.top + t.top + t.height / 2;
+  return cx > r.left && cx < r.right && cy > r.top && cy < r.bottom;
 });
-for (let i = 0; i < 3; i++) await page.locator(`[data-tr-tick="${i}"]`).check();
-ok(
-  (await page.locator("[data-tr-count]").innerText()).startsWith("All three done") &&
-    (await page.locator('[data-tr-stop="listening"]').getAttribute("class")).includes("is-done"),
-  "ticking all three steps marks Listening done",
+ok(ringOver, "the ring sits over the real control in the activity");
+await inner.locator("[data-frame-ready]").first().click();
+await coachSays(
+  /Directions/,
+  "pressing the skill lesson's button in the activity advances the coach",
 );
-ok(
-  (await frameEl.getAttribute("data-marker")) === "kept",
-  "ticking never reloads the live activity",
+await inner.locator(".directions [data-say]").first().click();
+await coachSays(/Choose an answer/, "Hear directions advances to Choose an answer");
+await inner.locator("label.choice").first().click();
+await coachSays(/sure/, "choosing an answer advances to How sure");
+await inner.locator("[data-sure]").first().click();
+await coachSays(/Check the answer/, "How sure advances to Check");
+await inner.locator("[data-check]").first().click();
+await coachSays(/guidance|correct answer/, "Check advances the card to the feedback step");
+const right = (await inner.locator(".feedback").first().getAttribute("class")).includes("is-right");
+await page.locator(".gc-foot [data-gc=next]").click();
+if (!right) {
+  await coachSays(/try again/, "after a wrong answer the coach shows Try again");
+  await inner.locator("[data-retry]").first().click();
+}
+await coachSays(
+  /student loop/,
+  right ? "a right answer skips Try again" : "Try again reaches the end of the loop",
 );
-await page.locator('input[name="tour-listening-support"][value="replay"]').check();
-await page.locator("#tour-listening-use").fill("Center rotation with headphones.");
-await page.locator('[data-pg-quick="students"]').click();
+await page.locator("[data-gc=finish]").click();
+await page.waitForSelector(".gt-part-prepare");
+ok(/part=3/.test(path(page)), "the coach's finish button opens Part 3");
+
+await page.locator('[data-gt-skill="speaking"]').click();
+await page.waitForSelector("[data-gt-support]");
+const supports = await page.locator("[data-gt-support]").count();
+ok(supports >= 2, `Part 3: choosing a skill shows the support choices (${supports})`);
+await page.locator('[data-gt-support="B"]').click();
+await page.waitForSelector(".gt-preview iframe.gc-frame", { timeout: 60000 });
 ok(
-  (await page.locator(".pg-thread").innerText()).includes("Students listen to a short story"),
-  "Mr. Neft answers a quick question from the activity's own description",
+  /\/Speaking\/B\//.test(await page.locator(".gt-preview iframe.gc-frame").getAttribute("src")),
+  "Part 3: the preview frames a Speaking activity at that support",
 );
-await page.locator("#pgQuestion").fill("microphone");
-await page.locator("[data-pg-form] button[type=submit]").click();
-await page.waitForFunction(() => !document.querySelector(".pg-a.is-pending"));
+await inner.locator("#app h1").first().waitFor({ state: "attached", timeout: 60000 });
 ok(
-  (await page.locator(".pg-thread .pg-turn").first().innerText()).match(/Site Guide/),
-  "with no AI helper, a typed question falls back to the Site Guide",
-);
-await page.getByRole("link", { name: /Open full screen/ }).click();
-await page.waitForSelector("#introReturn");
-ok(
-  path(page).startsWith("/Listening/A/g23-l-a-garden-helper") && path(page).includes("intro=tour"),
-  "Open full screen opens the activity in the same tab with a return hint",
-);
-ok(
-  (await page.locator("#introReturn a").innerText()).includes("Back to the Teacher Tour"),
-  "return bar names the tour",
-);
-await page.locator("#introReturn a").click();
-await page.waitForSelector(".tr-work");
-ok((await heading(page)) === "Listening", "returning lands on the same tour step");
-ok((await page.locator("#introReturn").count()) === 0, "the return bar goes away on the tour");
-ok(
-  (await page.locator('[data-tr-tick="2"]').isChecked()) &&
-    (await page.locator('input[name="tour-listening-support"][value="replay"]').isChecked()) &&
-    (await page.locator("#tour-listening-use").inputValue()).length > 10,
-  "ticks and notes survived the round trip",
+  (await inner.locator("#app h1").first().innerText()).length > 2,
+  "Part 3: the preview activity loads",
 );
 await page.reload();
-await page.waitForSelector(".tr-work");
-ok((await heading(page)) === "Listening", "reload resumes the tour on this device");
-await axe(page, "tour Listening step");
-await overflow(page, "tour 1280");
-const tourState = JSON.parse(
-  await page.evaluate(() => localStorage.getItem("accessPracticeLab:v1:intro")),
+await page.waitForSelector(".gt-part-prepare");
+ok(
+  (await page.locator('[data-gt-skill="speaking"]').getAttribute("aria-pressed")) === "true" &&
+    (await page.locator('[data-gt-support="B"]').getAttribute("aria-pressed")) === "true",
+  "reload keeps the part, the skill and the support",
+);
+await page.locator("[data-gt-use]").click();
+await page.waitForSelector(".gt-class-card");
+ok(/part=4/.test(path(page)), "Use this activity opens Part 4");
+ok(
+  (await page.locator(".gt-class-card .btn-primary").count()) === 1,
+  "Part 4: exactly one primary action on the classroom card",
 );
 ok(
-  tourState.tour.tried.listening === true &&
-    tourState.tour.ticks["2-3:listening"].every(Boolean) &&
-    tourState.tour.notes["listening-support"] === "replay",
-  "saved under accessPracticeLab:v1:intro",
-);
-for (let i = 0; i < 4; i++) await page.getByRole("link", { name: /^Next:/ }).click();
-await page.waitForSelector(".tr-plan");
-await page.locator('input[name="tour-pick"][value="listening"]').check();
-await page.waitForSelector(".tr-plan-act");
-ok(
-  (await page.locator(".tr-plan-act").innerText()).includes("Who Waters the Garden?"),
-  "the plan names the chosen activity",
+  await page.getByText("You’re ready to use this with students.").isVisible(),
+  "Part 4: “You’re ready to use this with students.” is visible",
 );
 ok(
-  (await page.locator(".tr-plan-link svg[role=img]").getAttribute("aria-label")).includes(
-    "Who Waters the Garden?",
-  ),
-  "the plan card shows a named QR code for the student link",
+  (await page.locator(".gt-ready-go").innerText()).includes("Start using the lab"),
+  "Part 4: Start using the lab",
 );
-const mailHref = await page.locator("[data-tr-email]").getAttribute("href");
-ok(
-  mailHref.startsWith("mailto:?subject=") &&
-    decodeURIComponent(mailHref).includes("Activity: Who Waters the Garden?"),
-  "Email it to myself is a mailto: with no address and the plan in the body",
-);
-ok(
-  (await page.locator("[data-tr-assign]").getAttribute("href")).endsWith(
-    "/launch-studio?grades=2-3",
-  ) && (await page.locator(".tr-assign").innerText()).includes("“Who Waters the Garden?”"),
-  "Assign to my class links the Launch Studio and names the activity to choose",
-);
-{
-  const studio = await open("/launch-studio?grades=2-3");
-  await studio.locator('[data-launch-field="domain"]').selectOption("Listening");
-  await studio.waitForTimeout(300);
-  ok(
-    (await studio.locator('[data-launch-field="selected"] option').allInnerTexts()).some((t) =>
-      t.startsWith("Who Waters the Garden?"),
-    ),
-    "the Launch Studio lists the tour's activity under Listening for Grades 2–3",
-  );
-  await studio.close();
-}
-await page.locator("[data-tr-show]").click();
-ok(
-  await page.locator("[data-tr-show-dialog]").evaluate((d) => d.open),
-  "Show to the class opens the full-screen view",
-);
-await page.keyboard.press("Escape");
-ok(
-  !(await page.locator("[data-tr-show-dialog]").evaluate((d) => d.open)) &&
-    (await page.evaluate(() => document.activeElement?.matches("[data-tr-show]"))),
-  "Escape closes it and focus returns to the button",
-);
-await page.evaluate(() => {
-  window.print = () => {};
-});
-await page.locator("[data-tr-print]").click();
-await page.emulateMedia({ media: "print" });
-ok(
-  (await page.locator(".tr-plan-card").isVisible()) &&
-    (await page.locator(".tr-plan-link > svg").isVisible()) &&
-    (await page.locator(".tr-plan-url").isVisible()) &&
-    !(await page.locator(".tr-next").isVisible()) &&
-    !(await page.locator(".ts-band").isVisible()) &&
-    !(await page.locator(".tr-plan-card [data-tr-copy]").first().isVisible()),
-  "Print my plan prints only the plan card, with its link and QR code",
-);
-await page.emulateMedia({ media: "screen" });
-await page.evaluate(() => document.documentElement.classList.remove("tr-print-plan"));
-await page.locator('[data-tr-copy="link"]').click();
+const link = await page.locator("[data-gt-link]").inputValue();
+await page.locator("[data-gt-copy]").click();
 await page
   .waitForFunction(
-    () => document.querySelector("[data-tr-copy-note]")?.textContent.length > 5,
+    () => document.querySelector("[data-gt-copy-note]")?.textContent.length > 3,
     null,
-    { timeout: 5000 },
+    {
+      timeout: 5000,
+    },
   )
   .catch(() => {});
 ok(
-  (await page.locator("[data-tr-copy-note]").innerText()).length > 5,
-  "copying the student link is announced",
+  (await page.evaluate(() => navigator.clipboard.readText())) === link &&
+    (await page.locator("[data-gt-copy-note]").innerText()).length > 3,
+  "Copy student link copies the link and says so",
 );
-ok((await page.locator("[data-tour-finish]").count()) === 1, "the last step offers Finish");
-await axe(page, "tour plan step");
-await page.getByRole("link", { name: "Exit" }).click();
+await page.locator("[data-gt-show]").click();
+ok(
+  await page.locator("[data-gt-show-dialog]").evaluate((d) => d.open),
+  "Show the QR code opens the dialog",
+);
+await page.keyboard.press("Escape");
+ok(
+  !(await page.locator("[data-gt-show-dialog]").evaluate((d) => d.open)) &&
+    (await page.evaluate(() => document.activeElement?.matches("[data-gt-show]"))),
+  "Escape closes it and focus returns to the button",
+);
+await axe(page, "tour Part 4");
+await overflow(page, "tour Part 4 1280");
+const saved = JSON.parse(
+  await page.evaluate(() => localStorage.getItem("accessPracticeLab:v1:intro")),
+);
+ok(
+  saved.guided?.part === 4 && saved.guided.done === true && saved.guided.skill === "speaking",
+  "the tour is saved under accessPracticeLab:v1:intro guided",
+);
+await page.locator("details.gt-help > summary").click();
+await page.locator("[data-gt-restart]").click();
+await page.waitForSelector(".gt-part-goal");
+ok(/part=1/.test(path(page)), "Need help → Start the teacher tour again returns to Part 1");
+// Leave the tour part-way through, then see the start page offer to resume it.
+await page.goto(`${LAB}/start/tour?part=3&goal=find&grades=6-8`, { waitUntil: "load" });
+await page.waitForSelector(".gt-part-prepare");
+await page.locator(".gt-exit").click();
+await page.waitForSelector(".lph-start");
+ok(
+  path(page).startsWith("/?grades=6-8") || path(page) === "/",
+  "Exit tour returns to the home page",
+);
+ok(
+  (await page.locator(".lph-start.is-teacher > .btn").innerText()).includes(
+    "Continue the Teacher Tour",
+  ),
+  "the home card offers to continue the tour",
+);
+await page.goto(`${LAB}/start`, { waitUntil: "load" });
 await page.waitForSelector(".in-hub");
-ok((await page.locator(".in-hub").count()) === 1, "Exit returns to the teacher start page");
 ok((await page.locator(".in-choices a").count()) === 3, "three choices on the start page");
 ok(
-  (await page.locator(".in-choice.is-tour strong").innerText()).includes("Resume the tour"),
+  (await page.locator(".in-choice.is-tour strong").innerText()).includes(
+    "Resume the tour at Part 3",
+  ),
   "start page offers to resume the saved tour",
 );
 ok(
@@ -317,7 +317,7 @@ ok(
 );
 ok(
   (await page.locator(".ov-progress li").count()) >= 1 &&
-    (await page.locator(".ov-progress").innerText()).includes("Guided Tour: Step 6 of 6"),
+    (await page.locator(".ov-progress").innerText()).includes("Teacher tour: Part 3 of 4"),
   "overview: progress panel shows the saved tour",
 );
 // The grade picker re-renders the page in place and puts the choice in the address.
@@ -340,8 +340,8 @@ const tourCard = await page
   .locator(".tb-domain.d-reading a", { hasText: "Try it in the tour" })
   .getAttribute("href");
 ok(
-  /grades=2-3/.test(tourCard) && /stop=4/.test(tourCard),
-  "overview: the Reading card opens tour stop 4 for Grades 2–3",
+  /grades=2-3/.test(tourCard) && /part=3/.test(tourCard) && /skill=reading/.test(tourCard),
+  "overview: the Reading card opens tour Part 3 with Reading chosen for Grades 2–3",
 );
 ok(
   (await page.locator(".ov-loop li").count()) === 5 &&
@@ -589,14 +589,13 @@ ok(
 await page.locator("#introReturn a").click();
 await page.waitForSelector(".in-activities");
 await axe(page, "Activity Guide");
-for (const nav of [
-  "Guided Tour",
-  "Explore",
-  "Lesson",
-  "Quick Guide",
-  "Activity Guide",
-  "Overview",
-]) {
+// The Teacher Tour is a focused page with its own header (no teacher nav): it opens, and Back returns.
+await page.locator(".ts-nav ul a", { hasText: "Teacher Tour" }).first().click();
+await page.waitForSelector(".gt-page");
+ok(path(page).startsWith("/start/tour"), "teacher nav opens the Teacher Tour");
+await page.goBack();
+await page.waitForSelector(".ts-nav");
+for (const nav of ["Explore", "Lesson", "Quick Guide", "Activity Guide", "Overview"]) {
   await page.locator(".ts-nav ul a", { hasText: nav }).first().click();
   await page.waitForFunction(
     (n) => document.querySelector(".ts-nav a[aria-current='page']")?.textContent.includes(n),
@@ -608,38 +607,31 @@ await page.close();
 
 // ── Family grade choice ─────────────────────────────────────────────────────
 page = await open("/practice-together");
-ok((await page.locator("[data-tg-band]").count()) === 3, "family page: three grade choices");
-await page.locator('[data-tg-band="3-5"]').click();
-await page.waitForSelector('[data-tg-band="3-5"][aria-pressed="true"]');
-const starts35 = await page
-  .locator(".tg-start")
-  .evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+ok((await page.locator("[data-ft-band]").count()) === 3, "family page: three grade choices");
+await page.locator('[data-ft-band="3-5"]').click();
+await page.waitForSelector('[data-ft-band="3-5"][aria-pressed="true"]');
 ok(
-  starts35.length === 2 &&
-    /class-garden\?grades=3-5/.test(starts35[0]) &&
-    /lu35-explain-plants&grades=3-5/.test(starts35[1]),
-  "family page: grades 3–5 open that band's own activities",
+  /step=2&grades=4-5/.test((await page.locator(".ft-go").getAttribute("href")) || ""),
+  "family page: Start follows the chosen grade",
 );
-const dest = await landingView(starts35[0]);
+await page.goto(`${LAB}/practice-together?step=3&grades=4-5`);
+await page.waitForSelector(".ft-next-card");
+const next35 = await page.locator(".ft-next-card .btn-primary").getAttribute("href");
+ok(/class-garden\?grades=4-5/.test(next35 || ""), "family page: grades 3–5 continue to that band's talk activity");
+const dest = await landingView(next35);
 ok(dest.includes("Our Class Garden"), "family page: the grades 3–5 talk activity opens");
-await page.locator('[data-tg-band="k-2"]').click();
-await page.waitForSelector('[data-tg-band="k-2"][aria-pressed="true"]');
-ok(
-  (await page.locator(".tg-start").count()) === 1 &&
-    /\/Speaking\/A\/gk-s-a-garden-see\?grades=K/.test(
-      await page.locator(".tg-start").getAttribute("href"),
-    ) &&
-    (await page.locator('a[href*="/early?grades=K"]').count()) >= 1,
-  "family page: grades K–2 get one picture-talk routine and a link to the early learners home",
-);
+await page.goto(`${LAB}/practice-together`);
+await page.waitForSelector(".ft-page");
+await page.locator('[data-ft-band="k-2"]').click();
+await page.waitForSelector('[data-ft-band="k-2"][aria-pressed="true"]');
 await page.reload();
-await page.waitForSelector(".tg-page");
+await page.waitForSelector(".ft-page");
 ok(
-  (await page.locator('[data-tg-band="k-2"]').getAttribute("aria-pressed")) === "true",
+  (await page.locator('[data-ft-band="k-2"]').getAttribute("aria-pressed")) === "true",
   "family page: the grade choice is remembered on this device",
 );
-await page.locator('[data-tg-band="6-8"]').click();
-await page.waitForSelector('[data-tg-band="6-8"][aria-pressed="true"]');
+await page.locator('[data-ft-band="6-8"]').click();
+await page.waitForSelector('[data-ft-band="6-8"][aria-pressed="true"]');
 await axe(page, "family page with grade choice");
 await page.close();
 
@@ -666,7 +658,7 @@ await page.locator(".lang-btn[data-lang-mode='es']").first().click();
 await page.waitForSelector(".lph-start");
 ok(
   (await page.locator(".lph-start.is-family > .btn").innerText()).includes(
-    "Empezar a practicar en familia",
+    "Practicar inglés juntos",
   ),
   "Spanish family card",
 );
@@ -693,6 +685,7 @@ for (const route of [
   "/",
   "/start",
   "/start/tour?stop=3",
+  "/start/tour?part=4&goal=share&grades=6-8&skill=writing&support=A",
   "/start/explore?stop=2&focus=writing",
   "/start/lesson",
   "/start/present?stop=2&focus=notes",
