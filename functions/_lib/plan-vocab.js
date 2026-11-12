@@ -5861,7 +5861,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/language-adventures/studios/",
-    title: "Studios · The Language Page",
+    title: "Studios · The Language Page · Language Adventures studios",
     category: "Tool",
     unit: null,
   },
@@ -5879,25 +5879,25 @@ export const ACTIVITIES = [
   },
   {
     path: "/language-studio/arcade/",
-    title: "The Language Page · Arcade",
+    title: "Arcade · The Language Page",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-studio/notes/",
-    title: "The Language Page · Notes",
+    title: "Teacher notes · The Language Page",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-studio/passport/",
-    title: "The Language Page · Passport",
+    title: "Passport · The Language Page",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-studio/studios/",
-    title: "The Language Page · Studios",
+    title: "Studios · The Language Page · Language Studio studios",
     category: "Tool",
     unit: null,
   },
