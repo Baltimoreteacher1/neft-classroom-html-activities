@@ -49,6 +49,8 @@ const LAB_EXACT = new Set([
   "/api/language-guide",
   // Its anonymous question log, read with the teacher key (functions/api/language-guide/questions.js).
   "/api/language-guide/questions",
+  // The same log grouped into themes and gaps by a model, teacher key only (functions/api/language-guide/insights.js).
+  "/api/language-guide/insights",
   "/graphic-novels",
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */

@@ -127,6 +127,13 @@ stored. Opening any help marks the work supported. Help items are written so the
    instead. The guide's question buttons answer from authored text with no network call, "Hear it" reads a line or an
    answer aloud with the browser's own voices, and with no model available the typed question falls back to the Site
    Guide search. Students' activity pages never call it.
+   **Third exception, decided by Joel on 2026-11-12 (he approved this wording and the deploy: "yes to both"):
+   question-log insights.** `GET /api/language-guide/insights` (teacher key only; `functions/api/language-guide/insights.js`) sends a
+   model (same order as above) the most frequent questions from the already-anonymized log above, and nothing else: no
+   student work, recordings, progress, identifiers or IP addresses. The model returns question numbers plus a short
+   theme label and reason; every number is checked against the input, and its text is shown only to the teacher-key
+   holder, never to a student, to help a person decide what to author next. With no model, too few questions or an
+   unusable reply, it returns the plain frequency list. Students' activity pages never call it.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,
