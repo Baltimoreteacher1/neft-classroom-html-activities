@@ -12,6 +12,7 @@ import {
   sanitizeTutor,
 } from "../tutor-engine.js";
 import { validLastVisit } from "../skill-path.js";
+import { meterFor } from "./meter.js";
 
 const PROGRESS = "ewl-fluency-progress-v1";
 const TUTOR = "ewl-fluency-tutor-v2";
@@ -162,3 +163,12 @@ export function skillStates(grade) {
   }
   return states;
 }
+
+// The mastery meter for every skill in a grade (library cards), read from one tutor load.
+export function skillMeters(grade) {
+  const tutor = loadTutor();
+  return Object.fromEntries(
+    ALL_SKILLS.filter((s) => s.grade === grade).map((s) => [s.id, meterFor(evidence(tutor, s))]),
+  );
+}
+export const skillMeter = (skill) => meterFor(skillEvidence(skill));

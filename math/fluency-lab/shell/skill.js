@@ -10,7 +10,9 @@ import { mountCanvas, frameStrip } from "./canvas.js";
 import { anotherWay, helpLadder, teach } from "./content.js";
 import { explainFrame, wordsToKnow } from "./language.js";
 import { bindListen, listenButton, readAloudOn } from "./prefs.js";
-import { loadTutor, recordPractice, saveLastVisit, skillEvidence } from "./store.js";
+import { loadTutor, recordPractice, saveLastVisit, skillMeter } from "./store.js";
+import { meterHtml } from "./meter.js";
+import { afterAnswer, afterSolution, loadAwards } from "./practice-cheer.js";
 import { esc, gradeName, lang, named, pickL, tr } from "./words.js";
 
 const STAGES = [
@@ -34,6 +36,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
       <header class="skill-head">
         <p class="eyebrow">${esc(gradeName(skill.grade))}</p>
         <h1 id="skill-title" tabindex="-1">${esc(pickL(content.title))}</h1>
+        <div class="skill-meter" data-meter-host>${meterHtml(skillMeter(skill))}</div>
         <ol class="stepper" aria-label="${esc(tr("Steps"))}">${STAGES.map((s) => `<li data-s="${s.id}"><button type="button" class="stepper-btn" data-goto="${s.id}">${esc(tr(s.label))}</button></li>`).join("")}</ol>
       </header>
       <div class="skill-body" data-body></div>
@@ -195,7 +198,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
           : "";
     body.innerHTML = `
       <div class="panel practice">
-        <p class="practice-meta">${esc(tr("Problem {n}", { n: count }))}${badge ? ` · <span class="tag">${esc(badge)}</span>` : ""}<span data-ev>${evidenceLine() ? ` · ${esc(evidenceLine())}` : ""}</span></p>
+        <p class="practice-meta">${esc(tr("Problem {n}", { n: count }))}${badge ? ` · <span class="tag">${esc(badge)}</span>` : ""}</p>
         <div class="problem-row"><p class="problem" id="problem">${esc(question)}</p>${readAloudOn(skill.grade) ? listenButton(esc(tr("Listen"))) : ""}</div>
         ${item.choices ? `<div class="choices" role="group" aria-labelledby="problem">${item.choices.map((c, i) => `<button type="button" class="btn btn-choice" data-pick="${esc(c)}" aria-pressed="false">${esc(labels[i] ?? c)}</button>`).join("")}</div>` : ""}
         <form class="answer-row" data-form>
@@ -211,6 +214,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
           ${other ? `<button type="button" class="btn btn-quiet" data-another>${esc(tr("Another way"))}</button>` : ""}
         </div>
       </div>`;
+    loadAwards();
     const input = body.querySelector("#answer");
     if (!item.choices) input.focus({ preventScroll: true });
     bindListen(
@@ -253,6 +257,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
       tries += 1;
       const correct = validateAnswer(raw, item);
       const independent = helpUsed === 0 && !sawAnother && tries === 1;
+      const before = skillMeter(skill);
       recordPractice(skill, item, {
         correct,
         independent,
@@ -265,7 +270,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
       if (correct) {
         streakIndependent = independent ? streakIndependent + 1 : 0;
         fb.className = "feedback is-right";
-        fb.innerHTML = `<p><strong>${esc(tr("Correct."))}</strong> ${esc(independent ? tr("Solved on your own.") : tr("You solved it with help. Try one on your own to show what you know."))}</p>
+        fb.innerHTML = `<p><span class="cheer-mark" aria-hidden="true">✓</span><strong>${esc(tr("Correct."))}</strong> ${esc(independent ? tr("Solved on your own.") : tr("You solved it with help. Try one on your own to show what you know."))}</p>
           ${whyHtml(item, solved, es)}`;
         finishProblem(fb, true);
       } else if (tries < 2) {
@@ -288,7 +293,9 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
           ${solutionHtml(item, solved, es)}`;
         mountFrames(fb);
         finishProblem(fb, false);
+        afterSolution(fb, count);
       }
+      afterAnswer({ root, skill, before, correct, independent, firstTry: tries === 1, fb, live: say, n: count });
     });
   }
 
@@ -310,7 +317,6 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     const next = fb.querySelector("[data-again]");
     next.addEventListener("click", renderPractice);
     next.focus();
-    body.querySelector("[data-ev]").textContent = evidenceLine() ? ` · ${evidenceLine()}` : "";
   }
 
   // Feedback on a miss, most specific first: the skill's authored misconceptions, then the studio engine's
@@ -356,12 +362,6 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     if ((item.steps || []).length)
       return `<ol class="steps"${es ? ' lang="en"' : ""}>${item.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>${es ? englishNote() : ""}`;
     return item.explanation ? `<p class="why"${es && !item.transfer ? ' lang="en"' : ""}>${esc(item.explanation)}</p>` : "";
-  }
-
-  function evidenceLine() {
-    const ev = skillEvidence(skill);
-    if (ev.secure) return tr("Remembered on my own");
-    return ev.recent.length ? `${ev.successes} ${tr("on your own")}` : "";
   }
 
   function rungHtml(rung) {

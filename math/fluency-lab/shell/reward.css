@@ -1,0 +1,310 @@
+/* Math Fluency Lab student app — mastery meter, celebrations, buddy, recommended next. Reads shell.css tokens. */
+
+/* Mastery meter: eight segments for independent answers and a star for "remembered". The stage is in words. */
+.skill-meter {
+  margin-top: var(--s3);
+}
+.meter-wrap {
+  display: grid;
+  gap: var(--s1);
+  max-width: 34rem;
+}
+.meter-row {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s2);
+  align-items: baseline;
+}
+.meter-stage {
+  color: var(--navy);
+}
+.meter-count,
+.meter-help {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+.meter-help {
+  margin: 0;
+}
+.meter {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr) auto;
+  gap: 4px;
+  align-items: center;
+}
+.meter i,
+.meter-dots i {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  border: 1.5px solid var(--q3);
+  background: var(--surface);
+}
+.meter i.on,
+.meter-dots i.on {
+  background: var(--q3);
+}
+.meter i.fresh {
+  animation: meter-fill 600ms ease-out;
+}
+.meter-goal {
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--line-2);
+  padding-left: 2px;
+}
+.meter-goal.on {
+  color: #a16207;
+}
+.meter-wrap[data-stage="remembered"] .meter-stage::before {
+  content: "★ ";
+  color: #a16207;
+}
+@keyframes meter-fill {
+  0% {
+    transform: scaleX(0.2);
+    box-shadow: 0 0 0 0 rgb(15 118 110 / 50%);
+  }
+  70% {
+    transform: scaleX(1);
+    box-shadow: 0 0 0 6px rgb(15 118 110 / 0%);
+  }
+}
+.meter-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+.meter-dots {
+  display: inline-grid;
+  grid-template-columns: repeat(8, 8px);
+  gap: 3px;
+}
+.meter-dots i {
+  width: 8px;
+  height: 8px;
+  border-width: 1.5px;
+}
+.card .meter-mini,
+.feature .meter-mini {
+  margin: 0;
+}
+.plist .meter-mini {
+  margin-left: var(--s2);
+}
+
+/* A right answer: a short check-mark pop. The bigger card is for a stage change on the meter. */
+.feedback.is-right .cheer-mark + strong::before {
+  content: none;
+}
+.cheer-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.35em;
+  border-radius: 50%;
+  background: var(--right);
+  color: #fff;
+  font-weight: 700;
+  vertical-align: -0.2em;
+  animation: cheer-pop 420ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes cheer-pop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.cheer {
+  position: relative;
+  margin: var(--s3) 0;
+  padding: var(--s4);
+  border-radius: var(--r);
+  background: var(--surface);
+  border: 2px solid #e2b33c;
+  overflow: hidden;
+  animation: cheer-rise 380ms ease-out;
+}
+.cheer-remembered {
+  border-width: 3px;
+  background: #fffaf0;
+}
+.cheer-title {
+  margin: 0 0 var(--s2);
+  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--navy);
+  font-weight: 600;
+}
+.cheer-remembered .cheer-title {
+  font-size: 1.55rem;
+}
+.cheer-star {
+  color: #a16207;
+}
+.cheer-stars,
+.cheer-stickers {
+  color: var(--ink);
+}
+.cheer-sticker {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fdf3d8;
+  margin: 2px 4px 2px 0;
+}
+.cheer-burst {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  pointer-events: none;
+}
+.cheer-burst i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #e2b33c;
+  opacity: 0;
+  transform: rotate(var(--a)) translateY(0);
+  animation: cheer-burst 800ms ease-out var(--d) 1;
+}
+.cheer-burst i:nth-child(3n) {
+  background: var(--q3);
+}
+.cheer-burst i:nth-child(3n + 1) {
+  background: var(--q2);
+}
+@keyframes cheer-rise {
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes cheer-burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-56px);
+  }
+}
+
+/* Buddy: small, beside its line, never on top of the problem. */
+.buddy {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin: var(--s2) 0;
+}
+.buddy-art {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 52px;
+}
+.buddy-art .bd-svg {
+  width: 100%;
+  height: 100%;
+}
+.buddy-line {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+.buddy-cheer .buddy-art {
+  width: 64px;
+  height: 70px;
+}
+.hero-buddy {
+  min-height: 60px;
+}
+.buddy-home {
+  margin: 0 0 var(--s2);
+}
+.buddy-home .buddy-line {
+  color: var(--ink-2);
+}
+
+/* Recommended next: a short list of links, each a name, the reason, and the meter mirror. */
+.rec {
+  margin-top: var(--s5);
+}
+.rec-title {
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin: 0 0 var(--s2);
+}
+.cheer .rec {
+  margin-top: var(--s3);
+}
+.rec-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s3);
+}
+.rec-card {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: var(--s3) var(--s4);
+  border: 1.5px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.rec-card:hover {
+  border-color: var(--blue);
+}
+.rec-card:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+.rec-name {
+  font-weight: 600;
+  color: var(--blue-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rec-why {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+
+/* Reduced motion (system or the app's own setting): the same acknowledgement, standing still. */
+html[data-motion="reduce"] .cheer-burst {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cheer-burst {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .meter i,
+  .meter-dots i {
+    border-color: CanvasText;
+  }
+  .meter i.on,
+  .meter-dots i.on {
+    background: CanvasText;
+  }
+}

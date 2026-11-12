@@ -7,16 +7,20 @@ import {
   PROFILE_NAMES,
   activeProfile,
   lastVisit,
+  loadTutor,
   progressSummary,
   saveGrade,
   savedGrade,
   selectLearner,
+  skillMeters,
   skillStates,
 } from "./store.js";
+import { meterMini } from "./meter.js";
+import { recommendedNext } from "./recommend.js";
+import { blurbOf as blurbFor, recStripHtml, titleOf as titleFor } from "./rec-view.js";
+import { loadAwards } from "./practice-cheer.js";
 import { applyPrefs, prefs, readAloudOn, setPref, setReadAloud } from "./prefs.js";
-import { kidLearnFor } from "../kid-learn.js";
-import { AUTHORED } from "./authored/index.js";
-import { keepLegible } from "./canvas.js";
+import { keepLegible, setPanLabel } from "./legible.js";
 import { mountSkill, stageFromParam } from "./skill.js";
 import {
   esc,
@@ -24,7 +28,6 @@ import {
   gradeShort,
   lang,
   named,
-  pickL,
   setLanguage,
   toggleLang,
   tr,
@@ -54,6 +57,7 @@ const forwardToLab =
 if (forwardToLab) location.replace(`lab.html${location.search}${location.hash}`);
 
 const app = document.getElementById("app");
+setPanLabel(() => tr("Picture: scroll sideways to see all of it"));
 keepLegible(app);
 const liveRegion = document.getElementById("live");
 const live = (text) => {
@@ -62,8 +66,8 @@ const live = (text) => {
 };
 // What a student reads about a skill: the authored title when there is one, else the bank title in the interface
 // language; the one-line description is the skill's big idea (bilingual), else the bank rule.
-const titleOf = (s) => pickL(AUTHORED[`${s.grade ?? grade}:${s.id}`]?.title) || named(s.title);
-const blurbOf = (s) => pickL(kidLearnFor(s, s.grade ?? grade)?.idea) || s.learn?.rule || "";
+const titleOf = (s) => titleFor({ ...s, grade: s.grade ?? grade });
+const blurbOf = (s) => blurbFor({ ...s, grade: s.grade ?? grade });
 const parseGrade = (raw) => (raw === "K" || raw === "k" ? 0 : raw === null ? null : Number(raw));
 let grade = (() => {
   const g = parseGrade(params.get("grade"));
@@ -143,16 +147,24 @@ function home() {
   const elsewhere = last && last.grade !== grade && last.skill ? last : null;
   const start = resume?.skill || topics[0]?.skills[0];
   const summary = progressSummary(grade);
+  const meters = keyed(skillMeters(grade));
+  const recs = recommendedNext(loadTutor(), grade, {
+    exclude: [`${grade}:${start.id}`],
+    limit: 2,
+  });
   app.innerHTML = `<section class="hero">
+      <div class="hero-buddy" data-buddy aria-hidden="true"></div>
       <p class="eyebrow">${esc(gradeName(grade))} · <button type="button" class="btn-link" data-change>${esc(tr("Change grade"))}</button></p>
       <h1 tabindex="-1">${esc(tr("What would you like to practice today?"))}</h1>
       <article class="feature">
         <p class="feature-kicker">${esc(resume ? tr("Continue learning") : tr("Start here"))}</p>
         <h2 class="feature-title">${esc(titleOf({ ...start, grade }))}</h2>
         <p class="feature-text">${esc(blurbOf({ ...start, grade }))}</p>
+        ${meters[`${grade}:${start.id}`] && meters[`${grade}:${start.id}`].stage !== "new" ? meterMini(meters[`${grade}:${start.id}`]) : ""}
         <div class="actions"><button type="button" class="btn btn-primary btn-lg" data-start>${esc(resume ? tr("Continue learning") : tr("Start this skill"))}</button>
         <button type="button" class="btn btn-secondary" data-go="library">${esc(resume ? tr("Choose another skill") : tr("Choose a different skill"))}</button></div>
       </article>
+      ${recStripHtml(recs, { meters })}
       ${elsewhere ? `<p class="quiet-progress">${esc(tr("Continue where you left off"))}: <a href="?grade=${elsewhere.grade}&skill=${esc(elsewhere.skillId)}${elsewhere.stage && elsewhere.stage !== "learn" ? `&stage=${esc(elsewhere.stage)}` : ""}">${esc(titleOf({ ...elsewhere.skill, grade: elsewhere.grade }))} · ${esc(gradeName(elsewhere.grade))}</a></p>` : ""}
       ${summary.practiced.length ? `<p class="quiet-progress"><a href="#" data-go="progress">${esc(tr("My Progress"))}</a> · ${summary.remembered.length} ${esc(tr("Remembered on my own").toLowerCase())} · ${summary.improving.length} ${esc(tr("What I am getting stronger at").toLowerCase())}</p>` : ""}
     </section>`;
@@ -165,7 +177,20 @@ function home() {
     grade = null;
     route("home");
   });
+  // The buddy is decoration with a word of encouragement: it loads after the screen is drawn, into a box of fixed
+  // size, so it never delays or shifts the first action.
+  const spot = app.querySelector("[data-buddy]");
+  loadAwards()
+    .then((m) => {
+      if (spot.isConnected) {
+        spot.innerHTML = m.buddyHtml(m.buddyLook(), "home", resume ? 1 : 0, "buddy-home");
+        spot.removeAttribute("aria-hidden");
+      }
+    })
+    .catch(() => {});
 }
+// skillMeters() is keyed by skill id; the recommendation strip and home use "grade:id".
+const keyed = (byId) => Object.fromEntries(Object.entries(byId).map(([id, m]) => [`${grade}:${id}`, m]));
 
 function bindGrades(after) {
   app.querySelectorAll("[data-grade]").forEach((b) =>
@@ -251,6 +276,7 @@ function library() {
   }
   const topics = topicsFor(grade);
   const states = skillStates(grade);
+  const meters = skillMeters(grade);
   const all = topics.flatMap((t) => t.skills);
   const inState = (id, s) => id === "all" || states[s.id] === id;
   const counts = Object.fromEntries(FILTERS.map(([id]) => [id, all.filter((s) => inState(id, s)).length]));
@@ -289,7 +315,7 @@ function library() {
             .map(
               (
                 s,
-              ) => `<article class="card"><h3>${esc(titleOf(s))}</h3><p>${esc(blurbOf(s))}</p>
+              ) => `<article class="card"><h3>${esc(titleOf(s))}</h3><p>${esc(blurbOf(s))}</p>${meters[s.id] && meters[s.id].stage !== "new" ? meterMini(meters[s.id]) : ""}
           <button type="button" class="btn btn-secondary" data-skill="${esc(s.id)}" aria-label="${esc(`${tr("Start")}: ${titleOf(s)}`)}">${esc(tr("Start"))}</button></article>`,
             )
             .join("")}</div></section>`,
@@ -327,8 +353,9 @@ function library() {
 function progress() {
   if (grade === null) return route("library");
   const s = progressSummary(grade);
+  const meters = skillMeters(grade);
   const list = (rows) =>
-    `<ul class="plist">${rows.map(({ skill, ev }) => `<li><a href="?grade=${grade}&skill=${esc(skill.id)}&stage=practice">${esc(titleOf(skill))}</a> <span class="tag">${esc(ev.secure ? tr("Remembered on my own") : `${ev.successes} ${tr("on your own")}`)}</span></li>`).join("")}</ul>`;
+    `<ul class="plist">${rows.map(({ skill }) => `<li><a href="?grade=${grade}&skill=${esc(skill.id)}&stage=practice">${esc(titleOf(skill))}</a> ${meterMini(meters[skill.id])}</li>`).join("")}</ul>`;
   const next = topicsFor(grade)
     .flatMap((t) => t.skills)
     .find((sk) => !s.practiced.some((r) => r.skill.id === sk.id));
@@ -403,6 +430,16 @@ function more() {
 const speechSupported = () => "speechSynthesis" in window;
 
 document.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-skill-link]");
+  if (link && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+    const [g, id] = link.dataset.skillLink.split(":");
+    const skill = getSkill(Number(g), id);
+    if (skill) {
+      event.preventDefault();
+      if (Number(g) !== grade) setGrade(Number(g));
+      return openSkill({ ...skill, grade: Number(g) });
+    }
+  }
   const go = event.target.closest("[data-go]");
   if (go) {
     event.preventDefault();
