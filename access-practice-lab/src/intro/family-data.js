@@ -160,6 +160,8 @@ export const FAMILY = {
     es: "Hablen de sus ideas en el idioma que usan en casa. Los adultos no necesitan un inglés perfecto para ayudar. Escuchar y hacer preguntas es suficiente.",
   },
   chooseHeading: { en: "Choose one", es: "Elijan una" },
+  /** Grades K–2 have one routine, so the heading names it instead of asking for a choice. */
+  chooseHeadingOne: { en: "Tonight’s activity", es: "La actividad de hoy" },
   stepsHeading: { en: "Three steps", es: "Tres pasos" },
   start: { en: "Start", es: "Empezar" },
   startsActivity: { en: "Opens", es: "Abre" },
@@ -196,6 +198,11 @@ export const FAMILY = {
   languageNote: {
     en: "This page is in English and Español. The activities practice English: the pictures, questions and sentences stay in English. When you choose Español, the buttons and directions in these two activities also show in Spanish.",
     es: "Esta página está en inglés y en español. Las actividades practican inglés: las imágenes, las preguntas y las oraciones quedan en inglés. Si eligen Español, los botones y las instrucciones de estas dos actividades también se muestran en español.",
+  },
+  /** Grades K–2: one activity, and its directions are not claimed to switch language. */
+  languageNoteOne: {
+    en: "This page is in English and Español. The activity practices English: the pictures, questions and sentences stay in English.",
+    es: "Esta página está en inglés y en español. La actividad practica inglés: las imágenes, las preguntas y las oraciones quedan en inglés.",
   },
   spanishNote: {
     en: "The Spanish on this page is machine-assisted and has not been reviewed by a human translator.",
@@ -285,6 +292,18 @@ export const FAMILY_BANDS = [
 ];
 export const FAMILY_GRADE = {
   heading: { en: "Your child’s grade", es: "El grado de su hijo o hija" },
+  /** Grades K–2: the exact grade picks the routine's picture, model child and activity. */
+  early: { en: "Which grade exactly?", es: "¿Qué grado exactamente?" },
+  earlyPicks: [
+    { id: "K", label: { en: "Kindergarten", es: "Kínder" } },
+    { id: "1", label: { en: "Grade 1", es: "1.º grado" } },
+    { id: "2-3", label: { en: "Grade 2", es: "2.º grado" } },
+  ],
+};
+/** Step 1 of tonight's flow when the grade has a single routine (K–2). */
+export const TONIGHT_ONE = {
+  head: { en: "Start", es: "Empiecen" },
+  body: { en: "Use the activity below.", es: "Usen la actividad de abajo." },
 };
 
 const [talk68, write68] = FAMILY_ACTIVITIES;

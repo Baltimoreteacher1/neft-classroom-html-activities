@@ -301,6 +301,64 @@ for (const [path, band] of [
   );
   await context.close();
 }
+// 5c. The family's grade becomes the lab's grade (menu, directory and later pages agree); Grades K–2 ask for the exact
+// grade and name the one activity instead of asking for a choice.
+{
+  const { page, context } = await open("en", 1280, "/practice-together?grades=6-8");
+  const labBand = () =>
+    page.evaluate((k) => JSON.parse(localStorage.getItem(k) || "{}").band, PREFS);
+  await page.click('[data-tg-band="3-5"]');
+  await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
+  ok((await labBand()) === "3-5", "choosing Grades 3–5 sets the lab's grade");
+  await page.click('[data-tg-band="k-2"]');
+  await page.waitForSelector("[data-tg-early]");
+  ok(
+    (await page.locator("[data-tg-early]").count()) === 3,
+    "Grades K–2 offer Kindergarten, Grade 1 and Grade 2",
+  );
+  await page.click('[data-tg-early="1"]');
+  await page.waitForFunction(() => document.body.dataset.labBand === "1");
+  ok((await labBand()) === "1", "Grade 1 sets the lab's grade");
+  ok(
+    (await page.$eval('[data-tg-early][aria-pressed="true"]', (b) => b.dataset.tgEarly)) === "1",
+    "Grade 1 shows as chosen",
+  );
+  ok(
+    (await page.locator(".tg-card").innerText()).includes("Mateo"),
+    "Grade 1 shows the Grade 1 model child",
+  );
+  ok(
+    (await page.locator("#tgChoose").innerText()).trim() === "Tonight’s activity",
+    "K–2 names the one activity",
+  );
+  ok(
+    (await page.locator('[data-tg-band][aria-pressed="false"]').count()) === 2,
+    "unchosen grade buttons say aria-pressed=false",
+  );
+  await page.reload();
+  await page.waitForSelector("#app .tg-page");
+  ok(
+    (await page.$eval('[data-tg-early][aria-pressed="true"]', (b) => b.dataset.tgEarly)) === "1",
+    "the exact grade is remembered after a reload",
+  );
+  await context.close();
+}
+// 5d. A first visit sees one language question on this page (its own switch), not the site banner as well.
+{
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(`${base}${LAB}/practice-together`, { waitUntil: "load" });
+  await page.waitForSelector("#app .tg-page");
+  ok(
+    (await page.locator("#labLangBanner:visible").count()) === 0,
+    "no site language banner on Practice Together",
+  );
+  ok(
+    (await page.locator("#app [data-lang-mode]").count()) >= 3,
+    "the page's own language switch is there",
+  );
+  await context.close();
+}
 {
   const { page, context } = await open("es");
   const href = await page.locator(".tg-print a").first().getAttribute("href");

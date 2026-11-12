@@ -623,6 +623,10 @@ body.has-intro-return .lab-footer {
   font-weight: 700;
   color: var(--room, var(--brand));
 }
+.ov-routine {
+  grid-template-rows: auto auto auto 1fr auto;
+  align-content: start;
+}
 .ov-routine .btn {
   align-self: end;
 }
@@ -638,6 +642,7 @@ body.has-intro-return .lab-footer {
 }
 .ov-share li {
   display: grid;
+  align-content: start;
   gap: 0.25rem;
   padding: 0.8rem 0.9rem;
   border: 1px solid var(--line);
@@ -1268,6 +1273,16 @@ body.has-intro-return .lab-footer {
   .ov-cancan {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* One compact row per step: the number beside its name and sentence. */
+  .ov-loop li {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.15rem;
+    padding: 0.75rem 0.9rem;
+  }
+  .ov-loop-n {
+    grid-row: span 2;
+  }
 }
 
 /* ── /start overview: grade picker card, domain cards, guide, resources, families (src/intro/start*.js) ── */
@@ -1307,11 +1322,16 @@ body.has-intro-return .lab-footer {
   gap: 0.4rem;
   margin: 0.3rem 0 0;
 }
+/* In a domain card the actions sit at the bottom, so the buttons line up across the row. */
+.tb-domain .ov-card-actions {
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
 .tb-domain .ov-card-actions .btn {
   margin-top: 0;
 }
 .ov-guide {
-  max-width: 56rem;
+  max-width: none;
 }
 .ov-cancan {
   align-items: start;

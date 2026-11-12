@@ -3,14 +3,22 @@
 // student's answer as the example, the grown-up's role, a Start button to the real activity and a quiet link to the
 // whole early-learner page. Copy lives in family-k2-data.js.
 import { ART, BASE, html, icon } from "../util.js";
-import { EARLY_CARD, earlyPickFrom, earlyRoutine } from "./family-k2-data.js";
+import { EARLY_CARD, EARLY_PICKS, earlyPickFrom, earlyRoutine } from "./family-k2-data.js";
 import { readButtonHTML } from "./family-read.js";
 import { withReturn } from "./return-bar.js";
 import { loadIntro } from "./state.js";
 import { tourRoute } from "./tour-bands.js";
 
-/** The early pick for this render: the link's ?grades=, else the grade remembered on this device, else K. */
-export const earlyPick = (ctx) => earlyPickFrom(ctx.route?.grades, loadIntro().band?.pick);
+/**
+ * The early pick for this render: the link's ?grades=, then the family's own choice, then the lab's grade when it is
+ * K–3, then the grade a teacher chose on this device, else K.
+ */
+export const earlyPick = (ctx) => {
+  const intro = loadIntro();
+  const own = EARLY_PICKS.includes(intro.family?.early) ? intro.family.early : "";
+  const lab = EARLY_PICKS.includes(ctx.band) ? ctx.band : "";
+  return earlyPickFrom(ctx.route?.grades, own || lab || intro.band?.pick);
+};
 
 /** The K–2 card. `tag` is the domain word on the picture (FAMILY_WELCOME.tags.talk). */
 export function earlyCardHTML(I, ctx, { tag, start }) {

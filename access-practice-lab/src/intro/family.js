@@ -18,10 +18,11 @@ import {
   FAMILY_MORE,
   FAMILY_WELCOME,
   TONIGHT,
+  TONIGHT_ONE,
   familyActivitiesFor,
   familyBandFromGrades,
 } from "./family-data.js";
-import { earlyCardHTML, earlySteps } from "./family-k2.js";
+import { earlyCardHTML, earlyPick, earlySteps } from "./family-k2.js";
 import { EARLY_CARD, FAMILY_HANDOUT_K2 } from "./family-k2-data.js";
 import { mountRead, onReadClick, readButtonHTML, unmountRead } from "./family-read.js";
 import { bindGuide, guideHTML } from "./guide.js";
@@ -53,12 +54,21 @@ function chosenBand(ctx) {
   return ["K", "1", "2-3"].includes(ctx.band) ? "k-2" : "6-8";
 }
 
-function bandHTML(I, band) {
+function bandHTML(I, band, ctx) {
+  const early = earlyPick(ctx);
   return html`<div class="tg-band">
     <p class="tg-label" id="tgBandLabel">${I.TO(FAMILY_GRADE.heading)}</p>
     <div class="tg-band-btns" role="group" aria-labelledby="tgBandLabel">
-      ${FAMILY_BANDS.map((b) => html`<button type="button" class="in-seg" data-tg-band="${b.id}" aria-pressed="${b.id === band}">${I.TO(b.label)}</button>`)}
+      ${FAMILY_BANDS.map((b) => html`<button type="button" class="in-seg" data-tg-band="${b.id}" aria-pressed="${String(b.id === band)}">${I.TO(b.label)}</button>`)}
     </div>
+    ${
+      band === "k-2"
+        ? html`<p class="tg-label tg-label-sub" id="tgEarlyLabel">${I.TO(FAMILY_GRADE.early)}</p>
+            <div class="tg-band-btns is-sub" role="group" aria-labelledby="tgEarlyLabel">
+              ${FAMILY_GRADE.earlyPicks.map((p) => html`<button type="button" class="in-seg" data-tg-early="${p.id}" aria-pressed="${String(p.id === early)}">${I.TO(p.label)}</button>`)}
+            </div>`
+        : ""
+    }
   </div>`;
 }
 
@@ -116,11 +126,12 @@ function cardHTML(I, a, band) {
   </article>`;
 }
 
-function tonightHTML(I) {
+function tonightHTML(I, band) {
+  const steps = band === "k-2" ? TONIGHT.map((t, i) => (i === 0 ? { ...t, ...TONIGHT_ONE } : t)) : TONIGHT;
   return html`<section class="tg-tonight" aria-labelledby="tgTonight">
     <h2 id="tgTonight">${I.TO(FAMILY_WELCOME.tonightHeading)}</h2>
     <ol class="tg-flow">
-      ${TONIGHT.map(
+      ${steps.map(
         (t) =>
           html`<li class="tg-flow-${t.id}">
             <span class="tg-flow-ic" aria-hidden="true">${icon(t.icon)}</span>
@@ -235,26 +246,26 @@ export async function render(ctx) {
           <h1 id="tgTitle" tabindex="-1">${I.TO(FAMILY.title)}</h1>
           <p class="lead">${I.TO(FAMILY.lead)}</p>
           <div class="tg-lang">${langSwitchHTML(I.mode, { large: true, idPrefix: "tgLang" })}</div>
-          ${bandHTML(I, band)}
+          ${bandHTML(I, band, ctx)}
           <button type="button" class="btn btn-primary btn-big tg-go" data-tg-go>
             ${I.TO(FAMILY_WELCOME.go)}${icon("chevron-down")}
           </button>
         </div>
         <div class="tg-hero-guide">${guidePanel(I, band)}</div>
       </header>
-      ${tonightHTML(I)}
+      ${tonightHTML(I, band)}
       <section class="tg-choices" aria-labelledby="tgChoose">
-        <h2 id="tgChoose" tabindex="-1">${I.TO(FAMILY.chooseHeading)}</h2>
+        <h2 id="tgChoose" tabindex="-1">${I.TO(band === "k-2" ? FAMILY.chooseHeadingOne : FAMILY.chooseHeading)}</h2>
         <div class="tg-cards${band === "k-2" ? " is-single" : ""}">${band === "k-2" ? earlyCardHTML(I, ctx, { tag: FAMILY_WELCOME.tags.talk, start: FAMILY.start }) : familyActivitiesFor(band).map((a) => cardHTML(I, a, band))}</div>
       </section>
       ${answersHTML(I, band)}
       <section class="tg-language" aria-labelledby="tgLangHead">
         <h2 id="tgLangHead">${I.TO(FAMILY.languageHeading)}</h2>
-        <p>${I.TO(FAMILY.languageNote)}</p>
+        <p>${I.TO(band === "k-2" ? FAMILY.languageNoteOne : FAMILY.languageNote)}</p>
         ${I.mode === "en" ? "" : html`<p class="fine">${I.TO(FAMILY.spanishNote)}</p>`}
       </section>
       <section class="tg-extras">${helpHTML(I)}${moreHTML(I)}</section>
-      ${audienceMapHTML(I, ctx.band, "family", {
+      ${audienceMapHTML(I, labBandFor(band, ctx), "family", {
         id: "familyMap",
         limit: 4,
         title: ["Everything for families", "Todo para las familias"],
@@ -272,6 +283,18 @@ export async function render(ctx) {
       </footer>
     </article>`,
   };
+}
+
+/** The lab's content band for the family's grade, so every link on the page (and after it) opens that grade. */
+function labBandFor(band, ctx) {
+  if (band === "k-2") return earlyPick(ctx);
+  return band;
+}
+
+/** Make the family's grade the lab's grade too: the menu, the directory and every activity then agree with it. */
+function syncLabBand(ctx, band) {
+  const target = labBandFor(band, ctx);
+  if (ctx.bands.includes(target)) ctx.setBand(target);
 }
 
 /** "Let's begin": bring the two choices into view and put focus on their heading. */
@@ -295,17 +318,30 @@ export function onClick(e, ctx) {
     goToChoices();
     return true;
   }
+  const early = e.target.closest?.("[data-tg-early]");
+  if (early) {
+    updateIntro("family", (f) => ({ ...f, band: "k-2", early: early.dataset.tgEarly }));
+    dropLinkedGrade();
+    syncLabBand(ctx, "k-2");
+    ctx.rerender();
+    return true;
+  }
   const b = e.target.closest?.("[data-tg-band]");
   if (!b) return false;
   updateIntro("family", (f) => ({ ...f, band: b.dataset.tgBand }));
-  // The family's own choice now wins over a teacher's link, so the link's ?grades= leaves the address.
+  dropLinkedGrade();
+  syncLabBand(ctx, b.dataset.tgBand);
+  ctx.rerender();
+  return true;
+}
+
+/** The family's own choice now wins over a teacher's link, so the link's ?grades= leaves the address. */
+function dropLinkedGrade() {
   const url = new URL(location.href);
   if (url.searchParams.has("grades")) {
     url.searchParams.delete("grades");
     history.replaceState(history.state, "", url.pathname + url.search + url.hash);
   }
-  ctx.rerender();
-  return true;
 }
 
 export function mount(root) {

@@ -77,7 +77,8 @@ function updateSavePanel() {
 /** First visit: offer the three language modes once, on every page except the family hub (which has its own). */
 function mountLangBanner(ctx) {
   const existing = document.getElementById("labLangBanner");
-  const wanted = !ctx.prefs.langChosen && ctx.route?.view !== "family";
+  // Family pages carry their own large language switch, so the banner would ask the same question twice.
+  const wanted = !ctx.prefs.langChosen && !["family", "practice-together"].includes(ctx.route?.view);
   if (!wanted) return existing?.remove();
   // index.html ships the same banner (hidden) so a first visit shows it before the first paint.
   if (existing) {
@@ -110,6 +111,26 @@ function mountSectionBar(ctx) {
   bar.setAttribute("aria-label", I.S("This section", "Esta sección"));
   if (bar.innerHTML !== markup) bar.innerHTML = markup;
   bar.querySelector('[aria-current="page"]')?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  watchSectionOverflow();
+}
+
+/** Fade the edge of the section links where more links scroll out of view, instead of cutting a word in half. */
+function fadeSectionOverflow() {
+  const list = document.querySelector("#labSectionBar .sb-links");
+  if (!list) return;
+  const more = list.scrollWidth - list.clientWidth;
+  list.toggleAttribute("data-more-end", more > 2 && list.scrollLeft < more - 2);
+  list.toggleAttribute("data-more-start", more > 2 && list.scrollLeft > 2);
+}
+let sectionFadeBound = false;
+function watchSectionOverflow() {
+  if (!sectionFadeBound) {
+    sectionFadeBound = true;
+    // scroll does not bubble: listen in the capture phase so a re-rendered list needs no new listener.
+    document.addEventListener("scroll", (e) => e.target?.matches?.(".sb-links") && fadeSectionOverflow(), { capture: true, passive: true });
+    window.addEventListener("resize", fadeSectionOverflow, { passive: true });
+  }
+  requestAnimationFrame(fadeSectionOverflow);
 }
 
 export function mountShell(ctx) {
