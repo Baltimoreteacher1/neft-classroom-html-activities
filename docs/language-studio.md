@@ -10,7 +10,7 @@ Both apps write `thelanguagepage:universe:v1` and `thelanguagepage:studios:v1`, 
 
 ## Source and republishing
 
-The source is a separate Next project, not part of this repo: `~/the-language-page` (local git, branch `integrate`). A bundle copy is in `~/Documents/language-studio-source/`. `next.config.ts` there sets `output: "export"`, `basePath: "/language-studio"` and `trailingSlash: true`.
+The source is a separate Next project, not part of this repo. It is backed up in the private GitHub repo `Baltimoreteacher1/neft-language-studio` (one snapshot commit; GitHub blocks pushes that carry Joel's private email, so the history is not there). The working copy is `~/the-language-page` (local git, branch `integrate`, with the full history including the Cursor session commits), and a bundle of that history is in `~/Documents/language-studio-source/`. After a change, push a new snapshot: `git commit-tree 'integrate^{tree}' -p <previous snapshot>` with the noreply author, then `git push origin <sha>:refs/heads/main`. `next.config.ts` there sets `output: "export"`, `basePath: "/language-studio"` and `trailingSlash: true`.
 
 ```bash
 cd ~/the-language-page && npm ci && npm test && npm run validate && npm run build
