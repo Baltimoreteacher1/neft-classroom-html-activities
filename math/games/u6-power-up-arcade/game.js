@@ -254,6 +254,9 @@ function init() {
     if (!k) return;
     const inp = $("padIn");
     sfx("key");
+    // After a miss the wrong answer stays selected; like the keyboard, the next key replaces it.
+    if (inp.value && inp.selectionStart === 0 && inp.selectionEnd === inp.value.length)
+      inp.value = "";
     if (k === "back") inp.value = inp.value.slice(0, -1);
     else if (inp.value.length < 7) inp.value += k;
     inp.focus();
