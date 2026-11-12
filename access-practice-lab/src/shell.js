@@ -199,3 +199,5 @@ export function mountShell(ctx) {
     });
   }
 }
+
+// Re-addressed 2026-11-12: the edge pinned the previous build of this file under its new hash for CORS (module) requests (see functions/access-practice-lab/[[path]].js).
