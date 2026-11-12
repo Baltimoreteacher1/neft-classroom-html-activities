@@ -421,7 +421,10 @@ async function render({ keepFocus = false, scroll = false } = {}) {
     if (scroll) window.scrollTo({ top: 0 });
     // Inside a guide's activity frame, focusing the heading on load would pull the page's focus into the frame.
     const framed = document.documentElement.classList.contains("is-framed");
-    if (!framed || document.hasFocus()) root.querySelector("h1")?.focus({ preventScroll: true });
+    // A view can name what a keyboard user should meet first ([data-focus-first]: the home page's Start Here cards
+    // sit above its heading); otherwise the heading.
+    if (!framed || document.hasFocus())
+      (root.querySelector("[data-focus-first]") || root.querySelector("h1"))?.focus({ preventScroll: true });
   }
 }
 

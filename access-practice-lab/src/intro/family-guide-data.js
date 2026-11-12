@@ -35,9 +35,17 @@ export const PAGE = {
   exit: { en: "Exit", es: "Salir" },
   back: { en: "Back", es: "Atrás" },
   title: { en: "Let’s practice English together.", es: "Practiquemos inglés juntos." },
+  nextNeft: {
+    en: "You did it together! Short practice, a few times a week, is what helps most. Here is the next activity for your child.",
+    es: "¡Lo lograron juntos! Practicar un poco, algunas veces por semana, es lo que más ayuda. Esta es la próxima actividad para su hijo o hija.",
+  },
+  welcome: {
+    en: "Welcome! I’m Mr. Neft. Choose your child’s grade and I’ll show you how to help, one step at a time. You do not need perfect English.",
+    es: "¡Bienvenidos! Soy Mr. Neft. Elijan el grado de su hijo o hija y les mostraré cómo ayudar, paso a paso. No necesitan un inglés perfecto.",
+  },
   lead: {
-    en: "Short English practice for school. Your child does the English; you sit beside them and help.",
-    es: "Práctica corta de inglés para la escuela. Su hijo o hija hace el inglés; ustedes se sientan a su lado y le ayudan.",
+    en: "Short English practice for school. Your child answers in English; you sit beside them and help.",
+    es: "Práctica corta de inglés para la escuela. Su hijo o hija responde en inglés; ustedes se sientan a su lado y le ayudan.",
   },
   noEnglish: {
     en: "You do not need to speak English well to help. Listening, pointing and saying “try again” is enough.",
@@ -50,11 +58,24 @@ export const PAGE = {
   },
   gradeLabel: { en: "Your child’s grade", es: "El grado de su hijo o hija" },
   early: { en: "Which grade exactly?", es: "¿Qué grado exactamente?" },
-  earlyPicks: [
-    { id: "K", label: { en: "Kindergarten", es: "Kínder" } },
-    { id: "1", label: { en: "Grade 1", es: "1.º grado" } },
-    { id: "2-3", label: { en: "Grade 2", es: "2.º grado" } },
-  ],
+  /** The exact grade inside a family grade band. `pick` is the lab grade the activities come from: Grade 3 uses the
+   *  lab's Grades 2–3 activities, as on the lab's own grade picker. Grades 6–8 share one set, so it has no list. */
+  exact: {
+    "k-2": [
+      { id: "K", pick: "K", label: { en: "Kindergarten", es: "Kínder" } },
+      { id: "1", pick: "1", label: { en: "Grade 1", es: "1.º grado" } },
+      { id: "2", pick: "2-3", label: { en: "Grade 2", es: "2.º grado" } },
+    ],
+    "3-5": [
+      { id: "3", pick: "2-3", label: { en: "Grade 3", es: "3.er grado" } },
+      { id: "4", pick: "4-5", label: { en: "Grade 4", es: "4.º grado" } },
+      { id: "5", pick: "4-5", label: { en: "Grade 5", es: "5.º grado" } },
+    ],
+  },
+  needGrade: {
+    en: "First, choose your child’s grade.",
+    es: "Primero, elijan el grado de su hijo o hija.",
+  },
   start: { en: "Start practicing together", es: "Empezar a practicar juntos" },
   how: { en: "How it works", es: "Cómo funciona" },
   howSteps: [
@@ -63,7 +84,7 @@ export const PAGE = {
       head: { en: "Listen to the directions", es: "Escuchen las instrucciones" },
       body: {
         en: "Read them, or press play to hear them.",
-        es: "Léanlas, o toquen para escucharlas.",
+        es: "Léanlas o toquen el botón para escucharlas.",
       },
     },
     {
@@ -80,21 +101,21 @@ export const PAGE = {
       body: { en: "Mistakes are part of learning.", es: "Los errores son parte de aprender." },
     },
   ],
-  skip: { en: "We know how. Go straight to practice", es: "Ya sabemos. Ir directo a practicar" },
+  skip: { en: "We know how. Go straight to practice", es: "Ya sabemos cómo. Ir directo a practicar" },
   print: { en: "Print a one-page guide", es: "Imprimir una guía de una página" },
   practiceTitle: { en: "Practice together", es: "Practiquen juntos" },
   practiceLead: {
     en: "Sit side by side. The guide next to the activity shows one thing at a time.",
     es: "Siéntense uno al lado del otro. La guía junto a la actividad muestra una cosa a la vez.",
   },
-  skipToNext: { en: "Skip to what to do next", es: "Ir a qué hacer después" },
+  skipToNext: { en: "Skip to what to do next", es: "Ver qué hacer después" },
   nextTitle: {
     en: "Great work! Here is what to do next.",
     es: "¡Buen trabajo! Esto es lo que sigue.",
   },
   nextLead: {
     en: "Practice a little, often. Here is the next activity for your child.",
-    es: "Practiquen un poco y seguido. Esta es la próxima actividad para su hijo o hija.",
+    es: "Practiquen un poco, pero seguido. Esta es la próxima actividad para su hijo o hija.",
   },
   startPracticing: { en: "Start practicing", es: "Empezar a practicar" },
   again: { en: "Do the same activity again", es: "Hacer la misma actividad otra vez" },
@@ -106,7 +127,7 @@ export const PAGE = {
     },
     {
       en: "Stop while it is still fun. Come back another day.",
-      es: "Paren mientras todavía es divertido. Vuelvan otro día.",
+      es: "Terminen mientras todavía se divierten. Vuelvan otro día.",
     },
     {
       en: "Ask your child to tell you one thing they learned, in any language.",
@@ -145,7 +166,7 @@ export const COACH_COPY = {
   skip: { en: "Skip this step", es: "Saltar este paso" },
   finish: { en: "Next", es: "Siguiente" },
   tryMyself: { en: "Hide the guide", es: "Ocultar la guía" },
-  showMe: { en: "Show me how", es: "Muéstrenme cómo" },
+  showMe: { en: "Show the guide", es: "Mostrar la guía" },
   missing: {
     en: "That part is not on the screen right now. Press Next to keep going.",
     es: "Esa parte no está en la pantalla ahora. Toquen Siguiente para seguir.",
@@ -160,9 +181,10 @@ export const COACH_COPY = {
   done: { en: "Done.", es: "Listo." },
   doIt: {
     en: "Do it in the activity. The guide moves on by itself.",
-    es: "Háganlo en la actividad. La guía sigue sola.",
+    es: "Háganlo en la actividad. La guía avanzará sola.",
   },
-  hear: { en: "Hear this", es: "Escuchar" },
+  hear: { en: "Hear the guide", es: "Escuchar la guía" },
+  goTo: { en: "Take me to it", es: "Llevarme ahí" },
 };
 
 /** What the guide says at each part of the activity (coach/activity-steps.js loopSteps). */
@@ -171,8 +193,8 @@ export const FAMILY_SAY = {
   intro: {
     title: { en: "Sit together, side by side", es: "Siéntense juntos, uno al lado del otro" },
     body: {
-      en: "Your child does the English. You help them get started and keep going.",
-      es: "Su hijo o hija hace el inglés. Ustedes le ayudan a empezar y a seguir.",
+      en: "Your child answers in English. You help them get started and keep going.",
+      es: "Su hijo o hija responde en inglés. Ustedes le ayudan a empezar y a seguir.",
     },
     why: {
       en: "Children try harder and stay longer when an adult is beside them, in any language.",
@@ -198,7 +220,7 @@ export const FAMILY_SAY = {
     },
     why: {
       en: "When the directions are clear, your child can spend their effort on the English.",
-      es: "Cuando las instrucciones están claras, su hijo o hija puede usar su esfuerzo en el inglés.",
+      es: "Cuando las instrucciones están claras, su hijo o hija puede concentrarse en el inglés.",
     },
     fallback: {
       en: "Read or listen to the directions together, then press Next.",
@@ -222,8 +244,8 @@ export const FAMILY_SAY = {
   answer: {
     title: { en: "Your child chooses the answer", es: "Su hijo o hija elige la respuesta" },
     body: {
-      en: "Let your child choose. If they are stuck, ask them to point to a word they know. Try not to give the answer.",
-      es: "Dejen que su hijo o hija elija. Si se traba, pídanle que señale una palabra que conoce. Traten de no darle la respuesta.",
+      en: "Let your child choose. If they are not sure, ask them to point to a word they know. Try not to give the answer.",
+      es: "Dejen que su hijo o hija elija. Si no está seguro o segura, pídanle que señale una palabra que conozca. Traten de no darle la respuesta.",
     },
     fallback: {
       en: "Let your child answer in the activity, then press Next.",
@@ -238,10 +260,10 @@ export const FAMILY_SAY = {
     },
   },
   sure: {
-    title: { en: "How sure is your child?", es: "¿Qué tan seguro está?" },
+    title: { en: "How sure is your child?", es: "¿Qué tan seguro o segura está?" },
     body: {
       en: "Your child chooses how sure they feel. Any choice is fine.",
-      es: "Su hijo o hija elige qué tan seguro se siente. Cualquier opción está bien.",
+      es: "Su hijo o hija elige qué tan seguro o segura se siente. Cualquier opción está bien.",
     },
     why: {
       en: "Saying “I’m guessing” is honest, and it helps the teacher know what to teach next.",
@@ -267,8 +289,8 @@ export const FAMILY_SAY = {
     },
     rightTitle: { en: "Celebrate!", es: "¡Celébrenlo!" },
     right: {
-      en: "Tell your child what they did well: “You listened carefully and found it!”",
-      es: "Díganle a su hijo o hija qué hizo bien: «¡Escuchaste con atención y lo encontraste!»",
+      en: "Tell your child what they did well: “You worked hard and found it!”",
+      es: "Díganle a su hijo o hija qué hizo bien: «¡Te esforzaste y lo encontraste!»",
     },
     why: {
       en: "The message helps without giving the answer away, so your child does the thinking.",
@@ -290,6 +312,17 @@ export const FAMILY_SAY = {
       es: "Todos los dibujos siguen ahí. Escuchen otra vez juntos y elijan una vez más.",
     },
   },
+  again: {
+    title: { en: "Check again together", es: "Revisen otra vez juntos" },
+    body: {
+      en: "Your child chooses again, then presses the highlighted button to check. Celebrate when it is right!",
+      es: "Su hijo o hija elige otra vez y toca el botón resaltado para revisar. ¡Celébrenlo cuando esté bien!",
+    },
+    fallback: {
+      en: "Choose again and check, or press Skip this step.",
+      es: "Elijan otra vez y revisen, o toquen Saltar este paso.",
+    },
+  },
   end: {
     title: { en: "You practiced English together!", es: "¡Practicaron inglés juntos!" },
     body: {
@@ -306,8 +339,8 @@ export const FAMILY_HELP = {
     {
       q: { en: "The guide disappeared", es: "La guía desapareció" },
       a: {
-        en: "Press “Show me how” next to the activity to bring it back.",
-        es: "Toquen «Muéstrenme cómo» junto a la actividad para que vuelva.",
+        en: "Press “Show the guide” next to the activity to bring it back.",
+        es: "Toquen «Mostrar la guía» junto a la actividad para que vuelva.",
       },
     },
     ...FAMILY.help.items

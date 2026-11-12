@@ -8,6 +8,13 @@ and coach the person through it one control at a time.
 | Teacher Tour       | `/start/tour?part=1..4&goal=&grades=&skill=&support=` | `src/intro/tour.js`   | goal → try an activity → prepare practice (skill, support, live preview) → take it to class |
 | Family walkthrough | `/practice-together?step=1..3&grades=`                | `src/intro/family.js` | get started (grade, directions language) → practice together → what to do next              |
 
+Mr. Neft (`src/intro/guide.js`, `guideBubbleHTML`) opens every part in a speech bubble, with his question box behind
+"Ask Mr. Neft a question", and speaks the guide card (`copy.guide`) beside the activity.
+
+Activity feedback in Español: `content/es-strings.json` (Spanish keyed by the exact English hint, support, correct,
+extension, wrong-choice note and focus tag) and `content/es-guide.json` (skill, directions per activity), read by
+`views/activity.js` (`tx`). Guarded by `tools/access-es-strings.test.mjs`.
+
 Entry points: the home page's **Teachers: Start Here** and **Families: Start Here** cards
 (`src/views/home-start.js`). Neither path opens by itself, and student practice never waits on either.
 
@@ -18,7 +25,8 @@ Entry points: the home page's **Teachers: Start Here** and **Families: Start Her
   Next / Skip / "Try it myself" / "Show me how", Escape to hide, read-aloud (`copy.hear`), "Bring the example back"
   when the frame navigates away, and a fallback text when a target never appears (2.5 s). Targets are looked up again
   on every redraw, so lab re-renders never strand the ring.
-- `src/coach/activity-steps.js` — `loopSteps(say)`: the student loop (skill lesson, directions, answer, how sure,
+- `src/coach/activity-steps.js` — `stepsFor(skill, say)`: `speakSteps` (question, starters, say it, self-check),
+  `writeSteps` (write, check, feedback, revise; K–3 paper) and `loopSteps(say)`: the student loop (skill lesson, directions, answer, how sure,
   check, feedback, try again) with selectors for both activity shells (`views/activity.js` and `early/player.js`).
   Steps advance on the real action (`done: { click }`) or when an element appears (`appear`). The lab re-renders on
   click, so a `change` event lands on a detached input: always complete on `click`.

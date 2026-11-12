@@ -141,7 +141,7 @@ test("pacing tables match the brief exactly", () => {
   );
   assert.deepEqual(
     PARTS.map((p) => p.name),
-    ["Choose a goal", "Try an activity", "Prepare practice", "Take it to class"],
+    ["Pick a skill", "Try it as a student", "Use it with your class"],
   );
 });
 

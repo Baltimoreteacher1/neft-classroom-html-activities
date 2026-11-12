@@ -130,7 +130,8 @@ function watchSectionOverflow() {
     document.addEventListener("scroll", (e) => e.target?.matches?.(".sb-links") && fadeSectionOverflow(), { capture: true, passive: true });
     window.addEventListener("resize", fadeSectionOverflow, { passive: true });
   }
-  requestAnimationFrame(fadeSectionOverflow);
+  // Node test renders have no requestAnimationFrame; the fade is a screen-only nicety.
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(fadeSectionOverflow);
 }
 
 export function mountShell(ctx) {

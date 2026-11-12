@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * The teacher introduction in a real browser: home cards -> Teacher Tour (goal, coach in a real activity, prepare,
- * classroom card, restart, resume); exploration
+ * The teacher introduction in a real browser: home cards -> Teacher Tour (pick a skill, Mr. Neft's coach in a real
+ * reading, speaking and writing activity, support + class card + map, restart, resume, 390px dock); exploration
  * (four domains, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view gone; the next-step strip
  * and return bar on curated activities only; Spanish home cards; keyboard path; axe WCAG 2.2 AA; 375px overflow.
  *   node tools/access-intro-e2e.mjs        (serves this working tree)
@@ -109,40 +109,86 @@ ok(
 );
 await axe(page, "home");
 await page.locator(".lph-start.is-teacher > .btn").click();
-await page.waitForSelector(".gt-part-goal");
+await page.waitForSelector(".gt-part-skill");
 ok(
   path(page).startsWith("/start/tour?part=1") && /grades=/.test(path(page)),
   "Start the Teacher Tour opens Part 1 in the home's grades",
 );
 
-// ── Teacher Tour: Part 1 goal, Part 2 coach in a real activity, Part 3 prepare, Part 4 classroom ─────────
+// ── Teacher Tour: Part 1 pick a skill, Part 2 try it as a student with Mr. Neft, Part 3 use it with your class ──
 const coachTitle = () => page.locator(".gc-title").innerText();
 const coachSays = async (re, label) => {
   await page
     .waitForFunction(
       (s) => new RegExp(s).test(document.querySelector(".gc-title")?.textContent || ""),
       re.source,
-      {
-        timeout: 10000,
-      },
+      { timeout: 10000 },
     )
     .catch(() => {});
   const t = await coachTitle().catch(() => "");
   ok(re.test(t), `${label} (card: "${t}")`);
 };
+/** Press the coach's Next / Skip button. */
+const coachNext = () => page.locator(".gc-foot [data-gc=next]").click();
+/** If the activity opens with its skill lesson, press its button the way a student would. */
+const passSkillLesson = async (label) => {
+  if (/skill lesson/.test(await coachTitle())) {
+    await page.frameLocator("iframe.gc-frame").locator("[data-frame-ready]").first().click();
+    await page
+      .waitForFunction(() => !/skill lesson/.test(document.querySelector(".gc-title")?.textContent))
+      .catch(() => {});
+    ok(!/skill lesson/.test(await coachTitle()), `${label}: the skill lesson's button moves on`);
+  }
+};
+const openPart2 = async (skill) => {
+  await page.goto(`${LAB}/start/tour?part=2&grades=6-8&skill=${skill}`, { waitUntil: "load" });
+  await page.waitForSelector(".gc-card", { timeout: 60000 });
+  await page
+    .frameLocator("iframe.gc-frame")
+    .locator("#app h1")
+    .first()
+    .waitFor({ state: "attached", timeout: 60000 });
+  await page.waitForTimeout(300);
+};
+await page.setViewportSize({ width: 1366, height: 900 });
 await page.goto(`${LAB}/start/tour?part=1&grades=6-8`, { waitUntil: "load" });
-await page.waitForSelector(".gt-part-goal");
-ok((await page.locator("[data-gt-goal]").count()) === 4, "Part 1: four goals");
-ok((await page.locator(".gt-goal.is-recommended").count()) === 1, "Part 1: one recommended goal");
+await page.waitForSelector(".gt-part-skill");
+ok((await page.locator("a.gt-domain[data-gt-skill]").count()) === 4, "Part 1: four skill cards");
+ok(
+  (await page.locator("section.nb .nb-name").innerText()).includes("Mr. Neft") &&
+    (await page.locator("section.nb details.nb-ask").count()) === 1,
+  "Part 1: Mr. Neft opens the part, with Ask Mr. Neft",
+);
+ok(
+  (await page.locator("#gtTitle").innerText()) === "What would you like your students to practice?",
+  "Part 1: the question",
+);
 ok((await page.locator(".gt-exit").innerText()).includes("Exit tour"), "Exit tour link is present");
-await page.locator(".gt-goal.is-recommended").click();
+await page.locator('a.gt-domain[data-gt-skill="reading"]').click();
 await page.waitForSelector(".gc-card", { timeout: 60000 });
-ok(/part=2/.test(path(page)) && /goal=show/.test(path(page)), "the recommended goal opens Part 2");
+ok(
+  /part=2/.test(path(page)) && /skill=reading/.test(path(page)),
+  "the Reading card opens Part 2 with Reading chosen",
+);
+ok(
+  (await page.locator(".gc-card .gc-who").innerText()).includes("Mr. Neft"),
+  "Part 2: the guide card is Mr. Neft's",
+);
 const frameEl = page.locator("iframe.gc-frame");
 const frameSrc = await frameEl.getAttribute("src");
 ok(
-  /frame=1/.test(frameSrc) && /grades=6-8/.test(frameSrc),
-  "Part 2 frames the activity in its grade",
+  /frame=1/.test(frameSrc) && /grades=6-8/.test(frameSrc) && /\/Reading\/A\//.test(frameSrc),
+  "Part 2 frames the level A Reading activity in its grade",
+);
+const [coachX, frameX] = await Promise.all(
+  [".gc-card", "iframe.gc-frame"].map((s) =>
+    page.locator(s).evaluate((e) => e.getBoundingClientRect().left),
+  ),
+);
+ok(coachX < frameX, `1366px: the guide card sits left of the frame (${coachX} < ${frameX})`);
+ok(
+  (await page.locator(".gt-trail").innerText()).includes("Reading"),
+  "Part 2: the trail names the skill",
 );
 const inner = page.frameLocator("iframe.gc-frame");
 await inner.locator("#app h1").first().waitFor({ state: "attached", timeout: 60000 });
@@ -159,7 +205,7 @@ for (let i = 0; i < 80 && !tabbed; i++) {
   tabbed = await page.evaluate(() => Boolean(document.activeElement?.closest(".gc-card button")));
 }
 ok(tabbed, "keyboard Tab reaches the coach card's buttons");
-await page.locator(".gc-foot [data-gc=next]").click();
+await coachNext();
 await coachSays(/skill lesson/, "Next moves the coach to the skill lesson step");
 await page.waitForTimeout(300);
 const ringOver = await page.evaluate(() => {
@@ -182,62 +228,83 @@ await coachSays(
 );
 await inner.locator(".directions [data-say]").first().click();
 await coachSays(/Choose an answer/, "Hear directions advances to Choose an answer");
-await inner.locator("label.choice").first().click();
+// A wrong answer on purpose, to see the guidance and the second try.
+await inner.locator("label.choice", { hasNotText: "save water" }).first().click();
 await coachSays(/sure/, "choosing an answer advances to How sure");
 await inner.locator("[data-sure]").first().click();
 await coachSays(/Check the answer/, "How sure advances to Check");
 await inner.locator("[data-check]").first().click();
-await coachSays(/guidance|correct answer/, "Check advances the card to the feedback step");
-const right = (await inner.locator(".feedback").first().getAttribute("class")).includes("is-right");
-await page.locator(".gc-foot [data-gc=next]").click();
-if (!right) {
-  await coachSays(/try again/, "after a wrong answer the coach shows Try again");
-  await inner.locator("[data-retry]").first().click();
-}
-await coachSays(
-  /student loop/,
-  right ? "a right answer skips Try again" : "Try again reaches the end of the loop",
+await coachSays(/guidance students receive/, "a wrong answer shows the guidance step");
+await coachNext();
+await coachSays(/try again/, "after the guidance the coach shows Try again");
+await inner.locator("[data-retry]").first().click();
+await coachSays(/Check again/, "Try again asks to check again");
+// The right answer to "Saving Water: Find the Main Idea": checking it ends the loop on success.
+await inner.locator("label.choice", { hasText: "save water" }).click();
+await inner.locator("[data-check]").first().click();
+await coachSays(/student loop/, "a right second answer reaches the end of the loop");
+ok(
+  (await page.locator("[data-gc=finish]").innerText()).includes("Next: use it with your class"),
+  "the last step's button is Next: use it with your class",
 );
 await page.locator("[data-gc=finish]").click();
-await page.waitForSelector(".gt-part-prepare");
-ok(/part=3/.test(path(page)), "the coach's finish button opens Part 3");
-
-await page.locator('[data-gt-skill="speaking"]').click();
-await page.waitForSelector("[data-gt-support]");
-const supports = await page.locator("[data-gt-support]").count();
-ok(supports >= 2, `Part 3: choosing a skill shows the support choices (${supports})`);
-await page.locator('[data-gt-support="B"]').click();
-await page.waitForSelector(".gt-preview iframe.gc-frame", { timeout: 60000 });
+await page.waitForSelector(".gt-class-card");
 ok(
-  /\/Speaking\/B\//.test(await page.locator(".gt-preview iframe.gc-frame").getAttribute("src")),
-  "Part 3: the preview frames a Speaking activity at that support",
+  /part=3/.test(path(page)) && /skill=reading/.test(path(page)),
+  "the coach's finish button opens Part 3",
 );
-await inner.locator("#app h1").first().waitFor({ state: "attached", timeout: 60000 });
+
+// ── Part 3: support, the class card, ready, map ──
 ok(
-  (await inner.locator("#app h1").first().innerText()).length > 2,
-  "Part 3: the preview activity loads",
+  (await page.locator('[data-gt-support][aria-pressed="true"]').getAttribute("data-gt-support")) ===
+    "A",
+  "Part 3: support A is chosen by default",
+);
+const titleA = await page.locator("#gtCardTitle").innerText();
+await page.locator('[data-gt-support="B"]').click();
+await page.waitForFunction(
+  () => document.querySelector('[data-gt-support="B"]')?.getAttribute("aria-pressed") === "true",
+);
+const titleB = await page.locator("#gtCardTitle").innerText();
+ok(
+  /support=B/.test(path(page)) &&
+    /\/Reading\/B\//.test(await page.locator("[data-gt-link]").inputValue()) &&
+    titleB.length > 2,
+  `Part 3: support B updates the card ("${titleA}" -> "${titleB}") and the address`,
+);
+ok(
+  await page.evaluate(() => document.activeElement?.matches('[data-gt-support="B"]')),
+  "Part 3: focus stays on the pressed support button",
 );
 await page.reload();
-await page.waitForSelector(".gt-part-prepare");
+await page.waitForSelector(".gt-class-card");
 ok(
-  (await page.locator('[data-gt-skill="speaking"]').getAttribute("aria-pressed")) === "true" &&
-    (await page.locator('[data-gt-support="B"]').getAttribute("aria-pressed")) === "true",
+  (await page.locator('[data-gt-support="B"]').getAttribute("aria-pressed")) === "true" &&
+    (await page.locator("#gtCardTitle").innerText()) === titleB,
   "reload keeps the part, the skill and the support",
 );
-await page.locator("[data-gt-use]").click();
-await page.waitForSelector(".gt-class-card");
-ok(/part=4/.test(path(page)), "Use this activity opens Part 4");
 ok(
-  (await page.locator(".gt-class-card .btn-primary").count()) === 1,
-  "Part 4: exactly one primary action on the classroom card",
+  (await page.locator(".gt-class-card .btn-primary").count()) === 1 &&
+    (await page.locator(".gt-class-card .btn-primary").innerText()).includes("Copy student link"),
+  "Part 3: exactly one primary action on the class card, Copy student link",
+);
+ok(
+  (await page.locator(".gt-start-steps > li").count()) === 3 &&
+    (await page.locator(".gt-start-print a").getAttribute("href")).endsWith(".pdf"),
+  "Part 3: Start tomorrow in three steps, with the quick guide PDF",
 );
 ok(
   await page.getByText("You’re ready to use this with students.").isVisible(),
-  "Part 4: “You’re ready to use this with students.” is visible",
+  "Part 3: “You’re ready to use this with students.” is visible",
 );
 ok(
   (await page.locator(".gt-ready-go").innerText()).includes("Start using the lab"),
-  "Part 4: Start using the lab",
+  "Part 3: Start using the lab",
+);
+ok((await page.locator(".gt-map-stops a").count()) === 7, "Part 3: the site map has seven stops");
+ok(
+  (await page.locator(".gt-map-more a").innerText()).includes("Open the full Site Guide"),
+  "Part 3: Open the full Site Guide",
 );
 const link = await page.locator("[data-gt-link]").inputValue();
 await page.locator("[data-gt-copy]").click();
@@ -245,9 +312,7 @@ await page
   .waitForFunction(
     () => document.querySelector("[data-gt-copy-note]")?.textContent.length > 3,
     null,
-    {
-      timeout: 5000,
-    },
+    { timeout: 5000 },
   )
   .catch(() => {});
 ok(
@@ -256,32 +321,75 @@ ok(
   "Copy student link copies the link and says so",
 );
 await page.locator("[data-gt-show]").click();
-ok(
-  await page.locator("[data-gt-show-dialog]").evaluate((d) => d.open),
-  "Show the QR code opens the dialog",
-);
+ok(await page.locator("[data-gt-show-dialog]").evaluate((d) => d.open), "Show QR opens the dialog");
 await page.keyboard.press("Escape");
 ok(
   !(await page.locator("[data-gt-show-dialog]").evaluate((d) => d.open)) &&
     (await page.evaluate(() => document.activeElement?.matches("[data-gt-show]"))),
   "Escape closes it and focus returns to the button",
 );
-await axe(page, "tour Part 4");
-await overflow(page, "tour Part 4 1280");
+await axe(page, "tour Part 3");
+await overflow(page, "tour Part 3 1366");
 const saved = JSON.parse(
   await page.evaluate(() => localStorage.getItem("accessPracticeLab:v1:intro")),
 );
 ok(
-  saved.guided?.part === 4 && saved.guided.done === true && saved.guided.skill === "speaking",
+  saved.guided?.part === 3 &&
+    saved.guided.done === true &&
+    saved.guided.skill === "reading" &&
+    saved.guided.support === "B",
   "the tour is saved under accessPracticeLab:v1:intro guided",
 );
 await page.locator("details.gt-help > summary").click();
 await page.locator("[data-gt-restart]").click();
-await page.waitForSelector(".gt-part-goal");
+await page.waitForSelector(".gt-part-skill");
 ok(/part=1/.test(path(page)), "Need help → Start the teacher tour again returns to Part 1");
+
+// ── Part 2, speaking: hear the question, say it, check it ──
+await openPart2("speaking");
+await coachNext();
+await passSkillLesson("speaking");
+await coachSays(/Hear the question/, "speaking: the coach points at the question");
+await inner.locator(".response-workspace [data-say], .directions [data-say]").first().click();
+await coachSays(/starters|Say the answer/, "speaking: hearing the question moves on");
+if (/starters/.test(await coachTitle())) await coachNext();
+await coachSays(/Say the answer/, "speaking: the coach asks for the answer out loud");
+await inner.locator("[data-rec-start]").first().click();
+await coachSays(/check their own answer/, "speaking: recording moves to the self-check");
+await inner.locator("[data-selfcheck]").first().click();
+await coachSays(/That is a speaking turn/, "speaking: a tick reaches “That is a speaking turn”");
+
+// ── Part 2, writing: write, check, see the feedback ──
+await openPart2("writing");
+await coachNext();
+await passSkillLesson("writing");
+await coachSays(/Directions/, "writing: the coach points at the directions");
+await coachNext();
+await coachSays(/Write an answer/, "writing: the coach asks for a sentence");
+await inner
+  .locator("textarea[data-note]")
+  .first()
+  .fill("Schools should save water because it helps.");
+await coachSays(/Check the writing/, "writing: typing moves to Check the writing");
+await inner.locator("[data-check-writing]").first().click();
+await coachSays(/feedback students get/, "writing: checking shows the feedback step");
+
+// ── 390px: the guide card docks at the bottom, nothing scrolls sideways ──
+await page.setViewportSize({ width: 390, height: 844 });
+await openPart2("reading");
+const dock = await page.evaluate(() => {
+  const card = document.querySelector(".gc-card");
+  let el = card;
+  while (el && getComputedStyle(el).position !== "fixed") el = el.parentElement;
+  return el ? Math.abs(innerHeight - card.getBoundingClientRect().bottom) : -1;
+});
+ok(dock >= 0 && dock <= 24, `390px: the guide card is fixed at the bottom (${dock})`);
+await overflow(page, "tour Part 2 390");
+await page.setViewportSize({ width: 1280, height: 900 });
+
 // Leave the tour part-way through, then see the start page offer to resume it.
-await page.goto(`${LAB}/start/tour?part=3&goal=find&grades=6-8`, { waitUntil: "load" });
-await page.waitForSelector(".gt-part-prepare");
+await page.goto(`${LAB}/start/tour?part=2&grades=6-8&skill=writing`, { waitUntil: "load" });
+await page.waitForSelector(".gt-part-try");
 await page.locator(".gt-exit").click();
 await page.waitForSelector(".lph-start");
 ok(
@@ -299,7 +407,7 @@ await page.waitForSelector(".in-hub");
 ok((await page.locator(".in-choices a").count()) === 3, "three choices on the start page");
 ok(
   (await page.locator(".in-choice.is-tour strong").innerText()).includes(
-    "Resume the tour at Part 3",
+    "Resume the tour at Part 2",
   ),
   "start page offers to resume the saved tour",
 );
@@ -317,7 +425,7 @@ ok(
 );
 ok(
   (await page.locator(".ov-progress li").count()) >= 1 &&
-    (await page.locator(".ov-progress").innerText()).includes("Teacher tour: Part 3 of 4"),
+    (await page.locator(".ov-progress").innerText()).includes("Teacher tour: Part 2 of 3"),
   "overview: progress panel shows the saved tour",
 );
 // The grade picker re-renders the page in place and puts the choice in the address.
@@ -340,8 +448,8 @@ const tourCard = await page
   .locator(".tb-domain.d-reading a", { hasText: "Try it in the tour" })
   .getAttribute("href");
 ok(
-  /grades=2-3/.test(tourCard) && /part=3/.test(tourCard) && /skill=reading/.test(tourCard),
-  "overview: the Reading card opens tour Part 3 with Reading chosen for Grades 2–3",
+  /grades=2-3/.test(tourCard) && /part=2/.test(tourCard) && /skill=reading/.test(tourCard),
+  "overview: the Reading card opens tour Part 2 with Reading chosen for Grades 2–3",
 );
 ok(
   (await page.locator(".ov-loop li").count()) === 5 &&
@@ -617,7 +725,10 @@ ok(
 await page.goto(`${LAB}/practice-together?step=3&grades=4-5`);
 await page.waitForSelector(".ft-next-card");
 const next35 = await page.locator(".ft-next-card .btn-primary").getAttribute("href");
-ok(/class-garden\?grades=4-5/.test(next35 || ""), "family page: grades 3–5 continue to that band's talk activity");
+ok(
+  /class-garden\?grades=4-5/.test(next35 || ""),
+  "family page: grades 3–5 continue to that band's talk activity",
+);
 const dest = await landingView(next35);
 ok(dest.includes("Our Class Garden"), "family page: the grades 3–5 talk activity opens");
 await page.goto(`${LAB}/practice-together`);
@@ -685,7 +796,8 @@ for (const route of [
   "/",
   "/start",
   "/start/tour?stop=3",
-  "/start/tour?part=4&goal=share&grades=6-8&skill=writing&support=A",
+  "/start/tour?part=3&grades=6-8&skill=writing&support=A",
+  "/start/tour?part=4&grades=6-8&skill=writing",
   "/start/explore?stop=2&focus=writing",
   "/start/lesson",
   "/start/present?stop=2&focus=notes",

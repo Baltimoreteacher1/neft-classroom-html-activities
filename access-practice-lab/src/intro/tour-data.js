@@ -5,56 +5,10 @@ import { normalizeBand } from "../bands.js";
 import { BAND_TOUR, DOMAIN_BY_ID, DOMAINS } from "./tour-bands.js";
 
 export const PARTS = [
-  { n: 1, id: "goal", name: "Choose a goal" },
-  { n: 2, id: "try", name: "Try an activity" },
-  { n: 3, id: "prepare", name: "Prepare practice" },
-  { n: 4, id: "classroom", name: "Take it to class" },
+  { n: 1, id: "skill", name: "Pick a skill" },
+  { n: 2, id: "try", name: "Try it as a student" },
+  { n: 3, id: "class", name: "Use it with your class" },
 ];
-
-/** The four answers to "What would you like to do with your students?". `show` is the recommended path. */
-export const GOALS = [
-  {
-    id: "show",
-    icon: "sparkle",
-    name: "Show me how it works",
-    detail:
-      "New here? Try one activity as a student, then set one up for your class. About 8 minutes.",
-    recommended: true,
-  },
-  {
-    id: "find",
-    icon: "search",
-    name: "Find a practice activity",
-    detail: "Pick a skill and the help students need, and see the activity they will get.",
-  },
-  {
-    id: "share",
-    icon: "launch",
-    name: "Prepare and share student practice",
-    detail: "Leave with a student link, a QR code and a printable plan.",
-  },
-  {
-    id: "understand",
-    icon: "evidence",
-    name: "Understand student work and next steps",
-    detail: "See the feedback students get, how they revise, and where their work is saved.",
-  },
-];
-export const GOAL_BY_ID = Object.fromEntries(GOALS.map((g) => [g.id, g]));
-export const goalOf = (id) => GOAL_BY_ID[id] || GOAL_BY_ID.show;
-
-/**
- * Part 2 activity for each grade choice: one with an answer, a check, feedback and a second try. K–3 use the
- * picture-choice listening activity (audio first, no reading needed); Grades 4–8 use the reading activity.
- */
-const TRY_DOMAIN = {
-  K: "listening",
-  1: "listening",
-  "2-3": "listening",
-  "4-5": "reading",
-  "6-8": "reading",
-};
-export const tryDomain = (pick) => TRY_DOMAIN[pick] || "reading";
 
 /** What each support choice means, in plain words. Keys are the lab's level letters. */
 export const SUPPORT_PLAIN = {
@@ -152,8 +106,8 @@ export function activityRoute(a, extra = {}) {
 export const skillOf = (id) => (DOMAINS.some((d) => d.id === id) ? id : "");
 
 /** The coach's words in Part 2 for teachers. `final` is the last step's button. */
-export const TEACHER_SAY = {
-  final: "Next: prepare practice",
+const LOOP_SAY = {
+  final: "Next: use it with your class",
   intro: {
     title: "Try this activity as a student would",
     body: "This is the real activity your students open. I’ll point to one part at a time.",
@@ -199,28 +153,95 @@ export const TEACHER_SAY = {
     body: "Press “Try again.” The choices come back so students can revise.",
     early: "All the pictures stay. Students listen again and choose once more. Try it now.",
   },
+  again: {
+    title: "Check again and see success",
+    body: "Choose the answer you now think is right, then check. This is what students see when they get there.",
+    fallback: "Choose again and check, or press Skip to move on.",
+  },
   end: {
     title: "That is the student loop",
-    body: "Try, get guidance, revise. Next, choose what your students will practice and how much help they get.",
+    body: "Try, get guidance, revise. Next, choose how much help your students get and share it.",
   },
 };
 
-/** Part 3 preview words per skill: the one control that makes each skill different. */
-export const PREVIEW_SAY = {
-  speaking: {
-    title: "Students speak their own answer",
-    body: "Students hear a model, then record or say their answer aloud. The microphone asks permission first; if it is blocked, students practice aloud with a partner and keep going.",
+const SKILL_INTRO = {
+  title: "Try this activity as a student would",
+  body: "This is the real activity your students open. I’ll point to one part at a time.",
+  why: "Trying it yourself first shows you what students see, where they get help, and what feedback sounds like.",
+};
+
+const SPEAK_SAY = {
+  final: "Next: use it with your class",
+  intro: SKILL_INTRO,
+  skill: LOOP_SAY.skill,
+  question: {
+    title: "Hear the question",
+    body: "Students hear the question first, so reading is never the barrier. Press the highlighted button.",
+    fallback: "Students listen to the question before they answer. Press Next.",
   },
-  writing: {
-    title: "Students write and revise",
-    body: "Students write their own sentences, check them, and fix what the check names. The check looks at words, not meaning.",
+  starters: {
+    title: "Sentence starters wait behind a button",
+    body: "Open it to see the starters and helpful words. Students choose when they need them.",
   },
-  listening: {
-    title: "Students listen first",
-    body: "Students press play, can slow the audio down, then answer. Nothing is timed.",
+  say: {
+    title: "Say the answer out loud",
+    body: "Press “Record my answer” and answer as a student would, or say it aloud. The microphone asks permission first and recordings stay on this device.",
+    why: "If the microphone is blocked, students practice aloud with a partner and keep going. Nothing is scored.",
+    fallback: "Say your answer out loud, then press Next.",
   },
-  reading: {
-    title: "Students read and prove it",
-    body: "Students read, open word help when they need it, then answer and check.",
+  check: {
+    title: "Students check their own answer",
+    body: "They tick what their answer did: named the topic, gave details, explained their thinking. Tick one.",
   },
+  end: {
+    title: "That is a speaking turn",
+    body: "Hear it, plan it, say it, check it. Next, choose how much help your students get and share it.",
+  },
+};
+
+const WRITE_SAY = {
+  final: "Next: use it with your class",
+  intro: SKILL_INTRO,
+  skill: LOOP_SAY.skill,
+  directions: LOOP_SAY.directions,
+  write: {
+    title: "Write an answer",
+    body: "Type one or two sentences, as a student would. Starters and word help are above if you want them.",
+    fallback: "Write in the box, then press Next.",
+  },
+  check: {
+    title: "Check the writing",
+    body: "Press the highlighted button. The check names what to add or fix.",
+    fallback: "Press the check button, then press Next.",
+  },
+  feedback: {
+    title: "This is the feedback students get",
+    body: "It names one thing to add or fix, like a detail or a connector, and never gives a score.",
+    why: "The check looks at words, not meaning, so it points students back to their own sentence to revise.",
+  },
+  revise: {
+    title: "Revise and check again",
+    body: "Change one thing the feedback named, then press the check button again.",
+    fallback: "Revise, check again, then press Next.",
+  },
+  paper: {
+    title: "Write on paper",
+    body: "Younger writers draw and write on paper, then show an adult. Press the highlighted button when it is done.",
+    fallback: "Press Next when the writing is done.",
+  },
+  end: {
+    title: "That is a writing turn",
+    body: "Plan, write, check, revise. Next, choose how much help your students get and share it.",
+  },
+};
+
+/** The guide's words in Part 2 for each kind of activity (coach/activity-steps.js stepsFor). */
+export const TEACHER_SAY = { loop: LOOP_SAY, speaking: SPEAK_SAY, writing: WRITE_SAY };
+
+/** What Mr. Neft says at the top of each part. */
+export const NEFT_SAYS = {
+  1: "Hi, I’m Mr. Neft, your tour guide. Which language skill would you like your students to practice? Pick one and I’ll show you the real activity.",
+  2: (skill) =>
+    `Here is a real ${skill} activity. Try it the way a student would. I’ll stand right next to it and show you one thing at a time.`,
+  3: "Nice work. Now choose how much help your students get. Your link, QR code and a printable card are ready right below.",
 };

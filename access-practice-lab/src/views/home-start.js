@@ -259,7 +259,7 @@ function teacherCard(I, band) {
 export function startHTML(I, ctx, data) {
   const { band, available, focusCounts, domains, tierFor, target } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
-    <div class="lph-starts">
+    <div class="lph-starts" data-focus-first tabindex="-1" role="region" aria-label="${I.S("Start here", "Empiecen aquí")}">
       ${startCardHTML(I, teacherCard(I, band))}
       ${startCardHTML(I, { id: "family", ic: "families", who: I.T("Families: Start Here", "Familias: Empiecen aquí"), text: I.T("Practice English together in 10 minutes. A short guide shows you how to help, even if you are still learning English.", "Practiquen inglés juntos en 10 minutos. Una guía corta les muestra cómo ayudar, aunque todavía estén aprendiendo inglés."), cta: I.T("Practice English Together", "Practicar inglés juntos"), href: `${BASE}/practice-together?grades=${band}`, more: { href: `${BASE}/family?grades=${band}`, label: I.T("Family Corner", "Rincón de la familia") } })}
     </div>

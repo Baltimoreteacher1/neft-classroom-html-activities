@@ -53,7 +53,8 @@ export function completes(done, event) {
  *   steps   [{ id, target, title, body, why?, done?, appear?, fallback?, when?, primary? }]
  *           `body` and `title` may be functions of the target element. `appear` advances when its selector shows up.
  *   copy    button and status words in the page language: { next, back, skip, finish, tryMyself, showMe, stepOf,
- *           missing, away, awayTitle, bringBack, why, done, doIt } plus optional { hear, lang } for read-aloud
+ *           missing, away, awayTitle, bringBack, why, done, doIt, goTo } plus optional { hear, lang } for read-aloud
+ *           and { guide: { name, role, avatar } }, the guide who speaks the card (Mr. Neft on the tour pages)
  *   onFinish()  the last step's primary button
  *   onStep(i)   remember the place
  *   isHome(win) true while the frame still shows the activity
@@ -78,6 +79,7 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
   let doc = null;
   let away = false;
   let pending = false;
+  const seen = new Set();
   let detach = () => {};
 
   const step = () => list[index];
@@ -91,9 +93,11 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
 
   function sizeFrame() {
     const d = frameDoc();
-    const root = d?.documentElement;
-    if (!root) return;
-    const h = Math.min(8000, Math.ceil(root.scrollHeight));
+    // The body's own height, not the document's scrollHeight: scrollHeight never drops below the frame's height, so
+    // measuring it only ever grows the frame (it ran away to the cap on the live site).
+    const body = d?.body;
+    if (!body) return;
+    const h = Math.min(8000, Math.ceil(body.getBoundingClientRect().height + 24));
     if (Math.abs(frame.offsetHeight - h) > 4) frame.style.height = `${h}px`;
   }
 
@@ -181,9 +185,19 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
     const waiting = Boolean((s.done || s.appear) && !missing && !away);
     const title = away ? copy.awayTitle : text(s.title, el);
     const body = away ? copy.away : missing ? s.fallback || copy.missing : text(s.body, el);
-    const dots = list
-      .map((_, i) => `<span class="${i < index ? "is-done" : i === index ? "is-now" : ""}"></span>`)
+    // Count the steps this person sees: the ones already shown plus the ones that apply from here, so a step the
+    // activity does not have never makes the count jump.
+    const d = frameDoc();
+    const shown = list.map((st, i) => (i <= index ? seen.has(i) : !st.when || st.when(d)));
+    const total = shown.filter(Boolean).length;
+    const at = shown.slice(0, index + 1).filter(Boolean).length;
+    const dots = shown
+      .map((on, i) => (on ? `<span class="${i < index ? "is-done" : i === index ? "is-now" : ""}"></span>` : ""))
       .join("");
+    const goTo =
+      waiting && el
+        ? `<button type="button" class="btn ghost small gc-go" data-gc="go">${esc(copy.goTo)}</button>`
+        : "";
     const primary = away
       ? `<button type="button" class="btn btn-primary small" data-gc="home">${ic("retry")}${esc(copy.bringBack)}</button>`
       : last
@@ -196,14 +210,15 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
         ? `<details class="gc-why"><summary>${esc(copy.why)}</summary><p>${esc(s.why)}</p></details>`
         : "";
     return `<section class="gc-card${waiting ? " is-waiting" : ""}" role="region" aria-labelledby="gcTitle">
+      ${copy.guide ? `<p class="gc-who"><span class="gc-avatar">${copy.guide.avatar}</span><span><strong>${esc(copy.guide.name)}</strong><span>${esc(copy.guide.role)}</span></span></p>` : ""}
       <header class="gc-head">
-        <p class="gc-count">${esc(copy.stepOf(index + 1, list.length))}</p>
+        <p class="gc-count">${esc(copy.stepOf(at, total))}</p>
         <span class="gc-dots" aria-hidden="true">${dots}</span>
         <button type="button" class="gc-x" data-gc="close">${ic("close")}<span>${esc(copy.tryMyself)}</span></button>
       </header>
       <h2 class="gc-title" id="gcTitle" tabindex="-1">${esc(title)}</h2>
       <p class="gc-body">${esc(body)}</p>
-      ${waiting ? `<p class="gc-wait">${ic("sparkle")}<span>${esc(copy.doIt)}</span></p>` : ""}
+      ${waiting ? `<p class="gc-wait">${ic("sparkle")}<span>${esc(copy.doIt)}</span></p>${goTo}` : ""}
       ${why}
       <footer class="gc-foot">
         ${index > 0 ? `<button type="button" class="btn ghost small" data-gc="back">${ic("arrow-left")}${esc(copy.back)}</button>` : "<span></span>"}
@@ -236,6 +251,7 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
     while (j >= 0 && j < list.length && !ok(j)) j += dir;
     if (j < 0 || j >= list.length) j = Math.max(0, Math.min(list.length - 1, i));
     index = j;
+    seen.add(j);
     pending = false;
     shownAt = Date.now();
     onStep?.(index);
@@ -315,6 +331,7 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
     else if (act === "back") go(index - 1, { dir: -1 });
     else if (act === "finish") onFinish?.();
     else if (act === "hear") hear();
+    else if (act === "go") goToTarget();
     else if (act === "close") {
       open = false;
       draw({ focus: true });
@@ -326,6 +343,18 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
       away = false;
       frame.src = frame.dataset.src;
     }
+  }
+
+  /** Keyboard path: put focus on the highlighted control inside the activity (made focusable if it is not). */
+  function goToTarget() {
+    const el = targetEl();
+    if (!el) return;
+    const control = el.matches("button, a[href], input, select, textarea, summary")
+      ? el
+      : el.querySelector("button, a[href], input, select, textarea, summary") || el;
+    if (!control.matches("button, a[href], input, select, textarea, summary")) control.tabIndex = -1;
+    frame.focus();
+    control.focus();
   }
 
   /** Read the card aloud in the page's language (the device's own voice; nothing is sent anywhere). */

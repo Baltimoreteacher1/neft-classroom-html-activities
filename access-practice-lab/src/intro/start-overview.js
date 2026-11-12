@@ -26,9 +26,9 @@ import { tourRoute } from "./tour-bands.js";
 import { PARTS } from "./tour-data.js";
 import { activityHref, copyWithNote, labHref } from "./ui.js";
 
-/** The teacher tour: a skill opens Part 3 with that skill chosen; no skill opens the tour where the teacher left it. */
+/** The teacher tour: a skill opens Part 2 (try it as a student) with that skill chosen; no skill opens the tour where the teacher left it. */
 export const tourHref = (pick, skill) =>
-  `${labHref(ROUTES.tour)}?${skill ? `part=3&skill=${skill}&` : ""}grades=${pick}`;
+  `${labHref(ROUTES.tour)}?${skill ? `part=2&skill=${skill}&` : ""}grades=${pick}`;
 
 const sections = (pick) => [
   ["ov-domains", "Your grades"],
@@ -45,7 +45,7 @@ export function progressItems(intro) {
   const t = intro.guided;
   if (t && t.part > 1 && !t.done) {
     items.push({
-      text: `Teacher tour: Part ${t.part} of ${PARTS.length}, ${PARTS[t.part - 1].name}`,
+      text: `Teacher tour: Part ${Math.min(t.part, PARTS.length)} of ${PARTS.length}, ${PARTS[Math.min(t.part, PARTS.length) - 1].name}`,
       href: labHref(ROUTES.tour),
       cta: "Resume the tour",
     });

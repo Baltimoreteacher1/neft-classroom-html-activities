@@ -30,6 +30,8 @@ export const loadFamilyCoach = () => getJson("family-coach.json").catch(() => nu
 export const loadFamilyHelp = () => getJson("family-help.json").catch(() => null);
 /** Spanish skill goals and directions by activity id (content/es-guide.json). */
 export const loadEsGuide = () => getJson("es-guide.json").then((d) => d.activities || {}).catch(() => ({}));
+/** Spanish for activity feedback and language-focus tags, keyed by the exact English string (es-strings.json). */
+export const loadEsStrings = () => getJson("es-strings.json").then((d) => d.strings || {}).catch(() => ({}));
 export const loadGlossary = () => getJson("glossary.json").catch(() => null);
 /** Skill mini-lessons for the lesson frame (content/lesson-learn.json). A failed load leaves the frame without them. */
 export const loadLessonLearn = () => getJson("lesson-learn.json").catch(() => null);

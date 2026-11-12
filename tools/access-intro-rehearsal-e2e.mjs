@@ -196,14 +196,14 @@ const cardVisible = await page.locator(".lph-start.is-teacher > .btn").isVisible
 ok(cardVisible, "first screen shows the teacher card without scrolling");
 await page.locator(".lph-start.is-teacher > .btn").click();
 clicks++;
-await page.waitForSelector(".gt-part-goal");
-await page.locator(".gt-goal.is-recommended").click();
+await page.waitForSelector(".gt-part-skill");
+await page.locator('a.gt-domain[data-gt-skill="reading"]').click();
 clicks++;
 await page.waitForSelector("iframe.gc-frame");
 const frameSrc = await page.locator("iframe.gc-frame").getAttribute("src");
 const secs = (Date.now() - t0) / 1000;
 ok(
-  /\/(Listening|Reading)\//.test(frameSrc || "") && clicks <= 2,
+  /\/Reading\/A\//.test(frameSrc || "") && clicks <= 2,
   `home to a real activity, running in the tour, in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
 );
 await page.close();

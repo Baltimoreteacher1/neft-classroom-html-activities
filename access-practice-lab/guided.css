@@ -125,7 +125,7 @@
   justify-content: space-between;
   gap: var(--s-3) var(--s-5);
 }
-.gt-head-row > div {
+.gt-head-text {
   flex: 1 1 28rem;
   display: grid;
   gap: var(--s-2);
@@ -297,7 +297,7 @@
 .gt-stage {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 21rem;
+  grid-template-columns: 21rem minmax(0, 1fr);
   gap: var(--s-4);
   align-items: start;
 }
@@ -365,7 +365,6 @@
   position: relative;
   display: grid;
   gap: 0.6rem;
-  margin-top: var(--gc-top, 0);
   padding: 1rem 1.1rem 1.05rem;
   border: 2px solid var(--brand);
   border-radius: var(--r-lg);
@@ -386,11 +385,11 @@
   content: "";
   position: absolute;
   top: 1.6rem;
-  left: -0.6rem;
+  right: -0.6rem;
   width: 1rem;
   height: 1rem;
-  border-left: 2px solid var(--brand);
-  border-bottom: 2px solid var(--brand);
+  border-right: 2px solid var(--brand);
+  border-top: 2px solid var(--brand);
   background: var(--surface);
   transform: rotate(45deg);
 }
@@ -805,8 +804,12 @@
 .gt-show::backdrop {
   background: rgb(8 14 37 / 60%);
 }
-.gt-show svg {
-  width: min(24rem, 70vw);
+.gt-show {
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+}
+.gt-show > svg {
+  width: min(24rem, 70vw, 55dvh);
   height: auto;
 }
 .gt-show-url {
@@ -1203,4 +1206,426 @@ html.is-framed .act-nav {
 .ft-bands.is-sub .ft-band {
   min-height: 3rem;
   font-size: 0.98rem;
+}
+/* "Take me to it": a keyboard path to the highlighted control; shown only when it has focus. */
+.gc-go:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Buttons and pills never break a word in half (the lab's global wrap rules allow it on narrow screens). */
+.gc-card .btn,
+.gc-pill,
+.gc-x,
+.ft-band,
+.gt-seg {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+.gc-foot {
+  flex-wrap: wrap;
+}
+.gc-foot .btn {
+  white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .gc-foot .gc-hear {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+  .gc-x span {
+    font-size: 0.85rem;
+  }
+}
+
+/* Inside a guide's frame the activity's own journey counters would compete with the guide's step count. */
+html.is-framed .act-journey-label,
+html.is-framed .act-step {
+  display: none !important; /* the guide's own count is the one progress line in the tour */
+}
+.gt-skip-top {
+  margin: 0;
+}
+.gt-skip-top a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.ft-need {
+  margin: 0;
+  color: var(--wrong);
+  font-weight: 700;
+}
+.ft-need:empty {
+  display: none;
+}
+
+/* Mr. Neft speaks the guide card: his picture and name above the step. */
+.gc-who {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+.gc-avatar {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.gc-avatar svg {
+  width: 100%;
+  height: 100%;
+}
+.gc-who > span:last-child {
+  display: grid;
+  line-height: 1.2;
+}
+.gc-who strong {
+  font-size: 1rem;
+}
+.gc-who > span:last-child > span {
+  font-size: 0.85rem;
+  color: var(--ink-2, #3d4664);
+}
+@media (max-width: 959px) {
+  .gc-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* ── Mr. Neft's speech bubble: opens every part of the tour and the family walkthrough ── */
+.nb {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s-3);
+  max-width: 52rem;
+}
+.nb-face {
+  width: 4.25rem;
+  height: 4.25rem;
+}
+.nb-face svg {
+  width: 100%;
+  height: 100%;
+}
+.nb-main {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem 1.1rem 0.9rem;
+  border: 2px solid var(--brand);
+  border-radius: 4px var(--r-lg) var(--r-lg) var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.nb-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  margin: 0;
+}
+.nb-name span {
+  font-size: 0.88rem;
+  color: var(--ink-2, #3d4664);
+}
+.nb-say {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.5;
+}
+.nb-ask > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+  color: var(--brand-ink);
+  cursor: pointer;
+}
+/* Inside the bubble the question box needs no second face or name. */
+.nb-ask .pg {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.nb-ask .pg-avatar,
+.nb-ask .pg-name {
+  display: none;
+}
+@media (max-width: 640px) {
+  .nb-face {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+  .nb-say {
+    font-size: 1.02rem;
+  }
+}
+
+/* ── Teacher Tour v3: skill cards, trail, support row, three-step start, site map ── */
+.gt-domains {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gt-domain {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid var(--line-control);
+  border-top: 6px solid var(--room);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+.gt-domain:hover {
+  border-color: var(--room);
+  box-shadow: var(--shadow-float);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gt-domain:hover {
+    transform: translateY(-3px);
+  }
+}
+.gt-domain img {
+  display: block;
+  width: 100%;
+  height: 8.5rem;
+  object-fit: cover;
+  background: var(--room-soft);
+}
+.gt-domain-body {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem 1.1rem;
+}
+.gt-domain-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font: 600 1.4rem/1.2 var(--font-display);
+  color: var(--room-ink);
+}
+.gt-domain-text {
+  line-height: 1.45;
+}
+.gt-domain-try {
+  font-size: 0.92rem;
+  color: var(--ink-2, #3d4664);
+}
+.gt-domain-go {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  color: var(--room-ink);
+}
+.gt-trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+}
+.gt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--room-soft, var(--brand-soft));
+  color: var(--room-ink, var(--brand-ink));
+  font-weight: 700;
+}
+.gt-trail a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+.gt-support-row {
+  display: grid;
+  gap: var(--s-2);
+}
+.gt-support-label {
+  margin: 0;
+  font: 600 1.25rem/1.25 var(--font-display);
+}
+.gt-support-note {
+  margin: 0;
+}
+.gt-start {
+  display: grid;
+  gap: var(--s-3);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: var(--r-lg);
+  background: var(--brand-soft);
+}
+.gt-start h2,
+.gt-map h2 {
+  margin: 0;
+  font: 600 1.45rem/1.2 var(--font-display);
+}
+.gt-start-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gt-start-steps li {
+  display: grid;
+  gap: 0.3rem;
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface);
+  line-height: 1.45;
+}
+.gt-start-n {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 800;
+}
+.gt-start-print {
+  margin: 0;
+}
+.gt-start-print a,
+.gt-map-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.gt-map {
+  display: grid;
+  gap: var(--s-3);
+}
+.gt-map-lead {
+  margin: 0;
+  color: var(--ink-2, #3d4664);
+}
+/* The stops sit on one dashed path, like a trail map. */
+.gt-map-stops {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gt-map-stops a {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  height: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px dashed var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.gt-map-stops a:hover {
+  border-style: solid;
+  border-color: var(--brand);
+}
+.gt-map-stops a > span:last-child {
+  display: grid;
+  gap: 0.2rem;
+  line-height: 1.4;
+}
+.gt-map-stops a > span:last-child > span {
+  color: var(--ink-2, #3d4664);
+  font-size: 0.95rem;
+}
+.gt-map-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.gt-map-more {
+  margin: 0;
+}
+@media (max-width: 640px) {
+  /* Phones: Mr. Neft's face sits beside his name, so the bubble and his question box get the full width. */
+  .nb {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nb-face {
+    position: absolute;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0.55rem 0 0 0.8rem;
+  }
+  .nb {
+    position: relative;
+  }
+  .nb-name {
+    padding-left: 2.9rem;
+    min-height: 2.5rem;
+    align-items: center;
+  }
+  .nb-ask .pg,
+  .nb-ask .pg-main {
+    width: 100%;
+    padding: 0;
+  }
+  .nb-ask .pg-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.gt-seg,
+.gt-grades-label {
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .nb-face {
+    z-index: 1;
+  }
+  .gt-grades {
+    flex-wrap: wrap;
+  }
+  .gt-grades-label {
+    flex-basis: 100%;
+  }
 }

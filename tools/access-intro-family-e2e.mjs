@@ -27,7 +27,9 @@ try {
 try {
   AxeBuilder = (await import("@axe-core/playwright")).default;
 } catch {
-  console.warn("access-intro-family-e2e: axe-core/playwright is not installed; skipping axe checks.");
+  console.warn(
+    "access-intro-family-e2e: axe-core/playwright is not installed; skipping axe checks.",
+  );
 }
 
 const LAB = "/access-practice-lab";
@@ -50,11 +52,15 @@ const ok = (cond, msg) => {
 };
 
 async function open(lang, width, path, { denyMic = false } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+  const context = await browser.newContext({
+    viewport: { width, height: 844 },
+    reducedMotion: "reduce",
+  });
   await context.addInitScript(
     ([key, l, deny]) => {
       try {
-        if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({ lang: l, langChosen: true }));
+        if (!localStorage.getItem(key))
+          localStorage.setItem(key, JSON.stringify({ lang: l, langChosen: true }));
       } catch {}
       if (deny && navigator.mediaDevices)
         navigator.mediaDevices.getUserMedia = () =>
@@ -79,7 +85,10 @@ const frame = (page) => page.frameLocator(".gc-frame");
 const title = (page) => page.locator(".gc-title").textContent();
 async function coachReady(page) {
   await page.waitForSelector(".gc-frame", { timeout: 15000 });
-  await frame(page).locator("main h1, main .early-player, [data-early-player]").first().waitFor({ timeout: 20000 });
+  await frame(page)
+    .locator("main h1, main .early-player, [data-early-player]")
+    .first()
+    .waitFor({ timeout: 20000 });
   await page.waitForSelector(".gc-card", { timeout: 10000 });
 }
 async function waitTitle(page, re, ms = 6000) {
@@ -90,7 +99,8 @@ async function waitTitle(page, re, ms = 6000) {
   }
   return false;
 }
-const noSideScroll = (page) => page.evaluate(() => document.scrollingElement.scrollWidth <= window.innerWidth + 1);
+const noSideScroll = (page) =>
+  page.evaluate(() => document.scrollingElement.scrollWidth <= window.innerWidth + 1);
 async function axe(page, label) {
   if (!AxeBuilder) return;
   const r = await new AxeBuilder({ page })
@@ -99,17 +109,29 @@ async function axe(page, label) {
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();
   const bad = r.violations.filter((v) => ["serious", "critical"].includes(v.impact));
-  ok(bad.length === 0, `${label}: axe serious/critical 0 (${bad.map((v) => v.id).join(", ") || "none"})`);
+  ok(
+    bad.length === 0,
+    `${label}: axe serious/critical 0 (${bad.map((v) => v.id).join(", ") || "none"})`,
+  );
 }
 
 try {
   // ── Spanish family on a phone ──
   {
     const { context, page } = await open("es", 375, "/practice-together?grades=6-8");
-    ok(/Practiquemos inglés juntos/.test(await page.locator("#app h1").textContent()), "ES phone: Spanish welcome");
-    ok((await page.locator(".ft-page .btn-primary").count()) === 1, "ES phone: one primary action on step 1");
+    ok(
+      /Practiquemos inglés juntos/.test(await page.locator("#app h1").textContent()),
+      "ES phone: Spanish welcome",
+    );
+    ok(
+      (await page.locator(".ft-page .btn-primary").count()) === 1,
+      "ES phone: one primary action on step 1",
+    );
     const go = await page.locator(".ft-go").boundingBox();
-    ok(go && go.y + go.height <= 844, `ES phone: Start is inside the first screen (bottom ${Math.round(go?.y + go?.height)})`);
+    ok(
+      go && go.y + go.height <= 844,
+      `ES phone: Start is inside the first screen (bottom ${Math.round(go?.y + go?.height)})`,
+    );
     ok(await noSideScroll(page), "ES phone: no horizontal scroll on step 1");
     await axe(page, "ES phone step 1");
     await page.locator(".ft-go").click();
@@ -124,14 +146,20 @@ try {
     // A first visit opens the activity's short skill lesson; the guide points at its button first.
     if (await waitTitle(page, /lección/, 2500)) {
       await page.waitForTimeout(400); // the ring moves on the next animation frame
-      ok(!(await page.locator(".gc-ring").isHidden()), "ES phone: the ring marks the skill lesson button");
+      ok(
+        !(await page.locator(".gc-ring").isHidden()),
+        "ES phone: the ring marks the skill lesson button",
+      );
       await frame(page).locator("[data-frame-ready]").click();
     }
     ok(await waitTitle(page, /instrucciones/), "ES phone: the guide reaches the directions");
     await page.waitForTimeout(400); // the ring moves on the next animation frame
     ok(!(await page.locator(".gc-ring").isHidden()), "ES phone: the ring marks a real control");
     await frame(page).locator(".directions [data-say], .directions [data-say-es]").first().click();
-    ok(await waitTitle(page, /^(?!Escuchen)/), "ES phone: hearing the directions moves the guide on");
+    ok(
+      await waitTitle(page, /^(?!Escuchen)/),
+      "ES phone: hearing the directions moves the guide on",
+    );
     while (!/elige/.test((await title(page)) || "")) {
       const t = await title(page);
       await page.locator("[data-gc=next]").click();
@@ -148,14 +176,32 @@ try {
       await page.locator("[data-gc=next]").click();
       ok(await waitTitle(page, /otra vez/), "ES phone: then try again");
       await frame(page).locator("[data-retry]").click();
+      ok(
+        await waitTitle(page, /Revisen otra vez/),
+        "ES phone: after Try again, the guide asks to check again",
+      );
+      // The right answer to "Saving Water: Find the Main Idea".
+      await frame(page).locator("label.choice", { hasText: "save water" }).click();
+      await frame(page).locator("[data-check]").click();
     }
-    ok(await waitTitle(page, /Practicaron inglés juntos/), "ES phone: the loop ends with a celebration");
+    ok(
+      await waitTitle(page, /Practicaron inglés juntos/),
+      "ES phone: the loop ends on a right answer, with a celebration",
+    );
     await page.locator("[data-gc=finish]").click();
     await page.waitForURL(/step=3/);
-    ok(/Buen trabajo/.test(await page.locator("#app h1").textContent()), "ES phone: step 3 in Spanish");
-    ok((await page.locator(".ft-page .btn-primary").count()) === 1, "ES phone: one primary action on step 3");
     ok(
-      /intro=together/.test((await page.locator(".ft-next-card .btn-primary").getAttribute("href")) || ""),
+      /Buen trabajo/.test(await page.locator("#app h1").textContent()),
+      "ES phone: step 3 in Spanish",
+    );
+    ok(
+      (await page.locator(".ft-page .btn-primary").count()) === 1,
+      "ES phone: one primary action on step 3",
+    );
+    ok(
+      /intro=together/.test(
+        (await page.locator(".ft-next-card .btn-primary").getAttribute("href")) || "",
+      ),
       "ES phone: Start practicing opens the next activity with the way back",
     );
     ok(await noSideScroll(page), "ES phone: no horizontal scroll on step 3");
@@ -180,34 +226,101 @@ try {
     await page.keyboard.press("Enter");
     ok(await waitTitle(page, /directions/), "EN K: Enter on Next moves the guide");
     await page.keyboard.press("Escape");
-    ok(await page.locator(".gc-pill").isVisible(), "EN K: Escape hides the guide and leaves “Show me how”");
-    ok(await page.evaluate(() => document.activeElement?.matches(".gc-pill")), "EN K: focus lands on “Show me how”");
+    ok(
+      await page.locator(".gc-pill").isVisible(),
+      "EN K: Escape hides the guide and leaves “Show me how”",
+    );
+    ok(
+      await page.evaluate(() => document.activeElement?.matches(".gc-pill")),
+      "EN K: focus lands on “Show me how”",
+    );
     await page.keyboard.press("Enter");
     ok(await page.locator(".gc-card").isVisible(), "EN K: “Show me how” brings the guide back");
     await frame(page).locator("[data-early-replay]").click();
     ok(await waitTitle(page, /chooses/), "EN K: hearing it again moves to the answer");
+    await page.locator(".gc-go").focus();
+    ok(
+      await page.locator(".gc-go").isVisible(),
+      "EN K: “Take me to it” shows when it has keyboard focus",
+    );
+    await page.keyboard.press("Enter");
+    ok(
+      await page
+        .locator(".gc-frame")
+        .evaluate((f) =>
+          Boolean(
+            f.contentDocument.activeElement?.closest(
+              "[data-early-pick], .early-picks, .early-hear",
+            ),
+          ),
+        ),
+      "EN K: “Take me to it” puts focus on the highlighted control inside the activity",
+    );
     await frame(page).locator("[data-early-pick='b']").click();
     ok(await waitTitle(page, /Check/), "EN K: tapping a picture moves to Check");
     await frame(page).locator("[data-early-check]").click();
     ok(await waitTitle(page, /message|Celebrate/), "EN K: the message follows");
     await page.reload();
     await page.waitForSelector("#app h1");
-    ok(/step=2/.test(page.url()) && /Practice together/.test(await page.locator("#app h1").textContent()), "EN K: reload keeps step 2");
+    ok(
+      /step=2/.test(page.url()) &&
+        /Practice together/.test(await page.locator("#app h1").textContent()),
+      "EN K: reload keeps step 2",
+    );
     await page.locator(".gt-help summary").click();
     await page.locator("[data-ft-restart]").click();
     await page.waitForURL(/step=1/);
-    ok(/Let’s practice English together/.test(await page.locator("#app h1").textContent()), "EN K: restart returns to step 1");
+    ok(
+      /Let’s practice English together/.test(await page.locator("#app h1").textContent()),
+      "EN K: restart returns to step 1",
+    );
     await page.locator("[data-ft-band='3-5']").click();
-    ok((await page.locator("[data-ft-band='3-5']").getAttribute("aria-pressed")) === "true", "EN: grade switch");
-    ok(/grades=4-5/.test((await page.locator(".ft-go").getAttribute("href")) || ""), "EN: Start follows the grade");
-    const labBand = () => page.evaluate((k) => JSON.parse(localStorage.getItem(k) || "{}").band, PREFS);
+    ok(
+      (await page.locator("[data-ft-band='3-5']").getAttribute("aria-pressed")) === "true",
+      "EN: grade switch",
+    );
+    ok(
+      /grades=4-5/.test((await page.locator(".ft-go").getAttribute("href")) || ""),
+      "EN: Start follows the grade",
+    );
+    const labBand = () =>
+      page.evaluate((k) => JSON.parse(localStorage.getItem(k) || "{}").band, PREFS);
     ok((await labBand()) === "3-5", "EN: the family's grade becomes the lab's grade");
     await page.locator("[data-ft-band='k-2']").click();
-    await page.locator("[data-ft-early='1']").click();
-    await page.waitForSelector("[data-ft-early='1'][aria-pressed='true']");
-    ok(/grades=1\b/.test((await page.locator(".ft-go").getAttribute("href")) || ""), "EN: K–2 exact grade (Grade 1) drives Start");
+    await page.locator("[data-ft-exact='1']").click();
+    await page.waitForSelector("[data-ft-exact='1'][aria-pressed='true']");
+    ok(
+      /grades=1\b/.test((await page.locator(".ft-go").getAttribute("href")) || ""),
+      "EN: K–2 exact grade (Grade 1) drives Start",
+    );
     ok((await labBand()) === "1", "EN: the exact K–2 grade becomes the lab's grade");
     await axe(page, "EN step 1");
+    await context.close();
+  }
+
+  // ── First visit with no grade: Start asks for one ──
+  {
+    const { context, page } = await open("en", 375, "/practice-together");
+    ok(
+      (await page.locator("[data-ft-band][aria-pressed='true']").count()) === 0,
+      "first visit: no grade is chosen for the family",
+    );
+    await page.locator(".ft-go").click();
+    ok(
+      /choose your child/i.test((await page.locator("[data-ft-need-note]").textContent()) || ""),
+      "first visit: Start asks for the grade",
+    );
+    ok(
+      await page.evaluate(() => document.activeElement?.matches("[data-ft-band]")),
+      "first visit: focus moves to the grade buttons",
+    );
+    await page.locator("[data-ft-band='3-5']").click();
+    await page.locator("[data-ft-exact='3']").click();
+    await page.waitForSelector("[data-ft-exact='3'][aria-pressed='true']");
+    ok(
+      /grades=2-3/.test((await page.locator(".ft-go").getAttribute("href")) || ""),
+      "Grade 3 uses the lab's Grades 2–3 activities",
+    );
     await context.close();
   }
 
@@ -220,17 +333,36 @@ try {
 
   // ── Microphone denied in the teacher tour's speaking preview ──
   {
-    const { context, page } = await open("en", 1280, "/start/tour?part=3&goal=show&grades=6-8&skill=speaking&support=B", {
-      denyMic: true,
-    });
+    const { context, page } = await open(
+      "en",
+      1280,
+      "/start/tour?part=2&grades=6-8&skill=speaking",
+      {
+        denyMic: true,
+      },
+    );
     await coachReady(page);
     const rec = frame(page).locator("[data-rec-start]").first();
     await rec.click();
     const msg = frame(page).locator("[data-rec-error]");
-    await msg.first().waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
-    ok(/microphone is unavailable/i.test((await msg.first().textContent().catch(() => "")) || ""), "mic denied: the activity explains it");
+    await msg
+      .first()
+      .waitFor({ state: "visible", timeout: 8000 })
+      .catch(() => {});
+    ok(
+      /microphone is unavailable/i.test(
+        (await msg
+          .first()
+          .textContent()
+          .catch(() => "")) || "",
+      ),
+      "mic denied: the activity explains it",
+    );
     ok(await page.locator(".gc-card").isVisible(), "mic denied: the guide stays on screen");
-    ok((await page.locator("[data-gt-use]").count()) === 1, "mic denied: “Use this activity” is still there");
+    ok(
+      (await page.locator(".gt-skip-top a").count()) === 1,
+      "mic denied: the way on to Part 3 is still there",
+    );
     await context.close();
   }
 } finally {
@@ -239,5 +371,7 @@ try {
 }
 
 ok(errors.length === 0, `no page errors (${errors.slice(0, 3).join(" | ") || "none"})`);
-console.log(`\naccess-intro-family-e2e: ${failures.length ? `${failures.length} FAILED` : "all passed"}`);
+console.log(
+  `\naccess-intro-family-e2e: ${failures.length ? `${failures.length} FAILED` : "all passed"}`,
+);
 process.exit(failures.length ? 1 : 0);

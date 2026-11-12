@@ -1,14 +1,15 @@
 /**
- * Teacher Tour (/start/tour), the four-part "learn by doing" tour, without a browser:
- *   - Part 1: GOALS has exactly one recommended goal;
- *   - Part 2: the coach's steps (coach/activity-steps.js loopSteps + TEACHER_SAY) are complete and their selectors
- *     parse, and the coach's pure helpers (findTarget, isShown, completes) behave;
- *   - Part 3: supportOptions / chooseActivity give a real activity from content/index.json for every grade choice x
- *     skill x support level, preferring the student's own words for speaking/writing and one answer for
- *     listening/reading;
- *   - Part 4: ACTION_ORDER has one lead + two more per goal, every id renders, and every student link that fits
- *     gets a QR code a scanner (macOS CoreImage, tools/lib/access-intro-qr-read.mjs) reads back to exactly that link;
- *   - render(): the place comes from ctx.route, legacy ?stop= lands on a part, and the state is saved under "guided".
+ * Teacher Tour (/start/tour), the three-part "learn by doing" tour, without a browser:
+ *   - PARTS: Pick a skill / Try it as a student / Use it with your class;
+ *   - Part 2: stepsFor (coach/activity-steps.js) gives each kind of activity (listening and reading: the answer loop,
+ *     speaking, writing) a complete list of steps whose selectors parse, and the coach's pure helpers (findTarget,
+ *     isShown, completes) behave;
+ *   - supportOptions / chooseActivity give a real activity from content/index.json for every grade choice x skill x
+ *     support level, and a level A activity for every grade choice x skill (the one Part 1 names and Part 2 opens);
+ *   - Part 3: the class card has one main action, the three-step start, the ready line and a seven-stop map, and
+ *     every student link gets a QR code a scanner (macOS CoreImage, tools/lib/access-intro-qr-read.mjs) reads back;
+ *   - render(): the place comes from ctx.route, old links (?part=4, ?stop=) land on a real part, Parts 2–3 without a
+ *     skill fall back to Part 1, and the state is saved under "guided".
  * The in-browser half is tools/access-intro-tour-a11y.mjs and the tour block of tools/access-intro-e2e.mjs.
  *   node --test tools/access-intro-tour.test.mjs
  */
@@ -46,7 +47,9 @@ const F = await import("../access-practice-lab/src/intro/tour-finish.js");
 const { completes, findTarget, isShown } = await import(
   "../access-practice-lab/src/coach/coach.js"
 );
-const { loopSteps, SEL } = await import("../access-practice-lab/src/coach/activity-steps.js");
+const { loopSteps, SEL, stepsFor } = await import(
+  "../access-practice-lab/src/coach/activity-steps.js"
+);
 const tour = await import("../access-practice-lab/src/intro/tour.js");
 const { INTRO_KEY, loadIntro } = await import("../access-practice-lab/src/intro/state.js");
 
@@ -63,7 +66,7 @@ const levelsOf = (pick, skill) =>
   index.bands[normalizeBand(pick)]?.domains?.[DOMAINS.find((d) => d.id === skill).name]?.levels ||
   {};
 
-/** Every Part 3 result: one per grade choice x skill x support level in content/index.json. */
+/** Every activity a teacher can reach: one per grade choice x skill x support level in content/index.json. */
 const CHOSEN = PICKS.flatMap((pick) =>
   SKILLS.flatMap((skill) =>
     Object.keys(levelsOf(pick, skill)).map((level) => ({
@@ -74,99 +77,167 @@ const CHOSEN = PICKS.flatMap((pick) =>
     })),
   ),
 );
-/** Part 2's activity for each grade choice, as Part 4 would link it. */
-const TRIED = PICKS.map((pick) => {
-  const skill = T.tryDomain(pick);
-  return { pick, skill, a: { ...BAND_TOUR[pick][skill], pick } };
+
+/* ── PARTS ── */
+test("PARTS: three parts, Pick a skill / Try it as a student / Use it with your class", () => {
+  assert.deepEqual(
+    T.PARTS.map((p) => [p.n, p.id, p.name]),
+    [
+      [1, "skill", "Pick a skill"],
+      [2, "try", "Try it as a student"],
+      [3, "class", "Use it with your class"],
+    ],
+  );
+  for (const gone of ["GOALS", "goalOf", "tryDomain", "PREVIEW_SAY", "UNDERSTAND"])
+    assert.equal(T[gone], undefined, `${gone} is gone`);
+  assert.equal(F.ACTION_ORDER, undefined, "ACTION_ORDER is gone");
+  for (const s of SKILLS) assert.ok(T.SKILL_PLAIN[s]?.length > 20, `${s}: plain words`);
+  assert.equal(T.skillOf("reading"), "reading");
+  assert.equal(T.skillOf("nope"), "");
+  assert.equal(T.skillOf(undefined), "");
 });
 
-/* ── Part 1 ── */
-test("Part 1: four goals, exactly one recommended (Show me how it works), and goalOf falls back to it", () => {
-  assert.deepEqual(
-    T.GOALS.map((g) => g.id),
-    ["show", "find", "share", "understand"],
-  );
-  const rec = T.GOALS.filter((g) => g.recommended);
-  assert.equal(rec.length, 1);
-  assert.equal(rec[0].id, "show");
-  assert.equal(T.GOALS[0], rec[0], "the recommended goal comes first");
-  for (const g of T.GOALS) assert.ok(g.name && g.detail && g.icon, g.id);
-  assert.equal(T.goalOf("nope").id, "show");
-  assert.equal(T.goalOf("share").id, "share");
-  assert.deepEqual(
-    T.PARTS.map((p) => p.n),
-    [1, 2, 3, 4],
-  );
-});
+/* ── Part 2: the coach's steps ── */
+const KINDS = {
+  listening: [
+    "intro",
+    "skill",
+    "directions",
+    "answer",
+    "sure",
+    "check",
+    "feedback",
+    "retry",
+    "again",
+    "end",
+  ],
+  reading: [
+    "intro",
+    "skill",
+    "directions",
+    "answer",
+    "sure",
+    "check",
+    "feedback",
+    "retry",
+    "again",
+    "end",
+  ],
+  speaking: ["intro", "skill", "question", "starters", "say", "check", "end"],
+  writing: ["intro", "skill", "directions", "write", "check", "feedback", "revise", "paper", "end"],
+};
 
-/* ── Part 2 ── */
-test("Part 2: each grade choice tries a real activity in its own skill, listening for K–3, reading for 4–8", () => {
-  assert.deepEqual(
-    PICKS.map((p) => T.tryDomain(p)),
-    ["listening", "listening", "listening", "reading", "reading"],
-  );
-  for (const { pick, skill, a } of TRIED) {
-    assert.ok(a?.id && a.route, `${pick}: no Part 2 activity`);
-    const [, domain, level, id] = a.route.split("?")[0].split("/");
-    assert.equal(domain.toLowerCase(), skill, pick);
-    assert.equal(id, a.id, pick);
-    const rows = levelsOf(pick, skill)[level]?.activities || [];
-    const row = rows.find((r) => r[0] === a.id);
-    assert.ok(row, `${pick}: ${a.route} is in content/index.json`);
-    assert.equal(row[2], "multipleChoice", `${pick}: Part 2 needs an answer to check`);
-    const route = T.activityRoute(a, { frame: "1" });
-    const q = new URL(route, "https://x.test").searchParams;
-    assert.equal(q.get("grades"), pick);
-    assert.equal(q.get("frame"), "1");
-  }
-});
+for (const [skill, ids] of Object.entries(KINDS))
+  test(`Part 2 (${skill}): every step has words, the last opens Part 3, waiting steps cannot trap anyone`, () => {
+    const steps = stepsFor(skill, T.TEACHER_SAY);
+    const say = (v) => (typeof v === "function" ? v(null) : v);
+    assert.deepEqual(
+      steps.map((s) => s.id),
+      ids,
+    );
+    assert.equal(new Set(steps.map((s) => s.id)).size, steps.length, "step ids are unique");
+    for (const s of steps) {
+      assert.ok(typeof say(s.title) === "string" && say(s.title).length > 3, `${s.id}: title`);
+      assert.ok(typeof say(s.body) === "string" && say(s.body).length > 10, `${s.id}: body`);
+      if (s.done || s.appear)
+        assert.ok(s.fallback || s.when, `${s.id}: waits for an action but has no fallback or when`);
+    }
+    assert.equal(steps.at(-1).primary, "Next: use it with your class");
+    for (const s of steps.slice(0, -1))
+      assert.equal(s.primary, undefined, `${s.id}: only the last`);
+    // Every selector parses, and every finder and `when` runs on an empty document without throwing.
+    const doc = new JSDOM("<body></body>").window.document;
+    const sels = [
+      ...Object.values(SEL).flat(),
+      ...steps.flatMap((s) => [
+        ...[s.target, s.appear].flat().filter((t) => typeof t === "string"),
+        ...Object.values(s.done || {}),
+      ]),
+    ];
+    for (const sel of sels) assert.doesNotThrow(() => doc.querySelector(sel), sel);
+    for (const s of steps) {
+      if (typeof s.target === "function") assert.equal(s.target(doc) ?? null, null, s.id);
+      if (s.when) assert.doesNotThrow(() => s.when(doc), s.id);
+    }
+  });
 
-test("Part 2: every coach step has words, the last has the finish button, waiting steps cannot trap anyone", () => {
-  const steps = loopSteps(T.TEACHER_SAY);
-  const say = (v) => (typeof v === "function" ? v(null) : v);
-  assert.equal(new Set(steps.map((s) => s.id)).size, steps.length, "step ids are unique");
-  for (const s of steps) {
-    assert.ok(typeof say(s.title) === "string" && say(s.title).length > 3, `${s.id}: title`);
-    assert.ok(typeof say(s.body) === "string" && say(s.body).length > 10, `${s.id}: body`);
-    if (s.done || s.appear)
-      assert.ok(s.fallback || s.when, `${s.id}: waits for an action but has no fallback or when`);
-  }
-  assert.equal(steps.at(-1).primary, T.TEACHER_SAY.final);
-  assert.equal(steps.at(-1).primary, "Next: prepare practice");
-  for (const s of steps.slice(0, -1)) assert.equal(s.primary, undefined, `${s.id}: only the last`);
+test("Part 2: listening and reading share the answer loop; speaking and writing have their own", () => {
+  const ids = (k) => stepsFor(k, T.TEACHER_SAY).map((s) => s.id);
+  assert.deepEqual(ids("listening"), ids("reading"));
   assert.deepEqual(
-    steps.map((s) => s.id),
-    ["intro", "skill", "directions", "answer", "sure", "check", "feedback", "retry", "end"],
+    ids("reading"),
+    loopSteps(T.TEACHER_SAY.loop).map((s) => s.id),
   );
-  // Every selector parses, and every finder runs on an empty document without throwing.
-  const doc = new JSDOM("<body></body>").window.document;
-  const sels = [
-    ...Object.values(SEL).flat(),
-    ...steps.flatMap((s) => [
-      ...[s.target, s.appear].flat().filter((t) => typeof t === "string"),
-      ...Object.values(s.done || {}),
-    ]),
-  ];
-  for (const sel of sels) assert.doesNotThrow(() => doc.querySelector(sel), sel);
-  for (const s of steps) {
-    if (typeof s.target === "function") assert.equal(s.target(doc) ?? null, null, s.id);
-    if (s.when) assert.doesNotThrow(() => s.when(doc), s.id);
-  }
+  assert.notDeepEqual(ids("speaking"), ids("reading"));
+  assert.notDeepEqual(ids("writing"), ids("reading"));
+  // The end card of each kind names that kind's turn.
+  assert.match(stepsFor("speaking", T.TEACHER_SAY).at(-1).title, /That is a speaking turn/);
+  assert.match(stepsFor("writing", T.TEACHER_SAY).at(-1).title, /That is a writing turn/);
+  assert.match(stepsFor("reading", T.TEACHER_SAY).at(-1).title, /That is the student loop/);
 });
 
 test("Part 2: feedback and retry words follow what the activity shows", () => {
-  const steps = loopSteps(T.TEACHER_SAY);
+  const say = T.TEACHER_SAY.loop;
+  const steps = loopSteps(say);
   const doc = new JSDOM(
     `<body><div class="feedback is-right"></div><div class="feedback"></div><button data-retry></button><div class="early-pick"></div></body>`,
   ).window.document;
   const fb = steps.find((s) => s.id === "feedback");
   const [right, wrong] = doc.querySelectorAll(".feedback");
-  assert.equal(fb.title(right), T.TEACHER_SAY.feedback.rightTitle);
-  assert.equal(fb.title(wrong), T.TEACHER_SAY.feedback.title);
-  assert.equal(fb.body(right), T.TEACHER_SAY.feedback.right);
+  assert.equal(fb.title(right), say.feedback.rightTitle);
+  assert.equal(fb.title(wrong), say.feedback.title);
+  assert.equal(fb.body(right), say.feedback.right);
   const retry = steps.find((s) => s.id === "retry");
-  assert.equal(retry.body(doc.querySelector("[data-retry]")), T.TEACHER_SAY.retry.body);
-  assert.equal(retry.body(doc.querySelector(".early-pick")), T.TEACHER_SAY.retry.early);
+  assert.equal(retry.body(doc.querySelector("[data-retry]")), say.retry.body);
+  assert.equal(retry.body(doc.querySelector(".early-pick")), say.retry.early);
+});
+
+test("Part 2: speaking and writing steps find the real controls", () => {
+  const box = (el, w = 100, h = 40) => {
+    el.getBoundingClientRect = () => ({
+      width: w,
+      height: h,
+      top: 0,
+      left: 0,
+      right: w,
+      bottom: h,
+    });
+  };
+  const speak = new JSDOM(
+    `<body><div class="response-workspace"><button data-say>Hear</button></div>
+      <details><summary>Sentence starters</summary></details>
+      <button data-rec-start>Record</button>
+      <fieldset><label><input type="checkbox" data-selfcheck>Topic</label></fieldset></body>`,
+  ).window.document;
+  for (const el of speak.querySelectorAll("button, summary")) box(el);
+  const steps = stepsFor("speaking", T.TEACHER_SAY);
+  const at = (id) => steps.find((s) => s.id === id);
+  assert.equal(findTarget(speak, at("question").target), speak.querySelector("[data-say]"));
+  assert.equal(at("starters").when(speak), true);
+  assert.equal(findTarget(speak, at("starters").target).tagName, "SUMMARY");
+  assert.equal(findTarget(speak, at("say").target), speak.querySelector("[data-rec-start]"));
+  assert.equal(at("check").when(speak), true);
+  assert.equal(
+    completes(at("check").done, { type: "click", target: speak.querySelector("[data-selfcheck]") }),
+    true,
+  );
+
+  const write = new JSDOM(
+    `<body><div class="response-workspace"><textarea data-note></textarea>
+      <button data-check-writing>Check</button><div class="feedback">Add a detail</div></div></body>`,
+  ).window.document;
+  for (const el of write.querySelectorAll("button, textarea, .feedback")) box(el);
+  const w = stepsFor("writing", T.TEACHER_SAY);
+  const wt = (id) => w.find((s) => s.id === id);
+  const area = write.querySelector("textarea");
+  assert.equal(wt("write").when(write), true);
+  assert.equal(findTarget(write, wt("write").target), area);
+  assert.equal(completes(wt("write").done, { type: "input", target: area }), true);
+  assert.equal(wt("check").when(write), true);
+  assert.ok(findTarget(write, wt("check").appear), "the feedback counts as appeared");
+  assert.equal(wt("feedback").when(write), true);
+  assert.equal(wt("revise").when(write), true);
+  assert.equal(wt("paper").when(write), false, "no K–3 paper step in the lab shell");
 });
 
 test("coach: completes() matches the step's action, findTarget() takes the first shown target", () => {
@@ -192,7 +263,7 @@ test("coach: completes() matches the step's action, findTarget() takes the first
   box(doc.querySelector("[data-check]"), 0, 0);
   box(doc.getElementById("early"), 80, 44);
   box(doc.querySelector("label.choice"), 200, 48);
-  const answer = loopSteps(T.TEACHER_SAY).find((s) => s.id === "answer").done;
+  const answer = loopSteps(T.TEACHER_SAY.loop).find((s) => s.id === "answer").done;
   const inner = doc.getElementById("in");
   assert.equal(
     completes(answer, { type: "click", target: inner }),
@@ -228,8 +299,23 @@ test("coach: completes() matches the step's action, findTarget() takes the first
   assert.equal(isShown(null), false);
 });
 
-/* ── Part 3 ── */
-test("Part 3: supportOptions lists exactly the levels content/index.json has, with names and counts", () => {
+/* ── Activities from content/index.json ── */
+test("chooseActivity: a level A activity for every grade choice x skill (Part 1's cards and Part 2's frame)", () => {
+  for (const pick of PICKS)
+    for (const skill of SKILLS) {
+      const a = T.chooseActivity(index, pick, skill, "A");
+      assert.ok(a, `${pick} ${skill}: no level A activity`);
+      assert.equal(a.level, "A");
+      assert.equal(a.pick, pick);
+      assert.equal(a.domain.id, skill);
+      assert.match(a.route, new RegExp(`^/${a.domain.name}/A/`), `${pick} ${skill}`);
+      const q = new URL(T.activityRoute(a, { frame: "1" }), "https://x.test").searchParams;
+      assert.equal(q.get("grades"), pick);
+      assert.equal(q.get("frame"), "1");
+    }
+});
+
+test("supportOptions lists exactly the levels content/index.json has, with names and counts", () => {
   for (const pick of PICKS)
     for (const skill of SKILLS) {
       const levels = levelsOf(pick, skill);
@@ -245,12 +331,13 @@ test("Part 3: supportOptions lists exactly the levels content/index.json has, wi
         assert.ok(T.SUPPORT_PLAIN[o.level], `${o.level} has plain words`);
       }
       assert.ok(opts.length >= 2, `${pick} ${skill}: at least two support choices`);
+      assert.equal(opts[0].level, "A", `${pick} ${skill}: A comes first (the default)`);
     }
   assert.deepEqual(T.supportOptions(index, "6-8", "nope"), []);
   assert.deepEqual(T.supportOptions(null, "6-8", "reading"), []);
 });
 
-test("Part 3: chooseActivity gives a real activity for every grade choice x skill x support", () => {
+test("chooseActivity gives a real activity for every grade choice x skill x support", () => {
   assert.ok(CHOSEN.length >= 50, `${CHOSEN.length} combinations`);
   for (const { pick, skill, level, a } of CHOSEN) {
     const key = `${pick} ${skill} ${level}`;
@@ -281,7 +368,7 @@ test("Part 3: chooseActivity gives a real activity for every grade choice x skil
   assert.equal(T.chooseActivity(null, "6-8", "reading", "A"), null);
 });
 
-test("Part 3: the tour's own activity is the one chosen at its level", () => {
+test("the tour's own activity is the one chosen at its level", () => {
   let seen = 0;
   for (const pick of PICKS)
     for (const skill of SKILLS) {
@@ -294,66 +381,71 @@ test("Part 3: the tour's own activity is the one chosen at its level", () => {
   assert.ok(seen >= 10, `${seen} curated lab activities`);
 });
 
-/* ── Part 4 ── */
+/* ── Part 3: the class card ── */
 const sample = T.chooseActivity(index, "2-3", "listening", "A");
+const sampleOpts = T.supportOptions(index, "2-3", "listening");
+const classDoc = (a = sample, support = "A") =>
+  parse(F.classroomHTML({ pick: a.pick, skill: a.domain.id, support }, a, sampleOpts));
 
-test("Part 4: ACTION_ORDER has one lead and two more per goal, and every id renders", () => {
-  assert.deepEqual(Object.keys(F.ACTION_ORDER).sort(), T.GOALS.map((g) => g.id).sort());
-  const MARK = {
-    open: (d) =>
-      [...d.querySelectorAll("a")].find((a) => /Open the student activity/.test(a.textContent)),
-    copy: (d) => d.querySelector("[data-gt-copy]"),
-    qr: (d) => d.querySelector("[data-gt-show]"),
-    print: (d) => d.querySelector("[data-gt-print]"),
-    passport: (d) => d.querySelector('a[href*="/passport?grades=2-3"]'),
-  };
-  for (const [goal, ids] of Object.entries(F.ACTION_ORDER)) {
-    assert.equal(ids.length, 3, goal);
-    assert.equal(new Set(ids).size, 3, `${goal}: no repeats`);
-    const d = parse(F.classroomHTML({ goal }, sample));
-    const card = d.querySelector(".gt-class-card");
-    assert.ok(card, goal);
-    const primary = card.querySelectorAll(".btn-primary");
-    assert.equal(primary.length, 1, `${goal}: one primary action`);
-    assert.equal(card.querySelectorAll(".gt-secondary .btn").length, 2, `${goal}: two more`);
-    for (const id of ids) assert.ok(MARK[id]?.(card), `${goal}: ${id} renders`);
-    assert.ok(MARK[ids[0]](card).classList.contains("btn-primary"), `${goal}: ${ids[0]} leads`);
-    assert.match(
-      d.querySelector("#gtReady").textContent,
-      /You’re ready to use this with students\./,
-    );
-    assert.match(d.querySelector(".gt-ready-go").textContent, /Start using the lab/);
-    assert.equal(d.querySelector("[data-gt-link]").getAttribute("value"), F.studentUrl(sample));
-    assert.equal(Boolean(d.querySelector(".gt-note strong")), goal === "understand", goal);
-  }
-  // The "open" action keeps the way back to the tour.
-  const d = parse(F.classroomHTML({ goal: "show" }, sample));
-  assert.match(d.querySelector(".gt-class-card a.btn-primary").getAttribute("href"), /intro=tour/);
-  // With no activity the page says so and offers a way on.
-  const none = parse(F.classroomHTML({ goal: "show" }, null));
-  assert.ok(none.querySelector("[role=alert]"));
+test("Part 3: one main action on the class card, three quieter ones, the start steps, ready line and map", () => {
+  const d = classDoc();
+  const card = d.querySelector(".gt-class-card");
+  assert.ok(card);
+  const primary = card.querySelectorAll(".btn-primary");
+  assert.equal(primary.length, 1, "one primary action");
+  assert.ok(primary[0].matches("[data-gt-copy]"));
+  assert.match(primary[0].textContent, /Copy student link/);
+  const secondary = [...card.querySelectorAll(".gt-secondary .btn")];
+  assert.equal(secondary.length, 3);
+  assert.match(secondary[0].textContent, /Open it/);
+  assert.match(secondary[0].getAttribute("href"), /intro=tour/, "Open it keeps the way back");
+  assert.ok(card.querySelector(".gt-secondary [data-gt-show]"));
+  assert.match(card.querySelector("[data-gt-print]").textContent, /Print this card/);
+  assert.equal(card.querySelector("#gtCardTitle").textContent, sample.title);
+  assert.equal(d.querySelector("[data-gt-link]").getAttribute("value"), F.studentUrl(sample));
+  // Support choice: one button per level, the chosen one pressed.
+  const sup = [...d.querySelectorAll("[data-gt-support]")];
+  assert.deepEqual(
+    sup.map((b) => b.dataset.gtSupport),
+    sampleOpts.map((o) => o.level),
+  );
+  assert.deepEqual(
+    sup.map((b) => b.getAttribute("aria-pressed")),
+    sampleOpts.map((o) => String(o.level === "A")),
+  );
+  // Start tomorrow in three steps, with the one-page quick guide.
+  const start = d.querySelector(".gt-start");
+  assert.match(start.querySelector("h2").textContent, /Start tomorrow in three steps/);
+  assert.equal(start.querySelectorAll(".gt-start-steps > li").length, 3);
+  assert.match(start.querySelector(".gt-start-print a").getAttribute("href"), /\.pdf$/);
+  // Ready.
+  assert.equal(d.querySelector("#gtReady").textContent, "You’re ready to use this with students.");
+  assert.match(d.querySelector(".gt-ready-go").textContent, /Start using the lab/);
+  // Map: seven stops, each in the teacher's grades, and the full Site Guide.
+  const stops = [...d.querySelectorAll(".gt-map-stops a")];
+  assert.equal(stops.length, 7);
+  for (const a of stops) assert.match(a.getAttribute("href"), /grades=2-3$/);
+  assert.match(d.querySelector(".gt-map-more a").textContent, /Open the full Site Guide/);
+  assert.ok(d.querySelector("dialog[data-gt-show-dialog]"));
 });
 
-test("Part 4: a link too long for a QR code shows Print instead of Show, and no dialog", () => {
+test("Part 3: a link too long for a QR code drops Show and the dialog, Print stays", () => {
   const long = { ...sample, route: `/Listening/A/${"x".repeat(MAX_BYTES)}` };
   assert.equal(F.qrFits(F.studentUrl(long)), false);
-  const d = parse(F.classroomHTML({ goal: "share" }, long));
+  const d = classDoc(long);
   assert.equal(d.querySelector("[data-gt-show]"), null);
   assert.equal(d.querySelector("[data-gt-show-dialog]"), null);
   assert.equal(d.querySelector(".gt-link svg"), null);
   assert.ok(d.querySelector("[data-gt-print]"));
-  const ok = parse(F.classroomHTML({ goal: "share" }, sample));
-  assert.ok(ok.querySelector("[data-gt-show-dialog]"));
+  assert.equal(d.querySelectorAll(".gt-class-card .btn-primary").length, 1);
   assert.match(
-    ok.querySelector(".gt-link svg").getAttribute("aria-label"),
+    classDoc().querySelector(".gt-link svg").getAttribute("aria-label"),
     /QR code for the student link/,
   );
 });
 
 // The encoder stops at 106 bytes (QR version 5); longer links are shown without a code.
-const LINKS = [
-  ...new Set([...CHOSEN.map((c) => F.studentUrl(c.a)), ...TRIED.map((t) => F.studentUrl(t.a))]),
-];
+const LINKS = [...new Set(CHOSEN.map((c) => F.studentUrl(c.a)))];
 const WITH_QR = LINKS.filter(F.qrFits);
 
 test("student links are the public host, in the teacher's grades, and every one fits a QR code", () => {
@@ -362,7 +454,6 @@ test("student links are the public host, in the teacher's grades, and every one 
     assert.match(url, /^https:\/\/thelanguagepage\.com\/access-practice-lab\//, url);
     assert.ok(new URL(url).searchParams.get("grades"), url);
   }
-  // Lab routes are short (/Domain/Level/id); a link that stops fitting gets Print instead of Show and fails here.
   assert.deepEqual(
     LINKS.filter((u) => !F.qrFits(u)),
     [],
@@ -370,7 +461,7 @@ test("student links are the public host, in the teacher's grades, and every one 
   assert.ok(LINKS.length >= 55, `${LINKS.length} distinct student links`);
 });
 
-test("a scanner reads each Part 4 QR code back to its student link", {
+test("a scanner reads each Part 3 QR code back to its student link", {
   skip: process.platform !== "darwin" && !process.env.CI && "CoreImage decoder needs macOS",
 }, () => {
   const dir = mkdtempSync(join(tmpdir(), "tour-qr-"));
@@ -397,71 +488,147 @@ const render = async (route) => {
   const out = await tour.render(ctxFor(route));
   return { out, d: parse(out.html) };
 };
+const q = (href) => new URL(href, "https://x.test").searchParams;
 
-test("render: each part from the route, with the goal, grades, skill and support carried", async () => {
+test("render Part 1: Mr. Neft, the question, the grade switch and four skill cards into Part 2", async () => {
   localStorage.removeItem(INTRO_KEY);
-  let { out, d } = await render({ part: "1", grades: "4-5" });
-  assert.match(out.title, /Choose a goal/);
-  const goals = [...d.querySelectorAll("[data-gt-goal]")];
-  assert.equal(goals.length, 4);
-  assert.equal(d.querySelectorAll(".gt-goal.is-recommended").length, 1);
-  const href = new URL(
-    d.querySelector(".gt-goal.is-recommended").getAttribute("href"),
-    "https://x.test",
+  const { out, d } = await render({ part: "1", grades: "4-5" });
+  assert.match(out.title, /Pick a skill/);
+  const nb = d.querySelector("section.nb");
+  assert.ok(nb, "Mr. Neft's bubble");
+  assert.match(nb.querySelector(".nb-name").textContent, /Mr\. Neft/);
+  assert.ok(nb.querySelector("details.nb-ask > summary"), "Ask Mr. Neft");
+  assert.equal(
+    d.querySelector("h1#gtTitle").textContent,
+    "What would you like your students to practice?",
   );
-  assert.equal(href.searchParams.get("part"), "2");
-  assert.equal(href.searchParams.get("goal"), "show");
-  assert.equal(href.searchParams.get("grades"), "4-5");
+  const grades = [...d.querySelectorAll("[data-gt-grades]")];
+  assert.equal(grades.length, PICKS.length);
+  assert.deepEqual(
+    grades.filter((b) => b.getAttribute("aria-pressed") === "true").map((b) => b.dataset.gtGrades),
+    ["4-5"],
+  );
+  const cards = [...d.querySelectorAll("a.gt-domain[data-gt-skill]")];
+  assert.deepEqual(
+    cards.map((c) => c.dataset.gtSkill),
+    SKILLS,
+  );
+  for (const c of cards) {
+    const p = q(c.getAttribute("href"));
+    assert.equal(p.get("part"), "2");
+    assert.equal(p.get("skill"), c.dataset.gtSkill);
+    assert.equal(p.get("grades"), "4-5");
+    const a = T.chooseActivity(index, "4-5", c.dataset.gtSkill, "A");
+    assert.match(c.textContent, new RegExp(a.title.replace(/[?()[\]*+.]/g, ".")));
+  }
+  assert.equal(d.querySelectorAll(".gt-progress li").length, 3);
   assert.ok(d.querySelector(".gt-exit"), "Exit tour link");
   assert.ok(d.querySelector("details.gt-help [data-gt-restart]"), "restart inside Need help");
+  assert.equal(d.querySelector(".gt-trail"), null, "no trail before a skill is chosen");
+  assert.equal(d.querySelector("[data-gt-stage]"), null);
+});
 
-  ({ out, d } = await render({ part: "2", goal: "share", grades: "K" }));
-  const stage = d.querySelector("[data-gt-stage]");
-  assert.match(stage.dataset.src, /frame=1/);
-  assert.match(stage.dataset.src, /grades=K/);
-  assert.ok(stage.dataset.src.includes(BAND_TOUR.K.listening.route.split("?")[0]));
-
-  ({ out, d } = await render({ part: "3", grades: "6-8", skill: "speaking", support: "B" }));
-  assert.equal(d.querySelector('[data-gt-skill="speaking"]').getAttribute("aria-pressed"), "true");
-  assert.equal(d.querySelector('[data-gt-support="B"]').getAttribute("aria-pressed"), "true");
-  const want = T.chooseActivity(index, "6-8", "speaking", "B");
-  assert.ok(d.querySelector("[data-gt-stage]").dataset.src.includes(want.route));
-  const use = new URL(d.querySelector("[data-gt-use]").getAttribute("href"), "https://x.test");
-  assert.deepEqual(
-    ["part", "grades", "skill", "support"].map((k) => use.searchParams.get(k)),
-    ["4", "6-8", "speaking", "B"],
-  );
-
-  ({ out, d } = await render({
-    part: "4",
-    goal: "share",
-    grades: "6-8",
-    skill: "speaking",
-    support: "B",
-  }));
-  assert.match(
-    d.querySelector("#gtCardTitle").textContent,
-    new RegExp(want.title.replace(/[?()]/g, ".")),
-  );
-  assert.ok(d.querySelector(".gt-class-card .btn-primary[data-gt-copy]"), "share leads with Copy");
-  const saved = loadIntro().guided;
-  assert.equal(saved.part, 4);
-  assert.equal(saved.done, true);
-  assert.equal(saved.goal, "share");
+test("render Part 2: the coach comes before the frame, which opens the level A activity", async () => {
+  localStorage.removeItem(INTRO_KEY);
+  for (const skill of SKILLS) {
+    const { out, d } = await render({ part: "2", grades: "6-8", skill });
+    assert.match(out.title, /Try it as a student/, skill);
+    const stage = d.querySelector(".gt-stage[data-gt-stage]");
+    assert.ok(stage, skill);
+    const kids = [...stage.children];
+    const coach = kids.findIndex((k) => k.matches(".gt-coach[data-coach-slot]"));
+    const frame = kids.findIndex((k) => k.matches("[data-gt-frame]"));
+    assert.ok(coach >= 0 && frame > coach, `${skill}: coach first in DOM order`);
+    const a = T.chooseActivity(index, "6-8", skill, "A");
+    const src = stage.dataset.src;
+    assert.ok(src.includes(a.route), `${skill}: ${src}`);
+    assert.match(src, /frame=1/);
+    assert.match(src, /grades=6-8/);
+    assert.equal(d.querySelector("#gtTitle").textContent, a.title);
+    const trail = d.querySelector(".gt-trail");
+    assert.ok(trail, `${skill}: trail`);
+    const chips = [...trail.querySelectorAll(".gt-chip")].map((c) => c.textContent.trim());
+    assert.equal(chips.length, 2);
+    assert.match(chips[0], new RegExp(a.domain.name));
+    assert.match(chips[1], /Grades 6/);
+    assert.equal(q(d.querySelector(".gt-skip-top a").getAttribute("href")).get("part"), "3");
+    assert.equal(q(d.querySelector(".gt-nav a").getAttribute("href")).get("part"), "1");
+  }
+  assert.equal(loadIntro().guided.part, 2);
+  assert.equal(loadIntro().guided.done, false);
   localStorage.removeItem(INTRO_KEY);
 });
 
-test("render: legacy ?stop= links land on a part, and a bare /start/tour resumes the saved part", async () => {
+test("render Part 3: support, one primary on the class card, the ready line and a seven-stop map", async () => {
   localStorage.removeItem(INTRO_KEY);
-  const part = async (route) => (await render(route)).out.title;
-  assert.match(await part({ stop: "1" }), /Choose a goal/);
-  assert.match(await part({ stop: "3" }), /Try an activity/);
-  assert.match(await part({ stop: "6" }), /Take it to class/);
-  localStorage.setItem(INTRO_KEY, JSON.stringify({ guided: { part: 3, goal: "find" } }));
+  let { out, d } = await render({ part: "3", grades: "6-8", skill: "speaking" });
+  assert.match(out.title, /Use it with your class/);
+  assert.ok(d.querySelector("section.nb details.nb-ask"), "Mr. Neft's bubble");
+  assert.equal(
+    d.querySelector('[data-gt-support][aria-pressed="true"]').dataset.gtSupport,
+    "A",
+    "A is pressed by default",
+  );
+  assert.equal(d.querySelectorAll(".gt-class-card .btn-primary").length, 1);
+  assert.ok(d.querySelector(".gt-class-card .btn-primary[data-gt-copy]"));
+  assert.equal(d.querySelectorAll(".gt-map-stops a").length, 7);
+  assert.match(
+    d.querySelector(".gt-ready").textContent,
+    /You’re ready to use this with students\./,
+  );
+
+  ({ out, d } = await render({ part: "3", grades: "6-8", skill: "speaking", support: "B" }));
+  const want = T.chooseActivity(index, "6-8", "speaking", "B");
+  assert.equal(d.querySelector("#gtCardTitle").textContent, want.title);
+  assert.equal(d.querySelector('[data-gt-support="B"]').getAttribute("aria-pressed"), "true");
+  assert.equal(d.querySelector("[data-gt-link]").getAttribute("value"), F.studentUrl(want));
+  const saved = loadIntro().guided;
+  assert.deepEqual(
+    [saved.part, saved.done, saved.skill, saved.support, saved.pick],
+    [3, true, "speaking", "B", "6-8"],
+  );
+  // A support level the grade choice does not have falls back to A.
+  ({ d } = await render({ part: "3", grades: "K", skill: "reading", support: "C" }));
+  if (!T.supportOptions(index, "K", "reading").some((o) => o.level === "C"))
+    assert.equal(d.querySelector('[data-gt-support][aria-pressed="true"]').dataset.gtSupport, "A");
+  localStorage.removeItem(INTRO_KEY);
+});
+
+test("render: Parts 2–3 without a skill, ?part=4 and ?stop= land on a real part; a bare tour resumes", async () => {
+  localStorage.removeItem(INTRO_KEY);
+  const title = async (route) => (await render(route)).out.title;
+  assert.match(await title({ part: "2", grades: "6-8" }), /Pick a skill/, "Part 2 needs a skill");
+  assert.match(await title({ part: "3", skill: "nope" }), /Pick a skill/, "unknown skill");
+  assert.match(
+    await title({ part: "4", skill: "writing", support: "A" }),
+    /Use it with your class/,
+  );
+  assert.match(await title({ part: "9", skill: "writing" }), /Use it with your class/);
+  assert.match(await title({ stop: "1" }), /Pick a skill/);
+  localStorage.setItem(INTRO_KEY, JSON.stringify({ guided: { skill: "reading" } }));
+  assert.match(await title({ stop: "3" }), /Try it as a student/);
+  assert.match(await title({ stop: "6" }), /Use it with your class/);
+  localStorage.setItem(
+    INTRO_KEY,
+    JSON.stringify({ guided: { part: 2, skill: "writing", pick: "6-8" } }),
+  );
   const { out, d } = await render({});
-  assert.match(out.title, /Prepare practice/);
+  assert.match(out.title, /Try it as a student/);
   assert.ok(d.querySelector(".gt-back-note[role=status]"), "says you are back where you stopped");
+  assert.ok(d.querySelector("[data-gt-stage]").dataset.src.includes("/Writing/A/"));
   localStorage.removeItem(INTRO_KEY);
-  assert.match(await part({}), /Choose a goal/, "nothing saved starts at Part 1");
+  assert.match(await title({}), /Pick a skill/, "nothing saved starts at Part 1");
+  localStorage.removeItem(INTRO_KEY);
+});
+
+test("render: a device saved by the old four-part tour (part 4) still opens on a real part", async () => {
+  localStorage.setItem(
+    INTRO_KEY,
+    JSON.stringify({
+      guided: { part: 4, goal: "share", skill: "reading", support: "A", done: true },
+    }),
+  );
+  const out = await tour.render(ctxFor({}));
+  assert.match(out.title, /Use it with your class/);
   localStorage.removeItem(INTRO_KEY);
 });

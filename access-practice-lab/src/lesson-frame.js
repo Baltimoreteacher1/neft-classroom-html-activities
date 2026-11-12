@@ -173,7 +173,7 @@ export function goalHTML(I, m) {
     <section class="lf-goal" aria-labelledby="lf-goal-h">
       <h2 id="lf-goal-h" class="lf-eyebrow">${I.T("Today's goal", "La meta de hoy")}</h2>
       <p class="lf-goal-text">${m.can ? I.T(m.can.en, m.can.es) : ""}</p>
-      ${m.focus.length ? html`<p class="lf-focus"><strong>${I.T("Language focus:", "Enfoque de lenguaje:")}</strong> <span lang="en">${m.focus.join(" · ")}</span></p>` : ""}
+      ${m.focus.length ? html`<p class="lf-focus"><strong>${I.T("Language focus:", "Enfoque de lenguaje:")}</strong> ${m.focus.map((f, i) => html`${i ? " · " : ""}${typeof f === "string" ? html`<span lang="en">${f}</span>` : f}`)}</p>` : ""}
     </section>`;
 }
 

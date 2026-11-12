@@ -45,7 +45,7 @@ const optional = (say, id) =>
           target: SEL[id],
           title: say[id].title,
           body: say[id].body,
-          done: { click: SEL[id] },
+          // Information only: opening the box must not move the guide on, or the tips scroll away unread.
         },
       ]
     : [];
@@ -128,6 +128,16 @@ export function loopSteps(say) {
       done: { click: `${SEL.retry}, [data-early-pick]` },
     },
     {
+      // After a second choice: check again and see what success looks like. Ends the loop on a right answer.
+      id: "again",
+      when: (doc) => !isRight(feedback(doc)) && has(SEL.check.join(", "))(doc),
+      target: SEL.check,
+      title: say.again.title,
+      body: say.again.body,
+      appear: ".feedback.is-right, .early-feedback.is-right",
+      fallback: say.again.fallback,
+    },
+    {
       id: "end",
       target: null,
       title: say.end.title,
@@ -148,3 +158,134 @@ export const PREVIEW_SEL = {
     check: ["[data-check-writing]", "[data-early-done]"],
   },
 };
+
+/**
+ * A speaking turn: hear the question, plan with the starters, say it (record or aloud), check it against the list.
+ * Lab shell: [data-rec-start], [data-selfcheck], [data-save-speaking]. K–3 shell: [data-early-model], [data-early-done].
+ */
+export function speakSteps(say) {
+  const checklist = (doc) => doc.querySelector("[data-selfcheck]")?.closest("fieldset, ul, ol, div") || null;
+  return [
+    { id: "intro", target: null, title: say.intro.title, body: say.intro.body, why: say.intro.why },
+    {
+      id: "skill",
+      when: has(SEL.skill),
+      target: SEL.skill,
+      title: say.skill.title,
+      body: say.skill.body,
+      done: { click: SEL.skill },
+      fallback: say.skill.fallback,
+    },
+    {
+      id: "question",
+      target: [".response-workspace [data-say]", "[data-early-model]", ".directions"],
+      title: say.question.title,
+      body: say.question.body,
+      done: { click: ".response-workspace [data-say], [data-early-model], .directions [data-say]" },
+      fallback: say.question.fallback,
+    },
+    {
+      id: "starters",
+      when: (doc) => [...doc.querySelectorAll("details > summary")].some((s) => /starter|inicio/i.test(s.textContent) && shown(s)),
+      target: (doc) => [...doc.querySelectorAll("details > summary")].find((s) => /starter|inicio/i.test(s.textContent)) || null,
+      title: say.starters.title,
+      body: say.starters.body,
+    },
+    {
+      id: "say",
+      target: ["[data-rec-start]", "[data-early-done]"],
+      title: say.say.title,
+      body: say.say.body,
+      why: say.say.why,
+      done: { click: "[data-rec-start], [data-early-done]" },
+      fallback: say.say.fallback,
+    },
+    {
+      id: "check",
+      when: (doc) => Boolean(checklist(doc)),
+      target: checklist,
+      title: say.check.title,
+      body: say.check.body,
+      done: { click: "[data-selfcheck]" },
+    },
+    { id: "end", target: null, title: say.end.title, body: say.end.body, primary: say.final },
+  ];
+}
+
+/**
+ * A writing turn: plan with the starters, write, check, read the feedback, revise and check again.
+ * Lab shell: textarea[data-note], [data-check-writing], .feedback. K–3 shell: starter speaker, [data-early-print],
+ * [data-early-done].
+ */
+export function writeSteps(say) {
+  const box = (doc) => doc.querySelector(".response-workspace textarea[data-note], textarea[data-note]");
+  return [
+    { id: "intro", target: null, title: say.intro.title, body: say.intro.body, why: say.intro.why },
+    {
+      id: "skill",
+      when: has(SEL.skill),
+      target: SEL.skill,
+      title: say.skill.title,
+      body: say.skill.body,
+      done: { click: SEL.skill },
+      fallback: say.skill.fallback,
+    },
+    {
+      id: "directions",
+      target: [".directions", "[data-early-say-text]"],
+      title: say.directions.title,
+      body: say.directions.body,
+      done: { click: ".directions [data-say], [data-early-say-text]" },
+      fallback: say.directions.fallback,
+    },
+    {
+      id: "write",
+      when: (doc) => Boolean(box(doc)),
+      target: box,
+      title: say.write.title,
+      body: say.write.body,
+      done: { input: "textarea[data-note]" },
+      fallback: say.write.fallback,
+    },
+    {
+      id: "check",
+      when: has("[data-check-writing]"),
+      target: "[data-check-writing]",
+      title: say.check.title,
+      body: say.check.body,
+      appear: ".response-workspace .feedback, .feedback",
+      fallback: say.check.fallback,
+    },
+    {
+      id: "feedback",
+      when: (doc) => hasFeedback(doc),
+      target: SEL.feedback,
+      title: say.feedback.title,
+      body: say.feedback.body,
+      why: say.feedback.why,
+    },
+    {
+      id: "revise",
+      when: (doc) => Boolean(box(doc)) && hasFeedback(doc),
+      target: box,
+      title: say.revise.title,
+      body: say.revise.body,
+      done: { click: "[data-check-writing]" },
+      fallback: say.revise.fallback,
+    },
+    {
+      id: "paper",
+      when: has("[data-early-done]"),
+      target: ["[data-early-print]", "[data-early-done]"],
+      title: say.paper.title,
+      body: say.paper.body,
+      done: { click: "[data-early-done]" },
+      fallback: say.paper.fallback,
+    },
+    { id: "end", target: null, title: say.end.title, body: say.end.body, primary: say.final },
+  ];
+}
+
+/** The steps for an activity's skill. */
+export const stepsFor = (skill, say) =>
+  skill === "speaking" ? speakSteps(say.speaking) : skill === "writing" ? writeSteps(say.writing) : loopSteps(say.loop);

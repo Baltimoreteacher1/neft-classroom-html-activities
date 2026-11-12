@@ -32,6 +32,8 @@ import { withReturn } from "./return-bar.js";
 import { loadIntro, updateIntro } from "./state.js";
 import { BAND_TOUR, DOMAIN_BY_ID } from "./tour-bands.js";
 import { helpHTML } from "./tour-help.js";
+import { bindGuide, guideBubbleHTML } from "./guide.js";
+import { guideArtSVG } from "./guide-art.js";
 
 let coach = null;
 let view = null;
@@ -40,29 +42,40 @@ let view = null;
 const guideLang = (I) => (I.mode === "en" ? "en" : "es");
 
 /**
- * The grade to show: a teacher's shared link (?grades=) first, then the family's own choice on this device, else the
- * lab's current band (K–3 bands map to K–2).
+ * The grade band to show: a teacher's shared link (?grades=) first, then the family's own choice on this device. With
+ * neither, step 1 shows no choice yet (a parent who taps Start is asked for the grade, never handed another grade's
+ * work); steps 2 and 3 fall back to the lab's current grade.
  */
-function chosenBand(ctx) {
+function chosenBand(ctx, { allowNone = false } = {}) {
   const linked = familyBandFromGrades(ctx.route?.grades);
   if (linked) return linked;
   const saved = loadIntro().family?.band;
   if (FAMILY_BANDS.some((b) => b.id === saved)) return saved;
+  if (allowNone) return "";
   if (ctx.band === "3-5" || ctx.band === "6-8") return ctx.band;
   return ["K", "1", "2-3"].includes(ctx.band) ? "k-2" : "6-8";
 }
 
-/**
- * K–2 activities come in three grade picks: the link's ?grades=, then the family's own exact choice, then the lab's
- * grade when it is K–3, then the grade a teacher chose on this device, else Kindergarten.
- */
-function earlyPick(ctx) {
-  const g = String(ctx.route?.grades || "").toUpperCase();
-  if (EARLY_PICKS.includes(g)) return g;
+/** The exact grade inside the band: the link's grade, then the family's own choice, then the lab's grade, else the
+ * band's usual one (Kindergarten, Grade 4). Returns a PAGE.exact entry, or null for Grades 6–8. */
+function exactGrade(ctx, band) {
+  const list = PAGE.exact[band];
+  if (!list) return null;
+  const linked = String(ctx.route?.grades || "").toUpperCase();
   const intro = loadIntro();
-  for (const p of [intro.family?.early, ctx.band, intro.band?.pick]) if (EARLY_PICKS.includes(p)) return p;
-  return "K";
+  const byPick = (p) => list.find((x) => x.pick === (p === "3-5" ? "4-5" : p));
+  return (
+    (linked && byPick(linked)) ||
+    list.find((x) => x.id === intro.family?.exact) ||
+    byPick(intro.family?.early) ||
+    byPick(ctx.band) ||
+    byPick(intro.band?.pick) ||
+    list.find((x) => x.id === (band === "k-2" ? "K" : "4"))
+  );
 }
+
+/** The lab grade pick for a band and its exact grade. */
+const pickFor = (band, exact) => exact?.pick || (band === "3-5" ? "4-5" : band === "k-2" ? "K" : "6-8");
 
 /** Make the family's grade the lab's grade too, so the menu, the directory and every activity agree with it. */
 function syncLabBand(ctx, plan) {
@@ -84,8 +97,8 @@ const K2_TALK = {
 };
 
 /** The practice activity (step 2) and the next ones (step 3) for a family grade. */
-export function familyPlan(band, pick = "K") {
-  if (band === "k-2") {
+export function familyPlan(band, pick = band === "k-2" ? "K" : "") {
+  if (band === "k-2" || EARLY_PICKS.includes(pick)) {
     const t = BAND_TOUR[pick];
     return {
       pick,
@@ -150,35 +163,32 @@ function topHTML(I, n, plan) {
   </header>`;
 }
 
-function bandHTML(I, band, early) {
+function bandHTML(I, band, exact) {
+  const list = PAGE.exact[band];
   return html`<div class="ft-field">
     <p class="ft-label" id="ftBandLabel">${I.TO(PAGE.gradeLabel)}</p>
     <div class="ft-bands" role="group" aria-labelledby="ftBandLabel">
       ${FAMILY_BANDS.map(
         (b) =>
-          html`<button
-            type="button"
-            class="ft-band"
-            data-ft-band="${b.id}"
-            aria-pressed="${String(b.id === band)}"
-          >
+          html`<button type="button" class="ft-band" data-ft-band="${b.id}" aria-pressed="${String(b.id === band)}">
             ${I.TO(b.label)}
           </button>`,
       )}
     </div>
     ${
-      band === "k-2"
-        ? html`<p class="ft-label ft-label-sub" id="ftEarlyLabel">${I.TO(PAGE.early)}</p>
-            <div class="ft-bands is-sub" role="group" aria-labelledby="ftEarlyLabel">
-              ${PAGE.earlyPicks.map(
-                (p) =>
-                  html`<button type="button" class="ft-band" data-ft-early="${p.id}" aria-pressed="${String(p.id === early)}">
-                    ${I.TO(p.label)}
+      list
+        ? html`<p class="ft-label ft-label-sub" id="ftExactLabel">${I.TO(PAGE.early)}</p>
+            <div class="ft-bands is-sub" role="group" aria-labelledby="ftExactLabel">
+              ${list.map(
+                (x) =>
+                  html`<button type="button" class="ft-band" data-ft-exact="${x.id}" aria-pressed="${String(x.id === exact?.id)}">
+                    ${I.TO(x.label)}
                   </button>`,
               )}
             </div>`
         : ""
     }
+    <p class="ft-need" data-ft-need-note aria-live="polite"></p>
   </div>`;
 }
 
@@ -195,20 +205,39 @@ function printHTML(I, band) {
   </p>`;
 }
 
+/** Mr. Neft opens each family step in the family's language, with the family questions behind "Ask". */
+const neftFamily = (I, line, plan) =>
+  guideBubbleHTML({
+    say: I.mode === "en" ? line.en : line.es,
+    role: I.mode === "en" ? "Your guide" : "Su guía",
+    chips: ["what", "account", "mic", "saved", "sound", "language"],
+    context: { page: "family", pick: plan.pick },
+    lang: I.mode === "en" ? "en" : "es",
+  });
+
 /* ── Step 1 ── */
-function startHTML(I, band, plan) {
+function startHTML(I, band, plan, exact) {
   return html`<section class="gt-part ft-start" aria-labelledby="ftTitle">
     <h1 id="ftTitle" tabindex="-1">${I.TO(PAGE.title)}</h1>
     <p class="gt-lead">${I.TO(PAGE.lead)}</p>
     <div class="ft-card">
-      ${bandHTML(I, band, plan.pick)}
-      <a class="btn btn-primary btn-big ft-go" href="${stepHref(2, plan)}">${I.TO(PAGE.start)}${icon("arrow-right")}</a>
+      ${bandHTML(I, band, exact)}
+      ${
+        band
+          ? html`<a class="btn btn-primary btn-big ft-go" href="${stepHref(2, plan)}"
+              >${I.TO(PAGE.start)}${icon("arrow-right")}</a
+            >`
+          : html`<button type="button" class="btn btn-primary btn-big ft-go" data-ft-need>
+              ${I.TO(PAGE.start)}${icon("arrow-right")}
+            </button>`
+      }
       <div class="ft-field ft-lang">
         <p class="ft-label" id="ftLangLabel">${I.TO(PAGE.langLabel)}</p>
         ${langSwitchHTML(I.mode, { idPrefix: "ftLang" })}
         <p class="fine">${I.TO(PAGE.langNote)}</p>
       </div>
     </div>
+    ${neftFamily(I, PAGE.welcome, plan)}
     <p class="ft-reassure">${icon("families")}<span>${I.TO(PAGE.noEnglish)}</span></p>
     <section class="ft-how" aria-labelledby="ftHow">
       <h2 id="ftHow">${I.TO(PAGE.how)}</h2>
@@ -246,12 +275,12 @@ function practiceHTML(I, band, plan) {
       data-path="${BASE}${path}"
       data-title="${a.title}"
     >
+      <div class="gt-coach" data-coach-slot></div>
       <div class="gt-frame-slot" data-gt-frame>
         <p class="gt-loading" role="status">
           ${icon("clock")}${I.S("Opening the activity…", "Abriendo la actividad…")}
         </p>
       </div>
-      <div class="gt-coach" data-coach-slot></div>
     </div>
     <nav class="gt-nav" aria-label="${I.S("Steps", "Pasos")}">
       <a class="btn ghost" href="${stepHref(1, plan)}">${icon("arrow-left")}${I.TO(PAGE.back)}</a>
@@ -268,6 +297,7 @@ function nextHTML(I, band, plan) {
       <p>${I.TO(x.a)}</p>
     </details>`;
   return html`<section class="gt-part ft-next" aria-labelledby="ftTitle">
+    ${neftFamily(I, PAGE.nextNeft, plan)}
     <div class="gt-ready ft-ready">
       <span class="gt-ready-mark" aria-hidden="true">${icon("check")}</span>
       <div>
@@ -316,16 +346,18 @@ function nextHTML(I, band, plan) {
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
-  const band = chosenBand(ctx);
   const n = readStep(ctx);
-  const plan = familyPlan(band, earlyPick(ctx));
+  const band = chosenBand(ctx, { allowNone: n === 1 });
+  const exact = exactGrade(ctx, band);
+  // With no grade chosen yet, the page's other links (the handout, "go straight to practice") use Grades 6–8.
+  const plan = familyPlan(band || "6-8", pickFor(band || "6-8", exact));
   view = { n, band, plan, lang: guideLang(I), mode: I.mode };
   updateIntro("family", (f) => ({ ...f, step: n }));
   const lang = guideLang(I);
   const help = resolveLang(FAMILY_HELP, lang);
   const body =
     n === 1
-      ? startHTML(I, band, plan)
+      ? startHTML(I, band, plan, exact)
       : n === 2
         ? practiceHTML(I, band, plan)
         : nextHTML(I, band, plan);
@@ -356,6 +388,7 @@ export async function render(ctx) {
 }
 
 export function mount(root, ctx) {
+  bindGuide();
   coach?.destroy();
   coach = null;
   const stage = document.querySelector("[data-gt-stage]");
@@ -369,6 +402,7 @@ export function mount(root, ctx) {
   const copy = resolveLang(COACH_COPY, lang);
   copy.stepOf = (a, b) => (lang === "es" ? `Paso ${a} de ${b}` : `Step ${a} of ${b}`);
   copy.lang = lang === "es" ? "es-US" : "en-US";
+  copy.guide = { name: "Mr. Neft", role: lang === "es" ? "Su guía" : "Your guide", avatar: guideArtSVG() };
   coach = createCoach({
     stage,
     frame,
@@ -397,11 +431,19 @@ export function onClick(e, ctx) {
     ctx.navigate(stepHref(1, view?.plan));
     return true;
   }
-  const early = e.target.closest?.("[data-ft-early]");
-  if (early) {
-    const pick = early.dataset.ftEarly;
-    updateIntro("family", (f) => ({ ...f, band: "k-2", early: pick }));
-    return chooseGrade(ctx, "k-2", `[data-ft-early="${pick}"]`);
+  if (e.target.closest?.("[data-ft-need]")) {
+    // Start before a grade is chosen: say so where the grade buttons are, and put focus on the first one.
+    const note = document.querySelector("[data-ft-need-note]");
+    if (note) note.textContent = i18nFor(ctx).S(PAGE.needGrade.en, PAGE.needGrade.es);
+    document.querySelector("[data-ft-band]")?.focus();
+    return true;
+  }
+  const exact = e.target.closest?.("[data-ft-exact]");
+  if (exact) {
+    const id = exact.dataset.ftExact;
+    const band = Object.keys(PAGE.exact).find((k) => PAGE.exact[k].some((x) => x.id === id));
+    updateIntro("family", (f) => ({ ...f, band, exact: id }));
+    return chooseGrade(ctx, band, `[data-ft-exact="${id}"]`);
   }
   const b = e.target.closest?.("[data-ft-band]");
   if (!b) return false;
@@ -416,7 +458,8 @@ function chooseGrade(ctx, band, focus) {
   const url = new URL(location.href);
   url.searchParams.delete("grades");
   history.replaceState(history.state, "", url.pathname + url.search + url.hash);
-  syncLabBand(ctx, familyPlan(band, earlyPick({ ...ctx, route: { ...ctx.route, grades: "" } })));
+  const exact = exactGrade({ ...ctx, route: { ...ctx.route, grades: "" } }, band);
+  syncLabBand(ctx, familyPlan(band, pickFor(band, exact)));
   Promise.resolve(ctx.rerender()).then(() => document.querySelector(focus)?.focus({ preventScroll: true }));
   return true;
 }

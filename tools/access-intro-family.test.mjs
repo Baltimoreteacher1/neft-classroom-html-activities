@@ -2,6 +2,7 @@
 // data.js, and the Start links carry the return hint. Pure logic: no browser.
 import assert from "node:assert/strict";
 import test from "node:test";
+import { loopSteps } from "../access-practice-lab/src/coach/activity-steps.js";
 import {
   ACTIVITIES,
   ACTIVITY_BY_ID,
@@ -19,22 +20,21 @@ import {
   TONIGHT,
 } from "../access-practice-lab/src/intro/family-data.js";
 import {
+  COACH_COPY,
+  FAMILY_HELP,
+  FAMILY_SAY,
+  PAGE,
+  pickLang,
+  resolveLang,
+  STEPS,
+} from "../access-practice-lab/src/intro/family-guide-data.js";
+import {
   EARLY_MODELS,
   earlyPickFrom,
   earlyRoutine,
   FAMILY_HANDOUT_K2,
   HANDOUT_K2_COPY,
 } from "../access-practice-lab/src/intro/family-k2-data.js";
-import {
-  COACH_COPY,
-  FAMILY_HELP,
-  FAMILY_SAY,
-  PAGE,
-  STEPS,
-  pickLang,
-  resolveLang,
-} from "../access-practice-lab/src/intro/family-guide-data.js";
-import { loopSteps } from "../access-practice-lab/src/coach/activity-steps.js";
 import { RETURNS, withReturn } from "../access-practice-lab/src/intro/return-bar.js";
 import { toHtml } from "../access-practice-lab/src/util.js";
 
@@ -243,33 +243,49 @@ test("a teacher's ?grades= link opens that grade", async () => {
   assert.equal(pressed(await page(EN, "4-5")), "3-5");
   assert.equal(pressed(await page(EN, "K")), "k-2");
   assert.equal(pressed(await page(EN, "6-8", "3-5")), "6-8");
-  assert.equal(pressed(await page(EN, "", "6-8")), "6-8", "no link: the lab's band");
+  assert.equal(
+    pressed(await page(EN, "", "6-8")),
+    undefined,
+    "no link and no choice yet: nothing is chosen for them",
+  );
+  assert.match(await page(EN, "", "6-8"), /data-ft-need/, "Start then asks for the grade");
+  assert.match(
+    await page(EN, "", "6-8", "2"),
+    /grades=6-8&amp;frame=1/,
+    "steps 2–3 fall back to the lab's grade",
+  );
 });
 
 test("step 1: one primary action, three steps across the top, the reassurance and the handout by language", async () => {
-  const en = await page(EN);
+  const en = await page(EN, "6-8");
   assert.equal((en.match(/btn-primary/g) || []).length, 1, "one primary action");
   assert.match(en, /Let’s practice English together\./);
   assert.match(en, /You do not need to speak English well to help\./);
   assert.match(en, /href="\/access-practice-lab\/practice-together\?step=2&amp;grades=6-8"/);
   assert.equal((en.match(/aria-current="step"/g) || []).length, 1);
   assert.ok(en.includes(FAMILY_HANDOUT.en.pdf) && !en.includes(FAMILY_HANDOUT.es.pdf));
-  const es = await page(ES);
+  const es = await page(ES, "6-8");
   assert.match(es, /Practiquemos inglés juntos\./);
   assert.ok(es.includes(FAMILY_HANDOUT.es.pdf) && !es.includes(FAMILY_HANDOUT.en.pdf));
-  const bi = await page(BI);
+  const bi = await page(BI, "6-8");
   assert.ok(bi.includes(FAMILY_HANDOUT.en.pdf) && bi.includes(FAMILY_HANDOUT.es.pdf));
   assert.ok((await page(EN, "1")).includes(FAMILY_HANDOUT_K2.en.pdf), "K–2 handout");
 });
 
 test("student practice stays one tap away from step 1, with the return hint", async () => {
-  assert.match(await page(EN), /href="\/access-practice-lab\/voice\/ladder\/school-hallway\?grades=6-8&amp;intro=together"/);
+  assert.match(
+    await page(EN, "6-8"),
+    /href="\/access-practice-lab\/voice\/ladder\/school-hallway\?grades=6-8&amp;intro=together"/,
+  );
 });
 
 test("step 2: a stage for the live activity, with Back and a way past it", async () => {
   const h = await page(EN, "6-8", "6-8", "2");
   assert.match(h, /data-gt-stage/);
-  assert.match(h, /data-src="\/access-practice-lab\/Reading\/A\/read-main-idea\?grades=6-8&amp;frame=1"/);
+  assert.match(
+    h,
+    /data-src="\/access-practice-lab\/Reading\/A\/read-main-idea\?grades=6-8&amp;frame=1"/,
+  );
   assert.match(h, /data-coach-slot/);
   assert.match(h, /step=1&amp;grades=6-8/);
   assert.match(h, /step=3&amp;grades=6-8/);
@@ -280,7 +296,10 @@ test("step 2: a stage for the live activity, with Back and a way past it", async
 test("step 3: one primary action, the next real activity, how to keep going, device and saving answers", async () => {
   const h = await page(EN, "4-5", "6-8", "3");
   assert.equal((h.match(/btn-primary/g) || []).length, 1);
-  assert.match(h, /href="\/access-practice-lab\/voice\/ladder\/class-garden\?grades=4-5&amp;intro=together"/);
+  assert.match(
+    h,
+    /href="\/access-practice-lab\/voice\/ladder\/class-garden\?grades=4-5&amp;intro=together"/,
+  );
   assert.match(h, /Start practicing/);
   assert.match(h, /More than one child uses this device/);
   assert.match(h, /Where is our work saved\?/);
@@ -289,10 +308,24 @@ test("step 3: one primary action, the next real activity, how to keep going, dev
   assert.match(k, /Empezar a practicar/);
 });
 
+test("the exact grade: Grade 3 uses the lab's Grades 2–3 activities, Grades 4 and 5 use Grades 4–5", async () => {
+  assert.equal(PAGE.exact["3-5"].find((x) => x.id === "3").pick, "2-3");
+  assert.equal(
+    familyPlan("3-5", "2-3").practice.route.split("?")[0],
+    familyPlan("k-2", "2-3").practice.route.split("?")[0],
+  );
+  assert.match(await page(EN, "4-5"), /data-ft-exact="4"\s+aria-pressed="true"/);
+  assert.match(await page(EN, "1"), /data-ft-exact="1"\s+aria-pressed="true"/);
+  assert.doesNotMatch(await page(EN, "6-8"), /data-ft-exact/);
+});
+
 test("familyPlan: every grade practices a checkable activity and moves on to speaking", () => {
   for (const [band, pick] of [["k-2", "K"], ["k-2", "1"], ["k-2", "2-3"], ["3-5"], ["6-8"]]) {
     const p = familyPlan(band, pick);
-    assert.ok(p.practice.route.startsWith("/Listening/") || p.practice.route.startsWith("/Reading/"), band);
+    assert.ok(
+      p.practice.route.startsWith("/Listening/") || p.practice.route.startsWith("/Reading/"),
+      band,
+    );
     assert.ok(p.next.route && p.next.name && p.next.description && p.next.steps.length === 3, band);
     assert.ok(p.more.length >= 1, band);
   }
@@ -309,7 +342,11 @@ test("the family guide speaks to the adult in either language and every step has
     assert.ok(steps.at(-1).primary, "the last step names its button");
     assert.ok(steps.some((s) => s.id === "spanish"));
   }
-  assert.equal(pickLang({ en: "Hi" }, "ar"), "Hi", "a language with no entry falls back to English");
+  assert.equal(
+    pickLang({ en: "Hi" }, "ar"),
+    "Hi",
+    "a language with no entry falls back to English",
+  );
 });
 
 test("the guide never quotes a button's words (they change with the page language)", () => {

@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 /**
- * Teacher Tour accessibility sweep (/start/tour, four parts): every grade choice (K, 1, 2-3, 4-5, 6-8) at 1280 and
- * 390 px, in each part — 1 the goals, 2 a live activity with the coach card, 3 a chosen skill and support with the
- * live preview, 4 the classroom card and its "Show the QR code to the class" dialog. Each state must have:
+ * Teacher Tour accessibility sweep (/start/tour, three parts): every grade choice (K, 1, 2-3, 4-5, 6-8) at 1280 and
+ * 390 px, in each part — 1 the skill cards with Mr. Neft, 2 a live activity with Mr. Neft's guide card beside it, 3
+ * the support choice, the class card and its "Show QR to the class" dialog. Each state must have:
  *   - axe (wcag2a/aa, 21a/aa, 22aa) serious + critical = 0 on the tour page. The activity frame's inner document is a
  *     lab activity page and is excluded (`iframe.gc-frame`): those pages have their own browser gates
  *     (access-lab-sweep, access-early-e2e, access-lesson-frame-e2e). The <iframe> element itself (title) is checked.
  *   - 44 x 44 px targets on every tour and coach control (links inside a sentence are exempt, WCAG 2.5.8);
  *   - no horizontal scroll; no console error from the tour page or the frame;
- *   - at phone width (< 960 px) the coach card is docked: position:fixed at the bottom of the screen.
+ *   - Part 2 at 960 px and up: the guide card sits left of the frame; below 960 px it docks: position:fixed at the
+ *     bottom of the screen.
  * The Show dialog must close on Escape and return focus to its button.
  *   node tools/access-intro-tour-a11y.mjs [--picks=K,1] [--widths=390]
  * A missing browser is a SKIP locally and a FAIL in CI.
@@ -20,13 +21,13 @@ const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.spli
 const PICKS = arg("picks")?.split(",") || Object.keys(BAND_TOUR);
 const WIDTHS = (arg("widths")?.split(",") || ["1280", "390"]).map(Number);
 const SHOTS = process.env.TOUR_A11Y_SHOTS || "";
-// Part 3 shows each grade choice a different skill, so all four skills are swept across the five picks.
-const PREP_SKILL = {
+// Each grade choice tries a different skill, so all four skills (and both coach shells) are swept across the picks.
+const SKILL = {
   K: "speaking",
   1: "writing",
   "2-3": "listening",
   "4-5": "writing",
-  "6-8": "speaking",
+  "6-8": "reading",
 };
 
 let chromium;
@@ -70,15 +71,19 @@ const smallTargets = (page) =>
       el.tagName === "A" &&
       !el.classList.contains("btn") &&
       el.closest("p, li, dd")?.textContent.trim() !== el.textContent.trim();
-    return [...new Set(document.querySelectorAll(sel))]
-      .filter((el) => el.offsetParent || el.getClientRects().length)
-      .filter((el) => !inline(el))
-      .map((el) => [el, el.getBoundingClientRect()])
-      .filter(([, r]) => r.width > 0 && (r.width < 43.5 || r.height < 43.5))
-      .map(
-        ([el, r]) =>
-          `${el.tagName.toLowerCase()}${el.className ? `.${String(el.className).split(" ")[0]}` : ""} "${el.textContent.trim().slice(0, 30)}" ${Math.round(r.width)}x${Math.round(r.height)}`,
-      );
+    return (
+      [...new Set(document.querySelectorAll(sel))]
+        .filter((el) => el.offsetParent || el.getClientRects().length)
+        // Content of a closed <details> keeps a layout box in Chromium but is not on screen.
+        .filter((el) => el.checkVisibility?.() !== false)
+        .filter((el) => !inline(el))
+        .map((el) => [el, el.getBoundingClientRect()])
+        .filter(([, r]) => r.width > 0 && (r.width < 43.5 || r.height < 43.5))
+        .map(
+          ([el, r]) =>
+            `${el.tagName.toLowerCase()}${el.className ? `.${String(el.className).split(" ")[0]}` : ""} "${el.textContent.trim().slice(0, 30)}" ${Math.round(r.width)}x${Math.round(r.height)}`,
+        )
+    );
   });
 
 async function check(page, label, errors) {
@@ -158,41 +163,59 @@ for (const width of WIDTHS) {
     await page.evaluate(() => localStorage.removeItem("accessPracticeLab:v1:intro"));
 
     await go(`part=1&grades=${g}`);
+    ok(
+      (await page.locator("a.gt-domain[data-gt-skill]").count()) === 4,
+      `${pick} part 1: four skill cards @${width}`,
+    );
     await check(page, `${pick} part 1 @${width}`, errors);
     await shot(1);
+    // "Ask Mr. Neft" opens the question box inside his bubble, at full width.
+    await page.locator("section.nb details.nb-ask > summary").click();
+    await check(page, `${pick} part 1 (Ask Mr. Neft open) @${width}`, errors);
+    const askW = await page.locator("#pgQuestion").evaluate((e) => e.getBoundingClientRect().width);
+    ok(
+      askW >= 160,
+      `${pick} part 1: the Ask Mr. Neft box is usable (${Math.round(askW)}px wide) @${width}`,
+    );
 
-    await go(`part=2&goal=show&grades=${g}`);
+    const skill = SKILL[pick] || "reading";
+    await go(`part=2&grades=${g}&skill=${skill}`);
     await stageReady(page);
-    await check(page, `${pick} part 2 (coach + live activity) @${width}`, errors);
+    ok(
+      (await page.locator(".gc-card .gc-who").innerText()).includes("Mr. Neft"),
+      `${pick} part 2 ${skill}: the guide card is Mr. Neft's @${width}`,
+    );
+    await check(page, `${pick} part 2 (${skill}, coach + live activity) @${width}`, errors);
     if (width < 960) {
       const where = await docked(page);
       ok(where === "", `coach card docked at the bottom @${width} ${pick}: ${where}`);
+    } else {
+      const [c, f] = await Promise.all(
+        [".gc-card", "iframe.gc-frame"].map((sel) =>
+          page.locator(sel).evaluate((e) => e.getBoundingClientRect().left),
+        ),
+      );
+      ok(c < f, `${pick} part 2: the guide card sits left of the frame @${width} (${c} < ${f})`);
     }
     await shot(2);
 
-    const skill = PREP_SKILL[pick] || "reading";
-    await go(`part=3&goal=show&grades=${g}&skill=${skill}&support=A`);
-    await stageReady(page);
-    ok(
-      (await page.locator("[data-gt-use]").count()) === 1,
-      `${pick} part 3 ${skill}: Use this activity`,
-    );
-    await check(page, `${pick} part 3 (${skill}, preview) @${width}`, errors);
-    await shot(3);
-
-    await go(`part=4&goal=share&grades=${g}&skill=${skill}&support=A`);
+    await go(`part=3&grades=${g}&skill=${skill}&support=A`);
     await page.waitForSelector(".gt-class-card");
-    await check(page, `${pick} part 4 @${width}`, errors);
-    await shot(4);
+    ok(
+      (await page.locator(".gt-class-card .btn-primary").count()) === 1,
+      `${pick} part 3: one primary action @${width}`,
+    );
+    await check(page, `${pick} part 3 @${width}`, errors);
+    await shot(3);
     if (await page.locator("[data-gt-show]").count()) {
       await page.locator("[data-gt-show]").click();
       await page.waitForSelector("[data-gt-show-dialog][open]");
-      await check(page, `${pick} part 4 (Show the QR code) @${width}`, errors);
+      await check(page, `${pick} part 3 (Show QR) @${width}`, errors);
       await page.keyboard.press("Escape");
       ok(
         (await page.locator("[data-gt-show-dialog][open]").count()) === 0 &&
           (await page.evaluate(() => document.activeElement?.matches("[data-gt-show]"))),
-        `Escape closes Show the QR code and focus returns: ${pick} @${width}`,
+        `Escape closes Show QR and focus returns: ${pick} @${width}`,
       );
     }
   }

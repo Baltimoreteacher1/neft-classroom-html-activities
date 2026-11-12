@@ -66,7 +66,7 @@ test("the page renders for every grade choice with one h1, ordered headings and 
   }
 });
 
-test("every domain card link carries grades=, and the tour link opens Part 3 with that card's skill", async () => {
+test("every domain card link carries grades=, and the tour link opens Part 2 with that card's skill", async () => {
   for (const pick of PICKS) {
     const { d } = await renderStart(pick);
     const cards = [...d.querySelectorAll(".tb-domain")];
@@ -78,7 +78,7 @@ test("every domain card link carries grades=, and the tour link opens Part 3 wit
       assert.equal(links.length, 2, pick);
       for (const u of links) assert.equal(u.searchParams.get("grades"), pick, u.href);
       const tour = links.find((u) => u.pathname.endsWith("/start/tour"));
-      assert.equal(tour.searchParams.get("part"), "3", `${pick}: card ${i + 1} opens Part 3`);
+      assert.equal(tour.searchParams.get("part"), "2", `${pick}: card ${i + 1} opens Part 2`);
       assert.equal(
         tour.searchParams.get("skill"),
         ["listening", "speaking", "reading", "writing"][i],
@@ -101,7 +101,7 @@ test("every domain card link carries grades=, and the tour link opens Part 3 wit
   assert.equal(O.DOMAIN_STOP, undefined);
   assert.equal(
     O.tourHref("4-5", "reading"),
-    "/access-practice-lab/start/tour?part=3&skill=reading&grades=4-5",
+    "/access-practice-lab/start/tour?part=2&skill=reading&grades=4-5",
   );
   assert.equal(O.tourHref("K"), "/access-practice-lab/start/tour?grades=K");
 });
@@ -171,13 +171,15 @@ test("no on-site link to /start/present or presenter notes: /start, teacher nav,
   assert.ok(present.html);
 });
 
-test("Pick up where you left off follows the four-part teacher tour", () => {
-  const [item] = O.progressItems({ guided: { part: 3, pick: "2-3", goal: "show" } });
-  assert.equal(item.text, "Teacher tour: Part 3 of 4, Prepare practice");
+test("Pick up where you left off follows the three-part teacher tour", () => {
+  const [item] = O.progressItems({ guided: { part: 2, pick: "2-3", skill: "reading" } });
+  assert.equal(item.text, "Teacher tour: Part 2 of 3, Try it as a student");
   assert.match(item.href, /\/start\/tour$/);
   assert.equal(item.cta, "Resume the tour");
   assert.deepEqual(O.progressItems({ guided: { part: 1 } }), [], "Part 1 is not progress");
-  assert.deepEqual(O.progressItems({ guided: { part: 4, done: true } }), [], "a finished tour");
+  assert.deepEqual(O.progressItems({ guided: { part: 3, done: true } }), [], "a finished tour");
+  // A device saved by the old four-part tour must not break the overview.
+  assert.doesNotThrow(() => O.progressItems({ guided: { part: 4, skill: "reading" } }));
   assert.deepEqual(
     O.progressItems({ tour: { stop: 3 } }),
     [],

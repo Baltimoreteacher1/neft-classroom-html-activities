@@ -115,14 +115,13 @@ test("every tour route opens in its own grade, and ?grades= values resolve to a 
   assert.equal(pickFromParam("nope"), "");
 });
 
-test("the tour has four parts: goal, try, prepare, classroom", () => {
+test("the tour has three parts: skill, try, class", () => {
   assert.deepEqual(
     PARTS.map((p) => [p.n, p.id]),
     [
-      [1, "goal"],
+      [1, "skill"],
       [2, "try"],
-      [3, "prepare"],
-      [4, "classroom"],
+      [3, "class"],
     ],
   );
 });

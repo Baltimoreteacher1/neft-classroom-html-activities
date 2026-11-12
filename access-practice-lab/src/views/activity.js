@@ -15,7 +15,7 @@ import {
 } from "../components.js";
 import * as early from "../early/player.js";
 import { CONTENT_BANDS } from "../bands.js";
-import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, loadLessonLearn, loadShared, ordered } from "../content.js";
+import { findActivity, loadDomain, loadEsGuide, loadEsStrings, loadFamilyCoach, loadGlossary, loadLessonLearn, loadShared, ordered } from "../content.js";
 import { buildCoaching } from "../family/coach.js";
 import { copilotHTML } from "../family/copilot.js";
 import { getFamily } from "../family/state.js";
@@ -124,6 +124,11 @@ let coachFeedback = null;
 // Lesson frame: per-skill mini-lessons (content/lesson-learn.json), what was seen/what helped (one small key),
 // whether the Learn panel is open this visit, and the pen tool and marks on a Reading passage (visit only).
 let lessonLearn = null;
+let esText = {}; // Spanish for feedback and focus tags (es-strings.json), keyed by the English string
+
+/** An activity's own English guidance in the page's language: Spanish in Español, both in English + Español. The
+ * English words being practiced stay English inside the Spanish (es-strings.json keeps them). */
+const tx = (en) => (typeof en === "string" && esText[en] && (I.spanish || I.bilingual) ? I.T(en, esText[en]) : en);
 let curFamily = null; // the skill family of the open activity (null until the data loads)
 let frame = { seen: {}, reflect: {} };
 const learnOpen = new Map(); // seenKey → boolean, once the learner opens or closes the panel this visit
@@ -335,7 +340,7 @@ function pickedNote(a) {
   const ids = Array.isArray(picked) ? picked : picked ? [picked] : [];
   const notes = ids.map((id) => a.distractorFeedback?.[id]).filter(Boolean);
   return notes.length
-    ? html`<p class="fb-why"><strong>${I.T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</strong> ${notes.join(" ")}</p>`
+    ? html`<p class="fb-why"><strong>${I.T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</strong> ${notes.map((n, i) => html`${i ? " " : ""}${tx(n)}`)}</p>`
     : "";
 }
 
@@ -346,19 +351,19 @@ function feedbackBody(a) {
     return html`<div class="feedback is-right" role="status">
       <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
       ${feedbackBodyHTML(I, {
-        well: a.correct || I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea."),
-        next: cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${a.extension}` : cur.domain === "Reading" ? lookBack() : "",
+        well: a.correct ? tx(a.correct) : I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea."),
+        next: cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${tx(a.extension)}` : cur.domain === "Reading" ? lookBack() : "",
         canModel: Boolean(curFamily) && mode === "supported",
       })}
     </div>`;
   if (c.diag && mode === "supported" && (c.reveal !== "full" || revealHeld(c)))
-    return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: a.hint });
+    return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: tx(a.hint) });
   if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
       <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
       ${pickedNote(a)}
-      ${feedbackBodyHTML(I, { well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))), next: a.support || (cur.domain === "Reading" ? lookBack() : ""), canModel: Boolean(curFamily) })}
+      ${feedbackBodyHTML(I, { well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))), next: tx(a.support) || (cur.domain === "Reading" ? lookBack() : ""), canModel: Boolean(curFamily) })}
       <button type="button" class="btn" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
     </div>`;
   return html`<div class="feedback is-hint" role="status">
@@ -366,7 +371,7 @@ function feedbackBody(a) {
     ${mode === "supported" ? pickedNote(a) : ""}
     ${feedbackBodyHTML(I, {
       well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))),
-      next: a.hint && mode === "supported" ? a.hint : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista."),
+      next: a.hint && mode === "supported" ? tx(a.hint) : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista."),
       canModel: Boolean(curFamily) && mode === "supported",
     })}
     ${cur.domain === "Reading" ? html`<p class="fine">${lookBack()}</p>` : ""}
@@ -558,7 +563,7 @@ function directionsBlocks(a, es) {
   const english = html`<div class="directions">
     ${icon("info", "directions-icon")}
     <p lang="en">${a.directions}</p>
-    <button type="button" class="ghost small" data-say="${a.directions}" aria-label="${I.S("Read the directions aloud", "Escuchar las instrucciones en inglés")}">
+    <button type="button" class="ghost small" data-say="${a.directions}" aria-label="${I.S("Hear directions aloud", "Escuchar en inglés: las instrucciones")}">
       ${icon("volume")} ${I.T("Hear directions", "Escuchar en inglés")}
     </button>
   </div>`;
@@ -566,7 +571,7 @@ function directionsBlocks(a, es) {
   const spanish = html`<div class="directions directions-es">
     ${icon("info", "directions-icon")}
     <p lang="es">${es.directions}</p>
-    <button type="button" class="ghost small" data-say-es="${es.directions}" aria-label="Escuchar las instrucciones en español">
+    <button type="button" class="ghost small" data-say-es="${es.directions}" aria-label="Escuchar en español: las instrucciones">
       ${icon("volume")} Escuchar en español
     </button>
   </div>`;
@@ -639,7 +644,7 @@ function lessonFrameView(a, es, meta, tier, done) {
     tierName: tier ? I.T(tier.name, tier.es) : cur.level,
     minutes: minutesOf(a),
     can: curFamily?.can || null,
-    focus: asList(a.wida).slice(0, 2),
+    focus: asList(a.wida).slice(0, 2).map(tx),
   };
   return {
     rail: railHTML(I, arc, { learnAvailable: mode === "supported" && Boolean(curFamily) }),
@@ -670,7 +675,8 @@ export async function render(ctx) {
   const found = await resolve(snapshot);
   const shared = await loadShared().catch(() => null);
   glossary = await loadGlossary();
-  const [coachData, esGuide, learnData] = await Promise.all([loadFamilyCoach(), loadEsGuide(), loadLessonLearn()]);
+  const [coachData, esGuide, learnData, esStrings] = await Promise.all([loadFamilyCoach(), loadEsGuide(), loadLessonLearn(), loadEsStrings()]);
+  esText = esStrings;
   lessonLearn = learnData;
   frame = loadFrame(storage);
   if (generation !== renderGeneration) return { title: "", html: "" };
