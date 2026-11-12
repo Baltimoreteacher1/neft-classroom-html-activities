@@ -91,7 +91,18 @@ const plane = (pts = [], axis = null, extra = "") => {
   const X = (v) => cx + v * k;
   const Y = (v) => cy - v * k;
   let out = `<line x1="${cx - size / 2 - 10}" x2="${cx + size / 2 + 10}" y1="${cy}" y2="${cy}" stroke="${axis === "x" ? COLORS.warn : COLORS.ink}" stroke-width="${axis === "x" ? 5 : 2.5}"/><line y1="${cy - size / 2 - 10}" y2="${cy + size / 2 + 10}" x1="${cx}" x2="${cx}" stroke="${axis === "y" ? COLORS.warn : COLORS.ink}" stroke-width="${axis === "y" ? 5 : 2.5}"/>`;
-  out += T(cx + size / 2 + 4, cy + 18, "x", 16, COLORS.mute, "end") + T(cx + 12, cy - size / 2 - 2, "y", 16, COLORS.mute, "start");
+  out += T(cx + size / 2 + 14, cy + 5, "x", 16, COLORS.mute, "start") + T(cx + 12, cy - size / 2 - 2, "y", 16, COLORS.mute, "start");
+  // Number every unit like a textbook plane: x under the x-axis, y left of the y-axis, one 0 at the origin (above-left,
+  // where the dense −1 labels leave room).
+  const range = Math.round(size / 2 / k);
+  const fs = Math.max(5, Math.min(8, k * 0.56));
+  const num = (v) => String(v).replace("-", "\u2212");
+  for (let v = -range; v <= range; v += 1) {
+    if (v === 0) continue;
+    out += `<line x1="${X(v)}" x2="${X(v)}" y1="${cy - 3}" y2="${cy + 3}" stroke="${COLORS.ink}" stroke-width="1"/><line x1="${cx - 3}" x2="${cx + 3}" y1="${Y(v)}" y2="${Y(v)}" stroke="${COLORS.ink}" stroke-width="1"/>`;
+    out += T(X(v), cy + 4 + fs * 2.1, num(v), fs, COLORS.mute, "middle") + T(cx - 9, Y(v) + fs / 3, num(v), fs, COLORS.mute, "end");
+  }
+  out += T(cx - 5, cy - 5, "0", fs, COLORS.mute, "end");
   pts.forEach(([x, y, color, label]) => (out += `<circle cx="${X(x)}" cy="${Y(y)}" r="8" fill="${color}" stroke="#fff" stroke-width="2"/>` + T(X(x) + 12, Y(y) - 10, label, 14, color, "start")));
   return out + extra;
 };
