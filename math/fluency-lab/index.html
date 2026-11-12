@@ -3,108 +3,60 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#17345f" />
+    <meta name="theme-color" content="#14284b" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/math/fluency-lab/manifest.json" />
     <link rel="apple-touch-icon" href="/math/fluency-lab/icons/icon-192.png" />
     <meta
       name="description"
-      content="Kindergarten–Grade 8 adaptive math fluency, strategy practice, interactive visual lessons, daily review, starting-point checkups, teacher assignments, family progress, and printable practice."
+      content="Kindergarten to Grade 8 math practice: see the idea, try it with a living model, and practice one problem at a time with help that explains."
     />
     <link rel="canonical" href="https://eduwonderlab.com/math/fluency-lab/" />
-    <title>Math Fluency Lab · Kindergarten–Grade 8 | EduWonderLab</title>
-    <link rel="preload" href="/assets/fonts/lexend-da864895.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/assets/fonts/fraunces-175f6e93.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Math Fluency Lab · EduWonderLab</title>
+    <link
+      rel="preload"
+      href="/assets/fonts/lexend-da864895.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="stylesheet" href="/assets/fonts/small-group.css" />
-    <link rel="stylesheet" href="./ds4.css" />
-    <link rel="stylesheet" href="./styles.css" />
-    <link rel="stylesheet" href="./long-division-board.css" />
-    <link rel="stylesheet" href="./tutor.css" />
-    <link rel="stylesheet" href="./journey.css" />
-    <link rel="stylesheet" href="./trail.css" />
-    <link rel="stylesheet" href="./games.css" />
-    <link rel="stylesheet" href="./language.css" />
-    <link rel="stylesheet" href="./scratchpad.css" />
-    <link rel="stylesheet" href="./rescue.css" /> <!-- fl4:adaptive -->
     <link rel="stylesheet" href="/assets/fonts/fraunces-87aa83.css" />
-    <link rel="stylesheet" href="./publisher.css" />
-    <link rel="stylesheet" href="./explain.css" />
-    <link rel="stylesheet" href="./step-lens.css" />
-    <link rel="stylesheet" href="./feedback.css" />
-<link rel="stylesheet" href="./response-widgets.css" />
-    <link rel="stylesheet" href="./audio-first.css" />
+    <link rel="stylesheet" href="/assets/fonts/atkinson-hyperlegible-nunito-76729d.css" />
     <link rel="stylesheet" href="./studio/studio.css" />
-    <link rel="stylesheet" href="./writing.css" />
-    <link rel="stylesheet" href="./journey-4.css" /> <!-- fl4:dashboard -->
-    <link rel="stylesheet" href="./mini-lesson.css" /> <!-- fl4:lessons -->
-    <link rel="stylesheet" href="./fl-class-tools.css" /> <!-- fl-teacher -->
-    <link rel="stylesheet" href="./ds4-screens.css" />
-    <link rel="stylesheet" href="./v7/v7.css" />
-    <link rel="stylesheet" href="./tour/tour.css" />
-    <link rel="stylesheet" href="./grade-experience.css" />
-    <link rel="stylesheet" href="./grade-hub.css" />
-    <link rel="stylesheet" href="./e8/tokens.generated.css" />
-    <link rel="stylesheet" href="./e8/grade-system.css" />
-    <link rel="stylesheet" href="./e8/progress-visual.css" />
-    <link rel="stylesheet" href="./e8/model-lab.css" />
-    <link rel="stylesheet" href="./e8/adaptive-ui.css" />
-    <link rel="stylesheet" href="./e8/game-room.css" />
-    <link rel="stylesheet" href="./e8/item-practice.css" />
-    <link rel="stylesheet" href="./cra-engine.css" />
-    <link rel="stylesheet" href="./atelier/atelier.css" />
-    <link rel="stylesheet" href="./entry.css" />
-    <link rel="stylesheet" href="./atelier/gateways.css" />
-    <link rel="stylesheet" href="./explorable-manipulatives.css" />
-    <link rel="stylesheet" href="./interactive-enhancements.css" />
-    <link rel="stylesheet" href="./interactive-universe.css" />
-    <link rel="stylesheet" href="./class-link.css" />
-    <link rel="stylesheet" href="./wonder-city.css" />
-    <link rel="stylesheet" href="./publisher-finish.css" />
-    <link rel="stylesheet" href="./fluency-2.css" />
-    <link rel="stylesheet" href="./models-visual.css" />
-    <link rel="stylesheet" href="./models-learn-visual.css" />
-    <link rel="stylesheet" href="./models-lesson-visual.css" />
-    <link rel="stylesheet" href="./visual-system.css" />
+    <link rel="stylesheet" href="./shell/shell.css" />
     <script>
-      // A grade named in the URL sets its type scale before first paint, so the page does not grow once the app
-      // loads. The table mirrors scaleRem in e8/grade-system.js (pinned by tools/fluency-atelier.test.mjs).
+      // Links meant for the full lab (assignments, teacher studio, games, writing, tools) leave before paint.
       (function () {
-        var scale = { 0: 1.18, 1: 1.14, 2: 1.1, 3: 1.06, 4: 1.03, 5: 1, 6: 1, 7: 0.98, 8: 0.96 };
-        var raw = new URLSearchParams(location.search).get("grade");
-        var grade = raw === "K" || raw === "k" ? "0" : raw;
-        if (!scale[grade]) return;
-        document.documentElement.dataset.gradeSystem = grade;
-        document.documentElement.dataset.atPreGrade = grade;
-        document.documentElement.style.setProperty("--gs-scale", String(scale[grade]));
+        var p = new URLSearchParams(location.search),
+          h = new URLSearchParams(location.hash.slice(1));
+        var lab =
+          [
+            "teacher",
+            "games",
+            "write",
+            "path",
+            "notebook",
+            "models",
+            "practice",
+            "progress",
+          ].indexOf(p.get("view")) > -1 ||
+          ["daily", "mission", "checkup", "realworld"].indexOf(p.get("start")) > -1 ||
+          p.get("stage") === "play" ||
+          h.has("assignment") ||
+          h.has("factplan") ||
+          h.has("videos") ||
+          h.has("board") ||
+          p.has("diagnostics") ||
+          p.has("publisher-demo") ||
+          p.has("tour") ||
+          p.has("profile");
+        if (lab) location.replace("lab.html" + location.search + location.hash);
       })();
     </script>
-    <script type="module" src="./scratchpad-entry.js"></script>
-    <script type="module" src="./tour/tour.js"></script>
-    <script>document.documentElement.dataset.publisherDemo = new URLSearchParams(location.search).get('publisher-demo') === '1' ? '1' : '0';</script>
-    <script type="module" src="./app.js"></script>
-    <script type="module">
-      import { MathFluencyLabEngine, SEED_EXERCISE, adaptPracticeItem } from '../../src/components/MathFluencyLabEngine.js';
-      if (document.documentElement.dataset.publisherDemo === '1') {
-        document.getElementById('publisher-demo-section').hidden = false;
-        const skillParam = new URLSearchParams(location.search).get('publisher-skill');
-        let schema = SEED_EXERCISE;
-        if (skillParam && skillParam.includes(':')) {
-          const [gStr, id] = skillParam.split(':');
-          const { GRADES, generateProblem } = await import('./problem-bank.js');
-          const gradeObj = GRADES.find((g) => g.grade === Number(gStr));
-          const skillObj = gradeObj?.skills.find((s) => s.id === id);
-          if (skillObj) {
-            const raw = generateProblem(skillObj);
-            raw.skill = skillObj;
-            schema = adaptPracticeItem(raw) || SEED_EXERCISE;
-          }
-        }
-        new MathFluencyLabEngine('fluency-lab-root').loadExercise(schema);
-      }
-    </script>
+    <script type="module" src="./shell/app.js"></script>
     <script>
-      // The lab saves itself on this device (and through its own backup file) without a name. The shared
-      // Save & Resume panel asks for a first and last name, which breaks this page's "no name" promise.
+      // The lab saves itself on this device without a name; the shared Save & Resume panel must not ask for one.
       window.NeftSaveResumeConfig = { autoStart: false };
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -112,678 +64,32 @@
     <!-- nsr-injected:end -->
   </head>
   <body>
-    <a class="skip-link" href="#main" data-i18n>Skip to practice</a>
-
-    <header class="site-header">
-      <button id="brand-home" class="brand-button" type="button" aria-label="Go to Math Fluency Lab library">
-        <span class="brand-mark" aria-hidden="true">8×</span>
-        <span><strong>Math Fluency Lab</strong><small>EduWonderLab</small></span>
-      </button>
-      <nav aria-label="Page controls" class="hud-topbar-controls">
-        <a href="./ratio-studio/" class="quiet-button" style="color:inherit;text-decoration:underline;white-space:nowrap">Ratio Studio</a>
-        <div class="hud-profile-capsule">
-          <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
-          <span id="storage-status-badge" class="storage-status-badge" title="Saved locally on this device">● Local</span>
-          <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
-        </div>
-        <button id="cmd-palette-btn" class="quiet-button cmd-palette-btn" type="button" aria-haspopup="dialog" aria-label="Search skills and tools (Cmd+K)" title="Quick search (Cmd+K or /)">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg> <span class="cmd-label"><kbd>⌘K</kbd></span>
+    <a class="skip-link" href="#app">Skip to content</a>
+    <header class="topbar">
+      <a href="./" class="brand" id="brand"
+        ><span class="brand-mark" aria-hidden="true">8×</span
+        ><span id="brand-name">Math Fluency Lab</span></a
+      >
+      <nav class="nav" id="nav" aria-label="Main"></nav>
+      <div class="topbar-end">
+        <button type="button" class="btn btn-quiet btn-sm" id="lang-btn" lang="es">Español</button>
+        <button type="button" class="btn btn-quiet btn-sm" id="more-btn" aria-haspopup="dialog">
+          More
         </button>
-        <div class="settings-menu-container">
-          <button id="settings-toggle" class="quiet-button settings-btn" type="button" aria-expanded="false" aria-controls="header-settings-popover" aria-label="Display and sound settings">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"></path><path d="m19.2 13.7 1.1.9-1.1 1.9-1.4-.5a7.6 7.6 0 0 1-1.5.9l-.2 1.5h-2.2l-.4-1.4a7.5 7.5 0 0 1-1.8 0l-.8 1.2-1.9-1.1.5-1.4a7.6 7.6 0 0 1-.9-1.5l-1.5-.2v-2.2l1.4-.4a7.5 7.5 0 0 1 0-1.8l-1.2-.8 1.1-1.9 1.4.5a7.6 7.6 0 0 1 1.5-.9l.2-1.5h2.2l.4 1.4a7.5 7.5 0 0 1 1.8 0l.8-1.2 1.9 1.1-.5 1.4a7.6 7.6 0 0 1 .9 1.5l1.5.2v2.2l-1.4.4a7.5 7.5 0 0 1 0 1.8Z"></path></svg> <span data-i18n>Settings</span>
-          </button>
-          <div id="header-settings-popover" class="header-settings-popover" hidden>
-            <div class="popover-header">
-              <strong data-i18n>Display & Sound</strong>
-              <button type="button" id="close-settings" class="close-popover-btn" aria-label="Close settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
-            </div>
-            <div class="header-settings">
-              <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
-                Text size: Standard
-              </button>
-              <button id="focus-mode" class="quiet-button" type="button" aria-pressed="false">Focus view</button>
-              <button id="reading-font" class="quiet-button" type="button" aria-pressed="false">Reading font: Off</button>
-              <button id="audio-first-toggle" class="quiet-button" type="button" aria-pressed="false" hidden>Listening help: Off</button>
-              <button id="sound-toggle" class="quiet-button" type="button" aria-pressed="false">Sound: Off</button>
-              <button id="reset-popover-btn" class="quiet-button reset-danger-btn" type="button" data-i18n>Start over (reset progress)</button>
-              <div class="setting-slider-row" style="display:flex; align-items:center; justify-content:space-between; padding:4px 8px; font-size:0.85rem">
-                <label for="master-volume-slider">Volume</label>
-                <input type="range" id="master-volume-slider" min="0" max="1" step="0.05" value="0.7" style="width:100px" aria-label="Master volume" />
-              </div>
-              <button id="speech-speed-toggle" class="quiet-button" type="button" aria-pressed="false">Voice speed: 1.0x</button>
-              <button id="contrast-toggle" class="quiet-button" type="button" aria-pressed="false">High contrast: Off</button>
-              <button id="reduced-motion-toggle" class="quiet-button" type="button" aria-pressed="false">Reduced motion: Off</button>
-            </div>
-          </div>
-        </div>
-        <button id="lang-toggle" class="quiet-button" type="button" lang="es">Español</button>
-      </nav>
+      </div>
     </header>
-
-    <main id="main">
-      <section class="intro at-hero" aria-labelledby="page-title">
-        <div class="intro-copy">
-          <p id="at-kicker" class="intro-kicker">EduWonderLab · Math Fluency Lab</p>
-          <h1 id="page-title" data-i18n>Math Fluency Lab</h1>
-          <p id="intro-description" data-i18n>Kindergarten to Grade 8. Choose a grade and a skill, then start.</p>
-          <div id="at-hero-actions" class="at-hero__actions"></div>
-          <div id="overall-stats" class="overall-stats" aria-label="Saved practice progress"></div>
-          <div class="at-grownups"><span class="at-grownups__label" data-i18n>For grown-ups:</span><a href="./family-adventure/" data-i18n>Family start here: take the tour</a><a href="./family/" data-i18n>Family Math Tonight</a><button id="tour-open" class="tour-open-btn" type="button" aria-haspopup="true" data-i18n>Show me how</button></div>
-        </div>
-        <div id="at-hero-sculpture" class="at-hero__sculpture"></div>
-      </section>
-      <section id="publisher-demo-section" aria-label="Interactive ratio fluency practice" style="max-width:820px;margin:1rem auto;padding:1rem" hidden>
-        <div id="fluency-lab-root"></div>
-      </section>
-      <div id="grade-experience-banner"></div>
-
-      <div id="storage-warning" class="storage-warning" role="status" hidden>Progress cannot be saved in this browser right now. Download a backup before closing the page.</div>
-      <section id="assignment-banner" class="assignment-banner" aria-label="Your assignment" hidden></section>
-      <nav id="hub-tabs" class="hub-tabs" aria-label="Fluency Lab areas">
-        <button type="button" data-view="library" data-home data-dest="home" aria-current="page" data-i18n>Home</button>
-        <button type="button" data-view="library" data-dest="learning" data-i18n>My Learning</button>
-        <button type="button" data-view="games" data-dest="explore" data-i18n>Explore</button>
-        <span class="hub-tabs__adults">
-          <a class="family-tab" href="./family/" data-i18n>For families</a>
-          <button type="button" data-view="teacher" class="teacher-tab" data-i18n>For teachers</button>
-        </span>
-      </nav>
-      <nav id="hub-subnav" class="hub-subnav" aria-label="More in this area" hidden></nav>
-      <section class="grade-rail" aria-labelledby="choose-grade">
-        <div class="grade-rail-heading">
-          <h2 id="choose-grade" data-i18n>My grade</h2>
-        </div>
-        <div id="grade-tabs" class="grade-tabs" role="tablist" aria-label="Grade level"></div>
-      </section>
-
-      <section id="library-view" class="library" data-hub="today" aria-labelledby="page-title">
-        <nav id="grade-hub-tabs" class="gh-tabs" role="tablist" aria-label="Sections of this grade">
-          <button type="button" role="tab" class="gh-tab" data-hub-tab="today" aria-selected="true"><svg class="fl-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg> <span data-i18n>Today</span></button>
-          <button type="button" role="tab" class="gh-tab" data-hub-tab="skills" aria-selected="false" tabindex="-1"><svg class="fl-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 5.5c3-1 6-.8 9 1.2v13c-3-2-6-2.2-9-1.2zM21 5.5c-3-1-6-.8-9 1.2v13c3-2 6-2.2 9-1.2z"></path></svg> <span data-i18n>Skills</span></button>
-          <button type="button" role="tab" class="gh-tab" data-hub-tab="trail" aria-selected="false" tabindex="-1"><svg class="fl-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19 9 5l5 14 6-14"></path><circle cx="9" cy="5" r="1.5"></circle><circle cx="14" cy="19" r="1.5"></circle><circle cx="20" cy="5" r="1.5"></circle></svg> <span data-i18n>Fact Trail</span></button>
-          <button type="button" role="tab" class="gh-tab" data-hub-tab="map" aria-selected="false" tabindex="-1"><svg class="fl-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="4.5"></circle><path d="m12 12 6-6"></path><path d="m15.5 5.5 2.5.5-.5 2.5"></path></svg> <span data-i18n>Skill map</span></button>
-          <button type="button" role="tab" class="gh-tab" data-hub-tab="rewards" aria-selected="false" tabindex="-1"><svg class="fl-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="5"></circle><path d="m9 12.2-1.3 8L12 18l4.3 2.2-1.3-8"></path></svg> <span data-i18n>Rewards</span></button>
-        </nav>
-        <section id="personal-dashboard" class="personal-dashboard" aria-label="Your Math Journey"></section>
-        <aside id="reality-feature" class="reality-feature" data-hub-panel="today" aria-labelledby="reality-feature-title">
-          <div>
-            <h2 id="reality-feature-title" data-i18n>Math Reality</h2>
-            <p data-i18n>Build a stadium, change it, and discover the math behind what happens.</p>
-          </div>
-          <a class="primary-action" data-reality-link href="reality/" data-i18n>Open Math Reality</a>
-          <a class="outline-action" data-lab-link href="reality/lab/" data-i18n>Open the Reality Lab</a>
-        </aside>
-        <aside id="class-link" class="class-link" data-hub-panel="today" aria-labelledby="class-link-title" hidden></aside>
-        <nav class="practice-subnav" aria-label="Practice view selection" role="tablist">
-          <button type="button" id="subnav-skills" class="subnav-tab active" data-subview="skills" role="tab" aria-selected="true">
-            <span aria-hidden="true">📚</span> <span data-i18n>Skill Library</span>
-          </button>
-          <button type="button" id="subnav-trail" class="subnav-tab" data-subview="trail" role="tab" aria-selected="false">
-            <span aria-hidden="true">🗺️</span> <span data-i18n>Fact Trail</span>
-          </button>
-        </nav>
-
-        <section id="trail-view" class="trail" data-hub-panel="trail" aria-labelledby="trail-title" hidden></section>
-
-        <div id="more-practice" class="more-practice" data-hub-panel="skills">
-          <div class="library-heading">
-            <div>
-              <h2 id="grade-heading">Grade 1</h2>
-              <p id="grade-promise"></p>
-              <div id="grade-scope" class="grade-scope"></div>
-            </div>
-            <div id="grade-summary" class="grade-summary" aria-label="Grade progress"></div>
-          </div>
-
-          <div class="skill-search-toolbar">
-            <div class="skill-search-field">
-              <span class="search-icon" aria-hidden="true">🔍</span>
-              <input id="skill-search-input" type="search" placeholder="Search skills by topic or keyword..." aria-label="Search skills" autocomplete="off" />
-            </div>
-            <label class="skill-jump-top" for="quick-skill-select">
-              <span class="visually-hidden">Jump to any skill</span>
-              <select id="quick-skill-select"><option value="">Choose a skill (Kindergarten–Grade 8)</option></select>
-            </label>
-          </div>
-
-          <div class="library-actions">
-            <div id="strand-filters" class="strand-filters" aria-label="Filter skills by strand"></div>
-            <button id="mixed-review" class="outline-action" type="button">Mix all skills</button>
-          </div>
-
-          <div id="skill-grid" class="skill-grid" aria-live="polite"></div>
-
-          <div class="practice-lower-grid">
-            <aside class="daily-card" aria-labelledby="daily-title">
-              <div>
-                <h3 id="daily-title">Today’s 10</h3>
-                <p>A mix of skills picked for you: one you are building, a few to remember, and one new idea.</p>
-              </div>
-              <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
-              <button id="start-mission" class="outline-action" type="button">Try a 5-step learning mission</button>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section id="path-view" class="hub-panel" aria-label="My learning path" hidden></section>
-      <section id="games-view" class="hub-panel gm-room" aria-label="Game Room" hidden></section>
-      <section id="models-view" class="hub-panel" aria-label="Model Lab" hidden></section>
-      <section id="write-view" class="hub-panel wr-view" aria-label="Math Writing Studio" hidden></section>
-      <section id="practice-view" class="hub-panel" aria-label="Practice" hidden></section>
-      <section id="notebook-view" class="hub-panel" aria-label="Mistake notebook" hidden></section>
-      <section id="teacher-view" class="hub-panel" aria-label="Teacher studio" hidden>
-        <nav class="teacher-jump" aria-label="Jump to a teacher section">
-          <a href="#teacher-tools">Print &amp; projector tools</a>
-          <a href="#teacher-studio">Class studio</a>
-          <a href="#receipt-decoder">Receipt decoder</a>
-        </nav>
-        <div id="teacher-tools" class="teacher-quick-tools" aria-label="Teacher resources">
-          <div><p class="section-label">EDUWONDERLAB · TEACHER RESOURCES</p><h2 data-i18n>Plan, print, and project</h2><p data-i18n>Classroom materials and math talk tools are gathered here, away from the student journey.</p></div>
-          <div class="button-row">
-            <button id="open-print-center" class="outline-action print-center-btn" type="button" data-i18n>Print Center</button>
-            <button id="open-word-wall-btn" class="outline-action word-wall-btn" type="button" title="Interactive Math Word Wall" data-i18n>Word Wall</button>
-            <button id="open-number-talk-btn" class="outline-action number-talk-btn" type="button" title="Classroom Number Talk Projector" data-i18n>Number Talk</button>
-            <a class="outline-action" href="class/teacher.html" data-i18n>Live class dashboard</a>
-          </div>
-        </div>
-        <div id="teacher-4"></div> <!-- fl4:teacher -->
-        <div id="teacher-studio"></div>
-        <div id="moby-teacher-host"></div>
-        <section id="receipt-decoder" class="receipt-decoder" aria-labelledby="receipt-decoder-title">
-          <h3 id="receipt-decoder-title" data-i18n>Mastery receipt decoder & class heatmap</h3>
-          <p data-i18n>Paste zero-PII receipt codes, one per line, to see class skill patterns on this device.</p>
-          <label for="receipt-batch"><span data-i18n>Receipt codes</span><textarea id="receipt-batch" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
-          <div class="receipt-decoder-actions" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem">
-            <button id="decode-receipts" class="outline-action" type="button" data-i18n>Decode receipts</button>
-            <button id="scan-receipt-qr-btn" class="outline-action" type="button">📷 Scan QR with camera</button>
-          </div>
-          <div id="receipt-scanner-container" class="receipt-scanner-container" hidden style="margin-top:0.75rem; border-radius:8px; overflow:hidden; max-width:320px; background:#000; text-align:center">
-            <video id="receipt-scanner-video" playsinline muted style="width:100%; max-height:240px; display:block"></video>
-            <button id="close-receipt-scanner" type="button" class="quiet-button" style="color:#fff; padding:6px 12px">Close Camera</button>
-          </div>
-          <div id="receipt-heatmap" aria-live="polite"></div>
-        </section>
-      </section>
-      <section id="workspace-view" class="workspace" aria-labelledby="workspace-title" hidden>
-        <button id="back-library" class="back-button" type="button">← My grade page</button>
-        <div id="skill-path" class="skill-path"></div>
-
-        <header class="workspace-heading">
-          <div>
-            <p id="workspace-grade" class="plain-label"></p>
-            <h2 id="workspace-title"></h2>
-            <p id="workspace-standard"></p>
-          </div>
-          <div class="mastery-box">
-            <label for="mastery-meter">Recent independent accuracy</label>
-            <progress id="mastery-meter" max="100" value="0"></progress>
-            <span id="mastery-label">New</span>
-          </div>
-        </header>
-
-        <div id="mode-tabs" class="mode-tabs"></div>
-
-        <section id="learn-panel" class="learn-panel" aria-label="Learn this skill"></section>
-        <div id="visual-studio" class="sd-slot" hidden></div>
-        <section id="visual-panel" class="visual-panel" aria-label="Interactive visual lesson" hidden></section>
-        <section id="play-panel" class="play-panel" aria-label="Play with this skill" hidden></section>
-        <section id="grow-panel" class="grow-panel" aria-label="How you are growing" hidden></section>
-
-        <section id="drill-panel" class="drill-panel" aria-label="Fluency practice" hidden>
-          <div class="practice-progress"><!-- fl4:screens persistent progress -->
-          <div class="session-header">
-            <div>
-              <p id="session-type" class="session-type">Practice 10</p>
-              <span id="session-count">0 completed</span>
-              <span id="session-accuracy">0% accurate</span>
-            </div>
-            <div id="streak-wrap" class="streak-wrap" hidden>
-              <span>Streak</span>
-              <div id="streak-meter" class="streak-meter" role="img" aria-label="0 of 10 correct in a row"></div>
-              <strong id="streak-label" aria-live="polite">0 of 10 in a row</strong>
-            </div>
-          </div>
-          <div class="progress-track" aria-hidden="true"><span id="session-progress"></span></div>
-          </div>
-
-          <div class="problem-stage">
-            <p id="session-insight" class="session-insight" aria-live="polite"></p>
-            <div id="problem-language-support"></div>
-
-            <div id="flashcard-stage" class="flashcard-stage" hidden>
-              <!-- Teachers-Pay-Teachers (TpT) Best-Seller Quality Math Flashcard -->
-              <div class="tpt-flashcard" id="tpt-flashcard">
-                <div class="tpt-punch-hole" aria-hidden="true" title="Ring hole punch"></div>
-                <div class="tpt-card-header">
-                  <div class="tpt-header-left">
-                    <span id="tpt-strand-badge" class="tpt-strand-badge">GRADE 1 · ADDITION</span>
-                    <span id="tpt-leitner-badge" class="tpt-leitner-badge" title="Leitner Spaced Repetition Box">🧠 Box 1</span>
-                  </div>
-                  <div class="tpt-header-right">
-                    <button type="button" id="tpt-print-deck" class="tpt-print-btn" title="Print duplex 4-up flashcards for this skill">🖨️ Print 4-Up</button>
-                    <span id="tpt-card-counter" class="tpt-card-counter">Card 1 of 10</span>
-                  </div>
-                </div>
-                <div class="tpt-card-flipper">
-                  <div class="tpt-card-face tpt-card-front">
-                    <span class="tpt-face-prompt">MATH FLASHCARD</span>
-                    <div id="tpt-front-equation" class="tpt-equation"></div>
-                    <form id="tpt-quick-form" class="tpt-quick-form" novalidate>
-                      <input
-                        type="text"
-                        id="tpt-quick-input"
-                        class="tpt-quick-input"
-                        placeholder="Your answer..."
-                        aria-label="Your answer"
-                        autocomplete="off"
-                        autocapitalize="off"
-                        spellcheck="false"
-                      />
-                      <button type="submit" class="tpt-quick-submit">Check</button>
-                    </form>
-                    <div class="tpt-front-actions">
-                      <button type="button" id="voice-flashcard-btn" class="voice-answer-btn" title="Speak your answer aloud">🎤 Speak Answer</button>
-                      <button type="button" id="tpt-flip-button" class="tpt-flip-action">
-                        <span aria-hidden="true">🔄</span> Flip Card <kbd>Space</kbd>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="tpt-card-face tpt-card-back">
-                    <div id="tpt-back-banner" class="tpt-back-banner" hidden></div>
-                    <span class="tpt-face-prompt tpt-prompt-success">ANSWER &amp; STRATEGY</span>
-                    <div id="tpt-back-equation" class="tpt-equation tpt-answer-revealed"></div>
-                    <div id="tpt-back-strategy" class="tpt-strategy-box"></div>
-                    <div class="tpt-self-eval">
-                      <p class="tpt-eval-label">Self-Check: Rate your recall</p>
-                      <div class="tpt-eval-buttons">
-                        <button type="button" id="tpt-repeat-card" class="tpt-rate-btn tpt-btn-repeat">
-                          <span aria-hidden="true">🔁</span> Still Practicing <kbd>1</kbd>
-                        </button>
-                        <button type="button" id="tpt-know-card" class="tpt-rate-btn tpt-btn-know">
-                          <span aria-hidden="true">⭐</span> I Know It! <kbd>2</kbd>
-                        </button>
-                      </div>
-                      <div class="tpt-back-actions">
-                        <button type="button" id="tpt-next-card" class="tpt-next-action">
-                          Next Card → <kbd>Space</kbd>
-                        </button>
-                        <button type="button" id="tpt-flip-back" class="tpt-flip-back-link">
-                          ↩ Turn card back over
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="problem-meta">
-              <span id="problem-number">Problem 1 of 10</span>
-              <div class="problem-meta-actions">
-                <button id="toggle-interactive-solver" class="icon-button" type="button" aria-expanded="false" aria-controls="interactive-solver-workspace" title="Step-by-step interactive workspace where you can insert numbers and use regrouping" hidden>
-                  🧮 Interactive Solver
-                </button>
-                <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
-                  🔊 Read aloud
-                </button>
-                <button id="hear-problem-es" class="icon-button" type="button" aria-label="Escuchar problema en español" title="Escuchar en español">
-                  🔊 En español
-                </button>
-              </div>
-            </div>
-            <div id="practice-visual-workspace" class="practice-visual-workspace">
-            <div class="problem-arena" id="problem-arena">
-              <div class="problem-question-zone">
-                <div class="question-feedback-row">
-                  <p id="question" class="question"></p>
-                  <span id="answer-result-status" class="answer-result-status" hidden></span>
-                </div>
-                <p id="problem-topic" class="problem-topic"></p>
-              </div>
-              <div class="problem-answer-zone">
-                <form id="answer-form" novalidate>
-                  <div class="confidence-meter-row" id="confidence-meter-row" role="group" aria-labelledby="confidence-label">
-                    <span class="conf-lead" id="confidence-label">My feeling:</span>
-                    <button type="button" class="conf-chip active" data-conf="certain" aria-pressed="true" title="I know this cold!">🦁 Certain</button>
-                    <button type="button" class="conf-chip" data-conf="thinking" aria-pressed="false" title="Working through the strategy">🦊 Thinking</button>
-                    <button type="button" class="conf-chip" data-conf="curious" aria-pressed="false" title="Exploring / Wondering">🦉 Curious</button>
-                  </div>
-                  <div id="response-widget" class="response-widget" hidden></div>
-                  <label class="answer-label" for="answer-input">Your answer</label>
-                  <div class="answer-input-row">
-                    <input
-                      id="answer-input"
-                      class="answer-input"
-                      aria-describedby="question"
-                      type="text"
-                      autocomplete="off"
-                      autocapitalize="off"
-                      spellcheck="false"
-                      required
-                    />
-                    <button id="voice-answer-btn" class="voice-answer-btn" type="button" title="Speak your answer aloud" aria-label="Speak your answer aloud">🎤</button>
-                    <span id="answer-unit" class="answer-unit" hidden></span>
-                    <button id="check-answer" class="primary-action" type="submit">Check</button>
-                    <button id="fix-answer-btn" class="primary-action fix-answer-btn" type="button" hidden>🔧 Fix My Answer</button>
-                    <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
-                  </div>
-                  <div id="choice-answers" class="choice-answers" hidden></div>
-                  <button id="toggle-math-keypad" class="math-keypad-toggle outline-action" type="button" aria-expanded="false" aria-controls="math-keypad" data-i18n>Show math keypad</button>
-                  <div id="math-keypad" class="math-keypad" role="group" aria-label="On-screen math keypad" hidden></div>
-                </form>
-              </div>
-            </div>
-            <!-- fl4:screens feedback sits directly under the answer card -->
-            <div id="feedback" class="feedback" hidden>
-              <span id="feedback-icon" class="fb-icon" aria-hidden="true"></span>
-              <div class="fb-body">
-                <div class="fb-live" role="status" aria-live="polite">
-                  <strong id="feedback-title"></strong>
-                  <p id="feedback-badge" class="fb-badge" hidden></p>
-                  <dl id="feedback-answers" class="fb-answers" hidden></dl>
-                </div>
-                <div id="feedback-actions" class="fb-actions" hidden></div>
-                <p id="feedback-copy" aria-live="polite"></p>
-              </div>
-            </div>
-            <div id="studio-slot" class="sd-slot"></div>
-            <div id="language-slot" class="language-slot"></div>
-            <div class="problem-actions-bar">
-              <button id="show-hint" class="outline-action" type="button">💡 Show a step</button>
-              <button id="dock-visual-studio" class="outline-action" type="button" aria-pressed="false" data-i18n>Dock Visual Studio</button>
-              <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="false" hidden>📐 Show the model</button>
-              <button id="skip-checkup" class="outline-action" type="button" data-i18n hidden>I’m not sure yet</button>
-            </div>
-
-            <div id="interactive-solver-workspace" class="interactive-solver-workspace" hidden></div>
-            <div id="cra-visual-bridge" class="cra-visual-bridge" hidden></div>
-            <div id="problem-visual-scaffold" class="problem-visual-scaffold"></div>
-            </div>
-            <section id="guided-coach" class="guided-coach" aria-labelledby="guided-coach-title" hidden>
-              <div class="guided-coach-heading">
-                <div>
-                  <p class="section-label">Work it with me</p>
-                  <h3 id="guided-coach-title">One step at a time</h3>
-                </div>
-                <span id="guided-step-count">1 of 3 steps open</span>
-              </div>
-              <ol id="guided-steps" class="guided-steps"></ol>
-              <button id="guided-next-step" class="outline-action" type="button">
-                Show the next step
-              </button>
-            </section>
-
-
-            <div id="repair-actions" class="repair-actions" hidden>
-              <button id="open-visual-help" class="outline-action" type="button">See it &amp; build it</button>
-              <span>Your practice will be saved while you explore.</span>
-            </div>
-            <details id="drill-toolbox" class="drill-toolbox-drawer">
-              <summary><span>🧮</span> <span data-i18n>Math tools for this problem</span></summary>
-              <div class="drill-toolbox-body">
-                <div class="drill-tool-picker" role="tablist" aria-label="Relevant tools for this problem">
-                  <button type="button" class="tool-btn" data-tool="vertical">🧮 Column Method</button>
-                  <button type="button" class="tool-btn active" data-tool="numberline">Number Line</button>
-                  <button type="button" class="tool-btn" data-tool="longdivision">➗ Long Division (Standard Algorithm)</button>
-                  <button type="button" class="tool-btn" data-tool="pizza">🍕 Pizza Slicer</button>
-                  <button type="button" class="tool-btn" data-tool="splitter">✂️ Splitter</button>
-                  <button type="button" class="tool-btn" data-tool="tape">📏 Tape Diagram</button>
-                  <button type="button" class="tool-btn" data-tool="tenframe">Ten-Frame</button>
-                  <button type="button" class="tool-btn" data-tool="multigrid">10×10 Grid</button>
-                  <button type="button" class="tool-btn" data-tool="fractions">Fraction Wall</button>
-                  <button type="button" class="tool-btn" data-tool="balance">⚖️ Balance Scale</button>
-                  <button type="button" class="tool-btn" data-tool="integers">🔵🔴 Integer Chips</button>
-                  <button type="button" class="tool-btn" data-tool="doublenumberline">📏 Double Line</button>
-                  <button type="button" class="tool-btn" data-tool="slicer">✂️ Dynamic Fraction Slicer</button>
-                  <button type="button" class="tool-btn" data-tool="areaScrubber">📦 Scrubbable Area Model</button>
-                  <button type="button" class="tool-btn" data-tool="pvMat">🧮 Place-Value Disks</button>
-                  <button type="button" class="tool-btn" data-tool="ratioScale">📊 Proportional Tape</button>
-                  <button type="button" class="tool-btn" data-tool="coord">📍 Coordinate Plane</button>
-                  <button type="button" class="tool-btn" data-tool="triShear">📐 Triangle Shear</button>
-                  <button type="button" class="tool-btn" data-tool="angle">📐 Angle Protractor</button>
-                  <button type="button" class="tool-btn" data-tool="primeLab">🌳 Prime Tree &amp; GCF/LCM</button>
-                  <button type="button" class="tool-btn" data-tool="probSpinner">🎲 Probability Spinner</button>
-                  <button type="button" class="tool-btn" data-tool="net3d">📦 3D Net Folder</button>
-                  <button type="button" class="tool-btn" data-tool="funcMach">⚙️ Function Machine</button>
-                  <button type="button" class="tool-btn" data-tool="rateComp">🏷️ Unit Rate Comparator</button>
-                  <button type="button" class="tool-btn" data-tool="circlePi">⚪ Circle &amp; π Lab</button>
-                  <button type="button" class="tool-btn" data-tool="pythagoras">📐 Pythagorean Theorem</button>
-                  <button type="button" class="tool-btn" data-tool="boxPlot">📊 Box-and-Whisker Plot</button>
-                  <button type="button" class="tool-btn" data-tool="intVector">🔵🔴 Directed Integer Line</button>
-                  <button type="button" class="tool-btn" data-tool="algebraTiles">🧱 Algebra Tiles Mat</button>
-                  <button type="button" class="tool-btn" data-tool="dilation">🔍 Dilations &amp; Scale Factors</button>
-                  <button type="button" class="tool-btn" data-tool="proofWords">✨ Proofs Without Words</button>
-                  <button type="button" class="tool-btn" data-tool="trigWave">🌊 Unit Circle &amp; Sine Wave</button>
-                  <button type="button" class="tool-btn" data-tool="kcfLab">🔄 Keep Change Flip Studio</button>
-                </div>
-                <div id="drill-tool-viewport" class="drill-tool-viewport"></div>
-              </div>
-            </details>
-            <details class="scratchpad-wrap">
-              <summary data-i18n>Open a scratchpad</summary>
-              <div id="scratchpad-canvas" aria-label="Draw your mathematical thinking"></div>
-              <div id="scratchpad-backgrounds" class="scratchpad-backgrounds" role="group" aria-label="Scratchpad backgrounds">
-                <button type="button" class="scratchpad-bg-btn" data-scratchpad-bg="blank" aria-pressed="false" data-i18n>Blank</button>
-                <button type="button" class="scratchpad-bg-btn active" data-scratchpad-bg="lined" aria-pressed="true" data-i18n>Lined</button>
-                <button type="button" class="scratchpad-bg-btn" data-scratchpad-bg="numberline" aria-pressed="false" data-i18n>Number line</button>
-                <button type="button" class="scratchpad-bg-btn" data-scratchpad-bg="coordinate" aria-pressed="false" data-i18n>Coordinate plane</button>
-              </div>
-              <label for="scratchpad" data-i18n>Work area — this stays on this page only</label>
-              <textarea id="scratchpad" class="scratchpad-background-lined" data-background="lined" rows="7" placeholder="Write a step, draw with keyboard symbols, or keep track of partial work."></textarea>
-            </details>
-          </div>
-
-          <section id="session-summary" class="session-summary" aria-live="polite" hidden>
-            <p class="plain-label">Set complete</p>
-            <h3 id="summary-title">Practice complete</h3>
-            <p id="summary-copy"></p>
-            <div id="summary-stats" class="summary-stats"></div>
-            <section id="mastery-receipt" class="mastery-receipt" aria-live="polite" hidden></section>
-            <div id="summary-next" class="summary-next"></div>
-            <div class="summary-actions">
-              <button id="retry-missed" class="primary-action" type="button">Practice missed skills</button>
-              <button id="independent-practice" class="primary-action" type="button" hidden>
-                Continue to Practice 10
-              </button>
-              <button id="reset-session" class="outline-action" type="button">Start another set</button>
-              <button id="print-set" class="outline-action" type="button">Print a 24-problem set</button>
-            </div>
-          </section>
-        </section>
-
-        <div id="stage-footer" class="stage-footer"></div>
-
-        <div class="workspace-footer-actions">
-          <button id="print-set-secondary" class="outline-action" type="button">
-            Print practice
-          </button>
-        </div>
-      </section>
-      <section class="data-tools" aria-label="Your saved work">
-        <div><strong>Take your progress with you</strong><p>Separate local learners keep home and classroom practice organized. Backups move a learner’s progress between devices.</p></div>
-        <div class="button-row"><button id="download-progress" class="outline-action" type="button">Download backup</button><label class="outline-action file-button">Restore backup<input id="restore-progress" type="file" accept="application/json,.json"/></label><button id="download-report" class="outline-action" type="button">Download progress report</button><button id="download-facts" class="outline-action" type="button">Download my facts report</button><button id="print-family" class="outline-action" type="button">Print family summary</button><button id="download-family" class="outline-action" type="button">Save family summary</button><button id="print-certificate" class="outline-action" type="button" data-i18n>Print my certificate</button><button id="reset-data-tools-btn" class="outline-action reset-danger-outline" type="button" data-i18n>Start over (reset progress)</button></div>
-        <div id="restore-preview" role="status" hidden></div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <p><strong>Your progress stays on this device.</strong> No account, name, or student information is required.</p>
-      <p>Learning comes before speed. Short checkups suggest a starting point; they do not assign a grade level.</p>
-    </footer>
-
-    <!-- Reset Progress Confirmation Dialog -->
-    <div id="reset-confirm-modal" class="reset-modal-backdrop" role="alertdialog" aria-modal="true" aria-labelledby="reset-modal-title" aria-describedby="reset-modal-desc" hidden>
-      <div class="reset-modal-card">
-        <header class="reset-modal-header">
-          <div class="reset-modal-title-group">
-            <span class="reset-modal-icon" aria-hidden="true">⚠️</span>
-            <h2 id="reset-modal-title" class="reset-modal-title" data-i18n>Start over and reset progress?</h2>
-          </div>
-          <button type="button" class="close-popover-btn" id="reset-cancel-close" aria-label="Close dialog">✕</button>
-        </header>
-        <p id="reset-modal-desc" class="reset-modal-desc" data-i18n>This will erase your stars, fact trail progress, streak, and saved records on this device. You will start fresh. This cannot be undone.</p>
-        <div class="reset-modal-actions">
-          <button id="reset-confirm-action" class="primary-action reset-confirm-btn" type="button" data-i18n>Yes, start over</button>
-          <button id="reset-cancel-action" class="outline-action" type="button" data-i18n>Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bilingual Interactive Vocabulary & Concept Modal -->
-    <div id="fluency-vocab-modal" class="vocab-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="vocab-modal-title" hidden>
-      <div class="vocab-modal-card">
-        <div class="vocab-modal-header">
-          <div class="vocab-modal-title-group">
-            <span class="vocab-modal-icon" aria-hidden="true">📖</span>
-            <div>
-              <h2 id="vocab-modal-title" class="vocab-modal-title">Math Vocabulary</h2>
-              <p id="vocab-modal-es-title" class="vocab-modal-es-title">Vocabulario Matemático</p>
-            </div>
-          </div>
-          <button type="button" class="vocab-modal-close" id="vocab-modal-close" aria-label="Close vocabulary popup">✕</button>
-        </div>
-
-        <div id="vocab-modal-svg" class="vocab-modal-svg"></div>
-
-        <div class="vocab-modal-definitions">
-          <div class="vocab-def-box vocab-en-box">
-            <div class="vocab-def-header">
-              <span class="vocab-badge en-badge">🇺🇸 Simple Definition</span>
-              <button type="button" class="vocab-tts-button" id="vocab-tts-en" aria-label="Listen in English">🗣️ Listen</button>
-            </div>
-            <p id="vocab-modal-en-def" class="vocab-def-copy"></p>
-          </div>
-
-          <div class="vocab-def-box vocab-es-box">
-            <div class="vocab-def-header">
-              <span class="vocab-badge es-badge">🇲🇽 Definición Sencilla</span>
-              <button type="button" class="vocab-tts-button" id="vocab-tts-es" aria-label="Escuchar en español">🗣️ Escuchar</button>
-            </div>
-            <p id="vocab-modal-es-def" class="vocab-def-copy"></p>
-          </div>
-        </div>
-
-        <div class="vocab-example-container">
-          <div class="vocab-example-tag">💡 Example · Ejemplo</div>
-          <p id="vocab-modal-example" class="vocab-example-copy"></p>
-        </div>
-
-        <div class="vocab-modal-actions">
-          <button type="button" class="vocab-gotit-btn" id="vocab-confirm-btn">Got it! · ¡Entendido!</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Teacher Print Center Modal (TpT Gold Standard Printables) -->
-    <div id="tpt-print-modal" class="tpt-print-modal" hidden role="dialog" aria-modal="true" aria-labelledby="tpt-modal-title">
-      <div class="tpt-modal-overlay" data-close-print-center></div>
-      <div class="tpt-modal-card">
-        <header class="tpt-modal-header">
-          <div>
-            <span class="tpt-modal-badge">TEACHERS PRINT CENTER · GOLD STANDARD TOOLKIT</span>
-            <h2 id="tpt-modal-title" class="tpt-modal-title">🖨️ Math Fluency Printables</h2>
-            <p class="tpt-modal-subtitle">Zero-prep printable companions, IEP scaffolds, and center rotation tools</p>
-          </div>
-          <button type="button" class="tpt-modal-close-btn" data-close-print-center aria-label="Close Print Center">✕</button>
-        </header>
-
-        <div class="tpt-filter-row" role="group" aria-label="Show printables for">
-          <button type="button" class="tpt-filter-chip active" data-tpt-filter="all" aria-pressed="true">All</button>
-          <button type="button" class="tpt-filter-chip" data-tpt-filter="student" aria-pressed="false">Student printables</button>
-          <button type="button" class="tpt-filter-chip" data-tpt-filter="teacher" aria-pressed="false">Teacher guides &amp; posters</button>
-          <button type="button" class="tpt-filter-chip" data-tpt-filter="family" aria-pressed="false">Family handouts</button>
-        </div>
-        <nav class="tpt-modal-tabs" role="tablist" aria-label="Printable resource categories">
-          <button type="button" class="tpt-tab-btn active" data-tpt-tab="mats" data-tpt-audience="student" role="tab" aria-selected="true">📝 Recording Mats <span class="tpt-audience-badge">Student print</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="partner" data-tpt-audience="student" role="tab" aria-selected="false">🎲 Partner Games <span class="tpt-audience-badge">Student print</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="exits" data-tpt-audience="student" role="tab" aria-selected="false">🎫 3-Tier Exit Tickets <span class="tpt-audience-badge">Student print</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="anchors" data-tpt-audience="teacher" role="tab" aria-selected="false">📌 Desk Helpers &amp; Posters <span class="tpt-audience-badge">Classroom</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="passports" data-tpt-audience="student" role="tab" aria-selected="false">🎖️ Passports &amp; Badges <span class="tpt-audience-badge">Student print</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="stations" data-tpt-audience="teacher" role="tab" aria-selected="false">🎪 Stations &amp; Coaching <span class="tpt-audience-badge">Teacher guide</span></button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="parents" data-tpt-audience="family" role="tab" aria-selected="false">🏠 "Fridge Math" Guide <span class="tpt-audience-badge">Family</span></button>
-        </nav>
-
-        <div id="tpt-modal-viewport" class="tpt-modal-viewport">
-          <!-- Rendered dynamically by TeacherPrintCenter.renderTab() -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Interactive Visual Math Word Wall Modal (ESOL / Dual-Language) -->
-    <div id="word-wall-modal" class="word-wall-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ww-modal-title">
-      <div class="word-wall-overlay" data-close-word-wall></div>
-      <div class="word-wall-card">
-        <header class="word-wall-header">
-          <div>
-            <span class="word-wall-badge">📖 BILINGUAL MATH VOCABULARY &amp; VISUALS</span>
-            <h2 id="ww-modal-title" class="word-wall-title">Math Word Wall</h2>
-            <p class="word-wall-subtitle">Interactive conceptual definitions, visual SVG models, Spanish cognates, and audio read-aloud</p>
-          </div>
-          <button type="button" class="word-wall-close-btn" data-close-word-wall aria-label="Close Math Word Wall">✕</button>
-        </header>
-
-        <div class="word-wall-controls">
-          <div class="word-wall-search-box">
-            <span class="search-icon">🔍</span>
-            <input type="search" id="ww-search-input" class="ww-search-input" placeholder="Search math terms (e.g., numerator, factor, variable, razón)..." aria-label="Search math vocabulary" />
-          </div>
-          <div class="word-wall-categories" role="tablist" aria-label="Vocabulary categories">
-            <button type="button" class="ww-cat-btn active" data-ww-cat="all">All Words</button>
-            <button type="button" class="ww-cat-btn" data-ww-cat="fractions">Fractions</button>
-            <button type="button" class="ww-cat-btn" data-ww-cat="operations">Operations</button>
-            <button type="button" class="ww-cat-btn" data-ww-cat="algebra">Algebra &amp; Equations</button>
-            <button type="button" class="ww-cat-btn" data-ww-cat="ratios">Ratios &amp; Rates</button>
-          </div>
-        </div>
-
-        <div id="ww-modal-viewport" class="word-wall-viewport">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Interactive Classroom Number Talk Projector Modal -->
-    <div id="number-talk-modal" class="number-talk-modal" hidden role="dialog" aria-modal="true" aria-labelledby="nt-modal-title">
-      <div class="number-talk-overlay" data-close-number-talk></div>
-      <div class="number-talk-card">
-        <header class="number-talk-header">
-          <div>
-            <span class="number-talk-badge">📽️ CLASSROOM ROUTINE · NUMBER TALK PROJECTOR</span>
-            <h2 id="nt-modal-title" class="number-talk-title">Daily Mental Math Number Talk</h2>
-          </div>
-          <div class="number-talk-header-actions">
-            <button type="button" class="outline-action" id="nt-toggle-lang" aria-label="Toggle English / Español">🌐 Español</button>
-            <button type="button" class="outline-action" id="nt-print-routine" aria-label="Print Routine Card">🖨️ Print Card</button>
-            <button type="button" class="number-talk-close-btn" data-close-number-talk aria-label="Close Number Talk">✕</button>
-          </div>
-        </header>
-
-        <div id="number-talk-viewport" class="number-talk-viewport">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Command Palette (Cmd+K / Ctrl+K / /) -->
-    <dialog id="cra-command-palette" class="cra-command-palette-dialog" aria-label="Command palette and quick search">
-      <div class="cra-palette-card">
-        <div class="cra-palette-search-row">
-          <span aria-hidden="true">🔍</span>
-          <input type="search" id="cra-palette-input" placeholder="Search grades (K–8), strands, skills, or tools (e.g. 7×8, ten-frame, ratios)..." aria-label="Command search" autocomplete="off" />
-          <button type="button" id="close-palette-btn" class="quiet-button close-palette-btn" aria-label="Close command palette">✕</button>
-        </div>
-        <div id="cra-palette-results" class="cra-palette-results" role="listbox" aria-label="Search results"></div>
-      </div>
+    <main id="app" tabindex="-1"><noscript>The Math Fluency Lab needs JavaScript.</noscript></main>
+    <p id="live" class="sr-only" role="status" aria-live="polite"></p>
+    <dialog id="more" aria-labelledby="more-title" class="drawer">
+      <form method="dialog" class="drawer-close">
+        <button class="btn btn-quiet btn-sm" aria-label="Close">✕</button>
+      </form>
+      <div data-more-body></div>
     </dialog>
-
-    <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js?v=20261026-v3" defer></script>
     <!-- nsr-injected:end -->
-  <script src="/family-app/home-link.js" defer></script>
+    <script src="/family-app/home-link.js" defer></script>
 <!-- offline-sw-injected:begin (offline service worker — tools/inject-offline-sw.mjs) -->
 <script>
   if ("serviceWorker" in navigator) {
@@ -795,5 +101,5 @@
   }
 </script>
 <!-- offline-sw-injected:end -->
-</body>
+  </body>
 </html>

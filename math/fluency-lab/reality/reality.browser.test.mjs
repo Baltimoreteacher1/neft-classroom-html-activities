@@ -152,7 +152,7 @@ try {
     assert.equal(await page.locator(".rl-crumbs li.is-done").count(), 4, "four steps show as done after resume");
     // The Lab's Home card reflects the unfinished world on the same device.
     const lab = await device.newPage();
-    await lab.goto(`${base}../?grade=7`, { waitUntil: "networkidle" });
+    await lab.goto(`${base}../lab.html?grade=7`, { waitUntil: "networkidle" });
     assert.equal(await lab.locator("#reality-feature [data-reality-link]").innerText(), "Continue your world");
     await lab.close();
     await press(page, "The length is multiplied by 2");

@@ -127,7 +127,14 @@ export function frames(s) {
     const alt = A(`${comma(s.n)} ÷ ${s.d} in chunks.`, `${comma(s.n)} ÷ ${s.d} en partes.`);
     const body = (upto) => {
       let out = tag(280, 40, `${comma(s.n)} ÷ ${s.d}`, 32);
-      s.chunks.slice(0, upto).forEach((c, i) => (out += tag(280, 86 + i * 44, `${s.d} × ${comma(c.piece)} = ${comma(c.take)}  →  ${comma(c.after)} left`, 20, COLORS.whole)));
+      // Before any chunk is taken, the work area lists the friendly chunks of the divisor that fit, so the first
+      // picture shows what to choose from instead of an empty box.
+      if (upto === 0)
+        [1, 10, 100, 1000]
+          // A row is left out when its multiplier or product happens to equal the quotient (2,560 ÷ 16: 16 × 10 = 160).
+          .filter((k) => s.d * k <= s.n && k !== s.result && s.d * k !== s.result)
+          .forEach((k, i) => (out += tag(280, 86 + i * 44, `${s.d} × ${comma(k)} = ${comma(s.d * k)}`, 22, COLORS.mute)));
+      s.chunks.slice(0, upto).forEach((c, i) => (out += tag(280, 86 + i * 44, `${s.d} × ${comma(c.piece)} = ${comma(c.take)}   ${comma(c.before)} − ${comma(c.take)} = ${comma(c.after)}`, 22, COLORS.whole)));
       if (upto === s.chunks.length) out += tag(280, 96 + upto * 44, `${s.chunks.map((c) => comma(c.piece)).join(" + ")} = ${comma(s.result)}`, 24, COLORS.part);
       return out;
     };

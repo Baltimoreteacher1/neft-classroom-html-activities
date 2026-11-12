@@ -37,7 +37,7 @@ try {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, `no sideways scroll: ${label}`);
 
     // ---- #3 accommodation profile: teacher builds it, learner gets it only during the assignment ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=4`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=4`, { waitUntil: "networkidle" });
     const form = page.locator("#teacher-4 [data-t4-form]");
     await form.waitFor();
     await form.locator("[name=grade]").selectOption("4");
@@ -79,7 +79,7 @@ try {
     await page.setViewportSize({ width: 1280, height: 900 });
 
     // ---- #18 worked-example policy per assignment, audio-first toggle, "viewed example" flag ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=3`, { waitUntil: "networkidle" });
     const supportForm = page.locator("#teacher-4 [data-t4-form]");
     await supportForm.waitFor();
     await supportForm.locator("[name=grade]").selectOption("3");
@@ -117,7 +117,7 @@ try {
     await shot("18-worked-example-policy");
 
     // ---- #29 teacher video for a skill: teacher adds, learner sees it in the Learn panel ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=3`, { waitUntil: "networkidle" });
     await page.locator("#t4-tab-tools").click();
     const videoForm = page.locator("[data-tt-video]");
     await videoForm.locator("[name=en]").fill("http://not-secure.example.com/v");
@@ -130,7 +130,7 @@ try {
     const videoLink = await page.locator("#tt-video-link").inputValue();
     assert.match(videoLink, /#videos=v1\./);
     await shot("29-video-tool");
-    await page.goto(`${base}/math/fluency-lab/?grade=3&skill=mul-0-5${new URL(videoLink).hash}`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?grade=3&skill=mul-0-5${new URL(videoLink).hash}`, { waitUntil: "networkidle" });
     await page.locator(".learn-support > summary").click();
     const slot = page.locator("[data-skill-video]");
     await slot.waitFor();
@@ -143,11 +143,11 @@ try {
     assert.equal(await page.locator("[data-skill-video] a").first().getAttribute("lang"), "es", "Spanish link first in Spanish");
     await page.evaluate(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("en")));
     await shot("29-video-learn");
-    await page.goto(`${base}/math/fluency-lab/?grade=3&skill=mul-6-9`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?grade=3&skill=mul-6-9`, { waitUntil: "networkidle" });
     assert.equal(await page.locator("[data-skill-video]").count(), 0, "a skill with no video shows no slot");
 
     // ---- #17 family letter, home-access cards, class fact poster ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=4`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=4`, { waitUntil: "networkidle" });
     await page.locator("#t4-tab-tools").click();
     const printForm = page.locator("[data-tt-print]");
     await printForm.locator("[name=teacher]").fill("Ms. Rivera");
@@ -195,13 +195,13 @@ try {
     await page.evaluate(() => {
       for (const key of Object.keys(localStorage)) if (/unitchecks|session-v2|tutor-v2/.test(key)) localStorage.removeItem(key);
     });
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });
     const unitPanel = page.locator(".unit-check");
     await unitPanel.waitFor();
     assert.equal(await unitPanel.locator("[data-start-unit]").count(), 8);
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=5`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=5`, { waitUntil: "networkidle" });
     assert.equal(await page.locator(".unit-check").count(), 0, "Grade 6 only");
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });
     await page.locator("[data-start-unit=g6-u3]").click();
     await page.locator("#problem-number").waitFor();
     assert.match(await page.locator("#problem-number").innerText(), /of 4/, "two problems for each of two skills");
@@ -236,14 +236,14 @@ try {
     assert.equal(await page.locator("#summary-stats [data-unit-skill='6:unit-rates'][data-confirmed=true]").count(), 0, "a skill with a miss is not confirmed");
     assert.equal(await page.locator("#reset-session").first().isHidden().catch(() => true), true, "no instant retake");
     await shot("12-unit-check-summary");
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });
     assert.equal(await page.locator("[data-start-unit=g6-u3]").getAttribute("aria-disabled"), "true", "one check per unit per day");
     await page.locator("[data-start-unit=g6-u3]").click({ force: true });
     assert.equal(await page.locator("#session-summary").isHidden(), true);
     assert.match(await page.locator("[data-start-unit=g6-u3]").innerText(), /1 of 2 skills confirmed|Checked today/);
 
     // ---- #15 unit warm-ups ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=6`, { waitUntil: "networkidle" });
     await page.locator("#t4-tab-tools").click();
     const warmForm = page.locator("[data-tt-warm]");
     await warmForm.locator("[name=unit]").selectOption("g6-u6");
@@ -258,7 +258,7 @@ try {
     assert.match(await page.locator("#print-sheet .fl-warmup").nth(1).innerText(), /Comparar en pareja/);
 
     // ---- #13 shareable board: set it up, share the link, the state is in the URL ----
-    await page.goto(`${base}/math/fluency-lab/?view=models&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=models&grade=6`, { waitUntil: "networkidle" });
     await page.locator(".e8ml-workspace [data-e8-control]").first().waitFor();
     const controls = page.locator(".e8ml-workspace [data-e8-control]:not([disabled])");
     for (let i = 0; i < 2; i += 1) await controls.nth(1).click();
@@ -271,7 +271,7 @@ try {
     await page.goto(`${base}/math/fluency-lab/${new URL(boardLink).search}${new URL(boardLink).hash}`, { waitUntil: "networkidle" });
     await page.locator(".e8ml-workspace [data-e8-control]").first().waitFor();
     assert.equal(await page.locator(".e8ml-workspace").innerText(), boardText, "the shared board looks the same");
-    await page.goto(`${base}/math/fluency-lab/?view=models&grade=6#board=b1.not-a-board`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=models&grade=6#board=b1.not-a-board`, { waitUntil: "networkidle" });
     await page.locator(".e8ml-workspace [data-e8-control]").first().waitFor();
     await page.setViewportSize({ width: 375, height: 800 });
     await noOverflow("model lab share at 375px");
@@ -279,7 +279,7 @@ try {
 
     // ---- #19 student-written problems: a student writes, the teacher pastes and approves, Team Relay plays them ----
     await page.evaluate(() => localStorage.removeItem("ewl-fluency-relay-deck-v1"));
-    await page.goto(`${base}/math/fluency-lab/?view=games&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=games&grade=3`, { waitUntil: "networkidle" });
     await page.locator('[data-game="teamrelay"]').click();
     await page.locator(".sp-write summary").click();
     await page.locator("[data-sp-write] [name=question]").fill("Mia has 6 bags with 7 marbles in each bag. How many marbles in all?");
@@ -299,7 +299,7 @@ try {
     await page.locator("input[name=teams][value='2']").check();
     await page.locator("[data-team-form] button[type=submit]").click();
     assert.doesNotMatch(await page.locator(".gm-q").innerText(), /Mia has 6 bags/, "an unapproved problem never appears");
-    await page.goto(`${base}/math/fluency-lab/?view=games&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=games&grade=3`, { waitUntil: "networkidle" });
     await page.locator('[data-game="teamrelay"]').click();
     await page.locator(".sp-deck summary").click();
     await page.locator("[data-sp-approve]").first().check();
@@ -310,7 +310,7 @@ try {
     await page.locator("form.gm-ask-form [type=submit]").first().click();
     await page.locator(".gm-note.fb-copy", { hasText: "Great teamwork!" }).waitFor();
     await page.setViewportSize({ width: 375, height: 800 });
-    await page.goto(`${base}/math/fluency-lab/?view=games&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=games&grade=3`, { waitUntil: "networkidle" });
     await page.locator('[data-game="teamrelay"]').click();
     await page.locator(".sp-deck summary").click();
     await noOverflow("team relay student problems at 375px");
@@ -319,7 +319,7 @@ try {
 
     // ---- #20 Lighthouse Campaign: chapter 1 is current, a confirmed unit finishes its chapter ----
     await page.evaluate(() => localStorage.removeItem("ewl-fluency-unitchecks-v1"));
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });
     const campaign = page.locator(".campaign");
     await campaign.waitFor();
     assert.equal(await campaign.locator("[data-status=current]").count(), 1);
@@ -333,9 +333,9 @@ try {
     assert.match(await page.locator(".campaign [data-status=current]").innerText(), /Mixing the Paint/);
     await page.locator(".campaign [data-status=current] a", { hasText: "Learn" }).first().click();
     await page.waitForURL(/grade=6&skill=/);
-    assert.ok((await page.locator("#learn-panel, .learn-simple").count()) >= 1, "Learn opens the skill's teaching");
+    assert.ok((await page.locator("#learn-panel, .learn-simple, .skill").count()) >= 1, "Learn opens the skill's teaching (the student app's skill screen)");
     await page.evaluate(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
-    await page.goto(`${base}/math/fluency-lab/?view=practice&grade=6`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });
     assert.match(await page.locator(".campaign h3").innerText(), /La campaña del faro/);
     await page.setViewportSize({ width: 375, height: 800 });
     await noOverflow("campaign at 375px");
@@ -347,7 +347,7 @@ try {
     });
 
     // ---- #14 fact plan link from Class tools, #7 introduce-then-practice, #6 one-tap note ----
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=3`, { waitUntil: "networkidle" });
     await page.locator("#t4-tab-tools").click();
     const planForm = page.locator("[data-tt-plan]");
     await planForm.locator("input[value=add]").check();
@@ -356,7 +356,7 @@ try {
     assert.match(planLink, /#factplan=fp1\.amd\.5$/);
     assert.equal(await page.locator("#t4-panel-tools svg[role=img]").count(), 1, "the plan link fits a QR code");
     await shot("14-fact-plan");
-    await page.goto(`${base}/math/fluency-lab/?grade=3${new URL(planLink).hash}`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?grade=3${new URL(planLink).hash}`, { waitUntil: "networkidle" });
     await page.locator(".fl-fact-plan-note").waitFor();
     await page.locator("[data-moby-start='5']").click();
     const card = page.locator("#mby-fluency-host .fl-fact-card");
@@ -391,7 +391,7 @@ try {
     await shot("7-fact-session");
 
     // ---- #8 Green Light: the shop waits for it ----
-    await page.goto(`${base}/math/fluency-lab/?view=games&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=games&grade=3`, { waitUntil: "networkidle" });
     await page.locator(".fl-green-light").waitFor();
     assert.match(await page.locator(".fl-green-light").innerText(), /Green Light: \d+ of 10/);
     assert.ok(await page.locator("[data-buy]").first().isDisabled());
@@ -403,13 +403,13 @@ try {
       const mistakes = [0, 1, 2].map((i) => ({ id: `m${i}`, key: "3:mul-0-5", question: `${i + 2} × 4 = ?`, submitted: String(i + 7), studentInput: String(i + 7), problemPrompt: `${i + 2} × 4 = ?`, category: null, at: now - i * 1000, resolvedAt: null }));
       localStorage.setItem("ewl-fluency-tutor-v2", JSON.stringify({ version: 2, records: { "3:mul-0-5": { recent } }, mistakes, diagnostics: {}, sessions: [] }));
     });
-    await page.goto(`${base}/math/fluency-lab/?view=notebook&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=notebook&grade=3`, { waitUntil: "networkidle" });
     await page.locator("#fl-qlog-title").waitFor();
     assert.equal(await page.locator("#notebook-view .fl-tt-table tbody tr").count(), 3);
     await page.locator("[data-print-misses]").click();
     assert.ok((await page.evaluate(() => window.__printed)) >= 1, "the fresh worksheet prints");
     assert.match(await page.locator("#print-sheet").innerText(), /My misses, fresh practice/);
-    await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=3`, { waitUntil: "networkidle" });
     await page.locator("#t4-tab-insights").click();
     await page.locator("[data-t4-device]").click();
     await page.locator("#t4-h-spots").waitFor();

@@ -23,7 +23,7 @@ async function open(query, { width = 1280, height = 900, lang = "en" } = {}) {
   }, lang);
   page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
   page.on("console", (message) => message.type() === "error" && errors.push(`console: ${message.text()}`));
-  await page.goto(`${base}/math/fluency-lab/?${query}&stage=practice`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?${query}&stage=practice`, { waitUntil: "networkidle" });
   await page.locator("#response-widget").waitFor({ state: "visible" });
   return page;
 }

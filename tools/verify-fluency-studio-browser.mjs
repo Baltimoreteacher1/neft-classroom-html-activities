@@ -54,7 +54,7 @@ try {
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(`${base}/math/fluency-lab/?grade=3`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?grade=3`, { waitUntil: "networkidle" });
     const sweep = await page.evaluate(async () => {
       const { ALL_SKILLS, generateProblem, seededRandom } = await import(
         "/math/fluency-lab/problem-bank.js"
@@ -172,7 +172,9 @@ try {
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     for (const [grade, skill, tabs] of cases) {
-      await page.goto(`${base}/math/fluency-lab/?grade=${grade}`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/math/fluency-lab/lab.html?grade=${grade}`, {
+        waitUntil: "networkidle",
+      });
       const openLibrary = (id) =>
         page.evaluate(async (id) => {
           const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -188,7 +190,9 @@ try {
         }, id);
       // The lab can reload once after first paint; if that lands mid-evaluate, load again and retry once.
       const opened = await openLibrary(skill).catch(async () => {
-        await page.goto(`${base}/math/fluency-lab/?grade=${grade}`, { waitUntil: "networkidle" });
+        await page.goto(`${base}/math/fluency-lab/lab.html?grade=${grade}`, {
+          waitUntil: "networkidle",
+        });
         return openLibrary(skill);
       });
       note(opened, `${skill} @${width}${reduced ? " reduced" : ""}: the Studio did not open`);

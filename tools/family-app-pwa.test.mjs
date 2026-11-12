@@ -20,7 +20,7 @@ const apps = [
   {
     name: "fluency lab",
     manifest: "math/fluency-lab/manifest.json",
-    page: "math/fluency-lab/index.html",
+    page: "math/fluency-lab/lab.html",
     sw: "math/fluency-lab/sw.js",
     swScope: "/math/fluency-lab/",
   },
@@ -66,7 +66,7 @@ test("family home: every card points at a page that exists", () => {
 
 test("each practice area loads the Family-home button", () => {
   for (const page of [
-    "math/fluency-lab/index.html",
+    "math/fluency-lab/lab.html",
     "curriculum/family-connections/index.html",
     "access-practice-lab/index.html",
   ]) {

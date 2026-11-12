@@ -72,7 +72,7 @@ try {
   const noOverflow = async (label) => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, `no sideways scroll: ${label}`);
   const t4 = page.locator("#teacher-4");
 
-  await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=6`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?view=teacher&grade=6`, { waitUntil: "networkidle" });
   await t4.locator(".t4").waitFor();
   assert.equal(await page.locator("#teacher-4 [role=tab]").count(), 7);
 

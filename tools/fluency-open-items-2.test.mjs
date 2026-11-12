@@ -5,9 +5,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 
-const html = readFileSync(new URL("../math/fluency-lab/index.html", import.meta.url), "utf8");
+const html = readFileSync(new URL("../math/fluency-lab/lab.html", import.meta.url), "utf8");
 const dom = new JSDOM(html, {
-  url: "https://example.test/math/fluency-lab/?grade=3",
+  url: "https://example.test/math/fluency-lab/lab.html?grade=3",
   pretendToBeVisual: true,
 });
 const win = dom.window;

@@ -305,13 +305,16 @@ export function predicts(spec) {
   if (!spec.steps.length) return [];
   const s = spec.steps[0];
   const label = s.k === "mul" ? `× ${fmt(s.n)}` : `÷ ${fmt(s.n)}`;
-  const known = spec.target.side === "l" ? spec.base[0] : spec.base[1];
+  const first = spec.target.side === "l";
+  const known = first ? spec.base[0] : spec.base[1];
+  // The first step only: a two-step scale (× then ÷) names where THIS step lands, not the final target.
+  const after = s.k === "mul" ? known * s.n : known / s.n;
   return [
     {
       at: 1,
       q: L(
-        `The first number goes from ${fmt(known)} by ${label}. What should we do to the other number?`,
-        `El primer número cambia por ${label}. ¿Qué debemos hacerle al otro número?`,
+        `The ${first ? "first" : "second"} number goes from ${fmt(known)} to ${fmt(after)}: that is ${label}. What should we do to the other number?`,
+        `El ${first ? "primer" : "segundo"} número pasa de ${fmt(known)} a ${fmt(after)}: eso es ${label}. ¿Qué debemos hacerle al otro número?`,
       ),
       choices: [
         {
@@ -324,8 +327,8 @@ export function predicts(spec) {
         },
         {
           t: L(
-            `Add the same amount that the first number gained.`,
-            `Sumar la misma cantidad que ganó el primer número.`,
+            `Add the same amount that the ${first ? "first" : "second"} number gained.`,
+            `Sumar la misma cantidad que ganó el ${first ? "primer" : "segundo"} número.`,
           ),
           ok: false,
           why: L(

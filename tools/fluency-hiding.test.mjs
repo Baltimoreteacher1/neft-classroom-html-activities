@@ -10,7 +10,7 @@ const wait = (ms = 15) => new Promise((resolve) => realSetTimeout(resolve, ms));
 const dir = new URL("../math/fluency-lab/", import.meta.url);
 const html = readFileSync(new URL("index.html", dir), "utf8");
 const dom = new JSDOM(html, {
-  url: "https://example.test/math/fluency-lab/?grade=0&view=games",
+  url: "https://example.test/math/fluency-lab/lab.html?grade=0&view=games",
   pretendToBeVisual: true,
 });
 const win = dom.window;

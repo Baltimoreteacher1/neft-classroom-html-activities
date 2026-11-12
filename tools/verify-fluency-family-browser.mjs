@@ -251,12 +251,12 @@ try {
 
   // The Fluency Lab itself still starts a real practice session from a family launch link.
   await page.goto(
-    `${base}/math/fluency-lab/?grade=4&profile=1&start=practice&skill=4%3Around-large`,
+    `${base}/math/fluency-lab/lab.html?grade=4&profile=1&start=practice&skill=4%3Around-large`,
     {
       waitUntil: "networkidle",
     },
   );
-  assert.equal(new URL(page.url()).pathname, "/math/fluency-lab/");
+  assert.equal(new URL(page.url()).pathname, "/math/fluency-lab/lab.html");
   const labNavigation = await page.locator("a[href]").evaluateAll((anchors) =>
     anchors.map((anchor) => {
       const url = new URL(anchor.href);
@@ -541,7 +541,9 @@ try {
       );
     }
   });
-  await teacherPage.goto(`${base}/math/fluency-lab/?view=teacher`, { waitUntil: "networkidle" });
+  await teacherPage.goto(`${base}/math/fluency-lab/lab.html?view=teacher`, {
+    waitUntil: "networkidle",
+  });
   assert.equal(
     await teacherPage
       .locator("#teacher-evidence-host .teacher-evidence-metrics strong")
@@ -638,7 +640,9 @@ try {
   gamePage.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
   });
-  await gamePage.goto(`${base}/math/fluency-lab/?grade=3&view=games`, { waitUntil: "networkidle" });
+  await gamePage.goto(`${base}/math/fluency-lab/lab.html?grade=3&view=games`, {
+    waitUntil: "networkidle",
+  });
   const savedGameIds = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally"];
   for (const gameId of savedGameIds) {
     await gamePage.locator(`[data-game="${gameId}"]`).click();
@@ -788,7 +792,7 @@ try {
   });
   const studentPage = await studentContext.newPage();
   studentPage.on("pageerror", (error) => errors.push(error.message));
-  await studentPage.goto(`${base}/math/fluency-lab/?grade=3`, { waitUntil: "networkidle" });
+  await studentPage.goto(`${base}/math/fluency-lab/lab.html?grade=3`, { waitUntil: "networkidle" });
   await waitForPaint(studentPage);
   const homeAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
@@ -877,7 +881,7 @@ try {
     0,
     "mobile student workflows do not overflow",
   );
-  await studentPage.goto(`${base}/math/fluency-lab/?grade=8`, { waitUntil: "networkidle" });
+  await studentPage.goto(`${base}/math/fluency-lab/lab.html?grade=8`, { waitUntil: "networkidle" });
   assert.match(await studentPage.locator("#grade-heading").innerText(), /Grade 8/);
   const middleAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(

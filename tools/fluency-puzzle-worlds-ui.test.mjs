@@ -6,9 +6,9 @@ import { worldLevel } from "../math/fluency-lab/puzzle-worlds.js";
 const realSetTimeout = globalThis.setTimeout;
 globalThis.setTimeout = (fn, ms, ...rest) => realSetTimeout(fn, Math.min(ms ?? 0, 4), ...rest);
 const wait = (ms = 12) => new Promise((resolve) => realSetTimeout(resolve, ms));
-const html = readFileSync(new URL("../math/fluency-lab/index.html", import.meta.url), "utf8");
+const html = readFileSync(new URL("../math/fluency-lab/lab.html", import.meta.url), "utf8");
 const dom = new JSDOM(html, {
-  url: "https://example.test/math/fluency-lab/?grade=6&view=games",
+  url: "https://example.test/math/fluency-lab/lab.html?grade=6&view=games",
   pretendToBeVisual: true,
 });
 const win = dom.window;

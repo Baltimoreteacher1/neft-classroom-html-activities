@@ -14,7 +14,7 @@ try {
     await context.addInitScript(() => { Math.random = () => 0.5; });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=7&skill=proportions&start=practice`);
+    await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=7&skill=proportions&start=practice`);
     await page.locator('#publisher-practice-root').waitFor({ state: 'visible' });
     assert.equal(await page.locator('#answer-form').isHidden(), true, 'legacy answer form is replaced during publisher practice');
     assert.equal(await page.locator('#question').isHidden(), true, 'the prompt appears once in the publisher workspace');
@@ -43,7 +43,7 @@ try {
   await miss.host.locator('#answer').fill('999');
   await miss.host.locator('#check').click();
   assert.equal(await miss.host.locator('#answer').inputValue(), '999');
-  await miss.page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=7&skill=proportions&stage=practice`);
+  await miss.page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=7&skill=proportions&stage=practice`);
   await miss.page.locator('#publisher-practice-root').waitFor({ state: 'visible' });
   assert.match(await miss.host.locator('#conceptual-hint').textContent(), /Check the equal segment value|Equivalent ratios|Keep the two quantities|That answer/, 'the conceptual scaffold survives session resume');
   await miss.host.locator('#answer').fill('998');
@@ -64,7 +64,7 @@ try {
   await gradeSix.addInitScript(() => { Math.random = () => 0.5; });
   const ratioPage = await gradeSix.newPage();
   ratioPage.on('pageerror', error => errors.push(error.message));
-  await ratioPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=6&skill=ratios&start=practice`);
+  await ratioPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=6&skill=ratios&start=practice`);
   const ratioHost = ratioPage.locator('#publisher-practice-root');
   await ratioHost.waitFor({ state: 'visible' });
   const ratioPrompt = (await ratioHost.locator('h2').textContent()).trim();
@@ -84,7 +84,7 @@ try {
     await rateContext.addInitScript(() => { Math.random = () => 0.5; });
     const ratePage = await rateContext.newPage();
     ratePage.on('pageerror', error => errors.push(error.message));
-    await ratePage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=${grade}&skill=${skill}&start=practice`);
+    await ratePage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=${grade}&skill=${skill}&start=practice`);
     const rateHost = ratePage.locator('#publisher-practice-root');
     await rateHost.waitFor({ state: 'visible' });
     const ratePrompt = (await rateHost.locator('h2').textContent()).trim();
@@ -121,7 +121,7 @@ try {
   await percentContext.addInitScript(() => { Math.random = () => 0.5; });
   const percentPage = await percentContext.newPage();
   percentPage.on('pageerror', error => errors.push(error.message));
-  await percentPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=6&skill=percent&start=practice`);
+  await percentPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=6&skill=percent&start=practice`);
   const percentHost = percentPage.locator('#publisher-practice-root');
   await percentHost.waitFor({ state: 'visible' });
   const percentPrompt = (await percentHost.locator('h2').textContent()).trim();
@@ -143,7 +143,7 @@ try {
   await wholeContext.addInitScript(() => { Math.random = () => 0.5; });
   const wholePage = await wholeContext.newPage();
   wholePage.on('pageerror', error => errors.push(error.message));
-  await wholePage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=6&skill=percent-whole&start=practice`);
+  await wholePage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=6&skill=percent-whole&start=practice`);
   const wholeHost = wholePage.locator('#publisher-practice-root');
   await wholeHost.waitFor({ state: 'visible' });
   const wholePrompt = (await wholeHost.locator('h2').textContent()).trim();
@@ -180,7 +180,7 @@ try {
   await fracContext.addInitScript(() => { Math.random = () => 0.3; });
   const fracPage = await fracContext.newPage();
   fracPage.on('pageerror', error => errors.push(error.message));
-  await fracPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=5&skill=fraction-add&start=practice`);
+  await fracPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?grade=5&skill=fraction-add&start=practice`);
   await fracPage.locator('#question .v-frac').first().waitFor({ state: 'visible' });
   const initialLabState = await fracPage.locator('#problem-arena').getAttribute('data-lab-state');
   assert.equal(initialLabState, 'PRESENTATION', 'live app starts in PRESENTATION state');

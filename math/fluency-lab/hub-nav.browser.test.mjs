@@ -10,7 +10,7 @@ const shots = process.env.NAV_SHOTS;
 if (shots) mkdirSync(shots, { recursive: true });
 const server = await createServer({ root: REPO_ROOT, logLevel: "error", server: { host: "127.0.0.1", port: 0 } });
 await server.listen();
-const base = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/`;
+const base = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html`;
 let browser;
 try {
   browser = await chromium.launch({ headless: true });

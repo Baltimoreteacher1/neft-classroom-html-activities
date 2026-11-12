@@ -180,9 +180,9 @@ check("quests that carry progress are never replaced by a grade switch", () => {
 });
 
 check("the early type-scale script mirrors the grade system", () => {
-  const html = readFileSync(new URL("index.html", lab), "utf8");
+  const html = readFileSync(new URL("lab.html", lab), "utf8");
   const table = html.match(/var scale = (\{[^}]+\})/)?.[1];
-  assert.ok(table, "index.html lost the early scale script");
+  assert.ok(table, "lab.html lost the early scale script");
   const early = JSON.parse(table.replace(/(\d+):/g, '"$1":'));
   const fromSystem = Object.fromEntries(
     Object.entries(GRADE_SYSTEM).map(([grade, p]) => [grade, p.scaleRem]),

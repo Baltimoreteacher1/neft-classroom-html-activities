@@ -128,7 +128,7 @@ for (const file of sources) {
     if (String(file).endsWith("games.js") || String(file).endsWith("skill-path.js"))
       keys.add(match[1]);
 }
-for (const page of ["index.html", "class/teacher.html", "class/live.html", "class/family.html"])
+for (const page of ["lab.html", "class/teacher.html", "class/live.html", "class/family.html"])
   for (const match of readFileSync(new URL(page, dir), "utf8").matchAll(/data-i18n[^>]*>([^<]+)</g))
     keys.add(match[1].trim());
 // MathSense's static labels; the formatter wraps long lines, so whitespace is folded before a label is a key.
@@ -140,7 +140,7 @@ for (const match of readFileSync(new URL("mathsense/index.html", dir), "utf8").m
 const { CLASS_I18N_KEYS } = await import("../math/fluency-lab/class-link-view.js");
 for (const key of CLASS_I18N_KEYS) keys.add(key);
 // A data-i18n-en attribute overrides the text as the key (context keys such as "Play ##nav").
-for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
+for (const match of readFileSync(new URL("lab.html", dir), "utf8").matchAll(
   /data-i18n-en="([^"]+)"/g,
 ))
   keys.add(match[1]);

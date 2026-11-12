@@ -11,7 +11,7 @@ import {
 import { SKILLS_PER_GRADE, TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const html = readFileSync(resolve(root, "math/fluency-lab/index.html"), "utf8");
+const html = readFileSync(resolve(root, "math/fluency-lab/lab.html"), "utf8");
 const app = readFileSync(resolve(root, "math/fluency-lab/app.js"), "utf8");
 const hub = readFileSync(resolve(root, "math/index.html"), "utf8");
 const catalogGenerator = readFileSync(resolve(root, "scripts/generate-catalog.mjs"), "utf8");

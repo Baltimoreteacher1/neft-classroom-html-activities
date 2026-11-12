@@ -30,7 +30,7 @@ const sessionOf = (page) => page.evaluate(() => JSON.parse(localStorage.getItem(
 async function openPractice(page, lang = "en") {
   await page.addInitScript(seed);
   if (lang === "es") await page.addInitScript(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
-  await page.goto(`${base}/math/fluency-lab/?grade=5&skill=fraction-add`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=5&skill=fraction-add`, { waitUntil: "networkidle" });
   await page.locator(".practice-alternatives summary").click();
   await page.locator('[data-mode="practice"]').click();
   await page.locator("#answer-input, #choice-answers button").first().waitFor({ state: "visible" });

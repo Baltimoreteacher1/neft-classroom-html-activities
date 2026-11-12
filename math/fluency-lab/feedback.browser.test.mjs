@@ -27,7 +27,7 @@ try {
       mistakes: [], diagnostics: {}, sessions: [], rescues: [],
     }));
   });
-  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10&profile=0`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=1&skill=add-10&profile=0`, { waitUntil: "networkidle" });
   await page.locator(".learn-support > summary").click();
   await page.getByRole("button", { name: "Practice 10" }).click();
   const question = page.locator("#question");
@@ -77,7 +77,7 @@ try {
     localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" }));
   });
   const spanishPage = await spanishContext.newPage();
-  await spanishPage.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
+  await spanishPage.goto(`${base}/math/fluency-lab/lab.html?grade=1&skill=add-10`, { waitUntil: "networkidle" });
   await spanishPage.locator(".learn-support > summary").click();
   await spanishPage.getByRole("button", { name: "Practicar 10" }).click();
   await spanishPage.locator("#answer-input").fill("999");
@@ -86,14 +86,14 @@ try {
   assert.match(await spanishPage.locator("#answer-result-status").innerText(), /Incorrecto/);
   await spanishContext.close();
 
-  await page.goto(`${base}/math/fluency-lab/?grade=4&skill=multiply-1digit`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=4&skill=multiply-1digit`, { waitUntil: "networkidle" });
   assert.equal(await page.locator("#workspace-title").innerText(), "Multiply a three-digit number by a one-digit number");
   // The worked example and first reasoning step are present in Understand It.
   const multiplicationLesson = await page.locator("#learn-panel").textContent();
   assert.match(multiplicationLesson, /three-digit number by a one-digit number/i);
   assert.match(multiplicationLesson, /\b\d{3} × [2-9] = \?/);
   assert.doesNotMatch(multiplicationLesson, /multiply by one digit/i);
-  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=1&skill=add-10`, { waitUntil: "networkidle" });
   assert.equal(await page.locator("#workspace-title").innerText(), "Addition facts: sums of 10 or less");
   assert.match(await page.locator("#learn-panel").innerText(), /sum is 10 or less/i);
   assert.doesNotMatch(await page.locator("#learn-panel").innerText(), /addition facts within 10/i);

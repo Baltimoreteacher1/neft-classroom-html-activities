@@ -50,7 +50,7 @@ const page = await readFile(
   new URL("../math/fluency-lab/family/index.html", import.meta.url),
   "utf8",
 );
-const labPage = await readFile(new URL("../math/fluency-lab/index.html", import.meta.url), "utf8");
+const labPage = await readFile(new URL("../math/fluency-lab/lab.html", import.meta.url), "utf8");
 const client = await readFile(
   new URL("../math/fluency-lab/family/family.js", import.meta.url),
   "utf8",

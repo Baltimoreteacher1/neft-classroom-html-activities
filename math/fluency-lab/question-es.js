@@ -104,7 +104,7 @@ const RULES = [
     (m) => `¿Qué hora será ${m[1]} minutos después de ${m[2].startsWith("1:") ? "la" : "las"} ${m[2]}?`,
   ],
   [/^A strip starts at (\d+) cm and ends at (\d+) cm on a ruler\. How long is the strip\?$/, (m) => `Una tira empieza en ${m[1]} cm y termina en ${m[2]} cm en una regla. ¿Cuánto mide la tira?`],
-  [/^A class vote shows apples: (\d+), bananas: (\d+), oranges: (\d+), pears: (\d+)\. Which fruit got the most votes\?$/, (m) => `Una votación de la clase muestra manzanas: ${m[1]}, plátanos: ${m[2]}, naranjas: ${m[3]}, peras: ${m[4]}. ¿Qué fruta obtuvo más votos?`],
+  [/^A class vote shows ((?:(?:apples|bananas|oranges|pears): \d+(?:, )?)+)\. Which fruit got the most votes\?$/, (m) => `Una votación de la clase muestra ${m[1].replace(/apples|bananas|oranges|pears/g, (f) => FRUIT_ES[f])}. ¿Qué fruta obtuvo más votos?`],
   [/^A scale drawing uses 1 cm to represent (\d+) m\. A wall is (\d+) cm long in the drawing\. How long is the real wall in meters\?$/, (m) => `En un dibujo a escala, 1 cm representa ${m[1]} m. Una pared mide ${m[2]} cm en el dibujo. ¿Cuánto mide la pared real en metros?`],
   [/^One of two vertical angles measures (\d+)°\. What is the measure of the other angle\?$/, (m) => `Uno de dos ángulos opuestos por el vértice mide ${m[1]}°. ¿Cuánto mide el otro ángulo?`],
   [/^Two (complementary|supplementary) angles include one angle that measures (\d+)°\. What is the other angle\?$/, (m) => `Dos ángulos ${m[1] === "complementary" ? "complementarios" : "suplementarios"} incluyen uno que mide ${m[2]}°. ¿Cuánto mide el otro ángulo?`],
@@ -228,7 +228,9 @@ export function questionEs(item) {
   return null;
 }
 
+const FRUIT_ES = { apples: "manzanas", bananas: "plátanos", oranges: "naranjas", pears: "peras" };
 const CHOICES = {
+  ...FRUIT_ES,
   even: "par", odd: "impar", yes: "sí", no: "no", prime: "primo", composite: "compuesto",
   positive: "positiva", negative: "negativa", none: "ninguna",
 };

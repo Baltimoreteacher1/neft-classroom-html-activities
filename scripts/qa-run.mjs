@@ -1024,6 +1024,9 @@ const COVERAGE = [
       "test",
     ],
   ],
+  // The Discovery Studio's on-demand browser suite (qa-exempt.json): an edit to it is linted and parsed. Its own run
+  // stays on demand; it has expected the retired #visual-studio mount since 6e2f87e905 and needs updating first.
+  [/^tools\/verify-fluency-studio-browser\.mjs$/, ["check", "validate:js-syntax"]],
   // Family Math Studio v3 art kit: its builders, shared libs, gallery page and validator (the design tokens have their own rules).
   [
     /^(design\/family-system\/art\.html$|tools\/(build-family-(?:art|brand-icons)|validate-family-art|verify-family-art-browser)\.mjs$|tools\/lib\/family-art-[\w-]+\.mjs$)/,

@@ -24,7 +24,7 @@ const files = readdirSync(source).filter(
   (name) => /\.(js|css)$/.test(name) && !/\.test\.m?js$/.test(name) && name !== "sw.js",
 );
 for (const file of files) copyFileSync(join(source, file), join(destination, file));
-let html = readFileSync(join(source, "index.html"), "utf8")
+let html = readFileSync(join(source, "lab.html"), "utf8")
   .replace(/\s*<!-- nsr-injected:begin[\s\S]*?<!-- nsr-injected:end -->/g, "")
   .replaceAll('href="/math/"', 'href="./index.html"');
 writeFileSync(join(destination, "index.html"), html);
@@ -45,7 +45,7 @@ const bundled = (Array.isArray(bundleResult) ? bundleResult : [bundleResult])
 if (!bundled) throw new Error("The standalone application bundle was not generated.");
 // The stylesheets index.html links from this folder, in the order the page loads them.
 const sheets = [
-  ...readFileSync(join(source, "index.html"), "utf8").matchAll(
+  ...readFileSync(join(source, "lab.html"), "utf8").matchAll(
     /<link rel="stylesheet" href="\.\/([\w-]+\.css)"/g,
   ),
 ].map((match) => match[1]);

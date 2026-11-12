@@ -14,7 +14,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(`${server.config.server.origin || `http://127.0.0.1:${server.httpServer.address().port}`}/math/fluency-lab/?grade=6&skill=ratios`);
+  await page.goto(`${server.config.server.origin || `http://127.0.0.1:${server.httpServer.address().port}`}/math/fluency-lab/lab.html?grade=6&skill=ratios`);
   await page.locator("#workspace-view").waitFor({ state: "visible" });
   await page.locator('.sp-stages [data-stage="learn"]').click();
   await page.locator("#learn-panel details.learn-support > summary").click();
@@ -104,14 +104,18 @@ try {
   await page.locator('[data-predict="yes"]').click();
   await page.reload();
   await page.waitForFunction(() => document.querySelector("#amount-a")?.value !== "");
-  const secondToWhole = derive(createState({ ...scenario, factor: 5 })).comparisons.find((item) => item.id === "second-to-whole");
-  await page.locator('[data-comparison="second-to-whole"]').click();
-  assert.equal(await page.locator('[data-comparison="second-to-whole"]').getAttribute("aria-pressed"), "true");
-  assert.equal(await page.locator("#comparison-output strong").innerText(), `${secondToWhole.first} : total = ${format(secondToWhole.left)} : ${format(secondToWhole.right)}`);
+  // Notebooks and dollars do not add to one total, so part-to-total is not offered for these units; the
+  // comparison choice that is offered still persists across a reload.
+  assert.equal(await page.locator('[data-comparison="second-to-whole"]').count(), 0);
+  assert.match(await page.locator("#models").innerText(), /needs both quantities in the same unit/);
+  const reversed = derive(createState({ ...scenario, unitA: "notebooks", unitB: "dollars", factor: 5 })).comparisons.find((item) => item.id === "reverse-part-to-part");
+  await page.locator('[data-comparison="reverse-part-to-part"]').click();
+  assert.equal(await page.locator('[data-comparison="reverse-part-to-part"]').getAttribute("aria-pressed"), "true");
+  assert.equal(await page.locator("#comparison-output strong").innerText(), `${reversed.first} : ${reversed.second} = ${format(reversed.left)} : ${format(reversed.right)}`);
   await page.reload();
   await page.waitForFunction(() => document.querySelector("#amount-a")?.value !== "");
-  assert.equal(await page.locator('[data-comparison="second-to-whole"]').getAttribute("aria-pressed"), "true");
-  assert.equal(await page.locator("#comparison-output strong").innerText(), `${secondToWhole.first} : total = ${format(secondToWhole.left)} : ${format(secondToWhole.right)}`);
+  assert.equal(await page.locator('[data-comparison="reverse-part-to-part"]').getAttribute("aria-pressed"), "true");
+  assert.equal(await page.locator("#comparison-output strong").innerText(), `${reversed.first} : ${reversed.second} = ${format(reversed.left)} : ${format(reversed.right)}`);
   assert.equal(await page.locator("#row-a").inputValue(), format(equivalentRow.a));
   assert.equal(await page.locator("#row-b").inputValue(), format(equivalentRow.b));
   assert.match(await page.locator("#row-feedback").innerText(), /^Yes/);

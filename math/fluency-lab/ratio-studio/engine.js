@@ -55,21 +55,46 @@ export function createState(input = {}) {
   if(!COMPARISON_TYPES.includes(comparison))throw new RangeError('Choose a supported ratio comparison');
   return {version:1, a,b, labelA:boundedLabel(input.labelA,'Red',24),labelB:boundedLabel(input.labelB,'Blue',24),unitA:boundedLabel(input.unitA,'counters',16),unitB:boundedLabel(input.unitB,'counters',16), factor, pointFactors:sortedPointFactors, comparison};
 }
+// Every representation is derived here from one state, so they cannot disagree. The current scale factor is
+// always a row of the table, a tick pair on both number lines and a graph point, even when it was typed into the
+// factor field rather than added as a saved paired point (it is then marked transient and is not saved).
+export function niceStep(max) {
+  const m=valueOf(max);
+  if(!(m>0))return rational(1);
+  const candidates=[];
+  for(let k=-3;k<=7;k+=1)for(const base of ['1','2','5/2','3','5'])candidates.push(multiply(rational(base),k>=0?rational(String(10**k)):rational(`1/${10**-k}`)));
+  const fits=candidates.filter(step=>m/valueOf(step)<=5+1e-9);
+  // Prefer a step that lands exactly on the largest value (12 → 0, 3, 6, 9, 12), else the smallest that fits.
+  return fits.find(step=>{const q=m/valueOf(step);return q>=2-1e-9&&Math.abs(q-Math.round(q))<1e-9})||fits[0]||rational(String(10**8));
+}
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
-  const rows=s.pointFactors.map(k=>({factor:k,a:multiply(s.a,k),b:multiply(s.b,k)}));
+  const saved=new Set(s.pointFactors.map(k=>`${k.n}/${k.d}`));
+  const factors=saved.has(`${s.factor.n}/${s.factor.d}`)?s.pointFactors:[...s.pointFactors,s.factor].sort(compare);
+  const rows=factors.map(k=>({factor:k,a:multiply(s.a,k),b:multiply(s.b,k),current:compare(k,s.factor)===0,transient:!saved.has(`${k.n}/${k.d}`)}));
   const last=rows.at(-1);
-  const graphAxisMax=compare(last.a,last.b)>=0?last.a:last.b;
-  const graphTicks=[0,1,2,3,4].map(i=>multiply(graphAxisMax,rational({n:String(i),d:'4'})));
+  // Axes share one scale with round tick steps (1, 2, 2.5, 3 or 5 times a power of ten, at most five steps),
+  // so a tick never reads as an awkward fraction such as 63/4; the axis ends on the first tick at or above
+  // the largest plotted value.
+  const largest=compare(last.a,last.b)>=0?last.a:last.b;
+  const tickStep=niceStep(largest);
+  const steps=Math.max(1,Math.ceil(valueOf(largest)/valueOf(tickStep)-1e-9));
+  const graphAxisMax=multiply(tickStep,rational(steps));
+  const graphTicks=Array.from({length:steps+1},(_,i)=>multiply(tickStep,rational(i)));
+  // A part-to-whole ratio adds the two quantities, which only makes sense when they are measured in the same unit
+  // (red counters and blue counters make a total of counters; notebooks and dollars do not make a total).
+  const sameUnit=s.unitA.trim().toLocaleLowerCase()===s.unitB.trim().toLocaleLowerCase();
   const comparisons=[
     {id:'part-to-part',name:'First to second',first:s.labelA,second:s.labelB,left:a,right:b,kind:'part-to-part'},
     {id:'reverse-part-to-part',name:'Reverse the order',first:s.labelB,second:s.labelA,left:b,right:a,kind:'part-to-part'},
-    {id:'first-to-whole',name:'First part to total',first:s.labelA,second:'total',left:a,right:total,kind:'part-to-whole'},
-    {id:'second-to-whole',name:'Second part to total',first:s.labelB,second:'total',left:b,right:total,kind:'part-to-whole'},
+    ...(sameUnit?[
+      {id:'first-to-whole',name:'First part to total',first:s.labelA,second:'total',left:a,right:total,kind:'part-to-whole'},
+      {id:'second-to-whole',name:'Second part to total',first:s.labelB,second:'total',left:b,right:total,kind:'part-to-whole'},
+    ]:[]),
   ];
   const axisMaxValue=valueOf(graphAxisMax);
   const maxFactor=valueOf(last.factor);
-  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,graph:{axisMax:graphAxisMax,ticks:graphTicks,isFunction:s.a.n!=='0'},points:rows.map(r=>({factor:r.factor,x:r.a,y:r.b,position:valueOf(r.factor)/maxFactor,positionX:valueOf(r.a)/axisMaxValue,positionY:valueOf(r.b)/axisMaxValue})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
+  return {a,b,total,sameUnit,reverse:[b,a],partWhole:sameUnit?[a,total]:null,comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison)||comparisons[0],rows,graph:{axisMax:graphAxisMax,ticks:graphTicks,isFunction:s.a.n!=='0'},points:rows.map(r=>({factor:r.factor,current:r.current,x:r.a,y:r.b,position:valueOf(r.factor)/maxFactor,positionX:valueOf(r.a)/axisMaxValue,positionY:valueOf(r.b)/axisMaxValue})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
 }
 export function transition(s, action) {
   switch(action.type) {

@@ -15,7 +15,7 @@ import { DAY, NOW, answers, keyOf, tutorWith } from "../../../tools/lib/teacher-
 const server = await createServer({ root: REPO_ROOT, logLevel: "error", server: { host: "127.0.0.1", port: 0 } });
 await server.listen();
 const base = `http://127.0.0.1:${server.httpServer.address().port}`;
-const lab = `${base}/math/fluency-lab/`;
+const lab = `${base}/math/fluency-lab/lab.html`;
 const browser = await chromium.launch();
 const failures = [];
 const check = (c, m) => { if (!c) failures.push(m); };
@@ -162,7 +162,7 @@ try {
 
   // ---------------------------------------------------------------- E. Family Math Studio
   {
-    const page = await open(`${lab}family/studio.html?grade=5`);
+    const page = await open(`${lab.replace("lab.html", "")}family/studio.html?grade=5`);
     check((await page.locator(".fs-card").count()) >= 1, "family studio: a plan appears for a brand-new learner");
     check(/not much practice on record|recent work/.test(await page.locator("#fs-plan").innerText()), "family studio: says what the plan is based on");
     check(/supported practice/.test(await page.locator("#fs-plan").innerText()), "family studio: says work together is supported practice");
@@ -174,11 +174,11 @@ try {
     check(/práctica con apoyo/.test(await page.locator("#fs-plan").innerText()), "family studio: Spanish plan text");
     await axeCheck(page, "main", "family studio");
     await page.context().close();
-    const phone = await open(`${lab}family/studio.html?grade=3`, { viewport: { width: 390, height: 844 } });
+    const phone = await open(`${lab.replace("lab.html", "")}family/studio.html?grade=3`, { viewport: { width: 390, height: 844 } });
     check((await overflow(phone)) <= 1, "family studio: no horizontal scroll at 390px");
     check(page.errors.length === 0, `family studio: page error ${page.errors[0]}`);
     await phone.context().close();
-    const home = await open(`${lab}family/`);
+    const home = await open(`${lab.replace("lab.html", "")}family/`);
     check((await home.locator("#studio-link").count()) === 1, "family home links to the studio");
     await home.context().close();
   }

@@ -1,5 +1,5 @@
 // Pure-logic checks for the Fluency Lab tour: saved state, the first-visit decision, launch-URL rules,
-// step copy in both languages and audiences, anchor selectors against index.html, and the demo math.
+// step copy in both languages and audiences, anchor selectors against lab.html, and the demo math.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DEMOS, HINT_FACTS, TENFRAME_FACTS, demoHtml } from "./tour-demos.js";
@@ -21,7 +21,7 @@ import {
 } from "./tour-state.js";
 import { BUBBLES, STEPS, UI, ui } from "./tour-steps.js";
 
-const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const html = readFileSync(new URL("../lab.html", import.meta.url), "utf8");
 const memory = () => {
   const data = new Map();
   return {
@@ -151,7 +151,7 @@ assert.match(spanish(STEPS.family), /\b(Elijan|Siéntense|Pregunten|Usen|Abran|V
 assert.doesNotMatch(spanish(STEPS.student), /\b(Elijan|Siéntense|Pregunten|Usen|Abran|Vean|ustedes)\b/);
 assert.match(spanish(STEPS.student), /\b(Elige|Empieza|Toca|Mira|Abre|Usa)\b/);
 
-// ---- Anchors exist in index.html unless they are marked dynamic ----
+// ---- Anchors exist in lab.html unless they are marked dynamic ----
 function selectorInHtml(selector) {
   const tokens = [...selector.matchAll(/#([\w-]+)|\.([\w-]+)|\[([\w-]+)="([^"]+)"\]/g)];
   assert.ok(tokens.length, `selector parsed: ${selector}`);
@@ -164,7 +164,7 @@ function selectorInHtml(selector) {
 const anchored = [...STEPS.student, ...STEPS.family, ...BUBBLES].filter((step) => step.anchor);
 for (const step of anchored) {
   if (step.dynamic) continue;
-  assert.ok(selectorInHtml(step.anchor), `anchor ${step.anchor} is in index.html`);
+  assert.ok(selectorInHtml(step.anchor), `anchor ${step.anchor} is in lab.html`);
 }
 assert.ok(anchored.some((step) => step.dynamic), "the dashboard card is the one dynamic anchor");
 for (const step of anchored.filter((entry) => entry.dynamic)) assert.ok(step.anchor.startsWith("#personal-dashboard"), `${step.anchor} lives in the dashboard`);

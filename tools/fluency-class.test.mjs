@@ -187,7 +187,7 @@ test("#21: join from the card, progress follows the learner to a second device",
   const deps = {
     fetchImpl: serverFetch,
     location: new URL(
-      `https://eduwonderlab.test/math/fluency-lab/?class=${classCode.toLowerCase()}`,
+      `https://eduwonderlab.test/math/fluency-lab/lab.html?class=${classCode.toLowerCase()}`,
     ),
     getBackup: () => backup,
     getSummary: () => ({ grade: 3, mastered: ["3:mul-0-5"] }),

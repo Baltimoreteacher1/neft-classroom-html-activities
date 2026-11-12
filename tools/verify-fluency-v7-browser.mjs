@@ -112,7 +112,7 @@ async function axe(page, label) {
 // 1. From the front door (grade, topic, skill, Start) to the skill's Learn stage, then into the v7 picture workspace.
 {
   const { ctx, page, errors } = await open({ width: 390, height: 844 });
-  await page.goto(`${base}/math/fluency-lab/`);
+  await page.goto(`${base}/math/fluency-lab/lab.html`);
   await page.waitForSelector(".ep");
   ok((await page.locator("[data-ep-grade]").count()) === 9, "nine grade choices, K to 8");
   await page.click('[data-ep-grade="4"]');
@@ -150,7 +150,7 @@ async function axe(page, label) {
       init: `if(!localStorage.getItem("ewl-fluency-progress-v1"))localStorage.setItem("ewl-fluency-progress-v1", ${JSON.stringify(OLD)})`,
     },
   );
-  await page.goto(`${base}/math/fluency-lab/?grade=4&skill=fraction-equiv`);
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=4&skill=fraction-equiv`);
   await page.waitForSelector("#main");
   ok((await page.locator(".ep").count()) === 0, "deep link skips the front door");
   await page.goto(`${base}/math/fluency-lab/v7/?grade=4&skill=fraction-equiv`);

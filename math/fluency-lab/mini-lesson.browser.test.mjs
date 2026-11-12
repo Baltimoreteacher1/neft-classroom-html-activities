@@ -84,7 +84,7 @@ async function walk(browser, { grade, id, label }, { lang, mode, width = 1280, s
   const tag = `${label}/${lang}/${mode}/${width}`;
   const shot = async (name) => shoot && shots && (await page.locator(".ml").screenshot({ path: `${shots}/${label}-${lang}-${width}-${name}.png` }));
   const ui = driver(page, mode);
-  const url = `${base}/math/fluency-lab/?grade=${grade}&skill=${id}&mini=1&lang=${lang}&profile=0`;
+  const url = `${base}/math/fluency-lab/lab.html?grade=${grade}&skill=${id}&mini=1&lang=${lang}&profile=0`;
   await page.goto(url, { waitUntil: "networkidle" });
   await page.locator(".ml").waitFor();
   await page.locator(".ml-stage").evaluate((node) => node.scrollIntoView());
@@ -211,7 +211,7 @@ try {
     const problems = [];
     page.on("pageerror", (error) => problems.push(error.message));
     page.on("console", (message) => message.type() === "error" && problems.push(message.text()));
-    await page.goto(`${base}/math/fluency-lab/?grade=5&skill=coordinate-plane&mini=1&lang=en&profile=0`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/math/fluency-lab/lab.html?grade=5&skill=coordinate-plane&mini=1&lang=en&profile=0`, { waitUntil: "networkidle" });
     await page.locator(".ml .coord-explorer-wrap").waitFor();
     const movePoint = async (selector, key, delta, label) => {
       const root = page.locator(selector);
@@ -238,7 +238,7 @@ try {
   const problems = [];
   page.on("pageerror", (error) => problems.push(error.message));
   page.on("console", (message) => message.type() === "error" && problems.push(message.text()));
-  await page.goto(`${base}/math/fluency-lab/?grade=6&skill=ratios&profile=0`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=6&skill=ratios&profile=0`, { waitUntil: "networkidle" });
   await openSupport(page);
   await page.getByRole("button", { name: "Mini-lesson" }).click();
   await page.locator(".ml").waitFor();

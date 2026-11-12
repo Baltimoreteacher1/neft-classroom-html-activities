@@ -13,7 +13,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  const demoUrl = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?publisher-demo=1`;
+  const demoUrl = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html?publisher-demo=1`;
   await page.goto(demoUrl);
   const root = page.locator('#fluency-lab-root');
   await root.locator('#answer').waitFor({ state: 'visible' });

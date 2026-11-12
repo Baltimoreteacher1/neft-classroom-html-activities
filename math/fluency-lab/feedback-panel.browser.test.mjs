@@ -30,7 +30,7 @@ try {
       mistakes: [], diagnostics: {}, sessions: [], rescues: [],
     }));
   });
-  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10&profile=0`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html?grade=1&skill=add-10&profile=0`, { waitUntil: "networkidle" });
   await page.locator(".practice-alternatives summary").click();
   await page.getByRole("tab", { name: "Practice 10" }).click();
   const feedback = page.locator("#feedback");

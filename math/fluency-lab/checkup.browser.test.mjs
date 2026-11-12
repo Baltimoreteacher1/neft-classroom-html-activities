@@ -10,7 +10,7 @@ const SECOND_LOOK = /^(A miss gets a second look|One miss is not enough)/;
 const server = await createServer({ root: REPO_ROOT, logLevel: "error", server: { host: "127.0.0.1", port: 0 } });
 await server.listen();
 const base = `http://127.0.0.1:${server.httpServer.address().port}`;
-const url = (grade, query = "start=checkup") => `${base}/math/fluency-lab/?grade=${grade}&${query}`;
+const url = (grade, query = "start=checkup") => `${base}/math/fluency-lab/lab.html?grade=${grade}&${query}`;
 let browser;
 
 const purpose = (insight) => (/^One miss is not enough/.test(insight) ? "second" : /^A short look at an earlier idea/.test(insight) ? "foundation" : "initial");

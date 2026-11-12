@@ -15,7 +15,7 @@ if (shots) mkdirSync(shots, { recursive: true });
 const VIEWPORTS = { desktop: { width: 1440, height: 900 }, tablet: { width: 768, height: 1024 }, phone: { width: 390, height: 844 } };
 const server = await createServer({ root: REPO_ROOT, logLevel: "error", server: { host: "127.0.0.1", port: 0 } });
 await server.listen();
-const base = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/`;
+const base = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/lab.html`;
 const browser = await chromium.launch();
 const failures = [];
 const fail = (message) => failures.push(message);

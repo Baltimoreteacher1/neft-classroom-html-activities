@@ -7,7 +7,7 @@
  *       -> registers /lessons/sw.js            (scope /lessons/)
  *   - math/games/practice-arcade/index.html
  *       -> registers /math/games/practice-arcade/sw.js
- *   - math/fluency-lab/index.html
+ *   - math/fluency-lab/lab.html
  *       -> registers /math/fluency-lab/sw.js   (installable family app)
  *
  * Mirrors tools/inject-mobile-access.js: one sentinel-guarded block injected

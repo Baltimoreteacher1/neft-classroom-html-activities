@@ -48,7 +48,7 @@ async function open(url, viewport = { width: 1280, height: 900 }, options = {}) 
   }
   page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
   page.on("console", (message) => message.type() === "error" && errors.push(`console: ${message.text()}`));
-  await page.goto(`${base}/math/fluency-lab/${url}`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/math/fluency-lab/lab.html${url}`, { waitUntil: "networkidle" });
   return page;
 }
 const shot = async (page, name) => shots && page.screenshot({ path: `${shots}/${name}.png`, fullPage: false });
