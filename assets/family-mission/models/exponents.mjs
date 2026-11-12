@@ -1,6 +1,7 @@
 // Family "exponents": repeated multiplication (b^n), growth columns, factor chains, and
-// order-of-operations expressions (a + m × b^n), with a side-by-side comparison against the
-// common base × exponent (b × n) multiplier misconception.
+// order-of-operations expressions (a + m × b^n). "powers" compares b^n against the common
+// base × exponent (b × n) misconception; "order" is a vertical guided stepper: the family taps the
+// rung of the order-of-operations ladder that comes next, and each right tap writes one more line.
 import {
   a11y,
   button,
@@ -31,12 +32,179 @@ export const label = { en: "Exponent & growth models", es: "Modelos de exponente
 const MODES = ["powers", "order"];
 const VIEW_KEYS = ["visual", "factors", "table", "compare"];
 const DEFAULT_VIEWS = { visual: true, factors: true, table: true, compare: true };
-const ACTIONS = ["base", "exponent", "addend", "multiplier", "compare", "prediction", "views"];
+const ACTIONS = ["base", "exponent", "addend", "multiplier", "compare", "prediction", "views", "pick", "reveal", "restart", "expr"];
+
+/* The order-of-operations ladder, top to bottom. */
+const RUNGS = ["P", "E", "MD", "AS"];
+const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶" };
+const UNSUP = Object.fromEntries(Object.entries(SUP).map(([k, v]) => [v, Number(k)]));
+const pow = (b, e) => `${b}${SUP[e]}`;
+const MAX_ORDER_STEPS = 8;
+
+// ── Order of operations: one operation per line ──────────────────────────────
+// An expression is whole numbers, + − × ÷, parentheses and small powers (2³ or 2^3). orderWalk()
+// rewrites it one operation at a time, the way a family writes it on paper, and names the ladder
+// rung each line uses: inside parentheses (P), then powers (E), then × ÷ left to right (MD), then
+// + − left to right (AS). Every intermediate value must be a whole number at least 0.
+
+function tokenize(src) {
+  const out = [];
+  const str = String(src ?? "").trim();
+  let i = 0;
+  while (i < str.length) {
+    const c = str[i];
+    if (c === " ") i++;
+    else if (/\d/.test(c)) {
+      let j = i;
+      while (j < str.length && /\d/.test(str[j])) j++;
+      out.push({ t: "num", v: Number(str.slice(i, j)) });
+      i = j;
+    } else if (c in UNSUP || c === "^") {
+      let e;
+      if (c === "^") {
+        const m = str.slice(i + 1).match(/^\s*(\d)/);
+        if (!m) throw new TypeError("exponents: ^ needs a digit");
+        e = Number(m[1]);
+        i += 1 + m[0].length;
+      } else {
+        e = UNSUP[c];
+        i++;
+      }
+      const prev = out[out.length - 1];
+      if (!prev || (prev.t !== "num" && prev.t !== ")")) throw new TypeError("exponents: a power needs a base");
+      out.push({ t: "pow", v: e });
+    } else if ("+-−×*÷/".includes(c)) {
+      out.push({ t: "op", v: { "-": "−", "*": "×", "/": "÷" }[c] || c });
+      i++;
+    } else if (c === "(" || c === ")") {
+      out.push({ t: c });
+      i++;
+    } else throw new TypeError(`exponents: unexpected "${c}" in expression`);
+  }
+  return out;
+}
+
+function show(tokens) {
+  let out = "";
+  for (const k of tokens) {
+    if (k.t === "num") out += (out && !out.endsWith("(") ? " " : "") + k.v;
+    else if (k.t === "pow") out += SUP[k.v];
+    else if (k.t === "op") out += ` ${k.v}`;
+    else if (k.t === "(") out += (out ? " " : "") + "(";
+    else out += ")";
+  }
+  return out.trim();
+}
+
+function apply(a, op, b) {
+  const v = op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a * b : b !== 0 && a % b === 0 ? a / b : NaN;
+  if (!Number.isInteger(v) || v < 0) throw new RangeError("exponents: every step must give a whole number");
+  return v;
+}
+
+/* Index of the operator to do next in a flat run of tokens (no parentheses), and its rung. */
+function nextInFlat(toks, lo, hi, strict = false) {
+  for (let i = lo; i < hi; i++) if (toks[i].t === "pow") return { i, rung: "E" };
+  if (!strict) for (let i = lo; i < hi; i++) if (toks[i].t === "op" && (toks[i].v === "×" || toks[i].v === "÷")) return { i, rung: "MD" };
+  for (let i = lo; i < hi; i++) if (toks[i].t === "op") return { i, rung: "AS" };
+  return null;
+}
+
+/* One step: returns { rung, work, toks } or null when only a number is left. */
+function stepOnce(toks, strict = false) {
+  let open = -1;
+  let close = -1;
+  for (let i = 0; i < toks.length; i++) {
+    if (toks[i].t === "(") open = i;
+    else if (toks[i].t === ")") {
+      close = i;
+      break;
+    }
+  }
+  const inParens = open >= 0 && close > open;
+  const lo = inParens ? open + 1 : 0;
+  const hi = inParens ? close : toks.length;
+  const at = nextInFlat(toks, lo, hi, strict);
+  if (!at) {
+    if (inParens && hi - lo === 1) {
+      /* "(5)" is just 5: drop the parentheses and keep going. */
+      const next = [...toks.slice(0, open), toks[lo], ...toks.slice(close + 1)];
+      return stepOnce(next, strict);
+    }
+    return null;
+  }
+  const rung = inParens ? "P" : at.rung;
+  let next;
+  let work;
+  if (toks[at.i].t === "pow") {
+    const b = toks[at.i - 1];
+    if (b.t !== "num") throw new TypeError("exponents: work inside the parentheses first");
+    const e = toks[at.i].v;
+    const v = powInt(b.v, e);
+    work = `${pow(b.v, e)} = ${e > 1 ? `${Array.from({ length: e }, () => b.v).join(" × ")} = ` : ""}${v}`;
+    next = [...toks.slice(0, at.i - 1), { t: "num", v }, ...toks.slice(at.i + 1)];
+  } else {
+    const a = toks[at.i - 1];
+    const b = toks[at.i + 1];
+    if (a?.t !== "num" || b?.t !== "num") throw new TypeError("exponents: malformed expression");
+    const v = apply(a.v, toks[at.i].v, b.v);
+    work = `${a.v} ${toks[at.i].v} ${b.v} = ${v}`;
+    next = [...toks.slice(0, at.i - 1), { t: "num", v }, ...toks.slice(at.i + 2)];
+  }
+  /* A group that is now one number loses its parentheses unless a power still needs them. */
+  for (let i = 0; i + 2 < next.length; i++) {
+    if (next[i].t === "(" && next[i + 1].t === "num" && next[i + 2].t === ")") next.splice(i, 3, next[i + 1]);
+  }
+  return { rung, work, toks: next };
+}
+
+const walkCache = new Map();
+/** The whole walk for an expression: { start, lines: [{ rung, work, after }], value, leftToRight }. */
+export function orderWalk(expr) {
+  if (walkCache.has(expr)) return walkCache.get(expr);
+  let toks = tokenize(expr);
+  if (!toks.length || toks.filter((k) => k.t === "(").length !== toks.filter((k) => k.t === ")").length) {
+    throw new TypeError("exponents: unbalanced or empty expression");
+  }
+  const start = show(toks);
+  const lines = [];
+  for (let r = stepOnce(toks); r; r = stepOnce(toks)) {
+    toks = r.toks;
+    lines.push({ rung: r.rung, work: r.work, after: show(toks) });
+    if (lines.length > MAX_ORDER_STEPS) throw new RangeError("exponents: too many steps for one problem");
+  }
+  if (toks.length !== 1 || toks[0].t !== "num" || lines.length < 2) {
+    throw new TypeError("exponents: an order problem needs at least two operations");
+  }
+  /* The mistake worth naming: + − × ÷ strictly left to right (powers and parentheses still first). */
+  let lr = tokenize(expr);
+  let leftToRight = null;
+  try {
+    for (let r = stepOnce(lr, true); r; r = stepOnce(lr, true)) lr = r.toks;
+    leftToRight = lr.length === 1 ? lr[0].v : null;
+  } catch {
+    leftToRight = null;
+  }
+  const walk = { start, lines, value: toks[0].v, leftToRight: leftToRight === toks[0].v ? null : leftToRight };
+  walkCache.set(expr, walk);
+  return walk;
+}
 
 // ── State ────────────────────────────────────────────────────────────────────
 
 function validateState(st) {
   if (!st || !MODES.includes(st.mode)) return false;
+  if (st.mode === "order") {
+    if (typeof st.expr !== "string") return false;
+    try {
+      if (st.step > orderWalk(st.expr).lines.length) return false;
+    } catch {
+      return false;
+    }
+    if (!Array.isArray(st.presets) || !st.presets.length || !st.presets.every((e) => typeof e === "string")) return false;
+  } else if (st.expr !== null) return false;
+  if (!Number.isInteger(st.step) || st.step < 0) return false;
+  if (st.miss !== null && !RUNGS.includes(st.miss)) return false;
   if (!Number.isInteger(st.base) || st.base < 1 || st.base > 10) return false;
   if (!Number.isInteger(st.exponent) || st.exponent < 0 || st.exponent > 6) return false;
   if (!Number.isInteger(st.maxExponent) || st.maxExponent < 3 || st.maxExponent > 6) return false;
@@ -77,8 +245,10 @@ function derive(st) {
   const orderCorrect = st.addend + orderProduct;
   const orderLeftToRightTrap = (st.addend + st.multiplier) * expTerm;
   const orderMultiplyBaseTrap = st.addend + st.multiplier * (b * expCap);
+  const walk = st.mode === "order" ? orderWalk(st.expr) : null;
   return {
     ...st,
+    walk,
     power,
     additive,
     swapped,
@@ -122,7 +292,17 @@ function normalize(config) {
     compare: Boolean(compare),
     prediction: null,
     views,
+    step: 0,
+    miss: null,
+    /* Order mode reads one expression; the older a + m × b^n config still works and builds it. */
+    expr: mode === "order" ? (typeof c.expr === "string" ? c.expr : `${addend} + ${multiplier} × ${pow(base, Math.min(exponent, 4))}`) : null,
   };
+  if (state.expr) {
+    orderWalk(state.expr);
+    const list = Array.isArray(c.presets) && c.presets.length ? c.presets.map(String) : DEFAULT_PRESETS;
+    for (const e of list) orderWalk(e);
+    state.presets = [state.expr, ...list.filter((e) => e !== state.expr)];
+  } else state.presets = [];
   if (!validateState(state)) throw new TypeError("exponents: invalid configuration");
   return { state, task: c.task || null };
 }
@@ -168,6 +348,41 @@ function reduce(st, patch) {
       next.views[k] = Boolean(v);
     }
   }
+  /* Changing the numbers starts the stepper over. */
+  if (["base", "exponent", "addend", "multiplier"].some((k) => k in patch)) {
+    next.step = 0;
+    next.miss = null;
+  }
+  if ("expr" in patch) {
+    if (next.mode !== "order" || typeof patch.expr !== "string") return null;
+    try {
+      orderWalk(patch.expr);
+    } catch {
+      return null;
+    }
+    next.expr = patch.expr;
+    next.step = 0;
+    next.miss = null;
+  }
+  const path = next.mode === "order" ? orderWalk(next.expr).lines.map((l) => l.rung) : [];
+  if ("pick" in patch) {
+    if (!RUNGS.includes(patch.pick) || next.step >= path.length) return null;
+    if (patch.pick === path[next.step]) {
+      next.step += 1;
+      next.miss = null;
+    } else {
+      next.miss = patch.pick;
+    }
+  }
+  if (patch.reveal === true) {
+    if (next.step >= path.length) return null;
+    next.step += 1;
+    next.miss = null;
+  }
+  if (patch.restart === true) {
+    next.step = 0;
+    next.miss = null;
+  }
   return validateState(next) ? next : null;
 }
 
@@ -176,9 +391,17 @@ function reduce(st, patch) {
 function accessibleDescription(st, lang) {
   const d = derive(st);
   if (d.mode === "order") {
+    const expr = d.walk.start;
+    const done = d.walk.lines.slice(0, d.step);
+    if (!done.length) {
+      return t(lang, {
+        en: `Order of operations steps for ${expr}. No steps done yet. Pick the step that comes first.`,
+        es: `Pasos del orden de las operaciones para ${expr}. Todavía no hay pasos. Elige el paso que va primero.`,
+      });
+    }
     return t(lang, {
-      en: `Order of operations model. The expression is ${d.addend} + ${d.multiplier} × ${d.base}^${d.expCap}. Evaluating the exponent first gives ${d.expTerm}, multiplying by ${d.multiplier} gives ${d.orderProduct}, and adding ${d.addend} gives ${d.orderCorrect}.`,
-      es: `Modelo de orden de operaciones. La expresión es ${d.addend} + ${d.multiplier} × ${d.base}^${d.expCap}. Evaluar el exponente primero da ${d.expTerm}, multiplicar por ${d.multiplier} da ${d.orderProduct}, y sumar ${d.addend} da ${d.orderCorrect}.`,
+      en: `Order of operations steps for ${expr}. ${done.map((l) => `${l.work}, so the expression is now ${l.after}.`).join(" ")}`,
+      es: `Pasos del orden de las operaciones para ${expr}. ${done.map((l) => `${l.work}, así que la expresión ahora es ${l.after}.`).join(" ")}`,
     });
   }
   return t(lang, {
@@ -190,9 +413,16 @@ function accessibleDescription(st, lang) {
 function explanation(st, lang) {
   const d = derive(st);
   if (d.mode === "order") {
+    const NAME = {
+      P: { en: "inside the parentheses", es: "dentro de los paréntesis" },
+      E: { en: "the power", es: "la potencia" },
+      MD: { en: "multiply or divide", es: "multiplicar o dividir" },
+      AS: { en: "add or subtract", es: "sumar o restar" },
+    };
+    const parts = d.walk.lines.map((l) => `${t(lang, NAME[l.rung])} (${l.work})`);
     return t(lang, {
-      en: `In ${d.addend} + ${d.multiplier} × ${d.base}^${d.expCap}, evaluate the exponent first (${d.base}^${d.expCap} = ${d.expTerm}), then multiply (${d.multiplier} × ${d.expTerm} = ${d.orderProduct}), and add last (${d.addend} + ${d.orderProduct} = ${d.orderCorrect}). Adding ${d.addend} + ${d.multiplier} first would give ${d.orderLeftToRightTrap}, which only works if parentheses are around ${d.addend} + ${d.multiplier}.`,
-      es: `En ${d.addend} + ${d.multiplier} × ${d.base}^${d.expCap}, evalúa el exponente primero (${d.base}^${d.expCap} = ${d.expTerm}), luego multiplica (${d.multiplier} × ${d.expTerm} = ${d.orderProduct}), y suma al final (${d.addend} + ${d.orderProduct} = ${d.orderCorrect}). Sumar ${d.addend} + ${d.multiplier} primero daría ${d.orderLeftToRightTrap}, lo cual solo ocurre si hay paréntesis alrededor de ${d.addend} + ${d.multiplier}.`,
+      en: `In ${d.walk.start}: ${parts.join(", then ")}. The value is ${d.walk.value}.`,
+      es: `En ${d.walk.start}: ${parts.join(", luego ")}. El valor es ${d.walk.value}.`,
     });
   }
   if (d.exponent === 0) {
@@ -243,11 +473,12 @@ function validateTask(st, task) {
   }
 
   if (task.kind === "evaluate-order") {
-    const want = frac(d.orderCorrect);
-    const given = toFrac(task.answer !== undefined ? task.answer : d.orderCorrect);
+    const want = frac(d.mode === "order" ? d.walk.value : d.orderCorrect);
+    const given = toFrac(task.answer !== undefined ? task.answer : want);
     if (!given) return none("invalid-answer");
     if (eq(given, want)) return none("correct", true);
-    if (eq(given, frac(d.orderLeftToRightTrap))) return wrong("left-to-right-before-exponent");
+    const trap = d.mode === "order" ? d.walk.leftToRight : d.orderLeftToRightTrap;
+    if (trap !== null && eq(given, frac(trap))) return wrong("left-to-right-before-exponent");
     if (eq(given, frac(d.orderMultiplyBaseTrap))) return wrong("exponent-as-multiplier");
     return wrong(null);
   }
@@ -266,7 +497,7 @@ export const create = defineFamily({
   validateTask,
   accessibleDescription,
   explanation,
-  track: (patch) => !("views" in patch) && !("prediction" in patch),
+  track: (patch) => !("views" in patch) && !("prediction" in patch) && !("pick" in patch),
   describeConfig: (st) => ({
     mode: st.mode,
     base: fracToString(frac(st.base)),
@@ -300,6 +531,38 @@ const STR = {
   expRow: { en: "Repeated multiplication (b^n)", es: "Multiplicación repetida (b^n)" },
   linRow: { en: "Multiplier trap (b × n)", es: "Trampa de multiplicar (b × n)" },
 };
+
+const OSTR = {
+  keys: { P: "P", E: "E", MD: "M D", AS: "A S" },
+  rung: {
+    P: { en: "Parentheses ( )", es: "Paréntesis ( )" },
+    E: { en: "Exponents", es: "Exponentes" },
+    MD: { en: "Multiply × or Divide ÷", es: "Multiplicar × o dividir ÷" },
+    AS: { en: "Add + or Subtract −", es: "Sumar + o restar −" },
+  },
+  rungSub: {
+    P: { en: "Work inside them first", es: "Primero lo de adentro" },
+    E: { en: "Powers like 2³", es: "Potencias como 2³" },
+    MD: { en: "Left to right", es: "De izquierda a derecha" },
+    AS: { en: "Left to right", es: "De izquierda a derecha" },
+  },
+  doneTag: { en: " (done)", es: " (hecho)" },
+  ladder: { en: "The order, top to bottom", es: "El orden, de arriba abajo" },
+  steps: { en: "Our steps", es: "Nuestros pasos" },
+  solve: { en: "Solve:", es: "Resuelvan:" },
+  start: { en: "Start", es: "Inicio" },
+  answer: { en: "Answer:", es: "Respuesta:" },
+  askFirst: { en: "What do you do first? Tap that step on the ladder.", es: "¿Qué hacen primero? Toquen ese paso en la escalera." },
+  askNext: { en: "Nice! What comes next? Tap the next step on the ladder.", es: "¡Bien! ¿Qué sigue? Toquen el siguiente paso en la escalera." },
+  done: { en: "Done! One expression, one answer.", es: "¡Listo! Una expresión, una respuesta." },
+  reveal: { en: "Show me the next step", es: "Muéstrame el siguiente paso" },
+  next: { en: "New problem", es: "Problema nuevo" },
+  restart: { en: "Start over", es: "Empezar de nuevo" },
+};
+
+/* "New problem" walks this list unless the lesson names its own (config.presets). Small numbers and
+   small powers, so a family can check every line by hand. */
+const DEFAULT_PRESETS = ["4 + 3 × 2³", "5 + 3 × 2²", "10 + 2 × 3²", "1 + 4 × 5²", "6 + 2 × 2⁴"];
 
 const W = 520;
 const H = 210;
@@ -360,11 +623,143 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     });
   }
 
+  // ── Order mode: a vertical ladder and a vertical list of steps ─────────────
+  function buildOrder() {
+    ui.expr = h("p", { class: "fm-oo-expr" });
+    ui.rungs = {};
+    const ladder = h("ol", { class: "fm-oo-ladder", "aria-label": t(L, OSTR.ladder) });
+    for (const id of RUNGS) {
+      const btn = h(
+        "button",
+        { type: "button", class: "fm-btn fm-oo-rung", "data-rung": id, disabled: readonly ? "" : null },
+        h("span", { class: "fm-oo-key", "aria-hidden": "true" }, OSTR.keys[id]),
+        h("span", { class: "fm-oo-name" }, h("strong", null, t(L, OSTR.rung[id])), h("small", null, t(L, OSTR.rungSub[id]))),
+        h("span", { class: "fm-oo-tick" }, h("span", { "aria-hidden": "true" }, "✓"), h("span", { class: "fm-sr" }, t(L, OSTR.doneTag))),
+      );
+      if (!readonly) bag.on(btn, "click", () => model.setState({ pick: id }));
+      ui.rungs[id] = btn;
+      put(ladder, h("li", null, btn));
+    }
+    ui.steps = h("ol", { class: "fm-oo-steps", "aria-label": t(L, OSTR.steps) });
+    ui.ask = h("p", { class: "fm-oo-ask", role: "status" });
+    ui.explain = h("p", { class: "fm-explain" });
+    ui.watch = h("p", { class: "fm-oo-watch" });
+    ui.desc = h("p", { class: "fm-sr" });
+    const controls = [];
+    if (!readonly) {
+      ui.revealBtn = button(bag, t(L, OSTR.reveal), { onClick: () => model.setState({ reveal: true }) });
+      ui.newBtn = button(bag, t(L, OSTR.next), {
+        onClick: () => {
+          const { presets, expr } = state();
+          model.setState({ expr: presets[(presets.indexOf(expr) + 1) % presets.length] });
+        },
+      });
+      ui.restartBtn = button(bag, t(L, OSTR.restart), { onClick: () => model.setState({ restart: true }) });
+      controls.push(h("div", { class: "fm-row" }, ui.revealBtn, ui.newBtn, ui.restartBtn));
+    }
+    put(
+      root,
+      model.task?.prompt ? h("p", { class: "fm-prompt" }, t(L, model.task.prompt)) : null,
+      ui.expr,
+      h("div", { class: "fm-oo-grid" }, h("section", { class: "fm-oo-col", "aria-label": t(L, OSTR.ladder) }, h("p", { class: "fm-oo-head" }, t(L, OSTR.ladder)), ladder), h("section", { class: "fm-oo-col", "aria-label": t(L, OSTR.steps) }, h("p", { class: "fm-oo-head" }, t(L, OSTR.steps)), ui.steps)),
+      ui.ask,
+      ...controls,
+      ui.explain,
+      ui.watch,
+      ui.desc,
+    );
+  }
+
+  function syncOrder() {
+    const d = state();
+    const lines = d.walk.lines;
+    const expr = d.walk.start;
+    clear(ui.expr);
+    put(ui.expr, t(L, OSTR.solve), " ", h("strong", { class: "fm-oo-math" }, expr));
+    const doneRungs = new Set(lines.slice(0, d.step).map((l) => l.rung));
+    for (const id of RUNGS) {
+      const btn = ui.rungs[id];
+      btn.classList.toggle("is-done", doneRungs.has(id));
+      btn.classList.toggle("is-miss", d.miss === id);
+      if (!readonly) btn.disabled = d.step >= lines.length;
+    }
+    clear(ui.steps);
+    put(ui.steps, h("li", { class: "fm-oo-line is-start" }, h("span", { class: "fm-oo-badge" }, t(L, OSTR.start)), h("span", { class: "fm-oo-math" }, expr)));
+    lines.slice(0, d.step).forEach((l) => {
+      put(
+        ui.steps,
+        h(
+          "li",
+          { class: "fm-oo-line" },
+          h("span", { class: "fm-oo-badge" }, OSTR.keys[l.rung]),
+          h(
+            "span",
+            { class: "fm-oo-work" },
+            h("span", { class: "fm-oo-math" }, l.work),
+            l.rung === "AS" ? null : h("span", { class: "fm-oo-after" }, "→ ", h("span", { class: "fm-oo-math" }, l.after)),
+          ),
+        ),
+      );
+    });
+    const finished = d.step >= lines.length;
+    if (finished) put(ui.steps, h("li", { class: "fm-oo-line is-answer" }, h("span", { class: "fm-oo-badge" }, "✓"), h("strong", { class: "fm-oo-math" }, `${t(L, OSTR.answer)} ${d.walk.value}`)));
+    ui.ask.textContent = finished ? t(L, OSTR.done) : d.miss ? missText(d) : t(L, d.step === 0 ? OSTR.askFirst : OSTR.askNext);
+    ui.ask.classList.toggle("is-miss", Boolean(d.miss));
+    if (ui.revealBtn) ui.revealBtn.disabled = finished;
+    ui.explain.textContent = finished ? model.getMathematicalExplanation(L) : "";
+    ui.explain.hidden = !finished;
+    const trap = d.walk.leftToRight;
+    ui.watch.textContent =
+      finished && trap !== null
+        ? t(L, {
+            en: `Watch out: doing + − × ÷ strictly left to right gives ${trap}, not ${d.walk.value}. That is why the order matters.`,
+            es: `Cuidado: hacer + − × ÷ solo de izquierda a derecha da ${trap}, no ${d.walk.value}. Por eso el orden importa.`,
+          })
+        : "";
+    ui.watch.hidden = !ui.watch.textContent;
+    ui.desc.textContent = model.getAccessibleDescription(L);
+  }
+
+  /** What to say after a wrong rung: why not that one, never the answer. */
+  function missText(d) {
+    const path = d.walk.lines.map((l) => l.rung);
+    const want = path[d.step];
+    const order = RUNGS.indexOf(d.miss) - RUNGS.indexOf(want);
+    if (d.miss === "P") {
+      return t(L, {
+        en: "Good habit to check! There are no parentheses left to work in, so move down the ladder.",
+        es: "¡Buen hábito revisar! Ya no quedan paréntesis por resolver, así que bajen por la escalera.",
+      });
+    }
+    if (want === "P") {
+      return t(L, {
+        en: "Not yet. Look for parentheses ( ). Work inside them first.",
+        es: "Todavía no. Busquen paréntesis ( ). Primero se trabaja adentro.",
+      });
+    }
+    if (!path.slice(d.step).includes(d.miss)) {
+      return t(L, { en: "That kind of step is already done. Look farther down the ladder.", es: "Ese tipo de paso ya está hecho. Miren más abajo en la escalera." });
+    }
+    if (want === "E") {
+      return t(L, {
+        en: "Not yet. Is there a power, like 2³? Powers come before × ÷ + −.",
+        es: "Todavía no. ¿Hay una potencia, como 2³? Las potencias van antes de × ÷ + −.",
+      });
+    }
+    return order > 0
+      ? t(L, { en: "Not yet. × and ÷ come before + and −. Look one step higher.", es: "Todavía no. × y ÷ van antes de + y −. Miren un paso más arriba." })
+      : t(L, { en: "Not yet. Look farther down the ladder.", es: "Todavía no. Miren más abajo en la escalera." });
+  }
+
   function build(v) {
     bag = v.bag;
     L = v.lang;
     ui = {};
     const st = state();
+    if (st.mode === "order") {
+      buildOrder();
+      return;
+    }
 
     ui.prompt = model.task?.prompt ? h("p", { class: "fm-prompt" }, t(L, model.task.prompt)) : null;
     ui.explain = h("p", { class: "fm-explain" });
@@ -698,6 +1093,10 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
 
   function sync(v, force) {
     const d = state();
+    if (d.mode === "order") {
+      syncOrder();
+      return;
+    }
     drawChart(d);
     drawSliderTrack(ui.baseSlider, 1, 10, d.base, "b=");
     drawSliderTrack(ui.expSlider, 0, d.maxExponent, d.exponent, "n=");

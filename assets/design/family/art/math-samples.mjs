@@ -86,4 +86,17 @@ export const SAMPLES = [
   },
   { id: "fraction", kind: "fraction", data: { parts: 8, shaded: 3, label: "3/8" } },
   { id: "balance", kind: "balance", data: { left: ["x", 3], right: [11], unknown: "x" } },
+  {
+    id: "order",
+    kind: "order",
+    data: {
+      steps: [
+        { rule: "start", expr: "4 + 3 × (9 − 7)²" },
+        { rule: "P", expr: "4 + 3 × 2²" },
+        { rule: "E", expr: "4 + 3 × 4" },
+        { rule: "MD", expr: "4 + 12" },
+        { rule: "AS", expr: "16" },
+      ],
+    },
+  },
 ];

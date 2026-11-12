@@ -649,3 +649,145 @@
     stroke: CanvasText;
   }
 }
+
+/* Order of operations stepper (exponents "order" mode): the ladder and the steps are both vertical
+   lists. Two columns side by side when there is room, stacked on a phone. A done rung shows a tick
+   and a solid edge; a wrong pick shows a dashed edge, so neither depends on colour. */
+.fm-oo-expr {
+  margin: 0;
+  font-size: var(--fm-fs-md);
+}
+.fm-oo-math {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fm-oo-expr .fm-oo-math {
+  font-size: var(--fm-fs-lg);
+}
+.fm-oo-grid {
+  display: grid;
+  gap: var(--fm-space-4);
+}
+@media (min-width: 36rem) {
+  .fm-oo-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.fm-oo-col {
+  display: grid;
+  gap: var(--fm-space-2);
+  min-width: 0;
+}
+.fm-oo-head {
+  margin: 0;
+  color: var(--fm-text-muted);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-oo-ladder,
+.fm-oo-steps {
+  display: grid;
+  gap: var(--fm-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fm-oo-rung {
+  display: flex;
+  gap: var(--fm-space-3);
+  align-items: center;
+  width: 100%;
+  color: var(--fm-text);
+  text-align: start;
+}
+.fm-oo-key {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding-inline: var(--fm-space-1);
+  color: var(--fm-on-primary);
+  background: var(--fm-primary);
+  border-radius: var(--fm-radius-sm);
+  font-weight: var(--fm-fw-bold);
+  white-space: nowrap;
+}
+.fm-oo-name {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.fm-oo-name small {
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-oo-tick {
+  display: none;
+  color: var(--fm-success-ink);
+  font-size: var(--fm-fs-lg);
+}
+.fm-oo-rung.is-done {
+  background: var(--fm-success-tint);
+  border-color: var(--fm-success-ink);
+}
+.fm-oo-rung.is-done .fm-oo-tick {
+  display: inline;
+}
+.fm-oo-rung.is-miss {
+  border-style: dashed;
+  border-color: var(--fm-highlight-ink);
+}
+.fm-oo-rung:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.fm-oo-line {
+  display: flex;
+  gap: var(--fm-space-3);
+  align-items: center;
+  min-height: var(--fm-target);
+  padding: var(--fm-space-2) var(--fm-space-3);
+  background: var(--fm-sunken);
+  border: var(--fm-line) solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  font-size: var(--fm-fs-md);
+}
+.fm-oo-line.is-answer {
+  background: var(--fm-success-tint);
+  border-color: var(--fm-success-ink);
+}
+.fm-oo-badge {
+  flex: none;
+  min-width: 3.25rem;
+  color: var(--fm-accent-ink);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-bold);
+  white-space: nowrap;
+}
+.fm-oo-work {
+  display: grid;
+  gap: var(--fm-space-1);
+  min-width: 0;
+}
+.fm-oo-after {
+  color: var(--fm-text-muted);
+}
+.fm-oo-ask {
+  margin: 0;
+  padding: var(--fm-space-3);
+  background: var(--fm-accent-tint);
+  border-inline-start: 4px solid var(--fm-accent-ink);
+  border-radius: var(--fm-radius-sm);
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-oo-ask.is-miss {
+  background: var(--fm-highlight-tint);
+  border-inline-start-color: var(--fm-highlight-ink);
+}
+.fm-oo-watch {
+  margin: 0;
+  color: var(--fm-text-muted);
+}

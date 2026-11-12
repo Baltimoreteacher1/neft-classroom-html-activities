@@ -166,6 +166,7 @@ export const TYPE_NAME = {
   barplot: { en: "Bar graph", es: "Gráfica de barras" },
   fraction: { en: "Fraction bar", es: "Barra de fracciones" },
   balance: { en: "Balance", es: "Balanza" },
+  order: { en: "Order of operations steps", es: "Pasos del orden de las operaciones" },
 };
 
 /**

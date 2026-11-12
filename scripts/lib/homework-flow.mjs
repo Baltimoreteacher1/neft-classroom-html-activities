@@ -70,7 +70,7 @@ export function renderLookAndLearn(
   const steps = Array.isArray(notes.conceptSteps) ? notes.conceptSteps : [];
   const why = notes.bridge?.why;
   return `
-      ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal, watch the picture build step by step, then follow the example.", "Lean la meta, miren cómo se arma el dibujo paso a paso y luego sigan el ejemplo.")}
+      ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal and look at the picture. Then go through the example one step at a time.", "Lean la meta y miren el dibujo. Luego sigan el ejemplo un paso a la vez.")}
       ${
         goal
           ? `<section class="fp-card fp-goal" aria-labelledby="hw_goal_label">
@@ -82,10 +82,10 @@ export function renderLookAndLearn(
       ${modelHtml}
       ${
         steps.length
-          ? `<section class="fp-card fp-example" aria-labelledby="hw_example_label">
+          ? `<section class="fp-card fp-example" aria-labelledby="hw_example_label" data-reveal>
         <p class="fp-label" id="hw_example_label">${bi("Worked example", "Ejemplo resuelto")}</p>
         <ol class="fp-steps">${steps.map((s) => `<li>${pair(s)}</li>`).join("")}</ol>
-        ${why ? `<p class="fp-why"><strong>${bi("Why it works", "Por qué funciona")}</strong> ${pair(why)}</p>` : ""}
+        ${why ? `<p class="fp-why" data-reveal-after><strong>${bi("Why it works", "Por qué funciona")}</strong> ${pair(why)}</p>` : ""}
       </section>`
           : ""
       }
@@ -105,7 +105,7 @@ export function renderTryTogether(
   const q = tryQuestion(notes);
   return `
       ${stepHead(2, "Try Together", "Prueben juntos", "Do this one side by side. Use the model, and ask for a hint whenever you want one.", "Háganlo lado a lado. Usen el modelo y pidan una pista cuando quieran.")}
-      <section class="fp-card fp-try" aria-labelledby="hw_try_label">
+      <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
         <p class="fp-label" id="hw_try_label">${bi("Try this one together", "Prueben este juntos")}</p>
         ${t.scenarioEn ? `<p class="fp-try-scenario">${bi(t.scenarioEn, t.scenarioEs)}</p>` : ""}
         <ol class="fp-steps fp-steps--try">

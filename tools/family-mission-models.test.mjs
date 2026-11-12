@@ -744,3 +744,64 @@ test("exponents: repeated multiplication, misconceptions, and DOM mount", () => 
   assert.match(root.textContent, /Base|Exponente/);
   domM.destroy();
 });
+
+test("exponents order: one operation per line, ladder rungs, and whole-number refusals", async () => {
+  const { orderWalk } = await import("../assets/family-mission/models/exponents.mjs");
+  const w = orderWalk("30 ÷ (11 − 6) + 2³");
+  assert.deepEqual(
+    w.lines.map((l) => [l.rung, l.work, l.after]),
+    [
+      ["P", "11 − 6 = 5", "30 ÷ 5 + 2³"],
+      ["E", "2³ = 2 × 2 × 2 = 8", "30 ÷ 5 + 8"],
+      ["MD", "30 ÷ 5 = 6", "6 + 8"],
+      ["AS", "6 + 8 = 14", "14"],
+    ],
+  );
+  assert.equal(w.value, 14);
+  // 4 + 3 × (9 − 7)²: parentheses, power, multiply, add = 16; strictly left to right gives 28.
+  const g = orderWalk("4 + 3 × (9 − 7)²");
+  assert.equal(g.value, 16);
+  assert.equal(g.leftToRight, 28);
+  assert.equal(orderWalk("5 + 3 × 2²").value, 17);
+  for (const bad of ["7 ÷ 2 + 1", "3 − 5 + 1", "(2 + 3", "5", "2 + x"])
+    assert.throws(() => orderWalk(bad));
+});
+
+test("exponents order: a wrong rung coaches without advancing, the right rung writes the line", () => {
+  const m = createModel("exponents", { mode: "order", expr: "4 + 3 × (9 − 7)²" });
+  assert.equal(m.setState({ pick: "E" }), true);
+  assert.equal(m.getState().step, 0);
+  assert.equal(m.getState().miss, "E");
+  for (const r of ["P", "E", "MD", "AS"]) m.setState({ pick: r });
+  assert.equal(m.getState().step, 4);
+  assert.equal(m.setState({ reveal: true }), false); // nothing left to reveal
+  assert.equal(m.validate({ kind: "evaluate-order", answer: 16 }).ok, true);
+  assert.equal(
+    m.validate({ kind: "evaluate-order", answer: 28 }).misconception?.id,
+    "left-to-right-before-exponent",
+  );
+  // The older a + m × b^n config still builds its expression.
+  assert.equal(
+    createModel("exponents", {
+      mode: "order",
+      base: 2,
+      exponent: 3,
+      addend: 4,
+      multiplier: 3,
+    }).getState().expr,
+    "4 + 3 × 2³",
+  );
+  assert.throws(() => createModel("exponents", { mode: "order", expr: "9 ÷ 2 + 1" }));
+
+  const { root, m: dm } = mount("exponents", { mode: "order", expr: "5 + 3 × 2²" });
+  const rung = (id) => root.querySelector(`[data-rung="${id}"]`);
+  rung("AS").click();
+  assert.equal(root.querySelectorAll(".fm-oo-line").length, 1); // only the start line
+  assert.doesNotMatch(root.querySelector(".fm-oo-ask").textContent, /17/); // a hint never states the answer
+  for (const r of ["E", "MD", "AS"]) rung(r).click();
+  assert.match(root.querySelector(".fm-oo-steps").textContent, /Answer: 17/);
+  assert.match(root.querySelector(".fm-oo-watch").textContent, /32/);
+  dm.setLang("es");
+  assert.match(root.textContent, /Exponentes/);
+  dm.destroy();
+});

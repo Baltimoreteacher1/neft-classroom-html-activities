@@ -178,14 +178,14 @@ export function renderMissionModelHost(config) {
   return `
     <section class="hw-mission-model" id="hw_mission_model" aria-labelledby="hw_mm_title" data-mission-model data-family="${esc(spec.family)}" data-config="${esc(JSON.stringify(spec.config))}">
       <div class="hw-mm-head">
-        <span class="hw-mm-badge">${bi("Living Math · Interactive Model", "Matemáticas vivas · Modelo interactivo")}</span>
+        <span class="hw-mm-badge">${bi("Hands-on model", "Modelo para tocar")}</span>
         <h2 class="hw-mm-title" id="hw_mm_title">${bi("Try it yourself", "Pruébalo tú")}</h2>
       </div>
       <p class="hw-mm-lead">${bi(spec.leadEn, spec.leadEs)}</p>
       <div class="hw-mm-stage" data-mission-stage></div>
       <p class="hw-mm-status" role="status" aria-live="polite" data-mission-status></p>
       <div class="hw-mm-transition">
-        <p class="hw-mm-predict">${bi("Prediction check: Before you move to Your Turn, predict what will happen when you change one value by 1 step, then test your prediction above.", "Comprobación de predicción: Antes de pasar a Tu turno, predice qué pasará cuando cambies un valor en 1 paso y luego pruébalo arriba.")}</p>
+        <p class="hw-mm-predict">${bi("Before you go on: say one thing the model showed you.", "Antes de seguir: digan una cosa que les mostró el modelo.")}</p>
         <button type="button" class="fm-btn fm-btn--primary" ${act("switchHomeworkTab", "check")}>${bi("Ready for Your Turn →", "Listo para Tu turno →")}</button>
       </div>
     </section>`;

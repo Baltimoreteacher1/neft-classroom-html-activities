@@ -304,10 +304,17 @@ test("family homework is one five-step flow; games and photobooth stay on the ra
       ["talk", "apply", "words"],
       id,
     );
+    // The side group: lesson Notes (a drawer, not a stop), then Games and Photobooth.
     assert.deepEqual(
-      [...d.querySelectorAll(".hw-fun-zone .homework-tab-extra")].map((b) => b.dataset.tab),
-      ["play", "photobooth"],
+      [...d.querySelectorAll(".hw-fun-zone .homework-tab-extra")].map((b) => b.dataset.tab || b.id),
+      ["hw_notes_btn", "play", "photobooth"],
       id,
+    );
+    // The notes are built on first open from the lesson's own sidecar, so that file must exist.
+    assert.ok(d.querySelector("#hw_notes_btn"), id);
+    assert.ok(
+      existsSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url)),
+      `${id}: notes sidecar`,
     );
     assert.ok(
       d.querySelector(".hw-session-banner a[href*='-part2/homework.html']"),

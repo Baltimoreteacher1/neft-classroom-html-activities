@@ -70,6 +70,7 @@ import { FLOW_JS } from "./lib/homework-flow-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
+import { NOTES_JS, renderNotesButton } from "./lib/homework-notes.mjs";
 import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
@@ -1394,6 +1395,7 @@ function generateHtml(lessonId, config) {
     tabPanels,
     renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
     config.unit,
+    renderNotesButton(),
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
@@ -1598,6 +1600,7 @@ ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${MISSION_JS}
 ${FLOW_JS}
+${NOTES_JS}
 ${PRACTICE_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}

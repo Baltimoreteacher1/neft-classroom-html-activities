@@ -9231,7 +9231,12 @@ export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
  * separate rail was added to answer — where am I, how long is this, what have
  * we finished — without a second row competing with it for the same job.
  */
-export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null) {
+export function renderHomeworkTabs(
+  panelsHtml,
+  helpDrawerHtml = "",
+  unit = null,
+  notesButtonHtml = "",
+) {
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml(unit);
   const tabBtn = (t, i) => `
@@ -9267,7 +9272,7 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${HOMEWORK_EXTRA_TABS.filter(
+        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${notesButtonHtml}${HOMEWORK_EXTRA_TABS.filter(
           (t) => FUN_STOPS.has(t.id),
         )
           .map(funBtn)

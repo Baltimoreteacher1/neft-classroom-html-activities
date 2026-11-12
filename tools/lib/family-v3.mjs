@@ -15,6 +15,7 @@ export const MODEL_KINDS = [
   "barplot",
   "fraction",
   "balance",
+  "order",
   "none",
 ];
 
@@ -34,6 +35,30 @@ const BANNED = [
 ];
 const USTED = /\b(Pregunte|Escuche|Pida|Anime|Evite|Elija|Diga|Dígale|Dele|Observe)\b/;
 const OFF_TERMS = [/\bel entero\b/i, /\bdel todo\b/i];
+
+/* An order-of-operations picture rewrites one expression line by line. Every line must have the SAME
+   value as the first (recomputed exactly), and the rules must walk the ladder downward. */
+const ORDER_RANK = { start: 0, P: 1, E: 2, MD: 3, AS: 4 };
+export function orderProblems(data) {
+  const steps = Array.isArray(data?.steps) ? data.steps : [];
+  if (steps.length < 2) return ["order needs at least 2 steps"];
+  const out = [];
+  let want = null;
+  let rank = 0;
+  steps.forEach((s, i) => {
+    if (!(s?.rule in ORDER_RANK)) return void out.push(`steps[${i}].rule unknown`);
+    if ((i === 0) !== (s.rule === "start")) out.push(`steps[${i}]: only the first line is "start"`);
+    if (ORDER_RANK[s.rule] < rank)
+      out.push(`steps[${i}]: ${s.rule} comes before an earlier rule on the ladder`);
+    rank = Math.max(rank, ORDER_RANK[s.rule]);
+    const v = evaluateExpression(String(s.expr ?? "").replace(/\$/g, ""));
+    if (!v) return void out.push(`steps[${i}].expr "${s.expr}" is not arithmetic`);
+    if (want === null) want = v;
+    else if (v.toString() !== want.toString())
+      out.push(`steps[${i}].expr = ${v} but the first line = ${want}`);
+  });
+  return out;
+}
 
 const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
 const str = (v) => (typeof v === "string" ? v.trim() : "");
@@ -165,6 +190,7 @@ export function checkV3(v3, ctx) {
       if (!isObj(m.data) || Object.keys(m.data).length === 0) add("model.data required");
       if (!biOk(m.alt)) add("model.alt needs en + es");
       else if (!/\d/.test(m.alt.en)) add("model.alt must mention the model's numbers");
+      if (m.kind === "order") for (const msg of orderProblems(m.data)) add(`model.data: ${msg}`);
     }
   }
 

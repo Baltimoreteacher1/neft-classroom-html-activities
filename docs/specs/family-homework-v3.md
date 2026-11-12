@@ -29,7 +29,7 @@ Socratic prompts), `bridge` (`class` = "in class today", `before` = "how you may
   },
   "classModel": { "name": { "en": "the 10% stepping stone", "es": "el peldaño del 10%" } },  // the lesson's own model/method name, used in headings and alt text
   "model": {                            // data -> SVG (assets/design/family/art/math-models.mjs). kind "none" only for mindset lessons.
-    "kind": "tape",                     // tape | doubleline | ratiotable | area | grid | numberline | coord | barplot | fraction | balance | none
+    "kind": "tape",                     // tape | doubleline | ratiotable | area | grid | numberline | coord | barplot | fraction | balance | order | none
     "data": { },                        // shape per kind below, built from the lesson's OWN numbers
     "alt": { "en": "", "es": "" }       // a real text alternative describing the math, mentions the numbers
   },
@@ -83,6 +83,7 @@ Socratic prompts), `bridge` (`class` = "in class today", `before` = "how you may
 | `barplot`    | `{ categories: [{ label, value }], unit }`                                                                                                            |
 | `fraction`   | `{ parts, shaded, label }`                                                                                                                            |
 | `balance`    | `{ left: [..], right: [..], unknown }`                                                                                                                |
+| `order`      | `{ steps: [{ rule: "start"\|"P"\|"E"\|"MD"\|"AS", expr }] }` — the expression rewritten one step per line; every line must equal the first (exact arithmetic), rules walk the ladder downward |
 | `none`       | `{}`                                                                                                                                                  |
 
 ## Rules the gates enforce

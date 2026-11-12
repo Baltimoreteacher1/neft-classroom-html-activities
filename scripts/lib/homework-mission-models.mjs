@@ -339,11 +339,24 @@ export const LESSON_MODELS = {
     },
   },
   "6-4": {
-    ...fam("exponents", { mode: "order", base: 2, exponent: 3, addend: 4, multiplier: 3 }),
+    /* The same problem as Try Together (5 + 3 × 2²), so the model walks the family through it. */
+    ...fam("exponents", { mode: "order", base: 2, exponent: 2, addend: 5, multiplier: 3 }),
     ...lead(
-      "Evaluate the exponent first, then multiply, and add last.",
-      "Evalúa el exponente primero, luego multiplica y suma al final.",
+      "Read the order from top to bottom. Tap the step that comes next, and watch the problem get shorter.",
+      "Lean el orden de arriba abajo. Toquen el paso que sigue y vean cómo el problema se hace más corto.",
     ),
+    /* Part 2 adds grouping: the same problem as its Try Together, then two more with parentheses. */
+    part2: {
+      config: {
+        mode: "order",
+        expr: "30 ÷ (11 − 6) + 2³",
+        presets: ["4 + 3 × (9 − 7)²", "(8 − 2) × 3 + 2²", "40 − (3 + 1)² ÷ 2"],
+      },
+      ...lead(
+        "Parentheses are the top step now. Tap the step that comes next, and watch the problem get shorter.",
+        "Ahora los paréntesis son el primer paso. Toquen el paso que sigue y vean cómo el problema se hace más corto.",
+      ),
+    },
   },
   "6-5": {
     ...fam("balance", { combine: [[2, 3]], x: 4 }),

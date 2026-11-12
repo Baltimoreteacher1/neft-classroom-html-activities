@@ -2,7 +2,7 @@
 //
 //   renderModel({ kind, data, alt }, { lang: "en" | "es" }) -> string
 //
-// kinds: tape, doubleline, ratiotable, area, grid, numberline, coord, barplot, fraction, balance, none.
+// kinds: tape, doubleline, ratiotable, area, grid, numberline, coord, barplot, fraction, balance, order, none.
 // Data shapes are fixed by docs/specs/family-homework-v3.md ("model.data by kind"). An unknown kind or a missing
 // required field THROWS: there is no generic fallback diagram (a generic 3-part tape on 30 unrelated lessons is
 // exactly what this library replaces). Output is deterministic: same input, same bytes.
@@ -378,6 +378,75 @@ function fraction(d, { lang }) {
   return { h: 116, body, defs, desc };
 }
 
+// ---------------------------------------------------------------- order
+// Order of operations, drawn vertically: the ladder (P, E, M D, A S) on top with the rungs this
+// problem uses filled and numbered, then the expression rewritten one line per step, top to bottom.
+// The arithmetic of every line is checked by tools/lib/family-v3.mjs, not here.
+const ORDER_RUNGS = [
+  { id: "P", key: "P", en: "Parentheses ( )", es: "Paréntesis ( )" },
+  { id: "E", key: "E", en: "Exponents (powers)", es: "Exponentes (potencias)" },
+  { id: "MD", key: "M D", en: "Multiply × or divide ÷", es: "Multiplicar × o dividir ÷" },
+  { id: "AS", key: "A S", en: "Add + or subtract −", es: "Sumar + o restar −" },
+];
+export const ORDER_RULES = ["start", ...ORDER_RUNGS.map((r) => r.id)];
+
+function order(d, { lang }) {
+  assertKeys(d, ["steps"], 'model "order" data');
+  need(d, "order", "steps");
+  const steps = d.steps;
+  if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6) {
+    throw new Error('model "order": data.steps must list 2 to 6 lines');
+  }
+  steps.forEach((s, i) => {
+    assertKeys(s, ["rule", "expr"], `model "order" steps[${i}]`);
+    if (!ORDER_RULES.includes(s?.rule)) throw new Error(`model "order": steps[${i}].rule must be one of ${ORDER_RULES.join(", ")}`);
+    if (typeof s.expr !== "string" || !s.expr.trim()) throw new Error(`model "order": steps[${i}].expr is required`);
+    if ((i === 0) !== (s.rule === "start")) throw new Error('model "order": only the first line is "start"');
+  });
+  const used = new Map();
+  steps.forEach((s, i) => {
+    if (i > 0 && !used.has(s.rule)) used.set(s.rule, i);
+  });
+  const out = [];
+  let y = 4;
+  out.push(text(PAD, y + 14, tr(lang, "The order, top to bottom", "El orden, de arriba abajo"), { anchor: "start", cls: "m-t" }));
+  y += 24;
+  const rowH = 34;
+  for (const r of ORDER_RUNGS) {
+    const on = used.has(r.id);
+    out.push(`<rect class="${on ? "m-p" : "m-g"}" x="${PAD}" y="${y}" width="${W - 2 * PAD}" height="${rowH - 6}" rx="${RADIUS}"/>`);
+    out.push(text(PAD + 26, y + 19, r.key, { cls: "m-t m-n" }));
+    out.push(text(PAD + 56, y + 19, tr(lang, r.en, r.es), { anchor: "start" }));
+    if (on) {
+      out.push(`<circle class="m-a" cx="${W - PAD - 18}" cy="${y + 14}" r="11"/>`);
+      out.push(text(W - PAD - 18, y + 19, String(used.get(r.id)), { cls: "m-t m-n" }));
+    }
+    y += rowH;
+  }
+  y += 10;
+  out.push(text(PAD, y + 14, tr(lang, "Our steps", "Nuestros pasos"), { anchor: "start", cls: "m-t" }));
+  y += 24;
+  const lineH = 36;
+  steps.forEach((s, i) => {
+    const last = i === steps.length - 1;
+    const chip = s.rule === "start" ? tr(lang, "Start", "Inicio") : `${i}. ${ORDER_RUNGS.find((r) => r.id === s.rule).key}`;
+    out.push(`<rect class="${last ? "m-a" : "m-g"}" x="${PAD}" y="${y}" width="${W - 2 * PAD}" height="${lineH - 6}" rx="${RADIUS}"/>`);
+    out.push(text(PAD + 10, y + 20, chip, { anchor: "start", cls: "m-t" }));
+    out.push(text(PAD + 84, y + 21, lab(s.expr, lang), { anchor: "start", cls: "m-t m-n" }));
+    y += lineH;
+    if (!last) {
+      out.push(`<path class="m-ln" d="M${PAD + 30} ${y - 4}v8"/>`);
+      y += 6;
+    }
+  });
+  const desc = tr(
+    lang,
+    `Order of operations, top to bottom: parentheses, exponents, multiply or divide, add or subtract. Steps: ${steps.map((s) => lab(s.expr, lang)).join(", then ")}.`,
+    `Orden de las operaciones, de arriba abajo: paréntesis, exponentes, multiplicar o dividir, sumar o restar. Pasos: ${steps.map((s) => lab(s.expr, lang)).join(", luego ")}.`,
+  );
+  return { h: y + 4, body: out.join(""), desc };
+}
+
 // ---------------------------------------------------------------- dispatcher
 const MODELS = {
   tape,
@@ -390,6 +459,7 @@ const MODELS = {
   barplot,
   fraction,
   balance: renderBalance,
+  order,
 };
 
 export const MODEL_KINDS = Object.freeze([...Object.keys(MODELS), "none"]);

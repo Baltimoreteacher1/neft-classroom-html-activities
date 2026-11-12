@@ -129,4 +129,55 @@ function hwFlowFix(idx) {
     if (first) first.focus({ preventScroll: true });
   }, 60);
 }
+
+/* ── One step at a time ──────────────────────────────────────────────────
+   A worked example or a Try Together problem marked data-reveal shows its first step, then one more
+   step per tap. Without this script every step is simply shown; print always shows every step. */
+function fpRevealSync(box) {
+  var items = box.querySelectorAll('.fp-steps > li');
+  var shown = Math.max(1, Math.min(items.length, parseInt(box.getAttribute('data-shown') || '1', 10)));
+  items.forEach(function (li, i) { li.classList.toggle('is-later', i >= shown); });
+  var done = shown >= items.length;
+  var btn = box.querySelector('[data-reveal-next]');
+  var all = box.querySelector('[data-reveal-all]');
+  var count = box.querySelector('[data-reveal-count]');
+  if (btn) btn.hidden = done;
+  if (all) all.hidden = done;
+  if (count) count.innerHTML = hwFlowBi('Step ' + shown + ' of ' + items.length, 'Paso ' + shown + ' de ' + items.length);
+  box.querySelectorAll('[data-reveal-after]').forEach(function (n) { n.hidden = !done; });
+  box.classList.toggle('is-revealed', done);
+}
+/* The bar is built here, not in the page: a family without the script just sees every step. */
+function fpRevealBar() {
+  var bar = hwFlowEl('div', 'fp-reveal-bar');
+  bar.innerHTML = '<span class="fp-reveal-count" data-reveal-count aria-live="polite"></span>' +
+    '<button type="button" class="btn btn-primary" data-reveal-next data-act="fpRevealStep" data-args="[&quot;$el&quot;]">' + hwFlowBi('Show the next step ↓', 'Mostrar el siguiente paso ↓') + '</button>' +
+    '<button type="button" class="btn btn-outline-primary" data-reveal-all data-act="fpRevealStep" data-args="[&quot;$el&quot;,true]">' + hwFlowBi('Show all steps', 'Mostrar todos los pasos') + '</button>';
+  return bar;
+}
+function fpRevealInit() {
+  document.querySelectorAll('[data-reveal]').forEach(function (box) {
+    var list = box.querySelector('.fp-steps');
+    if (!list || list.children.length < 2 || box.querySelector('.fp-reveal-bar')) return;
+    box.classList.add('fp-reveal');
+    list.insertAdjacentElement('afterend', fpRevealBar());
+    box.setAttribute('data-shown', '1');
+    fpRevealSync(box);
+  });
+}
+function fpRevealStep(el, all) {
+  var box = el && el.closest('[data-reveal]');
+  if (!box) return;
+  var items = box.querySelectorAll('.fp-steps > li');
+  var shown = all ? items.length : parseInt(box.getAttribute('data-shown') || '1', 10) + 1;
+  box.setAttribute('data-shown', String(shown));
+  fpRevealSync(box);
+  var li = items[Math.min(shown, items.length) - 1];
+  if (li) {
+    li.setAttribute('tabindex', '-1');
+    li.focus({ preventScroll: false });
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fpRevealInit);
+else fpRevealInit();
 `;

@@ -540,6 +540,12 @@
   .hw-stop-nav {
     margin-block-start: var(--fm-space-4);
   }
+  /* Desktop: the nav sits under the step, not in the 248px rail where "Next: …" was clipped. */
+  @media (min-width: 860px) {
+    .homework-tabs-shell > .hw-stop-nav {
+      grid-column: 2;
+    }
+  }
   .fp-nav--back {
     margin-block-start: var(--fm-space-4);
   }
@@ -560,4 +566,40 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  /* One step at a time (FLOW_JS marks later steps and adds the bar); print shows every step. */
+  @media screen {
+    .fp-reveal .fp-steps > li.is-later {
+      display: none;
+    }
+  }
+  .fp-reveal-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fm-space-2) var(--fm-space-3);
+    margin-block-start: var(--fm-space-4);
+  }
+  .fp-reveal-count {
+    flex-basis: 100%;
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+  }
+
+  /* The Notes card leads the side group; its drawer is notes.css, loaded on first open. */
+  .hw-fun-zone .hw-notes-btn {
+    flex-basis: 100%;
+    color: var(--fm-text);
+    background: var(--fm-accent-tint);
+    border-color: var(--fm-accent-ink);
+  }
+  /* Spanish-only mode: body.css's bilingual bar and block break split Spanish sentences in two. */
+  body.lang-mode-es .lang-en + .lang-es,
+  body.lang-mode-es .worked-step .lang-es {
+    display: revert-layer;
+    margin-block-start: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
 }

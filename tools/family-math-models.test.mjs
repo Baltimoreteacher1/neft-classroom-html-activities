@@ -43,6 +43,7 @@ const MUST_MENTION = {
   barplot: ["Soccer: 12", "Basketball: 18", "Swimming: 7", "10", "students"],
   fraction: ["8", "3", "3/8"],
   balance: ["3", "11", "unknown"],
+  order: ["4 + 3 × (9 − 7)²", "4 + 3 × 2²", "4 + 12", "16", "parentheses"],
 };
 
 const withoutVarFallbacks = (svg) => svg.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, "var()");
@@ -278,6 +279,7 @@ test("kind none draws nothing; every documented kind is exported", () => {
     "barplot",
     "fraction",
     "balance",
+    "order",
     "none",
   ]) {
     assert.ok(MODEL_KINDS.includes(k), k);
