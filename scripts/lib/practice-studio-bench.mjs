@@ -356,31 +356,31 @@ export function missionText(model) {
   if (model.kind === "balance")
     return {
       q: {
-        en: "At each stop, set the candidate value of x so both sides of the equation are equal. Plan the value, then test it.",
-        es: "En cada parada, ajusta el valor candidato de x para que los dos lados de la ecuación sean iguales. Planea el valor y luego pruébalo.",
+        en: "Each stop asks you to find the value of x that makes both sides equal. Decide on a value, then test it.",
+        es: "Cada parada te pide hallar el valor de x que hace iguales los dos lados. Decide un valor y luego pruébalo.",
       },
       x,
     };
   if (model.kind === "inequality")
     return {
       q: {
-        en: "At each stop, find a test value that the rule lets in or turns away, as the stop asks. Test the boundary number first.",
-        es: "En cada parada, halla un valor de prueba que la regla deje pasar o rechace, según pida la parada. Prueba primero el número límite.",
+        en: "Each stop asks for a number that the rule accepts or rejects. Try the boundary number first.",
+        es: "Cada parada pide un número que la regla acepta o rechaza. Prueba primero el número límite.",
       },
       x,
     };
   if (model.kind === "coordinates" && ["reflect", "symmetry"].includes(model.mode))
     return {
       q: {
-        en: "At each stop, move one point to the reflection of the other across the axis the stop names. Plan its coordinates, then test.",
-        es: "En cada parada, mueve un punto a la reflexión del otro sobre el eje que nombra la parada. Planea sus coordenadas y luego prueba.",
+        en: "Each stop names an axis. Move one point so it is the mirror image of the other point across that axis. Work out its coordinates first, then test.",
+        es: "Cada parada nombra un eje. Mueve un punto para que sea la imagen reflejada del otro punto sobre ese eje. Halla primero sus coordenadas y luego prueba.",
       },
       x,
     };
   return {
     q: {
-      en: "At each stop, plan the one unlocked control so the model reaches the target, then test your build.",
-      es: "En cada parada, planea el único control desbloqueado para que el modelo llegue a la meta y luego prueba tu construcción.",
+      en: "Each stop gives you a target. One control can change. Decide where to set it so the model matches the target, then test it.",
+      es: "Cada parada te da una meta. Solo un control se puede cambiar. Decide dónde ponerlo para que el modelo llegue a la meta y luego prueba.",
     },
     x,
   };
