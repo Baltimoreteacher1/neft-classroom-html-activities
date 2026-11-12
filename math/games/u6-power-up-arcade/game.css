@@ -1,0 +1,407 @@
+/* Power Up! Exponent Arcade — cabinet, screen, monsters, pad. Motion is cosmetic and stops under reduced motion. */
+:root {
+  --ink: #070d24;
+  --panel: #0f1a42;
+  --panel-2: #172456;
+  --cyan: #37e6ff;
+  --pink: #ff4fa3;
+  --gold: #ffe066;
+  --lime: #7dff6b;
+  --orange: #ff9a3c;
+  --white: #f4f8ff;
+  --muted: #a9b8e8;
+  --font: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+body {
+  background: radial-gradient(120% 90% at 50% 0%, #14246b 0%, #060b1f 60%, #03060f 100%) fixed;
+  color: var(--white);
+  font-family: var(--font);
+  display: flex;
+  justify-content: center;
+  padding: 12px 12px 24px;
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip {
+  position: absolute;
+  left: -999px;
+}
+.skip:focus {
+  left: 12px;
+  top: 12px;
+  z-index: 10;
+  background: var(--gold);
+  color: var(--ink);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── cabinet ── */
+.cabinet {
+  width: min(1080px, 100%);
+  background: linear-gradient(180deg, #1d2a5e, #0b1230 40%, #0b1230);
+  border: 4px solid #2b3a7a;
+  border-radius: 26px 26px 14px 14px;
+  box-shadow:
+    0 0 0 6px #0a1026,
+    0 0 40px rgba(55, 230, 255, 0.25),
+    0 20px 60px rgba(0, 0, 0, 0.6);
+  padding: 10px 14px 14px;
+  position: relative;
+}
+.marquee {
+  position: relative;
+  text-align: center;
+  background: linear-gradient(180deg, #ff4fa3, #c2306f);
+  border-radius: 16px 16px 6px 6px;
+  border: 3px solid #ffd1e6;
+  padding: 6px 12px 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 24px rgba(255, 79, 163, 0.55) inset;
+}
+.marquee h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 4.6vw, 2.4rem);
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow:
+    0 0 10px #fff,
+    0 3px 0 #8b1d52;
+  line-height: 1.1;
+}
+.marquee small {
+  display: block;
+  font-size: 0.42em;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  text-shadow: 0 0 8px var(--gold);
+}
+.bolt {
+  display: inline-block;
+  animation: zapflash 1.6s steps(2) infinite;
+}
+.bulbs {
+  position: absolute;
+  inset: 3px 8px auto;
+  height: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.bulbs i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  animation: bulb 1.2s steps(2) infinite;
+}
+.bulbs i:nth-child(odd) {
+  animation-delay: 0.6s;
+}
+.deck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 12px;
+  height: 46px;
+  background: linear-gradient(180deg, #16215a, #0a1030);
+  border-radius: 10px;
+  border: 2px solid #2b3a7a;
+}
+.stick {
+  width: 16px;
+  height: 34px;
+  background: #cfd7f5;
+  border-radius: 8px;
+  position: relative;
+  margin-right: 16px;
+}
+.stick i {
+  position: absolute;
+  left: -8px;
+  top: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff9ac9, #ff4fa3 60%, #a3205f);
+}
+.deck .btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #05081a;
+}
+.b1 {
+  background: var(--cyan);
+}
+.b2 {
+  background: var(--gold);
+}
+.b3 {
+  background: var(--lime);
+}
+
+/* ── screen ── */
+.screen {
+  position: relative;
+  min-height: 560px;
+  background: #050a22;
+  border: 4px solid #04071a;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 70px rgba(55, 230, 255, 0.18),
+    0 0 0 3px #26357a;
+}
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background:
+    linear-gradient(180deg, transparent 0 46%, rgba(255, 79, 163, 0.35) 100%),
+    repeating-linear-gradient(90deg, rgba(55, 230, 255, 0.28) 0 2px, transparent 2px 64px),
+    repeating-linear-gradient(0deg, rgba(55, 230, 255, 0.28) 0 2px, transparent 2px 48px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 5%, #000 85%);
+  mask-image: linear-gradient(180deg, transparent 5%, #000 85%);
+  animation: gridmove 6s linear infinite;
+}
+#fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+.view {
+  position: relative;
+  z-index: 2;
+  min-height: 560px;
+  padding: 18px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.screen-head {
+  margin: 8px 0 14px;
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 12px var(--cyan);
+}
+.eyebrow {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+}
+
+/* ── title ── */
+.title-view {
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+}
+.logo {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(3rem, 12vw, 6.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  text-shadow:
+    0 0 14px var(--cyan),
+    0 6px 0 #1b5a8c;
+}
+.logo .up {
+  color: var(--gold);
+  text-shadow:
+    0 0 18px var(--orange),
+    0 6px 0 #b86a14;
+  animation: pulse 2s ease-in-out infinite;
+}
+.logo sup {
+  color: var(--pink);
+  font-size: 0.5em;
+  text-shadow: 0 0 14px var(--pink);
+}
+.tagline {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 1.15rem;
+  color: var(--white);
+}
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.title-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── buttons ── */
+.arcade-btn {
+  font: inherit;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-size: 1.15rem;
+  color: var(--ink);
+  background: linear-gradient(180deg, #fff3a0, var(--gold) 55%, #f2a900);
+  border: 3px solid #fff7c8;
+  border-radius: 14px;
+  padding: 12px 26px;
+  min-height: 48px;
+  cursor: pointer;
+  box-shadow:
+    0 6px 0 #a56a00,
+    0 0 22px rgba(255, 224, 102, 0.5);
+}
+.arcade-btn.big {
+  font-size: 1.6rem;
+  padding: 16px 38px;
+}
+.arcade-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #a56a00;
+}
+.blink {
+  animation: blinkText 1.1s steps(2) infinite;
+}
+.mini-btn {
+  font: inherit;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--panel-2);
+  border: 2px solid #3b4f9c;
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
+}
+.mini-btn:hover {
+  border-color: var(--cyan);
+}
+
+/* ── cabinet select ── */
+.cabinets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: min(760px, 100%);
+}
+.cab-card {
+  font: inherit;
+  color: var(--white);
+  text-align: center;
+  background: var(--panel);
+  border: 4px solid var(--cyan);
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(55, 230, 255, 0.35);
+  transition: transform 0.15s;
+}
+.cab-card.challenging {
+  border-color: var(--pink);
+  box-shadow: 0 0 22px rgba(255, 79, 163, 0.4);
+}
+.cab-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+.cab-tag {
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  font-size: 1.25rem;
+  color: var(--cyan);
+}
+.challenging .cab-tag {
+  color: var(--pink);
+}
+.cab-art {
+  font-family: var(--mono);
+  font-weight: 900;
+  font-size: 2.8rem;
+  color: var(--gold);
+  text-shadow: 0 0 14px var(--orange);
+}
+.cab-desc {
+  font-size: 0.98rem;
+  color: var(--white);
+  min-height: 3em;
+}
+.cab-best {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--lime);
+}
+.badge-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0 10px;
+  max-width: 720px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--panel-2);
+  border: 2px solid #3b4f9c;
+  color: var(--muted);
+}
+.badge.on {
+  color: var(--ink);
+  background: var(--gold);
+  border-color: #fff7c8;
+}
+.badge.fresh {
+  animation: pop 0.6s ease-out;
+}
+

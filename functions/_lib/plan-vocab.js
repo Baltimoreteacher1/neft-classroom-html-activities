@@ -7752,6 +7752,12 @@ export const ACTIVITIES = [
     unit: 6,
   },
   {
+    path: "/math/games/u6-power-up-arcade/",
+    title: "Power Up! Exponent Arcade | Math Games",
+    category: "Game",
+    unit: 6,
+  },
+  {
     path: "/math/games/u7-equation-quest/",
     title: "Equation Quest — Balance Scale | Math Games",
     category: "Game",

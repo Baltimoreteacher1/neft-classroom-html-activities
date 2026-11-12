@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Power Up! Exponent Arcade | Math Games</title>
+    <meta
+      name="description"
+      content="A calm arcade battle for Grade 6 lesson 6-4 (6.AT.6c): beat Mr. Neft Monster by evaluating numerical expressions with exponents in the right order. Warm-up step mode, then full problems; 3 worlds and 15 battles in Regular and Challenging cabinets; no timer."
+    />
+    <link rel="stylesheet" href="game.css" />
+    <link rel="stylesheet" href="play.css" />
+    <link rel="stylesheet" href="battle.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the game</a>
+    <div class="cabinet">
+      <header class="marquee">
+        <div class="bulbs" aria-hidden="true"></div>
+        <h1>
+          <span class="bolt" aria-hidden="true">⚡</span> POWER UP!
+          <small>Exponent Arcade</small>
+        </h1>
+      </header>
+
+      <main id="main" class="screen">
+        <div class="grid-bg" aria-hidden="true"></div>
+        <canvas id="fx" aria-hidden="true"></canvas>
+        <p id="status" class="sr" role="status" aria-live="polite"></p>
+
+        <section id="v-title" class="view title-view" aria-labelledby="t-logo">
+          <p class="eyebrow">Lesson 6-4 · Numerical expressions with exponents</p>
+          <h2 id="t-logo" class="logo">
+            <span>POWER</span><span class="up">UP!<sup>2</sup></span>
+          </h2>
+          <p class="tagline">Battle Mr. Neft Monster with exponents and the order of operations.</p>
+          <button id="btnStart" class="arcade-btn big blink" type="button">PRESS START</button>
+          <div class="title-row">
+            <button id="btnHow" class="mini-btn" type="button">How to play</button>
+            <button id="btnMute" class="mini-btn" type="button" aria-pressed="false">
+              🔊 Sound on
+            </button>
+          </div>
+          <p class="hint">No timer. Take your time. Think, then zap.</p>
+        </section>
+
+        <section id="v-setup" class="view setup-view" aria-labelledby="p-head" hidden>
+          <h2 id="p-head" class="screen-head">Create your fighter</h2>
+          <label class="name-label" for="heroName">Your name</label>
+          <input id="heroName" class="name-in" type="text" maxlength="14" autocomplete="off" spellcheck="false" />
+          <p class="small-note">Your name stays on this device only.</p>
+          <p class="pick-label" id="heroPick">Choose your character</p>
+          <div id="heroes" class="heroes" role="group" aria-labelledby="heroPick"></div>
+          <button id="btnReady" class="arcade-btn" type="button">READY ▶</button>
+        </section>
+
+        <section id="v-select" class="view select-view" aria-labelledby="s-head" hidden>
+          <h2 id="s-head" class="screen-head">Choose your cabinet</h2>
+          <p id="rankLine" class="rank-line"></p>
+          <div class="cabinets">
+            <button class="cab-card regular" type="button" data-level="regular">
+              <span class="cab-tag">REGULAR</span>
+              <span class="cab-art" aria-hidden="true">3<sup>2</sup></span>
+              <span class="cab-desc">Squares and cubes, one set of parentheses. 3 worlds, 15 battles.</span>
+              <span class="cab-best" data-best="regular">No score yet</span>
+            </button>
+            <button class="cab-card challenging" type="button" data-level="challenging">
+              <span class="cab-tag">CHALLENGING</span>
+              <span class="cab-art" aria-hidden="true">(2+1)<sup>3</sup></span>
+              <span class="cab-desc">Bigger powers, powers of groups, nested parentheses. 3 worlds, 15 battles.</span>
+              <span class="cab-best" data-best="challenging">No score yet</span>
+            </button>
+          </div>
+          <div class="badge-shelf" id="shelf" aria-label="Badges"></div>
+          <button id="btnSelectBack" class="mini-btn" type="button">Change fighter</button>
+        </section>
+
+        <section id="v-map" class="view map-view" aria-labelledby="m-head" hidden>
+          <h2 id="m-head" class="screen-head">World map</h2>
+          <p id="mapSub" class="map-sub"></p>
+          <div id="worlds" class="worlds"></div>
+          <button id="btnMapBack" class="mini-btn" type="button">Choose cabinet</button>
+        </section>
+
+        <section id="v-play" class="view play-view" aria-label="Battle" hidden>
+          <div class="hud">
+            <div class="stat"><span>SCORE</span><b id="score">0</b></div>
+            <div class="stat"><span id="worldTag">WORLD 1</span><b id="stageNo">1/5</b></div>
+            <div class="stat"><span>COMBO</span><b id="combo">×1</b></div>
+            <div class="stat"><span>STARS</span><b id="starTotal">0</b></div>
+            <button id="btnSpot" class="power-btn" type="button" aria-label="Spotlight, 0 left">🔦 <b id="spotN">0</b></button>
+            <div id="shield" class="power-btn static" role="img" aria-label="Shields, 0">🛡️ <b id="shieldN">0</b></div>
+            <button id="btnMute2" class="mini-btn" type="button" aria-pressed="false">🔊</button>
+          </div>
+          <p id="modeTag" class="mode-tag"></p>
+
+          <div class="arena">
+            <div class="fighter hero-side">
+              <div id="heroArt" class="hero-art" aria-hidden="true"></div>
+              <p id="heroLabel" class="fighter-name"></p>
+              <div class="hp" role="img" id="heroHp" aria-label="Your health"><i id="heroHpFill"></i></div>
+            </div>
+            <div class="board">
+              <p id="roundTag" class="round-tag"></p>
+              <div id="expr" class="expr" role="group" aria-label="Expression"></div>
+              <p id="coach" class="coach"></p>
+            </div>
+            <div class="fighter foe">
+              <div id="monster" class="monster"></div>
+              <p class="fighter-name foe-name">Mr. Neft Monster</p>
+              <p id="foeForm" class="foe-form"></p>
+              <div class="hp" role="img" id="foeHp" aria-label="Mr. Neft Monster health"><i id="hpFill"></i></div>
+            </div>
+          </div>
+
+          <ol class="ladder" aria-label="Order of operations, first to last">
+            <li data-rung="paren"><b>( )</b> Parentheses</li>
+            <li data-rung="3"><b>x<sup>n</sup></b> Exponents</li>
+            <li data-rung="2"><b>× ÷</b> Multiply and divide, left to right</li>
+            <li data-rung="1"><b>+ −</b> Add and subtract, left to right</li>
+          </ol>
+
+          <form id="pad" class="pad" hidden autocomplete="off">
+            <div class="pad-main">
+              <p id="padQ" class="pad-q"></p>
+              <label class="sr" for="padIn">Your answer</label>
+              <input id="padIn" class="pad-in" type="text" inputmode="none" maxlength="7" autocomplete="off" />
+              <button id="padBack" class="mini-btn" type="button">Pick a different step</button>
+              <button id="padBreak" class="mini-btn help-btn" type="button" hidden>🆘 Break it down (half points)</button>
+            </div>
+            <div class="keys">
+              <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="0">0</button><button type="button" data-k="back" aria-label="Delete">⌫</button><button type="submit" class="go" aria-label="Zap it">ZAP</button>
+            </div>
+          </form>
+
+          <div id="banner" class="banner" hidden>
+            <p id="bannerTitle" class="banner-title"></p>
+            <p id="bannerSub" class="banner-sub"></p>
+            <ol id="bannerTrail" class="trail" hidden></ol>
+            <button id="bannerBtn" class="arcade-btn" type="button">NEXT ▶</button>
+          </div>
+        </section>
+
+        <section id="v-bonus" class="view bonus-view" aria-labelledby="bonusHead" hidden>
+          <p class="eyebrow">BONUS ROUND</p>
+          <h2 id="bonusHead" class="screen-head"></h2>
+          <p id="bonusIntro" class="bonus-intro"></p>
+          <div id="bonusBody" class="bonus-body"></div>
+          <p id="bonusCoach" class="coach" aria-live="polite"></p>
+          <button id="bonusNext" class="arcade-btn" type="button" hidden>NEXT ▶</button>
+        </section>
+
+        <section id="v-end" class="view end-view" aria-labelledby="e-head" hidden>
+          <h2 id="e-head" class="screen-head">World cleared!</h2>
+          <p id="endTitle" class="end-title"></p>
+          <p class="end-stars" id="endStars"></p>
+          <dl class="end-stats">
+            <div><dt>Score</dt><dd id="endScore"></dd></div>
+            <div><dt>Best combo</dt><dd id="endCombo"></dd></div>
+            <div><dt>Clean steps</dt><dd id="endClean"></dd></div>
+          </dl>
+          <p id="endNew" class="new-high" hidden>★ NEW HIGH SCORE ★</p>
+          <div class="xp"><p id="endRank" class="rank-line"></p><div class="xpbar"><i id="endXp"></i></div></div>
+          <div id="endBadges" class="badge-shelf"></div>
+          <div class="end-actions">
+            <button id="btnNextWorld" class="arcade-btn" type="button">NEXT WORLD ▶</button>
+            <button id="btnMap" class="mini-btn" type="button">World map</button>
+            <button id="btnTitle" class="mini-btn" type="button">Title screen</button>
+          </div>
+        </section>
+      </main>
+
+      <div class="deck" aria-hidden="true">
+        <span class="stick"><i></i></span>
+        <span class="btn b1"></span><span class="btn b2"></span><span class="btn b3"></span>
+      </div>
+    </div>
+
+    <dialog id="howto" class="howto" aria-labelledby="h-head">
+      <h2 id="h-head">How to play</h2>
+      <ol>
+        <li><b>Battle Mr. Neft Monster.</b> Every right answer hits him. Every mistake lets him hit back. No timer, so take your time.</li>
+        <li><b>World 1 is the warm-up.</b> Tap the operation that comes next, type its answer and press ZAP. Repeat until one number is left.</li>
+        <li><b>Worlds 2 and 3 are full problems.</b> Work out the whole expression on paper, then type the final answer. Stuck after two tries? Break it down into steps for half points.</li>
+        <li><b>Power-ups.</b> Clean answers build a combo. Every 4 in a row earns a 🔦 Spotlight that shows what is next. A 3-star battle earns a 🛡️ Shield that blocks one hit.</li>
+        <li><b>Remember:</b> in 3<sup>4</sup> the exponent says use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81, not 3 × 4.</li>
+      </ol>
+      <form method="dialog"><button class="arcade-btn" autofocus>GOT IT</button></form>
+    </dialog>
+
+    <script type="module" src="game.js"></script>
+  </body>
+</html>

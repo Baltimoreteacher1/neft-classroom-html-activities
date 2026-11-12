@@ -47,6 +47,7 @@ const GAME_DIRS = [
   "math/games/u4-percent-power",
   "math/games/u5-area-attack",
   "math/games/u6-expression-express",
+  "math/games/u6-power-up-arcade",
   "math/games/u7-equation-quest",
   "math/games/u8-data-dash",
   "math/games/u9-coordinate-quest",

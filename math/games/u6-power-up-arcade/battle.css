@@ -1,0 +1,328 @@
+/* Power Up! — fighter setup, world map, battle arena, bonus rounds, XP. Loads after play.css. */
+/* ── setup ── */
+.name-label,
+.pick-label {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin: 6px 0;
+}
+.name-in {
+  font: 700 1.4rem var(--font);
+  width: min(320px, 100%);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 3px solid var(--cyan);
+  background: var(--ink);
+  color: var(--white);
+  text-align: center;
+}
+.small-note {
+  margin: 6px 0 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.heroes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: min(560px, 100%);
+  margin-bottom: 16px;
+}
+.hero-btn {
+  font: inherit;
+  color: var(--white);
+  background: var(--panel);
+  border: 3px solid #34479a;
+  border-radius: 14px;
+  padding: 10px 6px;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.hero-btn[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: var(--panel-2);
+  box-shadow: 0 0 16px rgba(255, 224, 102, 0.5);
+}
+.hero-emoji {
+  font-size: 2.2rem;
+}
+.hero-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.rank-line {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-weight: 800;
+}
+
+/* ── world map ── */
+.map-sub {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.worlds {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.world-card {
+  font: inherit;
+  color: var(--white);
+  background: var(--panel);
+  border: 4px solid var(--cyan);
+  border-radius: 18px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+.world-card.w2 {
+  border-color: var(--orange);
+}
+.world-card.w3 {
+  border-color: var(--pink);
+}
+.world-card:hover:not(:disabled) {
+  background: var(--panel-2);
+}
+.world-card.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.world-no {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+}
+.world-name {
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+.world-mode {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.world-best {
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* ── arena ── */
+.mode-tag {
+  margin: 0;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--lime);
+}
+.arena {
+  grid-template-columns: 140px minmax(0, 1fr) 190px;
+  grid-template-areas: "hero board foe";
+}
+.hero-side {
+  grid-area: hero;
+}
+.board {
+  grid-area: board;
+}
+.foe {
+  grid-area: foe;
+}
+.fighter {
+  text-align: center;
+}
+.hero-art {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  animation: bob 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(255, 224, 102, 0.45));
+}
+.hero-art.hit {
+  animation: hitflash 0.5s ease-out;
+}
+.fighter-name {
+  margin: 4px 0 0;
+  font-weight: 800;
+  color: var(--gold);
+  overflow-wrap: anywhere;
+}
+.hero-side .hp i {
+  background: linear-gradient(90deg, var(--cyan), #9ff4ff);
+}
+.foe-form {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.round-tag {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--cyan);
+}
+.round-tag:empty {
+  display: none;
+}
+.help-btn {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.trail {
+  margin: 0;
+  padding: 10px 14px 10px 34px;
+  background: var(--panel);
+  border: 2px solid #34479a;
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  text-align: left;
+}
+.trail::before {
+  content: "Steps";
+  display: block;
+  margin: 0 0 4px -20px;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+}
+
+/* ── bonus rounds ── */
+.bonus-intro {
+  max-width: 640px;
+  text-align: center;
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.bonus-body {
+  width: min(680px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.crystal-row {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  white-space: pre;
+}
+.bonus-q {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-align: center;
+}
+.choice-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+.choice-btn,
+.glitch-btn {
+  font: 700 1.1rem var(--mono);
+  color: var(--white);
+  background: var(--panel);
+  border: 3px solid var(--cyan);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 48px;
+  cursor: pointer;
+}
+.choice-btn:hover:not(:disabled),
+.glitch-btn:hover:not(:disabled) {
+  background: var(--panel-2);
+}
+.choice-btn.miss {
+  border-color: #6b3a52;
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.choice-btn.hit,
+.glitch-btn.hit {
+  border-color: var(--lime);
+  background: #12361f;
+}
+.glitch-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.glitch-start {
+  font: 800 1.2rem var(--mono);
+  color: var(--gold);
+  text-align: center;
+}
+.glitch-btn {
+  width: 100%;
+  text-align: left;
+}
+.glitch-btn.ok-line {
+  border-color: #34479a;
+  opacity: 0.6;
+}
+#bonusCoach {
+  min-height: 3em;
+  max-width: 640px;
+  text-align: center;
+}
+
+/* ── XP bar ── */
+.xp {
+  width: min(420px, 100%);
+  margin: 6px 0 10px;
+}
+.xpbar {
+  height: 12px;
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ink);
+}
+.xpbar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  transition: width 0.8s;
+}
+
+@media (max-width: 720px) {
+  .heroes {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .hero-emoji {
+    font-size: 1.7rem;
+  }
+  .worlds,
+  .choice-row {
+    grid-template-columns: 1fr;
+  }
+  .arena {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "hero foe"
+      "board board";
+  }
+  .hero-art {
+    font-size: 3rem;
+  }
+}
