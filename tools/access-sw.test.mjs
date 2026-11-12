@@ -240,7 +240,7 @@ test("the manifest is installable: scope, start URL, and real icon files", async
     assert.ok(existsSync(new URL(icon.src.replace("/access-practice-lab/", ""), lab)), icon.src);
 });
 
-test("the Pages Function marks only hashed .js/.css as immutable", async () => {
+test("the Pages Function marks only hashed .js/.css whose bytes match the hash as immutable", async () => {
   const { onRequest } = await import("../functions/access-practice-lab/[[path]].js");
   const env = {
     ASSETS: {
@@ -252,8 +252,14 @@ test("the Pages Function marks only hashed .js/.css as immutable", async () => {
     (await onRequest({ request: new Request(`${ORIGIN}${path}`), env })).headers.get(
       "cache-control",
     );
-  assert.match(await call("/access-practice-lab/src/main.js?v=0123456789ab"), /immutable/);
-  assert.match(await call("/access-practice-lab/styles.css?v=0123456789ab"), /max-age=31536000/);
+  // "2d711642b726" is the first 12 hex of SHA-256("x"), the body every call here receives.
+  assert.match(await call("/access-practice-lab/src/main.js?v=2d711642b726"), /immutable/);
+  assert.match(await call("/access-practice-lab/styles.css?v=2d711642b726"), /max-age=31536000/);
+  assert.equal(
+    await call("/access-practice-lab/styles.css?v=0123456789ab"),
+    "no-store",
+    "bytes that do not match the hash (an old build mid-deploy) must never be pinned for a year",
+  );
   assert.equal(
     await call("/access-practice-lab/src/main.js"),
     "public, max-age=0, must-revalidate",
