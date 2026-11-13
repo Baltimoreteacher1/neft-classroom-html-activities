@@ -238,6 +238,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -282,28 +285,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 1, Episode 4: Exact Change. In the Engine's ledger hall, a glowing board shows a dollar amount with a decimal point above stacks of coins and a giant receipt, while four young auditors and a hovering orb work the counter and a rival waves a receipt.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="u1led" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07131f"/><stop offset=".55" stop-color="#0e2233"/><stop offset="1" stop-color="#103f3a"/></linearGradient></defs><rect width="500" height="700" fill="url(#u1led)"/><text x="250" y="360" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="320" fill="#13384a" opacity=".5">$</text><g fill="#7CF2EC" opacity=".5"><circle cx="74" cy="92" r="2.6"/><circle cx="430" cy="70" r="2.2"/><circle cx="120" cy="168" r="2"/><circle cx="392" cy="150" r="2.4"/><circle cx="58" cy="250" r="2"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,300) scale(5,3)" opacity=".4"><use href="#sym-skyline"/></g><rect x="60" y="232" width="380" height="96" rx="10" fill="#0d1f33" stroke="#1FA6A2" stroke-width="5"/><text x="250" y="296" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="44" fill="#7CF2EC">$1.60</text><rect x="0" y="356" width="500" height="16" fill="#13384a" stroke="#07131f" stroke-width="3"/><rect y="640" width="500" height="60" fill="#07131f"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="36" y="330" width="170" height="210" rx="6" fill="#FFFDF4" stroke="#17324D" stroke-width="6"/>
-        <g font-family="Consolas,monospace" font-weight="700" fill="#17324D"><text x="56" y="372" font-size="20">RECEIPT</text><line x1="56" y1="386" x2="186" y2="386" stroke="#17324D" stroke-width="2"/><text x="56" y="416" font-size="17">caramel</text><text x="56" y="444" font-size="17">0.5 kg</text><text x="56" y="472" font-size="17">x $3.20</text><line x1="56" y1="486" x2="186" y2="486" stroke="#17324D" stroke-width="2"/><text x="56" y="514" font-size="19" fill="#0F766E">$1.60</text></g>
-        <g><ellipse cx="330" cy="500" rx="46" ry="15" fill="#F2C15B" stroke="#17324D" stroke-width="5"/><ellipse cx="330" cy="482" rx="46" ry="15" fill="#F2C15B" stroke="#17324D" stroke-width="5"/><ellipse cx="330" cy="464" rx="46" ry="15" fill="#F2C15B" stroke="#17324D" stroke-width="5"/><text x="330" y="472" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="22" fill="#17324D">$</text></g>
-        <g><ellipse cx="416" cy="510" rx="38" ry="12" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><ellipse cx="416" cy="496" rx="38" ry="12" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><text x="416" y="503" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="18" fill="#17324D">$</text></g>
-        <rect x="0" y="566" width="500" height="134" fill="#07131f"/>
-        <g transform="translate(92,556) scale(.86)"><use href="#sym-maya"/></g>
-        <g transform="translate(156,566) scale(.8)"><use href="#sym-theo"/></g>
-        <g transform="translate(286,562) scale(.82)"><use href="#sym-zara"/></g>
-        <g transform="translate(350,572) scale(.78)"><use href="#sym-dev"/></g>
-        <g transform="translate(24,548) scale(.9)"><use href="#sym-bram"/></g>
-        <g transform="translate(404,150) scale(.86)"><use href="#sym-vex"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 1, Episode 4: Exact Change. Theo, Maya, Zara and Dev stand together in the lamp-lit Ledger Hall among tables piled with coins, with VEX, the teal robot with one golden eye, floating above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -380,164 +363,185 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss", label:"Books Balanced — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side) */
-const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const HALL = h=>`<rect width="400" height="${h}" fill="#0e2233"/><g stroke="#15384d" stroke-width="1.4" opacity=".55">${Array.from({length:9},(_,i)=>`<line x1="${i*50}" y1="0" x2="${i*50}" y2="${h}"/>`).join("")}${Array.from({length:Math.ceil(h/50)+1},(_,i)=>`<line x1="0" y1="${i*50}" x2="400" y2="${i*50}"/>`).join("")}</g>`;
-const STACK = (x,y,n,c)=>{let s="";for(let i=0;i<n;i++)s+=`<ellipse cx="${x}" cy="${(y-i*7).toFixed(1)}" rx="20" ry="7" fill="${c||'#F2C15B'}" stroke="#17324D" stroke-width="2.5"/>`;return s;};
-const LEDGER = (x,y,w,h,big)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#0d1f33" stroke="#1FA6A2" stroke-width="3"/><text x="${(x+w/2).toFixed(0)}" y="${(y+h/2+8).toFixed(0)}" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="18" fill="#7CF2EC">${big}</text>`;
-const RECEIPT = (x,y,w,h,lines)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#FFFDF4" stroke="#17324D" stroke-width="3"/>${(lines||[]).map((t,i)=>`<text x="${x+12}" y="${y+24+i*20}" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#17324D">${t}</text>`).join("")}`;
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u1-e4 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u1-e4-exact-change.webp?v=f62fc0c4bc","w":2610,"h":3265,"f":{"cover":[0,0,544,762,"Theo, Maya, Zara and Dev stand together in the lamp-lit Ledger Hall among tables piled with coins, with VEX, the teal robot with one golden eye, floating above them.",[]],"p1-crew":[870,1742,870,435,"On a rooftop over the glowing city at night, Maya and Theo look up at a big glowing price display while VEX floats beside it.",[]],"p1-engine":[0,2613,870,326,"The giant brass gears of the Pattern Engine turn again, glowing gold, while coins spill from a chute at its side.",[]],"p2-hall":[1740,762,870,490,"In the grand Ledger Hall, Maya spreads her arms proudly beside tables of coins while Bram leans on a table and waves a hand dismissively.",[]],"p2-theo":[1740,1742,870,381,"Theo sits at a counting table with neat coin stacks and an open ledger, pencil raised, serious.",[]],"p3-floor":[0,1252,870,490,"On the splitting floor, Dev points with chalk at a slate board beside six equal stacks of coins.",[]],"p3-vex":[0,2232,870,381,"VEX hovers on the right above six neat coin stacks.",[]],"p4-dev":[1740,2613,870,326,"Dev points out at the reader with a confident grin, coin stacks behind him.",[]],"p5-tag":[870,1252,870,490,"Zara holds a bag of caramels at the candy stall, puzzling over a big price card on the counter.",[]],"p5-theo":[1524,0,490,653,"Theo writes in his notebook, focused.",[]],"p5-vex":[2014,0,490,653,"VEX hovers beside a jar of caramels.",[]],"p6-zara":[0,2939,870,326,"Zara holds up a bag of caramels to the reader, smiling.",[]],"p7-bags":[1740,1252,870,490,"In the storeroom, Zara scoops caramel from a big sack into small identical bags lined up on a shelf.",[]],"p7-vex":[870,2232,870,381,"VEX hovers beside a row of small paper bags.",[]],"p8-zara":[870,2939,870,326,"Zara holds an empty bag out to the reader.",[]],"p9-receipt":[0,1742,870,490,"Bram slaps a long receipt onto the counter while Maya leans in, frowning with suspicion.",[]],"p9-vex":[1740,2232,870,381,"VEX flashes a warning red above the receipt on the counter.",[]],"p10-audit":[0,762,870,490,"In the Ledger Hall, Maya points at a big audit board on an easel while Theo stands ready with arms crossed and VEX floats above.",[]],"p11-vex":[870,2613,870,326,"VEX glows bright over a table of coin stacks and a ledger book, ready for the boss gate.",[]],"p12-win":[870,762,870,490,"Maya, Theo, Zara and Dev cheer in the Ledger Hall under a banner as VEX glows above them.",[]],"p12-bram":[544,0,490,653,"Bram sulks with his arms folded, looking away.",[]],"p12-next":[1034,0,490,653,"A big glowing screen lights a city wall at night as VEX floats beside it.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* p1 — title + previously */
 { ch:"Unit 1 · Episode 4", html:`
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">EXACT <em>CHANGE</em></h2>
   <div class="caption" style="display:inline-block">Lessons 2-6, 2-12 &amp; 2-7 — divide multi-digit numbers the long way, multiply decimals, then divide them. Four reader gates stand between a market full of receipts and the truth about Bram's.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 200",`${HALL(200)}
-    <g data-depth="6" transform="translate(0,40) scale(4,1.4)" opacity=".4"><use href="#sym-skyline"/></g>
-    <g data-depth="10">${LEDGER(150,28,150,52,"$ __ . __")}</g>
-    <g data-depth="12">${STACK(66,176,5,"#F2C15B")}${STACK(116,178,3,"#1FA6A2")}</g>
-    <g data-depth="16" transform="translate(20,86) scale(.9)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(150,90) scale(.9)"><use href="#sym-theo"/></g>
-    <g data-depth="24" transform="translate(330,14) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="bottom:8px;left:8px;max-width:54%"><span class="who">VEX</span>Previously: you restarted the Pattern Engine with whole gears. But Axiom City doesn't pay in whole numbers — it pays in coins and decimals. And tonight, the market's receipts don't add up.</div>
-  </div>
-  <div class="caption loc">Previously, in Episode 3: the core gears meshed and the Engine roared back to life. Now the city's money has to balance to the penny — and someone's been rounding in their own favor.</div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:50%;--ty:14px"><span class="who">VEX</span>Previously: you restarted the Pattern Engine with whole gears. But Axiom City doesn't pay in whole numbers — it pays in coins and decimals. And tonight, the market's receipts don't add up.</div>
+      <div class="gn-sign" data-gn-skip style="left:68%;top:40%">$ __ . __</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-engine")}
+      <div class="caption loc">Previously, in Episode 3: the core gears meshed and the Engine roared back to life. Now the city's money has to balance to the penny — and someone's been rounding in their own favor.</div>
+    </div>
+  </div>`},
 
 /* p2 — chapter 1 splash */
 { ch:"Chapter 1 · The Ledger Hall", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE LEDGER <em>HALL</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`${HALL(230)}
-    <g data-depth="6" transform="translate(0,56) scale(4,1.7)" opacity=".4"><use href="#sym-skyline"/></g>
-    <g data-depth="10">${LEDGER(118,22,172,48,"TONIGHT'S TAKE")}</g>
-    <g data-depth="12">${STACK(58,200,6,"#F2C15B")}${STACK(106,204,4,"#1FA6A2")}${STACK(338,202,5,"#F2C15B")}</g>
-    <g data-depth="18" transform="translate(150,142) scale(.82)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(300,144) scale(.8)"><use href="#sym-bram"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">MAYA</span>Every coin the festival raised lands here to be counted and split — exactly. No "about," no rounding. The Ledger Hall balances to the penny.</div>
-    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:42%"><span class="who">BRAM</span>Penny-counting! Just split it roughly, kid — close enough is good enough!</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#0c1c2c"/><g transform="translate(10,2) scale(.66)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:8px;left:84px;max-width:68%"><span class="who">THEO</span>"Close enough" is how money goes missing. We split it the exact way — long division, every digit in its place. Then we check the decimals.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-hall")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:12%;color:#F2C15B">TONIGHT'S TAKE</div>
+      <div class="balloon" style="top:24%;left:6px;max-width:42%;--tx:20%"><span class="who">MAYA</span>Every coin the festival raised lands here to be counted and split — exactly. No "about," no rounding. The Ledger Hall balances to the penny.</div>
+      <div class="balloon tail-r" style="top:24%;right:6px;max-width:40%;--tx:24%"><span class="who">BRAM</span>Penny-counting! Just split it roughly, kid — close enough is good enough!</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-theo")}
+      <div class="balloon gn-side" style="top:6px;left:8px;max-width:56%;--ty:14px"><span class="who">THEO</span>"Close enough" is how money goes missing. We split it the exact way — long division, every digit in its place. Then we check the decimals.</div>
+    </div>
   </div>`},
 
 /* p3 — lesson 1-4 scene: long division */
 { ch:"Chapter 1 · The Splitting Floor", html:`
   <div class="caption loc">The splitting floor — where the night's coins are shared into equal stacks, digit by digit.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${HALL(200)}
-    <g data-depth="12">${STACK(56,156,4,"#F2C15B")}${STACK(96,156,4,"#F2C15B")}${STACK(136,156,4,"#F2C15B")}</g>
-    <g data-depth="12" font-family="Consolas,monospace" font-weight="700" fill="#7CF2EC"><text x="214" y="58" font-size="18">1 0 3</text><line x1="206" y1="66" x2="300" y2="66" stroke="#7CF2EC" stroke-width="2"/><text x="206" y="92" font-size="18">6 ) 618</text></g>
-    <text data-depth="12" x="206" y="118" font-family="Consolas,monospace" font-size="11" fill="#F2C15B">write the 0 — don't skip it!</text>
-    <g data-depth="18" transform="translate(300,80) scale(.92)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:48%"><span class="who">DEV</span>618 coins, 6 equal stacks. 6 into 6 is 1. Then 6 into 1? Zero — so I write a 0 and bring down the 8. 6 into 18 is 3. Answer: 103.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#0c1c2c"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Names, keepers: the <b>dividend</b> is the number being split (618), the <b>divisor</b> is how many groups (6), the <b>quotient</b> is the answer. If a digit is too small to divide, write a <b>0</b> in the quotient — never skip it.</div>
-  </div>
-  <div class="caption">To divide with the standard algorithm, work left to right through the <b>dividend</b>. When the <b>divisor</b> won't go into a digit, put a <b>0</b> in the <b>quotient</b> and bring down the next digit. 618 ÷ 6 = 103, not 13.</div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-floor")}
+      <div class="balloon" style="top:6px;left:6px;max-width:36%;--tx:20%"><span class="who">DEV</span>618 coins, 6 equal stacks. 6 into 6 is 1. Then 6 into 1? Zero — so I write a 0 and bring down the 8. 6 into 18 is 3. Answer: 103.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:52%;top:42%">1 0 3<br>6 ) 618</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:52%;top:64%;font-size:13px">write the 0 — don't skip it!</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:60%;--ty:14px"><span class="who">VEX</span>Names, keepers: the <b>dividend</b> is the number being split (618), the <b>divisor</b> is how many groups (6), the <b>quotient</b> is the answer. If a digit is too small to divide, write a <b>0</b> in the quotient — never skip it.</div>
+    </div>
+    <div class="caption">To divide with the standard algorithm, work left to right through the <b>dividend</b>. When the <b>divisor</b> won't go into a digit, put a <b>0</b> in the <b>quotient</b> and bring down the next digit. 618 ÷ 6 = 103, not 13.</div>
+  </div>`},
 
 /* p4 — GATE g1 */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0c1c2c"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">DEV</span>Your turn, reader — split each pile into equal stacks. Watch the middle: a missing zero loses money.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-dev")}
+      <div class="balloon" style="top:6px;left:30%;max-width:62%;--tx:12px"><span class="who">DEV</span>Your turn, reader — split each pile into equal stacks. Watch the middle: a missing zero loses money.</div>
+    </div>
   </div>`},
 
 /* p5 — lesson 1-6 scene: multiply decimals */
 { ch:"Chapter 2 · The Price Tags", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE PRICE <em>TAGS</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${HALL(200)}
-    <g data-depth="10">${RECEIPT(34,38,156,126,["CARAMEL","0.4 kg","x $0.70 / kg","___________","$ ?"])}</g>
-    <g data-depth="12"><ellipse cx="300" cy="92" rx="22" ry="7" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><ellipse cx="300" cy="84" rx="22" ry="7" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/></g>
-    <g data-depth="18" transform="translate(286,96) scale(.86)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:202px;max-width:40%"><span class="who">ZARA</span>0.4 kg of caramel at $0.70 a kg. Multiply — but where does the decimal land?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#0c1c2c"/><g transform="translate(10,2) scale(.64)"><use href="#sym-theo"/></g><g transform="translate(322,6) scale(.58)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:50%"><span class="who">THEO</span>Multiply the digits as if there were no dots: 4 × 7 = 28…</div>
-    <div class="balloon vex tail-r" style="bottom:4px;right:60px;max-width:40%"><span class="who">VEX</span>…then count the decimal places in BOTH factors and place that many.</div>
-  </div>
-  <div class="caption">To <b>multiply decimals</b>, multiply as whole numbers, then count the total <b>decimal places</b> in the two factors and put that many in the answer. 0.4 × 0.7: 4×7 = 28, and 1 + 1 = 2 places → 0.28.</div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-tag")}
+      <div class="balloon" style="top:6px;left:6px;max-width:44%;--tx:24%"><span class="who">ZARA</span>0.4 kg of caramel at $0.70 a kg. Multiply — but where does the decimal land?</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:68%;top:56%;font-size:13px;color:#17324D;text-shadow:none">CARAMEL<br>0.4 kg<br>x $0.70 / kg<br>___________<br>$ ?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-theo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">THEO</span>Multiply the digits as if there were no dots: 4 × 7 = 28…</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-vex")}
+      <div class="balloon vex tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>…then count the decimal places in BOTH factors and place that many.</div>
+    </div>
+    <div class="caption">To <b>multiply decimals</b>, multiply as whole numbers, then count the total <b>decimal places</b> in the two factors and put that many in the answer. 0.4 × 0.7: 4×7 = 28, and 1 + 1 = 2 places → 0.28.</div>
+  </div>`},
 
 /* p6 — GATE g2 */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0c1c2c"/><g transform="translate(8,-2) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Reader — ring up each price. Same digits, but the decimal point decides everything.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-zara")}
+      <div class="balloon" style="top:6px;left:30%;max-width:62%;--tx:12px"><span class="who">ZARA</span>Reader — ring up each price. Same digits, but the decimal point decides everything.</div>
+    </div>
   </div>`},
 
 /* p7 — lesson 1-7 scene: divide decimals */
 { ch:"Chapter 3 · How Many Bags", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">HOW MANY <em>BAGS</em></h2>
   <div class="caption loc">Restock count. The total weight is known — but how many bags came out of it?</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${HALL(200)}
-    <g data-depth="10">${LEDGER(108,42,184,52,"4.8 ÷ 0.6 = ?")}</g>
-    <g data-depth="12">${STACK(64,172,5,"#1FA6A2")}</g>
-    <g data-depth="18" transform="translate(300,84) scale(.86)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:44%"><span class="who">ZARA</span>4.8 kg of caramel, bagged 0.6 kg at a time. How many bags? Dividing BY a decimal needs a trick.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#0c1c2c"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Rule: a <b>divisor</b> with a decimal is hard to divide by. Slide its decimal until it's a whole number — then slide the <b>dividend</b>'s decimal the SAME number of places. 4.8 ÷ 0.6 becomes 48 ÷ 6 = 8.</div>
-  </div>
-  <div class="caption">To <b>divide by a decimal</b>, move the decimal in the <b>divisor</b> to make it a whole number, and move the <b>dividend</b>'s decimal the same number of places. 4.8 ÷ 0.6 → 48 ÷ 6 = 8.</div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-bags")}
+      <div class="balloon" style="top:6px;left:6px;max-width:44%;--tx:24%"><span class="who">ZARA</span>4.8 kg of caramel, bagged 0.6 kg at a time. How many bags? Dividing BY a decimal needs a trick.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:78%;top:20%">4.8 ÷ 0.6 = ?</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:60%;--ty:14px"><span class="who">VEX</span>Rule: a <b>divisor</b> with a decimal is hard to divide by. Slide its decimal until it's a whole number — then slide the <b>dividend</b>'s decimal the SAME number of places. 4.8 ÷ 0.6 becomes 48 ÷ 6 = 8.</div>
+    </div>
+    <div class="caption">To <b>divide by a decimal</b>, move the decimal in the <b>divisor</b> to make it a whole number, and move the <b>dividend</b>'s decimal the same number of places. 4.8 ÷ 0.6 → 48 ÷ 6 = 8.</div>
+  </div>`},
 
 /* p8 — GATE g3 */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0c1c2c"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Count the bags, reader — make each divisor a whole number first, then divide.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-zara")}
+      <div class="balloon" style="top:6px;left:30%;max-width:62%;--tx:12px"><span class="who">ZARA</span>Count the bags, reader — make each divisor a whole number first, then divide.</div>
+    </div>
   </div>`},
 
 /* p9 — Bram's lying receipt */
 { ch:"Chapter 4 · The Receipt", html:`
   <div class="caption loc">Closing count. Bram slaps a receipt on the counter — and the totals don't sit right.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${HALL(200)}
-    <g data-depth="10">${RECEIPT(218,28,154,152,["BRAM'S STALL","caramel 0.5 kg","x $3.20 / kg","TOTAL:","$16.00  (?!)"])}</g>
-    <g data-depth="16" transform="translate(20,82)"><use href="#sym-bram"/></g>
-    <g data-depth="18" transform="translate(118,84) scale(.9)"><use href="#sym-maya"/></g>`)}
-    <div class="sfx" style="top:6px;left:150px">SLAP!</div>
-    <div class="balloon" style="top:8px;left:8px;max-width:40%"><span class="who">BRAM</span>Half a kilo of caramel — SIXTEEN DOLLARS! Pay up, the receipt says so!</div>
-    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:46%"><span class="who">MAYA</span>Sixteen dollars for half a kilo at $3.20? That decimal jumped a whole place. Let me run it for real.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#0c1c2c"/><g transform="translate(318,2) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Distortion spike. $3.20 × 0.5 is barely over a dollar — $16.00 is ten times too much. A single misplaced decimal overcharges the whole market. Audit it before he collects.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-receipt")}
+      <div class="sfx" style="top:6px;left:44%">SLAP!</div>
+      <div class="balloon" style="top:6px;left:6px;max-width:40%;--tx:24%"><span class="who">BRAM</span>Half a kilo of caramel — SIXTEEN DOLLARS! Pay up, the receipt says so!</div>
+      <div class="balloon tail-r" style="top:6px;right:6px;max-width:40%;--tx:24%"><span class="who">MAYA</span>Sixteen dollars for half a kilo at $3.20? That decimal jumped a whole place. Let me run it for real.</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:50%;top:74%;width:30%;font-size:12px;color:#17324D;text-shadow:none">BRAM'S STALL<br>caramel 0.5 kg<br>x $3.20 / kg<br>TOTAL:<br>$16.00  (?!)</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:60%;--ty:14px"><span class="who">VEX</span>Distortion spike. $3.20 × 0.5 is barely over a dollar — $16.00 is ten times too much. A single misplaced decimal overcharges the whole market. Audit it before he collects.</div>
+    </div>
   </div>`},
 
 /* p10 — boss setup */
 { ch:"Chapter 4 · The Audit", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${HALL(210)}
-    <rect data-depth="12" x="46" y="26" width="308" height="124" rx="8" fill="#0d1f33" stroke="#1FA6A2" stroke-width="3"/>
-    <g data-depth="12" font-family="Consolas,monospace" font-weight="700" fill="#7CF2EC"><text x="66" y="54" font-size="13">AUDIT — 3 LINES</text><text x="66" y="80" font-size="12">1. split $946 among 11 sellers</text><text x="66" y="104" font-size="12">2. 0.5 kg caramel @ $3.20 / kg</text><text x="66" y="128" font-size="12">3. Bram billed $16.00 — for how many kg?</text></g>
-    <g data-depth="18" transform="translate(150,150) scale(.7)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(342,152) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="bottom:10px;left:8px;max-width:50%"><span class="who">MAYA</span>Three locks to close the books: the fair split, the real price, and how much caramel Bram actually billed for.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:34%"><span class="who">THEO</span>The math is honest. The receipt isn't. Reader — take the boss.</div>
-  </div>
-  <div class="caption">Boss Gate: divide the take fairly, price the bag for real, then divide to expose what Bram's $16.00 truly billed.</div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p10-audit")}
+      <div class="balloon" style="top:6px;left:6px;max-width:34%;--tx:30%"><span class="who">MAYA</span>Three locks to close the books: the fair split, the real price, and how much caramel Bram actually billed for.</div>
+      <div class="balloon tail-r" style="top:6px;right:6px;max-width:30%;--tx:30%"><span class="who">THEO</span>The math is honest. The receipt isn't. Reader — take the boss.</div>
+      <div class="gn-sign gn-chalk gn-flow" data-gn-skip style="left:50%;top:56%;width:40%;font-size:12px">AUDIT — 3 LINES<br>1. split $946 among 11 sellers<br>2. 0.5 kg caramel @ $3.20 / kg<br>3. Bram billed $16.00 — for how many kg?</div>
+    </div>
+    <div class="caption">Boss Gate: divide the take fairly, price the bag for real, then divide to expose what Bram's $16.00 truly billed.</div>
+  </div>`},
 
 /* p11 — BOSS */
 { ch:"Boss Gate · Close the Books", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0c1c2c"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. Split it fair, price it true, and divide out Bram's decimal lie.</div>
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p11-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:56%;--ty:14px"><span class="who">VEX</span>BOSS GATE. Three locks. Split it fair, price it true, and divide out Bram's decimal lie.</div>
+    </div>
   </div>`},
 
 /* p12 — victory + teaser */
 { ch:"Chapter 5 · Balanced to the Penny", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${HALL(210)}
-    <g data-depth="6" transform="translate(0,52) scale(4,1.6)" opacity=".4"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="40" y="16" width="320" height="38" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="41" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="13">BOOKS BALANCED · $1.60 NOT $16.00</text>
-    <g data-depth="12">${STACK(58,196,5,"#F2C15B")}${STACK(342,198,5,"#1FA6A2")}</g>
-    <g data-depth="18" transform="translate(40,100) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(122,100) scale(.85)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(204,100) scale(.85)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(286,100) scale(.85)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(350,72) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:58px;left:18px">KA-CHING!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:54%"><span class="who">MAYA</span>$86 to each seller, a $1.60 bag, and Bram's "16 dollars" was really five kilos billed for half a kilo sold. Books balanced — to the penny.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#0c1c2c"/><g transform="translate(58,6) scale(.76)"><use href="#sym-bram"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">BRAM</span>One dollar sixty?! …Fine. I'll keep my decimals where they belong from now on.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><rect x="22" y="16" width="156" height="78" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="40" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#0F766E">UNIT 1 COMPLETE —</text><text x="100" y="56" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#0F766E">NEXT: UNIT 2</text><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="8" fill="#17324D">ratios, rates &amp; the Question Machine</text>`)}
-      <div class="balloon vex" style="bottom:2px;left:4px;max-width:64%"><span class="who">VEX</span>Whole numbers, decimals — mastered. Next, the city starts asking about ratios. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+  
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p12-win")}
+      <div class="sfx" style="top:58px;left:18px">KA-CHING!</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:50%;top:9%;width:70%;color:#F2C15B">BOOKS BALANCED · $1.60 NOT $16.00</div>
+      <div class="balloon" style="top:22%;left:6px;max-width:46%;--tx:30%"><span class="who">MAYA</span>$86 to each seller, a $1.60 bag, and Bram's "16 dollars" was really five kilos billed for half a kilo sold. Books balanced — to the penny.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-bram")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">BRAM</span>One dollar sixty?! …Fine. I'll keep my decimals where they belong from now on.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-next")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:80%"><span class="who">VEX</span>Whole numbers, decimals — mastered. Next, the city starts asking about ratios. To be continued…</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:50%;top:50%;width:70%;font-size:13px">UNIT 1 COMPLETE —<br>NEXT: UNIT 2<br>ratios, rates &amp; the Question Machine</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>
+  </div>`},
 
 /* p13 — journal */
 { ch:"End Matter · Ada Vex's Journal", html:`
