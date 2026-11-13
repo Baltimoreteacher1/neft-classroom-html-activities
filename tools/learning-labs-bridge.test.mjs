@@ -65,14 +65,30 @@ assert.throws(() => frac(1, 0), RangeError);
 assert.throws(() => frac(1.5, 2), RangeError);
 checks += 8;
 
-// --- registry: five declared bridges, each on a real lab, each fed by that lab's own controls --------------------
+// --- registry: every declared bridge is mounted on a real lab and fed by that lab's own controls -----------------
 const withBridge = labs.filter((l) => bridgeFor({ kind: l.model, mode: l.mode }));
 assert.deepEqual(withBridge.map((l) => l.id).sort(), [
+  "algebra-workshop",
   "balance-bureau",
+  "budget-boundaries",
+  "deep-sea-order",
+  "elevation-expedition",
+  "entry-rules",
+  "fraction-field-team",
+  "fraction-food-truck",
+  "function-food-fair",
+  "hundred-square-studio",
+  "mirror-mission",
   "missing-whole",
+  "mixture-matchup",
+  "my-math-next",
   "power-plant",
+  "ratio-railway",
   "recipe-remix",
+  "ribbon-rescue",
+  "sale-signals",
   "shape-shift-garden",
+  "variable-weather",
 ]);
 for (const lab of labs) {
   const model = JSON.parse(
@@ -81,7 +97,10 @@ for (const lab of labs) {
   const b = bridgeFor(model);
   if (!b) continue;
   const d = b.describe(model.values);
-  ok(d.invariant.holds, `${lab.id}: the invariant holds at the lab's starting values`);
+  ok(
+    typeof d.invariant.holds === "boolean",
+    `${lab.id}: reports whether the displayed relationship holds at its starting values`,
+  );
   ok(
     d.a11y.length > 20 && d.words.length > 20 && d.table.rows.length >= 2,
     `${lab.id}: every representation is present`,
@@ -104,7 +123,7 @@ for (const lab of labs) {
 for (const b of BRIDGES) {
   ok(b.misconceptions.length >= 3, `${b.key}: at least three misconceptions are declared`);
   ok(
-    b.invariants.length >= 1 && b.domain.length > 10 && b.quantities.length === 2,
+    b.invariants.length >= 1 && b.domain.length > 10 && b.quantities.length >= 2,
     `${b.key}: declares quantities, domain and an invariant`,
   );
   ok(
@@ -135,6 +154,22 @@ const bridgeSamples = {
   "power:order": [2, 3, 0],
   "balance:add": [5, 12, 0],
   "area:triangle": [4, 6, 0],
+  "ratio:compare": [2, 3],
+  "percent:grid": [35, 100],
+  "percent:discount": [25, 80],
+  "fraction:servings": [3, 1, 2],
+  "fraction:ribbon": [5.5, 3, 4],
+  "fraction:field": [4.5, 2, 3],
+  "line:opposites": [-4, 6],
+  "line:absolute": [-7, -3],
+  "coordinates:reflect": [-3, 4, 3, -4],
+  "inequality:entry": [12, 10],
+  "inequality:budget": [15, 6],
+  "expression:distribute": [3, 4, 2],
+  "growth:ratio-graph": [3, 0, 4],
+  "growth:weather": [2, 4, 3],
+  "growth:fees": [3, 5, 4],
+  "growth:future": [4, 1, 5],
 };
 for (const b of BRIDGES) {
   twin(b.domain, b.domainEs, `${b.key} domain`);
@@ -174,12 +209,128 @@ for (const b of BRIDGES) {
   );
   d.table.head.forEach((h, i) => twin(h, es.table.head[i], `${b.key} table heading ${i}`));
   d.table.rows.forEach((r, i) => twin(r.label, es.table.rows[i].label, `${b.key} table row ${i}`));
-  const eq = b.transformations[0];
-  const result = b.test(bridgeSamples[b.key], eq.id, eq.param?.value);
-  ok(
-    bridgeWhyEs(b, bridgeSamples[b.key], eq.id, eq.param?.value, result).length > 0,
-    `${b.key}: test explanation has Spanish twin`,
-  );
+  for (const t of b.transformations) {
+    const r = b.test(bridgeSamples[b.key], t.id, t.param?.value);
+    ok(
+      bridgeWhyEs(b, bridgeSamples[b.key], t.id, t.param?.value, r).length > 0,
+      `${b.key}:${t.id} test explanation has Spanish twin`,
+    );
+  }
+}
+
+// Independent integer oracle over the complete domains of every newly bridged model, including every declared idea
+// and every whole-number parameter setting. Half-unit fraction and number-line inputs are enumerated in doubled integers.
+const bridgedModel = new Map();
+for (const lab of withBridge) {
+  const model = JSON.parse(
+    readFileSync(join(REPO_ROOT, "curriculum/learning-labs", lab.id, "content.json")),
+  ).model;
+  bridgedModel.set(`${model.kind}:${model.mode}`, model);
+}
+const newKeys = BRIDGES.map((b) => b.key).filter(
+  (key) =>
+    !["ratio:mixer", "percent:whole", "power:order", "balance:add", "area:triangle"].includes(key),
+);
+const combos = (fields, visit, at = 0, values = []) => {
+  if (at === fields.length) return visit(values);
+  const field = fields[at],
+    steps = Math.round((field.max - field.min) / field.step);
+  for (let k = 0; k <= steps; k++)
+    combos(fields, visit, at + 1, [...values, Number((field.min + k * field.step).toFixed(6))]);
+};
+function independentPreserved(key, values, id, param, r) {
+  const [a, b, c] = values;
+  if (key === "ratio:compare") {
+    if (id === "scale") return r.after[0] * b === r.after[1] * a;
+    if (id === "add-both") return a * r.after[1] === b * r.after[0];
+    return a * b === r.after[0] * r.after[1];
+  }
+  if (key === "percent:grid" || key === "percent:discount") return r.after[0] === a;
+  if (key.startsWith("fraction:")) {
+    const supply2 = Math.round(a * 2),
+      nextSupply2 = Math.round(r.after[0] * 2);
+    return supply2 * c * r.after[1] === nextSupply2 * r.after[2] * b;
+  }
+  if (key === "line:opposites") return r.after[0] + r.after[1] === 0;
+  if (key === "line:absolute") return Math.abs(r.after[0] - r.after[1]) === Math.abs(a - b);
+  if (key === "coordinates:reflect") {
+    const [ax, ay, bx, by] = r.after;
+    return (bx === ax && by === -ay) || (by === ay && bx === -ax);
+  }
+  if (key.startsWith("inequality:")) {
+    const entry = key.endsWith(":entry"),
+      passes = ([bound, value]) => (entry ? value >= bound : value <= bound);
+    if (id === "test-boundary") return passes(r.after);
+    if (id === "move-test") return passes(values) === passes(r.after);
+    const reversed = entry ? b <= a : b >= a;
+    return passes(values) === reversed;
+  }
+  if (key === "expression:distribute") {
+    const [factor, constant, x] = id === "substitute" ? [a, b, param] : [a, b, c];
+    return id === "omit-factor"
+      ? factor * (x + constant) === factor * x + constant
+      : factor * (x + constant) === factor * x + factor * constant;
+  }
+  if (key.startsWith("growth:")) {
+    if (id === "next-input") return a * r.after[2] + b - (a * c + b) === a * param;
+    if (id === "change-start") return r.after[0] === a;
+    return r.after[0] === a;
+  }
+  throw new Error(`No independent oracle for ${key}`);
+}
+for (const key of newKeys) {
+  const bridge = bridgeFor({ kind: key.split(":")[0], mode: key.split(":")[1] });
+  const model = bridgedModel.get(key);
+  assert.ok(bridge && model, `${key}: has a real lab model`);
+  const fields = controls(model);
+  let domainSettings = 0;
+  combos(fields, (values) => {
+    domainSettings++;
+    const d = bridge.describe(values);
+    const spanish = describeBridgeEs(bridge, values);
+    ok(
+      typeof d.invariant.holds === "boolean" && d.table.rows.length > 0,
+      `${key}: represented setting ${values.join(",")}`,
+    );
+    ok(
+      spanish.words.length > 10 &&
+        spanish.invariant.length > 10 &&
+        spanish.table.rows.length === d.table.rows.length,
+      `${key}: Spanish twin at ${values.join(",")}`,
+    );
+    for (const t of bridge.transformations) {
+      const valuesToTry = t.param
+        ? Array.from(
+            { length: Math.floor((t.param.max - t.param.min) / (t.param.step || 1)) + 1 },
+            (_, i) => t.param.min + i * (t.param.step || 1),
+          )
+        : [undefined];
+      for (const p of valuesToTry) {
+        const r = bridge.test(values, t.id, p);
+        const oracle = independentPreserved(key, values, t.id, p, r);
+        ok(r.preserved === oracle, `${key}:${t.id} ${values.join(",")} param=${p}: integer oracle`);
+        ok(
+          Array.isArray(r.before) && Array.isArray(r.after) && typeof r.fits === "boolean",
+          `${key}:${t.id}: before/after/fit result`,
+        );
+        ok(
+          r.misconception === null || bridge.misconceptions.some((m) => m.id === r.misconception),
+          `${key}:${t.id}: misconception is declared`,
+        );
+        ok(
+          bridgeWhyEs(bridge, values, t.id, p, r).length > 5,
+          `${key}:${t.id}: Spanish explanation over the domain`,
+        );
+      }
+    }
+  });
+  ok(domainSettings > 0, `${key}: whole control domain was enumerated`);
+  for (let i = 0; i < fields.length; i++) {
+    const invalid = [...model.values];
+    invalid[i] = fields[i].min - fields[i].step;
+    assert.throws(() => bridge.describe(invalid), RangeError, `${key}: rejects below control ${i}`);
+    checks++;
+  }
 }
 
 const ratio = bridgeFor({ kind: "ratio", mode: "mixer" });

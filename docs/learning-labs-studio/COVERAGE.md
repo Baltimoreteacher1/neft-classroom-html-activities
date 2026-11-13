@@ -14,7 +14,7 @@ Generated 2026-11-13 from `data/learning-labs.json`, the Bridge registry (`share
 
 | Capability | Labs | Of 46 |
 | --- | --- | --- |
-| Bilingual Representation Bridge with predict-first "Test an idea" | Recipe Remix Radio, The Missing Whole Bureau, The Power Plant, The Balance Bureau, Shape-Shift Garden | 5 |
+| Bilingual Representation Bridge with predict-first "Test an idea" | 21 labs across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models | 21 |
 | Control on the first Chromebook screen | all labs | 46 |
 | First control on the phone's first screen | 41 labs; the five remaining labs use full-width data plots | 41 |
 | Model picture at least 60% visible on a phone's first screen | median 78.5%; see per-lab values | 40 |
@@ -40,41 +40,41 @@ First-screen columns are measured at 1366×768 (Chromebook) and 390×844 (phone)
 | The Outlier Investigation | 2 | 2-10 | data:outlier | No | No | Yes | No | 47% |
 | Decimal Design Shop | 2 | 2-11, 2-12 | decimal:receipt | No | No | Yes | Yes | 88% |
 | Recipe Remix Radio | 3 | 3-1, 3-2 | ratio:mixer | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 87% |
-| Ratio Railway | 3 | 3-3, 3-4 | growth:ratio-graph | No | No | Yes | Yes | 80% |
-| Mixture Matchup | 3 | 3-5 | ratio:compare | No | No | Yes | Yes | 87% |
+| Ratio Railway | 3 | 3-3, 3-4 | growth:ratio-graph | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 80% |
+| Mixture Matchup | 3 | 3-5 | ratio:compare | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 87% |
 | World Expedition Outfitters | 3 | 3-6, 3-7 | conversion:expedition | No | No | Yes | Yes | 91% |
 | Best Buy Boulevard | 3 | 3-8 | rate:shopping | No | No | Yes | Yes | 96% |
 | Scale and Sail Workshop | 3 | 3-9, 3-10 | conversion:scale | No | No | Yes | Yes | 91% |
-| Hundred-Square Studio | 4 | 4-1, 4-2 | percent:grid | No | No | Yes | Yes | 73% |
-| Sale Signals Studio | 4 | 4-3, 4-4 | percent:discount | No | No | Yes | Yes | 82% |
-| The Missing Whole Bureau | 4 | 4-5 | percent:whole | **Yes** (1 idea, 3 misconceptions; English + Spanish) | No | Yes | Yes | 90% |
-| Shape-Shift Garden | 5 | 5-1, 5-2 | area:triangle | **Yes** (2 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 98% |
+| Hundred-Square Studio | 4 | 4-1, 4-2 | percent:grid | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 73% |
+| Sale Signals Studio | 4 | 4-3, 4-4 | percent:discount | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 82% |
+| The Missing Whole Bureau | 4 | 4-5 | percent:whole | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 90% |
+| Shape-Shift Garden | 5 | 5-1, 5-2 | area:triangle | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 98% |
 | Festival Floorplan | 5 | 5-3, 5-4 | area:trapezoid | No | No | Yes | Yes | 77% |
 | Packaging Workshop | 5 | 5-5, 5-6 | solid:net | No | Yes | Yes | Yes | 79% |
-| Wrap Lab | 5 | 5-7, 5-8 | solid:surface | No | Yes | No | Yes | 44% |
+| Wrap Lab | 5 | 5-7, 5-8 | solid:surface | No | Yes | Yes | Yes | 44% |
 | Polygon Pavilion | 5 | 5-9, 5-10 | area:polygon | No | No | Yes | Yes | 86% |
-| Fraction Food Truck | 6 | 6-1, 6-2 | fraction:servings | No | No | Yes | Yes | 68% |
-| The Power Plant | 6 | 6-3, 6-4 | power:order | **Yes** (2 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 69% |
+| Fraction Food Truck | 6 | 6-1, 6-2 | fraction:servings | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 68% |
+| The Power Plant | 6 | 6-3, 6-4 | power:order | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 69% |
 | Expression Remix Studio | 6 | 6-5, 6-6 | expression:equivalence | No | No | Yes | Yes | 77% |
 | Factor Factory | 6 | 6-7, 6-8 | factors:gcf | No | No | Yes | Yes | 88% |
-| Ribbon Rescue | 6 | 6-9, 6-10 | fraction:ribbon | No | No | Yes | Yes | 68% |
-| Fraction Field Team | 6 | 6-11 | fraction:field | No | No | Yes | Yes | 68% |
+| Ribbon Rescue | 6 | 6-9, 6-10 | fraction:ribbon | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 68% |
+| Fraction Field Team | 6 | 6-11 | fraction:field | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 68% |
 | Synchronization Station | 6 | 6-12, 6-13 | factors:lcm | No | No | Yes | Yes | 88% |
-| Algebra Workshop | 6 | 6-14, 6-15 | expression:distribute | No | No | Yes | Yes | 84% |
-| Elevation Expedition | 7 | 7-1, 7-2 | line:opposites | No | No | Yes | Yes | 100% |
-| Deep Sea Dispatch | 7 | 7-3, 7-4 | line:absolute | No | No | Yes | Yes | 100% |
+| Algebra Workshop | 6 | 6-14, 6-15 | expression:distribute | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 84% |
+| Elevation Expedition | 7 | 7-1, 7-2 | line:opposites | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 100% |
+| Deep Sea Dispatch | 7 | 7-3, 7-4 | line:absolute | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 100% |
 | Coordinate Couriers | 7 | 7-5, 7-6 | coordinates:distance | No | No | Yes | Yes | 65% |
 | Grid Architects | 7 | 7-7, 7-8 | coordinates:rectangle | No | No | Yes | Yes | 71% |
-| Mirror Mission | 7 | 7-9 | coordinates:reflect | No | No | Yes | Yes | 71% |
+| Mirror Mission | 7 | 7-9 | coordinates:reflect | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 71% |
 | The Balance Bureau | 8 | 8-1, 8-2 | balance:add | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 78% |
 | Vault Division | 8 | 8-3 | balance:multiply | No | No | Yes | Yes | 78% |
-| Entry Rules Arcade | 8 | 8-4, 8-5 | inequality:entry | No | No | Yes | Yes | 84% |
-| Budget Boundaries | 8 | 8-6, 8-7 | inequality:budget | No | No | Yes | Yes | 84% |
-| Variable Weather Station | 9 | 9-1, 9-2 | growth:weather | No | No | Yes | Yes | 71% |
-| Function Food Fair | 9 | 9-3, 9-4 | growth:fees | No | No | Yes | Yes | 77% |
-| Symmetry Safari | 10 | 10-1, 10-2 | coordinates:symmetry | No | No | Yes | Yes | 71% |
+| Entry Rules Arcade | 8 | 8-4, 8-5 | inequality:entry | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 84% |
+| Budget Boundaries | 8 | 8-6, 8-7 | inequality:budget | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 84% |
+| Variable Weather Station | 9 | 9-1, 9-2 | growth:weather | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 71% |
+| Function Food Fair | 9 | 9-3, 9-4 | growth:fees | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 77% |
+| Symmetry Safari | 10 | 10-1, 10-2 | coordinates:symmetry | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 71% |
 | Invention Playground | 10 | 10-3, 10-4 | array:design | No | No | Yes | Yes | 98% |
-| My Math, Next | 10 | 10-5, 10-6 | growth:future | No | No | Yes | Yes | 77% |
+| My Math, Next | 10 | 10-5, 10-6 | growth:future | **Yes** (3 ideas, 3 misconceptions; English + Spanish) | No | Yes | Yes | 77% |
 
 Unit names: 1 Mathematical Discovery; 2 Statistics and Decimal Operations; 3 Ratios and Rates; 4 Percentages; 5 Geometry and Measurement; 6 Expressions and Number Operations; 7 Rational Numbers and Coordinates; 8 Equations and Inequalities; 9 Two-Variable Relationships; 10 Mathematical Synthesis.
 

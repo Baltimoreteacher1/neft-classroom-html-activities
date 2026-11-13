@@ -8,7 +8,7 @@ Lab pages are generated. Edit `tools/learning-labs/blueprints.mjs`, a lesson con
 
 ## The rules this layer enforces
 
-1. **Workspace first.** The Investigate stage opens with the open question, then the model. Instructions go in the `studio-how` disclosure. Do not put reading above the model. Measure it: `npm run audit:learning-labs-first-screen -- <label>` and compare with `first-screen-final.md` (Chromebook: first control on the first screen in 45 of 46 labs).
+1. **Workspace first.** The Investigate stage opens with the open question, then the model. Instructions go in the `studio-how` disclosure. Do not put reading above the model. Measure it: `npm run audit:learning-labs-first-screen -- <label>` and compare with `first-screen-final.md` (Chromebook: first control on the first screen in 46 of 46 labs).
 2. **A tool mounts only where its mathematics belongs.** Gate by `lab.model.kind` / `mode`, as the 3D net inspector is gated to `solid`. A cross-topic widget goes in the closed "Partner and small-group tools" disclosure or is not built. Never ship invented classmates, peers or scores.
 3. **44px targets** for everything a lab draws. `studio.css` sets the floor for `button`, `summary`, `select` and checkbox labels; do not lower it.
 4. **Colour never carries meaning alone.** Use the `--studio-*` tokens in `studio.css` (quantity A teal, quantity B coral, active sapphire, prediction violet, correct green, misconception ink, hint amber) and always pair them with a column name, icon or sentence.

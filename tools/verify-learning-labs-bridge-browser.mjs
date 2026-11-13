@@ -65,9 +65,25 @@ const count = async (page) =>
 
 // idea index to test for the misconception check, per lab: [idea, parameter, what the verdict must mention]
 const wrong = {
+  "mixture-matchup": [1, "1", /adding|cross-product|unit rate/i],
   "recipe-remix": [1, null, /multiplying|additive|Adding/i],
+  "hundred-square-studio": [2, "10", /share|percent|amount/i],
+  "sale-signals": [2, "10", /rate|discount|savings/i],
   "missing-whole": [0, "5.4", /work back to 100%/],
+  "fraction-food-truck": [2, "1", /serving|quotient|fraction/i],
   "power-plant": [1, null, /repeated|factor|exponent/i],
+  "ribbon-rescue": [2, "1", /serving|quotient|fraction/i],
+  "fraction-field-team": [2, "1", /serving|quotient|fraction/i],
+  "elevation-expedition": [1, null, /opposites|sum|zero/i],
+  "deep-sea-order": [2, "2", /distance|gap/i],
+  "mirror-mission": [2, null, /both signs|half.turn|single.axis/i],
+  "entry-rules": [2, null, /reversed|direction|rule/i],
+  "budget-boundaries": [2, null, /reversed|direction|rule/i],
+  "algebra-workshop": [2, null, /second term|factor/i],
+  "ratio-railway": [2, null, /rate|slope/i],
+  "variable-weather": [2, null, /rate|slope/i],
+  "function-food-fair": [2, null, /rate|slope/i],
+  "my-math-next": [2, null, /rate|slope/i],
   "balance-bureau": [1, null, /both sides|one side|same/i],
   "shape-shift-garden": [1, "9", /perpendicular|height/i],
 };
