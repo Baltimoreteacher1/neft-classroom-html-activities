@@ -29,7 +29,7 @@
   "use strict";
 
   var STORE_KEY = "nt_mentor";
-  var STATE_VERSION = 1;
+  var STATE_VERSION = 2;
 
   var R = null;
   var lang = "en";
@@ -59,7 +59,7 @@
       s5: "Done",
       readAloud: "🔊 Read to me",
       readAloudHint: "Read-aloud is on. Tap any words to hear them.",
-      heroEyebrow: "Before the math starts",
+      heroEyebrow: "A 60–90 second start",
       heroTitle: "Pick someone to think with.",
       heroBig: "You will choose a mathematician to work <strong>with</strong> this year.",
       heroF1: "You keep your own name.",
@@ -108,7 +108,7 @@
       s5: "Listo",
       readAloud: "🔊 Léemelo",
       readAloudHint: "La lectura en voz alta está activada. Toca cualquier texto para escucharlo.",
-      heroEyebrow: "Antes de empezar las matemáticas",
+      heroEyebrow: "Un inicio de 60–90 segundos",
       heroTitle: "Escoge a alguien para pensar juntos.",
       heroBig: "Vas a escoger a un matemático para trabajar <strong>con</strong> él este año.",
       heroF1: "Tú conservas tu propio nombre.",
@@ -277,16 +277,19 @@
       }
       var moves = prev && Array.isArray(prev.moves) ? prev.moves.slice() : [];
       if (moves.indexOf(m.lab) === -1) moves.push(m.lab);
-      localStorage.setItem(
-        STORE_KEY,
-        JSON.stringify({
-          version: STATE_VERSION,
-          id: id,
-          chosenAt: new Date().toISOString(),
-          moves: moves,
-          seenStories: prev && Array.isArray(prev.seenStories) ? prev.seenStories : [],
-        }),
-      );
+      var next = prev && typeof prev === "object" ? prev : {};
+      next.version = STATE_VERSION;
+      next.id = id;
+      next.chosenAt = new Date().toISOString();
+      next.moves = moves;
+      next.seenStories = Array.isArray(next.seenStories) ? next.seenStories : [];
+      next.lang = lang;
+      next.studio = next.studio && typeof next.studio === "object" ? next.studio : {};
+      next.journey =
+        next.journey && typeof next.journey === "object"
+          ? next.journey
+          : { weeks: {}, moments: {}, experiences: {} };
+      localStorage.setItem(STORE_KEY, JSON.stringify(next));
       return true;
     } catch (_e) {
       return false;
@@ -488,6 +491,46 @@
     if (!host) return;
 
     host.style.setProperty("--ml-color", lab ? lab.color : "#334155");
+    var universe = window.NTMentorUniverse;
+    var interaction = universe ? universe.interactionFor(m, lang) : null;
+    var sources = universe ? universe.sourcesFor(m) : [];
+    var enrichment = "";
+    if (interaction) {
+      enrichment =
+        '<section class="ml-detail-sec mu-profile-lab"><h2>' +
+        esc(lang === "es" ? "Prueba la estrategia" : "Try the strategy") +
+        "</h2><p>" +
+        esc(interaction.prompt) +
+        '</p><label><span class="ml-sr">' +
+        esc(lang === "es" ? "Tu respuesta" : "Your answer") +
+        '</span><input data-mu-profile-answer="' +
+        esc(m.id) +
+        '" autocomplete="off"></label> ' +
+        '<button class="ml-btn ml-btn-quiet" type="button" data-mu-profile-check="' +
+        esc(m.id) +
+        '">' +
+        esc(lang === "es" ? "Revisar" : "Check") +
+        '</button><p class="mu-profile-feedback" role="status" aria-live="polite"></p></section>';
+    }
+    if (sources.length) {
+      enrichment +=
+        '<section class="ml-detail-sec mu-sources"><h2>' +
+        esc(lang === "es" ? "Fuentes para seguir leyendo" : "Sources and further reading") +
+        "</h2><ul>" +
+        sources
+          .map(function (source) {
+            return (
+              '<li><a href="' +
+              esc(source.href) +
+              '" target="_blank" rel="noopener noreferrer">' +
+              esc(source.label) +
+              "</a></li>"
+            );
+          })
+          .join("") +
+        "</ul></section>";
+    }
+
     host.innerHTML =
       '<button class="ml-back" type="button" data-back="1">' +
       esc(t("back")) +
@@ -554,6 +597,7 @@
           esc(lab.tryIt.answer) +
           "</p></details></section>"
         : "") +
+      enrichment +
       '<div class="ml-actions ml-actions-sticky">' +
       '<button class="ml-btn ml-btn-go" type="button" data-choose="' +
       esc(m.id) +
@@ -653,6 +697,13 @@
     if (selectedLab) renderMatches(selectedLab);
     if (viewing) renderDetail(viewing.id);
     renderAll();
+    renderUniverseState();
+    var lessons = window.__NT_MENTOR_LESSONS || [];
+    if ($("mu-lesson-select") && lessons.length) {
+      for (var n = 0; n < lessons.length; n++) {
+        if (lessons[n].id === $("mu-lesson-select").value) renderMoment(lessons[n]);
+      }
+    }
   }
 
   /* ── collecting moves ──────────────────────────────────────────────────────
@@ -709,12 +760,31 @@
       return;
     }
 
+    var profileCheck = el.closest("[data-mu-profile-check]");
+    if (profileCheck && window.NTMentorUniverse) {
+      var mentorId = profileCheck.getAttribute("data-mu-profile-check");
+      var mentor = R.getMentor(mentorId);
+      var input = document.querySelector('[data-mu-profile-answer="' + mentorId + '"]');
+      var feedback = profileCheck.parentNode.querySelector(".mu-profile-feedback");
+      var result = window.NTMentorUniverse.checkInteraction(mentor, input ? input.value : "", lang);
+      if (feedback) {
+        feedback.textContent = result.correct
+          ? lang === "es"
+            ? "Correcto. Explica qué hizo útil la estrategia."
+            : "Correct. Explain what made the move useful."
+          : result.hint;
+      }
+      if (result.correct) window.NTMentorUniverse.markExperience("profile-" + mentorId, mentor.lab);
+      return;
+    }
+
     // Read-aloud mode: tapping text reads it, and does nothing else.
     if (speakOn) {
       var readable = el.closest(
         ".ml-lede, .ml-sub, h1, h2, .ml-person-simple, .ml-person-name, .ml-detail-simple," +
           " .ml-detail-sec p, .ml-detail-move-line, .ml-lab-sounds, .ml-lab-move, .ml-labhead-move," +
-          " .ml-labhead-blurb, .ml-done-note, .ml-done-move, .ml-foot p, .ml-word",
+          " .ml-labhead-blurb, .ml-done-note, .ml-done-move, .ml-foot p, .ml-word," +
+          " .mu-section p, .mu-section h2, .mu-section h3, .mu-section summary",
       );
       if (readable && !el.closest("button,a,summary")) {
         speak(readable.textContent);
@@ -792,6 +862,231 @@
     }
   }
 
+  /* ── yearlong universe ───────────────────────────────────────────────── */
+
+  function universeState() {
+    return window.NTMentorUniverse ? window.NTMentorUniverse.load() : null;
+  }
+
+  function renderUniverseState() {
+    var U = window.NTMentorUniverse;
+    if (!U) return;
+    var state = U.load();
+    var studio = state.studio || {};
+    if ($("mu-studio-move")) $("mu-studio-move").value = studio.move || "";
+    if ($("mu-studio-when")) $("mu-studio-when").value = studio.when || "";
+
+    var select = $("mu-week");
+    if (select && !select.options.length) {
+      for (var week = 1; week <= 36; week++) {
+        var option = document.createElement("option");
+        option.value = String(week);
+        option.textContent = (lang === "es" ? "Semana " : "Week ") + week;
+        select.appendChild(option);
+      }
+    }
+    var grid = $("mu-week-grid");
+    if (grid) {
+      var weeks = (state.journey && state.journey.weeks) || {};
+      var html = "";
+      for (var w = 1; w <= 36; w++) {
+        html +=
+          '<li class="' +
+          (weeks[String(w)] ? "is-done" : "") +
+          '"><button type="button" data-mu-week="' +
+          w +
+          '" aria-label="' +
+          (lang === "es" ? "Semana " : "Week ") +
+          w +
+          (weeks[String(w)] ? ", complete" : "") +
+          '">' +
+          w +
+          "</button></li>";
+      }
+      grid.innerHTML = html;
+    }
+
+    var a = $("mu-mash-a");
+    var b = $("mu-mash-b");
+    if (a && !a.options.length) {
+      for (var i = 0; i < R.labs.length; i++) {
+        var lab = R.labs[i];
+        var oa = document.createElement("option");
+        oa.value = lab.id;
+        oa.textContent = labField(lab, "name");
+        a.appendChild(oa);
+        b.appendChild(oa.cloneNode(true));
+      }
+      if (b.options.length > 1) b.selectedIndex = 1;
+    }
+
+    var investigations = $("mu-investigations");
+    if (investigations) {
+      investigations.innerHTML = Object.keys(U.investigations)
+        .map(function (unit) {
+          var item = U.investigations[unit];
+          return (
+            "<li><strong>" +
+            (lang === "es" ? "Unidad " : "Unit ") +
+            esc(unit) +
+            "</strong> — " +
+            esc(item[lang === "es" ? "es" : "en"]) +
+            "</li>"
+          );
+        })
+        .join("");
+    }
+  }
+
+  function renderMoment(lesson) {
+    var U = window.NTMentorUniverse;
+    var host = $("mu-moment-card");
+    if (!U || !host || !lesson) return;
+    var moment = U.momentFor(lesson, lang);
+    var lab = R.getLab(moment.lab);
+    host.style.setProperty("--ml-color", lab ? lab.color : "#17324D");
+    host.innerHTML =
+      '<p class="ml-eyebrow">' +
+      esc(lesson.id + " · " + (lab ? labField(lab, "name") : "")) +
+      "</p><h3>" +
+      esc(lesson.title) +
+      "</h3><p>" +
+      esc(moment.text) +
+      '</p><a href="/lessons/' +
+      esc(lesson.id) +
+      '/">' +
+      esc(lang === "es" ? "Abrir la lección" : "Open lesson") +
+      "</a>";
+  }
+
+  function loadMoments() {
+    var select = $("mu-lesson-select");
+    if (!select || !window.fetch) return;
+    fetch("/data/curriculum-launch-manifest.json")
+      .then(function (response) {
+        if (!response.ok) throw new Error("manifest " + response.status);
+        return response.json();
+      })
+      .then(function (manifest) {
+        var lessons = manifest && Array.isArray(manifest.lessons) ? manifest.lessons : [];
+        window.__NT_MENTOR_LESSONS = lessons;
+        select.innerHTML = lessons
+          .map(function (lesson) {
+            return (
+              '<option value="' +
+              esc(lesson.id) +
+              '">' +
+              esc(lesson.id + " · " + lesson.title) +
+              "</option>"
+            );
+          })
+          .join("");
+        if (lessons.length) renderMoment(lessons[0]);
+      })
+      .catch(function () {
+        select.innerHTML = "<option>The lesson list is unavailable.</option>";
+      });
+  }
+
+  function universeClick(ev) {
+    var target = ev.target;
+    if (!target || !target.closest || !window.NTMentorUniverse) return;
+    var weekButton = target.closest("[data-mu-week]");
+    if (weekButton) {
+      $("mu-week").value = weekButton.getAttribute("data-mu-week");
+      var state = universeState();
+      var saved = state.journey.weeks[$("mu-week").value];
+      $("mu-week-note").value = saved ? saved.reflection || "" : "";
+      $("mu-week-note").focus();
+      return;
+    }
+    var check = target.closest("[data-mu-check]");
+    if (!check) return;
+    var kind = check.getAttribute("data-mu-check");
+    if (kind === "switchboard") {
+      var strategy = document.querySelector('input[name="mu-first"]:checked');
+      var answer = $("mu-switch-answer").value.trim();
+      var reflection = $("mu-switch-reflect").value.trim();
+      var ok = !!strategy && answer === "21" && reflection.length >= 12;
+      $("mu-switch-feedback").textContent = ok
+        ? "Saved. 25% is one fourth, and 84 ÷ 4 = 21."
+        : "Choose a first strategy, enter 21, and compare it with a second strategy in a full sentence.";
+      if (ok) window.NTMentorUniverse.markExperience("strategy-switchboard", strategy.value);
+      return;
+    }
+    if (kind === "archive-expression") {
+      var choice = document.querySelector('input[name="mu-expression"]:checked');
+      var value = choice ? choice.value : "";
+      var feedback = {
+        "7t-24": "Correct: 7t is the cost of all seven tickets, then one $24 coupon is subtracted.",
+        "7(t-24)": "This subtracts the $24 coupon from every ticket—seven coupons. The coupon applies once to the total.",
+        "24-7t": "This reverses the quantities and can make the total negative. The ticket cost comes first; the coupon reduces it.",
+        "t(7-24)": "This multiplies t by a negative number. The 24 is a fixed coupon, not a number of tickets.",
+      };
+      $("mu-archive-feedback").textContent = feedback[value] || "Choose an expression so the archive can respond to your model.";
+      $("mu-archive-revision").hidden = false;
+      if (value === "7t-24") $("mu-revised-expression").value = "7t - 24";
+      return;
+    }
+    if (kind === "archive-transfer") {
+      var expression = $("mu-revised-expression").value.replace(/\s/g, "").toLowerCase();
+      var evaluation = $("mu-evaluate").value.trim();
+      var transfer = $("mu-transfer").value.replace(/\s/g, "").toLowerCase();
+      var complete = expression === "7t-24" && evaluation === "60" && transfer === "5m-18";
+      $("mu-archive-feedback").textContent = complete
+        ? "Archive complete: model, revision, evaluation, and transfer all agree."
+        : "Revise to 7t − 24. At t = 12, use 84 − 24. In the transfer, five m-dollar passes come before one $18 coupon.";
+      if (complete) window.NTMentorUniverse.markExperience("discovery-archive-6-5", "7t-24");
+      return;
+    }
+    if (kind === "mashup") {
+      var first = $("mu-mash-a").value;
+      var second = $("mu-mash-b").value;
+      var note = $("mu-mash-note").value.trim();
+      var mashOk = first !== second && note.length >= 20;
+      $("mu-mash-feedback").textContent = mashOk
+        ? "Saved. Your explanation uses two distinct moves on one decision."
+        : "Choose two different moves and explain the job each one does.";
+      if (mashOk) window.NTMentorUniverse.markExperience("mentor-mash-up", first + "+" + second);
+    }
+  }
+
+  function bootUniverse() {
+    if (!window.NTMentorUniverse) return;
+    renderUniverseState();
+    loadMoments();
+    var form = $("mu-studio-form");
+    if (form) {
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        window.NTMentorUniverse.update(function (state) {
+          state.studio = {
+            move: $("mu-studio-move").value.trim(),
+            when: $("mu-studio-when").value.trim(),
+            updatedAt: new Date().toISOString(),
+          };
+        });
+        $("mu-studio-status").textContent =
+          lang === "es" ? "Tu tarjeta se guardó en este dispositivo." : "Your strategy card is saved on this device.";
+      });
+    }
+    if ($("mu-save-week")) {
+      $("mu-save-week").addEventListener("click", function () {
+        window.NTMentorUniverse.markWeek($("mu-week").value, $("mu-week-note").value);
+        renderUniverseState();
+      });
+    }
+    if ($("mu-lesson-select")) {
+      $("mu-lesson-select").addEventListener("change", function () {
+        var lessons = window.__NT_MENTOR_LESSONS || [];
+        for (var i = 0; i < lessons.length; i++) {
+          if (lessons[i].id === $("mu-lesson-select").value) renderMoment(lessons[i]);
+        }
+      });
+    }
+    document.addEventListener("click", universeClick);
+  }
+
   /* ── boot ──────────────────────────────────────────────────────────────── */
 
   function boot() {
@@ -807,6 +1102,7 @@
     loadLang();
     applyLang();
     show(1);
+    bootUniverse();
     document.addEventListener("click", onClick);
     // `toggle` does not bubble — capture it at the document instead.
     document.addEventListener("toggle", onToggle, true);
