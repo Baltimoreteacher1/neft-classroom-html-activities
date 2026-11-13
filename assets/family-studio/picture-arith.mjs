@@ -98,11 +98,12 @@ const power = {
   match(s) {
     if (POWER_NO.test(s) || !/value|what is|evaluate|find|how many|\?/i.test(s)) return null;
     const found = [];
-    for (const m of s.matchAll(/(?<![\w.^])(\d+)\^(\d+)(?![\d.])/g)) found.push([+m[1], +m[2], m.index, m[0]]);
+    for (const m of s.matchAll(/(?<![\w.^])(\d+)\^(\d+)(?!\d|\.\d)/g)) found.push([+m[1], +m[2], m.index, m[0]]);
     for (const m of s.matchAll(/(?<![\w.])(\d+) (squared|cubed)\b/gi))
       found.push([+m[1], m[2].toLowerCase() === "squared" ? 2 : 3, m.index, m[0]]);
     for (const m of s.matchAll(/(?<![\w.])(\d+) to the (\d+)(?:st|nd|rd|th) power/gi)) found.push([+m[1], +m[2], m.index, m[0]]);
-    if (found.length !== 1) return null;
+    // The same power named twice ("plays 3⁴ beats. What is the value of 3⁴?") is one power.
+    if (found.length !== 1 && !(found.length === 2 && found[0][0] === found[1][0] && found[0][1] === found[1][1])) return null;
     const [b, n, at, tok] = found[0];
     if (b < 2 || b > 12 || n < 2 || n > 6) return null;
     const rest = s.slice(0, at) + s.slice(at + tok.length);
@@ -477,5 +478,5 @@ const percent = {
   },
 };
 
-export { fracdiv };
+export { equation, fracdiv, percent };
 export const ARITH = [power, order, equation, fracdiv, percent];

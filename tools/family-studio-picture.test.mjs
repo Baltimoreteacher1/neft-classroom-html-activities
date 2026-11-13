@@ -188,7 +188,10 @@ test("percent: bar from 0% to 100% with the unknown as ?", () => {
   });
   none("Estimate 32% of 89 by rounding to 30% of 90.");
   none("Which is greater: 15% of 200, or 30% of 90?");
-  none("A phone case costs $30. It is 40% off. How much is the discount?");
+  check("A phone case costs $30. It is 40% off. How much is the discount?", "percent", {
+    gives: [30, 40],
+    hides: [12, 18],
+  });
   none("8 is 20% of the whole. What is 10% of the whole?");
 });
 
@@ -257,8 +260,10 @@ test("inequality: open or closed circle and ray, only when the stem does not ask
     assert.doesNotMatch(bar.svg.replace(/<style>[\s\S]*?<\/style>/, ""), />\s*5\s*</);
     assert.doesNotMatch(bar.caption.en, /\b5\b/);
   }
-  none(
+  check(
     "Mia has $12. She wants at least $50. The inequality is 12 + s ≥ 50. What is the least whole number s?",
+    "inequality-bar",
+    { gives: [12, 50], hides: [38] },
   );
   none("A theme park has two rides. Ride A requires h > 48 inches. Ride B requires h ≥ 48 inches.");
 });
@@ -274,8 +279,10 @@ test("dot plot: one dot per value, no summary number", () => {
   none(
     "Mia's quiz scores are 8, 9, 10, 9. Leo's are 5, 7, 11, 13. Both means are 9. Who is more consistent?",
   );
-  none(
+  check(
     "Four numbers have a mean of 12. Three of them are 10, 14 and 11. What is the fourth number?",
+    "mean-target",
+    { gives: [10, 14, 11, 12], hides: [13, 48] },
   );
   none("What is the mode of 2, 3, 3, 5, 7?");
 });
@@ -304,7 +311,11 @@ test("area: one labelled shape with a dashed height; the unknown is ?", () => {
   none(
     "Parallelogram A has a base of 7 and a height of 6. Parallelogram B has a base of 5 and a height of 9.",
   );
-  none("A 10 by 6 rectangle has a 4 by 3 hole. What is the area of what is left?");
+  check(
+    "A 10 by 6 rectangle has a 4 by 3 hole. What is the area of what is left?",
+    "composite-area",
+    { gives: [10, 6, 4, 3], hides: [48, 60, 12] },
+  );
   none("A trapezoid has bases of 4 and 6. What is b1 + b2?");
   none(
     "A regular hexagon is decomposed into 6 identical triangles, each with base 8 cm and height 7 cm.",
@@ -343,8 +354,10 @@ test("conversion and unit price: double number line with ? at the asked amount",
       .kind,
     "ratio-table",
   );
-  none(
+  check(
     "Juice A: 4 bottles for $6. Juice B: 5 bottles for $9. Which has the lower price per bottle?",
+    "rate-compare",
+    { gives: [4, 6, 5, 9], hides: [1.5, 1.8] },
   );
   none(
     "When converting, do you multiply or divide? Sort each conversion by the correct operation.",
@@ -444,4 +457,33 @@ test("sweep: every stem in the pool runs, every picture is well formed", {
       .join(", "),
   );
   assert.ok(hit > 300, "coverage collapsed: a recognizer stopped matching");
+});
+
+// One real stem per round-2 kind: the givens are drawn and the answer never is.
+test("round-2 kinds draw the givens and never the answer", () => {
+  const cases = [
+    ["A shelf holds 9 cans. A pantry has 4 shelves just like it. How many cans are in the pantry?", "equal-groups", [9], [36]],
+    ["Four tickets cost $10.00 altogether. All the tickets cost the same. What does one ticket cost?", "equal-groups", ["10.00"], [2.5, "2.50"]],
+    ["A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?", "rate-table", [180, 6], [30]],
+    ["The unit rate is $3 per pound. How much do 7 pounds cost?", "rate-table", [3, 7], [21]],
+    ["Two boxes: Box A is 10 × 5 × 4 inches. Box B is 8 × 6 × 5 inches. Which has more volume and by how much?", "box-compare", [10, 5, 4, 8, 6], [200, 240, 40]],
+    ["The target total is 60 and you already have 45. How much more do you need?", "part-whole", [60, 45], [15]],
+    ["A plant is 10 cm tall and grows 2 cm each week. How tall is it after 4 weeks?", "growth", [10], [18]],
+    ["A table shows x = 1, 2, 3 and y = 7, 9, 11. What is y when x = 4?", "xy-table", [7, 9, 11], [13]],
+    ["A rectangle is 9 units long and 4 units wide. What is its perimeter?", "rectangle", [9, 4], [26, 36]],
+    ["You have $20. You buy items costing $6.75 and $4.50. How much money is left?", "change-chain", [20, 6.75, "4.50"], [8.75]],
+    ["Q1 = 12 and Q3 = 30. What is the IQR?", "iqr", [12, 30], [18]],
+    ["Set M is 7, 9, 11, 13 with mean 10. What is its MAD?", "mad", [7, 9, 11, 13], [2]],
+    ["The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?", "deviation", [15, 11], [4]],
+    ["A row of a ratio table is 12:8. Divide both numbers by 4. What is the new row?", "ratio-scale", [12, 8], [3, 2]],
+    ["A team has 6 girls and 4 boys. What is the ratio of girls to ALL the players?", "ratio-parts", [6, 4], [10]],
+    ["A cat weighs 11 pounds. The dose is 6 mg for every 1 kg. (1 kg ≈ 2.2 lbs) How much medicine does the cat need?", "dose", [11, 2.2, 6], [5, 30]],
+    ["12 out of 20 students bring lunch from home. What percent bring lunch?", "percent-of", [12, 20], [60]],
+    ["A 9 by 4 rectangle has a 3 by 2 rectangle cut out. What area is left?", "composite-area", [9, 4, 3, 2], [30, 36]],
+    ["A regular pentagon splits into 5 triangles. Each triangle has a base of 6 and a height of 5. What is the area of the pentagon?", "polygon-triangles", [6, 5], [15, 75]],
+    ["The faces of a box have areas 6, 8 and 12, and each area appears twice. What is the surface area?", "face-sum", [6, 8, 12], [52]],
+    ["What is the LCM of 6 and 8?", "multiples", [6, 8], [24]],
+    ["A teacher has 24 pencils and 36 erasers. She makes identical kits with nothing left over. What is the greatest number of kits?", "common-factor", [24, 36], [12]],
+  ];
+  for (const [stem, kind, gives, hides] of cases) check(stem, kind, { gives, hides });
 });

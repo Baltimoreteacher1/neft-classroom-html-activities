@@ -24,11 +24,12 @@ const NOUNS = {
   week: ["weeks", "semanas"], poster: ["posters", "pósteres"], box: ["boxes", "cajas"], red: ["red", "rojo"],
   blue: ["blue", "azul"], yellow: ["yellow", "amarillo"], paint: ["paint", "pintura"], word: ["words", "palabras"],
   mix: ["mix", "mezcla"], soda: ["soda", "refresco"], broth: ["broth", "caldo"], vegetable: ["vegetables", "verduras"],
+  banana: ["bananas", "plátanos"], strawberry: ["strawberries", "fresas"],
   girl: ["girls", "niñas"], boy: ["boys", "niños"], widget: ["widgets", "piezas"], cherry: ["cherry", "cereza"],
   load: ["loads", "cargas"], liter: ["liters", "litros"],
   "$": ["dollars", "dólares"],
 };
-const IRREG = { feet: "foot", inches: "inch", boxes: "box", kilometers: "kilometer" };
+const IRREG = { feet: "foot", inches: "inch", boxes: "box", kilometers: "kilometer", strawberries: "strawberry", lemons: "lemon" };
 
 /** The dictionary key for a noun phrase ("cups of olive oil" -> oil, "spoons" -> null), or null. */
 function nounKey(phrase) {
@@ -48,10 +49,10 @@ const q3 = (m, i) => (m[i] ? [m[i], "$"] : [m[i + 1], m[i + 2]]);
 
 // ---------------------------------------------------------------- ratio table with one missing value
 
-const RATIO_NO = /which|compare|better|faster|student|sort|match|explain|\bboth\b|\bleft\b|estimate|about|\bor\b|instead|goal|now there|scale factor from|divide both|multiply both|next row|third row|first row|simplest|equivalent\?|\bare\b.*equivalent|\bis\b \d+ ?: ?\d+ equivalent|more\b|≈|\bthen\b|convert|percent|%|recipe [A-Z]|\b[A-Z] (?:uses|sells|goes|does|runs)\b|cost (?:per|of one)|unit (?:rate|price)/i;
+const RATIO_NO = /which|compare|better|faster|student|sort|match|explain|\bboth\b|\bleft\b|estimate|about|\bor\b|instead|goal|now there|scale factor from|divide both|multiply both|next row|third row|first row|simplest|equivalent\?|\bare\b.*equivalent|\bis\b \d+ ?: ?\d+ equivalent|more\b|≈|\bthen\b|convert|percent|%|recipe [A-Z]\b|\b[A-Z] (?:uses|sells|goes|does|runs)\b|cost (?:per|of one)|unit (?:rate|price)/i;
 
 function bareRatio(s) {
-  const pairs = [...s.matchAll(/(?<![\w./])(\d+|\?|_{2,}) ?: ?(\d+|\?|_{2,})(?![\w./]|:)/g)];
+  const pairs = [...s.matchAll(/(?<![\w./])(\d+|\?|_{2,}) ?: ?(\d+|\?|_{2,})(?![\w/]|\.\d|:)/g)];
   if (pairs.length !== 2) return null;
   const cells = pairs.flatMap((p) => [p[1], p[2]]);
   const unk = cells.filter((c) => !/^\d+$/.test(c));
@@ -68,7 +69,8 @@ function storyRatio(s) {
     for (const m of s.matchAll(new RegExp(re, "gi"))) rels.push({ a: q3(m, 1), b: q3(m, 4), at: m[0] });
   };
   two(String.raw`(?<![\w.])${Q} (?:for every|for each) ${Q}`);
-  two(String.raw`\b(?:uses|mixes|mix) ${Q} (?:for|with|to) ${Q}`);
+  two(String.raw`\b(?:uses|mixes|mix) ${Q} (?:for|with|to|and) ${Q}`);
+  two(String.raw`^[A-Z][a-z]+ (?:is|are) ${Q} for ${Q}`);
   two(String.raw`\bthere are ${Q} in ${Q}`);
   two(String.raw`\b(?:produces|prints|travels|goes|drives|runs|reads|types|walks|swims|earns|makes|scores|burns|bikes) ${Q} in ${Q}`);
   for (const m of s.matchAll(new RegExp(String.raw`(?<![\w.])${Q} (?:each|per|an|a|every) ([a-z]+)\b`, "g")))
@@ -160,12 +162,18 @@ const ratioTable = {
 
 // ---------------------------------------------------------------- fraction of a whole number (tape)
 
-const FOF_NO = /which|first|estimate|about|sort|match|order|without|as (?:tall|long|many|much)|shortcut|explain|student|more|left|remain|\bnot\b|percent|%|÷|×|then|both|rest/i;
+const FOF_NO = /which|first|estimate|about|sort|match|order|without|as (?:tall|long|many|much)|shortcut|explain|student (?:says|thinks|claims|wrote)|more|left|remain|\bnot\b|percent|%|÷|×|then|both|rest/i;
+
+const WN = { one: 1, two: 2, three: 3, four: 4, five: 5 };
+const WD = { half: 2, halves: 2, third: 3, thirds: 3, fourth: 4, fourths: 4, quarter: 4, quarters: 4, fifth: 5, fifths: 5 };
+const WORD_FRAC = /\b(one|two|three|four|five) (half|halves|thirds?|fourths?|quarters?|fifths?) of\b/gi;
 
 const fractionOf = {
   kind: "fraction-of",
-  match(s) {
-    if (FOF_NO.test(s) || !/how many|what is|find|how much|how long|how far/i.test(s)) return null;
+  match(s0) {
+    if (FOF_NO.test(s0) || !/how many|what is|find|how much|how long|how far/i.test(s0)) return null;
+    // "Three fourths of the 20 chairs" reads as 3/4 of the 20 chairs.
+    const s = s0.replace(WORD_FRAC, (m, a, b) => `${WN[a.toLowerCase()]}/${WD[b.toLowerCase()]} of`);
     const fm = [...s.matchAll(/(?<![\w./])(\d+)\/(\d+) of\b/g)];
     if (fm.length !== 1) return null;
     const n = +fm[0][1];
@@ -178,7 +186,7 @@ const fractionOf = {
     if (!(N > 0) || !Number.isInteger(N) || N > 100000) return null;
     // The whole must be the "of" object: "2/3 of 30", or "N things ... n/d of them / of the things".
     const after = s.slice(fm[0].index + fm[0][0].length);
-    const direct = new RegExp(String.raw`^ \$?${nums[0][1].replace(/[$.]/g, "\\$&")}\b`).test(after);
+    const direct = new RegExp(String.raw`^ (?:the )?\$?${nums[0][1].replace(/[$.]/g, "\\$&")}\b`).test(after);
     const them = /^ (?:them|these|those|the [a-z]+|its [a-z]+|her [a-z]+|his [a-z]+)\b/.test(after) && nums[0].index < fm[0].index;
     if (!direct && !them) return null;
     return { n, d, Nt: show(nums[0][1]).replace(/^/, s.includes(`$${nums[0][1]}`) ? "$" : "") };
@@ -271,20 +279,33 @@ const mixed = {
 const FV = String.raw`\d+ \d+/\d+|\d+/\d+|\d+`;
 const STORY_NO = /which|sort|match|again|left ?over|remainder|whole|full\b|explain|student|mistake|before|predict|without|rewrite|keep, change|reciprocal|check|both|then|\bmodel\b|×|÷|equation|expression|of (?:a|an|the|her|his) /i;
 const SIZE = [
-  String.raw`\beach (?:[a-z-]+ ){0,3}(?:holds|uses|is|needs|gets|has|takes)(?: a| exactly)? (${FV})`,
+  String.raw`\bone [a-z]+(?: of [a-z]+)? (?:uses|holds|needs|takes) (${FV})`,
+  String.raw`\b(${FV}) (?:cups?|pounds?|feet|foot|yards?|miles?|gallons?) of [a-z]+ per [a-z]+`,
+  String.raw`\bof (${FV}) [a-z]+ each\b`,
+  String.raw`\beach [a-z]+ covers a (${FV})`,
+  String.raw`\beach (?:[a-z'-]+ ){0,3}(?:holds?|uses?|is|needs?|gets?|has|takes?)(?: a| exactly)? (${FV})`,
+  String.raw`\b(\d+/\d+) [a-z]+ per [a-z]+`,
   String.raw`\beach (${FV})(?= [a-z]+ (?:long|wide))`,
   String.raw`\bthat are each (${FV})`,
   String.raw`\bare each (${FV})`,
   String.raw`\beach (?:is )?(${FV}) (?:of a |of an )?[a-z]+ long`,
-  String.raw`(?<![\w/])(${FV})-[a-z]+ (?:pieces|scoops|cups|servings|bags|slices|sections|strips|bottles|glasses|jars)`,
+  String.raw`(?<![\w/])(${FV})-[a-z]+ (?:[a-z]+ )?(?:pieces|scoops?|cups|servings|bags|slices|sections|strips|bottles|glasses|jars)`,
   String.raw`\bevery (${FV}) (?:of an? )?[a-z]+`,
   String.raw`\binto (${FV})-[a-z]+ pieces`,
 ];
 
+/** "each hold 4/5 of a pound" -> "each hold 4/5 pound": a unit after a group size is not "a fraction of a whole". */
+const UNIT_OF = new RegExp(String.raw`(\beach (?:[a-z'-]+ ){0,3}(?:holds?|uses?|is|needs?|gets?|takes?)(?: a| exactly)? (?:${FV})|\beach (?:${FV})) of an? (?=(?:pound|cup|gallon|liter|quart|yard|foot|mile|loaf|pizza|hour)\b)`, "gi");
+
+/** "A trail is 5/6 of a mile": a fraction of a measuring unit is an amount, not a part of a whole. */
+const UNIT_OF_ANY = /(?<![\w/])(\d+\/\d+) of an? (?=(?:pound|cup|gallon|liter|quart|yard|foot|mile|hour)\b)/g;
+/** "A scoop holds 1/4 pound": a group size named by its container, used only when nothing else names one. */
+const SIZE_LAST = [String.raw`\ba [a-z]+ holds (${FV})`];
+
 const fracStory = {
   kind: "fraction-division",
   match(s0) {
-    const s = s0.replace(/^(?:room|mission|lock|stop|path|level) \d+\s*[—:-]\s*[^:]*?:\s*/i, "").replace(/^(?:room|mission|lock|stop) \d+\s*[—:-]\s*/i, "");
+    const s = s0.replace(/^(?:room|mission|lock|stop|path|level) \d+\s*[—:-]\s*[^:]*?:\s*/i, "").replace(/^(?:room|mission|lock|stop) \d+\s*[—:-]\s*/i, "").replace(UNIT_OF, "$1 ").replace(UNIT_OF_ANY, "$1 ");
     if (STORY_NO.test(s) || !/how many|how much|what fraction|how long|how big/i.test(s)) return null;
     const nums = [...s.matchAll(new RegExp(String.raw`(?<![\w./])(${FV})(?![\w/]|[.,]\d)`, "g"))].map((m) => m[1]);
     if (nums.length !== 2 || !nums.some((t) => t.includes("/"))) return null;
@@ -297,7 +318,8 @@ const fracStory = {
       return fracdiv.match(`${T} ÷ ${k}`);
     }
     if (!/how many/i.test(s)) return null;
-    const sizes = SIZE.flatMap((re) => [...s.matchAll(new RegExp(re, "gi"))].map((m) => m[1]));
+    let sizes = SIZE.flatMap((re) => [...s.matchAll(new RegExp(re, "gi"))].map((m) => m[1]));
+    if (!sizes.length) sizes = SIZE_LAST.flatMap((re) => [...s.matchAll(new RegExp(re, "gi"))].map((m) => m[1]));
     if (new Set(sizes).size !== 1) return null;
     const B = sizes[0];
     const T = nums.find((t) => t !== B);

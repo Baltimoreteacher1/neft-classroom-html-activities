@@ -195,12 +195,12 @@ const UNITS = {
   lb: ["pounds|pound|lb", "pounds", "libras", "pound", "libra"],
   oz: ["ounces|ounce|oz", "ounces", "onzas", "ounce", "onza"],
   T: ["tons|ton", "tons", "toneladas", "ton", "tonelada"],
-  km: ["kilometers|kilometer|km", "kilometers", "kilómetros", "kilometer", "kilómetro"],
-  m: ["meters|meter|m", "meters", "metros", "meter", "metro"],
-  cm: ["centimeters|centimeter|cm", "centimeters", "centímetros", "centimeter", "centímetro"],
-  mm: ["millimeters|millimeter|mm", "millimeters", "milímetros", "millimeter", "milímetro"],
-  L: ["liters|liter|L", "liters", "litros", "liter", "litro"],
-  mL: ["milliliters|milliliter|mL", "milliliters", "mililitros", "milliliter", "mililitro"],
+  km: ["kilometers|kilometer|kilometres|kilometre|km", "kilometers", "kilómetros", "kilometer", "kilómetro"],
+  m: ["meters|meter|metres|metre|m", "meters", "metros", "meter", "metro"],
+  cm: ["centimeters|centimeter|centimetres|centimetre|cm", "centimeters", "centímetros", "centimeter", "centímetro"],
+  mm: ["millimeters|millimeter|millimetres|millimetre|mm", "millimeters", "milímetros", "millimeter", "milímetro"],
+  L: ["liters|liter|litres|litre|L", "liters", "litros", "liter", "litro"],
+  mL: ["milliliters|milliliter|millilitres|millilitre|mL", "milliliters", "mililitros", "milliliter", "mililitro"],
   kg: ["kilograms|kilogram|kg", "kilograms", "kilogramos", "kilogram", "kilogramo"],
   g: ["grams|gram|g", "grams", "gramos", "gram", "gramo"],
   mg: ["milligrams|milligram|mg", "milligrams", "miligramos", "milligram", "miligramo"],
@@ -224,8 +224,13 @@ const convert = {
   match(s) {
     if (CONV_NO.test(s)) return null;
     let rel = null;
+    s = s.replace(/^leg \d+: /i, "");
     let rest = s;
-    const fm = s.match(new RegExp(String.raw`\(?1 (${UALT}) (=|≈) (${NUM}) (${UALT})\)?`));
+    const U = String.raw`(${UALT})(?![A-Za-z])`;
+    let fm = s.match(new RegExp(String.raw`\(?1 ${U} (=|≈) (${NUM}) ${U}\)?`));
+    // "There are 100 centimeters in 1 meter": the same fact, read the other way round.
+    const tm = !fm && s.match(new RegExp(String.raw`\(?there are (${NUM}) ${U} in (?:1|one) ${U}\.?\)?`, "i"));
+    if (tm) fm = [tm[0], tm[3], "=", tm[1], tm[2]];
     if (fm) {
       const a = unitOf(fm[1]);
       const b = unitOf(fm[4]);

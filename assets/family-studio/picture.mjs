@@ -12,16 +12,25 @@
 
 import { ALG } from "./picture-alg.mjs";
 import { ARITH } from "./picture-arith.mjs";
+import { EXTRA } from "./picture-extra.mjs";
+import { FACTOR } from "./picture-factor.mjs";
 import { GEO } from "./picture-geo.mjs";
+import { GROUP } from "./picture-group.mjs";
 import { norm, shell } from "./picture-kit.mjs";
 import { LINE } from "./picture-line.mjs";
+import { MORE } from "./picture-more.mjs";
 import { OPS } from "./picture-ops.mjs";
+import { PCT } from "./picture-pct.mjs";
 import { PLANE } from "./picture-plane.mjs";
+import { RATE } from "./picture-rate.mjs";
 import { RATIO } from "./picture-ratio.mjs";
+import { SCALE } from "./picture-scale.mjs";
+import { SHAPE } from "./picture-shape.mjs";
 import { SOLID } from "./picture-solid.mjs";
+import { SPREAD } from "./picture-spread.mjs";
 import { STATS } from "./picture-stats.mjs";
 
-export const RECOGNIZERS = [...ARITH, ...PLANE, ...GEO, ...SOLID, ...RATIO, ...OPS, ...ALG, ...STATS, ...LINE];
+export const RECOGNIZERS = [...ARITH, ...PLANE, ...GEO, ...SOLID, ...RATIO, ...OPS, ...ALG, ...STATS, ...LINE, ...RATE, ...PCT, ...GROUP, ...SHAPE, ...SPREAD, ...MORE, ...FACTOR, ...SCALE, ...EXTRA];
 
 /** Stems that describe a task with several items or a drag/sort board: no single problem to draw. */
 const MULTI = /^(sort|match|drag|complete the table|put the steps)|\beach (one|problem|expression|equation|inequality|power)\b/i;
@@ -33,7 +42,8 @@ const MULTI = /^(sort|match|drag|complete the table|put the steps)|\beach (one|p
 export function pictureFor(stem, { topic = "", lang = "en" } = {}) {
   void topic;
   const L = lang === "es" ? "es" : "en";
-  const s = norm(stem);
+  // A game label in front of the problem ("Leg 2: ", "Light Cue 1: ", "Mission 3 — ") is not part of the mathematics.
+  const s = norm(stem).replace(/^(?:[A-Z][a-z]+ ){1,2}\d+ ?[:—–] +(?=[A-Z])/, "");
   if (!s || s.length > 400 || MULTI.test(s)) return null;
   for (const r of RECOGNIZERS) {
     const data = r.match(s);

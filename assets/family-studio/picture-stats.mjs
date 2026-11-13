@@ -145,7 +145,7 @@ const histogram = {
     if (Math.max(...heights) > 20) return null;
     // Every number is a bar height or an interval end.
     const rest = s.replace(/\d+–\d+/g, " ");
-    const nums = (rest.match(/(?<![\w.])\d+(?![\w.])/g) || []).map(Number);
+    const nums = (rest.match(/(?<![\w.])\d+(?!\w|\.\d)/g) || []).map(Number);
     if (nums.length !== heights.length) return null;
     return { heights, bins };
   },

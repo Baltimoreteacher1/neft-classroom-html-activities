@@ -30,7 +30,7 @@ const distance = {
   kind: "number-line-distance",
   match(s) {
     if (LINE_NO.test(s)) return null;
-    const ns = nums(s);
+    const ns = nums(s.replace(/\bsides? of 0\b/g, "sides of zero"));
     const abs = [...s.matchAll(new RegExp(String.raw`\|(${NUM})\|`, "g"))];
     if (abs.length === 1 && ns.length === 1 && /what is|find/i.test(s) && !/[+×÷=]/.test(s)) {
       const v = num(abs[0][1]);
@@ -80,9 +80,13 @@ const opposite = {
   kind: "opposite",
   match(s) {
     if (LINE_NO.test(s)) return null;
-    const m = s.match(new RegExp(String.raw`^what is the opposite of (${NUM})\?$`, "i"));
-    if (!m || num(m[1]) === 0 || Math.abs(num(m[1])) > 1000) return null;
-    return { v: num(m[1]), t: m[1] };
+    // "What is the opposite of 3/4?" / "In Reykjavik the temperature was -9°C. What is the opposite of -9?"
+    const m = s.match(new RegExp(String.raw`(?:^|\. )what is the opposite of (-?\d+/\d+|${NUM})\?$`, "i"));
+    if (!m) return null;
+    const v = m[1].includes("/") ? (m[1].startsWith("-") ? -1 : 1) * (+m[1].replace("-", "").split("/")[0] / +m[1].split("/")[1]) : num(m[1]);
+    const all = s.match(new RegExp(String.raw`(?<![\w.])(?:-?\d+/\d+|${NUM})(?![\w/]|\.\d)`, "g")) || [];
+    if (all.some((t) => t !== m[1]) || v === 0 || !Number.isFinite(v) || Math.abs(v) > 1000) return null;
+    return { v, t: m[1] };
   },
   draw({ v, t }, lang) {
     const y = 96;
@@ -109,18 +113,18 @@ const opposite = {
 const P = String.raw`\d+(?:\.\d+)?`;
 const OP = "(<|>|≤|≥)";
 const INEQ_FORMS = [
-  [new RegExp(String.raw`(?<![\w.])([a-z]) \+ (${P}) ${OP} (${P})(?![\w.])`), (m) => ({ op: "+", v: m[1], a: m[2], rel: m[3], b: m[4] })],
-  [new RegExp(String.raw`(?<![\w.])(${P}) \+ ([a-z]) ${OP} (${P})(?![\w.])`), (m) => ({ op: "+", v: m[2], a: m[1], rel: m[3], b: m[4], lead: true })],
-  [new RegExp(String.raw`(?<![\w.])([a-z]) - (${P}) ${OP} (${P})(?![\w.])`), (m) => ({ op: "-", v: m[1], a: m[2], rel: m[3], b: m[4] })],
-  [new RegExp(String.raw`(?<![\w.])(\d+)([a-z]) ${OP} (${P})(?![\w.])`), (m) => ({ op: "×", v: m[2], a: m[1], rel: m[3], b: m[4] })],
-  [new RegExp(String.raw`(?<![\w.])([a-z]) ÷ (\d+) ${OP} (${P})(?![\w.])`), (m) => ({ op: "÷", v: m[1], a: m[2], rel: m[3], b: m[4] })],
+  [new RegExp(String.raw`(?<![\w.])([a-z]) \+ (${P}) ${OP} (${P})(?![\w]|\.\d)`), (m) => ({ op: "+", v: m[1], a: m[2], rel: m[3], b: m[4] })],
+  [new RegExp(String.raw`(?<![\w.])(${P}) \+ ([a-z]) ${OP} (${P})(?![\w]|\.\d)`), (m) => ({ op: "+", v: m[2], a: m[1], rel: m[3], b: m[4], lead: true })],
+  [new RegExp(String.raw`(?<![\w.])([a-z]) - (${P}) ${OP} (${P})(?![\w]|\.\d)`), (m) => ({ op: "-", v: m[1], a: m[2], rel: m[3], b: m[4] })],
+  [new RegExp(String.raw`(?<![\w.])(\d+)([a-z]) ${OP} (${P})(?![\w]|\.\d)`), (m) => ({ op: "×", v: m[2], a: m[1], rel: m[3], b: m[4] })],
+  [new RegExp(String.raw`(?<![\w.])([a-z]) ÷ (\d+) ${OP} (${P})(?![\w]|\.\d)`), (m) => ({ op: "÷", v: m[1], a: m[2], rel: m[3], b: m[4] })],
 ];
 const WORDS = { ">": ["more than", "más de"], "≥": ["at least", "por lo menos"], "<": ["less than", "menos de"], "≤": ["at most", "como máximo"] };
 
 const ineqBar = {
   kind: "inequality-bar",
   match(s) {
-    if (/is [a-z] = |test|graph|circle|which|sort|match|student|check|explain|describe the solution set|each inequality|write an inequality|solution set/i.test(s)) return null;
+    if (/is [a-z] = |test|graph|circle|which(?! value (?:is a solution of|of [a-z] makes))|sort|match|student|check|explain|describe the solution set|each inequality|write an inequality|solution set/i.test(s)) return null;
     if ((s.match(/[<>≤≥]/g) || []).length !== 1) return null;
     const hits = INEQ_FORMS.map(([re, mk]) => s.match(re) && mk(s.match(re))).filter(Boolean);
     if (hits.length !== 1) return null;
