@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "c98cf4ca463d";
+const BUILD_HASH = "9555dce12608";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=dde5b4a738a3",
   "/access-practice-lab/home.css?v=567acc7b4b89",
@@ -66,7 +66,8 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/comfort.js?v=750da0271342",
   "/access-practice-lab/src/nav.js?v=14094c388093",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
-  "/access-practice-lab/src/sitemap.js?v=f08aedcb10c4",
+  "/access-practice-lab/src/sitemap.js?v=c3c62cde9a6e",
+  "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
   "/access-practice-lab/src/wayfinding.js?v=dc0db13df91e",
@@ -463,7 +464,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/lang/science-lab.js?v=9af991c0ec01",
   "/access-practice-lab/src/lang/share.js?v=a242c7c098c9",
   "/access-practice-lab/src/lang/shields.js?v=4e794018b3d6",
-  "/access-practice-lab/src/lang/site-search.js?v=147695367056",
+  "/access-practice-lab/src/lang/site-search.js?v=662a2f643898",
   "/access-practice-lab/src/lang/sound-bridge.js?v=98d9a56a4a33",
   "/access-practice-lab/src/lang/speaking-groups.js?v=ee517ba2c903",
   "/access-practice-lab/src/lang/supports-report.js?v=fbdbce312880",
@@ -490,7 +491,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/puzzles.js?v=e2ce0e67b724",
   "/access-practice-lab/src/reading-state.js?v=bf683a81a318",
   "/access-practice-lab/src/reality-engine.js?v=a93ba9370392",
-  "/access-practice-lab/src/search-data.js?v=f5effe965b1b",
+  "/access-practice-lab/src/search-data.js?v=dbd7bd881c55",
   "/access-practice-lab/src/search-palette.js?v=f838f9300fdc",
   "/access-practice-lab/src/sor/path.js?v=0e8119751408",
   "/access-practice-lab/src/sor/player.js?v=ec65c9115dea",

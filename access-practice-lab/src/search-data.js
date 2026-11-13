@@ -4,6 +4,7 @@ import { loadGlossary, loadIndex } from "./content.js";
 import { HOME_CARDS } from "./home-registry.js";
 import { UNITS } from "./journey/curriculum.js";
 import { buildBridge, buildDocs } from "./lang/site-search.js";
+import { STUDIO_APP_PAGES } from "./studio-app.js";
 import { STUDIOS } from "./studios.js";
 
 let pending = null;
@@ -12,7 +13,7 @@ let pending = null;
 export function loadSearch() {
   pending ||= (async () => {
     const [index, glossary] = await Promise.all([loadIndex().catch(() => null), loadGlossary().catch(() => null)]);
-    const docs = buildDocs({ index, glossary, cards: HOME_CARDS, studios: STUDIOS, units: UNITS, tests: index?.tests || [] });
+    const docs = buildDocs({ index, glossary, cards: HOME_CARDS, studios: STUDIOS, studioApp: STUDIO_APP_PAGES, units: UNITS, tests: index?.tests || [] });
     return { docs, bridge: buildBridge(glossary) };
   })();
   pending.catch(() => {

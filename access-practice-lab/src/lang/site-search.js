@@ -262,6 +262,7 @@ export function buildDocs({
   studios = [],
   units = [],
   tests = [],
+  studioApp = [],
 } = {}) {
   const docs = [...PAGE_DOCS, ...COMMAND_DOCS];
   for (const c of cards)
@@ -288,6 +289,19 @@ export function buildDocs({
       textEs: s.blurbEs,
       href: `/wida-access/${s.slug}/`,
       keys: ["studio", "estudio"],
+      bands: null,
+    });
+  for (const p of studioApp)
+    docs.push({
+      id: `studio-app:${p.id}`,
+      kind: "studio",
+      icon: p.icon,
+      title: p.title[0],
+      titleEs: p.title[1],
+      text: p.text[0],
+      textEs: p.text[1],
+      href: p.path,
+      keys: ["studio", "estudio", ...(p.keys || [])],
       bands: null,
     });
   for (const u of units)

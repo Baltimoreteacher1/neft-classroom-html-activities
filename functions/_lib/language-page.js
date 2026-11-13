@@ -13,6 +13,7 @@
 // here. Student progress lives in each origin's localStorage and does not cross origins, so the old origin must
 // keep serving the lab until students have moved their progress (docs/language-page-migration.md).
 
+import { STUDIO_APP_PAGES } from "../../access-practice-lab/src/studio-app.js";
 import { STUDIOS, studioFor, studioPath } from "../../access-practice-lab/src/studios.js";
 import { studioLabHtml } from "./language-page-studios.js";
 
@@ -23,7 +24,7 @@ export const LAB_BASE = "/access-practice-lab";
 export const ADVENTURES_BASE = "/language-adventures";
 /** The Language Studio app: a second static export mounted here, beside the adventures app. */
 export const STUDIO_BASE = "/language-studio";
-/** The Learning Studios landing page: a static page that points to studios.eduwonderlab.com. */
+/** The Learning Studios landing page: a static page that lists every studio and links into /studios. */
 export const LEARNING_STUDIOS_BASE = "/learning-studios";
 /** The Learning Studios app, proxied from its own Worker (functions/_lib/studios-proxy.js). */
 export const STUDIOS_APP_BASE = "/studios";
@@ -104,16 +105,11 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/vocabulary/mastery`,
   `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
-  // The Learning Studios app (proxied at /studios): the language studios, one public page each.
-  `${STUDIOS_APP_BASE}/language`,
-  `${STUDIOS_APP_BASE}/language/speaking`,
-  `${STUDIOS_APP_BASE}/language/writing`,
-  `${STUDIOS_APP_BASE}/language/words`,
-  `${STUDIOS_APP_BASE}/language/reading`,
-  `${STUDIOS_APP_BASE}/language/foundations`,
-  `${STUDIOS_APP_BASE}/language/games`,
-  `${STUDIOS_APP_BASE}/language/family`,
-  `${STUDIOS_APP_BASE}/math`,
+  // The Learning Studios app (proxied at /studios), one public page each, from access-practice-lab/src/studio-app.js.
+  // Teacher-only pages are left out of the crawler sitemap.
+  ...STUDIO_APP_PAGES.filter((page) => page.for.some((who) => who !== "teacher")).map(
+    (page) => page.path,
+  ),
   // The introduction: one entrance (/start) for teachers, a family page and the Site Guide (src/intro/data.js ROUTES).
   `${LAB_BASE}/start`,
   `${LAB_BASE}/start/tour`,

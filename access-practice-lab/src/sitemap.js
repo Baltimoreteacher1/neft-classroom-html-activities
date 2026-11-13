@@ -15,6 +15,8 @@
 //   top      shown in the section bar and the first rows of the menu
 //   external opens another site (labelled so nobody is surprised)
 
+import { STUDIO_APP_PAGES } from "./studio-app.js";
+
 const P = (en, es) => [en, es];
 
 export const SECTIONS = Object.freeze([
@@ -711,6 +713,20 @@ export const DESTINATIONS = Object.freeze([
       "Estudios del lenguaje para los grados 3 a 8 y estudios de matemáticas de 6.º grado, con indicaciones en inglés y español.",
     ),
   },
+  // The Learning Studios app, proxied at /studios (access-practice-lab/src/studio-app.js is the one list).
+  ...STUDIO_APP_PAGES.map((page) => ({
+    id: page.id,
+    section: page.section,
+    skill: page.skill,
+    kind: page.kind,
+    for: page.for,
+    top: false,
+    href: page.path,
+    icon: page.icon,
+    match: [],
+    title: page.title,
+    text: page.text,
+  })),
   {
     id: "worlds",
     section: "play",
