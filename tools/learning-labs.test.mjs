@@ -17,7 +17,98 @@ import {
   activityStatus,
   overview,
   parseKeyIdea,
+  progressStage,
 } from "../curriculum/learning-labs/shared/progress.mjs";
+
+const progressBase = {
+  version: 1,
+  notes: {},
+  practice: {},
+  created: "",
+  experiments: { v: 1, items: [] },
+};
+assert.equal(progressStage(progressBase, { done: 0, total: 6 }), "new");
+assert.equal(
+  progressStage(
+    { ...progressBase, notes: { prediction: "I can compare ratios" } },
+    { done: 0, total: 6 },
+  ),
+  "explored",
+);
+assert.equal(
+  progressStage(
+    { ...progressBase, practice: { q: { attempts: 1, correct: false } } },
+    { done: 0, total: 6 },
+  ),
+  "explored",
+);
+assert.equal(
+  progressStage({ ...progressBase, summary: { done: 6, total: 6 } }, { done: 6, total: 6 }),
+  "completed",
+);
+assert.equal(
+  progressStage(
+    { ...progressBase, experiments: { v: 1, items: [{ prediction: { ok: true } }] } },
+    { done: 0, total: 6 },
+  ),
+  "demonstrated",
+);
+assert.equal(
+  progressStage(
+    { ...progressBase, experiments: { v: 1, items: [{ prediction: { ok: false } }] } },
+    { done: 0, total: 6 },
+  ),
+  "explored",
+);
+assert.equal(
+  progressStage(
+    {
+      ...progressBase,
+      practice: {
+        "core-original-0": { attempts: 2, correct: true, hints: 0, independentRevision: true },
+      },
+    },
+    { done: 0, total: 6 },
+  ),
+  "demonstrated",
+);
+assert.equal(
+  progressStage(
+    {
+      ...progressBase,
+      practice: {
+        "core-original-0": { attempts: 2, correct: true, hints: 1, independentRevision: true },
+      },
+    },
+    { done: 0, total: 6 },
+  ),
+  "demonstrated",
+);
+assert.equal(
+  progressStage(
+    {
+      ...progressBase,
+      practice: {
+        "core-original-0": { attempts: 2, correct: true, hints: 1, independentRevision: false },
+      },
+    },
+    { done: 0, total: 6 },
+  ),
+  "explored",
+);
+assert.equal(
+  progressStage(
+    {
+      version: 1,
+      notes: { prediction: "older save" },
+      practice: {},
+      summary: { done: 2, total: 6 },
+    },
+    { done: 2, total: 6 },
+  ),
+  "explored",
+);
+
 import { blueprints } from "./learning-labs/blueprints.mjs";
 import { isLessonName } from "./learning-labs/vocabulary.mjs";
 import {

@@ -1,7 +1,7 @@
 import { esc } from './model.mjs';
 import { mountGames } from './games.mjs?v=20261007';
 import { create, investigate, learn, practice } from './activities.mjs';
-import { levels, noteLabels, overview, tabs, timing } from './progress.mjs';
+import { levels, noteLabels, overview, progressStage, progressStageLabel, tabs, timing } from './progress.mjs';
 import { connect } from './ewl-bridge.mjs?v=20261015';
 import { createCelebrator } from './celebrate.mjs';
 import * as sound from './sound.mjs';
@@ -41,7 +41,7 @@ const fresh = () => ({
 function save() {
   // The catalog cannot load every lab's content, so each save carries a small progress summary it can read.
   const o = overview(lab, state);
-  state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now(), stamped: !!state.stamped };
+  state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now(), stamped: !!state.stamped, stage: progressStage(state, o) };
   try {
     localStorage.setItem(storeKey, JSON.stringify(state));
     syncUnifiedStorage(lab, state);
@@ -85,6 +85,8 @@ function refreshProgress() {
   }
   const summary = document.getElementById('progress-summary');
   if (summary) summary.textContent = `${o.done} of ${o.total} activities complete`;
+  const stage = document.getElementById('mission-progress-stage');
+  if (stage) stage.textContent = `Lab progress: ${progressStageLabel[progressStage(state, o)]}. Demonstrated means a correct prediction or an independently revised transfer answer.`;
   const segWrap = document.getElementById('hud-segments');
   if (segWrap) {
     segWrap.innerHTML = o.items
@@ -213,7 +215,7 @@ function showTab(id, nav = 'push') {
 }
 function brief(host) {
   const o = overview(lab, state), started = o.done > 0 || o.items.some((i) => i.status === 'started');
-  host.innerHTML = `<div class="brief-layout"><div><h2>Your mission</h2><p class="large-copy">${esc(lab.mission)}</p><h3>What you will be able to do</h3><ul class="objectives">${lab.lessons.map((l) => `<li><strong>Lesson ${lessonNumber(l.id)}.</strong> ${esc(l.objective)}</li>`).join('')}</ul><div class="ready-note"><h3>Before you begin</h3><p>Have paper and a pencil nearby. Use the model to test an idea, but write down a prediction before changing it. Mistakes are a reason to investigate.</p><p>Every activity is open. If you get stuck, choose Support, open a hint, or return to a worked example.</p></div></div><aside class="route-card"><h3>${started ? 'Your progress' : 'Your route through the lab'}</h3><ol class="route-list">${o.items.map((item) => `<li data-status="${item.status}"><span class="route-title">${item.title}<span class="route-time">${timing[item.id]}</span></span><span class="route-status">${esc(item.summary)}</span></li>`).join('')}</ol><button type="button" data-start>${started && o.next !== 'brief' ? `Continue with ${tabs.find((t) => t[0] === o.next)[1]}` : 'Start with Learn'}</button></aside></div>${textArea('prediction', 'What do you already know that might help?', 'A word, sketch description, example, or question is a useful start.')}`;
+  host.innerHTML = `<div class="brief-layout"><div><h2>Your mission</h2><p class="large-copy">${esc(lab.mission)}</p><h3>What you will be able to do</h3><ul class="objectives">${lab.lessons.map((l) => `<li><strong>Lesson ${lessonNumber(l.id)}.</strong> ${esc(l.objective)}</li>`).join('')}</ul><div class="ready-note"><h3>Before you begin</h3><p>Have paper and a pencil nearby. Use the model to test an idea, but write down a prediction before changing it. Mistakes are a reason to investigate.</p><p>Every activity is open. If you get stuck, choose Support, open a hint, or return to a worked example.</p></div></div><aside class="route-card"><p id="mission-progress-stage" class="progress-text">Lab progress: ${progressStageLabel[progressStage(state, o)]}. Demonstrated means a correct prediction or an independently revised transfer answer.</p><h3>${started ? 'Your progress' : 'Your route through the lab'}</h3><ol class="route-list">${o.items.map((item) => `<li data-status="${item.status}"><span class="route-title">${item.title}<span class="route-time">${timing[item.id]}</span></span><span class="route-status">${esc(item.summary)}</span></li>`).join('')}</ol><button type="button" data-start>${started && o.next !== 'brief' ? `Continue with ${tabs.find((t) => t[0] === o.next)[1]}` : 'Start with Learn'}</button></aside></div>${textArea('prediction', 'What do you already know that might help?', 'A word, sketch description, example, or question is a useful start.')}`;
   host.querySelector('[data-start]').onclick = () => showTab(started && o.next !== 'brief' ? o.next : 'learn'); bindNotes(host);
   // The lab's story: the same world as the Games step. Each pair of finished activities lights one location.
   const world = expeditionWorlds[lab.id];

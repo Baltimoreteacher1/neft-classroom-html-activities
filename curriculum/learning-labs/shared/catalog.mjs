@@ -1,3 +1,4 @@
+import { progressStage, progressStageLabel } from './progress.mjs';
 // Catalog enhancements: progress on each card, "this week in class", unit folding,
 // search and filters that live in the URL. The page works without JavaScript.
 const STORE = 'eduwonderlab:learning-lab:v1:';
@@ -13,12 +14,12 @@ function readProgress(id) {
   let state = null;
   try { state = JSON.parse(localStorage.getItem(STORE + id) || 'null'); } catch { return null; }
   if (!state || state.version !== 1) return null;
-  if (state.summary && Number.isFinite(state.summary.total)) return state.summary;
+  if (state.summary && Number.isFinite(state.summary.total)) return { ...state.summary, stage: progressStage(state, state.summary) };
   // Saved before summaries existed: any written work counts as started.
-  const touched = Object.values(state.notes || {}).some(Boolean) || Object.keys(state.practice || {}).length || state.created;
-  return touched ? { done: 0, total: 6, started: true, savedAt: 0 } : null;
+  const touched = Object.values(state.notes || {}).some(Boolean) || Object.keys(state.practice || {}).length || state.created || state.experiments?.items?.length;
+  return touched ? { done: 0, total: 6, started: true, savedAt: 0, stage: progressStage(state, { done: 0, total: 6 }) } : null;
 }
-const statusOf = (p) => (!p ? 'new' : p.total && p.done >= p.total ? 'done' : p.started || p.done ? 'started' : 'new');
+const statusOf = (p) => (!p ? 'new' : p.total && p.done >= p.total ? 'done' : p.started || p.done || (p.stage && p.stage !== 'new') ? 'started' : 'new');
 const ctaText = { new: 'Start lab', started: 'Keep going', done: 'Review lab' };
 const progress = new Map();
 for (const card of cards) {
@@ -35,6 +36,7 @@ for (const card of cards) {
     meter.innerHTML = `<span style="width:${Math.round((100 * (p.done || 0)) / (p.total || 6))}%"></span>`;
     label.after(meter);
   }
+  label.textContent = `${progressStageLabel[p?.stage || 'new']}${p?.done ? ` · ${p.done} of ${p.total} parts` : ''}`;
 }
 for (const unit of units) {
   const inUnit = cards.filter((c) => c.dataset.unit === unit.dataset.unit);

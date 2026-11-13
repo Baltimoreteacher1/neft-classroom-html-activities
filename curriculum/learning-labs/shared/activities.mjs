@@ -401,7 +401,7 @@ export function practice(ctx, host) {
     ctx.refreshProgress();
   };
   form.onsubmit = (event) => {
-    event.preventDefault(); record.input = getInput();
+    event.preventDefault(); const previousInput = record.lastSubmittedInput; record.input = getInput();
     if (!String(record.input).trim()) { status.className = 'practice-feedback'; status.textContent = 'Enter your response first. You can use a hint whenever you need one.'; return; }
     if (q.evidenceMode === 'fresh-check' && !record.firstResponse) {
       record.firstResponse = { input: String(record.input), at: Date.now(), taskSupport: record.hints || record.modelUsed ? 'Task support used' : 'No task support recorded' };
@@ -410,6 +410,8 @@ export function practice(ctx, host) {
     const number = q.type === 'number' ? numericAnswer(record.input) : Number(record.input);
     if (!Number.isFinite(number)) { status.className = 'practice-feedback'; status.textContent = 'Use a number, fraction, or mixed number. For example: 0.5, 1/2, or 2 1/2.'; return; }
     const ok = q.type === 'number' ? Math.abs(number - q.answer) <= q.tolerance : number === q.answer;
+    if (ok && q.id.includes('original') && record.attempts > 0 && !record.correct && String(previousInput) !== String(record.input) && !record.hints && !record.modelUsed) record.independentRevision = true;
+    record.lastSubmittedInput = String(record.input);
     record.attempts++; record.correct ||= ok; record.lastCorrect = ok;
     if (ok) state.streak = (state.streak || 0) + 1;
     host.querySelector('[data-explain]').hidden = false;

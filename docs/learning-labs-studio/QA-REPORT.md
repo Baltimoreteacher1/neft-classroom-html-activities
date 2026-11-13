@@ -4,6 +4,15 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Results
 
+### Progress slice
+
+- **Before → after:** 0 → 46 labs show Explored / Completed / Demonstrated on the Mission tab and catalog card. The stage is derived from saved notes, attempts, Recorder predictions and independent transfer revisions; it is not a score.
+- `npm run validate:learning-labs`: PASS. Transition checks cover new, explored, completed and demonstrated, including an older version 1 save and a later hint after independent evidence.
+- `QA_TIMEOUT_MS=1800000 npm run validate:learning-labs-browser`: PASS; 46-lab sweep checked 508 answers with no runtime errors, and the 21-lab Bridge suite checked 42 ideas, 35 model restores and older-save compatibility.
+- Focused Playwright check at 390px: PASS; an unsaved catalog card read “Not started,” an older version 1 save with a correct prediction read “Demonstrated” on both the card and Mission tab, and its note was preserved. No page errors.
+- Focused Playwright transfer check: PASS; a wrong answer followed by a revised correct answer on `core-original-0`, with no hint, saved `independentRevision: true` after two attempts. The first check exposed draft autosave masking the prior answer; tracking the last submitted answer fixed it.
+- `npx biome check` on the five changed JavaScript files: PASS. Native Spanish and human accessibility review remain undone.
+
 | Check                                                           | Result                                                                                                                                                                                                                                                                                             |
 | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `validate:learning-labs`                                        | PASS: 46 labs, 84 lessons, 1,426 practice items, 414 game goals, 20 independent math fixtures, 500 property checks                                                                                                                                                                                 |
@@ -26,7 +35,7 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Known gaps and unresolved limitations
 
-1. **Not delivered from the directive:** per-lab content centerpieces for 41 of 46 labs; redesigned game mechanics; the five-part rebuilt explanations; Strategy Comparator; Design Studio; Discovery Portfolio; Explored / Completed / Demonstrated progress; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
+1. **Not delivered from the directive:** per-lab content centerpieces for 41 of 46 labs; redesigned game mechanics; the five-part rebuilt explanations; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
 2. **Bridge covers 21 of 46 labs** across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models.
 3. **Spanish text** is present for all 21 Bridges and the Recorder and is checked by the Bridge test and browser verifier. No native Spanish review has occurred; the translations need review by a fluent speaker.
 4. **Phone:** the first control remains below the first screen in five data labs: Data Newsroom, Middle Ground, Consistency Cup, Fair Share Festival and Outlier Investigation. The full-width plot is retained on those labs.

@@ -17,6 +17,20 @@ export const timing = { brief: '3 min', learn: '8–12 min', investigate: '8–1
 const filled = (text) => String(text || '').trim().length > 0;
 const words = (text) => String(text || '').trim().split(/\s+/).filter(Boolean).length;
 
+// A lab stage describes saved evidence. Activity completion and independent math evidence stay separate.
+export function progressStage(state, o = state.summary || {}) {
+  const experiments = Array.isArray(state.experiments?.items) ? state.experiments.items : [];
+  const practice = Object.entries(state.practice || {});
+  const demonstrated = experiments.some((item) => item.prediction?.ok === true)
+    || practice.some(([id, record]) => id.includes('original') && record?.independentRevision === true && record.correct);
+  if (demonstrated) return 'demonstrated';
+  if (o.total > 0 && o.done >= o.total) return 'completed';
+  const explored = experiments.length > 0 || practice.some(([, record]) => record?.attempts > 0 || record?.reviewed)
+    || Object.values(state.notes || {}).some(filled) || filled(state.created);
+  return explored ? 'explored' : 'new';
+}
+export const progressStageLabel = { new: 'Not started', explored: 'Explored', completed: 'Completed', demonstrated: 'Demonstrated' };
+
 // Each activity reports a status: 'done', 'started', or 'new', plus a short summary.
 export function activityStatus(lab, state, id) {
   const level = state.level;

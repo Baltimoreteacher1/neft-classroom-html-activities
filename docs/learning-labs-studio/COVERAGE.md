@@ -9,6 +9,7 @@ Generated 2026-11-13 from `data/learning-labs.json`, the Bridge registry (`share
 - 44px touch targets on everything the lab draws itself (0 of 46 labs below 44px; the curriculum shell's own EN/ES/hub pills are separate and meet WCAG 2.2 AA's 24px minimum).
 - On phones, non-data model controls sit beside the picture; the Pocket Reference button moves to the lower-left so it stays clear of that control column.
 - Tools mounted only where their mathematics belongs (the 3D net inspector on the two solid-figure labs only).
+- Derived lab progress shown on the Mission tab and catalog: Explored from saved work, Completed from the six activity statuses, and Demonstrated from a correct prediction or independently revised transfer answer. Older version 1 saves remain readable.
 
 ## What only some labs have
 
@@ -21,7 +22,7 @@ Generated 2026-11-13 from `data/learning-labs.json`, the Bridge registry (`share
 
 ## Not done for any lab
 
-A content-specific interactive centerpiece beyond the existing model, a redesigned game mechanic, the five-part rebuilt worked explanations, the Strategy Comparator, the Design Studio, the Discovery Portfolio, Explored / Completed / Demonstrated progress, and the teacher view. See QA-REPORT.md.
+A content-specific interactive centerpiece beyond the existing model, a redesigned game mechanic, the five-part rebuilt worked explanations, the Strategy Comparator, the Design Studio, the Discovery Portfolio, and the teacher view. See QA-REPORT.md.
 
 ## Per lab
 
