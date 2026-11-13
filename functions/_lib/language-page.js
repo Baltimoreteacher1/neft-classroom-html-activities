@@ -23,12 +23,15 @@ export const LAB_BASE = "/access-practice-lab";
 export const ADVENTURES_BASE = "/language-adventures";
 /** The Language Studio app: a second static export mounted here, beside the adventures app. */
 export const STUDIO_BASE = "/language-studio";
+/** The Learning Studios landing page: a static page that points to studios.eduwonderlab.com. */
+export const LEARNING_STUDIOS_BASE = "/learning-studios";
 
 /** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
 const LAB_PREFIXES = [
   `${LAB_BASE}/`,
   `${ADVENTURES_BASE}/`,
   `${STUDIO_BASE}/`,
+  `${LEARNING_STUDIOS_BASE}/`,
   "/graphic-novels/",
   "/assets/",
   "/data/",

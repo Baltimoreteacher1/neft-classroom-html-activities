@@ -176,6 +176,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "learning-studios",
+    group: "explore",
+    featured: false,
+    href: "/learning-studios/",
+    icon: "worlds",
+    title: ["Learning Studios · Language and Math", "Estudios de aprendizaje · lenguaje y matemáticas"],
+    text: [
+      "Speaking, writing, WordLab, reading, word study, and games for grades 3–8, plus Grade 6 math studios.",
+      "Hablar, escribir, WordLab, lectura, palabras y juegos para los grados 3 a 8, más estudios de matemáticas de 6.º grado.",
+    ],
+  },
+  {
     id: "exhibition",
     group: "explore",
     featured: true,

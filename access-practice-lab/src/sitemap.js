@@ -696,6 +696,22 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "learning-studios",
+    section: "play",
+    skill: "Mixed",
+    kind: "world",
+    for: STF,
+    top: false,
+    href: "/learning-studios/",
+    icon: "worlds",
+    match: [],
+    title: P("Learning Studios", "Estudios de aprendizaje"),
+    text: P(
+      "Language studios for grades 3–8 and Grade 6 math studios, with English and Spanish directions.",
+      "Estudios del lenguaje para los grados 3 a 8 y estudios de matemáticas de 6.º grado, con indicaciones en inglés y español.",
+    ),
+  },
+  {
     id: "worlds",
     section: "play",
     skill: "Mixed",
