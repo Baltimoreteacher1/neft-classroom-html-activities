@@ -5,7 +5,7 @@ and coach the person through it one control at a time.
 
 | Path               | Route                                                 | Module                | Steps                                                                                       |
 | ------------------ | ----------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- |
-| Teacher Tour       | `/start/tour?part=1..4&goal=&grades=&skill=&support=` | `src/intro/tour.js`   | goal → try an activity → prepare practice (skill, support, live preview) → take it to class |
+| Teacher Tour       | `/start/tour?part=1..3&grades=&skill=&support=`       | `src/intro/tour.js`   | pick a skill → try it as a student → use it with your class (support, link, QR, card)       |
 | Family walkthrough | `/practice-together?step=1..3&grades=`                | `src/intro/family.js` | get started (grade, directions language) → practice together → what to do next              |
 
 Mr. Neft (`src/intro/guide.js`, `guideBubbleHTML`) opens every part in a speech bubble, with his question box behind
@@ -33,7 +33,7 @@ Entry points: the home page's **Teachers: Start Here** and **Families: Start Her
 - `src/intro/tour-data.js` — goals, parts, the teacher's words (`TEACHER_SAY`), plain-English support descriptions,
   and `chooseActivity(index, pick, skill, level)`, which reads `content/index.json` (the tour's own activity wins for
   its level; otherwise the first activity of the preferred type).
-- `src/intro/tour-finish.js` — Part 4: one recommended action per goal (`ACTION_ORDER`), at most two more, QR (when the
+- `src/intro/tour-finish.js` — Part 3 ("Use it with your class"): one recommended action per goal (`ACTION_ORDER`), at most two more, QR (when the
   link fits 106 bytes), Show to the class dialog, Print this card.
 - `src/intro/tour-help.js` — the "Need help?" quick reference (teacher default; the family passes its own words).
 - `src/intro/family-guide-data.js` — every family string as `{ en, es }`. A new language is one more key per pair;

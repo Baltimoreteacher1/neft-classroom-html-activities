@@ -78,7 +78,9 @@ function updateSavePanel() {
 function mountLangBanner(ctx) {
   const existing = document.getElementById("labLangBanner");
   // Family pages carry their own large language switch, so the banner would ask the same question twice.
-  const wanted = !ctx.prefs.langChosen && !["family", "practice-together"].includes(ctx.route?.view);
+  // The Teacher Tour (start/tour) keeps the activity above the fold: the header's EN / ES switch is still there.
+  const inTour = ctx.route?.view === "start" && ctx.route?.id === "tour";
+  const wanted = !ctx.prefs.langChosen && !inTour && !["family", "practice-together"].includes(ctx.route?.view);
   if (!wanted) return existing?.remove();
   // index.html ships the same banner (hidden) so a first visit shows it before the first paint.
   if (existing) {
