@@ -21,6 +21,7 @@ import { blurbOf as blurbFor, recStripHtml, titleOf as titleFor } from "./rec-vi
 import { loadAwards } from "./practice-cheer.js";
 import { applyPrefs, prefs, readAloudOn, setPref, setReadAloud } from "./prefs.js";
 import { keepLegible, setPanLabel } from "./legible.js";
+import { queryWords, skillMatcher } from "./search.js";
 import { mountSkill, stageFromParam } from "./skill.js";
 import {
   esc,
@@ -101,6 +102,11 @@ function nav(active) {
   document.getElementById("lang-btn").textContent = lang() === "es" ? "English" : "Español";
 }
 
+// The shell's progress screen must not use `?view=progress`: that address is the full lab's, and forwarding old links
+// to it (LAB_VIEWS) is a promise, so reloading the shell's own URL would land a learner in the other app.
+const SHELL_VIEW_PARAM = { progress: "my-progress" };
+const SHELL_VIEWS = { library: "library", "my-progress": "progress" };
+
 function route(view, opts = {}) {
   window.scrollTo(0, 0);
   if (view === "skill") {
@@ -116,7 +122,7 @@ function route(view, opts = {}) {
       ? grade === null
         ? location.pathname
         : `?grade=${grade}`
-      : `?view=${view}${grade === null ? "" : `&grade=${grade}`}`,
+      : `?view=${SHELL_VIEW_PARAM[view] ?? view}${grade === null ? "" : `&grade=${grade}`}`,
   );
   nav(view === "library" ? "library" : view === "progress" ? "progress" : "home");
   ({ home, library, progress })[view]();
@@ -202,64 +208,6 @@ function bindGrades(after) {
 }
 
 // Everyday words → topic ids, so "times tables" or "negative numbers" find the right skills.
-const SYNONYMS = {
-  times: "multiplication",
-  multiply: "multiplication",
-  multiplication: "multiplication",
-  tables: "multiplication",
-  divide: "division",
-  division: "division",
-  share: "division",
-  add: "add-subtract",
-  plus: "add-subtract",
-  subtract: "add-subtract",
-  minus: "add-subtract",
-  take: "add-subtract",
-  fraction: "fractions",
-  fractions: "fractions",
-  half: "fractions",
-  decimal: "decimals",
-  decimals: "decimals",
-  ratio: "ratios-percents",
-  ratios: "ratios-percents",
-  rate: "ratios-percents",
-  percent: "ratios-percents",
-  proportion: "ratios-percents",
-  negative: "integers-rational",
-  integer: "integers-rational",
-  integers: "integers-rational",
-  equation: "expressions-equations",
-  equations: "expressions-equations",
-  expression: "expressions-equations",
-  variable: "expressions-equations",
-  inequality: "expressions-equations",
-  graph: "functions",
-  slope: "functions",
-  function: "functions",
-  line: "functions",
-  area: "measurement-geometry",
-  volume: "measurement-geometry",
-  shape: "measurement-geometry",
-  angle: "measurement-geometry",
-  time: "measurement-geometry",
-  clock: "measurement-geometry",
-  money: "money",
-  coins: "money",
-  data: "data",
-  mean: "data",
-  median: "data",
-  chart: "data",
-  count: "counting",
-  counting: "counting",
-  place: "place-value",
-  tens: "place-value",
-  exponent: "exponents-roots",
-  square: "exponents-roots",
-  factor: "factors-multiples",
-  multiple: "factors-multiples",
-  prime: "factors-multiples",
-};
-
 // A few meaningful filters, never more: everything, new to me, still practising, due for a refresh.
 const FILTERS = [
   ["all", "All skills"],
@@ -293,19 +241,13 @@ function library() {
       <div data-results></div></section>`;
   const results = app.querySelector("[data-results]");
   let query = "";
+  const textOf = (topic, s) =>
+    `${s.title} ${titleOf(s)} ${blurbOf(s)} ${s.learn?.rule || ""} ${topic.name} ${named(topic.name)}`;
+  const entries = topics.flatMap((topic) => topic.skills.map((s) => ({ text: textOf(topic, s), topicId: topic.id })));
   const draw = () => {
-    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-    const matches = (topic, s) =>
-      inFilter(s) &&
-      (!words.length ||
-        words.every(
-          (w) =>
-            `${s.title} ${titleOf(s)} ${blurbOf(s)} ${s.learn?.rule || ""} ${topic.name} ${named(topic.name)}`
-              .toLowerCase()
-              .includes(w) ||
-            SYNONYMS[w] === topic.id ||
-            SYNONYMS[w.replace(/e?s$/, "")] === topic.id,
-        ));
+    const words = queryWords(query);
+    const matcher = skillMatcher(words, entries);
+    const matches = (topic, s) => inFilter(s) && (!words.length || matcher.matches(textOf(topic, s), topic.id));
     const html = topics
       .map((topic) => ({ topic, skills: topic.skills.filter((s) => matches(topic, s)) }))
       .filter((g) => g.skills.length)
@@ -467,6 +409,6 @@ function boot(source = params) {
     params.delete("skill");
     return openSkill({ ...skill, grade }, stage);
   }
-  route(view === "library" || view === "progress" ? view : "home");
+  route(SHELL_VIEWS[view] ?? "home");
 }
 boot();

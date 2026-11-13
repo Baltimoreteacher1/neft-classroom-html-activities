@@ -153,6 +153,7 @@ main {
 .brand {
   display: flex;
   align-items: center;
+  min-height: 44px;
   gap: var(--s2);
   color: #fff;
   text-decoration: none;
@@ -246,7 +247,7 @@ main {
   cursor: pointer;
 }
 .btn-sm {
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 14px;
   font-size: 0.92rem;
 }
@@ -577,6 +578,7 @@ main {
   list-style: none;
   padding: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s3);
 }
 .model-fallback table {
@@ -667,6 +669,7 @@ main {
 .help {
   margin-top: var(--s4);
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* a widened picture scrolls in its box; it never widens the page */
   gap: var(--s3);
 }
 .rung {
@@ -767,6 +770,12 @@ main {
 }
 .plist li {
   margin: var(--s2) 0;
+}
+/* A link in a list is a touch target: 44px tall, the same as every other control. */
+.plist a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .tag {
   font-size: 0.82rem;
