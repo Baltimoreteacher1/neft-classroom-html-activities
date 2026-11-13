@@ -5902,6 +5902,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/learning-studios/",
+    title: "Learning Studios · Estudios de aprendizaje",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/living-school/",
     title: "Neft City · Living School",
     category: "Tool",
