@@ -25,6 +25,8 @@ export const ADVENTURES_BASE = "/language-adventures";
 export const STUDIO_BASE = "/language-studio";
 /** The Learning Studios landing page: a static page that points to studios.eduwonderlab.com. */
 export const LEARNING_STUDIOS_BASE = "/learning-studios";
+/** The Learning Studios app, proxied from its own Worker (functions/_lib/studios-proxy.js). */
+export const STUDIOS_APP_BASE = "/studios";
 
 /** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
 const LAB_PREFIXES = [
@@ -32,6 +34,7 @@ const LAB_PREFIXES = [
   `${ADVENTURES_BASE}/`,
   `${STUDIO_BASE}/`,
   `${LEARNING_STUDIOS_BASE}/`,
+  `${STUDIOS_APP_BASE}/`,
   "/graphic-novels/",
   "/assets/",
   "/data/",
@@ -55,6 +58,7 @@ const LAB_EXACT = new Set([
   // The same log grouped into themes and gaps by a model, teacher key only (functions/api/language-guide/insights.js).
   "/api/language-guide/insights",
   "/graphic-novels",
+  STUDIOS_APP_BASE,
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */
 export const HUB_BASE = "/access-teacher";
@@ -100,6 +104,16 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/vocabulary/mastery`,
   `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
+  // The Learning Studios app (proxied at /studios): the language studios, one public page each.
+  `${STUDIOS_APP_BASE}/language`,
+  `${STUDIOS_APP_BASE}/language/speaking`,
+  `${STUDIOS_APP_BASE}/language/writing`,
+  `${STUDIOS_APP_BASE}/language/words`,
+  `${STUDIOS_APP_BASE}/language/reading`,
+  `${STUDIOS_APP_BASE}/language/foundations`,
+  `${STUDIOS_APP_BASE}/language/games`,
+  `${STUDIOS_APP_BASE}/language/family`,
+  `${STUDIOS_APP_BASE}/math`,
   // The introduction: one entrance (/start) for teachers, a family page and the Site Guide (src/intro/data.js ROUTES).
   `${LAB_BASE}/start`,
   `${LAB_BASE}/start/tour`,

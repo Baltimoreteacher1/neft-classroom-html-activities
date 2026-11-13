@@ -23,6 +23,7 @@ import {
   sitemapXml,
 } from "./_lib/language-page.js";
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
+import { isStudiosRequest, proxyStudios } from "./_lib/studios-proxy.js";
 import { hasValidSession, mintSessionCookie } from "./_lib/teacher-session.js";
 import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
 
@@ -184,6 +185,11 @@ async function handle(context) {
       },
     });
   }
+
+  // The Learning Studios app is served at /studios on the visitor's own origin (functions/_lib/studios-proxy.js).
+  // It carries no teacher data, so it is answered here, ahead of the teacher gate, which would otherwise turn
+  // the app's own "teacher notes" page into a password prompt.
+  if (isStudiosRequest(url)) return proxyStudios(request, url);
 
   const p = url.pathname.toLowerCase();
   const isFamilyPublishedFeed = p === "/api/family-connections/canvas-feed";

@@ -158,7 +158,7 @@ await t("robots.txt and sitemap.xml are generated for the lab host and name only
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   assert.equal(locs.length, SITEMAP_PATHS.length);
   assert.ok(
-    locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/") || STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`)),
+    locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/") || l.startsWith("https://thelanguagepage.com/studios/") || STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`)),
   );
   assert.ok(!locs.some((l) => l === "https://thelanguagepage.com/wida-access/"));
   assert.ok(locs.includes("https://thelanguagepage.com/access-practice-lab/portfolio"));
