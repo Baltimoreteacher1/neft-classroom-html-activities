@@ -232,6 +232,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -277,28 +280,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 3, Episode 3: Across the Line. At dawn on a race route, four kids plant signposts showing mixed units of measure, one pushes a surveyor wheel, and a glowing orb projects a unit-conversion chart into the sky.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#duskgrad)"/><circle cx="118" cy="208" r="56" fill="#FFF3D8" opacity=".95"/><circle cx="118" cy="208" r="84" fill="#FFF3D8" opacity=".25"/><g fill="#FFF3D8" opacity=".5"><circle cx="330" cy="96" r="3"/><circle cx="424" cy="148" r="2.5"/><circle cx="268" cy="64" r="2"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,256) scale(5,3.2)" opacity=".75"><use href="#sym-skyline"/></g><polygon points="40,700 460,700 312,470 188,470" fill="#17324D" opacity=".92"/><line x1="250" y1="478" x2="250" y2="700" stroke="#F2C15B" stroke-width="6" stroke-dasharray="26 20"/><rect y="640" width="500" height="60" fill="#0d1f33"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <polygon points="394,300 168,402 366,420" fill="#7CF2EC" opacity=".14"/>
-        <g transform="rotate(-2 250 340)"><rect x="150" y="296" width="200" height="84" rx="10" fill="#06222b" stroke="#1FA6A2" stroke-width="4"/><text x="250" y="328" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="19" fill="#7CF2EC">1 mi &#8776; 1.6 km</text><text x="250" y="360" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="19" fill="#7CF2EC">1 in = 2.54 cm</text></g>
-        <g transform="translate(34,408)"><rect x="46" y="0" width="10" height="200" fill="#8a6a3c" stroke="#17324D" stroke-width="4"/><rect x="-6" y="10" width="118" height="36" rx="6" fill="#F7F4EC" stroke="#17324D" stroke-width="4"/><text x="51" y="35" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="17" fill="#17324D">4 km</text><rect x="0" y="56" width="106" height="32" rx="6" fill="#F2C15B" stroke="#17324D" stroke-width="4" transform="rotate(-4 53 72)"/><text x="51" y="79" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#17324D" transform="rotate(-4 53 72)">2.5 mi</text></g>
-        <g transform="translate(354,420)"><rect x="44" y="0" width="10" height="188" fill="#8a6a3c" stroke="#17324D" stroke-width="4"/><rect x="-8" y="12" width="116" height="34" rx="6" fill="#F7F4EC" stroke="#17324D" stroke-width="4" transform="rotate(3 50 28)"/><text x="50" y="36" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#17324D" transform="rotate(3 50 28)">0.8 km</text><rect x="-2" y="58" width="104" height="30" rx="6" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><text x="50" y="80" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#17324D">800 m</text></g>
-        <rect x="0" y="640" width="500" height="60" fill="#0d1f33"/>
-        <g transform="translate(160,556) scale(.82)"><use href="#sym-maya"/></g>
-        <g transform="translate(228,548) scale(.88)"><use href="#sym-theo"/></g>
-        <g transform="translate(300,552) scale(.86)"><use href="#sym-dev"/></g>
-        <g transform="translate(366,568) scale(1.05)"><use href="#sym-wheel"/></g>
-        <g transform="translate(96,566) scale(.8)"><use href="#sym-zara"/></g>
-        <g transform="translate(386,236) scale(.85)"><use href="#sym-vex"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 3, Episode 3: Across the Line. At sunrise on the race route, Sienna holds a signpost, Kofi and Chloe stand beside her and Rohan pushes a surveyor wheel, while VEX, the small teal robot with one glowing golden eye, glows above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -374,201 +357,172 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",  label:"Across the Line — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-/* dawn backdrop for the qualifier morning */
-const DAWN='<rect width="400" height="200" fill="url(#duskgrad)"/><circle cx="64" cy="58" r="26" fill="#FFF3D8" opacity=".95"/><circle cx="64" cy="58" r="40" fill="#FFF3D8" opacity=".25"/>';
-/* staging-tent interior */
-const TENT='<rect width="400" height="200" fill="#f3ead9"/><polygon points="0,38 200,0 400,38 400,200 0,200" fill="#1FA6A2" opacity=".16"/><line x1="200" y1="0" x2="200" y2="38" stroke="#17324D" stroke-width="3"/>';
 
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u3-e3 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u3-e3-across-the-line.webp?v=360497ae19","w":3100,"h":3483,"f":{"cover":[0,0,544,762,"At sunrise on the race route, Sienna plants a signpost, Kofi and Chloe stand beside her and Rohan pushes a measuring wheel, while VEX, the small teal robot with one glowing golden eye, glows above them.",[]],"p1-crew":[490,762,870,490,"Sienna, Kofi, Chloe and Rohan stand ready on the race route at dawn while VEX glows in the sky above them.",[]],"p1-graph":[1740,1905,870,381,"Kofi proudly holds up a sheet of grid paper with a straight line on it while the Torque captain scowls with his arms crossed.",[]],"p2-route":[2230,762,870,490,"On the race route at dawn, Marshal Lin, in her yellow jacket, clutches a clipboard beside three route signs while Rohan grins on the right.",[]],"p2-kofi":[1524,0,490,653,"Close-up of Kofi in his green hoodie and glasses, holding up one finger, calm and confident.",[]],"p2-vex":[2014,0,490,653,"VEX floats in the dark, its golden eye bright, sparkles around it.",[]],"p3-tent":[0,1415,870,490,"In the staging tent, Kofi points at a big whiteboard while Rohan happily rolls a measuring wheel and Chloe paints a blank signboard in the back.",[]],"p3-vex":[0,2395,870,381,"VEX hovers in a soft cyan glow at the edge of the dark panel.",[]],"p4-rohan":[1740,2776,870,326,"Rohan holds a paint brush and gives the reader a thumbs up, with VEX floating beside him.",[]],"p5-chart":[870,1415,870,490,"Marshal Lin holds up a big chart board at her desk while Kofi and Rohan study it.",[]],"p5-rohan":[870,2395,870,381,"Rohan measures a small race number plate with a ruler, eyes wide with interest.",[]],"p6-kofi":[0,3157,870,326,"Kofi holds out a rolled-up chart to the reader, smiling.",[]],"p7-paint":[1740,1415,870,490,"On the race route, Chloe paints a signboard with a stencil while Sienna checks her clipboard beside two signposts, a measuring wheel on the ground.",[]],"p7-vex":[1740,2395,870,381,"VEX peers suspiciously at a folding desk where red sparks crackle around a clipboard.",[]],"p8-protest":[0,1905,870,490,"The Torque captain slams a protest sheet on Marshal Lin's desk while Kofi, arms crossed, and Rohan stand calmly on the right.",[]],"p8-rohan":[2504,0,490,653,"Close-up of Rohan cracking his knuckles with a determined grin.",[]],"p8-vex":[0,762,490,653,"VEX narrows its golden eye, a red warning ring glowing around it.",[]],"p9-form":[870,1905,870,490,"Marshal Lin uncaps a pen over the certification form on her desk while the Torque captain leans in with a smug smirk.",[]],"p9-vex":[0,2776,870,381,"VEX glows bright in the dark, cyan rays fanning out behind it.",[]],"p10-rohan":[870,2776,870,326,"Rohan holds up a fistful of pens and grins at the reader.",[]],"p11-certified":[1360,762,870,490,"Sienna, Kofi, Chloe and Rohan cheer under a banner on the sunny race route, VEX glowing above them.",[]],"p11-rohan":[544,0,490,653,"Rohan pulls on his helmet beside a red racing bike, grinning.",[]],"p11-start":[1034,0,490,653,"Racing bikes wait at the start line under a banner while riders in black jackets stretch in the distance.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + previously (recaps Episode 2) ---- */
 { ch:"Axiom City · Unit Three Finale", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">ACROSS THE <em>LINE</em></h2>
   <div class="caption" style="display:inline-block">Unit 3 · Episode 3 — the international qualifier. Three reader gates stand between the Courier Cup and a certified course. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    ${SKY}<g data-depth="8" transform="translate(0,40) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <g data-depth="16" transform="translate(20,86)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(170,8) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:48%"><span class="who">VEX</span>Distortion reading: the qualifier route. The units are… arguing. Reader — suit up.</div>
-  </div>
-  <div class="caption loc">Previously, in Episode 2: ratio tables scaled the aid stations for every heat, and one honest graph debunked Team Torque's "record" stats — their points bent right off the line. Now the international qualifier rolls into Axiom City… and its route signs speak five different units.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:46%;--tx:14px"><span class="who">VEX</span>Distortion reading: the qualifier route. The units are… arguing. Reader — suit up.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-graph")}
+      <div class="caption loc">Previously, in Episode 2: ratio tables scaled the aid stations for every heat, and one honest graph debunked Team Torque's "record" stats — their points bent right off the line. Now the international qualifier rolls into Axiom City… and its route signs speak five different units.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: splash + scene — qualifier morning, mixed-unit signs ---- */
 { ch:"Episode 3 · Signs of Trouble", html:`
   <div class="kicker">Unit 3 · Episode 3</div><h2 class="splashtitle">SIGNS OF <em>TROUBLE</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    <rect width="400" height="230" fill="url(#duskgrad)"/><circle cx="56" cy="52" r="24" fill="#FFF3D8" opacity=".95"/><circle cx="56" cy="52" r="38" fill="#FFF3D8" opacity=".25"/>
-    <g data-depth="6" transform="translate(0,64) scale(4,1.5)" opacity=".45"><use href="#sym-skyline"/></g>
-    <rect data-depth="8" y="196" width="400" height="34" fill="#0d1f33"/>
-    <line data-depth="8" x1="0" y1="212" x2="400" y2="212" stroke="#F2C15B" stroke-width="4" stroke-dasharray="22 16"/>
-    <g data-depth="12" transform="translate(120,42)"><rect x="44" y="0" width="8" height="156" fill="#8a6a3c" stroke="#17324D" stroke-width="3"/><rect x="6" y="6" width="86" height="26" rx="4" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><text x="49" y="24" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#17324D">LOOP 12 km</text><rect x="12" y="40" width="74" height="24" rx="4" fill="#F2C15B" stroke="#17324D" stroke-width="3" transform="rotate(-5 49 52)"/><text x="49" y="57" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#17324D" transform="rotate(-5 49 52)">…miles?</text></g>
-    <g data-depth="12" transform="translate(236,64)"><rect x="40" y="0" width="8" height="134" fill="#8a6a3c" stroke="#17324D" stroke-width="3"/><rect x="2" y="8" width="84" height="24" rx="4" fill="#F7F4EC" stroke="#17324D" stroke-width="3" transform="rotate(4 44 20)"/><text x="44" y="25" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#E2674A" transform="rotate(4 44 20)">CHUTE 5.5 m</text></g>
-    <g data-depth="18" transform="translate(18,118) scale(.8)"><use href="#sym-marshal"/></g>
-    <g data-depth="18" transform="translate(322,116) scale(.82)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:58px;left:6px;max-width:46%"><span class="who">MARSHAL LIN</span>Riders from four countries land at noon. Their route cards are in <b>miles</b> and <b>inches</b>. Half my signs are metric. Reconcile everything by nine — or the qualifier is OFF.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:42%"><span class="who">ROHAN</span>A unit side quest before the main race. Kofi — co-op mode?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(8,0) scale(.68)"><use href="#sym-theo"/></g><g transform="translate(322,4) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:42%"><span class="who">KOFI</span>Co-op. First fact for the record: the course never changes. Only its <i>labels</i> do.</div>
-    <div class="balloon vex" style="bottom:4px;right:78px;max-width:38%"><span class="who">VEX</span>Confirmed. A conversion is just a ratio in a trench coat.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-route")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:30%;top:36%;width:18%">LOOP 12 km</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:36%;top:52%">…miles?</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:62%;top:36%;width:18%">CHUTE 5.5 m</div>
+      <div class="balloon" style="top:6px;left:8px;max-width:46%;--tx:12%"><span class="who">MARSHAL LIN</span>Riders from four countries land at noon. Their route cards are in <b>miles</b> and <b>inches</b>. Half my signs are metric. Reconcile everything by nine — or the qualifier is OFF.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:40%"><span class="who">ROHAN</span>A unit side quest before the main race. Kofi — co-op mode?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-kofi")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KOFI</span>Co-op. First fact for the record: the course never changes. Only its <i>labels</i> do.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>Confirmed. A conversion is just a ratio in a trench coat.</div>
+    </div>
   </div>`},
 
 /* ---- p3: scene — within-system conversion modeled ---- */
 { ch:"Episode 3 · The Metric Staircase", html:`
-  <div class="caption loc">The staging tent, 6:40 a.m. Chloe stencils blank signboards. Rohan rolls the surveyor wheel in circles. It clicks. He loves it.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${TENT}
-    <rect data-depth="10" x="36" y="30" width="190" height="118" rx="8" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="10" x="131" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#1FA6A2">THE METRIC STAIRCASE</text>
-    <g data-depth="10"><path d="M60 128 h28 v-22 h28 v-22 h28 v-22 h28" fill="none" stroke="#17324D" stroke-width="4"/>
-    <text x="74" y="122" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#17324D">mm</text>
-    <text x="102" y="100" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#17324D">cm</text>
-    <text x="130" y="78" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#17324D">m</text>
-    <text x="172" y="56" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#17324D">km</text>
-    <text x="150" y="136" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#E2674A">down a step = MORE of them</text></g>
-    <g data-depth="16" transform="translate(238,62) scale(.82)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(316,70) scale(.78)"><use href="#sym-dev"/></g>
-    <g data-depth="12" transform="translate(286,140) scale(.56)"><use href="#sym-wheel"/></g>`)}
-    <div class="balloon tail-r" style="top:6px;right:4px;max-width:46%"><span class="who">KOFI</span>Watch one: the connector sign says <b>0.8 km</b>. Meters are smaller, so the count grows — 0.8 × 1000 = <b>800 m</b>. Same path, new name.</div>
-    <div class="balloon" style="bottom:8px;left:6px;max-width:40%"><span class="who">ROHAN</span>The wheel agrees. One click per meter. Eight hundred clicks of pure joy.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#eef7f6"/><g transform="translate(320,0) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Metric rule, archived: every step is a power of ten. 1 m = 100 cm. 1 kg = 1000 g. And always — bigger unit, smaller number.</div>
-  </div>
-  <div class="caption"><b>Converting within a system</b> means trading one unit for another in the SAME family — multiply or divide by 10, 100, or 1000.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-tent")}
+      <div class="caption loc">The staging tent, 6:40 a.m. Chloe stencils blank signboards. Rohan rolls the surveyor wheel in circles. It clicks. He loves it.</div>
+      <div class="gn-sign" data-gn-skip style="left:52%;top:46%;width:34%;font-size:13px;color:#17324D;text-shadow:none">THE METRIC STAIRCASE<br>mm · cm · m · km<br>down a step = MORE of them</div>
+      <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:42%"><span class="who">KOFI</span>Watch one: the connector sign says <b>0.8 km</b>. Meters are smaller, so the count grows — 0.8 × 1000 = <b>800 m</b>. Same path, new name.</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:34%"><span class="who">ROHAN</span>The wheel agrees. One click per meter. Eight hundred clicks of pure joy.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>Metric rule, archived: every step is a power of ten. 1 m = 100 cm. 1 kg = 1000 g. And always — bigger unit, smaller number.</div>
+    </div>
+    <div class="caption"><b>Converting within a system</b> means trading one unit for another in the SAME family — multiply or divide by 10, 100, or 1000.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 (within a system) ---- */
 { ch:"Episode 3 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#eef7f6"/><g transform="translate(8,2) scale(.7)"><use href="#sym-dev"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:62%"><span class="who">ROHAN</span>Reader — two crooked signs left. Re-label them before the marshal melts.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p4-rohan")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">ROHAN</span>Reader — two crooked signs left. Re-label them before the marshal melts.</div>
+    </div>
   </div>`},
 
 /* ---- p5: scene — between-systems conversion modeled ---- */
 { ch:"Episode 3 · The Marshal's Chart", html:`
   <div class="kicker">Two Systems, One Course</div><h2 class="splashtitle">THE MARSHAL'S <em>CHART</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${TENT}
-    <rect data-depth="10" x="120" y="24" width="160" height="74" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/>
-    <text data-depth="10" x="200" y="50" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="15" fill="#7CF2EC">1 mi &#8776; 1.6 km</text>
-    <text data-depth="10" x="200" y="78" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="15" fill="#7CF2EC">1 in = 2.54 cm</text>
-    <g data-depth="16" transform="translate(20,84) scale(.84)"><use href="#sym-marshal"/></g>
-    <g data-depth="16" transform="translate(160,100) scale(.78)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(310,96) scale(.8)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:4px;left:6px;max-width:36%"><span class="who">MARSHAL LIN</span>My bridge chart. Two facts. Guard them with your lives.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:4px;max-width:52%"><span class="who">KOFI</span>Watch one more: the 4 km connector in miles — 4 ÷ 1.6 = <b>2.5 mi</b>. Fewer miles than kilometers, because each mile is <i>longer</i>.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf2ee"/><g transform="translate(10,0) scale(.68)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:82px;max-width:70%"><span class="who">ROHAN</span>And tiny stuff works the same: a 2-inch number plate is 2 × 2.54 = <b>5.08 cm</b>. Centimeters are shorter, so the count grows. Direction check on everything.</div>
-  </div>
-  <div class="caption"><b>Converting between systems</b> uses a bridge ratio — a fact like 1 mi &#8776; 1.6 km that names one unit in terms of the other. Then multiply or divide, and sanity-check the direction.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-chart")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:42%;width:34%;color:#17324D;text-shadow:none">1 mi &#8776; 1.6 km<br>1 in = 2.54 cm</div>
+      <div class="balloon" style="top:6px;left:8px;max-width:30%"><span class="who">MARSHAL LIN</span>My bridge chart. Two facts. Guard them with your lives.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:46%"><span class="who">KOFI</span>Watch one more: the 4 km connector in miles — 4 ÷ 1.6 = <b>2.5 mi</b>. Fewer miles than kilometers, because each mile is <i>longer</i>.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-rohan")}
+      <div class="balloon" style="top:6px;right:6px;max-width:52%"><span class="who">ROHAN</span>And tiny stuff works the same: a 2-inch number plate is 2 × 2.54 = <b>5.08 cm</b>. Centimeters are shorter, so the count grows. Direction check on everything.</div>
+    </div>
+    <div class="caption"><b>Converting between systems</b> uses a bridge ratio — a fact like 1 mi &#8776; 1.6 km that names one unit in terms of the other. Then multiply or divide, and sanity-check the direction.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 (between systems) ---- */
 { ch:"Episode 3 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fdf2ee"/><g transform="translate(8,-2) scale(.66)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">KOFI</span>Reader, take the chart. The big loop and the sticker strip — call them across the bridge.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p6-kofi")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">KOFI</span>Reader, take the chart. The big loop and the sticker strip — call them across the bridge.</div>
+    </div>
   </div>`},
 
 /* ---- p7: scene — repainting montage ---- */
 { ch:"Episode 3 · Repainting the Course", html:`
-  <div class="caption loc">8:15 a.m. Forty signboards, one stencil, two systems, zero mistakes allowed.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${DAWN}<g data-depth="6" transform="translate(0,56) scale(4,1.5)" opacity=".4"><use href="#sym-skyline"/></g>
-    <rect data-depth="8" y="170" width="400" height="30" fill="#0d1f33"/>
-    <g data-depth="12" transform="translate(36,68) scale(1.0)"><use href="#sym-signpost"/></g>
-    <g data-depth="12" transform="translate(150,76) scale(.9)"><use href="#sym-signpost"/></g>
-    <text data-depth="12" x="86" y="105" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#17324D">HILL 3.2 km</text>
-    <text data-depth="12" x="195" y="112" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#17324D">HARBOR 2 mi</text>
-    <g data-depth="18" transform="translate(238,76) scale(.82)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(316,80) scale(.8)"><use href="#sym-maya"/></g>
-    <g data-depth="14" transform="translate(120,136) scale(.6)"><use href="#sym-wheel"/></g>`)}
-    <div class="sfx" style="top:8px;right:14px">CLICK-CLICK!</div>
-    <div class="balloon" style="top:6px;left:6px;max-width:44%"><span class="who">CHLOE</span>Every sign gets BOTH labels now. Could I have painted them churro-scented? Yes. Did the marshal let me? No.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:44%"><span class="who">SIENNA</span>Rohan and Kofi run the numbers, Chloe paints, I check the checklist. Crew at full velocity.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#eef7f6"/><g transform="translate(320,0) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Distortion fading… except at the marshal's desk. Something on a clipboard is about to go wrong on purpose.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-paint")}
+      <div class="caption loc">8:15 a.m. Forty signboards, one stencil, two systems, zero mistakes allowed.</div>
+      <div class="sfx" style="top:30%;right:14px">CLICK-CLICK!</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:42%;top:40%;width:16%">HILL 3.2 km</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:58%;top:40%;width:16%">HARBOR 2 mi</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:40%"><span class="who">CHLOE</span>Every sign gets BOTH labels now. Could I have painted them churro-scented? Yes. Did the marshal let me? No.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:40%"><span class="who">SIENNA</span>Rohan and Kofi run the numbers, Chloe paints, I check the checklist. Crew at full velocity.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex" style="bottom:6px;right:6px;max-width:56%"><span class="who">VEX</span>Distortion fading… except at the marshal's desk. Something on a clipboard is about to go wrong on purpose.</div>
+    </div>
   </div>`},
 
 /* ---- p8: scene — the protest ---- */
 { ch:"Episode 3 · The Protest", html:`
-  <div class="caption loc">8:40 a.m. The marshal's desk. Team Torque arrives with matching jackets and a complaint.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${TENT}
-    <rect data-depth="8" x="120" y="118" width="170" height="60" rx="6" fill="#8a6a3c" stroke="#17324D" stroke-width="3"/>
-    <rect data-depth="8" x="138" y="96" width="120" height="34" rx="4" fill="#fff" stroke="#E2674A" stroke-width="3" transform="rotate(-3 198 113)"/>
-    <text data-depth="8" x="198" y="118" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#E2674A" transform="rotate(-3 198 113)">PROTEST!</text>
-    <g data-depth="14" transform="translate(28,76) scale(.84)"><use href="#sym-torque"/></g>
-    <g data-depth="14" transform="translate(118,84) scale(.78)"><use href="#sym-marshal"/></g>
-    <g data-depth="18" transform="translate(252,80) scale(.8)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(326,84) scale(.78)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:4px;left:6px;max-width:48%"><span class="who">TORQUE CAPTAIN</span>Your "total course" is a scramble of miles and kilometers. I say it doesn't add up — and if it doesn't add up by nine, <b>nobody</b> races.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:44%"><span class="who">KOFI</span>It adds up fine. You just have to put every leg in the <b>same units</b> before you add. That's the whole rule.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#fdf2ee"/><g transform="translate(58,2) scale(.76)"><use href="#sym-dev"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:70%"><span class="who">ROHAN</span>Final boss just announced itself. Certification form, two blanks, one trap question.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#eef7f6"/><g transform="translate(62,8) scale(.72)"><use href="#sym-vex"/></g>`)}
-      <div class="balloon vex" style="top:4px;left:4px;max-width:74%"><span class="who">VEX</span>Adding 2 and 3.2 while their units disagree would be… a distortion. Convert first. Add second.</div></div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p8-protest")}
+      <div class="caption loc">8:40 a.m. The marshal's desk. Team Torque arrives with matching jackets and a complaint.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:38%;top:62%;width:16%;color:#c0392b">PROTEST!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:40%"><span class="who">TORQUE CAPTAIN</span>Your "total course" is a scramble of miles and kilometers. I say it doesn't add up — and if it doesn't add up by nine, <b>nobody</b> races.</div>
+      <div class="balloon tail-r" style="top:30%;right:8px;max-width:38%"><span class="who">KOFI</span>It adds up fine. You just have to put every leg in the <b>same units</b> before you add. That's the whole rule.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-rohan")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ROHAN</span>Final boss just announced itself. Certification form, two blanks, one trap question.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-vex")}
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>Adding 2 and 3.2 while their units disagree would be… a distortion. Convert first. Add second.</div>
+    </div>
   </div>`},
 
 /* ---- p9: boss setup — the certification form ---- */
 { ch:"Episode 3 · The Certification Form", html:`
-  <div class="caption loc">8:55 a.m. The form that decides everything. The marshal uncaps the official pen.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/>
-    <rect data-depth="10" x="84" y="20" width="232" height="150" rx="8" fill="#F7F4EC" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="10" x="200" y="46" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">COURSE CERTIFICATION</text>
-    <text data-depth="10" x="104" y="74" font-family="Arial" font-weight="700" font-size="12" fill="#17324D">Leg 1 — harbor straight: 2 miles</text>
-    <text data-depth="10" x="104" y="96" font-family="Arial" font-weight="700" font-size="12" fill="#17324D">Leg 2 — hillside climb: 3.2 km</text>
-    <text data-depth="10" x="104" y="126" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">TOTAL: ____ km  =  ____ m</text>
-    <text data-depth="10" x="104" y="152" font-family="Arial" font-style="italic" font-size="10" fill="#5a4a22">attach unit reasoning · marshal's seal required</text>
-    <g data-depth="16" transform="translate(8,86) scale(.78)"><use href="#sym-marshal"/></g>
-    <g data-depth="16" transform="translate(322,88) scale(.76)"><use href="#sym-torque"/></g>`)}
-    <div class="balloon tail-r" style="top:6px;right:2px;max-width:38%"><span class="who">TORQUE CAPTAIN</span>Easy out for you all: everyone knows <b>1 kilometer is longer than 1 mile</b>. Write that down, see what happens.</div>
-    <div class="balloon" style="bottom:8px;left:6px;max-width:44%"><span class="who">MARSHAL LIN</span>The form takes <i>true</i> statements only. Crew — and reader — finish it.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The qualifier — and Torque's smug face — hang on your conversions.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-form")}
+      <div class="caption loc">8:55 a.m. The form that decides everything. The marshal uncaps the official pen.</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:58%;width:40%;font-size:11px;color:#17324D;text-shadow:none">COURSE CERTIFICATION<br>Leg 1 — harbor straight: 2 miles<br>Leg 2 — hillside climb: 3.2 km<br>TOTAL: ____ km  =  ____ m<br><small>attach unit reasoning · marshal's seal required</small></div>
+      <div class="balloon tail-r" style="top:30%;right:8px;max-width:30%"><span class="who">TORQUE CAPTAIN</span>Easy out for you all: everyone knows <b>1 kilometer is longer than 1 mile</b>. Write that down, see what happens.</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:30%"><span class="who">MARSHAL LIN</span>The form takes <i>true</i> statements only. Crew — and reader — finish it.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>BOSS GATE. Three locks. The qualifier — and Torque's smug face — hang on your conversions.</div>
+    </div>
   </div>`},
 
 /* ---- p10: BOSS GATE ---- */
 { ch:"Boss Gate · Across the Line", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(8,-6) scale(.6)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ROHAN</span>Boss fight, reader. You carry the chart, I'll carry the pens.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p10-rohan")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">ROHAN</span>Boss fight, reader. You carry the chart, I'll carry the pens.</div>
+    </div>
   </div>`},
 
 /* ---- p11: victory + Vol 3 teaser ---- */
 { ch:"Episode 3 · Certified", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    ${DAWN.replace('height="200"','height="210"')}<g data-depth="6" transform="translate(0,60) scale(4,1.5)" opacity=".4"><use href="#sym-skyline"/></g>
-    <rect data-depth="8" y="180" width="400" height="30" fill="#0d1f33"/>
-    <rect data-depth="12" x="110" y="22" width="180" height="48" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="44" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="14">COURSE CERTIFIED</text>
-    <text data-depth="12" x="200" y="62" text-anchor="middle" fill="#7CF2EC" font-family="Consolas,monospace" font-size="11">6.4 km · 6400 m · sign-perfect</text>
-    <g data-depth="16" transform="translate(18,92) scale(.76)"><use href="#sym-marshal"/></g>
-    <g data-depth="18" transform="translate(92,96) scale(.74)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(152,100) scale(.72)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(212,96) scale(.74)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(272,100) scale(.72)"><use href="#sym-dev"/></g>
-    <g data-depth="24" transform="translate(338,128) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:70px;left:16px">STAMP!</div>
-    <div class="balloon" style="bottom:10px;left:8px;max-width:50%"><span class="who">MARSHAL LIN</span>Certified — every sign, both systems, one honest course. Protest dismissed. The heats run at noon.</div>
-    <div class="balloon tail-r" style="top:78px;right:6px;max-width:40%"><span class="who">KOFI</span>For the record: the captain's "easy out" was 0.6 kilometers short of true.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#fdf2ee"/><g transform="translate(14,30) scale(.9)"><use href="#sym-bike"/></g><g transform="translate(108,2) scale(.7)"><use href="#sym-dev"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:52%"><span class="who">ROHAN</span>Side quest complete. Main quest: the Courier Cup itself. Loot: one library.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#17324D"/><rect x="36" y="12" width="128" height="86" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="32" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">COURIER CUP</text><g transform="translate(76,38) scale(.46)"><use href="#sym-bike"/></g><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">THE HEATS BEGIN AT NOON</text><text x="100" y="91" text-anchor="middle" font-family="Arial" font-weight="700" font-size="8" fill="#1FA6A2">TEAM TORQUE IS ALREADY STRETCHING</text>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:56%"><span class="who">VEX</span>New distortion at the start line. It's fast. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>THE RACE ITSELF — VOL. 3: FULL VELOCITY</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-certified")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:13%;width:62%;font-size:13px">COURSE CERTIFIED<br>6.4 km · 6400 m · sign-perfect</div>
+      <div class="sfx" style="top:30%;left:14px">STAMP!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%"><span class="who">MARSHAL LIN</span>Certified — every sign, both systems, one honest course. Protest dismissed. The heats run at noon.</div>
+      <div class="balloon tail-r" style="top:30%;right:8px;max-width:36%"><span class="who">KOFI</span>For the record: the captain's "easy out" was 0.6 kilometers short of true.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-rohan")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ROHAN</span>Side quest complete. Main quest: the Courier Cup itself. Loot: one library.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-start")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:12%;width:84%;font-size:12px">COURIER CUP<br>THE HEATS BEGIN AT NOON<br>TEAM TORQUE IS ALREADY STRETCHING</div>
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>New distortion at the start line. It's fast. To be continued…</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>THE RACE ITSELF — VOL. 3: FULL VELOCITY</b></div>
+  </div>`},
 
 /* ---- p12: Ada Vex's journal mini-recap + certificate ---- */
 { ch:"End Matter · Journal & Certificate", html:`

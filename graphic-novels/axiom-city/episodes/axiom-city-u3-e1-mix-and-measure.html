@@ -231,6 +231,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -270,34 +273,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 3, Episode 1: Mix and Measure. Training-camp dawn at the old depot lot: relay bikes lean by a rack, open cans of blue and white paint wait beside a half-painted team flag, the four crew kids gear up, and the glowing orb VEX hovers overhead.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#duskgrad)"/><circle cx="118" cy="252" r="58" fill="#FFF3D8" opacity=".95"/><circle cx="118" cy="252" r="84" fill="#FFF3D8" opacity=".25"/><g fill="#fff" opacity=".5"><ellipse cx="340" cy="148" rx="58" ry="14"/><ellipse cx="244" cy="98" rx="44" ry="11"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,252) scale(5,3.5)" opacity=".5"><use href="#sym-skyline"/></g><rect y="600" width="500" height="100" fill="#2b3f50"/><line x1="0" y1="644" x2="500" y2="644" stroke="#F2C15B" stroke-width="4" stroke-dasharray="26 20" opacity=".7"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <path d="M0 300 Q250 336 500 300" fill="none" stroke="#17324D" stroke-width="4"/>
-        <g stroke="#17324D" stroke-width="1.5"><polygon points="56,306 82,306 69,330" fill="#1FA6A2"/><polygon points="128,318 154,318 141,342" fill="#F2C15B"/><polygon points="200,324 226,324 213,348" fill="#E2674A"/><polygon points="272,322 298,322 285,346" fill="#1FA6A2"/><polygon points="344,312 370,312 357,336" fill="#F2C15B"/><polygon points="416,302 442,302 429,326" fill="#E2674A"/></g>
-        <rect x="318" y="270" width="12" height="330" fill="#6b4f2a" stroke="#17324D" stroke-width="4"/>
-        <rect x="330" y="284" width="148" height="92" fill="#fff" stroke="#17324D" stroke-width="5"/>
-        <rect x="330" y="284" width="54" height="92" fill="#1FA6A2"/>
-        <g transform="translate(36,500) scale(2)"><use href="#sym-bike"/></g>
-        <g transform="translate(168,524) scale(1.6)"><use href="#sym-bike"/></g>
-        <g transform="translate(30,608)"><rect x="0" y="10" width="40" height="44" rx="4" fill="#dfe5ea" stroke="#17324D" stroke-width="4"/><ellipse cx="20" cy="10" rx="20" ry="8" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/></g>
-        <g transform="translate(82,612)"><rect x="0" y="10" width="40" height="44" rx="4" fill="#dfe5ea" stroke="#17324D" stroke-width="4"/><ellipse cx="20" cy="10" rx="20" ry="8" fill="#F7F4EC" stroke="#17324D" stroke-width="4"/></g>
-        <g transform="translate(134,616)"><rect x="0" y="10" width="40" height="44" rx="4" fill="#dfe5ea" stroke="#17324D" stroke-width="4"/><ellipse cx="20" cy="10" rx="20" ry="8" fill="#F7F4EC" stroke="#17324D" stroke-width="4"/></g>
-        <rect x="196" y="652" width="120" height="10" rx="5" fill="#1FA6A2" opacity=".7"/>
-        <g transform="translate(228,448) scale(1.1)"><use href="#sym-zara"/></g>
-        <g transform="translate(120,476) scale(.95)"><use href="#sym-maya"/></g>
-        <g transform="translate(340,500) scale(.9)"><use href="#sym-theo"/></g>
-        <g transform="translate(418,520) scale(.84)"><use href="#sym-dev"/></g>
-        <g transform="translate(170,316) scale(.9)"><use href="#sym-vex"/></g>
-        <g stroke="#fff" stroke-width="3" opacity=".5" stroke-linecap="round"><line x1="40" y1="586" x2="110" y2="586"/><line x1="150" y1="600" x2="206" y2="600"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 3, Episode 1: Mix and Measure. At dawn in the old depot lot strung with pennants, Sienna, Kofi, Chloe and Rohan stand with their bikes while VEX, the small teal robot with one golden eye, floats above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -373,215 +350,176 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss", label:"Mix & Measure — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-const PENNANTS=(y=24)=>`<path d="M0 ${y} Q200 ${y+18} 400 ${y}" fill="none" stroke="#17324D" stroke-width="2.5"/>`+
-  Array.from({length:11},(_,i)=>{const x=12+i*36,t=(x+9)/400,yo=y+Math.round(36*t*(1-t)),c=["#1FA6A2","#F2C15B","#E2674A"][i%3];
-  return `<polygon points="${x},${yo} ${x+18},${yo} ${x+9},${yo+16}" fill="${c}" stroke="#17324D" stroke-width="1.5"/>`}).join("");
-const CAN=(x,y,fill)=>`<g transform="translate(${x},${y})"><rect x="0" y="7" width="26" height="29" rx="3" fill="#dfe5ea" stroke="#17324D" stroke-width="3"/><ellipse cx="13" cy="7" rx="13" ry="5" fill="${fill}" stroke="#17324D" stroke-width="3"/></g>`;
-/* inline guest characters (content-side; same 100×118 grid as the crew symbols) */
-const BRAM=`<g><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><path d="M46 84 l9 7 -7 5 9 7" fill="none" stroke="#F2C15B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="44" r="24" fill="#E8BEAC" stroke="#17324D" stroke-width="4"/><path d="M28 38 Q26 14 52 14 Q78 16 74 28 Q84 22 82 38 Q74 28 60 26 Q34 26 30 42 Z" fill="#3A3A44" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="44" r="2.4" fill="#17324D"/><circle cx="58" cy="44" r="2.4" fill="#17324D"/><path d="M36 38 q5 -4 10 -2 M54 36 q6 -2 10 2" stroke="#17324D" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M42 57 q8 4 16 -3" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>`;
-const JUNO=`<g><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><rect x="40" y="84" width="20" height="17" rx="3" fill="#fff" stroke="#17324D" stroke-width="3"/><text x="50" y="98" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#17324D">7</text><circle cx="50" cy="48" r="22" fill="#9C6B30" stroke="#17324D" stroke-width="4"/><path d="M26 46 Q26 18 50 18 Q74 18 74 46 L66 46 Q66 28 50 28 Q34 28 34 46 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="3"/><path d="M30 46 h40" stroke="#17324D" stroke-width="3"/><circle cx="43" cy="51" r="2.4" fill="#17324D"/><circle cx="57" cy="51" r="2.4" fill="#17324D"/><path d="M42 61 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>`;
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected below by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u3-e1 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u3-e1-mix-and-measure.webp?v=a528d39379","w":2994,"h":3916,"f":{"cover":[0,0,544,762,"At dawn in the old depot lot strung with pennants, Sienna, Kofi, Chloe and Rohan stand with their bikes while VEX, the small teal robot with one golden eye, floats above them.",[]],"p1-crew":[0,2068,870,435,"At sunrise in the depot lot, Sienna, Kofi, Chloe and Rohan stand in a sleepy row, one of them yawning, while VEX floats in the corner.",[]],"p2-depot":[1850,1415,870,490,"In the depot lot, Chloe stirs a can of sky-blue paint at a folding table while Bram, the rival from Team Torque in a coral jacket, leans beside a gold trophy with his arms crossed, smirking.",[]],"p2-chloe":[870,2938,870,326,"Chloe proudly holds up a stir stick dripping with sky-blue paint.",[]],"p2-vex":[1740,2938,870,326,"VEX hovers above a row of open sky-blue and white paint cans, its glow shining on the wet paint.",[]],"p3-table":[870,2068,870,435,"At the paint table, Sienna points at a big recipe card on an easel while Chloe holds up two paint cans. The card gives the flag paint ratio.",[]],"p3-sienna":[0,762,490,653,"Close-up of Sienna holding up two fingers on one hand and five on the other, explaining with a bright smile.",[]],"p3-chloe":[2504,0,490,653,"Close-up of Chloe holding a gray paint can and an amber paint can with a serious, knowing look.",[]],"p3-vex":[0,3264,870,326,"VEX floats beside one gray paint can and three amber paint cans lined up on the table.",[]],"p4-chloe":[870,3264,870,326,"Chloe grins at the reader, holding a big paint can and a stir stick, with VEX floating beside her.",[]],"p5-track":[1740,2068,870,435,"On the depot loop, Rohan holds up a stopwatch and clipboard while Juno, the new courier in a gold jersey and teal cap, sits eagerly on her bike beside a whiteboard time-trial log.",[]],"p5-juno":[490,762,490,653,"Close-up of Juno giving a cool, confident smirk as she taps the watch on her wrist.",[]],"p5-vex":[1470,762,490,653,"VEX hovers over the bike loop, sweeping it with a thin cyan beam.",[]],"p5-kofi":[980,762,490,653,"Kofi jogs in place on the bike loop, smiling as he checks the watch on his wrist.",[]],"p6-rohan":[1740,3264,870,326,"Rohan holds up his stopwatch toward the reader with a serious, focused face.",[]],"p7-roster":[0,2503,870,435,"At the relay roster board, Bram jabs a finger and scoffs while Juno stands proudly with her arms crossed and Kofi calmly raises a finger to answer him.",[]],"p7-sienna":[0,3590,870,326,"Sienna smiles warmly and holds out her hand in welcome.",[]],"p8-shed":[870,2503,870,435,"In the supply shed, Sienna counts stacked water bottles while Rohan holds a calculator and VEX floats above them. A sign on the wall lists the bulk bottle prices.",[]],"p8-sienna":[2450,762,490,653,"Close-up of Sienna sorting water bottles on a shelf into small groups, counting carefully.",[]],"p8-rohan":[1960,762,490,653,"Close-up of Rohan tapping a calculator and raising one eyebrow with a sly grin.",[]],"p8-vex":[870,3590,870,326,"VEX floats above a six-pack of juice bottles on a wooden counter.",[]],"p9-order":[1740,2503,870,435,"At sundown in the race office, Bram leans smirking in the doorway while Sienna studies the supply order form pinned to the corkboard, VEX floating beside her.",[]],"p9-bram":[0,1415,490,653,"Close-up of Bram leaning on the doorframe in the sunset light, smirking and holding up three fingers.",[]],"p9-sienna":[490,1415,490,653,"Close-up of Sienna turning to the reader with a determined face, pencil in hand.",[]],"p10-vex":[0,2938,870,326,"VEX glows bright and determined against a deep navy background, cyan sparks around it.",[]],"p11-win":[980,1415,870,490,"At night in the depot lot, Chloe, Juno and Sienna cheer under the glowing board showing the approved supply order, while Bram sulks with his arms crossed and VEX floats above.",[]],"p11-bram":[544,0,490,653,"Close-up of Bram crossing his arms and looking away with a grumpy pout.",[]],"p11-juno":[1034,0,490,653,"Close-up of Juno grinning and jabbing a thumb at herself.",[]],"p11-kofi":[1524,0,490,653,"Kofi holds up a long recipe sheet and scratches his head with a wry smile.",[]],"p11-plans":[2014,0,490,653,"VEX hovers in the dark beside the main stage plans, a big blueprint sheet glowing faintly on the wall.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + previously ---- */
 { ch:"Axiom City · Unit 3, Episode 1", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">MIX &amp; <em>MEASURE</em></h2>
   <div class="caption" style="display:inline-block">An Axiom City episode — Lessons 3-1 &amp; 3-2 in one sitting, featuring three reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="url(#duskgrad)"/><circle cx="58" cy="64" r="24" fill="#FFF3D8" opacity=".9"/>
-    <g data-depth="6">${PENNANTS(22)}</g><g data-depth="8" transform="translate(0,44) scale(4,1.6)" opacity=".45"><use href="#sym-skyline"/></g>
-    <g data-depth="16" transform="translate(16,88)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(108,88)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(200,88)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(292,88)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(168,6) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Race season status: ON. Training camp status: 06:00. Crew status: mostly awake.</div>
-  </div>
-  <div class="caption loc">Previously: on a rained-out field day, four sixth graders woke VEX — a fragment of Ada Vex's Pattern Engine — in the old observatory. Now race season begins: the Courier Cup, the bike relay that funds the library, is one week away. Training camp opens at dawn.</div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:52%;--ty:14px"><span class="who">VEX</span>Race season status: ON. Training camp status: 06:00. Crew status: mostly awake.</div>
+    </div>
+    <div class="caption loc">Previously: on a rained-out field day, four sixth graders woke VEX — a fragment of Ada Vex's Pattern Engine — in the old observatory. Now race season begins: the Courier Cup, the bike relay that funds the library, is one week away. Training camp opens at dawn.</div>
+  </div>`},
 /* ---- p2: episode splash — training camp dawn ---- */
 { ch:"Episode 1 · Training Week", html:`
   <div class="kicker">Episode One</div><h2 class="splashtitle">TRAINING <em>WEEK</em></h2>
-  <div class="caption loc">The old depot lot, dawn. Bikes on the rack, paint on the table, Team Torque already lurking.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    <rect width="400" height="230" fill="url(#duskgrad)"/><circle cx="54" cy="60" r="22" fill="#FFF3D8" opacity=".9"/>
-    <g data-depth="6">${PENNANTS(24)}</g>
-    <g data-depth="8" transform="translate(0,60) scale(4,1.7)" opacity=".45"><use href="#sym-skyline"/></g>
-    <rect data-depth="10" x="0" y="196" width="400" height="34" fill="#3a4f63"/>
-    <g data-depth="12" transform="translate(14,142) scale(.9)"><use href="#sym-bike"/></g>
-    <g data-depth="12" transform="translate(88,150) scale(.78)"><use href="#sym-bike"/></g>
-    <rect data-depth="10" x="216" y="48" width="8" height="160" fill="#6b4f2a" stroke="#17324D" stroke-width="3"/>
-    <rect data-depth="10" x="224" y="56" width="96" height="60" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <rect data-depth="10" x="224" y="56" width="34" height="60" fill="#1FA6A2"/>
-    <g data-depth="10">${CAN(170,178,"#1FA6A2")}${CAN(202,178,"#F7F4EC")}${CAN(234,178,"#F7F4EC")}</g>
-    <g data-depth="16" transform="translate(144,114) scale(.8)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(312,112) scale(.86)">${BRAM}</g>
-    <g data-depth="14" transform="translate(346,28) scale(.5)"><use href="#sym-trophy"/></g>`)}
-    <div class="sfx" style="top:8px;right:14px">SLOSH!</div>
-    <div class="balloon tail-r" style="top:26px;right:4px;max-width:44%"><span class="who">BRAM</span>Cute flag, junior leaguers. Torque's flag is gold. Like our trophies. Like our FUTURE.</div>
-    <div class="balloon" style="bottom:12px;left:8px;max-width:50%"><span class="who">CHLOE</span>It's not cute, Bram, it's a recipe: two parts sky-blue to five parts white. Courier blue. I could build a cathedral out of this color.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#e9f6f5"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Distortion forecast for race day: high. Today's forecast: paint, pedals, and proportions. Mixing is mathematics, crew — get it wrong and the flag goes chalky.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-depot")}
+      <div class="caption loc">The old depot lot, dawn. Bikes on the rack, paint on the table, Team Torque already lurking.</div>
+      <div class="sfx" style="bottom:12px;left:30%">SLOSH!</div>
+      <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:40%"><span class="who">BRAM</span>Cute flag, junior leaguers. Torque's flag is gold. Like our trophies. Like our FUTURE.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-chloe")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">CHLOE</span>It's not cute, Bram, it's a recipe: two parts sky-blue to five parts white. Courier blue. I could build a cathedral out of this color.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:62%"><span class="who">VEX</span>Distortion forecast for race day: high. Today's forecast: paint, pedals, and proportions. Mixing is mathematics, crew — get it wrong and the flag goes chalky.</div>
+    </div>
   </div>`},
-
 /* ---- p3: the recipe — ratio reasoning ---- */
 { ch:"Episode 1 · The Recipe", html:`
-  <div class="caption loc">The paint table. One recipe card, many cans, zero room for error.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <rect data-depth="6" x="0" y="0" width="400" height="52" fill="#1FA6A2" opacity=".14"/>
-    <rect data-depth="10" x="146" y="22" width="124" height="120" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="10" x="208" y="46" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#17324D">FLAG PAINT</text>
-    <text data-depth="10" x="208" y="72" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#1FA6A2">blue : white</text>
-    <text data-depth="10" x="208" y="100" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="22" fill="#17324D">2 : 5</text>
-    <text data-depth="10" x="208" y="128" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#E2674A">COURIER BLUE — DO NOT WING IT</text>
-    <g data-depth="8">${CAN(56,152,"#1FA6A2")}${CAN(90,152,"#F7F4EC")}${CAN(286,152,"#F7F4EC")}</g>
-    <g data-depth="16" transform="translate(12,58) scale(.92)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(298,54) scale(.92)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:46%"><span class="who">SIENNA</span>A ratio, not a riddle: 2 cans of blue for every 5 of white. Say it like a heartbeat — two FOR five.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:48%"><span class="who">CHLOE</span>The trim taught me the rule. Gray to amber is 1 to 3 — I doubled it once, 2 and 6, and the shade didn't budge. Multiply BOTH numbers or repaint everything.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#e9f6f5"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Definition loaded: a <b>ratio</b> compares amounts. 1:3 is part-to-PART — gray against amber. The whole trim batch is 1 + 3 = 4 parts, so gray-to-WHOLE is 1:4. Same paint, two different comparisons.</div>
-  </div>
-  <div class="caption">A <b>ratio</b> compares part to part (gray:amber, 1:3) or part to whole (gray:all the trim paint, 1:4). Scaling a batch multiplies every part by the same number.</div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-table")}
+      <div class="caption loc">The paint table. One recipe card, many cans, zero room for error.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:40%;width:30%;color:#17324D;background:#fff">FLAG PAINT<br>blue : white<br><b style="font-size:1.4em">2 : 5</b><br><small style="color:#E2674A">COURIER BLUE — DO NOT WING IT</small></div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-sienna")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SIENNA</span>A ratio, not a riddle: 2 cans of blue for every 5 of white. Say it like a heartbeat — two FOR five.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-chloe")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CHLOE</span>The trim taught me the rule. Gray to amber is 1 to 3 — I doubled it once, 2 and 6, and the shade didn't budge. Multiply BOTH numbers or repaint everything.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:62%"><span class="who">VEX</span>Definition loaded: a <b>ratio</b> compares amounts. 1:3 is part-to-PART — gray against amber. The whole trim batch is 1 + 3 = 4 parts, so gray-to-WHOLE is 1:4. Same paint, two different comparisons.</div>
+    </div>
+    <div class="caption">A <b>ratio</b> compares part to part (gray:amber, 1:3) or part to whole (gray:all the trim paint, 1:4). Scaling a batch multiplies every part by the same number.</div>
+  </div>`},
 /* ---- p4: GATE 1 ---- */
 { ch:"Episode 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#e9f6f5"/><g transform="translate(8,0) scale(.7)"><use href="#sym-zara"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">CHLOE</span>Reader — you're our fifth crew member. The flag needs a TRIPLE batch of Courier blue. Pour it true.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-chloe")}
+      <div class="balloon" style="top:6px;left:34%;max-width:44%;--tx:10px"><span class="who">CHLOE</span>Reader — you're our fifth crew member. The flag needs a TRIPLE batch of Courier blue. Pour it true.</div>
+    </div>
   </div>`},
-
 /* ---- p5: time trials — rates ---- */
 { ch:"Episode 1 · The Stopwatch Knows", html:`
   <div class="kicker">Mid-Morning</div><h2 class="splashtitle">THE STOPWATCH <em>KNOWS</em></h2>
-  <div class="caption loc">The depot loop. Rohan has a stopwatch and a clipboard. Juno — the new courier from Harbor Row — wants the tryout of her life.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${SKY}<g data-depth="6">${PENNANTS(20)}</g>
-    <ellipse data-depth="8" cx="200" cy="178" rx="195" ry="22" fill="#cdc6ad"/><ellipse data-depth="8" cx="200" cy="178" rx="195" ry="22" fill="url(#halftone)"/>
-    <g data-depth="12" transform="translate(36,122) scale(.85)"><use href="#sym-bike"/></g>
-    <g data-depth="14" transform="translate(58,72) scale(.8)"><use href="#sym-zara"/></g>
-    <g data-depth="14" transform="translate(156,82) scale(.84)">${JUNO}</g>
-    <g data-depth="16" transform="translate(298,74) scale(.9)"><use href="#sym-dev"/></g>
-    <rect data-depth="12" x="238" y="16" width="132" height="50" rx="6" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="12" x="304" y="32" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#1FA6A2">TIME-TRIAL LOG</text>
-    <text data-depth="12" x="304" y="46" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">Chloe · 5.4 km · 18 min</text>
-    <text data-depth="12" x="304" y="59" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">Juno · 4.4 km · 11 min</text>`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:46%"><span class="who">ROHAN</span>Tryout logged! Chloe: 5.4 km in 18 minutes. Juno: 4.4 km in 11. Two riders, two totally different rides.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:40%"><span class="who">JUNO</span>Shorter ride, I know. Don't read the odometer — interview the stopwatch.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 132",`<rect width="400" height="132" fill="#e9f6f5"/><g transform="translate(8,28) scale(.72)"><use href="#sym-theo"/></g><g transform="translate(332,6) scale(.54)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:4px;left:86px;max-width:58%"><span class="who">VEX</span>Definition loaded: a <b>rate</b> compares two different units — kilometers AND minutes. Divide distance by time: that is the <b>unit rate</b>, km per ONE minute. One number per rider.</div>
-    <div class="balloon" style="bottom:6px;left:98px;max-width:56%"><span class="who">KOFI</span>Like my warm-up: 2 km in 8 minutes. 2 ÷ 8 = 0.25 km a minute. The decimal doesn't care how long you rode.</div>
-  </div>
-  <div class="caption">A <b>rate</b> compares different units; a <b>unit rate</b> rescales it to "per one" — km per 1 minute — so any two riders can be compared fairly.</div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-track")}
+      <div class="caption loc">The depot loop. Rohan has a stopwatch and a clipboard. Juno — the new courier from Harbor Row — wants the tryout of her life.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:84%;top:46%;width:26%;font-size:12px;color:#17324D">TIME-TRIAL LOG<br>Chloe · 5.4 km · 18 min<br>Juno · 4.4 km · 11 min</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:40%"><span class="who">ROHAN</span>Tryout logged! Chloe: 5.4 km in 18 minutes. Juno: 4.4 km in 11. Two riders, two totally different rides.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-juno")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JUNO</span>Shorter ride, I know. Don't read the odometer — interview the stopwatch.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-kofi")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KOFI</span>Like my warm-up: 2 km in 8 minutes. 2 ÷ 8 = 0.25 km a minute. The decimal doesn't care how long you rode.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:62%"><span class="who">VEX</span>Definition loaded: a <b>rate</b> compares two different units — kilometers AND minutes. Divide distance by time: that is the <b>unit rate</b>, km per ONE minute. One number per rider.</div>
+    </div>
+    <div class="caption">A <b>rate</b> compares different units; a <b>unit rate</b> rescales it to "per one" — km per 1 minute — so any two riders can be compared fairly.</div>
+  </div>`},
 /* ---- p6: GATE 2 ---- */
 { ch:"Episode 1 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#e9f6f5"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">ROHAN</span>Reader — run the division. Two unit rates, one anchor leg. Who takes it?</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-rohan")}
+      <div class="balloon" style="top:6px;left:34%;max-width:60%;--tx:10px"><span class="who">ROHAN</span>Reader — run the division. Two unit rates, one anchor leg. Who takes it?</div>
+    </div>
   </div>`},
-
 /* ---- p7: the anchor decision ---- */
 { ch:"Episode 1 · The Anchor", html:`
   <div class="kicker">The Roster Board</div><h2 class="splashtitle">THE <em>ANCHOR</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#10243a"/>
-    <g data-depth="6" opacity=".4" transform="translate(0,70) scale(4,1.4)"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="104" y="22" width="192" height="120" rx="8" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="4"/>
-    <text data-depth="12" x="200" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">RELAY ROSTER</text>
-    <text data-depth="12" x="200" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Leg 1 Sienna · Leg 2 Rohan · Leg 3 Chloe</text>
-    <text data-depth="12" x="200" y="108" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#1FA6A2">ANCHOR · JUNO</text>
-    <g data-depth="18" transform="translate(10,82) scale(.9)">${BRAM}</g>
-    <g data-depth="18" transform="translate(308,82) scale(.9)">${JUNO}</g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:44%"><span class="who">BRAM</span>You benched the kid who rode FARTHEST? Farther means faster. Torque thanks you for the trophy.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:48%"><span class="who">KOFI</span>Farther in MORE minutes, Bram. Speed is distance PER minute — the stopwatch out-argues you every time.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#e9f6f5"/><g transform="translate(10,0) scale(.64)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">SIENNA</span>Welcome to the crew, Juno. You bring the legs — the math brought the proof.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-roster")}
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:50%;top:30%;width:46%;font-size:12px;color:#17324D">RELAY ROSTER<br>Leg 1 Sienna · Leg 2 Rohan · Leg 3 Chloe<br><b style="color:#1FA6A2">ANCHOR · JUNO</b></div>
+      <div class="balloon" style="bottom:8px;left:6px;max-width:44%"><span class="who">BRAM</span>You benched the kid who rode FARTHEST? Farther means faster. Torque thanks you for the trophy.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:44%"><span class="who">KOFI</span>Farther in MORE minutes, Bram. Speed is distance PER minute — the stopwatch out-argues you every time.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-sienna")}
+      <div class="balloon" style="top:6px;left:34%;max-width:60%;--tx:10px"><span class="who">SIENNA</span>Welcome to the crew, Juno. You bring the legs — the math brought the proof.</div>
+    </div>
   </div>`},
-
 /* ---- p8: bottles & budgets — unit price ---- */
 { ch:"Episode 1 · Bottles &amp; Budgets", html:`
-  <div class="caption loc">The supply shed, late afternoon. Race rule #12: every water station stocks 3 bottles for every 2 riders.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    <rect width="400" height="190" fill="#fff8ea"/>
-    <rect data-depth="6" y="146" width="400" height="44" fill="#d9c9a3"/>
-    <rect data-depth="10" x="120" y="22" width="160" height="110" rx="6" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <line data-depth="10" x1="120" y1="58" x2="280" y2="58" stroke="#17324D" stroke-width="3"/>
-    <line data-depth="10" x1="120" y1="94" x2="280" y2="94" stroke="#17324D" stroke-width="3"/>
-    ${Array.from({length:12},(_,i)=>`<rect data-depth="10" x="${130+(i%6)*24}" y="${32+Math.floor(i/6)*36}" width="12" height="22" rx="4" fill="#1FA6A2" stroke="#17324D" stroke-width="2"/>`).join("")}
-    <rect data-depth="12" x="294" y="30" width="92" height="74" rx="6" fill="#FFF3D8" stroke="#E2674A" stroke-width="3" transform="rotate(3 340 67)"/>
-    <g data-depth="12" transform="rotate(3 340 67)"><text x="340" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#E2674A">BULK BOTTLES</text><text x="340" y="68" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">5 for $7.50</text><text x="340" y="84" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">4 for $6.40</text></g>
-    <g data-depth="16" transform="translate(12,46) scale(.88)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(302,100) scale(.72)"><use href="#sym-dev"/></g>
-    <g data-depth="22" transform="translate(186,140) scale(.42)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:4px;left:6px;max-width:42%"><span class="who">SIENNA</span>Three bottles per TWO riders — so the order scales by rider-pairs. Count the pairs, then deal each pair its three bottles.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:44%"><span class="who">ROHAN</span>And pack prices are decoys. Boss math is the price of ONE bottle — divide the tag by the pack.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#e9f6f5"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Demo from Kofi's juice run: a 6-pack for $7.20 → 7.20 ÷ 6 = $1.20 per bottle. The shelf tag shouts; the unit price tells the truth.</div>
-  </div>
-  <div class="caption">A <b>unit price</b> is a unit rate in dollars: cost ÷ count = price of ONE. Compare per-one prices, never pack tags.</div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p8-shed")}
+      <div class="caption loc">The supply shed, late afternoon. Race rule #12: every water station stocks 3 bottles for every 2 riders.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:84%;top:40%;width:24%;font-size:12px">BULK BOTTLES<br>5 for $7.50<br>4 for $6.40</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-sienna")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SIENNA</span>Three bottles per TWO riders — so the order scales by rider-pairs. Count the pairs, then deal each pair its three bottles.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-rohan")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ROHAN</span>And pack prices are decoys. Boss math is the price of ONE bottle — divide the tag by the pack.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p8-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:62%"><span class="who">VEX</span>Demo from Kofi's juice run: a 6-pack for $7.20 → 7.20 ÷ 6 = $1.20 per bottle. The shelf tag shouts; the unit price tells the truth.</div>
+    </div>
+    <div class="caption">A <b>unit price</b> is a unit rate in dollars: cost ÷ count = price of ONE. Compare per-one prices, never pack tags.</div>
+  </div>`},
 /* ---- p9: boss setup ---- */
 { ch:"Episode 1 · The Supply Order", html:`
-  <div class="caption loc">Sundown. The order form is due at the race office tonight. Bram leans on the doorframe, smirking like it's cardio.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <g data-depth="6">${PENNANTS(16)}</g>
-    <rect data-depth="10" x="118" y="38" width="172" height="118" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="10" x="204" y="62" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#E2674A">SUPPLY ORDER — DUE TONIGHT</text>
-    <text data-depth="10" x="204" y="86" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">24 riders registered.</text>
-    <text data-depth="10" x="204" y="106" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Bottles: 3 per 2 riders.</text>
-    <text data-depth="10" x="204" y="126" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Bulk: 5/$7.50 or 4/$6.40.</text>
-    <g data-depth="16" transform="translate(14,66) scale(.96)">${BRAM}</g>
-    <g data-depth="16" transform="translate(298,66) scale(.96)"><use href="#sym-maya"/></g>
-    <g data-depth="22" transform="translate(186,150) scale(.42)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:4px;left:6px;max-width:46%"><span class="who">BRAM</span>Torque's order took five minutes. Bet your crew blows the library's budget by breakfast. Triple bet you can't show the work.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:40%"><span class="who">SIENNA</span>Reader — three locks. Fill the form. Make every coin count.</div>
-  </div>
-  <div class="caption">Boss Gate: scale the 3:2 bottle ratio to the whole field, price ONE bottle, then pick the pack that protects the library's money.</div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-order")}
+      <div class="caption loc">Sundown. The order form is due at the race office tonight. Bram leans on the doorframe, smirking like it's cardio.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:44%;width:34%;font-size:12px;color:#17324D;background:#fff"><b style="color:#E2674A">SUPPLY ORDER — DUE TONIGHT</b><br>24 riders registered.<br>Bottles: 3 per 2 riders.<br>Bulk: 5/$7.50 or 4/$6.40.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-bram")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">BRAM</span>Torque's order took five minutes. Bet your crew blows the library's budget by breakfast. Triple bet you can't show the work.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-sienna")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SIENNA</span>Reader — three locks. Fill the form. Make every coin count.</div>
+    </div>
+    <div class="caption">Boss Gate: scale the 3:2 bottle ratio to the whole field, price ONE bottle, then pick the pack that protects the library's money.</div>
+  </div>`},
 /* ---- p10: BOSS GATE ---- */
 { ch:"Boss Gate · The Supply Order", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. One smug rival. (No pressure. Some pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:62%"><span class="who">VEX</span>BOSS GATE. Three locks. One smug rival. (No pressure. Some pressure.)</div>
+    </div>
   </div>`},
-
 /* ---- p11: victory + teaser ---- */
 { ch:"Episode 1 · Order, Filed", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="url(#duskgrad)"/><g data-depth="6">${PENNANTS(22)}</g>
-    <g data-depth="8" transform="translate(0,56) scale(4,1.6)" opacity=".45"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="60" y="34" width="280" height="46" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="55" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="14">SUPPLY ORDER — APPROVED</text>
-    <text data-depth="12" x="200" y="72" text-anchor="middle" fill="#7CF2EC" font-family="Arial" font-weight="700" font-size="10">36 bottles · 5-packs · under budget</text>
-    <rect data-depth="10" x="20" y="96" width="8" height="112" fill="#6b4f2a" stroke="#17324D" stroke-width="3"/>
-    <rect data-depth="10" x="28" y="100" width="86" height="54" fill="#1FA6A2" stroke="#17324D" stroke-width="3"/>
-    <path data-depth="10" d="M44 128 l10 10 20 -22" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <g data-depth="18" transform="translate(128,112) scale(.78)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(192,116) scale(.76)">${JUNO}</g>
-    <g data-depth="18" transform="translate(254,118) scale(.76)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(316,120) scale(.74)">${BRAM}</g>
-    <g data-depth="26" transform="translate(344,20) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:82px;left:18px">STAMP!</div>
-    <div class="balloon" style="bottom:48px;right:8px;max-width:38%"><span class="who">BRAM</span>…beginner's luck.</div>
-    <div class="balloon tail-r" style="bottom:8px;left:10px;max-width:46%"><span class="who">JUNO</span>Nope. Division. You should try it before Saturday.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#e9f6f5"/><g transform="translate(58,4) scale(.78)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">KOFI</span>Camp's done. But race day feeds SIXTY volunteers — somebody has to scale Ms. Ortiz's whole recipe table.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><rect x="40" y="20" width="120" height="70" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="44" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#E2674A">MAIN STAGE PLANS</text><text x="100" y="62" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">rows and columns,</text><text x="100" y="76" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">everything scaled up…</text>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:58%"><span class="who">VEX</span>New distortion humming at the main stage. It grows in rows and columns. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: EPISODE 2 — THE SCALING STAGE</b></div>`},
-
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-win")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:18%;width:52%;font-size:13px;color:#F2C15B">SUPPLY ORDER — APPROVED<br><small style="color:#7CF2EC">36 bottles · 5-packs · under budget</small></div>
+      <div class="sfx" style="top:34%;left:18px">STAMP!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-bram")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">BRAM</span>…beginner's luck.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-juno")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JUNO</span>Nope. Division. You should try it before Saturday.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-kofi")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KOFI</span>Camp's done. But race day feeds SIXTY volunteers — somebody has to scale Ms. Ortiz's whole recipe table.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-plans")}
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:50%;top:62%;width:80%;font-size:12px;color:#E2674A">MAIN STAGE PLANS<br><span style="color:#cfe8ff">rows and columns,<br>everything scaled up…</span></div>
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:20%"><span class="who">VEX</span>New distortion humming at the main stage. It grows in rows and columns. To be continued…</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: EPISODE 2 — THE SCALING STAGE</b></div>
+  </div>`},
 /* ---- p12: journal mini-recap + certificate ---- */
 { ch:"End Matter · Journal &amp; Certificate", html:`
   <h2 class="splashtitle" style="font-size:1.25rem">ADA VEX'S <em>JOURNAL</em></h2>

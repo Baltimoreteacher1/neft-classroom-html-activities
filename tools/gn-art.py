@@ -2,6 +2,7 @@
 """Axiom City comic art pipeline: generate panel images, then pack them into one atlas per book.
 
     gn-art.py generate <panels.json> [--only id,id] [--force]   needs mflux (FLUX.1-schnell, local)
+    gn-art.py generate <panels.json> --engine gemini            needs GEMINI_API_KEY (~/.config/gn-art/gemini.env)
     gn-art.py pack     <panels.json>                              needs Pillow (optional per-panel "crop")
     gn-art.py prompts  <panels.json> [--only id]                  print the expanded prompts
 
@@ -42,7 +43,9 @@ def fragments(spec=None):
     book's own `fragments` map in panels.json (book-only settings and side characters)."""
     text = CHARACTERS.read_text()
     section = text.split("## Prompt fragments", 1)[1].split("\n## ", 1)[0]
-    shared = {m[1]: m[2].strip() for m in re.finditer(r"^- (\w+): (.+)$", section, re.M)}
+    shared = {
+        m[1]: m[2].strip() for m in re.finditer(r"^- (\w+): (.+)$", section, re.M)
+    }
     return {**shared, **((spec or {}).get("fragments") or {})}
 
 
@@ -92,9 +95,6 @@ def cmd_prompts(args):
 
 
 def cmd_generate(args):
-    from mflux.models.common.config import ModelConfig
-    from mflux.models.flux.variants.txt2img.flux import Flux1
-
     spec = load(args.spec)
     frags = fragments(spec)
     out = raw_dir(spec)
@@ -106,6 +106,12 @@ def cmd_generate(args):
     if not todo:
         print("nothing to generate")
         return
+    if args.engine == "gemini":
+        return cmd_generate_gemini(spec, todo, out)
+
+    from mflux.models.common.config import ModelConfig
+    from mflux.models.flux.variants.txt2img.flux import Flux1
+
     flux = Flux1(
         model_config=ModelConfig.from_name(model_name="schnell"), model_path=str(MODEL)
     )
@@ -125,6 +131,134 @@ def cmd_generate(args):
             f"{p['id']}: {w}x{h} seed {p['seed']} in {time.time() - t0:.0f}s",
             flush=True,
         )
+
+
+GEMINI_MODEL = os.environ.get("GN_GEMINI_MODEL", "gemini-2.5-flash-image")
+GEMINI_RATIOS = [
+    "1:1",
+    "2:3",
+    "3:2",
+    "3:4",
+    "4:3",
+    "4:5",
+    "5:4",
+    "9:16",
+    "16:9",
+    "21:9",
+]
+
+
+def nearest_ratio(w, h):
+    def value(r):
+        a, b = map(int, r.split(":"))
+        return a / b
+
+    return min(GEMINI_RATIOS, key=lambda r: abs(value(r) - w / h))
+
+
+def trim_frame(im, limit=0.12):
+    """Crop a flat light margin (often with an outline stroke) that the model drew around the scene."""
+    from PIL import ImageStat
+
+    g = im.convert("L")
+    W, H = g.size
+
+    def flat(box):
+        s = ImageStat.Stat(g.crop(box))
+        return s.mean[0] > 200 and s.stddev[0] < 18
+
+    l = t = 0
+    r, b = W, H
+    while l < W * limit and flat((l, 0, l + 1, H)):
+        l += 1
+    while r > W * (1 - limit) and flat((r - 1, 0, r, H)):
+        r -= 1
+    while t < H * limit and flat((0, t, W, t + 1)):
+        t += 1
+    while b > H * (1 - limit) and flat((0, b - 1, W, b)):
+        b -= 1
+    if (l, t, r, b) == (0, 0, W, H):
+        return im
+    pad = 6  # also drop the outline stroke just inside the margin
+    return im.crop(
+        (
+            min(l + pad, W // 4),
+            min(t + pad, H // 4),
+            max(r - pad, W * 3 // 4),
+            max(b - pad, H * 3 // 4),
+        )
+    )
+
+
+def cover_fit(im, w, h):
+    """Scale to cover w x h, then centre-crop to exactly that size."""
+    from PIL import Image
+
+    s = max(w / im.width, h / im.height)
+    im = im.resize(
+        (max(w, round(im.width * s)), max(h, round(im.height * s))), Image.LANCZOS
+    )
+    x, y = (im.width - w) // 2, (im.height - h) // 2
+    return im.crop((x, y, x + w, y + h))
+
+
+def gemini_image(prompt, w, h, key):
+    import base64
+    import urllib.request
+
+    from PIL import Image
+
+    body = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["IMAGE"],
+            "imageConfig": {"aspectRatio": nearest_ratio(w, h)},
+        },
+    }
+    req = urllib.request.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json", "x-goog-api-key": key},
+    )
+    with urllib.request.urlopen(req, timeout=180) as res:
+        data = json.load(res)
+    for cand in data.get("candidates", []):
+        for part in cand.get("content", {}).get("parts", []):
+            if "inlineData" in part:
+                raw = base64.b64decode(part["inlineData"]["data"])
+                return cover_fit(
+                    trim_frame(Image.open(io.BytesIO(raw)).convert("RGB")), w, h
+                )
+    raise RuntimeError(f"no image in response: {json.dumps(data)[:300]}")
+
+
+def cmd_generate_gemini(spec, todo, out):
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        sys.exit("GEMINI_API_KEY is not set (source ~/.config/gn-art/gemini.env)")
+    frags = fragments(spec)
+    failed = []
+    for p in todo:
+        t0 = time.time()
+        w, h = p["size"]
+        for attempt in range(4):
+            try:
+                gemini_image(expand(p["prompt"], frags), w, h, key).save(
+                    out / f"{p['id']}.png"
+                )
+                print(
+                    f"{p['id']}: {w}x{h} gemini in {time.time() - t0:.0f}s", flush=True
+                )
+                break
+            except (
+                Exception
+            ) as e:  # rate limits and empty responses: back off and retry
+                print(f"{p['id']}: attempt {attempt + 1} failed: {e}", flush=True)
+                time.sleep(5 * 2**attempt)
+        else:
+            failed.append(p["id"])
+    if failed:
+        sys.exit(f"failed: {','.join(failed)}")
 
 
 def shelf_pack(sizes, max_w):
@@ -159,9 +293,18 @@ def cmd_pack(args):
     images, sizes = {}, {}
     for p in spec["panels"]:
         im = Image.open(src / f"{p['id']}.png").convert("RGB")
-        if p.get("crop"):  # [left, top, right, bottom] as 0-1: trim a frame the model drew inside the image
+        if p.get(
+            "crop"
+        ):  # [left, top, right, bottom] as 0-1: trim a frame the model drew inside the image
             l, t, r, b = p["crop"]
-            im = im.crop((round(l * im.width), round(t * im.height), round(r * im.width), round(b * im.height)))
+            im = im.crop(
+                (
+                    round(l * im.width),
+                    round(t * im.height),
+                    round(r * im.width),
+                    round(b * im.height),
+                )
+            )
         w, h = round(im.width * scale), round(im.height * scale)
         images[p["id"]] = im.resize((w, h), Image.LANCZOS)
         sizes[p["id"]] = (w, h)
@@ -204,6 +347,7 @@ def main():
         s.add_argument("spec")
         s.add_argument("--only")
         s.add_argument("--force", action="store_true")
+        s.add_argument("--engine", choices=("flux", "gemini"), default="flux")
     args = ap.parse_args()
     {"generate": cmd_generate, "pack": cmd_pack, "prompts": cmd_prompts}[args.cmd](args)
 
