@@ -239,6 +239,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -289,25 +292,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 5: Blueprint for Brightside. Under a deep navy sky, four kids unroll a giant glowing blueprint across a storm-damaged lot — Mina front and center in her coral overalls and tool belt — while a glowing orb scans the plans beside a skate ramp and a small shed.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="#17324D"/><rect width="500" height="700" fill="url(#duskgrad)" opacity=".35"/><g stroke="#F2C15B" stroke-width="1.5" opacity=".18"><line x1="50" y1="0" x2="50" y2="700"/><line x1="130" y1="0" x2="130" y2="700"/><line x1="210" y1="0" x2="210" y2="700"/><line x1="290" y1="0" x2="290" y2="700"/><line x1="370" y1="0" x2="370" y2="700"/><line x1="450" y1="0" x2="450" y2="700"/><line x1="0" y1="80" x2="500" y2="80"/><line x1="0" y1="160" x2="500" y2="160"/><line x1="0" y1="240" x2="500" y2="240"/><line x1="0" y1="320" x2="500" y2="320"/><line x1="0" y1="400" x2="500" y2="400"/><line x1="0" y1="480" x2="500" y2="480"/><line x1="0" y1="560" x2="500" y2="560"/><line x1="0" y1="640" x2="500" y2="640"/></g><circle cx="390" cy="140" r="62" fill="#F2C15B" opacity=".85"/><circle cx="390" cy="140" r="84" fill="#F2C15B" opacity=".2"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,260) scale(5,3.4)" opacity=".7"><use href="#sym-skyline"/></g><rect y="640" width="500" height="60" fill="#17324D"/><g transform="translate(20,420) scale(1.6)" opacity=".95"><use href="#sym-ramp"/></g><g transform="translate(380,440) scale(1.2)" opacity=".95"><use href="#sym-shed"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="600" width="500" height="40" fill="#0d1f33"/>
-        <g transform="translate(60,470) rotate(-4)"><rect x="0" y="60" width="380" height="130" rx="8" fill="#2a4d8f" stroke="#cfe3ff" stroke-width="4"/><g stroke="#cfe3ff" stroke-width="1.6" opacity=".5"><line x1="0" y1="100" x2="380" y2="100"/><line x1="0" y1="140" x2="380" y2="140"/><line x1="60" y1="60" x2="60" y2="190"/><line x1="140" y1="60" x2="140" y2="190"/><line x1="220" y1="60" x2="220" y2="190"/><line x1="300" y1="60" x2="300" y2="190"/></g><polygon points="30,170 110,170 134,96 54,96" fill="none" stroke="#fff" stroke-width="3"/><polygon points="160,170 250,170 205,100" fill="none" stroke="#F2C15B" stroke-width="3"/><polygon points="276,108 352,108 352,170 276,170" fill="none" stroke="#7CF2EC" stroke-width="3"/></g>
-        <g transform="translate(60,330) scale(.85)"><use href="#sym-maya"/></g>
-        <g transform="translate(150,320) scale(.9)"><use href="#sym-theo"/></g>
-        <g transform="translate(225,295) scale(1.25)"><use href="#sym-zara"/></g>
-        <g transform="translate(370,330) scale(.85)"><use href="#sym-dev"/></g>
-        <g transform="translate(385,205) scale(.9)"><use href="#sym-vex"/></g>
-        <g stroke="#F2C15B" stroke-width="4" opacity=".8" stroke-linecap="round" stroke-dasharray="14 10"><line x1="40" y1="640" x2="200" y2="640"/><line x1="300" y1="640" x2="460" y2="640"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 5: Blueprint for Brightside. On a storm-damaged lot at dusk, Valeria, Darius, Mina and Noah stand together while VEX, the small teal robot with one glowing golden eye, floats above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -386,226 +372,210 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",label:"Blueprint Master — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-05 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-05-blueprint-for-brightside.webp?v=18690b7d2e","w":3100,"h":4134,"f":{"cover":[0,0,544,762,"Mina, Valeria, Darius and Noah stand together on a storm-damaged lot at dusk while VEX, the teal robot with one golden eye, floats above them.",[]],"p1-crew":[1740,1905,870,435,"Valeria, Darius, Mina and Noah stand in a row on the muddy Brightside lot, VEX floating above them.",[]],"p1-market":[0,2395,870,435,"The night market on the pier at night, lanterns glowing, where one stall's torn banner droops over its counter.",[]],"p2-lot":[0,1415,870,490,"On the storm-flattened lot, Mina pumps her fist and Valeria smiles with a rolled blueprint, beside a half-built skate ramp under a banner on the fence.",[]],"p2-darius":[1524,0,490,653,"Close-up of Darius in his green hoodie and gold glasses, arms crossed, one eyebrow raised in suspicion.",[]],"p2-vex":[2014,0,490,653,"VEX hovers over a crumpled blueprint that crackles with jagged red warning light.",[]],"p3-hargrove":[870,1415,870,490,"On the muddy lot, Mr. Hargrove, a grinning contractor in a tan vest, waves off the slanted stage-floor blueprint on an easel while Mina stands firm with her hands on her hips. His company sign hangs above.",[]],"p3-vex":[0,3156,870,326,"VEX projects a glowing hologram of a parallelogram with a dashed line showing its straight-up height.",[]],"p4-mina":[870,3156,870,326,"Mina smiles and points straight at the reader while VEX glows nearby.",[]],"p5-sail":[1740,1415,870,490,"A big teal triangular shade sail snaps open in the wind between two poles above the new wooden stage, the city skyline behind.",[]],"p5-noah":[2504,0,490,653,"Close-up of Noah in his red t-shirt, grinning and making a triangle with his hands.",[]],"p5-valeria":[0,762,490,653,"Close-up of Valeria in her yellow hard hat, thinking and tapping a pencil on her notebook.",[]],"p5-vex":[1740,3156,870,326,"VEX glows beside a hologram of two matching triangles snapping together into a parallelogram.",[]],"p6-noah":[0,3482,870,326,"Noah hugs a big bundle of teal sail fabric and shrugs with a worried grin.",[]],"p7-beds":[0,1905,870,490,"In the corner of the lot, Mina kneels measuring a tapered trapezoid garden bed with a tape measure, while Valeria frowns at a crumpled flyer.",[]],"p7-vex":[870,3482,870,326,"VEX flickers with static beside a hologram of a trapezoid split into a rectangle and two triangles.",[]],"p8-mina":[1740,3482,870,326,"Mina holds up a roll of garden liner and a tape measure, determined.",[]],"p9-planter":[870,1905,870,490,"Noah drops a wooden cube into a planter box half full of stacked cubes while Darius holds up a half-size cube, puzzled.",[]],"p9-vex":[0,3808,870,326,"VEX glows beside a hologram of a box built from small stacked cubes.",[]],"p10-noah":[870,2395,870,326,"Noah gives a thumbs up beside a dump truck full of soil.",[]],"p11-net":[490,762,870,490,"On the lot, Mina kneels proudly beside a plywood crate she has unfolded flat into a cross-shaped net of six rectangles while Valeria gapes.",[]],"p11-vex":[1740,2395,870,326,"VEX glows beside a hologram of a flat net folding up into a box.",[]],"p12-mina":[0,2830,870,326,"Mina compares two paper box nets, one in each hand.",[]],"p13-council":[870,2830,870,326,"The city council sits behind a long wooden desk in City Hall, pens raised.",[]],"p13-hall":[1360,762,870,490,"In City Hall, Mr. Hargrove grins beside his bid poster on an easel, while Mina stands across from him with VEX glowing at her side and a small model shed on the table between them.",[]],"p14-vex":[1740,2830,870,326,"VEX glows intensely in the dark, golden rays fanning out behind it.",[]],"p15-reopen":[2230,762,870,490,"At the rebuilt Brightside lot, with its skate ramp, sail-covered stage and painted shed, Mina cuts a red ribbon with giant scissors as Valeria, Darius and Noah cheer.",[]],"p15-darius":[544,0,490,653,"Close-up of Darius grinning with satisfaction, his clipboard in hand.",[]],"p15-vault":[1034,0,490,653,"A round vault door with a glowing teal rim waits in an old stone wall underground, VEX floating beside it.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: previously + title page + crew strip ---- */
 { ch:"Axiom City · Volume Five", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">BLUEPRINT FOR <em>BRIGHTSIDE</em></h2>
   <div class="caption" style="display:inline-block">An area, surface area &amp; volume adventure in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    ${SKY}<g data-depth="8" transform="translate(0,40) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <g data-depth="16" transform="translate(12,92) scale(.92)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(102,92) scale(.92)"><use href="#sym-theo"/></g>
-    <g data-depth="20" transform="translate(196,84) scale(1.05)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(300,92) scale(.92)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(166,4) scale(.55)"><use href="#sym-vex"/></g>
-    <g data-depth="22" transform="translate(238,150) scale(.5)"><use href="#sym-blueprint"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion detected in a set of blueprints. Reader: bring a pencil.</div>
-  </div>
-  <div class="caption loc">Previously: a night-market stall yelled "50% OFF EVERYTHING" — and lied with every percent. The crew worked backwards from the parts, exposed the scam, and the pier fund hit 100%. The whole city was watching.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:46%;--ty:14px"><span class="who">VEX</span>Pattern distortion detected in a set of blueprints. Reader: bring a pencil.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-market")}
+      <div class="caption loc">Previously: a night-market stall yelled "50% OFF EVERYTHING" — and lied with every percent. The crew worked backwards from the parts, exposed the scam, and the pier fund hit 100%. The whole city was watching.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: ch1 splash — the winning bid ---- */
 { ch:"Chapter 1 · The Winning Bid", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE WINNING <em>BID</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    ${SKY}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".6"><use href="#sym-skyline"/></g>
-    <rect data-depth="10" x="40" y="26" width="320" height="44" rx="8" fill="#17324D"/>
-    <text data-depth="10" x="200" y="54" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="17">BRIGHTSIDE LOT — DESIGN BID: AWARDED!</text>
-    <g data-depth="14" transform="translate(20,120) scale(1.1)"><use href="#sym-ramp"/></g>
-    <g data-depth="18" transform="translate(160,98) scale(1)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(258,108) scale(.9)"><use href="#sym-maya"/></g>
-    <g data-depth="22" transform="translate(300,150) scale(.62)"><use href="#sym-blueprint"/></g>
-    ${GROUND.replace(/200/g,'230').replace(/168/g,'198')}`)}
-    <div class="balloon" style="bottom:18px;left:10px;max-width:52%"><span class="who">MINA</span>The city picked OUR design. Skate ramp, stage, garden beds, storage shed — Brightside comes back.</div>
-    <div class="balloon tail-r" style="top:84px;right:8px;max-width:42%"><span class="who">VALERIA</span>The storm flattened this lot. Your blueprint un-flattens it, Mina. Lead the build.</div>
-  </div>
-  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#fdf2ee"/><g transform="translate(60,8) scale(.85)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">DARIUS</span>We beat one other bidder: <b>Hargrove &amp; Sons</b>. Their bid was suspiciously cheap.</div></div>
-  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#EEF7F6"/><g transform="translate(64,14) scale(.8)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="bottom:6px;left:6px;max-width:80%"><span class="who">VEX</span>Warning: Hargrove's blueprints hum with distortion. Their measurements are… bent.</div></div></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-lot")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:11%;width:84%;color:#F2C15B;font-family:'Arial Black',Arial,sans-serif;font-weight:900;text-shadow:none">BRIGHTSIDE LOT — DESIGN BID: AWARDED!</div>
+      <div class="balloon" style="bottom:10px;left:8px;max-width:46%"><span class="who">MINA</span>The city picked OUR design. Skate ramp, stage, garden beds, storage shed — Brightside comes back.</div>
+      <div class="balloon tail-r" style="top:24%;right:8px;max-width:40%"><span class="who">VALERIA</span>The storm flattened this lot. Your blueprint un-flattens it, Mina. Lead the build.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-darius")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">DARIUS</span>We beat one other bidder: <b>Hargrove &amp; Sons</b>. Their bid was suspiciously cheap.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Warning: Hargrove's blueprints hum with distortion. Their measurements are… bent.</div>
+    </div>
+  </div>`},
 
 /* ---- p3: ch1 scene — the parallelogram stage floor ---- */
 { ch:"Chapter 1 · The Winning Bid", html:`
-  <div class="caption loc">The Brightside lot, day one. Mud, sawhorses, and one very loud contractor.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <g data-depth="8" transform="translate(20,30) scale(2.6)" opacity=".95"><use href="#sym-blueprint"/></g>
-    <g data-depth="18" transform="translate(255,60)"><use href="#sym-zara"/></g>
-    <g data-depth="14" transform="translate(330,90) scale(.7)"><use href="#sym-theo"/></g>
-    <rect data-depth="10" x="262" y="14" width="126" height="34" rx="6" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="10" x="325" y="36" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#17324D">HARGROVE &amp; SONS™</text>`)}
-    <div class="balloon" style="bottom:10px;left:8px;max-width:50%"><span class="who">MR. HARGROVE</span>That slanted stage floor? It's half a rectangle, kid. I'd charge you half. <i>You're welcome.</i></div>
-    <div class="balloon tail-r" style="top:52px;right:6px;max-width:46%"><span class="who">MINA</span>It's a parallelogram. Slice a triangle off one end, slide it to the other — it IS a rectangle. Whole, not half.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Vocabulary upload. The <b>base</b> is the side you stand on. The <b>height</b> is the straight-up distance to the opposite side — never the slanted edge. Area = base × height.</div>
-  </div>
-  <div class="caption">To <b>decompose</b> a shape means to cut it into pieces you already know. Mina's slice-and-slide turns a parallelogram into a rectangle with the same base, height, and area.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-hargrove")}
+      <div class="caption loc">The Brightside lot, day one. Mud, sawhorses, and one very loud contractor.</div>
+      <div class="gn-sign" data-gn-skip style="left:84%;top:10%;font-family:Arial,sans-serif;font-weight:800;color:#17324D;text-shadow:none">HARGROVE &amp; SONS™</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%"><span class="who">MR. HARGROVE</span>That slanted stage floor? It's half a rectangle, kid. I'd charge you half. <i>You're welcome.</i></div>
+      <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:40%"><span class="who">MINA</span>It's a parallelogram. Slice a triangle off one end, slide it to the other — it IS a rectangle. Whole, not half.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>Vocabulary upload. The <b>base</b> is the side you stand on. The <b>height</b> is the straight-up distance to the opposite side — never the slanted edge. Area = base × height.</div>
+    </div>
+    <div class="caption">To <b>decompose</b> a shape means to cut it into pieces you already know. Mina's slice-and-slide turns a parallelogram into a rectangle with the same base, height, and area.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#EEF7F6"/><g transform="translate(8,2) scale(.7)"><use href="#sym-zara"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">MINA</span>Reader — you're our fifth crew member. Size the stage floor before Hargrove "helps."</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-mina")}
+      <div class="balloon" style="top:6px;right:6px;max-width:64%;--tx:10px"><span class="who">MINA</span>Reader — you're our fifth crew member. Size the stage floor before Hargrove "helps."</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 scene — the triangle shade sail ---- */
 { ch:"Chapter 2 · Raise the Sail", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">RAISE THE <em>SAIL</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    ${SKY.replace('height="200"','height="190"')}
-    <g data-depth="8" transform="translate(0,36) scale(4,1.5)" opacity=".45"><use href="#sym-skyline"/></g>
-    <polygon data-depth="16" points="120,30 280,30 200,130" fill="#1FA6A2" opacity=".85" stroke="#17324D" stroke-width="4"/>
-    <line data-depth="16" x1="120" y1="30" x2="110" y2="158" stroke="#17324D" stroke-width="4"/>
-    <line data-depth="16" x1="280" y1="30" x2="292" y2="158" stroke="#17324D" stroke-width="4"/>
-    <g data-depth="20" transform="translate(20,68)"><use href="#sym-dev"/></g>
-    <g data-depth="14" transform="translate(310,72) scale(.85)"><use href="#sym-maya"/></g>
-    ${GROUND.replace(/200/g,'190').replace(/168/g,'158')}`)}
-    <div class="sfx" style="top:8px;left:14px">FWUMP!</div>
-    <div class="balloon" style="bottom:14px;left:8px;max-width:50%"><span class="who">NOAH</span>Shade sail over the stage. It's literally a parallelogram folded in half — triangle class, level one.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">VALERIA</span>So same move as the floor… then take half. The fabric bill depends on it.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fff8ea"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Confirmed. Two copies of any triangle snap together into a parallelogram. So a triangle's area = base × height ÷ 2.</div>
-  </div>
-  <div class="caption">Noah tested it on scrap fabric: a little triangle with base 6 and height 8 came out to 24 square units — half of 48. The ÷ 2 is not optional.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-sail")}
+      <div class="sfx" style="top:8px;left:14px">FWUMP!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-noah")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">NOAH</span>Shade sail over the stage. It's literally a parallelogram folded in half — triangle class, level one.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-valeria")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VALERIA</span>So same move as the floor… then take half. The fabric bill depends on it.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>Confirmed. Two copies of any triangle snap together into a parallelogram. So a triangle's area = base × height ÷ 2.</div>
+    </div>
+    <div class="caption">Noah tested it on scrap fabric: a little triangle with base 6 and height 8 came out to 24 square units — half of 48. The ÷ 2 is not optional.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fff8ea"/><g transform="translate(10,0) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">NOAH</span>Order the sail fabric, reader. Too little = sunburn. Too much = broke.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-noah")}
+      <div class="balloon" style="top:6px;right:6px;max-width:64%;--tx:10px"><span class="who">NOAH</span>Order the sail fabric, reader. Too little = sunburn. Too much = broke.</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 scene — the trapezoid garden bed ---- */
 { ch:"Chapter 3 · The Garden Beds", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE GARDEN <em>BEDS</em></h2>
-  <div class="caption loc">East corner of the lot. The beds taper so wheelbarrows can pass.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#e9f1e2"/>
-    <polygon data-depth="12" points="120,60 280,60 330,150 70,150" fill="#b78a2e" opacity=".5" stroke="#17324D" stroke-width="4"/>
-    <polygon data-depth="12" points="135,72 265,72 305,138 95,138" fill="#6b4226" opacity=".6"/>
-    <g data-depth="18" transform="translate(10,60) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="14" transform="translate(316,64) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="22" transform="translate(180,8) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="bottom:10px;left:6px;max-width:46%"><span class="who">MINA</span>Trapezoid bed: two parallel sides — a short base and a long base — and the height runs straight between them.</div>
-    <div class="balloon tail-r" style="top:8px;right:8px;max-width:46%"><span class="who">VALERIA</span>Hargrove's flyer says beds like ours need "double" the liner. VEX is glitching just looking at it.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Trapezoid trick: it's an in-between rectangle. Average the two bases — add them, divide by 2 — then multiply by the height.</div>
-  </div>
-  <div class="caption">Mina proved it on the whiteboard with bases 6 and 10 and height 4: the average base is 8, so the area is 32. Decompose it into a rectangle plus two triangles — same answer.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-beds")}
+      <div class="caption loc">East corner of the lot. The beds taper so wheelbarrows can pass.</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%"><span class="who">MINA</span>Trapezoid bed: two parallel sides — a short base and a long base — and the height runs straight between them.</div>
+      <div class="balloon tail-r" style="top:8px;right:8px;max-width:42%"><span class="who">VALERIA</span>Hargrove's flyer says beds like ours need "double" the liner. VEX is glitching just looking at it.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>Trapezoid trick: it's an in-between rectangle. Average the two bases — add them, divide by 2 — then multiply by the height.</div>
+    </div>
+    <div class="caption">Mina proved it on the whiteboard with bases 6 and 10 and height 4: the average base is 8, so the area is 32. Decompose it into a rectangle plus two triangles — same answer.</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#e9f1e2"/><g transform="translate(8,0) scale(.66)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">MINA</span>Liner fabric is cut to the square foot. Measure the bed, reader — exactly.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-mina")}
+      <div class="balloon" style="top:6px;right:6px;max-width:64%;--tx:10px"><span class="who">MINA</span>Liner fabric is cut to the square foot. Measure the bed, reader — exactly.</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 scene — planter volume with fractional edges ---- */
 { ch:"Chapter 4 · Counting in Cubes", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">COUNTING IN <em>CUBES</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#fff8ea"/>
-    <rect data-depth="6" y="150" width="400" height="50" fill="#d9c9a3"/>
-    <g data-depth="12" transform="translate(60,60) scale(1.6)"><use href="#sym-crate"/></g>
-    <g data-depth="18" transform="translate(230,52) scale(.95)"><use href="#sym-dev"/></g>
-    <g data-depth="14" transform="translate(318,62) scale(.85)"><use href="#sym-theo"/></g>`)}
-    <div class="sfx" style="top:6px;right:14px">THUNK!</div>
-    <div class="balloon" style="bottom:12px;left:8px;max-width:52%"><span class="who">NOAH</span>Planter boxes for the herbs. <b>Volume</b> tells us how much soil fits inside — we measure it in cubic feet, like stacking blocks.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">DARIUS</span>Except our edges aren't whole numbers. The blocks come in halves now.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Formula holds anyway: volume = length × width × height — even with fractional edge lengths. Noah's test box, 3 × 1.5 × 2, packs exactly 9 cubic feet.</div>
-  </div>
-  <div class="caption">Half-blocks still count. A layer of half-foot cubes is just a thinner layer — multiply it in like any other number.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-planter")}
+      <div class="sfx" style="top:6px;right:14px">THUNK!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:46%"><span class="who">NOAH</span>Planter boxes for the herbs. <b>Volume</b> tells us how much soil fits inside — we measure it in cubic feet, like stacking blocks.</div>
+      <div class="balloon tail-r" style="top:8px;left:8px;max-width:40%"><span class="who">DARIUS</span>Except our edges aren't whole numbers. The blocks come in halves now.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>Formula holds anyway: volume = length × width × height — even with fractional edge lengths. Noah's test box, 3 × 1.5 × 2, packs exactly 9 cubic feet.</div>
+    </div>
+    <div class="caption">Half-blocks still count. A layer of half-foot cubes is just a thinner layer — multiply it in like any other number.</div>
+  </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#fff8ea"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">NOAH</span>The soil truck is idling, reader. How many cubic feet does one planter hold?</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-noah")}
+      <div class="balloon" style="top:6px;right:6px;max-width:64%;--tx:10px"><span class="who">NOAH</span>The soil truck is idling, reader. How many cubic feet does one planter hold?</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash — unfold the box ---- */
 { ch:"Chapter 5 · Unfold the Box", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">UNFOLD THE <em>BOX</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="url(#duskgrad)"/>
-    <g data-depth="8" transform="translate(0,70) scale(4,1.6)" opacity=".8"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" y="180" width="400" height="40" fill="#0d1f33"/>
-    <g data-depth="20" transform="translate(40,90) scale(1.4)"><use href="#sym-crate"/></g>
-    <g data-depth="22" transform="translate(170,92) scale(.95)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(280,100) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="26" transform="translate(330,24) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:10px;left:14px">RRRIP!</div>
-    <div class="balloon" style="bottom:14px;left:8px;max-width:50%"><span class="who">MINA</span>Storage crates for the tools — 4 by 3 by 2 feet, plywood on every face. Watch this.</div>
-    <div class="balloon tail-r" style="top:8px;right:8px;max-width:44%"><span class="who">VALERIA</span>She just flattened a whole box. Six faces, one flat shape.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>That flat shape is a <b>net</b>. Fold it back up and you get the box. Add the areas of all six faces and you get the <b>surface area</b> — the box's whole skin.</div>
-  </div>
-  <div class="caption">Shortcut: a box has three different faces, each appearing twice. Find the three, add them, double the total.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-net")}
+      <div class="sfx" style="top:8px;left:14px">RRRIP!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%"><span class="who">MINA</span>Storage crates for the tools — 4 by 3 by 2 feet, plywood on every face. Watch this.</div>
+      <div class="balloon tail-r" style="top:8px;right:8px;max-width:40%"><span class="who">VALERIA</span>She just flattened a whole box. Six faces, one flat shape.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p11-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>That flat shape is a <b>net</b>. Fold it back up and you get the box. Add the areas of all six faces and you get the <b>surface area</b> — the box's whole skin.</div>
+    </div>
+    <div class="caption">Shortcut: a box has three different faces, each appearing twice. Find the three, add them, double the total.</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#EEF7F6"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">MINA</span>Two jobs, reader: pick the net that really folds into our crate, then price its skin.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p12-mina")}
+      <div class="balloon" style="top:6px;right:6px;max-width:64%;--tx:10px"><span class="who">MINA</span>Two jobs, reader: pick the net that really folds into our crate, then price its skin.</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup — the two bids ---- */
 { ch:"Chapter 5 · The Two Bids", html:`
-  <div class="caption loc">City Hall, 6 PM. The council will fund whichever bid "adds up." Hargrove smiles like a crocodile.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="url(#duskgrad)"/>
-    <g data-depth="10" transform="translate(0,56) scale(4,1.5)" opacity=".7"><use href="#sym-skyline"/></g>
-    <rect data-depth="14" y="160" width="400" height="40" fill="#0d1f33"/>
-    <g data-depth="16" transform="translate(30,80) scale(1.1)"><use href="#sym-shed"/></g>
-    <g data-depth="22" transform="translate(170,58) scale(.95)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(20,20) scale(.55)"><use href="#sym-vex"/></g>
-    <rect data-depth="12" x="262" y="22" width="128" height="76" rx="8" fill="#fff" stroke="#E2674A" stroke-width="3"/>
-    <text data-depth="12" x="326" y="42" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#E2674A">HARGROVE'S BID</text>
-    <text data-depth="12" x="326" y="62" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Shed paint: 54 sq ft</text>
-    <text data-depth="12" x="326" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Bed soil: 12 cu ft</text>
-    <text data-depth="12" x="326" y="92" text-anchor="middle" font-family="Arial" font-style="italic" font-size="9" fill="#5a4a22">"trust us" — H&amp;S</text>`)}
-    <div class="balloon vex" style="top:8px;left:8px;max-width:46%"><span class="who">VEX</span>Distortion source located: that bid. The shed is 5 × 4 × 3 feet. The garden bed is 6 × 2 × 1.5. Verify everything.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:42%"><span class="who">MINA</span>Reader — paint covers faces, soil fills space. Run our honest numbers. Then we call the vote.</div>
-  </div>
-  <div class="caption">Boss Gate: surface area for the paint, volume for the soil, and one final judgment call. Everything from this volume, all at once.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p13-council")}
+      <div class="caption loc">City Hall, 6 PM. The council will fund whichever bid "adds up." Hargrove smiles like a crocodile.</div>
+    </div>
+    <div class="panel gn-panel panel3d">${ART("p13-hall")}
+      <div class="gn-sign gn-flow" data-gn-skip style="left:80%;top:36%;width:24%;font-family:Arial,sans-serif;font-size:13px;color:#17324D;text-shadow:none"><b style="color:#E2674A">HARGROVE'S BID</b><br>Shed paint: 54 sq ft<br>Bed soil: 12 cu ft<br><i style="color:#5a4a22">"trust us" — H&amp;S</i></div>
+      <div class="balloon vex" style="top:8px;left:8px;max-width:44%"><span class="who">VEX</span>Distortion source located: that bid. The shed is 5 × 4 × 3 feet. The garden bed is 6 × 2 × 1.5. Verify everything.</div>
+      <div class="balloon tail-r" style="bottom:8px;left:8px;max-width:42%"><span class="who">MINA</span>Reader — paint covers faces, soil fills space. Run our honest numbers. Then we call the vote.</div>
+    </div>
+    <div class="caption">Boss Gate: surface area for the paint, volume for the soil, and one final judgment call. Everything from this volume, all at once.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · Blueprint for Brightside", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#17324D"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. One lot. The council is literally holding pens.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:68%"><span class="who">VEX</span>BOSS GATE. Three locks. One lot. The council is literally holding pens.</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory + vol 6 teaser ---- */
 { ch:"Chapter 5 · Ribbon Cutting", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    ${SKY.replace('height="200"','height="220"')}
-    <g data-depth="8" transform="translate(0,60) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="40" y="16" width="320" height="40" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="42" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="16">BRIGHTSIDE LOT — GRAND REOPENING</text>
-    <g data-depth="16" transform="translate(8,128) scale(1)"><use href="#sym-ramp"/></g>
-    <g data-depth="14" transform="translate(300,118) scale(.9)"><use href="#sym-shed"/></g>
-    <g data-depth="20" transform="translate(120,96) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(200,100) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(265,104) scale(.8)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(60,104) scale(.8)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(330,60) scale(.55)"><use href="#sym-vex"/></g>
-    ${GROUND.replace(/168/g,'192').replace(/height="32"/g,'height="28"')}`)}
-    <div class="sfx" style="top:62px;left:18px">SNIP!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:52%"><span class="who">MINA</span>Built from an honest blueprint: 84 for the stage, 30 for the sail, 50 per bed — and every face of that shed painted.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#fdf2ee"/><g transform="translate(58,4) scale(.78)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">DARIUS</span>The council audited Hargrove's "54." Two missing faces. He's banned from city bids for a year.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#17324D"/><g transform="translate(55,12) scale(.9)"><use href="#sym-vault"/></g>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:60%"><span class="who">VEX</span>New distortion. A vault door under Vexhall… covered in symbols. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-reopen")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:10%;width:84%;color:#F2C15B;font-family:'Arial Black',Arial,sans-serif;font-weight:900;text-shadow:none">BRIGHTSIDE LOT — GRAND REOPENING</div>
+      <div class="sfx" style="top:24%;left:14px">SNIP!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:46%"><span class="who">MINA</span>Built from an honest blueprint: 84 for the stage, 30 for the sail, 50 per bed — and every face of that shed painted.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-darius")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">DARIUS</span>The council audited Hargrove's "54." Two missing faces. He's banned from city bids for a year.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-vault")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>New distortion. A vault door under Vexhall… covered in symbols. To be continued…</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>
+  </div>`},
 
 /* ---- p16: cast ---- */
 { ch:"End Matter · The Crew", html:`
