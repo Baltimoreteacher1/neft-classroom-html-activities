@@ -684,6 +684,12 @@
       var key = nodes[i].getAttribute("data-i18n");
       if (T[lang] && T[lang][key] != null) nodes[i].innerHTML = T[lang][key];
     }
+    var universeCopy = document.querySelectorAll("[data-mu-en][data-mu-es]");
+    for (var u = 0; u < universeCopy.length; u++) {
+      universeCopy[u].textContent = universeCopy[u].getAttribute(
+        lang === "es" ? "data-mu-es" : "data-mu-en",
+      );
+    }
     var btns = document.querySelectorAll("[data-lang]");
     for (var k = 0; k < btns.length; k++) {
       var on = btns[k].getAttribute("data-lang") === lang;
@@ -1009,20 +1015,32 @@
       var reflection = $("mu-switch-reflect").value.trim();
       var ok = !!strategy && answer === "21" && reflection.length >= 12;
       $("mu-switch-feedback").textContent = ok
-        ? "Saved. 25% is one fourth, and 84 ÷ 4 = 21."
-        : "Choose a first strategy, enter 21, and compare it with a second strategy in a full sentence.";
+        ? lang === "es"
+          ? "Guardado. 25% es un cuarto, y 84 ÷ 4 = 21."
+          : "Saved. 25% is one fourth, and 84 ÷ 4 = 21."
+        : lang === "es"
+          ? "Escoge una estrategia, escribe 21 y compárala con una segunda estrategia en una oración completa."
+          : "Choose a first strategy, enter 21, and compare it with a second strategy in a full sentence.";
       if (ok) window.NTMentorUniverse.markExperience("strategy-switchboard", strategy.value);
       return;
     }
     if (kind === "archive-expression") {
       var choice = document.querySelector('input[name="mu-expression"]:checked');
       var value = choice ? choice.value : "";
-      var feedback = {
-        "7t-24": "Correct: 7t is the cost of all seven tickets, then one $24 coupon is subtracted.",
-        "7(t-24)": "This subtracts the $24 coupon from every ticket—seven coupons. The coupon applies once to the total.",
-        "24-7t": "This reverses the quantities and can make the total negative. The ticket cost comes first; the coupon reduces it.",
-        "t(7-24)": "This multiplies t by a negative number. The 24 is a fixed coupon, not a number of tickets.",
-      };
+      var feedback =
+        lang === "es"
+          ? {
+              "7t-24": "Correcto: 7t es el costo de los siete boletos y después se resta un cupón de $24.",
+              "7(t-24)": "Esto resta el cupón de $24 de cada boleto: siete cupones. El cupón se aplica una vez al total.",
+              "24-7t": "Esto invierte las cantidades y puede producir un total negativo. El costo de los boletos va primero.",
+              "t(7-24)": "Esto multiplica t por un número negativo. El 24 es un cupón fijo, no una cantidad de boletos.",
+            }
+          : {
+              "7t-24": "Correct: 7t is the cost of all seven tickets, then one $24 coupon is subtracted.",
+              "7(t-24)": "This subtracts the $24 coupon from every ticket—seven coupons. The coupon applies once to the total.",
+              "24-7t": "This reverses the quantities and can make the total negative. The ticket cost comes first; the coupon reduces it.",
+              "t(7-24)": "This multiplies t by a negative number. The 24 is a fixed coupon, not a number of tickets.",
+            };
       $("mu-archive-feedback").textContent = feedback[value] || "Choose an expression so the archive can respond to your model.";
       $("mu-archive-revision").hidden = false;
       if (value === "7t-24") $("mu-revised-expression").value = "7t - 24";
@@ -1034,8 +1052,12 @@
       var transfer = $("mu-transfer").value.replace(/\s/g, "").toLowerCase();
       var complete = expression === "7t-24" && evaluation === "60" && transfer === "5m-18";
       $("mu-archive-feedback").textContent = complete
-        ? "Archive complete: model, revision, evaluation, and transfer all agree."
-        : "Revise to 7t − 24. At t = 12, use 84 − 24. In the transfer, five m-dollar passes come before one $18 coupon.";
+        ? lang === "es"
+          ? "Archivo completo: el modelo, la corrección, la evaluación y la transferencia coinciden."
+          : "Archive complete: model, revision, evaluation, and transfer all agree."
+        : lang === "es"
+          ? "Corrige a 7t − 24. Cuando t = 12, usa 84 − 24. En la transferencia, cinco pases de m dólares van antes de un cupón de $18."
+          : "Revise to 7t − 24. At t = 12, use 84 − 24. In the transfer, five m-dollar passes come before one $18 coupon.";
       if (complete) window.NTMentorUniverse.markExperience("discovery-archive-6-5", "7t-24");
       return;
     }
@@ -1045,8 +1067,12 @@
       var note = $("mu-mash-note").value.trim();
       var mashOk = first !== second && note.length >= 20;
       $("mu-mash-feedback").textContent = mashOk
-        ? "Saved. Your explanation uses two distinct moves on one decision."
-        : "Choose two different moves and explain the job each one does.";
+        ? lang === "es"
+          ? "Guardado. Tu explicación usa dos estrategias distintas en una decisión."
+          : "Saved. Your explanation uses two distinct moves on one decision."
+        : lang === "es"
+          ? "Escoge dos estrategias diferentes y explica el trabajo de cada una."
+          : "Choose two different moves and explain the job each one does.";
       if (mashOk) window.NTMentorUniverse.markExperience("mentor-mash-up", first + "+" + second);
     }
   }
