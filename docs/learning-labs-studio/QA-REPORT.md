@@ -4,6 +4,13 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Results
 
+### Worked explanation pilot
+
+- **Before → after:** 0 → 5 labs use the source-backed Learn sequence. The other 41 retain the existing Learn stage.
+- `npm run validate:learning-labs`: PASS. The gate compares every displayed worked line, transfer line, visual description and mathematical connection with its lesson source, and checks that every number in the arc appears in that source.
+- Focused Playwright check at 390px: PASS. Recipe Remix required a prediction before the next reveal, revealed one step, kept Spanish labels and saved the prediction; Ratio Railway retained its existing Learn stage. No page errors.
+- `QA_TIMEOUT_MS=1800000 npm run validate:learning-labs-browser`: PASS; 46 labs, 508 answers and no runtime errors, then 21 Bridge labs with 42 ideas, 35 model restores and no axe violations.
+
 ### Progress slice
 
 - **Before → after:** 0 → 46 labs show Explored / Completed / Demonstrated on the Mission tab and catalog card. The stage is derived from saved notes, attempts, Recorder predictions and independent transfer revisions; it is not a score.
@@ -35,7 +42,7 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Known gaps and unresolved limitations
 
-1. **Not delivered from the directive:** per-lab content centerpieces for 41 of 46 labs; redesigned game mechanics; the five-part rebuilt explanations; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
+1. **Not delivered from the directive:** per-lab content centerpieces for 41 of 46 labs; redesigned game mechanics; the five-part rebuilt explanations for the other 41 labs; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
 2. **Bridge covers 21 of 46 labs** across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models.
 3. **Spanish text** is present for all 21 Bridges and the Recorder and is checked by the Bridge test and browser verifier. No native Spanish review has occurred; the translations need review by a fluent speaker.
 4. **Phone:** the first control remains below the first screen in five data labs: Data Newsroom, Middle Ground, Consistency Cup, Fair Share Festival and Outlier Investigation. The full-width plot is retained on those labs.

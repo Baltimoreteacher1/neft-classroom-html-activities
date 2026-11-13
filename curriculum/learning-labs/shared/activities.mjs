@@ -24,14 +24,27 @@ import {
 import { renderSnapshotsCard } from './scratchpad.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
+const workedArcLabs = new Set(['recipe-remix', 'missing-whole', 'power-plant', 'balance-bureau', 'shape-shift-garden']);
+/** The five first rebuilt explanations use lesson fields verbatim; no example numbers are introduced here. */
+export function workedArc(lab, lesson, lang = 'en') {
+  if (!workedArcLabs.has(lab.id)) return null;
+  const c = lesson.concept, es = lang === 'es';
+  return {
+    concept: c.intro,
+    visual: c.worked.viz?.alt || null,
+    connection: c.keyIdea,
+    reasoning: es && c.worked.linesEs?.length ? c.worked.linesEs : c.worked.lines,
+    transfer: es && c.together?.linesEs?.length ? c.together.linesEs : c.together?.lines || [],
+  };
+}
 
 const copy = {
   en: { step: ['Step', 'step', 'steps'], question: ['Question', 'question', 'questions'], all: (n, w) => `All ${n} ${w} shown`, of: 'of', reveal: (w) => `Reveal next ${w}`, showAll: 'Show all' },
   es: { step: ['Paso', 'paso', 'pasos'], question: ['Pregunta', 'pregunta', 'preguntas'], all: (n, w) => `Se muestran los ${n} ${w}`, of: 'de', reveal: (w) => `Mostrar el siguiente ${w}`, showAll: 'Mostrar todo' },
 };
-function stepper(host, lines, count, { onReveal, onAll, label = 'step', lang = 'en' }) {
+function stepper(host, lines, count, { onReveal, onAll, label = 'step', lang = 'en', locked = false, allLocked = false }) {
   const t = copy[lang] || copy.en, [Title, single, plural] = t[label];
-  host.innerHTML = `<ol>${lines.slice(0, count).map((line, i) => `<li ${i === count - 1 && count > 1 ? 'class="just-revealed"' : ''}>${esc(line)}</li>`).join('')}</ol><div class="step-row"><p class="step-count">${count === lines.length ? t.all(lines.length, plural) : `${Title} ${count} ${t.of} ${lines.length}`}</p><button type="button" data-reveal ${count === lines.length ? 'disabled' : ''}>${t.reveal(single)}</button><button type="button" class="quiet" data-all ${count === lines.length ? 'disabled' : ''}>${t.showAll}</button></div>`;
+  host.innerHTML = `<ol>${lines.slice(0, count).map((line, i) => `<li ${i === count - 1 && count > 1 ? 'class="just-revealed"' : ''}>${esc(line)}</li>`).join('')}</ol><div class="step-row"><p class="step-count">${count === lines.length ? t.all(lines.length, plural) : `${Title} ${count} ${t.of} ${lines.length}`}</p><button type="button" data-reveal ${count === lines.length || locked ? 'disabled' : ''}>${t.reveal(single)}</button><button type="button" class="quiet" data-all ${count === lines.length || locked || allLocked ? 'disabled' : ''}>${t.showAll}</button></div>`;
   host.querySelector('[data-reveal]').onclick = onReveal;
   host.querySelector('[data-all]').onclick = onAll;
 }
@@ -86,20 +99,44 @@ export function learn(ctx, host) {
     host.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     const workedLines = es && c.worked.linesEs?.length ? c.worked.linesEs : c.worked.lines;
     const togetherLines = es && c.together?.linesEs?.length ? c.together.linesEs : c.together?.lines || [];
+    const arc = workedArc(lab, lesson, state.lang);
+    const predictionKey = `worked-predict-${lesson.id}`;
     state.steps[lesson.id] ||= 1; state.steps[`${lesson.id}-together`] ||= 1;
     const key = parseKeyIdea(c.keyIdea);
     const stage = host.querySelector('.learn-stage');
     stage.innerHTML = `<div class="lesson-meta"><span class="lesson-chip">Lesson ${lessonNumber(lesson.id)}</span>${lesson.standard ? `<span class="lesson-chip quiet-chip">Standard ${esc(lesson.standard)}</span>` : ''}</div><h3>${esc(c.heading)}</h3><p class="large-copy">${esc(c.intro)}</p>${key.points.length ? `<aside class="key-idea"><h4>Key idea${key.title ? `: ${esc(key.title)}` : ''}</h4><ol>${key.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ol></aside>` : ''}<div class="worked-example" ${es ? 'lang="es"' : ''}><h4>${esc(es ? c.worked.titleEs || c.worked.title : c.worked.title || 'Worked example')}</h4><div data-worked></div></div>${togetherLines.length ? `<div class="worked-example together" ${es ? 'lang="es"' : ''}><h4>${esc(es ? c.together.titleEs || c.together.title : c.together.title || 'Try it together')}</h4><p class="field-hint">${es ? 'Responde cada pregunta en papel antes de mostrar la siguiente.' : 'Answer each question on paper before revealing the next one.'}</p><div data-together></div></div>` : ''}<div class="objective-box"><h4>Lesson goal</h4><p>${esc(lesson.objective)}</p></div>${textArea(`learn-${lesson.id}`, 'Explain the idea in your own words', state.level === 'support' ? `Start with: "The main idea is ___ because ___." ${lesson.languageObjective}` : lesson.languageObjective)}<p><a href="/lessons/${lesson.id}/">Open the complete Lesson ${lessonNumber(lesson.id)}</a></p>`;
+    if (arc) {
+      stage.querySelector('h3').insertAdjacentHTML('beforebegin', `<p class="arc-stage">${es ? 'Concepto' : 'Concept'}</p>`);
+      stage.querySelector('.worked-example').insertAdjacentHTML('beforebegin', `<div class="arc-predict"><p class="arc-stage">${es ? 'Predice' : 'Predict'}</p>${textArea(predictionKey, es ? '¿Qué crees que cambiará en el siguiente paso?' : 'What do you think will change in the next step?')}</div><p class="arc-stage">${es ? 'Razona y descubre un cambio' : 'Reason and reveal one change'}</p>`);
+    }
     const drawWorked = () => {
       const count = Math.min(workedLines.length, state.steps[lesson.id]);
       stepper(stage.querySelector('[data-worked]'), workedLines, count, {
         lang: state.lang,
+        locked: !!arc && count <= 1 && !String(state.notes[predictionKey] || '').trim(),
+        allLocked: !!arc && count <= 1,
         onReveal: () => { state.steps[lesson.id] = count + 1; save(); drawWorked(); stage.querySelector('[data-worked] [data-reveal], [data-worked] [data-all]').focus(); },
         onAll: () => { state.steps[lesson.id] = workedLines.length; save(); drawWorked(); stage.querySelector('[data-worked] .step-count').setAttribute('tabindex', '-1'); stage.querySelector('[data-worked] .step-count').focus(); },
       });
+      const sourceVisual = stage.querySelector('[data-arc-visual]');
+      if (sourceVisual) sourceVisual.hidden = count < workedLines.length;
+      const notation = stage.querySelector('[data-arc-notation]');
+      if (notation) notation.hidden = count < workedLines.length;
     };
     drawWorked();
     stage.querySelector('[data-worked]').after(modelPanel(ctx, `learn-${lesson.id}`, 'Try this idea on the lab model'));
+    if (arc) {
+      const model = stage.querySelector('.practice-model');
+      model.insertAdjacentHTML('beforebegin', `<p class="arc-stage">${es ? 'Manipula el modelo' : 'Manipulate the model'}</p>`);
+      model.insertAdjacentHTML('afterend', `${arc.visual ? `<p class="field-hint" data-arc-visual ${state.steps[lesson.id] < workedLines.length ? 'hidden' : ''}>${esc(arc.visual)}</p>` : ''}<p class="arc-stage">${es ? 'Observa' : 'Notice'}</p>${textArea(`worked-notice-${lesson.id}`, es ? '¿Qué cambió en el modelo?' : 'What changed in the model?')}`);
+      const notice = stage.querySelector(`[data-note="worked-notice-${lesson.id}"]`).closest('label');
+      const keyIdea = stage.querySelector('.key-idea');
+      if (keyIdea) { keyIdea.querySelector('h4').prepend(`${es ? 'Conexión matemática' : 'Mathematical connection'}: `); keyIdea.dataset.arcNotation = ''; keyIdea.hidden = state.steps[lesson.id] < workedLines.length; notice.after(keyIdea); }
+      const explanation = stage.querySelector(`[data-note="learn-${lesson.id}"]`).closest('label');
+      explanation.insertAdjacentHTML('beforebegin', `<p class="arc-stage">${es ? 'Explica' : 'Explain'}</p>`);
+      const transfer = stage.querySelector('.worked-example.together');
+      if (transfer) { explanation.after(transfer); transfer.insertAdjacentHTML('beforebegin', `<p class="arc-stage">${es ? 'Aplica en otro contexto' : 'Transfer to a new context'}</p>`); }
+    }
     if (togetherLines.length) {
       const drawTogether = () => {
         const count = Math.min(togetherLines.length, state.steps[`${lesson.id}-together`]);
@@ -112,6 +149,7 @@ export function learn(ctx, host) {
       drawTogether();
     }
     bindNotes(stage);
+    if (arc) stage.querySelector(`[data-note="${predictionKey}"]`).addEventListener('input', () => { const next = stage.querySelector('[data-worked] [data-reveal]'); if (next && state.steps[lesson.id] <= 1) next.disabled = !String(state.notes[predictionKey] || '').trim(); });
     mountByteBot(stage, ctx, `byte-learn-${lesson.id}`);
   };
   host.querySelectorAll('[data-lesson]').forEach((b) => (b.onclick = () => { current = Number(b.dataset.lesson); render(); }));

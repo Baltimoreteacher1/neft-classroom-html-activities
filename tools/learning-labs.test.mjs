@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { JSDOM } from "jsdom";
+import { workedArc } from "../curriculum/learning-labs/shared/activities.mjs";
 import { grab, move } from "../curriculum/learning-labs/shared/direct.mjs";
 import {
   controls,
@@ -119,6 +120,39 @@ import {
 } from "./lib/curriculum-source.mjs";
 
 const catalogue = JSON.parse(readFileSync(join(REPO_ROOT, "data/learning-labs.json")));
+const arcLabs = [
+  "recipe-remix",
+  "missing-whole",
+  "power-plant",
+  "balance-bureau",
+  "shape-shift-garden",
+];
+for (const id of arcLabs) {
+  const lab = JSON.parse(
+    readFileSync(join(REPO_ROOT, "curriculum/learning-labs", id, "content.json")),
+  );
+  for (const lesson of lab.lessons) {
+    const arc = workedArc(lab, lesson, "en");
+    assert.deepEqual(
+      arc.reasoning,
+      lesson.concept.worked.lines,
+      `${id}: all worked lines must remain verbatim`,
+    );
+    assert.deepEqual(
+      arc.transfer,
+      lesson.concept.together.lines,
+      `${id}: transfer must come from the lesson source`,
+    );
+    assert.equal(arc.visual, lesson.concept.worked.viz?.alt || null);
+    assert.equal(arc.connection, lesson.concept.keyIdea);
+    const source = JSON.stringify(lesson.concept);
+    for (const number of JSON.stringify(arc).match(/\d+(?:[.,]\d+)*/g) || [])
+      assert.ok(
+        source.includes(number),
+        `${id}: explanation number ${number} must occur in its lesson source`,
+      );
+  }
+}
 const core = listLessonDirs({ filter: CORE_ID_RE }).sort();
 const currentReveal = JSON.parse(
   readFileSync(join(REPO_ROOT, "tools/learning-labs/reveal-concept-source.json")),
