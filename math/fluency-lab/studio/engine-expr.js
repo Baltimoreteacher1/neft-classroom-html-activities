@@ -5,6 +5,7 @@ import { COLORS, L, bilingualText, choiceBuild, clean, frameOf, gcd, keyed, num,
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import { fiveNumber } from "../response-check.js";
 import { FRUIT_ES } from "../question-es.js";
+import { percentModelEs } from "./percent-model-es.js";
 
 const sg = (n) => (n < 0 ? `−${-n}` : String(n));
 const fmtN = (n) => String(Math.round(n * 1e6) / 1e6).replace("-", "−");
@@ -13,19 +14,6 @@ const fruit = (name) => L(name, FRUIT_ES[name] ?? name);
 // "0 pets" / "1 book" from a frequency table, in Spanish: "0 mascotas" / "1 libro".
 const countNoun = (label) =>
   L(label, label.replace(/\b(pet|book)(s?)$/, (w, noun, plural) => (noun === "pet" ? "mascota" : "libro") + plural));
-// The shared percent model (learning labs) labels its double number line in English; these are its Spanish words.
-const percentModelEs = (t) =>
-  t === "Percent" ? "Porcentaje"
-  : t === "Amount" ? "Cantidad"
-  : t === "Whole = Part ÷ Percent" ? "Entero = Parte ÷ Porcentaje"
-  : t
-      .replace(/^part = whole /, "parte = entero ")
-      .replace(/^part /, "parte ")
-      .replace(/^whole /, "entero ")
-      .replace(/^Step down: the known part is already (\S+), so (\S+) is /, "Baja: la parte conocida ya es $1, así que $2 es ")
-      .replace(/^Step down: (\S+) is (\S+), so (\S+) is /, "Baja: $1 es $2, así que $3 es ")
-      .replace(/^Count up: 100% is (\S+) jumps of (\S+), so /, "Sube: 100% son $1 saltos de $2, así que ");
-
 // ----- order of operations: a tiny tokenizer and a one-step reducer -----
 function tokenize(text) {
   const out = [];

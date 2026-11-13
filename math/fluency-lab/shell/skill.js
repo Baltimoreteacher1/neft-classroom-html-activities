@@ -6,7 +6,9 @@ import { renderModel } from "../visual-lab.js";
 import { choicesEs, questionEs } from "../question-es.js";
 import { diagnose, framesOf, lessonFor } from "../studio/engines.js";
 import { mountBuild } from "../studio/panel-build.js";
+import { bankEs, stepsEs } from "./bank-es.js";
 import { mountCanvas, frameStrip } from "./canvas.js";
+import { eqIn } from "../studio/eq-language.js";
 import { anotherWay, helpLadder, teach } from "./content.js";
 import { explainFrame, wordsToKnow } from "./language.js";
 import { bindListen, listenButton, readAloudOn } from "./prefs.js";
@@ -339,11 +341,22 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
       : feedbackFor(skill, item, raw);
   }
 
-  // Spanish mode keeps only rungs that speak Spanish (pictures and authored hints); with no picture, the English
-  // rungs stay and are marked as English rather than leaving a learner with no help.
+  // Spanish mode keeps the rungs that speak Spanish: pictures, and the hint and steps wherever bank-es.js has them.
+  // A rung with no Spanish is left out while another rung can help; if none can, the English rungs stay and are
+  // marked as English rather than leaving a learner with no help.
   function localLadder(ladder) {
     if (lang() !== "es") return ladder;
-    const spanish = ladder.filter((r) => r.kind === "visual");
+    const spanish = ladder
+      .map((rung) => {
+        if (rung.kind === "visual") return rung;
+        if (rung.kind === "hint") {
+          const text = bankEs(rung.text);
+          return text === null ? null : { ...rung, text };
+        }
+        const steps = stepsEs(rung.steps);
+        return steps ? { ...rung, steps } : null;
+      })
+      .filter(Boolean);
     return spanish.length ? spanish : ladder.map((r) => ({ ...r, english: true }));
   }
 
@@ -353,15 +366,25 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     if (item.transfer || !es) return item.explanation ? `<p class="why">${esc(item.explanation)}</p>` : "";
     const last = solved.at(-1);
     if (last)
-      return `<p class="why">${esc(last.eq || "")} ${esc(pickL(last.cap))}</p>`;
-    return item.explanation ? `<p class="why" lang="en">${esc(item.explanation)} ${englishNote()}</p>` : "";
+      return `<p class="why">${esc(eqIn(last.eq, lang()))} ${esc(pickL(last.cap))}</p>`;
+    if (!item.explanation) return "";
+    const text = bankEs(item.explanation);
+    return text === null
+      ? `<p class="why" lang="en">${esc(item.explanation)} ${englishNote()}</p>`
+      : `<p class="why">${esc(text)}</p>`;
   }
   function solutionHtml(item, solved, es) {
     // The worked solution of THIS problem as the synchronized picture (both languages); bank steps without one.
     if (solved.length) return frameBox(solved);
-    if ((item.steps || []).length)
-      return `<ol class="steps"${es ? ' lang="en"' : ""}>${item.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>${es ? englishNote() : ""}`;
-    return item.explanation ? `<p class="why"${es && !item.transfer ? ' lang="en"' : ""}>${esc(item.explanation)}</p>` : "";
+    if ((item.steps || []).length) {
+      const spanish = es ? stepsEs(item.steps) : null;
+      const english = es && !spanish;
+      return `<ol class="steps"${english ? ' lang="en"' : ""}>${(spanish || item.steps).map((s) => `<li>${esc(s)}</li>`).join("")}</ol>${english ? englishNote() : ""}`;
+    }
+    if (!item.explanation) return "";
+    const spanish = es && !item.transfer ? bankEs(item.explanation) : null;
+    const english = es && !item.transfer && spanish === null;
+    return `<p class="why"${english ? ' lang="en"' : ""}>${esc(spanish ?? item.explanation)}</p>`;
   }
 
   function rungHtml(rung) {

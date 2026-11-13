@@ -3,6 +3,8 @@
 // At an engine's Predict point the student answers before the step that would show what happens.
 import { esc, lang, pickL, tr } from "./words.js";
 import { speak } from "../speech.js";
+import { svgAlt } from "../studio/core.js";
+import { eqIn } from "../studio/eq-language.js";
 
 const reduced = () =>
   typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,8 +54,8 @@ export function mountCanvas(host, { frames, predicts = [], onFinish = null, fini
     const f = frames[i];
     const stage = q("[data-stage]");
     stage.classList.toggle("cv-animate", !reduced());
-    stage.innerHTML = f.svg;
-    q("[data-eq]").textContent = f.eq || "";
+    stage.innerHTML = svgAlt(f.svg, f.alt, lang());
+    q("[data-eq]").textContent = eqIn(f.eq, lang());
     q("[data-cap]").textContent = pickL(f.cap);
     q("[data-count]").textContent = tr("Step {n} of {total}", { n: i + 1, total: frames.length });
     q("[data-back]").disabled = i === 0;
@@ -78,7 +80,7 @@ export function mountCanvas(host, { frames, predicts = [], onFinish = null, fini
     } else onFinish?.();
   });
   q("[data-say]").addEventListener("click", () =>
-    speak(`${frames[i].eq || ""}. ${pickL(frames[i].cap)}`, lang()),
+    speak(`${eqIn(frames[i].eq, lang())}. ${pickL(frames[i].cap)}`, lang()),
   );
   q("[data-stage]").addEventListener("keydown", (event) => {
     if (event.key === "ArrowRight" && !q("[data-next]").disabled) q("[data-next]").click();
@@ -89,7 +91,7 @@ export function mountCanvas(host, { frames, predicts = [], onFinish = null, fini
 
 // A static strip of frames (used inside help, where no predicting is asked).
 export const frameStrip = (frames) =>
-  `<ol class="cv-strip">${frames.map((f) => `<li><div class="cv-stage">${f.svg}</div><p class="cv-eq">${esc(f.eq || "")}</p><p class="cv-cap">${esc(pickL(f.cap))}</p></li>`).join("")}</ol>`;
+  `<ol class="cv-strip">${frames.map((f) => `<li><div class="cv-stage">${svgAlt(f.svg, f.alt, lang())}</div><p class="cv-eq">${esc(eqIn(f.eq, lang()))}</p><p class="cv-cap">${esc(pickL(f.cap))}</p></li>`).join("")}</ol>`;
 
 // Label legibility for every picture lives in legible.js (14px minimum at the rendered size, no clipping).
 export { keepLegible, legibleSvg } from "./legible.js";

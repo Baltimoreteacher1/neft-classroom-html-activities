@@ -59,6 +59,13 @@ export const frame = (f) => ({ easy: null, focus: null, ...f });
 export const svgWrap = (body, alt, { w = 560, h = 260 } = {}) =>
   `<svg class="sd-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(alt)}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
 
+// The picture's text description (`aria-label`) in one language. svgWrap() draws it once, in English, when the frame is
+// built; the frame keeps the pair in `alt`, so whoever shows the frame sets the description the reader's language.
+export const svgAlt = (svg, alt, lang) => {
+  const text = pick(alt, lang);
+  return text ? String(svg).replace(/(<svg\b[^>]*?\baria-label=")[^"]*(")/, (_, a, b) => `${a}${esc(text)}${b}`) : svg;
+};
+
 // Keyed element: data-k identifies it across frames; the transform moves it, the class decides how it enters.
 export const keyed = (key, x, y, inner, cls = "") =>
   `<g class="sd-k ${cls}" data-k="${esc(key)}" style="transform:translate(${x}px,${y}px)">${inner}</g>`;

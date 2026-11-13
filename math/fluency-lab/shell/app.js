@@ -450,21 +450,23 @@ document
   .getElementById("brand")
   .addEventListener("click", (e) => (e.preventDefault(), route("home")));
 document.getElementById("more-btn").addEventListener("click", more);
+// The language button re-draws where the learner is: the skill and step (or the library / progress view) live in the
+// address bar, which the views keep current, so it is read again rather than the copy taken when the page loaded.
 document.getElementById("lang-btn").addEventListener("click", () => {
   toggleLang();
-  boot();
+  boot(new URLSearchParams(location.search));
 });
 
-function boot() {
+function boot(source = params) {
   if (forwardToLab) return;
-  const skill = grade !== null && params.get("skill") ? getSkill(grade, params.get("skill")) : null;
-  const view = params.get("view");
+  const skill = grade !== null && source.get("skill") ? getSkill(grade, source.get("skill")) : null;
+  const view = source.get("view");
   if (skill) {
     const stage =
-      params.get("start") === "practice" ? "practice" : stageFromParam(params.get("stage"));
+      source.get("start") === "practice" ? "practice" : stageFromParam(source.get("stage"));
     params.delete("skill");
     return openSkill({ ...skill, grade }, stage);
   }
-  route(view === "library" ? "library" : "home");
+  route(view === "library" || view === "progress" ? view : "home");
 }
 boot();

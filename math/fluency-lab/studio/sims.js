@@ -1,7 +1,8 @@
 // Concept simulators: change one variable, watch the relationship. Each simulator is pure: `render(state)` returns
 // the drawing, a text description and a one-line reading of what the numbers say right now, so the picture,
 // the numbers and the words always agree. Sliders are real range inputs, so they work with keyboard and touch.
-import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
+import { COLORS, L, bilingualText, esc, fmt, gcd, svgWrap, txt } from "./core.js";
+import { percentModelEs } from "./percent-model-es.js";
 import { record } from "./adaptive.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import percentTape from "../../../curriculum/learning-labs/shared/models/percent-tape.mjs";
@@ -464,7 +465,7 @@ const volumeFractional = {
       txt(390, 91, spanish ? "cubos de medio pie por capa" : "half-foot cubes per layer", { size: 13, fill: COLORS.mute, anchor: "start" }) +
       txt(390, 129, `× ${s.c} ${spanish ? "capas" : "layers"}`, { size: 19, fill: COLORS.hundreds }) +
       txt(390, 176, `= ${eighths} ${spanish ? "cubos unitarios" : "unit cubes"}`, { size: 17 }) +
-      txt(390, 207, `${eighths}/8 ft³ = ${volumeText} ft³`, { size: 20, fill: COLORS.ink });
+      txt(390, 207, `${eighths}/8 ${spanish ? "pie³" : "ft³"} = ${volumeText} ${spanish ? "pie³" : "ft³"}`, { size: 20, fill: COLORS.ink });
     const alt = L(
       `A prism ${length(s.a)} by ${length(s.b)} by ${length(s.c)} feet. One layer has ${s.a} times ${s.b}, or ${s.a * s.b}, half-foot cubes. There are ${s.c} layers: ${eighths} cubes total. Each cube is one eighth of a cubic foot, so the volume is ${eighths}/8, or ${volumeText} cubic feet.`,
       `Un prisma de ${length(s.a)} por ${length(s.b)} por ${length(s.c)} pies. Una capa tiene ${s.a} por ${s.b}, o ${s.a * s.b}, cubos de medio pie. Hay ${s.c} capas: ${eighths} cubos en total. Cada cubo equivale a un octavo de pie cúbico; el volumen es ${eighths}/8, o ${volumeText} pies cúbicos.`,
@@ -488,7 +489,7 @@ const surfaceNet = {
   sliders: () => [],
   render() {
     const alt = L("A three-dimensional net preview opens for the current surface-area problem.", "Se abre una vista tridimensional de la red para el problema actual de área de superficie.");
-    return out(svgWrap(txt(280, 100, "3D net", { size: 26 }), "", { h: 180 }), alt, alt);
+    return out(svgWrap(txt(280, 100, L("3D net", "Red 3D"), { size: 26 }), "", { h: 180 }), alt, alt);
   },
   mount(ctx, root) {
     const s = ctx.lesson?.spec;
@@ -572,7 +573,7 @@ const percentWhole = {
   ],
   render(s) {
     const result = percentFindWhole.evaluate(null, [s.p, s.part]);
-    const body = percentFindWhole.visual([s.p, s.part], result) + hundredGrid(s.p, 405);
+    const body = bilingualText(percentFindWhole.visual([s.p, s.part], result), percentModelEs) + hundredGrid(s.p, 405);
     const alt = L(
       `Percent tape and double number line. ${s.p}% is ${fmt(s.part)}; the recovered 100% whole is ${fmt(result.value)}.`,
       `Cinta de porcentaje y recta numérica doble. El ${s.p}% es ${fmt(s.part)}; el entero recuperado al 100% es ${fmt(result.value)}.`,
@@ -621,7 +622,7 @@ const percentPart = {
   },
   render(s) {
     const result = percentTape.evaluate(null, [s.p, s.w]);
-    const body = percentTape.visual([s.p, s.w], result) + hundredGrid(s.p, 360);
+    const body = bilingualText(percentTape.visual([s.p, s.w], result), percentModelEs) + hundredGrid(s.p, 360);
     const alt = L(
       `Percent tape, double number line, and hundred grid. ${s.p}% of ${fmt(s.w)} is ${fmt(result.value)}.`,
       `Cinta de porcentaje, recta numérica doble y cuadrícula de cien. El ${s.p}% de ${fmt(s.w)} es ${fmt(result.value)}.`,
