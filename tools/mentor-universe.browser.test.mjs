@@ -145,6 +145,31 @@ try {
   assert.equal(initial.startButtonReachable, true, "shared page chrome covers the start button");
   assert.equal(initial.drags, 0, "a drag-only path was introduced");
 
+  await send(
+    "Emulation.setDeviceMetricsOverride",
+    { width: 360, height: 780, deviceScaleFactor: 1, mobile: false },
+    session,
+  );
+  const compactPhone = await evaluate(
+    session,
+    `(() => {
+      const button = document.querySelector('[data-go="2"]');
+      const rect = button.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        startButtonReachable: hit === button || button.contains(hit)
+      };
+    })()`,
+  );
+  assert.equal(compactPhone.overflow, false, "360px page has horizontal overflow");
+  assert.equal(compactPhone.startButtonReachable, true, "short phone dock covers the start button");
+  await send(
+    "Emulation.setDeviceMetricsOverride",
+    { width: 390, height: 844, deviceScaleFactor: 1, mobile: false },
+    session,
+  );
+
   await evaluate(
     session,
     `(() => {
