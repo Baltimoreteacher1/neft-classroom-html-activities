@@ -752,7 +752,7 @@ h1 {
 
 .ml-lang button:focus-visible,
 .ml-speak-toggle:focus-visible {
-  outline: 3px solid #7c3aed;
+  outline: 3px solid #0f766e;
   outline-offset: 2px;
 }
 
@@ -770,16 +770,16 @@ h1 {
 }
 
 .ml-speak-toggle.is-on {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #0f766e;
+  border-color: #0f766e;
   color: #fff;
 }
 
 .ml-speak-hint {
   margin: 0;
   padding: 10px clamp(16px, 4vw, 32px);
-  background: #ede9fe;
-  color: #4c1d95;
+  background: #ccfbf1;
+  color: #134e4a;
   font-size: 0.86rem;
   font-weight: 600;
   text-align: center;
@@ -794,7 +794,7 @@ body.ml-speaking .ml-detail-sec p,
 body.ml-speaking .ml-labhead-move,
 body.ml-speaking .ml-done-move {
   cursor: pointer;
-  text-decoration: underline dotted rgba(124, 58, 237, 0.6);
+  text-decoration: underline dotted rgba(15, 118, 110, 0.7);
   text-underline-offset: 3px;
 }
 
@@ -1042,11 +1042,179 @@ body.ml-speaking .ml-done-move {
 
 @media (prefers-color-scheme: dark) {
   .ml-speak-hint {
-    background: #2e1065;
-    color: #ddd6fe;
+    background: #134e4a;
+    color: #ccfbf1;
   }
 
   .ml-labhead {
     background: color-mix(in srgb, var(--ml-color, #334155) 22%, var(--ml-card));
+  }
+}
+
+/* ── yearlong Mentor Universe ─────────────────────────────────────────── */
+
+.mu-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px clamp(16px, 4vw, 32px);
+  border-bottom: 1px solid var(--ml-line);
+  background: var(--ml-card);
+}
+
+.mu-nav a {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--ml-ink);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.mu-nav a:focus-visible,
+.mu-nav a:hover {
+  outline: 3px solid #0f766e;
+  outline-offset: 1px;
+}
+
+.mu-section {
+  margin-block: 64px;
+  padding-block-start: 24px;
+  border-block-start: 2px solid var(--ml-line);
+  scroll-margin-top: 16px;
+}
+
+.mu-section > h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.mu-form,
+.mu-experience {
+  display: grid;
+  gap: 14px;
+  margin-block-start: 20px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius);
+  background: var(--ml-card);
+  box-shadow: var(--ml-shadow);
+}
+
+.mu-experience + .mu-experience {
+  margin-block-start: 22px;
+}
+
+.mu-form label,
+.mu-experience label,
+#mu-moments > label {
+  display: grid;
+  gap: 6px;
+  font-weight: 650;
+}
+
+.mu-form textarea,
+.mu-form select,
+.mu-experience textarea,
+.mu-experience select,
+.mu-experience input,
+#mu-moments select,
+.mu-profile-lab input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ml-ink-faint);
+  border-radius: 10px;
+  background: var(--ml-card);
+  color: var(--ml-ink);
+  font: inherit;
+}
+
+.mu-experience fieldset {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--ml-line);
+  border-radius: 12px;
+}
+
+.mu-experience fieldset label {
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.mu-experience fieldset input {
+  width: 22px;
+  min-height: 22px;
+}
+
+.mu-week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.mu-week-grid button {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--ml-line);
+  border-radius: 10px;
+  background: var(--ml-card);
+  color: var(--ml-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mu-week-grid .is-done button {
+  border-color: #0f766e;
+  background: #ccfbf1;
+  color: #134e4a;
+  font-weight: 800;
+}
+
+.mu-moment-card {
+  margin-block: 18px;
+  padding: 20px;
+  border-inline-start: 6px solid var(--ml-color, #17324d);
+  border-radius: 12px;
+  background: var(--ml-card);
+  box-shadow: var(--ml-shadow);
+}
+
+.mu-moment-card h3 {
+  margin: 0;
+}
+
+.mu-profile-lab {
+  padding: 18px;
+  border: 1px solid var(--ml-line);
+  border-radius: 14px;
+}
+
+.mu-profile-lab .ml-btn {
+  margin-block-start: 10px;
+}
+
+.mu-sources ul {
+  padding-inline-start: 22px;
+}
+
+.mu-privacy {
+  padding: 24px;
+  border: 2px solid #0f766e;
+  border-radius: var(--ml-radius);
+  background: color-mix(in srgb, #0f766e 8%, var(--ml-card));
+}
+
+@media (max-width: 620px) {
+  .mu-nav {
+    position: static;
   }
 }
