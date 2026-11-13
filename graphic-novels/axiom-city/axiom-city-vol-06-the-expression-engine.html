@@ -247,6 +247,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -298,28 +301,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 6: The Expression Engine. Deep under the library, four kids and a glowing orb face a giant round vault door covered in glowing algebraic expression glyphs.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="#0d1f33"/><rect width="500" height="700" fill="url(#halftone)"/><circle cx="250" cy="330" r="240" fill="#F2C15B" opacity=".10"/><circle cx="250" cy="330" r="160" fill="#F2C15B" opacity=".12"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(60,140) scale(3.8)" opacity=".95"><use href="#sym-vault"/></g>
-        <g font-family="Consolas,monospace" font-weight="700" fill="#F2C15B" opacity=".9"><text x="60" y="120" font-size="24">2(x+4)</text><text x="350" y="150" font-size="22">3⁴</text><text x="40" y="560" font-size="22">12(2a+3)</text><text x="360" y="540" font-size="24">3n+5</text><text x="395" y="240" font-size="20">¾÷3</text><text x="48" y="250" font-size="20">x+x+x</text></g>
-        <rect y="640" width="500" height="60" fill="#17324D"/>
-      </svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="586" width="500" height="60" fill="#06121f"/>
-        <g transform="translate(58,470) scale(.95)"><use href="#sym-maya"/></g>
-        <g transform="translate(158,486) scale(.88)"><use href="#sym-theo"/></g>
-        <g transform="translate(252,486) scale(.88)"><use href="#sym-zara"/></g>
-        <g transform="translate(346,470) scale(.95)"><use href="#sym-dev"/></g>
-        <g transform="translate(212,372) scale(.85)"><use href="#sym-vex"/></g>
-        <g stroke="#7CF2EC" stroke-width="3" opacity=".6" stroke-linecap="round"><line x1="240" y1="450" x2="225" y2="475"/><line x1="262" y1="450" x2="277" y2="475"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 6: The Expression Engine. Deep under the library, Keiko, Andre, Layla and Mateo stand together at the foot of a giant round brass vault door, while VEX, the teal robot with one golden eye, glows above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -398,219 +381,225 @@ const BADGES = [
   {id:"boss",icon:"#sig-key",  label:"Key Forger — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected below by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-06 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-06-the-expression-engine.webp?v=9aac3a5c3f","w":2994,"h":4190,"f":{"cover":[0,0,544,762,"Keiko, Andre, Layla and Mateo stand together at the foot of a giant round brass vault door deep under the library, while VEX, the teal robot with one golden eye, glows above them.",[]],"p1-vault":[1740,3048,870,381,"Seen from behind, Keiko, Andre, Layla and Mateo face a giant round vault door in the lantern-lit stone vault, while VEX glows high to the right.",[]],"p2-street":[0,2558,870,490,"On a city street at dusk, Mateo points in disbelief at two street signs crackling with cyan sparks, while VEX floats at the right.",[]],"p2-keiko":[490,762,490,653,"Close-up of Keiko, in her red jacket, leaning in to share a secret with a serious look.",[]],"p2-mateo":[980,762,490,653,"Close-up of Mateo, in his orange shirt, pumping a fist with a huge excited grin.",[]],"p3-stairs":[870,2558,870,490,"In the dark library stairwell, Layla holds up one of two glowing jars of glow-ink while Andre and Mateo look on.",[]],"p3-andre":[1470,762,490,653,"Close-up of Andre, in his blue hoodie, holding up one finger as he thinks hard.",[]],"p3-vex":[1960,762,490,653,"VEX projects two glowing bars of light, each sliced into three equal pieces.",[]],"p4-mateo":[0,3864,870,326,"Mateo holds a glowing jar of ink out toward the reader with a grin.",[]],"p5-cells":[1740,2558,870,490,"In the vault, Andre and Mateo face two dark glass power cells while the scribbly teal glitch creature chalks wrong math on the wall between them.",[]],"p5-mateo":[2450,762,490,653,"Close-up of Mateo crouching, battle-ready, with a determined grin.",[]],"p5-vex":[0,1415,490,653,"VEX projects four identical glowing cubes stacked in the air.",[]],"p6-andre":[870,3864,870,326,"Andre points out at the reader with a serious, focused look.",[]],"p7-press":[0,3048,870,490,"In the sign-press room, a brass printing machine the size of a bus waits for letter tiles; Keiko holds Ada's open journal and Mateo lifts a tile.",[]],"p7-mateo":[490,1415,490,653,"Close-up of Mateo holding up a single letter tile with a clever grin.",[]],"p7-vex":[980,1415,490,653,"VEX glows beside the press, projecting a small funnel-shaped machine of light.",[]],"p8-mateo":[1740,3864,870,326,"Mateo offers a letter tile to the reader.",[]],"p9-door":[870,3048,870,490,"Layla and Mateo stand before the tall twin door, each leaf set with two glowing panels, while the scribbly glitch peeks around its edge.",[]],"p9-layla":[1470,1415,490,653,"Close-up of Layla, in her green sweatshirt, holding up two wooden sticks side by side with a knowing smile.",[]],"p9-vex":[1960,1415,490,653,"VEX shines two thin beams of light to compare a pair of glowing panels.",[]],"p10-layla":[0,3538,870,326,"Layla holds up two sticks and nods at the reader.",[]],"p11-gears":[0,2068,870,490,"The vault's gear heart: a smaller brass gear meshes with a larger one, each with a round hub, as timing lamps glow on the wall and VEX floats above.",[]],"p11-layla":[1034,0,490,653,"Close-up of Layla pointing at a big brass gear with an excited grin.",[]],"p11-keiko":[544,0,490,653,"Close-up of Keiko counting on her fingers as the timing lamps blink.",[]],"p12-layla":[870,3538,870,326,"Layla holds a small brass cog out toward the reader with a smile.",[]],"p13-door":[870,2068,870,490,"At the cipher vault door, the glitch swells huge and scribbles over Ada's engraving while Mateo stands his ground below a brass key plate.",[]],"p13-mateo":[1524,0,490,653,"Close-up of Mateo, fists clenched, with a fierce, determined look.",[]],"p13-vex":[2014,0,490,653,"VEX glows bright as a golden key of light takes shape before it.",[]],"p14-vex":[1740,3538,870,326,"VEX hovers in the dark vault, golden eye bright, faint scribbles on the wall behind it.",[]],"p15-wake":[1740,2068,870,490,"The Expression Engine whirs back to life in a burst of cyan light under a fixed street sign, while Keiko, Andre, Layla and Mateo cheer and VEX glows above.",[]],"p15-glitch":[0,762,490,653,"The glitch, now small, calm and tidy, smiles contentedly in a soft glow.",[]],"p15-cold":[2504,0,490,653,"Snowflakes swirl around a frosted thermometer on a dark winter night.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + crew strip ---- */
 { ch:"Axiom City · Volume Six", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE EXPRESSION <em>ENGINE</em></h2>
   <div class="caption" style="display:inline-block">An expressions adventure in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/><g data-depth="8" transform="translate(150,10) scale(1)" opacity=".9"><use href="#sym-vault"/></g>
-    <g data-depth="16" transform="translate(20,86) scale(1)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(50,4) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Distortion detected. It is rewriting the city's signs. Reader: stand by.</div>
-  </div>
-  <div class="caption loc">Previously, in Volume Five: the crew's blueprints rebuilt the Brightside community lot — skate ramp, garden beds, stage and all. The mayor still has Layla's sketch framed. Then the new street signs started speaking… nonsense.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-vault")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:50%"><span class="who">VEX</span>Distortion detected. It is rewriting the city's signs. Reader: stand by.</div>
+    </div>
+    <div class="caption loc">Previously, in Volume Five: the crew's blueprints rebuilt the Brightside community lot — skate ramp, garden beds, stage and all. The mayor still has Layla's sketch framed. Then the new street signs started speaking… nonsense.</div>
+  </div>`},
 
 /* ---- p2: ch1 splash ---- */
 { ch:"Chapter 1 · The Scribbled Signs", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE SCRIBBLED <em>SIGNS</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    ${SKY}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".6"><use href="#sym-skyline"/></g>
-    <g data-depth="14" transform="translate(40,96) scale(1.2)"><use href="#sym-glyphsign"/></g>
-    <g data-depth="14" transform="translate(250,100) scale(1.1)"><use href="#sym-glyphsign"/></g>
-    <g data-depth="18" transform="translate(150,96) scale(.85)"><use href="#sym-dev"/></g>
-    <g data-depth="22" transform="translate(210,30) scale(.5)"><use href="#sym-vex"/></g>
-    ${GROUND}`)}
-    <div class="sfx" style="top:8px;left:14px">ZZRRT!</div>
-    <div class="balloon" style="bottom:16px;left:10px;max-width:52%"><span class="who">MATEO</span>Library Lane now says <b>"⌁§∆!?"</b>. The bakery sign says it too. EVERY sign says it.</div>
-    <div class="balloon vex tail-r" style="top:60px;right:8px;max-width:42%"><span class="who">VEX</span>Distortion source: below the library. Something is rewriting the city's symbols.</div>
-  </div>
-  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#fdf2ee"/><g transform="translate(60,8) scale(.85)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">KEIKO</span>Ms. Ortiz says Ada Vex built a <b>cipher vault</b> under the library. The sign machine lives inside it.</div></div>
-  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#eef7f6"/><g transform="translate(64,14) scale(.85)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="bottom:6px;left:6px;max-width:80%"><span class="who">MATEO</span>A vault full of locks and puzzles? Crew… I have trained for this my whole life. Follow me.</div></div></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-street")}
+      <div class="sfx" style="top:8px;left:14px">ZZRRT!</div>
+      <div class="balloon" style="bottom:10px;left:8px;max-width:48%;--tx:20%"><span class="who">MATEO</span>Library Lane now says <b>"⌁§∆!?"</b>. The bakery sign says it too. EVERY sign says it.</div>
+      <div class="balloon vex tail-r" style="top:20%;right:8px;max-width:40%"><span class="who">VEX</span>Distortion source: below the library. Something is rewriting the city's symbols.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-keiko")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Ms. Ortiz says Ada Vex built a <b>cipher vault</b> under the library. The sign machine lives inside it.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-mateo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>A vault full of locks and puzzles? Crew… I have trained for this my whole life. Follow me.</div>
+    </div>
+  </div>`},
 
 /* ---- p3: ch1 descent + lantern setup ---- */
 { ch:"Chapter 1 · The Scribbled Signs", html:`
-  <div class="caption loc">Under Vexhall Library. A stone stairwell. Very dark. Very deep.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
-    <polygon data-depth="6" points="60,0 340,0 300,200 100,200" fill="#17324D"/>
-    <g data-depth="12" transform="translate(40,60) scale(.8)"><use href="#sym-zara"/></g>
-    <g data-depth="12" transform="translate(130,70) scale(.8)"><use href="#sym-dev"/></g>
-    <g data-depth="12" transform="translate(220,60) scale(.8)"><use href="#sym-theo"/></g>
-    <g data-depth="20" transform="translate(310,16) scale(.5)"><use href="#sym-vex"/></g>
-    <g data-depth="16" fill="#F2C15B" stroke="#17324D" stroke-width="2"><rect x="318" y="120" width="26" height="34" rx="4"/><rect x="350" y="120" width="26" height="34" rx="4"/><circle cx="331" cy="130" r="5" fill="#FFF3D8"/><circle cx="363" cy="130" r="5" fill="#FFF3D8"/></g>
-    <text data-depth="16" x="346" y="174" text-anchor="middle" font-family="Arial" font-weight="800" font-size="10" fill="#F2C15B">GLOW-INK · 2 JARS</text>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">LAYLA</span>Ms. Ortiz left us two jars of glow-ink. Each stair lantern drinks exactly <b>one third</b> of a jar.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:46%"><span class="who">ANDRE</span>So the question is 2 ÷ 1/3. How many third-size servings live inside two whole jars?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>The answer to a division is called the <b>quotient</b>. Draw a bar for each jar, slice each bar into thirds, count the pieces. Models do not lie.</div>
-  </div>
-  <div class="caption">Dividing by a fraction asks "how many of that piece fit inside?" A bar model makes the pieces visible — slice, then count.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-stairs")}
+      <div class="caption loc">Under Vexhall Library. A stone stairwell. Very dark. Very deep.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:30%;top:80%;font-size:clamp(12px,2.6cqi,15px)">GLOW-INK · 2 JARS</div>
+      <div class="balloon" style="top:6px;right:8px;max-width:46%"><span class="who">LAYLA</span>Ms. Ortiz left us two jars of glow-ink. Each stair lantern drinks exactly <b>one third</b> of a jar.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-andre")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>So the question is 2 ÷ 1/3. How many third-size servings live inside two whole jars?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>The answer to a division is called the <b>quotient</b>. Draw a bar for each jar, slice each bar into thirds, count the pieces. Models do not lie.</div>
+    </div>
+    <div class="caption">Dividing by a fraction asks "how many of that piece fit inside?" A bar model makes the pieces visible — slice, then count.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#0d1f33"/><g transform="translate(8,2) scale(.7)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:60%"><span class="who">MATEO</span>Reader — you're our fifth crew member. Light the stairwell!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-mateo")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">MATEO</span>Reader — you're our fifth crew member. Light the stairwell!</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 splash — power cells + glitch appears ---- */
 { ch:"Chapter 2 · Power Cells", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">POWER <em>CELLS</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#10243a"/><rect width="400" height="220" fill="url(#halftone)"/>
-    <g data-depth="8" fill="#1FA6A2" opacity=".25"><rect x="30" y="40" width="60" height="140" rx="6"/><rect x="310" y="40" width="60" height="140" rx="6"/></g>
-    <g data-depth="14" transform="translate(150,20) scale(1.05)"><use href="#sym-glitch"/></g>
-    <g data-depth="18" transform="translate(40,96) scale(.85)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(290,96) scale(.85)"><use href="#sym-dev"/></g>
-    <rect data-depth="10" x="120" y="150" width="160" height="48" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
-    <text data-depth="10" x="200" y="170" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">CELL A: 3⁴ crystals</text>
-    <text data-depth="10" x="200" y="188" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">CELL B: 2⁵ crystals</text>`)}
-    <div class="sfx" style="top:6px;right:14px">SKRITCH!</div>
-    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">ANDRE</span>There it is — a scribble made of broken equations. It just wrote "3⁴ = 12" on the wall.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:44%"><span class="who">MATEO</span>Boss fight, level one. It guards the power cells. Wrong totals keep the lights dead.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>3⁴ is a <b>power</b>: base 3, <b>exponent</b> 4. The exponent counts how many times the base is multiplied — never base times exponent. The glitch wants you to add or shortcut.</div>
-  </div>
-  <div class="caption">An exponent is repeated multiplication: 5² = 5 × 5, not 5 × 2. Say it "three to the fourth power."</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-cells")}
+      <div class="sfx" style="top:6px;right:14px">SKRITCH!</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:16%;top:62%;font-size:clamp(12px,2.6cqi,15px)">CELL A: 3⁴ crystals</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:84%;top:62%;font-size:clamp(12px,2.6cqi,15px)">CELL B: 2⁵ crystals</div>
+      <div class="balloon" style="top:6px;left:8px;max-width:44%;--tx:20%"><span class="who">ANDRE</span>There it is — a scribble made of broken equations. It just wrote "3⁴ = 12" on the wall.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Boss fight, level one. It guards the power cells. Wrong totals keep the lights dead.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>3⁴ is a <b>power</b>: base 3, <b>exponent</b> 4. The exponent counts how many times the base is multiplied — never base times exponent. The glitch wants you to add or shortcut.</div>
+    </div>
+    <div class="caption">An exponent is repeated multiplication: 5² = 5 × 5, not 5 × 2. Say it "three to the fourth power."</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#10243a"/><g transform="translate(10,0) scale(.66)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">ANDRE</span>Charge both cells, reader. Real totals only — no glitch math.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-andre")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">ANDRE</span>Charge both cells, reader. Real totals only — no glitch math.</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 — say it with symbols ---- */
 { ch:"Chapter 3 · Say It With Symbols", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">SAY IT WITH <em>SYMBOLS</em></h2>
-  <div class="caption loc">The sign-press room. A brass machine the size of a bus, fed by letter tiles.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#17324D"/><rect width="400" height="200" fill="url(#halftone)"/>
-    <rect data-depth="8" x="60" y="30" width="280" height="90" rx="10" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
-    <text data-depth="8" x="200" y="62" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="13" fill="#FFF3D8">"5 more than 3 times the mystery number n"</text>
-    <text data-depth="8" x="200" y="86" text-anchor="middle" font-family="Consolas,monospace" font-size="12" fill="#7CF2EC">— Ada Vex's journal, page 112</text>
-    <g data-depth="16" transform="translate(30,84) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(296,84) scale(.85)"><use href="#sym-dev"/></g>
-    <g data-depth="20" transform="translate(180,128) scale(.9)"><use href="#sym-ctile"/></g>`)}
-    <div class="balloon" style="bottom:12px;left:8px;max-width:50%"><span class="who">KEIKO</span>The press only prints when we feed it Ada's sentence — written in <b>symbols</b>, not words.</div>
-    <div class="balloon tail-r" style="top:8px;right:8px;max-width:44%"><span class="who">MATEO</span>Word-to-code translation. The letter <b>n</b> is the <b>variable</b> — the mystery number's costume.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>In a term like 7y, the 7 is the <b>coefficient</b> — the number multiplying the variable. Translate the words, then test your expression by feeding it a value.</div>
-  </div>
-  <div class="caption">An algebraic expression is math with at least one variable. "Times" becomes a coefficient; "more than" becomes addition.</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">The sign-press room. A brass machine the size of a bus, fed by letter tiles.</div>
+    <div class="panel gn-panel panel3d">${ART("p7-press")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:62%;top:34%;width:46%;font-size:clamp(12px,2.6cqi,16px)">"5 more than 3 times the mystery number n"<small>— Ada Vex's journal, page 112</small></div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:46%;--tx:20%"><span class="who">KEIKO</span>The press only prints when we feed it Ada's sentence — written in <b>symbols</b>, not words.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Word-to-code translation. The letter <b>n</b> is the <b>variable</b> — the mystery number's costume.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>In a term like 7y, the 7 is the <b>coefficient</b> — the number multiplying the variable. Translate the words, then test your expression by feeding it a value.</div>
+    </div>
+    <div class="caption">An algebraic expression is math with at least one variable. "Times" becomes a coefficient; "more than" becomes addition.</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#17324D"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">MATEO</span>Your turn, reader. Build Ada's expression — then run it.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-mateo")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">MATEO</span>Your turn, reader. Build Ada's expression — then run it.</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 — the twin door ---- */
 { ch:"Chapter 4 · The Twin Door", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE TWIN <em>DOOR</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#0d1f33"/><rect width="400" height="210" fill="url(#halftone)"/>
-    <rect data-depth="8" x="130" y="20" width="140" height="180" rx="8" fill="#17324D" stroke="#F2C15B" stroke-width="4"/>
-    <line data-depth="8" x1="200" y1="20" x2="200" y2="200" stroke="#F2C15B" stroke-width="3" stroke-dasharray="8 6"/>
-    <g data-depth="8" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#7CF2EC"><text x="142" y="70">3(x+4)</text><text x="212" y="70">3x+12</text><text x="148" y="130">x+x</text><text x="222" y="130">x²</text></g>
-    <g data-depth="16" transform="translate(20,86) scale(.85)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(300,86) scale(.85)"><use href="#sym-dev"/></g>
-    <g data-depth="14" transform="translate(50,8) scale(.7)"><use href="#sym-glitch"/></g>`)}
-    <div class="balloon" style="top:8px;right:8px;max-width:46%" ><span class="who">MATEO</span>Twin door rule: each pair only powers up if both sides are <b>equivalent expressions</b> — same value for EVERY x.</div>
-    <div class="balloon tail-r" style="bottom:10px;left:8px;max-width:48%"><span class="who">LAYLA</span>x + x is two sticks taped together — that's 2x. A square of sticks is x·x. Totally different builds.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Two tests, crew: distribute and combine like terms — or substitute a number into both sides. Equivalent expressions match every single time. The glitch only needs you wrong once.</div>
-  </div>
-  <div class="caption">Equivalent expressions name the same value for every value of the variable. One mismatch = not equivalent.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-door")}
+      <div class="gn-sign" data-gn-skip style="left:42%;top:32%">3(x+4)</div>
+      <div class="gn-sign" data-gn-skip style="left:58%;top:32%">3x+12</div>
+      <div class="gn-sign" data-gn-skip style="left:42%;top:58%;color:#ff8a6e">x+x</div>
+      <div class="gn-sign" data-gn-skip style="left:58%;top:58%;color:#ff8a6e">x²</div>
+      <div class="balloon" style="top:6px;right:8px;max-width:30%" ><span class="who">MATEO</span>Twin door rule: each pair only powers up if both sides are <b>equivalent expressions</b> — same value for EVERY x.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-layla")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>x + x is two sticks taped together — that's 2x. A square of sticks is x·x. Totally different builds.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Two tests, crew: distribute and combine like terms — or substitute a number into both sides. Equivalent expressions match every single time. The glitch only needs you wrong once.</div>
+    </div>
+    <div class="caption">Equivalent expressions name the same value for every value of the variable. One mismatch = not equivalent.</div>
+  </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">LAYLA</span>Sort the pairs, reader — true twins power the door, fakes feed the glitch.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-layla")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">LAYLA</span>Sort the pairs, reader — true twins power the door, fakes feed the glitch.</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash — the gear heart ---- */
 { ch:"Chapter 5 · The Gear Heart", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE GEAR <em>HEART</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#10243a"/><rect width="400" height="220" fill="url(#halftone)"/>
-    <g data-depth="10" transform="translate(70,30) scale(1.6)"><use href="#sym-gear"/></g>
-    <g data-depth="10" transform="translate(230,60) scale(1.2)"><use href="#sym-gear"/></g>
-    <text data-depth="10" x="134" y="120" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#FFF3D8">24</text>
-    <text data-depth="10" x="278" y="130" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#FFF3D8">36</text>
-    <g data-depth="18" transform="translate(20,96) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(310,96) scale(.85)"><use href="#sym-zara"/></g>
-    <g data-depth="22" transform="translate(180,150) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:10px;left:14px">KA-CHUNK</div>
-    <div class="balloon" style="top:8px;right:8px;max-width:46%"><span class="who">LAYLA</span>The vault's heart: a 24-tooth gear and a 36-tooth gear. The linking cog must be the <b>greatest common factor</b> — the biggest tooth count that divides both.</div>
-    <div class="balloon tail-r" style="bottom:10px;left:8px;max-width:44%"><span class="who">KEIKO</span>And the timing lights blink every 6 turns and every 8 turns. They sync at the <b>least common multiple</b> — the first count they share.</div>
-  </div>
-  <div class="caption">GCF: the greatest factor two numbers share. LCM: the smallest number both count to. Factors divide in; multiples count up.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-gears")}
+      <div class="sfx" style="top:10px;left:14px">KA-CHUNK</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:34%;top:56%">24</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:68%;top:52%">36</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-layla")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>The vault's heart: a 24-tooth gear and a 36-tooth gear. The linking cog must be the <b>greatest common factor</b> — the biggest tooth count that divides both.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-keiko")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>And the timing lights blink every 6 turns and every 8 turns. They sync at the <b>least common multiple</b> — the first count they share.</div>
+    </div>
+    <div class="caption">GCF: the greatest factor two numbers share. LCM: the smallest number both count to. Factors divide in; multiples count up.</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">LAYLA</span>Size the cog and set the timing, reader — the heart won't turn without you.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p12-layla")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">LAYLA</span>Size the cog and set the timing, reader — the heart won't turn without you.</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup ---- */
 { ch:"Chapter 5 · The Master Key", html:`
-  <div class="caption loc">The cipher vault door. The glitch swells, scribbling over Ada's engraving: 18x + 24.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
-    <g data-depth="10" transform="translate(140,30) scale(1.4)"><use href="#sym-vault"/></g>
-    <g data-depth="16" transform="translate(30,10) scale(1.2)"><use href="#sym-glitch"/></g>
-    <g data-depth="18" transform="translate(30,110) scale(.8)"><use href="#sym-dev"/></g>
-    <rect data-depth="12" x="290" y="30" width="100" height="58" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
-    <text data-depth="12" x="340" y="52" text-anchor="middle" font-family="Consolas,monospace" font-size="10" fill="#7CF2EC">KEY FORMAT:</text>
-    <text data-depth="12" x="340" y="74" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#F2C15B">GCF( __ + __ )</text>`)}
-    <div class="balloon" style="bottom:8px;left:8px;max-width:48%"><span class="who">MATEO</span>Final boss. The lock wants 18x + 24 <b>factored</b> — greatest common factor pulled out front, distributive property in reverse.</div>
-    <div class="balloon vex tail-r" style="top:8px;right:8px;max-width:42%"><span class="who">VEX</span>Then two more locks: one order-of-operations engine code, one equivalence seal. Reader — forge the master key.</div>
-  </div>
-  <div class="caption">Boss Gate: factoring, powers, and equivalence — everything this vault taught you, in three locks.</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">The cipher vault door. The glitch swells, scribbling over Ada's engraving: 18x + 24.</div>
+    <div class="panel gn-panel panel3d">${ART("p13-door")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:80%;top:46%;width:30%;font-size:clamp(12px,2.6cqi,16px)">KEY FORMAT:<br>GCF( __ + __ )</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p13-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Final boss. The lock wants 18x + 24 <b>factored</b> — greatest common factor pulled out front, distributive property in reverse.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p13-vex")}
+      <div class="balloon vex tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Then two more locks: one order-of-operations engine code, one equivalence seal. Reader — forge the master key.</div>
+    </div>
+    <div class="caption">Boss Gate: factoring, powers, and equivalence — everything this vault taught you, in three locks.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · The Master Key", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0d1f33"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The glitch is watching. No pressure. (Some pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:64%"><span class="who">VEX</span>BOSS GATE. Three locks. The glitch is watching. No pressure. (Some pressure.)</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory + teaser ---- */
 { ch:"Chapter 5 · The Engine Wakes", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#10243a"/>
-    <circle data-depth="8" cx="200" cy="90" r="80" fill="#F2C15B" opacity=".18"/>
-    <g data-depth="10" transform="translate(155,30) scale(.95)"><use href="#sym-vault"/></g>
-    <g data-depth="18" transform="translate(30,96) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(110,104) scale(.8)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(290,104) scale(.8)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(320,90) scale(.4)"><use href="#sym-vex"/></g>
-    <g data-depth="22" transform="translate(196,96) scale(.85)"><use href="#sym-dev"/></g>
-    <text data-depth="14" x="200" y="200" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">LIBRARY LANE → LIBRARY LANE ✓</text>`)}
-    <div class="sfx" style="top:10px;left:16px">CLUNK-WHIRRR!</div>
-    <div class="balloon" style="bottom:14px;left:10px;max-width:52%"><span class="who">MATEO</span>Vault cleared! The Expression Engine reboots — every sign in the city snaps back to honest words.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#eef7f6"/><g transform="translate(58,4) scale(.7)"><use href="#sym-glitch"/></g><text x="100" y="100" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#0d7a4f">=</text>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">KEIKO</span>The glitch isn't gone — it's <i>fixed</i>. All its broken equations balanced. Now it's just a tidy little equals sign.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#06121f"/><g stroke="#22456a" stroke-width="1.5">${[1,2,3,4].map(i=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="110"/>`).join("")}${[1,2].map(i=>`<line x1="0" y1="${i*36}" x2="200" y2="${i*36}"/>`).join("")}</g><g fill="#7CF2EC" font-size="14" font-family="Arial"><text x="30" y="30">❄</text><text x="150" y="24">❄</text><text x="90" y="58">❄</text><text x="170" y="84">❄</text><text x="50" y="92">❄</text></g><text x="100" y="50" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#F2C15B">−9°</text>`)}
-      <div class="balloon vex" style="bottom:2px;left:4px;max-width:64%"><span class="who">VEX</span>New distortion. Cold. Negative. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: VOL. 7 — BELOW ZERO</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-wake")}
+      <div class="sfx" style="top:10px;left:16px">CLUNK-WHIRRR!</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:22%;font-size:clamp(12px,2.6cqi,16px)">LIBRARY LANE → LIBRARY LANE ✓</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:50%"><span class="who">MATEO</span>Vault cleared! The Expression Engine reboots — every sign in the city snaps back to honest words.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-glitch")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>The glitch isn't gone — it's <i>fixed</i>. All its broken equations balanced. Now it's just a tidy little equals sign.</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:72%;font-size:clamp(22px,8cqi,40px);color:#F2C15B">=</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-cold")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>New distortion. Cold. Negative. To be continued…</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:66%;font-size:clamp(18px,6cqi,30px)">−9°</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: VOL. 7 — BELOW ZERO</b></div>
+  </div>`},
 
 /* ---- p16: cast ---- */
 { ch:"End Matter · The Crew", html:`

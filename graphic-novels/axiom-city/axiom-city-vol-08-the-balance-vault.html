@@ -236,6 +236,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -287,30 +290,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 8: The Balance Vault. Nadia leads the crew into an underground vault of brass balance scales while pale inequality fog curls around their feet and a great round vault door glows behind them.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#vaultgrad)"/><circle cx="250" cy="300" r="150" fill="#1FA6A2" opacity=".16"/><circle cx="250" cy="300" r="80" fill="#7CF2EC" opacity=".14"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(140,190) scale(2.2)" opacity=".97"><use href="#sym-vaultdoor"/></g>
-        <rect y="430" width="500" height="14" fill="#0d1f33"/>
-        <g opacity=".85"><g transform="translate(16,330) scale(1)"><use href="#sym-bscale"/></g><g transform="translate(396,330) scale(1)"><use href="#sym-bscale"/></g><g transform="translate(-30,344) scale(.8)"><use href="#sym-bscale"/></g><g transform="translate(450,344) scale(.8)"><use href="#sym-bscale"/></g></g>
-        <rect y="640" width="500" height="60" fill="#0d1f33"/>
-      </svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="600" width="500" height="100" fill="#0d1f33"/>
-        <g transform="translate(60,468) scale(.84)"><use href="#sym-maya"/></g>
-        <g transform="translate(348,472) scale(.82)"><use href="#sym-zara"/></g>
-        <g transform="translate(420,496) scale(.74)"><use href="#sym-dev"/></g>
-        <g transform="translate(180,420) scale(1.25)"><use href="#sym-theo"/></g>
-        <g transform="translate(386,250) scale(.85)"><use href="#sym-vex"/></g>
-        <g fill="#9fb7c6" opacity=".55"><ellipse cx="80" cy="610" rx="130" ry="22"/><ellipse cx="280" cy="628" rx="160" ry="20"/><ellipse cx="440" cy="606" rx="110" ry="22"/><ellipse cx="180" cy="650" rx="180" ry="24"/></g>
-        <g fill="#9fb7c6" opacity=".3"><ellipse cx="120" cy="580" rx="100" ry="14"/><ellipse cx="380" cy="586" rx="120" ry="15"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 8: The Balance Vault. Nadia steps out ahead of Caleb, Tessa and Kenji at the bottom of an underground vault of brass balance scales; pale fog curls around their feet, a great round brass vault door glows behind them and VEX floats above.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -389,248 +370,225 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",  label:"Vault Breaker — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const VAULTBG='<rect width="400" height="200" fill="#152736"/><rect width="400" height="200" fill="url(#halftone)" opacity=".4"/>';
-const FOG=y=>`<g fill="#9fb7c6" opacity=".5"><ellipse cx="60" cy="${y}" rx="92" ry="15"/><ellipse cx="210" cy="${y+8}" rx="115" ry="13"/><ellipse cx="352" cy="${y+2}" rx="78" ry="14"/></g>`;
 
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-08 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-08-the-balance-vault.webp?v=0c9d0bee20","w":3156,"h":4571,"f":{"cover":[0,0,544,762,"Nadia steps out ahead of Caleb, Tessa and Kenji at the bottom of an underground vault of brass balance scales. Pale fog curls around their feet, a great round brass vault door glows behind them and VEX floats above.",[]],"p1-crew":[1740,3048,870,435,"Caleb, Nadia, Tessa and Kenji stand in a row between two tall brass balance scales in a dark stone room, while VEX glows in the upper corner.",[]],"p1-city":[0,3538,870,381,"Axiom City on a snowy winter night: the windows are dark, and the street lamps in front of the domed city hall blink with a pale teal light.",[]],"p2-door":[0,2558,870,490,"Nadia leads Caleb and Tessa down a brass staircase toward a huge round vault door that stands slightly open, while pale fog pools across the floor and VEX glows above.",[]],"p2-kenji":[0,762,653,653,"Kenji looks down in surprise as pale teal fog curls up around his sneakers like smoke.",[]],"p2-vex":[653,762,653,653,"VEX hovers above a floor of thick, glowing fog that rises in slow wisps.",[]],"p3-ante":[870,2558,870,490,"In the antechamber, Nadia points at a stone pedestal holding a slate plate and four brass keys, while Tessa stands at the right with her arms crossed. Brass scales line the walls and fog creeps over the floor.",[]],"p3-caleb":[1306,762,653,653,"Caleb grins and holds up a small brass practice plate.",[]],"p3-vex":[1959,762,653,653,"VEX glows brightly in the dark chamber in front of a level brass balance scale.",[]],"p4-nadia":[0,4245,870,326,"Nadia looks straight out with a determined smile while VEX floats nearby above the fog.",[]],"p5-scale":[1740,2558,870,490,"A giant brass balance scale spans a dark chasm, its beam a bridge. A sealed crate and brass weights sit on the left pan and a taller stack of weights on the right. Tessa stands at the left edge and Nadia at the right.",[]],"p5-caleb":[0,1415,653,653,"Caleb kneels beside a small brass scale and lifts one weight off each pan at the same time.",[]],"p5-vex":[653,1415,653,653,"VEX hovers above a small brass balance scale whose two pans hang perfectly level.",[]],"p6-tessa":[870,4245,870,326,"Tessa grins as she hugs a heavy brass counterweight in front of the giant scale's beam.",[]],"p7-gears":[0,3048,870,490,"Kenji points up at a brass door with two big gear locks while Nadia studies it, hand on her chin. Behind them the corridor lamps are going dark.",[]],"p7-tessa":[870,3538,870,381,"Tessa explains with a raised finger, showing a small rope pulley with three equal brass weights hanging from it.",[]],"p8-kenji":[1740,4245,870,326,"Kenji reaches urgently for a brass gear lock as the lamps dim behind him.",[]],"p9-lift":[870,3048,870,490,"An old iron freight lift waits beside a brass plate on the wall, with stacks of wooden crates nearby. Tessa and a puzzled Caleb stand at the left.",[]],"p9-vex":[1959,1415,653,653,"VEX glows beside the bars of the iron freight lift.",[]],"p9-nadia":[1306,1415,653,653,"Nadia reads from Ada's thick old leather manual by lantern light.",[]],"p10-caleb":[1740,3538,870,326,"Caleb points at the lift's brass plate and smiles out at the reader.",[]],"p11-gallery":[0,2068,870,490,"In a long stone gallery, five large blank cards hang on brass chains above floor grates puffing fog. Nadia gestures at them from the lower left.",[]],"p11-vex":[1197,0,653,653,"VEX hovers above a glowing boundary line on the stone floor, the blank cards behind it.",[]],"p11-kenji":[544,0,653,653,"Kenji smirks and points, a handheld game console in his other hand, as fog drifts around him.",[]],"p12-nadia":[0,3919,870,326,"Nadia coughs into her sleeve and waves away the thickening fog.",[]],"p13-door":[870,2068,870,490,"In the last chamber, Ada Vex's great round vault door fills the wall, with three lock dials and a pressure gauge in its frame. Nadia and Caleb stand at the right in knee-high fog.",[]],"p13-caleb":[870,3919,870,326,"Caleb turns to the reader with an encouraging grin and a thumbs up.",[]],"p14-vex":[1740,3919,870,326,"VEX glows gold above the swirling fog at the vault door.",[]],"p15-open":[1740,2068,870,490,"The vault door swings wide open and golden light pours out while the fog rushes up out of every grate. Tessa, Nadia, Kenji and Caleb cheer, and VEX floats above.",[]],"p15-kenji":[2503,0,653,653,"Kenji pumps his fist in victory in the warm light of sunrise.",[]],"p15-dome":[1850,0,653,653,"A glass harvest dome on a hill glows an eerie green in the night, and VEX hovers nearby.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + previously (recaps Vol 7) ---- */
 { ch:"Axiom City · Volume Eight", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE BALANCE <em>VAULT</em></h2>
   <div class="caption" style="display:inline-block">An equations &amp; inequalities adventure in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#152736"/><rect width="400" height="210" fill="url(#halftone)" opacity=".4"/>
-    <g data-depth="8" opacity=".7"><g transform="translate(28,40) scale(.7)"><use href="#sym-bscale"/></g><g transform="translate(300,40) scale(.7)"><use href="#sym-bscale"/></g></g>
-    <g data-depth="16" transform="translate(20,86) scale(1)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(170,8) scale(.55)"><use href="#sym-vex"/></g>
-    ${FOG(196)}`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion detected under city hall. Reader: stand by.</div>
-  </div>
-  <div class="caption loc">Previously: a winter blackout turned the city grid dark. The crew plotted every district by its coordinates and relit Axiom City — then the lamps under city hall blinked out a message: COME DOWN.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:56%;--ty:14px"><span class="who">VEX</span>Pattern distortion detected under city hall. Reader: stand by.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-city")}
+      <div class="caption loc">Previously: a winter blackout turned the city grid dark. The crew plotted every district by its coordinates and relit Axiom City — then the lamps under city hall blinked out a message: COME DOWN.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: ch1 splash ---- */
 { ch:"Chapter 1 · The Door Under City Hall", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE DOOR UNDER <em>CITY HALL</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    <rect width="400" height="230" fill="#0d1f33"/>
-    <g data-depth="6" fill="#152736" stroke="#17324D" stroke-width="3"><polygon points="0,0 400,0 400,40 0,90"/><rect x="0" y="90" width="400" height="140"/></g>
-    <g data-depth="10" stroke="#b78a2e" stroke-width="4"><line x1="40" y1="60" x2="120" y2="84"/><line x1="60" y1="78" x2="140" y2="102"/><line x1="80" y1="96" x2="160" y2="120"/><line x1="100" y1="114" x2="180" y2="138"/></g>
-    <g data-depth="12" transform="translate(250,60) scale(1.5)"><use href="#sym-vaultdoor"/></g>
-    <g data-depth="20" transform="translate(60,96) scale(.95)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(140,116) scale(.8)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(8,130) scale(.75)"><use href="#sym-zara"/></g>
-    <g data-depth="24" transform="translate(196,18) scale(.5)"><use href="#sym-vex"/></g>
-    ${FOG(218)}`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">NADIA</span>Ada Vex built a vault below city hall. The blueprints call it the <b>Balance Vault</b>. Tonight, its door is… open.</div>
-    <div class="balloon tail-r" style="bottom:14px;right:8px;max-width:42%"><span class="who">CALEB</span>Open doors are invitations. Or warnings. Nadia — you know the blueprints. Lead.</div>
-  </div>
-  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#10243a"/><g transform="translate(60,8) scale(.85)"><use href="#sym-dev"/></g>${FOG(112).replace('cx="210"','cx="120"')}`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">KENJI</span>Dungeon level unlocked. Why is the floor… smoking?</div></div>
-  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#10243a"/><g transform="translate(64,14) scale(.8)"><use href="#sym-vex"/></g>${FOG(110)}`)}
-    <div class="balloon vex" style="bottom:6px;left:6px;max-width:84%"><span class="who">VEX</span>That is <b>inequality fog</b>. It seals exits. Only TRUE statements vent it. False ones feed it.</div></div></div>
-  <div class="sr-only">The crew descends a brass staircase toward a round vault door while pale fog pools on the floor.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-door")}
+      <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">NADIA</span>Ada Vex built a vault below city hall. The blueprints call it the <b>Balance Vault</b>. Tonight, its door is… open.</div>
+      <div class="balloon tail-r" style="bottom:14px;right:8px;max-width:42%"><span class="who">CALEB</span>Open doors are invitations. Or warnings. Nadia — you know the blueprints. Lead.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-kenji")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KENJI</span>Dungeon level unlocked. Why is the floor… smoking?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>That is <b>inequality fog</b>. It seals exits. Only TRUE statements vent it. False ones feed it.</div>
+    </div>
+  </div>`},
 
 /* ---- p3: ch1 antechamber ---- */
 { ch:"Chapter 1 · The Antechamber", html:`
-  <div class="caption loc">The antechamber. Brass balance scales line the walls. Behind the crew, the fog slides over the staircase — and the way back is gone.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${VAULTBG}
-    <g data-depth="8" opacity=".8"><g transform="translate(10,26) scale(.62)"><use href="#sym-bscale"/></g><g transform="translate(86,26) scale(.62)"><use href="#sym-bscale"/></g><g transform="translate(316,26) scale(.62)"><use href="#sym-bscale"/></g></g>
-    <rect data-depth="12" x="150" y="78" width="120" height="78" rx="8" fill="#0d1f33" stroke="#b78a2e" stroke-width="3"/>
-    <text data-depth="12" x="210" y="106" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="17" fill="#7CF2EC">x + 7 = 15</text>
-    <g data-depth="12" fill="#F2C15B" stroke="#17324D" stroke-width="2"><rect x="160" y="120" width="20" height="24" rx="3"/><rect x="186" y="120" width="20" height="24" rx="3"/><rect x="212" y="120" width="20" height="24" rx="3"/><rect x="238" y="120" width="20" height="24" rx="3"/></g>
-    <text data-depth="12" x="170" y="137" text-anchor="middle" font-size="9" font-family="Arial" font-weight="800" fill="#17324D">8</text>
-    <text data-depth="12" x="196" y="137" text-anchor="middle" font-size="9" font-family="Arial" font-weight="800" fill="#17324D">22</text>
-    <text data-depth="12" x="222" y="137" text-anchor="middle" font-size="9" font-family="Arial" font-weight="800" fill="#17324D">7</text>
-    <text data-depth="12" x="248" y="137" text-anchor="middle" font-size="9" font-family="Arial" font-weight="800" fill="#17324D">105</text>
-    <g data-depth="18" transform="translate(40,76) scale(.9)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(300,86) scale(.82)"><use href="#sym-zara"/></g>
-    ${FOG(190)}`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:52%"><span class="who">NADIA</span>Every scale in here is an <b>equation</b> — a statement that two sides are equal. The pedestal wants a key.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:42%"><span class="who">TESSA</span>So we test keys the way I test bolts. One at a time, no guessing twice.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#10243a"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g><g transform="translate(14,-6) scale(.7)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:38%"><span class="who">CALEB</span>Practice plate: n + 2 = 6. Only n = 4 keeps it true — 4 + 2 really is 6.</div>
-    <div class="balloon vex tail-r" style="bottom:4px;right:4px;max-width:44%"><span class="who">VEX</span>Correct. A <b>solution</b> is the value that makes the statement TRUE. A wrong key is a lie. The fog likes lies.</div>
-  </div>
-  <div class="caption">An <b>equation</b> says two things are equal. A <b>solution</b> is the value that makes it true. Substitute, then check.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-ante")}
+      <div class="caption loc">The antechamber. Brass balance scales line the walls. Behind the crew, the fog slides over the staircase — and the way back is gone.</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:44%">x + 7 = 15</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:58%;color:#17324D">8 &nbsp; 22 &nbsp; 7 &nbsp; 105</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:46%"><span class="who">NADIA</span>Every scale in here is an <b>equation</b> — a statement that two sides are equal. The pedestal wants a key.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:40%"><span class="who">TESSA</span>So we test keys the way I test bolts. One at a time, no guessing twice.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-caleb")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CALEB</span>Practice plate: n + 2 = 6. Only n = 4 keeps it true — 4 + 2 really is 6.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Correct. A <b>solution</b> is the value that makes the statement TRUE. A wrong key is a lie. The fog likes lies.</div>
+    </div>
+    <div class="caption">An <b>equation</b> says two things are equal. A <b>solution</b> is the value that makes it true. Substitute, then check.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#10243a"/><g transform="translate(8,2) scale(.7)"><use href="#sym-theo"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>${FOG(84)}`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">NADIA</span>Reader — you're our fifth crew member. Test the keys. TRUE statements only.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-nadia")}
+      <div class="balloon" style="top:6px;left:34%;max-width:44%;--tx:10px"><span class="who">NADIA</span>Reader — you're our fifth crew member. Test the keys. TRUE statements only.</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 the great scale ---- */
 { ch:"Chapter 2 · The Great Scale", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE GREAT <em>SCALE</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#152736"/><rect width="400" height="210" fill="url(#halftone)" opacity=".4"/>
-    <g data-depth="10" transform="translate(70,10) scale(2.6)" opacity=".95"><use href="#sym-bscale"/></g>
-    <rect data-depth="10" x="96" y="118" width="36" height="30" fill="#a2683a" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="10" x="114" y="139" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#fff">x</text>
-    <text data-depth="10" x="150" y="142" font-family="Arial" font-weight="800" font-size="13" fill="#F2C15B">+ 9</text>
-    <text data-depth="10" x="282" y="142" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#F2C15B">14</text>
-    <g data-depth="18" transform="translate(8,90) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(312,96) scale(.84)"><use href="#sym-theo"/></g>
-    ${FOG(200)}`)}
-    <div class="sfx" style="top:8px;right:14px">CREEEAK</div>
-    <div class="balloon" style="top:6px;left:8px;max-width:48%"><span class="who">TESSA</span>The bridge across IS the beam of one giant scale. It only locks level when both pans match.</div>
-    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:46%"><span class="who">NADIA</span>Left pan: a sealed crate — call its weight <b>x</b> — plus nine brass weights. Right pan: fourteen.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#10243a"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g><g transform="translate(12,-6) scale(.7)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:4px;left:84px;max-width:40%"><span class="who">CALEB</span>Practice beam: n + 3 = 10. Lift 3 off BOTH pans… n = 7. It never wobbled.</div>
-    <div class="balloon vex tail-r" style="bottom:4px;right:4px;max-width:44%"><span class="who">VEX</span>That undo-move is an <b>inverse operation</b>. Addition is undone by subtraction — applied to BOTH sides.</div>
-  </div>
-  <div class="caption"><b>Inverse operations</b> undo each other: + and −, × and ÷. Balance rule: same move, both sides, every time.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-scale")}
+      <div class="sfx" style="top:8px;right:14px">CREEEAK</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:28%;top:58%">x</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:38%;top:58%">+ 9</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:72%;top:56%">14</div>
+      <div class="balloon" style="top:6px;left:8px;max-width:46%"><span class="who">TESSA</span>The bridge across IS the beam of one giant scale. It only locks level when both pans match.</div>
+      <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:44%"><span class="who">NADIA</span>Left pan: a sealed crate — call its weight <b>x</b> — plus nine brass weights. Right pan: fourteen.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-caleb")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CALEB</span>Practice beam: n + 3 = 10. Lift 3 off BOTH pans… n = 7. It never wobbled.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>That undo-move is an <b>inverse operation</b>. Addition is undone by subtraction — applied to BOTH sides.</div>
+    </div>
+    <div class="caption"><b>Inverse operations</b> undo each other: + and −, × and ÷. Balance rule: same move, both sides, every time.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#152736"/><g transform="translate(10,0) scale(.66)"><use href="#sym-zara"/></g>${FOG(78)}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">TESSA</span>Counterweights ready. Reader — level the beam so we can cross!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-tessa")}
+      <div class="balloon" style="top:6px;left:36%;max-width:46%;--tx:10px"><span class="who">TESSA</span>Counterweights ready. Reader — level the beam so we can cross!</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 gear locks ---- */
 { ch:"Chapter 3 · The Gear Locks", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE GEAR <em>LOCKS</em></h2>
-  <div class="caption loc">Past the bridge: a brass door with two gear locks. Behind the crew, the fog snuffs the corridor lamps one by one.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${VAULTBG}
-    <rect data-depth="6" x="120" y="20" width="160" height="170" rx="10" fill="#0d1f33" stroke="#b78a2e" stroke-width="4"/>
-    <g data-depth="12" transform="translate(128,36) scale(.72)"><use href="#sig-gearx"/></g>
-    <g data-depth="12" transform="translate(204,36) scale(.72)"><use href="#sig-gearx"/></g>
-    <text data-depth="12" x="164" y="128" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">6x = 42</text>
-    <text data-depth="12" x="240" y="128" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">x ÷ 4 = 8</text>
-    <g data-depth="18" transform="translate(16,76) scale(.92)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(300,80) scale(.88)"><use href="#sym-theo"/></g>
-    ${FOG(192)}`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:46%"><span class="who">KENJI</span>Lock A multiplied x by six and shows 42. Lock B split x into four equal turns and shows one turn: eight.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:46%"><span class="who">NADIA</span>Naming the unknown <b>x</b> tells us exactly what each lock DID. Then we undo it — inverses again.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#10243a"/><g transform="translate(10,-6) scale(.68)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:82px;max-width:74%"><span class="who">TESSA</span>Like my pulley test: 3g = 12 means one g is 12 ÷ 3 — four. And if w ÷ 2 = 5, the whole w is 5 × 2 — ten.</div>
-  </div>
-  <div class="caption">A letter like <b>x</b> stands for the unknown number. Say what was done to it, then apply the inverse to both sides.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-gears")}
+      <div class="caption loc">Past the bridge: a brass door with two gear locks. Behind the crew, the fog snuffs the corridor lamps one by one.</div>
+      <div class="gn-sign" data-gn-skip style="left:42%;top:40%">6x = 42</div>
+      <div class="gn-sign" data-gn-skip style="left:60%;top:40%">x ÷ 4 = 8</div>
+      <div class="balloon" style="bottom:10px;left:8px;max-width:44%"><span class="who">KENJI</span>Lock A multiplied x by six and shows 42. Lock B split x into four equal turns and shows one turn: eight.</div>
+      <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:44%"><span class="who">NADIA</span>Naming the unknown <b>x</b> tells us exactly what each lock DID. Then we undo it — inverses again.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-tessa")}
+      <div class="balloon" style="top:8px;right:8px;max-width:60%;--tx:12px"><span class="who">TESSA</span>Like my pulley test: 3g = 12 means one g is 12 ÷ 3 — four. And if w ÷ 2 = 5, the whole w is 5 × 2 — ten.</div>
+    </div>
+    <div class="caption">A letter like <b>x</b> stands for the unknown number. Say what was done to it, then apply the inverse to both sides.</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#152736"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>${FOG(78)}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">KENJI</span>Two locks, two inverses. Spin them, reader — the lamps are going out!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-kenji")}
+      <div class="balloon" style="top:6px;left:36%;max-width:46%;--tx:10px"><span class="who">KENJI</span>Two locks, two inverses. Spin them, reader — the lamps are going out!</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 the freight lift ---- */
 { ch:"Chapter 4 · The Freight Lift", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE FREIGHT <em>LIFT</em></h2>
-  <div class="caption loc">A freight lift waits at the shaft. A brass plate states the rule. The fog states its disagreement.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${VAULTBG}
-    <g data-depth="8" stroke="#b78a2e" stroke-width="4" fill="none"><rect x="240" y="14" width="140" height="160"/><line x1="240" y1="54" x2="380" y2="54"/><line x1="275" y1="14" x2="275" y2="174"/><line x1="310" y1="14" x2="310" y2="174"/><line x1="345" y1="14" x2="345" y2="174"/></g>
-    <rect data-depth="12" x="20" y="20" width="190" height="52" rx="6" fill="#0d1f33" stroke="#b78a2e" stroke-width="3"/>
-    <text data-depth="12" x="115" y="41" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B">LIFT OPERATES WITH</text>
-    <text data-depth="12" x="115" y="60" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B">AT LEAST 12 CRATES OF BALLAST</text>
-    <g data-depth="12" fill="#a2683a" stroke="#17324D" stroke-width="2.5"><rect x="250" y="140" width="30" height="26"/><rect x="284" y="140" width="30" height="26"/><rect x="318" y="140" width="30" height="26"/><rect x="284" y="112" width="30" height="26"/></g>
-    <g data-depth="18" transform="translate(30,82) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(130,88) scale(.84)"><use href="#sym-maya"/></g>
-    ${FOG(192)}`)}
-    <div class="sfx" style="top:74px;right:10px">CLUNK</div>
-    <div class="balloon" style="bottom:14px;left:8px;max-width:52%"><span class="who">CALEB</span>"At least 12" isn't one number. Twelve works. Thirteen works. Fifty works. How do we even write that?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#10243a"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g><g transform="translate(12,-4) scale(.68)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon vex" style="top:4px;left:84px;max-width:42%"><span class="who">VEX</span>With an <b>inequality</b> — a statement comparing values. It can be true for MANY values at once.</div>
-    <div class="balloon tail-r" style="bottom:4px;right:4px;max-width:44%"><span class="who">NADIA</span>Ada's manual graphs one: "at most 20 degrees" is t ≤ 20 — a FILLED circle on 20, ray toward the smaller numbers. Filled means 20 itself counts.</div>
-  </div>
-  <div class="caption">Symbols: <b>&gt;</b> greater than · <b>&lt;</b> less than · <b>≥</b> at least (the number is included) · <b>≤</b> at most (included).</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-lift")}
+      <div class="caption loc">A freight lift waits at the shaft. A brass plate states the rule. The fog states its disagreement.</div>
+      <div class="sfx" style="top:40%;right:10px">CLUNK</div>
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:66%;top:44%;width:30%">LIFT OPERATES WITH<br>AT LEAST 12 CRATES OF BALLAST</div>
+      <div class="balloon" style="bottom:12px;left:8px;max-width:48%"><span class="who">CALEB</span>"At least 12" isn't one number. Twelve works. Thirteen works. Fifty works. How do we even write that?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>With an <b>inequality</b> — a statement comparing values. It can be true for MANY values at once.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-nadia")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">NADIA</span>Ada's manual graphs one: "at most 20 degrees" is t ≤ 20 — a FILLED circle on 20, ray toward the smaller numbers. Filled means 20 itself counts.</div>
+    </div>
+    <div class="caption">Symbols: <b>&gt;</b> greater than · <b>&lt;</b> less than · <b>≥</b> at least (the number is included) · <b>≤</b> at most (included).</div>
+  </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#152736"/><g transform="translate(8,0) scale(.66)"><use href="#sym-maya"/></g>${FOG(78)}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:70%"><span class="who">CALEB</span>Write the lift's rule, then pick its picture. The fog reads symbols, reader.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-caleb")}
+      <div class="balloon" style="top:6px;left:36%;max-width:46%;--tx:10px"><span class="who">CALEB</span>Write the lift's rule, then pick its picture. The fog reads symbols, reader.</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash fog gallery ---- */
 { ch:"Chapter 5 · The Fog Gallery", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE FOG <em>GALLERY</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#0d1f33"/>
-    <g data-depth="8" opacity=".9"><g transform="translate(24,16) scale(.62)"><use href="#sig-vent"/></g><g transform="translate(100,16) scale(.62)"><use href="#sig-vent"/></g><g transform="translate(176,16) scale(.62)"><use href="#sig-vent"/></g><g transform="translate(252,16) scale(.62)"><use href="#sig-vent"/></g><g transform="translate(328,16) scale(.62)"><use href="#sig-vent"/></g></g>
-    <rect data-depth="12" x="120" y="92" width="160" height="34" rx="6" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/>
-    <text data-depth="12" x="200" y="114" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="15" fill="#7CF2EC">VENT RULE: v &lt; 9</text>
-    <g data-depth="16" fill="#F2C15B" stroke="#17324D" stroke-width="2.5">${[["3",40],["8.9",108],["9",184],["12",252],["5.5",320]].map(([t,x])=>`<rect x="${x}" y="140" width="44" height="30" rx="5"/>`).join("")}</g>
-    ${[["3",40],["8.9",108],["9",184],["12",252],["5.5",320]].map(([t,x])=>`<text data-depth="16" x="${+x+22}" y="160" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">${t}</text>`).join("")}
-    <g data-depth="20" transform="translate(8,96) scale(.8)"><use href="#sym-theo"/></g>
-    ${FOG(208)}`)}
-    <div class="balloon" style="top:4px;left:8px;max-width:50%"><span class="who">NADIA</span>Value cards. Every card that makes the rule TRUE opens a vent. Every false one… feeds the fog.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><g transform="translate(62,8) scale(.78)"><use href="#sym-vex"/></g>`)}
-      <div class="balloon vex" style="top:4px;left:4px;max-width:78%"><span class="who">VEX</span>All the true values together form the <b>solution set</b>. Strictly less than. The boundary is not invited.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><g transform="translate(58,4) scale(.78)"><use href="#sym-dev"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">KENJI</span>Like loot filters. t &lt; 4 keeps 2 and 3.5, rejects 4 — because 4 &lt; 4 is false.</div></div>
-  </div>
-  <div class="caption">A <b>solution set</b> is every value that makes a statement true — an inequality can have many solutions.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-gallery")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:12%">VENT RULE: v &lt; 9</div>
+      ${[["3",18],["8.9",34],["9",50],["12",66],["5.5",82]].map(([t,x])=>`<div class="gn-sign gn-plate" data-gn-skip style="left:${x}%;top:44%;color:#17324D">${t}</div>`).join("")}
+      <div class="balloon" style="bottom:10px;left:8px;max-width:48%"><span class="who">NADIA</span>Value cards. Every card that makes the rule TRUE opens a vent. Every false one… feeds the fog.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>All the true values together form the <b>solution set</b>. Strictly less than. The boundary is not invited.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-kenji")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KENJI</span>Like loot filters. t &lt; 4 keeps 2 and 3.5, rejects 4 — because 4 &lt; 4 is false.</div>
+    </div>
+    <div class="caption">A <b>solution set</b> is every value that makes a statement true — an inequality can have many solutions.</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0d1f33"/><g transform="translate(8,0) scale(.66)"><use href="#sym-theo"/></g>${FOG(78)}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:70%"><span class="who">NADIA</span>Tap every TRUE card, reader. Miss one and we keep breathing fog.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p12-nadia")}
+      <div class="balloon" style="top:6px;left:36%;max-width:46%;--tx:10px"><span class="who">NADIA</span>Tap every TRUE card, reader. Miss one and we keep breathing fog.</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup ---- */
 { ch:"Chapter 5 · The Vault Door", html:`
-  <div class="caption loc">The last chamber. Ada Vex's vault door — three locks, one pressure gauge, fog to the knees.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#0d1f33"/>
-    <g data-depth="10" transform="translate(120,24) scale(1.6)"><use href="#sym-vaultdoor"/></g>
-    <rect data-depth="14" x="12" y="22" width="96" height="64" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
-    <text data-depth="14" x="60" y="44" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">PRESSURE:</text>
-    <text data-depth="14" x="60" y="68" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#F2C15B">p ≤ 15</text>
-    <text data-depth="14" x="60" y="118" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#7CF2EC">m − 6 = 9</text>
-    <text data-depth="14" x="60" y="140" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#7CF2EC">4t = 36</text>
-    <g data-depth="20" transform="translate(310,86) scale(.92)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(232,110) scale(.74)"><use href="#sym-maya"/></g>
-    ${FOG(200)}`)}
-    <div class="balloon ada" style="top:6px;right:8px;max-width:46%"><span class="who">ADA VEX · RECORDED</span>Balance is not stillness. It is truth, held steady. Prove three truths and breathe easy.</div>
-    <div class="balloon" style="bottom:14px;left:8px;max-width:50%"><span class="who">NADIA</span>Locks 1 and 2 are one-step equations. Lock 3 is the gauge — the door stays open only while p ≤ 15 stays true.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#10243a"/><g transform="translate(10,-4) scale(.64)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:72%"><span class="who">CALEB</span>Reader — you've leveled beams and read symbols all night. Call the truths!</div>
-  </div>
-  <div class="caption">Boss Gate: inverse operations on both sides, then test the pressure set — remember what ≤ includes.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p13-door")}
+      <div class="caption loc">The last chamber. Ada Vex's vault door — three locks, one pressure gauge, fog to the knees.</div>
+      <div class="gn-sign" data-gn-skip style="left:30%;top:60%">m − 6 = 9</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:60%">4t = 36</div>
+      <div class="gn-sign" data-gn-skip style="left:40%;top:78%">PRESSURE:<br>p ≤ 15</div>
+      <div class="balloon ada" style="top:6px;right:8px;max-width:44%"><span class="who">ADA VEX · RECORDED</span>Balance is not stillness. It is truth, held steady. Prove three truths and breathe easy.</div>
+      <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:46%"><span class="who">NADIA</span>Locks 1 and 2 are one-step equations. Lock 3 is the gauge — the door stays open only while p ≤ 15 stays true.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p13-caleb")}
+      <div class="balloon" style="top:6px;left:34%;max-width:56%;--tx:10px"><span class="who">CALEB</span>Reader — you've leveled beams and read symbols all night. Call the truths!</div>
+    </div>
+    <div class="caption">Boss Gate: inverse operations on both sides, then test the pressure set — remember what ≤ includes.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · The Balance Vault", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0d1f33"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>${FOG(70)}`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The fog is listening. No pressure. (Measurable pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:10px;max-width:62%"><span class="who">VEX</span>BOSS GATE. Three locks. The fog is listening. No pressure. (Measurable pressure.)</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory + teaser ---- */
 { ch:"Chapter 5 · Open Air", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#152736"/>
-    <g data-depth="10" transform="translate(130,16) scale(1.5)"><use href="#sym-vaultdoor"/></g>
-    <g data-depth="8" stroke="#9fb7c6" stroke-width="6" opacity=".7" stroke-linecap="round"><path d="M60 200 q10 -40 -6 -80" fill="none"/><path d="M200 206 q14 -50 -4 -96" fill="none"/><path d="M340 200 q10 -40 -8 -84" fill="none"/></g>
-    <g data-depth="18" transform="translate(20,96) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(96,100) scale(.86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(298,104) scale(.84)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(228,116) scale(.78)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(330,18) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:8px;left:16px">FWOOSH!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:44%"><span class="who">TESSA</span>The fog's venting — every grate at once! TRUE statements, five for five!</div>
-    <div class="balloon tail-r" style="top:60px;right:6px;max-width:42%"><span class="who">NADIA</span>And inside: Ada's eighth journal… plus the city ledger she balanced by hand.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#fdf2ee"/><g transform="translate(58,4) scale(.78)"><use href="#sym-dev"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">KENJI</span>Achievement: VAULT BREAKER. Sunrise in twenty minutes. Pancakes in thirty.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#17324D"/><path d="M40 92 Q100 18 160 92 Z" fill="#3a7d44" stroke="#F2C15B" stroke-width="3"/><path d="M58 92 Q100 40 142 92" fill="none" stroke="#9fe89f" stroke-width="2" opacity=".8"/><circle cx="100" cy="58" r="16" fill="#c9f25b" opacity=".85"/><circle cx="100" cy="58" r="26" fill="#c9f25b" opacity=".3"/><g fill="#F2C15B"><circle cx="30" cy="24" r="2"/><circle cx="170" cy="18" r="2"/><circle cx="150" cy="36" r="1.6"/></g>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:64%"><span class="who">VEX</span>New distortion. The harvest dome is glowing wrong at night. Something in there depends on something else… To be continued.</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: VOL. 9 — CAUSE & EFFECT</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-open")}
+      <div class="sfx" style="top:8px;left:16px">FWOOSH!</div>
+      <div class="balloon" style="bottom:10px;left:8px;max-width:44%"><span class="who">TESSA</span>The fog's venting — every grate at once! TRUE statements, five for five!</div>
+      <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:42%"><span class="who">NADIA</span>And inside: Ada's eighth journal… plus the city ledger she balanced by hand.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-kenji")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KENJI</span>Achievement: VAULT BREAKER. Sunrise in twenty minutes. Pancakes in thirty.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-dome")}
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none;--tx:22%"><span class="who">VEX</span>New distortion. The harvest dome is glowing wrong at night. Something in there depends on something else… To be continued.</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: VOL. 9 — CAUSE & EFFECT</b></div>
+  </div>`},
 
 /* ---- p16: cast ---- */
 { ch:"End Matter · The Crew", html:`
