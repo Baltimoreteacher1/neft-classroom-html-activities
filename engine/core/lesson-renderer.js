@@ -57,7 +57,6 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { recordLearningEvent } from "./learning-events.js";
 import {
   badgeName,
   getPreferredLang,
@@ -79,6 +78,7 @@ import {
   recordInstructionalEvidence,
 } from "./instructional-intelligence.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
+import { recordLearningEvent } from "./learning-events.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";

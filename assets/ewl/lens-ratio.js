@@ -345,7 +345,11 @@
           { class: "lens-qty" },
           btn,
           h("span", { class: "lens-qty-bar", style: `width:${width}px` }, Lens.fmt(p.x)),
-          h("span", { class: "lens-qty-bar lens-qty-bar-b", style: `width:${widthB}px` }, Lens.fmt(p.y, m.money)),
+          h(
+            "span",
+            { class: "lens-qty-bar lens-qty-bar-b", style: `width:${widthB}px` },
+            Lens.fmt(p.y, m.money),
+          ),
         );
         ctx.part({
           el: btn,
@@ -402,7 +406,14 @@
       return h(
         "div",
         null,
-        h("p", null, ctx.t("The scale factor changes both quantities together.", "El factor de escala cambia las dos cantidades juntas.")),
+        h(
+          "p",
+          null,
+          ctx.t(
+            "The scale factor changes both quantities together.",
+            "El factor de escala cambia las dos cantidades juntas.",
+          ),
+        ),
         h("ul", { class: "lens-statements", "aria-label": rep.alt(ctx.lang) }, items),
       );
     },

@@ -24,7 +24,9 @@ function listDirs(dir) {
 }
 
 function coreLessons() {
-  return listDirs("lessons").filter((id) => /^\d+-\d+$/.test(id) && existsSync(join(ROOT, "lessons", id, "config.json")));
+  return listDirs("lessons").filter(
+    (id) => /^\d+-\d+$/.test(id) && existsSync(join(ROOT, "lessons", id, "config.json")),
+  );
 }
 
 function readJson(path) {
@@ -37,14 +39,17 @@ function readJson(path) {
 
 const lessons = coreLessons();
 const flagship = listDirs("lessons").filter((id) => id.endsWith("-flagship"));
-const labs = listDirs("curriculum/learning-labs").filter((id) => existsSync(join(ROOT, "curriculum/learning-labs", id, "index.html")) && id !== "shared");
+const labs = listDirs("curriculum/learning-labs").filter(
+  (id) => existsSync(join(ROOT, "curriculum/learning-labs", id, "index.html")) && id !== "shared",
+);
 const practice = existsSync(join(ROOT, "math/practice-studio"))
   ? listDirs("math/practice-studio").filter((id) => /^\d+-\d+$/.test(id))
   : [];
 const smallGroups = listDirs("lessons").filter((id) => /-(group1|group2|catchup)$/.test(id));
 const family = lessons.filter((id) => existsSync(join(ROOT, "lessons", id, "homework.html")));
-const gameDirs = ["math/games", "curriculum/arcade"]
-  .flatMap((dir) => (existsSync(join(ROOT, dir)) ? listDirs(dir).map((name) => `${dir}/${name}`) : []));
+const gameDirs = ["math/games", "curriculum/arcade"].flatMap((dir) =>
+  existsSync(join(ROOT, dir)) ? listDirs(dir).map((name) => `${dir}/${name}`) : [],
+);
 const projects = existsSync(join(ROOT, "curriculum/projects/studio/projects.mjs")) ? 1 : 0;
 const novels = listDirs("graphic-novels");
 
@@ -54,10 +59,18 @@ const teacherTools = [
   ["runtime", "/curriculum/runtime/", "curriculum/runtime/index.html"],
   ["insight", "/teacher-tools/insight-brief/", "teacher-tools/insight-brief/index.html"],
   ["class-boss", "/curriculum/class-boss/", "curriculum/class-boss/index.html"],
-  ["teach-the-machine", "/curriculum/teach-the-machine/", "curriculum/teach-the-machine/index.html"],
+  [
+    "teach-the-machine",
+    "/curriculum/teach-the-machine/",
+    "curriculum/teach-the-machine/index.html",
+  ],
   ["pacing", "/curriculum/planning/", "curriculum/planning/index.html"],
   ["class-board", "/math/student-board/", "math/student-board/index.html"],
-  ["command-center", "/teacher-tools/canvas-command-center/", "teacher-tools/canvas-command-center/index.html"],
+  [
+    "command-center",
+    "/teacher-tools/canvas-command-center/",
+    "teacher-tools/canvas-command-center/index.html",
+  ],
   ["scorm", "/teacher-tools/canvas-scorm/", "teacher-tools/canvas-scorm/index.html"],
 ];
 
@@ -92,9 +105,13 @@ for (const id of lessons) {
     verified_defects: touched
       ? "Title emphasized exponents while standard 6.AT.6c is evaluating expressions at specific values. Target updated from the standard, the title's powers, and the launch substitution task."
       : "",
-    enhancements_required: touched ? "Keep Part 2 separate. Generated printables that copy the objective were string-aligned." : "Individual lesson files were not rewritten.",
+    enhancements_required: touched
+      ? "Keep Part 2 separate. Generated printables that copy the objective were string-aligned."
+      : "Individual lesson files were not rewritten.",
     implementation_status: touched ? "substantially-enhance" : "extend",
-    tests: touched ? "engine/core/publisher-upgrade.test.mjs lesson 6-4" : "shared engine tests; not an individual lesson play-through",
+    tests: touched
+      ? "engine/core/publisher-upgrade.test.mjs lesson 6-4"
+      : "shared engine tests; not an individual lesson play-through",
     evidence: touched
       ? "lessons/6-4/config.json contentObjective"
       : "engine/core/app.js sidebar goal; engine/core/hint-ladder.js; engine/core/learning-events.js",
@@ -125,7 +142,8 @@ for (const id of practice) {
     feature_family: "practice",
     instructional_goal: "Prepare, explore, guided, independent, reason, apply, improve.",
     existing_capability: "Generated practice studios with hints, Spanish, and adaptive levels.",
-    enhancements_required: "Studios were not regenerated. The shared clarity script adds the arc on load.",
+    enhancements_required:
+      "Studios were not regenerated. The shared clarity script adds the arc on load.",
     implementation_status: "extend",
     tests: "engine/core/publisher-upgrade.test.mjs hint roles",
     evidence: "assets/studio/clarity.js practice arc",
@@ -142,7 +160,8 @@ for (const id of smallGroups) {
     instructional_goal: challenge
       ? "Challenge adds reasoning depth, not only larger numbers."
       : "Support small group with a teacher launch card.",
-    existing_capability: "Five stable stage ids. Teacher view already held objective, timing, and next step.",
+    existing_capability:
+      "Five stable stage ids. Teacher view already held objective, timing, and next step.",
     enhancements_required: "Student stage ids were not renamed.",
     implementation_status: "extend",
     tests: "engine/core/small-group-pathway.test.mjs still pins stage ids",
@@ -156,10 +175,13 @@ for (const id of family) {
     route: `/lessons/${id}/homework.html`,
     lesson_id: id,
     feature_family: "family",
-    instructional_goal: "What we are learning, see it, try it together, your turn, need help, finish. Optional and ungraded.",
-    existing_capability: "Five-stop family mission already says optional and ungraded. EN/ES toggle does not clear answers.",
+    instructional_goal:
+      "What we are learning, see it, try it together, your turn, need help, finish. Optional and ungraded.",
+    existing_capability:
+      "Five-stop family mission already says optional and ungraded. EN/ES toggle does not clear answers.",
     verified_defects: "",
-    enhancements_required: "Generated homework.html pages were not regenerated, so the new path sentence is in the generator source only.",
+    enhancements_required:
+      "Generated homework.html pages were not regenerated, so the new path sentence is in the generator source only.",
     implementation_status: "preserve-polish",
     tests: "engine/core/publisher-upgrade.test.mjs family optional-language guard",
     evidence: "scripts/lib/homework-mission.mjs; scripts/homework-guided-notes.mjs setLanguageMode",
@@ -173,9 +195,11 @@ for (const dir of gameDirs) {
     lesson_id: "",
     feature_family: "arcade-games",
     instructional_goal: "Math drives the mechanic where a shared engine exists.",
-    existing_capability: "Shared fluency and canvas engines already exist for ratio, percent, area, equations, and data.",
+    existing_capability:
+      "Shared fluency and canvas engines already exist for ratio, percent, area, equations, and data.",
     verified_defects: "",
-    enhancements_required: "reviewed-not-rebuilt: this pass did not individually rebuild bespoke game cabinets.",
+    enhancements_required:
+      "reviewed-not-rebuilt: this pass did not individually rebuild bespoke game cabinets.",
     implementation_status: "reviewed-not-rebuilt",
     tests: "not individually retested",
     evidence: "docs/publisher-upgrade/upgrade-register.md",
@@ -230,14 +254,19 @@ for (const [id, route, file] of teacherTools) {
     route,
     lesson_id: "",
     feature_family: "teacher-tools",
-    instructional_goal: id === "living-map"
-      ? "Selecting a standard shows understanding, stored prerequisites, lessons, practice, support, challenge, and a next step."
-      : "Keep the existing teacher tool reachable from the curriculum home.",
+    instructional_goal:
+      id === "living-map"
+        ? "Selecting a standard shows understanding, stored prerequisites, lessons, practice, support, challenge, and a next step."
+        : "Keep the existing teacher tool reachable from the curriculum home.",
     existing_capability: present ? "Page exists." : "Page missing.",
     verified_defects: present ? "" : "Route file was not on disk.",
-    enhancements_required: id === "living-map" ? "No dependencies were invented." : "Tool behavior was not rebuilt.",
+    enhancements_required:
+      id === "living-map" ? "No dependencies were invented." : "Tool behavior was not rebuilt.",
     implementation_status: id === "living-map" || id === "pacing" ? "extend" : "preserve-polish",
-    tests: id === "living-map" ? "engine/core/publisher-upgrade.test.mjs standard plan" : "route smoke list",
+    tests:
+      id === "living-map"
+        ? "engine/core/publisher-upgrade.test.mjs standard plan"
+        : "route smoke list",
     evidence: file,
   });
 }
@@ -247,8 +276,10 @@ row({
   route: "/curriculum/",
   lesson_id: "",
   feature_family: "teacher-tools",
-  instructional_goal: "Teach today, Plan, Respond, and Resource library, with the rest of the hub still on the page.",
-  existing_capability: "Curriculum hub already linked Forge, the map, Class Boss, pacing, SCORM, family, and the command center.",
+  instructional_goal:
+    "Teach today, Plan, Respond, and Resource library, with the rest of the hub still on the page.",
+  existing_capability:
+    "Curriculum hub already linked Forge, the map, Class Boss, pacing, SCORM, family, and the command center.",
   implementation_status: "extend",
   tests: "route smoke list",
   evidence: "curriculum/index.html #hub-home-organize",
@@ -259,7 +290,8 @@ row({
   route: "/curriculum/math-canvas/?scene=equivalent-ratios&lesson=3-3",
   lesson_id: "3-3",
   feature_family: "representations",
-  instructional_goal: "One scale factor updates the quantity model, tape, double number line, table, and symbolic statement.",
+  instructional_goal:
+    "One scale factor updates the quantity model, tape, double number line, table, and symbolic statement.",
   existing_capability: "Living Math Canvas already synced tape, double number line, and table.",
   implementation_status: "substantially-enhance",
   tests: "engine/core/publisher-upgrade.test.mjs ratio invariance",
@@ -271,11 +303,13 @@ row({
   route: "/curriculum/almost-right-lab/#exponent-repair",
   lesson_id: "6-4",
   feature_family: "misconceptions",
-  instructional_goal: "3^2 is repeated multiplication. A product bug opens a repair and a fresh item.",
+  instructional_goal:
+    "3^2 is repeated multiplication. A product bug opens a repair and a fresh item.",
   existing_capability: "Misconception taxonomy already predicted exponent-as-multiplication.",
   implementation_status: "extend",
   tests: "engine/core/publisher-upgrade.test.mjs exponent",
-  evidence: "engine/core/publisher-models.js; engine/core/misconceptions.js re-export; curriculum/almost-right-lab/index.html",
+  evidence:
+    "engine/core/publisher-models.js; engine/core/misconceptions.js re-export; curriculum/almost-right-lab/index.html",
 });
 
 const counts = {};
@@ -299,7 +333,10 @@ const summary = {
 };
 
 mkdirSync(OUT_DIR, { recursive: true });
-writeFileSync(join(OUT_DIR, "coverage-matrix.json"), `${JSON.stringify({ summary, rows }, null, 2)}\n`);
+writeFileSync(
+  join(OUT_DIR, "coverage-matrix.json"),
+  `${JSON.stringify({ summary, rows }, null, 2)}\n`,
+);
 
 const lines = [
   "# Coverage report",

@@ -79,7 +79,12 @@
       for (let k = -r; k <= r; k++)
         s += `<line class="u7-gl" x1="${X(k)}" y1="${Y(-r)}" x2="${X(k)}" y2="${Y(r)}"/><line class="u7-gl" x1="${X(-r)}" y1="${Y(k)}" x2="${X(r)}" y2="${Y(k)}"/>`;
       s += `<line class="u7-ax" x1="${X(-r)}" y1="${Y(0)}" x2="${X(r)}" y2="${Y(0)}"/><line class="u7-ax" x1="${X(0)}" y1="${Y(-r)}" x2="${X(0)}" y2="${Y(r)}"/>`;
-      const tk = (/** @type {number} */ x, /** @type {number} */ y, /** @type {number} */ k, end = false) =>
+      const tk = (
+        /** @type {number} */ x,
+        /** @type {number} */ y,
+        /** @type {number} */ k,
+        end = false,
+      ) =>
         `<text class="u7-tk" x="${x}" y="${y}" style="font-size:${fs}px${end ? ";text-anchor:end" : ""}">${k < 0 ? "−" : ""}${Math.abs(k)}</text>`;
       s += tk(X(0) - 5, Y(0) + 13, 0, true);
       for (let k = -r; k <= r; k++) {

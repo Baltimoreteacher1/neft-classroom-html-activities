@@ -10,7 +10,11 @@ export const SCHEMA_VERSION = 1;
 
 export const HINT_ROLES = [
   { id: "strategic", en: "Strategic question", es: "Pregunta estratégica" },
-  { id: "representation", en: "Representation or partial step", es: "Representación o paso parcial" },
+  {
+    id: "representation",
+    en: "Representation or partial step",
+    es: "Representación o paso parcial",
+  },
   { id: "parallel", en: "Parallel worked example", es: "Ejemplo parecido resuelto" },
 ];
 
@@ -98,7 +102,8 @@ export function ratioScaleInvariant(model) {
     model.table.row[1] === y &&
     model.doubleNumberLine.x === x &&
     model.doubleNumberLine.y === y;
-  const sameScale = model.quantity.groups === k && model.tape.copies === k && model.table.times === k;
+  const sameScale =
+    model.quantity.groups === k && model.tape.copies === k && model.table.times === k;
   const rateHeld = y / x === B / A && x / A === k && y / B === k;
   const statement = model.symbolic === `${trimNum(A)}:${trimNum(B)} = ${trimNum(x)}:${trimNum(y)}`;
   return sameTotals && sameScale && rateHeld && statement;

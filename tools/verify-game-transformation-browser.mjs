@@ -84,7 +84,11 @@ const worlds = [
   ["volume", "/math/unit-10/games/unit10-volume-vault.html"],
   ["stats", "/math/statistics/games/unit8-stats-slam.html"],
 ];
-const browser = await chromium.launch({ headless: true, args: ["--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({
+  headless: true,
+  args: ["--enable-unsafe-swiftshader"],
+  ...(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {}),
+});
 async function open(context, path) {
   const p = await context.newPage();
   // A finished activity opens the Canvas completion-code dialog (assets/canvas-bridge.js), which

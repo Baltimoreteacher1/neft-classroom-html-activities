@@ -282,7 +282,9 @@
     nav.innerHTML = `<ol>${ARC.map(
       ([en, es], i) =>
         `<li><span class="practice-arc-n">${i + 1}</span><span class="t-en">${en}</span><span class="t-es" lang="es">${es}</span></li>`,
-    ).join("")}</ol><p class="practice-arc-note"><span class="t-en">Challenge adds a reason to explain or compare. It is not only bigger numbers.</span><span class="t-es" lang="es">El desafío pide explicar o comparar. No son solo números más grandes.</span></p>`;
+    ).join(
+      "",
+    )}</ol><p class="practice-arc-note"><span class="t-en">Challenge adds a reason to explain or compare. It is not only bigger numbers.</span><span class="t-es" lang="es">El desafío pide explicar o comparar. No son solo números más grandes.</span></p>`;
     const bar = document.querySelector(".tab-bar");
     if (bar) bar.before(nav);
     else host.prepend(nav);

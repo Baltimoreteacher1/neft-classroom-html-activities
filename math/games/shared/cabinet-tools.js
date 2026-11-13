@@ -5,6 +5,16 @@
 (function () {
   'use strict';
   let attempts = 0;
+  if (!document.querySelector('script[src*="/math/games/shared/game-shell.js"]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/math/games/shared/game-shell.css';
+    document.head.appendChild(link);
+    const shell = document.createElement('script');
+    shell.type = 'module';
+    shell.src = '/math/games/shared/game-shell.js';
+    document.head.appendChild(shell);
+  }
 
   // Ensure ArcadeFX is loaded
   if (!window.ArcadeFX && !document.querySelector('script[src*="arcade-fx-engine.js"]')) {

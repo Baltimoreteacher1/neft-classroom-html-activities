@@ -25,6 +25,7 @@
 // that stays quiet, because a teacher will act on the label.
 
 import { numberOf } from "./answer-match.js";
+
 export {
   applyBothSides,
   equationSolution,

@@ -1,4 +1,7 @@
 /* Accessible controls and deliberate round pacing for the curriculum cabinets. */
+if (!document.querySelector('script[src*="/math/games/shared/game-shell.js"]')) {
+  document.write('<link rel="stylesheet" href="/math/games/shared/game-shell.css"><script type="module" src="/math/games/shared/game-shell.js"><\/script>');
+}
 (function () {
   'use strict';
   const keyNames = {Enter: 'ENTER', Space: 'SPACE', ArrowLeft: 'LEFT', ArrowRight: 'RIGHT', ArrowUp: 'UP', ArrowDown: 'DOWN', '1': 'ONE', '2': 'TWO', '3': 'THREE', '4': 'FOUR', Backspace: 'BACKSPACE'};
@@ -22,6 +25,7 @@
     let root, prompt, feedback, progress, controls, nextButton, pending = null;
     let pausedScenes = [];
     let adventure, missionPaused = [];
+    let lastShellFeedback = "";
     function scene() {
       const active = game.scene.getScenes(true);
       return active.find(current => current.studio && Array.isArray(current.studio.actions)) || active[0];
@@ -138,6 +142,11 @@
       prompt.textContent = [text, hint].filter(Boolean).join(' · ') || options.instructions[0];
       const value = current.feedback && current.feedback.text;
       feedback.textContent = value || '';
+      if (window.EWLGameShell && value && value !== lastShellFeedback) {
+        lastShellFeedback = value;
+        const correct = /\b(correct|solved|equivalent|matches|yes)\b/i.test(value) && !/not quite|not yet|wrong|may indicate/i.test(value);
+        window.EWLGameShell.observe(options.id, value, correct);
+      }
       const readout = current.readout && current.readout.text;
       const solved = current.solved || 0;
       const streak = window.GameStudio?.session?.streak || 0;

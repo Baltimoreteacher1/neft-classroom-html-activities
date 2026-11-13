@@ -110,14 +110,13 @@ export function renderMissionStart() {
   return `
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Practice", "La práctica familiar de hoy")}</h2>
-        <p class="hw-mission-lead fm-hero__promise">${bi(
-          `Five short steps, about ${ROUTE_TIMES.quick} minutes: watch the idea, try one together, solve ${MISSION_PRACTICE_COUNT} in three levels, check, celebrate.`,
-          `Cinco pasos cortos, unos ${ROUTE_TIMES.quick} minutos: miren la idea, prueben uno juntos, resuelvan ${MISSION_PRACTICE_COUNT} en tres niveles, revisen y celebren.`,
+        <p class="hw-mission-lead hw-family-path fm-hero__promise">${bi(
+          `What we are learning, see it, try it together, your turn, need help, finish, then solve ${MISSION_PRACTICE_COUNT}. Optional and ungraded.`,
+          `Qué estamos aprendiendo, míralo, pruébenlo juntos, tu turno, ¿necesitan ayuda?, terminar. Resuelvan ${MISSION_PRACTICE_COUNT}.`,
         )}</p>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
         <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Your place is saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Su avance se guarda en este dispositivo.</span></p>
-        <p class="hw-family-path"><span class="lang-en">What we are learning, see it, try it together, your turn, need help, finish. This family practice is optional and ungraded.</span><span class="lang-es" lang="es">Qué estamos aprendiendo, míralo, pruébenlo juntos, tu turno, ¿necesitan ayuda?, terminar. Esta práctica familiar es opcional y no lleva calificación.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;

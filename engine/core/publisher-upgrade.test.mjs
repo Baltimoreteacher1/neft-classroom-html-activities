@@ -152,7 +152,7 @@ test("a selected standard only lists prerequisites stored on the map", () => {
     unlocks: [],
     coverage: { l1: 4, l2: 2 },
     assets: [
-      { category: "Lesson", path: "/lessons/3-3/", title: "Lesson 3-3" },
+      { category: "Lesson", path: "/lessons/3-3/", title: "Equivalent ratios" },
       { category: "Practice", path: "/math/practice-studio/3-3/", title: "Practice studio" },
     ],
   };
