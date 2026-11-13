@@ -17,7 +17,7 @@ import { ES_MOBY_FACTS } from "./moby/i18n-es-facts.js";
 import { ES_MOBY_QUESTS } from "./moby/i18n-es-quests.js";
 import { ES_MOBY_INTERVENTION } from "./moby/i18n-es-intervention.js";
 import { ES_MOBY_STRATEGIES } from "./moby/i18n-es-strategies.js";
-import { readLocal, writeLocal } from "./school-tools.js";
+import { getLang, setLang } from "./lang-state.js";
 
 export const ES = {
   ...ES_STUDIO,
@@ -39,19 +39,7 @@ export const ES = {
   ...ES_MOBY_INTERVENTION,
   ...ES_MOBY_STRATEGIES,
 };
-const KEY = "ewl-fluency-lang-v1";
-let lang = null;
-
-export const getLang = () => {
-  if (lang === null) lang = readLocal(KEY, "en") === "es" ? "es" : "en";
-  return lang;
-};
-
-export function setLang(next, { persist = true } = {}) {
-  lang = next === "es" ? "es" : "en";
-  if (persist) writeLocal(KEY, lang);
-  if (typeof document !== "undefined") document.documentElement.lang = lang;
-}
+export { getLang, setLang };
 
 // A key may end in " ##context" (e.g. "Play ##nav") so one English word can have two Spanish translations; English drops it.
 export function t(text, vars = null) {

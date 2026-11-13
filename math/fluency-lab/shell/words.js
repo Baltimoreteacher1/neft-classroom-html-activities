@@ -1,6 +1,6 @@
 // Interface wording for the student app, English and Spanish side by side. Mathematics shown in problems is
 // generated with its own Spanish (question-es.js, engine captions); this table covers the app's own words.
-import { getLang, setLang } from "../i18n.js";
+import { getLang, setLang } from "../lang-state.js";
 import { TITLES_ES } from "./titles-es.js";
 
 const ES = {

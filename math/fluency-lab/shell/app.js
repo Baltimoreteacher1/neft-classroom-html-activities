@@ -22,7 +22,7 @@ import { loadAwards } from "./practice-cheer.js";
 import { applyPrefs, prefs, readAloudOn, setPref, setReadAloud } from "./prefs.js";
 import { keepLegible, setPanLabel } from "./legible.js";
 import { queryWords, skillMatcher } from "./search.js";
-import { mountSkill, stageFromParam } from "./skill.js";
+import { stageFromParam } from "./stage-param.js";
 import {
   esc,
   gradeName,
@@ -107,10 +107,16 @@ function nav(active) {
 const SHELL_VIEW_PARAM = { progress: "my-progress" };
 const SHELL_VIEWS = { library: "library", "my-progress": "progress" };
 
-function route(view, opts = {}) {
+// The skill screen (its models, studio panels and picture lab) is most of the code. It loads when a skill opens and is
+// fetched in the background once the first screen is showing, so the first paint carries only what that screen draws.
+const loadSkill = () => import("./skill.js");
+(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => loadSkill().catch(() => {}));
+
+async function route(view, opts = {}) {
   window.scrollTo(0, 0);
   if (view === "skill") {
     nav("home");
+    const { mountSkill } = await loadSkill();
     mountSkill(app, opts.skill, { stage: opts.stage, go: route, live });
     document.title = `${titleOf(opts.skill)} · ${tr("Math Fluency Lab")}`;
     return;

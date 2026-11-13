@@ -23,9 +23,6 @@ const STAGES = [
   { id: "practice", label: "Practice it" },
 ];
 const REP_NAMES = { table: "a table", line: "a number line" };
-// Legacy stage ids in shared links: learn→see, try→try, practice→practice.
-export const stageFromParam = (value) =>
-  ({ learn: "see", try: "try", practice: "practice", see: "see" })[value] || "see";
 const linkStage = { see: "learn", try: "try", practice: "practice" };
 
 export function mountSkill(root, skill, { stage = "see", go, live }) {
