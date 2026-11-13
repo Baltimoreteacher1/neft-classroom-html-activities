@@ -35,7 +35,8 @@ export const isStudiosPath = (pathname) =>
   pathname === STUDIOS_BASE || pathname.startsWith(`${STUDIOS_BASE}/`);
 
 /** True when this request belongs to the studios app on a host that serves it. */
-export const isStudiosRequest = (url) => PROXY_HOSTS.has(url.hostname) && isStudiosPath(url.pathname);
+export const isStudiosRequest = (url) =>
+  PROXY_HOSTS.has(url.hostname) && isStudiosPath(url.pathname);
 
 const text = (status, body, extra = {}) =>
   new Response(body, {
@@ -44,7 +45,8 @@ const text = (status, body, extra = {}) =>
   });
 
 export async function proxyStudios(request, url, upstreamFetch = fetch) {
-  if (!METHODS.has(request.method)) return text(405, "Method not allowed.", { Allow: "GET, HEAD, POST" });
+  if (!METHODS.has(request.method))
+    return text(405, "Method not allowed.", { Allow: "GET, HEAD, POST" });
 
   const target = new URL(STUDIOS_UPSTREAM);
   target.pathname = url.pathname;
@@ -82,7 +84,8 @@ export async function proxyStudios(request, url, upstreamFetch = fetch) {
   if (location) {
     try {
       const next = new URL(location, target);
-      if (next.origin === target.origin) out.set("location", `${url.origin}${next.pathname}${next.search}${next.hash}`);
+      if (next.origin === target.origin)
+        out.set("location", `${url.origin}${next.pathname}${next.search}${next.hash}`);
     } catch (_error) {
       out.delete("location");
     }
@@ -92,5 +95,9 @@ export async function proxyStudios(request, url, upstreamFetch = fetch) {
   if ((out.get("content-type") || "").includes("text/html")) {
     out.set("cache-control", "public, max-age=0, must-revalidate");
   }
-  return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: out });
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers: out,
+  });
 }
