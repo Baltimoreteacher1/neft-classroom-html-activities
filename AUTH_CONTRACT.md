@@ -117,6 +117,14 @@ and client-side teacher tools/mode toggle). It is never 302 redirected or challe
 - All student action cards (Small-Group Studio, NetFold 3D Simulator, Arcade Review Games, Unit 0 Math Mentors, My Progress, The Almost-Right Lab, etc.) are public and immediately available.
 - Gating or redirecting `/curriculum/` to a stripped page is explicitly prohibited.
 
+## 2c. thelanguagepage.com is open (2026-11-13)
+
+On the lab host (`thelanguagepage.com`, `LAB_HOST_OPEN` in `_lib/language-page.js`) the SITE_PASSWORD gate in §2 is
+skipped: teacher pages there answer without a challenge. Joel's decision, "for now it should all be open and
+unrestricted". It is one `if` in `_middleware.js`, after the host redirects and before the password check, so
+`eduwonderlab.com` is unchanged (`npm run e2e:auth`, both engines, 26/26). The TEACHER_KEY API gate (§3) and class
+passcodes are untouched: they protect stored data, not pages. To close the lab host again, set `LAB_HOST_OPEN` to false.
+
 ## 3. TEACHER_KEY — the API credential
 
 `/api/*` endpoints carry **their own** policy; the page gate never runs for them.

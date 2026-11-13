@@ -104,18 +104,6 @@ export const HOME_CARDS = [
     ],
   },
   {
-    id: "graphic-novels",
-    group: "explore",
-    featured: true,
-    href: "/graphic-novels/",
-    icon: "reading",
-    title: ["Graphic Novel Library · ESOL Edition", "Biblioteca de novelas gráficas · Edición ESOL"],
-    text: [
-      "Bilingual math graphic novels with side-by-side English + Spanish, numbered panel badges, and step-by-step guidance.",
-      "Novelas gráficas matemáticas bilingües con inglés y español lado a lado, números de viñeta y lectura guiada.",
-    ],
-  },
-  {
     id: "language-city",
     group: "explore",
     featured: true,

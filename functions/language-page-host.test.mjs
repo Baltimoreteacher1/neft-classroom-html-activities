@@ -115,9 +115,9 @@ await t("the Learning Studios landing page is served on the lab host, and a look
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", path);
 });
 
-await t("the Graphic Novels app is served on the lab host", () => {
+await t("the Graphic Novels are not on the lab host: they go to eduwonderlab.com", () => {
   for (const path of ["/graphic-novels/", "/graphic-novels/unit1/graphic-novel-1.html", "/graphic-novels"])
-    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+    assert.equal(at(`https://thelanguagepage.com${path}`).location, `https://eduwonderlab.com${path}`, path);
 });
 
 await t("everything else goes to eduwonderlab.com, so the lab host is not a second copy of the site", () => {
@@ -139,11 +139,14 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
   }
 });
 
-await t("the Teacher Hub is served on the lab host (behind the teacher gate); the predictor and Flight Deck are not", async () => {
+await t("the Teacher Hub is served on the lab host with no password; the predictor and Flight Deck are not", async () => {
   for (const path of ["/access-teacher/", "/access-teacher", "/access-teacher/teacher.js", "/access-teacher/class-panel.js"])
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
-  const gated = await answer("https://thelanguagepage.com/access-teacher/", { SITE_PASSWORD: "x" });
-  assert.equal(gated.res.status, 401, "the same teacher gate answers on the lab host");
+  for (const path of ["/access-teacher/", "/access-practice-lab/teacher"]) {
+    const open = await answer(`https://thelanguagepage.com${path}`, { SITE_PASSWORD: "x" });
+    assert.ok(open.fell, `${path} is served without a password on the lab host`);
+    assert.notEqual(open.res.status, 401, path);
+  }
 });
 
 await t("robots.txt and sitemap.xml are generated for the lab host and name only that host", async () => {

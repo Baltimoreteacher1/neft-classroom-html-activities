@@ -18,6 +18,7 @@
 
 import {
   brandLabResponse,
+  LAB_HOST_OPEN,
   languagePageRoute,
   robotsTxt,
   sitemapXml,
@@ -226,6 +227,10 @@ async function handle(context) {
     headers.set("x-content-type-options", "nosniff");
     return new Response(JSON.stringify(config), { status: asset.status, headers });
   }
+
+  // thelanguagepage.com is open for now: its teacher pages skip the password (see LAB_HOST_OPEN).
+  if (lab?.kind === "serve" && LAB_HOST_OPEN && isTeacherSurface)
+    return privateTeacherResponse(next);
 
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.

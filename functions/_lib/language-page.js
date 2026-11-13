@@ -4,7 +4,7 @@
 //
 // Everything outside the lab's own surface (lessons, curriculum, teacher tools) lives on eduwonderlab.com, so
 // the lab host redirects it there instead of serving a duplicate of the whole site. The Teacher Hub (/access-teacher/)
-// IS served here, behind the same teacher gate, so a teacher can run a class on thelanguagepage.com: its Class panel is
+// IS served here, with no password (LAB_HOST_OPEN), so a teacher can run a class on thelanguagepage.com: its Class panel is
 // backed by /api/class, which lives on this origin next to the students' progress. Its browser-local panels (rosters
 // and typed scores) are per origin, as before. The Hub's math Flight Deck and the score predictor stay on
 // eduwonderlab.com.
@@ -36,7 +36,6 @@ const LAB_PREFIXES = [
   `${STUDIO_BASE}/`,
   `${LEARNING_STUDIOS_BASE}/`,
   `${STUDIOS_APP_BASE}/`,
-  "/graphic-novels/",
   "/assets/",
   "/data/",
   "/shared/",
@@ -58,7 +57,6 @@ const LAB_EXACT = new Set([
   "/api/language-guide/questions",
   // The same log grouped into themes and gaps by a model, teacher key only (functions/api/language-guide/insights.js).
   "/api/language-guide/insights",
-  "/graphic-novels",
   STUDIOS_APP_BASE,
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */
@@ -124,6 +122,12 @@ export const SITEMAP_PATHS = [
   // gradebook under /wida-access/ are not on this host.
   ...STUDIOS.map((s) => studioPath(s.slug)),
 ];
+
+/**
+ * The lab host has no username/password gate for now: every page it serves, teacher pages included, is open.
+ * API routes keep their own key checks (class rosters, the question log), since those guard stored data.
+ */
+export const LAB_HOST_OPEN = true;
 
 export const isLanguagePageHost = (hostname) =>
   hostname === LANGUAGE_PAGE_HOST || hostname === `www.${LANGUAGE_PAGE_HOST}`;

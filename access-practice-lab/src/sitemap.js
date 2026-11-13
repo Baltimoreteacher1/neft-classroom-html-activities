@@ -6,7 +6,7 @@
 //
 // Pure data and pure functions: no DOM, so Node tests can import it.
 //
-//   href     a lab route ("speak", "journey/map", "Listening") or a site path ("/graphic-novels/")
+//   href     a lab route ("speak", "journey/map", "Listening") or a site path ("/language-studio/")
 //   section  where it lives (SECTIONS); `skill` sub-groups the Practice section
 //   for      who it is for: student | teacher | family
 //   kind     what it is: practice | studio | game | story | world | test | tool | guide | progress
@@ -256,22 +256,6 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "A shelf of books to read, listen to and log.",
       "Un estante de libros para leer, escuchar y registrar.",
-    ),
-  },
-  {
-    id: "graphic-novels",
-    section: "practice",
-    skill: "Reading",
-    kind: "story",
-    for: STF,
-    top: true,
-    href: "/graphic-novels/",
-    icon: "reading",
-    match: [],
-    title: P("Graphic Novel Library", "Biblioteca de novelas gráficas"),
-    text: P(
-      "Illustrated stories with read-aloud and word help.",
-      "Cuentos ilustrados con lectura en voz alta y ayuda con palabras.",
     ),
   },
   {
