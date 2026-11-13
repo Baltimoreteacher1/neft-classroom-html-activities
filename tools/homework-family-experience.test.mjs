@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { renderStatsDataLab } from "@eduwonderlab/engine/components/stats-data-lab.js";
 import { JSDOM } from "jsdom";
@@ -44,7 +44,10 @@ test("all family lessons lead with a short bilingual idea and keep full steps op
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const firstIdea = page.indexOf('class="family-plain-start"');
     const fullExample = page.indexOf('class="fp-card fp-example"');
-    assert.ok(firstIdea >= 0 && firstIdea < fullExample, `${id}: show the short idea before the full example`);
+    assert.ok(
+      firstIdea >= 0 && firstIdea < fullExample,
+      `${id}: show the short idea before the full example`,
+    );
     assert.match(page, /Show the full example, one step at a time/);
     assert.match(page, /Ver el ejemplo completo, paso a paso/);
     if (page.includes("data-mission-model")) {
@@ -53,7 +56,10 @@ test("all family lessons lead with a short bilingual idea and keep full steps op
       assert.match(page, /When ___ changes, ___ changes\./);
     }
   }
-  assert.ok(interactiveModels > 140, `expected broad interactive model coverage, got ${interactiveModels}`);
+  assert.ok(
+    interactiveModels > 140,
+    `expected broad interactive model coverage, got ${interactiveModels}`,
+  );
 });
 
 test("the printable practice record offers an optional practice partner, never a signature", () => {
