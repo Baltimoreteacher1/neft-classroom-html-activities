@@ -9237,7 +9237,7 @@ export function renderHomeworkTabs(
   panelsHtml,
   helpDrawerHtml = "",
   unit = null,
-  notesButtonHtml = "",
+  studioButtonsHtml = "",
 ) {
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml(unit);
@@ -9261,11 +9261,6 @@ export function renderHomeworkTabs(
               <span class="tab-extra-blurb"><span class="lang-en">${esc(t.blurbEn)}</span><span class="lang-es" lang="es">${esc(t.blurbEs)}</span></span>
             </button>`;
 
-  /* Games and the photobooth stay one tap away from every step (they were hidden with the other optional stops). */
-  const funBtn = (t) => `
-            <button type="button" id="hw_tab_${t.id}" class="homework-tab-extra hw-fun-btn" aria-controls="hw_panel_${t.id}"
-              data-tab="${t.id}" ${act("openOptionalStop", t.id)}><span class="tab-icon" aria-hidden="true">${t.icon}</span>
-              <span class="tab-label"><span class="tab-en">${t.id === "play" ? "Games" : t.en}</span><span class="tab-es" lang="es">${t.id === "play" ? "Juegos" : t.es}</span></span></button>`;
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
@@ -9274,11 +9269,7 @@ export function renderHomeworkTabs(
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${notesButtonHtml}${HOMEWORK_EXTRA_TABS.filter(
-          (t) => FUN_STOPS.has(t.id),
-        )
-          .map(funBtn)
-          .join("")}</div>
+        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Understand, practice, play" data-aria-en="Understand, practice, play" data-aria-es="Entender, practicar, jugar">${studioButtonsHtml}</div>
         <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.filter(
           (t) => !FUN_STOPS.has(t.id),
         )
@@ -10865,7 +10856,9 @@ function initHomeworkVocabPopups() {
   var shared = Array.isArray(window.__HW_VOCAB_SHARED__) ? window.__HW_VOCAB_SHARED__ : [];
   var skip = Object.create(null);
   (window.__HW_VOCAB_SKIP__ || []).forEach(function(i) { skip[i] = true; });
-  var list = head.concat(shared.filter(function(_e, i) { return !skip[i]; }));
+  // __HW_VOCAB_PATCH__ replaces single shared entries this lesson words differently (same term, same place).
+  var patch = window.__HW_VOCAB_PATCH__ || {};
+  var list = head.concat(shared.map(function(e, i) { return patch[i] || e; }).filter(function(_e, i) { return !skip[i]; }));
   var match = window.__HW_VOCAB_MATCH__ || null;
   var container = document.getElementById('hw_tab_panels');
   if (!container || !list.length || !match || !match.regexSource) return;

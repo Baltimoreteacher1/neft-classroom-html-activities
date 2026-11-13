@@ -88,6 +88,6 @@ test("generated pages show the card in the grown-up panel, only where authored",
     assert.match(html, /How you may have learned it/);
     assert.match(html, /Cómo pudiste haberlo aprendido/);
   }
-  assert.equal(bridgeRequired("3-2"), false);
-  assert.doesNotMatch(readFileSync(lessonPath("3-2", "homework.html"), "utf8"), /data-bridge-card/);
+  assert.equal(bridgeRequired("1-2"), false);
+  assert.doesNotMatch(readFileSync(lessonPath("1-2", "homework.html"), "utf8"), /data-bridge-card/);
 });

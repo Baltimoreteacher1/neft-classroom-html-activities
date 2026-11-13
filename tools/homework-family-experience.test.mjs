@@ -24,6 +24,7 @@ import { renderVisualMathLab, VISUAL_LABS_JS } from "../scripts/homework-visual-
 import { renderExperienceDialogs } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
 import { MISSION_PRACTICE_COUNT, renderMissionStart } from "../scripts/lib/homework-mission.mjs";
+import { renderStudioButtons } from "../scripts/lib/homework-studio.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
@@ -85,6 +86,9 @@ function runtime(query = "") {
         '<section class="problem-section"></section>'.repeat(4) +
         '</div><div class="practice-tier-challenge"></div>' +
         renderDoneTab(config("3-2"), "3-2"),
+      "",
+      null,
+      renderStudioButtons(),
     ) +
     '<a id="hw_text_link"></a><a id="hw_email_link"></a>' +
     renderExperienceDialogs();
@@ -167,7 +171,6 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
     w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"),
     "games are one tap away from every step",
   );
-  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   // Earlier defaults were written without a choice: "core" and "full" both fall back to Quick.
   w.localStorage.setItem("hw_route_3-2", "core");
   w.restoreHomeworkRoute();
@@ -177,11 +180,11 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   // An explicit choice is kept.
   w.setHomeworkRoute("full");
-  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
+  assert.ok(w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"), "Play (games, photobooth) stays one tap away");
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   w.setHomeworkRoute("core");
-  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
+  assert.ok(w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"), "Play (games, photobooth) stays one tap away");
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   dom.window.close();
@@ -304,14 +307,14 @@ test("family homework is one five-step flow; games and photobooth stay on the ra
       ["talk", "apply", "words"],
       id,
     );
-    // The side group: lesson Notes (a drawer, not a stop), then Games and Photobooth.
+    // The three doors: Understand and Play open the Family Studio sheet, Practice is the five steps.
     assert.deepEqual(
-      [...d.querySelectorAll(".hw-fun-zone .homework-tab-extra")].map((b) => b.dataset.tab || b.id),
-      ["hw_notes_btn", "play", "photobooth"],
+      [...d.querySelectorAll(".hw-fun-zone .homework-tab-extra")].map((b) => b.id),
+      ["hw_understand_btn", "hw_practice_btn", "hw_tab_play"],
       id,
     );
-    // The notes are built on first open from the lesson's own sidecar, so that file must exist.
-    assert.ok(d.querySelector("#hw_notes_btn"), id);
+    // Understand is built on first open from the lesson's own sidecar, so that file must exist.
+    assert.ok(d.querySelector('#hw_understand_btn[data-act="openFamilyStudio"]'), id);
     assert.ok(
       existsSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url)),
       `${id}: notes sidecar`,

@@ -70,8 +70,8 @@ import { FLOW_JS } from "./lib/homework-flow-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
-import { NOTES_JS, renderNotesButton } from "./lib/homework-notes.mjs";
 import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
+import { renderStudioButtons, STUDIO_JS } from "./lib/homework-studio.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
 import {
@@ -412,20 +412,20 @@ function sharedVocabEntries() {
 
 /**
  * Split one lesson's glossary into what the page inlines and what it takes from
- * the shared file. `head` = entries this lesson adds or overrides (placed first,
- * as before); `skip` = indices of shared entries the page must not append
- * because the head already carries that term. The browser rebuilds
- * `head + shared minus skip`, which is asserted here to equal the old full list
- * entry for entry, so every index in `match.lookup` still points at the same
- * entry.
+ * the shared file. `head` = entries this lesson adds (placed first, as before);
+ * `skip` = indices of shared entries the page must not append because the head
+ * already carries that term; `patch` = shared entries this lesson words
+ * differently (same term, same position), keyed by shared index. The browser
+ * rebuilds `head + (shared with patch) minus skip`, which is asserted here to
+ * equal the old full list entry for entry, so every index in `match.lookup`
+ * still points at the same entry. Patching keeps one differently-worded term
+ * near the end of the list from inlining the whole glossary (2-4 inlined 97
+ * entries for two acronym rows).
  */
 function buildVocabGlossary(vocab, lessonId = "") {
   const built = buildVocabEntries(vocab, lessonId);
   if (!built) return null;
   const shared = sharedVocabEntries();
-  // The lesson's own entries lead the list, then the shared ones in shared
-  // order: find the shortest head after which the rest IS the shared list minus
-  // the terms the head already carries.
   const all = built.entries;
   for (let k = 0; k <= all.length; k++) {
     const head = all.slice(0, k);
@@ -436,9 +436,13 @@ function buildVocabGlossary(vocab, lessonId = "") {
     });
     if (all.length - k !== shared.length - skip.length) continue;
     const skipSet = new Set(skip);
-    const rest = shared.filter((_, i) => !skipSet.has(i));
-    if (rest.every((e, i) => JSON.stringify(e) === JSON.stringify(all[k + i])))
-      return { head, skip, match: built.match };
+    const restIdx = shared.map((_, i) => i).filter((i) => !skipSet.has(i));
+    if (!restIdx.every((si, j) => vocabKey(shared[si].term) === vocabKey(all[k + j].term))) continue;
+    const patch = {};
+    restIdx.forEach((si, j) => {
+      if (JSON.stringify(shared[si]) !== JSON.stringify(all[k + j])) patch[si] = all[k + j];
+    });
+    return { head, skip, patch, match: built.match };
   }
   throw new Error("homework glossary: the lesson list is not head + shared entries");
 }
@@ -1395,7 +1399,7 @@ function generateHtml(lessonId, config) {
     tabPanels,
     renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
     config.unit,
-    renderNotesButton(),
+    renderStudioButtons(),
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
@@ -1583,6 +1587,7 @@ window.LESSON_TITLE_ES = "${escAttr(familyTitlesEs[lessonId] || title)}";
 window.HW_CORE_COUNT = ${coreSelected.length};
 window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.head) : "[]"};
 window.__HW_VOCAB_SKIP__ = ${vocabGlossary ? jsonForScript(vocabGlossary.skip) : "[]"};
+window.__HW_VOCAB_PATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.patch) : "{}"};
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
@@ -1600,7 +1605,7 @@ ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${MISSION_JS}
 ${FLOW_JS}
-${NOTES_JS}
+${STUDIO_JS}
 ${PRACTICE_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}

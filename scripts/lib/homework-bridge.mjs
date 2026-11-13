@@ -15,7 +15,7 @@
 
 import { act } from "./homework-actions.mjs";
 
-export const BRIDGE_UNITS = ["4", "6"];
+export const BRIDGE_UNITS = ["2", "3", "4", "5", "6", "7", "8", "9"];
 
 export const BRIDGE_ROWS = [
   {

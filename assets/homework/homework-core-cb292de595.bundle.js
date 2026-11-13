@@ -1638,7 +1638,9 @@ function initHomeworkVocabPopups() {
   var shared = Array.isArray(window.__HW_VOCAB_SHARED__) ? window.__HW_VOCAB_SHARED__ : [];
   var skip = Object.create(null);
   (window.__HW_VOCAB_SKIP__ || []).forEach(function(i) { skip[i] = true; });
-  var list = head.concat(shared.filter(function(_e, i) { return !skip[i]; }));
+  // __HW_VOCAB_PATCH__ replaces single shared entries this lesson words differently (same term, same place).
+  var patch = window.__HW_VOCAB_PATCH__ || {};
+  var list = head.concat(shared.map(function(e, i) { return patch[i] || e; }).filter(function(_e, i) { return !skip[i]; }));
   var match = window.__HW_VOCAB_MATCH__ || null;
   var container = document.getElementById('hw_tab_panels');
   if (!container || !list.length || !match || !match.regexSource) return;
@@ -5079,178 +5081,45 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 else fpRevealInit();
 
 
-/* ── Lesson notes ────────────────────────────────────────────────────── */
-var HW_NOTE_TITLES = {
-  idea: ['The big idea', 'La idea principal'],
-  picture: ['The picture', 'El dibujo'],
-  steps: ['Step by step', 'Paso a paso'],
-  words: ['Words to know', 'Palabras clave'],
-  watch: ['Common mistake', 'Error común']
-};
-function hwNoteText(tag, cls, en, es) {
-  var el = document.createElement(tag);
-  if (cls) el.className = cls;
-  var a = document.createElement('span'); a.className = 'lang-en'; a.textContent = en;
-  var b = document.createElement('span'); b.className = 'lang-es'; b.lang = 'es'; b.textContent = es || en;
-  el.appendChild(a); el.appendChild(b);
-  return el;
+/* ── Family Studio: Understand · Practice · Play ─────────────────────── */
+var HW_STUDIO_URL = '/assets/family-studio/index.mjs';
+var hwStudioPromise = null;
+function hwStudio() {
+  if (!hwStudioPromise) hwStudioPromise = import(HW_STUDIO_URL);
+  return hwStudioPromise;
 }
-function hwHas(p) { return !!(p && p.en && String(p.en).trim()); }
-
-/* The page's own word cards: not the lesson-title card, no repeats ("Ratio Tables" / "Ratio table"). */
-function hwNoteWords() {
-  var title = (((document.querySelector('h1') || {}).textContent || '') + ' ' + document.title).toLowerCase();
-  var key = function (s) { return String(s).trim().toLowerCase().replace(/s$/, ''); };
-  var seen = {}, out = [];
-  document.querySelectorAll('.vocab-card').forEach(function (card) {
-    var term = card.querySelector('.vocab-term .lang-en');
-    var def = card.querySelector('.vocab-def');
-    if (!term || !def || out.length >= 4) return;
-    var name = term.textContent.trim();
-    var k = key(name);
-    /* The lesson's concept card reads like a title ("Solve One-Step Addition and Subtraction Equations"). */
-    if (seen[k] || title.indexOf(name.toLowerCase()) >= 0 || name.split(/\s+/).length > 4) return;
-    seen[k] = 1;
-    var termEs = card.querySelector('.vocab-term .lang-es');
-    var defEs = card.querySelector('.vocab-def-es');
-    var hint = card.querySelector('.vocab-visual-hint');
-    var row = document.createElement('div'); row.className = 'hw-note-word';
-    row.appendChild(hwNoteText('dt', '', name, termEs ? termEs.textContent.trim() : ''));
-    var dd = hwNoteText('dd', '', def.textContent.trim(), defEs ? defEs.textContent.trim() : '');
-    if (hint) {
-      var ex = document.createElement('span'); ex.className = 'hw-note-ex';
-      ex.textContent = hint.textContent.replace(/^[^\w(]+/, '').trim();
-      dd.appendChild(ex);
-    }
-    row.appendChild(dd);
-    out.push(row);
+function openFamilyStudio(mode) {
+  hwStudio().then(function (m) { m.openStudio(mode); }).catch(function () {
+    /* Offline or blocked: the five steps below still teach tonight's lesson. */
+    if (mode === 'play' && typeof openOptionalStop === 'function') openOptionalStop('play');
+    else if (typeof switchHomeworkTab === 'function') switchHomeworkTab('connect');
   });
-  if (!out.length) return null;
-  var dl = document.createElement('dl'); dl.className = 'hw-note-words';
-  out.forEach(function (r) { dl.appendChild(r); });
-  return dl;
 }
-
-function hwBuildNotes(notes) {
-  var list = document.querySelector('#hw_notes_drawer [data-notes-list]');
-  if (!list || list.getAttribute('aria-busy') !== 'true') return;
-  notes = notes || {};
-  var v3 = notes.v3 || {};
-  var parts = [];
-  var idea = [notes.bigIdea, v3.standardPlain, notes.learningTonight].filter(hwHas)[0];
-  if (idea) parts.push(['idea', hwNoteText('p', 'hw-note-idea', idea.en, idea.es)]);
-  var stage = document.querySelector('#hw_family_bridge_60s .hw-colearn-svg-stage');
-  if (stage && stage.querySelector('svg')) {
-    var fig = document.createElement('figure'); fig.className = 'hw-note-figure';
-    fig.innerHTML = stage.innerHTML.replace(/\bfm-([0-9a-z]+)-(en|es)-/g, 'nt-$1-$2-');
-    if (v3.classModel && hwHas(v3.classModel.name)) fig.appendChild(hwNoteText('figcaption', '', v3.classModel.name.en, v3.classModel.name.es));
-    parts.push(['picture', fig]);
+var HW_STUDIO_STEPS = ['connect', 'explore', 'check', 'improve', 'done'];
+/* Practice: back to the five steps, at the step the family was on. */
+function hwStudioPractice() {
+  var cur = document.body.dataset.activeTab;
+  if (HW_STUDIO_STEPS.indexOf(cur) < 0 && typeof switchHomeworkTab === 'function') switchHomeworkTab('connect');
+  var bar = document.querySelector('.homework-tab-bar');
+  if (bar) { try { bar.scrollIntoView({ block: 'start' }); } catch (e) {} }
+}
+(function () {
+  var q = /[?&]view=(understand|play)\b/.test(location.search) || /^#(understand|play)$/.test(location.hash);
+  function boot() {
+    hwStudio().then(function (m) {
+      if (q) m.openFromUrl();
+      return m.decoratePractice();
+    }).catch(function () {});
   }
-  var steps = (notes.conceptSteps || []).filter(hwHas);
-  var ol;
-  if (steps.length) {
-    ol = document.createElement('ol');
-    steps.forEach(function (s) { ol.appendChild(hwNoteText('li', '', s.en, s.es)); });
+  if (q) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
   } else {
-    /* No sidecar (offline): the worked example on this page is the same list. */
-    var ex = document.querySelector('.fp-example .fp-steps');
-    if (ex) {
-      ol = ex.cloneNode(true);
-      ol.querySelectorAll('li').forEach(function (li) { li.classList.remove('is-later'); li.removeAttribute('tabindex'); });
-    }
+    window.addEventListener('load', function () {
+      (window.requestIdleCallback || function (f) { setTimeout(f, 1200); })(boot);
+    });
   }
-  if (ol) { ol.className = 'fp-steps hw-note-steps'; parts.push(['steps', ol]); }
-  var words = hwNoteWords();
-  if (words) parts.push(['words', words]);
-  var watch = notes.corner && notes.corner.watchOut;
-  if (hwHas(watch)) {
-    var p = hwNoteText('p', 'hw-note-watch', watch.en, watch.es);
-    p.insertBefore(hwNoteText('strong', '', 'Watch out for this: ', 'Cuidado con esto: '), p.firstChild);
-    parts.push(['watch', p]);
-  }
-  parts.forEach(function (part, i) {
-    var li = document.createElement('li'); li.className = 'hw-note'; li.setAttribute('data-note', part[0]);
-    var h = hwNoteText('h3', 'hw-note-title', HW_NOTE_TITLES[part[0]][0], HW_NOTE_TITLES[part[0]][1]);
-    var num = document.createElement('span'); num.className = 'hw-note-num'; num.setAttribute('aria-hidden', 'true'); num.textContent = String(i + 1);
-    h.insertBefore(num, h.firstChild);
-    li.appendChild(h); li.appendChild(part[1]);
-    list.appendChild(li);
-  });
-  list.setAttribute('aria-busy', 'false');
-}
-
-/* The drawer: the help drawer's shell (body.css), made on first open. */
-function hwNotesDrawer() {
-  var drawer = document.getElementById('hw_notes_drawer');
-  var btn = document.getElementById('hw_notes_btn');
-  if (drawer || !btn) return drawer;
-  drawer = document.createElement('div');
-  drawer.className = 'hw-help-drawer hw-notes-drawer';
-  drawer.id = 'hw_notes_drawer';
-  drawer.hidden = true;
-  drawer.setAttribute('role', 'dialog');
-  drawer.setAttribute('aria-modal', 'true');
-  drawer.setAttribute('aria-labelledby', 'hw_notes_title');
-  drawer.innerHTML = '<div class="hw-help-drawer-scrim" data-act="toggleNotesDrawer"></div>' +
-    '<div class="hw-help-drawer-sheet"><div class="hw-help-drawer-head">' +
-    '<strong id="hw_notes_title"><span aria-hidden="true">📝</span> ' + hwFlowBi('Lesson notes', 'Apuntes de la lección') + '</strong>' +
-    '<button type="button" class="hw-help-drawer-close hw-notes-close" data-act="toggleNotesDrawer"><span aria-hidden="true">✕</span>' +
-    '<span class="hw-sr-only">' + hwFlowBi('Close notes', 'Cerrar apuntes') + '</span></button></div>' +
-    '<div class="hw-help-drawer-body"><p class="hw-notes-lead">' +
-    hwFlowBi('Read from top to bottom. Copy the big idea and the steps into your notebook.', 'Lean de arriba abajo. Copien la idea principal y los pasos en su cuaderno.') +
-    '</p><ol class="hw-notes-list" data-notes-list aria-busy="true"></ol></div></div>';
-  document.body.appendChild(drawer);
-  btn.setAttribute('aria-controls', 'hw_notes_drawer');
-  return drawer;
-}
-
-/* The drawer's stylesheet, once: on first open, or earlier when the page goes idle. */
-function hwNotesCss() {
-  var href = '/assets/design/family/notes.css?v=6810ff66e6';
-  if (document.querySelector('link[data-notes-css]')) return;
-  var link = document.createElement('link');
-  link.rel = 'stylesheet'; link.href = href; link.setAttribute('data-notes-css', '');
-  document.head.appendChild(link);
-}
-window.addEventListener('load', function () {
-  (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(hwNotesCss);
-});
-
-var hwNotesLoading = null;
-function hwLoadNotes() {
-  hwNotesCss();
-  if (hwNotesLoading) return hwNotesLoading;
-  var id = String(window.LESSON_ID || '');
-  var src = /^[\w-]+$/.test(id) ? '/data/family-homework-notes/' + id + '.json' : '';
-  var get = src && window.fetch
-    ? fetch(src, { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; })
-    : Promise.resolve(null);
-  hwNotesLoading = get.catch(function () { return null; }).then(hwBuildNotes);
-  return hwNotesLoading;
-}
-
-/* A drawer over the current step, so a family can check the notes mid-problem and come straight back. */
-function toggleNotesDrawer() {
-  var drawer = hwNotesDrawer();
-  var btn = document.getElementById('hw_notes_btn');
-  if (!drawer) return;
-  var open = drawer.hidden;
-  if (open) hwLoadNotes();
-  drawer.hidden = !open;
-  document.body.classList.toggle('hw-drawer-open', open);
-  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if (open) {
-    var close = drawer.querySelector('.hw-notes-close');
-    if (close) close.focus();
-  } else if (btn) {
-    btn.focus();
-  }
-}
-document.addEventListener('keydown', function (e) {
-  if (e.key !== 'Escape') return;
-  var drawer = document.getElementById('hw_notes_drawer');
-  if (drawer && !drawer.hidden) toggleNotesDrawer();
-});
+})();
 
 
 /* ── Levels, challenge round, celebration, Watch it ──────────────────── */

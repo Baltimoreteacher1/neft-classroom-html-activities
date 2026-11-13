@@ -385,6 +385,16 @@ function studioLinksHtml(lesson) {
   return `<div class="studio-links"><span class="cap">Family Math Studio / Estudio familiar</span>${link(href, SESSIONS[1].en, SESSIONS[1].es)}${link(part2Href, SESSIONS[2].en, SESSIONS[2].es)}</div>`;
 }
 
+/* The lesson guide now lives in the family practice page, under Understand (one family page per lesson).
+   The guide stays generated for print and no-script readers; a browser goes straight to Understand,
+   keeping the family's language choice. */
+function understandRedirect(id) {
+  const url = `/lessons/${id}/homework.html?view=understand`;
+  return `<link rel="canonical" href="${url}">
+<meta http-equiv="refresh" content="0; url=${url}">
+<script>location.replace(${JSON.stringify(url)} + (/[?&]lang=es\b/.test(location.search) ? "&lang=es" : "") + location.hash);</script>`;
+}
+
 function renderLessonPage(lesson) {
   return `<!doctype html>
 <html lang="en">
@@ -392,6 +402,7 @@ function renderLessonPage(lesson) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Family Math Studio · Lesson guide | ${esc(lesson.title)}</title>
+  ${understandRedirect(esc(lesson.lessonId))}
   <style>
     :root {
       --ink: #1f2933;

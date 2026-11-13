@@ -440,6 +440,16 @@ const FAMILY_INTERACTIVE_SCRIPT = `
 })();
 </script>`;
 
+/* The lesson guide now lives in the family practice page, under Understand (one family page per lesson).
+   The guide stays generated for print and no-script readers; a browser goes straight to Understand,
+   keeping the family's language choice. */
+function understandRedirect(id) {
+  const url = `/lessons/${id}/homework.html?view=understand`;
+  return `<link rel="canonical" href="${url}">
+<meta http-equiv="refresh" content="0; url=${url}">
+<script>location.replace(${JSON.stringify(url)} + (/[?&]lang=es\b/.test(location.search) ? "&lang=es" : "") + location.hash);</script>`;
+}
+
 function page({ title, kind, head, body, rail = "", id, scripts = "" }) {
   if (kind === "family") {
     return `<!doctype html>
@@ -449,6 +459,7 @@ function page({ title, kind, head, body, rail = "", id, scripts = "" }) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>${esc(title)}</title>
+${understandRedirect(esc(id))}
 <!-- generated:support-page kind=family lesson=${id} — regenerate: npm run generate-support-pages -->
 <link rel="stylesheet" href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" />
 <style>${PALETTE}${FAMILY_PAPER}${FAMILY_LETTER_CSS}${FAMILY_CSS}</style>

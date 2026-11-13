@@ -23,9 +23,6 @@ export const DESIGN_CSS_LINKS = DESIGN_SHEETS.map((name) => {
   return `<link rel="stylesheet" href="/${file}?v=${stamp(read(file))}">`;
 }).join("\n");
 
-/** The notes drawer's sheet: not render-blocking, the page script adds it on first open. */
-export const NOTES_CSS_HREF = `/assets/design/family/notes.css?v=${stamp(read("assets/design/family/notes.css"))}`;
-
 export const LEGACY_SHELL_CSS = read("scripts/lib/homework-legacy-shell.css")
   .replace(/\/\*[\s\S]*?\*\//g, "")
   .trim();

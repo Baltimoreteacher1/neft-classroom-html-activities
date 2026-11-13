@@ -10,7 +10,7 @@ in class / Why both work.**
   `{ "before": {en, es}, "class": {en, es}, "why": {en, es} }`.
 - Rendered by `renderParentQuickCard` (scripts/homework-guided-notes.mjs) through `scripts/lib/homework-bridge.mjs`, inside a `<details>`
   in "For the grown-up helping tonight", with a Listen button. A sidecar without a complete bilingual bridge renders nothing.
-- Required units: `BRIDGE_UNITS` in `scripts/lib/homework-bridge.mjs` (currently 4 and 6, Part 1, Part 2 and the 6-1/6-2 practice pages).
+- Required units: `BRIDGE_UNITS` in `scripts/lib/homework-bridge.mjs` (Units 2-9, every taught unit: Part 1, Part 2 and practice pages; Units 1 and 10 are not taught).
 
 ## Rules (enforced by `node tools/validate-family-bridge.mjs` and `tools/homework-bridge-card.test.mjs`)
 
