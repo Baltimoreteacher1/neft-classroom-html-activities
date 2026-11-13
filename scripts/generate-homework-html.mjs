@@ -71,7 +71,6 @@ import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
 import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
-import { renderStudioButtons, STUDIO_JS } from "./lib/homework-studio.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
 import {
@@ -99,6 +98,7 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
+import { renderStudioButtons, STUDIO_JS } from "./lib/homework-studio.mjs";
 import { renderPrintFooter, renderProblemAsk } from "./lib/homework-v3-learn.mjs";
 import { V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
 import { VOICE_JS } from "./lib/homework-voice.mjs";
@@ -437,7 +437,8 @@ function buildVocabGlossary(vocab, lessonId = "") {
     if (all.length - k !== shared.length - skip.length) continue;
     const skipSet = new Set(skip);
     const restIdx = shared.map((_, i) => i).filter((i) => !skipSet.has(i));
-    if (!restIdx.every((si, j) => vocabKey(shared[si].term) === vocabKey(all[k + j].term))) continue;
+    if (!restIdx.every((si, j) => vocabKey(shared[si].term) === vocabKey(all[k + j].term)))
+      continue;
     const patch = {};
     restIdx.forEach((si, j) => {
       if (JSON.stringify(shared[si]) !== JSON.stringify(all[k + j])) patch[si] = all[k + j];

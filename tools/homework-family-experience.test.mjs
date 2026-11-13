@@ -207,11 +207,17 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   // An explicit choice is kept.
   w.setHomeworkRoute("full");
-  assert.ok(w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"), "Play (games, photobooth) stays one tap away");
+  assert.ok(
+    w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"),
+    "Play (games, photobooth) stays one tap away",
+  );
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   w.setHomeworkRoute("core");
-  assert.ok(w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"), "Play (games, photobooth) stays one tap away");
+  assert.ok(
+    w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"),
+    "Play (games, photobooth) stays one tap away",
+  );
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   dom.window.close();

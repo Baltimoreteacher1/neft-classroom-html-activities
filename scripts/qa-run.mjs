@@ -1168,6 +1168,11 @@ const COVERAGE = [
       "test",
     ],
   ],
+  // Mentor Lab phone layout and its dedicated browser assertion.
+  [
+    /^(mentor-lab\/mentor-lab\.css|tools\/mentor-universe\.browser\.test\.mjs)$/,
+    ["validate:js-syntax", "validate:css-integrity", "validate:static"],
+  ],
   // Standalone student & teacher surfaces not matched by a narrower rule above
   [
     /^(math|games|activities|webquests|hyperdocs|mstar-practice|teacher-tools|esol|wida-access)\//,

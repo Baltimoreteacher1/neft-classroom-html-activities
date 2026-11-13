@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const CHROME =
@@ -10,8 +11,7 @@ const CHROME =
   ["/usr/local/bin/google-chrome", "/usr/bin/google-chrome", "/usr/bin/chromium"].find(existsSync);
 
 if (!CHROME) {
-  console.log("SKIP mentor-universe browser: no Chromium executable");
-  process.exit(0);
+  process.exit(skipExit("no Chromium executable for the Mentor Universe browser test"));
 }
 
 const MIME = {
@@ -128,6 +128,12 @@ try {
       lessons: document.querySelectorAll("#mu-lesson-select option").length,
       investigations: document.querySelectorAll("#mu-investigations li").length,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      startButtonReachable: (() => {
+        const button = document.querySelector('[data-go="2"]');
+        const rect = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return hit === button || button.contains(hit);
+      })(),
       drags: document.querySelectorAll("[draggable=true]").length
     })`,
   );
@@ -136,6 +142,7 @@ try {
   assert.equal(initial.lessons, 84);
   assert.equal(initial.investigations, 10);
   assert.equal(initial.overflow, false, "390px page has horizontal overflow");
+  assert.equal(initial.startButtonReachable, true, "shared page chrome covers the start button");
   assert.equal(initial.drags, 0, "a drag-only path was introduced");
 
   await evaluate(
