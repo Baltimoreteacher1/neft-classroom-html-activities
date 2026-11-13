@@ -1,0 +1,131 @@
+/* Discovery Studio layer: semantic tokens, workspace-first layout, compact chrome on working stages.
+   Loaded after lab.css and lab-dimension.css. Colour carries one mathematical meaning each, and never alone:
+   every use below is paired with a label, shape or position. */
+:root {
+  --studio-quantity-a: #0b6b73;      /* first quantity (teal): diagram, table column, equation term */
+  --studio-quantity-b: #a24a2c;      /* second quantity (coral) */
+  --studio-active: #1d4ea0;          /* what the student is manipulating (sapphire) */
+  --studio-predict: #6a4a9c;         /* predictions (violet, used only in this layer) */
+  --studio-correct: #17674a;         /* a relationship that holds */
+  --studio-misconception: #9b3b1f;   /* a relationship that does not hold */
+  --studio-hint: #7a5200;            /* supports (amber ink) */
+  --studio-surface: #fff;
+  --studio-edge: #c9d6e0;
+  --studio-ink: #17344b;
+  --studio-radius: 14px;
+}
+:root[data-theme="dark"] {
+  --studio-quantity-a: #6fd3d8; --studio-quantity-b: #f0a58a; --studio-active: #9bbcff; --studio-predict: #c8b3f2;
+  --studio-correct: #7fd9b0; --studio-misconception: #f4a98e; --studio-hint: #f0cd75;
+  --studio-surface: #14212c; --studio-edge: #3a5266; --studio-ink: #e8f1f8;
+}
+
+/* Working stages: the mathematics is the centrepiece, so the page chrome above it gets out of the way. */
+.page-shell[data-stage="investigate"] .crumbs,
+.page-shell[data-stage="practice"] .crumbs,
+.page-shell[data-stage="create"] .crumbs,
+.page-shell[data-stage="games"] .crumbs { display: none; }
+.page-shell[data-stage="investigate"] .lab-header,
+.page-shell[data-stage="practice"] .lab-header,
+.page-shell[data-stage="create"] .lab-header,
+.page-shell[data-stage="games"] .lab-header { padding: 8px 16px; gap: 12px; min-height: 0; }
+.page-shell[data-stage="investigate"] .lab-emblem,
+.page-shell[data-stage="practice"] .lab-emblem,
+.page-shell[data-stage="create"] .lab-emblem,
+.page-shell[data-stage="games"] .lab-emblem,
+.page-shell[data-stage="investigate"] .mission-lead,
+.page-shell[data-stage="practice"] .mission-lead,
+.page-shell[data-stage="create"] .mission-lead,
+.page-shell[data-stage="games"] .mission-lead,
+.page-shell[data-stage="investigate"] .lesson-chips,
+.page-shell[data-stage="practice"] .lesson-chips,
+.page-shell[data-stage="create"] .lesson-chips,
+.page-shell[data-stage="games"] .lesson-chips { display: none; }
+.page-shell[data-stage="investigate"] .lab-header h1,
+.page-shell[data-stage="practice"] .lab-header h1,
+.page-shell[data-stage="create"] .lab-header h1,
+.page-shell[data-stage="games"] .lab-header h1 { font-size: 1.15rem; margin: 0; }
+.page-shell[data-stage="investigate"] .lesson-label,
+.page-shell[data-stage="practice"] .lesson-label,
+.page-shell[data-stage="create"] .lesson-label,
+.page-shell[data-stage="games"] .lesson-label { margin: 0; font-size: .8rem; }
+.page-shell[data-stage="investigate"] #level-detail,
+.page-shell[data-stage="practice"] #level-detail,
+.page-shell[data-stage="create"] #level-detail,
+.page-shell[data-stage="games"] #level-detail { display: none; }
+.page-shell[data-stage="investigate"] .toolbar,
+.page-shell[data-stage="practice"] .toolbar,
+.page-shell[data-stage="create"] .toolbar,
+.page-shell[data-stage="games"] .toolbar { padding: 6px 12px; gap: 8px; }
+.page-shell[data-stage="investigate"] .micro-hud,
+.page-shell[data-stage="practice"] .micro-hud,
+.page-shell[data-stage="create"] .micro-hud,
+.page-shell[data-stage="games"] .micro-hud { padding: 4px 12px; }
+.page-shell[data-stage="investigate"] .hud-actions,
+.page-shell[data-stage="practice"] .hud-actions,
+.page-shell[data-stage="create"] .hud-actions,
+.page-shell[data-stage="games"] .hud-actions,
+.page-shell[data-stage="investigate"] .hud-session-summary,
+.page-shell[data-stage="practice"] .hud-session-summary,
+.page-shell[data-stage="create"] .hud-session-summary,
+.page-shell[data-stage="games"] .hud-session-summary { display: none; }
+
+/* One slim control row: level, save tools; progress lives in the tab marks and the Mission tab. */
+.page-shell[data-stage="investigate"] .micro-hud,
+.page-shell[data-stage="practice"] .micro-hud,
+.page-shell[data-stage="create"] .micro-hud,
+.page-shell[data-stage="games"] .micro-hud { display: none; }
+.page-shell[data-stage="investigate"] .toolbar,
+.page-shell[data-stage="practice"] .toolbar,
+.page-shell[data-stage="create"] .toolbar,
+.page-shell[data-stage="games"] .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; padding: 6px 12px; }
+.page-shell[data-stage="investigate"] .toolbar label,
+.page-shell[data-stage="practice"] .toolbar label,
+.page-shell[data-stage="create"] .toolbar label,
+.page-shell[data-stage="games"] .toolbar label { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .95rem; }
+.page-shell[data-stage="investigate"] .toolbar select,
+.page-shell[data-stage="practice"] .toolbar select,
+.page-shell[data-stage="create"] .toolbar select,
+.page-shell[data-stage="games"] .toolbar select { min-height: 44px; width: auto; }
+.page-shell[data-stage="investigate"] .save-tools,
+.page-shell[data-stage="practice"] .save-tools,
+.page-shell[data-stage="create"] .save-tools,
+.page-shell[data-stage="games"] .save-tools { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+.page-shell[data-stage="investigate"] .save-tools button,
+.page-shell[data-stage="practice"] .save-tools button,
+.page-shell[data-stage="create"] .save-tools button,
+.page-shell[data-stage="games"] .save-tools button { min-height: 44px; padding: 4px 12px; white-space: nowrap; }
+.page-shell[data-stage="investigate"] #save-status,
+.page-shell[data-stage="practice"] #save-status,
+.page-shell[data-stage="create"] #save-status,
+.page-shell[data-stage="games"] #save-status { display: none; }
+.page-shell[data-stage="investigate"] .tabs button,
+.page-shell[data-stage="practice"] .tabs button,
+.page-shell[data-stage="create"] .tabs button,
+.page-shell[data-stage="games"] .tabs button { min-height: 48px; padding-block: 6px; }
+
+/* Investigate: the question, then the model next to Predict and the target. */
+.studio-ask { margin: 0 0 12px; }
+.studio-eyebrow { margin: 0 0 2px; font-size: .85rem; font-weight: 700; color: var(--studio-active); letter-spacing: .01em; }
+.studio-question { margin: 0 0 4px; font-size: clamp(1.2rem, 2.2vw, 1.55rem); line-height: 1.25; }
+.studio-try { margin: 0; font-size: 1rem; color: var(--studio-ink); }
+.studio-grid { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(250px, 1fr); gap: 16px; align-items: start; }
+.studio-stage, .studio-side > section { background: var(--studio-surface); border: 1px solid var(--studio-edge); border-radius: var(--studio-radius); padding: 12px; }
+.studio-side { display: grid; gap: 12px; }
+.studio-side > section { margin: 0; }
+.studio-side .predict-bar { border-left: 6px solid var(--studio-predict); }
+.studio-side .model-challenge { border-left: 6px solid var(--studio-active); }
+.studio-side h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.studio-side .predict-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.studio-side .predict-choices button { min-height: 44px; padding: 6px 8px; font-size: .95rem; }
+.studio-stage .model-workspace { margin: 0; }
+.studio-stage .model-picture { min-height: 280px; }
+.studio-ask { max-width: none; }
+.studio-how { margin: 12px 0; background: var(--studio-surface); border: 1px solid var(--studio-edge); border-radius: var(--studio-radius); padding: 8px 14px; }
+.studio-how summary { min-height: 44px; display: flex; align-items: center; font-weight: 700; cursor: pointer; }
+.studio-how .method-strip { margin-top: 8px; }
+@media (max-width: 900px) {
+  .studio-grid { grid-template-columns: minmax(0, 1fr); }
+  .studio-side { order: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .studio * { animation: none !important; transition: none !important; } }

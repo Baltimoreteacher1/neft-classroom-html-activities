@@ -197,6 +197,7 @@ function move(direction) {
 function showTab(id, nav = 'push') {
   if (!tabs.some((t) => t[0] === id)) id = 'brief';
   state.tab = id;
+  root.querySelector('.page-shell').dataset.stage = id;
   if (location.hash !== `#${id}` && nav !== 'none') history[nav === 'replace' ? 'replaceState' : 'pushState'](null, '', `#${id}`);
   root.querySelectorAll('[role="tabpanel"]').forEach((panel) => { panel.hidden = panel.id !== `panel-${id}`; });
   root.querySelectorAll('[data-tab]').forEach((button) => { const selected = button.dataset.tab === id; button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1; });

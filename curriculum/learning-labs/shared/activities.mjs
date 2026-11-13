@@ -127,14 +127,18 @@ export function investigate(ctx, host) {
     stretch: 'State your claim, give the evidence from the model, and explain the mathematics that makes it true in general.',
   };
   state.investigated ||= [];
-  host.innerHTML = `<div class="section-intro"><h2>Investigate: ${esc(lab.title)}</h2><p>Predict, change one thing, and explain what happens. The control changes this lab’s mathematics: the picture and the readout update together. Type a number or use the arrow keys inside any control.</p></div><ol class="method-strip" aria-label="How to investigate"><li><strong>Predict</strong> what will change before you touch a control.</li><li><strong>Change one thing</strong> and read the picture and readout.</li><li><strong>Explain</strong> with evidence, then record it below.</li></ol><div class="watch-card"><p><strong>What the picture shows.</strong> ${esc(tips.show)}</p><p><strong>Try this first.</strong> ${esc(tips.tip)}</p></div><div id="investigation-model"></div><div class="investigation-prompts">${lab.investigate.map((p, i) => `<article class="${state.investigated.includes(i) ? 'is-done' : ''}" data-investigation="${i}"><div class="investigation-head"><h3>Investigation ${i + 1} of ${lab.investigate.length}</h3><label class="check-item done-check"><input type="checkbox" data-done="${i}" ${state.investigated.includes(i) ? 'checked' : ''}><span>Done</span></label></div><p class="question-prompt">${esc(p)}</p>${textArea(`investigate-${i}`, 'My prediction, test, and evidence', frames[state.level])}<button type="button" class="quiet small" data-capture="${i}">Add what the model shows now</button></article>`).join('')}</div>${state.level === 'stretch' ? '<div class="stretch-task"><h3>Push the idea further</h3><p>Find two different settings that produce the same result. Explain what the settings have in common, or show why that cannot happen when only one quantity changes.</p></div>' : ''}`;
+  // Workspace first: the open question, then the model beside Predict and the target, then the notes.
+  const open = Math.max(0, lab.investigate.findIndex((_, i) => !state.investigated.includes(i)));
+  const notes = lab.investigate.map((p, i) => `<article class="${state.investigated.includes(i) ? 'is-done' : ''}" data-investigation="${i}"><div class="investigation-head"><h3>Investigation ${i + 1} of ${lab.investigate.length}</h3><label class="check-item done-check"><input type="checkbox" data-done="${i}" ${state.investigated.includes(i) ? 'checked' : ''}><span>Done</span></label></div><p class="question-prompt">${esc(p)}</p>${textArea(`investigate-${i}`, 'My prediction, test, and evidence', frames[state.level])}<button type="button" class="quiet small" data-capture="${i}">Add what the model shows now</button></article>`).join('');
+  const stretch = state.level === 'stretch' ? '<div class="stretch-task"><h3>Push the idea further</h3><p>Find two different settings that produce the same result. Explain what the settings have in common, or show why that cannot happen when only one quantity changes.</p></div>' : '';
+  host.innerHTML = `<div class="studio" data-studio="investigate"><header class="studio-ask"><p class="studio-eyebrow">${esc(lab.title)} · Investigation ${open + 1} of ${lab.investigate.length}</p><h2 class="studio-question">${esc(lab.investigate[open])}</h2><p class="studio-try"><strong>Try this:</strong> ${esc(tips.tip)}</p></header><div class="studio-grid"><div class="studio-stage"><div id="investigation-model"></div></div><aside class="studio-side" aria-label="Predict and challenge"></aside></div><details class="studio-how"><summary>What am I looking at?</summary><p>${esc(tips.show)}</p><ol class="method-strip" aria-label="How to investigate"><li><strong>Predict</strong> what will change before you touch a control.</li><li><strong>Change one thing</strong> and read the picture and readout.</li><li><strong>Explain</strong> with evidence, then record it below.</li></ol></details><div class="investigation-prompts">${notes}</div>${stretch}</div>`;
   let latest = null;
   // Model challenge: reach a target by touching the model; checked against the model's own math.
   const goals = makeChallenges(lab.id, lab.model);
   state.challenge ||= { index: 0, solved: [] };
   const card = document.createElement('section');
   card.className = 'model-challenge'; card.setAttribute('aria-labelledby', 'mc-title');
-  host.querySelector('#investigation-model').before(card);
+  host.querySelector('.studio-side').append(card);
   const drawChallenge = (message = '') => {
     const c = state.challenge, i = Math.min(c.index, goals.length - 1), goal = goals[i], solved = c.solved.includes(i);
     const all = c.solved.length >= goals.length;
@@ -166,7 +170,7 @@ export function investigate(ctx, host) {
     bar.querySelectorAll('[data-predict]').forEach((b) => b.addEventListener('click', () => { pending = { choice: b.dataset.predict, base: latest?.result.value }; drawPredict(); }));
   };
   let pending = null, settle = 0;
-  host.querySelector('#investigation-model').before(bar);
+  host.querySelector('.studio-side').append(bar);
   const judgePrediction = (result) => {
     if (!pending || pending.base === undefined) return;
     clearTimeout(settle);
