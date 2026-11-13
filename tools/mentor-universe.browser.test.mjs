@@ -112,7 +112,10 @@ try {
   const target = await send("Target.createTarget", {
     url: `http://127.0.0.1:${port}/mentor-lab/`,
   });
-  const attached = await send("Target.attachToTarget", { targetId: target.targetId, flatten: true });
+  const attached = await send("Target.attachToTarget", {
+    targetId: target.targetId,
+    flatten: true,
+  });
   const session = attached.sessionId;
   await send("Runtime.enable", {}, session);
   await new Promise((resolveWait) => setTimeout(resolveWait, 1500));
@@ -146,10 +149,7 @@ try {
   );
   await send("Page.reload", {}, session);
   await new Promise((resolveWait) => setTimeout(resolveWait, 1200));
-  const migration = await evaluate(
-    session,
-    `JSON.parse(localStorage.getItem("nt_mentor"))`,
-  );
+  const migration = await evaluate(session, `JSON.parse(localStorage.getItem("nt_mentor"))`);
   assert.equal(migration.id, "benjamin-banneker");
   assert.deepEqual(migration.moves, ["pattern"]);
   assert.equal(migration.version, 2);
@@ -214,7 +214,9 @@ try {
   assert.equal(journey.completed, true);
   assert.equal(journey.readAloud, "true");
 
-  console.log("mentor-universe browser: phone render, migration, profile, studio, and 6-5 archive PASS");
+  console.log(
+    "mentor-universe browser: phone render, migration, profile, studio, and 6-5 archive PASS",
+  );
 } finally {
   try {
     await send("Browser.close");

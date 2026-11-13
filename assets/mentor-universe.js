@@ -198,9 +198,13 @@
     var es = language === "es";
     var interactions = {
       noticing: {
-        prompt: es ? "¿Qué par forma 100 en 48 + 27 + 52?" : "Which pair makes 100 in 48 + 27 + 52?",
+        prompt: es
+          ? "¿Qué par forma 100 en 48 + 27 + 52?"
+          : "Which pair makes 100 in 48 + 27 + 52?",
         answer: "48,52",
-        hint: es ? "Busca dos números con unidades que suman 10." : "Look for ones digits that total 10.",
+        hint: es
+          ? "Busca dos números con unidades que suman 10."
+          : "Look for ones digits that total 10.",
       },
       balance: {
         prompt: es ? "x + 7 = 12. Escribe x." : "x + 7 = 12. Enter x.",
@@ -208,7 +212,9 @@
         hint: es ? "Resta 7 en ambos lados." : "Subtract 7 from both sides.",
       },
       drawing: {
-        prompt: es ? "Una razón 3:2 se duplica. Escribe la nueva razón." : "Double the ratio 3:2. Enter the new ratio.",
+        prompt: es
+          ? "Una razón 3:2 se duplica. Escribe la nueva razón."
+          : "Double the ratio 3:2. Enter the new ratio.",
         answer: "6:4",
         hint: es ? "Duplica las dos cantidades." : "Double both quantities.",
       },
@@ -223,14 +229,20 @@
         hint: es ? "25% es un cuarto." : "25% is one fourth.",
       },
       reality: {
-        prompt: es ? "¿Es razonable $340 por un lápiz? sí/no" : "Is $340 reasonable for one pencil? yes/no",
+        prompt: es
+          ? "¿Es razonable $340 por un lápiz? sí/no"
+          : "Is $340 reasonable for one pencil? yes/no",
         answer: es ? "no" : "no",
         hint: es ? "Compara con una compra real." : "Compare with a real purchase.",
       },
       record: {
-        prompt: es ? "Si un intento falla, ¿lo borras o lo registras?" : "If a try fails, erase it or record it?",
+        prompt: es
+          ? "Si un intento falla, ¿lo borras o lo registras?"
+          : "If a try fails, erase it or record it?",
         answer: es ? "registras" : "record",
-        hint: es ? "Un registro evita repetir un callejón sin salida." : "A record prevents repeating a dead end.",
+        hint: es
+          ? "Un registro evita repetir un callejón sin salida."
+          : "A record prevents repeating a dead end.",
       },
       "second-way": {
         prompt: es ? "0.5 como fracción simplificada = __" : "0.5 as a simplified fraction = __",

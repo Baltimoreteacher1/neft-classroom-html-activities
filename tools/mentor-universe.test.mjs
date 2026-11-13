@@ -55,7 +55,10 @@ for (const mentor of R.mentors) {
     `${mentor.id}: source must use HTTPS`,
   );
   const interaction = U.interactionFor(mentor, "en");
-  assert.ok(interaction.prompt && interaction.answer && interaction.hint, `${mentor.id}: no interaction`);
+  assert.ok(
+    interaction.prompt && interaction.answer && interaction.hint,
+    `${mentor.id}: no interaction`,
+  );
   assert.equal(
     U.checkInteraction(mentor, interaction.answer, "en").correct,
     true,
