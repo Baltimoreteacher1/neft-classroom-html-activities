@@ -239,6 +239,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -286,36 +289,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 5, Episode 2: Solid Ground. A cement truck pours into L-shaped form boards on the Brightside lot while the crew measures and the glowing orb VEX hovers with a volume readout.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#duskgrad)"/><circle cx="392" cy="180" r="54" fill="#FFF3D8" opacity=".95"/><circle cx="392" cy="180" r="82" fill="#FFF3D8" opacity=".25"/><g fill="#fff" opacity=".45"><ellipse cx="140" cy="120" rx="56" ry="13"/><ellipse cx="260" cy="76" rx="42" ry="10"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,250) scale(5,3.5)" opacity=".5"><use href="#sym-skyline"/></g><rect y="596" width="500" height="104" fill="#17324D"/><g stroke="#17324D" stroke-width="2.5"><rect x="20" y="560" width="14" height="50" fill="#b78a2e"/><rect x="56" y="560" width="14" height="50" fill="#b78a2e"/><rect x="430" y="560" width="14" height="50" fill="#b78a2e"/><rect x="466" y="560" width="14" height="50" fill="#b78a2e"/><rect x="10" y="572" width="480" height="9" fill="#8a6a1c"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(96,300) scale(3.1)"><use href="#sym-dtable"/></g>
-        <rect x="120" y="368" width="262" height="150" rx="8" fill="#2a4d8f" stroke="#17324D" stroke-width="6" transform="rotate(-6 251 443)"/>
-        <g transform="rotate(-6 251 443)">
-          <g stroke="#cfe3ff" stroke-width="1.6" opacity=".5"><line x1="132" y1="404" x2="372" y2="404"/><line x1="132" y1="442" x2="372" y2="442"/><line x1="132" y1="480" x2="372" y2="480"/><line x1="176" y1="370" x2="176" y2="516"/><line x1="232" y1="370" x2="232" y2="516"/><line x1="288" y1="370" x2="288" y2="516"/><line x1="344" y1="370" x2="344" y2="516"/></g>
-          <polygon points="142,498 206,498 226,432 162,432" fill="none" stroke="#fff" stroke-width="3.5"/>
-          <line x1="196" y1="498" x2="196" y2="432" stroke="#F2C15B" stroke-width="3" stroke-dasharray="7 5"/>
-          <text x="184" y="520" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#7CF2EC">b</text>
-          <text x="204" y="470" font-family="Arial" font-weight="800" font-size="13" fill="#F2C15B">h</text>
-          <polygon points="238,498 310,498 274,438" fill="none" stroke="#F2C15B" stroke-width="3.5"/>
-          <polygon points="318,498 372,498 358,446 332,446" fill="none" stroke="#7CF2EC" stroke-width="3.5"/>
-          <text x="252" y="392" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#fff" text-anchor="middle">BRIGHTSIDE LOT — FLOOR PLAN</text>
-        </g>
-        <g stroke="#7CF2EC" stroke-width="2" opacity=".65" stroke-dasharray="4 6"><line x1="250" y1="180" x2="140" y2="400"/><line x1="250" y1="180" x2="250" y2="420"/><line x1="250" y1="180" x2="360" y2="400"/></g>
-        <g transform="translate(200,108) scale(.95)"><use href="#sym-vex"/></g>
-        <g transform="translate(60,440) scale(1.12)"><use href="#sym-zara"/></g>
-        <rect x="128" y="478" width="30" height="7" rx="3.5" fill="#F2C15B" stroke="#17324D" stroke-width="2.5" transform="rotate(-26 143 481)"/>
-        <g transform="translate(372,452) scale(.95)"><use href="#sym-maya"/></g>
-        <g transform="translate(28,560) scale(.84)"><use href="#sym-theo"/></g>
-        <g transform="translate(404,566) scale(.8)"><use href="#sym-dev"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 5, Episode 2: Solid Ground. On the sunny Brightside lot, Valeria, Darius, Mina and Noah stand proudly in front of a cement mixer truck while VEX, the small teal robot with one glowing golden eye, hovers above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -391,151 +366,163 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",label:"Solid Ground — Boss Gate"}
 ];
 
-const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-/* the lot, build week: dirt, form boards, cones */
-const LOT=`<rect width="400" height="210" fill="url(#skygrad)"/><g transform="translate(0,60) scale(4,1.6)" opacity=".4"><use href="#sym-skyline"/></g><rect y="150" width="400" height="60" fill="#c9b896"/><rect y="150" width="400" height="60" fill="url(#halftone)"/><g fill="#E2674A" stroke="#17324D" stroke-width="2"><path d="M60 150 l8 -18 8 18 z"/><path d="M330 150 l8 -18 8 18 z"/></g>`;
 function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
 
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u5-e2 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u5-e2-solid-ground.webp?v=7aeb694d33","w":2610,"h":3265,"f":{"cover":[0,0,544,762,"Valeria, Darius, Mina and Noah stand proudly on a sunny construction lot in front of a cement mixer truck, with VEX glowing above them.",[]],"p1-lot":[870,1742,870,435,"Mina and Noah stand on the sunny construction lot among form boards and traffic cones, with VEX glowing in the upper right.",[]],"p1-plans":[1740,1742,870,381,"Blue floor-plan blueprints lie on a wooden drafting table with a pencil and a ruler.",[]],"p2-forms":[870,762,870,490,"On the lot, wooden form boards lie in a big L shape. Mina kneels at the left setting a board while Fenwick, the Hargrove surveyor, pulls out his tape measure at the right.",[]],"p2-mina":[2014,0,490,653,"Close-up of Mina, in her green sweatshirt, holding a hammer, confident and busy.",[]],"p2-fenwick":[1524,0,490,653,"Close-up of Fenwick, in his yellow hard hat and safety vest, holding up his tape measure with a sly, fake-polite smile.",[]],"p2-noah":[870,2613,870,326,"Noah, at the left edge of the panel, slices the air with one finger as he explains.",[]],"p3-sketch":[1740,762,870,490,"A survey sketch is taped to a form board: one big L-shaped outline. Mina stands at the right with a pencil.",[]],"p3-vex":[0,2232,870,381,"VEX hovers beside two glowing rectangles, one big and one small, fitting together into an L.",[]],"p4-mina":[1740,2613,870,326,"Mina turns and points at the reader with an urgent grin.",[]],"p5-planter":[0,1252,870,490,"On the lot, a big empty wooden planter box waits for soil. Noah stands at the left with a shovel and VEX glows in the upper right.",[]],"p5-vex":[870,2232,870,381,"VEX hovers beside a glowing box built from stacked cubes, with a thin half layer on top.",[]],"p6-noah":[0,2939,870,326,"Noah turns to the reader holding up two fingers with a grin.",[]],"p7-fence":[870,1252,870,490,"At night, a big notice with a coral border hangs on the construction fence. Darius stands at the left, frowning at it.",[]],"p7-darius":[870,2939,870,326,"Darius, at the right edge of the panel, jabs a finger at a rolled blueprint, annoyed.",[]],"p8-deck":[1740,1252,870,490,"On the drafting table, a plan shows a wide rectangle with a triangle wing on its right. Valeria stands at the left with a ruler.",[]],"p8-vex":[1740,2232,870,381,"VEX hovers beside a glowing flat square and a glowing cube, side by side.",[]],"p9-truck":[0,1742,870,490,"A big cement mixer truck rolls onto the lot at the right, drum turning. Mina and Darius wave it in from the left.",[]],"p9-mina":[1740,2939,870,326,"Mina, at the left edge, grips the concrete chute with both hands, shouting with excitement.",[]],"p10-vex":[0,2613,870,326,"VEX flashes a bright alarm ring around its golden eye in the dark.",[]],"p11-slab":[0,762,870,490,"A smooth, fresh concrete slab fills the lot. Valeria cheers at the left and Mina at the right while VEX glows above.",[]],"p11-darius":[544,0,490,653,"Close-up of Darius grinning, holding a paint roller and a folded canvas tarp.",[]],"p11-net":[1034,0,490,653,"A cardboard box lies unfolded into a cross of six squares, outlined in glowing gold.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* p1 */
 { ch:"Unit 5 · Episode 2", html:`
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">SOLID <em>GROUND</em></h2>
   <div class="caption" style="display:inline-block">Lessons 5-4 &amp; 5-5 — compound area and the volume of rectangular prisms (fractional edges included). Three reader gates before the concrete sets.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`${LOT}
-    <g data-depth="16" transform="translate(40,76) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(150,80) scale(.88)"><use href="#sym-dev"/></g>
-    <g data-depth="24" transform="translate(320,16) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:52%"><span class="who">VEX</span>Previously: the floor plans were drawn, and Hargrove's one-base trapezoid was exposed in front of the whole council.</div>
-  </div>
-  <div class="caption loc">Previously, in Episode 1: the crew's drawings beat Hargrove's. Now the cement truck is booked for Friday — and the forms have to be RIGHT.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-lot")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:52%"><span class="who">VEX</span>Previously: the floor plans were drawn, and Hargrove's one-base trapezoid was exposed in front of the whole council.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-plans")}
+      <div class="caption loc">Previously, in Episode 1: the crew's drawings beat Hargrove's. Now the cement truck is booked for Friday — and the forms have to be RIGHT.</div>
+    </div>
+  </div>`},
 
 /* p2 */
 { ch:"Chapter 1 · Build Week", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">BUILD <em>WEEK</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${LOT}
-    <g data-depth="12" stroke="#b78a2e" stroke-width="6" fill="none"><path d="M70 150 h120 v-30 h60 v60"/></g>
-    <g data-depth="18" transform="translate(36,78) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="14" transform="translate(280,84) scale(.85)"><use href="#sym-fenwick"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:48%"><span class="who">MINA</span>Form boards for the patio go down today. Concrete waits for nobody.</div>
-    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:46%"><span class="who">FENWICK (HARGROVE & SONS)</span>I'll just… independently verify your measurements. With my own tape. For the record.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(10,2) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:8px;left:84px;max-width:68%"><span class="who">NOAH</span>The patio's not a rectangle, it's an L. No single formula fits — so we SPLIT it into shapes that have formulas.</div>
-  </div>
-  <div class="caption"><b>Compound figures</b> get decomposed: cut them into rectangles and triangles, find each area, add them up.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-forms")}</div>
+    <div class="panel gn-panel gn-half">${ART("p2-mina")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MINA</span>Form boards for the patio go down today. Concrete waits for nobody.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-fenwick")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">FENWICK (HARGROVE & SONS)</span>I'll just… independently verify your measurements. With my own tape. For the record.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-noah")}
+      <div class="balloon" style="top:8px;right:8px;max-width:64%;--tx:10px"><span class="who">NOAH</span>The patio's not a rectangle, it's an L. No single formula fits — so we SPLIT it into shapes that have formulas.</div>
+    </div>
+    <div class="caption"><b>Compound figures</b> get decomposed: cut them into rectangles and triangles, find each area, add them up.</div>
+  </div>`},
 
 /* p3 */
 { ch:"Chapter 1 · The L-Shaped Patio", html:`
-  <div class="caption loc">The survey sketch, taped to a form board. One L, five labels.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#fff8ea"/>
-    <g data-depth="10"><path d="M80 40 h180 v75 h-90 v45 h-90 z" fill="rgba(31,166,162,.18)" stroke="#17324D" stroke-width="4"/>
-    <text x="170" y="32" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">8 m</text>
-    <text x="62" y="105" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">5 m</text>
-    <text x="215" y="180" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">4 m</text>
-    <text x="290" y="142" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">3 m</text></g>
-    <g data-depth="16" transform="translate(300,60) scale(.8)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon tail-r" style="top:8px;right:4px;max-width:40%"><span class="who">MINA</span>Big rectangle, 8 by 5. Little rectangle, 4 by 3. One cut line and it's two easy problems.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#EEF7F6"/><g transform="translate(318,2) scale(.58)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Decomposition protocol: area survives cutting. The L's total is exactly the sum of its parts — no more, no less.</div>
+  <div class="gn-comic">
+    <div class="caption loc">The survey sketch, taped to a form board. One L, five labels.</div>
+    <div class="panel gn-panel panel3d">${ART("p3-sketch")}
+      <div class="gn-sign" data-gn-skip style="left:36%;top:12%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif">8 m</div>
+      <div class="gn-sign" data-gn-skip style="left:12%;top:48%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif">5 m</div>
+      <div class="gn-sign" data-gn-skip style="left:46%;top:88%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif">4 m</div>
+      <div class="gn-sign" data-gn-skip style="left:62%;top:70%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif">3 m</div>
+      <div class="balloon tail-r" style="top:8px;right:4px;max-width:36%"><span class="who">MINA</span>Big rectangle, 8 by 5. Little rectangle, 4 by 3. One cut line and it's two easy problems.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>Decomposition protocol: area survives cutting. The L's total is exactly the sum of its parts — no more, no less.</div>
+    </div>
   </div>`},
 
 /* p4 GATE1 */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fff8ea"/><g transform="translate(8,0) scale(.64)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">MINA</span>Reader — total the patio before Fenwick "verifies" it wrong!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-mina")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">MINA</span>Reader — total the patio before Fenwick "verifies" it wrong!</div>
+    </div>
   </div>`},
 
 /* p5 */
 { ch:"Chapter 2 · The Pour", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE <em>POUR</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${LOT}
-    <g data-depth="12" stroke="#17324D" stroke-width="3"><rect x="120" y="96" width="150" height="56" rx="4" fill="#1FA6A2" opacity=".35"/><rect x="120" y="96" width="150" height="56" rx="4" fill="none"/></g>
-    <text data-depth="12" x="195" y="88" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">PLANTER BOX — 4 m × 3 m × 2.5 m</text>
-    <g data-depth="18" transform="translate(30,80) scale(.9)"><use href="#sym-dev"/></g>
-    <g data-depth="24" transform="translate(320,20) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">NOAH</span>Soil order time. Volume is length × width × height — three dimensions, one multiply chain.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#EEF7F6"/><g transform="translate(318,4) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Fractional edges are not optional decimals. 2.5 metres of depth means every cubic metre counts — including the half-layers.</div>
-  </div>
-  <div class="caption"><b>Volume of a rectangular prism</b> = length × width × height. Works exactly the same when an edge is a fraction or decimal.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-planter")}
+      <div class="gn-sign" data-gn-skip style="left:56%;top:40%;width:44%;color:#17324D;text-shadow:0 0 4px #fff;font-family:Arial,sans-serif;font-size:13px">PLANTER BOX — 4 m × 3 m × 2.5 m</div>
+      <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">NOAH</span>Soil order time. Volume is length × width × height — three dimensions, one multiply chain.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>Fractional edges are not optional decimals. 2.5 metres of depth means every cubic metre counts — including the half-layers.</div>
+    </div>
+    <div class="caption"><b>Volume of a rectangular prism</b> = length × width × height. Works exactly the same when an edge is a fraction or decimal.</div>
+  </div>`},
 
 /* p6 GATE2 */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#EEF7F6"/><g transform="translate(8,-2) scale(.6)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:76px;max-width:70%"><span class="who">NOAH</span>Two boxes, two pours, reader. Don't drop the half metre.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-noah")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">NOAH</span>Two boxes, two pours, reader. Don't drop the half metre.</div>
+    </div>
   </div>`},
 
 /* p7 */
 { ch:"Chapter 3 · Fenwick's Clipboard", html:`
-  <div class="caption loc">Thursday. Fenwick posts his "independent verification" on the fence.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    <rect width="400" height="190" fill="#10243a"/>
-    <rect data-depth="10" x="80" y="18" width="240" height="130" rx="8" fill="#FFFDF4" stroke="#E2674A" stroke-width="4"/>
-    <text data-depth="10" x="200" y="46" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">HARGROVE VERIFICATION</text>
-    <text data-depth="10" x="200" y="76" text-anchor="middle" font-family="Arial" font-weight="700" font-size="12" fill="#17324D">Stage slab: 6 m × 4 m × 1 m deep</text>
-    <text data-depth="10" x="200" y="98" text-anchor="middle" font-family="Arial" font-weight="800" font-size="14" fill="#17324D">= 24 m³ of concrete</text>
-    <text data-depth="10" x="200" y="128" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#5a4a22">"bill accordingly" — F.</text>
-    <g data-depth="18" transform="translate(8,66) scale(.85)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="bottom:8px;left:96px;max-width:56%"><span class="who">DARIUS</span>The plans say HALF a metre deep. He just doubled the city's concrete bill with one fake digit.</div>
-  </div>
-  <div class="caption">One wrong dimension doesn't add a little error — it MULTIPLIES the whole answer.</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">Thursday. Fenwick posts his "independent verification" on the fence.</div>
+    <div class="panel gn-panel panel3d">${ART("p7-fence")}
+      <div class="gn-sign" data-gn-skip style="left:56%;top:44%;width:44%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif;font-size:13px"><b style="color:#C9472B">HARGROVE VERIFICATION</b><br>Stage slab: 6 m × 4 m × 1 m deep<br><b>= 24 m³ of concrete</b><br><i style="color:#5a4a22">"bill accordingly" — F.</i></div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-darius")}
+      <div class="balloon gn-side" style="top:8px;left:6px;max-width:64%"><span class="who">DARIUS</span>The plans say HALF a metre deep. He just doubled the city's concrete bill with one fake digit.</div>
+    </div>
+    <div class="caption">One wrong dimension doesn't add a little error — it MULTIPLIES the whole answer.</div>
+  </div>`},
 
 /* p8 */
 { ch:"Chapter 3 · Stage Math", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#fff8ea"/>
-    <g data-depth="10"><rect x="60" y="60" width="170" height="100" fill="rgba(31,166,162,.18)" stroke="#17324D" stroke-width="4"/>
-    <path d="M230 60 l70 100 h-70 z" fill="rgba(31,166,162,.25)" stroke="#17324D" stroke-width="4"/>
-    <text x="145" y="50" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">10 m</text>
-    <text x="42" y="115" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">6 m</text>
-    <text x="268" y="178" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">base 6 m</text>
-    <text x="320" y="100" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">h 4 m</text></g>
-    <g data-depth="16" transform="translate(8,70) scale(.8)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:90px;max-width:56%"><span class="who">VALERIA</span>The stage deck: a 10-by-6 rectangle plus a triangle wing. Compound shape — Episode 1 rules apply.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#EEF7F6"/><g transform="translate(318,2) scale(.58)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Friday's pour needs BOTH numbers: the deck's area in square metres, and the slab's volume in cubic metres. Then we audit Fenwick.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p8-deck")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:18%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif;font-size:13px">10 m</div>
+      <div class="gn-sign" data-gn-skip style="left:28%;top:56%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif;font-size:13px">6 m</div>
+      <div class="gn-sign" data-gn-skip style="left:74%;top:88%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif;font-size:13px">base 6 m</div>
+      <div class="gn-sign" data-gn-skip style="left:86%;top:52%;color:#17324D;text-shadow:none;font-family:Arial,sans-serif;font-size:13px">h 4 m</div>
+      <div class="balloon" style="top:6px;left:22%;max-width:50%;--tx:10px"><span class="who">VALERIA</span>The stage deck: a 10-by-6 rectangle plus a triangle wing. Compound shape — Episode 1 rules apply.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p8-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>Friday's pour needs BOTH numbers: the deck's area in square metres, and the slab's volume in cubic metres. Then we audit Fenwick.</div>
+    </div>
   </div>`},
 
 /* p9 boss setup */
 { ch:"Chapter 4 · Pour Day", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${LOT.replace('height="210"','height="200"')}
-    <g data-depth="12" fill="#5a6672" stroke="#17324D" stroke-width="3"><rect x="240" y="70" width="120" height="58" rx="10"/><circle cx="268" cy="136" r="16"/><circle cx="330" cy="136" r="16"/></g>
-    <polygon data-depth="12" points="240,86 200,108 240,118" fill="#9aa7b4" stroke="#17324D" stroke-width="3"/>
-    <g data-depth="18" transform="translate(30,78) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(120,84) scale(.85)"><use href="#sym-theo"/></g>`)}
-    <div class="sfx" style="top:8px;right:14px">RRRMMM!</div>
-    <div class="balloon" style="top:30px;left:8px;max-width:48%"><span class="who">MINA</span>Truck's here! Reader — run the final numbers while I hold the chute!</div>
-  </div>
-  <div class="caption">Boss Gate: the deck's compound area, the slab's true volume, and the flaw in Fenwick's 24.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-truck")}
+      <div class="sfx" style="top:8px;right:14px">RRRMMM!</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-mina")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">MINA</span>Truck's here! Reader — run the final numbers while I hold the chute!</div>
+    </div>
+    <div class="caption">Boss Gate: the deck's compound area, the slab's true volume, and the flaw in Fenwick's 24.</div>
+  </div>`},
 
 /* p10 BOSS */
 { ch:"Boss Gate · Solid Ground", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The concrete is literally setting. No pressure. (Measurable pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:66%"><span class="who">VEX</span>BOSS GATE. Three locks. The concrete is literally setting. No pressure. (Measurable pressure.)</div>
+    </div>
   </div>`},
 
 /* p11 victory */
 { ch:"Chapter 5 · Set in Stone", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${LOT}
-    <rect data-depth="10" x="70" y="120" width="180" height="30" rx="4" fill="#d8d3c8" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="10" x="160" y="140" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#5a6672">FRESH — 12 m³ EXACTLY</text>
-    <g data-depth="18" transform="translate(270,76) scale(.9)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(40,80) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="24" transform="translate(330,16) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:8px;left:14px">SMOOTH!</div>
-    <div class="balloon tail-r" style="top:30px;right:6px;max-width:46%"><span class="who">MINA</span>Twelve cubic metres ordered, twelve poured, zero wasted. The city refused Fenwick's bill.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#EEF7F6"/><g transform="translate(56,2) scale(.74)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">DARIUS</span>Next week: paint and canvas. Everything we built has to get WRAPPED — and wrapping is surface area.</div></div>
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#17324D"/><g transform="translate(60,12)"><path d="M30 0 h30 v30 h30 v30 h-30 v30 h-30 v-30 h-30 v-30 h30 z" fill="none" stroke="#F2C15B" stroke-width="3"/></g><text x="100" y="96" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#F2C15B">an unfolded box?…</text>`)}</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-slab")}
+      <div class="sfx" style="top:8px;left:14px">SMOOTH!</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:76%;color:#5a6672;text-shadow:0 0 4px #fff;font-family:Arial,sans-serif;font-size:13px">FRESH — 12 m³ EXACTLY</div>
+      <div class="balloon tail-r" style="top:30px;right:6px;max-width:46%"><span class="who">MINA</span>Twelve cubic metres ordered, twelve poured, zero wasted. The city refused Fenwick's bill.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-darius")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">DARIUS</span>Next week: paint and canvas. Everything we built has to get WRAPPED — and wrapping is surface area.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-net")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:90%;color:#F2C15B;font-family:Arial,sans-serif;font-size:13px">an unfolded box?…</div>
+    </div>
   </div>
   <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
 
