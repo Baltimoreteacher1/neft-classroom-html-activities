@@ -40,7 +40,7 @@
   if (window.NTMentor && window.NTMentor.__booted) return;
 
   var STORE_KEY = "nt_mentor";
-  var STATE_VERSION = 1;
+  var STATE_VERSION = 2;
   var UNIT0_URL = "/mentor-lab/";
   var BASE = "/assets/";
   var WRONG_BEFORE_STORY = 2; // incorrect attempts before ONE story offer
@@ -77,6 +77,8 @@
       moves: [],
       seenStories: [],
       lang: "en",
+      studio: {},
+      journey: { weeks: {}, moments: {}, experiences: {} },
     };
   }
 
@@ -95,6 +97,11 @@
         // Set in Unit 0. This layer has no toggle of its own — it follows the
         // choice the student already made rather than resetting them to English.
         lang: s.lang === "es" ? "es" : "en",
+        studio: s.studio && typeof s.studio === "object" ? s.studio : {},
+        journey:
+          s.journey && typeof s.journey === "object"
+            ? s.journey
+            : { weeks: {}, moments: {}, experiences: {} },
       };
     } catch (_e) {
       return blank();
@@ -110,6 +117,7 @@
   }
 
   var state = load();
+  var lessonContext = null;
 
   /* ── language ──────────────────────────────────────────────────────────────
    * Chosen in Unit 0 and carried on the shared record. The layer shows the
@@ -420,6 +428,15 @@
       esc(mField(mentor, "struggle")) +
       "</p>" +
       "</details>" +
+      (lessonContext
+        ? '<div class="ntm-section ntm-moment"><p class="ntm-eyebrow">' +
+          esc(state.lang === "es" ? "Momento del mentor" : "Mentor Moment") +
+          "</p><p><strong>" +
+          esc(lessonContext.title) +
+          "</strong></p><p>" +
+          esc(lessonContext.text) +
+          "</p></div>"
+        : "") +
       '<div class="ntm-section">' +
       '<p class="ntm-eyebrow">' +
       esc(s_("collected")) +
@@ -487,6 +504,8 @@
     if (state.lang === want) return;
     state.lang = want;
     save(state);
+    lessonContext = null;
+    loadLessonContext();
     renderPill();
     if (els.panel) {
       close();
@@ -662,6 +681,7 @@
     booted = true;
     ensureCss();
     renderPill();
+    loadLessonContext();
 
     // The telemetry layer boots before us in the manifest, but tolerate any
     // order: retry briefly, then give up quietly.
@@ -673,12 +693,39 @@
     }
   }
 
+  function loadLessonContext() {
+    try {
+      var match = window.location.pathname.match(/^\/lessons\/(\d+-\d+)\//);
+      if (!match || !window.NTMentorUniverse || !window.fetch) return;
+      fetch("/data/curriculum-launch-manifest.json")
+        .then(function (response) {
+          return response.ok ? response.json() : null;
+        })
+        .then(function (manifest) {
+          var lessons = manifest && Array.isArray(manifest.lessons) ? manifest.lessons : [];
+          for (var i = 0; i < lessons.length; i++) {
+            if (lessons[i].id !== match[1]) continue;
+            var moment = window.NTMentorUniverse.momentFor(lessons[i], state.lang);
+            lessonContext = { title: lessons[i].title, text: moment.text, lab: moment.lab };
+            return;
+          }
+        })
+        .catch(function () {
+          /* a missing enhancement never blocks the lesson */
+        });
+    } catch (_error) {
+      /* best effort */
+    }
+  }
+
   function init() {
     try {
       ensureScript("mentor-avatar.js", "NTMentorAvatar", function () {
         ensureScript("mentor-roster.js", "NTMentorRoster", function () {
-          if (document.body) start();
-          else document.addEventListener("DOMContentLoaded", start);
+          ensureScript("mentor-universe.js", "NTMentorUniverse", function () {
+            if (document.body) start();
+            else document.addEventListener("DOMContentLoaded", start);
+          });
         });
       });
     } catch (e) {
@@ -727,6 +774,9 @@
         moves: state.moves.slice(),
         seenStories: state.seenStories.slice(),
         chosenAt: state.chosenAt,
+        lang: state.lang,
+        studio: state.studio,
+        journey: state.journey,
       };
     },
     set: function (id) {

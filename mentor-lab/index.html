@@ -38,6 +38,12 @@
         </button>
       </div>
     </header>
+    <nav class="mu-nav" aria-label="Math Mentor Universe">
+      <a href="#ml-main">Find my match</a>
+      <a href="#mu-studio">My Mentor Studio</a>
+      <a href="#mu-journey">My Math Journey</a>
+      <a href="#mu-experiences">Signature experiences</a>
+    </nav>
 
     <p id="ml-speak-hint" class="ml-speak-hint" hidden data-i18n="readAloudHint">
       Read-aloud is on. Tap any words to hear them.
@@ -177,6 +183,103 @@
           </button>
         </div>
       </section>
+
+      <section class="mu-section" id="mu-studio" aria-labelledby="mu-studio-title">
+        <p class="ml-eyebrow">Make the move your own · Haz tuya la estrategia</p>
+        <h2 id="mu-studio-title">My Mentor Studio</h2>
+        <p>Save a personal strategy card. It stays on this device and travels with existing Save/Resume backups; it is not sent to a class dashboard.</p>
+        <form id="mu-studio-form" class="mu-form">
+          <label>My version of the move · Mi versión de la estrategia
+            <textarea id="mu-studio-move" rows="3" maxlength="240"></textarea>
+          </label>
+          <label>When I will use it · Cuándo la usaré
+            <textarea id="mu-studio-when" rows="3" maxlength="240"></textarea>
+          </label>
+          <button class="ml-btn ml-btn-go" type="submit">Save my strategy card</button>
+          <p id="mu-studio-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="mu-section" id="mu-journey" aria-labelledby="mu-journey-title">
+        <p class="ml-eyebrow">36 weeks · 36 semanas</p>
+        <h2 id="mu-journey-title">My Math Journey</h2>
+        <p>One short reflection each week. Completed weeks stay in your existing local mentor record.</p>
+        <div class="mu-form">
+          <label>Week · Semana <select id="mu-week"></select></label>
+          <label>What did you try, revise, or connect? · ¿Qué probaste, revisaste o conectaste?
+            <textarea id="mu-week-note" rows="3" maxlength="500"></textarea>
+          </label>
+          <button class="ml-btn ml-btn-go" type="button" id="mu-save-week">Save this week</button>
+        </div>
+        <ol id="mu-week-grid" class="mu-week-grid" aria-label="36-week journey"></ol>
+      </section>
+
+      <section class="mu-section" id="mu-experiences" aria-labelledby="mu-experiences-title">
+        <p class="ml-eyebrow">Three ways to think deeply</p>
+        <h2 id="mu-experiences-title">Signature experiences</h2>
+        <article class="mu-experience" id="mu-switchboard">
+          <h3>Strategy Switchboard</h3>
+          <p>Solve <strong>25% of 84</strong> with a strategy, then switch strategies.</p>
+          <fieldset><legend>First strategy</legend>
+            <label><input type="radio" name="mu-first" value="small-start" /> Use 25% = 1/4</label>
+            <label><input type="radio" name="mu-first" value="drawing" /> Draw a 100% bar</label>
+            <label><input type="radio" name="mu-first" value="second-way" /> Use 0.25 × 84</label>
+          </fieldset>
+          <label>Answer <input id="mu-switch-answer" inputmode="numeric" /></label>
+          <label>How did the second strategy confirm or change your thinking?
+            <textarea id="mu-switch-reflect" rows="2"></textarea>
+          </label>
+          <button class="ml-btn ml-btn-go" type="button" data-mu-check="switchboard">Check and save</button>
+          <p id="mu-switch-feedback" role="status" aria-live="polite"></p>
+        </article>
+
+        <article class="mu-experience" id="mu-archive">
+          <h3>Discovery Archives · Lesson 6-5</h3>
+          <p>A club buys <strong>7 tickets at t dollars each</strong> and uses a <strong>$24 coupon</strong>. Write the total cost.</p>
+          <fieldset><legend>Choose an expression</legend>
+            <label><input type="radio" name="mu-expression" value="7t-24" /> 7t − 24</label>
+            <label><input type="radio" name="mu-expression" value="7(t-24)" /> 7(t − 24)</label>
+            <label><input type="radio" name="mu-expression" value="24-7t" /> 24 − 7t</label>
+            <label><input type="radio" name="mu-expression" value="t(7-24)" /> t(7 − 24)</label>
+          </fieldset>
+          <button class="ml-btn ml-btn-go" type="button" data-mu-check="archive-expression">Check my model</button>
+          <p id="mu-archive-feedback" role="status" aria-live="polite"></p>
+          <div id="mu-archive-revision" hidden>
+            <label>Revise the expression <input id="mu-revised-expression" autocomplete="off" /></label>
+            <label>If t = 12, the total is $ <input id="mu-evaluate" inputmode="numeric" /></label>
+            <label>Transfer: 5 museum passes at m dollars with an $18 coupon
+              <input id="mu-transfer" autocomplete="off" />
+            </label>
+            <button class="ml-btn ml-btn-go" type="button" data-mu-check="archive-transfer">Check revision and transfer</button>
+          </div>
+        </article>
+
+        <article class="mu-experience" id="mu-mashup">
+          <h3>Mentor Mash-Up</h3>
+          <p>Combine two thinking moves for: <strong>Which is the better buy, 6 for $9 or 10 for $14?</strong></p>
+          <label>First move <select id="mu-mash-a"></select></label>
+          <label>Second move <select id="mu-mash-b"></select></label>
+          <label>Explain how both moves work together <textarea id="mu-mash-note" rows="3"></textarea></label>
+          <button class="ml-btn ml-btn-go" type="button" data-mu-check="mashup">Save my mash-up</button>
+          <p id="mu-mash-feedback" role="status" aria-live="polite"></p>
+        </article>
+      </section>
+
+      <section class="mu-section" id="mu-moments" aria-labelledby="mu-moments-title">
+        <p class="ml-eyebrow">Every lesson · Cada lección</p>
+        <h2 id="mu-moments-title">Mentor Moments and unit investigations</h2>
+        <label>Choose a lesson · Escoge una lección
+          <select id="mu-lesson-select"><option>Loading the 84-lesson course…</option></select>
+        </label>
+        <article id="mu-moment-card" class="mu-moment-card" aria-live="polite"></article>
+        <details><summary>Ten substantial unit investigations</summary><ol id="mu-investigations"></ol></details>
+      </section>
+
+      <section class="mu-section mu-privacy" aria-labelledby="mu-privacy-title">
+        <h2 id="mu-privacy-title">What saves—and what does not</h2>
+        <p>Mentor choices, studio writing, and journey checks save locally and are included in the existing progress backup/restore flow. SCORM and course links continue to use their current routing. There is no secure automatic class aggregation for Mentor Universe. A teacher may review only a student-presented device or an intentionally imported local backup.</p>
+        <p><a href="/curriculum/my-progress/">My Progress</a> · <a href="/curriculum/">Curriculum</a> · <a href="/families/">Family resources</a></p>
+      </section>
     </main>
 
     <footer class="ml-foot">
@@ -188,6 +291,7 @@
 
     <script src="/assets/mentor-avatar.js?v=20260730b" defer></script>
     <script src="/assets/mentor-roster.js?v=20260730b" defer></script>
+    <script src="/assets/mentor-universe.js?v=20261113a" defer></script>
     <script src="/mentor-lab/mentor-lab.js?v=20260730b" defer></script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
