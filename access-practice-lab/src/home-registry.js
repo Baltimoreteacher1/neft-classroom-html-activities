@@ -178,7 +178,7 @@ export const HOME_CARDS = [
   {
     id: "learning-studios",
     group: "explore",
-    featured: false,
+    featured: true,
     href: "/learning-studios/",
     icon: "worlds",
     title: ["Learning Studios · Language and Math", "Estudios de aprendizaje · lenguaje y matemáticas"],
