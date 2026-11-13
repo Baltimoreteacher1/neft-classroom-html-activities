@@ -2908,7 +2908,7 @@ export function renderWelcomeBanner(config, lessonId) {
   const pageLabelEn = here
     ? `Lesson ${here.baseId} · ${SESSIONS[here.session].en}`
     : homeworkPageLabel(lessonId);
-  const bigIdea = learningTonight(config);
+  const bigIdea = config.familyNotes?.v3?.standardPlain || learningTonight(config);
   const pageLabelEs = pageLabelEn
     .replace(/^Lesson /, "Lección ")
     .replace(/^Review/, "Repaso")
@@ -2941,7 +2941,7 @@ export function renderWelcomeBanner(config, lessonId) {
       extras: `
         ${renderSessionBanner(lessonId, partner)}
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label"><span class="lang-en">Tonight's idea</span><span class="lang-es" lang="es">La idea de hoy</span></span>
           <span class="lang-en">${esc(completeSentence(bigIdea.en))}</span><span class="lang-es" lang="es">${esc(completeSentence(bigIdea.es))}</span>
         </p>
         ${renderTonightStrip()}
@@ -3121,6 +3121,28 @@ export function renderConceptExplainer(config) {
   const steps = buildConceptSteps(config);
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
+  // Family-note v3 carries a lesson-specific objective deliberately written in
+  // short, plain language. Lead with it so families meet one clear idea before
+  // the fuller explanation and vocabulary.
+  const plainIdea = config.familyNotes?.v3?.standardPlain || {};
+  const startEn = plainIdea.en || learningTonight(config).en || keyEn;
+  const startEs = plainIdea.es || learningTonight(config).es || keyEs;
+  const simpleStart = `
+      <div class="family-plain-start" role="group" aria-labelledby="family-plain-start-title">
+        <span class="family-plain-start-mark" aria-hidden="true">✦</span>
+        <div>
+          <strong id="family-plain-start-title"><span class="lang-en">Start with one idea</span><span class="lang-es" lang="es">Empieza con una idea</span></strong>
+          <p class="lang-en">${esc(completeSentence(startEn))}</p>
+          <p class="lang-es" lang="es">${esc(completeSentence(startEs))}</p>
+        </div>
+        <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", startEn, startEs)} title="Listen / Escuchar" aria-label="Listen to the short explanation" data-aria-en="Listen to the short explanation" data-aria-es="Escuchar la explicación breve">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+      </div>`;
+  const deeperIdea = `
+      <details class="family-why">
+        <summary><span class="lang-en">Why this works</span><span class="lang-es" lang="es">Por qué funciona</span></summary>
+        <p class="lang-en">${esc(completeSentence(keyEn))}</p>
+        <p class="lang-es" lang="es">${esc(completeSentence(keyEs))}</p>
+      </details>`;
   const visual = conceptVisual(config);
   // The caption lives in HTML, not inside the <svg>, so the page language
   // toggle can hide one language and so it scales with the reader's own font
@@ -3135,11 +3157,10 @@ export function renderConceptExplainer(config) {
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <div class="big-idea">
+        ${simpleStart}
         <div class="family-big-idea-piece">
           <div class="family-big-idea-copy">
-            <p class="lang-en">${esc(completeSentence(keyEn))}</p>
-            <p class="lang-es" lang="es">${esc(completeSentence(keyEs))}</p>
-            <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", keyEn, keyEs)} title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+            ${deeperIdea}
           </div>
           ${renderUnit4FamilyBigIdeaVisual(config)}
         </div>
@@ -3154,16 +3175,9 @@ export function renderConceptExplainer(config) {
            "big idea" type scale hangs off this inner div, not off
            .section-visual (which never reaches the page). -->
       <div class="big-idea">
-      <div class="key-idea-banner">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-          <div>
-            <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
-          </div>
-          <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", keyEn, keyEs)} title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-        </div>
-      </div>
+      ${simpleStart}
       <figure class="concept-visual-wrap">${visual.svg}${caption}<button type="button" class="concept-zoom-btn" ${act("openConceptZoom", EL)}><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
+      ${deeperIdea}
       <ol class="guided-steps">
         ${steps
           .map((s, index) => {

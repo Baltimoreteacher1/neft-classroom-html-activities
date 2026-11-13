@@ -1142,6 +1142,11 @@ const COVERAGE = [
     /^(scripts\/readiness\/|scripts\/generate-readiness-(html|docx)\.mjs$|esol\/reveal-math-guides\/|tools\/validate-lesson-labels\.mjs$)/,
     ["validate:lesson-labels", "validate:static", "audit:links", "test"],
   ],
+  // Family practice picture models use the shared SVG grammar and family design tokens.
+  [
+    /^(assets\/family-studio\/picture-kit\.mjs|tools\/family-studio-picture\.test\.mjs)$/,
+    ["test", "validate:family-body-tokens", "validate:family-visual", "check"],
+  ],
   // Curriculum discovery routes and their shared source palette
   [
     /^(curriculum\/(?:index\.html|units\/index\.html)|assets\/curriculum-system\.css|tools\/validate-no-purple(?:\.test)?\.mjs)$/,

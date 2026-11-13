@@ -73,9 +73,13 @@ export function renderLookAndLearn(
       ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal and look at the picture. Then go through the example one step at a time.", "Lean la meta y miren el dibujo. Luego sigan el ejemplo un paso a la vez.")}
       ${
         goal
-          ? `<section class="fp-card fp-goal" aria-labelledby="hw_goal_label">
-        <p class="fp-label" id="hw_goal_label">${bi("Today's goal", "La meta de hoy")}</p>
-        <p class="fp-goal-text">${pair(goal)}</p>
+          ? `<section class="family-plain-start" role="group" aria-labelledby="hw_goal_label">
+        <span class="family-plain-start-mark" aria-hidden="true">✦</span>
+        <div>
+          <strong id="hw_goal_label">${bi("Start with one idea", "Empieza con una idea")}</strong>
+          <p class="lang-en">${esc(goal.en)}</p><p class="lang-es" lang="es">${esc(goal.es)}</p>
+        </div>
+        <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", goal.en, goal.es)} title="Listen / Escuchar" aria-label="Listen to today's goal" data-aria-en="Listen to today's goal" data-aria-es="Escuchar la meta de hoy">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
       </section>`
           : ""
       }
@@ -87,11 +91,11 @@ export function renderLookAndLearn(
       ${modelHtml}
       ${
         steps.length
-          ? `<section class="fp-card fp-example" aria-labelledby="hw_example_label" data-reveal>
-        <p class="fp-label" id="hw_example_label">${bi("Worked example", "Ejemplo resuelto")}</p>
+          ? `<details class="fp-card fp-example" aria-labelledby="hw_example_label" data-reveal>
+        <summary class="fp-label" id="hw_example_label">${bi("Show the full example, one step at a time", "Ver el ejemplo completo, paso a paso")}</summary>
         <ol class="fp-steps">${steps.map((s) => `<li>${pair(s)}</li>`).join("")}</ol>
         ${why ? `<p class="fp-why" data-reveal-after><strong>${bi("Why it works", "Por qué funciona")}</strong> ${pair(why)}</p>` : ""}
-      </section>`
+      </details>`
           : ""
       }
       ${wordsHtml ? `<details class="fp-optional"><summary>${bi("Words to know (optional)", "Palabras que conviene saber (opcional)")}</summary>${wordsHtml}</details>` : ""}

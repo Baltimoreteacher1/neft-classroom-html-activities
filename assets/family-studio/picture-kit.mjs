@@ -13,10 +13,10 @@ export { esc, n1 };
 export const W = 360; // viewBox width
 export const PAD = 16;
 
-const INK = "var(--fs-ink,#1f2a44)";
-const ACC = "var(--fs-accent,#0f766e)";
-const UNK = "var(--fs-unknown,#b45309)";
-const SOFT = "var(--fs-soft,#e6f2ef)";
+const INK = "var(--fs-ink,var(--fm-text,#24323f))";
+const ACC = "var(--fs-accent,var(--fm-m-part,#136e6b))";
+const UNK = "var(--fs-unknown,var(--fm-m-unknown,#8a4c08))";
+const SOFT = "var(--fs-soft,var(--fm-m-part-tint,#e3f1ef))";
 
 /** One stylesheet for every picture; class names carry an fp- prefix so they cannot meet the page's own. */
 export const STYLE = `.fp-t{font:600 14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:${INK}}.fp-n{font-weight:700;font-size:15px}.fp-s{font-size:13px;font-weight:600}.fp-q{font-weight:800;font-size:18px;fill:${UNK}}.fp-ta{fill:${ACC}}.fp-ln{fill:none;stroke:${INK};stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.fp-gr{fill:none;stroke:${INK};stroke-opacity:.18;stroke-width:1}.fp-ax{fill:none;stroke:${INK};stroke-opacity:.7;stroke-width:1.5}.fp-dash{fill:none;stroke:${INK};stroke-opacity:.6;stroke-width:1.5;stroke-dasharray:4 4}.fp-p{fill:${SOFT};stroke:${ACC};stroke-width:2;stroke-linejoin:round}.fp-g{fill:none;stroke:${INK};stroke-width:2;stroke-linejoin:round}.fp-u{fill:none;stroke:${UNK};stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round}.fp-ul{fill:none;stroke:${UNK};stroke-width:2.5;stroke-dasharray:5 4;stroke-linecap:round}.fp-dot{fill:${ACC}}.fp-ink{fill:${INK}}.fp-ray{fill:none;stroke:${ACC};stroke-width:5;stroke-linecap:round}.fp-open{fill:${SOFT};stroke:${ACC};stroke-width:3}.fp-off{opacity:.38}`;

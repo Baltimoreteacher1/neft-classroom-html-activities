@@ -182,6 +182,10 @@ export function renderMissionModelHost(config) {
         <h2 class="hw-mm-title" id="hw_mm_title">${bi("Try it yourself", "Pruébalo tú")}</h2>
       </div>
       <p class="hw-mm-lead">${bi(spec.leadEn, spec.leadEs)}</p>
+      <p class="hw-mm-howto">
+        ${bi("Change one value. Watch what changes in the picture and answer.", "Cambia un valor. Mira qué cambia en el dibujo y la respuesta.")}
+        <span class="hw-mm-frame">${bi("Say: “When ___ changes, ___ changes.”", "Di: “Cuando ___ cambia, ___ cambia.”")}</span>
+      </p>
       <div class="hw-mm-stage" data-mission-stage></div>
       <p class="hw-mm-status" role="status" aria-live="polite" data-mission-status></p>
       <div class="hw-mm-transition">

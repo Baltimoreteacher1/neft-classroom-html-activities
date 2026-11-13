@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 import { renderStatsDataLab } from "@eduwonderlab/engine/components/stats-data-lab.js";
 import { JSDOM } from "jsdom";
@@ -28,6 +28,33 @@ import { renderStudioButtons } from "../scripts/lib/homework-studio.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
+
+test("all family lessons lead with a short bilingual idea and keep full steps optional", () => {
+  const notesDir = "data/family-homework-notes";
+  const files = readdirSync(notesDir).filter((name) => name.endsWith(".json"));
+  assert.equal(files.length, 166, "review page coverage when the family lesson inventory changes");
+  let interactiveModels = 0;
+  for (const file of files) {
+    const id = file.replace(/\.json$/, "");
+    const notes = JSON.parse(readFileSync(`${notesDir}/${file}`, "utf8"));
+    const plain = notes.v3?.standardPlain;
+    assert.ok(plain?.en && plain?.es, `${id}: concise explanations must be bilingual`);
+    assert.ok(plain.en.trim().split(/\s+/).length <= 20, `${id}: keep the first idea short`);
+
+    const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
+    const firstIdea = page.indexOf('class="family-plain-start"');
+    const fullExample = page.indexOf('class="fp-card fp-example"');
+    assert.ok(firstIdea >= 0 && firstIdea < fullExample, `${id}: show the short idea before the full example`);
+    assert.match(page, /Show the full example, one step at a time/);
+    assert.match(page, /Ver el ejemplo completo, paso a paso/);
+    if (page.includes("data-mission-model")) {
+      interactiveModels += 1;
+      assert.match(page, /Change one value\. Watch what changes in the picture and answer\./);
+      assert.match(page, /When ___ changes, ___ changes\./);
+    }
+  }
+  assert.ok(interactiveModels > 140, `expected broad interactive model coverage, got ${interactiveModels}`);
+});
 
 test("the printable practice record offers an optional practice partner, never a signature", () => {
   const d = new JSDOM(renderRefrigeratorSheet(config("4-4"), "4-4")).window.document;
