@@ -236,6 +236,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -287,30 +290,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 8, Episode 3: The Fog Gallery, part of The Balance Vault arc.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#vaultgrad)"/><circle cx="250" cy="300" r="150" fill="#1FA6A2" opacity=".16"/><circle cx="250" cy="300" r="80" fill="#7CF2EC" opacity=".14"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(140,190) scale(2.2)" opacity=".97"><use href="#sym-vaultdoor"/></g>
-        <rect y="430" width="500" height="14" fill="#0d1f33"/>
-        <g opacity=".85"><g transform="translate(16,330) scale(1)"><use href="#sym-bscale"/></g><g transform="translate(396,330) scale(1)"><use href="#sym-bscale"/></g><g transform="translate(-30,344) scale(.8)"><use href="#sym-bscale"/></g><g transform="translate(450,344) scale(.8)"><use href="#sym-bscale"/></g></g>
-        <rect y="640" width="500" height="60" fill="#0d1f33"/>
-      </svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="600" width="500" height="100" fill="#0d1f33"/>
-        <g transform="translate(60,468) scale(.84)"><use href="#sym-maya"/></g>
-        <g transform="translate(348,472) scale(.82)"><use href="#sym-zara"/></g>
-        <g transform="translate(420,496) scale(.74)"><use href="#sym-dev"/></g>
-        <g transform="translate(180,420) scale(1.25)"><use href="#sym-theo"/></g>
-        <g transform="translate(386,250) scale(.85)"><use href="#sym-vex"/></g>
-        <g fill="#9fb7c6" opacity=".55"><ellipse cx="80" cy="610" rx="130" ry="22"/><ellipse cx="280" cy="628" rx="160" ry="20"/><ellipse cx="440" cy="606" rx="110" ry="22"/><ellipse cx="180" cy="650" rx="180" ry="24"/></g>
-        <g fill="#9fb7c6" opacity=".3"><ellipse cx="120" cy="580" rx="100" ry="14"/><ellipse cx="380" cy="586" rx="120" ry="15"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 8, Episode 3: The Fog Gallery, part of The Balance Vault arc. Caleb, Nadia, Tessa and Kenji stand knee-deep in fog before Ada Vex's giant round brass vault door, while VEX, the teal robot with one golden eye, glows above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -383,24 +364,126 @@ const VOLUME = {
 
 const BADGES = [{"id":"g4","icon":"#sig-ray","label":"Line Reader — Inequalities"},{"id":"g5","icon":"#sig-vent","label":"Fog Venter — Solution Sets"},{"id":"boss","icon":"#sig-boss","label":"Vault Breaker — Boss Gate"}];
 
-/* scene helpers (verbatim from source volume) */
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const VAULTBG='<rect width="400" height="200" fill="#152736"/><rect width="400" height="200" fill="url(#halftone)" opacity=".4"/>';
-const FOG=y=>`<g fill="#9fb7c6" opacity=".5"><ellipse cx="60" cy="${y}" rx="92" ry="15"/><ellipse cx="210" cy="${y+8}" rx="115" ry="13"/><ellipse cx="352" cy="${y+2}" rx="78" ry="14"/></g>`;
-
 function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
 
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected below by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u8-e3 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u8-e3-the-fog-gallery.webp?v=4557d7464e","w":2994,"h":3047,"f":{"cover":[0,0,544,762,"Caleb, Nadia, Tessa and Kenji stand knee-deep in fog before a giant round brass vault door flanked by balance scales, while VEX, the teal robot with one golden eye, glows above them.",[]],"p1-crew":[870,1905,870,381,"Caleb, Nadia, Tessa and Kenji stand in a row in a misty stone vault, looking ahead, while VEX glows at the right.",[]],"p2-lift":[0,1415,870,490,"Tessa and Caleb look up at a brass rule plate on the vault wall beside an open freight lift cage loaded with four wooden crates, fog curling over the floor.",[]],"p2-caleb":[544,0,490,653,"Close-up of Caleb in his green hoodie, scratching his head with a puzzled frown.",[]],"p2-vex":[1034,0,490,653,"VEX, the small teal robot with one golden eye, hovers in the dark vault as wisps of fog curl beneath it.",[]],"p2-nadia":[1740,1905,870,381,"Nadia, in her blue sweatshirt, holds open Ada's thick leather manual and points at a page with a confident smile.",[]],"p3-caleb":[0,2395,870,326,"Caleb gives the reader a thumbs up as fog swirls around him.",[]],"p4-gallery":[870,1415,870,490,"The fog gallery: five brass vent grates line the top of a dark stone wall above a glowing rule screen, and five golden value cards stand in a row on a ledge as fog drifts below.",[]],"p4-nadia":[1524,0,490,653,"Close-up of Nadia grinning as she holds up one golden value card.",[]],"p4-vex":[2014,0,490,653,"VEX shines a thin cyan scanning beam down into the fog.",[]],"p4-kenji":[870,2395,870,326,"Kenji, in his navy t-shirt, smirks over a glowing handheld game console.",[]],"p5-nadia":[1740,2395,870,326,"Nadia points out at the reader with an encouraging smile, fog up to her waist.",[]],"p6-door":[1740,1415,870,490,"Ada Vex's giant round brass vault door fills the last chamber, three small locks beside it, a glowing pressure gauge on the left wall and an amber speaker grille on the right, fog to the knees.",[]],"p6-nadia":[0,762,490,653,"Close-up of Nadia pointing up at the gauge with a focused, serious look.",[]],"p6-caleb":[2504,0,490,653,"Close-up of Caleb grinning at the reader with both fists raised.",[]],"p7-vex":[0,2721,870,326,"VEX hovers in the misty dark, its golden eye flaring bright.",[]],"p8-vent":[0,1905,870,490,"The vault door stands open, golden light pouring out, as fog streams up through the floor grates. Tessa, Nadia, Kenji and Caleb cheer with their arms raised while VEX glows above.",[]],"p8-tessa":[1960,762,490,653,"Close-up of Tessa, in her orange sweatshirt, cheering with both arms up as the fog streams away.",[]],"p8-nadia":[1470,762,490,653,"Close-up of Nadia hugging Ada's old leather journal and the thick city ledger, smiling in amazement.",[]],"p8-kenji":[980,762,490,653,"Close-up of Kenji stretching and yawning happily against a pink sunrise glow.",[]],"p8-dome":[490,762,490,653,"A big glass harvest dome glows an eerie lime green on a dark hill under the night stars.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
-{ ch:"Unit 8 · Episode 3", html:"\n  <div style=\"text-align:center;margin-top:8px\"><div class=\"kicker\">EduWonderLab Presents</div>\n  <h2 class=\"splashtitle\" style=\"margin:8px 0\">THE FOG <em>GALLERY</em></h2>\n  <div class=\"caption\" style=\"display:inline-block\">Lessons 8-4, 8-5 &amp; 8-6 &mdash; part of <b>The Balance Vault</b> arc. write &amp; graph inequalities &middot; solution sets &middot; 6.AT.C.9. Read straight through: each reader gate coaches you with hints and a worked example, but never blocks the page.</div></div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 120\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"120\" fill=\"#17324D\"/><g transform=\"translate(330,2) scale(.6)\"><use href=\"#sym-vex\"/></g><g transform=\"translate(20,6) scale(.74)\"><use href=\"#sym-maya\"/></g><g transform=\"translate(112,6) scale(.74)\"><use href=\"#sym-theo\"/></g><g transform=\"translate(204,6) scale(.74)\"><use href=\"#sym-zara\"/></g><g transform=\"translate(296,6) scale(.74)\"><use href=\"#sym-dev\"/></g></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:64%\"><span class=\"who\">VEX</span>Episode 3. Same crew, same city — one focused stretch of the case. Turn the page when you're ready.</div>\n  </div>" },
-{ ch:"Chapter 4 · The Freight Lift", html:"\n  <div class=\"kicker\">Chapter Four</div><h2 class=\"splashtitle\">THE FREIGHT <em>LIFT</em></h2>\n  <div class=\"caption loc\">A freight lift waits at the shaft. A brass plate states the rule. The fog states its disagreement.</div>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 200\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"200\" fill=\"#152736\"/><rect width=\"400\" height=\"200\" fill=\"url(#halftone)\" opacity=\".4\"/>\n    <g data-depth=\"8\" stroke=\"#b78a2e\" stroke-width=\"4\" fill=\"none\"><rect x=\"240\" y=\"14\" width=\"140\" height=\"160\"/><line x1=\"240\" y1=\"54\" x2=\"380\" y2=\"54\"/><line x1=\"275\" y1=\"14\" x2=\"275\" y2=\"174\"/><line x1=\"310\" y1=\"14\" x2=\"310\" y2=\"174\"/><line x1=\"345\" y1=\"14\" x2=\"345\" y2=\"174\"/></g>\n    <rect data-depth=\"12\" x=\"20\" y=\"20\" width=\"190\" height=\"52\" rx=\"6\" fill=\"#0d1f33\" stroke=\"#b78a2e\" stroke-width=\"3\"/>\n    <text data-depth=\"12\" x=\"115\" y=\"41\" text-anchor=\"middle\" font-family=\"Arial\" font-weight=\"800\" font-size=\"11\" fill=\"#F2C15B\">LIFT OPERATES WITH</text>\n    <text data-depth=\"12\" x=\"115\" y=\"60\" text-anchor=\"middle\" font-family=\"Arial\" font-weight=\"800\" font-size=\"11\" fill=\"#F2C15B\">AT LEAST 12 CRATES OF BALLAST</text>\n    <g data-depth=\"12\" fill=\"#a2683a\" stroke=\"#17324D\" stroke-width=\"2.5\"><rect x=\"250\" y=\"140\" width=\"30\" height=\"26\"/><rect x=\"284\" y=\"140\" width=\"30\" height=\"26\"/><rect x=\"318\" y=\"140\" width=\"30\" height=\"26\"/><rect x=\"284\" y=\"112\" width=\"30\" height=\"26\"/></g>\n    <g data-depth=\"18\" transform=\"translate(30,82) scale(.9)\"><use href=\"#sym-zara\"/></g>\n    <g data-depth=\"16\" transform=\"translate(130,88) scale(.84)\"><use href=\"#sym-maya\"/></g>\n    <g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"192\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"200\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"194\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"sfx\" style=\"top:74px;right:10px\">CLUNK</div>\n    <div class=\"balloon\" style=\"bottom:14px;left:8px;max-width:52%\"><span class=\"who\">CALEB</span>\"At least 12\" isn't one number. Twelve works. Thirteen works. Fifty works. How do we even write that?</div>\n  </div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 96\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"96\" fill=\"#10243a\"/><g transform=\"translate(316,4) scale(.66)\"><use href=\"#sym-vex\"/></g><g transform=\"translate(12,-4) scale(.68)\"><use href=\"#sym-theo\"/></g></svg>\n    <div class=\"balloon vex\" style=\"top:4px;left:84px;max-width:42%\"><span class=\"who\">VEX</span>With an <b>inequality</b> — a statement comparing values. It can be true for MANY values at once.</div>\n    <div class=\"balloon tail-r\" style=\"bottom:4px;right:4px;max-width:44%\"><span class=\"who\">NADIA</span>Ada's manual graphs one: \"at most 20 degrees\" is t ≤ 20 — a FILLED circle on 20, ray toward the smaller numbers. Filled means 20 itself counts.</div>\n  </div>\n  <div class=\"caption\">Symbols: <b>&gt;</b> greater than · <b>&lt;</b> less than · <b>≥</b> at least (the number is included) · <b>≤</b> at most (included).</div>" },
-{ ch:"Chapter 4 · Reader Gate", gate:"g4", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 84\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"84\" fill=\"#152736\"/><g transform=\"translate(8,0) scale(.66)\"><use href=\"#sym-maya\"/></g><g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"78\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"86\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"80\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"balloon\" style=\"top:6px;left:80px;max-width:70%\"><span class=\"who\">CALEB</span>Write the lift's rule, then pick its picture. The fog reads symbols, reader.</div>\n  </div>" },
-{ ch:"Chapter 5 · The Fog Gallery", html:"\n  <div class=\"kicker\">Chapter Five</div><h2 class=\"splashtitle\">THE FOG <em>GALLERY</em></h2>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 220\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"220\" fill=\"#0d1f33\"/>\n    <g data-depth=\"8\" opacity=\".9\"><g transform=\"translate(24,16) scale(.62)\"><use href=\"#sig-vent\"/></g><g transform=\"translate(100,16) scale(.62)\"><use href=\"#sig-vent\"/></g><g transform=\"translate(176,16) scale(.62)\"><use href=\"#sig-vent\"/></g><g transform=\"translate(252,16) scale(.62)\"><use href=\"#sig-vent\"/></g><g transform=\"translate(328,16) scale(.62)\"><use href=\"#sig-vent\"/></g></g>\n    <rect data-depth=\"12\" x=\"120\" y=\"92\" width=\"160\" height=\"34\" rx=\"6\" fill=\"#06222b\" stroke=\"#1FA6A2\" stroke-width=\"3\"/>\n    <text data-depth=\"12\" x=\"200\" y=\"114\" text-anchor=\"middle\" font-family=\"Consolas,monospace\" font-weight=\"700\" font-size=\"15\" fill=\"#7CF2EC\">VENT RULE: v &lt; 9</text>\n    <g data-depth=\"16\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"><rect x=\"40\" y=\"140\" width=\"44\" height=\"30\" rx=\"5\"/><rect x=\"108\" y=\"140\" width=\"44\" height=\"30\" rx=\"5\"/><rect x=\"184\" y=\"140\" width=\"44\" height=\"30\" rx=\"5\"/><rect x=\"252\" y=\"140\" width=\"44\" height=\"30\" rx=\"5\"/><rect x=\"320\" y=\"140\" width=\"44\" height=\"30\" rx=\"5\"/></g>\n    <text data-depth=\"16\" x=\"62\" y=\"160\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" fill=\"#17324D\">3</text><text data-depth=\"16\" x=\"130\" y=\"160\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" fill=\"#17324D\">8.9</text><text data-depth=\"16\" x=\"206\" y=\"160\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" fill=\"#17324D\">9</text><text data-depth=\"16\" x=\"274\" y=\"160\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" fill=\"#17324D\">12</text><text data-depth=\"16\" x=\"342\" y=\"160\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" fill=\"#17324D\">5.5</text>\n    <g data-depth=\"20\" transform=\"translate(8,96) scale(.8)\"><use href=\"#sym-theo\"/></g>\n    <g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"208\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"216\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"210\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"balloon\" style=\"top:4px;left:8px;max-width:50%\"><span class=\"who\">NADIA</span>Value cards. Every card that makes the rule TRUE opens a vent. Every false one… feeds the fog.</div>\n  </div>\n  <div class=\"panelrow\">\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#10243a\"/><g transform=\"translate(62,8) scale(.78)\"><use href=\"#sym-vex\"/></g></svg>\n      <div class=\"balloon vex\" style=\"top:4px;left:4px;max-width:78%\"><span class=\"who\">VEX</span>All the true values together form the <b>solution set</b>. Strictly less than. The boundary is not invited.</div></div>\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#10243a\"/><g transform=\"translate(58,4) scale(.78)\"><use href=\"#sym-dev\"/></g></svg>\n      <div class=\"balloon\" style=\"top:4px;left:4px;max-width:74%\"><span class=\"who\">KENJI</span>Like loot filters. t &lt; 4 keeps 2 and 3.5, rejects 4 — because 4 &lt; 4 is false.</div></div>\n  </div>\n  <div class=\"caption\">A <b>solution set</b> is every value that makes a statement true — an inequality can have many solutions.</div>" },
-{ ch:"Chapter 5 · Reader Gate", gate:"g5", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 84\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"84\" fill=\"#0d1f33\"/><g transform=\"translate(8,0) scale(.66)\"><use href=\"#sym-theo\"/></g><g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"78\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"86\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"80\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"balloon\" style=\"top:6px;left:80px;max-width:70%\"><span class=\"who\">NADIA</span>Tap every TRUE card, reader. Miss one and we keep breathing fog.</div>\n  </div>" },
-{ ch:"Chapter 5 · The Vault Door", html:"\n  <div class=\"caption loc\">The last chamber. Ada Vex's vault door — three locks, one pressure gauge, fog to the knees.</div>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 210\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"210\" fill=\"#0d1f33\"/>\n    <g data-depth=\"10\" transform=\"translate(120,24) scale(1.6)\"><use href=\"#sym-vaultdoor\"/></g>\n    <rect data-depth=\"14\" x=\"12\" y=\"22\" width=\"96\" height=\"64\" rx=\"8\" fill=\"#06222b\" stroke=\"#1FA6A2\" stroke-width=\"2.5\"/>\n    <text data-depth=\"14\" x=\"60\" y=\"44\" text-anchor=\"middle\" font-family=\"Consolas,monospace\" font-size=\"11\" fill=\"#7CF2EC\">PRESSURE:</text>\n    <text data-depth=\"14\" x=\"60\" y=\"68\" text-anchor=\"middle\" font-family=\"Consolas,monospace\" font-weight=\"700\" font-size=\"16\" fill=\"#F2C15B\">p ≤ 15</text>\n    <text data-depth=\"14\" x=\"60\" y=\"118\" text-anchor=\"middle\" font-family=\"Consolas,monospace\" font-weight=\"700\" font-size=\"13\" fill=\"#7CF2EC\">m − 6 = 9</text>\n    <text data-depth=\"14\" x=\"60\" y=\"140\" text-anchor=\"middle\" font-family=\"Consolas,monospace\" font-weight=\"700\" font-size=\"13\" fill=\"#7CF2EC\">4t = 36</text>\n    <g data-depth=\"20\" transform=\"translate(310,86) scale(.92)\"><use href=\"#sym-theo\"/></g>\n    <g data-depth=\"18\" transform=\"translate(232,110) scale(.74)\"><use href=\"#sym-maya\"/></g>\n    <g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"200\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"208\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"202\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"balloon ada\" style=\"top:6px;right:8px;max-width:46%\"><span class=\"who\">ADA VEX · RECORDED</span>Balance is not stillness. It is truth, held steady. Prove three truths and breathe easy.</div>\n    <div class=\"balloon\" style=\"bottom:14px;left:8px;max-width:50%\"><span class=\"who\">NADIA</span>Locks 1 and 2 are one-step equations. Lock 3 is the gauge — the door stays open only while p ≤ 15 stays true.</div>\n  </div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 84\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"84\" fill=\"#10243a\"/><g transform=\"translate(10,-4) scale(.64)\"><use href=\"#sym-maya\"/></g></svg>\n    <div class=\"balloon\" style=\"top:6px;left:78px;max-width:72%\"><span class=\"who\">CALEB</span>Reader — you've leveled beams and read symbols all night. Call the truths!</div>\n  </div>\n  <div class=\"caption\">Boss Gate: inverse operations on both sides, then test the pressure set — remember what ≤ includes.</div>" },
-{ ch:"Boss Gate · The Balance Vault", gate:"boss", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 76\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"76\" fill=\"#0d1f33\"/><g transform=\"translate(330,4) scale(.56)\"><use href=\"#sym-vex\"/></g><g fill=\"#9fb7c6\" opacity=\".5\"><ellipse cx=\"60\" cy=\"70\" rx=\"92\" ry=\"15\"/><ellipse cx=\"210\" cy=\"78\" rx=\"115\" ry=\"13\"/><ellipse cx=\"352\" cy=\"72\" rx=\"78\" ry=\"14\"/></g></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:72%\"><span class=\"who\">VEX</span>BOSS GATE. Three locks. The fog is listening. No pressure. (Measurable pressure.)</div>\n  </div>" },
-{ ch:"Chapter 5 · Open Air", html:"\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 220\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"220\" fill=\"#152736\"/>\n    <g data-depth=\"10\" transform=\"translate(130,16) scale(1.5)\"><use href=\"#sym-vaultdoor\"/></g>\n    <g data-depth=\"8\" stroke=\"#9fb7c6\" stroke-width=\"6\" opacity=\".7\" stroke-linecap=\"round\"><path d=\"M60 200 q10 -40 -6 -80\" fill=\"none\"/><path d=\"M200 206 q14 -50 -4 -96\" fill=\"none\"/><path d=\"M340 200 q10 -40 -8 -84\" fill=\"none\"/></g>\n    <g data-depth=\"18\" transform=\"translate(20,96) scale(.9)\"><use href=\"#sym-zara\"/></g>\n    <g data-depth=\"18\" transform=\"translate(96,100) scale(.86)\"><use href=\"#sym-theo\"/></g>\n    <g data-depth=\"16\" transform=\"translate(298,104) scale(.84)\"><use href=\"#sym-maya\"/></g>\n    <g data-depth=\"16\" transform=\"translate(228,116) scale(.78)\"><use href=\"#sym-dev\"/></g>\n    <g data-depth=\"26\" transform=\"translate(330,18) scale(.55)\"><use href=\"#sym-vex\"/></g></svg>\n    <div class=\"sfx\" style=\"top:8px;left:16px\">FWOOSH!</div>\n    <div class=\"balloon\" style=\"bottom:12px;left:10px;max-width:44%\"><span class=\"who\">TESSA</span>The fog's venting — every grate at once! TRUE statements, five for five!</div>\n    <div class=\"balloon tail-r\" style=\"top:60px;right:6px;max-width:42%\"><span class=\"who\">NADIA</span>And inside: Ada's eighth journal… plus the city ledger she balanced by hand.</div>\n  </div>\n  <div class=\"panelrow\">\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#fdf2ee\"/><g transform=\"translate(58,4) scale(.78)\"><use href=\"#sym-dev\"/></g></svg>\n      <div class=\"balloon\" style=\"top:4px;left:4px;max-width:72%\"><span class=\"who\">KENJI</span>Achievement: VAULT BREAKER. Sunrise in twenty minutes. Pancakes in thirty.</div></div>\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#17324D\"/><path d=\"M40 92 Q100 18 160 92 Z\" fill=\"#3a7d44\" stroke=\"#F2C15B\" stroke-width=\"3\"/><path d=\"M58 92 Q100 40 142 92\" fill=\"none\" stroke=\"#9fe89f\" stroke-width=\"2\" opacity=\".8\"/><circle cx=\"100\" cy=\"58\" r=\"16\" fill=\"#c9f25b\" opacity=\".85\"/><circle cx=\"100\" cy=\"58\" r=\"26\" fill=\"#c9f25b\" opacity=\".3\"/><g fill=\"#F2C15B\"><circle cx=\"30\" cy=\"24\" r=\"2\"/><circle cx=\"170\" cy=\"18\" r=\"2\"/><circle cx=\"150\" cy=\"36\" r=\"1.6\"/></g></svg>\n      <div class=\"balloon vex\" style=\"top:2px;left:4px;max-width:64%\"><span class=\"who\">VEX</span>New distortion. The harvest dome is glowing wrong at night. Something in there depends on something else… To be continued.</div></div>\n  </div>\n  <div class=\"caption\" style=\"text-align:center\"><b>NEXT: VOL. 9 — CAUSE & EFFECT</b></div>" },
+{ ch:"Unit 8 · Episode 3", html:`
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE FOG <em>GALLERY</em></h2>
+  <div class="caption" style="display:inline-block">Lessons 8-4, 8-5 &amp; 8-6 &mdash; part of <b>The Balance Vault</b> arc. write &amp; graph inequalities &middot; solution sets &middot; 6.AT.C.9. Read straight through: each reader gate coaches you with hints and a worked example, but never blocks the page.</div></div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:58%"><span class="who">VEX</span>Episode 3. Same crew, same city — one focused stretch of the case. Turn the page when you're ready.</div>
+    </div>
+  </div>`},
+{ ch:"Chapter 4 · The Freight Lift", html:`
+  <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE FREIGHT <em>LIFT</em></h2>
+  <div class="gn-comic">
+    <div class="caption loc">A freight lift waits at the shaft. A brass plate states the rule. The fog states its disagreement.</div>
+    <div class="panel gn-panel panel3d">${ART("p2-lift")}
+      <div class="sfx" style="top:30%;right:12px">CLUNK</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:30%;top:24%;width:42%;color:#F2C15B">LIFT OPERATES WITH<br>AT LEAST 12 CRATES OF BALLAST</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-caleb")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CALEB</span>"At least 12" isn't one number. Twelve works. Thirteen works. Fifty works. How do we even write that?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>With an <b>inequality</b> — a statement comparing values. It can be true for MANY values at once.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-nadia")}
+      <div class="balloon tail-r" style="top:8px;left:8px;max-width:52%"><span class="who">NADIA</span>Ada's manual graphs one: "at most 20 degrees" is t ≤ 20 — a FILLED circle on 20, ray toward the smaller numbers. Filled means 20 itself counts.</div>
+    </div>
+    <div class="caption">Symbols: <b>&gt;</b> greater than · <b>&lt;</b> less than · <b>≥</b> at least (the number is included) · <b>≤</b> at most (included).</div>
+  </div>`},
+{ ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p3-caleb")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">CALEB</span>Write the lift's rule, then pick its picture. The fog reads symbols, reader.</div>
+    </div>
+  </div>`},
+{ ch:"Chapter 5 · The Fog Gallery", html:`
+  <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE FOG <em>GALLERY</em></h2>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p4-gallery")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:44%">VENT RULE: v &lt; 9</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:18%;top:74%">3</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:34%;top:74%">8.9</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:74%">9</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:66%;top:74%">12</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:82%;top:74%">5.5</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p4-nadia")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">NADIA</span>Value cards. Every card that makes the rule TRUE opens a vent. Every false one… feeds the fog.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p4-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>All the true values together form the <b>solution set</b>. Strictly less than. The boundary is not invited.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p4-kenji")}
+      <div class="balloon tail-r" style="top:8px;left:8px;max-width:52%"><span class="who">KENJI</span>Like loot filters. t &lt; 4 keeps 2 and 3.5, rejects 4 — because 4 &lt; 4 is false.</div>
+    </div>
+    <div class="caption">A <b>solution set</b> is every value that makes a statement true — an inequality can have many solutions.</div>
+  </div>`},
+{ ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p5-nadia")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">NADIA</span>Tap every TRUE card, reader. Miss one and we keep breathing fog.</div>
+    </div>
+  </div>`},
+{ ch:"Chapter 5 · The Vault Door", html:`
+  <div class="gn-comic">
+    <div class="caption loc">The last chamber. Ada Vex's vault door — three locks, one pressure gauge, fog to the knees.</div>
+    <div class="panel gn-panel panel3d">${ART("p6-door")}
+      <div class="gn-sign" data-gn-skip style="left:14%;top:46%;font-size:clamp(12px,2.6cqi,16px)">PRESSURE:<br><span style="color:#F2C15B">p ≤ 15</span><br>m − 6 = 9<br>4t = 36</div>
+      <div class="balloon ada" style="top:6px;right:8px;max-width:44%"><span class="who">ADA VEX · RECORDED</span>Balance is not stillness. It is truth, held steady. Prove three truths and breathe easy.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p6-nadia")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">NADIA</span>Locks 1 and 2 are one-step equations. Lock 3 is the gauge — the door stays open only while p ≤ 15 stays true.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p6-caleb")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CALEB</span>Reader — you've leveled beams and read symbols all night. Call the truths!</div>
+    </div>
+    <div class="caption">Boss Gate: inverse operations on both sides, then test the pressure set — remember what ≤ includes.</div>
+  </div>`},
+{ ch:"Boss Gate · The Balance Vault", gate:"boss", html:`
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:64%"><span class="who">VEX</span>BOSS GATE. Three locks. The fog is listening. No pressure. (Measurable pressure.)</div>
+    </div>
+  </div>`},
+{ ch:"Chapter 5 · Open Air", html:`
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p8-vent")}
+      <div class="sfx" style="top:8px;left:16px">FWOOSH!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-tessa")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">TESSA</span>The fog's venting — every grate at once! TRUE statements, five for five!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-nadia")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">NADIA</span>And inside: Ada's eighth journal… plus the city ledger she balanced by hand.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-kenji")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KENJI</span>Achievement: VAULT BREAKER. Sunrise in twenty minutes. Pancakes in thirty.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p8-dome")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>New distortion. The harvest dome is glowing wrong at night. Something in there depends on something else… To be continued.</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: VOL. 9 — CAUSE & EFFECT</b></div>
+  </div>`},
 { ch:"End Matter · Ada Vex's Journal", html:"\n  <h2 class=\"splashtitle\" style=\"font-size:1.4rem\">ADA VEX'S <em>JOURNAL</em></h2>\n  <div class=\"journal\"><h4>Lessons 8-4, 8-5 &amp; 8-6 &mdash; what this stretch of the case taught us</h4>\n    <div class=\"jrow\"><b>6.AT.C.8</b><span>Understand solving an equation or inequality as finding the values that make it true; use substitution</span></div><div class=\"jrow\"><b>6.AT.C.8</b><span>Solve real-world one-step equations of the form x + p = q and px = q</span></div><div class=\"jrow\"><b>6.AT.C.9</b><span>Write an inequality for a condition; recognize infinitely many solutions; graph on a number line</span></div><div class=\"jrow\"><b>MP3 / MP7</b><span>Construct viable arguments; look for and use structure (balance as equality)</span></div>\n  </div>\n  <div class=\"caption\">The full story — <b>The Balance Vault</b> — is glowing at the city gate. — A.V.</div>" },
 { ch:"End Matter · Certificate", html:"\n  <div id=\"certificate\">\n    <div class=\"kicker\">Axiom City · EduWonderLab</div>\n    <h3>READER CERTIFICATE</h3>\n    <p style=\"font:600 .9rem Georgia,serif\">This certifies that</p>\n    <input id=\"certName\" maxlength=\"40\" placeholder=\"write your name\" aria-label=\"Your name for the certificate\">\n    <p style=\"font:600 .9rem Georgia,serif\">completed <b>Unit 8 · Episode 3: The Fog Gallery</b> in The Balance Vault arc, and proved mastery over write &amp; graph inequalities · solution sets · 6.AT.C.9.</p>\n    <div class=\"certbadges\" id=\"certBadges\"></div>\n    <button class=\"gatecheck\" id=\"printCert\" style=\"align-self:center\">PRINT CERTIFICATE</button>\n  </div>\n  <div class=\"caption\" style=\"text-align:center\">Next up: the full anchor volume — The Balance Vault.</div>" }
 ];
