@@ -333,6 +333,8 @@ try {
     assert.match(await page.locator(".campaign [data-status=current]").innerText(), /Mixing the Paint/);
     await page.locator(".campaign [data-status=current] a", { hasText: "Learn" }).first().click();
     await page.waitForURL(/grade=6&skill=/);
+    // The student app loads its skill screen on demand, so it mounts just after the page's load event.
+    await page.locator("#learn-panel, .learn-simple, .skill").first().waitFor();
     assert.ok((await page.locator("#learn-panel, .learn-simple, .skill").count()) >= 1, "Learn opens the skill's teaching (the student app's skill screen)");
     await page.evaluate(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
     await page.goto(`${base}/math/fluency-lab/lab.html?view=practice&grade=6`, { waitUntil: "networkidle" });

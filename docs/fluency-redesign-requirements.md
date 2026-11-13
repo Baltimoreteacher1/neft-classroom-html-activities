@@ -97,3 +97,68 @@ A line is checked only with the evidence named in its last column. Do not tick a
 ## 17. Publisher acceptance — scored with evidence | UX |
 
 ## 18. Deliverables — implementation summary, before/after screenshots, preservation report, coverage report, test results, 1–5 scores with evidence, deployment readiness | UX (final) |
+
+## Close-out walk — 2026-11-12 (production `41bad3a6d6`)
+
+Every line above, with the evidence that was actually run. ✅ met, ◐ partly met (what is missing is the work item),
+✗ not met. Evidence files: `docs/fluency-redesign-report/evidence/`. Numbered work items refer to section 9 of
+[fluency-redesign-report.md](fluency-redesign-report.md).
+
+| #       | Status | Evidence                                                                                                                                                                                           |
+| ------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1     | ✅     | The header has exactly Learn & Practice, Choose a Skill, My Progress (live page snapshot, every journey).                                                                                          |
+| 1.2     | ✅     | More drawer: Explore more, For families, For teachers, Settings (Larger text, Reading font, Reduce motion, Read aloud, Learner on this device, Back up or restore); 12 destinations.               |
+| 1.3     | ✅     | Journey 1, 10 runs: grade chooser lists K–8, nothing preselected, then one primary action and "Choose a different skill".                                                                          |
+| 1.4     | ✅     | Journey 4, 10 runs: returning learner sees the grade and one Continue action.                                                                                                                      |
+| 1.5     | ✅     | Journey 3: a fresh browser opens a direct practice link and answers with no account or setup.                                                                                                      |
+| 1.6     | ✅     | More → Starting-point checkup, Daily mix, Full lab; 23 / 23 legacy routes reach the lab.                                                                                                           |
+| 1.7     | ◐      | Exactly one primary action on home (journeys 1, 4). Other screens judged from 12 screenshots only; "no long text above the first action" is not measured. Work: audit each screen.                 |
+| 2.1     | ✅     | Grade chosen once, then the library opened with no grade in the address shows it selected.                                                                                                         |
+| 2.2     | ✅     | All 9 grades: strands shown equal the grade's strands (4, 4, 8, 6, 8, 6, 9, 5, 5), 0 empty strands.                                                                                                |
+| 2.3     | ✅     | All 128 cards have a name and a one-line sentence. K–5 titles are plain and task-shaped; formal vocabulary appears only in grades 6–8 (16 titles), as 4.L asks.                                    |
+| 2.4     | ✅     | `search.test.mjs`: 35 everyday queries (13 Spanish) find their strand. Before this pass "take away" and Spanish queries found nothing.                                                             |
+| 2.5     | ◐      | Learn new / Keep practicing / Review chips render with counts and filter. "Review (due)" with seeded practice history was not driven in a browser.                                                 |
+| 2.6     | ✅     | 128 / 128 cards are name + sentence + exactly one Start button (a mini meter appears once started).                                                                                                |
+| 2.7     | ✅     | Grade → Start is 2 actions; every one of the 128 skills opens from `?grade=&skill=&stage=` with no setup (640 / 640 loads).                                                                        |
+| 3.1     | ✅     | See it has a picture on all 128 skills in both languages; concept and worked example 128 / 128.                                                                                                    |
+| 3.2     | ✅     | Try it: 35 living models + 93 engine builds, 0 guided fallbacks; a model is present on all 128.                                                                                                    |
+| 3.3     | ✅     | Practice: one problem, answer box, Check, help only on request (640 / 640 loads, journeys 3 and 4).                                                                                                |
+| 3.4     | ✅     | Misconception feedback 128 / 128 (286 detectors), "Picture it" correction after a miss, a new problem, difficulty chosen from the record, transfer after 3 independent answers (seen live as "Problem 4 · New context"). |
+| 3.5     | ✅     | Compact 8-segment meter; direct practice links work.                                                                                                                                               |
+| 4.A–G   | ✅     | Concept, example, Try it, guided attempt, transfer, misconceptions: 128 / 128 each (`fluency-redesign-coverage.md`).                                                                               |
+| 4.Q     | ◐      | Tested: no answer in any help rung (0 leaks), steps match the models (6,400 items). Not machine-checked: consistent vocabulary, no undefined terms, no repetition. No outside reader. Work: item 5. |
+| 4.L     | ◐      | Written per grade band by the content sessions; there is no readability gate. Work: add one.                                                                                                       |
+| 4.R     | ✅     | `authored/ratios-6.js`; ratio-tape model agrees with an independent count on 144 settings (`studio-model-ratio-tape.test.mjs`).                                                                    |
+| 5.1     | ✅     | One SVG style; labels at least 14px and no overlap at 320px (`legible.js`, measured when shipped in `9d0db672dd`); 0 overflow in 70 runs.                                                          |
+| 5.2     | ◐      | 106 / 128 skills are drawn by an engine; 22 are not (help ladder has no picture). Work: item 2.                                                                                                    |
+| 5.3     | ✅     | Quantities agree with the models (alignment test); descriptions follow the language (27,185 / 27,185); axe 0 serious or critical.                                                                  |
+| 5.4     | ◐      | Colour is paired with labels by design; axe checks contrast, not whether colour is the only cue. Work: item 4.                                                                                     |
+| 6.1     | ✅     | `shell/SCHEMA.md`; `shell-content.test.mjs` validates all 128.                                                                                                                                     |
+| 6.2     | ✅     | One frame carries picture, notation and caption; the equation line and description now follow the language.                                                                                        |
+| 6.3     | ✅     | Predict points before the reveal; no text-only click-through.                                                                                                                                      |
+| 6.4     | ✅     | One "Help me understand" ladder (hint → picture → steps) plus "Another way"; 15,600 leak checks.                                                                                                   |
+| 7.1     | ✅     | The relevant model opens on Try it; the full library is More → Math tools and models.                                                                                                              |
+| 7.2     | ◐      | Models are tested for synchronization (`authored/g68.test.mjs`, `fluency-studio.test.mjs`); keyboard, reset, undo and bounds are not audited model by model. Work: item 4.                         |
+| 7.3     | ✅     | Ratio Studio audit shipped in `aeef14e9da`; `studio-model-ratio-tape.test.mjs` passes.                                                                                                             |
+| 8.1     | ✅     | Practice layout verified in screenshots and 640 loads.                                                                                                                                             |
+| 8.2     | ✅     | Correct answers acknowledged; the meter and celebration follow (`meter-awards.test.mjs`).                                                                                                          |
+| 8.3     | ✅     | On production, answering 50 for "50% of 8" shows the authored "25% is one-fourth: 25% of 40 means split 40 into four equal groups" with a picture.                                                  |
+| 8.4     | ✅     | The meter counts independent first-try answers only; supported work shows "counted separately".                                                                                                    |
+| 9.1     | ✅     | Next problem from the learner's record (`difficulty`, evidence), prerequisites, transfer; next-skill strip. Unit-tested; never validated against learner outcomes.                                  |
+| 9.2     | ✅     | Misconception categories per skill drive feedback, 128 / 128.                                                                                                                                      |
+| 9.3     | ✅     | My Progress shows remembered / improving / next; existing records preserved (backup round trip tested).                                                                                            |
+| 10.1    | ◐      | axe WCAG 2.2 AA 0 serious or critical on 1,274 + 120 page states; no keyboard traps; 3px focus ring; 44px targets; reduced motion verified. Not run: screen reader, forced colors, 200% zoom, 400% reflow. Work: item 4. |
+| 10.2    | ◐      | Bilingual vocabulary, frames, read-aloud wired; Spanish covered by sweeps but never reviewed by a native speaker. Work: item 3.                                                                    |
+| 10.3    | ✅     | One Español / English button plus More → Settings.                                                                                                                                                 |
+| 10.4    | ◐      | K pre-reader: read-aloud control and picture verified (journey 5). The full audio-first flow, a family session and a projector run were not driven end to end.                                      |
+| 11      | ✅     | **Was ✗ at the start of this pass.** `shell/DESIGN.md` now documents the tokens, components, rules and guarding tests.                                                                             |
+| 12      | ◐      | Routes and parameters 23 / 23; storage keys shared; profiles and backup tested. Print, SCORM and receipts not re-verified.                                                                         |
+| 13      | ◐      | Every skill is reviewed by automated tests and the 640-page sweep; no human per-skill review. Work: item 5.                                                                                        |
+| 14      | ✅     | 35 living models, "Picture it" coaching after a miss, continuity (meter, next-skill strip, the language switch keeps your place).                                                                  |
+| 15      | ✅     | Reuses the rewards record (no second economy), no second framework, data-driven Spanish and search, 0 TODO or placeholder text in the new code.                                                    |
+| 16      | ◐      | 5 widths, journeys 1–7, no overflow, no console errors; LCP / INP / CLS measured. Phone LCP misses 2.5s (home 3.4s, skill 4.9s). Work: item 1.                                                      |
+| 17      | ✅     | Scored with evidence in section 7 of the report.                                                                                                                                                   |
+| 18      | ✅     | Report, before/after screenshots, preservation and coverage reports, test results, scores, readiness and work list.                                                                                |
+
+**Tally:** 53 lines. 40 met, 13 partly met, 0 wholly unmet. The partial lines are 1.7, 2.5, 4.Q, 4.L, 5.2, 5.4, 7.2,
+10.1, 10.2, 10.4, 12, 13 and 16.
