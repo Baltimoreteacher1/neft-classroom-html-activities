@@ -69,7 +69,10 @@ for (const s of data.scenes) {
   for (const fig of box.querySelectorAll(".lens-rep")) {
     const svg = fig.querySelector("svg");
     const table = fig.querySelector("table");
-    const label = (svg || table).getAttribute("aria-label");
+    const group = fig.querySelector('[role="group"][aria-label]');
+    const named = svg || table || group;
+    ok(named, `${s.id}/${fig.dataset.rep}: draws an svg, a table or a labelled group`);
+    const label = named?.getAttribute("aria-label");
     ok(label && label.length > 20, `${s.id}/${fig.dataset.rep}: has a text alternative`);
     if (svg)
       ok(

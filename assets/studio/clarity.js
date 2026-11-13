@@ -14,6 +14,12 @@
   const W = /** @type {any} */ (window);
   if (W.StudioClarity) return;
   const lang = () => document.body.classList.contains("show-es");
+  if (!document.getElementById("practice-arc-css")) {
+    const style = document.createElement("style");
+    style.id = "practice-arc-css";
+    style.textContent = `.practice-arc{margin:12px 0 16px}.practice-arc ol{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}.practice-arc li{display:flex;align-items:center;gap:6px;min-height:44px;padding:6px 10px;border:1px solid #c5d4dc;border-radius:999px;background:#fff;font-size:15px;font-weight:700}.practice-arc-n{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#17324d;color:#f7f4ec;font-size:13px}.practice-arc-note{margin:8px 0 0;font-size:15px;max-width:70ch}@media (prefers-reduced-motion:reduce){.practice-arc *{transition:none}}`;
+    document.head.append(style);
+  }
 
   /* ---- Menu ----------------------------------------------------------------------------------------------------- */
   /** Menu order; anything else that asks to be in the menu goes last. */
@@ -256,10 +262,39 @@
     main.insertBefore(btn, main.firstElementChild);
   }
 
+  const ARC = [
+    ["Prepare", "Preparar"],
+    ["Explore", "Explorar"],
+    ["Guided", "Guiado"],
+    ["Independent", "Independiente"],
+    ["Reason", "Razonar"],
+    ["Apply", "Aplicar"],
+    ["Improve", "Mejorar"],
+  ];
+
+  function initPracticeArc() {
+    if (document.getElementById("practice-arc")) return;
+    const host = document.querySelector("main") || document.body;
+    const nav = document.createElement("nav");
+    nav.id = "practice-arc";
+    nav.className = "practice-arc";
+    nav.setAttribute("aria-label", "Practice path");
+    nav.innerHTML = `<ol>${ARC.map(
+      ([en, es], i) =>
+        `<li><span class="practice-arc-n">${i + 1}</span><span class="t-en">${en}</span><span class="t-es" lang="es">${es}</span></li>`,
+    ).join(
+      "",
+    )}</ol><p class="practice-arc-note"><span class="t-en">Challenge adds a reason to explain or compare. It is not only bigger numbers.</span><span class="t-es" lang="es">El desafío pide explicar o comparar. No son solo números más grandes.</span></p>`;
+    const bar = document.querySelector(".tab-bar");
+    if (bar) bar.before(nav);
+    else host.prepend(nav);
+  }
+
   function init() {
     initMenu();
     initMission();
     initFocusLayout();
+    initPracticeArc();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();

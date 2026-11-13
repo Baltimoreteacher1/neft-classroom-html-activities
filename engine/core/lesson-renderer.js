@@ -78,6 +78,7 @@ import {
   recordInstructionalEvidence,
 } from "./instructional-intelligence.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
+import { recordLearningEvent } from "./learning-events.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
@@ -1266,6 +1267,17 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     const tag = isCorrect
       ? null
       : reportMisconception(problemDef, selected, shellOpts && shellOpts.state);
+    const lessonFromPath =
+      typeof location !== "undefined"
+        ? (String(location.pathname).match(/\/lessons\/([^/]+)/) || [])[1]
+        : "";
+    recordLearningEvent({
+      lesson_id: shellOpts?.lessonId || problemDef.lessonId || lessonFromPath || "",
+      skill: problemDef.standard || problemDef.skill || problemDef.type || "",
+      attempt: Number(shellOpts?.state?.get?.()?.attempts) || 1,
+      result: isCorrect ? "correct" : "incorrect",
+      support_used: (Number(shellOpts?.state?.get?.()?.hintsUsed) || 0) > 0,
+    });
     onAnswer?.(isCorrect, tag);
   };
 

@@ -7,6 +7,40 @@
 
 import { domainStyle, traceBack, traceForward } from "./data.js";
 
+/** What a selected standard can honestly show from map data already on the node. */
+export function standardPlan(model, node) {
+  const assets = node.assets || [];
+  const lessons = assets.filter(
+    (a) => a.category === "Lesson" || /\/lessons\//.test(String(a.path || "")),
+  );
+  const practice = assets.filter((a) => /practice|studio|homework/i.test(`${a.path || ""} ${a.title || ""}`));
+  const prerequisites = traceBack(model, node.id, 1).map((step) => ({
+    id: step.node.id,
+    label: step.node.shortLabel || step.node.label,
+    why: step.why || "",
+  }));
+  const next = traceForward(model, node.id, 1)[0] || null;
+  return {
+    understanding: node.fullText || node.label || "",
+    prerequisites,
+    lessons,
+    practice,
+    support: Number(node.coverage?.l1) || 0,
+    challenge: Number(node.coverage?.l2) || 0,
+    next: next
+      ? {
+          id: next.node.id,
+          label: next.node.shortLabel || next.node.label,
+          href: `/curriculum/map/?node=${encodeURIComponent(next.node.id)}`,
+        }
+      : {
+          id: node.id,
+          label: "Build a re-teach from the resources already tagged to this standard.",
+          href: `/curriculum/forge/?standard=${encodeURIComponent(node.id)}`,
+        },
+  };
+}
+
 const DEPTH_LABEL = [
   "",
   "Directly underneath",
@@ -73,6 +107,43 @@ function standardButton(node, onOpen, extraClass) {
   b.appendChild(el("span", { class: "std-link-id", text: node.id }));
   b.appendChild(el("span", { class: "std-link-name", text: node.shortLabel || node.label }));
   return b;
+}
+
+function planSection(model, node, onOpen) {
+  const plan = standardPlan(model, node);
+  const list = (title, items, empty) => {
+    const ul = el("ul", { class: "asset-list" }, []);
+    if (!items.length) ul.appendChild(el("li", { text: empty }));
+    for (const item of items.slice(0, 8)) {
+      const label = item.title || item.label || item.id;
+      ul.appendChild(
+        el("li", {}, [
+          item.path
+            ? el("a", { class: "asset-link", href: item.path, text: label })
+            : el("button", {
+                type: "button",
+                class: "std-link",
+                text: `${item.id} · ${label}`,
+                onclick: () => item.id && onOpen(item.id),
+              }),
+        ]),
+      );
+    }
+    return el("div", { class: "asset-group" }, [el("h4", { class: "pnl-h4", text: title }), ul]);
+  };
+  return section("When this standard is selected", "Only links and prerequisites already stored on this standard.", [
+    el("p", { class: "pnl-full", text: plan.understanding }),
+    list("Prerequisites in this map", plan.prerequisites, "No Grade 6 prerequisite is stored under this standard."),
+    list("Lessons", plan.lessons, "No lesson is tagged to this standard yet."),
+    list("Practice", plan.practice, "No practice resource is tagged to this standard yet."),
+    el("p", {
+      class: "pnl-hint",
+      text: `Support pieces tagged: ${plan.support}. Challenge pieces tagged: ${plan.challenge}.`,
+    }),
+    el("p", {}, [
+      el("a", { class: "asset-link", href: plan.next.href, text: `Next step: ${plan.next.label}` }),
+    ]),
+  ]);
 }
 
 function traceSection(model, node, onOpen) {
@@ -353,6 +424,7 @@ export function renderPanel(root, model, id, ctx) {
 
   root.appendChild(head);
   const body = el("div", { class: "pnl-body" }, []);
+  body.appendChild(planSection(model, node, ctx.onOpen));
   body.appendChild(traceSection(model, node, ctx.onOpen));
   const live = liveSection(node, ctx.pulse);
   if (live) body.appendChild(live);

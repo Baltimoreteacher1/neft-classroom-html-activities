@@ -497,8 +497,12 @@ if (typeof document !== "undefined") {
   }
 }
 
-/** Persist the student's language choice ("en" | "es"); "" clears it. */
+/**
+ * Persist the student's language choice ("en" | "es"); "" clears it.
+ * This only changes the language. It does not clear in-progress answers.
+ */
 export function setPreferredLang(lang) {
+  // Language only. This does not clear in-progress answers.
   try {
     if (lang === "es" || lang === "en") localStorage.setItem(LANG_LS, lang);
     else localStorage.removeItem(LANG_LS);

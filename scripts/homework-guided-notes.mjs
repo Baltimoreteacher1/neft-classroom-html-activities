@@ -10290,6 +10290,7 @@ function syncDocumentLanguage(mode) {
    page still written left-to-right. Removed rather than stubbed, because an
    offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
+  /* Language only. Do not clear inputs, answers, or the saved stop. */
   if (mode !== 'en' && mode !== 'es' && mode !== 'bilingual') mode = 'en';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');

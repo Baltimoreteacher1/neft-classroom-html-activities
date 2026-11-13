@@ -26,6 +26,16 @@
 
 import { numberOf } from "./answer-match.js";
 
+export {
+  applyBothSides,
+  equationSolution,
+  exponentProductBug,
+  freshPowerItem,
+  isExponentProductBug,
+  powerValue,
+  repairExponent,
+} from "./publisher-models.js";
+
 const EPS = 1e-9;
 const near = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < EPS;
 

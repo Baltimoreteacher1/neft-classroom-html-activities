@@ -2658,6 +2658,11 @@ function buildSidebar(config, state, _phaseConfigs) {
       <div>
         <div class="sidebar-title">${escHtml(config.title)}</div>
         <div class="sidebar-subtitle">${escHtml(config.standard)} · Unit ${config.unit}</div>
+        ${
+          config.contentObjective
+            ? `<p class="sidebar-goal">${escHtml(config.contentObjective)}</p>`
+            : ""
+        }
       </div>
     </div>
 

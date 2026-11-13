@@ -12,6 +12,7 @@
 // the server confirmed the teacher route, and `.sg-tv` is in Present Mode's TEACHER_ONLY
 // list so it is blacked out on the screen turned toward the table.
 
+import { teacherLaunchCard } from "./publisher-models.js";
 import { evidenceKeys, evidenceModel } from "./small-group-evidence-summary.js";
 import {
   essentialQuestion,
@@ -100,7 +101,16 @@ export function mountTeacherView({ config, facilitation, talk, nodes = [], store
   document.addEventListener("sg:evidence", refresh);
   refresh();
 
+  const launch = teacherLaunchCard(config);
   const sections = [
+    section(
+      "Launch card",
+      `<p><b>${esc(launch.variant === "challenge" ? "Challenge" : launch.variant === "support" ? "Support" : "Core")}</b> · ${esc(launch.standard)}</p>` +
+        `<p>${esc(launch.goal)}</p>` +
+        `<ol>${launch.arc.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>` +
+        `<p>${esc(launch.challengeDepth)}</p><p>${esc(launch.optionalHelp)}</p>`,
+      true,
+    ),
     section(
       "Objective",
       `<p>${esc(String(config.contentObjective || ""))}</p>${config.languageObjective ? `<p><b>Language:</b> ${esc(config.languageObjective)}</p>` : ""}`,

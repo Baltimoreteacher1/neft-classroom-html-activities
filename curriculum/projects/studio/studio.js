@@ -22,7 +22,7 @@ const esc = (s) =>
 const main = $("#main");
 const id = new URL(location.href).searchParams.get("project");
 const project = getProject(id);
-const stages = ["Choose", "Build", "Test", "Revise", "Publish"];
+const stages = ["Plan", "Build", "Test", "Revise", "Explain"];
 let state,
   workbench,
   storageOK = true,

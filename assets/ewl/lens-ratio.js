@@ -308,9 +308,124 @@
     },
   };
 
+  fam.reps.quantity = {
+    label: "Quantity model",
+    labelEs: "Modelo de cantidades",
+    build(m) {
+      const parts = X.pts(m);
+      return {
+        parts,
+        read() {
+          const ks = parts.map(X.slope);
+          return ks.every((k) => k.eq(ks[0])) ? ks[0] : null;
+        },
+        alt: (l) =>
+          X.say(
+            m,
+            l,
+            `Quantity model: ${parts.length} equal groups of ${m.a.frac()} and ${m.b.frac()}.`,
+            `Modelo de cantidades: ${parts.length} grupos iguales de ${m.a.frac()} y ${m.b.frac()}.`,
+          ),
+        hits: X.exact(parts),
+      };
+    },
+    draw(rep, ctx) {
+      const h = EWL.h;
+      const m = ctx.model;
+      const rows = rep.parts.map((p) => {
+        const width = Math.max(8, Math.min(240, Number(p.x.n) * 14));
+        const widthB = Math.max(8, Math.min(240, Number(p.y.n) * 14));
+        const btn = h(
+          "button",
+          { type: "button", class: "lens-rowbtn" },
+          `${Lens.fmt(p.s)} × (${Lens.fmt(m.a)} : ${Lens.fmt(m.b)})`,
+        );
+        const row = h(
+          "div",
+          { class: "lens-qty" },
+          btn,
+          h("span", { class: "lens-qty-bar", style: `width:${width}px` }, Lens.fmt(p.x)),
+          h(
+            "span",
+            { class: "lens-qty-bar lens-qty-bar-b", style: `width:${widthB}px` },
+            Lens.fmt(p.y, m.money),
+          ),
+        );
+        ctx.part({
+          el: btn,
+          marks: [row],
+          id: p.id,
+          key: p.key,
+          label: ctx.t(
+            `${Lens.fmt(p.s)} groups: ${Lens.fmt(p.x)} and ${Lens.fmt(p.y, m.money)}`,
+            `${Lens.fmt(p.s)} grupos: ${Lens.fmt(p.x)} y ${Lens.fmt(p.y, m.money)}`,
+          ),
+        });
+        return row;
+      });
+      return h(
+        "div",
+        { class: "lens-quantities", role: "group", "aria-label": rep.alt(ctx.lang) },
+        rows,
+      );
+    },
+  };
+
+  fam.reps.statement = {
+    label: "Symbolic statement",
+    labelEs: "Enunciado simbólico",
+    build(m) {
+      const parts = X.pts(m);
+      return {
+        parts,
+        read() {
+          const ks = parts.map(X.slope);
+          return ks.every((k) => k.eq(ks[0])) ? ks[0] : null;
+        },
+        alt: (l) =>
+          X.say(
+            m,
+            l,
+            `Each copy keeps the statement ${m.a.frac()}:${m.b.frac()}.`,
+            `Cada copia conserva el enunciado ${m.a.frac()}:${m.b.frac()}.`,
+          ),
+        hits: X.exact(parts),
+      };
+    },
+    draw(rep, ctx) {
+      const h = EWL.h;
+      const m = ctx.model;
+      const items = rep.parts.map((p) => {
+        const text = `${m.a.frac()}:${m.b.frac()} = ${Lens.fmt(p.x)}:${Lens.fmt(p.y, m.money)}`;
+        const btn = h("button", { type: "button", class: "lens-rowbtn" }, text);
+        ctx.part({
+          el: btn,
+          marks: [btn],
+          id: p.id,
+          key: p.key,
+          label: text,
+        });
+        return h("li", null, btn);
+      });
+      return h(
+        "div",
+        { role: "group", "aria-label": rep.alt(ctx.lang) },
+        h(
+          "p",
+          null,
+          ctx.t(
+            "The scale factor changes both quantities together.",
+            "El factor de escala cambia las dos cantidades juntas.",
+          ),
+        ),
+        h("ul", { class: "lens-statements" }, items),
+      );
+    },
+  };
+
   Object.assign(fam, {
     id: "ratio",
-    repOrder: ["tape", "dnl", "table", "plane", "balance"],
+    repOrder: ["quantity", "tape", "dnl", "table", "statement", "plane", "balance"],
     normalize,
     setText(spec, text) {
       const R = EWL.Rat;
