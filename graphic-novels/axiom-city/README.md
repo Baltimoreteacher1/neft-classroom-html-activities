@@ -43,7 +43,7 @@ frame changes.
 |---|---|
 | Character sheet and prompt fragments (`{{maya}}`, `{{vex}}` ...), one seed per character | `_engine/art/CHARACTERS.md` |
 | Per-book panel list: id, size, seed, prompt, alt text, face boxes | `_engine/art/<book>/panels.json` |
-| Generate (local FLUX.1-schnell via mflux) and pack (one WebP atlas per book) | `tools/gn-art.py` |
+| Generate (Gemini, or local FLUX via mflux) and pack (one WebP atlas per book) | `tools/gn-art.py` |
 | Atlas coordinates (written by pack) | `_engine/art/<book>/atlas.json` |
 | Write coordinates + alt text into the book (`GN_ART`, `ART(id)`), `--check` for staleness | `tools/inject-gn-art.mjs` |
 | Panel, balloon, caption, sign and gate-frame styles (shared) | `../_shared/gn-comic.css` |
@@ -70,5 +70,12 @@ To illustrate another book:
    `node tools/gn-layer.test.mjs`, `node tools/inject-gn-layer.mjs --check` and
    `node tools/verify-gn-layer-browser.mjs --books=<slug>`.
 
-Why local FLUX: Gemini needs an API key this machine does not have, and keyless Pollinations now serves only
-its `sana` model (one image per 45 s, watermarked, not usable as comic art).
+Image engines (`generate --engine`):
+- `gemini` (default for new books when a key exists): `GEMINI_API_KEY` from `~/.config/gn-art/gemini.env`, model
+  `gemini-2.5-flash-image`, ~7 s a panel. Crops a drawn frame/margin and retries on rate limits. The key was rejected (401)
+  on 2026-11-12, so the 25 books drawn after that used the local engine below.
+- `flux` (default): local FLUX.1-schnell via mflux, no key, ~3 min a panel.
+- FLUX.2 Klein 4B (`mflux`, `flux2-klein-4b`, `small_text_encoder=True`) also runs with no key at 2-4 min a panel and gives a
+  flatter cel look closer to the Gemini books. It needs ~8.6 GB of RAM: on a 16 GB machine under other load it swaps and a
+  step can take 15 minutes, so run it alone. Its download is ~17 GB in `~/.cache/huggingface/hub/blobs`; delete that when done.
+Keyless Pollinations now serves only its `sana` model (one image per 45 s, watermarked, not usable as comic art).
