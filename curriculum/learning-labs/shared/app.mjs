@@ -32,7 +32,6 @@ const fresh = () => ({
   snapshots: [],
   hintHistory: [],
   byteBot: null,
-  marsColony: null,
   smallGroup: null,
   rewindHistory: [],
 });

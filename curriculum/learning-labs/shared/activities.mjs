@@ -9,8 +9,6 @@ import { controls, numericAnswer } from './math.mjs';
 import { numberFeedback } from './number-feedback.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
 import {
-  attachGhostMesh,
-  mountAresColony,
   mountByteBot,
   mountMeshClassroomSync,
   mountSmallGroupStation,
@@ -66,7 +64,6 @@ function modelPanel(ctx, key, summary) {
       level: state.level,
       lang: () => state.lang,
     });
-    attachGhostMesh(slot);
     if (key.startsWith('learn-')) slot.prepend(mountWatch(slot, controls(lab.model)));
   };
   tool.addEventListener('toggle', () => { state.modelOpen[key] = tool.open; if (tool.open) mount(); save(); });
@@ -199,7 +196,6 @@ export function investigate(ctx, host) {
     lens: true,
     lang: () => state.lang,
   });
-  attachGhostMesh(invModelHost);
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);
@@ -214,9 +210,14 @@ export function investigate(ctx, host) {
     state.investigated = box.checked ? [...new Set([...state.investigated, i])] : state.investigated.filter((n) => n !== i);
     box.closest('article').classList.toggle('is-done', box.checked); save(); ctx.refreshProgress();
   }));
-  mountSpatialInspector(host, ctx, 'spatial-inv');
-  mountAresColony(host, ctx, 'ares-inv');
-  mountSmallGroupStation(host, ctx, 'sg-inv');
+  // A tool appears only where its mathematics belongs: the net/3D inspector on solid-figure labs; the partner station
+  // (a collaboration tool, not lab mathematics) tucked into one closed disclosure instead of the student's main path.
+  if (lab.model.kind === 'solid') mountSpatialInspector(host, ctx, 'spatial-inv');
+  const partner = document.createElement('details');
+  partner.className = 'studio-how studio-partner';
+  partner.innerHTML = '<summary>Partner and small-group tools</summary>';
+  host.append(partner);
+  mountSmallGroupStation(partner, ctx, 'sg-inv');
 }
 
 export function practice(ctx, host) {
@@ -436,7 +437,6 @@ export function create(ctx, host) {
     onChange: (values, result) => { shown = result; state.models.create = values; save(); },
     prefix: 'create-model', level: state.level, lang: () => state.lang,
   });
-  attachGhostMesh(createModelHost);
   const note = studio.querySelector('.create-note');
   studio.querySelector('[data-add-model]').onclick = () => {
     if (!shown) return;
