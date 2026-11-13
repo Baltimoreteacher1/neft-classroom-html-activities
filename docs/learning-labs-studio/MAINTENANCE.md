@@ -16,19 +16,19 @@ Lab pages are generated. Edit `tools/learning-labs/blueprints.mjs`, a lesson con
 
 ## Adding a Representation Bridge to a lab
 
-A bridge is one object in `shared/bridge-math.mjs`, keyed `kind:mode` of the lab's model (`data/learning-labs.json`). It declares:
+A bridge is one object in `shared/bridge-math.mjs`, keyed `kind:mode` of the lab's model (`data/learning-labs.json`). It declares English strings beside Spanish twins (`nameEs`, `labelEs`, `questionEs`, `responseEs`, `domainEs`, and `invariantsEs`). Dynamic descriptions and test explanations live in `shared/bridge-language-es.mjs`; the UI pairs Spanish inside `span.es-line[lang="es"]` and follows the saved `state.lang`. Add a Spanish-twin assertion to `tools/learning-labs-bridge.test.mjs` for every new string family. Do not claim native review unless it has happened. It declares:
 
-- `quantities` (two), `domain` (a sentence), `invariants`, `representations`;
-- `transformations`: each has `id`, `label`, `question` (the yes/no prediction), and `param` (or null);
-- `misconceptions`: at least three, each with `id`, `name`, `response`;
+- `quantities` (two), `domain` (a sentence), `invariants`, `representations`, plus Spanish twins for every string;
+- `transformations`: each has `id`, `label`/`labelEs`, `question`/`questionEs` (the yes/no prediction), and `param` (or null, with `labelEs` when present);
+- `misconceptions`: at least three, each with `id`, `name`/`nameEs`, `response`/`responseEs`;
 - `describe(values)` returning `table` (with `tones`), `equation` (text, `note`, and optionally `fraction`, `power` or `half` for MathML), `words`, `invariant`, `a11y`;
-- `test(values, id, param)` returning `{ before, after, preserved, why, misconception, fits, names }`.
+- `test(values, id, param)` returning `{ before, after, preserved, why, misconception, fits, names }`; user-facing test explanations have a Spanish twin in `bridge-language-es.mjs`.
 
 Rules: whole-number or exact-fraction arithmetic only (`frac`, `fmul`, `feq`; never floats); `describe` and `test` throw `RangeError` outside the domain, and the domain must contain every setting the model's own controls allow; `before` and `after` may name only the bridge's quantities (the lab merges them into the full model vector); a misconception id returned by `test` must be declared; the explanation must state the numbers it is about. Add the object to `BRIDGES`, then extend `tools/learning-labs-bridge.test.mjs` with an independent integer oracle over the whole domain, and add the lab to the `wrong` table in `tools/verify-learning-labs-bridge-browser.mjs`. Register nothing else: `activities.mjs` mounts a bridge automatically when `bridgeFor(lab.model)` finds one.
 
 ## The Experiment Recorder
 
-`shared/recorder.mjs`. `state.experiments = { v: 1, items }`, capped at 40. Entries are process evidence (prediction, change, outcome, relationship), never a score. A new feature that makes a student predict or test something should call `recorder.add(...)` rather than keep its own log.
+`shared/recorder.mjs`. `state.experiments = { v: 1, items }`, capped at 40. Keep `v: 1`; optional `textEs` and `relationEs` fields are additive so old saved records remain intact. Entries are process evidence (prediction, change, outcome, relationship), never a score. A new feature that makes a student predict or test something should call `recorder.add(...)` rather than keep its own log.
 
 ## Checks
 

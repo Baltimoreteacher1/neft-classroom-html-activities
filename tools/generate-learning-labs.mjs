@@ -69,6 +69,7 @@ const version = createHash("sha256")
       "number-feedback.mjs",
       "nextgen.mjs",
       "bridge-math.mjs",
+      "bridge-language-es.mjs",
       "bridge.mjs",
       "recorder.mjs",
       "lab.css",

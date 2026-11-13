@@ -151,6 +151,54 @@
   .page-shell[data-stage="investigate"] .save-tools button { flex: 1; padding-inline: 6px; }
 }
 
+/* At phone width, keep non-data controls beside the picture so the first
+   manipulation is reachable without scrolling past a full-height diagram. */
+@media (max-width: 600px) {
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(132px, .8fr);
+    align-items: stretch;
+  }
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) .model-picture {
+    min-width: 0;
+    min-height: 150px;
+  }
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) .model-controls {
+    display: block;
+    min-width: 0;
+    padding: 6px;
+  }
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) .model-controls label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: .82rem;
+    line-height: 1.2;
+  }
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) .model-controls input,
+  .page-shell[data-stage="investigate"] .studio-stage .model-workspace:not([data-kind="data"]) .model-controls select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+  }
+}
+
+/* Wrap Lab's full investigation question needs less vertical space on a Chromebook. */
+@media (min-width: 601px) {
+  #lab-root[data-lab="wrap-lab"] .studio-question { font-size: 1.25rem; line-height: 1.2; }
+  #lab-root[data-lab="wrap-lab"] .studio-stage .model-picture {
+    align-self: start;
+    height: 190px;
+    min-height: 190px;
+  }
+  #lab-root[data-lab="wrap-lab"] .studio-stage .model-controls { padding-top: 0; }
+}
+@media (max-width: 600px) {
+  html[data-lab-stage="investigate"] .ewlr-fab {
+    right: auto;
+    left: max(8px, env(safe-area-inset-left));
+  }
+}
+
 /* Phones on a working stage: the course navigation keeps its links but drops its brand block, so the model starts higher. */
 @media (max-width: 600px) {
   html[data-lab-stage="investigate"] .ewl-course-brand,

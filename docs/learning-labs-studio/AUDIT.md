@@ -25,10 +25,10 @@ What was actually examined, so the findings can be judged against it:
 
 ## Usability risks (not fixed)
 
-- **Phone first screen.** After the fixes the first control is on a phone's first screen in 2 of 46 labs; the picture is at least 60% visible in 36 of 46 (median 68%). The curriculum shell's navigation still sits above the lab, and the shell's floating Pocket Reference button overlaps content at the lower-right corner.
-- **Wrap Lab** is the one lab whose first control is off the first Chromebook screen (a long investigation question).
+- **Phone first screen (updated 2026-11-13).** The first control is now on-screen in 41 of 46 labs. Data Newsroom, Middle Ground, Consistency Cup, Fair Share Festival and Outlier Investigation retain full-width data plots and place the controls below them. The Picture and control column are side by side for non-data models. The Pocket Reference button is at the lower-left on phone Investigate screens, away from the control column. See `first-screen-before.*` and `first-screen-phone-final.*` for the measured before/after. Targets remain at least 44px; no overflow or console errors were measured.
+- **Wrap Lab Chromebook check (updated 2026-11-13).** The control is now on-screen in all 46 labs. Wrap Lab uses a compact model picture/control panel at Chromebook width; the question and the math are unchanged.
 - **Always-on widgets** that remain by design: "Repair Byte's Mathematical Logic" (Learn and Practice, a per-kind bug catalog) and "Morning Lab Sync Code" (Create, classroom sync). They are not unrelated to the mathematics but have not been reviewed for load.
-- **Spanish.** The Bridge and Recorder are English only. The existing Spanish toggle covers worked examples and model labels, not these.
+- **Spanish (updated 2026-11-13).** The five current Bridges and the Recorder now follow the saved English/Spanish language state. Spanish text is shown in `lang="es"` lines beside English. No native Spanish review has occurred; the translations need review by a fluent speaker.
 - The curriculum shell's EN/ES/hub pills are 22–35px wide and 24–28px tall: they meet WCAG 2.2 AA's 24px minimum but not the 44px target. They belong to the shell, not the labs.
 
 ## Findings by scorecard dimension

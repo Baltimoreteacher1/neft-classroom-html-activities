@@ -4,6 +4,11 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  BRIDGE_STATIC_ES,
+  bridgeWhyEs,
+  describeBridgeEs,
+} from "../curriculum/learning-labs/shared/bridge-language-es.mjs";
+import {
   BRIDGES,
   bridgeFor,
   fadd,
@@ -113,6 +118,70 @@ for (const b of BRIDGES) {
   );
 }
 
+// Spanish-twin gate: every declared Bridge string and every rendered text role has a Spanish companion.
+const twin = (en, es, where) =>
+  ok(
+    typeof en === "string" && en.length > 0 && typeof es === "string" && es.length > 0,
+    `${where}: Spanish twin exists`,
+  );
+ok(
+  Object.keys(BRIDGE_STATIC_ES).length > 0 &&
+    Object.values(BRIDGE_STATIC_ES).every((s) => typeof s === "string" && s.length > 0),
+  "Bridge static interface labels all have Spanish text",
+);
+const bridgeSamples = {
+  "ratio:mixer": [2, 3],
+  "percent:whole": [30, 18],
+  "power:order": [2, 3, 0],
+  "balance:add": [5, 12, 0],
+  "area:triangle": [4, 6, 0],
+};
+for (const b of BRIDGES) {
+  twin(b.domain, b.domainEs, `${b.key} domain`);
+  ok(
+    b.invariants.length === b.invariantsEs.length,
+    `${b.key}: invariant strings have one-to-one Spanish twins`,
+  );
+  b.invariants.forEach((s, i) => twin(s, b.invariantsEs[i], `${b.key} invariant ${i}`));
+  ok(
+    b.representations.length === b.representationsEs.length,
+    `${b.key}: representation labels have Spanish twins`,
+  );
+  b.representations.forEach((s, i) =>
+    twin(s, b.representationsEs[i], `${b.key} representation ${i}`),
+  );
+  b.quantities.forEach((q) => {
+    twin(q.name, q.nameEs, `${b.key} quantity ${q.id}`);
+    if (q.unit) twin(q.unit, q.unitEs, `${b.key} unit ${q.id}`);
+  });
+  b.transformations.forEach((t) => {
+    twin(t.label, t.labelEs, `${b.key} idea ${t.id} label`);
+    twin(t.question, t.questionEs, `${b.key} idea ${t.id} prediction`);
+    if (t.param) twin(t.param.label, t.param.labelEs, `${b.key} idea ${t.id} parameter`);
+  });
+  b.misconceptions.forEach((m) => {
+    twin(m.name, m.nameEs, `${b.key} misconception ${m.id} name`);
+    twin(m.response, m.responseEs, `${b.key} misconception ${m.id} response`);
+  });
+  const d = b.describe(bridgeSamples[b.key]);
+  const es = describeBridgeEs(b, bridgeSamples[b.key]);
+  twin(d.words, es.words, `${b.key} words output`);
+  twin(d.invariant.text, es.invariant, `${b.key} invariant output`);
+  twin(d.a11y, es.a11y, `${b.key} accessibility output`);
+  ok(
+    d.table.head.length === es.table.head.length && d.table.rows.length === es.table.rows.length,
+    `${b.key}: table has a Spanish twin`,
+  );
+  d.table.head.forEach((h, i) => twin(h, es.table.head[i], `${b.key} table heading ${i}`));
+  d.table.rows.forEach((r, i) => twin(r.label, es.table.rows[i].label, `${b.key} table row ${i}`));
+  const eq = b.transformations[0];
+  const result = b.test(bridgeSamples[b.key], eq.id, eq.param?.value);
+  ok(
+    bridgeWhyEs(b, bridgeSamples[b.key], eq.id, eq.param?.value, result).length > 0,
+    `${b.key}: test explanation has Spanish twin`,
+  );
+}
+
 const ratio = bridgeFor({ kind: "ratio", mode: "mixer" });
 const percent = bridgeFor({ kind: "percent", mode: "whole" });
 const power = bridgeFor({ kind: "power", mode: "order" });
@@ -128,6 +197,11 @@ const declared = (b, r) =>
 for (let a = 1; a <= 12; a++)
   for (let b = 1; b <= 12; b++) {
     const d = ratio.describe([a, b]);
+    const de = describeBridgeEs(ratio, [a, b]);
+    ok(
+      de.words.length > 20 && de.invariant.length > 5,
+      `ratio ${a}:${b} has a Spanish description`,
+    );
     ok(
       d.invariant.holds &&
         d.table.rows.every((r, k) => r.cells[0] === a * (k + 1) && r.cells[1] === b * (k + 1)),
@@ -135,6 +209,10 @@ for (let a = 1; a <= 12; a++)
     );
     for (let k = 2; k <= 6; k++) {
       const r = ratio.test([a, b], "scale", k);
+      ok(
+        bridgeWhyEs(ratio, [a, b], "scale", k, r).length > 20,
+        "ratio scaling has a Spanish explanation",
+      );
       ok(
         r.preserved && r.after[0] === a * k && r.after[1] === b * k && r.misconception === null,
         `ratio ${a}:${b} x${k}`,
@@ -146,6 +224,10 @@ for (let a = 1; a <= 12; a++)
     }
     for (let n = 1; n <= 6; n++) {
       const add = ratio.test([a, b], "add", n);
+      ok(
+        bridgeWhyEs(ratio, [a, b], "add", n, add).length > 20,
+        "ratio addition has a Spanish explanation",
+      );
       // equivalent iff a/b === (a+n)/(b+n), i.e. a(b+n) === b(a+n), i.e. a === b
       ok(
         add.preserved === (a * (b + n) === b * (a + n)) && add.preserved === (a === b),
@@ -157,6 +239,10 @@ for (let a = 1; a <= 12; a++)
       );
       declared(ratio, add);
       const one = ratio.test([a, b], "one", n);
+      ok(
+        bridgeWhyEs(ratio, [a, b], "one", n, one).length > 20,
+        "one-quantity change has a Spanish explanation",
+      );
       ok(
         !one.preserved && one.misconception === "one-quantity" && one.after[1] === b,
         `ratio ${a}:${b} juice only +${n}`,
@@ -174,6 +260,11 @@ checks += 5;
 for (let p = 1; p <= 100; p++)
   for (let part = 1; part <= 120; part++) {
     const d = percent.describe([p, part]);
+    const de = describeBridgeEs(percent, [p, part]);
+    ok(
+      de.words.length > 20 && de.invariant.length > 5,
+      `percent ${p}% / ${part} has a Spanish description`,
+    );
     ok(d.invariant.holds, `percent ${p}% of whole = ${part}`);
     const wholeNum = part * 100;
     ok(
@@ -196,6 +287,10 @@ for (const [p, part, guess] of [
   [100, 30, 30],
 ]) {
   const r = percent.test([p, part], "verify", guess);
+  ok(
+    bridgeWhyEs(percent, [p, part], "verify", guess, r).length > 15,
+    "whole-check has a Spanish explanation",
+  );
   ok(
     r.preserved === (Math.round(guess * 10) * p === part * 1000),
     `percent ${p}% / ${part} guess ${guess}`,
@@ -223,6 +318,11 @@ checks += 10;
 for (let b = 2; b <= 5; b++)
   for (let e = 1; e <= 5; e++) {
     const d = power.describe([b, e, 0]);
+    const de = describeBridgeEs(power, [b, e, 0]);
+    ok(
+      de.words.length > 20 && de.invariant.length > 0,
+      `power ${b}^${e} has a Spanish description`,
+    );
     ok(
       d.invariant.holds &&
         d.table.rows[e - 1].cells[0] === Array(e).fill(b).join(" × ") &&
@@ -230,6 +330,10 @@ for (let b = 2; b <= 5; b++)
       `power ${b}^${e}`,
     );
     const t = power.test([b, e], "times");
+    ok(
+      bridgeWhyEs(power, [b, e], "times", undefined, t).length > 15,
+      "power comparison has a Spanish explanation",
+    );
     ok(t.preserved === (b ** e === b * e), `power ${b}^${e} vs ${b}x${e}`);
     ok(
       t.preserved || t.misconception === "exponent-as-multiplier",
@@ -237,6 +341,10 @@ for (let b = 2; b <= 5; b++)
     );
     declared(power, t);
     const f = power.test([b, e], "add-factor");
+    ok(
+      bridgeWhyEs(power, [b, e], "add-factor", undefined, f).length > 15,
+      "adding a factor has a Spanish explanation",
+    );
     ok(f.preserved && f.fits === e < 5, `power add a factor at ${b}^${e}`);
     ok(!f.fits || f.after[1] === e + 1, "add-factor moves to one more factor");
   }
@@ -251,18 +359,35 @@ checks++;
 for (let a = 1; a <= 12; a++)
   for (let rhs = 1; rhs <= 60; rhs++) {
     const d = balance.describe([a, rhs, 0]);
+    const de = describeBridgeEs(balance, [a, rhs, 0]);
+    ok(
+      de.words.length > 20 && de.invariant.length > 5,
+      `balance ${a} / ${rhs} has a Spanish description`,
+    );
     ok(d.invariant.holds, `balance x + ${a} = ${rhs}`);
     const both = balance.test([a, rhs], "both");
+    ok(
+      bridgeWhyEs(balance, [a, rhs], "both", undefined, both).length > 15,
+      "two-sided subtraction has a Spanish explanation",
+    );
     ok(
       both.preserved && both.solution === rhs - a && both.solution + a === rhs,
       "both sides: the solution is unchanged",
     );
     const addBoth = balance.test([a, rhs], "add-both");
     ok(
+      bridgeWhyEs(balance, [a, rhs], "add-both", undefined, addBoth).length > 15,
+      "adding to both sides has a Spanish explanation",
+    );
+    ok(
       addBoth.preserved && addBoth.solution === rhs - a,
       "add the same to both sides keeps the solution",
     );
     const left = balance.test([a, rhs], "left");
+    ok(
+      bridgeWhyEs(balance, [a, rhs], "left", undefined, left).length > 15,
+      "one-sided change has a Spanish explanation",
+    );
     ok(
       !left.preserved &&
         left.solution === rhs &&
@@ -278,12 +403,27 @@ checks += 0;
 for (let b = 1; b <= 12; b++)
   for (let h = 1; h <= 12; h++) {
     const d = area.describe([b, h, 4]);
+    const de = describeBridgeEs(area, [b, h, 4]);
+    ok(
+      de.words.length > 20 && de.invariant.length > 5,
+      `triangle ${b}x${h} has a Spanish description`,
+    );
     ok(d.invariant.holds && d.table.rows[0].cells[2] === b * h, `triangle ${b}x${h}`);
     ok(d.table.rows[1].cells[2] === fstr(frac(b * h, 2)), "triangle is half the parallelogram");
-    for (const s of [1, 5, 12])
+    for (const s of [1, 5, 12]) {
+      const r = area.test([b, h], "slide", s);
       ok(area.test([b, h], "slide", s).preserved, "sliding the apex keeps the area");
+      ok(
+        bridgeWhyEs(area, [b, h], "slide", s, r).length > 15,
+        "sliding the top has a Spanish explanation",
+      );
+    }
     for (let s = 1; s <= 20; s++) {
       const r = area.test([b, h], "slant", s);
+      ok(
+        bridgeWhyEs(area, [b, h], "slant", s, r).length > 15,
+        "slant test has a Spanish explanation",
+      );
       ok(r.preserved === (s === h), `slant ${s} vs height ${h}`);
       ok(
         s < h ? r.why.includes("cannot be shorter") : true,
@@ -314,10 +454,11 @@ const e1 = addExperiment(
   st,
   {
     source: "bridge",
-    prediction: { text: "yes", ok: true },
-    change: { text: "x2", before: [2, 3], after: [4, 6] },
-    observed: { text: "same", ok: true },
+    prediction: { text: "yes", textEs: "sí", ok: true },
+    change: { text: "x2", textEs: "por 2", before: [2, 3], after: [4, 6] },
+    observed: { text: "same", textEs: "igual", ok: true },
     relation: "2:3",
+    relationEs: "2:3",
   },
   1000,
 );
@@ -340,6 +481,10 @@ assert.deepEqual(cmp.differs, [0], "[4,6] and [5,6] differ only in the first set
 assert.equal(compareExperiments(st, 1, 1), null);
 assert.equal(compareExperiments(st, 1, 99), null);
 assert.ok(reportLines(st).join("\n").includes("MY EXPERIMENTS"));
+st.lang = "es";
+assert.ok(reportLines(st).join("\n").includes("MIS EXPERIMENTOS"));
+assert.ok(reportLines(st).join("\n").includes("por 2"));
+assert.equal(st.experiments.v, 1, "Spanish companions are additive to saved version 1");
 assert.deepEqual(reportLines({}), []);
 const big = {};
 for (let i = 0; i < MAX_EXPERIMENTS + 7; i++) addExperiment(big, { change: { after: [i] } });

@@ -9,5 +9,6 @@ Open https://eduwonderlab.com/curriculum/learning-labs/recipe-remix/#investigate
 5. **Try it for real (2:15).** Press "Show this in the model" and watch the model, table and sentence move to the new, non-equivalent mixture.
 6. **A new attempt (2:40).** Press "Test another idea", choose the multiplication idea again with a different factor, and predict again. Open "My experiments": both attempts are there with "Prediction matched / did not match", and "Back to before" returns the model to either state. Tick two to compare.
 7. **Another model (3:15).** Open https://eduwonderlab.com/curriculum/learning-labs/missing-whole/#investigate. Test "Check a whole you think is right" with 5.4 (30% of 18): it names the classic mistake and says to work back to 100%. Then enter 60.
+8. **Spanish (3:45).** Open Learn, choose Español, then return to Investigate. The English Bridge and Recorder text stays visible with Spanish lines marked `lang="es"`; test one idea and confirm both language versions appear in the saved experiment.
 
-**Not shown, because it is not built:** teacher-facing evidence view, a creative Design Studio, a Spanish version of the Bridge, and the rebuilt game for each lab.
+**Not shown, because they are not built:** teacher-facing evidence view, a creative Design Studio, and the rebuilt game for each lab. Spanish text needs native review.

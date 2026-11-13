@@ -179,6 +179,39 @@ for (const id of Object.keys(wrong)) {
   report.axe += axe.violations.length;
   for (const v of bad) say(`axe ${v.impact}: ${v.id} (${v.nodes.length})`);
 
+  // Spanish follows the lab's saved language choice. Test one complete Bridge and Recorder interaction.
+  if (id === "recipe-remix") {
+    await page.locator("#tab-learn").click();
+    await page.locator('.lang-switch [data-lang="es"]').click();
+    await page.locator("#tab-investigate").click();
+    await page.locator('.bridge-card [lang="es"]').first().waitFor({ timeout: 3000 });
+    if (!(await page.locator(".bridge-card").innerText()).includes("Cómo se conectan las partes"))
+      say("Spanish Bridge heading is missing");
+    if ((await page.locator(".bridge-card [lang=es]").first().getAttribute("lang")) !== "es")
+      say("Spanish Bridge text is missing lang=es");
+    await page.locator("[data-idea]").first().click();
+    await page.locator("[data-guess='yes']").click();
+    await page.locator(".bridge-verdict").waitFor();
+    await page.locator(".recorder summary").click();
+    const recText = await page.locator(".recorder").innerText();
+    if (!recText.includes("Mis experimentos") || !recText.includes("Predije:"))
+      say("Spanish Recorder text is missing");
+    const savedEs = JSON.parse(
+      await page.evaluate(() => localStorage.getItem("eduwonderlab:learning-lab:v1:recipe-remix")),
+    );
+    if (savedEs.experiments?.items?.at(-1)?.prediction?.textEs !== "sí")
+      say("Spanish experiment was not stored additively");
+    const spanishAxe = await new AxeBuilder({ page })
+      .include("#panel-investigate")
+      .withTags(["wcag2a", "wcag2aa", "wcag22aa"])
+      .analyze();
+    const spanishBad = spanishAxe.violations.filter((v) =>
+      ["serious", "critical"].includes(v.impact),
+    );
+    report.axe += spanishAxe.violations.length;
+    for (const v of spanishBad) say(`Spanish axe ${v.impact}: ${v.id} (${v.nodes.length})`);
+  }
+
   if (errors.length) say(`console/page errors: ${errors.slice(0, 2).join(" | ")}`);
   await context.close();
 
@@ -194,6 +227,9 @@ for (const id of Object.keys(wrong)) {
   const { context, page, errors } = await open("consistency-cup");
   if (await page.locator(".bridge-card").count())
     problems.push("consistency-cup: has a bridge card but no bridge is declared");
+  await page.locator("#tab-learn").click();
+  await page.locator('.lang-switch [data-lang="es"]').click();
+  await page.locator("#tab-investigate").click();
   await page.locator("[data-predict='up']").click();
   const input = page.locator("#investigation-model [data-control]:not([readonly])").first();
   await input.fill(String(Number(await input.inputValue()) + 9));
@@ -201,6 +237,14 @@ for (const id of Object.keys(wrong)) {
   await page.waitForTimeout(1300);
   if ((await count(page)) < 1)
     problems.push("consistency-cup: a judged prediction was not recorded");
+  await page.locator(".recorder summary").click();
+  if (!(await page.locator(".recorder").innerText()).includes("Mis experimentos"))
+    problems.push("consistency-cup: Spanish Recorder text is missing");
+  const loggedEs = JSON.parse(
+    await page.evaluate(() => localStorage.getItem("eduwonderlab:learning-lab:v1:consistency-cup")),
+  );
+  if (!loggedEs.experiments?.items?.at(-1)?.observed?.textEs)
+    problems.push("consistency-cup: Predict-bar Spanish evidence was not recorded");
   if (errors.length) problems.push(`consistency-cup: errors ${errors[0]}`);
   await context.close();
 }

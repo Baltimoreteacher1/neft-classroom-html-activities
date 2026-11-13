@@ -37,19 +37,22 @@ const times = (b, e) => Array(e).fill(b).join(' × ');
 // ---------------------------------------------------------------------------------------------------------------------
 const ratioMixer = {
   key: 'ratio:mixer',
-  quantities: [{ id: 'juice', name: 'Juice', unit: 'cups', color: 'a' }, { id: 'water', name: 'Water', unit: 'cups', color: 'b' }],
+  quantities: [{ id: 'juice', name: 'Juice', nameEs: 'Jugo', unit: 'cups', unitEs: 'tazas', color: 'a' }, { id: 'water', name: 'Water', nameEs: 'Agua', unit: 'cups', unitEs: 'tazas', color: 'b' }],
   domain: 'Juice and water are whole numbers of cups from 1 to 12.',
+  domainEs: 'El jugo y el agua se expresan en tazas enteras del 1 al 12.',
   invariants: ['Juice ÷ water stays the same when both amounts are multiplied by the same number.'],
+  invariantsEs: ['Jugo ÷ agua se mantiene igual cuando ambas cantidades se multiplican por el mismo número.'],
   representations: ['model', 'table', 'equation', 'words'],
+  representationsEs: ['modelo', 'tabla', 'ecuación', 'palabras'],
   transformations: [
-    { id: 'scale', label: 'Multiply both amounts by', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', param: { label: 'Factor', min: 2, max: 6, value: 2 } },
-    { id: 'add', label: 'Add the same number of cups to both by', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', param: { label: 'Cups', min: 1, max: 6, value: 2 } },
-    { id: 'one', label: 'Add this many cups to juice only:', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', param: { label: 'Cups', min: 1, max: 6, value: 1 } },
+    { id: 'scale', label: 'Multiply both amounts by', labelEs: 'Multiplica ambas cantidades por', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', questionEs: '¿La receta seguirá siendo equivalente (la misma razón de jugo a agua)?', param: { label: 'Factor', labelEs: 'Factor', min: 2, max: 6, value: 2 } },
+    { id: 'add', label: 'Add the same number of cups to both by', labelEs: 'Suma la misma cantidad de tazas a ambos', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', questionEs: '¿La receta seguirá siendo equivalente (la misma razón de jugo a agua)?', param: { label: 'Cups', labelEs: 'Tazas', min: 1, max: 6, value: 2 } },
+    { id: 'one', label: 'Add this many cups to juice only:', labelEs: 'Suma estas tazas solo al jugo:', question: 'Will the recipe stay equivalent (the same juice-to-water ratio)?', questionEs: '¿La receta seguirá siendo equivalente (la misma razón de jugo a agua)?', param: { label: 'Cups', labelEs: 'Tazas', min: 1, max: 6, value: 1 } },
   ],
   misconceptions: [
-    { id: 'additive-ratio', name: 'Adding the same amount to both keeps the ratio', response: 'Equivalent ratios come from multiplying both amounts by the same factor, not from adding.' },
-    { id: 'one-quantity', name: 'Changing one amount leaves the recipe the same', response: 'If only one amount changes, the amount of water for each cup of juice changes.' },
-    { id: 'part-whole', name: 'Juice to water and juice to the whole drink are the same comparison', response: 'Juice to water compares two parts. Juice to the whole drink compares a part with the total, so the second number is bigger.' },
+    { id: 'additive-ratio', name: 'Adding the same amount to both keeps the ratio', nameEs: 'Sumar lo mismo a ambos mantiene la razón', response: 'Equivalent ratios come from multiplying both amounts by the same factor, not from adding.', responseEs: 'Las razones equivalentes se forman al multiplicar ambas cantidades por el mismo factor, no al sumarlas.' },
+    { id: 'one-quantity', name: 'Changing one amount leaves the recipe the same', nameEs: 'Cambiar una cantidad deja igual la receta', response: 'If only one amount changes, the amount of water for each cup of juice changes.', responseEs: 'Si solo cambia una cantidad, cambia cuánta agua corresponde a cada taza de jugo.' },
+    { id: 'part-whole', name: 'Juice to water and juice to the whole drink are the same comparison', nameEs: 'Jugo a agua y jugo al total son la misma comparación', response: 'Juice to water compares two parts. Juice to the whole drink compares a part with the total, so the second number is bigger.', responseEs: 'Jugo a agua compara dos partes. Jugo al total compara una parte con el total, por eso el segundo número es mayor.' },
   ],
   describe(values) {
     const [a, b] = values;
@@ -91,15 +94,18 @@ const ratioMixer = {
 // ---------------------------------------------------------------------------------------------------------------------
 const percentWhole = {
   key: 'percent:whole',
-  quantities: [{ id: 'percent', name: 'Percent', unit: '%', color: 'a' }, { id: 'part', name: 'Known part', unit: '', color: 'b' }],
+  quantities: [{ id: 'percent', name: 'Percent', nameEs: 'Porcentaje', unit: '%', unitEs: '%', color: 'a' }, { id: 'part', name: 'Known part', nameEs: 'Parte conocida', unit: '', color: 'b' }],
   domain: 'The percent is a whole number from 1 to 100 and the known part is a whole number from 1 to 120.',
+  domainEs: 'El porcentaje es un número entero del 1 al 100 y la parte conocida es un número entero del 1 al 120.',
   invariants: ['The whole times the percent equals the part.'],
+  invariantsEs: ['El total multiplicado por el porcentaje es igual a la parte.'],
   representations: ['model', 'table', 'equation', 'words'],
-  transformations: [{ id: 'verify', label: 'Check a whole you think is right:', question: 'Is that number the whole?', param: { label: 'Whole', min: 0.1, max: 1000, step: 0.1, value: 100 } }],
+  representationsEs: ['modelo', 'tabla', 'ecuación', 'palabras'],
+  transformations: [{ id: 'verify', label: 'Check a whole you think is right:', labelEs: 'Comprueba el total que crees correcto:', question: 'Is that number the whole?', questionEs: '¿Ese número es el total?', param: { label: 'Whole', labelEs: 'Total', min: 0.1, max: 1000, step: 0.1, value: 100 } }],
   misconceptions: [
-    { id: 'percent-of-part', name: 'Finding the percent of the part when you need the whole', response: 'The part is already the percent. Work back to 100% instead of taking the percent of the part.' },
-    { id: 'whole-too-small', name: 'Choosing a whole smaller than the part', response: 'A part that is less than 100% must be smaller than the whole.' },
-    { id: 'percent-is-amount', name: 'Reading the percent as an amount', response: 'The percent names a share of the whole, not a number of items.' },
+    { id: 'percent-of-part', name: 'Finding the percent of the part when you need the whole', nameEs: 'Calcular el porcentaje de la parte cuando necesitas el total', response: 'The part is already the percent. Work back to 100% instead of taking the percent of the part.', responseEs: 'La parte ya representa el porcentaje. Regresa al 100% en vez de calcular el porcentaje de la parte.' },
+    { id: 'whole-too-small', name: 'Choosing a whole smaller than the part', nameEs: 'Elegir un total menor que la parte', response: 'A part that is less than 100% must be smaller than the whole.', responseEs: 'Una parte menor que el 100% debe ser menor que el total.' },
+    { id: 'percent-is-amount', name: 'Reading the percent as an amount', nameEs: 'Interpretar el porcentaje como una cantidad', response: 'The percent names a share of the whole, not a number of items.', responseEs: 'El porcentaje indica una parte del total, no una cantidad de artículos.' },
   ],
   describe(values) {
     const [p, part] = values;
@@ -136,18 +142,21 @@ const percentWhole = {
 // ---------------------------------------------------------------------------------------------------------------------
 const powerOrder = {
   key: 'power:order',
-  quantities: [{ id: 'base', name: 'Base', unit: '', color: 'a' }, { id: 'exponent', name: 'Number of factors', unit: '', color: 'b' }],
+  quantities: [{ id: 'base', name: 'Base', nameEs: 'Base', unit: '', color: 'a' }, { id: 'exponent', name: 'Number of factors', nameEs: 'Número de factores', unit: '', color: 'b' }],
   domain: 'The base is a whole number from 2 to 5 and the exponent is a whole number from 1 to 5.',
+  domainEs: 'La base es un número entero del 2 al 5 y el exponente es un número entero del 1 al 5.',
   invariants: ['An exponent counts how many times the base is used as a factor.'],
+  invariantsEs: ['El exponente cuenta cuántas veces se usa la base como factor.'],
   representations: ['model', 'table', 'equation', 'words'],
+  representationsEs: ['modelo', 'tabla', 'ecuación', 'palabras'],
   transformations: [
-    { id: 'add-factor', label: 'Add one more factor of the base', question: 'Will the value be multiplied by the base?', param: null },
-    { id: 'times', label: 'Treat the exponent as multiplication:', question: 'Will the exponent and the multiplication give the same value?', param: null },
+    { id: 'add-factor', label: 'Add one more factor of the base', labelEs: 'Agrega un factor más de la base', question: 'Will the value be multiplied by the base?', questionEs: '¿El valor se multiplicará por la base?', param: null },
+    { id: 'times', label: 'Treat the exponent as multiplication:', labelEs: 'Interpreta el exponente como una multiplicación:', question: 'Will the exponent and the multiplication give the same value?', questionEs: '¿El exponente y la multiplicación dan el mismo valor?', param: null },
   ],
   misconceptions: [
-    { id: 'exponent-as-multiplier', name: '2³ means 2 × 3', response: 'An exponent tells how many times the base is used as a factor.' },
-    { id: 'base-times-base', name: 'The exponent multiplies the base by itself once', response: 'Count the factors: the exponent says how many copies of the base are multiplied.' },
-    { id: 'power-after-add', name: 'Adding before the power', response: 'Evaluate the power first, then add.' },
+    { id: 'exponent-as-multiplier', name: '2³ means 2 × 3', nameEs: '2³ significa 2 × 3', response: 'An exponent tells how many times the base is used as a factor.', responseEs: 'El exponente indica cuántas veces se usa la base como factor.' },
+    { id: 'base-times-base', name: 'The exponent multiplies the base by itself once', nameEs: 'El exponente multiplica la base por sí misma una vez', response: 'Count the factors: the exponent says how many copies of the base are multiplied.', responseEs: 'Cuenta los factores: el exponente indica cuántas copias de la base se multiplican.' },
+    { id: 'power-after-add', name: 'Adding before the power', nameEs: 'Sumar antes de calcular la potencia', response: 'Evaluate the power first, then add.', responseEs: 'Primero calcula la potencia y después suma.' },
   ],
   describe(values) {
     const [b, e, add = 0] = values;
@@ -180,19 +189,22 @@ const powerOrder = {
 // ---------------------------------------------------------------------------------------------------------------------
 const balanceAdd = {
   key: 'balance:add',
-  quantities: [{ id: 'added', name: 'Amount added to x', unit: '', color: 'a' }, { id: 'total', name: 'Right side', unit: '', color: 'b' }],
+  quantities: [{ id: 'added', name: 'Amount added to x', nameEs: 'Cantidad sumada a x', unit: '', color: 'a' }, { id: 'total', name: 'Right side', nameEs: 'Lado derecho', unit: '', color: 'b' }],
   domain: 'The amount added is a whole number from 1 to 12 and the right side is a whole number from 1 to 60.',
+  domainEs: 'La cantidad sumada es un número entero del 1 al 12 y el lado derecho es un número entero del 1 al 60.',
   invariants: ['Doing the same thing to both sides keeps the same solution.'],
+  invariantsEs: ['Hacer lo mismo a ambos lados conserva la misma solución.'],
   representations: ['model', 'table', 'equation', 'words'],
+  representationsEs: ['modelo', 'tabla', 'ecuación', 'palabras'],
   transformations: [
-    { id: 'both', label: 'Subtract the added amount from both sides', question: 'Will the solution stay the same?', param: null },
-    { id: 'left', label: 'Subtract it from the left side only', question: 'Will the solution stay the same?', param: null },
-    { id: 'add-both', label: 'Add the same amount to both sides', question: 'Will the solution stay the same?', param: null },
+    { id: 'both', label: 'Subtract the added amount from both sides', labelEs: 'Resta la cantidad sumada a ambos lados', question: 'Will the solution stay the same?', questionEs: '¿La solución seguirá siendo la misma?', param: null },
+    { id: 'left', label: 'Subtract it from the left side only', labelEs: 'Réstala solo del lado izquierdo', question: 'Will the solution stay the same?', questionEs: '¿La solución seguirá siendo la misma?', param: null },
+    { id: 'add-both', label: 'Add the same amount to both sides', labelEs: 'Suma la misma cantidad a ambos lados', question: 'Will the solution stay the same?', questionEs: '¿La solución seguirá siendo la misma?', param: null },
   ],
   misconceptions: [
-    { id: 'one-sided', name: 'Changing only one side', response: 'A balance stays level only when both sides change by the same amount.' },
-    { id: 'wrong-inverse', name: 'Adding when you should undo an addition', response: 'To undo adding a number, subtract it.' },
-    { id: 'skip-check', name: 'Not checking by substituting', response: 'Put your value of x back into the original equation to see if it balances.' },
+    { id: 'one-sided', name: 'Changing only one side', nameEs: 'Cambiar solo un lado', response: 'A balance stays level only when both sides change by the same amount.', responseEs: 'El equilibrio se conserva solo cuando ambos lados cambian en la misma cantidad.' },
+    { id: 'wrong-inverse', name: 'Adding when you should undo an addition', nameEs: 'Sumar cuando debes deshacer una suma', response: 'To undo adding a number, subtract it.', responseEs: 'Para deshacer una suma, resta ese número.' },
+    { id: 'skip-check', name: 'Not checking by substituting', nameEs: 'No comprobar sustituyendo', response: 'Put your value of x back into the original equation to see if it balances.', responseEs: 'Sustituye tu valor de x en la ecuación original para comprobar si queda equilibrada.' },
   ],
   describe(values) {
     const [a, rhs] = values;
@@ -222,18 +234,21 @@ const balanceAdd = {
 // ---------------------------------------------------------------------------------------------------------------------
 const areaTriangle = {
   key: 'area:triangle',
-  quantities: [{ id: 'base', name: 'Base', unit: 'units', color: 'a' }, { id: 'height', name: 'Perpendicular height', unit: 'units', color: 'b' }],
+  quantities: [{ id: 'base', name: 'Base', nameEs: 'Base', unit: 'units', unitEs: 'unidades', color: 'a' }, { id: 'height', name: 'Perpendicular height', nameEs: 'Altura perpendicular', unit: 'units', unitEs: 'unidades', color: 'b' }],
   domain: 'The base and the perpendicular height are whole numbers from 1 to 12.',
+  domainEs: 'La base y la altura perpendicular son números enteros del 1 al 12.',
   invariants: ['Two copies of a triangle make a parallelogram with the same base and height, so the triangle is half of base × height.'],
+  invariantsEs: ['Dos copias de un triángulo forman un paralelogramo con la misma base y altura, así que el triángulo equivale a la mitad de base × altura.'],
   representations: ['model', 'table', 'equation', 'words'],
+  representationsEs: ['modelo', 'tabla', 'ecuación', 'palabras'],
   transformations: [
-    { id: 'slide', label: 'Slide the top point sideways by', question: 'Will the area stay the same?', param: { label: 'Units', min: 1, max: 12, value: 3 } },
-    { id: 'slant', label: 'Use a slanted side of this length as the height:', question: 'Will the slanted side give the same area as the height?', param: { label: 'Length', min: 1, max: 20, value: 5 } },
+    { id: 'slide', label: 'Slide the top point sideways by', labelEs: 'Desliza el punto superior hacia un lado', question: 'Will the area stay the same?', questionEs: '¿El área seguirá siendo la misma?', param: { label: 'Units', labelEs: 'Unidades', min: 1, max: 12, value: 3 } },
+    { id: 'slant', label: 'Use a slanted side of this length as the height:', labelEs: 'Usa como altura un lado inclinado de esta longitud:', question: 'Will the slanted side give the same area as the height?', questionEs: '¿El lado inclinado dará la misma área que la altura?', param: { label: 'Length', labelEs: 'Longitud', min: 1, max: 20, value: 5 } },
   ],
   misconceptions: [
-    { id: 'slant-as-height', name: 'Using the slanted side as the height', response: 'The height is the perpendicular distance from the base to the top, not the slanted side.' },
-    { id: 'forget-half', name: 'Forgetting the one half for a triangle', response: 'A triangle is half of a parallelogram with the same base and height.' },
-    { id: 'shear-changes-area', name: 'Thinking sliding the top changes the area', response: 'Sliding the top point parallel to the base keeps the base and the height, so the area stays the same.' },
+    { id: 'slant-as-height', name: 'Using the slanted side as the height', nameEs: 'Usar el lado inclinado como altura', response: 'The height is the perpendicular distance from the base to the top, not the slanted side.', responseEs: 'La altura es la distancia perpendicular desde la base hasta la parte superior, no el lado inclinado.' },
+    { id: 'forget-half', name: 'Forgetting the one half for a triangle', nameEs: 'Olvidar la mitad en el área del triángulo', response: 'A triangle is half of a parallelogram with the same base and height.', responseEs: 'Un triángulo equivale a la mitad de un paralelogramo con la misma base y altura.' },
+    { id: 'shear-changes-area', name: 'Thinking sliding the top changes the area', nameEs: 'Pensar que deslizar la parte superior cambia el área', response: 'Sliding the top point parallel to the base keeps the base and the height, so the area stays the same.', responseEs: 'Deslizar el punto superior en paralelo a la base conserva la base y la altura, así que el área no cambia.' },
   ],
   describe(values) {
     const [b, h] = values;

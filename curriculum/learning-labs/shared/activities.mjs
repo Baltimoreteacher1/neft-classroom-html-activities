@@ -2,9 +2,10 @@
 import { bridgeFor } from './bridge-math.mjs';
 import { mountBridge } from './bridge.mjs';
 import { mountRecorder } from './recorder.mjs';
+import { esLabel } from './labels-es.mjs';
+import { WORDS_ES, judge } from './predict.mjs';
 import { esc, guidance, mountModel } from './model.mjs';
 import { makeChallenges, reached } from './challenge.mjs';
-import { judge } from './predict.mjs';
 import { toPng } from './snapshot.mjs';
 import { play } from './sound.mjs';
 import { mountWatch } from './watch.mjs';
@@ -175,10 +176,11 @@ export function investigate(ctx, host) {
     if (!pending || pending.base === undefined) return;
     clearTimeout(settle);
     settle = setTimeout(() => {
-      const verdict = judge(pending.choice, pending.base, result.value, result.label);
+      const labelEs = esLabel(result.label) || result.label;
+      const verdict = judge(pending.choice, pending.base, result.value, result.label, labelEs);
       if (verdict.actual === 'same' && pending.choice !== 'same') return; // nothing moved yet: keep waiting
       state.predict.total++; if (verdict.ok) state.predict.right++;
-      recorder.add({ source: 'predict', prediction: { text: `${label()} would go ${pending.choice === 'same' ? 'stay the same' : pending.choice}`, ok: verdict.ok }, change: { text: 'Changed the model', before: pending.baseValues, after: latest.values }, observed: { text: verdict.message, ok: verdict.ok }, relation: result.equation });
+      recorder.add({ source: 'predict', prediction: { text: `${label()} would go ${pending.choice === 'same' ? 'stay the same' : pending.choice}`, textEs: `${labelEs} ${WORDS_ES[pending.choice]}`, ok: verdict.ok }, change: { text: 'Changed the model', textEs: 'Cambió el modelo', before: pending.baseValues, after: latest.values }, observed: { text: verdict.message, textEs: verdict.messageEs, ok: verdict.ok }, relation: result.equation, relationEs: result.equation });
       pending = null; save(); if (verdict.ok) play('star'); drawPredict(verdict.message, verdict.ok);
     }, 700);
   };
@@ -186,7 +188,7 @@ export function investigate(ctx, host) {
   const invModelHost = host.querySelector('#investigation-model');
   const recorderHost = document.createElement('div');
   host.querySelector('.studio-how').after(recorderHost);
-  const recorder = mountRecorder(recorderHost, { state, save, restore: (v) => invModel.set(full(v)) });
+  const recorder = mountRecorder(recorderHost, { state, save, restore: (v) => invModel.set(full(v)), lang: () => state.lang });
   const bridge = bridgeFor(lab.model);
   // A bridge or a saved experiment may carry only the quantities it names; the rest of the model keeps its current setting.
   const full = (v) => [...v, ...invModel.values.slice(v.length)];
@@ -208,7 +210,7 @@ export function investigate(ctx, host) {
     lens: true,
     lang: () => state.lang,
   });
-  if (bridge) bridgeCtl = mountBridge(host.querySelector('.studio-stage'), { bridge, getValues: () => invModel.values, apply: (v) => invModel.set(full(v)), record: (e) => recorder.add(e) });
+  if (bridge) bridgeCtl = mountBridge(host.querySelector('.studio-stage'), { bridge, getValues: () => invModel.values, apply: (v) => invModel.set(full(v)), record: (e) => recorder.add(e), lang: () => state.lang });
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);
