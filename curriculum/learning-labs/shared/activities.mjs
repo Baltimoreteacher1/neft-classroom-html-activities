@@ -1,4 +1,7 @@
 // Learn, Investigate, Practice, and Create activities. Each receives the shared lab context.
+import { bridgeFor } from './bridge-math.mjs';
+import { mountBridge } from './bridge.mjs';
+import { mountRecorder } from './recorder.mjs';
 import { esc, guidance, mountModel } from './model.mjs';
 import { makeChallenges, reached } from './challenge.mjs';
 import { judge } from './predict.mjs';
@@ -164,7 +167,7 @@ export function investigate(ctx, host) {
     bar.innerHTML = `<h3 id="predict-title">Predict first</h3><p>After your next change, will <strong>${esc(label())}</strong> go up, go down, or stay the same?</p>
       <div class="predict-choices" role="group" aria-label="Your prediction">${[['up', 'Go up ▲'], ['down', 'Go down ▼'], ['same', 'Stay the same ＝']].map(([v, t]) => `<button type="button" data-predict="${v}" aria-pressed="${pending?.choice === v}">${t}</button>`).join('')}</div>
       <p class="predict-result" role="status" aria-live="polite"${ok === null ? '' : ` data-ok="${ok}"`}>${esc(message || (pending ? 'Now change the model. I will check your prediction when you stop.' : ''))}</p><p class="predict-score">${esc(score)}</p>`;
-    bar.querySelectorAll('[data-predict]').forEach((b) => b.addEventListener('click', () => { pending = { choice: b.dataset.predict, base: latest?.result.value }; drawPredict(); }));
+    bar.querySelectorAll('[data-predict]').forEach((b) => b.addEventListener('click', () => { pending = { choice: b.dataset.predict, base: latest?.result.value, baseValues: latest?.values || [] }; drawPredict(); }));
   };
   let pending = null, settle = 0;
   host.querySelector('.studio-side').append(bar);
@@ -175,16 +178,25 @@ export function investigate(ctx, host) {
       const verdict = judge(pending.choice, pending.base, result.value, result.label);
       if (verdict.actual === 'same' && pending.choice !== 'same') return; // nothing moved yet: keep waiting
       state.predict.total++; if (verdict.ok) state.predict.right++;
+      recorder.add({ source: 'predict', prediction: { text: `${label()} would go ${pending.choice === 'same' ? 'stay the same' : pending.choice}`, ok: verdict.ok }, change: { text: 'Changed the model', before: pending.baseValues, after: latest.values }, observed: { text: verdict.message, ok: verdict.ok }, relation: result.equation });
       pending = null; save(); if (verdict.ok) play('star'); drawPredict(verdict.message, verdict.ok);
     }, 700);
   };
   drawPredict();
   const invModelHost = host.querySelector('#investigation-model');
-  mountModel(invModelHost, lab.model, {
+  const recorderHost = document.createElement('div');
+  host.querySelector('.studio-how').after(recorderHost);
+  const recorder = mountRecorder(recorderHost, { state, save, restore: (v) => invModel.set(full(v)) });
+  const bridge = bridgeFor(lab.model);
+  // A bridge or a saved experiment may carry only the quantities it names; the rest of the model keeps its current setting.
+  const full = (v) => [...v, ...invModel.values.slice(v.length)];
+  let bridgeCtl = null;
+  const invModel = mountModel(invModelHost, lab.model, {
     initial: state.models.investigate || lab.model.values,
     onChange: (values, result) => {
       const first = !latest;
       latest = { values, result };
+      bridgeCtl?.update();
       state.models.investigate = values;
       VisualLogicRewind.record(state, values, result.equation);
       save();
@@ -196,6 +208,7 @@ export function investigate(ctx, host) {
     lens: true,
     lang: () => state.lang,
   });
+  if (bridge) bridgeCtl = mountBridge(host.querySelector('.studio-stage'), { bridge, getValues: () => invModel.values, apply: (v) => invModel.set(full(v)), record: (e) => recorder.add(e) });
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);

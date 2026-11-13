@@ -129,3 +129,95 @@
   .studio-side { order: 2; }
 }
 @media (prefers-reduced-motion: reduce) { .studio * { animation: none !important; transition: none !important; } }
+
+/* Touch targets: everything the lab itself draws is at least 44px; checkboxes get a 44px label around a 24px box. */
+#lab-root button, #lab-root summary, #lab-root select, #lab-root .lesson-chip { min-height: 44px; }
+#lab-root button { min-width: 44px; }
+#lab-root .check-item { align-items: center; min-height: 44px; margin: 4px 0; }
+#lab-root input[type="checkbox"], #lab-root input[type="radio"] { width: 24px; height: 24px; flex: none; }
+
+/* Phones: the picture and its controls come first; the guidance is one short line under the question. */
+@media (max-width: 600px) {
+  .page-shell[data-stage="investigate"] .studio-eyebrow { display: none; }
+  .page-shell[data-stage="investigate"] .studio-question { font-size: 1.1rem; margin-bottom: 2px; }
+  .page-shell[data-stage="investigate"] .studio-try { font-size: .92rem; }
+  .page-shell[data-stage="investigate"] .studio-ask { margin-bottom: 8px; }
+  .page-shell[data-stage="investigate"] .studio-stage { padding: 6px; }
+  .page-shell[data-stage="investigate"] .studio-stage .model-picture { min-height: 170px; padding: 4px; }
+  .page-shell[data-stage="investigate"] .tabs { gap: 4px; padding: 4px; }
+  .page-shell[data-stage="investigate"] .tabs button { padding: 4px 6px; min-height: 44px; }
+  .page-shell[data-stage="investigate"] .tab-step { display: none; }
+  .page-shell[data-stage="investigate"] .save-tools { margin-inline-start: 0; width: 100%; }
+  .page-shell[data-stage="investigate"] .save-tools button { flex: 1; padding-inline: 6px; }
+}
+
+/* Phones on a working stage: the course navigation keeps its links but drops its brand block, so the model starts higher. */
+@media (max-width: 600px) {
+  html[data-lab-stage="investigate"] .ewl-course-brand,
+  html[data-lab-stage="practice"] .ewl-course-brand,
+  html[data-lab-stage="create"] .ewl-course-brand,
+  html[data-lab-stage="games"] .ewl-course-brand { display: none; }
+  html[data-lab-stage="investigate"] .ewl-course-nav__inner,
+  html[data-lab-stage="practice"] .ewl-course-nav__inner,
+  html[data-lab-stage="create"] .ewl-course-nav__inner,
+  html[data-lab-stage="games"] .ewl-course-nav__inner { padding: 2px 8px; gap: 0; }
+}
+@media (max-width: 600px) {
+  .page-shell[data-stage="investigate"] .model-controls .direct-hint { grid-column: 1 / -1; margin: 0; font-size: .85rem; }
+  .page-shell[data-stage="investigate"] .model-controls { padding: 8px; gap: 8px; }
+}
+
+/* Data labs: the dot plot and its values sit side by side on wide screens so the first value is on the first screen. */
+@media (min-width: 901px) {
+  .studio-stage .model-workspace[data-kind="data"] { grid-template-columns: minmax(0, 1.6fr) minmax(230px, 1fr); }
+  .studio-stage .model-workspace[data-kind="data"] .model-picture { align-items: start; place-items: start center; }
+  .studio-stage .model-workspace[data-kind="data"] .model-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 8px; }
+  .studio-stage .model-workspace[data-kind="data"] .model-controls .direct-hint { grid-column: 1 / -1; }
+}
+
+/* Representation Bridge: four synchronized panels under the model. A quantity keeps its colour AND its column name. */
+.bridge-card { margin: 12px 0 0; padding: 12px; border: 1px solid var(--studio-edge); border-radius: var(--studio-radius); background: var(--studio-surface); }
+.bridge-card h3 { margin: 0 0 2px; font-size: 1.1rem; }
+.bridge-card h4 { margin: 0 0 6px; font-size: .98rem; }
+.bridge-lede { margin: 0 0 8px; font-size: .92rem; }
+.bridge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.bridge-panel { padding: 8px 10px; border: 1px solid var(--studio-edge); border-radius: 10px; min-width: 0; }
+.bridge-scroll { overflow-x: auto; }
+.bridge-panel table, .bridge-compare, .rec-compare table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+.bridge-panel th, .bridge-panel td, .bridge-compare th, .bridge-compare td, .rec-compare th, .rec-compare td { padding: 4px 8px; text-align: left; border-bottom: 1px solid var(--studio-edge); }
+.bq-a { border-top: 4px solid var(--studio-quantity-a); }
+.bq-b { border-top: 4px solid var(--studio-quantity-b); }
+td.bq-a, td.bq-b, th[scope="row"].bq-a, th[scope="row"].bq-b { border-top: 0; border-left: 4px solid var(--studio-quantity-a); }
+td.bq-b { border-left-color: var(--studio-quantity-b); }
+.bridge-eq { margin: 0 0 4px; font-size: 1.05rem; font-weight: 700; overflow-wrap: anywhere; }
+.bridge-note { margin: 4px 0 0; font-size: .92rem; }
+.bridge-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; border: 2px solid currentColor; }
+[data-holds="true"] .bridge-badge, .bridge-verdict[data-ok="true"] .bridge-badge { color: var(--studio-correct); }
+[data-holds="false"] .bridge-badge, .bridge-verdict[data-ok="false"] .bridge-badge { color: var(--studio-misconception); }
+.bridge-test { margin-top: 10px; }
+.bridge-ideas { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.bridge-idea { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bridge-idea label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex: 1 1 260px; }
+.bridge-idea input[type="number"] { width: 5.5em; min-height: 44px; font-size: 1.05rem; }
+.bridge-stage { margin-top: 8px; padding: 8px 10px; border-radius: 10px; outline-offset: 2px; }
+.bridge-stage:not(:empty) { border: 2px solid var(--studio-predict); }
+.bridge-choices, .bridge-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.bridge-miscon { padding: 6px 10px; border-left: 6px solid var(--studio-misconception); background: color-mix(in srgb, var(--studio-misconception) 8%, transparent); }
+.bridge-error { color: var(--studio-misconception); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 700px) { .bridge-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Experiment Recorder */
+.recorder .rec-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.rec-item { padding: 8px 10px; border: 1px solid var(--studio-edge); border-radius: 10px; }
+.rec-item p { margin: 2px 0; }
+.rec-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rec-badge { font-weight: 700; font-size: .9rem; }
+.rec-badge[data-ok="true"] { color: var(--studio-correct); }
+.rec-badge[data-ok="false"] { color: var(--studio-misconception); }
+.rec-pick { display: flex; align-items: center; gap: 6px; min-height: 44px; }
+.rec-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.rec-compare { margin-top: 10px; padding: 8px 10px; border: 2px solid var(--studio-active); border-radius: 10px; }
+@media print { .bridge-test, .recorder .rec-actions, .rec-pick { display: none; } }
+
+.bridge-key { margin: 2px 0; font-size: 1.25rem; text-align: start; }

@@ -256,7 +256,11 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     values = [...initial]; valid = true; lensView?.reset(); host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; }); host.querySelector('.model-error').textContent = ''; update();
   });
   update();
-  return { get values() { return [...values]; }, get valid() { return valid; }, result: () => evaluate(model, values, { symbol, shape }) };
+  return {
+    get values() { return [...values]; }, get valid() { return valid; }, result: () => evaluate(model, values, { symbol, shape }),
+    /** Put the model at these values (the Bridge and the Experiment Recorder restore settings this way). */
+    set(next) { values = [...next]; valid = true; host.querySelectorAll('[data-control]').forEach((el) => { el.value = values[Number(el.dataset.control)]; }); host.querySelector('.model-error').textContent = ''; update(); },
+  };
 }
 
 // Student-facing orientation for each live model: what the picture shows and what to watch.

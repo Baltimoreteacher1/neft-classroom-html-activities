@@ -73,10 +73,25 @@ const measure = () => {
   const rect = (el) => (el ? el.getBoundingClientRect() : null);
   const mr = rect(model);
   const cr = rect(control);
-  const touch = [...panel.querySelectorAll("button, input, select, a[href]")]
-    .filter((el) => el.offsetParent && el.getBoundingClientRect().height)
-    .map((el) => el.getBoundingClientRect())
-    .filter((r) => r.width < 44 || r.height < 44).length;
+  // Targets the lab draws itself (the curriculum shell's own EN/ES and hub pills are reported separately); a checkbox counts
+  // through its label.
+  const small = (el) => {
+    const box =
+      el.closest("label") && el.matches("input[type=checkbox],input[type=radio]")
+        ? el.closest("label")
+        : el;
+    const r = box.getBoundingClientRect();
+    return r.width < 44 || r.height < 44;
+  };
+  const targets = [
+    ...document.querySelectorAll(
+      "#lab-root button, #lab-root input, #lab-root select, #lab-root a[href], #lab-root summary",
+    ),
+  ].filter(
+    (el) =>
+      el.offsetParent && el.getBoundingClientRect().height && !el.matches("input[type=hidden]"),
+  );
+  const touch = targets.filter(small).length;
   return {
     hasModel: !!model,
     modelTop: mr ? Math.round(mr.top + scrollY) : null,

@@ -9,6 +9,7 @@ import { worldArt } from './expedition.mjs';
 import { expeditionWorlds } from './expedition-worlds.mjs';
 import { mountScratchpad, renderSnapshotsCard } from './scratchpad.mjs';
 import { mountTeacherRadarHUD, syncUnifiedStorage } from './nextgen.mjs';
+import { reportLines } from './recorder.mjs';
 
 const root = document.getElementById('lab-root');
 let lab, state, storeKey, memoryOnly = false, bridge = null, celebrator = null, scratchpadCtrl = null;
@@ -34,6 +35,7 @@ const fresh = () => ({
   byteBot: null,
   smallGroup: null,
   rewindHistory: [],
+  experiments: { v: 1, items: [] },
 });
 
 function save() {
@@ -197,6 +199,7 @@ function showTab(id, nav = 'push') {
   if (!tabs.some((t) => t[0] === id)) id = 'brief';
   state.tab = id;
   root.querySelector('.page-shell').dataset.stage = id;
+  document.documentElement.dataset.labStage = id;
   if (location.hash !== `#${id}` && nav !== 'none') history[nav === 'replace' ? 'replaceState' : 'pushState'](null, '', `#${id}`);
   root.querySelectorAll('[role="tabpanel"]').forEach((panel) => { panel.hidden = panel.id !== `panel-${id}`; });
   root.querySelectorAll('[data-tab]').forEach((button) => { const selected = button.dataset.tab === id; button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1; });
@@ -230,6 +233,7 @@ function reportText() {
   const labels = noteLabels(lab), o = overview(lab, state);
   const lines = [lab.title, `Unit ${lab.unit} · Lessons: ${lab.lessons.map((l) => lessonNumber(l.id)).join(', ')}`, `Level: ${levels[state.level].label}`, `Progress: ${o.done} of ${o.total} activities complete`, `Mastery streak: ${state.streak || 0}`, ...o.items.map((i) => `  ${i.title}: ${i.summary}`), '', 'MY CREATION', state.created || '(No creation recorded)', '', 'NOTES'];
   for (const [key, value] of Object.entries(state.notes)) if (value) lines.push(labels[key] || key, value, '');
+  lines.push(...reportLines(state));
   lines.push('PRACTICE RESPONSES');
   for (const [id, response] of Object.entries(state.practice)) if (String(response.input).trim()) {
     const q = Object.values(lab.practice).flat().find((item) => item.id === id);
