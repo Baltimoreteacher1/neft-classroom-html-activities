@@ -18,9 +18,32 @@ const btn = (id, cls, action, icon, en, es, extra = "") => `
 
 export function renderStudioButtons() {
   return (
-    btn("hw_understand_btn", "hw-studio-understand", act("openFamilyStudio", "understand"), "📖", "Understand", "Entender", ' aria-haspopup="dialog"') +
-    btn("hw_practice_btn", "hw-studio-practice", act("hwStudioPractice"), "✏️", "Practice", "Practicar") +
-    btn("hw_tab_play", "hw-studio-play", act("openFamilyStudio", "play"), "🎲", "Play", "Jugar", ' data-tab="play" aria-controls="hw_panel_play" aria-haspopup="dialog"')
+    btn(
+      "hw_understand_btn",
+      "hw-studio-understand",
+      act("openFamilyStudio", "understand"),
+      "📖",
+      "Understand",
+      "Entender",
+      ' aria-haspopup="dialog"',
+    ) +
+    btn(
+      "hw_practice_btn",
+      "hw-studio-practice",
+      act("hwStudioPractice"),
+      "✏️",
+      "Practice",
+      "Practicar",
+    ) +
+    btn(
+      "hw_tab_play",
+      "hw-studio-play",
+      act("openFamilyStudio", "play"),
+      "🎲",
+      "Play",
+      "Jugar",
+      ' data-tab="play" aria-controls="hw_panel_play" aria-haspopup="dialog"',
+    )
   );
 }
 
