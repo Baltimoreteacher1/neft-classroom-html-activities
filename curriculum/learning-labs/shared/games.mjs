@@ -1,5 +1,6 @@
 import { mountExpedition } from './expedition.mjs?v=20261007';
 import { esc } from './model.mjs';
+import { mountUnit2, unit2Challenge } from './unit2.mjs';
 
 function shuffled(items, seed) {
   const out = [...items]; let x = seed || 17;
@@ -12,7 +13,8 @@ export function mountGames(host, lab, state, save, level) {
   const progress = state.games[level];
   progress.checks ||= 0; progress.hints ||= 0; progress.solutions ||= []; progress.shuffle ||= 0;
   const tier = ['support', 'core', 'stretch'].indexOf(level);
-  host.innerHTML = `<div class="game-menu"><button type="button" data-game="mission" aria-pressed="true">${esc(lab.finale)}</button><button type="button" data-game="match" aria-pressed="false">Connection Quest</button></div><div class="game-stage"></div>`;
+  const unit2 = unit2Challenge(lab);
+  host.innerHTML = `<div class="game-menu"><button type="button" data-game="mission" aria-pressed="true">${esc(lab.finale)}</button>${unit2 ? '<button type="button" data-game="unit2" aria-pressed="false">Math Mission</button>' : ''}<button type="button" data-game="match" aria-pressed="false">Connection Quest</button></div><div class="game-stage"></div>`;
   let active = 'mission';
   const stage = host.querySelector('.game-stage');
   const mission = () => mountExpedition(stage, lab, progress, save, level, choose);
@@ -68,7 +70,7 @@ export function mountGames(host, lab, state, save, level) {
   function choose(game) {
     active = game;
     host.querySelectorAll('[data-game]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.game === game)));
-    if (game === 'mission') mission(); else match();
+    if (game === 'mission') mission(); else if (game === 'unit2') mountUnit2(stage, lab, state, save, true); else match();
   }
   host.querySelectorAll('[data-game]').forEach(button => button.onclick = () => choose(button.dataset.game));
   choose(active);

@@ -22,6 +22,7 @@ import {
   VisualLogicRewind,
 } from './nextgen.mjs';
 import { renderSnapshotsCard } from './scratchpad.mjs';
+import { mountUnit2 } from './unit2.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
 /** Taught-unit explanations use lesson fields verbatim; no example numbers are introduced here. */
@@ -248,6 +249,7 @@ export function investigate(ctx, host) {
     lang: () => state.lang,
   });
   if (bridge) bridgeCtl = mountBridge(host.querySelector('.studio-stage'), { bridge, getValues: () => invModel.values, apply: (v) => invModel.set(full(v)), record: (e) => recorder.add(e), lang: () => state.lang });
+  if (lab.unit === 2) { const slot = document.createElement('div'); host.querySelector('.studio-stage').append(slot); mountUnit2(slot, lab, state, save); }
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);

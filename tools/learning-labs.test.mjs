@@ -20,6 +20,7 @@ import {
   parseKeyIdea,
   progressStage,
 } from "../curriculum/learning-labs/shared/progress.mjs";
+import { checkUnit2, unit2Challenge } from "../curriculum/learning-labs/shared/unit2.mjs";
 
 const progressBase = {
   version: 1,
@@ -120,6 +121,29 @@ import {
 } from "./lib/curriculum-source.mjs";
 
 const catalogue = JSON.parse(readFileSync(join(REPO_ROOT, "data/learning-labs.json")));
+const unit2Expected = {
+  "data-newsroom": "15",
+  "middle-ground": "8",
+  "consistency-cup": "19.5",
+  "delivery-dispatch": "12",
+  "fair-share-festival": "9,4",
+  "outlier-investigation": "mean",
+  "decimal-design-shop": "16.50",
+};
+for (const [id, answer] of Object.entries(unit2Expected)) {
+  const lab = JSON.parse(
+    readFileSync(join(REPO_ROOT, "curriculum/learning-labs", id, "content.json")),
+  );
+  const challenge = unit2Challenge(lab);
+  assert.equal(challenge.answer, answer, `${id}: math comes from the lab model`);
+  assert.ok(
+    challenge.titleEs && challenge.promptEs,
+    `${id}: Spanish labels accompany the challenge`,
+  );
+  assert.equal(checkUnit2(challenge, answer), true);
+  assert.equal(checkUnit2(challenge, "wrong"), false);
+  if (id === "consistency-cup") assert.equal(checkUnit2(challenge, "19,5"), true);
+}
 const arcLabs = catalogue.labs.filter((lab) => lab.unit >= 2 && lab.unit <= 9).map((lab) => lab.id);
 assert.equal(arcLabs.length, 40, "Worked explanation rollout covers the taught units only");
 for (const lab of catalogue.labs.filter((entry) => entry.unit === 1 || entry.unit === 10)) {

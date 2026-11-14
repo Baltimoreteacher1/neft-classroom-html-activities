@@ -4,6 +4,15 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Results
 
+### Unit 2 math centerpieces and missions
+
+- **Before → after:** 0 → 7 labs have a source-data math challenge in Investigate and a Math Mission in Games. The challenges cover histogram intervals, median, IQR, equal shipments, mean and MAD, outlier effects, and exact decimal receipts. Saved completions add `state.unit2` to version 1 saves.
+- `npm run validate:learning-labs`: PASS, including seven source-based correct and incorrect answer checks and Spanish text checks.
+- `npm run validate:game-rules`: PASS, 486 game files and 15 self-tests; the new Math Mission gives a retry prompt without printing the worked answer on a miss.
+- `QA_TIMEOUT_MS=1800000 npm run validate:learning-labs-browser`: PASS, 46-lab sweep and chained 21-lab Bridge suite. The sweep checked the new Unit 2 challenges in Investigate and Games for correct answers, retry feedback and continued access to the existing expedition game.
+- `npx biome check` on seven changed JavaScript files and `git diff --check`: PASS.
+- Spanish text has not received native-speaker review.
+
 ### Worked explanation rollout (Units 2–9)
 
 - **Before → after:** 5 → 40 labs use the source-backed Learn sequence. Six Unit 1/10 labs retain their existing Learn stage, following the content-scope rule.
@@ -48,7 +57,7 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Known gaps and unresolved limitations
 
-1. **Not delivered from the directive:** per-lab content centerpieces for 41 of 46 labs; redesigned game mechanics; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
+1. **Not delivered from the directive:** per-lab content centerpieces and math missions for the 33 taught labs in Units 3–9; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
 2. **Bridge covers 21 of 46 labs** across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models.
 3. **Spanish text** is present for all 21 Bridges and the Recorder and is checked by the Bridge test and browser verifier. No native Spanish review has occurred; the translations need review by a fluent speaker.
 4. **Phone:** the first control remains below the first screen in five data labs: Data Newsroom, Middle Ground, Consistency Cup, Fair Share Festival and Outlier Investigation. The full-width plot is retained on those labs.
