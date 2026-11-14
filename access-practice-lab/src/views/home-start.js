@@ -1,18 +1,17 @@
-// The top of the lab home: one screen that answers "where do I start?" for each audience.
-//   Students: the grade ruler, the language choice, a Continue card built from what this device has saved, and the
-//   four skills one tap away. Teachers and families: one door each, to their own section further down.
-// Cards outside these panels come from home-registry.js.
+// The top of the lab home: one screen that answers "where do I start?".
+//   One primary action (Continue unfinished work, or Start today's mission), an "I am a… Student / Teacher / Family"
+//   switch, and the grade ruler. The language choice lives once, in the header. The four skills and everything else
+//   sit below in "More ways to practice" (home.js); cards outside these panels come from home-registry.js.
 import { GRADE_PICKS, bandName, pickerState, resolvePick } from "../grade-bands.js";
 import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
 import { gradeFocusHTML } from "../grade-focus-ui.js";
-import { langSwitchHTML } from "../i18n.js";
 import { MISSIONS, stepInfo } from "../journey/curriculum.js";
 import { ctaLabel, headline } from "../journey/ui/pages-hero.js";
 import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
 import { loadIntro } from "../intro/state.js";
-import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon } from "../util.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 
 const SKILL_ES = {
   Listening: "Escuchar",
@@ -201,68 +200,91 @@ function skillsHTML(I, band, domains, tierFor) {
   </ul>`;
 }
 
-function continueHTML(I, target, band) {
-  const fresh = target.kind === "start";
-  return html`<section
-    class="lph-continue"
-    aria-labelledby="lphContinueTitle"
-    data-continue-kind="${target.kind}"
-  >
-    <p class="lph-label">
-      ${fresh ? I.T("Start learning", "Empezar a aprender") : I.T("Continue learning", "Continuar aprendiendo")}
-    </p>
-    <h2 id="lphContinueTitle">${target.title}</h2>
-    <p class="lph-why">${target.why}</p>
-    <a class="btn btn-primary btn-big lph-go" data-continue href="${target.href}"
-      >${target.cta}${icon("arrow-right")}</a
-    >
-    ${target.minutes ? html`<p class="fine lph-time">${I.T(`About ${target.minutes} minutes · no timer`, `Unos ${target.minutes} minutos · sin cronómetro`)}</p>` : ""}
-    <div class="lph-primary-options" aria-label="${I.S("Other ways to start", "Otras formas de empezar")}">
-      <a href="#start-learning">${I.T("Start by skill", "Empezar por destreza")}</a>
-      <a href="${BASE}/library?grades=${band}">${I.T("Explore activities", "Explorar actividades")}</a>
-    </div>
-  </section>`;
+/** The four skills, one tap each. Rendered in "More ways to practice" (home.js) under #start-learning. */
+export function skillPickHTML(I, band, domains, tierFor) {
+  return html`<div class="lph-pick" id="start-learning">
+    <h2 class="lph-label" id="lphSkillsTitle">${I.T("Choose a skill to begin", "Elige una destreza para empezar")}</h2>
+    ${skillsHTML(I, band, domains, tierFor)}
+  </div>`;
 }
 
-/** The two Start Here cards at the very top of the home: one for teachers, one for families (both bilingual). */
-function startCardHTML(I, { id, ic, who, text, cta, href, more }) {
-  return html`<section class="lph-start is-${id}" aria-labelledby="lphStart-${id}">
-    <span class="lph-start-ic" aria-hidden="true">${icon(ic)}</span>
-    <div>
-      <h2 id="lphStart-${id}">${who}</h2>
-      <p>${text}</p>
-    </div>
-    <a class="btn btn-primary btn-big" href="${href}">${cta}${icon("arrow-right")}</a>
-    <a class="lph-start-more" href="${more.href}">${more.label}</a>
-  </section>`;
+/** The 5 / 10 / 15-minute mission buttons. `primary` makes the 10-minute one the page's main action. */
+function missionButtonsHTML(I, missions, { primary, resume }) {
+  const label = resume
+    ? I.T("Start a new session", "Empezar una sesión nueva")
+    : I.T("Start today’s mission", "Empezar la misión de hoy");
+  const btn = (m) => {
+    const main = primary && m.minutes === 10;
+    const minutes = I.L("common.minutes", { n: m.minutes });
+    return html`<button
+      type="button"
+      class="${main ? "btn btn-primary btn-big lph-go" : "lph-chip"}"
+      ${main ? raw("data-continue") : ""}
+      data-start-mission="${m.minutes}"
+      data-session-ids="${m.ids.join(",")}"
+      data-session-review-ids="${m.reviewIds.join(",")}"
+    >
+      ${main ? html`${label} · ${minutes}` : html`<span class="visually-hidden">${label} · </span>${minutes}`}
+    </button>`;
+  };
+  const main = primary ? missions.find((m) => m.minutes === 10) : null;
+  const chips = missions.filter((m) => m !== main).sort((a, b) => a.minutes - b.minutes);
+  return html`${main ? btn(main) : ""}
+    <div class="lph-chips" role="group" aria-labelledby="lphChipsLabel">
+      <span class="lph-chips-label" id="lphChipsLabel"
+        >${primary ? I.T("Or choose a length:", "O elige la duración:") : resume ? I.T("Or start a new session:", "O empieza una sesión nueva:") : I.T("Or start today’s mission:", "O empieza la misión de hoy:")}</span
+      >${chips.map(btn)}
+    </div>`;
 }
 
 /**
- * The teacher card follows the tour on this device: start it, continue where it stopped, or take it again. It never
- * opens by itself.
+ * The one primary action. Unfinished work (a session, a mission, the journey, a saved lesson, the last skill room)
+ * means "Continue"; otherwise "Start today’s mission" (10 minutes) with 5 and 15 as small chips. With no mission
+ * possible (nothing matches the plan), the Continue target's first step is the action.
  */
-function teacherCard(I, band) {
-  const tour = loadIntro().guided || {};
-  const going = tour.part > 1 && !tour.done;
-  return {
-    id: "teacher",
-    ic: "teacher",
-    who: I.T("Teachers: Start Here", "Docentes: Empiecen aquí"),
-    text: I.T("Learn the lab by using it: try one activity as a student, then set one up for your class. About 8 minutes.", "Aprendan a usar el laboratorio usándolo: prueben una actividad como estudiante y luego preparen una para su clase. Unos 8 minutos."),
-    cta: going ? I.T("Continue the Teacher Tour", "Continuar el recorrido para docentes") : tour.done ? I.T("Take the Teacher Tour again", "Repetir el recorrido para docentes") : I.T("Start the Teacher Tour", "Empezar el recorrido para docentes"),
-    href: going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`,
-    more: { href: `${BASE}/start?grades=${band}`, label: I.T("All teacher resources", "Todos los recursos para docentes") },
-  };
+export function frontDoorHTML(I, { target, missions = [], resume = null, dueCount = 0 }) {
+  const continuing = target.kind !== "start";
+  const mission = !continuing && missions.length > 0;
+  const journeyStart = !continuing && target.href !== "#skills" ? target : null;
+  return html`<section class="lph-continue lph-front" id="lphFront" data-focus-first tabindex="-1" aria-labelledby="lphContinueTitle" data-continue-kind="${mission ? "mission" : target.kind}">
+    <p class="lph-label">
+      ${continuing ? I.T("Continue learning", "Continuar aprendiendo") : I.T("Start here", "Empieza aquí")}
+    </p>
+    <h2 id="lphContinueTitle">${mission ? I.T("Today’s mission", "La misión de hoy") : target.title}</h2>
+    <p class="lph-why">
+      ${mission ? (dueCount ? I.T("Short practice picked for you. Review that is due comes first. No timer.", "Práctica corta elegida para ti. Primero va el repaso pendiente. Sin cronómetro.") : I.T("Short practice picked for you. Unfinished work comes first. No timer.", "Práctica corta elegida para ti. Primero va lo que no has terminado. Sin cronómetro.")) : target.why}
+    </p>
+    <div class="session-heading lph-actions">
+      ${mission ? "" : html`<a class="btn btn-primary btn-big lph-go" data-continue href="${target.href}">${target.cta}${icon("arrow-right")}</a>`}
+      ${missions.length ? missionButtonsHTML(I, missions, { primary: mission, resume: continuing && resume }) : ""}
+    </div>
+    ${!mission && target.minutes ? html`<p class="fine lph-time">${I.T(`About ${target.minutes} minutes · no timer`, `Unos ${target.minutes} minutos · sin cronómetro`)}</p>` : ""}
+    ${journeyStart && mission ? html`<p class="fine lph-time"><a data-continue-journey href="${journeyStart.href}">${I.T("New here? Begin the Learning Journey", "¿Eres nuevo? Empieza el recorrido de aprendizaje")}</a></p>` : ""}
+  </section>`;
 }
 
-/** The start screen. `data` carries what home.js already loaded so nothing is read twice. */
+/** "I am a… Student / Teacher / Family": Teacher follows the tour on this device; Family opens Practice Together. */
+function rolesHTML(I, band) {
+  const tour = loadIntro().guided || {};
+  const going = tour.part > 1 && !tour.done;
+  const tourState = going ? "continue" : tour.done ? "again" : "start";
+  const teacherHint = { continue: I.S("Continue the Teacher Tour", "Continuar el recorrido para docentes"), again: I.S("Take the Teacher Tour again", "Repetir el recorrido para docentes"), start: I.S("Start the Teacher Tour", "Empezar el recorrido para docentes") }[tourState];
+  return html`<nav class="lph-roles" aria-labelledby="lphRolesLabel">
+    <span class="lph-roles-label" id="lphRolesLabel">${I.T("I am a…", "Soy…")}</span>
+    <a class="lph-role is-student" href="#lphFront" aria-current="true">${icon("reading")}<span>${I.T("Student", "Estudiante")}</span></a>
+    <a class="lph-role is-teacher" data-tour="${tourState}" title="${teacherHint}" href="${going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`}">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
+    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/practice-together?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
+  </nav>`;
+}
+
+/**
+ * The start screen: who you are, the title, ONE primary action, and the grade. Everything else on the home sits
+ * below it behind "More ways to practice" (home.js). `data` carries what home.js already loaded.
+ */
 export function startHTML(I, ctx, data) {
-  const { band, available, focusCounts, domains, tierFor, target } = data;
+  const { band, available, focusCounts, target, missions, resume, dueCount } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
-    <div class="lph-starts" data-focus-first tabindex="-1" role="region" aria-label="${I.S("Start here", "Empiecen aquí")}">
-      ${startCardHTML(I, teacherCard(I, band))}
-      ${startCardHTML(I, { id: "family", ic: "families", who: I.T("Families: Start Here", "Familias: Empiecen aquí"), text: I.T("Practice English together in 10 minutes. A short guide shows you how to help, even if you are still learning English.", "Practiquen inglés juntos en 10 minutos. Una guía corta les muestra cómo ayudar, aunque todavía estén aprendiendo inglés."), cta: I.T("Practice English Together", "Practicar inglés juntos"), href: `${BASE}/practice-together?grades=${band}`, more: { href: `${BASE}/family?grades=${band}`, label: I.T("Family Corner", "Rincón de la familia") } })}
-    </div>
+    ${rolesHTML(I, band)}
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">
         ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
@@ -270,19 +292,9 @@ export function startHTML(I, ctx, data) {
       <p class="lph-lead">
         ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
       </p>
-      ${rulerHTML(I, ctx, band, available, focusCounts)}
     </div>
-    <div class="lph-student">
-      ${continueHTML(I, target, band)}
-      <div class="lph-pick" id="start-learning">
-        <h2 class="lph-label" id="lphSkillsTitle">${I.T("Choose a skill to begin", "Elige una destreza para empezar")}</h2>
-        ${skillsHTML(I, band, domains, tierFor)}
-      </div>
-    </div>
-    <div class="lph-setting lph-lang">
-      <p class="lph-label">${I.T("Language for directions", "Idioma de las instrucciones")}</p>
-      ${langSwitchHTML(I.mode, { large: true, idPrefix: "homeLang" })}
-    </div>
+    <div class="lph-student">${frontDoorHTML(I, { target, missions, resume, dueCount })}</div>
+    <div class="lph-grade">${rulerHTML(I, ctx, band, available, focusCounts)}</div>
   </section>`;
 }
 

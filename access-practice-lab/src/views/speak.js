@@ -14,6 +14,8 @@ import {
   LOCAL_FEEDBACK_PROMPT_VERSION,
 } from "../lang/providers.js";
 import { describeSpeech, summarizeEnvelope } from "../lang/audio.js";
+import { transcriptFit } from "../lang/speech-feedback.js";
+import { whatISaidHTML } from "../speech-feedback-ui.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { emptyReview, reviewComplete } from "../lang/rubrics.js";
 import {
@@ -149,7 +151,7 @@ async function chooserHTML(ctx, index, entries) {
                     <h2 id="spk-next-h">${icon("sparkle")} ${I.T("Try next", "Prueba la siguiente")}</h2>
                     <p class="fine">${I.T("Picked from the evidence you have saved on this device.", "Elegidas según la evidencia que guardaste en este dispositivo.")}</p>
                   </header>
-                  <div class="task-grid">${recs.map((r) => card(r.task, r.why))}</div>
+                  <div class="task-grid">${recs.map((r) => card(r.task, I.T(...r.why)))}</div>
                 </section>`
               : ""
           }
@@ -457,15 +459,14 @@ function recorderBlock(task, state) {
 function transcriptCheck(take) {
   const words = wordCount(take.transcript);
   const seconds = take.audio?.ok ? take.audio.speechSeconds : 0;
-  if (!words || !seconds) return "";
-  const rate = words / seconds;
-  if (rate > 4.5)
+  const fit = transcriptFit(words, seconds);
+  if (fit === "high")
     return html`<p class="note-todo">
       ${icon("alert")}<span
         >${I.T(`You typed ${words} words for ${seconds} seconds of speaking. That is more than most people say that fast — check that you typed only what you said.`, `Escribiste ${words} palabras para ${seconds} segundos de habla. Es más de lo que la mayoría de las personas dice tan rápido — revisa que escribiste solo lo que dijiste.`)}</span
       >
     </p>`;
-  if (rate < 0.7 && seconds >= 8)
+  if (fit === "low")
     return html`<p class="note-todo">
       ${icon("alert")}<span
         >${I.T(`You typed ${words} words for ${seconds} seconds of speaking. Did you leave parts out?`, `Escribiste ${words} palabras para ${seconds} segundos de habla. ¿Omitiste alguna parte?`)}</span
@@ -761,7 +762,7 @@ export async function render(ctx) {
                     }
                   </div>
                 </div>
-                ${analysisHTML(task, S.state, take)}${resultsHTML(task, S.state, take, prev)}`
+                ${analysisHTML(task, S.state, take)}${take?.analyzedAt ? whatISaidHTML({ transcript: take.transcript, task, audio: take.audio, stage: S.stage, typed: !take.transcriptSource?.startsWith("speech"), sttAvailable: canDictate() }, I) : ""}${resultsHTML(task, S.state, take, prev)}`
         }
       </article>
       ${mission ? html`<p><a class="btn" href="${missionHref(mission, ctx.band)}">${icon("arrow-left")} ${I.T("Back to the mission", "Volver a la misión")}</a></p>` : ""}
@@ -1042,6 +1043,12 @@ export function onClick(e, ctx) {
     save();
     announce(I.S("Review saved.", "Revisión guardada."));
     ctx.rerender();
+    return true;
+  }
+  if (t.closest("[data-again-word]")) {
+    const target = document.querySelector("[data-rec-start], [data-manual-take]");
+    target?.scrollIntoView({ block: "center" });
+    target?.focus();
     return true;
   }
   if (t.closest("[data-again]")) {

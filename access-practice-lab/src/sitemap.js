@@ -20,13 +20,33 @@ import { STUDIO_APP_PAGES } from "./studio-app.js";
 const P = (en, es) => [en, es];
 
 export const SECTIONS = Object.freeze([
+  // Student navigation leads with three ideas: Today (daily mission), Road to ACCESS, and Studios (open practice).
+  {
+    // "Today": the daily mission and the learner's own path. Same id, so /explore/progress keeps answering.
+    id: "progress",
+    icon: "growth",
+    title: P("Today & my progress", "Hoy y mi progreso"),
+    lead: P(
+      "Today's mission, your learning journey, your path and missions, and the progress saved on this device.",
+      "La misión de hoy, tu recorrido de aprendizaje, tu camino y tus misiones, y el progreso guardado en este dispositivo.",
+    ),
+  },
+  {
+    id: "prep",
+    icon: "tests",
+    title: P("Road to ACCESS", "Camino a ACCESS"),
+    lead: P(
+      "Practice tests, the 12-week Road to ACCESS and an optional skill check-in. Practice only, never an official score.",
+      "Pruebas de práctica, el Camino a ACCESS de 12 semanas y un chequeo opcional. Solo práctica, nunca un puntaje oficial.",
+    ),
+  },
   {
     id: "practice",
     icon: "reading",
-    title: P("Practice", "Practicar"),
+    title: P("Studios & practice", "Estudios y práctica"),
     lead: P(
-      "Listening, reading, speaking, writing and words. Pick a skill, then a studio.",
-      "Escuchar, leer, hablar, escribir y palabras. Elige una destreza y luego un estudio.",
+      "Open practice: listening, reading, speaking, writing and words, plus the reader, stories and library. Pick a skill, then a studio.",
+      "Práctica libre: escuchar, leer, hablar, escribir y palabras, además del lector, los cuentos y la biblioteca. Elige una destreza y luego un estudio.",
     ),
   },
   {
@@ -36,24 +56,6 @@ export const SECTIONS = Object.freeze([
     lead: P(
       "Games, story worlds, a city to explore and real-life scenes. Every one practices real language.",
       "Juegos, mundos de cuentos, una ciudad para explorar y escenas de la vida real. Todos practican lenguaje real.",
-    ),
-  },
-  {
-    id: "prep",
-    icon: "tests",
-    title: P("ACCESS Prep", "Preparación ACCESS"),
-    lead: P(
-      "Practice tests, the 12-week Road to ACCESS and an optional skill check-in. Practice only, never an official score.",
-      "Pruebas de práctica, el Camino a ACCESS de 12 semanas y un chequeo opcional. Solo práctica, nunca un puntaje oficial.",
-    ),
-  },
-  {
-    id: "progress",
-    icon: "growth",
-    title: P("My Progress", "Mi progreso"),
-    lead: P(
-      "Your path, your growth from your own work, and everything you have saved on this device.",
-      "Tu camino, tu crecimiento a partir de tu propio trabajo y todo lo que guardaste en este dispositivo.",
     ),
   },
   {
@@ -213,7 +215,7 @@ export const DESTINATIONS = Object.freeze([
     kind: "studio",
     for: ST,
     bands: UPPER,
-    top: true,
+    top: false, // secondary: overlaps a lead destination; still in Explore and the Site Guide
     href: "arena",
     icon: "conversation",
     title: P("Argument Arena", "Arena de argumentos"),
@@ -372,7 +374,7 @@ export const DESTINATIONS = Object.freeze([
     skill: "Writing",
     kind: "studio",
     for: ST,
-    top: true,
+    top: false, // secondary: overlaps a lead destination; still in Explore and the Site Guide
     href: "sentences",
     icon: "writing",
     title: P("Sentence Lab", "Laboratorio de oraciones"),
@@ -387,7 +389,7 @@ export const DESTINATIONS = Object.freeze([
     skill: "Writing",
     kind: "studio",
     for: ST,
-    top: true,
+    top: false, // secondary: overlaps a lead destination; still in Explore and the Site Guide
     href: "newsroom",
     icon: "launch",
     title: P("Newsroom", "Sala de redacción"),
@@ -532,20 +534,6 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
-    id: "learn",
-    section: "practice",
-    skill: "Mixed",
-    kind: "studio",
-    for: S,
-    href: "learn",
-    icon: "bulb",
-    title: P("Interactive Learn Hub", "Centro interactivo de aprendizaje"),
-    text: P(
-      "Learn a language move, then try it.",
-      "Aprende una estrategia de lenguaje y pruébala.",
-    ),
-  },
-  {
     id: "language-studios",
     section: "practice",
     skill: "Mixed",
@@ -557,21 +545,6 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "Discourse studios for explaining and arguing in content classes.",
       "Estudios de discurso para explicar y argumentar en las materias.",
-    ),
-  },
-  {
-    id: "missions",
-    section: "practice",
-    skill: "Mixed",
-    kind: "studio",
-    for: ST,
-    href: "missions",
-    icon: "mission",
-    match: [["missions"], ["mission"]],
-    title: P("Academic missions", "Misiones académicas"),
-    text: P(
-      "Prepare, produce real language, get feedback, revise.",
-      "Prepara, produce lenguaje real, recibe comentarios y revisa.",
     ),
   },
   {
@@ -756,6 +729,21 @@ export const DESTINATIONS = Object.freeze([
   },
   // ── ACCESS Prep ───────────────────────────────────────────────────────────────────────────
   {
+    id: "road",
+    section: "prep",
+    skill: "Mixed",
+    kind: "test",
+    for: STF,
+    top: true,
+    href: "road",
+    icon: "road",
+    title: P("Road to ACCESS", "Camino a ACCESS"),
+    text: P(
+      "A 12-week plan: one theme and task type each week.",
+      "Un plan de 12 semanas: un tema y un tipo de tarea por semana.",
+    ),
+  },
+  {
     id: "access-prep",
     section: "prep",
     skill: "Mixed",
@@ -792,28 +780,13 @@ export const DESTINATIONS = Object.freeze([
     skill: "Mixed",
     kind: "test",
     for: ST,
-    top: true,
+    top: false, // secondary: overlaps a lead destination; still in Explore and the Site Guide
     href: "assess",
     icon: "tests",
     title: P("Assessment simulator", "Simulador de evaluación"),
     text: P(
       "Practice the real screens, or learn as you go.",
       "Practica con las pantallas reales o aprende mientras avanzas.",
-    ),
-  },
-  {
-    id: "road",
-    section: "prep",
-    skill: "Mixed",
-    kind: "test",
-    for: STF,
-    top: true,
-    href: "road",
-    icon: "road",
-    title: P("Road to ACCESS", "Camino a ACCESS"),
-    text: P(
-      "A 12-week plan: one theme and task type each week.",
-      "Un plan de 12 semanas: un tema y un tipo de tarea por semana.",
     ),
   },
   {
@@ -874,6 +847,37 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "missions",
+    section: "progress",
+    skill: "Mixed",
+    kind: "studio",
+    for: ST,
+    top: true,
+    href: "missions",
+    icon: "mission",
+    match: [["missions"], ["mission"]],
+    title: P("Academic missions", "Misiones académicas"),
+    text: P(
+      "Prepare, produce real language, get feedback, revise.",
+      "Prepara, produce lenguaje real, recibe comentarios y revisa.",
+    ),
+  },
+  {
+    id: "learn",
+    section: "progress",
+    skill: "Mixed",
+    kind: "studio",
+    for: S,
+    top: true,
+    href: "learn",
+    icon: "bulb",
+    title: P("Interactive Learn Hub", "Centro interactivo de aprendizaje"),
+    text: P(
+      "Learn a language move, then try it.",
+      "Aprende una estrategia de lenguaje y pruébala.",
+    ),
+  },
+  {
     id: "growth",
     section: "progress",
     skill: "Mixed",
@@ -904,12 +908,27 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "trip-journal",
+    section: "progress",
+    skill: "Mixed",
+    kind: "progress",
+    for: STF,
+    href: "passport/journal",
+    icon: "passport",
+    match: [["passport", "journal"]],
+    title: P("Trip journal", "Diario del viaje"),
+    text: P(
+      "One page per finished journey stop, culture cards and what I learned.",
+      "Una página por cada parada terminada, tarjetas de cultura y lo que aprendí.",
+    ),
+  },
+  {
     id: "warmup",
     section: "progress",
     skill: "Mixed",
     kind: "practice",
     for: S,
-    top: true,
+    top: false, // secondary: overlaps a lead destination; still in Explore and the Site Guide
     href: "warmup",
     icon: "sparkle",
     title: P("Daily Language Warm-Up", "Calentamiento diario de lenguaje"),
@@ -934,7 +953,7 @@ export const DESTINATIONS = Object.freeze([
   },
   {
     id: "collection",
-    section: "progress",
+    section: "practice",
     skill: "Mixed",
     kind: "progress",
     for: S,
@@ -954,6 +973,28 @@ export const DESTINATIONS = Object.freeze([
     match: [["class"]],
     title: P("Join my class", "Unirme a mi clase"),
     text: P("Enter the class code from my teacher.", "Escribe el código de clase de mi maestro."),
+  },
+  {
+    id: "pairs",
+    section: "progress",
+    skill: "Speaking",
+    kind: "tool",
+    for: S,
+    href: "pairs",
+    icon: "classroom",
+    title: P("Listening partners", "Parejas para escuchar"),
+    text: P("Share a short recording with my class partner.", "Comparte una grabación corta con tu pareja de la clase."),
+  },
+  {
+    id: "scenes",
+    section: "progress",
+    skill: "Speaking",
+    kind: "tool",
+    for: S,
+    href: "scenes",
+    icon: "conversation",
+    title: P("Class scenes", "Escenas de la clase"),
+    text: P("Play and write real-life scenes with my class.", "Juega y escribe escenas de la vida real con tu clase."),
   },
   {
     id: "move",
@@ -1170,6 +1211,34 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "What each part of the site does and how to try it.",
       "Qué hace cada parte del sitio y cómo probarla.",
+    ),
+  },
+  {
+    id: "privacy",
+    section: "help",
+    skill: "Mixed",
+    kind: "guide",
+    for: STF,
+    href: "privacy",
+    icon: "lock",
+    title: P("Privacy", "Privacidad"),
+    text: P(
+      "What the lab keeps on this device, what a class sees, and how to delete it.",
+      "Lo que el laboratorio guarda en este dispositivo, lo que ve una clase y cómo borrarlo.",
+    ),
+  },
+  {
+    id: "accessibility",
+    section: "help",
+    skill: "Mixed",
+    kind: "guide",
+    for: STF,
+    href: "accessibility",
+    icon: "help",
+    title: P("Accessibility", "Accesibilidad"),
+    text: P(
+      "Keyboard, screen reader, read-aloud and comfort settings, known limits, and how to report a problem.",
+      "Teclado, lector de pantalla, lectura en voz alta y opciones de comodidad, límites conocidos y cómo informar un problema.",
     ),
   },
   {

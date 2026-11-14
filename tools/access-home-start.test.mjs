@@ -201,7 +201,6 @@ test("home keeps every destination the previous home linked, for both bands", as
     "/reality",
     "/learn",
     "/games",
-    "/publisher-demo",
     "/stories",
     "/speak",
     "/write",
@@ -244,6 +243,8 @@ test("home keeps every destination the previous home linked, for both bands", as
       );
     for (const c of cardsFor("start", band))
       assert.ok(hrefs.includes(start.cardHref(c, band)), `${band}: quick link ${c.id}`);
+    // The publisher demo is a pitch for publishers: its route stays, the student home no longer links it.
+    assert.ok(!hrefs.some((h) => h.includes("/publisher-demo")), `${band}: no publisher demo card`);
     // In-page anchors the start screen uses all exist.
     for (const a of doc.querySelectorAll('.lph a[href^="#"]'))
       assert.ok(
@@ -253,26 +254,29 @@ test("home keeps every destination the previous home linked, for both bands", as
   }
 });
 
-test("the teacher card follows the tour on this device: start, continue, take it again", async () => {
+test("the Teacher switch follows the tour on this device: start, continue, take it again", async () => {
   const KEY = "accessPracticeLab:v1:intro";
   const card = async () => {
     const doc = await renderHome("6-8", "en");
-    const btn = doc.querySelector(".lph-start.is-teacher > .btn");
-    return [btn.textContent.trim(), btn.getAttribute("href")];
+    const link = doc.querySelector(".lph-roles .lph-role.is-teacher");
+    return [link.dataset.tour, link.getAttribute("title"), link.getAttribute("href")];
   };
   try {
     localStorage.setItem(KEY, JSON.stringify({ guided: { part: 3, goal: "show" } }));
     assert.deepEqual(await card(), [
+      "continue",
       "Continue the Teacher Tour",
       "/access-practice-lab/start/tour",
     ]);
     localStorage.setItem(KEY, JSON.stringify({ guided: { part: 4, done: true } }));
     assert.deepEqual(await card(), [
+      "again",
       "Take the Teacher Tour again",
       "/access-practice-lab/start/tour?part=1&grades=6-8",
     ]);
     localStorage.setItem(KEY, JSON.stringify({ guided: { part: 1 } }));
     assert.deepEqual(await card(), [
+      "start",
       "Start the Teacher Tour",
       "/access-practice-lab/start/tour?part=1&grades=6-8",
     ]);
@@ -281,7 +285,8 @@ test("the teacher card follows the tour on this device: start, continue, take it
   }
 });
 
-test("start screen: landmarks, one h1, a labelled ruler, the language choice, four skills, two doors", async () => {
+test("start screen: one h1, a labelled ruler, an I-am switch, ONE primary action, the rest collapsed", async () => {
+  localStorage.clear();
   const doc = await renderHome("6-8", "en");
   const lph = doc.querySelector("section.lph");
   assert.equal(lph.getAttribute("aria-labelledby"), "homeTitle");
@@ -299,47 +304,54 @@ test("start screen: landmarks, one h1, a labelled ruler, the language choice, fo
     "6-8",
   );
   assert.match(steps[0].getAttribute("aria-label"), /Kindergarten \(coming soon\)/);
+  // The language choice lives once, in the header: the home no longer repeats it.
   assert.equal(
-    lph.querySelectorAll("[data-lang-mode]").length,
-    3,
-    "language choice on the start screen",
+    doc.querySelectorAll("[data-lang-mode]").length,
+    0,
+    "no language switch in the page",
   );
-  assert.equal(lph.querySelectorAll(".lph-skill").length, 4);
-  assert.equal(lph.querySelectorAll(".lph-primary-options a").length, 2);
-  assert.ok(lph.querySelector(".lph-primary-options a[href='#start-learning']"));
-  assert.ok(lph.querySelector(".lph-primary-options a[href*='/library']"));
+  // One primary action on the start screen.
+  assert.equal(lph.querySelectorAll(".btn-primary").length, 1, "exactly one primary action");
+  assert.equal(
+    lph.querySelectorAll(".lph-start").length,
+    0,
+    "the big Teacher / Family cards are gone",
+  );
+  // I am a… Student / Teacher / Family.
+  const roles = [...lph.querySelectorAll(".lph-roles .lph-role")];
+  assert.deepEqual(
+    roles.map((a) => a.textContent.trim()),
+    ["Student", "Teacher", "Family"],
+  );
+  assert.equal(lph.querySelector(".lph-role.is-student").getAttribute("aria-current"), "true");
+  assert.equal(
+    lph.querySelector(".lph-role.is-family").getAttribute("href"),
+    "/access-practice-lab/practice-together?grades=6-8",
+  );
+  assert.equal(
+    lph.querySelector(".lph-role.is-teacher").getAttribute("href"),
+    "/access-practice-lab/start/tour?part=1&grades=6-8",
+  );
+  // Everything else is below, collapsed, and still reachable.
+  const more = doc.querySelector("details.lph-more-ways");
+  assert.equal(more.open, false, "More ways to practice starts collapsed");
+  assert.match(more.querySelector("summary").textContent, /More ways to practice/);
+  assert.equal(
+    more.querySelectorAll(".lph-skill").length,
+    4,
+    "the four skills sit in More ways to practice",
+  );
+  assert.ok(more.querySelector("#start-learning") && more.querySelector("#skills"));
   assert.equal(
     doc.querySelector("details.lph-dashboard").open,
     false,
     "secondary resources start collapsed",
   );
-  assert.equal(lph.querySelectorAll(".lph-start").length, 2);
-  assert.equal(
-    lph.querySelector(".lph-start.is-family > .btn").getAttribute("href"),
-    "/access-practice-lab/practice-together?grades=6-8",
-  );
-  assert.equal(
-    lph.querySelector(".lph-start.is-teacher > .btn").getAttribute("href"),
-    "/access-practice-lab/start/tour?part=1&grades=6-8",
-  );
-  assert.match(lph.querySelector(".lph-start.is-teacher h2").textContent, /Teachers: Start Here/);
-  assert.match(
-    lph.querySelector(".lph-start.is-teacher").textContent,
-    /Learn the lab by using it:/,
-  );
-  assert.match(
-    lph.querySelector(".lph-start.is-teacher > .btn").textContent,
-    /Start the Teacher Tour/,
-  );
-  assert.match(
-    lph.querySelector(".lph-start.is-family > .btn").textContent,
-    /Practice English Together/,
-  );
+  assert.ok(doc.querySelector("a[href*='/family?']"), "Family Corner stays reachable from home");
   assert.ok(
-    lph.querySelector(".lph-start.is-family a[href*='/family?']"),
-    "Family Corner stays reachable from home",
+    doc.querySelector("a[href^='/access-teacher/']"),
+    "teacher resources stay reachable from home",
   );
-  assert.ok(lph.querySelector(".lph-continue [data-continue].btn-primary"));
   // The 4-5 pick on the 3-5 band says which practice it shows; a pick with no band yet says so plainly.
   const d35 = await renderHome("3-5", "en");
   assert.match(d35.querySelector(".lph-note").textContent, /Showing Grades 3–5 practice/);
@@ -565,7 +577,7 @@ test("styles: the start sheet is critical, uses tokens and keeps 48px targets", 
     [],
     "colours come from ds.css tokens",
   );
-  for (const sel of [".lph-step", ".lph-skill", ".lph-primary-options a", ".lph-more > summary"]) {
+  for (const sel of [".lph-step", ".lph-skill", ".lph-chip", ".lph-more > summary"]) {
     const block =
       css.match(new RegExp(`${sel.replace(/[.>]/g, (m) => `\\${m}`)} \\{[^}]*\\}`))?.[0] || "";
     const h = Number(block.match(/min-height: ([\d.]+)rem/)?.[1] || 0);

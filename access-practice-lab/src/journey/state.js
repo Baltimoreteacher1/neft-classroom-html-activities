@@ -9,6 +9,7 @@
 //  * nothing here is a score: it records what was done and under which supports.
 import { safeJson, storage } from "../util.js";
 import { BANDS, MISSION_IDS, STEP_IDS } from "./curriculum.js";
+import { GOAL_IDS, MET, cleanGoal } from "./goal.js";
 
 export const KEY = "accessPracticeLab:v1:journey";
 export const SUPPORT_LEVELS = ["A", "B", "C"];
@@ -60,9 +61,9 @@ function cleanMission(raw) {
     if (at) reviewed[id] = at;
   }
   const startedAt = isoOrNull(raw.startedAt);
-  return startedAt || Object.keys(steps).length || Object.keys(reviewed).length
-    ? { startedAt, steps, reviewed }
-    : null;
+  const goal = cleanGoal(raw.goal);
+  if (!startedAt && !Object.keys(steps).length && !Object.keys(reviewed).length && !goal) return null;
+  return goal ? { startedAt, steps, reviewed, goal } : { startedAt, steps, reviewed };
 }
 
 function cleanBand(raw) {
@@ -282,6 +283,24 @@ export function markReviewed(state, band, mission, reviewedMission, now) {
   });
 }
 
+/** The learner's personal goal for a mission: a goal id, or "skip". Choosing again replaces it (and its answer). */
+export function setGoal(state, band, mission, choice, now) {
+  if (!MISSION_IDS.includes(mission) || (choice !== "skip" && !GOAL_IDS.includes(choice))) return state;
+  return edit(state, band, (b) => {
+    const at = stamp(now);
+    const m = (b.missions[mission] ||= { startedAt: null, steps: {}, reviewed: {} });
+    m.goal = choice === "skip" ? { skipped: true, at } : { id: choice, met: null, at };
+  });
+}
+
+/** "Did you meet your goal?": yes | partly | notyet. Only for a chosen goal; never a score. */
+export function setGoalMet(state, band, mission, met, now) {
+  if (!MET.includes(met) || !bandState(state, band).missions[mission]?.goal?.id) return state;
+  return edit(state, band, (b) => {
+    b.missions[mission].goal = { ...b.missions[mission].goal, met, at: stamp(now) };
+  });
+}
+
 export const setSupport = (state, band, level) =>
   SUPPORT_LEVELS.includes(level) ? edit(state, band, (b) => void (b.support = level)) : state;
 export const setCursor = (state, band, mission, step) =>
@@ -330,7 +349,9 @@ function mergeMission(local, incoming) {
   }
   const reviewed = { ...incoming.reviewed };
   for (const [id, at] of Object.entries(local.reviewed)) reviewed[id] = later(at, reviewed[id]);
-  return { startedAt: earlier(local.startedAt, incoming.startedAt), steps, reviewed };
+  const goal = local.goal || incoming.goal;
+  const merged = { startedAt: earlier(local.startedAt, incoming.startedAt), steps, reviewed };
+  return goal ? { ...merged, goal } : merged;
 }
 
 function mergeBand(local, incoming) {

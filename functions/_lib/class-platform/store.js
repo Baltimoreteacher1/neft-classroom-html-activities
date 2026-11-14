@@ -1,9 +1,10 @@
 /* =============================================================================
  * Class platform storage + auth (D1 `env.DB`). Used by functions/api/class.
  * -----------------------------------------------------------------------------
- * The schema of record is migrations/0011_class_platform.sql; the endpoint also
+ * The schema of record is migrations/0011_class_platform.sql (SCHEMA) plus
+ * migrations/0012_class_review.sql (REVIEW_SCHEMA); the endpoint also
  * creates it lazily (CREATE TABLE IF NOT EXISTS, the sg-room/class-data pattern)
- * and functions/api/class/class.test.mjs fails if the two differ.
+ * and functions/api/class/class.test.mjs fails if either pair differs.
  *
  * AUTH (AUTH_CONTRACT.md §3 extended per class, never per teacher):
  *   - Creating a class needs `x-teacher-key` == env.TEACHER_KEY.
@@ -17,6 +18,7 @@
  * ========================================================================== */
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
+import { SOCIAL_SCHEMA, socialPruneStatements, socialPurgeStatements } from "./social-schema.js";
 
 export const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS class_platform_class (
@@ -92,10 +94,36 @@ export const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS class_platform_audio_student ON class_platform_audio (code, student_id)`,
 ];
 
+/** The scoring queue: writing samples a learner shares, and the teacher's review of a sample or recording. */
+export const REVIEW_SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS class_platform_work (
+    work_id TEXT PRIMARY KEY,
+    code TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    label TEXT NOT NULL DEFAULT '',
+    body TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS class_platform_work_student ON class_platform_work (code, student_id)`,
+  `CREATE TABLE IF NOT EXISTS class_platform_review (
+    code TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    rubric TEXT NOT NULL,
+    chips_json TEXT NOT NULL DEFAULT '{}',
+    comment TEXT NOT NULL DEFAULT '',
+    reviewed_at INTEGER NOT NULL,
+    PRIMARY KEY (code, item_id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS class_platform_review_student ON class_platform_review (code, student_id)`,
+];
+
 const ready = new WeakSet();
 export async function ensureSchema(db) {
   if (ready.has(db)) return;
-  await db.batch(SCHEMA.map((sql) => db.prepare(sql)));
+  await db.batch([...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA].map((sql) => db.prepare(sql)));
   ready.add(db);
 }
 
@@ -152,9 +180,12 @@ export const touchClass = (db, code, now) =>
 export function purgeStatements(db, code) {
   const rooms = `SELECT room_id FROM class_platform_room WHERE code = ?`;
   return [
+    ...socialPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_audio WHERE code = ?`).bind(code),
+    db.prepare(`DELETE FROM class_platform_work WHERE code = ?`).bind(code),
+    db.prepare(`DELETE FROM class_platform_review WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_doc WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_student WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_class WHERE code = ?`).bind(code),
@@ -166,6 +197,7 @@ export async function pruneExpired(db, now) {
   const gone = `SELECT code FROM class_platform_class WHERE expires_at < ?`;
   const oldRooms = `SELECT room_id FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`;
   await db.batch([
+    ...socialPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db
       .prepare(`DELETE FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`)
@@ -173,6 +205,13 @@ export async function pruneExpired(db, now) {
     db
       .prepare(`DELETE FROM class_platform_audio WHERE expires_at < ? OR code IN (${gone})`)
       .bind(now, now),
+    db
+      .prepare(`DELETE FROM class_platform_work WHERE expires_at < ? OR code IN (${gone})`)
+      .bind(now, now),
+    // A review goes with the recording or writing sample it answers.
+    db.prepare(
+      `DELETE FROM class_platform_review WHERE item_id NOT IN (SELECT audio_id FROM class_platform_audio) AND item_id NOT IN (SELECT work_id FROM class_platform_work)`,
+    ),
     db.prepare(`DELETE FROM class_platform_doc WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_student WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_class WHERE expires_at < ?`).bind(now),

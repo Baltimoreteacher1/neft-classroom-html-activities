@@ -11,8 +11,14 @@ import { BAND_INFO, CONTENT_BANDS } from "../bands.js";
 import { findActivity, loadIndex, loadUnits } from "../content.js";
 import { BASE, safeJson } from "../util.js";
 import { ASSIGN_DOMAINS, UNITS_ASSIGN, assignableActivities, assignableUnitStops, assignmentBandText, assignmentLabel, toAssignment } from "./assign.js";
-import { el, errorText, toBase64 } from "./dom.js";
+import { el, errorText } from "./dom.js";
+import { familyReportControls } from "./family-reports.js";
+import { heatMapTable } from "./heat-map.js";
+import { createJoinCards } from "./join-cards.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
+import { drawReviewQueue } from "./review-queue.js";
+import { mountSupportEditor } from "./support-editor.js";
+import { recordingPlayer, voiceNoteButton } from "./voice-note.js";
 
 const CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
 const SITE_KEY = "accessPracticeLabClass:v1:site-key";
@@ -53,7 +59,11 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
   let current = null;
   const timers = [];
   const stopTimers = () => {
-    while (timers.length) clearInterval(timers.pop());
+    while (timers.length) {
+      const t = timers.pop();
+      if (t && typeof t.unmount === "function") t.unmount();
+      else clearInterval(t);
+    }
   };
   const live = el("p", { class: "visually-hidden", role: "status", "aria-live": "polite" });
 
@@ -127,6 +137,10 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     const assignBox = el("div");
     const quizBox = el("div");
     const notesBox = el("div");
+    const heatBox = el("div");
+    const supportBox = el("div");
+    const queueBox = el("div");
+    const socialBox = el("div");
     const header = el(
       "div",
       { class: "cls-card" },
@@ -140,6 +154,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       ),
     );
     if (svg) header.querySelector(".cls-qr").innerHTML = svg;
+    const cards = createJoinCards({ S, api, title: current.title, code: current.code, url, svg, live });
     root.replaceChildren(
       live,
       header,
@@ -147,15 +162,23 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         el("table", { class: "cls-table" },
           el("thead", {}, el("tr", {}, ["Nickname|Apodo", "Last seen|Visto por última vez", "Evidence this week|Evidencia esta semana", "Days|Días", "Assigned done|Tareas hechas", ""].map((h) => el("th", { scope: "col" }, h ? S(...h.split("|")) : "")))),
           rosterBody)),
+      cards.node,
+      el("section", { class: "cls-card" }, el("h4", {}, S("Class heat map", "Mapa de calor de la clase")), heatBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Student details and starting support", "Detalles del estudiante y apoyo inicial")), supportBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Scoring queue", "Cola de revisión")), queueBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Family reports", "Informes para las familias")), familyReportControls(S, () => roster?.students || [])),
       el("section", { class: "cls-card" }, el("h4", {}, S("Assignments", "Tareas")), assignBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Live class quiz", "Cuestionario de clase en vivo")), quizBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Recordings and voice notes", "Grabaciones y notas de voz")), notesBox),
+      socialBox,
       el("section", { class: "cls-card" }, el("button", { type: "button", class: "btn ghost", onclick: async () => {
         const typed = prompt(S("Type the class code to delete this class and everything in it.", "Escribe el código de clase para eliminar esta clase y todo lo que contiene."));
         if (typed && (await api.remove(typed)).ok) { store.write(store.read().filter((c) => c.code !== current.code)); entry(); }
       } }, S("Delete this class", "Eliminar esta clase"))),
     );
     let roster = null;
+    let heatSig = "";
+    const support = mountSupportEditor(supportBox, { S, api, live, reload: () => loadRoster() });
     const loadRoster = async () => {
       const res = await api.roster();
       if (!res.ok) {
@@ -163,12 +186,19 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         return;
       }
       roster = res;
+      cards.update(res.students);
+      const nextHeat = JSON.stringify(res.students.map((s) => [s.studentId, s.alias, s.docs?.language?.summary?.byUse ?? null]));
+      if (nextHeat !== heatSig) {
+        heatSig = nextHeat;
+        heatBox.replaceChildren(heatMapTable(S, res.students, (id) => support.open(id)));
+      }
+      support.draw(res);
       const now = Date.now();
       rosterBody.replaceChildren(...(res.students.length ? res.students.map((s) => {
         const sum = s.docs?.language?.summary || {};
         const ids = (res.settings?.assignments || []).map((a) => a.id);
         return el("tr", {}, el("th", { scope: "row" }, s.alias), el("td", {}, seenText(S, s.lastSeen, now)), el("td", {}, String(sum.weekEvidence ?? 0)), el("td", {}, String(sum.weekDays ?? 0)), el("td", {}, ids.length ? `${(sum.assignmentsDone || []).filter((id) => ids.includes(id)).length}/${ids.length}` : "—"),
-          el("td", {}, el("button", { type: "button", class: "btn small ghost", onclick: async () => { const r = await api.resetStudent(s.studentId); live.textContent = r.ok ? S(`New student key for ${s.alias}: ${r.studentKey}`, `Nueva clave de estudiante para ${s.alias}: ${r.studentKey}`) : errorText(S, r.error); } }, S("Reset key", "Restablecer clave"))));
+          el("td", {}, el("button", { type: "button", class: "btn small ghost", onclick: async () => { const r = await api.resetStudent(s.studentId); if (r.ok) cards.setKey(s.studentId, r.studentKey); live.textContent = r.ok ? S(`New student key for ${s.alias}: ${r.studentKey}`, `Nueva clave de estudiante para ${s.alias}: ${r.studentKey}`) : errorText(S, r.error); } }, S("Reset key", "Restablecer clave"))));
       }) : [el("tr", {}, el("td", { colspan: "6" }, S("No students yet. Share the class code, link or QR.", "Todavía no hay estudiantes. Comparte el código, el enlace o el QR.")))]));
       const goal = goalProgress(res.settings?.goal, res.students.map((s) => s.docs?.language?.summary));
       goalLine.textContent = goal ? S(`Class goal: ${goal.value} of ${goal.target} ${goal.label || ""}`, `Meta de la clase: ${goal.value} de ${goal.target} ${goal.label || ""}`) : "";
@@ -206,6 +236,12 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     timers.push(setInterval(() => !document.hidden && loadRoster(), ROSTER_MS));
     drawQuiz(quizBox);
     drawNotes(notesBox);
+    drawReviewQueue(queueBox, { S, api, live });
+    import("./social-teacher.js").then((m) => {
+      const social = m.mountSocialPanel(socialBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
+      // The social panel polls on its own timer; stop it with the panel's other timers.
+      if (social?.unmount) timers.push({ unmount: social.unmount });
+    });
   }
 
   async function drawQuiz(box) {
@@ -266,42 +302,9 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     const items = res.ok ? res.items || [] : [];
     const recordings = items.filter((i) => i.kind === "recording");
     const notesOf = (id) => items.filter((i) => i.parentId === id);
-    const player = async (item) => {
-      const audio = el("audio", { controls: true, preload: "none", "aria-label": item.label || "audio" });
-      audio.addEventListener("play", async () => {
-        if (audio.src) return;
-        const blob = await api.audioBlob(item.audioId);
-        if (blob) { audio.src = URL.createObjectURL(blob); audio.play().catch(() => {}); }
-      }, { once: true });
-      return audio;
-    };
-    const rows = await Promise.all(recordings.map(async (r) => {
-      let recorder = null;
-      let chunks = [];
-      const status = el("span", { class: "fine", role: "status" });
-      const btn = el("button", { type: "button", class: "btn small" }, S("Record a voice note", "Grabar una nota de voz"));
-      btn.addEventListener("click", async () => {
-        if (recorder) { recorder.stop(); return; }
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          recorder = new MediaRecorder(stream);
-          chunks = [];
-          recorder.ondataavailable = (e) => chunks.push(e.data);
-          recorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop());
-            const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
-            recorder = null;
-            btn.textContent = S("Record a voice note", "Grabar una nota de voz");
-            const sent = await api.audioNote({ parentId: r.audioId, label: S("Note from your teacher", "Nota de tu maestro o maestra"), mime: blob.type, data: await toBase64(blob) });
-            status.textContent = sent.ok ? S("Sent.", "Enviada.") : errorText(S, sent.error);
-            if (sent.ok) drawNotes(box);
-          };
-          recorder.start();
-          btn.textContent = S("Stop and send", "Detener y enviar");
-        } catch { status.textContent = S("The microphone is not available.", "El micrófono no está disponible."); }
-      });
-      return el("li", {}, el("strong", {}, `${r.alias || ""} — ${r.label || S("Recording", "Grabación")}`), " ", await player(r), " ", btn, " ", status, notesOf(r.audioId).length ? el("span", { class: "fine" }, ` ${S("Notes sent", "Notas enviadas")}: ${notesOf(r.audioId).length}, ${S("heard", "escuchadas")}: ${notesOf(r.audioId).filter((n) => n.heard).length}`) : null);
-    }));
+    const rows = recordings.map((r) =>
+      el("li", {}, el("strong", {}, `${r.alias || ""} — ${r.label || S("Recording", "Grabación")}`), " ", recordingPlayer(api, r), " ", voiceNoteButton({ S, api, parentId: r.audioId, onSent: () => drawNotes(box) }), notesOf(r.audioId).length ? el("span", { class: "fine" }, ` ${S("Notes sent", "Notas enviadas")}: ${notesOf(r.audioId).length}, ${S("heard", "escuchadas")}: ${notesOf(r.audioId).filter((n) => n.heard).length}`) : null),
+    );
     box.replaceChildren(rows.length ? el("ul", { class: "cls-list" }, rows) : el("p", {}, S("No recordings yet. Learners choose to send one from a Speaking task. Recordings are kept for 30 days.", "Todavía no hay grabaciones. Los estudiantes eligen enviar una desde una tarea de Hablar. Las grabaciones se guardan 30 días.")));
   }
 

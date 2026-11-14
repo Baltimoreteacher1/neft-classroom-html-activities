@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { ALL_SKILLS, generateProblem, seededRandom } from "../../../math/fluency-lab/problem-bank.js";
 import quizKey from "../../../shared/class-platform/quiz-key.js";
 import { goalProgress, validateAlias, validateSummary } from "../../../shared/class-platform/contract.js";
+import { REVIEW_SCHEMA } from "../../_lib/class-platform/store.js";
 import { onRequest, SCHEMA } from "./[[path]].js";
 
 function d1(sqlite) {
@@ -83,6 +84,12 @@ test("schema of record matches the migration", () => {
   const sql = readFileSync(fileURLToPath(new URL("../../../migrations/0011_class_platform.sql", import.meta.url)), "utf8");
   const norm = (s) => s.replace(/--[^\n]*/g, "").replace(/\s+/g, " ").trim();
   assert.equal(norm(sql), norm(SCHEMA.map((s) => `${s};`).join("\n")));
+});
+
+test("review schema of record matches migration 0012", () => {
+  const sql = readFileSync(fileURLToPath(new URL("../../../migrations/0012_class_review.sql", import.meta.url)), "utf8");
+  const norm = (s) => s.replace(/--[^\n]*/g, "").replace(/\s+/g, " ").trim();
+  assert.equal(norm(sql), norm(REVIEW_SCHEMA.map((s) => `${s};`).join("\n")));
 });
 
 test("health answers without D1; data routes 503 without it", async () => {
@@ -383,4 +390,103 @@ test("voice notes: student shares a recording, teacher answers, caps hold", asyn
   const fluency = await newClass(w, "fluency");
   const fs = await join(w, fluency.code, "Max");
   assert.equal((await call(w, "audio/share", { method: "POST", headers: asStudent(fs), body: { code: fluency.code, mime: "audio/webm", data: audio } })).json.error, "invalid-app");
+});
+
+test("starting support: strict validation, merged per student, each learner reads only their own", async () => {
+  const w = world();
+  const c = await newClass(w, "language");
+  const a = await join(w, c.code, "Luna");
+  const b = await join(w, c.code, "Sol");
+  const set = (settings, headers = teacher) => call(w, "settings", { method: "POST", headers, body: { code: c.code, settings } });
+  assert.equal((await set({ support: { [a.studentId]: { stages: { writing: "B" } } } }, {})).status, 401);
+  for (const bad of [
+    { [a.studentId]: { stages: { writing: "D" } } },
+    { [a.studentId]: { stages: { math: "A" } } },
+    { [a.studentId]: { stages: {}, level: 3 } },
+    { notastudent: { stages: { writing: "A" } } },
+    { [a.studentId]: { stages: { writing: "A" }, roadWeek: 0 } },
+    [],
+  ])
+    assert.equal((await set({ support: bad })).status, 400, JSON.stringify(bad));
+  assert.equal((await set({ roadWeek: 99 })).json.error, "invalid-road-week");
+  assert.equal((await set({ support: { [a.studentId]: { stages: { writing: "B", speaking: "A" }, roadWeek: 4 } } })).status, 200);
+  assert.equal((await set({ support: { [b.studentId]: { stages: { reading: "C" } } }, roadWeek: 2 })).status, 200);
+  const both = (await call(w, "roster", { query: `?code=${c.code}`, headers: teacher })).json.settings;
+  assert.deepEqual(Object.keys(both.support).sort(), [a.studentId, b.studentId].sort());
+  const meA = (await call(w, "me", { query: `?code=${c.code}`, headers: asStudent(a) })).json;
+  assert.deepEqual(meA.support, { stages: { writing: "B", speaking: "A" }, roadWeek: 4 });
+  assert.equal(meA.roadWeek, 2);
+  assert.doesNotMatch(JSON.stringify(meA), new RegExp(b.studentId));
+  const info = (await call(w, "info", { query: `?code=${c.code}` })).json;
+  assert.equal(info.support, undefined, "the public class info never carries per-student support");
+  assert.equal((await set({ support: { [a.studentId]: null }, roadWeek: null })).status, 200);
+  const after = (await call(w, "roster", { query: `?code=${c.code}`, headers: teacher })).json.settings;
+  assert.deepEqual(Object.keys(after.support), [b.studentId]);
+  assert.equal(after.roadWeek, undefined);
+  const fluency = await newClass(w, "fluency");
+  const f = await call(w, "settings", { method: "POST", headers: teacher, body: { code: fluency.code, settings: { support: {} } } });
+  assert.equal(f.json.error, "invalid-support");
+});
+
+test("scoring queue: writing and recordings, strict review input, the learner sees only their own reviews", async () => {
+  const w = world();
+  const c = await newClass(w, "language");
+  const s = await join(w, c.code, "Luna");
+  const other = await join(w, c.code, "Sol");
+  const pass = { "x-class-teacher": c.teacherPasscode };
+  const share = (body, headers = asStudent(s)) => call(w, "review/share", { method: "POST", headers, body: { code: c.code, ...body } });
+  assert.equal((await share({ text: "   " })).json.error, "empty-writing");
+  assert.equal((await share({ text: "x".repeat(4001) })).status, 413);
+  assert.equal((await share({ text: "hi" }, teacher)).status, 403);
+  assert.equal((await share({ text: "hi" }, {})).status, 401);
+  const work = await share({ label: "Argue: school lunch", text: "Schools should start later.\n\nStudents sleep more." });
+  assert.equal(work.status, 200, JSON.stringify(work.json));
+  assert.match(work.json.workId, /^w[a-f0-9]{12}$/);
+  const audio = Buffer.alloc(2000, 7).toString("base64");
+  const rec = await call(w, "audio/share", { method: "POST", headers: asStudent(other), body: { code: c.code, label: "Retell", mime: "audio/webm", data: audio } });
+  assert.equal((await call(w, "review/queue", { query: `?code=${c.code}`, headers: asStudent(s) })).status, 401);
+  const queue = await call(w, "review/queue", { query: `?code=${c.code}`, headers: pass });
+  assert.equal(queue.status, 200);
+  assert.deepEqual(queue.json.items.map((i) => i.kind).sort(), ["recording", "writing"]);
+  const writing = queue.json.items.find((i) => i.kind === "writing");
+  assert.equal(writing.text, "Schools should start later.\n\nStudents sleep more.");
+  assert.equal(writing.review, null);
+  const mark = (body, headers = pass) => call(w, "review/mark", { method: "POST", headers, body: { code: c.code, ...body } });
+  for (const [body, error] of [
+    [{ itemId: work.json.workId, rubric: "wida", chips: { task: 2 } }, "invalid-rubric"],
+    [{ itemId: work.json.workId, rubric: "writing-practice", chips: { task: 4 } }, "invalid-chips"],
+    [{ itemId: work.json.workId, rubric: "writing-practice", chips: { elaboration: 2 } }, "invalid-chips"],
+    [{ itemId: work.json.workId, rubric: "writing-practice", chips: {}, comment: "" }, "empty-review"],
+    [{ itemId: work.json.workId, rubric: "writing-practice", comment: "x".repeat(281) }, "comment-too-long"],
+    [{ itemId: "../etc", rubric: "writing-practice", comment: "ok" }, "invalid-item"],
+  ])
+    assert.equal((await mark(body)).json.error, error, JSON.stringify(body));
+  assert.equal((await mark({ itemId: work.json.workId, rubric: "writing-practice", comment: "ok" }, asStudent(s))).status, 401);
+  assert.equal((await mark({ itemId: "w000000000000", rubric: "writing-practice", comment: "ok" })).status, 404);
+  const ok = await mark({ itemId: work.json.workId, rubric: "writing-practice", chips: { task: 2, organization: 1 }, comment: "Clear claim. Add one reason." });
+  assert.equal(ok.status, 200, JSON.stringify(ok.json));
+  assert.equal((await mark({ itemId: rec.json.audioId, rubric: "speaking-practice", chips: { clarity: 3 } })).status, 200);
+  const after = (await call(w, "review/queue", { query: `?code=${c.code}`, headers: teacher })).json.items;
+  assert.ok(after.every((i) => i.review), "both items are marked reviewed");
+  const mine = (await call(w, "review/mine", { query: `?code=${c.code}`, headers: asStudent(s) })).json.reviews;
+  assert.equal(mine.length, 1);
+  assert.deepEqual(mine[0].chips, { task: 2, organization: 1 });
+  assert.equal(mine[0].comment, "Clear claim. Add one reason.");
+  assert.equal((await call(w, "review/mine", { query: `?code=${c.code}`, headers: asStudent(other) })).json.reviews[0].kind, "recording");
+  await call(w, "remove-student", { method: "POST", headers: teacher, body: { code: c.code, studentId: s.studentId } });
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_work").get().n, 0);
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_review WHERE student_id = ?").get(s.studentId).n, 0);
+  await call(w, "delete", { method: "POST", headers: teacher, body: { code: c.code, confirm: c.code } });
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_review").get().n, 0);
+  const fluency = await newClass(w, "fluency");
+  const fs = await join(w, fluency.code, "Max");
+  assert.equal((await call(w, "review/share", { method: "POST", headers: asStudent(fs), body: { code: fluency.code, text: "hi there" } })).json.error, "invalid-app");
+});
+
+test("language summary accepts Key Language Use counts and refuses bad shapes", () => {
+  assert.equal(validateSummary("language", { byUse: { Argue: { writing: 3, speaking: 1 } } }).ok, true);
+  assert.equal(validateSummary("language", { byUse: { Persuade: { writing: 1 } } }).ok, false);
+  assert.equal(validateSummary("language", { byUse: { Argue: { math: 1 } } }).ok, false);
+  assert.equal(validateSummary("language", { byUse: { Argue: { writing: -1 } } }).ok, false);
+  assert.equal(validateSummary("language", { byUse: [] }).ok, false);
 });

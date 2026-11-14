@@ -28,6 +28,7 @@ import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
 import { buildPracticePlan } from "../practice-plan.js";
 import { i18nFor } from "../i18n.js";
+import { classRoadWeek } from "../class/support.js";
 import { currentWeek } from "./road.js";
 import {
   daysThisWeek,
@@ -42,7 +43,7 @@ import { cardsFor } from "../home-registry.js";
 import { domT, nextActivity, planOptionsHTML, portalHTML, reasonT, tierFor } from "./home-panels.js";
 
 export { nextActivity, tierFor };
-import { cardHref, continueTarget, pickBand, recentRoom, startHTML } from "./home-start.js";
+import { cardHref, continueTarget, pickBand, recentRoom, skillPickHTML, startHTML } from "./home-start.js";
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
 import { latestModuleResume } from "../home-resume.js";
 import { sectionTilesHTML } from "../sitemap-ui.js";
@@ -83,7 +84,7 @@ function reviewHTML(I, due, plan, band, ctx) {
           </li>`,
       )}
     </ul>
-    ${mixedReview ? html`<a class="btn btn-primary" href="${mixedReview}">${I.T(`Start mixed review · about ${estimateMinutes(reviewRows)} min`, `Empezar el repaso mixto · unos ${estimateMinutes(reviewRows)} min`)}${icon("arrow-right")}</a>` : ""}
+    ${mixedReview ? html`<a class="btn" href="${mixedReview}">${I.T(`Start mixed review · about ${estimateMinutes(reviewRows)} min`, `Empezar el repaso mixto · unos ${estimateMinutes(reviewRows)} min`)}${icon("arrow-right")}</a>` : ""}
     <p class="fine">
       <a href="${BASE}/growth?grades=${band}#supportChoiceTitle"
         >${I.T("Choose how much support you get", "Elige cuánto apoyo recibes")}</a
@@ -136,7 +137,7 @@ export async function render(ctx) {
   const focus = CORE_DOMAINS.includes(settings.focus) ? settings.focus : "balanced";
   const level = shippedLevels.includes(settings.level) ? settings.level : "preferred";
   const count = [2, 4, 6].includes(Number(settings.count)) ? Number(settings.count) : 4;
-  const week = currentWeek(road?.[band]);
+  const week = currentWeek(road?.[band], classRoadWeek());
   const stamps = bandRecords.reduce((n, r) => n + r.record.complete.length, 0);
   const due = plan.due || [];
   const streak = weekStreak();
@@ -179,7 +180,7 @@ export async function render(ctx) {
       next = {
         href: `${BASE}/${rec.task.taskType ? "speak" : "write"}/${rec.task.id}?grades=${band}`,
         title: rec.task.title,
-        why: html`${domT(I, rec.task.taskType ? "Speaking" : "Writing")} · ${rec.why}`,
+        why: html`${domT(I, rec.task.taskType ? "Speaking" : "Writing")} · ${I.T(...rec.why)}`,
       };
   }
   const windowPhase = testingWindowPhase(win);
@@ -204,6 +205,18 @@ export async function render(ctx) {
     recent: recentRoom(band, domains, activeGradeFocus(ctx.prefs, band)),
     moduleResume,
   });
+
+  // Today's mission in three lengths; the front door shows 10 minutes as the main action and 5 / 15 as chips.
+  const missions = plan.length
+    ? [5, 10, 15].map((minutes) => {
+        const activities = trimToMinutes(plan, minutes);
+        return {
+          minutes,
+          ids: activities.map((r) => r.id),
+          reviewIds: activities.filter((r) => due.some((item) => r.review?.key === item.key)).map((r) => r.id),
+        };
+      })
+    : [];
 
   const card = (c) =>
     html`<a class="studio-card" data-home-card="${c.id}" href="${cardHref(c, band)}"
@@ -249,7 +262,8 @@ export async function render(ctx) {
 
   return {
     title: "",
-    html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, domains, tierFor: (d, levels) => tierFor(ctx, d, levels), target })}
+    html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, target, missions, resume, dueCount: due.length })}
+      <div class="cls-prompt-host" id="labJoinPrompt" data-nsr-ignore></div>
       ${
         familyMessage
           ? html`<aside class="student-family-note panel">
@@ -263,8 +277,6 @@ export async function render(ctx) {
             </aside>`
           : ""
       }
-      ${next ? html`<aside class="lph-recommended-next" aria-label="${I.S("Recommended next practice", "Práctica siguiente recomendada")}"><a class="next-step" href="${next.href}"><span class="ll-kicker">${I.T("Continue where it helps most", "Continúa donde más ayuda")}</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a></aside>` : ""}
-      ${due.length ? reviewPanel : ""}
       ${
         windowPhase
           ? html`<aside
@@ -286,6 +298,16 @@ export async function render(ctx) {
             </aside>`
           : ""
       }
+      ${due.length ? reviewPanel : ""}
+      <details class="lph-more-ways" id="more-ways">
+        <summary>
+          <span>${I.T("More ways to practice", "Más formas de practicar")}</span>
+          <strong>${I.T("Skills, studios, your plan and review", "Destrezas, estudios, tu plan y el repaso")}</strong>
+          <span class="fine">${I.T("Pick a skill or a studio, change today’s plan, or find your way around the site.", "Elige una destreza o un estudio, cambia el plan de hoy o encuentra tu camino en el sitio.")}</span>
+        </summary>
+        <div class="lph-dashboard-content">
+      ${skillPickHTML(I, band, domains, (d, levels) => tierFor(ctx, d, levels))}
+      ${next ? html`<aside class="lph-recommended-next" aria-label="${I.S("Recommended next practice", "Práctica siguiente recomendada")}"><a class="next-step" href="${next.href}"><span class="ll-kicker">${I.T("Continue where it helps most", "Continúa donde más ayuda")}</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a></aside>` : ""}
 
       ${sectionTilesHTML(I, band)}
 
@@ -299,34 +321,6 @@ export async function render(ctx) {
           </h2>
           <p class="lead">
             ${band === "3-5" ? I.T("Listen, read, speak and write at the Seed Science Fair and beyond. Choose your help. Try again any time.", "Escucha, lee, habla y escribe en la Feria de Ciencias y más. Elige tu ayuda. Intenta otra vez cuando quieras.") : I.T("Four studios and one living exhibition for listening, reading, speaking and writing. You choose the support; every try is saved on this device.", "Cuatro estudios y una exposición viva para escuchar, leer, hablar y escribir. Tú eliges el apoyo; cada intento se guarda en este dispositivo.")}
-          </p>
-          <div class="session-heading">
-            ${resume ? html`<a class="btn btn-primary btn-big" href="${sessionHref(resume)}">${I.T("Resume today’s mission", "Retoma la misión de hoy")} · ${I.L("common.minutes", { n: resume.minutes })}${icon("arrow-right")}</a>` : ""}
-            ${
-              plan.length
-                ? [10, 5, 15].map((minutes) => {
-                    const activities = trimToMinutes(plan, minutes);
-                    return html`<button
-                      type="button"
-                      class="btn ${minutes === 10 && !resume ? "btn-primary btn-big" : "ll-btn-quiet"}"
-                      data-start-mission="${minutes}"
-                      data-session-ids="${activities.map((r) => r.id).join(",")}"
-                      data-session-review-ids="${activities
-                        .filter((r) => due.some((item) => r.review?.key === item.key))
-                        .map((r) => r.id)
-                        .join(",")}"
-                    >
-                      ${resume ? I.T("Start a new session", "Empezar una sesión nueva") : I.T("Start today’s mission", "Empezar la misión de hoy")}
-                      · ${I.L("common.minutes", { n: minutes })}
-                    </button>`;
-                  })
-                : html`<a class="btn btn-big" href="#skills"
-                    >${I.T("Choose a skill", "Elige una habilidad")}</a
-                  >`
-            }
-          </div>
-          <p class="session-summary" aria-live="polite">
-            ${plan.length ? I.T("Choose about 5, 10 or 15 minutes. There is no countdown; unfinished work comes first.", "Elige unos 5, 10 o 15 minutos. No hay cuenta regresiva; primero va lo que no has terminado.") : I.T("No activities match your plan. Change your plan to see activities.", "Ninguna actividad coincide con tu plan. Cambia tu plan para ver actividades.")}
           </p>
           <ul class="ll-legend" aria-label="${I.S("The four stations", "Las cuatro estaciones")}">
             <li class="d-listening">
@@ -408,10 +402,12 @@ export async function render(ctx) {
         </div>
         <div class="room-grid ll-portals">${tiles}</div>
       </section>
+        </div>
+      </details>
 
       <details class="lph-dashboard">
         <summary>
-          <span>${I.T("More ways to learn", "Más formas de aprender")}</span>
+          <span>${I.T("Explore everything", "Explorar todo")}</span>
           <strong>${I.T("Explore activities, plans and progress", "Explora actividades, planes y progreso")}</strong>
           <span class="fine">${I.T("Your learning tools and resources are ready when you need them.", "Tus herramientas y recursos están listos cuando los necesites.")}</span>
         </summary>
@@ -610,6 +606,14 @@ export async function render(ctx) {
       </details>`,
   };
 }
+
+// Class-first save (class/join-prompt.js): loaded after render so the home page never waits on it.
+let joinPrompt = null;
+export function mount(root, ctx) {
+  const host = root.querySelector("#labJoinPrompt");
+  if (host) import("../class/join-prompt.js").then((m) => { joinPrompt = m; m.mountJoinPrompt(host, ctx); }).catch(() => {});
+}
+export const unmount = () => joinPrompt?.unmountJoinPrompt();
 
 export function onClick(e, ctx) {
   if (heroClick(e, ctx)) return true;

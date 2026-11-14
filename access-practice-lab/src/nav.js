@@ -188,6 +188,8 @@ export function footerHTML(ctx, I) {
         <a href="${BASE}/site-guide${q}">${T("Site Guide", "Guía del sitio")}</a>
         <a href="/access-teacher/">${T("Teacher Hub", "Centro docente")}</a>
         <a href="${BASE}/tools${q}">${T("Help and device check", "Ayuda y revisión del dispositivo")}</a>
+        <a href="${BASE}/privacy${q}">${T("Privacy", "Privacidad")}</a>
+        <a href="${BASE}/accessibility${q}">${T("Accessibility", "Accesibilidad")}</a>
       </nav>
     </div>
     <p class="footer-legal">

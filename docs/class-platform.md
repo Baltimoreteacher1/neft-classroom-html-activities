@@ -72,6 +72,16 @@ and the class copy is MERGED through the lab's own importer (`importProgressData
 device, so no prompt can lose anything. The student key is stored under `accessPracticeLabClass:v1:link`, outside the
 `accessPracticeLab:v1:` namespace that Passport codes and the class copy carry.
 
+Class-first save (`class/session.js`, `class/join-prompt.js`, `class/join-cards.js`): the home page shows a join card by
+default (`?join=CODE` or the QR link prefills it; on ChromeOS/Android the card can scan the QR with the browser's own
+`BarcodeDetector`), or a "Saved to <class>" chip once joined; "Practice on this device only" is remembered under
+`accessPracticeLabClass:v1:prompt`. On `/class`, "Sign back in" (`?signin=1` puts it first) uses the existing rejoin path
+(code + nickname + the student key, hashed and rate-limited server-side; no new endpoint or migration), and "Switch
+student / Sign out on this computer" pushes pending work, stops the sync loop, then clears every lab key and recording on
+the device after an in-page confirm (it warns, and waits, when work has not reached the class). The teacher panel adds
+printable join cards (one class QR, a slip per student, reset key) and a Google Classroom public share link; posting or
+roster import through the Classroom API is not built (the existing Google OAuth app has read-only scopes for another app).
+
 ## AI helpers (selection only)
 
 `POST /api/class/ai/writing` classifies a learner's draft into the lab's authored next-move and error-pattern ids;
@@ -82,5 +92,5 @@ receives only the learner's own words, never a prompt, passage or test item (no 
 
 ## Local testing
 
-`node --test functions/api/class/class.test.mjs functions/api/class/ai.test.mjs tools/fluency-class.test.mjs tools/language-class.test.mjs tools/fluency-ai-hint.test.mjs`. To exercise with wrangler: `npx wrangler d1 execute
+`node --test functions/api/class/class.test.mjs functions/api/class/ai.test.mjs tools/fluency-class.test.mjs tools/language-class.test.mjs tools/access-class-first.test.mjs tools/fluency-ai-hint.test.mjs`. To exercise with wrangler: `npx wrangler d1 execute
 neft-student-progress --local --file migrations/0011_class_platform.sql`. Never apply with `--remote` without Joel.

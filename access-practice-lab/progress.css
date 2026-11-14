@@ -2014,3 +2014,33 @@
   background: var(--acc-surface-2, #f1ede6);
   font-weight: 600;
 }
+
+/* Passport culture cards and Trip journal (/passport/journal) */
+.journey-cardline { margin: 0; }
+.journey-cardline a { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; color: var(--ink); font-weight: 700; }
+.tj-page { display: grid; gap: var(--s-4); }
+.tj-head .row-actions .btn { min-height: 44px; }
+.tj-country h3 { margin: var(--s-3) 0 var(--s-2); }
+.tj-cards, .tj-entries { display: grid; gap: var(--s-3); margin: 0; padding: 0; list-style: none; }
+.tj-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+.tj-card { padding: var(--s-3); border: 1px solid var(--line); border-left: 6px solid #1fa6a2; border-radius: var(--r-lg); background: var(--surface); overflow-wrap: anywhere; }
+.tj-card h4 { margin: 0 0 var(--s-1); }
+.tj-card p { margin: 0 0 var(--s-2); line-height: 1.5; }
+.tj-card.is-locked { border-left-color: #f2c15b; border-style: dashed; }
+.tj-ask { font-style: italic; }
+.tj-entry { padding: var(--s-3); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.tj-stop { margin: 0 0 var(--s-2); overflow-wrap: anywhere; }
+.tj-entry input { width: 100%; min-height: 44px; }
+.tj-print-line { display: none; }
+@media print {
+  .tj-entry input, .tj-entry .field > span { display: none; }
+  .tj-print-line { display: block; min-height: 1.6em; margin: 0; border-bottom: 1px solid #24323f; }
+  .tj-print-line::before { content: "I learned / Aprendí: "; font-weight: 700; }
+  .tj-card, .tj-entry { break-inside: avoid; box-shadow: none; }
+}
+
+/* Road to ACCESS: offline week pack (src/road-offline.js) */
+.rd-offline { margin-top: var(--s-4); box-shadow: none; }
+.rd-offline .row-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.rd-offline .btn { min-height: 44px; }
+.rd-offline-bar { width: 100%; height: 0.75rem; accent-color: #1fa6a2; }

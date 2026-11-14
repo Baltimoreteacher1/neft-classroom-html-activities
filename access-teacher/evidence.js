@@ -35,6 +35,7 @@ import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util.js";
 import { createExtras } from "./evidence-extras.js";
+import { copyGroupPlaylist, groupBand } from "./group-playlist.js";
 import { normalizeFluencyReport } from "./math-fluency-report.js";
 
 const KEY = "accessTeacher:v1:roster";
@@ -544,7 +545,8 @@ function groupsTab(rowsAll) {
             <p class="fine">${g.why}</p>
             <p>${g.suggestion.plan}</p>
             <p class="fine">About ${g.suggestion.minutes} minutes</p>
-            <a href="${g.suggestion.link}" target="_blank" rel="noopener">Open in the lab</a>
+            <p class="row-actions no-print"><a href="${g.suggestion.link}" target="_blank" rel="noopener">Open in the lab</a>
+              <button type="button" class="ghost small" data-group-playlist="${g.kind}" data-band="${groupBand(g.members, T.students)}" data-label="${g.label}">Copy playlist link</button></p>
           </div>`,
       )}
     </div>
@@ -1165,6 +1167,14 @@ root.addEventListener("click", async (e) => {
       persist();
     }
     return draw();
+  }
+  const playlist = t.closest("[data-group-playlist]");
+  if (playlist) {
+    try {
+      return announce((await copyGroupPlaylist(playlist)) ? "Playlist link copied. Students open it and work through the activities in order." : "No matching activities for this group's grade band.");
+    } catch {
+      return announce("Copy failed. Try again, or build the playlist in the Activities list.");
+    }
   }
   const copy = t.closest("[data-copy]");
   if (copy) {

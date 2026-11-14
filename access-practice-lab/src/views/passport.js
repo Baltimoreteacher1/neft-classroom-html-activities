@@ -33,6 +33,7 @@ import {
 import { practiceSummary } from "../practice-report.js";
 import { journeyHTML, routeProgress } from "../journey.js";
 import { checkinHTML, onCheckinClick } from "../checkin-ui.js";
+import * as tripJournal from "./passport-journal.js";
 import { familyLetterHTML, howIWorkHTML, onLetterClick } from "./passport-work.js";
 import { journeyEvidenceHTML, livingPortfolioHTML } from "./passport-living.js";
 import { paperPassportMenu } from "../paper-passport.js";
@@ -480,6 +481,7 @@ const nextStep = (domain) =>
 
 export async function render(ctx) {
   I = i18nFor(ctx);
+  if (ctx.route?.id === "journal") return tripJournal.render(ctx);
   const band = ctx.band;
   const rows = await bandRows(band);
   const saved = rows.map((row) => ({
@@ -804,7 +806,8 @@ export async function render(ctx) {
 }
 export function unmount() { postcards.unmount(); postcards.releaseAlbumUrls(); }
 export function onChange(e, ctx) { if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled) postcards.onChange(e, ctx.rerender); }
-export function onInput(e) {
+export function onInput(e, ctx) {
+  if (tripJournal.onInput(e, ctx)) return;
   if (e.target.matches("[data-name]")) setStudentName(e.target.value.trim());
 }
 
@@ -818,6 +821,7 @@ async function shareBundle(ctx) {
 export async function onClick(e, ctx) {
   const I = i18nFor(ctx);
   if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled && postcards.onClick(e, I, ctx.rerender)) return true;
+  if (tripJournal.onClick(e, ctx)) return true;
   if (await onCheckinClick(e, ctx, I)) return true;
   if (onLetterClick(e, ctx)) return true;
   const t = e.target;

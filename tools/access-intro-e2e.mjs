@@ -84,21 +84,22 @@ const overflow = async (page, label) =>
 
 // ── home cards ─────────────────────────────────────────────────────────────
 let page = await open("/");
-ok((await page.locator(".lph-start").count()) === 2, "home shows two Start Here cards");
+// One front door: "I am a… Student / Teacher / Family" replaces the two big Start Here cards.
+ok((await page.locator(".lph-roles .lph-role").count()) === 3, "home shows the I am a… switch");
 ok(
-  (await page.locator(".lph-start.is-teacher h2").innerText()).includes("Teachers: Start Here"),
-  "teacher card title",
+  (await page.locator(".lph-role.is-teacher").innerText()).includes("Teacher"),
+  "teacher switch label",
 );
 ok(
-  (await page.locator(".lph-start.is-family > .btn").innerText()).includes(
+  (await page.locator(".lph-role.is-family").getAttribute("title")).includes(
     "Practice English Together",
   ),
-  "family card button",
+  "family switch opens Practice English Together",
 );
 const topY = await page
-  .locator(".lph-start.is-teacher")
+  .locator(".lph-role.is-teacher")
   .evaluate((e) => e.getBoundingClientRect().top);
-ok(topY < 450, `cards sit near the top of the home (top ${Math.round(topY)}px)`);
+ok(topY < 450, `the switch sits near the top of the home (top ${Math.round(topY)}px)`);
 ok(
   (await page.locator(".lab-tools a.top-family").innerText()).includes("Families"),
   "Families in the main navigation",
@@ -108,7 +109,7 @@ ok(
   "Site Guide in the footer",
 );
 await axe(page, "home");
-await page.locator(".lph-start.is-teacher > .btn").click();
+await page.locator(".lph-role.is-teacher").click();
 await page.waitForSelector(".gt-part-skill");
 ok(
   path(page).startsWith("/start/tour?part=1") && /grades=/.test(path(page)),
@@ -391,16 +392,14 @@ await page.setViewportSize({ width: 1280, height: 900 });
 await page.goto(`${LAB}/start/tour?part=2&grades=6-8&skill=writing`, { waitUntil: "load" });
 await page.waitForSelector(".gt-part-try");
 await page.locator(".gt-exit").click();
-await page.waitForSelector(".lph-start");
+await page.waitForSelector(".lph-roles");
 ok(
   path(page).startsWith("/?grades=6-8") || path(page) === "/",
   "Exit tour returns to the home page",
 );
 ok(
-  (await page.locator(".lph-start.is-teacher > .btn").innerText()).includes(
-    "Continue the Teacher Tour",
-  ),
-  "the home card offers to continue the tour",
+  (await page.locator(".lph-role.is-teacher").getAttribute("data-tour")) === "continue",
+  "the home Teacher switch offers to continue the tour",
 );
 await page.goto(`${LAB}/start`, { waitUntil: "load" });
 await page.waitForSelector(".in-hub");
@@ -766,26 +765,22 @@ await page.close();
 // ── Spanish home, keyboard, mobile ─────────────────────────────────────────
 page = await open("/");
 await page.locator(".lang-btn[data-lang-mode='es']").first().click();
-await page.waitForSelector(".lph-start");
+await page.waitForSelector(".lph-roles");
 ok(
-  (await page.locator(".lph-start.is-family > .btn").innerText()).includes(
-    "Practicar inglés juntos",
-  ),
-  "Spanish family card",
+  (await page.locator(".lph-role.is-family").innerText()).includes("Familia"),
+  "Spanish family switch",
 );
 ok(
-  (await page.locator(".lph-start.is-teacher h2").innerText()).includes("Docentes: Empiecen aquí"),
-  "Spanish teacher card",
+  (await page.locator(".lph-role.is-teacher").innerText()).includes("Docente"),
+  "Spanish teacher switch",
 );
 await page.locator(".lang-btn[data-lang-mode='en']").first().click();
 let reached = false;
 for (let i = 0; i < 60 && !reached; i++) {
   await page.keyboard.press("Tab");
-  reached = await page.evaluate(() =>
-    document.activeElement?.matches(".lph-start.is-teacher > .btn"),
-  );
+  reached = await page.evaluate(() => document.activeElement?.matches(".lph-role.is-teacher"));
 }
-ok(reached, "keyboard Tab reaches the teacher Start card");
+ok(reached, "keyboard Tab reaches the Teacher switch");
 const ring = await page.evaluate(() => {
   const s = getComputedStyle(document.activeElement);
   return s.outlineStyle !== "none" && Number.parseFloat(s.outlineWidth) >= 2;

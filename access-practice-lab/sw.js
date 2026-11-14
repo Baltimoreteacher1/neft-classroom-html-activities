@@ -11,17 +11,17 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "b1748664274f";
+const BUILD_HASH = "5a60b742f0bb";
 const PRECACHE_CORE = [
-  "/access-practice-lab/ds.css?v=dde5b4a738a3",
+  "/access-practice-lab/ds.css?v=96db0e394ffd",
   "/access-practice-lab/home.css?v=567acc7b4b89",
-  "/access-practice-lab/home-start.css?v=ef7ab46d406b",
-  "/access-practice-lab/progress.css?v=15f589eb2692",
+  "/access-practice-lab/home-start.css?v=ac8eefa44250",
+  "/access-practice-lab/progress.css?v=ad28e1088e49",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=2b5e93a8f490",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=a501acc3060f",
+  "/access-practice-lab/src/main.js?v=e80368547a5c",
   "/access-practice-lab/src/brand.js?v=aa10e7cfb67f",
   "/access-practice-lab/src/components.js?v=a2dbaaeec4e0",
   "/access-practice-lab/src/grade.js?v=632a26ffc0a8",
@@ -45,29 +45,31 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/strings.js?v=b2c3430b7e54",
   "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
   "/access-practice-lab/src/early/gate.js?v=dc7e5bb7a200",
-  "/access-practice-lab/src/grade-focus-ui.js?v=dcd2c7ac5ef0",
+  "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
   "/access-practice-lab/src/content.js?v=961e01a22f07",
   "/access-practice-lab/src/grade-bands.js?v=f68093c034d6",
   "/access-practice-lab/src/store.js?v=d648fc5c5654",
   "/access-practice-lab/src/lang/ledger.js?v=e16dfd00f9e0",
   "/access-practice-lab/src/lang/studio.js?v=fe989ddb7881",
   "/access-practice-lab/src/games/state.js?v=2d3733f8972e",
-  "/access-practice-lab/src/journey/state.js?v=ff053467c521",
+  "/access-practice-lab/src/journey/state.js?v=1e1f56f0f878",
   "/access-practice-lab/src/journey/curriculum.js?v=a74df9d5029e",
   "/access-practice-lab/src/acc/wida/catalog.js?v=6e6f43902ef1",
   "/access-practice-lab/src/acc/wida/framework.js?v=8036ddd6586c",
+  "/access-practice-lab/src/journey/goal.js?v=82f429addf8e",
   "/access-practice-lab/src/vocab-curriculum/model.js?v=735dfef00994",
   "/access-practice-lab/src/vocab-curriculum/lessons.js?v=bc2907754ff2",
   "/access-practice-lab/src/items.js?v=6d49bdf03b5c",
   "/access-practice-lab/src/studio-ui.js?v=1a18494fd564",
   "/access-practice-lab/src/lang/rubrics.js?v=5656db97483b",
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
-  "/access-practice-lab/src/shell.js?v=9324a0360dbe",
+  "/access-practice-lab/src/shell.js?v=787a2420c0b2",
   "/access-practice-lab/src/comfort.js?v=750da0271342",
-  "/access-practice-lab/src/nav.js?v=14094c388093",
+  "/access-practice-lab/src/nav.js?v=f0cde81d70b2",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
-  "/access-practice-lab/src/sitemap.js?v=26b915ea641a",
+  "/access-practice-lab/src/sitemap.js?v=722c85218733",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
+  "/access-practice-lab/src/read-page.js?v=cb45ffd17272",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
   "/access-practice-lab/src/wayfinding.js?v=dc0db13df91e",
@@ -77,8 +79,8 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/postcard-store.js?v=af17944635b2",
   "/access-practice-lab/src/intro/return-bar.js?v=79c35e605cef",
   "/access-practice-lab/src/intro/data.js?v=b265b7093fc7",
-  "/access-practice-lab/src/views/home.js?v=65893d28da4c",
-  "/access-practice-lab/src/lang/adapt.js?v=4f5782d70773",
+  "/access-practice-lab/src/views/home.js?v=755c9dc35b9b",
+  "/access-practice-lab/src/lang/adapt.js?v=61f2ee6f6b67",
   "/access-practice-lab/src/lang/skill-graph.js?v=0e98cc7ed2ef",
   "/access-practice-lab/src/views/home-klu.js?v=c53238084ad7",
   "/access-practice-lab/src/views/home-hero.js?v=02f81806106d",
@@ -88,16 +90,19 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/exhibition-steps.js?v=bc81f24c0c97",
   "/access-practice-lab/src/practice-plan.js?v=e0ccb901e2cd",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
-  "/access-practice-lab/src/views/road.js?v=cb5d56fdfccb",
+  "/access-practice-lab/src/class/support.js?v=04d92cc9418d",
+  "/access-practice-lab/src/views/road.js?v=82c8cbdee8e1",
   "/access-practice-lab/src/views/room.js?v=8b3ea3648bbf",
   "/access-practice-lab/src/games/registry.js?v=646a2e41e28a",
+  "/access-practice-lab/src/road-offline.js?v=1c183707346d",
+  "/access-practice-lab/src/offline-pack.js?v=f9e0a4e748c2",
   "/access-practice-lab/src/engagement.js?v=6b7a0c435f9a",
   "/access-practice-lab/src/lang/unlocks.js?v=dbfd283714f1",
   "/access-practice-lab/src/family/plan.js?v=fe5c5c1669b6",
-  "/access-practice-lab/src/home-registry.js?v=10d685378c40",
+  "/access-practice-lab/src/home-registry.js?v=6b4e686a6145",
   "/access-practice-lab/src/views/home-panels.js?v=4da141951ca0",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",
-  "/access-practice-lab/src/views/home-start.js?v=76fe203b9561",
+  "/access-practice-lab/src/views/home-start.js?v=41b9b8b5e0dc",
   "/access-practice-lab/src/journey/ui/pages-hero.js?v=ddd28b485c0c",
   "/access-practice-lab/src/journey/ui/pages-shared.js?v=67192ca457c6",
   "/access-practice-lab/src/journey/recommend.js?v=02f666f06ad6",
@@ -109,7 +114,7 @@ const PRECACHE_CORE = [
 ];
 const PRECACHE_MORE = [
   "/access-practice-lab/library.css?v=e7031fc81074",
-  "/access-practice-lab/studio.css?v=28d71fd235dd",
+  "/access-practice-lab/studio.css?v=b9cd351c5b37",
   "/access-practice-lab/launch-studio.css?v=2ebc9a120833",
   "/access-practice-lab/diagnostic.css?v=9be5c7b346a7",
   "/access-practice-lab/worlds.css?v=c5111325ca90",
@@ -118,21 +123,21 @@ const PRECACHE_MORE = [
   "/access-practice-lab/subject-reading.css?v=5bd52f4b8914",
   "/access-practice-lab/classroom-studio.css?v=9668bf1c9d32",
   "/access-practice-lab/vocabulary.css?v=b88a981f54fd",
-  "/access-practice-lab/class.css?v=8e998fcc65d8",
+  "/access-practice-lab/class.css?v=10e69b16efa2",
   "/access-practice-lab/practice-games.css?v=117b3a7d1b66",
   "/access-practice-lab/publisher.css?v=67f6dac7bd48",
   "/access-practice-lab/rehearsal.css?v=0a3c174d773e",
   "/access-practice-lab/early.css?v=80e55c78cb13",
   "/access-practice-lab/intro.css?v=db2c1eaf6394",
   "/access-practice-lab/intro-guide.css?v=77675b6e5b61",
-  "/access-practice-lab/site-guide.css?v=f33e4f247a2c",
+  "/access-practice-lab/site-guide.css?v=c06bddd1147b",
   "/access-practice-lab/intro-tour.css?v=aba877855bee",
   "/access-practice-lab/guided.css?v=d8c273e652e4",
   "/access-practice-lab/voice.css?v=a73c965c687d",
   "/access-practice-lab/activity.css?v=0e9ea6739c9c",
   "/access-practice-lab/lesson-frame.css?v=0cd08cbb2b0c",
   "/access-practice-lab/room.css?v=59ccc2904c81",
-  "/access-practice-lab/tests.css?v=2e15128301e8",
+  "/access-practice-lab/tests.css?v=ebbc261c8d58",
   "/access-practice-lab/family.css?v=362c81f37ed0",
   "/access-practice-lab/exhibition.css?v=c971915e02d7",
   "/access-practice-lab/science-lab.css?v=f92c314db5e0",
@@ -141,7 +146,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/science-lab-argue.css?v=deb1d25bcd86",
   "/access-practice-lab/science-lab-share.css?v=ca0dc898554d",
   "/access-practice-lab/journey-map.css?v=92cb3eb9a778",
-  "/access-practice-lab/journey-runner.css?v=d3caedfa290f",
+  "/access-practice-lab/journey-runner.css?v=9f5df15cc274",
   "/access-practice-lab/journey-scene.css?v=8a1d2521a3b2",
   "/access-practice-lab/journey-listen.css?v=ff87d360ea05",
   "/access-practice-lab/journey-xray.css?v=7fe935c3229a",
@@ -174,7 +179,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/experience.css?v=ecfa672e8c43",
   "/access-practice-lab/units.css?v=d6528dce25e0",
   "/access-practice-lab/language-studios.css?v=ce965935b55f",
-  "/access-practice-lab/comfort.css?v=5e5c2cf66911",
+  "/access-practice-lab/comfort.css?v=a29ddd3960d5",
   "/access-practice-lab/reader.css?v=ab192bd27e31",
   "/access-practice-lab/wayfinding.css?v=8d27730b599e",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971bc05",
@@ -213,10 +218,24 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/checkin.js?v=4bdf0895e93f",
   "/access-practice-lab/src/class/ai-feedback.js?v=27693ecac934",
   "/access-practice-lab/src/class/assign.js?v=e5e1e46eabf8",
-  "/access-practice-lab/src/class/dom.js?v=cec391dd8f12",
-  "/access-practice-lab/src/class/link.js?v=ecd9f9644296",
+  "/access-practice-lab/src/class/dom.js?v=58c6cbed1ce6",
+  "/access-practice-lab/src/class/family-reports.js?v=b37a1666dca7",
+  "/access-practice-lab/src/class/feedback-card.js?v=46cc9de0ac21",
+  "/access-practice-lab/src/class/heat-map.js?v=7155b73984f0",
+  "/access-practice-lab/src/class/join-cards.js?v=6a6f241e00e0",
+  "/access-practice-lab/src/class/join-prompt.js?v=fd2c7e4b31c0",
+  "/access-practice-lab/src/class/link.js?v=18c598a249ec",
+  "/access-practice-lab/src/class/qr-scan.js?v=727b199a62ce",
   "/access-practice-lab/src/class/quiz-key.js?v=13bb7f30d02c",
-  "/access-practice-lab/src/class/roster-panel.js?v=307def69b026",
+  "/access-practice-lab/src/class/review-queue.js?v=5700b6bdd9bd",
+  "/access-practice-lab/src/class/roster-panel.js?v=ec9625c3a6f8",
+  "/access-practice-lab/src/class/scene-model.js?v=5186712c0173",
+  "/access-practice-lab/src/class/scene-player.js?v=c8ec08fe0219",
+  "/access-practice-lab/src/class/session.js?v=33c9947847e4",
+  "/access-practice-lab/src/class/social-api.js?v=fa21494b88d7",
+  "/access-practice-lab/src/class/social-teacher.js?v=4ee40abbd7ef",
+  "/access-practice-lab/src/class/support-editor.js?v=ce5d62f8bd35",
+  "/access-practice-lab/src/class/voice-note.js?v=daf5fa7d289b",
   "/access-practice-lab/src/class/voice.js?v=cf59c94c6fa6",
   "/access-practice-lab/src/coach/activity-steps.js?v=db9c18280637",
   "/access-practice-lab/src/coach/coach.js?v=47633eb4a944",
@@ -249,6 +268,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/content/journey/m11.js?v=a3aea1a7c2c4",
   "/access-practice-lab/src/content/journey/m12.js?v=ca6753b349a2",
   "/access-practice-lab/src/content/newsroom.js?v=ed5aec2ddef5",
+  "/access-practice-lab/src/content/passport-cards.js?v=903cb730232c",
   "/access-practice-lab/src/content/phonics/level-1.js?v=0ee994aadde4",
   "/access-practice-lab/src/content/phonics/level-2.js?v=12083d956307",
   "/access-practice-lab/src/content/phonics/level-3.js?v=564abd7561e5",
@@ -400,7 +420,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/journey/runner-env.js?v=913a1d1bcd21",
   "/access-practice-lab/src/journey/runner-panels.js?v=881a4e586a76",
   "/access-practice-lab/src/journey/runner-steps.js?v=bacb157be8b4",
-  "/access-practice-lab/src/journey/runner.js?v=86aa5f2328bd",
+  "/access-practice-lab/src/journey/runner.js?v=85cc85e89c59",
   "/access-practice-lab/src/journey/ui/compose.js?v=70a53c0cdd4c",
   "/access-practice-lab/src/journey/ui/construct-ui-modules.js?v=36147b211966",
   "/access-practice-lab/src/journey/ui/construct-ui-sentence.js?v=4cd6249aba49",
@@ -423,7 +443,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/journey/ui/xray.js?v=c0fc23eb6ae1",
   "/access-practice-lab/src/journey/wida.js?v=06c840eb859f",
   "/access-practice-lab/src/journey/worlds-portal.js?v=73d63b6ddf0c",
-  "/access-practice-lab/src/journey.js?v=b07214a9d657",
+  "/access-practice-lab/src/journey.js?v=70275025cddb",
   "/access-practice-lab/src/ladder-placement.js?v=0758c0b2b4c6",
   "/access-practice-lab/src/ladder-tools.js?v=19e08686e255",
   "/access-practice-lab/src/ladder.js?v=d6d1319e9352",
@@ -456,6 +476,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/lang/providers.js?v=03dd3b9732ad",
   "/access-practice-lab/src/lang/reader.js?v=017842d19ea2",
   "/access-practice-lab/src/lang/readiness.js?v=ea8f0aa9261d",
+  "/access-practice-lab/src/lang/rehearsal-route.js?v=a73f9dc97faa",
   "/access-practice-lab/src/lang/scaffold-check.js?v=f3cd548204a5",
   "/access-practice-lab/src/lang/scenarios.js?v=f3203a8042a2",
   "/access-practice-lab/src/lang/science-lab-asks.js?v=6a6530b396ed",
@@ -467,6 +488,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/lang/site-search.js?v=662a2f643898",
   "/access-practice-lab/src/lang/sound-bridge.js?v=98d9a56a4a33",
   "/access-practice-lab/src/lang/speaking-groups.js?v=ee517ba2c903",
+  "/access-practice-lab/src/lang/speech-feedback.js?v=0e4b79910275",
   "/access-practice-lab/src/lang/supports-report.js?v=fbdbce312880",
   "/access-practice-lab/src/lang/teacher.js?v=120c2acd5605",
   "/access-practice-lab/src/lang/units.js?v=692239e326ee",
@@ -496,6 +518,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/sor/path.js?v=0e8119751408",
   "/access-practice-lab/src/sor/player.js?v=ec65c9115dea",
   "/access-practice-lab/src/sor/sequence.js?v=3a948335011e",
+  "/access-practice-lab/src/speech-feedback-ui.js?v=654ff09745b9",
   "/access-practice-lab/src/stt.js?v=2ac7de58914c",
   "/access-practice-lab/src/studios/data-bridge-view.js?v=dd19eb01b947",
   "/access-practice-lab/src/studios/discourse-architect.js?v=f8dbb5153e04",
@@ -512,7 +535,9 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/subject-reading/index.js?v=1672c52aa841",
   "/access-practice-lab/src/tour-dock.js?v=99483d90801c",
   "/access-practice-lab/src/transfer.js?v=088ee1d199d1",
+  "/access-practice-lab/src/trip-journal.js?v=a82fc915a141",
   "/access-practice-lab/src/views/access-prep.js?v=61389eedb85d",
+  "/access-practice-lab/src/views/accessibility.js?v=512c6e8154d2",
   "/access-practice-lab/src/views/activity.js?v=be2a794de790",
   "/access-practice-lab/src/views/arena.js?v=6c583b00f93b",
   "/access-practice-lab/src/views/assess.js?v=48bf2625256a",
@@ -525,7 +550,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/city.js?v=8100439dadce",
   "/access-practice-lab/src/views/class-quiz.js?v=4860dd2c84f4",
   "/access-practice-lab/src/views/class-roster.js?v=09ea25a55bad",
-  "/access-practice-lab/src/views/class.js?v=051ea1e940aa",
+  "/access-practice-lab/src/views/class.js?v=67bec97444cf",
   "/access-practice-lab/src/views/classroom-data.js?v=de468c8a1192",
   "/access-practice-lab/src/views/classroom.js?v=9c4730c38e28",
   "/access-practice-lab/src/views/collection.js?v=667a147152fb",
@@ -556,13 +581,16 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/missions.js?v=bd20ac59d573",
   "/access-practice-lab/src/views/move.js?v=f3dd06df59d3",
   "/access-practice-lab/src/views/newsroom.js?v=dc24fb107870",
+  "/access-practice-lab/src/views/pairs.js?v=c37e524f19d2",
+  "/access-practice-lab/src/views/passport-journal.js?v=f1dd61e51db5",
   "/access-practice-lab/src/views/passport-living.js?v=31294555e7ef",
   "/access-practice-lab/src/views/passport-work.js?v=b54559c3caaf",
-  "/access-practice-lab/src/views/passport.js?v=dd53bf36d9d4",
+  "/access-practice-lab/src/views/passport.js?v=24b99b058ac2",
   "/access-practice-lab/src/views/path-copy.js?v=ddd3b11da995",
   "/access-practice-lab/src/views/path-data.js?v=211090563fdb",
   "/access-practice-lab/src/views/path.js?v=5d1d9b7b12f3",
   "/access-practice-lab/src/views/portfolio.js?v=f6a78f8d2462",
+  "/access-practice-lab/src/views/privacy.js?v=b44231d85491",
   "/access-practice-lab/src/views/publisher-demo.js?v=0765e82772fc",
   "/access-practice-lab/src/views/puzzles.js?v=dbe7c9724593",
   "/access-practice-lab/src/views/reader.js?v=ec394bc82c29",
@@ -574,6 +602,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/scaffold.js?v=b90f04dbe09d",
   "/access-practice-lab/src/views/scenario-art.js?v=ffa774aab5a6",
   "/access-practice-lab/src/views/scenarios.js?v=dcdfbfb7fa9e",
+  "/access-practice-lab/src/views/scenes.js?v=f646ca94e402",
   "/access-practice-lab/src/views/science-lab-actions.js?v=2a63906edb0c",
   "/access-practice-lab/src/views/science-lab-argue.js?v=43bd3ed92f37",
   "/access-practice-lab/src/views/science-lab-collect.js?v=1d90ec3bd627",
@@ -597,14 +626,16 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/search.js?v=8f002ad294d0",
   "/access-practice-lab/src/views/sentences.js?v=d256ccdaa9bd",
   "/access-practice-lab/src/views/shields.js?v=fd63ffdffcf9",
-  "/access-practice-lab/src/views/speak.js?v=3929061c1acc",
+  "/access-practice-lab/src/views/speak.js?v=76438f9acdf5",
   "/access-practice-lab/src/views/stories.js?v=fe89bdea0410",
   "/access-practice-lab/src/views/studio-art.js?v=c200fec1317c",
   "/access-practice-lab/src/views/studio-kit.js?v=88dcdb166f72",
+  "/access-practice-lab/src/views/test-adaptive.js?v=b244d402b380",
+  "/access-practice-lab/src/views/test-live-tools.js?v=de470fec74b6",
   "/access-practice-lab/src/views/test-modes.js?v=7eb7cfaf9c3d",
   "/access-practice-lab/src/views/test-report.js?v=ab358b37e88c",
-  "/access-practice-lab/src/views/test.js?v=dec5b64590d9",
-  "/access-practice-lab/src/views/tests.js?v=3b6cab44df94",
+  "/access-practice-lab/src/views/test.js?v=b8ea058e0f3d",
+  "/access-practice-lab/src/views/tests.js?v=aaa8a8013d36",
   "/access-practice-lab/src/views/tools.js?v=906833d0a863",
   "/access-practice-lab/src/views/units-common.js?v=0cdeb3a208c1",
   "/access-practice-lab/src/views/units-lesson.js?v=b28cf647ead4",
@@ -628,7 +659,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/wordlab-play.js?v=875d4d16827b",
   "/access-practice-lab/src/views/wordlab.js?v=42d6417a639b",
   "/access-practice-lab/src/views/worlds.js?v=3adb4809d545",
-  "/access-practice-lab/src/views/write.js?v=38bf6b770a9f",
+  "/access-practice-lab/src/views/write.js?v=56fe8dfa60af",
   "/access-practice-lab/src/vocab-curriculum/view.js?v=597fa515d9e7",
   "/access-practice-lab/src/warmup-art.js?v=f847b039971f",
   "/access-practice-lab/src/word-goal.js?v=ad23f2359efe",
@@ -910,10 +941,13 @@ const SHELL = `${SCOPE}app-shell`;
 const PREFIX = "ewl-access-";
 const CACHE = `${PREFIX}${BUILD_HASH}`;
 const FRESH_MS = 3500;
+// Modules outside the lab folder that src/main.js imports statically: without them the lab cannot start offline.
+const OUTSIDE_MODULES = ["/shared/math-language-bridge/v1.js", "/shared/math-language-bridge/v2.js"];
 // Shared chrome the lab loads from outside its own folder; worth having offline so the page is not unstyled.
 const OUTSIDE = [
   /^\/assets\/mobile-access\.css$/,
   /^\/shared\/save-resume\//,
+  /^\/shared\/math-language-bridge\/v\d+\.js$/,
   /^\/assets\/fonts\/(?:atkinson-hyperlegible|fraunces)-[0-9a-f]+\.woff2$/,
 ];
 
@@ -976,12 +1010,18 @@ async function immutableResponse(request) {
   return response;
 }
 
+// This build's copy first; an offline week pack (older, possibly) only when the build has none.
+async function savedCopy(request) {
+  const own = await caches.open(CACHE).then((cache) => cache.match(request)).catch(() => undefined);
+  return own || caches.match(request);
+}
+
 async function freshResponse(request) {
   const network = fetch(request).then((response) => {
     put(CACHE, request, response);
     return response;
   });
-  const saved = await caches.match(request);
+  const saved = await savedCopy(request);
   if (!saved) return network;
   return withTimeout(
     network.then((r) => (r.status >= 500 ? saved : r)).catch(() => saved),
@@ -1003,9 +1043,10 @@ async function precache() {
 async function warmOffline() {
   const cache = await caches.open(CACHE);
   // Best effort after first paint: route modules, secondary styles, content and pictures. A miss is filled by use.
-  for (let i = 0; i < PRECACHE_MORE.length; i += 8)
+  const more = [...OUTSIDE_MODULES, ...PRECACHE_MORE];
+  for (let i = 0; i < more.length; i += 8)
     await Promise.all(
-      PRECACHE_MORE.slice(i, i + 8).map(async (url) => {
+      more.slice(i, i + 8).map(async (url) => {
         try {
           await cache.put(url, await fetchOk(new Request(url, { cache: "reload" })));
         } catch {
@@ -1028,6 +1069,112 @@ async function dropOldCaches() {
   await Promise.all(stale.map((key) => caches.delete(key)));
 }
 
+// ── Offline week packs (src/offline-pack.js) ────────────────────────────────────
+// A page sends {type: "cache-urls", name, urls} with a MessagePort. Same-origin URLs inside the lab are saved into
+// their own cache, "ewl-offline-<name>", which dropOldCaches never clears (it only clears "ewl-access-" builds).
+// Pages (navigations) are not fetched: the shell answers them, so the worker only checks it has the shell and the
+// lab's modules. Everything else (cross-origin, outside the lab, /api/, this file, config.json) is refused.
+const PACK_PREFIX = "ewl-offline-";
+const PACK_MAX = 400;
+const PACK_NAME = /^[a-z0-9-]{1,60}$/;
+const PACK_MANIFEST = `${SCOPE}__offline-pack.json`;
+
+/** Pure: split a requested list into pages, files and refused entries. */
+function packPlan(urls, origin) {
+  const pages = [];
+  const files = [];
+  const refused = [];
+  const seen = new Set();
+  for (const raw of Array.isArray(urls) ? urls.slice(0, PACK_MAX) : []) {
+    let url;
+    try {
+      url = new URL(String(raw), origin);
+    } catch {
+      refused.push(String(raw));
+      continue;
+    }
+    const path = url.pathname;
+    if (
+      url.origin !== origin ||
+      !/^https?:$/.test(url.protocol) ||
+      !path.startsWith(SCOPE) ||
+      path.includes("..") ||
+      path === `${SCOPE}sw.js` ||
+      path === `${SCOPE}config.json` ||
+      path === PACK_MANIFEST
+    ) {
+      refused.push(String(raw));
+      continue;
+    }
+    if (seen.has(url.href)) continue;
+    seen.add(url.href);
+    (/\.[a-z0-9]+$/i.test(path) ? files : pages).push(url.href);
+  }
+  return { pages, files, refused };
+}
+
+/** The lab's own modules and styles (not content) that this build has not saved yet: needed to open a page offline. */
+async function ensureAppCode() {
+  const cache = await caches.open(CACHE);
+  if (!(await cache.match(SHELL))) await cache.put(SHELL, await fetchOk(new Request(SHELL, { cache: "reload" })));
+  const code = [
+    ...OUTSIDE_MODULES,
+    ...[...PRECACHE_CORE, ...PRECACHE_MORE].filter((u) => /\.(js|css)\?v=/.test(u)),
+  ];
+  for (let i = 0; i < code.length; i += 8)
+    await Promise.all(
+      code.slice(i, i + 8).map(async (url) => {
+        if (await cache.match(url)) return;
+        try {
+          await cache.put(url, await fetchOk(new Request(url)));
+        } catch {
+          /* best effort: a module the learner never opens is not needed */
+        }
+      }),
+    );
+}
+
+async function cachePack(data, report = () => {}) {
+  const name = String(data?.name || "");
+  if (!PACK_NAME.test(name)) throw new Error("bad pack name");
+  const origin = self.location.origin;
+  const { pages, files, refused } = packPlan(data.urls, origin);
+  await ensureAppCode();
+  const cache = await caches.open(PACK_PREFIX + name);
+  let done = 0;
+  let bytes = 0;
+  let failed = 0;
+  report({ done, total: files.length, bytes });
+  for (let i = 0; i < files.length; i += 4)
+    await Promise.all(
+      files.slice(i, i + 4).map(async (url) => {
+        try {
+          const response = await fetchOk(new Request(url, { cache: "reload" }));
+          bytes += (await response.clone().blob()).size;
+          await cache.put(url, response);
+        } catch {
+          failed += 1;
+        }
+        done += 1;
+        report({ done, total: files.length, bytes });
+      }),
+    );
+  const summary = {
+    name,
+    saved: files.length - failed,
+    failed,
+    refused: refused.length,
+    pages: pages.length,
+    bytes,
+    at: new Date().toISOString(),
+  };
+  await cache.put(
+    PACK_MANIFEST,
+    new Response(JSON.stringify(summary), { headers: { "content-type": "application/json" } }),
+  );
+  return summary;
+}
+
 if (typeof self !== "undefined" && typeof self.addEventListener === "function") {
   self.addEventListener("install", (event) => {
     event.waitUntil(precache().then(() => self.skipWaiting()));
@@ -1037,6 +1184,15 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
   });
   self.addEventListener("message", (event) => {
     if (event.data?.type === "prepare-offline") event.waitUntil(warmOffline());
+    if (event.data?.type === "cache-urls") {
+      const port = event.ports?.[0] || event.source;
+      const reply = (msg) => port?.postMessage?.(msg);
+      event.waitUntil(
+        cachePack(event.data, (p) => reply({ type: "cache-progress", ...p }))
+          .then((summary) => reply({ type: "cache-done", ...summary }))
+          .catch((error) => reply({ type: "cache-error", message: String(error?.message || error) })),
+      );
+    }
   });
   self.addEventListener("fetch", (event) => {
     const kind = route(event.request, new URL(event.request.url), self.location.origin);
@@ -1060,4 +1216,6 @@ if (typeof module !== "undefined")
     precache,
     warmOffline,
     dropOldCaches,
+    packPlan,
+    cachePack,
   };

@@ -54,6 +54,19 @@ import {
   reviewScreenHTML,
   sectionsText,
 } from "./test-report.js";
+import {
+  adaptiveEligible,
+  adaptiveOptionHTML,
+  applyRoute,
+  decideRoute,
+  isRoutedDomain,
+  loadPools,
+  requestedAdaptive,
+  routeApplied,
+  routeNoticeHTML,
+  teacherRouteHTML,
+} from "./test-adaptive.js";
+import { highlightBarHTML, micCheckHTML, mountHighlighter, onHighlightClick, onMicClick, unmountLiveTools } from "./test-live-tools.js";
 import { MODES, MODE_TEXT, gradesText, modeBannerHTML, modeOf, modePhrase, modePhraseS, otherMode, rich, testStrategiesHTML } from "./test-modes.js";
 
 export { MODES, modeOf };
@@ -117,6 +130,20 @@ const persist = () => {
   saveTestRecord(T.test.id, T.rec);
   T.savedSnapshot = JSON.stringify(loadTestRecord(T.test.id));
 };
+/** Rehearsal that adapts: show the routed Speaking/Writing prompts once a route exists (same counts, so indices hold). */
+function syncRoute() {
+  T.test = applyRoute(T.base, T.rec.route, T.pool);
+  T.flat = flatten(T.test);
+}
+/** Route on first arrival in Speaking or Writing (or at review), from the Listening and Reading answers so far. */
+function maybeRoute() {
+  if (!T.rec.adaptive || T.rec.route || !T.pool || !adaptiveEligible(T.base)) return;
+  const f = T.flat[T.rec.index];
+  if (T.rec.phase === "review" || (T.rec.phase === "running" && f && isRoutedDomain(f.section.domain))) {
+    T.rec.route = decideRoute(T.base, runOutcomes(T.flat, T.rec), T.pool);
+    syncRoute();
+  }
+}
 
 // Planning notes are preparation, not evidence of a spoken response.
 export function responseDone(item, domain, answer, oralPractice = false, hasTake = false) {
@@ -138,6 +165,7 @@ export function unmount() {
   renderGeneration++;
   clearInterval(timerId);
   releaseRehearsal();
+  unmountLiveTools();
   if (T) T.paramApplied = false;
   if (T) T.pendingMode = null;
   if (T?.rec.phase === "running") {
@@ -247,6 +275,7 @@ function introHTML() {
     <div class="test-intro-grid">
       <div class="test-intro-main">
         ${modeCardsHTML(I, T.rec, { started: inProgress(), minutes: T.minutes })}
+        ${adaptiveEligible(T.base) ? adaptiveOptionHTML(I, T.rec, { started: inProgress() }) : ""}
         ${rehearsalToolbarHTML()}
         <div class="row-actions test-start">
           <button type="button" class="btn btn-primary btn-big" data-start>
@@ -433,7 +462,9 @@ function runnerHTML(ctx) {
   const hasPassage = !listening && asList(f.item.passage).length > 0;
   const stim = stimulus(f, ctx);
   const hasStimulus = Boolean(toHtml(stim).replace(/\s+/g, ""));
-  const response = html`<p class="prompt-text">${f.item.prompt || ""}</p>
+  // A real microphone check opens each run's Speaking part; it sits above the question and can be skipped.
+  const micCheck = f.section.domain === "Speaking" && f.n === 1 && !T.rec.micCheck ? micCheckHTML(I) : "";
+  const response = html`${micCheck}<p class="prompt-text">${f.item.prompt || ""}</p>
     ${inputFor(f)} ${supportZoneHTML(f)}`;
   return html`<div class="test-bar">
       ${modeBadgeHTML(I, modeOf(T.rec))}
@@ -453,6 +484,7 @@ function runnerHTML(ctx) {
       <button type="button" class="btn small strategy-toggle ${T.rec.showStrategy ? "is-active" : ""}" data-strategy-toggle aria-pressed="${Boolean(T.rec.showStrategy)}" title="${I.S("Test strategies & POE", "Estrategias de examen y descarte")}">
         ${icon("bulb")}${I.T("Strategies & POE", "Estrategias y descarte")}
       </button>
+      ${T.rec.conditions ? highlightBarHTML(I) : ""}
     </div>
     ${T.rec.crossOffMode ? html`<div class="crossoff-banner" role="status">
       <span>${icon("x")}<strong>${I.T("Cross-off active:", "Modo tachar activo:")}</strong> ${I.T("Click any choice to eliminate or restore it. Click 'Cross-off tool' again to select your answer.", "Haz clic en una opción para tacharla o restaurarla. Haz clic de nuevo en 'Tachar opciones' para responder.")}</span>
@@ -475,6 +507,7 @@ function runnerHTML(ctx) {
             ${icon("flag")}${flagged ? I.T("Flagged", "Marcada") : I.T("Flag for review", "Marcar para revisar")}
           </button>
         </div>
+        ${f.n === 1 && isRoutedDomain(f.section.domain) && routeApplied(T.rec.route) ? routeNoticeHTML(I) : ""}
         ${f.n === 1 && f.section.directions ? html`<p class="section-directions">${icon("info")}<span><strong>${I.T("Directions.", "Instrucciones.")}</strong> ${f.section.directions}</span></p>` : ""}
         ${
           hasStimulus
@@ -536,6 +569,7 @@ function resultsHTML() {
       ${ratingHTML(I, r, T.rec.ratings)}
       ${compositeHTML(I, practiceComposite(r.sections, T.rec.ratings), { WEIGHTS, METHOD, LIMITS, MIN_ITEMS, BAND_POINTS })}
       ${formativeHTML(I, T.rec.formative, formativeBreakdown, { SMALL_SAMPLE, FORMATIVE_SMALL })}
+      ${teacherRouteHTML(I, T.rec, T.base.id, T.base.band)}
       <p class="test-note disclaimer">
         ${icon("info")}<span>${I.T(
           "This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best judged by your teacher.",
@@ -576,6 +610,7 @@ export async function render(ctx) {
     const rec = saved;
     T = {
       test,
+      base: test,
       savedSnapshot: JSON.stringify(saved),
       flat: flatten(test),
       minutes: (test.sections || []).reduce((n, s) => n + (Number(s.estMinutes) || 8), 0),
@@ -583,6 +618,18 @@ export async function render(ctx) {
     };
     if (T.rec.results) T.rec.phase = "results";
     if (T.rec.phase === "running") T.rec.phase = "intro"; // resume from the intro screen
+  }
+  if (requestedAdaptive() && !T.adaptApplied) {
+    T.adaptApplied = true;
+    if (T.rec.phase === "intro" && !inProgress() && adaptiveEligible(T.base) && !T.rec.adaptive) {
+      T.rec.adaptive = true;
+      persist();
+    }
+  }
+  if (T.rec.adaptive && adaptiveEligible(T.base) && !T.pool) {
+    T.pool = await loadPools(T.base.band);
+    if (generation !== renderGeneration) return { title: "", html: html`` };
+    syncRoute();
   }
   const want = requestedMode();
   if (want && !T.paramApplied) {
@@ -609,8 +656,10 @@ export async function render(ctx) {
     html: html`<div class="test-view is-${T.rec.phase} ${running ? domainClass(domain) : "d-model-test"} ${rehearsalClasses()}" data-mode="${modeOf(T.rec)}">${body}</div>`,
   };
 }
-export function mount(_root, ctx) {
+export function mount(root, ctx) {
   applyRehearsal(ctx);
+  const cur = T?.rec.phase === "running" && T.flat[T.rec.index];
+  if (cur && T.rec.conditions) mountHighlighter(root, T.rec.highlights?.[cur.item.id]);
   if (T?.rec.phase === "running" && T.rec.timer) startTimer();
   else clearInterval(timerId);
 }
@@ -622,8 +671,9 @@ function restart(ctx, mode = modeOf(T.rec)) {
     if (T !== current) return;
     for (const f of T.flat) clearTake(`${T.test.id}:${f.item.id}`);
     clearTestRecord(T.test.id);
-    const { formative, conditions, replay } = T.rec;
-    T.rec = { phase: "intro", index: 0, answers: {}, flags: [], conditions, replay };
+    const { formative, conditions, replay, adaptive } = T.rec;
+    T.rec = { phase: "intro", index: 0, answers: {}, flags: [], conditions, replay, ...(adaptive ? { adaptive } : {}) };
+    syncRoute();
     if (formative) T.rec.formative = formative;
     setMode(mode);
     T.pendingMode = null;
@@ -655,6 +705,7 @@ async function go(ctx, patch) {
   await stopRecording();
   if (T !== current) return;
   Object.assign(T.rec, patch);
+  maybeRoute();
   persist();
   ctx.rerender();
   window.scrollTo({ top: 0 });
@@ -674,6 +725,14 @@ export function onClick(e, ctx) {
   }
   const f = T.flat[T.rec.index];
   if (onRehearsalClick(e, ctx)) return true;
+  if (T.rec.phase === "running" && f) {
+    const save = (list) => {
+      (T.rec.highlights ||= {})[f.item.id] = list;
+      persist();
+    };
+    if (onHighlightClick(e, document, { list: T.rec.highlights?.[f.item.id] || [], save }, I)) return true;
+    if (onMicClick(e, document, I, (result) => go(ctx, { micCheck: result }))) return true;
+  }
   if (t.closest("[data-crossoff-toggle]")) {
     T.rec.crossOffMode = !T.rec.crossOffMode;
     announce(
@@ -800,6 +859,13 @@ export function onChange(e, ctx) {
     persist();
     const id = t.id;
     return ctx.rerender().then(() => document.getElementById(id)?.focus({ preventScroll: true }));
+  }
+  if (T.rec.phase === "intro" && t.matches("[data-adaptive]") && !inProgress()) {
+    T.rec.adaptive = t.checked;
+    T.rec.route = undefined;
+    if (t.checked) T.pool = null; // render loads the prompt sets
+    persist();
+    return ctx.rerender().then(() => document.querySelector("[data-adaptive]")?.focus({ preventScroll: true }));
   }
   if (T.rec.phase === "intro" && (t.matches("[data-conditions]") || t.matches("[data-replay]"))) {
     if (t.matches("[data-conditions]")) {

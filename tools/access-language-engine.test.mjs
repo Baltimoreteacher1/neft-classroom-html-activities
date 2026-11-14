@@ -625,8 +625,27 @@ test("recommendations: every result carries an observable reason from standards,
   assert.equal(standardFor({ standards: ["ELD-LA"], contentArea: "Science" }), "ELD-LA");
   assert.equal(Object.keys(ELD_STANDARDS).length, 5);
   const recs = recommendTasks(tasks, [], { n: 3, signals: noSignals });
-  assert.ok(recs.every((r) => r.reason && r.reason === r.why));
-  assert.ok(recs.some((r) => /WIDA ELD Standard 4/.test(r.reason)));
+  assert.ok(recs.every((r) => r.reason && r.reason === r.teacherWhy));
+  assert.ok(
+    recs.some((r) => /WIDA ELD Standard 4/.test(r.teacherWhy)),
+    "standard number stays teacher-facing",
+  );
+  // The student sees a short, friendly reason in English and Spanish, never a standard number.
+  for (const r of recs) {
+    assert.ok(
+      Array.isArray(r.why) && r.why.length === 2 && r.why.every((w) => w.trim()),
+      "why is [en, es]",
+    );
+    assert.notEqual(r.why[0], r.why[1]);
+    assert.ok(
+      r.why.every((w) => w.length <= 60 && !/WIDA|Standard|Estándar|\d/.test(w)),
+      r.why.join(" / "),
+    );
+  }
+  assert.deepEqual(recs.find((r) => r.task.id === "s1").why, [
+    "New for you: science words",
+    "Nuevo para ti: palabras de ciencias",
+  ]);
   const signals = { checkinMissed: { "cause-effect": ["Listening"] }, worlds: {} };
   const withCheckin = recommendTasks(tasks, [], { n: 3, signals });
   assert.equal(withCheckin[0].task.id, "s2");

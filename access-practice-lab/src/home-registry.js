@@ -399,17 +399,8 @@ export const HOME_CARDS = [
       "Cuentos cortos para leer, escuchar y comentar.",
     ],
   },
-  {
-    id: "publisher-demo",
-    group: "explore",
-    href: "publisher-demo",
-    icon: "library",
-    title: ["One topic, four skills", "Un tema, cuatro habilidades"],
-    text: [
-      "One topic through listening, reading, speaking and writing.",
-      "Un tema a través de escuchar, leer, hablar y escribir.",
-    ],
-  },
+  // The publisher demo (/publisher-demo) is a pitch for publishers, not student practice: the route stays, the home
+  // card does not.
   {
     id: "road",
     group: "explore",

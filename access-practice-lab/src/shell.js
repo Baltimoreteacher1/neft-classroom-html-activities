@@ -3,6 +3,7 @@ import { BRAND, brandName, onLanguagePage } from "./brand.js";
 import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { comfortButtonHTML, installComfort } from "./comfort.js";
 import { footerHTML, navHTML } from "./nav.js";
+import { installReadPage, readPageButtonHTML } from "./read-page.js";
 import { installShortcuts } from "./shortcuts.js";
 import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
@@ -74,14 +75,25 @@ function updateSavePanel() {
   const meta = [T("Alias", "Alias"), T("Class", "Clase"), T("Progress", "Progreso"), T("Last saved", "Último guardado")];
   panel.querySelectorAll("dt").forEach((node, i) => { if (meta[i] && node.textContent !== meta[i]) node.textContent = meta[i]; });
 }
-/** First visit: offer the three language modes once, on every page except the family hub (which has its own). */
+/** Phone widths: the header's EN / ES switch is on screen too, so the banner would ask the same question twice. */
+export const PHONE_QUERY = "(max-width: 559px)";
+const onPhone = () => typeof matchMedia === "function" && matchMedia(PHONE_QUERY).matches;
+
+/**
+ * First visit: offer the three language modes once, on every page except the family hub (which has its own), and
+ * not on phones, where the header switch is already visible beside it. Using either switch sets `langChosen`
+ * (main.js), which retires the banner everywhere.
+ */
+export function wantsLangBanner(ctx, phone = onPhone()) {
+  const inTour = ctx.route?.view === "start" && ctx.route?.id === "tour";
+  return !phone && !ctx.prefs.langChosen && !inTour && !["family", "practice-together"].includes(ctx.route?.view);
+}
+
 function mountLangBanner(ctx) {
   const existing = document.getElementById("labLangBanner");
   // Family pages carry their own large language switch, so the banner would ask the same question twice.
   // The Teacher Tour (start/tour) keeps the activity above the fold: the header's EN / ES switch is still there.
-  const inTour = ctx.route?.view === "start" && ctx.route?.id === "tour";
-  const wanted = !ctx.prefs.langChosen && !inTour && !["family", "practice-together"].includes(ctx.route?.view);
-  if (!wanted) return existing?.remove();
+  if (!wantsLangBanner(ctx)) return existing?.remove();
   // index.html ships the same banner (hidden) so a first visit shows it before the first paint.
   if (existing) {
     existing.hidden = false;
@@ -150,7 +162,9 @@ export function mountShell(ctx) {
     nav.querySelector("details").open = Boolean(wasOpen);
     // Site search: a header button (palette) and a search box at the top of the More menu (results page).
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(searchButtonHTML(I)));
+    nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(readPageButtonHTML(I)));
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(comfortButtonHTML(I)));
+    installReadPage(ctx, I);
     installComfort(ctx, I);
     installShortcuts(ctx, I);
     nav.querySelector(".lab-utilities-body")?.insertAdjacentHTML("afterbegin", toHtml(searchFormHTML(I)));

@@ -98,7 +98,13 @@ export async function render(ctx) {
           class="is-independent"
           href="${BASE}/test/${t.id}?grades=${ctx.band}&rehearsal=independent"
           >${icon("lock")}${modeText(I, "independent", "name")}</a
-        >
+        >${
+          t.kind === "full"
+            ? html`<a class="is-adapt" href="${BASE}/test/${t.id}?grades=${ctx.band}&rehearsal=independent&adapt=1"
+                >${icon("growth")}${I.T("Rehearsal that adapts", "Ensayo que se adapta")}</a
+              >`
+            : ""
+        }
       </p>
     </li>`;
   };
@@ -127,8 +133,8 @@ export async function render(ctx) {
       <p class="test-note disclaimer">
         ${icon("info")}<span
           >${I.T(
-            "Actual ACCESS Online adapts Listening and Reading and uses those results for Speaking and Writing tier placement. These fixed classroom sets do not reproduce that routing, timing, scoring, or difficulty. Grade 3 ACCESS Writing uses paper; ask your teacher about your assigned format.",
-            "El ACCESS Online real adapta Escuchar y Leer, y usa esos resultados para asignar el nivel (tier) de Hablar y Escribir. Estos conjuntos fijos de clase no reproducen esa ruta, el tiempo, la puntuación ni la dificultad. La sección de Escritura de ACCESS en 3.er grado usa papel; pregunta a tu docente cuál es tu formato asignado.",
+            "Actual ACCESS Online adapts Listening and Reading and uses those results to choose the Speaking and Writing tasks. These classroom sets are fixed unless you choose Rehearsal that adapts on a four-domain form: then your Speaking and Writing tasks are chosen from your Listening and Reading answers, like the real test does. It still does not reproduce the real routing, timing, scoring, or difficulty, and it never gives a score or level. Grade 3 ACCESS Writing uses paper; ask your teacher about your assigned format.",
+            "El ACCESS Online real adapta Escuchar y Leer, y usa esos resultados para elegir las tareas de Hablar y Escribir. Estos conjuntos de clase son fijos, a menos que elijas Ensayo que se adapta en una prueba de las cuatro destrezas: entonces tus tareas de Hablar y Escribir se eligen según tus respuestas de Escuchar y Leer, como lo hace la prueba real. Aun así, no reproduce la ruta, el tiempo, la puntuación ni la dificultad reales, y nunca da un puntaje ni un nivel. La sección de Escritura de ACCESS en 3.er grado usa papel; pregunta a tu docente cuál es tu formato asignado.",
           )}</span
         >
       </p>

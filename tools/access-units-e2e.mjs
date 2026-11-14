@@ -70,7 +70,19 @@ const overflow = (page) =>
   const u = bands["6-8"][0];
   const { ctx, page, errors } = await open(1366);
   await page.goto(url("6-8"), { waitUntil: "networkidle" });
-  ok((await page.locator(".un-card").count()) === bands["6-8"].length, "hub lists every 6-8 unit");
+  // networkidle can land before the hub renders under load; wait for the cards themselves.
+  await page
+    .waitForFunction(
+      (n) => document.querySelectorAll(".un-card").length >= n,
+      bands["6-8"].length,
+      { timeout: 15000 },
+    )
+    .catch(() => {});
+  const cardCount = await page.locator(".un-card").count();
+  ok(
+    cardCount === bands["6-8"].length,
+    `hub lists every 6-8 unit (${cardCount} of ${bands["6-8"].length})`,
+  );
   await page.locator(`a.un-card[href*="/units/${u.id}"]`).click();
   await page.waitForSelector(".un-map-wide a.un-stop");
   ok((await page.locator(".un-map-wide a.un-stop").count()) === 7, "map has 7 stops");

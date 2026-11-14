@@ -147,6 +147,16 @@ export function studentApi(doc) {
         headers: studentHeaders(link),
         body: { code: link.code, audioId },
       }),
+    /** Share one finished writing sample with the teacher's scoring queue (Language Page). */
+    reviewShare: (link, { label, text }, fetchImpl = fetch) =>
+      request(fetchImpl, "review/share", {
+        method: "POST",
+        headers: studentHeaders(link),
+        body: { code: link.code, label, text },
+      }),
+    /** The teacher's reviews of this learner's shared work: descriptor chips and a comment, never a score. */
+    reviewMine: (link, fetchImpl = fetch) =>
+      request(fetchImpl, `review/mine?code=${link.code}`, { headers: studentHeaders(link) }),
     /** Bytes of one recording or note, fetched with the learner's headers (an <audio src> cannot send them). */
     async audioBlob(link, audioId, fetchImpl = fetch) {
       try {
@@ -204,6 +214,8 @@ export function createTeacherClient({
     audioList: () => call(`audio/list?code=${code}`),
     audioNote: (note) => call("audio/note", note),
     audioDelete: (audioId) => call("audio/delete", { audioId }),
+    reviewQueue: () => call(`review/queue?code=${code}`),
+    reviewMark: (review) => call("review/mark", review),
     /** Bytes of one recording, fetched with the teacher's own headers (an <audio src> cannot send them). */
     async audioBlob(audioId) {
       try {

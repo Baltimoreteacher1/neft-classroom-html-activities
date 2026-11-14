@@ -10,7 +10,7 @@
  *   POST /join      { code, alias, studentKey? }    -> { studentId, studentKey, alias }
  *   GET  /progress?code=&doc=        (student)      -> { doc, updatedAt, data } | { doc: null }
  *   POST /progress  { code, doc, updatedAt, data, summary }   (student, last-write-wins)
- *   GET  /me?code=                   (student)      -> { alias, studentId, familyToken }
+ *   GET  /me?code=                   (student)      -> { alias, studentId, familyToken, support, roadWeek }
  *   GET  /digest?code=&student=&token=  (family)    -> one learner's week, read-only
  *   Teacher (x-teacher-key, or x-class-teacher for that class):
  *   POST /create    { app, title }   (site key)     -> { code, teacherPasscode }
@@ -19,7 +19,9 @@
  *   POST /reset-student  { code, studentId }        -> { studentKey }
  *   POST /remove-student { code, studentId }
  *   POST /delete    { code, confirm }               -> hard delete, everything
- *   /room/* and /audio/* are live rooms and voice notes (see their modules).
+ *   /room/*, /audio/* and /review/* are live rooms, voice notes and the scoring
+ *   queue (see their modules).
+ *   /pairs/* and /scenes/* are peer listening pairs and student-made scenes (see their modules).
  *   /ai/* are the selection-only AI helpers (writing feedback, hint tutor); no class or D1 needed.
  *
  * GRACEFUL DEGRADATION: without the D1 binding every data route is 503 and both
@@ -36,6 +38,7 @@ import {
   isStudentId,
   LIMITS,
   lwwAccepts,
+  mergeSupport,
   normalizeCode,
   validateAlias,
   validateDocUpload,
@@ -43,7 +46,11 @@ import {
 } from "../../../shared/class-platform/contract.js";
 import { handleAi } from "../../_lib/class-platform/ai.js";
 import { handleAudio } from "../../_lib/class-platform/audio.js";
+import { handlePairs } from "../../_lib/class-platform/pairs.js";
+import { handleReview } from "../../_lib/class-platform/review.js";
 import { handleRoom } from "../../_lib/class-platform/rooms.js";
+import { handleScenes } from "../../_lib/class-platform/scenes.js";
+import { socialStudentStatements } from "../../_lib/class-platform/social-schema.js";
 import {
   ensureSchema,
   familyToken,
@@ -289,6 +296,9 @@ const routes = {
       studentId: student.student_id,
       alias: student.alias,
       familyToken: await familyToken(cls.salt, student.student_id, student.key_hash),
+      // This learner's own starting support (support stage names only, never a level) and Road week.
+      support: settingsOf(cls).support?.[student.student_id] || null,
+      roadWeek: settingsOf(cls).roadWeek ?? null,
     };
   },
 
@@ -435,7 +445,11 @@ const routes = {
     if (auth.error) return auth.error;
     const result = validateSettings(ctx.body?.settings, auth.cls.app);
     if (!result.ok) return fail(result.error);
-    const merged = { ...settingsOf(auth.cls), ...result.settings };
+    const stored = settingsOf(auth.cls);
+    const merged = { ...stored, ...result.settings };
+    if (result.settings.support)
+      merged.support = mergeSupport(stored.support, result.settings.support);
+    if (merged.roadWeek === null) delete merged.roadWeek;
     await ctx.db.batch([
       ctx.db
         .prepare(`UPDATE class_platform_class SET settings_json = ? WHERE code = ?`)
@@ -466,9 +480,16 @@ const routes = {
     const { db } = ctx;
     const code = auth.cls.code;
     await db.batch([
+      ...socialStudentStatements(db, code, id),
       db.prepare(`DELETE FROM class_platform_doc WHERE code = ? AND student_id = ?`).bind(code, id),
       db
         .prepare(`DELETE FROM class_platform_audio WHERE code = ? AND student_id = ?`)
+        .bind(code, id),
+      db
+        .prepare(`DELETE FROM class_platform_work WHERE code = ? AND student_id = ?`)
+        .bind(code, id),
+      db
+        .prepare(`DELETE FROM class_platform_review WHERE code = ? AND student_id = ?`)
         .bind(code, id),
       db
         .prepare(
@@ -522,6 +543,9 @@ export const onRequest = handler({
     };
     if (seg === "room") return handleRoom(ctx, parts[1] || "");
     if (seg === "audio") return handleAudio(ctx, parts[1] || "");
+    if (seg === "review") return handleReview(ctx, parts[1] || "");
+    if (seg === "pairs") return handlePairs(ctx, parts[1] || "");
+    if (seg === "scenes") return handleScenes(ctx, parts[1] || "");
     const route = routes[`${method} ${seg}`];
     return route ? route(ctx) : fail("not-found", 404);
   },

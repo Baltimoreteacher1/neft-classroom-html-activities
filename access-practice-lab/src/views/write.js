@@ -27,7 +27,10 @@ import {
   taskCardHTML,
   trackDisclosures,
 } from "../studio-ui.js";
-import { ART, BASE, announce, esc, html, icon, raw, wordCount } from "../util.js";
+import { ART, BASE, announce, esc, html, icon, raw, storage, wordCount } from "../util.js";
+
+// Present only after a learner joins a class (class/link.js): a finished piece can go to the teacher's scoring queue.
+const CLASS_LINK_KEY = "accessPracticeLabClass:v1:link";
 import { award } from "../engagement.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -162,7 +165,7 @@ async function chooserHTML(ctx, index, entries) {
             recs.length
               ? html`<section class="task-group is-next" aria-labelledby="wrt-next-h">
                   <header><h2 id="wrt-next-h">${icon("sparkle")} ${I.T("Try next", "Prueba la siguiente")}</h2><p class="fine">${I.T("Picked from the evidence you have saved on this device.", "Elegida según la evidencia que guardaste en este dispositivo.")}</p></header>
-                  <div class="task-grid">${recs.map((r) => card(r.task, r.why))}</div>
+                  <div class="task-grid">${recs.map((r) => card(r.task, I.T(...r.why)))}</div>
                 </section>`
               : ""
           }
@@ -443,6 +446,7 @@ ${text}</textarea></label>
                   <label class="field"><span>${I.T("What did you improve, and why?", "¿Qué mejoraste y por qué?")}</span><textarea rows="3" data-reflection ${IGN}>${S.state.reflection}</textarea></label>
                   <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save to my portfolio", "Guardar en mi portafolio")}</button></div>
                   ${S.state.finishedAt ? html`<p class="saved-note">${icon("check")} <span>${I.T("Saved to your portfolio.", "Guardado en tu portafolio.")} <a href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${I.T("See my portfolio", "Ver mi portafolio")}</a></span></p>` : ""}
+                  ${S.state.finishedAt && storage.get(CLASS_LINK_KEY) ? html`<p><button type="button" class="btn small" data-send-writing>${I.T("Send to my teacher", "Enviar a mi docente")}</button></p>` : ""}
                   ${S.state.finishedAt && S.state.versions.length < 2 ? html`<p class="fine">${I.T("Next, change one part of your draft and request feedback again. Compare your versions before trying a new topic.", "Después, cambia una parte de tu borrador y pide comentarios otra vez. Compara tus versiones antes de probar un tema nuevo.")}</p>` : ""}
                   ${nextTransfer ? html`<div class="next-application"><h4>${I.T("Apply it in a new context", "Aplícalo en un nuevo contexto")}</h4><p>${I.T("Use the same language move with new sources. Your first response there will be recorded as a transfer attempt, with your chosen supports noted separately.", "Usa la misma estrategia de lenguaje con nuevas fuentes. Tu primera respuesta allí se guardará como un intento de transferencia, con los apoyos elegidos registrados por separado.")}</p><a class="btn btn-primary" href="${BASE}/write/${nextTransfer.id}?grades=${ctx.band}&transfer=1&fromWriting=${task.id}">${I.T(`Try: ${nextTransfer.title}`, `Prueba: ${nextTransfer.title}`)} ${icon("arrow-right")}</a></div>` : ""}
                 </section>
@@ -589,6 +593,22 @@ export function onClick(e, ctx) {
   const read = t.closest("[data-read-source]");
   if (read) {
     speak(S.task.sources[Number(read.dataset.readSource)].text, { rate: ctx.prefs.rate });
+    return true;
+  }
+  const sendWriting = t.closest("[data-send-writing]");
+  if (sendWriting) {
+    const text = S.state.versions.at(-1)?.text || "";
+    sendWriting.disabled = true;
+    import("../class/link.js")
+      .then(async ({ api, loadLink }) => {
+        const link = loadLink();
+        const res = link && text ? await api.reviewShare(link, { label: S.task.title, text }) : { ok: false };
+        announce(res.ok ? I.S("Sent to your teacher. Look in My class for their feedback.", "Enviado a tu docente. Busca sus comentarios en Mi clase.") : I.S("Could not send your writing. It is still on this device. Try again later.", "No se pudo enviar tu escritura. Sigue en este dispositivo. Inténtalo de nuevo más tarde."));
+      })
+      .catch(() => announce(I.S("Could not send your writing.", "No se pudo enviar tu escritura.")))
+      .finally(() => {
+        sendWriting.disabled = false;
+      });
     return true;
   }
   if (t.closest("[data-revise]")) {

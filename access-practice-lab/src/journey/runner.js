@@ -12,6 +12,7 @@ import {
   quickNavHTML,
   railHTML,
 } from "./runner-chrome.js";
+import { goalPickerHTML, goalReflectHTML, personalGoalHTML } from "./goal.js";
 import { commit, helpWrites, makeEnv } from "./runner-env.js";
 import {
   alternatives,
@@ -102,8 +103,13 @@ async function completeBody({
   let showSummary = null;
   if (stepId === "show") {
     const [mirror, growth] = await Promise.all([deps.loadUI("mirror"), deps.loadUI("growth")]);
-    const record = growth.recordFor(band, missionId, deps.state.bandState(state, band).missions[missionId]);
-    showSummary = mirror.showSummaryHTML?.(I, record) || null;
+    const saved = deps.state.bandState(state, band).missions[missionId];
+    const record = growth.recordFor(band, missionId, saved);
+    const summary = mirror.showSummaryHTML?.(I, record) || null;
+    const reflect = goalReflectHTML(I, saved?.goal, record, saved);
+    showSummary = reflect
+      ? html`${reflect}${typeof summary === "string" ? raw(summary) : summary || ""}`
+      : summary;
   }
   // Optional related practice (and the unit checkpoint card); a failure here never blocks the panel.
   const related = await import("./ui/related.js")
@@ -261,6 +267,16 @@ export async function renderStep(ctx, deps, params) {
   records.set(id, built.record);
   active = { ctx, deps, band, missionId, stepId };
   const step = C.STEPS[stepIdx];
+  // Personal goal: offered before the mission until chosen or skipped (only with a state that can store it).
+  const goal = St.bandState(state, band).missions[missionId]?.goal || null;
+  const goalBlock =
+    typeof St.setGoal !== "function"
+      ? ""
+      : goal
+        ? personalGoalHTML(I, goal)
+        : showComplete
+          ? ""
+          : goalPickerHTML(I, mission.klu);
   const chrome = { I, band, missionId, steps: C.STEPS, statuses, currentIdx: stepIdx };
   const out = html`<div
     class="jr"
@@ -271,7 +287,7 @@ export async function renderStep(ctx, deps, params) {
   >
     ${quickNavHTML({ I, band })}
     ${headerHTML({ I, band, missionId, mission, step, unit: C.unitOf(missionId), number: C.missionNumber(missionId) })}
-    ${railHTML(chrome)} ${buildsOnHTML(chrome)}
+    ${goalBlock} ${railHTML(chrome)} ${buildsOnHTML(chrome)}
     ${showComplete ? "" : controlsHTML({ I, support: St.bandState(state, band).support, own, stepId, helpOpen: shell.helpOpen === true })}
     ${!showComplete && shell.helpOpen ? helpHTML({ I, pack, independent: own }) : ""} ${built.body}
   </div>`;
@@ -360,6 +376,25 @@ export function handleClick(e) {
       shell({ helpOpen: open }),
       ...(open ? helpWrites(deps, band, missionId, stepId, "vocab") : []),
     );
+    ctx.rerender();
+    return true;
+  }
+  const goalPick = target.closest("[data-jr-goal], [data-jr-goal-skip]");
+  if (goalPick && St.setGoal) {
+    const choice = goalPick.dataset.jrGoal || "skip";
+    commit(deps, (s) => St.setGoal(s, band, missionId, choice));
+    deps.announce(
+      choice === "skip"
+        ? I.S("Goal skipped. You can start the mission.", "Meta saltada. Puedes empezar la misión.")
+        : I.S("Goal saved with this mission.", "Meta guardada con esta misión."),
+    );
+    ctx.rerender();
+    return true;
+  }
+  const met = target.closest("[data-jr-goal-met]");
+  if (met && St.setGoalMet) {
+    commit(deps, (s) => St.setGoalMet(s, band, missionId, met.dataset.jrGoalMet));
+    deps.announce(I.S("Saved with this mission.", "Guardado con esta misión."));
     ctx.rerender();
     return true;
   }

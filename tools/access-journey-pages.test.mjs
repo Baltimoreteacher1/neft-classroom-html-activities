@@ -340,12 +340,19 @@ test("lab home: one h1 in the start screen, the journey offered as Continue, eve
     const h1 = doc.querySelector("h1");
     assert.equal(h1.id, "homeTitle");
     assert.ok(h1.closest(".lph"), "the start screen owns the page h1");
+    // One front door: with nothing unfinished, today's mission is the main action and the journey's first step
+    // stays one tap away right under it.
     assert.match(
       doc.getElementById("lphContinueTitle").textContent,
-      /Start My Learning Journey/,
+      /Today’s mission/,
+      "a new learner is offered today's mission",
+    );
+    assert.equal(doc.querySelector("[data-continue]").dataset.startMission, "10");
+    assert.match(
+      doc.querySelector("[data-continue-journey]").getAttribute("href"),
+      /\/journey\/m01\//,
       "a new learner is offered the first journey step",
     );
-    assert.match(doc.querySelector("[data-continue]").getAttribute("href"), /\/journey\/m01\//);
     assert.equal(all(doc, "[data-grade-pick]").length, 5, "grade ruler: K, 1, 2-3, 4-5, 6-8");
     assert.equal(all(doc, '[data-grade-pick][aria-pressed="true"]').length, 1);
     assert.equal(all(doc, ".room-tile").length, 4);

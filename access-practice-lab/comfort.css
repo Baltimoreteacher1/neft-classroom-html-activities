@@ -472,3 +472,43 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── "Read this page" (src/read-page.js) ───────────────────────────────── */
+.lab-read-btn {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.lab-tools > .top-link.lab-read-btn {
+  display: inline-flex;
+}
+.lab-top .lab-tools > .top-link.lab-read-btn > .ico {
+  display: inline-block;
+}
+.lab-read-btn[aria-pressed="true"] {
+  background: var(--brand);
+  color: #fff;
+}
+/* Icon-only below 1500px like its neighbours; the label stays in the accessibility tree. */
+@media (max-width: 1500px) {
+  .lab-read-btn span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+@media (max-width: 1199px) {
+  .lab-tools > .top-link.lab-read-btn {
+    order: 1;
+  }
+}

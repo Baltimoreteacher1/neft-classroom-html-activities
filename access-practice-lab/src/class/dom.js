@@ -24,6 +24,8 @@ export function errorText(S, code) {
     "alias-characters": S("Use letters, numbers, spaces, - or ' only.", "Usa solo letras, números, espacios, - o '."),
     "alias-too-many-words": S("A nickname is one or two words, not a full name.", "Un apodo tiene una o dos palabras, no un nombre completo."),
     "alias-taken": S("Someone already uses that nickname. Add your student key to rejoin as yourself, or pick another.", "Alguien ya usa ese apodo. Agrega tu clave de estudiante para volver como tú, o elige otro."),
+    "wrong-student-key": S("That student key does not match this nickname. Check it, or ask your teacher to reset it.", "Esa clave de estudiante no coincide con este apodo. Revísala o pide a tu maestro o maestra que la restablezca."),
+    "rate limited": S("Too many tries. Wait a few minutes, or ask your teacher to reset your student key.", "Demasiados intentos. Espera unos minutos o pide a tu maestro o maestra que restablezca tu clave de estudiante."),
     "class-full": S("This class is full.", "Esta clase está llena."),
     unauthorized: S("Your class sign-in did not work. Rejoin with your nickname and student key.", "No funcionó tu ingreso a la clase. Vuelve a entrar con tu apodo y tu clave de estudiante."),
     offline: S("No connection right now. Your work is safe on this device.", "No hay conexión ahora. Tu trabajo está seguro en este dispositivo."),

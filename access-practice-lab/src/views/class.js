@@ -1,15 +1,16 @@
 // My class (/class): join a class by code or QR link, see assignments, hear a teacher's voice notes, and send a
 // practice recording to the teacher. The class copy of progress is opt-in and merges into this device (class/link.js);
 // the lab works exactly as before for a learner who never joins.
-import { classInfo, joinClass } from "../../../shared/class-platform/client.js";
-import { normalizeCode } from "../../../shared/class-platform/contract.js";
+import { classInfo } from "../../../shared/class-platform/client.js";
 import { crumbsHTML } from "../components.js";
-import { api, languageSummary, leaveClass, loadLink, saveLink, setAssignments, startSync } from "../class/link.js";
+import { feedbackCard, loadMyReviews } from "../class/feedback-card.js";
+import { api, languageSummary, leaveClass, loadLink, refreshClassSupport, setAssignments, startSync } from "../class/link.js";
 import { assignmentBandText } from "../class/assign.js";
 import { el, errorText, statusText } from "../class/dom.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, html } from "../util.js";
 import { loadVoiceNotes } from "../class/voice.js";
+import { flushToClass, joinAndLink, joinCodeFromSearch, signOutDevice } from "../class/session.js";
 
 let cleanup = null;
 
@@ -43,6 +44,7 @@ export function mount(root, ctx) {
   let status = null;
   let info = null;
   let notes = [];
+  let reviews = [];
   let timer = null;
   let shownKey = ""; // the student key, shown until the learner says they wrote it down
   const live = (msg) => {
@@ -69,43 +71,47 @@ export function mount(root, ctx) {
   async function refresh() {
     const link = loadLink();
     if (!link) return;
-    const [i, n] = await Promise.all([classInfo(link.code), loadVoiceNotes(link)]);
+    const [i, n, r] = await Promise.all([classInfo(link.code), loadVoiceNotes(link), loadMyReviews(api, link), refreshClassSupport(link)]);
     if (i.ok) setInfo(i);
     notes = n;
+    reviews = r;
     draw();
   }
 
-  function joinForm(prefill) {
-    const code = el("input", { id: "clsCode", name: "code", autocomplete: "off", autocapitalize: "characters", maxlength: "12", value: prefill, required: true });
-    const alias = el("input", { id: "clsAlias", name: "alias", autocomplete: "off", maxlength: "20", required: true });
-    const key = el("input", { id: "clsKey", name: "key", autocomplete: "off", autocapitalize: "characters", maxlength: "12" });
+  function joinForm(prefill, withKey = false) {
+    const fid = (name) => (withKey ? `clsIn${name}` : `cls${name}`);
+    const code = el("input", { id: fid("Code"), name: "code", autocomplete: "off", autocapitalize: "characters", maxlength: "12", value: prefill, required: true });
+    const alias = el("input", { id: fid("Alias"), name: "alias", autocomplete: "off", maxlength: "20", required: true });
+    const key = withKey ? el("input", { id: "clsKey", name: "key", autocomplete: "off", autocapitalize: "characters", maxlength: "12", required: true }) : null;
     const error = el("p", { class: "cls-error", role: "alert", "data-cls-error": true });
     const form = el(
       "form",
-      { class: "cls-card cls-join", novalidate: true },
-      el("h2", {}, S("Join a class", "Unirse a una clase")),
-      el("label", { for: "clsCode" }, S("Class code (6 letters and numbers)", "Código de clase (6 letras y números)")),
+      { class: `cls-card ${withKey ? "cls-signin" : "cls-join"}`, novalidate: true },
+      el("h2", {}, withKey ? S("Sign back in", "Volver a entrar") : S("Join your class", "Unirse a tu clase")),
+      withKey ? el("p", { class: "fine" }, S("Joined before on another computer? Use the same class code, nickname and student key to get your own work back.", "¿Ya te uniste en otra computadora? Usa el mismo código de clase, apodo y clave de estudiante para recuperar tu trabajo.")) : null,
+      el("label", { for: fid("Code") }, S("Class code (6 letters and numbers)", "Código de clase (6 letras y números)")),
       code,
-      el("label", { for: "clsAlias" }, S("Your nickname (not your full name)", "Tu apodo (no tu nombre completo)")),
+      el("label", { for: fid("Alias") }, S("Your nickname (not your full name)", "Tu apodo (no tu nombre completo)")),
       alias,
-      el("label", { for: "clsKey" }, S("Student key (only if you joined before on another device)", "Clave de estudiante (solo si ya te uniste antes en otro dispositivo)")),
+      key ? el("label", { for: "clsKey" }, S("Student key (8 letters and numbers)", "Clave de estudiante (8 letras y números)")) : null,
       key,
       error,
-      el("button", { type: "submit", class: "btn btn-primary" }, S("Join class", "Unirse a la clase")),
+      el("button", { type: "submit", class: "btn btn-primary" }, withKey ? S("Sign back in", "Volver a entrar") : S("Join class", "Unirse a la clase")),
     );
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       error.textContent = "";
-      const res = await joinClass({ code: code.value, alias: alias.value, studentKey: key.value || undefined });
+      if (key && !key.value.trim()) {
+        error.textContent = S("Type your student key.", "Escribe tu clave de estudiante.");
+        return;
+      }
+      const res = await joinAndLink({ code: code.value, alias: alias.value, studentKey: key?.value, start: sync });
       if (!res.ok) {
         error.textContent = errorText(S, res.error);
         return;
       }
-      const meta = await classInfo(code.value);
-      saveLink({ code: normalizeCode(code.value), studentId: res.studentId, studentKey: res.studentKey, alias: res.alias, title: meta.title || "" });
-      setInfo(meta.ok ? meta : null);
-      sync().pull();
-      shownKey = key.value ? "" : res.studentKey;
+      setInfo(res.info);
+      shownKey = res.newKey;
       draw();
       refresh();
     });
@@ -166,12 +172,82 @@ export function mount(root, ctx) {
     return card;
   }
 
+  // In-page confirms (no native confirm()): one box under the class card, kept across the 30 s redraws.
+  const confirmBox = el("div", { class: "cls-confirm-host" });
+  function confirmPanel(title, body, actions) {
+    const heading = el("h2", { tabindex: "-1" }, title);
+    const close = () => {
+      confirmBox.replaceChildren();
+      host.querySelector("[data-cls-signout]")?.focus();
+    };
+    confirmBox.replaceChildren(
+      el("section", { class: "cls-card cls-confirm", role: "group", "aria-label": title },
+        heading,
+        ...body.map((line) => el("p", {}, line)),
+        el("p", { role: "status", "data-cls-confirm-status": true }),
+        el("div", { class: "row-actions" },
+          ...actions.map(([label, run, primary]) => el("button", { type: "button", class: primary ? "btn btn-primary" : "btn", onclick: () => run(close) }, label)),
+          el("button", { type: "button", class: "btn ghost", "data-cls-cancel": true, onclick: close }, S("Cancel", "Cancelar")),
+        ),
+      ),
+    );
+    heading.focus();
+  }
+  const confirmStatus = (text) => {
+    const node = confirmBox.querySelector("[data-cls-confirm-status]");
+    if (node) node.textContent = text;
+  };
+
+  async function signOut(force) {
+    if (!force) {
+      confirmStatus(S("Saving your work to your class…", "Guardando tu trabajo en tu clase…"));
+      const { pending } = await flushToClass();
+      if (pending) {
+        confirmPanel(
+          S("Some work has not reached your class yet", "Parte de tu trabajo aún no llegó a tu clase"),
+          [S("This computer is offline or the class did not answer. If you sign out now, your newest work on this computer will be lost.", "Esta computadora no tiene conexión o la clase no respondió. Si sales ahora, se perderá tu trabajo más reciente en esta computadora.")],
+          [[S("Try again", "Intentar de nuevo"), () => signOut(false), true], [S("Sign out anyway", "Salir de todos modos"), () => signOut(true)]],
+        );
+        return;
+      }
+    }
+    confirmStatus(S("Signing out…", "Saliendo…"));
+    await signOutDevice();
+    location.assign(`${BASE}/class`);
+  }
+
+  function askSignOut() {
+    const link = loadLink();
+    if (!link) return;
+    confirmPanel(
+      S("Sign out on this computer?", "¿Salir en esta computadora?"),
+      [
+        S("Your work is saved to your class. Signing out removes your class sign-in and your practice from this computer, so the next student starts fresh.", "Tu trabajo está guardado en tu clase. Al salir se quitan tu ingreso a la clase y tu práctica de esta computadora, para que el siguiente estudiante empiece de cero."),
+        S(`To sign back in on any computer you need: class code ${link.code}, nickname ${link.alias}, and your student key. Lost the key? Your teacher can reset it.`, `Para volver a entrar en cualquier computadora necesitas: el código de clase ${link.code}, el apodo ${link.alias} y tu clave de estudiante. ¿Perdiste la clave? Tu maestro o maestra puede restablecerla.`),
+      ],
+      [[S("Sign out and clear this computer", "Salir y borrar esta computadora"), () => signOut(false), true]],
+    );
+  }
+
+  function askLeave() {
+    confirmPanel(
+      S("Leave this class on this device?", "¿Salir de esta clase en este dispositivo?"),
+      [S("Your practice stays here and the class keeps its copy. Your work stops saving to the class.", "Tu práctica se queda aquí y la clase guarda su copia. Tu trabajo deja de guardarse en la clase.")],
+      [[S("Leave class", "Salir de la clase"), (close) => { leaveClass(); setInfo(null); close(); draw(); }, true]],
+    );
+  }
+
   function draw() {
     const link = loadLink();
+    const keepFocus = confirmBox.contains(document.activeElement) ? document.activeElement : null;
     host.replaceChildren();
     host.append(el("p", { class: "visually-hidden", role: "status", "aria-live": "polite", "data-cls-live": true }));
     if (!link) {
-      host.append(joinForm(normalizeCode(new URLSearchParams(location.search).get("class") || "")));
+      const params = new URLSearchParams(location.search);
+      const prefill = joinCodeFromSearch(location.search);
+      const forms = [joinForm(prefill), joinForm(prefill, true)];
+      if (params.has("signin")) forms.reverse();
+      host.append(...forms);
       return;
     }
     if (shownKey)
@@ -188,12 +264,20 @@ export function mount(root, ctx) {
         el("div", { class: "row-actions" },
           el("button", { type: "button", class: "btn", onclick: () => sync().push().then(() => sync().pull()) }, S("Sync now", "Sincronizar ahora")),
           el("a", { class: "btn", href: `${BASE}/class/quiz` }, S("Join the live quiz", "Unirse al cuestionario en vivo")),
-          el("button", { type: "button", class: "btn ghost", onclick: () => { if (confirm(S("Leave this class on this device? Your practice stays here.", "¿Salir de esta clase en este dispositivo? Tu práctica se queda aquí."))) { leaveClass(); setInfo(null); draw(); } } }, S("Leave class", "Salir de la clase")),
+          el("a", { class: "btn", href: `${BASE}/pairs` }, S("Listening partners", "Parejas para escuchar")),
+          el("a", { class: "btn", href: `${BASE}/scenes` }, S("Class scenes", "Escenas de la clase")),
+          el("button", { type: "button", class: "btn", "data-cls-signout": true, onclick: () => askSignOut() }, S("Switch student / Sign out on this computer", "Cambiar de estudiante / Salir en esta computadora")),
+          el("button", { type: "button", class: "btn ghost", "data-cls-leave": true, onclick: () => askLeave() }, S("Leave class", "Salir de la clase")),
         ),
       ),
+      confirmBox,
       assignmentCards(),
       notesCard(link),
     );
+    const fbSlot = el("div");
+    host.append(fbSlot);
+    feedbackCard(S, reviews).then((card) => fbSlot.replaceWith(card));
+    keepFocus?.focus();
   }
 
   draw();

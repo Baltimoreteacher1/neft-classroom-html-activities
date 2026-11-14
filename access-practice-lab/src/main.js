@@ -76,6 +76,8 @@ const VIEW_LOADERS = {
   wordlab: () => import("./views/wordlab.js"),
   reader: () => import("./views/reader.js"),
   scenarios: () => import("./views/scenarios.js"),
+  pairs: () => import("./views/pairs.js"),
+  scenes: () => import("./views/scenes.js"),
   city: () => import("./views/city.js"),
   newsroom: () => import("./views/newsroom.js"),
   write: () => import("./views/write.js"),
@@ -108,6 +110,8 @@ const VIEW_LOADERS = {
   start: () => import("./intro/start.js"),
   "practice-together": () => import("./intro/family.js"),
   "site-guide": () => import("./intro/site-guide.js"),
+  privacy: () => import("./views/privacy.js"),
+  accessibility: () => import("./views/accessibility.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -187,6 +191,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
       support: q.get("support") || "",
     };
   if (a === "practice-together") return { ...r, view: "practice-together", id: b || "", step: q.get("step") || "" };
+  if (a === "privacy" || a === "accessibility") return { ...r, view: a };
   if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };
   if (a === "arena") return { ...r, view: "arena", id: b || "" };
   if (a === "mentor") return { ...r, view: "mentor", id: b || "", sub: c || "" };
@@ -194,6 +199,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "voice") return { ...r, view: "voice", id: b || "", sub: c || "", tab: q.get("tab") || "" };
   if (a === "wordlab") return { ...r, view: "wordlab", id: b || "", sub: c || "" };
   if (a === "scenarios") return { ...r, view: "scenarios", id: b || "" };
+  if (a === "pairs" || a === "scenes") return { ...r, view: a, id: "" };
   if (a === "city") return { ...r, view: "city", id: b || "", missionId: c || "" };
   if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };
   if (a === "warmup") return { ...r, view: "warmup", id: b || "", date: q.get("date") || "" };

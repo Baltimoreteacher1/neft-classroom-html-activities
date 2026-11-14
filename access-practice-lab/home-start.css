@@ -1,14 +1,14 @@
-/* Lab home start screen (src/views/home-start.js): grade ruler, language, Continue, the four skills, and one door
-   each for teachers and families. Tokens only (ds.css). The ruler is the one distinctive element: each grade group
+/* Lab home start screen (src/views/home-start.js): an "I am a…" switch, ONE primary action (Continue or today's
+   mission, with 5 / 15-minute chips) and the grade ruler; "More ways to practice" holds the rest (home.js). Tokens only (ds.css). The ruler is the one distinctive element: each grade group
    is as wide as the grades it covers, on a K-8 scale. */
 
 .lph {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   grid-template-areas:
-    "starts starts"
+    "roles roles"
     "intro student"
-    "lang student";
+    "grade student";
   grid-template-rows: auto auto 1fr;
   gap: var(--s-5) clamp(1.25rem, 3.5vw, 3rem);
   align-items: start;
@@ -25,12 +25,14 @@
 .lph-student {
   grid-area: student;
 }
-.lph-lang {
-  grid-area: lang;
+.lph-grade {
+  grid-area: grade;
+}
+.lph-grade > .lph-setting {
   margin-top: 0;
 }
-.lph-starts {
-  grid-area: starts;
+.lph-roles {
+  grid-area: roles;
 }
 .lph h1 {
   margin: 0 0 var(--s-3);
@@ -151,55 +153,41 @@
 .lph-time {
   margin: var(--s-2) 0 0;
 }
-.lph-primary-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-  margin-top: var(--s-3);
-}
-.lph-primary-options a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 3rem;
-  padding: 0.5rem 0.8rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--brand-ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-.lph-primary-options a:hover {
-  background: var(--brand-soft);
-}
-.lph-primary-options a:focus-visible,
-.lph-dashboard > summary:focus-visible {
+.lph-chip:focus-visible,
+.lph-role:focus-visible,
+.lph-dashboard > summary:focus-visible,
+.lph-more-ways > summary:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
-.lph-dashboard {
+.lph-dashboard,
+.lph-more-ways {
   margin-block: var(--s-5);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
-.lph-dashboard > summary {
+.lph-dashboard > summary,
+.lph-more-ways > summary {
   display: grid;
   gap: 0.2rem;
   min-height: 4.5rem;
   padding: 1rem 1.25rem;
   cursor: pointer;
 }
-.lph-dashboard > summary > span:first-child {
+.lph-dashboard > summary > span:first-child,
+.lph-more-ways > summary > span:first-child {
   color: var(--brand-ink);
   font-size: 0.875rem;
   font-weight: 700;
 }
-.lph-dashboard > summary strong {
+.lph-dashboard > summary strong,
+.lph-more-ways > summary strong {
   font: 600 1.25rem/1.25 var(--font-display);
 }
-.lph-dashboard[open] > summary {
+.lph-dashboard[open] > summary,
+.lph-more-ways[open] > summary {
   margin-bottom: var(--s-3);
   border-bottom: 1px solid var(--line);
 }
@@ -220,15 +208,12 @@
   margin-inline: auto;
 }
 @media (max-width: 599px) {
-  .lph-dashboard > summary {
+  .lph-dashboard > summary,
+  .lph-more-ways > summary {
     padding-inline: 0.9rem;
   }
   .lph-dashboard-content {
     padding-inline: 0.75rem;
-  }
-  .lph-primary-options a {
-    flex: 1 1 9rem;
-    justify-content: center;
   }
 }
 .lph-skills {
@@ -266,65 +251,74 @@
   outline-offset: 3px;
 }
 
-/* ── Start Here: one compact card each for teachers and families ─────────── */
-.lph-starts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-3);
-}
-.lph-start {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "ic text"
-    "go go"
-    "more more";
-  gap: var(--s-2) var(--s-3);
+/* ── "I am a… Student / Teacher / Family" ─────────────────────────────────── */
+.lph-roles {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  padding: var(--s-4);
-  border: 2px solid var(--brand);
-  border-radius: var(--r-lg);
-  background: var(--brand-soft);
+  gap: var(--s-2);
 }
-.lph-start.is-family {
-  border-color: var(--writing);
-  background: var(--writing-soft);
+.lph-roles-label {
+  color: var(--ink-2);
+  font-weight: 700;
 }
-.lph-start-ic {
-  grid-area: ic;
-  display: grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--brand-ink);
-}
-.lph-start.is-family .lph-start-ic {
-  color: var(--writing-ink);
-}
-.lph-start > div {
-  grid-area: text;
-}
-.lph-start h2 {
-  margin: 0;
-  font: 700 1.25rem/1.2 var(--font);
-}
-.lph-start p {
-  margin: 0.2rem 0 0;
-  color: var(--ink);
-}
-.lph-start > .btn {
-  grid-area: go;
-  justify-content: center;
-}
-.lph-start-more {
-  grid-area: more;
-  justify-self: center;
+.lph-role {
   display: inline-flex;
   align-items: center;
+  gap: 0.4rem;
   min-height: 2.75rem;
+  padding: 0.35rem 0.9rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.lph-role:hover {
+  background: var(--brand-soft);
+}
+.lph-role[aria-current="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.lph-role .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* ── the 5 / 10 / 15-minute mission chips ─────────────────────────────────── */
+.lph-actions {
+  display: grid;
+  gap: var(--s-3);
+}
+.lph-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.lph-chips-label {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.lph-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.5rem;
+  min-height: 3rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
   color: var(--brand-ink);
+  font: 700 1rem var(--font);
+  cursor: pointer;
+}
+.lph-chip:hover {
+  background: var(--brand-soft);
 }
 
 /* ── explore: featured cards, then the rest behind one disclosure ───────── */
@@ -349,14 +343,25 @@
   .lph {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "starts"
+      "roles"
       "intro"
       "student"
-      "lang";
+      "grade";
     grid-template-rows: none;
   }
-  .lph-starts {
-    grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 599px) {
+  /* Phones: the one primary action belongs in the first screen. The lead's promises ("no timer", "saves on this
+     device") are repeated on the front door itself, so the lead steps aside here. */
+  .lph {
+    gap: var(--s-4);
+  }
+  .lph-lead {
+    display: none;
+  }
+  .lph h1 {
+    margin-bottom: 0;
+    font-size: 1.75rem;
   }
 }
 @media (max-width: 599px) {
@@ -383,7 +388,7 @@
   }
 }
 
-/* The Start Here cards receive focus on load (data-focus-first) so keyboard users meet them first; no ring for that. */
-.lph-starts:focus:not(:focus-visible) {
+/* The front door receives focus on load (data-focus-first) so keyboard users meet it first; no ring for that. */
+.lph-front:focus:not(:focus-visible) {
   outline: none;
 }

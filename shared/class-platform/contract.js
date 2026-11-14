@@ -88,6 +88,15 @@ export function validateAlias(raw) {
 
 const SKILL_RE = /^[a-z0-9][a-z0-9:_-]{0,39}$/;
 const intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+const isPlain = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+
+/** The four Key Language Uses and the four domains, as the language summary and class settings name them. */
+export const KEY_USES = Object.freeze(["Narrate", "Inform", "Explain", "Argue"]);
+export const SUMMARY_DOMAINS = Object.freeze(["listening", "speaking", "reading", "writing"]);
+const domainCounts = (v) =>
+  isPlain(v) &&
+  Object.keys(v).every((k) => SUMMARY_DOMAINS.includes(k)) &&
+  Object.values(v).every((n) => intIn(n, 0, 1_000_000));
 
 /**
  * Summary fields per document. Every field is optional; anything not declared is
@@ -120,12 +129,7 @@ export const SUMMARY_FIELDS = Object.freeze({
     lastActivity: (v) => intIn(v, 0, 9_999_999_999_999),
   },
   language: {
-    domains: (v) =>
-      v &&
-      typeof v === "object" &&
-      !Array.isArray(v) &&
-      Object.keys(v).every((k) => ["listening", "speaking", "reading", "writing"].includes(k)) &&
-      Object.values(v).every((n) => intIn(n, 0, 1_000_000)),
+    domains: domainCounts,
     assignmentsDone: (v) =>
       Array.isArray(v) &&
       v.length <= 60 &&
@@ -133,6 +137,10 @@ export const SUMMARY_FIELDS = Object.freeze({
     weekEvidence: (v) => intIn(v, 0, 100_000),
     weekDays: (v) => intIn(v, 0, 7),
     lastActivity: (v) => intIn(v, 0, 9_999_999_999_999),
+    // Key Language Use x domain counts from the lab's ledger: { Narrate: { writing: 3 }, ... }. Counts only.
+    byUse: (v) =>
+      isPlain(v) &&
+      Object.entries(v).every(([use, row]) => KEY_USES.includes(use) && domainCounts(row)),
   },
 });
 
@@ -219,7 +227,68 @@ export function validateSettings(raw, app) {
     }
   }
   if (raw.digest != null) out.digest = raw.digest === true;
+  if (raw.roadWeek !== undefined) {
+    if (raw.roadWeek !== null && !intIn(raw.roadWeek, 1, MAX_ROAD_WEEK))
+      return { ok: false, error: "invalid-road-week" };
+    out.roadWeek = raw.roadWeek;
+  }
+  if (raw.support !== undefined) {
+    const support = validateSupport(raw.support, app);
+    if (!support.ok) return support;
+    out.support = support.support;
+  }
   return { ok: true, settings: out };
+}
+
+/* ── per-student starting support (Language Page) ──────────────────────────── */
+
+/** Support stages the lab's learners already see: A Starting, B Growing, C Expanding. Never a level or score. */
+export const SUPPORT_STAGES = Object.freeze(["A", "B", "C"]);
+export const MAX_ROAD_WEEK = 60;
+
+/**
+ * `support` is a PATCH: { [studentId]: { stages: { listening: "B", ... }, roadWeek } | null }. null clears that
+ * student's entry; the route merges it into the stored map (mergeSupport).
+ */
+export function validateSupport(raw, app) {
+  if (app !== "language") return { ok: false, error: "invalid-support" };
+  if (!isPlain(raw) || Object.keys(raw).length > LIMITS.maxStudents)
+    return { ok: false, error: "invalid-support" };
+  const support = {};
+  for (const [id, entry] of Object.entries(raw)) {
+    if (!isStudentId(id)) return { ok: false, error: "invalid-support" };
+    if (entry === null) {
+      support[id] = null;
+      continue;
+    }
+    if (!isPlain(entry) || Object.keys(entry).some((k) => k !== "stages" && k !== "roadWeek"))
+      return { ok: false, error: "invalid-support" };
+    const stages = entry.stages ?? {};
+    if (
+      !isPlain(stages) ||
+      !Object.entries(stages).every(
+        ([d, st]) => SUMMARY_DOMAINS.includes(d) && SUPPORT_STAGES.includes(st),
+      )
+    )
+      return { ok: false, error: "invalid-support" };
+    if (entry.roadWeek != null && !intIn(entry.roadWeek, 1, MAX_ROAD_WEEK))
+      return { ok: false, error: "invalid-road-week" };
+    support[id] = {
+      stages: { ...stages },
+      ...(entry.roadWeek != null ? { roadWeek: entry.roadWeek } : {}),
+    };
+  }
+  return { ok: true, support };
+}
+
+/** Apply a validated support patch to the stored map (null removes a student). */
+export function mergeSupport(stored, patch) {
+  const out = isPlain(stored) ? { ...stored } : {};
+  for (const [id, entry] of Object.entries(patch || {})) {
+    if (entry === null) delete out[id];
+    else out[id] = entry;
+  }
+  return out;
 }
 
 /** Pool independent evidence for the community goal meter. */

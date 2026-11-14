@@ -1,17 +1,23 @@
 // Road to ACCESS: a 12-week plan, one stop a week (a playlist of one activity
-// per skill + a family talk prompt). The current week is picked from today's date.
+// per skill + a family talk prompt). The current week is picked from today's date, or from the Road week a
+// teacher set for a learner in their class.
+import { classRoadWeek } from "../class/support.js";
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows, loadRoad } from "../content.js";
 import { loadRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, DOMAIN_META, bandLabel, formatDate, html, icon, todayISO } from "../util.js";
 import { activityHref } from "./room.js";
+import { mountOffline, offlineCardHTML, onOfflineClick } from "../road-offline.js";
 
 const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
 
-export function currentWeek(plan) {
+/** This week of the plan by date, unless a teacher set this learner's Road week in their class (class/support.js). */
+export function currentWeek(plan, override = null) {
   const weeks = plan?.weeks || [];
   if (!weeks.length) return null;
+  const set = Number.isInteger(override) ? weeks.find((w) => w.n === override) : null;
+  if (set) return set;
   const today = todayISO();
   let pick = weeks[0];
   for (const w of weeks) if (w.start <= today) pick = w;
@@ -23,9 +29,12 @@ const playHref = (w, band, I) =>
 
 const minutesOf = (a) => Number(a.minutes) || parseInt(a.time, 10) || 8;
 
+let page = null; // { I, plan } of the week on screen, for the offline card
+
 export async function render(ctx) {
   const band = ctx.band;
   const I = i18nFor(ctx);
+  page = null;
   const { T, S } = I;
   const dom = (d) => T(d, DOMAIN_META[d]?.es);
   const [road, rows] = await Promise.all([loadRoad(), bandRows(band)]);
@@ -38,8 +47,9 @@ export async function render(ctx) {
         <p>${T(`The weekly plan for ${bandLabel(band)} is coming soon.`, `El plan semanal para ${bandEs(band).toLowerCase()} llegará pronto.`)}</p>
       </section>`,
     };
+  page = { I, plan };
   const byId = new Map(rows.map((r) => [r.id, r]));
-  const now = currentWeek(plan);
+  const now = currentWeek(plan, classRoadWeek());
   const focus = plan.weeks.find((w) => w.n === ctx.route.week) || now;
   const isDone = (id) => {
     const r = byId.get(id);
@@ -129,6 +139,7 @@ export async function render(ctx) {
             ${prev ? html`<a class="btn small" href="${BASE}/road/${prev.n}?grades=${band}">${icon("arrow-left")} ${T(`Week ${prev.n}`, `Semana ${prev.n}`)}</a>` : html`<span></span>`}
             ${next ? html`<a class="btn small" href="${BASE}/road/${next.n}?grades=${band}">${T(`Week ${next.n}`, `Semana ${next.n}`)} ${icon("arrow-right")}</a>` : ""}
           </nav>
+          ${offlineCardHTML(I, band, focus)}
         </section>
         <aside class="rd-aside" aria-label="${S("This week's tools", "Herramientas de esta semana")}">
           <section class="rd-card">
@@ -146,4 +157,12 @@ export async function render(ctx) {
         </aside>
       </div>`,
   };
+}
+
+export function mount(root) {
+  if (page) mountOffline(root, page.I);
+}
+
+export function onClick(e) {
+  return page ? onOfflineClick(e, page.I, page.plan) : false;
 }

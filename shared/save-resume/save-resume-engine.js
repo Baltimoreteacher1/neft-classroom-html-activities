@@ -1579,8 +1579,22 @@
       ) ||
       location.pathname.indexOf("/math/statistics/games/") === 0 ||
       location.pathname.indexOf("/games/") === 0;
+    // Language pages (The Language Page and its sibling language surfaces) are not math: no Workbench there.
+    var isLanguageRoute =
+      /(^|\.)thelanguagepage\.com$/i.test(location.hostname) ||
+      [
+        "/access-practice-lab/",
+        "/access-teacher/",
+        "/access-expedition/",
+        "/access-family-expedition/",
+        "/access-family-tour/",
+        "/language-adventures/",
+        "/language-studio/",
+      ].some(function (p) {
+        return location.pathname.indexOf(p) === 0;
+      });
     var workbench =
-      isGameRoute || isFluencyLabRoute || document.getElementById("mwb-launcher")
+      isGameRoute || isFluencyLabRoute || isLanguageRoute || document.getElementById("mwb-launcher")
         ? null
         : el("a", {
             id: "nsr-workbench",

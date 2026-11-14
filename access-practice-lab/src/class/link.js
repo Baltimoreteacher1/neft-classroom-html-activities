@@ -11,8 +11,11 @@ import {
   createSync as createClassSync,
   studentApi,
 } from "../../../shared/class-platform/client.js";
+import { KEY_USES } from "../../../shared/class-platform/contract.js";
+import { loadLedger } from "../lang/ledger.js";
 import { allRecords, isActivityComplete, practiceDays, PREFIX, importProgressData } from "../store.js";
 import { safeJson, storage } from "../util.js";
+import { applyClassSupport, clearClassSupport } from "./support.js";
 
 export const LINK_KEY = "accessPracticeLabClass:v1:link";
 export const api = studentApi("language");
@@ -35,9 +38,21 @@ export function makeBackup() {
 
 export const hasLocalProgress = () => Object.keys(makeBackup().data).some((k) => k !== `${PREFIX}:prefs`);
 
+/** Key Language Use x domain counts from the ledger ({ Narrate: { writing: 2 } }); entries without a use are skipped. */
+export function useCounts(entries = loadLedger().entries) {
+  const byUse = {};
+  for (const e of entries) {
+    const domain = String(e?.domain || "").toLowerCase();
+    if (!KEY_USES.includes(e?.use) || !DOMAINS.some((d) => d.toLowerCase() === domain)) continue;
+    const row = (byUse[e.use] ||= {});
+    row[domain] = Math.min(1_000_000, (row[domain] || 0) + 1);
+  }
+  return byUse;
+}
+
 /**
- * What the teacher dashboard and class goal see: counts per domain, which assigned activities are done, and this
- * week's activity. Counts and ids only; never a response, a recording or a score.
+ * What the teacher dashboard and class goal see: counts per domain and per Key Language Use, which assigned
+ * activities are done, and this week's activity. Counts and ids only; never a response, a recording or a score.
  */
 export function languageSummary({ assignmentIds = [], now = Date.now() } = {}) {
   const domains = {};
@@ -61,6 +76,7 @@ export function languageSummary({ assignmentIds = [], now = Date.now() } = {}) {
   const weekDays = practiceDays().filter((d) => now - Date.parse(`${d}T12:00:00`) <= WEEK_MS).length;
   return {
     domains,
+    byUse: useCounts(),
     assignmentsDone: [...done].slice(0, 60),
     weekEvidence: Math.min(100_000, weekEvidence),
     weekDays: Math.min(7, weekDays),
@@ -124,13 +140,22 @@ export async function bootClassSync(fetchImpl = (...a) => fetch(...a)) {
   if (!link) return null;
   const info = await classInfo(link.code, fetchImpl);
   if (info.ok) setAssignments(info.assignments);
+  refreshClassSupport(link, fetchImpl);
   const running = startSync({ fetchImpl });
   running.pull();
   return running;
+}
+
+/** Read this learner's starting support and Road week from the class and apply them as defaults (support.js). */
+export async function refreshClassSupport(link = loadLink(), fetchImpl = (...a) => fetch(...a)) {
+  if (!link) return false;
+  const me = await api.whoAmI(link, fetchImpl);
+  return me.ok ? applyClassSupport(me) : false;
 }
 
 /** Leave the class on this device: the link is forgotten, local progress stays, the class keeps its copy. */
 export function leaveClass() {
   stopSync();
   saveLink(null);
+  clearClassSupport();
 }

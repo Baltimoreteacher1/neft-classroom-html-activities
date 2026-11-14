@@ -16,11 +16,11 @@ export const WORLD_MISSIONS_KEY = "accessPracticeLab:v1:world-missions";
 
 /** WIDA ELD Standards Framework (2020): the five standards, by the codes STUDIO-CONTENT.md uses. */
 export const ELD_STANDARDS = Object.freeze({
-  "ELD-SI": { n: 1, name: "Language for Social and Instructional Purposes", short: "social and instructional" },
-  "ELD-LA": { n: 2, name: "Language for Language Arts", short: "language arts" },
-  "ELD-MA": { n: 3, name: "Language for Mathematics", short: "math" },
-  "ELD-SC": { n: 4, name: "Language for Science", short: "science" },
-  "ELD-SS": { n: 5, name: "Language for Social Studies", short: "social studies" },
+  "ELD-SI": { n: 1, name: "Language for Social and Instructional Purposes", short: "social and instructional", words: ["school", "la escuela"] },
+  "ELD-LA": { n: 2, name: "Language for Language Arts", short: "language arts", words: ["language arts", "artes del lenguaje"] },
+  "ELD-MA": { n: 3, name: "Language for Mathematics", short: "math", words: ["math", "matemáticas"] },
+  "ELD-SC": { n: 4, name: "Language for Science", short: "science", words: ["science", "ciencias"] },
+  "ELD-SS": { n: 5, name: "Language for Social Studies", short: "social studies", words: ["social studies", "estudios sociales"] },
 });
 export const LANGUAGE_DIMENSIONS = ["Discourse", "Sentence", "Word/Phrase"];
 
@@ -112,9 +112,37 @@ function dimensionNeeds(profile) {
   return needs;
 }
 
+// Student-facing reason for each factor: a few friendly words, [en, es]. The full explanation (with WIDA standard
+// numbers and the evidence behind it) stays in `teacherWhy` / `factors` for teacher surfaces.
+const STUDENT_WHY = {
+  new: () => ["New for you", "Nuevo para ti"],
+  keyUse: () => ["Try this kind of task on your own", "Prueba este tipo de tarea por tu cuenta"],
+  standard: (std) => [`New for you: ${ELD_STANDARDS[std].words[0]} words`, `Nuevo para ti: palabras de ${ELD_STANDARDS[std].words[1]}`],
+  dimension: () => ["Practice what your recent work needs", "Practica lo que necesita tu trabajo reciente"],
+  pattern: () => ["Practice a pattern from your recent work", "Practica un patrón de tu trabajo reciente"],
+  checkin: () => ["Your check-in pointed here", "Tu chequeo sugirió esto"],
+  world: () => ["Use what you did in Language Worlds", "Usa lo que hiciste en los mundos del lenguaje"],
+  prerequisite: () => ["Build a skill you are still growing", "Fortalece una destreza que sigues desarrollando"],
+  transfer: () => ["Use a skill you showed on your own", "Usa una destreza que mostraste por tu cuenta"],
+};
+const MORE_PRACTICE = ["More practice with a task you tried", "Más práctica con una tarea que ya probaste"];
+
+// Which reason a student hears: the strongest piece of their own evidence (most points); with none, what is new
+// about the task (its content area first, then the kind of task).
+const EVIDENCE = new Set(["checkin", "prerequisite", "transfer", "dimension", "pattern", "world"]);
+const NEWNESS_ORDER = ["standard", "keyUse", "new"];
+
+/** The one short [en, es] reason a student sees. */
+function studentWhy(factors, std) {
+  const evidence = factors.filter((f) => EVIDENCE.has(f.factor)).sort((a, b) => b.points - a.points)[0];
+  const top = evidence?.factor || NEWNESS_ORDER.find((id) => factors.some((f) => f.factor === id));
+  return top ? STUDENT_WHY[top](std) : MORE_PRACTICE;
+}
+
 /**
- * Rank tasks to suggest next. Each result: { task, score, reason, why, factors }. `reason` (= `why`)
- * is the learner-facing explanation built only from the factors that actually applied.
+ * Rank tasks to suggest next. Each result: { task, score, why, teacherWhy, reason, factors }.
+ * `why` is the short [en, es] reason a student sees. `teacherWhy` (= `reason`) is the full explanation, with WIDA
+ * ELD standard numbers, built only from the factors that actually applied; it is for teacher surfaces.
  */
 export function recommendTasks(tasks, entries, { n = 3, band = null, signals = null } = {}) {
   const list = Array.isArray(tasks) ? tasks : [];
@@ -173,7 +201,7 @@ export function recommendTasks(tasks, entries, { n = 3, band = null, signals = n
     }
     const shown = factors.filter((f) => f.factor !== "new").map((f) => f.text);
     const reason = [factors.some((f) => f.factor === "new") ? "New to you" : "", ...shown].filter(Boolean).join("; ") || "More practice of a task you have tried";
-    return { task: t, score, why: reason, reason, factors, order };
+    return { task: t, score, why: studentWhy(factors, std), teacherWhy: reason, reason, factors, order };
   });
   return scored
     .sort((a, b) => b.score - a.score || a.order - b.order)

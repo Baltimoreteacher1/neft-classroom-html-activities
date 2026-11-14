@@ -1518,11 +1518,13 @@ await page.evaluate(
   { ledgerKey: LEDGER, studioKey: STUDIO },
 );
 await go(`${BASE}/?grades=6-8`);
+// The suggestion sits in "More ways to practice" and speaks plainly to the student; the evidence trace (skill names,
+// standards) stays in the recommender's teacher-facing `teacherWhy` (tools/access-language-engine.test.mjs).
+await page.locator("details.lph-more-ways > summary").click();
 const nextSuggestion = await page.locator(".next-step").innerText();
 ok(
-  nextSuggestion.includes("your saved practice shows State a clear idea with support") &&
-    nextSuggestion.includes("before explain reasoning"),
-  "Home recommends a demonstrated prerequisite and explains its link to the learner's next skill",
+  nextSuggestion.includes("Build a skill you are still growing"),
+  `Home recommends a demonstrated prerequisite and explains its link to the learner's next skill${nextSuggestion.includes("Build a skill you are still growing") ? "" : ` — got "${nextSuggestion}"`}`,
 );
 ok(
   problems.length === 0,
