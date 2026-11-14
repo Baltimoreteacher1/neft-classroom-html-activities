@@ -118,6 +118,38 @@ export function itemSignature(text) {
 // The new three-dimension fluency rule coexists with the established numeric
 // meter until every practice mode can record strategy and explanation evidence.
 export const REVIEW_GAPS_DAYS = REVIEW_LADDER;
+const EVIDENCE_STRATEGIES = new Set(["visual", "decomposition", "fact"]);
+
+export function normalizeMasteryEvent(event) {
+  if (!event || !Number.isFinite(event.at) || typeof event.sessionId !== "string" || !event.sessionId ||
+    typeof event.eventId !== "string" || typeof event.correct !== "boolean" || typeof event.independent !== "boolean") return null;
+  return {
+    at: event.at, sessionId: event.sessionId.slice(0, 80), eventId: event.eventId.slice(0, 100),
+    correct: event.correct, independent: event.independent,
+    hintsUsed: Math.min(20, Math.max(0, Number(event.hintsUsed) || 0)),
+    ...(Number.isFinite(event.responseMs) && event.responseMs >= 0 && event.responseMs <= 300000 ? { responseMs: event.responseMs } : {}),
+    ...(EVIDENCE_STRATEGIES.has(event.strategy) ? { strategy: event.strategy, explained: event.explained === true } : {}),
+    ...(typeof event.strategyHelped === "boolean" ? { strategyHelped: event.strategyHelped } : {}),
+  };
+}
+
+export function recordMasteryEvent(record, event) {
+  const clean = normalizeMasteryEvent(event);
+  if (!record || !clean) return null;
+  const history = Array.isArray(record.masteryEvents) ? record.masteryEvents : [];
+  record.masteryEvents = [...history.filter((entry) => entry?.eventId !== clean.eventId), clean].slice(-100);
+  return clean;
+}
+
+export function recordMasteryReflection(record, eventId, strategy, strategyHelped) {
+  if (!record || !EVIDENCE_STRATEGIES.has(strategy) || typeof strategyHelped !== "boolean") return false;
+  const event = record.masteryEvents?.find((entry) => entry.eventId === eventId && entry.correct && entry.independent);
+  if (!event) return false;
+  event.strategy = strategy;
+  event.explained = true;
+  event.strategyHelped = strategyHelped;
+  return true;
+}
 
 export function masterySummary(history, now = Date.now()) {
   const events = (Array.isArray(history) ? history : [])

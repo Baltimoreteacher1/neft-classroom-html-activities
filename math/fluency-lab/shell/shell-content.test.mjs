@@ -74,7 +74,7 @@ for (const key of [
   "Strategies I used", "I used a visual", "I broke numbers apart", "I recalled a fact",
   "Did that strategy help?", "Yes", "Not sure yet", "Save reflection", "Reflection saved on this device.",
   "Three-part fluency evidence",
-  "This evidence comes from Practice it in this learner space. Older activity and other lab modes are not included. Strategy choices are the learner’s reflection.",
+  "This evidence uses independent first tries in Practice it and the full Fluency Lab. Older activity and other modes are not included. Strategy choices are the learner’s reflection.",
   "Answer a practice problem to begin collecting this evidence.", "Accuracy", "Strategy flexibility",
   "Helpful strategies", "Evidence developing", "Evidence threshold reached", "Building evidence",
   "independent sessions", "strategies named", "sessions where a strategy helped", "hint use is rising",

@@ -334,7 +334,7 @@ function progress() {
     ${s.remembered.length ? `<div class="panel"><h2>${esc(tr("Remembered on my own"))}</h2>${list(s.remembered)}</div>` : ""}
     ${s.improving.length ? `<div class="panel"><h2>${esc(tr("What I am getting stronger at"))}</h2>${list(s.improving)}</div>` : ""}
     <details class="panel"><summary>${esc(tr("Three-part fluency evidence"))}</summary>
-      <p class="note">${esc(tr("This evidence comes from Practice it in this learner space. Older activity and other lab modes are not included. Strategy choices are the learner’s reflection."))}</p>
+      <p class="note">${esc(tr("This evidence uses independent first tries in Practice it and the full Fluency Lab. Older activity and other modes are not included. Strategy choices are the learner’s reflection."))}</p>
       ${masteryRows.length ? `<ul class="plist">${masteryRows.map(({ skill, summary }) => `<li><strong>${esc(titleFor(skill))}</strong><ul>
         <li>${esc(tr("Accuracy"))}: ${esc(tr(summary.dimensions.accuracy ? "Evidence threshold reached" : "Building evidence"))} (${summary.evidence.independentSessions} ${esc(tr("independent sessions"))})</li>
         <li>${esc(tr("Strategy flexibility"))}: ${esc(tr(summary.dimensions.flexibility ? "Evidence threshold reached" : "Building evidence"))} (${summary.evidence.explainedStrategies} ${esc(tr("strategies named"))})</li>

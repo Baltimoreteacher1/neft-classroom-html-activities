@@ -216,6 +216,20 @@ for (const key of [
   "Use place value to multiply a three-digit number by a one-digit number.",
   "Addition facts: sums of 10 or less",
   "Add two numbers whose sum is 10 or less.",
+  "Did that strategy help?",
+  "Yes",
+  "Not sure yet",
+  "Save reflection",
+  "Reflection saved on this device.",
+  "Three-part fluency evidence",
+  "Evidence threshold reached",
+  "Building evidence",
+  "Helpful strategies",
+  "independent sessions",
+  "strategies named",
+  "sessions where a strategy helped",
+  "hint use is rising",
+  "hint use is not rising",
 ])
   keys.add(key);
 for (const team of TEAMS) keys.add(team.name);

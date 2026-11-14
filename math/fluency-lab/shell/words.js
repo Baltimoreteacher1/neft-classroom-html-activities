@@ -38,7 +38,7 @@ const ES = {
   "Save reflection": "Guardar reflexión",
   "Reflection saved on this device.": "Reflexión guardada en este dispositivo.",
   "Three-part fluency evidence": "Evidencia de fluidez en tres partes",
-  "This evidence comes from Practice it in this learner space. Older activity and other lab modes are not included. Strategy choices are the learner’s reflection.": "Esta evidencia proviene de la sección Practica en este espacio del estudiante. No incluye actividades anteriores ni otros modos del laboratorio. Las estrategias elegidas son una reflexión del estudiante.",
+  "This evidence uses independent first tries in Practice it and the full Fluency Lab. Older activity and other modes are not included. Strategy choices are the learner’s reflection.": "Esta evidencia usa primeros intentos independientes en Practica y en el Laboratorio de Fluidez completo. No incluye actividades anteriores ni otros modos. Las estrategias elegidas son una reflexión del estudiante.",
   "Answer a practice problem to begin collecting this evidence.": "Resuelve un problema de práctica para empezar a reunir esta evidencia.",
   Accuracy: "Precisión",
   "Strategy flexibility": "Flexibilidad de estrategias",

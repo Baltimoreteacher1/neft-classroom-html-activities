@@ -10,7 +10,7 @@ import {
 } from "./problem-bank.js";
 import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
 import { paintActions, paintFeedback } from "./feedback-panel.js";
-import { itemSignature } from "./mastery-model.js";
+import { itemSignature, masterySummary, recordMasteryEvent, recordMasteryReflection } from "./mastery-model.js";
 import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, markExampleViewed, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
 import { adaptiveItem, builtAnswerItem } from "./adaptive-item.js"; // fl4:adaptive
@@ -464,6 +464,30 @@ function recordFor(skill) {
     lastPracticed: null,
     ...(state.progress[`${skill.grade ?? state.grade}:${skill.id}`] || {}),
   };
+}
+
+function renderMasteryReflection(eventId, skill, strategy) {
+  const record = state.tutor.records[tutorSkillKey(skill)];
+  if (!record || !els.feedbackCopy) return;
+  const fieldset = document.createElement("fieldset");
+  fieldset.className = "mastery-reflection";
+  fieldset.innerHTML = `<legend>${t("Did that strategy help?")}</legend>
+    <label><input type="radio" name="mastery-help-${escapeHtml(eventId)}" value="yes"> ${t("Yes")}</label>
+    <label><input type="radio" name="mastery-help-${escapeHtml(eventId)}" value="no"> ${t("Not sure yet")}</label>
+    <button type="button" class="outline-action" data-save-mastery disabled>${t("Save reflection")}</button>
+    <span class="sr-only" data-reflection-status aria-live="polite"></span>`;
+  const button = fieldset.querySelector("[data-save-mastery]");
+  fieldset.addEventListener("change", () => {
+    button.disabled = !fieldset.querySelector('input[type="radio"]:checked');
+  });
+  button.addEventListener("click", () => {
+    const helped = fieldset.querySelector('input[type="radio"]:checked')?.value === "yes";
+    if (!recordMasteryReflection(record, eventId, strategy, helped)) return;
+    saveProgress();
+    button.remove();
+    fieldset.querySelector("[data-reflection-status]").textContent = t("Reflection saved on this device.");
+  });
+  els.feedbackCopy.append(fieldset);
 }
 
 function accuracy(record) {
@@ -7697,6 +7721,19 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         // Practice is untimed. This is a descriptive first-response sample, never a speed score.
         calm: true,
       });
+      const event = recordMasteryEvent(state.tutor.records[tutorSkillKey(state.item.skill)], {
+        eventId: `${session.id}:${session.answered}:${state.itemAttempts}`,
+        sessionId: session.id,
+        at: Date.now(),
+        correct: independent ? firstCorrect : correct,
+        independent,
+        hintsUsed: Number(Boolean(state.initialSupport)) + Number(Boolean(state.hintBeforeFirst)),
+        strategy: strategyTags[0],
+        explained: strategyTags.length > 0,
+        responseMs: state.firstResponseMs,
+      });
+      if (event?.correct && event.independent && event.strategy)
+        renderMasteryReflection(event.eventId, state.item.skill, event.strategy);
     }
     if (session.unitId && !isRevision) {
       const tally = (session.unitResults[tutorSkillKey(state.item.skill)] ||= { right: 0, total: 0 }); // fl-teacher:unit-check
@@ -8495,7 +8532,13 @@ function renderSkillFluencyMetrics(skill) {
   const paceCopy = Number.isFinite(pace.medianResponseMs)
     ? t("Typical calm thinking time: {time} seconds · {trend}", { time: Math.max(1, Math.round(pace.medianResponseMs / 1000)), trend: trendCopy })
     : t("No calm response samples yet");
-  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p></div>`;
+  const mastery = masterySummary(record?.masteryEvents || []);
+  const threshold = (met) => t(met ? "Evidence threshold reached" : "Building evidence");
+  const threePart = record?.masteryEvents?.length ? `<p class="three-part-evidence"><strong>${t("Three-part fluency evidence")}</strong><br>
+    ${t("Accuracy")}: ${threshold(mastery.dimensions.accuracy)} (${mastery.evidence.independentSessions} ${t("independent sessions")}) ·
+    ${t("Strategy flexibility")}: ${threshold(mastery.dimensions.flexibility)} (${mastery.evidence.explainedStrategies} ${t("strategies named")}) ·
+    ${t("Helpful strategies")}: ${threshold(mastery.dimensions.efficiency)} (${mastery.evidence.helpfulStrategySessions} ${t("sessions where a strategy helped")}; ${t(mastery.privateMetrics.hintsTrend === "increasing" ? "hint use is rising" : "hint use is not rising")})</p>` : "";
+  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p>${threePart}</div>`;
 }
 
 function renderPath() {
