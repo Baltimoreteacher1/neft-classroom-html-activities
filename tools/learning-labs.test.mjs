@@ -120,13 +120,18 @@ import {
 } from "./lib/curriculum-source.mjs";
 
 const catalogue = JSON.parse(readFileSync(join(REPO_ROOT, "data/learning-labs.json")));
-const arcLabs = [
-  "recipe-remix",
-  "missing-whole",
-  "power-plant",
-  "balance-bureau",
-  "shape-shift-garden",
-];
+const arcLabs = catalogue.labs.filter((lab) => lab.unit >= 2 && lab.unit <= 9).map((lab) => lab.id);
+assert.equal(arcLabs.length, 40, "Worked explanation rollout covers the taught units only");
+for (const lab of catalogue.labs.filter((entry) => entry.unit === 1 || entry.unit === 10)) {
+  const content = JSON.parse(
+    readFileSync(join(REPO_ROOT, "curriculum/learning-labs", lab.id, "content.json")),
+  );
+  assert.equal(
+    workedArc(content, content.lessons[0], "en"),
+    null,
+    `${lab.id}: untaught unit keeps its existing Learn stage`,
+  );
+}
 for (const id of arcLabs) {
   const lab = JSON.parse(
     readFileSync(join(REPO_ROOT, "curriculum/learning-labs", id, "content.json")),

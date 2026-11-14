@@ -69,6 +69,32 @@ async function sweepLab(page, item) {
     await page.locator(`#panel-${tab}`).waitFor({ state: "visible" });
     report.tabs++;
     assert.ok(await page.locator(`#panel-${tab}`).innerText());
+    if (tab === "learn") {
+      const taught = item.unit >= 2 && item.unit <= 9;
+      assert.equal(
+        await page.locator(".arc-predict").count(),
+        taught ? 1 : 0,
+        `${item.id}: source-backed Learn scope`,
+      );
+      if (taught) {
+        const reveal = page.locator("[data-worked] [data-reveal]");
+        assert.equal(
+          await reveal.isDisabled(),
+          true,
+          `${item.id}: prediction comes before the next reveal`,
+        );
+        await page
+          .locator(".arc-predict textarea")
+          .fill("I predict the model relationship will stay visible.");
+        assert.equal(
+          await reveal.isEnabled(),
+          true,
+          `${item.id}: prediction unlocks a single step`,
+        );
+        await reveal.click();
+        assert.match(await page.locator("[data-worked] .step-count").innerText(), /2 of/);
+      }
+    }
   }
   for (const level of ["support", "core", "stretch"]) {
     await page.selectOption("#level", level);

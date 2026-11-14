@@ -24,10 +24,9 @@ import {
 import { renderSnapshotsCard } from './scratchpad.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
-const workedArcLabs = new Set(['recipe-remix', 'missing-whole', 'power-plant', 'balance-bureau', 'shape-shift-garden']);
-/** The five first rebuilt explanations use lesson fields verbatim; no example numbers are introduced here. */
+/** Taught-unit explanations use lesson fields verbatim; no example numbers are introduced here. */
 export function workedArc(lab, lesson, lang = 'en') {
-  if (!workedArcLabs.has(lab.id)) return null;
+  if (lab.unit < 2 || lab.unit > 9) return null;
   const c = lesson.concept, es = lang === 'es';
   return {
     concept: c.intro,

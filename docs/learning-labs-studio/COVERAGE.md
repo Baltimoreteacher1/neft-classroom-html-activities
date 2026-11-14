@@ -16,14 +16,14 @@ Generated 2026-11-13 from `data/learning-labs.json`, the Bridge registry (`share
 | Capability | Labs | Of 46 |
 | --- | --- | --- |
 | Bilingual Representation Bridge with predict-first "Test an idea" | 21 labs across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models | 21 |
-| Source-backed Learn sequence: concept, prediction, one-step reveal, live model, observation, notation, explanation and new context | Recipe Remix Radio, The Missing Whole Bureau, The Power Plant, The Balance Bureau, Shape-Shift Garden | 5 |
+| Source-backed Learn sequence: concept, prediction, one-step reveal, live model, observation, notation, explanation and new context | Units 2–9 (all taught labs) | 40 |
 | Control on the first Chromebook screen | all labs | 46 |
 | First control on the phone's first screen | 41 labs; the five remaining labs use full-width data plots | 41 |
 | Model picture at least 60% visible on a phone's first screen | median 78.5%; see per-lab values | 40 |
 
 ## Not done for any lab
 
-A content-specific interactive centerpiece beyond the existing model, a redesigned game mechanic, the five-part rebuilt worked explanations for the other 41 labs, the Strategy Comparator, the Design Studio, the Discovery Portfolio, and the teacher view. See QA-REPORT.md.
+A content-specific interactive centerpiece beyond the existing model, a redesigned game mechanic, the Strategy Comparator, the Design Studio, the Discovery Portfolio, and the teacher view. The six Unit 1 and Unit 10 labs keep their existing Learn stage because those units are not taught. See QA-REPORT.md.
 
 ## Per lab
 
