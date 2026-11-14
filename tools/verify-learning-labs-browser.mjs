@@ -8,7 +8,7 @@ import { extname, join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { puzzle } from "../curriculum/learning-labs/shared/math.mjs";
-import { unit2Challenge } from "../curriculum/learning-labs/shared/unit2.mjs";
+import { unitMission } from "../curriculum/learning-labs/shared/unit-missions.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const full = process.argv.includes("--full");
@@ -70,19 +70,22 @@ async function sweepLab(page, item) {
     await page.locator(`#panel-${tab}`).waitFor({ state: "visible" });
     report.tabs++;
     assert.ok(await page.locator(`#panel-${tab}`).innerText());
-    if (item.unit === 2 && (tab === "investigate" || tab === "games")) {
-      const challenge = unit2Challenge(lab);
-      if (tab === "games") await page.locator('[data-game="unit2"]').click();
-      const card = page.locator(`#panel-${tab} .u2-centerpiece`);
+    if (item.unit >= 2 && item.unit <= 9 && (tab === "investigate" || tab === "games")) {
+      const challenge = unitMission(lab).challenge;
+      if (tab === "games") await page.locator(`[data-game="unit${item.unit}"]`).click();
+      const card = page.locator(`#panel-${tab} .u${item.unit}-centerpiece`);
       assert.equal(await card.count(), 1, `${item.id}: distinct math challenge in ${tab}`);
-      const input = card.locator('[name="unit2-answer"]');
+      const input = card.locator(`[name="unit${item.unit}-answer"]`);
       await input.fill("wrong");
       await card.locator('[type="submit"]').click();
-      const miss = await card.locator(".u2-result").innerText();
+      const miss = await card.locator(`.u${item.unit}-result`).innerText();
       assert.ok(!miss.includes(challenge.answer), `${item.id}: miss must not print the answer`);
       await input.fill(challenge.answer);
       await card.locator('[type="submit"]').click();
-      assert.match(await card.locator(".u2-result").innerText(), /That relationship works/);
+      assert.equal(
+        await card.locator(`.u${item.unit}-result`).getAttribute("data-result"),
+        "correct",
+      );
       if (tab === "games") await page.locator('[data-game="mission"]').click();
     }
     if (tab === "learn") {

@@ -4,6 +4,16 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Results
 
+### Units 3–9 source-data challenges and missions
+
+- **Before → after:** 7 → 40 labs have a source-data math challenge in Investigate and a Math Mission in Games. Units 3–9 cover ratios, percent, geometry, fraction and expression operations, signed numbers and coordinates, equations and inequalities, and two-variable relationships. The shared answer form is a first layer of mathematical interaction; the richer per-lab centerpieces and varied game mechanics in Section 11 remain unfinished.
+- The tasks are gated by each lab's model kind and mode, use exact integer or hundredth arithmetic, provide English and Spanish interfaces, and save solved work additively in version 1 state. A miss gives a retry prompt without revealing the answer.
+- `npm run validate:learning-labs`: PASS, including all 33 new source answers, Spanish twins, wrong inputs and model-kind/mode gating.
+- `npm run validate:game-rules`: PASS; 488 game files and 15 self-tests.
+- `QA_TIMEOUT_MS=1800000 npm run validate:learning-labs-browser`: PASS, including all 33 new tasks in Investigate and Games across the 46-lab sweep and the chained 21-lab Bridge suite.
+- Focused Playwright at 390px: PASS for all 33 Unit 3–9 labs; no page errors, horizontal overflow or task controls below 44px.
+- `npm run check`, `npm run validate:js-syntax`, `npm run validate:gate-coverage`, `node tools/learning-labs-bridge.test.mjs`, and all six other `tools/learning-labs-*.test.mjs`: PASS.
+
 ### Unit 2 math centerpieces and missions
 
 - **Before → after:** 0 → 7 labs have a source-data math challenge in Investigate and a Math Mission in Games. The challenges cover histogram intervals, median, IQR, equal shipments, mean and MAD, outlier effects, and exact decimal receipts. Saved completions add `state.unit2` to version 1 saves.
@@ -57,7 +67,7 @@ Results of checks that were run. Nothing here claims human review, certified acc
 
 ## Known gaps and unresolved limitations
 
-1. **Not delivered from the directive:** per-lab content centerpieces and math missions for the 33 taught labs in Units 3–9; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
+1. **Not delivered from the directive:** richer per-lab interactive centerpieces and varied game mechanics beyond the source-data challenge cards; Strategy Comparator; Design Studio; Discovery Portfolio; teacher view; publisher showcase route beyond PUBLISHER-DEMO.md. See COVERAGE.md.
 2. **Bridge covers 21 of 46 labs** across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models.
 3. **Spanish text** is present for all 21 Bridges and the Recorder and is checked by the Bridge test and browser verifier. No native Spanish review has occurred; the translations need review by a fluent speaker.
 4. **Phone:** the first control remains below the first screen in five data labs: Data Newsroom, Middle Ground, Consistency Cup, Fair Share Festival and Outlier Investigation. The full-width plot is retained on those labs.

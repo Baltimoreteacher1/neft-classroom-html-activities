@@ -21,6 +21,13 @@ import {
   progressStage,
 } from "../curriculum/learning-labs/shared/progress.mjs";
 import { checkUnit2, unit2Challenge } from "../curriculum/learning-labs/shared/unit2.mjs";
+import { checkUnit3, unit3Challenge } from "../curriculum/learning-labs/shared/unit3.mjs";
+import { checkUnit4, unit4Challenge } from "../curriculum/learning-labs/shared/unit4.mjs";
+import { checkUnit5, unit5Challenge } from "../curriculum/learning-labs/shared/unit5.mjs";
+import { checkUnit6, unit6Challenge } from "../curriculum/learning-labs/shared/unit6.mjs";
+import { checkUnit7, unit7Challenge } from "../curriculum/learning-labs/shared/unit7.mjs";
+import { checkUnit8, unit8Challenge } from "../curriculum/learning-labs/shared/unit8.mjs";
+import { checkUnit9, unit9Challenge } from "../curriculum/learning-labs/shared/unit9.mjs";
 
 const progressBase = {
   version: 1,
@@ -144,6 +151,126 @@ for (const [id, answer] of Object.entries(unit2Expected)) {
   assert.equal(checkUnit2(challenge, "wrong"), false);
   if (id === "consistency-cup") assert.equal(checkUnit2(challenge, "19,5"), true);
 }
+const unitMissionExpected = [
+  [
+    3,
+    unit3Challenge,
+    checkUnit3,
+    {
+      "recipe-remix": "3:5",
+      "ratio-railway": "12",
+      "mixture-matchup": "your",
+      "world-expedition": "12.70",
+      "best-buy-boulevard": "1.50",
+      "scale-and-sail": "48",
+    },
+  ],
+  [
+    4,
+    unit4Challenge,
+    checkUnit4,
+    {
+      "hundred-square-studio": "65",
+      "sale-signals": "60",
+      "missing-whole": "60",
+    },
+  ],
+  [
+    5,
+    unit5Challenge,
+    checkUnit5,
+    {
+      "shape-shift-garden": "24",
+      "festival-floorplan": "7,42",
+      "packaging-workshop": "24",
+      "wrap-lab": "148",
+      "polygon-pavilion": "9,36",
+    },
+  ],
+  [
+    6,
+    unit6Challenge,
+    checkUnit6,
+    {
+      "fraction-food-truck": "6",
+      "power-plant": "83",
+      "expression-remix": "32",
+      "factor-factory": "6",
+      "ribbon-rescue": "22/3",
+      "fraction-field-team": "27/4",
+      "synchronization-station": "36",
+      "algebra-workshop": "3x+12",
+    },
+  ],
+  [
+    7,
+    unit7Challenge,
+    checkUnit7,
+    {
+      "elevation-expedition": "4",
+      "deep-sea-order": "4",
+      "coordinate-couriers": "5",
+      "grid-architects": "42",
+      "mirror-mission": "3,4",
+    },
+  ],
+  [
+    8,
+    unit8Challenge,
+    checkUnit8,
+    {
+      "balance-bureau": "12",
+      "vault-division": "9",
+      "entry-rules": "2",
+      "budget-boundaries": "10",
+    },
+  ],
+  [
+    9,
+    unit9Challenge,
+    checkUnit9,
+    {
+      "variable-weather": "3,10",
+      "function-food-fair": "y=3x+5",
+    },
+  ],
+];
+for (const [unit, make, check, expected] of unitMissionExpected) {
+  assert.equal(
+    Object.keys(expected).length,
+    catalogue.labs.filter((lab) => lab.unit === unit).length,
+  );
+  for (const [id, answer] of Object.entries(expected)) {
+    const lab = JSON.parse(
+      readFileSync(join(REPO_ROOT, "curriculum/learning-labs", id, "content.json")),
+    );
+    const challenge = make(lab);
+    assert.equal(challenge.answer, answer, `${id}: math comes from the source model`);
+    assert.ok(
+      challenge.titleEs && challenge.promptEs && challenge.sceneEs,
+      `${id}: Spanish text accompanies the task`,
+    );
+    assert.equal(check(challenge, answer), true, `${id}: source answer works`);
+    assert.equal(check(challenge, "wrong"), false, `${id}: wrong answer fails`);
+    assert.equal(
+      make({ ...lab, model: { ...lab.model, mode: "unrelated" } }),
+      null,
+      `${id}: model gates task`,
+    );
+  }
+}
+assert.equal(
+  checkUnit3(
+    unit3Challenge(
+      JSON.parse(
+        readFileSync(join(REPO_ROOT, "curriculum/learning-labs/world-expedition/content.json")),
+      ),
+    ),
+    "12,70",
+  ),
+  true,
+  "Spanish decimal comma works",
+);
 const arcLabs = catalogue.labs.filter((lab) => lab.unit >= 2 && lab.unit <= 9).map((lab) => lab.id);
 assert.equal(arcLabs.length, 40, "Worked explanation rollout covers the taught units only");
 for (const lab of catalogue.labs.filter((entry) => entry.unit === 1 || entry.unit === 10)) {
