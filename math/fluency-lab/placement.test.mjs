@@ -6,7 +6,7 @@ Object.defineProperty(globalThis, "localStorage", { configurable: true, value: {
 Object.defineProperty(globalThis, "window", { configurable: true, value: globalThis });
 
 const { findSkill, sanitizeTutor, emptyTutor } = await import("./tutor-engine.js");
-const { MAX_FOUNDATION_PROBES, PURPOSE, checkupPlan, checkupSummary, recordCheckupAnswer } = await import("./placement.js");
+const { MAX_CHECKUP_ITEMS, MAX_FOUNDATION_PROBES, PURPOSE, checkupPlan, checkupSummary, recordCheckupAnswer } = await import("./placement.js");
 
 // Walk a session exactly as app.js does: answer queue[answered], advance, then let the checkup react.
 function run(grade, learner, unsureKeys = []) {
@@ -31,10 +31,11 @@ const grades = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 const strong = () => true;
 const never = () => false;
 
-// Every grade: the plan covers each skill once, entries resolve, and a strong learner is never given a second look.
+// Every grade: the short plan has distinct, valid skills, and a strong learner is never given a second look.
 let shortened = 0;
 for (const grade of grades) {
   const plan = checkupPlan(grade);
+  assert.ok(plan.length <= MAX_CHECKUP_ITEMS, `grade ${grade}: first-run plan fits the item cap`);
   assert.equal(new Set(plan.map((entry) => entry.key)).size, plan.length, `grade ${grade}: one initial item per skill`);
   assert.ok(plan.every((entry) => findSkill(entry.key) && entry.purpose === PURPOSE.initial));
   const { session, asked, summary } = run(grade, strong);
@@ -108,9 +109,9 @@ assert.ok(shortened > 0, "a strong learner skips at least one prerequisite somew
 for (const grade of grades) {
   const { session, asked } = run(grade, never);
   const plan = checkupPlan(grade);
-  assert.ok(asked.length <= plan.length * 2 + MAX_FOUNDATION_PROBES, `grade ${grade}: bounded length`);
+  assert.ok(asked.length <= MAX_CHECKUP_ITEMS, `grade ${grade}: at most 12 items`);
   assert.ok(session.checkup.probed.length <= MAX_FOUNDATION_PROBES);
-  assert.ok(plan.every((entry) => session.diagnosticResults[entry.key] === false), `grade ${grade}: every skill ends as an evidenced gap`);
+  assert.ok(asked.filter((entry) => entry.purpose === PURPOSE.initial).every((entry) => session.diagnosticResults[entry.key] === false), `grade ${grade}: each asked grade skill ends as an evidenced gap`);
   const counts = {};
   for (const entry of asked.filter((row) => row.purpose !== PURPOSE.foundation)) counts[entry.key] = (counts[entry.key] || 0) + 1;
   assert.ok(Object.values(counts).every((count) => count === 2), `grade ${grade}: each skill gets exactly one second look`);

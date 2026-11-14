@@ -114,3 +114,68 @@ export function itemSignature(text) {
   for (const char of String(text ?? "").replace(/\s+/g, " ").trim()) hash = ((hash * 33) ^ char.charCodeAt(0)) >>> 0;
   return hash.toString(36);
 }
+
+// The new three-dimension fluency rule coexists with the established numeric
+// meter until every practice mode can record strategy and explanation evidence.
+export const REVIEW_GAPS_DAYS = REVIEW_LADDER;
+
+export function masterySummary(history, now = Date.now()) {
+  const events = (Array.isArray(history) ? history : [])
+    .filter((event) => event && Number.isFinite(event.at) && event.at <= now &&
+      typeof event.sessionId === "string" && event.sessionId &&
+      typeof event.correct === "boolean" && typeof event.independent === "boolean")
+    .toSorted((a, b) => a.at - b.at);
+  const independentCorrect = events.filter((event) => event.correct && event.independent);
+  const sessions = new Set(independentCorrect.map((event) => event.sessionId));
+  const strategies = new Set(independentCorrect.filter((event) => event.explained && event.strategy).map((event) => event.strategy));
+  const appropriate = new Set(independentCorrect.filter((event) => event.appropriateStrategy === true).map((event) => event.sessionId));
+  const halfway = Math.ceil(events.length / 2);
+  const hintTotal = (rows) => rows.reduce((sum, event) => sum + (Number(event.hintsUsed) || 0), 0);
+  const earlyHints = hintTotal(events.slice(0, halfway));
+  const lateHints = hintTotal(events.slice(halfway));
+  const dimensions = {
+    accuracy: sessions.size >= 3,
+    flexibility: strategies.size >= 2,
+    efficiency: appropriate.size >= 2 && lateHints <= earlyHints,
+  };
+  const responseTimes = independentCorrect.map((event) => event.responseMs)
+    .filter((value) => Number.isFinite(value) && value >= 0).toSorted((a, b) => a - b);
+
+  let fluentAt = null;
+  const seenSessions = new Set();
+  const seenStrategies = new Set();
+  const seenAppropriate = new Set();
+  for (const event of events) {
+    if (event.correct && event.independent) {
+      seenSessions.add(event.sessionId);
+      if (event.explained && event.strategy) seenStrategies.add(event.strategy);
+      if (event.appropriateStrategy === true) seenAppropriate.add(event.sessionId);
+    }
+    if (seenSessions.size >= 3 && seenStrategies.size >= 2 && seenAppropriate.size >= 2) {
+      fluentAt = event.at;
+      break;
+    }
+  }
+  if (!dimensions.efficiency) fluentAt = null;
+
+  let reviews = 0;
+  let lastReview = fluentAt;
+  if (fluentAt !== null) {
+    for (const event of events) {
+      if (event.at <= fluentAt || reviews === REVIEW_LADDER.length) continue;
+      if (event.retrieval !== true || !event.correct || !event.independent) continue;
+      if (event.at - lastReview < REVIEW_LADDER[reviews] * DAY) continue;
+      reviews++;
+      lastReview = event.at;
+    }
+  }
+  const state = reviews === REVIEW_LADDER.length ? "Maintained" : fluentAt !== null ? "Fluent" : events.length ? "Strategy" : "Explore";
+  return {
+    state,
+    dimensions,
+    evidence: { independentSessions: sessions.size, explainedStrategies: strategies.size, appropriateSessions: appropriate.size },
+    retention: { completedGaps: reviews, nextDueAt: fluentAt !== null && reviews < REVIEW_LADDER.length ? lastReview + REVIEW_LADDER[reviews] * DAY : null },
+    privateMetrics: { medianResponseMs: responseTimes.length ? responseTimes[Math.floor(responseTimes.length / 2)] : null,
+      hintsTrend: lateHints < earlyHints ? "decreasing" : lateHints === earlyHints ? "steady" : "increasing" },
+  };
+}

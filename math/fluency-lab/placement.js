@@ -21,6 +21,8 @@ export const PURPOSE = Object.freeze({
   foundation: "Foundation check",
 });
 export const MAX_FOUNDATION_PROBES = 2;
+export const MAX_CHECKUP_ITEMS = 12;
+const INITIAL_CHECKUP_ITEMS = 10;
 
 // Authored same-grade ancestors of a skill, transitively. Only authored edges are used: the generator-based
 // fallback in prerequisites() is fine for suggesting a foundation, not for crediting unseen skills.
@@ -42,6 +44,7 @@ export function checkupPlan(grade) {
   return diagnosticPlan(grade)
     .map((entry, index) => ({ entry, index, depth: sameGradeAncestors(findSkill(entry.key)).size }))
     .sort((a, b) => b.depth - a.depth || a.index - b.index)
+    .slice(0, INITIAL_CHECKUP_ITEMS)
     .map(({ entry }) => ({ ...entry, purpose: PURPOSE.initial }));
 }
 
@@ -60,8 +63,19 @@ export function recordCheckupAnswer(session, key, correct, { unsure = false } = 
   const purpose = session.queue[session.answered - 1]?.purpose || PURPOSE.initial;
   const skill = findSkill(key);
   const insert = (entry) => {
+    if (session.queue.length >= MAX_CHECKUP_ITEMS) {
+      // Keep a second look or foundation probe by retiring an unasked initial
+      // item. Never turn a single miss into a reported gap just to fit the cap.
+      const lastInitial = session.queue.findLastIndex(
+        (candidate, index) => index >= session.answered && candidate.purpose === PURPOSE.initial,
+      );
+      if (lastInitial < 0) return false;
+      session.queue.splice(lastInitial, 1);
+      session.target -= 1;
+    }
     session.queue.splice(session.answered, 0, entry);
     session.target += 1;
+    return true;
   };
   const covered = (candidate) => {
     const candidateKey = skillKey(candidate);
@@ -77,12 +91,11 @@ export function recordCheckupAnswer(session, key, correct, { unsure = false } = 
       (candidate) => skillKey(candidate) !== skillKey(from) && !covered(candidate),
     );
     if (!next) return;
-    checkup.probed.push(skillKey(next));
-    insert({
+    if (insert({
       key: skillKey(next),
       purpose: PURPOSE.foundation,
       reason: "A short look at an earlier idea this builds on.",
-    });
+    })) checkup.probed.push(skillKey(next));
   };
 
   if (unsure) {

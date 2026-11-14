@@ -60,7 +60,13 @@ try {
   assert.equal(secondLooks, firstMisses, "every first miss gets exactly one second look");
   assert.ok(steps.filter((step) => step.kind === "foundation").length <= 2, "foundation probes are capped at two");
   assert.ok(steps.some((step) => step.kind === "foundation"), "a skill missed twice probes an earlier foundation");
-  assert.equal(steps.length, initialTotal + secondLooks + steps.filter((step) => step.kind === "foundation").length, "length = plan + second looks + probes");
+  assert.ok(initialTotal <= 10, "the initial plan leaves room for adaptive follow-ups");
+  assert.ok(steps.length <= 12, "the whole checkup stays within 12 items");
+  assert.equal(
+    steps.length,
+    steps.filter((step) => step.kind === "initial").length + secondLooks + steps.filter((step) => step.kind === "foundation").length,
+    "every item is an initial, second-look, or foundation item",
+  );
   const summary = await page.locator("#summary-copy").innerText();
   assert.match(summary, /Worth practicing:/);
   assert.doesNotMatch(summary, /ten samples/);

@@ -17,6 +17,23 @@ function getLessonEntries() {
   return entries;
 }
 
+function fluencyStudentRoutes() {
+  const route =
+    /^\/math\/fluency-lab\/(?:today|skills|progress|grade-(?:k|[1-8])(?:\/[^/.]+)?)\/?$/;
+  const rewrite = (server) => {
+    server.middlewares.use((req, _res, next) => {
+      if (route.test(new URL(req.url || "/", "http://localhost").pathname))
+        req.url = "/math/fluency-lab/index.html";
+      next();
+    });
+  };
+  return {
+    name: "fluency-student-routes",
+    configureServer: rewrite,
+    configurePreviewServer: rewrite,
+  };
+}
+
 function copyStandaloneHtml() {
   const SKIP_DIRS = new Set([
     "node_modules",
@@ -582,5 +599,5 @@ export default defineConfig({
       "@lessons": resolve(__dirname, "lessons"),
     },
   },
-  plugins: [homeworkInteractiveDevEntry(), copyStandaloneHtml()],
+  plugins: [fluencyStudentRoutes(), homeworkInteractiveDevEntry(), copyStandaloneHtml()],
 });

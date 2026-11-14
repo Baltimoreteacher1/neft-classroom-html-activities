@@ -16,6 +16,7 @@ import { loadTutor, recordPractice, saveLastVisit, skillMeter } from "./store.js
 import { meterHtml } from "./meter.js";
 import { afterAnswer, afterSolution, loadAwards } from "./practice-cheer.js";
 import { esc, gradeName, lang, named, pickL, tr } from "./words.js";
+import { skillPath } from "./routes.js";
 
 const STAGES = [
   { id: "see", label: "See it" },
@@ -28,6 +29,7 @@ const linkStage = { see: "learn", try: "try", practice: "practice" };
 export function mountSkill(root, skill, { stage = "see", go, live }) {
   const content = teach(skill);
   let current = stage;
+  let initialShow = true;
   const say = (text) => live(text);
 
   root.innerHTML = `
@@ -48,11 +50,12 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
   function show(id) {
     current = id;
     saveLastVisit(skill.grade, skill.id, linkStage[id]);
-    history.replaceState(
+    history[initialShow ? "replaceState" : "pushState"](
       null,
       "",
-      `?grade=${skill.grade}&skill=${skill.id}${id === "see" ? "" : `&stage=${linkStage[id]}`}`,
+      skillPath(skill.grade, skill.id, id),
     );
+    initialShow = false;
     root.querySelectorAll(".stepper li").forEach((li) => {
       li.classList.toggle("is-on", li.dataset.s === id);
       li.querySelector("button").setAttribute(

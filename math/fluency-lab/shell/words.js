@@ -5,6 +5,16 @@ import { TITLES_ES } from "./titles-es.js";
 
 const ES = {
   "Math Fluency Lab": "Laboratorio de Fluidez Matemática",
+  "Build math facts you can trust": "Construye conocimientos matemáticos que puedas usar",
+  "See ideas, try strategies, and remember what works.": "Explora ideas, prueba estrategias y recuerda lo que funciona.",
+  "Start today's workout": "Empezar la práctica de hoy",
+  "Find my starting point": "Encontrar mi punto de partida",
+  Today: "Hoy",
+  Skills: "Destrezas",
+  Games: "Juegos",
+  Comfort: "Comodidad",
+  "Switch learner": "Cambiar de estudiante",
+  "For Adults": "Para adultos",
   "What would you like to practice today?": "¿Qué te gustaría practicar hoy?",
   "Choose your grade": "Elige tu grado",
   Kindergarten: "Kínder",

@@ -1,5 +1,5 @@
-// Math Fluency Lab — student app. Three destinations (Learn & Practice, Choose a Skill, My Progress) and
-// one "More" drawer for everything else. Links meant for the full lab (assignments, teacher, games, writing,
+// Math Fluency Lab — student app. Four primary destinations and a Comfort dialog.
+// Links meant for the full lab (assignments, teacher, games, writing,
 // tools, daily mix, checkup) are forwarded to lab.html unchanged, so no shared link breaks.
 import { GRADES, getSkill } from "../problem-bank.js";
 import { topicsFor } from "../skill-path.js";
@@ -23,6 +23,7 @@ import { applyPrefs, prefs, readAloudOn, setPref, setReadAloud } from "./prefs.j
 import { keepLegible, setPanLabel } from "./legible.js";
 import { queryWords, skillMatcher } from "./search.js";
 import { stageFromParam } from "./stage-param.js";
+import { ROOT, parsePath, skillPath, viewPath } from "./routes.js";
 import {
   esc,
   gradeName,
@@ -55,9 +56,13 @@ const forwardToLab =
   params.has("publisher-demo") ||
   params.has("tour") ||
   params.has("profile");
-if (forwardToLab) location.replace(`lab.html${location.search}${location.hash}`);
+if (forwardToLab) location.replace(`${ROOT}lab.html${location.search}${location.hash}`);
 
 const app = document.getElementById("app");
+document.querySelector(".skip-link")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  app.focus();
+});
 setPanLabel(() => tr("Picture: scroll sideways to see all of it"));
 keepLegible(app);
 const liveRegion = document.getElementById("live");
@@ -87,57 +92,54 @@ if (grade !== null) setGrade(grade);
 
 function nav(active) {
   const items = [
-    ["home", "Learn & Practice"],
-    ["library", "Choose a Skill"],
-    ["progress", "My Progress"],
+    ["home", "Today", viewPath("home", grade)],
+    ["library", "Skills", viewPath("library", grade)],
+    ["games", "Games", "lab.html?view=games"],
+    ["progress", "My Progress", viewPath("progress", grade)],
   ];
   document.getElementById("nav").innerHTML = items
     .map(
-      ([id, label]) =>
-        `<a href="#" class="nav-link" data-go="${id}" ${active === id ? 'aria-current="page"' : ""}>${esc(tr(label))}</a>`,
+      ([id, label, href]) =>
+        `<a href="${href}" class="nav-link" ${id === "games" ? "" : `data-go="${id}"`} ${active === id ? 'aria-current="page"' : ""}>${esc(tr(label))}</a>`,
     )
     .join("");
   document.getElementById("brand-name").textContent = tr("Math Fluency Lab");
-  document.getElementById("more-btn").textContent = tr("More");
+  document.getElementById("more-btn").textContent = tr("Comfort");
+  document.getElementById("learner-btn").setAttribute("aria-label", tr("Switch learner"));
+  document.getElementById("learner-btn").setAttribute("title", tr("Switch learner"));
   document.getElementById("lang-btn").textContent = lang() === "es" ? "English" : "Español";
 }
 
 // The shell's progress screen must not use `?view=progress`: that address is the full lab's, and forwarding old links
 // to it (LAB_VIEWS) is a promise, so reloading the shell's own URL would land a learner in the other app.
-const SHELL_VIEW_PARAM = { progress: "my-progress" };
 const SHELL_VIEWS = { library: "library", "my-progress": "progress" };
 
-// The skill screen (its models, studio panels and picture lab) is most of the code. It loads when a skill opens and is
-// fetched in the background once the first screen is showing, so the first paint carries only what that screen draws.
+// The skill screen (its models, studio panels and picture lab) loads when a skill opens.
 const loadSkill = () => import("./skill.js");
-(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => loadSkill().catch(() => {}));
 
 async function route(view, opts = {}) {
   window.scrollTo(0, 0);
   if (view === "skill") {
+    if (opts.push) history.pushState(null, "", skillPath(opts.skill.grade, opts.skill.id, opts.stage));
     nav("home");
     const { mountSkill } = await loadSkill();
     mountSkill(app, opts.skill, { stage: opts.stage, go: route, live });
     document.title = `${titleOf(opts.skill)} · ${tr("Math Fluency Lab")}`;
     return;
   }
-  history.replaceState(
+  history[opts.push ? "pushState" : "replaceState"](
     null,
     "",
-    view === "home"
-      ? grade === null
-        ? location.pathname
-        : `?grade=${grade}`
-      : `?view=${SHELL_VIEW_PARAM[view] ?? view}${grade === null ? "" : `&grade=${grade}`}`,
+    viewPath(view, grade),
   );
   nav(view === "library" ? "library" : view === "progress" ? "progress" : "home");
-  ({ home, library, progress })[view]();
+  await ({ home, library, progress })[view]();
   document.title = `${tr("Math Fluency Lab")} · EduWonderLab`;
   app.querySelector("h1")?.focus({ preventScroll: true });
 }
 
-const openSkill = (s, stage = "see") =>
-  route("skill", { skill: { ...s, grade: s.grade ?? grade }, stage });
+const openSkill = (s, stage = "see", push = true) =>
+  route("skill", { skill: { ...s, grade: s.grade ?? grade }, stage, push });
 
 function gradePicker(compact = false) {
   return `<div class="grade-grid${compact ? " is-compact" : ""}" role="group" aria-label="${esc(tr("Choose your grade"))}">${GRADES.map(
@@ -149,9 +151,20 @@ function gradePicker(compact = false) {
 function home() {
   const last = lastVisit();
   if (grade === null) {
-    app.innerHTML = `<section class="hero"><h1 tabindex="-1">${esc(tr("What would you like to practice today?"))}</h1>
-      <p class="hero-sub">${esc(tr("Choose your grade"))}</p>${gradePicker()}</section>`;
-    return bindGrades(() => route("home"));
+    app.innerHTML = `<section class="hero"><h1 tabindex="-1">${esc(tr("Build math facts you can trust"))}</h1>
+      <p class="hero-sub">${esc(tr("See ideas, try strategies, and remember what works."))}</p>
+      <button type="button" class="btn btn-primary btn-lg" data-choose-grade="daily">${esc(tr("Start today's workout"))}</button>
+      <button type="button" class="btn btn-link" data-choose-grade="checkup">${esc(tr("Find my starting point"))}</button></section>
+      <dialog class="grade-dialog" aria-label="${esc(tr("Choose your grade"))}"><h2>${esc(tr("Choose your grade"))}</h2>${gradePicker()}<button type="button" class="btn btn-secondary" data-close-grade>${esc(tr("Close"))}</button></dialog>`;
+    const dialog = app.querySelector(".grade-dialog");
+    app.querySelectorAll("[data-choose-grade]").forEach((button) =>
+      button.addEventListener("click", () => {
+        dialog.dataset.start = button.dataset.chooseGrade;
+        dialog.showModal();
+      }),
+    );
+    app.querySelector("[data-close-grade]").addEventListener("click", () => dialog.close());
+    return bindGrades(() => location.assign(`${ROOT}lab.html?grade=${grade}&start=${dialog.dataset.start || "daily"}`));
   }
   const topics = topicsFor(grade);
   const resume = last && last.grade === grade ? last : null;
@@ -164,10 +177,14 @@ function home() {
     exclude: [`${grade}:${start.id}`],
     limit: 2,
   });
-  app.innerHTML = `<section class="hero">
+  app.innerHTML = `<section class="hero home-intro">
       <div class="hero-buddy" data-buddy aria-hidden="true"></div>
       <p class="eyebrow">${esc(gradeName(grade))} · <button type="button" class="btn-link" data-change>${esc(tr("Change grade"))}</button></p>
-      <h1 tabindex="-1">${esc(tr("What would you like to practice today?"))}</h1>
+      <h1 tabindex="-1">${esc(tr("Build math facts you can trust"))}</h1>
+      <p class="hero-sub">${esc(tr("See ideas, try strategies, and remember what works."))}</p>
+      <a class="btn btn-primary btn-lg" href="lab.html?grade=${grade}&start=daily">${esc(tr("Start today's workout"))}</a>
+      <a class="btn btn-link" href="lab.html?grade=${grade}&start=checkup">${esc(tr("Find my starting point"))}</a>
+    </section><section class="home-next">
       <article class="feature">
         <p class="feature-kicker">${esc(resume ? tr("Continue learning") : tr("Start here"))}</p>
         <h2 class="feature-title">${esc(titleOf({ ...start, grade }))}</h2>
@@ -178,7 +195,7 @@ function home() {
       </article>
       ${recStripHtml(recs, { meters })}
       ${elsewhere ? `<p class="quiet-progress">${esc(tr("Continue where you left off"))}: <a href="?grade=${elsewhere.grade}&skill=${esc(elsewhere.skillId)}${elsewhere.stage && elsewhere.stage !== "learn" ? `&stage=${esc(elsewhere.stage)}` : ""}">${esc(titleOf({ ...elsewhere.skill, grade: elsewhere.grade }))} · ${esc(gradeName(elsewhere.grade))}</a></p>` : ""}
-      ${summary.practiced.length ? `<p class="quiet-progress"><a href="#" data-go="progress">${esc(tr("My Progress"))}</a> · ${summary.remembered.length} ${esc(tr("Remembered on my own").toLowerCase())} · ${summary.improving.length} ${esc(tr("What I am getting stronger at").toLowerCase())}</p>` : ""}
+      ${summary.practiced.length ? `<p class="quiet-progress"><a href="${viewPath("progress", grade)}" data-go="progress">${esc(tr("My Progress"))}</a> · ${summary.remembered.length} ${esc(tr("Remembered on my own").toLowerCase())} · ${summary.improving.length} ${esc(tr("What I am getting stronger at").toLowerCase())}</p>` : ""}
     </section>`;
   app
     .querySelector("[data-start]")
@@ -223,12 +240,13 @@ const FILTERS = [
 ];
 let filter = "all";
 
-function library() {
+async function library() {
   if (grade === null) {
     app.innerHTML = `<section class="hero"><h1 tabindex="-1">${esc(tr("Choose a Skill"))}</h1>${gradePicker()}</section>`;
     return bindGrades(() => route("library"));
   }
   const topics = topicsFor(grade);
+  const { languageProfile } = await import("../language-terms.js");
   const states = skillStates(grade);
   const meters = skillMeters(grade);
   const all = topics.flatMap((t) => t.skills);
@@ -247,8 +265,10 @@ function library() {
       <div data-results></div></section>`;
   const results = app.querySelector("[data-results]");
   let query = "";
-  const textOf = (topic, s) =>
-    `${s.title} ${titleOf(s)} ${blurbOf(s)} ${s.learn?.rule || ""} ${topic.name} ${named(topic.name)}`;
+  const textOf = (topic, s) => {
+    const terms = languageProfile(s).terms || [];
+    return `${s.title} ${titleOf(s)} ${blurbOf(s)} ${s.learn?.rule || ""} ${(s.learn?.steps || []).join(" ")} ${terms.map((term) => `${term.en} ${term.es} ${term.defEn || ""} ${term.defEs || ""}`).join(" ")} ${topic.name} ${named(topic.name)}`;
+  };
   const entries = topics.flatMap((topic) => topic.skills.map((s) => ({ text: textOf(topic, s), topicId: topic.id })));
   const draw = () => {
     const words = queryWords(query);
@@ -324,14 +344,11 @@ function progress() {
     </ul></div></section>`;
 }
 
-// The More drawer: everything that is not the student's next step, grouped by who it is for, then settings.
-// Every link goes to a page that exists; every setting does something visible on this page.
-function more() {
-  const g = grade === null ? "" : `grade=${grade}&`;
+// Comfort settings stay in the learner shell; adult destinations have their own page.
+function more(focusLearner = false) {
   const dlg = document.getElementById("more");
   const { ids, active } = activeProfile();
   const p = prefs();
-  const link = (href, label) => `<li><a href="${href}">${esc(tr(label))}</a></li>`;
   const toggle = (name, label, on) =>
     `<label class="toggle"><input type="checkbox" data-pref="${name}" ${on ? "checked" : ""}/> <span>${esc(tr(label))}</span></label>`;
   const learnerOptions = PROFILE_NAMES.map(
@@ -339,18 +356,7 @@ function more() {
       `<option value="${id}" ${id === active ? "selected" : ""}>${esc(ids.includes(id) ? name : `${name} (${tr("new")})`)}</option>`,
   ).join("");
   dlg.querySelector("[data-more-body]").innerHTML = `
-    <h2 id="more-title">${esc(tr("More"))}</h2>
-    <h3>${esc(tr("Explore more"))}</h3><ul class="more-list">
-      ${link(`lab.html?${g}view=games`, "Game Room")}${link("ratio-studio/", "Ratio Studio")}
-      ${link("reality/", "Math Reality")}${link(`lab.html?${g}view=models`, "Math tools and models")}
-      ${link(`lab.html?${g}view=write`, "Math Writing Studio")}${link(`lab.html?${g}start=daily`, "Daily mix")}</ul>
-    <h3>${esc(tr("For families"))}</h3><ul class="more-list">
-      ${link("family-adventure/", "Family Math Expedition")}${link(`lab.html?${g}view=progress`, "Progress report and printing")}</ul>
-    <h3>${esc(tr("For teachers"))}</h3><ul class="more-list">
-      ${link(`lab.html?${g}view=teacher`, "Teacher studio: assignments, class reports, print packets")}
-      ${link(`lab.html?${g}start=checkup`, "Starting-point checkup")}
-      ${link(`lab.html${grade === null ? "" : `?grade=${grade}`}`, "Full lab (all features)")}</ul>
-    <h3>${esc(tr("Settings"))}</h3>
+    <h2 id="more-title">${esc(tr("Comfort"))}</h2>
     <div class="settings">
       ${toggle("largeText", "Larger text", p.largeText)}
       ${toggle("readingFont", "Reading font", p.readingFont)}
@@ -359,7 +365,7 @@ function more() {
       <label class="field"><span>${esc(tr("Learner on this device"))}</span>
         <select data-learner>${learnerOptions}</select></label>
       <p class="note">${esc(tr("Each learner keeps their own grade and progress on this device."))}</p>
-      <ul class="more-list">${link(`lab.html?${g}view=progress`, "Back up or restore progress")}</ul>
+      <p><a href="lab.html?${grade === null ? "" : `grade=${grade}&`}view=progress">${esc(tr("Back up or restore progress"))}</a></p>
     </div>`;
   dlg.querySelectorAll("[data-pref]").forEach((input) =>
     input.addEventListener("change", () => {
@@ -374,6 +380,7 @@ function more() {
     location.assign(location.pathname);
   });
   dlg.showModal();
+  if (focusLearner) dlg.querySelector("[data-learner]").focus();
 }
 const speechSupported = () => "speechSynthesis" in window;
 
@@ -390,14 +397,17 @@ document.addEventListener("click", (event) => {
   }
   const go = event.target.closest("[data-go]");
   if (go) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
+      return;
     event.preventDefault();
-    route(go.dataset.go);
+    route(go.dataset.go, { push: true });
   }
 });
 document
   .getElementById("brand")
-  .addEventListener("click", (e) => (e.preventDefault(), route("home")));
-document.getElementById("more-btn").addEventListener("click", more);
+  .addEventListener("click", (e) => (e.preventDefault(), route("home", { push: true })));
+document.getElementById("more-btn").addEventListener("click", () => more());
+document.getElementById("learner-btn").addEventListener("click", () => more(true));
 // The language button re-draws where the learner is: the skill and step (or the library / progress view) live in the
 // address bar, which the views keep current, so it is read again rather than the copy taken when the page loaded.
 document.getElementById("lang-btn").addEventListener("click", () => {
@@ -407,14 +417,20 @@ document.getElementById("lang-btn").addEventListener("click", () => {
 
 function boot(source = params) {
   if (forwardToLab) return;
+  const path = parsePath(location.pathname);
+  if (path?.grade !== undefined) setGrade(path.grade);
+  const pathSkill = path?.view === "skill" ? getSkill(path.grade, path.skillId) : null;
+  if (pathSkill)
+    return openSkill({ ...pathSkill, grade: path.grade }, stageFromParam(source.get("stage")), false);
   const skill = grade !== null && source.get("skill") ? getSkill(grade, source.get("skill")) : null;
-  const view = source.get("view");
+  const view = path?.view || source.get("view");
   if (skill) {
     const stage =
       source.get("start") === "practice" ? "practice" : stageFromParam(source.get("stage"));
     params.delete("skill");
-    return openSkill({ ...skill, grade }, stage);
+    return openSkill({ ...skill, grade }, stage, false);
   }
-  route(SHELL_VIEWS[view] ?? "home");
+  route(path?.view || SHELL_VIEWS[view] || "home");
 }
 boot();
+window.addEventListener("popstate", () => boot(new URLSearchParams(location.search)));
