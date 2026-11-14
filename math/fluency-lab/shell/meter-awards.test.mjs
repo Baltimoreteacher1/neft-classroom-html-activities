@@ -16,7 +16,7 @@ globalThis.document ??= { documentElement: { dataset: {}, lang: "en" } };
 const { getSkill } = await import("../problem-bank.js");
 const { emptyTutor, recordAnswer, evidence } = await import("../tutor-engine.js");
 const { METER_STEPS, STAGE_TEXT, meterChange, meterFor, meterHtml, meterMini } = await import("./meter.js");
-const { recordPractice, skillMeter } = await import("./store.js");
+const { masteryForGrade, recordMasteryReflection, recordPractice, skillMeter } = await import("./store.js");
 const { REWARDS_KEY, cleanRewards, loadRewards } = await import("../rewards.js");
 const awards = await import("./awards.js");
 const { missingSpanish } = await import("./words.js");
@@ -77,6 +77,14 @@ const HOUR = 3600 * 1000;
   assert.equal(skillMeter(skill).filled, 1, "an independent first try moves the meter");
   recordPractice(skill, item, { correct: true, independent: false, firstTry: false, raw: "6", level: 1 });
   assert.equal(skillMeter(skill).filled, 1, "a second try never moves the meter");
+  recordPractice(skill, item, { correct: true, independent: true, firstTry: true, raw: "6", level: 1,
+    masteryEvent: { sessionId: "session-a", eventId: "a-1", hintsUsed: 0 } });
+  assert.equal(recordMasteryReflection(skill, "a-1", "visual", true), true);
+  const row = masteryForGrade(6).find(({ skill: candidate }) => candidate.id === skill.id);
+  assert.equal(row.summary.evidence.independentSessions, 1);
+  assert.equal(row.summary.evidence.explainedStrategies, 1);
+  assert.equal(row.summary.evidence.helpfulStrategySessions, 1);
+  assert.equal(recordMasteryReflection(skill, "missing", "visual", true), false);
 }
 
 // --- rewards: the existing record, cleaned the existing way ---

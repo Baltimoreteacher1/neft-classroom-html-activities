@@ -13,6 +13,7 @@ import {
 } from "../tutor-engine.js";
 import { validLastVisit } from "../skill-path.js";
 import { meterFor } from "./meter.js";
+import { masterySummary } from "../mastery-model.js";
 
 const PROGRESS = "ewl-fluency-progress-v1";
 const TUTOR = "ewl-fluency-tutor-v2";
@@ -94,12 +95,22 @@ export const skillEvidence = (skill) => evidence(loadTutor(), skill);
 
 // One answered practice problem. `independent` is false whenever any help was opened before the answer, so
 // supported work never counts toward "Remembered independently" (tutor-engine evidence()).
-export function recordPractice(skill, item, { correct, independent, firstTry, raw, level = 1 }) {
+export function recordPractice(skill, item, { correct, independent, firstTry, raw, level = 1, masteryEvent = null }) {
   const tutor = loadTutor();
   if (firstTry)
     recordAnswer(tutor, skill, { correct, independent, level, viewedExample: !independent });
   if (!correct) rememberMistake(tutor, skill, item, raw);
   write(key(TUTOR), tutor);
+  if (firstTry && masteryEvent) {
+    const mastery = sanitizeMasteryEvent({ ...masteryEvent, correct, independent, at: Date.now() });
+    if (mastery) {
+      const saved = loadTutor();
+      const record = saved.records[`${skill.grade}:${skill.id}`] || {};
+      record.masteryEvents = [...(record.masteryEvents || []), mastery].slice(-100);
+      saved.records[`${skill.grade}:${skill.id}`] = record;
+      write(key(TUTOR), saved);
+    }
+  }
   if (!firstTry) return;
   const progress = loadProgress();
   const id = `${skill.grade}:${skill.id}`;
@@ -125,6 +136,40 @@ export function recordPractice(skill, item, { correct, independent, firstTry, ra
   record.lastPracticed = new Date().toISOString();
   progress[id] = record;
   write(key(PROGRESS), progress);
+}
+
+const MASTERY_STRATEGIES = new Set(["visual", "decomposition", "fact"]);
+function sanitizeMasteryEvent(event) {
+  if (!event || typeof event.sessionId !== "string" || !event.sessionId || typeof event.eventId !== "string") return null;
+  return {
+    sessionId: event.sessionId.slice(0, 80), eventId: event.eventId.slice(0, 100), at: Number(event.at),
+    correct: Boolean(event.correct), independent: Boolean(event.independent),
+    hintsUsed: Math.min(20, Math.max(0, Number(event.hintsUsed) || 0)),
+    ...(Number.isFinite(event.responseMs) && event.responseMs >= 0 && event.responseMs <= 300000 ? { responseMs: event.responseMs } : {}),
+    ...(MASTERY_STRATEGIES.has(event.strategy) ? { strategy: event.strategy, explained: true } : {}),
+    ...(event.strategyHelped === true || event.strategyHelped === false ? { strategyHelped: event.strategyHelped } : {}),
+  };
+}
+
+export function recordMasteryReflection(skill, eventId, strategy, strategyHelped) {
+  if (!MASTERY_STRATEGIES.has(strategy) || typeof strategyHelped !== "boolean") return false;
+  const tutor = loadTutor();
+  const record = tutor.records[`${skill.grade}:${skill.id}`];
+  const event = record?.masteryEvents?.find((entry) => entry.eventId === eventId && entry.correct && entry.independent);
+  if (!event) return false;
+  event.strategy = strategy;
+  event.explained = true;
+  event.strategyHelped = strategyHelped;
+  write(key(TUTOR), tutor);
+  return true;
+}
+
+export function masteryForGrade(grade) {
+  const tutor = loadTutor();
+  return ALL_SKILLS.filter((skill) => skill.grade === grade).flatMap((skill) => {
+    const events = tutor.records[`${skill.grade}:${skill.id}`]?.masteryEvents || [];
+    return events.length ? [{ skill, summary: masterySummary(events) }] : [];
+  });
 }
 
 // Student-facing progress: what I practiced, what I am improving, what to try next. No scores.

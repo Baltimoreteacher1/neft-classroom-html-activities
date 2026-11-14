@@ -619,6 +619,17 @@ export function sanitizeTutor(value) {
       dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(REVIEW_LADDER.at(-1), Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
       strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
+      masteryEvents: (Array.isArray(record.masteryEvents) ? record.masteryEvents : []).filter((event) =>
+        event && Number.isFinite(event.at) && typeof event.sessionId === "string" && event.sessionId &&
+        typeof event.eventId === "string" && typeof event.correct === "boolean" && typeof event.independent === "boolean")
+        .slice(-100).map((event) => ({
+          at: event.at, sessionId: event.sessionId.slice(0, 80), eventId: event.eventId.slice(0, 100),
+          correct: event.correct, independent: event.independent,
+          hintsUsed: Math.min(20, Math.max(0, Number(event.hintsUsed) || 0)),
+          ...(Number.isFinite(event.responseMs) && event.responseMs >= 0 && event.responseMs <= 300000 ? { responseMs: event.responseMs } : {}),
+          ...(STRATEGIES.has(event.strategy) ? { strategy: event.strategy, explained: event.explained === true } : {}),
+          ...(typeof event.strategyHelped === "boolean" ? { strategyHelped: event.strategyHelped } : {}),
+        })),
       metrics: summarizeMetrics({ recent, strategyTags }),
       ...(sanitizeAbility(record.ability) ? { ability: sanitizeAbility(record.ability) } : {}), // fl4:adaptive
     };

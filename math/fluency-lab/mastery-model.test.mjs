@@ -23,9 +23,9 @@ assert.deepEqual(masterySummary(accuracyOnly, 100 * day).dimensions, {
 });
 
 const fluent = [
-  at(1, "a", { strategy: "make-ten", explained: true, appropriateStrategy: true, responseMs: 9000 }),
-  at(2, "b", { strategy: "decompose", explained: true, appropriateStrategy: true, responseMs: 7000 }),
-  at(3, "c", { strategy: "make-ten", explained: true, appropriateStrategy: true, responseMs: 6000 }),
+  at(1, "a", { strategy: "visual", explained: true, strategyHelped: true, responseMs: 9000 }),
+  at(2, "b", { strategy: "decomposition", explained: true, strategyHelped: true, responseMs: 7000 }),
+  at(3, "c", { strategy: "visual", explained: true, strategyHelped: false, responseMs: 6000 }),
 ];
 const ready = masterySummary(fluent, 100 * day);
 assert.equal(ready.state, "Fluent");
