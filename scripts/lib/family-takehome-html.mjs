@@ -59,9 +59,15 @@ export function fontFaceCss() {
 }
 
 // ---- pieces ---------------------------------------------------------------------------------------------------
+const PRINT_MIN_NUMERAL_PX = 14;
+
 /** The model as drawn by the shared grammar. `forWeb` drops ids so the page keeps unique ids. */
 export function modelSvg(data, { forWeb = false } = {}) {
-  let svg = renderModel(data.model.raw, { lang: data.lang });
+  // Printed at 4.1in a 360-unit model is scaled by 0.82, so a 14-unit numeral is 11.5pt; the print floor is 11pt.
+  const svgOptions = forWeb
+    ? { lang: data.lang }
+    : { lang: data.lang, minNumeralPx: PRINT_MIN_NUMERAL_PX };
+  let svg = renderModel(data.model.raw, svgOptions);
   svg = svg
     .replace(/ role="img" aria-labelledby="[^"]*"/, ' aria-hidden="true" focusable="false"')
     .replace(/<title[^>]*>[\s\S]*?<\/title><desc[^>]*>[\s\S]*?<\/desc>/, "");

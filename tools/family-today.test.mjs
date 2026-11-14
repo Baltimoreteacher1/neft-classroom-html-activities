@@ -180,7 +180,7 @@ test("seed: writes nothing when the family home was never visited or holds junk"
 
 test("seed writes the exact values the apps read back", () => {
   // Fluency reads JSON.parse(localStorage[KEY]) === "es"; ACCESS merges the stored object over its defaults.
-  const fluency = read("math/fluency-lab/i18n.js");
+  const fluency = read("math/fluency-lab/lang-state.js");
   assert.match(fluency, /const KEY = "ewl-fluency-lang-v1"/);
   assert.match(fluency, /readLocal\(KEY, "en"\) === "es"/);
   assert.match(read("access-practice-lab/src/store.js"), /const PREFS_KEY = `\$\{PREFIX\}:prefs`/);

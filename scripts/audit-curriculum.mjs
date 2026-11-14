@@ -36,6 +36,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { STUDIOS_BASE } from "../functions/_lib/studios-proxy.js";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 
@@ -120,12 +121,14 @@ function resolveSitePath(link, fromFile) {
 }
 
 /**
- * Routes served by functions/access-practice-lab/[[path]].js, not static files.
+ * Routes served by Pages Functions, not static files: functions/access-practice-lab/[[path]].js and the /studios proxy.
  * Mirrors that function: every extensionless path under the lab answers with the
  * app shell, except the generated /printables/ packets.
  */
 function isFunctionBackedRoute(link) {
   const path = link.split("#")[0].split("?")[0];
+  // /studios is a reverse proxy to the Learning Studios Worker (functions/_lib/studios-proxy.js): no files on disk.
+  if (path === STUDIOS_BASE || path.startsWith(`${STUDIOS_BASE}/`)) return true;
   return (
     path.startsWith("/access-practice-lab/") &&
     !path.startsWith("/access-practice-lab/printables/") &&

@@ -464,7 +464,7 @@ const MODELS = {
 
 export const MODEL_KINDS = Object.freeze([...Object.keys(MODELS), "none"]);
 
-export function renderModel(model, { lang = "en" } = {}) {
+export function renderModel(model, { lang = "en", minNumeralPx = 0 } = {}) {
   if (model === null || typeof model !== "object") throw new Error("renderModel needs { kind, data, alt }");
   const { kind, data, alt } = model;
   if (lang !== "en" && lang !== "es") throw new Error(`renderModel: lang must be "en" or "es"; got ${JSON.stringify(lang)}`);
@@ -472,7 +472,7 @@ export function renderModel(model, { lang = "en" } = {}) {
   if (!Object.hasOwn(MODELS, kind)) {
     throw new Error(`Unknown model kind ${JSON.stringify(kind)}; expected one of ${MODEL_KINDS.join(", ")}`);
   }
-  const r = MODELS[kind](data ?? {}, { lang });
+  const r = MODELS[kind](data ?? {}, { lang, minNumeralPx });
   return shell({ kind, lang, alt, key: JSON.stringify(data), ...r });
 }
 

@@ -66,6 +66,7 @@ export const SKIP_TOPLEVEL = new Set([
   "design", // design-system specimen: a read-only reference page, no student work to save
   "families", // read-only family reference guides, not student work surfaces
   "family-app", // installable family home screen: three links, no student work
+  "learning-studios", // landing page for the /studios app: a list of links, no student work; the app (a separate Worker) keeps its own progress
   "about", // public about/impact/accessibility/privacy info pages — not activities
   "personal", // private (event planning, family pages) — not classroom activities
   "futures", // concept/demo/roadmap pages — not student activities

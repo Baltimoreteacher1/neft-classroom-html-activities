@@ -251,7 +251,7 @@ function placePointLabels(points, { plot, axisX, axisY }) {
 }
 
 // ---------------------------------------------------------------- coord
-export function renderCoord(d, { lang }) {
+export function renderCoord(d, { lang, minNumeralPx = 0 }) {
   assertKeys(d, ["xmax", "ymax", "points", "quadrants"], 'model "coord" data');
   need(d, "coord", "xmax", "ymax");
   const xmax = int(d, "coord", "xmax", 1, 20);
@@ -277,16 +277,35 @@ export function renderCoord(d, { lang }) {
   out.push(`<path class="m-ln" d="M${left} ${n1(y0)}H${n1(left + nx * px + 8)}M${n1(x0)} ${top + ny * py}V${top - 8}"/>${head(left + nx * px + 12, y0, "r")}${head(x0, top - 12, "u")}`);
   // Every gridline is numbered on the axes (x just below the x-axis, y just left of the y-axis); a dense grid
   // shrinks the numerals instead of skipping gridlines. The origin is labelled 0 exactly once, below-left.
-  const fx = px >= 20 ? "" : ` style="font-size:${Math.max(9, Math.floor(px * 0.7))}px"`;
-  const fy = py >= 16 ? "" : ` style="font-size:${Math.max(9, Math.floor(py * 0.85))}px"`;
+  let fx = px >= 20 ? "" : ` style="font-size:${Math.max(9, Math.floor(px * 0.7))}px"`;
+  let fy = py >= 16 ? "" : ` style="font-size:${Math.max(9, Math.floor(py * 0.85))}px"`;
+  // A caller that prints the model at a fixed width (the take-home sheet) states the smallest numeral it can accept.
+  // A dense plane then keeps numerals at that size and numbers every k-th gridline, never a smaller numeral.
+  // Without it (the web), every gridline is numbered and dense planes shrink the numerals, as above.
+  let kx = 1;
+  let ky = 1;
+  if (minNumeralPx) {
+    const natX = px >= 20 ? 14 : Math.max(9, Math.floor(px * 0.7));
+    const natY = py >= 16 ? 14 : Math.max(9, Math.floor(py * 0.85));
+    const fontX = Math.max(natX, minNumeralPx);
+    const fontY = Math.max(natY, minNumeralPx);
+    if (fontX > natX) {
+      fx = ` style="font-size:${fontX}px"`;
+      kx = Math.ceil((String(Math.max(xmax, ymax)).length * 0.6 * fontX + 6) / px);
+    }
+    if (fontY > natY) {
+      fy = ` style="font-size:${fontY}px"`;
+      ky = Math.ceil((fontY + 4) / py);
+    }
+  }
   out.push(text(x0 - 6, y0 + 18, "0", { anchor: "end", extra: fx || fy }));
   for (let i = 0; i <= nx; i++) {
     const v = lx + i;
-    if (v !== 0) out.push(text(left + i * px, y0 + 18, minus(String(v)), { extra: fx }));
+    if (v !== 0 && v % kx === 0) out.push(text(left + i * px, y0 + 18, minus(String(v)), { extra: fx }));
   }
   for (let j = 0; j <= ny; j++) {
     const v = ly + j;
-    if (v !== 0) out.push(text(x0 - 8, top + (ny - j) * py + 5, minus(String(v)), { anchor: "end", extra: fy }));
+    if (v !== 0 && v % ky === 0) out.push(text(x0 - 8, top + (ny - j) * py + 5, minus(String(v)), { anchor: "end", extra: fy }));
   }
   const pts = d.points ?? [];
   const pd = [];

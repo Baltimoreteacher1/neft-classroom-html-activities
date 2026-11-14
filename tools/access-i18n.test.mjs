@@ -248,7 +248,20 @@ test("es-guide.json translates every activity's goal and directions and keeps bl
     if (es.directions === a.directions) bad.push(`${a.id}: not translated`);
   }
   assert.deepEqual(bad, []);
-  assert.equal(Object.keys(esGuide).length, activities.length, "no orphan translations");
+  // The guide also carries the K-3 early-band entries (tools/build-access-early-content.mjs), so an orphan is a key
+  // that names no activity in ANY band, not a key outside grades 3-8.
+  const allIds = new Set();
+  for (const file of walk(join(LAB, "content"), (n) => n.endsWith(".json"))) {
+    if (!/content\/g(K|1|2-3|3-5|6-8)\//.test(file)) continue;
+    const d = JSON.parse(readFileSync(file, "utf8"));
+    for (const level of Object.values(d.levels || {}))
+      for (const a of level.activities) allIds.add(a.id);
+  }
+  assert.deepEqual(
+    Object.keys(esGuide).filter((id) => !allIds.has(id)),
+    [],
+    "no orphan translations",
+  );
 });
 
 // ── Co-Pilot ──────────────────────────────────────────────────────────────────

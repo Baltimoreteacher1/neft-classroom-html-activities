@@ -51,7 +51,7 @@ const MATCH_CASES = [
 export function countQuickChecks(html) {
   return (
     html.match(
-      /class="problem-number-badge"><span class="lang-en">(?:Warm-up|Level up)<\/span>[\s\S]*?<\/span> \d/g,
+      /class="problem-number-badge"><span class="lang-en">(?:Warm-up|Level up|Set [123]: [^<]+)<\/span>[\s\S]*?<\/span> \d/g,
     ) || []
   ).length;
 }
@@ -89,6 +89,13 @@ function selfTestCountQuickChecks() {
       '<div class="problem-number-badge">Warm-up / Calentamiento 1</div>',
       0,
     ],
+    [
+      "counts the Set 1-3 badges",
+      badge("Set 1: Build Confidence", "Serie 1: Gana confianza", 1) +
+        badge("Set 3: Think Deeper", "Serie 3: Piensa más a fondo", 2),
+      2,
+    ],
+    ["ignores Practice More", badge("Practice More", "Más práctica", 1), 0],
     ["ignores Bonus", badge("Bonus", "Más", 1), 0],
     ["empty document counts zero", "<html></html>", 0],
   ];
@@ -113,7 +120,7 @@ const REQUIRED_MARKERS = [
   "Estudio familiar de matemáticas",
   "What we're learning tonight",
   // Look & Learn: the goal and the worked example (replaced the "learning tonight" card and its word chips).
-  "La meta de hoy",
+  "Empieza con una idea",
   "Ejemplo resuelto",
   "The big idea",
   "La idea principal",
@@ -391,7 +398,8 @@ for (const id of lessonIds) {
   }
 
   const quickChecks = countQuickChecks(html);
-  if (quickChecks > 6) {
+  // Core practice is Set 1 (4) + Set 2 (3) + Set 3 (3) on the current page; "Practice More" is the excluded bonus tier.
+  if (quickChecks > 10) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
   if (quickChecks === 0) {

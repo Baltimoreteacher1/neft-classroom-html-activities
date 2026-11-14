@@ -9,6 +9,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve } from "node:path";
+import { STUDIOS_BASE } from "../functions/_lib/studios-proxy.js";
 
 const ROOT = process.cwd();
 const SKIP_DIRS = new Set([
@@ -135,6 +136,8 @@ for (const file of htmlFiles) {
 
     if (existsTarget(fsPath)) continue;
     if (url.startsWith("/") && redirectCovers(pathname)) continue;
+    // /studios is a reverse proxy to the Learning Studios Worker (functions/_lib/studios-proxy.js): no files on disk.
+    if (pathname === STUDIOS_BASE || pathname.startsWith(`${STUDIOS_BASE}/`)) continue;
     problems.push({ file: file.slice(ROOT.length + 1), url });
   }
 }
