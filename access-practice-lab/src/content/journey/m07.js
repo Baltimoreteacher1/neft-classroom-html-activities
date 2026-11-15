@@ -667,6 +667,11 @@ const g68 = {
     kind: "scene",
     prompt:
       "How does a stack of gravel, sand and charcoal turn cloudy pond water into clear water?",
+    procedurePlans: [
+      { id: "all", label: "Gravel → sand → charcoal", controls: { sand: "sand", charcoal: "charcoal" }, steps: ["Gravel catches leaves and twigs.", "Fine sand traps some silt in its small gaps.", "Activated charcoal holds some color- and odor-causing chemicals on its surface."] },
+      { id: "no-sand", label: "Gravel → charcoal", controls: { sand: "none", charcoal: "charcoal" }, steps: ["Gravel catches leaves and twigs.", "With no sand, muddy water reaches and coats the charcoal."] },
+      { id: "no-charcoal", label: "Gravel → sand", controls: { sand: "sand", charcoal: "none" }, steps: ["Gravel catches leaves and twigs.", "Fine sand traps some silt in its small gaps.", "Without charcoal, the model leaves some tint and odor."] },
+    ],
     objects: [
       {
         id: "sample",

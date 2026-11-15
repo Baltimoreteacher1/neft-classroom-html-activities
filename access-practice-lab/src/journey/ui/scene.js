@@ -20,6 +20,7 @@ import {
 } from "../engines/scene.js";
 import { environmentArt } from "./environments.js";
 import { compareCause } from "../engines/cause-compare.js";
+import { runProcedure } from "../engines/procedure-plan.js";
 
 const MOOD_ICON = { good: "check", warn: "alert", bad: "x", neutral: "info" };
 const MOOD_WORD = {
@@ -199,6 +200,22 @@ function causeCompareHTML(I, task, data) {
     <button type="button" class="btn btn-secondary" data-sc-cause-run>${I.T("Run the comparison", "Ejecuta la comparación")}</button>
     ${data?.causeError ? html`<p role="status" tabindex="-1" data-sc-cause-result>${I.T("Choose a prediction before running the comparison.", "Elige una predicción antes de ejecutar la comparación.")}</p>` : ""}
     ${result ? html`<div role="status" tabindex="-1" data-sc-cause-result><p><strong>${I.T("Before:", "Antes:")}</strong> <span lang="en">${result.before}</span></p><p><strong>${I.T("After:", "Después:")}</strong> <span lang="en">${result.after}</span></p><p lang="en">${result.held}</p><p>${result.matched ? I.T("The model matches your prediction. Explain how the evidence supports it.", "El modelo coincide con tu predicción. Explica cómo la evidencia la apoya.") : I.T("The model differs from your prediction. Compare the results and revise your explanation.", "El modelo difiere de tu predicción. Compara los resultados y revisa tu explicación.")}</p><p>${I.T("What changed? What stayed the same? Use both observations to explain your reasoning.", "¿Qué cambió? ¿Qué permaneció igual? Usa ambas observaciones para explicar tu razonamiento.")}</p></div>` : ""}
+  </section>`;
+}
+
+function procedureHTML(I, task, data) {
+  if (!task.procedurePlans?.length) return "";
+  const selected = data?.procedurePlan || "";
+  const result = data?.procedureResult;
+  return html`<section class="sc-controls" aria-labelledby="sc-procedure-h">
+    <h3 id="sc-procedure-h">${I.T("Test your instructions", "Prueba tus instrucciones")}</h3>
+    <p>${I.T("Choose an ordered plan. Predict what each layer will do, then let the model follow your instructions. Compare another plan and revise your explanation.", "Elige un plan ordenado. Predice lo que hará cada capa y deja que el modelo siga tus instrucciones. Compara otro plan y revisa tu explicación.")}</p>
+    <label for="sc-procedure-plan">${I.T("Filter sequence", "Secuencia del filtro")}</label>
+    <select id="sc-procedure-plan" data-sc-procedure-plan><option value="">${I.T("Choose a plan", "Elige un plan")}</option>${task.procedurePlans.map((plan) => html`<option value="${plan.id}" lang="en" ${selected === plan.id ? "selected" : ""}>${plan.label}</option>`)}</select>
+    <button type="button" class="btn btn-secondary" data-sc-procedure-run>${I.T("Follow the plan", "Seguir el plan")}</button>
+    ${data?.procedureError ? html`<p role="status" tabindex="-1" data-sc-procedure-result>${I.T("Choose a plan first.", "Primero elige un plan.")}</p>` : ""}
+    ${result ? html`<div role="status" tabindex="-1" data-sc-procedure-result><p>${I.T("The model follows these steps:", "El modelo sigue estos pasos:")}</p><ol lang="en">${result.steps.map((step) => html`<li>${step}</li>`)}</ol><p><strong>${I.T("Model result:", "Resultado del modelo:")}</strong> <span lang="en">${result.result}</span></p><p>${I.T("Which layer changed the result? Use the observations to explain your choice.", "¿Qué capa cambió el resultado? Usa las observaciones para explicar tu elección.")}</p></div>` : ""}
+    <p>${I.T("Clear-looking water is not necessarily safe to drink. This model does not test for germs or all contaminants.", "El agua que parece clara no necesariamente es potable. Este modelo no detecta microbios ni todos los contaminantes.")}</p>
   </section>`;
 }
 
@@ -417,7 +434,7 @@ export function render(task, env) {
         ${stateCardHTML(I, outcome)}
       </div>
       <div class="sc-side">
-        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${descriptionHTML(I, task, env.data)}${causeCompareHTML(I, task, env.data)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
+        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${descriptionHTML(I, task, env.data)}${causeCompareHTML(I, task, env.data)}${procedureHTML(I, task, env.data)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
       </div>
     </div>
     <section class="sc-explain" aria-labelledby="sc-explain-h">
@@ -539,6 +556,16 @@ function onClick(root, env, event) {
     const descriptionSelection = Object.fromEntries([...root.querySelectorAll("[data-sc-description]")].map((input) => [input.dataset.scDescription, input.value]));
     env.update({ descriptionSelection, descriptionChecked: true, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
     focusLater(root, "[data-sc-description-result]");
+  } else if (target.dataset.scProcedureRun !== undefined) {
+    const procedurePlan = root.querySelector("[data-sc-procedure-plan]")?.value;
+    const result = runProcedure(task, procedurePlan, sceneOf(task, env));
+    if (!result) {
+      env.update({ procedurePlan, procedureError: true, procedureResult: null, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    } else {
+      const { scene, ...procedureResult } = result;
+      env.update({ scene, procedurePlan, procedureResult, procedureError: false, lastAction: "control", draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    }
+    focusLater(root, "[data-sc-procedure-result]");
   } else if (target.dataset.scCauseRun !== undefined) {
     const causeCase = root.querySelector("[data-sc-cause-case]")?.value;
     const causePrediction = root.querySelector("[data-sc-cause-predict]")?.value;
@@ -569,6 +596,11 @@ function onClick(root, env, event) {
 
 function onChange(root, env, event) {
   const input = event.target;
+  if (input.matches?.("[data-sc-procedure-plan]")) {
+    env.update({ procedurePlan: input.value, procedureResult: null, procedureError: false, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    focusLater(root, "[data-sc-procedure-plan]");
+    return;
+  }
   if (input.matches?.("[data-sc-cause-case], [data-sc-cause-predict]")) {
     const causeCase = root.querySelector("[data-sc-cause-case]")?.value;
     const causePrediction = input.matches("[data-sc-cause-case]") ? "" : input.value;

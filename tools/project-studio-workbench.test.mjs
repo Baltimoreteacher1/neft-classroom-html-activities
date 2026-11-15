@@ -14,6 +14,7 @@ import {
 import {
   checkExpressionChallenge,
   expressionChallenge,
+  ratioChallenge,
 } from "../curriculum/projects/studio/challenge-preview.mjs";
 import {
   addCheckpoint,
@@ -53,6 +54,16 @@ import { Rat } from "../scripts/lib/rational.mjs";
   assert.match(expressionChallenge(project, project.defaults, "5").error, /reserved/);
   assert.match(expressionChallenge(project, project.defaults, "6").error, /reserved/);
   assert.match(expressionChallenge(project, { ...project.defaults, a: 0 }, "7").error, /valid/);
+}
+{
+  const project = getProject("unit-3-a");
+  const challenge = ratioChallenge(project, project.defaults, "7");
+  assert.match(challenge.prompt, /14 parts of B/);
+  assert.equal(challenge.answer, 21);
+  assert.equal(checkExpressionChallenge(challenge, "21"), "correct");
+  assert.equal(checkExpressionChallenge(challenge, "14"), "revise");
+  assert.match(ratioChallenge(project, project.defaults, "6").error, /reserved/);
+  assert.match(ratioChallenge(project, project.defaults, "21").error, /2 to 20/);
 }
 
 // ---- history

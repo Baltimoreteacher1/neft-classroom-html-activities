@@ -465,6 +465,17 @@ async function v2Flow(flow) {
     "existing save fields are intact",
   );
   if (EXTRAS[flow.id]) await EXTRAS[flow.id](page);
+  if (flow.id === "unit-3-a") {
+    await page.locator("#challenge-input").fill("7");
+    await page.locator('[data-wb-form="challenge-create"] button').click();
+    assert.match(await page.locator("#challenge-preview").innerText(), /14 parts of B/);
+    await page.locator("#challenge-answer").fill("14");
+    await page.locator('[data-wb-form="challenge-play"] button').click();
+    assert.match(await page.locator("#challenge-result").innerText(), /does not match yet/);
+    await page.locator("#challenge-answer").fill("21");
+    await page.locator('[data-wb-form="challenge-play"] button').click();
+    assert.match(await page.locator("#challenge-result").innerText(), /value works/);
+  }
   if (flow.builder) {
     await page.locator("#challenge-input").fill("7");
     await page.locator('[data-wb-form="challenge-create"] button').click();
