@@ -66,6 +66,7 @@ const css = [
   "games-j.css",
   "games-k.css",
   "games-l.css",
+  "games-m.css",
 ]
   .map((f) => fs.readFileSync(path.join(root, f), "utf8"))
   .join("\n")
