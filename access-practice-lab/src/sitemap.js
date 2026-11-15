@@ -563,6 +563,21 @@ export const DESTINATIONS = Object.freeze([
   },
   // ── Games & Worlds ────────────────────────────────────────────────────────────────────────
   {
+    id: "signal-quest",
+    section: "play",
+    skill: "Mixed",
+    kind: "game",
+    for: STF,
+    bands: UPPER,
+    href: "/language-adventures/signal-quest/",
+    icon: "worlds",
+    title: P("Signal Quest", "Misión Señal"),
+    text: P(
+      "Explore an island and restore its signal through four language challenges.",
+      "Explora una isla y restaura su señal con cuatro retos de lenguaje.",
+    ),
+  },
+  {
     id: "games",
     section: "play",
     skill: "Mixed",

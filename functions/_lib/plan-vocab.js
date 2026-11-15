@@ -5355,6 +5355,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/language-adventures/signal-quest/",
+    title: "Signal Quest | The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/language-adventures/studios/",
     title: "Studios · The Language Page · Language Adventures studios",
     category: "Tool",
@@ -5855,6 +5861,12 @@ export const ACTIVITIES = [
   {
     path: "/access-practice-lab/",
     title: "ACCESS Practice Lab",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/access-practice-lab/videos/",
+    title: "Videos | The Language Page",
     category: "Practice",
     unit: null,
   },

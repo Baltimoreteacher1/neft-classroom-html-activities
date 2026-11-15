@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "c10785cd5c8b";
+const BUILD_HASH = "f1e8a4227252";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=96db0e394ffd",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -67,7 +67,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/comfort.js?v=750da0271342",
   "/access-practice-lab/src/nav.js?v=f0cde81d70b2",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
-  "/access-practice-lab/src/sitemap.js?v=6e97d7bcbef5",
+  "/access-practice-lab/src/sitemap.js?v=ed485a776ea1",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/read-page.js?v=cb45ffd17272",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
@@ -263,7 +263,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/content/journey/m04.js?v=1be813f7f442",
   "/access-practice-lab/src/content/journey/m05.js?v=fa824438e037",
   "/access-practice-lab/src/content/journey/m06.js?v=483da6cf02d1",
-  "/access-practice-lab/src/content/journey/m07.js?v=972ab0114a5b",
+  "/access-practice-lab/src/content/journey/m07.js?v=145423733cad",
   "/access-practice-lab/src/content/journey/m08.js?v=418884adf575",
   "/access-practice-lab/src/content/journey/m09.js?v=ab1dc0c4d8ad",
   "/access-practice-lab/src/content/journey/m10.js?v=0cefbe3eefd4",
@@ -416,6 +416,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/journey/engines/mirror-record.js?v=31255ced11f2",
   "/access-practice-lab/src/journey/engines/mirror-revision.js?v=81a2c540fcf2",
   "/access-practice-lab/src/journey/engines/mirror.js?v=a8ff3dc82c07",
+  "/access-practice-lab/src/journey/engines/procedure-plan.js?v=483676ec3e9b",
   "/access-practice-lab/src/journey/engines/scene.js?v=33dee4d90f7e",
   "/access-practice-lab/src/journey/engines/xray.js?v=bd960c708359",
   "/access-practice-lab/src/journey/runner-chrome.js?v=94e0231219c2",
@@ -442,7 +443,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/journey/ui/pages-overview.js?v=4f2941943b76",
   "/access-practice-lab/src/journey/ui/pages.js?v=e0e9e00d032e",
   "/access-practice-lab/src/journey/ui/related.js?v=5d08c0354b40",
-  "/access-practice-lab/src/journey/ui/scene.js?v=130a15d099e9",
+  "/access-practice-lab/src/journey/ui/scene.js?v=9e61026400a2",
   "/access-practice-lab/src/journey/ui/xray.js?v=b5b162174873",
   "/access-practice-lab/src/journey/wida.js?v=06c840eb859f",
   "/access-practice-lab/src/journey/worlds-portal.js?v=73d63b6ddf0c",
