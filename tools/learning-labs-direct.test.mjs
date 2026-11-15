@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { grab, isDirect, move } from "../curriculum/learning-labs/shared/direct.mjs";
 import { controls, evaluate, puzzle } from "../curriculum/learning-labs/shared/math.mjs";
+import { exponentModel } from "../shared/motion/exponent-copies.mjs";
+import { renderExponent } from "../shared/motion/exponent-copies-render.mjs";
 
 const root = "curriculum/learning-labs";
 const labs = readdirSync(root).filter((d) => existsSync(`${root}/${d}/content.json`));
@@ -100,9 +102,33 @@ assert.deepEqual(
   [2, 12],
   "right box slides the count to its max",
 );
+// The power picture (shared/motion) says where its steps end and its answer boxes begin; a drag lands on what it points at.
 const pow = { kind: "power", mode: "order", values: [2, 3, 4] };
-assert.equal(drag(pow, [2, 3, 4], { x: 70 + 460, y: 60 })[1], 5, "top row sets the exponent");
-assert.equal(drag(pow, [2, 3, 4], { x: 70, y: 220 })[2], 0, "bottom row sets the added amount");
+const powPicture = renderExponent(exponentModel(2, 3), { compact: true, width: 400 });
+const powSvg = {
+  viewBox: { baseVal: { width: powPicture.width } },
+  querySelector: () => ({
+    dataset: {
+      zoneCards: String(powPicture.zones.cards),
+      zoneAnswer: String(powPicture.zones.answer),
+    },
+  }),
+};
+const dragPow = (p) => {
+  const h = grab(pow, [2, 3, 4], p, "prism", powSvg);
+  return move(pow, [2, 3, 4], p, h, controls(pow));
+};
+assert.equal(dragPow({ x: 20 + 360, y: 60 })[1], 5, "the steps set the exponent");
+assert.equal(
+  dragPow({ x: 20, y: powPicture.zones.answer + 10 })[2],
+  0,
+  "the bottom boxes set the added amount",
+);
+assert.equal(
+  dragPow({ x: 20, y: (powPicture.zones.cards + powPicture.zones.answer) / 2 })[0],
+  2,
+  "the notation sets the base",
+);
 const poly = { kind: "area", mode: "polygon", values: [6, 4, 3] };
 assert.deepEqual(
   drag(poly, [6, 4, 3], { x: 450, y: 30 }).slice(0, 2),

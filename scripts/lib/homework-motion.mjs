@@ -47,20 +47,20 @@ export const MOTION_INTRO = {
   title: bi("Predict, test, talk", "Predice, prueba, conversa"),
   steps: [
     bi(
-      "<strong>Predict.</strong> Before you press anything, say what you think will happen.",
-      "<strong>Predice.</strong> Antes de tocar nada, di qué crees que pasará.",
+      "Predict. Before you press anything, say what you think will happen.",
+      "Predice. Antes de tocar nada, di qué crees que pasará.",
     ),
     bi(
-      "<strong>Test.</strong> Press “Watch it move,” or change a number and look again.",
-      "<strong>Prueba.</strong> Toca “Míralo moverse” o cambia un número y mira otra vez.",
+      "Test. Press “Watch it move,” or change a number and look again.",
+      "Prueba. Toca “Míralo moverse” o cambia un número y mira otra vez.",
     ),
     bi(
-      "<strong>Talk.</strong> Did it match? What changed? What stayed the same?",
-      "<strong>Conversa.</strong> ¿Coincidió? ¿Qué cambió? ¿Qué se quedó igual?",
+      "Talk. Did it match? What changed? What stayed the same?",
+      "Conversa. ¿Coincidió? ¿Qué cambió? ¿Qué se quedó igual?",
     ),
   ],
   help: bi(
-    "<strong>Grown-ups:</strong> ask “What do you notice?” and “What would happen if…?” Let your child say it first. You do not need to give the answer.",
-    "<strong>Adultos:</strong> pregunten “¿Qué notas?” y “¿Qué pasaría si…?”. Dejen que su hijo o hija lo diga primero. No necesitan dar la respuesta.",
+    "Grown-ups: ask “What do you notice?” and “What would happen if…?” Let your child say it first. You do not need to give the answer.",
+    "Adultos: pregunten “¿Qué notas?” y “¿Qué pasaría si…?”. Dejen que su hijo o hija lo diga primero. No necesitan dar la respuesta.",
   ),
 };

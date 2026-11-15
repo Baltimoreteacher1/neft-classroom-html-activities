@@ -105,8 +105,9 @@ function hwMotionMount() {
   if (!host || hwMotionView || hwMotionLoading) return;
   if (!host.querySelector('[data-motion-stage]')) {
     host.className = 'hw-mission-model hw-motion';
+    host.setAttribute('data-no-listen', ''); /* written after the stop opens, so the stop's Read-aloud does not race it; the figure carries its own text description */
     host.setAttribute('aria-labelledby', 'hw_motion_title');
-    host.innerHTML = '<div class="hw-mm-head"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><h2 class="hw-mm-title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</h2></div><ol class="hw-motion-steps"><li>' + HW_MOTION_INTRO.steps.join('</li><li>') + '</li></ol><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div>';
+    host.innerHTML = '<div class="hw-mm-head"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><h2 class="hw-mm-title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</h2></div><div class="hw-motion-steps"><p>' + HW_MOTION_INTRO.steps.join('</p><p>') + '</p></div><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div>';
     host.hidden = false;
   }
   var stage = host.querySelector('[data-motion-stage]');
