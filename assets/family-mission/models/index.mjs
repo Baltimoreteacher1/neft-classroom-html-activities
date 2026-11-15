@@ -5,11 +5,12 @@ import * as coordinate from "./coordinate.mjs";
 import * as data from "./data.mjs";
 import * as exponents from "./exponents.mjs";
 import * as geometry from "./geometry.mjs";
+import * as kcf from "./kcf.mjs";
 import * as numberline from "./numberline.mjs";
 import * as percent from "./percent.mjs";
 import * as ratio from "./ratio.mjs";
 
-export const FAMILIES = { percent, ratio, balance, numberline, coordinate, data, geometry, exponents };
+export const FAMILIES = { percent, ratio, balance, numberline, coordinate, data, geometry, exponents, kcf };
 
 export function listFamilies() {
   return Object.values(FAMILIES).map((f) => ({ id: f.id, label: f.label }));

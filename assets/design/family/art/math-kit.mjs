@@ -167,6 +167,7 @@ export const TYPE_NAME = {
   fraction: { en: "Fraction bar", es: "Barra de fracciones" },
   balance: { en: "Balance", es: "Balanza" },
   order: { en: "Order of operations steps", es: "Pasos del orden de las operaciones" },
+  kcf: { en: "Keep, Change, Flip", es: "Mantener, Cambiar, Invertir" },
 };
 
 /**

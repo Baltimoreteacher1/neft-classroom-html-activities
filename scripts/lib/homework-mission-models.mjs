@@ -34,58 +34,6 @@ const lead = (en, es) => ({ leadEn: en, leadEs: es });
 /** base lesson id -> { family, config, leadEn, leadEs, part2?: { config?, leadEn?, leadEs? } } */
 export const LESSON_MODELS = {
   /* Unit 1: Fraction & Decimal Operations */
-  "1-1": {
-    ...pct(100, "parts", "partes", 50, {
-      views: { grid: true, tape: true, line: false, read: true },
-    }),
-    ...lead(
-      "Shade parts of the whole to compare equivalent fractions and decimals.",
-      "Sombrea partes del total para comparar fracciones y decimales equivalentes.",
-    ),
-  },
-  "1-2": {
-    ...pct(100, "hundredths", "centésimas", 40, {
-      views: { grid: true, tape: true, line: true, read: true },
-    }),
-    ...lead(
-      "Drag the handle to see how parts of 100 connect fractions and decimals.",
-      "Arrastra el control para ver cómo las partes de 100 conectan fracciones y decimales.",
-    ),
-  },
-  "1-3": {
-    ...ratio(3, 4, "parts shaded", "partes sombreadas", "whole units", "unidades enteras", 2, {
-      focus: "tape",
-    }),
-    ...lead(
-      "Stretch the tape to multiply equal fractional parts.",
-      "Estira la cinta para multiplicar partes fraccionarias iguales.",
-    ),
-  },
-  "1-4": {
-    ...ratio(2, 3, "batches", "lotes", "cups", "tazas", 3, {
-      focus: "double-number-line",
-    }),
-    ...lead(
-      "Count how many equal groups fit inside the total on the double number line.",
-      "Cuenta cuántos grupos iguales caben dentro del total en la recta numérica doble.",
-    ),
-  },
-  "1-5": {
-    ...ratio(3, 5, "groups", "grupos", "units", "unidades", 3, {
-      focus: "tape",
-    }),
-    ...lead(
-      "Compare the size of the dividend and the divisor on the tape model.",
-      "Compara el tamaño del dividendo y del divisor en el modelo de cinta.",
-    ),
-  },
-  "1-6": {
-    ...fam("geometry", { mode: "volume", l: "3/2", w: 2, h: 1 }),
-    ...lead(
-      "Adjust the fractional edge lengths and watch the area and volume update.",
-      "Ajusta las longitudes fraccionarias de las aristas y observa cómo cambian el área y el volumen.",
-    ),
-  },
   "3-1": {
     ...ratio(3, 5, "red", "rojas", "blue", "azules", 1),
     ...lead(
@@ -189,20 +137,6 @@ export const LESSON_MODELS = {
       "Agrega un punto lejano. Compara qué pasa con el rango y con el RIC.",
     ),
   },
-  "2-6": {
-    ...fam("data", { values: [2, 4, 4, 5, 7, 8], min: 0, max: 12 }),
-    ...lead(
-      "Drag a dot to see how the shape and center of the data shift.",
-      "Arrastra un punto para ver cómo cambian la forma y el centro de los datos.",
-    ),
-  },
-  "2-7": {
-    ...fam("data", { values: [1, 3, 5, 6, 6, 8, 10], min: 0, max: 12 }),
-    ...lead(
-      "Compare the five-number summary as you move points across the plot.",
-      "Compara el resumen de cinco números mientras mueves los puntos.",
-    ),
-  },
   "2-8": {
     ...fam("data", { values: [3, 4, 4, 5, 9], min: 0, max: 12 }),
     ...lead(
@@ -222,20 +156,6 @@ export const LESSON_MODELS = {
     ...lead(
       "Drag the far dot closer. Which measure changes most?",
       "Acerca el punto lejano. ¿Qué medida cambia más?",
-    ),
-  },
-  "2-11": {
-    ...fam("data", { values: [2, 3, 4, 5, 6, 7], min: 0, max: 12, mad: true }),
-    ...lead(
-      "Compare center and spread as you rearrange the data points.",
-      "Compara el centro y la dispersión mientras reorganizas los puntos.",
-    ),
-  },
-  "2-12": {
-    ...fam("data", { values: [3, 5, 5, 6, 8, 9], min: 0, max: 14 }),
-    ...lead(
-      "Explore how median, mean, and interquartile range describe the distribution.",
-      "Explora cómo la mediana, la media y el rango intercuartílico describen la distribución.",
     ),
   },
   /* Geometry (Unit 5) */
@@ -295,13 +215,6 @@ export const LESSON_MODELS = {
       "Ajusta la base y la altura perpendicular para hallar el área de caras triangulares.",
     ),
   },
-  "5-9": {
-    ...fam("geometry", { mode: "volume", l: 5, w: 3, h: 2 }),
-    ...lead(
-      "Compare surface area and volume as you change the prism dimensions.",
-      "Compara el área superficial y el volumen mientras cambias las dimensiones del prisma.",
-    ),
-  },
   "5-10": {
     ...fam("geometry", { mode: "volume", l: "3/2", w: 2, h: "4/3" }),
     ...lead(
@@ -311,18 +224,64 @@ export const LESSON_MODELS = {
   },
   /* Exponents, expressions, and equations (Units 6, 8, and 9) */
   "6-1": {
-    ...fam("balance", { a: 1, b: 4, c: 0, d: 10 }),
+    ...fam("kcf", {
+      dividend: "3",
+      divisor: "1/4",
+      presets: [
+        { dividend: "3", divisor: "1/4" },
+        { dividend: "4", divisor: "1/2" },
+        { dividend: "2", divisor: "1/3" },
+      ],
+    }),
     ...lead(
-      "Use the balance to see why both sides of an equation must stay equal.",
-      "Usa la balanza para ver por qué ambos lados de una ecuación deben mantenerse iguales.",
+      "Tap Keep, Change, Flip in order. Watch the division problem turn into a multiplication problem.",
+      "Toca Mantener, Cambiar, Invertir en orden. Mira cómo el problema de dividir se convierte en uno de multiplicar.",
     ),
+    part2: {
+      config: {
+        dividend: "3/4",
+        divisor: "6",
+        presets: [
+          { dividend: "3/4", divisor: "6" },
+          { dividend: "1/2", divisor: "4" },
+          { dividend: "2/3", divisor: "3" },
+        ],
+      },
+      ...lead(
+        "Split a fraction into equal shares. Tap Keep, Change, Flip to turn it into multiplying by a unit fraction.",
+        "Reparte una fracción en partes iguales. Toca Mantener, Cambiar, Invertir para convertirlo en multiplicar por una fracción unitaria.",
+      ),
+    },
   },
   "6-2": {
-    ...fam("balance", { a: 2, b: 0, c: 0, d: 10 }),
+    ...fam("kcf", {
+      dividend: "2 1/2",
+      divisor: "1/2",
+      presets: [
+        { dividend: "2 1/2", divisor: "1/2" },
+        { dividend: "1 1/2", divisor: "3/4" },
+        { dividend: "3 1/3", divisor: "2/3" },
+      ],
+    }),
     ...lead(
-      "Test values for x until the two sides of the balance match.",
-      "Prueba valores para x hasta que los dos lados de la balanza coincidan.",
+      "Tap Keep, Change, Flip in order. Watch the division problem turn into a multiplication problem.",
+      "Toca Mantener, Cambiar, Invertir en orden. Mira cómo el problema de dividir se convierte en uno de multiplicar.",
     ),
+    part2: {
+      config: {
+        dividend: "6 3/4",
+        divisor: "2 1/4",
+        presets: [
+          { dividend: "6 3/4", divisor: "2 1/4" },
+          { dividend: "3 1/2", divisor: "1 3/4" },
+          { dividend: "4 1/2", divisor: "1 1/2" },
+        ],
+      },
+      ...lead(
+        "Write both mixed numbers as fractions first. Then tap Keep, Change, Flip.",
+        "Escribe primero los dos números mixtos como fracciones. Luego toca Mantener, Cambiar, Invertir.",
+      ),
+    },
   },
   "6-3": {
     ...fam("exponents", { mode: "powers", base: 2, exponent: 3, maxExponent: 5, compare: true }),
@@ -372,19 +331,6 @@ export const LESSON_MODELS = {
       "Sustituye valores para la variable y evalúa la expresión.",
     ),
   },
-  "6-7": {
-    ...fam("balance", {
-      combine: [
-        [2, 3],
-        [2, 3],
-      ],
-      x: 3,
-    }),
-    ...lead(
-      "Group equal sets of x-tiles and unit tiles to model the distributive property.",
-      "Agrupa conjuntos iguales de fichas x y unidades para modelar la propiedad distributiva.",
-    ),
-  },
   "6-8": {
     ...fam("balance", {
       combine: [
@@ -399,64 +345,106 @@ export const LESSON_MODELS = {
     ),
   },
   "6-9": {
-    ...fam("balance", {
-      combine: [
-        [3, 1],
-        [1, 4],
+    ...fam("kcf", {
+      dividend: "4",
+      divisor: "1/2",
+      presets: [
+        { dividend: "4", divisor: "1/2" },
+        { dividend: "3", divisor: "1/4" },
+        { dividend: "5", divisor: "2/3" },
       ],
-      x: 2,
     }),
     ...lead(
-      "Test different values of x to verify that both expressions are equivalent.",
-      "Prueba distintos valores de x para verificar que ambas expresiones son equivalentes.",
+      "Tap Keep, Change, Flip in order. Watch the division problem turn into a multiplication problem.",
+      "Toca Mantener, Cambiar, Invertir en orden. Mira cómo el problema de dividir se convierte en uno de multiplicar.",
     ),
+    part2: {
+      config: {
+        dividend: "6",
+        divisor: "2/3",
+        presets: [
+          { dividend: "6", divisor: "2/3" },
+          { dividend: "8", divisor: "3/4" },
+          { dividend: "9", divisor: "3/5" },
+        ],
+      },
+      ...lead(
+        "Write the whole number over 1. Then tap Keep, Change, Flip.",
+        "Escribe el entero sobre 1. Luego toca Mantener, Cambiar, Invertir.",
+      ),
+    },
   },
   "6-10": {
-    ...fam("balance", { a: 2, b: 1, c: 0, d: 9 }),
+    ...fam("kcf", {
+      dividend: "3 1/2",
+      divisor: "1/4",
+      presets: [
+        { dividend: "3 1/2", divisor: "1/4" },
+        { dividend: "2 1/4", divisor: "3/4" },
+        { dividend: "1 1/2", divisor: "1/6" },
+      ],
+    }),
     ...lead(
-      "Keep both sides of the balance level as you isolate x.",
-      "Mantén ambos lados de la balanza nivelados mientras despejas x.",
+      "Tap Keep, Change, Flip in order. Watch the division problem turn into a multiplication problem.",
+      "Toca Mantener, Cambiar, Invertir en orden. Mira cómo el problema de dividir se convierte en uno de multiplicar.",
     ),
+    part2: {
+      config: {
+        dividend: "4 1/2",
+        divisor: "1 1/2",
+        presets: [
+          { dividend: "4 1/2", divisor: "1 1/2" },
+          { dividend: "5 1/4", divisor: "3/4" },
+          { dividend: "3 3/4", divisor: "1 1/4" },
+        ],
+      },
+      ...lead(
+        "Convert both mixed numbers first. Then tap Keep, Change, Flip.",
+        "Convierte primero los dos números mixtos. Luego toca Mantener, Cambiar, Invertir.",
+      ),
+    },
   },
   "6-11": {
-    ...fam("balance", { a: 1, b: 6, c: 0, d: 14 }),
-    ...lead(
-      "Use inverse operations on both sides to find the unknown value.",
-      "Usa operaciones inversas en ambos lados para hallar el valor desconocido.",
-    ),
-  },
-  "6-12": {
-    ...fam("ratio", {
-      a: 1,
-      b: 4,
-      labels: { a: { en: "hours (x)", es: "horas (x)" }, b: { en: "miles (y)", es: "millas (y)" } },
-      rows: [1, 2, 3, 4],
-      views: { table: true, tape: false, line: true },
-    }),
-    ...lead(
-      "Watch how the dependent variable changes as you step the independent variable.",
-      "Observa cómo cambia la variable dependiente al cambiar la variable independiente.",
-    ),
-  },
-  "6-13": {
-    ...fam("coordinate", {
-      points: [
-        [1, 2],
-        [2, 4],
-        [3, 6],
+    ...fam("kcf", {
+      dividend: "2/3",
+      divisor: "1/6",
+      presets: [
+        { dividend: "2/3", divisor: "1/6" },
+        { dividend: "3/4", divisor: "1/8" },
+        { dividend: "5/6", divisor: "1/12" },
       ],
-      range: 6,
     }),
     ...lead(
-      "Plot ordered pairs from the two-variable relationship on the coordinate plane.",
-      "Grafica pares ordenados de la relación entre dos variables en el plano de coordenadas.",
+      "Say the total, then the group. Tap Keep, Change, Flip to find how many groups fit.",
+      "Di primero el total y luego el grupo. Toca Mantener, Cambiar, Invertir para hallar cuántos grupos caben.",
     ),
+    part2: {
+      config: {
+        dividend: "5/6",
+        divisor: "1/12",
+        presets: [
+          { dividend: "5/6", divisor: "1/12" },
+          { dividend: "7/8", divisor: "1/4" },
+          { dividend: "3/4", divisor: "3/8" },
+        ],
+      },
+      ...lead(
+        "Say the total, then the group. Tap Keep, Change, Flip to find how many groups fit.",
+        "Di primero el total y luego el grupo. Toca Mantener, Cambiar, Invertir para hallar cuántos grupos caben.",
+      ),
+    },
   },
   "6-14": {
-    ...fam("exponents", { mode: "powers", base: 2, exponent: 4, maxExponent: 5, compare: true }),
+    ...fam("balance", {
+      combine: [
+        [2, 3],
+        [2, 3],
+      ],
+      x: 3,
+    }),
     ...lead(
-      "Compare exponential growth against linear multiplication.",
-      "Compara el crecimiento exponencial con la multiplicación lineal.",
+      "Group equal sets of x-tiles and unit tiles to model the distributive property.",
+      "Agrupa conjuntos iguales de fichas x y unidades para modelar la propiedad distributiva.",
     ),
   },
   "6-15": {
@@ -501,10 +489,16 @@ export const LESSON_MODELS = {
     ),
   },
   "9-1": {
-    ...fam("balance", { a: 2, b: -3, c: 0, d: 5 }),
+    ...fam("ratio", {
+      a: 1,
+      b: 4,
+      labels: { a: { en: "hours (x)", es: "horas (x)" }, b: { en: "miles (y)", es: "millas (y)" } },
+      rows: [1, 2, 3, 4],
+      views: { table: true, tape: false, line: true },
+    }),
     ...lead(
-      "Apply inverse operations to both sides of the balance.",
-      "Aplica operaciones inversas en ambos lados de la balanza.",
+      "Watch how the dependent variable changes as you step the independent variable.",
+      "Observa cómo cambia la variable dependiente al cambiar la variable independiente.",
     ),
   },
   "9-2": {
@@ -522,17 +516,17 @@ export const LESSON_MODELS = {
     ),
   },
   "9-3": {
-    ...fam("numberline", { mode: "order", values: [-6, -2, 2, 5] }),
+    ...fam("coordinate", {
+      points: [
+        [1, 2],
+        [2, 4],
+        [3, 6],
+      ],
+      range: 6,
+    }),
     ...lead(
-      "Compare signed values and distances along the number line.",
-      "Compara valores con signo y distancias en la recta numérica.",
-    ),
-  },
-  "9-4": {
-    ...fam("balance", { a: 3, b: 2, c: 1, d: 10 }),
-    ...lead(
-      "Keep both sides balanced while solving multi-step equations.",
-      "Mantén ambos lados en equilibrio mientras resuelves ecuaciones de varios pasos.",
+      "Plot ordered pairs from the two-variable relationship on the coordinate plane.",
+      "Grafica pares ordenados de la relación entre dos variables en el plano de coordenadas.",
     ),
   },
   /* Number line (Units 7 and 8) */

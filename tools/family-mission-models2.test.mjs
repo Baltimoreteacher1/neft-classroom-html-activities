@@ -44,7 +44,7 @@ const M = "−"; // the minus sign the models print
 
 // ── Registry ─────────────────────────────────────────────────────────────────
 
-test("index: all eight families are registered and unknown names are refused", () => {
+test("index: all nine families are registered and unknown names are refused", () => {
   const ids = [
     "percent",
     "ratio",
@@ -54,6 +54,7 @@ test("index: all eight families are registered and unknown names are refused", (
     "data",
     "geometry",
     "exponents",
+    "kcf",
   ];
   assert.deepEqual(Object.keys(FAMILIES), ids);
   assert.deepEqual(

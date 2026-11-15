@@ -29,7 +29,7 @@ Socratic prompts), `bridge` (`class` = "in class today", `before` = "how you may
   },
   "classModel": { "name": { "en": "the 10% stepping stone", "es": "el peldaño del 10%" } },  // the lesson's own model/method name, used in headings and alt text
   "model": {                            // data -> SVG (assets/design/family/art/math-models.mjs). kind "none" only for mindset lessons.
-    "kind": "tape",                     // tape | doubleline | ratiotable | area | grid | numberline | coord | barplot | fraction | balance | order | none
+    "kind": "tape",                     // tape | doubleline | ratiotable | area | grid | numberline | coord | barplot | fraction | balance | order | kcf | none
     "data": { },                        // shape per kind below, built from the lesson's OWN numbers
     "alt": { "en": "", "es": "" }       // a real text alternative describing the math, mentions the numbers
   },
@@ -84,6 +84,7 @@ Socratic prompts), `bridge` (`class` = "in class today", `before` = "how you may
 | `fraction`   | `{ parts, shaded, label }`                                                                                                                            |
 | `balance`    | `{ left: [..], right: [..], unknown }`                                                                                                                |
 | `order`      | `{ steps: [{ rule: "start"\|"P"\|"E"\|"MD"\|"AS", expr }] }` — the expression rewritten one step per line; every line must equal the first (exact arithmetic), rules walk the ladder downward |
+| `kcf`        | `{ dividend, divisor }` — each a whole number, a fraction ("3/4") or a mixed number ("1 1/2"); drawn as the problem, both numbers as fractions (only when something converted), Keep / Change / Flip, then multiply across and simplify |
 | `none`       | `{}`                                                                                                                                                  |
 
 ## Rules the gates enforce

@@ -2,7 +2,7 @@
 //
 //   renderModel({ kind, data, alt }, { lang: "en" | "es" }) -> string
 //
-// kinds: tape, doubleline, ratiotable, area, grid, numberline, coord, barplot, fraction, balance, order, none.
+// kinds: tape, doubleline, ratiotable, area, grid, numberline, coord, barplot, fraction, balance, order, kcf, none.
 // Data shapes are fixed by docs/specs/family-homework-v3.md ("model.data by kind"). An unknown kind or a missing
 // required field THROWS: there is no generic fallback diagram (a generic 3-part tape on 30 unrelated lessons is
 // exactly what this library replaces). Output is deterministic: same input, same bytes.
@@ -32,6 +32,7 @@ import {
   wrap,
 } from "./math-kit.mjs";
 import { renderArea, renderBalance, renderCoord, renderGrid } from "./math-models-geometry.mjs";
+import { renderKcf } from "./math-models-kcf.mjs";
 
 const tr = (lang, en, es) => (lang === "es" ? es : en);
 
@@ -460,6 +461,7 @@ const MODELS = {
   fraction,
   balance: renderBalance,
   order,
+  kcf: renderKcf,
 };
 
 export const MODEL_KINDS = Object.freeze([...Object.keys(MODELS), "none"]);

@@ -27,6 +27,8 @@ import { SAMPLES } from "../assets/design/family/art/math-samples.mjs";
 const MAX_BYTES = 8192;
 // Numbers that MUST appear in the computed text alternative, per sample (the numbers the sample passes in).
 const MUST_MENTION = {
+  kcf: ["3/4", "6/1", "1/6", "1/8", "Keep", "Flip"],
+  "kcf-mixed": ["3/2", "3/4", "4/3", "Keep", "Flip"],
   "tape-45": ["10", "6", "$42", "$7", "100%"],
   "tape-part": ["5", "2", "$50", "$10"],
   doubleline: ["0", "2", "4", "8", "Cups of flour", "Batches"],

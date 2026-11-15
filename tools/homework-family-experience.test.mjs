@@ -56,8 +56,11 @@ test("all family lessons lead with a short bilingual idea and keep full steps op
       assert.match(page, /When ___ changes, ___ changes\./);
     }
   }
+  // A page carries a hands-on model only when the model is about that lesson. The floor was 140
+  // while 27 pages (Unit 1 mindset, decimal operations, regular polygons, factors/LCM and the
+  // two-variable lessons) carried a model for a different topic; those were removed, not replaced.
   assert.ok(
-    interactiveModels > 140,
+    interactiveModels > 120,
     `expected broad interactive model coverage, got ${interactiveModels}`,
   );
 });

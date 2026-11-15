@@ -1,23 +1,11 @@
 // Pure checks for the lesson-keyed family homework `v3` block (docs/specs/family-homework-v3.md).
 // No file reads here: callers hand in the sidecar, the lesson config and the list of known lesson ids,
 // so the same functions run on real data and on the self-test fixtures.
+import { MODEL_KINDS } from "../../assets/design/family/art/math-models.mjs";
 import { evaluateExpression, parseAnswerValue } from "../../scripts/lib/rational.mjs";
 
 export const HOOK_STYLES = ["price-tag", "recipe", "scoreboard", "map", "ticket", "receipt"];
-export const MODEL_KINDS = [
-  "tape",
-  "doubleline",
-  "ratiotable",
-  "area",
-  "grid",
-  "numberline",
-  "coord",
-  "barplot",
-  "fraction",
-  "balance",
-  "order",
-  "none",
-];
+export { MODEL_KINDS };
 
 // Phrases that belong only on a ratio lesson (Unit 3). Seeing one elsewhere is wrong-lesson content.
 export const RATIO_SIGNATURES = [
