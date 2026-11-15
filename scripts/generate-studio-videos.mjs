@@ -3,13 +3,14 @@
  * generate-studio-videos.mjs: everything that shows a studio video is generated from
  * data/studio-videos.json (contract: tools/lib/studio-videos.mjs; author guide: docs/studio-videos.md).
  *
- *   1. Mapped static pages (`pages[]`) get ONE marked block (stylesheet, module script, card) inserted
- *      before the page footer. A page that is not mapped is never touched, and a block whose page
- *      is no longer mapped is removed byte-for-byte, so the manifest alone decides where a card is.
+ *   1. Mapped static pages (`pages[]`) get one marked block per video (card, plus the stylesheet and module
+ *      script once per page), under the title and lead or, with an `after` selector, inside the named section.
+ *      A page that is not mapped is never touched, and a block whose page is no longer mapped is removed
+ *      byte-for-byte, so the manifest alone decides where a card is.
  *   2. Pages on the Language Page app (/access-practice-lab/...) are rendered by the app, not static
  *      files: they read access-practice-lab/src/studio-video-routes.js, generated here.
  *   3. The two hubs, /videos/ (EduWonderLab) and /access-practice-lab/videos/ (The Language Page),
- *      list only their own brand's videos.
+ *      list only their own brand's videos, concept clips apart from full films.
  *
  *   node scripts/generate-studio-videos.mjs           write
  *   node scripts/generate-studio-videos.mjs --check   exit 1 if anything is stale (validate:studio-videos)
@@ -20,22 +21,23 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assetTags, cardHtml, esc } from "../assets/studio-video/studio-video-markup.mjs";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
+import { locateAnchor, stripBlocks } from "../tools/lib/studio-video-anchor.mjs";
 import {
   BRANDS,
+  isClip,
   isLabRoute,
   normalizePage,
   pageFile,
   parseVtt,
+  placementOf,
   readManifest,
   validateManifest,
   videosFor,
 } from "../tools/lib/studio-videos.mjs";
 
-export const START = "<!-- studio-video:start -->";
-export const END = "<!-- studio-video:end -->";
-const BLOCK = /<!-- studio-video:start -->[\s\S]*?<!-- studio-video:end -->\n/;
-const ANCHORS = ['<footer class="site-footer"', "</main>", "</body>"];
+export const START = "studio-video:start";
 export const ROUTES_FILE = "access-practice-lab/src/studio-video-routes.js";
+const ANCHORS = ['<footer class="site-footer"', "</main>", "</body>"];
 
 /** Manifest entry + its parsed captions + where "all videos" lives. */
 export function hydrate(root, video) {
@@ -47,44 +49,73 @@ export function hydrate(root, video) {
   return { ...video, cues, hub: { path: brand.hubPath, name: brand.name } };
 }
 
-export const blockFor = (entry) => `${START}\n${assetTags()}\n${cardHtml(entry)}\n${END}\n`;
+/** One card block. `assets` adds the stylesheet and script: once per page, in its first block. */
+export const blockFor = (entry, { assets = true } = {}) =>
+  `<!-- ${START} ${entry.id} -->\n${assets ? `${assetTags()}\n` : ""}${cardHtml(entry)}\n<!-- studio-video:end -->`;
 
-/** Insert or replace the block in a page's HTML. Returns the new HTML. */
 /** Pages whose lead paragraph sits inside a full-bleed hero banner: the film goes after the whole hero instead. */
 export const AFTER_HERO_PAGES = new Set(["/math/games/"]);
 
-export function withBlock(html, entry, { afterHero = false } = {}) {
-  const clean = withoutBlock(html);
-  // Preferred spot: right after the block that holds the page's <h1> (its hero), so the film is the first
-  // thing a visitor sees. Fall back to the footer / </main> / </body> anchors for pages without one.
+/**
+ * Default spot: the offset of the newline after which a block goes. Right under the page's <h1> and its lead
+ * paragraph (before callouts, side cards and long hero content that can push the film far down on a phone);
+ * else after the hero section/header; else before the footer, </main> or </body>.
+ */
+function defaultSpot(clean, afterHero) {
   const h1 = clean.indexOf("<h1");
   if (h1 !== -1) {
-    // Best spot: directly under the title and its lead paragraph (before callouts, side cards and long
-    // hero content that can push the film far down on a phone).
     const h1End = clean.indexOf("</h1>", h1);
-    const lead = h1End === -1 || afterHero ? null : /^\s*<p[^>]*>[\s\S]*?<\/p>[ \t]*\n/.exec(clean.slice(h1End + 5));
-    if (lead) {
-      const at = h1End + 5 + lead[0].length;
-      return `${clean.slice(0, at)}${blockFor(entry)}${clean.slice(at)}`;
-    }
-    const ends = ["</section>", "</header>"].map((t) => [clean.indexOf(t, h1), t]).filter(([i]) => i !== -1).sort((a, b) => a[0] - b[0]);
+    const lead =
+      h1End === -1 || afterHero
+        ? null
+        : /^\s*<p[^>]*>[\s\S]*?<\/p>[ \t]*\n/.exec(clean.slice(h1End + 5));
+    if (lead) return h1End + 5 + lead[0].length - 1;
+    const ends = ["</section>", "</header>"]
+      .map((t) => [clean.indexOf(t, h1), t])
+      .filter(([i]) => i !== -1)
+      .sort((a, b) => a[0] - b[0]);
     if (ends.length) {
       const [i, tag] = ends[0];
-      const at = clean.indexOf("\n", i + tag.length) + 1;
-      if (at > 0) return `${clean.slice(0, at)}${blockFor(entry)}${clean.slice(at)}`;
+      const nl = clean.indexOf("\n", i + tag.length);
+      if (nl !== -1) return nl;
     }
   }
   for (const anchor of ANCHORS) {
     const at = clean.indexOf(anchor);
     if (at === -1) continue;
     const lineStart = clean.lastIndexOf("\n", at) + 1;
-    return `${clean.slice(0, lineStart)}${blockFor(entry)}${clean.slice(lineStart)}`;
+    if (lineStart > 0) return lineStart - 1;
   }
   throw new Error("no insertion point (footer, </main> or </body>)");
 }
 
-/** Exactly undo `withBlock`. */
-export const withoutBlock = (html) => html.replace(BLOCK, "");
+/**
+ * Insert every placement (`{ entry, after?, up? }`) into a page's HTML, replacing whatever blocks it had.
+ * Each block is spliced in after a newline as "\n<block>", so removing them restores the page byte for byte.
+ */
+export function withBlocks(html, placements, { afterHero = false } = {}) {
+  const clean = withoutBlock(html);
+  const spots = placements
+    .map((pl, order) => ({
+      pl,
+      order,
+      at: pl.after ? locateAnchor(clean, pl) : defaultSpot(clean, afterHero),
+    }))
+    .sort((a, b) => a.at - b.at || a.order - b.order);
+  let out = "";
+  let from = 0;
+  for (const [i, { pl, at }] of spots.entries()) {
+    out += `${clean.slice(from, at)}\n${blockFor(pl.entry, { assets: i === 0 })}`;
+    from = at;
+  }
+  return out + clean.slice(from);
+}
+
+/** One default-placed card (the common case). */
+export const withBlock = (html, entry, options) => withBlocks(html, [{ entry }], options);
+
+/** Exactly undo `withBlocks`. */
+export const withoutBlock = stripBlocks;
 
 /* ---------------------------------------------------------------------------- hubs */
 
@@ -110,12 +141,34 @@ const HUBS = {
   },
 };
 
+const HUB_GROUPS = [
+  [
+    "clips",
+    "Concept clips",
+    "Short clips that show one idea. Each also appears on the pages where that idea is taught.",
+    isClip,
+  ],
+  ["films", "Full films", "Longer videos that tell the whole story.", (e) => !isClip(e)],
+];
+
 export function hubHtml(brandId, entries) {
   const hub = HUBS[brandId];
   const brand = BRANDS[brandId];
-  const cards = entries.map((e) => cardHtml({ ...e, hub: undefined })).join("\n");
-  const body = entries.length
-    ? `<div class="sv-list">\n${cards}\n</div>`
+  const groups = HUB_GROUPS.map(([kind, title, text, keep]) => [
+    kind,
+    title,
+    text,
+    entries.filter(keep),
+  ]).filter(([, , , list]) => list.length);
+  const sections = groups.map(([kind, title, text, list]) => {
+    const id = `sv-group-${kind}`;
+    const cards = list
+      .map((e) => cardHtml({ ...e, hub: undefined }, { headingLevel: 3 }))
+      .join("\n");
+    return `<section class="sv-group" data-kind="${kind}" aria-labelledby="${id}">\n<h2 class="sv-group-title" id="${id}">${esc(title)}</h2>\n<p class="sv-group-lead">${esc(text)}</p>\n<div class="sv-list">\n${cards}\n</div>\n</section>`;
+  });
+  const body = sections.length
+    ? sections.join("\n")
     : `<p class="sv-hub-empty">There are no videos here yet.</p>`;
   const links = hub.nav.map(([href, label]) => `<li><a href="${esc(href)}">${esc(label)}</a></li>`);
   return `<!doctype html>
@@ -150,27 +203,19 @@ export function routesModule(entries) {
   const videos = {};
   const routes = {};
   for (const e of entries) {
-    const labPages = e.pages.filter(isLabRoute);
+    const labPages = e.pages.map(placementOf).filter((p) => isLabRoute(p.path));
     if (!labPages.length) continue;
-    videos[e.id] = {
-      id: e.id,
-      brand: e.brand,
-      title: e.title,
-      description: e.description,
-      mp4: e.mp4,
-      poster: e.poster,
-      vtt: e.vtt,
-      durationSec: e.durationSec,
-      width: e.width,
-      height: e.height,
-      cues: e.cues,
-      hub: e.hub,
-    };
-    for (const page of labPages) routes[normalizePage(page)] = e.id;
+    videos[e.id] = { id: e.id, html: cardHtml(e) };
+    for (const { path, after, up } of labPages)
+      routes[normalizePage(path)] = {
+        id: e.id,
+        ...(after ? { after, ...(up ? { up } : {}) } : {}),
+      };
   }
   return `// GENERATED by scripts/generate-studio-videos.mjs from data/studio-videos.json. Do not edit.
 // The routes of the Language Page app that show a studio video card, so an unmapped route costs one
-// object lookup and no network request.
+// object lookup and no network request. STUDIO_VIDEOS holds each card pre-rendered (the same builder as the static
+// pages); a route is { id, after?, up? }: which card, and where on the screen it goes.
 export const STUDIO_VIDEOS = ${JSON.stringify(videos, null, 2)};
 export const STUDIO_VIDEO_ROUTES = ${JSON.stringify(routes, null, 2)};
 `;
@@ -202,12 +247,22 @@ export function plan(root) {
   const entries = manifest.videos.map((v) => hydrate(root, v));
   const out = new Map();
 
-  const mapped = new Map();
+  const mapped = new Map(); // page file -> placements, in manifest order
   for (const e of entries)
-    for (const page of e.pages) if (!isLabRoute(page)) mapped.set(pageFile(page), e);
-  for (const [file, entry] of mapped) {
+    for (const item of e.pages) {
+      const { path, after, up } = placementOf(item);
+      if (isLabRoute(path)) continue;
+      const file = pageFile(path);
+      mapped.set(file, [...(mapped.get(file) ?? []), { entry: e, after, up }]);
+    }
+  for (const [file, placements] of mapped) {
     const html = readFileSync(join(root, file), "utf8");
-    out.set(file, withBlock(html, entry, { afterHero: [...AFTER_HERO_PAGES].some((pg) => pageFile(pg) === file) }));
+    out.set(
+      file,
+      withBlocks(html, placements, {
+        afterHero: [...AFTER_HERO_PAGES].some((pg) => pageFile(pg) === file),
+      }),
+    );
   }
   // Pages that carry a block but are no longer mapped lose it.
   for (const file of pagesWithBlock(root)) {

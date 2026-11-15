@@ -312,11 +312,11 @@ const COVERAGE = [
   ],
   // STUDIO VIDEOS — the manifest, the shared player, its generator and the two generated hubs. Every
   // generated output is proved fresh by validate:studio-videos (it re-runs the generator in --check mode),
-  // and tools/studio-videos.test.mjs (run via `test`) proves each detector can fail. The three mapped
-  // pages (math/index.html, math/games/index.html, math/unit-6/index.html) are shared pages and are
-  // deliberately NOT listed: an edit to them still takes the default-deny full gate.
+  // and tools/studio-videos.test.mjs (run via `test`) proves each detector can fail. The mapped
+  // pages (math/index.html, math/unit-6/index.html, the lesson and game pages carrying a clip, ...) are
+  // shared pages and are deliberately NOT listed: an edit to them still takes the default-deny full gate.
   [
-    /^(data\/studio-videos\.json|assets\/studio-videos?\/.*|tools\/(lib\/studio-videos|studio-videos\.test|validate-studio-videos)\.mjs|scripts\/generate-studio-videos\.mjs|videos\/index\.html|access-practice-lab\/(videos\/index\.html|src\/studio-video-(mount|routes)\.js))$/,
+    /^(data\/studio-videos\.json|assets\/studio-videos?\/.*|tools\/(lib\/studio-videos?(-anchor)?|studio-videos\.test|validate-studio-videos)\.mjs|scripts\/generate-studio-videos\.mjs|videos\/index\.html|access-practice-lab\/(videos\/index\.html|src\/studio-video-(mount|routes)\.js))$/,
     [
       "validate:studio-videos",
       "validate:static",

@@ -11,6 +11,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { clock } from "../../assets/studio-video/studio-video-markup.mjs";
+import { assertSelector, locateAnchor, MAX_UP, stripBlocks } from "./studio-video-anchor.mjs";
 
 export { clock };
 
@@ -36,9 +37,13 @@ export const BRANDS = Object.freeze({
 
 export const MAX_MP4_BYTES = 20 * 1024 * 1024; // Cloudflare Pages: 25 MiB per file; keep headroom.
 export const MAX_POSTER_BYTES = 150 * 1024;
+/** Up to this long a video is a concept clip; longer is a full film. The hubs group by it (one rule). */
+export const CLIP_MAX_SEC = 15;
+export const isClip = (video) => video.durationSec <= CLIP_MAX_SEC;
 
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PAGE = /^\/[a-z0-9._~\-/]*$/;
+const PAGE_KEYS = ["path", "after", "up"];
 const ENTRY_KEYS = [
   "id",
   "brand",
@@ -60,6 +65,24 @@ export function normalizePage(page) {
 
 export const isLabRoute = (page) =>
   normalizePage(page) === LAB_BASE || page.startsWith(`${LAB_BASE}/`);
+
+/**
+ * A manifest `pages` item is a path ("/math/") or `{ path, after, up? }`: the card goes after the element
+ * `after` (CSS selector, first match), `up` parents higher; without `after` it sits under the title and lead.
+ */
+export function placementOf(page) {
+  return typeof page === "string"
+    ? { path: page, after: null, up: 0 }
+    : { path: page.path, after: page.after ?? null, up: page.up ?? 0 };
+}
+
+/** One video per placement: the page, and where on it. */
+export const placementKey = (p) =>
+  `${normalizePage(p.path)}${p.after ? ` after ${p.after}${p.up ? ` ^${p.up}` : ""}` : ""}`;
+
+/** Canonical manifest form of a placement (a bare path when it has no anchor). */
+export const pageItem = (p) =>
+  p.after ? { path: p.path, after: p.after, ...(p.up ? { up: p.up } : {}) } : p.path;
 
 /** The three files every entry owns, derived from its id (single naming rule). */
 export function assetPaths(id) {
@@ -183,31 +206,68 @@ export function validateManifest(manifest, { root = null, isTeacherSurface = nul
 
     if (!Array.isArray(v.pages)) add(at, "pages must be an array");
     else
-      for (const page of v.pages) {
-        if (
-          typeof page !== "string" ||
-          !PAGE.test(page) ||
-          page.includes("//") ||
-          page.includes("/.")
-        )
-          add(at, `page "${page}" must be a site path such as /math/`);
-        else {
-          const key = normalizePage(page);
-          if (claimed.has(key) && claimed.get(key) === v.id) add(at, `page ${page} listed twice`);
-          else if (claimed.has(key))
-            add(at, `page ${page} is already mapped to "${claimed.get(key)}" (one video per page)`);
-          else claimed.set(key, v.id);
-          if (BRANDS[v.brand] && key === normalizePage(BRANDS[v.brand].hubPath))
-            add(at, `page ${page} is the brand hub, which lists every video already`);
-          if (isTeacherSurface?.(page)) add(at, `page ${page} is a teacher surface`);
-          if (root && !isLabRoute(page) && !existsSync(join(root, pageFile(page))))
-            add(at, `page ${page} has no ${pageFile(page)}`);
-        }
-      }
+      for (const item of v.pages)
+        pageProblems(v, item, { claimed, add, at, root, isTeacherSurface });
 
     if (root && typeof v.id === "string" && ID.test(v.id)) fileProblems(v, root, add, at);
   }
   return problems;
+}
+
+function pageProblems(v, item, { claimed, add, at, root, isTeacherSurface }) {
+  const bad = (msg) => add(at, `page ${JSON.stringify(item)} ${msg}`);
+  const obj = item && typeof item === "object" && !Array.isArray(item);
+  if (obj)
+    for (const key of Object.keys(item))
+      if (!PAGE_KEYS.includes(key)) bad(`has unknown key "${key}"`);
+  const { path: page, after, up } = obj ? placementOf(item) : { path: item, after: null, up: 0 };
+  if (typeof page !== "string" || !PAGE.test(page) || page.includes("//") || page.includes("/."))
+    return bad("must be a site path such as /math/");
+  if (obj && item.after === undefined && item.up !== undefined)
+    return bad("has `up` without `after`");
+  if (
+    after !== null &&
+    (typeof after !== "string" || !after.trim() || after.length > 200 || /[\n\r]/.test(after))
+  )
+    return bad("`after` must be a one-line CSS selector up to 200 characters");
+  if (!Number.isInteger(up) || up < 0 || up > MAX_UP)
+    return bad(`\`up\` must be an integer 0-${MAX_UP}`);
+  const key = placementKey({ path: page, after, up });
+  if (claimed.has(key) && claimed.get(key) === v.id) add(at, `page ${key} listed twice`);
+  else if (claimed.has(key))
+    add(
+      at,
+      `page ${key} is already mapped to "${claimed.get(key)}" (one video per place on a page)`,
+    );
+  else claimed.set(key, v.id);
+  if (BRANDS[v.brand] && normalizePage(page) === normalizePage(BRANDS[v.brand].hubPath))
+    add(at, `page ${page} is the brand hub, which lists every video already`);
+  if (isTeacherSurface?.(page)) add(at, `page ${page} is a teacher surface`);
+  if (isLabRoute(page)) {
+    // The app renders these routes, so only the selector's syntax can be checked here (the browser recipe
+    // in docs/studio-videos.md covers the rest; a missing anchor falls back to the default spot).
+    if (after) {
+      try {
+        assertSelector(after);
+      } catch (error) {
+        bad(error.message);
+      }
+    }
+    return;
+  }
+  if (!root) return;
+  const file = join(root, pageFile(page));
+  if (!existsSync(file)) return add(at, `page ${page} has no ${pageFile(page)}`);
+  if (after) {
+    try {
+      locateAnchor(stripBlocks(readFileSync(file, "utf8")), { after, up });
+    } catch (error) {
+      add(
+        at,
+        `${pageFile(page)}: anchor ${JSON.stringify(after)}${up ? ` ^${up}` : ""}: ${error.message}`,
+      );
+    }
+  }
 }
 
 function fileProblems(v, root, add, at) {

@@ -6,23 +6,29 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { studioVideoFor } from "../access-practice-lab/src/studio-video-mount.js";
+import { JSDOM } from "jsdom";
+import { placeCard, studioVideoFor } from "../access-practice-lab/src/studio-video-mount.js";
 import { cardHtml, esc } from "../assets/studio-video/studio-video-markup.mjs";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import {
   hubHtml,
   hydrate,
   plan,
+  routesModule,
   run,
   withBlock,
+  withBlocks,
   withoutBlock,
 } from "../scripts/generate-studio-videos.mjs";
+import { locateAnchor } from "./lib/studio-video-anchor.mjs";
 import {
   assetPaths,
   BRANDS,
+  isClip,
   normalizePage,
   pageFile,
   parseVtt,
+  placementOf,
   readManifest,
   validateManifest,
   videosFor,
@@ -83,6 +89,35 @@ test("manifest contract: a good manifest passes, every class of bad entry fails"
       manifest(entry("a", { brand: "languagepage", pages: ["/access-practice-lab/videos"] })),
       /brand hub/,
     ],
+    [
+      manifest(entry("a", { pages: [{ path: "/math/", after: "#x", extra: 1 }] })),
+      /unknown key "extra"/,
+    ],
+    [manifest(entry("a", { pages: [{ path: "/math/", up: 1 }] })), /`up` without `after`/],
+    [manifest(entry("a", { pages: [{ path: "/math/", after: "#x", up: 4 }] })), /`up` must be/],
+    [manifest(entry("a", { pages: [{ path: "/math/", after: " " }] })), /one-line CSS selector/],
+    [
+      manifest(
+        entry("a", {
+          pages: [
+            { path: "/math/", after: "#x" },
+            { path: "/math", after: "#x" },
+          ],
+        }),
+      ),
+      /listed twice/,
+    ],
+    [
+      manifest(
+        entry("a", { pages: [{ path: "/math/", after: "#x" }] }),
+        entry("b", { pages: [{ path: "/math/", after: "#x" }] }),
+      ),
+      /already mapped to "a" \(one video per place/,
+    ],
+    [
+      manifest(entry("a", { pages: [{ path: "/access-practice-lab/speak", after: "a[" }] })),
+      /not a valid CSS selector/,
+    ],
     [{ ...manifest(entry("a")), videos: [{ ...entry("a"), extra: 1 }] }, /unknown key/],
     [{ version: 2, videos: [] }, /version/],
   ];
@@ -91,6 +126,48 @@ test("manifest contract: a good manifest passes, every class of bad entry fails"
     problemsFor(manifest(entry("a", { pages: ["/access-teacher/"] })), { isTeacherSurface }),
     /teacher surface/,
   );
+  // The same page can carry several videos when each has its own place on it.
+  assert.equal(
+    problemsFor(
+      manifest(
+        entry("a", { pages: ["/math/"] }),
+        entry("b", { pages: [{ path: "/math/", after: "#x" }] }),
+        entry("c", { pages: [{ path: "/math/", after: "#x", up: 1 }] }),
+      ),
+    ),
+    "",
+  );
+});
+
+test("anchors are checked against the real page: a renamed section fails", () => {
+  const real = readManifest(ROOT).videos.find((v) => v.pages.some((p) => typeof p !== "string"));
+  assert.ok(real, "the manifest uses at least one anchored placement");
+  const anchored = real.pages.find((p) => typeof p !== "string");
+  assert.deepEqual(problemsFor(manifest(real), { root: ROOT }), "");
+  const bad = (page) => problemsFor(manifest({ ...real, pages: [page] }), { root: ROOT });
+  assert.match(bad({ ...anchored, after: "#no-such-section" }), /no element inside <body> matches/);
+  assert.match(bad({ ...anchored, after: "h2[" }), /not a valid CSS selector/);
+  assert.match(bad({ ...anchored, after: "main", up: 2 }), /no parent 2 level|no parent 1 level/);
+});
+
+test("locateAnchor lands after the element, climbs parents, and rejects what is missing", () => {
+  const html = '<body><div id="a"><h2 id="h">T</h2><p>x</p></div><p id="z">end</p></body>';
+  const at = (opts) => html.slice(0, locateAnchor(html, opts));
+  assert.ok(at({ after: "#h" }).endsWith("</h2>"));
+  assert.ok(at({ after: "#h", up: 1 }).endsWith("<p>x</p></div>"));
+  assert.ok(at({ after: "p" }).endsWith("<p>x</p>"), "first match wins");
+  assert.throws(() => locateAnchor(html, { after: "#nope" }), /no element inside/);
+  assert.throws(() => locateAnchor(html, { after: "#a", up: 1 }), /parent 1/);
+  assert.throws(() => locateAnchor(html, { after: "body" }), /no element inside/);
+});
+
+test("placementOf reads both page forms", () => {
+  assert.deepEqual(placementOf("/math/"), { path: "/math/", after: null, up: 0 });
+  assert.deepEqual(placementOf({ path: "/math/", after: "#a", up: 2 }), {
+    path: "/math/",
+    after: "#a",
+    up: 2,
+  });
 });
 
 test("the committed manifest is valid against the real files", () => {
@@ -143,9 +220,13 @@ test("a card is added only to mapped pages, and removing it restores the page by
 test("the committed tree matches the manifest: blocks on mapped pages only, nothing stale", () => {
   assert.deepEqual(run(ROOT, { check: true }), []);
   const m = readManifest(ROOT);
-  const mapped = m.videos
-    .flatMap((v) => v.pages.filter((p) => !p.startsWith("/access-practice-lab")).map(pageFile))
-    .sort();
+  const placed = m.videos.flatMap((v) =>
+    v.pages
+      .map((p) => placementOf(p).path)
+      .filter((p) => !p.startsWith("/access-practice-lab"))
+      .map(pageFile),
+  );
+  const mapped = [...new Set(placed)].sort();
   const withBlockOnDisk = execFileSync(
     "git",
     ["grep", "-l", "-I", "studio-video:start", "--", "*.html"],
@@ -155,8 +236,19 @@ test("the committed tree matches the manifest: blocks on mapped pages only, noth
     .filter((f) => f && !f.endsWith("videos/index.html"))
     .sort();
   assert.deepEqual(withBlockOnDisk, mapped);
-  for (const file of mapped)
-    assert.equal((read(file).match(/studio-video:start/g) || []).length, 1, file);
+  for (const file of mapped) {
+    const html = read(file);
+    assert.equal(
+      (html.match(/studio-video:start/g) || []).length,
+      placed.filter((f) => f === file).length,
+      file,
+    );
+    assert.equal(
+      (html.match(/studio-video\.css"/g) || []).length,
+      1,
+      `${file}: assets once per page`,
+    );
+  }
   // The plan touches nothing else: hubs, routes, mapped pages.
   const expected = new Set([
     ...mapped,
@@ -183,7 +275,10 @@ test("each hub lists only its own brand's videos", () => {
 test("the Language Page app mounts a card only on mapped routes", () => {
   const m = readManifest(ROOT);
   const routes = m.videos.flatMap((v) =>
-    v.pages.filter((p) => p.startsWith("/access-practice-lab")).map((p) => [p, v.id]),
+    v.pages
+      .map((p) => placementOf(p).path)
+      .filter((p) => p.startsWith("/access-practice-lab"))
+      .map((p) => [p, v.id]),
   );
   assert.ok(routes.length >= 2);
   for (const [page, id] of routes) {
@@ -196,12 +291,108 @@ test("the Language Page app mounts a card only on mapped routes", () => {
   }
   for (const other of [
     "/access-practice-lab/explore/play",
-    "/access-practice-lab/speak",
+    "/access-practice-lab/voice",
     "/access-practice-lab/videos/",
     "/math/",
     "/",
   ])
     assert.equal(studioVideoFor(other), null, other);
+});
+
+test("several cards on one page: assets once, each in its place, exact reversal", () => {
+  const [a, b] = readManifest(ROOT)
+    .videos.slice(0, 2)
+    .map((v) => hydrate(ROOT, v));
+  const html = [
+    "<body>",
+    "<main><section><h1>T</h1>",
+    "<p>lead</p>",
+    '<h2 id="s2">Two</h2><div id="w"><p>w</p></div></section></main>',
+    "</body>",
+  ].join("\n");
+  const placed = withBlocks(html, [
+    { entry: b, after: "#s2" },
+    { entry: a },
+    { entry: { ...a, id: "third" }, after: "#w", up: 0 },
+  ]);
+  const order = [...placed.matchAll(/studio-video:start ([a-z0-9-]+)/g)].map((m) => m[1]);
+  assert.deepEqual(order, [a.id, b.id, "third"], "document order, not manifest order");
+  assert.equal((placed.match(/studio-video\.css"/g) || []).length, 1);
+  assert.ok(
+    placed.indexOf("studio-video.css") < placed.indexOf("<studio-video"),
+    "assets before the first card",
+  );
+  assert.equal(
+    withBlocks(placed, [
+      { entry: b, after: "#s2" },
+      { entry: a },
+      { entry: { ...a, id: "third" }, after: "#w" },
+    ]),
+    placed,
+    "idempotent",
+  );
+  assert.equal(withoutBlock(placed), html, "exact reversal");
+  assert.throws(() => withBlocks(html, [{ entry: a, after: "#gone" }]), /no element inside/);
+});
+
+test("the Language Page route table carries each route's placement", () => {
+  const e = hydrate(
+    ROOT,
+    readManifest(ROOT).videos.find((v) => v.brand === "languagepage"),
+  );
+  const text = routesModule([
+    {
+      ...e,
+      pages: ["/access-practice-lab/x", { path: "/access-practice-lab/y/", after: ".a", up: 1 }],
+    },
+  ]);
+  assert.match(text, /"\/access-practice-lab\/x": \{\s*"id": "[a-z0-9-]+"\s*\}/);
+  assert.match(text, /"\/access-practice-lab\/y": \{[^}]*"after": "\.a",\s*"up": 1/);
+});
+
+test("placeCard honours `after` / `up` and falls back to the default spot", () => {
+  const entry = hydrate(ROOT, readManifest(ROOT).videos[0]);
+  const fresh = () => {
+    const { document } = new JSDOM(
+      '<div id="root"><h1>T</h1><p>lead</p><section><h2 id="h">H</h2></section><p id="tail">t</p></div>',
+    ).window;
+    return document.getElementById("root");
+  };
+  const next = (el) => el.nextElementSibling?.tagName;
+  const a = fresh();
+  assert.equal(placeCard(a, cardHtml(entry), { after: "#h" }).previousElementSibling.id, "h");
+  const b = fresh();
+  assert.equal(
+    placeCard(b, cardHtml(entry), { after: "#h", up: 1 }).previousElementSibling.tagName,
+    "SECTION",
+  );
+  const c = fresh();
+  const warn = console.warn;
+  console.warn = () => {};
+  try {
+    const card = placeCard(c, cardHtml(entry), { after: "#renamed" });
+    assert.equal(card.previousElementSibling.tagName, "P", "default: under the title and lead");
+    assert.equal(next(c.querySelector("h1")), "P");
+  } finally {
+    console.warn = warn;
+  }
+  const d = fresh();
+  assert.equal(placeCard(d, cardHtml(entry)).previousElementSibling.textContent, "lead");
+});
+
+test("hubs group concept clips apart from full films", () => {
+  const m = readManifest(ROOT);
+  assert.ok(m.videos.some(isClip) && m.videos.some((v) => !isClip(v)));
+  for (const brandId of Object.keys(BRANDS)) {
+    const html = read(BRANDS[brandId].hubFile);
+    const group = (kind) =>
+      html.match(new RegExp(`data-kind="${kind}"[\\s\\S]*?</section>`))?.[0] ?? "";
+    for (const v of videosFor(m, brandId))
+      assert.ok(
+        group(isClip(v) ? "clips" : "films").includes(`data-id="${v.id}"`),
+        `${brandId} / ${v.id}`,
+      );
+  }
 });
 
 test("card markup escapes everything it prints", () => {
