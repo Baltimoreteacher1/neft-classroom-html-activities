@@ -45,6 +45,8 @@ export function figureSvg(fig, key, values, o = {}) {
 const STR = {
   watch: { en: "Watch it move", es: "Míralo moverse" },
   stop: { en: "Show the end", es: "Mostrar el final" },
+  open: { en: "Show the picture", es: "Mostrar el dibujo" },
+  close: { en: "Hide the picture", es: "Ocultar el dibujo" },
   invalid: { en: (/** @type {Control} */ c) => `Use ${c.min} to ${c.max}, in steps of ${c.step}.`, es: (/** @type {Control} */ c) => `Usa de ${c.min} a ${c.max}, de ${c.step} en ${c.step}.` },
 };
 
@@ -81,6 +83,7 @@ export function mountFigure(host, fig, key, opts) {
   host.textContent = "";
   const stage = doc.createElement("div");
   stage.className = "mc-stage";
+  stage.id = `${id}-stage`;
   const sr = doc.createElement("p");
   sr.className = "mc-sr";
   sr.id = `${id}-desc`;
@@ -96,7 +99,26 @@ export function mountFigure(host, fig, key, opts) {
   showEnd.type = "button";
   showEnd.className = "mc-btn";
   showEnd.setAttribute("data-quiet", "");
-  tools.append(play, showEnd);
+  /* A tall figure on a phone starts folded behind one button, so the page stays short; the text description stays available. */
+  const fold = doc.createElement("button");
+  fold.type = "button";
+  fold.className = "mc-btn";
+  fold.setAttribute("data-quiet", "");
+  fold.setAttribute("aria-controls", `${id}-stage`);
+  let collapsed = false;
+  let userChose = false;
+  const setCollapsed = (/** @type {boolean} */ c) => {
+    collapsed = c;
+    stage.hidden = c;
+    fold.setAttribute("aria-expanded", String(!c));
+    fold.textContent = STR[c ? "open" : "close"][lang];
+  };
+  fold.addEventListener("click", () => {
+    userChose = true;
+    stop();
+    setCollapsed(!collapsed);
+  });
+  tools.append(play, showEnd, fold);
 
   /** @type {HTMLInputElement[]} */
   const inputs = [];
@@ -155,6 +177,8 @@ export function mountFigure(host, fig, key, opts) {
       throw e;
     }
     stage.innerHTML = r.svg;
+    if (!userChose) setCollapsed(width < 480 && r.height > 600);
+    else setCollapsed(collapsed);
     stage.style.setProperty("--mc-min-height", `${Math.round((r.height / r.width) * Math.min(host.clientWidth || width, 640))}px`);
     stage.querySelector("svg")?.setAttribute("aria-describedby", sr.id);
     sr.textContent = fig.describe(r.model, lang);
@@ -170,6 +194,10 @@ export function mountFigure(host, fig, key, opts) {
 
   function watch() {
     stop();
+    if (collapsed) {
+      userChose = true;
+      setCollapsed(false);
+    }
     const svg = stage.querySelector("svg");
     if (!svg) return;
     let model;
