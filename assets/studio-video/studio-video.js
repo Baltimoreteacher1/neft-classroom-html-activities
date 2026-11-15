@@ -109,7 +109,24 @@ class StudioVideo extends HTMLElement {
 if (!customElements.get("studio-video")) customElements.define("studio-video", StudioVideo);
 
 /** Mount a card into `container` (used by the Language Page app on its own routes). */
+/**
+ * The card goes right under the page's heading block, so it is the first thing a visitor sees:
+ * climb from the first <h1> until the parent has three or more children, and insert after that block.
+ * With no <h1> (or a heading that is the whole container) it goes first in the container.
+ */
 export function mountStudioVideo(container, entry, options) {
-  container.insertAdjacentHTML("beforeend", cardHtml(entry, options));
-  return container.lastElementChild;
+  const html = cardHtml(entry, options);
+  let block = container.querySelector("h1");
+  // Best spot: directly under the title and its lead paragraph, before controls and side cards.
+  if (block?.nextElementSibling?.tagName === "P") {
+    block.nextElementSibling.insertAdjacentHTML("afterend", html);
+    return block.nextElementSibling.nextElementSibling;
+  }
+  while (block && block.parentElement && block.parentElement !== container && block.parentElement.children.length < 3) block = block.parentElement;
+  if (block && block !== container && block.parentElement) {
+    block.insertAdjacentHTML("afterend", html);
+    return block.nextElementSibling;
+  }
+  container.insertAdjacentHTML("afterbegin", html);
+  return container.firstElementChild;
 }

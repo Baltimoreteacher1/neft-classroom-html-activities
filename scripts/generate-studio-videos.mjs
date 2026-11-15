@@ -50,8 +50,30 @@ export function hydrate(root, video) {
 export const blockFor = (entry) => `${START}\n${assetTags()}\n${cardHtml(entry)}\n${END}\n`;
 
 /** Insert or replace the block in a page's HTML. Returns the new HTML. */
-export function withBlock(html, entry) {
+/** Pages whose lead paragraph sits inside a full-bleed hero banner: the film goes after the whole hero instead. */
+export const AFTER_HERO_PAGES = new Set(["/math/games/"]);
+
+export function withBlock(html, entry, { afterHero = false } = {}) {
   const clean = withoutBlock(html);
+  // Preferred spot: right after the block that holds the page's <h1> (its hero), so the film is the first
+  // thing a visitor sees. Fall back to the footer / </main> / </body> anchors for pages without one.
+  const h1 = clean.indexOf("<h1");
+  if (h1 !== -1) {
+    // Best spot: directly under the title and its lead paragraph (before callouts, side cards and long
+    // hero content that can push the film far down on a phone).
+    const h1End = clean.indexOf("</h1>", h1);
+    const lead = h1End === -1 || afterHero ? null : /^\s*<p[^>]*>[\s\S]*?<\/p>[ \t]*\n/.exec(clean.slice(h1End + 5));
+    if (lead) {
+      const at = h1End + 5 + lead[0].length;
+      return `${clean.slice(0, at)}${blockFor(entry)}${clean.slice(at)}`;
+    }
+    const ends = ["</section>", "</header>"].map((t) => [clean.indexOf(t, h1), t]).filter(([i]) => i !== -1).sort((a, b) => a[0] - b[0]);
+    if (ends.length) {
+      const [i, tag] = ends[0];
+      const at = clean.indexOf("\n", i + tag.length) + 1;
+      if (at > 0) return `${clean.slice(0, at)}${blockFor(entry)}${clean.slice(at)}`;
+    }
+  }
   for (const anchor of ANCHORS) {
     const at = clean.indexOf(anchor);
     if (at === -1) continue;
@@ -185,7 +207,7 @@ export function plan(root) {
     for (const page of e.pages) if (!isLabRoute(page)) mapped.set(pageFile(page), e);
   for (const [file, entry] of mapped) {
     const html = readFileSync(join(root, file), "utf8");
-    out.set(file, withBlock(html, entry));
+    out.set(file, withBlock(html, entry, { afterHero: [...AFTER_HERO_PAGES].some((pg) => pageFile(pg) === file) }));
   }
   // Pages that carry a block but are no longer mapped lose it.
   for (const file of pagesWithBlock(root)) {
