@@ -5829,6 +5829,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/videos/",
+    title: "Videos",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/work-coach/",
     title: "Show Your Work Coach",
     category: "Tool",

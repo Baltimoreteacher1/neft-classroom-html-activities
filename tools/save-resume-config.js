@@ -142,7 +142,9 @@ export const SKIP_FILE_RE =
 //     IndexedDB (level, solves and energy cores per game, plus round receipts) and
 //     restore it on load; every control lives in the machine's shadow root, which
 //     the generic widget cannot see, so it would offer to save an empty page.
+//   - videos/index.html and access-practice-lab/videos/index.html → the generated studio video hubs
+//     (scripts/generate-studio-videos.mjs): read-only lists of videos with no student work to save.
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/games\/engines\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|mathsense\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|(?:access-practice-lab\/)?videos\/index\.html$|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/games\/engines\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|mathsense\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;

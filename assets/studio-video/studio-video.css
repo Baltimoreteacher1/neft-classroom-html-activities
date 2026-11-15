@@ -1,0 +1,290 @@
+/*
+ * <studio-video> card and the two video hub pages. Self-contained: every colour is a token set per brand
+ * on the element, so the card looks the same on a light shared.css page, a dark page or the Language
+ * Page app. Fonts are the ones those sites already self-host (Fraunces, Hanken Grotesk, Atkinson
+ * Hyperlegible); the stacks fall back to system fonts when a page has not loaded them.
+ */
+studio-video {
+  display: block;
+}
+.sv {
+  --sv-bg: #0c0a1d;
+  --sv-panel: #17142f;
+  --sv-ink: #f6f1e6;
+  --sv-muted: #cfc9de;
+  --sv-accent: #e8b75c;
+  --sv-accent-ink: #0c0a1d;
+  --sv-line: #3a3560;
+  --sv-focus: #ffd98a;
+  --sv-heading: "Fraunces", Georgia, "Times New Roman", serif;
+  --sv-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: clamp(14px, 3vw, 24px);
+  border: 1px solid var(--sv-line);
+  border-radius: 16px;
+  background: var(--sv-bg);
+  color: var(--sv-ink);
+  font-family: var(--sv-body);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.sv[data-brand="languagepage"] {
+  --sv-bg: #ffffff;
+  --sv-panel: #f2f5fb;
+  --sv-ink: #111a3b;
+  --sv-muted: #404a6b;
+  --sv-accent: #1a2f78;
+  --sv-accent-ink: #ffffff;
+  --sv-line: #aab1c6;
+  --sv-focus: #1a2f78;
+  --sv-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* the four skill colours of the lab (access-practice-lab/ds.css), as a stripe */
+  background:
+    linear-gradient(90deg, #075568 0 25%, #2e4a94 25% 50%, #8a3a5c 50% 75%, #9a4a26 75% 100%) top / 100% 6px no-repeat,
+    var(--sv-bg);
+  padding-top: calc(clamp(14px, 3vw, 24px) + 6px);
+}
+.sv *,
+.sv *::before,
+.sv *::after {
+  box-sizing: border-box;
+}
+.sv .sv-eyebrow {
+  margin: 0 0 4px;
+  color: var(--sv-accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sv .sv-title {
+  margin: 0 0 6px;
+  font-family: var(--sv-heading);
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+  line-height: 1.2;
+  color: var(--sv-ink);
+}
+.sv .sv-desc {
+  margin: 0 0 14px;
+  max-width: 68ch;
+  color: var(--sv-muted);
+}
+.sv .sv-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #000;
+}
+.sv .sv-fallback,
+.sv .sv-stage {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.sv .sv-poster,
+.sv .sv-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.sv .sv-video {
+  object-fit: contain;
+}
+.sv .sv-fallback-label {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgb(12 10 29 / 0.82);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: underline;
+}
+.sv .sv-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sv-accent);
+  box-shadow: 0 0 0 3px var(--sv-accent-ink), 0 6px 18px rgb(0 0 0 / 0.45);
+  color: var(--sv-accent-ink);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease;
+}
+.sv .sv-play[hidden] {
+  display: none;
+}
+.sv .sv-play:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.sv a:focus-visible,
+.sv summary:focus-visible,
+.sv .sv-play:focus-visible,
+.sv .sv-video:focus-visible {
+  outline: 3px solid var(--sv-focus);
+  outline-offset: 3px;
+}
+.sv .sv-note {
+  margin: 10px 0 0;
+  color: var(--sv-muted);
+  font-size: 0.9375rem;
+}
+.sv .sv-transcript {
+  margin-top: 10px;
+  border: 1px solid var(--sv-line);
+  border-radius: 10px;
+  background: var(--sv-panel);
+}
+.sv .sv-transcript summary {
+  min-height: 44px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--sv-ink);
+}
+.sv .sv-cues {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0 14px 14px 14px;
+  list-style: none;
+}
+.sv .sv-cues li {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 8px;
+}
+.sv .sv-cues time {
+  color: var(--sv-accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.sv .sv-more {
+  margin: 12px 0 0;
+}
+.sv .sv-more a {
+  display: inline-block;
+  padding: 10px 0;
+  color: var(--sv-accent);
+  font-weight: 700;
+}
+
+/* ---- hub pages (/videos/ and /access-practice-lab/videos/) ---- */
+body.sv-page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #0c0a1d;
+  color: #f6f1e6;
+}
+body.sv-page[data-brand="languagepage"] {
+  font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f2f5fb;
+  color: #111a3b;
+}
+.sv-hub {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+.sv-hub-head {
+  padding: 28px 0 8px;
+}
+.sv-hub-head a {
+  color: inherit;
+  font-weight: 700;
+}
+body.sv-page a:focus-visible {
+  outline: 3px solid #ffd98a;
+  outline-offset: 3px;
+}
+body.sv-page[data-brand="languagepage"] a:focus-visible {
+  outline-color: #1a2f78;
+}
+.sv-hub h1 {
+  margin: 12px 0 8px;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-size: clamp(1.9rem, 5vw, 2.75rem);
+  line-height: 1.15;
+}
+body.sv-page[data-brand="eduwonderlab"] h1 {
+  color: #e8b75c;
+}
+body.sv-page[data-brand="languagepage"] h1 {
+  color: #1a2f78;
+}
+.sv-hub-lead {
+  max-width: 62ch;
+  margin: 0 0 8px;
+  font-size: 1.0625rem;
+}
+.sv-hub .sv-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sv-hub .sv {
+  width: 100%;
+  margin: 24px 0;
+}
+.sv-hub-empty {
+  margin: 32px 0;
+}
+.sv-hub-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sv-hub-nav a {
+  display: inline-block;
+  padding: 10px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv *,
+  .sv *::before,
+  .sv *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  .sv .sv-play {
+    border: 3px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
+@media (max-width: 480px) {
+  .sv .sv-play {
+    width: 60px;
+    height: 60px;
+  }
+  .sv .sv-cues li {
+    grid-template-columns: 2.8rem 1fr;
+  }
+}
