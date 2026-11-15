@@ -107,7 +107,7 @@ export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
       <div class="gs-hero-copy">
         <p class="gm-kicker">${icon("sparkle")}${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</p>
         <h1 tabindex="-1">${I.T("Play with language. Practice what matters.", "Juega con el lenguaje. Practica lo que importa.")}</h1>
-        <p class="lead">${I.T("Fifteen games for listening, reading, speaking and writing. Pick a support mode, play at your pace, then use the words on your own. There is no timer.", "Quince juegos para escuchar, leer, hablar y escribir. Elige un modo de apoyo, juega a tu ritmo y luego usa las palabras por tu cuenta. No hay temporizador.")}</p>
+        <p class="lead">${I.T(`${GAMES.length} games for listening, reading, speaking and writing. Pick a support mode, play at your pace, then use the words on your own. There is no timer.`, `${GAMES.length} juegos para escuchar, leer, hablar y escribir. Elige un modo de apoyo, juega a tu ritmo y luego usa las palabras por tu cuenta. No hay temporizador.`)}</p>
         <div class="gs-hero-actions">
           ${quick ? html`<a class="btn btn-primary btn-big" href="${playHref(quick.game, band, q, "&len=quick")}">${icon("play")}${I.T("5-minute mission: ", "Misión de 5 minutos: ")}${pair(I, GAME[quick.game].title)}</a>` : ""}
           <a class="btn btn-big" href="#gs-all">${I.T("Browse all games", "Ver todos los juegos")}</a>
