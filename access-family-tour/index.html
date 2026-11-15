@@ -946,10 +946,10 @@
           changeGrade: ["Change grade", "Cambiar de grado"],
           stopOf: (n) => [`Stop ${n} of ${TOTAL}`, `Parada ${n} de ${TOTAL}`],
           about: ["About 2 minutes", "Unos 2 minutos"],
-          open: ["Open this part of the site", "Abrir esta parte del sitio"],
+          open: ["Open this part of the site (new tab)", "Abrir esta parte del sitio (pestaña nueva)"],
           comeBack: [
-            "A guide stays with you while you look around: beside the page on a computer, at the bottom on a phone. Tap “Back to the tour” in it any time.",
-            "Una guía los acompaña mientras exploran: al lado de la página en una computadora, abajo en un teléfono. Toquen “Volver al recorrido” cuando quieran.",
+            "This guide stays open here. Switch back to this tab to choose another stop. A guide also follows you on the page you open.",
+            "Esta guía queda abierta aquí. Vuelvan a esta pestaña para elegir otra parada. Una guía también los acompaña en la página que abran.",
           ],
           where: ["Where to next?", "¿A dónde ahora?"],
           didNext: (name) => [`I know this one. Next: ${name[0]}`, `Ya lo conozco. Sigue: ${name[1]}`],
@@ -1122,7 +1122,7 @@
   <div class="destination-body">${miniMap(state.stop)}
   <p class="lead">${T(s.what)}</p>
   <section class="playcard"><ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
-  <a class="btn primary" href="${stopUrl(state.stop, state.band)}">${T(COPY.open)}</a>
+  <a class="btn primary" href="${stopUrl(state.stop, state.band)}" target="_blank" rel="noopener">${T(COPY.open)}</a>
   <p class="note">${T(COPY.comeBack)}</p></section>
   <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.tip)}</p></div>
   ${done ? `<p class="collected">${T(COPY.doneHere)}</p>` : ""}
@@ -1131,7 +1131,7 @@
         function end() {
           const n = state.done.length;
           const link = (href, title, help) =>
-            `<a class="btn" href="${href}">${T(title)}<span class="note">${T(help)}</span></a>`;
+            `<a class="btn" href="${href}" target="_blank" rel="noopener">${T(title)} <span class="note">${T(["Opens in a new tab", "Se abre en una pestaña nueva"])}</span><span class="note">${T(help)}</span></a>`;
           return `<section class="outro stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (isDone(i) ? "★" : "☆")).join("")}</div>
   <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
   <h2>${T(COPY.readyTitle)}</h2>

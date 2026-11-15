@@ -399,6 +399,8 @@ test("Part 3: one main action on the class card, three quieter ones, the start s
   assert.equal(secondary.length, 3);
   assert.match(secondary[0].textContent, /Open it/);
   assert.match(secondary[0].getAttribute("href"), /intro=tour/, "Open it keeps the way back");
+  assert.equal(secondary[0].target, "_blank");
+  assert.match(secondary[0].rel, /noopener/);
   assert.ok(card.querySelector(".gt-secondary [data-gt-show]"));
   assert.match(card.querySelector("[data-gt-print]").textContent, /Print this card/);
   assert.equal(card.querySelector("#gtCardTitle").textContent, sample.title);
@@ -424,7 +426,11 @@ test("Part 3: one main action on the class card, three quieter ones, the start s
   // Map: seven stops, each in the teacher's grades, and the full Site Guide.
   const stops = [...d.querySelectorAll(".gt-map-stops a")];
   assert.equal(stops.length, 7);
-  for (const a of stops) assert.match(a.getAttribute("href"), /grades=2-3$/);
+  for (const a of stops) {
+    assert.match(a.getAttribute("href"), /grades=2-3$/);
+    assert.equal(a.target, "_blank");
+    assert.match(a.rel, /noopener/);
+  }
   assert.match(d.querySelector(".gt-map-more a").textContent, /Open the full Site Guide/);
   assert.ok(d.querySelector("dialog[data-gt-show-dialog]"));
 });
@@ -544,6 +550,11 @@ test("render Part 2: the coach comes before the frame, which opens the level A a
     assert.ok(src.includes(a.route), `${skill}: ${src}`);
     assert.match(src, /frame=1/);
     assert.match(src, /grades=6-8/);
+    const external = [...d.querySelectorAll('a[target="_blank"]')].find((link) =>
+      link.textContent.includes("Open this activity in a new tab"),
+    );
+    assert.ok(external, `${skill}: activity can open alongside the guide`);
+    assert.match(external.getAttribute("href"), /intro=tour/);
     assert.equal(d.querySelector("#gtTitle").textContent, a.title);
     const trail = d.querySelector(".gt-trail");
     assert.ok(trail, `${skill}: trail`);

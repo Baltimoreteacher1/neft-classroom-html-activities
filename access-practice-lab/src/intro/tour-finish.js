@@ -92,12 +92,12 @@ const AVENUES = [
 function mapHTML(pick) {
   return html`<section class="gt-map" aria-labelledby="gtMapTitle">
     <h2 id="gtMapTitle">Where students can go next</h2>
-    <p class="gt-map-lead">The site at a glance. Each stop opens in your students’ grades.</p>
+    <p class="gt-map-lead">Use this guide whenever you need it. Each stop opens in a new tab in your students’ grades; switch back here to choose another.</p>
     <ol class="gt-map-stops">
       ${AVENUES.map(
         (v) =>
           html`<li>
-            <a href="${BASE}${v.route}?grades=${pick}">
+            <a href="${BASE}${v.route}?grades=${pick}" target="_blank" rel="noopener">
               <span class="gt-map-ic" aria-hidden="true">${icon(v.icon)}</span>
               <span><strong>${v.name}</strong><span>${v.text}</span></span>
             </a>
@@ -105,7 +105,7 @@ function mapHTML(pick) {
       )}
     </ol>
     <p class="gt-map-more">
-      <a href="${BASE}/site-guide?for=teacher&grades=${pick}">${icon("help")}Open the full Site Guide</a>
+      <a href="${BASE}/site-guide?for=teacher&grades=${pick}" target="_blank" rel="noopener">${icon("help")}Open the full Site Guide (new tab)</a>
     </p>
   </section>`;
 }
@@ -133,7 +133,7 @@ export function classroomHTML(s, a, options = []) {
       <div class="gt-actions gt-class-actions">
         <button type="button" class="btn btn-primary btn-big" data-gt-copy>${icon("copy")}Copy student link</button>
         <span class="gt-secondary">
-          <a class="btn" href="${open}">${icon("play")}Open it</a>
+          <a class="btn" href="${open}" target="_blank" rel="noopener">${icon("play")}Open it (new tab)</a>
           ${qrFits(url) ? html`<button type="button" class="btn" data-gt-show>${icon("classroom")}Show QR to the class</button>` : ""}
           <button type="button" class="btn ghost" data-gt-print>${icon("print")}Print this card</button>
         </span>
@@ -147,7 +147,7 @@ export function classroomHTML(s, a, options = []) {
         <h2 id="gtReady">You’re ready to use this with students.</h2>
         <p>Every activity works the way you just tried it: try, get guidance, revise.</p>
       </div>
-      <a class="btn btn-big gt-ready-go" href="${BASE}/explore/practice?grades=${a.pick}">Start using the lab${icon("arrow-right")}</a>
+      <a class="btn btn-big gt-ready-go" href="${BASE}/explore/practice?grades=${a.pick}" target="_blank" rel="noopener">Start using the lab (new tab)${icon("arrow-right")}</a>
     </section>
     ${mapHTML(a.pick)}
     ${showDialogHTML(a, url)}`;
