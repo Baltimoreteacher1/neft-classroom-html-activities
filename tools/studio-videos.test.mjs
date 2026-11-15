@@ -223,7 +223,10 @@ test("component promises hold, and each detector fires on a mutation of the real
   const cases = [
     [mutate("js", 'video.preload = "none"', 'video.preload = "auto"'), /preload/],
     [mutate("js", "video.controls = true", "video.controls = false"), /native controls/],
-    [mutate("js", "track.default = true", "track.default = false"), /captions/],
+    [{ ...base, js: `${base.js}\ntrack.default = true;` }, /not be default/],
+    [{ ...base, markup: `${base.markup}<track kind="captions" default>` }, /not be default/],
+    [mutate("js", 't.mode = "disabled"', 't.mode = "showing"'), /disabled/],
+    [mutate("js", 'track.kind = "captions"', 'track.kind = "subtitles"'), /captions <track>/],
     [mutate("js", "video.muted = true", "video.muted = false"), /muted/],
     [mutate("js", /IntersectionObserver/g, "Nope"), /IntersectionObserver/],
     [mutate("js", "transcript.open = true", "transcript.open = false"), /reduced-motion/],

@@ -57,7 +57,7 @@ To remove a video from a page, delete the path from `pages[]` and run the genera
 ## Player behaviour
 
 Poster first (`preload="none"`; nothing but the poster is fetched until the card is within 300px of the viewport,
-and the MP4 only after Play). Native controls, an English captions `<track default>` from the VTT, muted,
+and the MP4 only after Play). Native controls, an English captions `<track>` from the VTT that is off until chosen in the captions menu (the films already show their words, so a default track would draw every line twice), muted,
 click or key to play, never autoplay. `prefers-reduced-motion`: no transitions and the captions text opens by
 default. Without JavaScript the card is a labelled link to the MP4 plus the full captions text. The films are
 silent, and the card says so.

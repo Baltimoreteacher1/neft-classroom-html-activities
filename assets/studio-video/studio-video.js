@@ -5,7 +5,7 @@
  * poster link to the MP4, the description and the full captions text. With it:
  *   - nothing is downloaded until the card is near the viewport (IntersectionObserver), and then only
  *     the poster: the <video> is built with preload="none";
- *   - native controls, an English captions <track default> read from the VTT, and a real <button> that
+ *   - native controls, an English captions <track> read from the VTT (off until chosen: the films already show their words), and a real <button> that
  *     starts playback on a click or key press. Nothing ever autoplays, with or without sound;
  *   - prefers-reduced-motion: no animation or transition, and the captions text opens by default so
  *     the poster and the words are what the reader gets.
@@ -77,8 +77,10 @@ class StudioVideo extends HTMLElement {
     track.srclang = "en";
     track.label = "English captions";
     track.src = vtt;
-    track.default = true;
+    // The films carry their captions in the picture, so the track is NOT default: a showing track would
+    // draw every line twice. It stays disabled until the viewer picks it in the player's captions menu.
     video.append(source, track);
+    for (const t of video.textTracks) t.mode = "disabled";
 
     const button = document.createElement("button");
     button.type = "button";

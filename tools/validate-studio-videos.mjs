@@ -9,7 +9,7 @@
  *      block on each mapped page, the two hubs, the Language Page route table. That is also what
  *      proves a page that is NOT mapped carries no block.
  *   3. The component keeps its promises (componentProblems): no autoplay, preload none, native
- *      controls, a default captions track, an IntersectionObserver, a prefers-reduced-motion path, no
+ *      controls, a captions track that is not default, an IntersectionObserver, a prefers-reduced-motion path, no
  *      third-party URL, reserved 16:9 space, and a transcript disclosure in the markup.
  *
  * The behaviour in a real browser (poster first, play, captions, layout shift) is covered by the
@@ -42,10 +42,13 @@ export function componentProblems(sources) {
   );
   need(/preload\s*=\s*"none"/.test(js), 'the <video> must be built with preload = "none"');
   need(/video\.controls\s*=\s*true/.test(js), "the <video> must have native controls");
+  need(/track\.kind\s*=\s*"captions"/.test(js), "a captions <track> from the VTT is required");
   need(
-    /track\.kind\s*=\s*"captions"/.test(js) && /track\.default\s*=\s*true/.test(js),
-    "a default captions <track> is required",
+    !/\.default\s*=\s*true|setAttribute\("default"/.test(js) &&
+      !/<track[^>]*\bdefault\b/.test(markup),
+    "the captions track must not be default: the films have burned-in captions and a showing track doubles every line",
   );
+  need(/t\.mode\s*=\s*"disabled"/.test(js), 'the captions track must start with mode "disabled"');
   need(/video\.muted\s*=\s*true/.test(js), "the <video> must start muted (click-to-play only)");
   need(
     /IntersectionObserver/.test(js),
