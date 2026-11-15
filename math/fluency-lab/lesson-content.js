@@ -213,7 +213,7 @@ export function createLesson(skill, variant = 0) {
       return lesson("Find one part, then several", "Divide the whole into equal groups before taking the required groups.", { type: "fractions", fractions: [[numerator, denominator]], caption: `${numerator}/${denominator} of ${whole}` }, [step(`Split ${whole} into ${denominator} equal parts. How much is in one part?`, 5, "Divide by the denominator.", `${whole} ÷ ${denominator} = 5.`), step(`Take ${numerator} of those parts. What amount is that?`, 15, "Multiply the amount in one part by the numerator.", "5 × 3 = 15."), step("How much of the whole remains?", whole - 15, "Subtract your selected amount from the whole.", `${whole} − 15 = ${whole - 15}.`)]);
     }
     const op = config.op;
-    if (op === "mul") return lesson("Take a part of a part", "Shade 2 of 3 columns, then take 3 of 4 rows of the shaded part. The overlap is the product.", { type: "fractionGrid", cols: 3, rows: 4, selectedCols: 2, selectedRows: 3, caption: "2/3 × 3/4" }, [step("How many equal cells make the whole grid?", 12, "Multiply rows by columns.", "3 × 4 = 12 cells."), step("How many cells are in the overlap?", 6, "Count the cells in both selected rows and columns.", "2 × 3 = 6 overlapping cells."), step("What fraction of the whole is the overlap?", "1/2", "Use overlap cells over total cells; simplify if you can.", "6/12 = 1/2.", "fraction")]);
+    if (op === "mul") return lesson("Multiply fractions straight across", "Stack the fractions. Multiply the top numbers, then the bottom numbers. Simplify if you can.", { type: "fractionGrid", cols: 3, rows: 4, selectedCols: 2, selectedRows: 3, caption: "2/3 × 3/4" }, [step("Multiply the top numbers: 2 × 3 = ?", 6, "Top times top.", "The numerator is 6."), step("Multiply the bottom numbers: 3 × 4 = ?", 12, "Bottom times bottom.", "The denominator is 12."), step("Simplify 6/12. What is the product?", "1/2", "Divide the top and bottom by their common factor, 6.", "6/12 = 1/2.", "fraction")]);
     if (op === "div") {
       const examples = [
         {
@@ -270,8 +270,21 @@ export function createLesson(skill, variant = 0) {
   }
   if (gen === "decimalOp") {
     if (config.op === "div") {
-      const divisor = 3; const eachTenths = 12 + k; const totalTenths = divisor * eachTenths; const total = totalTenths / 10;
-      return lesson("Divide tenths into equal groups", "Think in tenths: the decimal point only says what size each piece is. Share the tenths equally, then write the answer as a decimal.", { type: "place", numbers: [total.toFixed(1), String(divisor)], caption: `${total} ÷ ${divisor}` }, [step(`How many tenths are in ${total}?`, totalTenths, "Multiply the number by 10.", `${total} is ${totalTenths} tenths.`), step(`Share ${totalTenths} tenths into ${divisor} equal groups. How many tenths in each group?`, eachTenths, "Divide the count of tenths by the divisor.", `${totalTenths} ÷ ${divisor} = ${eachTenths} tenths.`), step("Write the answer as a decimal.", num(eachTenths / 10), "Tenths are one place right of the decimal point.", `${eachTenths} tenths is ${num(eachTenths / 10)}.`)]);
+      const divisor = (2 + k) / 10;
+      const quotient = 12 + k;
+      const dividend = num(divisor * quotient);
+      const shiftedDividend = num(dividend * 10);
+      const shiftedDivisor = num(divisor * 10);
+      return lesson(
+        "Make the divisor a whole number",
+        "Move both decimal points the same number of places. Divide the new whole numbers; the quotient stays the same.",
+        { type: "place", numbers: [String(dividend), String(divisor)], caption: `Move both points right: ${dividend} ÷ ${divisor} → ${shiftedDividend} ÷ ${shiftedDivisor}` },
+        [
+          step(`Move both decimal points one place right. What whole-number division do you get from ${dividend} ÷ ${divisor}?`, `${shiftedDividend} ÷ ${shiftedDivisor}`, "Move both points the same distance so the quotient stays the same.", `${dividend} ÷ ${divisor} becomes ${shiftedDividend} ÷ ${shiftedDivisor}.`, "text"),
+          step(`Now divide ${shiftedDividend} ÷ ${shiftedDivisor}. What is the quotient?`, quotient, "Divide as you would with whole numbers.", `${shiftedDividend} ÷ ${shiftedDivisor} = ${quotient}.`),
+          step(`Check ${dividend} ÷ ${divisor} by multiplying ${quotient} × ${divisor}.`, dividend, "The quotient times the original divisor should give the original dividend.", `${quotient} × ${divisor} = ${dividend}.`),
+        ],
+      );
     }
     const a = num(2.4 + k / 10); const mul = config.op === "mul";
     const b = mul ? 0.5 : 1.35; const subtract = config.op === "sub";

@@ -871,16 +871,73 @@ function renderModeTabs(mixed = false) {
   renderStageUi();
 }
 
-// Learn it: one sentence, one interactive model, and "Watch me solve it" steps revealed one tap at a time.
+function learnRoutine(skill, example) {
+  const question = String(example.question || "");
+  if (skill.generator === "fact" && skill.grade >= 4 && skill.config?.op === "div") {
+    return getLang() === "es"
+      ? ["Divide: ¿cuántas veces cabe el divisor?", "Multiplica: divisor × dígito del cociente.", "Resta el producto.", "Baja el siguiente dígito. Repite."]
+      : ["Divide: how many times does the divisor fit?", "Multiply: divisor × quotient digit.", "Subtract the product.", "Bring down the next digit. Repeat."];
+  }
+  const fractionProduct = /[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(question);
+  if (skill.id === "fraction-mul" || fractionProduct) {
+    return getLang() === "es"
+      ? ["Escribe las fracciones una sobre otra.", "Multiplica directo: arriba por arriba y abajo por abajo.", "Simplifica la fracción si puedes."]
+      : ["Stack the fractions vertically.", "Multiply straight across: top × top and bottom × bottom.", "Simplify the fraction if you can."];
+  }
+  const decimalDivision = question.match(/([\d.]+) ÷ ([\d.]+)/);
+  if (decimalDivision) {
+    const [, dividend, divisor] = decimalDivision;
+    const places = (divisor.split(".")[1] || "").length;
+    if (places) {
+      const factor = 10 ** places;
+      const shiftedDividend = String(Number(dividend) * factor);
+      const shiftedDivisor = String(Number(divisor) * factor);
+      return getLang() === "es"
+        ? [`Mueve ambos puntos ${places === 1 ? "un lugar" : `${places} lugares`} a la derecha: ${dividend} ÷ ${divisor} → ${shiftedDividend} ÷ ${shiftedDivisor}.`, "Divide los números enteros.", "Comprueba: cociente × divisor original = dividendo original."]
+        : [`Move both decimal points ${places === 1 ? "one place" : `${places} places`} right: ${dividend} ÷ ${divisor} → ${shiftedDividend} ÷ ${shiftedDivisor}.`, "Divide the whole numbers.", "Check: quotient × original divisor = original dividend."];
+    }
+    return getLang() === "es"
+      ? ["Divide como siempre.", "Coloca el punto del cociente justo arriba del punto del dividendo.", "Comprueba multiplicando el cociente por el divisor."]
+      : ["Divide as usual.", "Put the quotient's decimal point straight above the dividend's decimal point.", "Check by multiplying the quotient by the divisor."];
+  }
+  return (skill.learn?.steps || [skill.learn?.rule]).filter(Boolean).slice(0, 3);
+}
+
+function learnHeadline(skill, example) {
+  const question = String(example.question || "");
+  if (/[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(question))
+    return getLang() === "es"
+      ? "Multiplica los numeradores. Multiplica los denominadores. Simplifica si puedes."
+      : "Multiply the top numbers. Multiply the bottom numbers. Simplify if you can.";
+  if (skill.id === "decimal-ops" && / ÷ [\d]*\.[\d]+ = \?/.test(question))
+    return getLang() === "es"
+      ? "Mueve ambos puntos decimales el mismo número de lugares. Luego divide."
+      : "Move both decimal points the same number of places. Then divide.";
+  if (skill.generator === "fact" && skill.grade >= 4 && skill.config?.op === "div")
+    return getLang() === "es"
+      ? "Repite estos cuatro pasos con cada dígito."
+      : "Repeat these four steps for each digit.";
+  return t(skill.learn.rule);
+}
+
+// Learn it: a short process, a matching visual and "Watch me solve it" steps revealed one tap at a time.
 function renderLearn() {
   const skill = state.skill;
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
   const draws = Array.from({ length: 12 }, () => generateProblem(skill, rng));
   // A worked example about zero ("10 + 0 = 10") shows nothing; prefer a draw with real numbers when there is one.
   const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
-  const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const usefulDraws = draws.filter((item) => !trivial(item));
+  const pool = usefulDraws.length ? usefulDraws : draws;
+  const decimalDivision = skill.id === "decimal-ops" ? pool.find((item) => / ÷ [\d]*\.[\d]+ = \?/.test(item.question)) : null;
+  const example = decimalDivision || pool.reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const routine = learnRoutine(skill, example);
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || renderInlineProblemModel(skill, example) || fractionPicture(example.question, { worked: true });
+  const modelPicture = interactivePicture({ ...example.model, worked: true });
+  const fractionProduct = /[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(example.question);
+  const picture = fractionProduct
+    ? `${fractionPicture(example.question, { worked: true })}${modelPicture}`
+    : modelPicture || trailPicture(example.model) || renderInlineProblemModel(skill, example) || fractionPicture(example.question, { worked: true });
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
   // Understand It keeps one worked example in view. The interactive model lives in
@@ -893,10 +950,14 @@ function renderLearn() {
     : "";
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
-      <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
+      <h3 class="tr-idea">${highlightVocab(escapeHtml(learnHeadline(skill, example)))}</h3>
       <div class="tr-lesson">
+        <section class="learn-routine" aria-label="${escapeHtml(getLang() === "es" ? "Una forma sencilla de resolverlo" : "A simple way to solve it" )}">
+          <p class="learn-routine-title">${getLang() === "es" ? "Una forma sencilla de resolverlo" : "A simple way to solve it"}</p>
+          <ol>${routine.map((line) => `<li>${formatVerticalFractions(mathText(line))}</li>`).join("")}</ol>
+        </section>
         <div class="tr-example">
-          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
+          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(formatVerticalFractions(mathText(example.question)))}</p>
           ${picture}
         </div>
         <div class="tr-guide">
