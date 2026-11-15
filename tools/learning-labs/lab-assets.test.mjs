@@ -22,4 +22,6 @@ test("Power Plant assets are included in the appropriate document regions and ex
   assert.match(mixture.head, /mixture-matchup\/delivery-network\.css/);
   assert.equal(mixture.body, "");
   assert.ok(existsSync("./curriculum/learning-labs/mixture-matchup/delivery-network.css"));
+  assert.match(labAssets("packaging-workshop").head, /packaging-workshop\/district-design\.css/);
+  assert.ok(existsSync("./curriculum/learning-labs/packaging-workshop/district-design.css"));
 });

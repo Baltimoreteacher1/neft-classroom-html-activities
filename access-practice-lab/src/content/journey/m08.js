@@ -57,6 +57,28 @@ const g35 = {
     kind: "scene",
     prompt:
       "Why are the bean plants in Bed 2 small and yellow, while the plants in Bed 1 are tall and green?",
+    causalComparisons: [
+      {
+        id: "sunlight",
+        label: "More sun, same water",
+        before: { sun: "shade", water: "daily" },
+        after: { sun: "full", water: "daily" },
+        held: "Both tests use 2 cups of water a day.",
+      },
+      {
+        id: "water",
+        label: "No water, same sun",
+        before: { sun: "full", water: "daily" },
+        after: { sun: "full", water: "none" },
+        held: "Both tests use sun all day.",
+      },
+    ],
+    causalPredictions: [
+      { key: "thrive", label: "Tall, green plants" },
+      { key: "slow", label: "Small, yellow plants" },
+      { key: "dry", label: "Drooping leaves, dry soil" },
+      { key: "poor", label: "Tiny plants, brown leaves" },
+    ],
     objects: [
       {
         id: "bed1",

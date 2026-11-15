@@ -1,5 +1,11 @@
 /** Lab-specific enhancements included when their pages are regenerated. */
 export function labAssets(id) {
+  if (id === "packaging-workshop") {
+    return {
+      head: '<link rel="stylesheet" href="/curriculum/learning-labs/packaging-workshop/district-design.css">',
+      body: "",
+    };
+  }
   if (id === "mixture-matchup") {
     return {
       head: '<link rel="stylesheet" href="/curriculum/learning-labs/mixture-matchup/delivery-network.css">',

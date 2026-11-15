@@ -19,6 +19,7 @@ import {
   setControl,
 } from "../engines/scene.js";
 import { environmentArt } from "./environments.js";
+import { compareCause } from "../engines/cause-compare.js";
 
 const MOOD_ICON = { good: "check", warn: "alert", bad: "x", neutral: "info" };
 const MOOD_WORD = {
@@ -179,6 +180,25 @@ function descriptionHTML(I, task, data) {
     <button type="button" class="btn btn-secondary" data-sc-match-description>${I.T("Show matching specimens", "Mostrar muestras coincidentes")}</button>
     ${result ? html`<div role="status" tabindex="-1" data-sc-description-result><p>${feedback}</p></div>` : ""}
     <ul class="sc-notes" aria-label="${I.S("Specimen descriptions", "Descripciones de las muestras")}">${config.specimens.map((specimen) => html`<li class="sc-note"><div><strong lang="en">${specimen.label}</strong><p lang="en">${config.dimensions.map((dimension) => labelFor(dimension, specimen[dimension.id])).join(" · ")}</p><p>${result ? (result.matches.includes(specimen.id) ? I.T("Fits your description", "Coincide con tu descripción") : I.T("Does not fit", "No coincide")) : ""}</p></div></li>`)}</ul>
+  </section>`;
+}
+
+function causeCompareHTML(I, task, data) {
+  const cases = task.causalComparisons;
+  if (!cases?.length) return "";
+  const selectedCase = data?.causeCase || cases[0].id;
+  const prediction = data?.causePrediction || "";
+  const result = data?.causeResult;
+  return html`<section class="sc-controls" aria-labelledby="sc-cause-h">
+    <h3 id="sc-cause-h">${I.T("Predict and compare", "Predice y compara")}</h3>
+    <p>${I.T("Choose one change, predict the result, then run the model. Compare what changed with what stayed the same.", "Elige un cambio, predice el resultado y ejecuta el modelo. Compara lo que cambió con lo que permaneció igual.")}</p>
+    <label for="sc-cause-case">${I.T("Test", "Prueba")}</label>
+    <select id="sc-cause-case" data-sc-cause-case lang="en">${cases.map((item) => html`<option value="${item.id}" ${selectedCase === item.id ? "selected" : ""}>${item.label}</option>`)}</select>
+    <label for="sc-cause-predict">${I.T("My prediction after the change", "Mi predicción después del cambio")}</label>
+    <select id="sc-cause-predict" data-sc-cause-predict><option value="">${I.T("Choose a prediction", "Elige una predicción")}</option>${task.causalPredictions.map((option) => html`<option value="${option.key}" lang="en" ${prediction === option.key ? "selected" : ""}>${option.label}</option>`)}</select>
+    <button type="button" class="btn btn-secondary" data-sc-cause-run>${I.T("Run the comparison", "Ejecuta la comparación")}</button>
+    ${data?.causeError ? html`<p role="status" tabindex="-1" data-sc-cause-result>${I.T("Choose a prediction before running the comparison.", "Elige una predicción antes de ejecutar la comparación.")}</p>` : ""}
+    ${result ? html`<div role="status" tabindex="-1" data-sc-cause-result><p><strong>${I.T("Before:", "Antes:")}</strong> <span lang="en">${result.before}</span></p><p><strong>${I.T("After:", "Después:")}</strong> <span lang="en">${result.after}</span></p><p lang="en">${result.held}</p><p>${result.matched ? I.T("The model matches your prediction. Explain how the evidence supports it.", "El modelo coincide con tu predicción. Explica cómo la evidencia la apoya.") : I.T("The model differs from your prediction. Compare the results and revise your explanation.", "El modelo difiere de tu predicción. Compara los resultados y revisa tu explicación.")}</p><p>${I.T("What changed? What stayed the same? Use both observations to explain your reasoning.", "¿Qué cambió? ¿Qué permaneció igual? Usa ambas observaciones para explicar tu razonamiento.")}</p></div>` : ""}
   </section>`;
 }
 
@@ -397,7 +417,7 @@ export function render(task, env) {
         ${stateCardHTML(I, outcome)}
       </div>
       <div class="sc-side">
-        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${descriptionHTML(I, task, env.data)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
+        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${descriptionHTML(I, task, env.data)}${causeCompareHTML(I, task, env.data)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
       </div>
     </div>
     <section class="sc-explain" aria-labelledby="sc-explain-h">
@@ -519,6 +539,17 @@ function onClick(root, env, event) {
     const descriptionSelection = Object.fromEntries([...root.querySelectorAll("[data-sc-description]")].map((input) => [input.dataset.scDescription, input.value]));
     env.update({ descriptionSelection, descriptionChecked: true, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
     focusLater(root, "[data-sc-description-result]");
+  } else if (target.dataset.scCauseRun !== undefined) {
+    const causeCase = root.querySelector("[data-sc-cause-case]")?.value;
+    const causePrediction = root.querySelector("[data-sc-cause-predict]")?.value;
+    const result = compareCause(task, causeCase, causePrediction, sceneOf(task, env));
+    if (!result) {
+      env.update({ causeError: true, causeResult: null, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    } else {
+      const { scene, ...causeResult } = result;
+      env.update({ scene, causeCase, causePrediction, causeResult, causeError: false, lastAction: "control", draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    }
+    focusLater(root, "[data-sc-cause-result]");
   } else if (target.dataset.scSend !== undefined) send(root, env, false);
   else if (target.dataset.scSend2 !== undefined) send(root, env, true);
   else if (target.dataset.scFrame) {
@@ -538,6 +569,13 @@ function onClick(root, env, event) {
 
 function onChange(root, env, event) {
   const input = event.target;
+  if (input.matches?.("[data-sc-cause-case], [data-sc-cause-predict]")) {
+    const causeCase = root.querySelector("[data-sc-cause-case]")?.value;
+    const causePrediction = input.matches("[data-sc-cause-case]") ? "" : input.value;
+    env.update({ causeCase, causePrediction, causeResult: null, causeError: false, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    focusLater(root, input.matches("[data-sc-cause-case]") ? "[data-sc-cause-case]" : "[data-sc-cause-predict]");
+    return;
+  }
   if (input.matches?.("[data-sc-description]")) {
     const descriptionSelection = Object.fromEntries([...root.querySelectorAll("[data-sc-description]")].map((item) => [item.dataset.scDescription, item.value]));
     env.update({ descriptionSelection, descriptionChecked: false, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
