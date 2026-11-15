@@ -1,0 +1,76 @@
+# Motion audit: purposeful animation and interaction in Practice, Challenge and Family
+
+Branch `feat/motion-practice-models`, cut from `origin/main` (8cb07c4823) in worktree `~/wt-motion-practice`.
+Machine-readable coverage: [`motion-manifest.json`](motion-manifest.json) (84 lessons; regenerate with
+`node scripts/generate-motion-manifest.mjs`, `--check` for freshness). Running ledger: [`motion-ledger.md`](motion-ledger.md).
+
+## 1. What the surfaces are made of (authoritative sources)
+
+Nothing here is a hand-edited page per lesson. Every surface is generated from data, so the integration points are the
+generators and shared modules, not the HTML.
+
+| Surface                         | URL                                                                                              | Authoritative source                                                                                                                              | Generated output                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Practice (Standard)             | `/math/practice-studio/<id>/`                                                                    | `data/practice-studio/<id>.json` + `lessons/<id>/config.json` + `data/practice-studio/worlds.json`; contract `docs/specs/practice-studio-v2.md`   | `scripts/generate-practice-studios.mjs` -> `math/practice-studio/<id>/index.html` |
+| Practice (Challenge)            | `/math/practice-studio/<id>/challenge/`                                                          | same data file (`challenge` block)                                                                                                                | same generator                                                                    |
+| Unit 4 Practice / Challenge     | `/math/unit-4/4-N-practice-studio[-challenging]/`, `percent-practice-studio[-challenging]` (4-1) | hand-built pages + `data/practice-studio-u4/`                                                                                                     | hand-authored, receive shared layers (`assets/u4-studio.*`)                       |
+| Family Practice                 | `/lessons/<id>/homework.html` (+ `-part2`)                                                       | `data/family-homework-notes/<id>.json` (`v3` block, contract `docs/specs/family-homework-v3.md`)                                                  | homework generator, `scripts/lib/homework-*.mjs`                                  |
+| Family mission models           | inside the homework page                                                                         | `assets/family-mission/models/*.mjs` (28 modules, `defineFamily` contract in `core.mjs`), configured by `scripts/lib/homework-mission-models.mjs` | runtime                                                                           |
+| Lab bench (inside both studios) | embedded; also `/curriculum/learning-labs/<lab>/`                                                | `curriculum/learning-labs/shared/models/*.mjs` registry (`kind:mode`), `data/learning-labs.json`, bench data in each studio file                  | `assets/studio/lab-embed.js` mounts it                                            |
+| Hands-on activities             | inside the studios                                                                               | `assets/studio-act/*.js` (`StudioAct` pure `make/solution/wrong/grade` + DOM `mount`)                                                             | runtime                                                                           |
+| Figures                         | inside the studios                                                                               | `StudioViz.render(spec)` pure SVG-string function                                                                                                 | runtime                                                                           |
+
+Stack: static HTML/JS, no React. Vite builds `dist/`; the studios and family pages ship their runtime as plain scripts and ES modules.
+There is **no** Playwright/Vitest runner for the motion work to join beyond what already exists (`npm test` = `tools/run-tests.mjs`,
+`@playwright/test`, `vitest` and `jsdom` are devDependencies).
+
+Core lessons: 84 (Units 1-10). Practice and Challenge studios exist for the 67 lessons of Units 2-9 plus the five hand-built Unit 4 lessons
+(72 total); the 12 lessons of Units 1 and 10 have no studio (mindset lessons). Every one of the 72 has a Family page.
+
+Findings:
+
+- **No pathway named "Advanced" exists.** The nearest is small-group Group 2 (Challenge) at `/lessons/<id>-group2/`. Recorded as `advanced.exists: false` in the manifest rather than invented.
+- **The studio routes are not pinned in `data/public-route-contract.json`.** They are still public routes; the integration adds no route, redirect or gate.
+- **`scripts/lib/rational.mjs` is exact (BigInt) but is Node tooling,** not shipped to the browser. The motion work needs a browser-safe exact module (see section 4).
+
+## 2. Contracts to preserve
+
+| Contract                             | Where it lives                                                                                                                                                                                                                                                                                                   | What must not change                                                                                                                      |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Lesson URLs, lesson ids              | `data/curriculum-launch-manifest.json`, `lessons/<id>/`                                                                                                                                                                                                                                                          | no id, route, redirect or gate added or moved (CLAUDE.md: never change what a URL answers)                                                |
+| Standard / Challenge / Family routes | table above                                                                                                                                                                                                                                                                                                      | unchanged                                                                                                                                 |
+| Studio save and resume               | `StudioStore` (`assets/studio/store.js`): key `neft_studio_<lesson>_<mode>_v2`, schema 2, versioned `load()` migration; corrupt or blocked store = fresh start                                                                                                                                                   | schema stays 2; any new field is optional with a default, so every existing save loads                                                    |
+| Site-wide Save/Resume                | `shared/save-resume/save-resume-engine.js` (DOM-state capture, resume codes, optional D1)                                                                                                                                                                                                                        | new controls must be real inputs/buttons that restore through `input`/`change` events; `validate:save-resume` stays green                 |
+| Family save                          | `hw_*` localStorage keys, route and language per device, `hw_lang_mode`                                                                                                                                                                                                                                          | unchanged; reload restores the meter without celebrating twice                                                                            |
+| Family model state                   | `defineFamily` snapshot, validated by each model's `validateState`                                                                                                                                                                                                                                               | ranges may only widen (base 1-10 -> 1-12 is a superset); an old snapshot must still validate                                              |
+| Completion semantics                 | `StudioBus` events `solved`, `section`, `proved`, `progress`, `seal`, ...                                                                                                                                                                                                                                        | animation never marks anything solved; a wrong answer is never progress                                                                   |
+| SCORM / LMS                          | `scripts/lib` SCO builder, `validate:scorm*`; packages are live-site wrappers (manifest + `index.html`)                                                                                                                                                                                                          | no change: motion code ships with the site, packages stay wrappers                                                                        |
+| Analytics / teacher evidence         | `StudioBus` listeners (`assets/studio/insight.js`: Mistake Map, share code, Passport), `evidence/`                                                                                                                                                                                                               | new events only additive; no teacher answer exposed to students                                                                           |
+| EN / ES                              | `body.show-es` stack in studios (`api.es()`), `?lang=es` and `hw_lang_mode` on family pages, `{en, es}` string pairs in family models                                                                                                                                                                            | every new string has a reviewed Spanish sibling; no string replacement of math terms                                                      |
+| Accessibility controls               | learning-supports (`assets/learning-supports/`), clarity layer (`assets/studio/clarity.*`), Theme control                                                                                                                                                                                                        | motion honours the same settings; reduced motion and forced colors keep working                                                           |
+| Printables                           | `generate-worksheets`, `generate-printable-lesson`, family print (`homework-print*.mjs`)                                                                                                                                                                                                                         | static fallback of each model is print-safe                                                                                               |
+| House rules                          | `docs/specs/practice-studio-v2.md` design rules                                                                                                                                                                                                                                                                  | no timers; a wrong answer explains and never prints the answer; no hub links; `×` `÷` `−`; 375px; keyboard; forced colors; reduced motion |
+| Gates that cover touched code        | `validate:practice-studio-data`, `tools/studio-models.test.mjs`, `tools/family-mission-models.test.mjs`, `validate:js-syntax`, Biome lint coverage, `typecheck-ratchet` (the `@ts-nocheck` count may only shrink, so new code must type-check), `validate:palette` (no violet/magenta), `validate:design-tokens` | stay green                                                                                                                                |
+
+## 3. Exponents today (the reference family)
+
+Lessons 6-3 (6.AT.5) and 6-4 (6.AT.6c). Three surfaces draw a power; none shows what changes between steps:
+
+1. **Lab bench `power:order`** (`curriculum/learning-labs/shared/model.mjs: powerVisual`): one chip per factor, the written power and its value. Controls base 2-5, exponent 1-5. The mission puzzles for 6-3 and 6-4 are validated against these exact ranges by `tools/studio-lab-bench.test.mjs`, so the **controls and `evaluate` are left alone**; only the picture changes.
+2. **Family `exponents:powers`** (`assets/family-mission/models/exponents.mjs`): a bar chart of running totals (b^0 ... b^max) beside a "b x n" comparison. This is the confusing pattern from the brief: totals with no visible copies. Base 1-10, exponent 0-6 (validated in `validateState`).
+3. **StudioAct `powers`** (`assets/studio-act/powers.js`): chips for factors. Modes expand/value/write.
+
+## 4. What is built (see the ledger for status)
+
+- `shared/motion/` browser-safe, dependency-free modules: exact BigInt arithmetic, the exponent-copies model (pure, deterministic), a fraction-scheduled scene runtime (Web Animations API, reduced motion, page-visibility pause), design tokens.
+- The exponent-copies model is registered into the existing lab registry (replacing only the `power` picture) and mounted by the family `exponents` model.
+- Tests for the math, the model contract, equivalence checking, input clamping, and state migration; Playwright screenshots at four viewports.
+
+## 5. Not built in this pass
+
+Every family other than exponent-copies is `planned` in the manifest, with a lesson-specific design note and no code. The manifest says
+so lesson by lesson; nothing inherits a stylesheet and is called done.
+
+## 6. Flags (ambiguous content, not changed)
+
+See `flags` in the manifest. In addition: lesson 6-3's authored practice includes `paths` (route counting with forks, base 2) beside `powers`; the new model covers the repeated-factor idea and does not replace `paths`.

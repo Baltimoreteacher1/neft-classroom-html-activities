@@ -206,6 +206,7 @@ const EXCLUSIVE = new Set([
   "validate:studio-linked-models-browser",
   "validate:studio-pathways-browser",
   "validate:studio-lab-browser",
+  "validate:motion-exponents-browser",
   "validate:studio-guess-browser",
   "validate:studio-layout-browser",
   "validate:u4-whole-check-browser",
@@ -1142,6 +1143,16 @@ const COVERAGE = [
       "audit:links",
       "test",
     ],
+  ],
+  // The shared motion modules and their browser suite: unit tests, syntax, lint, and the exponent model driven in a real browser
+  [
+    /^(shared\/motion\/|tools\/verify-motion-exponents-browser\.mjs$)/,
+    ["validate:motion-exponents-browser", "validate:js-syntax", "check", "test"],
+  ],
+  // Motion audit: the coverage manifest, its generator, its data and the motion unit tests (shared/motion/ is covered by the shared/ rule above)
+  [
+    /^(docs\/motion-(audit\.md|ledger\.md|manifest\.json)|data\/motion\/|scripts\/generate-motion-manifest\.mjs|tools\/motion-[\w-]+\.test\.mjs)$/,
+    ["validate:motion-manifest", "test", "check"],
   ],
   // The Family Practice content gate (concept, count, bilingual, answer and link checks) and its inventory
   [
