@@ -72,7 +72,8 @@ export function directHint(model) {
     return model.mode === 'grid' ? 'Tap a square in either grid to shade up to that square; the second grid represents another whole.' : 'Tap a square to change the percent; type a value below to be precise.';
   if (['decimal', 'division', 'rate', 'conversion'].includes(model.kind))
     return 'Slide across each box in the picture to change its number.';
-  if (['factors', 'power'].includes(model.kind)) return 'Slide across each row of the picture to change its number.';
+  if (model.kind === 'power') return 'Slide across the steps to change the exponent, across the notation to change the base, and across the bottom to change the amount added.';
+  if (model.kind === 'factors') return 'Slide across each row of the picture to change its number.';
   if (model.kind === 'balance') return 'Slide across the picture to try different values of x.';
   if (model.kind === 'data' && model.mode === 'histogram') return 'Drag a bar up or down to move observations into or out of it.';
   if (model.kind === 'data') return 'Drag a dot left or right to change that observation.';
@@ -92,7 +93,7 @@ export function isDirect(model) {
 }
 
 /** The pointer went down at p (viewBox units). Returns a handle for move(), or null if nothing is held. */
-export function grab(model, values, p, shape = 'prism') {
+export function grab(model, values, p, shape = 'prism', svg = null) {
   switch (model.kind) {
     case 'percent': return { kind: 'grid' };
     case 'array': return { geo: arrayGeometry(values) };
@@ -101,7 +102,12 @@ export function grab(model, values, p, shape = 'prism') {
     case 'balance': return {};
     case 'decimal': case 'division': case 'rate': case 'conversion': return { i: p.x < 300 ? 0 : 1 };
     case 'factors': return { i: p.y < 84 ? 0 : 1 };
-    case 'power': return { i: p.y < 116 ? 1 : p.y < 190 ? 0 : 2 };
+    case 'power': {
+      // the picture says where its steps end and its answer boxes begin (data-zone-*), and how wide it was drawn
+      const zones = svg?.querySelector('.mc-root')?.dataset ?? {};
+      const w = svg?.viewBox?.baseVal?.width || 400;
+      return { i: p.y < Number(zones.zoneCards ?? 190) ? 1 : p.y < Number(zones.zoneAnswer ?? 400) ? 0 : 2, w };
+    }
     case 'expression': return {};
     case 'line': return { i: nearest([45 + (values[0] + 10) / 20 * 510, 45 + (values[1] + 10) / 20 * 510], p.x) };
     case 'inequality': return { i: p.y > 190 ? 1 : 0 };
@@ -164,7 +170,7 @@ export function move(model, values, p, h, fields) {
     case 'balance': return set(values, fields, 2, (p.x - 60) / 480 * 30);
     case 'decimal': case 'division': case 'rate': case 'conversion': return slide(values, fields, h.i, (p.x - (h.i ? 345 : 45)) / 210);
     case 'factors': return slide(values, fields, h.i, (p.x - 40) / 520);
-    case 'power': return slide(values, fields, h.i, (p.x - 70) / 460);
+    case 'power': return slide(values, fields, h.i, (p.x - 20) / ((h.w || 400) - 40));
     case 'expression': {
       // the split follows the pointer: x is the share of the rectangle left of it
       const f = Math.min(0.92, Math.max(0.04, (p.x - 70) / 460));
@@ -242,10 +248,11 @@ export function attachDirect(host, model, { fields, free = null, workspace = nul
     pt.x = clientX;
     pt.y = clientY;
     const r = pt.matrixTransform(m.inverse());
+    const box = svg.viewBox?.baseVal;
     const minX = model.kind === 'coordinates' ? 135 : 0;
-    const maxX = model.kind === 'coordinates' ? 465 : 600;
+    const maxX = model.kind === 'coordinates' ? 465 : box?.width || 600;
     const minY = model.kind === 'coordinates' ? -8 : 0;
-    const maxY = model.kind === 'coordinates' ? 297 : 300;
+    const maxY = model.kind === 'coordinates' ? 297 : box?.height || 300;
     const invalid = r.x < minX - 24 || r.x > maxX + 24 || r.y < minY - 24 || r.y > maxY + 24;
     return {
       x: Math.max(minX, Math.min(maxX, r.x)),
@@ -286,7 +293,7 @@ export function attachDirect(host, model, { fields, free = null, workspace = nul
     if (!p) return;
     startValues = [...getValues()];
     outOfBounds = false;
-    handle = grab(model, getValues(), p, getShape());
+    handle = grab(model, getValues(), p, getShape(), host.querySelector('svg'));
     if (!handle) return;
     e.preventDefault();
     host.setPointerCapture?.(e.pointerId);

@@ -2,6 +2,8 @@
 // order-of-operations expressions (a + m × b^n). "powers" compares b^n against the common
 // base × exponent (b × n) misconception; "order" is a vertical guided stepper: the family taps the
 // rung of the order-of-operations ladder that comes next, and each right tap writes one more line.
+import { describe as describePower, exponentModel } from "../../../shared/motion/exponent-copies.mjs";
+import { mountExponentPicture } from "../../../shared/motion/exponent-copies-view.mjs";
 import {
   a11y,
   button,
@@ -36,7 +38,7 @@ const ACTIONS = ["base", "exponent", "addend", "multiplier", "compare", "predict
 
 /* The order-of-operations ladder, top to bottom. */
 const RUNGS = ["P", "E", "MD", "AS"];
-const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶" };
+const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
 const UNSUP = Object.fromEntries(Object.entries(SUP).map(([k, v]) => [v, Number(k)]));
 const pow = (b, e) => `${b}${SUP[e]}`;
 const MAX_ORDER_STEPS = 8;
@@ -205,9 +207,9 @@ function validateState(st) {
   } else if (st.expr !== null) return false;
   if (!Number.isInteger(st.step) || st.step < 0) return false;
   if (st.miss !== null && !RUNGS.includes(st.miss)) return false;
-  if (!Number.isInteger(st.base) || st.base < 1 || st.base > 10) return false;
-  if (!Number.isInteger(st.exponent) || st.exponent < 0 || st.exponent > 6) return false;
-  if (!Number.isInteger(st.maxExponent) || st.maxExponent < 3 || st.maxExponent > 6) return false;
+  if (!Number.isInteger(st.base) || st.base < 1 || st.base > 12) return false;
+  if (!Number.isInteger(st.exponent) || st.exponent < 0 || st.exponent > 8) return false;
+  if (!Number.isInteger(st.maxExponent) || st.maxExponent < 3 || st.maxExponent > 8) return false;
   if (st.exponent > st.maxExponent) return false;
   if (!Number.isInteger(st.addend) || st.addend < 0 || st.addend > 50) return false;
   if (!Number.isInteger(st.multiplier) || st.multiplier < 1 || st.multiplier > 12) return false;
@@ -275,8 +277,8 @@ function normalize(config) {
     if (n < lo || n > hi) throw new RangeError(`exponents: ${name} out of range`);
     return n;
   };
-  const maxExponent = intIn(c.maxExponent, 5, 3, 6, "maxExponent");
-  const base = intIn(c.base, 2, 1, 10, "base");
+  const maxExponent = intIn(c.maxExponent, 5, 3, 8, "maxExponent");
+  const base = intIn(c.base, 2, 1, 12, "base");
   const exponent = intIn(c.exponent, 3, 0, maxExponent, "exponent");
   const addend = intIn(c.addend, 4, 0, 50, "addend");
   const multiplier = intIn(c.multiplier, 3, 1, 12, "multiplier");
@@ -317,7 +319,7 @@ function reduce(st, patch) {
   };
   if ("base" in patch) {
     const b = intOf(patch.base);
-    if (b === null || b < 1 || b > 10) return null;
+    if (b === null || b < 1 || b > 12) return null;
     next.base = b;
   }
   if ("exponent" in patch) {
@@ -404,6 +406,7 @@ function accessibleDescription(st, lang) {
       es: `Pasos del orden de las operaciones para ${expr}. ${done.map((l) => `${l.work}, así que la expresión ahora es ${l.after}.`).join(" ")}`,
     });
   }
+  if (d.exponent >= 1) return describePower(exponentModel(d.base, d.exponent), lang === "es" ? "es" : "en");
   return t(lang, {
     en: `Exponent growth model. Base ${d.base} to the power of ${d.exponent} equals ${d.factorsChain} = ${d.power}. Comparing with ${d.base} times ${d.exponent} gives ${d.additive}.`,
     es: `Modelo de crecimiento exponencial. Base ${d.base} elevada a ${d.exponent} es igual a ${d.factorsChain} = ${d.power}. Comparado con ${d.base} por ${d.exponent} que da ${d.additive}.`,
@@ -427,13 +430,14 @@ function explanation(st, lang) {
   }
   if (d.exponent === 0) {
     return t(lang, {
-      en: `${d.base}^0 = 1. Every time the exponent decreases by 1, we divide by ${d.base} (${d.base}^1 ÷ ${d.base} = 1). A zero exponent never makes a positive base equal 0.`,
-      es: `${d.base}^0 = 1. Cada vez que el exponente disminuye en 1, dividimos entre ${d.base} (${d.base}^1 ÷ ${d.base} = 1). Un exponente cero nunca hace que una base positiva sea igual a 0.`,
+      en: `${pow(d.base, 0)} = 1. Every time the exponent decreases by 1, we divide by ${d.base} (${pow(d.base, 1)} ÷ ${d.base} = 1). A zero exponent never makes a positive base equal 0.`,
+      es: `${pow(d.base, 0)} = 1. Cada vez que el exponente disminuye en 1, dividimos entre ${d.base} (${pow(d.base, 1)} ÷ ${d.base} = 1). Un exponente cero nunca hace que una base positiva sea igual a 0.`,
     });
   }
+  const same = d.additive === d.power; // 2², 3¹: b × n happens to equal bⁿ, so there is no trap to name
   return t(lang, {
-    en: `${d.base}^${d.exponent} means multiplying ${d.exponent} factors of ${d.base}: ${d.factorsChain} = ${d.power}. Each +1 step on the exponent multiplies the total by ${d.base}, whereas ${d.base} × ${d.exponent} = ${d.additive} only adds ${d.base} each time.`,
-    es: `${d.base}^${d.exponent} significa multiplicar ${d.exponent} factores de ${d.base}: ${d.factorsChain} = ${d.power}. Cada paso de +1 en el exponente multiplica el total por ${d.base}, mientras que ${d.base} × ${d.exponent} = ${d.additive} solo suma ${d.base} cada vez.`,
+    en: `${pow(d.base, d.exponent)} means multiplying ${d.exponent} ${d.exponent === 1 ? "factor" : "factors"} of ${d.base}: ${d.factorsChain} = ${d.power}. Each step makes ${d.base} ${d.base === 1 ? "copy" : "copies"} of the block before it, so each +1 on the exponent multiplies the total by ${d.base}.${same ? "" : ` It is not ${d.base} × ${d.exponent} = ${d.additive}, which only adds ${d.base} each time.`}`,
+    es: `${pow(d.base, d.exponent)} significa multiplicar ${d.exponent} ${d.exponent === 1 ? "factor" : "factores"} de ${d.base}: ${d.factorsChain} = ${d.power}. Cada paso hace ${d.base} ${d.base === 1 ? "copia" : "copias"} del bloque anterior, así que cada +1 en el exponente multiplica el total por ${d.base}.${same ? "" : ` No es ${d.base} × ${d.exponent} = ${d.additive}, que solo suma ${d.base} cada vez.`}`,
   });
 }
 
@@ -514,7 +518,7 @@ const STR = {
   titleOrder: { en: "Order of operations with exponents", es: "Orden de las operaciones con exponentes" },
   base: { en: "Base (b)", es: "Base (b)" },
   exponent: { en: "Exponent (n)", es: "Exponente (n)" },
-  power: { en: "Power (b^n)", es: "Potencia (b^n)" },
+  power: { en: "Power (bⁿ)", es: "Potencia (bⁿ)" },
   factors: { en: "Factor chain", es: "Cadena de factores" },
   linearTrap: { en: "Multiplier trap (b × n)", es: "Trampa lineal (b × n)" },
   compareToggle: { en: "Compare b × n trap", es: "Comparar trampa b × n" },
@@ -528,8 +532,10 @@ const STR = {
   handleBase: { en: "Base factor. Use arrow keys or drag.", es: "Factor base. Usa las flechas o arrastra." },
   handleExp: { en: "Exponent. Use arrow keys or drag.", es: "Exponente. Usa las flechas o arrastra." },
   stageCol: { en: "Stage", es: "Etapa" },
-  expRow: { en: "Repeated multiplication (b^n)", es: "Multiplicación repetida (b^n)" },
+  expRow: { en: "Repeated multiplication (bⁿ)", es: "Multiplicación repetida (bⁿ)" },
   linRow: { en: "Multiplier trap (b × n)", es: "Trampa de multiplicar (b × n)" },
+  picture: { en: "How the power is built, copy by copy", es: "Cómo se construye la potencia, copia por copia" },
+  growthSummary: { en: "Growth chart: bⁿ against b × n", es: "Gráfica de crecimiento: bⁿ frente a b × n" },
 };
 
 const OSTR = {
@@ -593,14 +599,14 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       get: () => state().base,
       set: (v) => model.setState({ base: Math.round(v) }),
       min: 1,
-      max: 10,
+      max: 12,
       step: 1,
       bigStep: 2,
       label: T("handleBase"),
       valueText: () => `${T("base")} = ${state().base}`,
       toValue: ({ x, node: n }) => {
         const ratio = (toSvgX(n, x, W).x - TRACK.x0) / (TRACK.x1 - TRACK.x0);
-        return 1 + Math.round(clamp(ratio, 0, 1) * 9);
+        return 1 + Math.round(clamp(ratio, 0, 1) * 11);
       },
     });
   }
@@ -800,7 +806,10 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     ui.factorsField = field(bag, { id: `${id0}-fac`, label: T("factors"), readonly: true });
     ui.trapField = field(bag, { id: `${id0}-trap`, label: T("linearTrap"), readonly: true });
 
-    ui.tableWrap = h("div", { class: "fm-view fm-exp-table-wrap" });
+    ui.tableWrap = h("div", { class: "fm-view fm-exp-table-wrap", tabindex: "0", role: "region", "aria-label": T("tableToggle") });
+    ui.pic = h("div", { class: "fm-exp-pic" });
+    ui.picZero = h("p", { class: "fm-explain" });
+    ui.picKey = "";
 
     // Prediction reasoning question built into the model
     ui.predictPrompt = h("p", { class: "fm-sub" });
@@ -839,7 +848,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     put(
       root,
       ui.prompt,
-      h("section", { class: "fm-view", "aria-label": T("titlePowers") }, ui.svg),
+      h("section", { class: "fm-view fm-exp-copies", "aria-label": T("picture") }, ui.pic, ui.picZero),
+      h("details", { class: "fm-view fm-exp-growth" }, h("summary", null, T("growthSummary")), ui.svg),
       h(
         "section",
         { class: "fm-view", "aria-label": T("base") },
@@ -855,6 +865,9 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       ui.desc
     );
 
+    /* The copies picture is redrawn from the same state as the fields below it (see sync), so the two cannot disagree. */
+    ui.picView = mountExponentPicture(ui.pic, { base: st.base, exponent: Math.max(1, st.exponent), lang: L });
+    v.handles.push({ refresh() {}, destroy: () => ui.picView.destroy() });
     if (ui.baseSlider.handle) v.handles.push(wireBaseSlider(ui.baseSlider.handle));
     if (ui.expSlider.handle) v.handles.push(wireExpSlider(ui.expSlider.handle));
   }
@@ -876,7 +889,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
           x: 20,
           cls: "fm-fill-part",
           title: t(L, { en: "1. Exponent first", es: "1. Exponente primero" }),
-          val: `${d.base}^${d.expCap} = ${d.expTerm}`,
+          val: `${pow(d.base, d.expCap)} = ${d.expTerm}`,
         },
         {
           x: 186,
@@ -984,7 +997,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
         stext(
           cx,
           H - 10,
-          `${d.base}^${stp.step}`,
+          `${pow(d.base, stp.step)}`,
           stp.active ? "fm-svg-text fm-svg-strong" : "fm-svg-text fm-tick-label",
           "middle"
         )
@@ -1001,7 +1014,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     for (let k = min; k <= max; k++) {
       g.append(
         s("line", { class: "fm-tick", x1: X(k), x2: X(k), y1: TRACK.y - 5, y2: TRACK.y + 5 }),
-        stext(X(k), TRACK.y + 20, `${labelPrefix}${k}`, "fm-svg-text fm-tick-label", "middle")
+        stext(X(k), TRACK.y + 20, k === min ? `${labelPrefix}${k}` : String(k), "fm-svg-text fm-tick-label", "middle")
       );
     }
     slider.handle?.setAttribute("transform", `translate(${X(clamp(current, min, max))} ${TRACK.y})`);
@@ -1015,7 +1028,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       "tr",
       null,
       h("th", { scope: "col" }, T("stageCol")),
-      ...d.growthSteps.map((s0) => h("th", { scope: "col" }, `${d.base}^${s0.step}`))
+      ...d.growthSteps.map((s0) => h("th", { scope: "col" }, `${pow(d.base, s0.step)}`))
     );
     const expRow = h(
       "tr",
@@ -1040,8 +1053,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const trapAdd = d.power + d.base;
     const trapLinear = d.base * (d.exponent + 1);
     ui.predictPrompt.textContent = t(L, {
-      en: `Predict & Reason: Right now ${d.base}^${d.exponent} = ${d.power}. If you increase the exponent by 1 (to ${d.base}^${d.exponent + 1}), what happens?`,
-      es: `Predice y razona: Ahora ${d.base}^${d.exponent} = ${d.power}. Si aumentas el exponente en 1 (a ${d.base}^${d.exponent + 1}), ¿qué ocurre?`,
+      en: `Predict & Reason: Right now ${pow(d.base, d.exponent)} = ${d.power}. If you increase the exponent by 1 (to ${pow(d.base, d.exponent + 1)}), what happens?`,
+      es: `Predice y razona: Ahora ${pow(d.base, d.exponent)} = ${d.power}. Si aumentas el exponente en 1 (a ${pow(d.base, d.exponent + 1)}), ¿qué ocurre?`,
     });
     clear(ui.predictRow);
     const choices = [
@@ -1085,10 +1098,26 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       });
     } else {
       ui.predictFeedback.textContent = t(L, {
-        en: `Look at the factor chain: ${d.base}^${d.exponent + 1} has one more "× ${d.base}" factor, so ${d.power} × ${d.base} = ${nextPower}.`,
-        es: `Observa la cadena de factores: ${d.base}^${d.exponent + 1} tiene un factor "× ${d.base}" más, así que ${d.power} × ${d.base} = ${nextPower}.`,
+        en: `Look at the factor chain: ${pow(d.base, d.exponent + 1)} has one more "× ${d.base}" factor, so ${d.power} × ${d.base} = ${nextPower}.`,
+        es: `Observa la cadena de factores: ${pow(d.base, d.exponent + 1)} tiene un factor "× ${d.base}" más, así que ${d.power} × ${d.base} = ${nextPower}.`,
       });
     }
+  }
+
+  function syncPicture(d) {
+    const zero = d.exponent < 1;
+    ui.pic.hidden = zero;
+    ui.picZero.hidden = !zero;
+    ui.picZero.textContent = zero
+      ? t(L, {
+          en: `With an exponent of 0 there are no factors yet, so the product starts at 1: ${d.base}⁰ = 1.`,
+          es: `Con exponente 0 todavía no hay factores, así que el producto empieza en 1: ${d.base}⁰ = 1.`,
+        })
+      : "";
+    const key = `${d.base}|${d.exponent}|${L}`;
+    if (zero || key === ui.picKey) return;
+    ui.picKey = key;
+    ui.picView.update({ base: d.base, exponent: d.exponent, lang: L });
   }
 
   function sync(v, force) {
@@ -1098,7 +1127,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       return;
     }
     drawChart(d);
-    drawSliderTrack(ui.baseSlider, 1, 10, d.base, "b=");
+    syncPicture(d);
+    drawSliderTrack(ui.baseSlider, 1, 12, d.base, "b=");
     drawSliderTrack(ui.expSlider, 0, d.maxExponent, d.exponent, "n=");
     ui.baseField.set(d.base, force);
     ui.expField.set(d.exponent, force);

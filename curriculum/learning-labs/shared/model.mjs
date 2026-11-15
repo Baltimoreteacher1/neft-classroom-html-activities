@@ -5,35 +5,27 @@ import { play } from './sound.mjs';
 import { esLabel } from './labels-es.mjs';
 import { esc, line, text, rect, dot, svg } from './models/draw.mjs';
 import { registered } from './models/index.mjs';
+import { describe, exponentModel } from '../../../shared/motion/exponent-copies.mjs';
+import { renderExponent } from '../../../shared/motion/exponent-copies-render.mjs';
+import { enterLatest } from '../../../shared/motion/exponent-copies-motion.mjs';
 export { esc };
 
-/** A power as what it means: one chip per factor (the exponent counts them), then the power written with a raised
- *  exponent and its value. A term added after the power is shown as its own step, never as "add 0". */
-function powerVisual(a, b, c, result) {
-  const shown = b > 8 ? 6 : b, gap = 26, size = Math.min(72, (520 - (shown - 1) * gap) / Math.max(1, shown + (b > 8 ? 1 : 0)));
-  const count = shown + (b > 8 ? 1 : 0), width = count * size + (count - 1) * gap, left = (600 - width) / 2;
-  let out = '';
-  for (let i = 0; i < count; i++) {
-    const x = left + i * (size + gap);
-    if (b > 8 && i === shown - 1) out += text(x + size / 2, 62 + size / 2 + 6, '…');
-    else {
-      out += rect(x, 40, size, size, 'shape-light') + `<text x="${x + size / 2}" y="${40 + size / 2 + 9}" text-anchor="middle" font-size="26" font-weight="700">${esc(a)}</text>`;
-    }
-    if (i < count - 1) out += `<text x="${x + size + gap / 2}" y="${40 + size / 2 + 8}" text-anchor="middle" font-size="22">×</text>`;
-  }
-  out += text(300, 40 + size + 30, `${b} ${b === 1 ? 'factor' : 'factors'} of ${a}`);
-  const power = `<tspan>${esc(a)}</tspan><tspan dy="-20" font-size="28">${esc(b)}</tspan><tspan dy="20"> = ${esc(fmt(a ** b))}</tspan>`;
-  out += `<text x="300" y="${size + 150}" text-anchor="middle" font-size="44" font-weight="700">${power}</text>`;
-  if (c) out += text(300, size + 196, `${fmt(a ** b)} + ${c} = ${fmt(result.value)}`);
-  return out;
+/** A power as what it means (shared/motion): `base` copies of the block before, step by step, then the expanded form, the notation
+ *  and the "not base × exponent" check. Every number is computed from the settings. A term added after the power is its own line. */
+function powerPicture(a, b, c, result, lang, width) {
+  const m = exponentModel(a, b), r = renderExponent(m, { lang, compact: true, width });
+  let body = `<desc>${esc(describe(m, lang))}</desc>${r.body}`, height = r.height;
+  if (c) { body += text(width / 2, height + 18, `${lang === 'es' ? 'Luego suma' : 'Then add'} ${c}: ${fmt(a ** b)} + ${c} = ${fmt(result.value)}`); height += 30; }
+  return svg(body, `${result.equation}. ${result.note}`, `0 0 ${width} ${height}`);
 }
 
-export function visual(model, values, result) {
+export function visual(model, values, result, lang = 'en', width = 400) {
   const plug = registered(model);
   if (plug) return svg(plug.visual(values, result, model), `${result.equation}. ${result.note}`, plug.viewBox || '0 0 600 300');
   const [a, b, c, d] = values;
   let body = '';
   const k = model.kind;
+  if (k === 'power') return powerPicture(a, b, c, result, lang, width);
   if (k === 'array') {
     const size = Math.min(34, 450 / b, 235 / a), left = (600 - b * size) / 2;
     for (let row = 0; row < a; row++) for (let col = 0; col < b; col++) body += rect(left + col * size, 22 + row * size, size - 3, size - 3, row % 2 ? 'shape-alt' : 'shape');
@@ -142,14 +134,14 @@ export function visual(model, values, result) {
       for (let j = 1; j < c; j++) body += line(50 + j * supplyWidth / c, 20 + i * size, 50 + j * supplyWidth / c, 20 + i * size + size - 5);
     }
     body += text(300, 273, `Each full strip = 1 unit, divided into ${c} equal parts`) + text(300, 296, `A ${portionNoun(model.mode)} uses ${b} of those parts (${fmt(portion)} units).`);
-  } else if (['power', 'expression', 'factors'].includes(k)) {
+  } else if (['expression', 'factors'].includes(k)) {
     if (k === 'factors') {
       body += text(300, 57, `Factors of ${a}: ${result.first.join(', ')}`) + text(300, 112, `Factors of ${b}: ${result.second.join(', ')}`);
       body += rect(65, 150, 200, 85, 'shape-light') + text(165, 200, `GCF = ${result.gcf}`) + rect(335, 150, 200, 85, 'shape-light') + text(435, 200, `LCM = ${result.lcm}`);
     } else if (k === 'expression') {
       const scale = 460 / (c + b); body += rect(70, 70, c * scale, 120, 'shape') + rect(70 + c * scale, 70, b * scale, 120, 'shape-alt');
       body += text(70 + c * scale / 2, 135, `${a} × ${c}`) + text(70 + c * scale + b * scale / 2, 135, `${a} × ${b}`) + text(300, 232, `${a}(x + ${b}) = ${a}x + ${a * b}; x = ${c}`);
-    } else body += powerVisual(a, b, c, result);
+    }
   } else if (k === 'line' || k === 'inequality') {
     const min = k === 'line' ? -10 : 0, max = k === 'line' ? 10 : 30, sx = n => 45 + (n - min) / (max - min) * 510;
     body += line(45, 160, 555, 160);
@@ -189,9 +181,17 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const lockedNote = free !== null ? `<p class="model-locked" id="${prefix}-locked">${esc(`Only “${nameEn(fields[free], free)}” can change in this task.`)}${spanish() ? `<span class="es-line" lang="es">${esc(`En esta tarea solo puede cambiar “${nameEs(fields[free], free) || nameEn(fields[free], free)}”.`)}</span>` : ''}</p>` : '';
   host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${lockedNote}${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${labelHtml(field, i)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? `readonly aria-describedby="${prefix}-locked"` : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>${spanish() ? 'Reset model<span class="es-line" lang="es">Reiniciar el modelo</span>' : 'Reset model'}</button></div></div><p class="model-error" id="${prefix}-err" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
   const lensView = lens ? mountLens(host, model, { lang, prefix: `${prefix}-lens` }) : null;
+  let shown = null;
+  // the power picture is drawn at its container's own width (300-480), so one unit is one pixel and 13px text stays 13px
+  const drawWidth = (picture) => {
+    const css = getComputedStyle(picture), pad = (parseFloat(css.paddingLeft) || 0) + (parseFloat(css.paddingRight) || 0);
+    return Math.max(300, Math.min(480, Math.floor((picture.clientWidth || 400) - pad)));
+  };
   const update = () => {
     const r = evaluate(model, values, { symbol, shape });
-    host.querySelector('.model-picture').innerHTML = visual(model, values, r);
+    const picture = host.querySelector('.model-picture');
+    picture.innerHTML = visual(model, values, r, spanish() ? 'es' : 'en', drawWidth(picture));
+    if (model.kind === 'power') { enterLatest(picture, shown, values); shown = [...values]; }
     host.querySelector('.model-readout').innerHTML = `<strong>${esc(r.equation)}</strong><p>${esc(r.note)}</p>`;
     lensView?.update([...values], r);
     onChange([...values], r); return r;
@@ -209,6 +209,16 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const select = host.querySelector('[data-symbol]');
   if (select) { select.value = symbol; select.disabled = free !== null; select.addEventListener('change', () => { symbol = select.value; update(); }); }
   host.querySelector('.model-workspace').dataset.kind = model.kind;
+  if (model.kind === 'power' && typeof ResizeObserver === 'function') {
+    const picture = host.querySelector('.model-picture');
+    let drawn = 0;
+    new ResizeObserver(() => {
+      const w = drawWidth(picture);
+      if (Math.abs(w - drawn) <= 8) return;
+      drawn = w;
+      try { picture.innerHTML = visual(model, values, evaluate(model, values, { symbol, shape }), spanish() ? 'es' : 'en', w); } catch { /* an invalid setting keeps the picture as it was */ }
+    }).observe(picture);
+  }
   if (isDirect(model)) {
     const picture = host.querySelector('.model-picture');
     attachDirect(picture, model, {
@@ -288,7 +298,7 @@ const watch = {
   'solid': ['The net shows all faces of the box laid flat. Volume counts the unit cubes that fill it.', 'Change one dimension and predict the new volume before reading it.'],
   'solid:surface': ['The net shows every face. Surface area adds the area of all faces; the pyramid net has one square and four triangles.', 'Switch between prism and pyramid nets and compare how the formulas use the dimensions.'],
   'fraction': ['Each strip is one whole unit, divided into equal parts. A portion uses some of those parts.', 'Make the serving size smaller and predict whether the number of portions grows or shrinks.'],
-  'power': ['The expression evaluates the power first, then adds. The picture shows the repeated multiplication.', 'Increase the exponent by one and compare the jump in value with adding one to the base.'],
+  'power': ['Each step makes copies of the block before it. The exponent counts the steps, which are the factors; the base says how many copies.', 'Raise the exponent by one and see the block grow by one more factor of the base. Then compare with base × exponent.'],
   'expression': ['The rectangle is split into two parts: a·x and a·b. Together they equal a(x + b).', 'Change x and check that both expression forms still give the same value.'],
   'factors': ['The lists show every factor of each number. The GCF is the largest shared factor; the LCM is the smallest shared multiple.', 'Choose two numbers with no common factor other than 1 and check what happens to the LCM.'],
   'line': ['Both locations sit on one number line. The readout compares them and measures their distance.', 'Place one point at the opposite of the other and watch the distances from zero.'],

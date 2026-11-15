@@ -1,0 +1,86 @@
+/* Motion figures (shared/motion). Tokens come from engine/design/tokens.json via tokens.mjs; this file only sizes and
+   lays out the controls. Targets are 44px, text is 13px or larger, nothing shifts when the picture redraws. */
+.mc-figure {
+  /* the figure's palette, resolved from the site's design tokens (engine/design/tokens.json) with the same values as fallback */
+  --mc-navy: var(--ds-color-navy, #17324d);
+  --mc-ink: var(--ds-color-diagram-ink, #0d273d);
+  --mc-white: var(--ds-color-white, #ffffff);
+  --mc-teal-ink: var(--ds-color-teal-ink, #177b78);
+  --mc-muted: var(--ds-color-muted, #4a555e);
+  --mc-success: var(--ds-color-success, #0f7c4a);
+  --mc-error: var(--ds-color-error, #b3402a);
+  --mc-c0: var(--ds-color-teal, #1fa6a2);
+  --mc-c1: var(--ds-color-amber, #f2c15b);
+  --mc-c2: var(--ds-tint-navy-64, #6b7c8d);
+  --mc-c3: var(--ds-tint-success-64, #65ab8b);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  font-family: "Nunito", "Avenir Next", Calibri, system-ui, sans-serif;
+  color: #24323f;
+}
+.mc-stage {
+  min-width: 0;
+  /* reserve the picture's height before it is drawn so a redraw never moves the page */
+  min-height: var(--mc-min-height, 320px);
+}
+.mc-stage > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin-inline: auto;
+}
+.mc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mc-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  background: #17324d;
+  border: 2px solid #17324d;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.mc-btn[data-quiet] {
+  color: #17324d;
+  background: #ffffff;
+}
+.mc-btn:focus-visible {
+  outline: 3px solid #17324d;
+  outline-offset: 3px;
+}
+.mc-btn[aria-pressed="true"] {
+  background: #886c33;
+  border-color: #886c33;
+}
+.mc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (forced-colors: active) {
+  .mc-exponent text {
+    fill: CanvasText;
+  }
+  .mc-exponent rect,
+  .mc-exponent path {
+    stroke: CanvasText;
+  }
+  .mc-btn {
+    border-color: ButtonText;
+  }
+}
