@@ -12,6 +12,10 @@ import {
   unitCheck,
 } from "../curriculum/projects/studio/builders.mjs";
 import {
+  checkExpressionChallenge,
+  expressionChallenge,
+} from "../curriculum/projects/studio/challenge-preview.mjs";
+import {
   addCheckpoint,
   changedFields,
   cleanCheckpoints,
@@ -38,6 +42,18 @@ import { getProject, PROJECTS } from "../curriculum/projects/studio/projects.mjs
 import { clean, fresh } from "../curriculum/projects/studio/state.mjs";
 import { attachExtras } from "../curriculum/projects/studio/workbench.js";
 import { Rat } from "../scripts/lib/rational.mjs";
+
+{
+  const project = getProject("unit-6-a");
+  const challenge = expressionChallenge(project, project.defaults, "7");
+  assert.equal(challenge.answer, 44, "4(7 + 3) + 2² is 44");
+  assert.equal(checkExpressionChallenge(challenge, "44"), "correct");
+  assert.equal(checkExpressionChallenge(challenge, "42"), "revise");
+  assert.equal(checkExpressionChallenge(challenge, ""), "invalid");
+  assert.match(expressionChallenge(project, project.defaults, "5").error, /reserved/);
+  assert.match(expressionChallenge(project, project.defaults, "6").error, /reserved/);
+  assert.match(expressionChallenge(project, { ...project.defaults, a: 0 }, "7").error, /valid/);
+}
 
 // ---- history
 {

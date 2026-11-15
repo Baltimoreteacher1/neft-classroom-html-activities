@@ -12,6 +12,7 @@ import { hasV2, JUDGED, verifiedFacts } from "./feedback.mjs";
 import { BUILDER_KEYS } from "./builders.mjs";
 import { PLANE, planePoint } from "./models-space.mjs";
 import { graphPoint } from "./models-algebra.mjs";
+import { checkExpressionChallenge, expressionChallenge } from "./challenge-preview.mjs";
 
 const clip = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
 /** Additive save fields. Called after state.mjs `clean`, which ignores fields it does not know. */
@@ -43,6 +44,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
   let confirmRemove = null;
   let editingReason = null;
   let reasonDraft = "";
+  let challenge = null;
   const $ = (s) => section?.querySelector(s);
   const fields = fieldsFor(project);
   const statsFamily = project.family === "statistics";
@@ -116,6 +118,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     s.design = { ...s.design, ...patch };
     s.checked = {};
     s.review[0] = false;
+    clearChallenge();
     history.record(s.design, tag);
     save();
     sync({ structural: !tag });
@@ -126,6 +129,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     s.design = design;
     s.checked = {};
     s.review[0] = false;
+    clearChallenge();
     save();
     sync({ structural: true });
     announce(message);
@@ -160,7 +164,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     const s = ensure();
     const stage = s.stage;
     if (stage === 1 && hasModels(project))
-      return `<h3 id="wb-h">Live models: change a quantity and every picture updates</h3><p class="muted">Values you have not checked yet show as ?. They appear when your answer matches in Test.</p>${statsFamily ? `<div id="wb-editor" data-count="${dataValues().length}">${statisticsEditor(dataValues(), true)}</div>` : controlsHTML(project, s.design, true)}<div id="wb-models" class="wb-models">${modelsMarkup(true)}</div>${checkpointPanel()}`;
+      return `<h3 id="wb-h">Live models: change a quantity and every picture updates</h3><p class="muted">Values you have not checked yet show as ?. They appear when your answer matches in Test.</p>${statsFamily ? `<div id="wb-editor" data-count="${dataValues().length}">${statisticsEditor(dataValues(), true)}</div>` : controlsHTML(project, s.design, true)}<div id="wb-models" class="wb-models">${modelsMarkup(true)}</div>${project.family === "expressions" ? `<section class="card" aria-labelledby="challenge-heading"><h3 id="challenge-heading">Make a challenge for a partner</h3><p>Choose a different input for your rule, then preview the challenge. Your partner can test an answer and revise it here.</p><form data-wb-form="challenge-create" novalidate><label for="challenge-input">Input x (whole number from 1 to 30)</label><input id="challenge-input" inputmode="numeric" maxlength="2" autocomplete="off"><button type="submit">Prepare preview</button><p id="challenge-status" role="status"></p></form><div id="challenge-preview"></div></section>` : ""}${checkpointPanel()}`;
     if (stage === 2 && hasModels(project))
       return `<details class="wb-details wb-test-models"><summary>Show the live models for this design</summary><div id="wb-models" class="wb-models">${modelsMarkup(false)}</div></details>${hasV2(project) ? judgePanel() : ""}`;
     if (stage === 3 && hasModels(project)) return checkpointPanel();
@@ -170,6 +174,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
   function mount() {
     section?.remove();
     section = null;
+    challenge = null;
     const s = ensure();
     history.record(s.design, null);
     const panel = document.querySelector("#stage-panel");
@@ -363,6 +368,21 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     gridSet(event.key === "Home" ? field.min : event.key === "End" ? field.max : cur + delta);
   }
   function onSubmit(event) {
+    if (event.target.dataset.wbForm === "challenge-create") {
+      event.preventDefault();
+      challenge = expressionChallenge(project, ensure().design, $("#challenge-input").value);
+      $("#challenge-status").textContent = challenge.error || "Preview ready. Give the device to your partner to try it.";
+      $("#challenge-preview").innerHTML = challenge.error ? "" : `<form data-wb-form="challenge-play" novalidate><p>${esc(challenge.prompt)}</p><label for="challenge-answer">Your answer</label><input id="challenge-answer" inputmode="numeric" autocomplete="off"><button type="submit">Check answer</button><p id="challenge-result" role="status"></p></form>`;
+      if (challenge.error) challenge = null;
+      return;
+    }
+    if (event.target.dataset.wbForm === "challenge-play") {
+      event.preventDefault();
+      if (!challenge) return;
+      const result = checkExpressionChallenge(challenge, $("#challenge-answer").value);
+      $("#challenge-result").textContent = result === "invalid" ? "Enter a whole-number answer." : result === "correct" ? "That value works. Explain your order of operations to the creator." : "That value does not match yet. Substitute x, then consider the parentheses and the square before adding. Revise and check again.";
+      return;
+    }
     if (event.target.dataset.wbForm !== "checkpoint") return;
     event.preventDefault();
     const s = ensure();
@@ -381,11 +401,21 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     announce(`Saved checkpoint ${result.entry.name}.`);
   }
 
+  function clearChallenge() {
+    if (!challenge) return;
+    challenge = null;
+    const preview = $("#challenge-preview");
+    if (preview) preview.innerHTML = "";
+    const status = $("#challenge-status");
+    if (status) status.textContent = "Your design changed. Prepare a new preview.";
+  }
+
   return {
     mount,
     /** The Build form changed a design input. */
     designTyped(key) {
       const s = ensure();
+      clearChallenge();
       history.record(s.design, `form-${key}`);
       sync();
     },

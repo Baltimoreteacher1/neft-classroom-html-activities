@@ -126,6 +126,20 @@ export function followInstruction(task, state, targetId, action) {
   return { state: setControl(state, target.control, value, task), result: "followed" };
 }
 
+/** Find every specimen consistent with the learner's selected observations. */
+export function matchDescription(task, selected) {
+  const config = task.descriptionMatch;
+  if (!config) return null;
+  const dimensions = config.dimensions.filter((dimension) => {
+    const value = selected?.[dimension.id];
+    return dimension.options.some((option) => option.id === value);
+  });
+  const matches = config.specimens.filter((specimen) =>
+    dimensions.every((dimension) => specimen[dimension.id] === selected[dimension.id]),
+  );
+  return { count: dimensions.length, matches: matches.map((specimen) => specimen.id), target: config.target };
+}
+
 export const manipulations = (state) => state.changes.length;
 
 /** The notebook: examined objects in examine order. */

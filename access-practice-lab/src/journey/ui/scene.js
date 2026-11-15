@@ -12,6 +12,7 @@ import {
   followInstruction,
   init,
   ledgerEntry,
+  matchDescription,
   notebook,
   recordExchange,
   recordFollowup,
@@ -154,6 +155,30 @@ function instructionHTML(I, task, feedback) {
     <select id="sc-instruction-target" data-sc-instruction-target lang="en">${task.instruction.targets.map((target) => html`<option value="${target.id}">${target.label}</option>`)}</select>
     <button type="button" class="btn btn-secondary" data-sc-instruct>${I.T("Ask your partner", "Pide a tu compañero")}</button>
     ${feedback ? html`<p role="status" tabindex="-1" data-sc-instruction-feedback>${feedback === "followed" ? I.T("Your partner followed the instruction. Compare the scene with what you asked.", "Tu compañero siguió la instrucción. Compara la escena con lo que pediste.") : I.T("Which opening do you mean? Name the object so your partner can act.", "¿A qué abertura te refieres? Nombra el objeto para que tu compañero pueda actuar.")}</p>` : ""}
+  </section>`;
+}
+
+function descriptionHTML(I, task, data) {
+  const config = task.descriptionMatch;
+  if (!config) return "";
+  const selected = data?.descriptionSelection || {};
+  const result = data?.descriptionChecked ? matchDescription(task, selected) : null;
+  const labelFor = (dimension, id) => dimension.options.find((option) => option.id === id)?.label || "";
+  let feedback = "";
+  if (result) {
+    if (!result.count) feedback = I.T("Choose at least one detail, then ask your partner again.", "Elige al menos un detalle y vuelve a preguntarle a tu compañero.");
+    else if (!result.matches.length) feedback = I.T("No specimen matches every detail. Compare your words with your observations and revise.", "Ninguna muestra coincide con todos los detalles. Compara tus palabras con tus observaciones y revísalas.");
+    else if (result.matches.length > 1) feedback = I.T(`${result.matches.length} specimens fit. Which additional observation would distinguish the leaf?`, `${result.matches.length} muestras coinciden. ¿Qué otra observación distinguiría la hoja?`);
+    else if (result.matches[0] === result.target) feedback = I.T("One specimen fits, and it matches the observed leaf. Explain which details made your description clear.", "Una muestra coincide y corresponde a la hoja observada. Explica qué detalles aclararon tu descripción.");
+    else feedback = I.T("One specimen fits your words, but it is not the observed leaf. Compare the details with the field notebook and revise.", "Una muestra coincide con tus palabras, pero no es la hoja observada. Compara los detalles con el cuaderno y revísalos.");
+  }
+  return html`<section class="sc-controls" aria-labelledby="sc-description-h">
+    <h3 id="sc-description-h">${I.T("Describe the missing leaf", "Describe la hoja que falta")}</h3>
+    <p>${I.T("Use your observations to describe the leaf. Your partner will find every specimen that fits your words.", "Usa tus observaciones para describir la hoja. Tu compañero buscará todas las muestras que coincidan con tus palabras.")}</p>
+    ${config.dimensions.map((dimension) => html`<label for="sc-desc-${dimension.id}" lang="en">${dimension.label}</label><select id="sc-desc-${dimension.id}" data-sc-description="${dimension.id}"><option value="">${I.T("No detail yet", "Sin detalle todavía")}</option>${dimension.options.map((option) => html`<option value="${option.id}" ${selected[dimension.id] === option.id ? "selected" : ""}>${option.label}</option>`)}</select>`)}
+    <button type="button" class="btn btn-secondary" data-sc-match-description>${I.T("Show matching specimens", "Mostrar muestras coincidentes")}</button>
+    ${result ? html`<div role="status" tabindex="-1" data-sc-description-result><p>${feedback}</p></div>` : ""}
+    <ul class="sc-notes" aria-label="${I.S("Specimen descriptions", "Descripciones de las muestras")}">${config.specimens.map((specimen) => html`<li class="sc-note"><div><strong lang="en">${specimen.label}</strong><p lang="en">${config.dimensions.map((dimension) => labelFor(dimension, specimen[dimension.id])).join(" · ")}</p><p>${result ? (result.matches.includes(specimen.id) ? I.T("Fits your description", "Coincide con tu descripción") : I.T("Does not fit", "No coincide")) : ""}</p></div></li>`)}</ul>
   </section>`;
 }
 
@@ -372,7 +397,7 @@ export function render(task, env) {
         ${stateCardHTML(I, outcome)}
       </div>
       <div class="sc-side">
-        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
+        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${descriptionHTML(I, task, env.data)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
       </div>
     </div>
     <section class="sc-explain" aria-labelledby="sc-explain-h">
@@ -490,6 +515,10 @@ function onClick(root, env, event) {
     env.update({ scene: result.state, instructionFeedback: result.result, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft, lastAction: result.result === "followed" ? "control" : "instruction" });
     env.announce?.(result.result === "followed" ? currentOutcome(task, result.state).state : env.I.S("Which opening do you mean? Name the object.", "¿A qué abertura te refieres? Nombra el objeto."));
     focusLater(root, "[data-sc-instruction-feedback]");
+  } else if (target.dataset.scMatchDescription !== undefined) {
+    const descriptionSelection = Object.fromEntries([...root.querySelectorAll("[data-sc-description]")].map((input) => [input.dataset.scDescription, input.value]));
+    env.update({ descriptionSelection, descriptionChecked: true, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    focusLater(root, "[data-sc-description-result]");
   } else if (target.dataset.scSend !== undefined) send(root, env, false);
   else if (target.dataset.scSend2 !== undefined) send(root, env, true);
   else if (target.dataset.scFrame) {
@@ -509,6 +538,12 @@ function onClick(root, env, event) {
 
 function onChange(root, env, event) {
   const input = event.target;
+  if (input.matches?.("[data-sc-description]")) {
+    const descriptionSelection = Object.fromEntries([...root.querySelectorAll("[data-sc-description]")].map((item) => [item.dataset.scDescription, item.value]));
+    env.update({ descriptionSelection, descriptionChecked: false, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft });
+    focusLater(root, `[data-sc-description="${input.dataset.scDescription}"]`);
+    return;
+  }
   if (!input.matches?.("[data-sc-control]")) return;
   const task = taskOf(env);
   const state = sceneOf(task, env);

@@ -268,6 +268,11 @@ export function investigate(ctx, host) {
   // A tool appears only where its mathematics belongs: the net/3D inspector on solid-figure labs; the partner station
   // (a collaboration tool, not lab mathematics) tucked into one closed disclosure instead of the student's main path.
   if (lab.model.kind === 'solid') mountSpatialInspector(host, ctx, 'spatial-inv');
+  if (lab.id === 'mixture-matchup') {
+    import('../mixture-matchup/delivery-network.mjs')
+      .then(({ mountDeliveryNetwork }) => { if (host.isConnected) mountDeliveryNetwork(host, ctx); })
+      .catch(() => { /* The existing investigation remains usable in self-contained packages. */ });
+  }
   const partner = document.createElement('details');
   partner.className = 'studio-how studio-partner';
   partner.innerHTML = '<summary>Partner and small-group tools</summary>';

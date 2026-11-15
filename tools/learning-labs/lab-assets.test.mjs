@@ -18,4 +18,8 @@ test("Power Plant assets are included in the appropriate document regions and ex
   assert.ok(existsSync(`.${stylesheet.getAttribute("href")}`));
   assert.ok(existsSync(`.${script.getAttribute("src")}`));
   assert.deepEqual(labAssets("ratio-railway"), { head: "", body: "" });
+  const mixture = labAssets("mixture-matchup");
+  assert.match(mixture.head, /mixture-matchup\/delivery-network\.css/);
+  assert.equal(mixture.body, "");
+  assert.ok(existsSync("./curriculum/learning-labs/mixture-matchup/delivery-network.css"));
 });

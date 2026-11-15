@@ -466,6 +466,22 @@ async function v2Flow(flow) {
   );
   if (EXTRAS[flow.id]) await EXTRAS[flow.id](page);
   if (flow.builder) {
+    await page.locator("#challenge-input").fill("7");
+    await page.locator('[data-wb-form="challenge-create"] button').click();
+    assert.match(await page.locator("#challenge-preview").innerText(), /when x = 7/);
+    await page.locator("#challenge-answer").fill("42");
+    await page.locator('[data-wb-form="challenge-play"] button').click();
+    assert.match(await page.locator("#challenge-result").innerText(), /does not match yet/);
+    await page.locator("#challenge-answer").fill("44");
+    await page.locator('[data-wb-form="challenge-play"] button').click();
+    assert.match(await page.locator("#challenge-result").innerText(), /value works/);
+    await page.locator(stepButton).click();
+    assert.equal(
+      await page.locator('[data-wb-form="challenge-play"]').count(),
+      0,
+      "changing design invalidates preview",
+    );
+    await page.locator('[data-wb="undo"]').click();
     const [coefficient, constant] = ["coefficient", "constant"].map((id) =>
       oracle(project, project.defaults).find((o) => o.id === id),
     );
