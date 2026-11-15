@@ -18,15 +18,6 @@ export const MANIFEST_PATH = "data/studio-videos.json";
 export const ASSET_DIR = "assets/studio-videos";
 export const LAB_BASE = "/access-practice-lab";
 
-/**
- * The Language Page half (its app routes, its hub, thelanguagepage.com) is held back: it needs changes under
- * access-practice-lab/ and functions/ that have not shipped. While false, the languagepage brand and every
- * /access-practice-lab/ page are rejected, and the generator writes nothing under access-practice-lab/.
- * The held-back pieces are saved as claude-motion-studio/docs/site-integration-language-page.patch,
- * which flips this to true.
- */
-export const LAB_ENABLED = false;
-
 /** brand id (as the studio names it) -> where that brand's videos are listed. */
 export const BRANDS = Object.freeze({
   eduwonderlab: {
@@ -34,14 +25,12 @@ export const BRANDS = Object.freeze({
     hubPath: "/videos/",
     hubFile: "videos/index.html",
     site: "eduwonderlab.com",
-    enabled: true,
   },
   languagepage: {
     name: "The Language Page",
     hubPath: `${LAB_BASE}/videos/`,
     hubFile: "access-practice-lab/videos/index.html",
     site: "thelanguagepage.com",
-    enabled: LAB_ENABLED,
   },
 });
 
@@ -171,8 +160,6 @@ export function validateManifest(manifest, { root = null, isTeacherSurface = nul
     else if (ids.has(v.id)) add(at, "duplicate id");
     else ids.add(v.id);
     if (!(v.brand in BRANDS)) add(at, `brand must be one of ${Object.keys(BRANDS).join(", ")}`);
-    else if (!BRANDS[v.brand].enabled)
-      add(at, `brand ${v.brand} is not enabled yet (see LAB_ENABLED)`);
     for (const key of ["title", "description"]) {
       const max = key === "title" ? 120 : 400;
       if (typeof v[key] !== "string" || !v[key].trim() || v[key].length > max)
@@ -212,11 +199,6 @@ export function validateManifest(manifest, { root = null, isTeacherSurface = nul
           else claimed.set(key, v.id);
           if (BRANDS[v.brand] && key === normalizePage(BRANDS[v.brand].hubPath))
             add(at, `page ${page} is the brand hub, which lists every video already`);
-          if (isLabRoute(page) && !LAB_ENABLED)
-            add(
-              at,
-              `page ${page} is a Language Page app route, which is not enabled yet (see LAB_ENABLED)`,
-            );
           if (isTeacherSurface?.(page)) add(at, `page ${page} is a teacher surface`);
           if (root && !isLabRoute(page) && !existsSync(join(root, pageFile(page))))
             add(at, `page ${page} has no ${pageFile(page)}`);

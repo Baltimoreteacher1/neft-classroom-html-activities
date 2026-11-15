@@ -1214,6 +1214,22 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    // A generated static page (scripts/generate-studio-videos.mjs), not an app route.
+    id: "videos",
+    section: "help",
+    skill: "Mixed",
+    kind: "guide",
+    for: STF,
+    href: "/access-practice-lab/videos/",
+    icon: "sparkle",
+    match: [],
+    title: P("Videos", "Videos"),
+    text: P(
+      "Short animated videos with English captions and a written copy.",
+      "Videos animados cortos con subtítulos en inglés y una copia escrita.",
+    ),
+  },
+  {
     id: "privacy",
     section: "help",
     skill: "Mixed",

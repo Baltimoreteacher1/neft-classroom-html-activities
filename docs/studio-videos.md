@@ -13,16 +13,6 @@ Nothing is hand-edited into a page.
 | Generator | `scripts/generate-studio-videos.mjs` (`npm run generate:studio-videos`) |
 | Gate | `npm run validate:studio-videos`, `tools/studio-videos.test.mjs` |
 
-## Held back: the Language Page half
-
-Only EduWonderLab is live. The Language Page side (`brand: languagepage`, the `/access-practice-lab/videos/` hub, the card
-on `/access-practice-lab/...` app routes, thelanguagepage.com) needs changes under `access-practice-lab/` and `functions/`
-and is not enabled: `LAB_ENABLED` in `tools/lib/studio-videos.mjs` is `false`, so the validator rejects that brand and any
-`/access-practice-lab/` page, and the generator writes nothing under `access-practice-lab/`. The code for it (app hook,
-route table, hub bypass, sitemap entries, flag flip, tests) is saved as
-`claude-motion-studio/docs/site-integration-language-page.patch`; apply it with `git apply`, then re-publish the
-Language Page video from the studio and run the generator. The rest of this page describes the finished design.
-
 ## What the generator writes
 
 - **Mapped static pages** (`pages[]`): one marked block, `<!-- studio-video:start -->` to `<!-- studio-video:end -->`,

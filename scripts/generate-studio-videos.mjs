@@ -23,7 +23,6 @@ import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import {
   BRANDS,
   isLabRoute,
-  LAB_ENABLED,
   normalizePage,
   pageFile,
   parseVtt,
@@ -194,10 +193,9 @@ export function plan(root) {
       continue;
     out.set(file, withoutBlock(readFileSync(join(root, file), "utf8")));
   }
-  for (const [brandId, brand] of Object.entries(BRANDS))
-    if (brand.enabled)
-      out.set(brand.hubFile, hubHtml(brandId, videosFor({ videos: entries }, brandId)));
-  if (LAB_ENABLED) out.set(ROUTES_FILE, routesModule(entries));
+  for (const brandId of Object.keys(BRANDS))
+    out.set(BRANDS[brandId].hubFile, hubHtml(brandId, videosFor({ videos: entries }, brandId)));
+  out.set(ROUTES_FILE, routesModule(entries));
   return out;
 }
 

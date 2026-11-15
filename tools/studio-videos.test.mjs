@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { studioVideoFor } from "../access-practice-lab/src/studio-video-mount.js";
 import { cardHtml, esc } from "../assets/studio-video/studio-video-markup.mjs";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import {
@@ -19,7 +20,6 @@ import {
 import {
   assetPaths,
   BRANDS,
-  LAB_ENABLED,
   normalizePage,
   pageFile,
   parseVtt,
@@ -96,7 +96,7 @@ test("manifest contract: a good manifest passes, every class of bad entry fails"
 test("the committed manifest is valid against the real files", () => {
   const m = readManifest(ROOT);
   assert.deepEqual(validateManifest(m, { root: ROOT, isTeacherSurface }), []);
-  assert.ok(m.videos.length >= 2);
+  assert.ok(m.videos.length >= 3);
   for (const v of m.videos) assert.ok(parseVtt(read(v.vtt.slice(1))).length > 0, v.id);
 });
 
@@ -143,7 +143,9 @@ test("a card is added only to mapped pages, and removing it restores the page by
 test("the committed tree matches the manifest: blocks on mapped pages only, nothing stale", () => {
   assert.deepEqual(run(ROOT, { check: true }), []);
   const m = readManifest(ROOT);
-  const mapped = m.videos.flatMap((v) => v.pages.map(pageFile)).sort();
+  const mapped = m.videos
+    .flatMap((v) => v.pages.filter((p) => !p.startsWith("/access-practice-lab")).map(pageFile))
+    .sort();
   const withBlockOnDisk = execFileSync(
     "git",
     ["grep", "-l", "-I", "studio-video:start", "--", "*.html"],
@@ -156,19 +158,20 @@ test("the committed tree matches the manifest: blocks on mapped pages only, noth
   for (const file of mapped)
     assert.equal((read(file).match(/studio-video:start/g) || []).length, 1, file);
   // The plan touches nothing else: hubs, routes, mapped pages.
-  const expected = new Set([...mapped, BRANDS.eduwonderlab.hubFile]);
+  const expected = new Set([
+    ...mapped,
+    BRANDS.eduwonderlab.hubFile,
+    BRANDS.languagepage.hubFile,
+    "access-practice-lab/src/studio-video-routes.js",
+  ]);
   for (const file of plan(ROOT).keys()) assert.ok(expected.has(file), `unexpected output ${file}`);
 });
 
-test("each enabled hub lists only its own brand's videos; disabled brands write no hub", () => {
+test("each hub lists only its own brand's videos", () => {
   const m = readManifest(ROOT);
   const entries = m.videos.map((v) => hydrate(ROOT, v));
-  for (const [brandId, brand] of Object.entries(BRANDS)) {
-    if (!brand.enabled) {
-      assert.equal(plan(ROOT).has(brand.hubFile), false, `${brandId} hub must not be written`);
-      continue;
-    }
-    const html = read(brand.hubFile);
+  for (const brandId of Object.keys(BRANDS)) {
+    const html = read(BRANDS[brandId].hubFile);
     assert.equal(html, hubHtml(brandId, videosFor({ videos: entries }, brandId)));
     for (const v of m.videos)
       assert.equal(html.includes(`data-id="${v.id}"`), v.brand === brandId, `${brandId} / ${v.id}`);
@@ -177,17 +180,28 @@ test("each enabled hub lists only its own brand's videos; disabled brands write 
   assert.match(hubHtml("eduwonderlab", []), /no videos here yet/);
 });
 
-test("the held-back Language Page half is rejected, and the generator writes nothing under access-practice-lab/", () => {
-  assert.equal(LAB_ENABLED, false);
-  assert.match(
-    problemsFor(manifest(entry("a", { brand: "languagepage", pages: [] }))),
-    /not enabled yet/,
+test("the Language Page app mounts a card only on mapped routes", () => {
+  const m = readManifest(ROOT);
+  const routes = m.videos.flatMap((v) =>
+    v.pages.filter((p) => p.startsWith("/access-practice-lab")).map((p) => [p, v.id]),
   );
-  assert.match(
-    problemsFor(manifest(entry("a", { pages: ["/access-practice-lab/"] }))),
-    /app route/,
-  );
-  for (const file of plan(ROOT).keys()) assert.ok(!file.startsWith("access-practice-lab/"), file);
+  assert.ok(routes.length >= 2);
+  for (const [page, id] of routes) {
+    assert.equal(studioVideoFor(page)?.id, id, page);
+    assert.equal(
+      studioVideoFor(`${normalizePage(page)}/`)?.id,
+      id,
+      `${page} with a trailing slash`,
+    );
+  }
+  for (const other of [
+    "/access-practice-lab/explore/play",
+    "/access-practice-lab/speak",
+    "/access-practice-lab/videos/",
+    "/math/",
+    "/",
+  ])
+    assert.equal(studioVideoFor(other), null, other);
 });
 
 test("card markup escapes everything it prints", () => {

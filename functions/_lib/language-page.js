@@ -103,6 +103,8 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/vocabulary/mastery`,
   `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
+  // The video hub: a generated static page (scripts/generate-studio-videos.mjs), not an app route.
+  `${LAB_BASE}/videos/`,
   // The Learning Studios app (proxied at /studios), one public page each, from access-practice-lab/src/studio-app.js.
   // Teacher-only pages are left out of the crawler sitemap.
   ...STUDIO_APP_PAGES.filter((page) => page.for.some((who) => who !== "teacher")).map(

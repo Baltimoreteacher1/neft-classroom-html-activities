@@ -46,11 +46,13 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // Static assets (have a file extension) and the generated printable packets
-  // (under /printables/, served as real .html/.docx files) bypass the SPA shell.
+  // Static assets (have a file extension), the generated printable packets (under /printables/, real
+  // .html/.docx files) and the video hub (/videos/, generated from data/studio-videos.json) bypass the SPA shell.
   if (
     /\.[a-z0-9]+$/i.test(url.pathname) ||
-    url.pathname.startsWith("/access-practice-lab/printables/")
+    url.pathname.startsWith("/access-practice-lab/printables/") ||
+    url.pathname === "/access-practice-lab/videos" ||
+    url.pathname.startsWith("/access-practice-lab/videos/")
   ) {
     const asset = await env.ASSETS.fetch(request);
     return withImmutableCaching(url, asset);

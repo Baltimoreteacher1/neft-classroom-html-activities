@@ -26,6 +26,7 @@ import { registerSaveResume } from "./sync.js";
 import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js";
 import { initStartFresh } from "./reset.js";
 import { mountReturnBar } from "./intro/return-bar.js";
+import { mountStudioVideo } from "./studio-video-mount.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
@@ -231,6 +232,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   return { ...r, view: "room", domain: a, level: b || "" };
 }
 
+// Pages under the lab that are real files, not app routes: a click on a link to one is a normal navigation.
+const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`);
+
 const app = {
   route: null,
   band: "6-8",
@@ -393,6 +397,8 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
   root.removeAttribute("aria-busy");
+  // A route listed in data/studio-videos.json gets its video card; every other route does nothing here.
+  void mountStudioVideo(root, location.pathname, () => token === app.rendering);
   // Orientation on navigation only: the new screen settles in place (reduced motion turns this off).
   if (routeChanged && app.rendered) {
     root.classList.remove("is-entering");
@@ -404,7 +410,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   // Shared links carry their grade context into a fresh browser.
   for (const link of root.querySelectorAll("a[href]")) {
     const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || url.pathname.startsWith(`${BASE}/printables/`)) continue;
+    if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || isStaticPage(url.pathname)) continue;
     if (!url.searchParams.has("grades")) url.searchParams.set("grades", app.band);
     const mode = new URLSearchParams(location.search).get("mode");
     if (mode && !url.searchParams.has("mode")) url.searchParams.set("mode", mode);
@@ -612,7 +618,7 @@ function interceptLink(e) {
     url.origin !== location.origin ||
     !url.pathname.startsWith(`${BASE}/`) ||
     /\.[a-z0-9]+$/i.test(url.pathname) ||
-    url.pathname.startsWith(`${BASE}/printables/`)
+    isStaticPage(url.pathname)
   )
     return false;
   e.preventDefault();

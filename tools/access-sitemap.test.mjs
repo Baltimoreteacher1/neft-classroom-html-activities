@@ -67,7 +67,7 @@ test("every lab route parses to a real view and locates back to its own destinat
     if (d.href.startsWith("/")) {
       assert.ok(
         d.external ||
-          /^\/(graphic-novels|language-adventures|language-studio|access-teacher|learning-studios|studios)\//.test(
+          /^\/(graphic-novels|language-adventures|language-studio|access-teacher|learning-studios|studios|access-practice-lab\/videos)\//.test(
             d.href,
           ),
         `${d.id}: site path served on the lab host or marked external`,
