@@ -1,5 +1,11 @@
 /** Lab-specific enhancements included when their pages are regenerated. */
 export function labAssets(id) {
+  if (id === "expression-remix") {
+    return {
+      head: '<link rel="stylesheet" href="/curriculum/learning-labs/expression-remix/expression-factory.css">',
+      body: "",
+    };
+  }
   if (id === "hundred-square-studio") {
     return {
       head: '<link rel="stylesheet" href="/curriculum/learning-labs/hundred-square-studio/power-grid.css">',

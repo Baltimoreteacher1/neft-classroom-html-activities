@@ -273,6 +273,11 @@ export function investigate(ctx, host) {
       .then(({ mountDeliveryNetwork }) => { if (host.isConnected) mountDeliveryNetwork(host, ctx); })
       .catch(() => { /* The existing investigation remains usable in self-contained packages. */ });
   }
+  if (lab.id === 'expression-remix') {
+    import('../expression-remix/expression-factory.mjs')
+      .then(({ mountExpressionFactory }) => { if (host.isConnected) mountExpressionFactory(host, ctx); })
+      .catch(() => { /* The existing investigation remains usable in self-contained packages. */ });
+  }
   if (lab.id === 'packaging-workshop') {
     import('../packaging-workshop/district-design.mjs')
       .then(({ mountDistrictDesign }) => { if (host.isConnected) mountDistrictDesign(host, ctx); })
