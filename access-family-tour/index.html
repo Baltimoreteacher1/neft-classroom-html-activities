@@ -259,6 +259,10 @@
       .welcome-copy {
         padding: 28px 22px;
       }
+      .tour-film { border: 1px solid #b8dcd8; border-radius: 14px; padding: 14px; background: #f2faf7; }
+      .tour-film summary { cursor: pointer; font-weight: 700; color: #17324d; padding: 8px; }
+      .tour-film summary:focus-visible { outline: 3px solid #17324d; outline-offset: 2px; }
+      .tour-film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #17324d; border-radius: 8px; margin-top: 12px; }
       .welcome-visual {
         display: none;
         background: #dfeff5;
@@ -1059,6 +1063,10 @@
             `<button type="button" class="grade" data-band="${band}" aria-pressed="${state.band === band}"><strong>${T(title)}</strong><span>${T(sub)}</span></button>`;
           return `<section class="welcome"><div class="welcome-copy stack"><span class="tag">${esc(S(COPY.tagline))}</span>
   <h1>${T(COPY.welcomeTitle)}</h1><p class="lead">${T(COPY.welcomeLead)}</p>
+  <details class="tour-film"><summary>${T(["▶ Watch the 30-second family tour introduction", "▶ Miren la introducción de 30 segundos al recorrido familiar"])}</summary>
+    <video controls preload="none" playsinline width="1920" height="1080" poster="/assets/language-intro/family-poster.jpg" aria-label="${esc(S(["Family tour introduction", "Introducción al recorrido familiar"]))}"><source src="/assets/language-intro/family-tour.mp4" type="video/mp4"></video>
+    <details><summary>${T(["Read the video text", "Leer el texto del video"])}</summary><p>${T(["Welcome, families. Explore together. Choose a stop, visit a real part of the site with a guide, and check it off. Practice listening, speaking, reading, and writing together. Music plays throughout; there is no spoken narration.", "Bienvenidas, familias. Exploren juntos. Elijan una parada, visiten una parte real del sitio con una guía y márquenla. Practiquen juntos escuchar, hablar, leer y escribir. Hay música durante todo el video; no hay narración hablada."])}</p></details>
+  </details>
   <h2>${T(COPY.pickGrade)}</h2>
   <div class="grades">${grade("3-5", COPY.g35, COPY.g35s)}${grade("6-8", COPY.g68, COPY.g68s)}</div>
   <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></div>

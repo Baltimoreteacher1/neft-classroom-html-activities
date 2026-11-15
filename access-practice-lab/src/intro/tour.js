@@ -11,6 +11,7 @@ import { activityFrame, createCoach } from "../coach/coach.js";
 import { stepsFor } from "../coach/activity-steps.js";
 import { loadIndex } from "../content.js";
 import { ART, BASE, html, icon } from "../util.js";
+import { onLanguagePage } from "../brand.js";
 import { pickById, pickName, savePick, TEACHER_PICKS, teacherPick } from "./band.js";
 import { bindGuide, guideBubbleHTML } from "./guide.js";
 import { guideArtSVG } from "./guide-art.js";
@@ -273,6 +274,10 @@ export async function render(ctx) {
     title: `Teacher tour: ${PARTS[s.part - 1].name}`,
     html: html`<article class="gt-page" aria-labelledby="gtTitle">
       ${topHTML(s)} ${s.part > 1 ? trailHTML(s) : ""}
+      ${s.part === 1 && onLanguagePage() ? html`<details class="language-intro">
+        <summary><span class="language-intro-play" aria-hidden="true">▶</span><span><strong>See the Teacher Tour</strong><span>Watch a 30-second introduction</span></span></summary>
+        <div class="language-intro-body"><video controls preload="none" playsinline width="1920" height="1080" poster="/assets/language-intro/educator-poster.jpg" aria-label="Introduction to the Teacher Tour"><source src="/assets/language-intro/educator-tour.mp4" type="video/mp4" />Your browser cannot play this video.</video><details class="language-intro-transcript"><summary>Read the video text</summary><p>Welcome, educators. Pick a skill and choose a grade. Try an activity as a student, explore the language supports, and use it with your class. Music plays throughout; there is no spoken narration.</p></details></div>
+      </details>` : ""}
       ${s.resume ? html`<p class="gt-back-note" role="status">${icon("bookmark")}You are back where you stopped. <a href="${partHref(1, s)}">Start from the beginning</a>.</p>` : ""}
       ${body}
       ${s.part > 1 ? html`<nav class="gt-nav" aria-label="Tour controls"><a class="btn ghost" href="${partHref(s.part - 1, s)}">${icon("arrow-left")}Back</a></nav>` : ""}

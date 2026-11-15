@@ -11,10 +11,10 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "5a60b742f0bb";
+const BUILD_HASH = "119035d04201";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=96db0e394ffd",
-  "/access-practice-lab/home.css?v=567acc7b4b89",
+  "/access-practice-lab/home.css?v=f83bff904edd",
   "/access-practice-lab/home-start.css?v=ac8eefa44250",
   "/access-practice-lab/progress.css?v=ad28e1088e49",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
@@ -79,7 +79,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/postcard-store.js?v=af17944635b2",
   "/access-practice-lab/src/intro/return-bar.js?v=79c35e605cef",
   "/access-practice-lab/src/intro/data.js?v=b265b7093fc7",
-  "/access-practice-lab/src/views/home.js?v=755c9dc35b9b",
+  "/access-practice-lab/src/views/home.js?v=624167682c36",
   "/access-practice-lab/src/lang/adapt.js?v=61f2ee6f6b67",
   "/access-practice-lab/src/lang/skill-graph.js?v=0e98cc7ed2ef",
   "/access-practice-lab/src/views/home-klu.js?v=c53238084ad7",
@@ -398,7 +398,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/tour-data.js?v=9f28af736ee7",
   "/access-practice-lab/src/intro/tour-finish.js?v=81af43c5702d",
   "/access-practice-lab/src/intro/tour-help.js?v=5974813cb94e",
-  "/access-practice-lab/src/intro/tour.js?v=724490aa6534",
+  "/access-practice-lab/src/intro/tour.js?v=6ac9dec30aae",
   "/access-practice-lab/src/intro/ui.js?v=9a5c1c9351e5",
   "/access-practice-lab/src/journey/engines/compose-notes.js?v=f7765b02b033",
   "/access-practice-lab/src/journey/engines/compose.js?v=b9ff6ae0d24b",
@@ -443,7 +443,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/journey/ui/xray.js?v=c0fc23eb6ae1",
   "/access-practice-lab/src/journey/wida.js?v=06c840eb859f",
   "/access-practice-lab/src/journey/worlds-portal.js?v=73d63b6ddf0c",
-  "/access-practice-lab/src/journey.js?v=70275025cddb",
+  "/access-practice-lab/src/journey.js?v=aba10af18b40",
   "/access-practice-lab/src/ladder-placement.js?v=0758c0b2b4c6",
   "/access-practice-lab/src/ladder-tools.js?v=19e08686e255",
   "/access-practice-lab/src/ladder.js?v=d6d1319e9352",
