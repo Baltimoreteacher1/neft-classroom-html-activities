@@ -701,6 +701,21 @@ const g68 = {
   discover: {
     kind: "scene",
     prompt: "Why did the garden's yield fall from 120 pounds to 72 pounds in one year?",
+    causalPrompt: [
+      "Predict a model result, then change one condition while the other stays the same. Compare the modeled yields; the model is a hypothesis, not a measurement of the real garden.",
+      "Predice un resultado del modelo y cambia una condición mientras la otra permanece igual. Compara las cosechas del modelo; el modelo es una hipótesis, no una medición del huerto real.",
+    ],
+    causalComparisons: [
+      { id: "sun-compacted", label: "More sun, compacted soil", before: { sun: "four", soil: "compacted" }, after: { sun: "eight", soil: "compacted" }, held: "The soil stays compacted in both model runs." },
+      { id: "soil-shade", label: "Loosen soil, same sun", before: { sun: "four", soil: "compacted" }, after: { sun: "four", soil: "loose" }, held: "Sunlight stays at 4 hours in both model runs." },
+      { id: "sun-loose", label: "More sun, loose soil", before: { sun: "four", soil: "loose" }, after: { sun: "eight", soil: "loose" }, held: "The soil stays loose in both model runs. Compare this sunlight change with the test using compacted soil." },
+    ],
+    causalPredictions: [
+      { key: "both", label: "About 72 pounds" },
+      { key: "wet", label: "About 90 pounds" },
+      { key: "shade", label: "About 95 pounds" },
+      { key: "full", label: "About 120 pounds" },
+    ],
     objects: [
       {
         id: "chart",

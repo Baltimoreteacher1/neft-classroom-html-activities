@@ -33,3 +33,17 @@ test("reject missing predictions and comparisons that change multiple variables"
   };
   assert.equal(compareCause(unsafe, "bad", "thrive", init(task)), null);
 });
+
+test("middle-grade model isolates each condition and provides a transfer comparison", () => {
+  const older = pack.bands["6-8"].discover;
+  const sunCompacted = compareCause(older, "sun-compacted", "wet", init(older));
+  const soil = compareCause(older, "soil-shade", "shade", init(older));
+  const sunLoose = compareCause(older, "sun-loose", "full", init(older));
+  assert.match(sunCompacted.before, /72 pounds/);
+  assert.match(sunCompacted.after, /90 pounds/);
+  assert.match(soil.after, /95 pounds/);
+  assert.match(sunLoose.before, /95 pounds/);
+  assert.match(sunLoose.after, /120 pounds/);
+  assert.equal(sunCompacted.matched && soil.matched && sunLoose.matched, true);
+  assert.equal(compareCause(older, "sun-loose", "wet", init(older)).matched, false);
+});

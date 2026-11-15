@@ -28,6 +28,8 @@ const STORY_DEFAULTS = {
   sequence2: "However, the water tank was still full, so Maya inspected the timer relay.",
   resolution: "Finally, they reset the solar timer and explained the checklist to the garden club.",
   choiceA: "", outcomeA: "", choiceB: "", outcomeB: "", published: false,
+  sceneTitleA: "", scenePlaceA: "", sceneObjectA: "",
+  sceneTitleB: "", scenePlaceB: "", sceneObjectB: "",
 };
 
 // Transient UI state for active tab / studio forms
@@ -97,7 +99,7 @@ function aiCoachInsight(mission, mProg, tier, I) {
 function renderStoryBuilder(state, band, I) {
   const { T, S } = I;
   const sb = { ...STORY_DEFAULTS, ...(state.storyBuilder || {}) };
-  for (const key of ["setting", "character", "problem", "sequence1", "sequence2", "resolution", "choiceA", "outcomeA", "choiceB", "outcomeB"]) sb[key] = String(sb[key] ?? "");
+  for (const key of ["setting", "character", "problem", "sequence1", "sequence2", "resolution", "choiceA", "outcomeA", "choiceB", "outcomeB", "sceneTitleA", "scenePlaceA", "sceneObjectA", "sceneTitleB", "scenePlaceB", "sceneObjectB"]) sb[key] = String(sb[key] ?? "");
   return html`<section class="panel reality-substudio" aria-labelledby="storyBuilderTitle" data-story-builder data-content>
     <div class="learn-wb-head">
       <div>
@@ -155,8 +157,8 @@ function renderStoryBuilder(state, band, I) {
       </div>
     </div>
     <details class="learn-stimulus-box"><summary>${T("Add a branching choice", "Agrega una decisión con dos caminos")}</summary>
-      <p>${T("Write two choices and what happens after each. A reader can try both paths in the preview.", "Escribe dos decisiones y lo que sucede después de cada una. Un lector puede probar ambos caminos en la vista previa.")}</p>
-      ${[["A", "First", "Primera"], ["B", "Second", "Segunda"]].map(([key, en, es]) => html`<div class="learn-step-card"><h3>${T(`${en} path`, `${es} opción`)}</h3><label class="field"><span>${T("Reader's choice", "Decisión del lector")}</span><input data-sb-field="choice${key}" maxlength="120" value="${sb[`choice${key}`]}" ${IGN}></label><label class="field"><span>${T("What happens next?", "¿Qué sucede después?")}</span><textarea data-sb-field="outcome${key}" maxlength="300" rows="2" ${IGN}>${sb[`outcome${key}`]}</textarea></label></div>`)}
+      <p>${T("Write two choices and a scene for each one. A reader can try both paths before the shared ending.", "Escribe dos decisiones y una escena para cada una. Un lector puede probar ambos caminos antes del final compartido.")}</p>
+      ${[["A", "First", "Primera"], ["B", "Second", "Segunda"]].map(([key, en, es]) => html`<div class="learn-step-card"><h3>${T(`${en} path`, `${es} opción`)}</h3><label class="field"><span>${T("Reader's choice", "Decisión del lector")}</span><input data-sb-field="choice${key}" maxlength="120" value="${sb[`choice${key}`]}" ${IGN}></label><label class="field"><span>${T("Scene title (optional)", "Título de la escena (opcional)")}</span><input data-sb-field="sceneTitle${key}" maxlength="80" value="${sb[`sceneTitle${key}`]}" ${IGN}></label><label class="field"><span>${T("Where does this scene happen? (optional)", "¿Dónde ocurre esta escena? (opcional)")}</span><input data-sb-field="scenePlace${key}" maxlength="120" value="${sb[`scenePlace${key}`]}" ${IGN}></label><label class="field"><span>${T("A useful object in the scene (optional)", "Un objeto útil en la escena (opcional)")}</span><input data-sb-field="sceneObject${key}" maxlength="120" value="${sb[`sceneObject${key}`]}" ${IGN}></label><label class="field"><span>${T("What happens next?", "¿Qué sucede después?")}</span><textarea data-sb-field="outcome${key}" maxlength="300" rows="2" ${IGN}>${sb[`outcome${key}`]}</textarea></label></div>`)}
     </details>
     <div class="learn-stimulus-box">
       <div class="learn-stimulus-head">
@@ -164,8 +166,9 @@ function renderStoryBuilder(state, band, I) {
         ${canSpeak() ? html`<button type="button" class="btn small" data-sb-audio data-reality-say="${`${sb.sequence1} ${sb.sequence2} ${sb.resolution}`}">${icon("volume")} ${T("Listen to story", "Escuchar historia")}</button>` : ""}
       </div>
       <p lang="en"><strong data-sb-preview="character">${sb.character}</strong> · <em data-sb-preview="problem">${sb.problem}</em></p>
-      <blockquote class="learn-quote" lang="en"><span data-sb-preview="sequence1">${sb.sequence1}</span> <span data-sb-preview="sequence2">${sb.sequence2}</span> <span data-sb-preview="resolution">${sb.resolution}</span></blockquote>
-      <div><h3>${T("Try a path", "Prueba un camino")}</h3><p>${T("Complete a choice and its outcome to try it.", "Completa una decisión y su resultado para probarla.")}</p><div class="row-actions">${["A", "B"].map((key) => html`<button type="button" class="btn" data-sb-path="${key}" ${!sb[`choice${key}`].trim() || !sb[`outcome${key}`].trim() ? raw("disabled") : ""}>${sb[`choice${key}`] || T(`Path ${key}`, `Camino ${key}`)}</button>`)}</div><p data-sb-path-result role="status"></p></div>
+      <blockquote class="learn-quote" lang="en"><span data-sb-preview="sequence1">${sb.sequence1}</span> <span data-sb-preview="sequence2">${sb.sequence2}</span></blockquote>
+      <div><h3>${T("Try a path", "Prueba un camino")}</h3><p>${T("Complete a choice and its outcome to try it.", "Completa una decisión y su resultado para probarla.")}</p><div class="row-actions">${["A", "B"].map((key) => html`<button type="button" class="btn" data-sb-path="${key}" ${!sb[`choice${key}`].trim() || !sb[`outcome${key}`].trim() ? raw("disabled") : ""}>${sb[`choice${key}`] || T(`Path ${key}`, `Camino ${key}`)}</button>`)}</div><section data-sb-scene hidden aria-live="polite"><div class="learn-step-card"><h4 data-sb-scene-title></h4><p data-sb-scene-place></p><p data-sb-scene-object></p><p data-sb-path-result></p></div></section></div>
+      <p><strong>${T("Shared ending", "Final compartido")}:</strong> <span data-sb-preview="resolution">${sb.resolution}</span></p>
       <div class="row-actions">
         <button type="button" class="btn btn-primary" data-sb-publish>
           ${icon("check")} ${T("Save this story", "Guardar esta historia")}
@@ -800,6 +803,8 @@ export function onInput(e, ctx) {
     }
     const pathResult = root?.querySelector("[data-sb-path-result]");
     if (pathResult) pathResult.textContent = "";
+    const scene = root?.querySelector("[data-sb-scene]");
+    if (scene) scene.hidden = true;
     root?.querySelector("[data-sb-saved]")?.remove();
     return;
   }
@@ -840,9 +845,18 @@ export function onClick(e, ctx) {
     const key = storyPath.dataset.sbPath;
     if (!["A", "B"].includes(key)) return false;
     const story = { ...STORY_DEFAULTS, ...(state.storyBuilder || {}) };
-    const output = storyPath.closest("[data-story-builder]")?.querySelector("[data-sb-path-result]");
+    const root = storyPath.closest("[data-story-builder]");
+    const output = root?.querySelector("[data-sb-path-result]");
     if (!output || !String(story[`choice${key}`] || "").trim() || !String(story[`outcome${key}`] || "").trim()) return false;
-    output.textContent = story[`outcome${key}`];
+    const scene = root.querySelector("[data-sb-scene]");
+    const title = String(story[`sceneTitle${key}`] || "").trim();
+    const place = String(story[`scenePlace${key}`] || "").trim();
+    const object = String(story[`sceneObject${key}`] || "").trim();
+    root.querySelector("[data-sb-scene-title]").textContent = title || I.S(`Path ${key}`, `Camino ${key}`);
+    root.querySelector("[data-sb-scene-place]").textContent = place ? `${I.S("Place", "Lugar")}: ${place}` : "";
+    root.querySelector("[data-sb-scene-object]").textContent = object ? `${I.S("Object", "Objeto")}: ${object}` : "";
+    output.textContent = String(story[`outcome${key}`]);
+    scene.hidden = false;
     return true;
   }
 

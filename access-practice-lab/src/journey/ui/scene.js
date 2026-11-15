@@ -191,7 +191,7 @@ function causeCompareHTML(I, task, data) {
   const result = data?.causeResult;
   return html`<section class="sc-controls" aria-labelledby="sc-cause-h">
     <h3 id="sc-cause-h">${I.T("Predict and compare", "Predice y compara")}</h3>
-    <p>${I.T("Choose one change, predict the result, then run the model. Compare what changed with what stayed the same.", "Elige un cambio, predice el resultado y ejecuta el modelo. Compara lo que cambió con lo que permaneció igual.")}</p>
+    <p>${task.causalPrompt ? I.T(...task.causalPrompt) : I.T("Choose one change, predict the result, then run the model. Compare what changed with what stayed the same.", "Elige un cambio, predice el resultado y ejecuta el modelo. Compara lo que cambió con lo que permaneció igual.")}</p>
     <label for="sc-cause-case">${I.T("Test", "Prueba")}</label>
     <select id="sc-cause-case" data-sc-cause-case lang="en">${cases.map((item) => html`<option value="${item.id}" ${selectedCase === item.id ? "selected" : ""}>${item.label}</option>`)}</select>
     <label for="sc-cause-predict">${I.T("My prediction after the change", "Mi predicción después del cambio")}</label>

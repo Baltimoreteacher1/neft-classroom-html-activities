@@ -278,6 +278,11 @@ export function investigate(ctx, host) {
       .then(({ mountDistrictDesign }) => { if (host.isConnected) mountDistrictDesign(host, ctx); })
       .catch(() => { /* The original lab remains usable if optional assets are unavailable. */ });
   }
+  if (lab.id === 'hundred-square-studio') {
+    import('../hundred-square-studio/power-grid.mjs')
+      .then(({ mountPowerGrid }) => { if (host.isConnected) mountPowerGrid(host, ctx); })
+      .catch(() => { /* The original lab remains usable if optional assets are unavailable. */ });
+  }
   const partner = document.createElement('details');
   partner.className = 'studio-how studio-partner';
   partner.innerHTML = '<summary>Partner and small-group tools</summary>';

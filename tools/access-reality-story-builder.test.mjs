@@ -57,12 +57,23 @@ test("branching story preview follows the author's choices and restores safely",
     "The garden needed water.",
   );
   input("choiceA", "Check the tank");
+  input("sceneTitleA", "The tank room");
+  input("scenePlaceA", "Greenhouse");
+  input("sceneObjectA", "Water gauge");
   input("outcomeA", "The tank is empty.");
   input("choiceB", "Inspect the pipe");
+  input("sceneTitleB", "Under the sink");
+  input("scenePlaceB", "Workshop");
   input("outcomeB", "A loose joint is leaking.");
   click('[data-sb-path="A"]');
+  assert.equal(root.querySelector("[data-sb-scene]").hidden, false);
+  assert.equal(root.querySelector("[data-sb-scene-title]").textContent, "The tank room");
+  assert.equal(root.querySelector("[data-sb-scene-place]").textContent, "Place: Greenhouse");
+  assert.equal(root.querySelector("[data-sb-scene-object]").textContent, "Object: Water gauge");
   assert.equal(root.querySelector("[data-sb-path-result]").textContent, "The tank is empty.");
   click('[data-sb-path="B"]');
+  assert.equal(root.querySelector("[data-sb-scene-title]").textContent, "Under the sink");
+  assert.equal(root.querySelector("[data-sb-scene-object]").textContent, "");
   assert.equal(
     root.querySelector("[data-sb-path-result]").textContent,
     "A loose joint is leaking.",
@@ -75,6 +86,7 @@ test("branching story preview follows the author's choices and restores safely",
   assert.deepEqual(entry.m, {}, "saving a template does not invent writing scores");
   await render();
   assert.equal(root.querySelector('[data-sb-field="choiceB"]').value, "Inspect the pipe");
+  assert.equal(root.querySelector('[data-sb-field="sceneTitleB"]').value, "Under the sink");
   click('[data-sb-path="B"]');
   assert.equal(
     root.querySelector("[data-sb-path-result]").textContent,
@@ -88,4 +100,16 @@ test("branching story preview follows the author's choices and restores safely",
     "authored text is not HTML",
   );
   assert.equal(root.querySelector("[data-sb-saved]"), null, "edits clear the saved confirmation");
+});
+
+test("older saved story remains readable without scene metadata", async () => {
+  localStorage.setItem(
+    REALITY_STORAGE_KEY,
+    JSON.stringify({ storyBuilder: { choiceA: "Open it", outcomeA: "A map appears." } }),
+  );
+  await render();
+  click('[data-sb-path="A"]');
+  assert.equal(root.querySelector("[data-sb-scene-title]").textContent, "Path A");
+  assert.equal(root.querySelector("[data-sb-path-result]").textContent, "A map appears.");
+  assert.ok(root.querySelector('[data-sb-preview="resolution"]').textContent);
 });
