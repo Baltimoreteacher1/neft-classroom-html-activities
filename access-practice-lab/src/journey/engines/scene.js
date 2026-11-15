@@ -115,6 +115,17 @@ export function setControl(state, controlId, optionId, task) {
   };
 }
 
+/** Apply an authored instruction only when it identifies a target and a valid action. */
+export function followInstruction(task, state, targetId, action) {
+  const target = task.instruction?.targets?.find((item) => item.id === targetId);
+  if (!target || target.ambiguous) return { state, result: "unclear" };
+  const value = target.values?.[action];
+  const control = task.controls?.find((item) => item.id === target.control);
+  if (!value || !control?.options.some((option) => option.id === value))
+    return { state, result: "invalid" };
+  return { state: setControl(state, target.control, value, task), result: "followed" };
+}
+
 export const manipulations = (state) => state.changes.length;
 
 /** The notebook: examined objects in examine order. */

@@ -126,7 +126,13 @@ export function unit3Challenge(lab) {
 export function checkUnit3(challenge, input) {
   const value = String(input ?? '').trim().replace(/^\$/, '');
   if (challenge.type === 'buttons') return value === challenge.answer;
-  if (challenge.type === 'ratio') return /^\d+\s*:\s*\d+$/.test(value) && value.replace(/\s/g, '') === challenge.answer;
+  if (challenge.type === 'ratio') {
+    const actual = /^(\d+)\s*:\s*(\d+)$/.exec(value);
+    const expected = /^(\d+)\s*:\s*(\d+)$/.exec(challenge.answer);
+    if (!actual || !expected) return false;
+    const [a, b] = actual.slice(1).map(BigInt), [c, d] = expected.slice(1).map(BigInt);
+    return b !== 0n && d !== 0n && a * d === c * b;
+  }
   if (challenge.type === 'hundredths') {
     try { return hundredths(value.replace(',', '.')) === hundredths(challenge.answer); } catch { return false; }
   }

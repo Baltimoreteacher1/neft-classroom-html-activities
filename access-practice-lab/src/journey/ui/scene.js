@@ -9,6 +9,7 @@ import {
   doneCriteria,
   evaluateExplanation,
   examine,
+  followInstruction,
   init,
   ledgerEntry,
   notebook,
@@ -139,6 +140,20 @@ function controlsHTML(I, task, state) {
           </div>
         </fieldset>`,
     )}
+  </section>`;
+}
+
+function instructionHTML(I, task, feedback) {
+  if (!task.instruction) return "";
+  return html`<section class="sc-controls" aria-labelledby="sc-instruction-h">
+    <h3 id="sc-instruction-h">${I.T("Give an instruction", "Da una instrucción")}</h3>
+    <p>${I.T("Tell your partner what to do. Notice what happens when the object is unclear.", "Dile a tu compañero qué hacer. Observa qué pasa cuando el objeto no está claro.")}</p>
+    <label for="sc-instruction-action">${I.T("Action", "Acción")}</label>
+    <select id="sc-instruction-action" data-sc-instruction-action lang="en"><option value="close">Close</option><option value="open">Open</option></select>
+    <label for="sc-instruction-target">${I.T("Object", "Objeto")}</label>
+    <select id="sc-instruction-target" data-sc-instruction-target lang="en">${task.instruction.targets.map((target) => html`<option value="${target.id}">${target.label}</option>`)}</select>
+    <button type="button" class="btn btn-secondary" data-sc-instruct>${I.T("Ask your partner", "Pide a tu compañero")}</button>
+    ${feedback ? html`<p role="status" tabindex="-1" data-sc-instruction-feedback>${feedback === "followed" ? I.T("Your partner followed the instruction. Compare the scene with what you asked.", "Tu compañero siguió la instrucción. Compara la escena con lo que pediste.") : I.T("Which opening do you mean? Name the object so your partner can act.", "¿A qué abertura te refieres? Nombra el objeto para que tu compañero pueda actuar.")}</p>` : ""}
   </section>`;
 }
 
@@ -357,7 +372,7 @@ export function render(task, env) {
         ${stateCardHTML(I, outcome)}
       </div>
       <div class="sc-side">
-        ${lookListHTML(I, task, state)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
+        ${lookListHTML(I, task, state)}${instructionHTML(I, task, env.data?.instructionFeedback)}${controlsHTML(I, task, state)}${notebookHTML(I, task, state)}
       </div>
     </div>
     <section class="sc-explain" aria-labelledby="sc-explain-h">
@@ -468,6 +483,13 @@ function onClick(root, env, event) {
       root,
       `.${target.classList.contains("sc-chip") ? "sc-chip" : "sc-hot"}[data-sc-examine="${id}"]`,
     );
+  } else if (target.dataset.scInstruct !== undefined) {
+    const action = root.querySelector("[data-sc-instruction-action]")?.value;
+    const object = root.querySelector("[data-sc-instruction-target]")?.value;
+    const result = followInstruction(task, sceneOf(task, env), object, action);
+    env.update({ scene: result.state, instructionFeedback: result.result, draft: draftOf(root, "[data-sc-draft]") ?? env.data?.draft, lastAction: result.result === "followed" ? "control" : "instruction" });
+    env.announce?.(result.result === "followed" ? currentOutcome(task, result.state).state : env.I.S("Which opening do you mean? Name the object.", "¿A qué abertura te refieres? Nombra el objeto."));
+    focusLater(root, "[data-sc-instruction-feedback]");
   } else if (target.dataset.scSend !== undefined) send(root, env, false);
   else if (target.dataset.scSend2 !== undefined) send(root, env, true);
   else if (target.dataset.scFrame) {

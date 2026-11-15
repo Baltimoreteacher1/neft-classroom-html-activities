@@ -58,6 +58,11 @@ export function addCheckpoint(project, list, { name, reason, design, matched }) 
 
 export const removeCheckpoint = (list, id) => list.filter((cp) => cp.id !== id);
 
+/** Revise the explanation without changing the saved mathematical design. */
+export function reviseCheckpoint(list, id, reason) {
+  return list.map((cp) => cp.id === id ? { ...cp, reason: text(reason, 500) } : cp);
+}
+
 /** The design a restore would apply, or null if the checkpoint is gone. */
 export const restoreDesign = (list, id) => {
   const cp = list.find((item) => item.id === id);

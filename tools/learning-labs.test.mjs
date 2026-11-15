@@ -271,6 +271,15 @@ assert.equal(
   true,
   "Spanish decimal comma works",
 );
+const ratioChallenge = { type: "ratio", answer: "2:5" };
+assert.equal(checkUnit3(ratioChallenge, "4 : 10"), true, "equivalent ratios are accepted");
+assert.equal(checkUnit3(ratioChallenge, "5:2"), false, "ratio order matters");
+assert.equal(checkUnit3(ratioChallenge, "0:0"), false, "zero denominator is not a ratio");
+assert.equal(
+  checkUnit3(ratioChallenge, "200000000000000000000:500000000000000000000"),
+  true,
+  "ratio comparison stays exact",
+);
 const arcLabs = catalogue.labs.filter((lab) => lab.unit >= 2 && lab.unit <= 9).map((lab) => lab.id);
 assert.equal(arcLabs.length, 40, "Worked explanation rollout covers the taught units only");
 for (const lab of catalogue.labs.filter((entry) => entry.unit === 1 || entry.unit === 10)) {

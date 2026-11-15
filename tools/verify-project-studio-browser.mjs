@@ -420,7 +420,21 @@ async function v2Flow(flow) {
   await page.locator('[data-wb-form="checkpoint"] button[type=submit]').click();
   assert.match(await page.locator("#wb-checkpoints").innerText(), /Gate checkpoint/);
   await page.locator(stepButton).click();
-  assert.notEqual(await page.locator(`#design-${field}`).inputValue(), saved);
+  const current = await page.locator(`#design-${field}`).inputValue();
+  assert.notEqual(current, saved);
+  const comparison = page.locator("#wb-checkpoints table");
+  assert.match(
+    await comparison.innerText(),
+    new RegExp(`${saved}\\s+${current}`),
+    "comparison shows both saved and current inputs",
+  );
+  await page.locator("[data-wb-edit-reason]").click();
+  await page.locator("[data-wb-reason]").fill("I revised my explanation using evidence.");
+  await page.locator("[data-wb-save-reason]").click();
+  assert.match(
+    await page.locator("#wb-checkpoints").innerText(),
+    /I revised my explanation using evidence/,
+  );
   await page.locator("[data-wb-restore]").first().click();
   assert.equal(
     await page.locator(`#design-${field}`).inputValue(),
@@ -445,6 +459,7 @@ async function v2Flow(flow) {
   const save = await stored();
   assert.equal(save.version, 1, "save version is unchanged");
   assert.equal(save.checkpoints.length, 1);
+  assert.equal(save.checkpoints[0].reason, "I revised my explanation using evidence.");
   assert.ok(
     save.design && save.answers && save.instructionalEvidence && save.evidence,
     "existing save fields are intact",
@@ -458,12 +473,15 @@ async function v2Flow(flow) {
     await page.locator(".wb-test-models summary").first().click();
     await page.locator("#wb-A").fill(answerText(coefficient.answer));
     await page.locator("#wb-B").fill(answerText(constant.answer.add(coefficient.answer)));
+    await page.locator("#wb-C").fill("-2");
+    assert.match(await page.locator("#wb-custom-result").innerText(), /They differ at this input/);
     assert.match(
       await page.locator(".wb-verdict").innerText(),
       /does not match the original at/,
       "builder: a wrong constant is flagged at specific inputs",
     );
     await page.locator("#wb-B").fill(answerText(constant.answer));
+    assert.match(await page.locator("#wb-custom-result").innerText(), /They match at this input/);
     assert.match(
       await page.locator(".wb-verdict").innerText(),
       /matches the original at all 3 test inputs/,

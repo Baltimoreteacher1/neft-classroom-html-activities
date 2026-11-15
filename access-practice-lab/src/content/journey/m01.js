@@ -126,6 +126,14 @@ const g35 = {
         note: "The calendar says it is Tuesday. Picture day is next week.",
       },
     ],
+    // An authored communication task: the same action has different effects depending on the named object.
+    instruction: {
+      targets: [
+        { id: "opening", label: "the opening", ambiguous: true },
+        { id: "window", label: "the window", control: "window", values: { open: "open", close: "shut" } },
+        { id: "cage", label: "Biscuit's cage door", control: "cage", values: { open: "open", close: "latched" } },
+      ],
+    },
     controls: [
       {
         id: "window",

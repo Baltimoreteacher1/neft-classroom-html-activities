@@ -35,6 +35,7 @@ export function stageView(task, stageKey = "main") {
       claim: t.claim,
       valid: t.valid || [],
       weak: t.weak || [],
+      rationales: t.rationales || {},
       minValid: t.minValid || 1,
       claimOptions,
       refs: [],
@@ -49,6 +50,7 @@ export function stageView(task, stageKey = "main") {
     claim: c.claim,
     valid: c.valid || [],
     weak: c.weak || [],
+    rationales: c.rationales || {},
     minValid: c.minValid || 1,
     claimOptions: task.claimOptions || [c.claim],
     refs: task.refs || [],
@@ -183,14 +185,15 @@ const NOTE_IRRELEVANT = pair(
 
 function classify(v, id) {
   const role = sentence(v, id)?.role;
+  const authored = v.rationales[id];
   if (v.valid.includes(id))
-    return { id, cls: "valid", snippet: snippet(textOf(v, id)), note: NOTE_VALID };
+    return { id, cls: "valid", snippet: snippet(textOf(v, id)), note: authored || NOTE_VALID, authored: Boolean(authored) };
   if (v.weak.includes(id))
     return {
       id,
       cls: "weak",
       snippet: snippet(textOf(v, id)),
-      note: WEAK_NOTES[role] || WEAK_NOTES.default,
+      note: authored || WEAK_NOTES[role] || WEAK_NOTES.default,
     };
   return {
     id,

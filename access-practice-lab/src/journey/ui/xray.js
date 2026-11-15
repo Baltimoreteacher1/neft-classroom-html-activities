@@ -304,8 +304,8 @@ function sentenceRow(task, env, s, st, ui, sent, n) {
     ? html`<span class="xr-mark xr-mark-${checked.cls}">${icon(ico)}${I.T(...label)}</span>`
     : "";
   const why =
-    checked && checked.cls !== "valid"
-      ? html`<p class="xr-why">${I.T("Why not: ", "Por qué no: ")}${I.T(...checked.note)}</p>`
+    checked && (checked.cls !== "valid" || checked.authored)
+      ? html`<p class="xr-why">${checked.cls === "valid" ? I.T("Connection: ", "Conexión: ") : I.T("Why not: ", "Por qué no: ")}${I.T(...checked.note)}</p>`
       : "";
   const trace =
     s.stage === "main" &&
@@ -553,7 +553,7 @@ function act(root, env, action, el) {
       st = r.state;
       set({
         checked: Object.fromEntries(
-          r.result.items.map((i) => [i.id, { cls: i.cls, note: i.note }]),
+          r.result.items.map((i) => [i.id, { cls: i.cls, note: i.note, authored: i.authored }]),
         ),
         ready: r.result.status === "sufficient",
         feedback: { kind: feedbackKind(r.result), message: r.result.message },

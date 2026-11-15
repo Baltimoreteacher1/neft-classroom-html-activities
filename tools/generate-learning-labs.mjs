@@ -7,6 +7,7 @@ import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
 import { injectUtilityBar } from "./inject-curriculum-utility-bar.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { catalogBody } from "./learning-labs/catalog-page.mjs";
+import { labAssets } from "./learning-labs/lab-assets.mjs";
 import { modelQuestion } from "./learning-labs/model-question.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
 import { isLessonName, vocabKey } from "./learning-labs/vocabulary.mjs";
@@ -256,13 +257,14 @@ for (const blueprint of blueprints) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "content.json"), `${JSON.stringify(lab, null, 2)}\n`);
   const label = blueprint.lessons.map((x) => x.replace("-", ".")).join(" & ");
+  const assets = labAssets(blueprint.id);
   writeFileSync(
     join(dir, "index.html"),
     injectUtilityBar(
       page(
         blueprint.title,
-        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
-        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">`,
+        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>${assets.body}`,
+        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">${assets.head}`,
       ),
       join(dir, "index.html"),
     ),
