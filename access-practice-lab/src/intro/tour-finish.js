@@ -97,7 +97,7 @@ function mapHTML(pick) {
       ${AVENUES.map(
         (v) =>
           html`<li>
-            <a href="${BASE}${v.route}?grades=${pick}" target="_blank" rel="noopener">
+            <a href="https://thelanguagepage.com${BASE}${v.route}?grades=${pick}" target="_blank" rel="noopener">
               <span class="gt-map-ic" aria-hidden="true">${icon(v.icon)}</span>
               <span><strong>${v.name}</strong><span>${v.text}</span></span>
             </a>
@@ -105,7 +105,7 @@ function mapHTML(pick) {
       )}
     </ol>
     <p class="gt-map-more">
-      <a href="${BASE}/site-guide?for=teacher&grades=${pick}" target="_blank" rel="noopener">${icon("help")}Open the full Site Guide (new tab)</a>
+      <a href="https://thelanguagepage.com${BASE}/site-guide?for=teacher&grades=${pick}" target="_blank" rel="noopener">${icon("help")}Open the full Site Guide (new tab)</a>
     </p>
   </section>`;
 }
@@ -113,7 +113,7 @@ function mapHTML(pick) {
 /** Part 3 of the tour: support, the class card with one main action, the three-step start, ready, and the map. */
 export function classroomHTML(s, a, options = []) {
   const url = studentUrl(a);
-  const open = withReturn(`${BASE}${activityRoute(a)}`, "tour");
+  const open = `https://thelanguagepage.com${withReturn(`${BASE}${activityRoute(a)}`, "tour")}`;
   return html`${supportHTML(s, options)}
     <article class="gt-class-card ${a.domain.cls}" aria-labelledby="gtCardTitle" data-gt-card>
       <header class="gt-class-head">
@@ -147,7 +147,7 @@ export function classroomHTML(s, a, options = []) {
         <h2 id="gtReady">You’re ready to use this with students.</h2>
         <p>Every activity works the way you just tried it: try, get guidance, revise.</p>
       </div>
-      <a class="btn btn-big gt-ready-go" href="${BASE}/explore/practice?grades=${a.pick}" target="_blank" rel="noopener">Start using the lab (new tab)${icon("arrow-right")}</a>
+      <a class="btn btn-big gt-ready-go" href="https://thelanguagepage.com${BASE}/explore/practice?grades=${a.pick}" target="_blank" rel="noopener">Start using the lab (new tab)${icon("arrow-right")}</a>
     </section>
     ${mapHTML(a.pick)}
     ${showDialogHTML(a, url)}`;

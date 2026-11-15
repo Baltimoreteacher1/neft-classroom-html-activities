@@ -226,7 +226,7 @@ function tryHTML(s, a) {
         <p class="gt-loading" role="status">${icon("clock")}Opening the activity…</p>
       </div>
     </div>
-    <p class="fine"><a href="${withReturn(`${BASE}${activityRoute(a)}`, "tour")}" target="_blank" rel="noopener">Open this activity in a new tab</a> and return here to continue the guide.</p>
+    <p class="fine"><a href="https://thelanguagepage.com${withReturn(`${BASE}${activityRoute(a)}`, "tour")}" target="_blank" rel="noopener">Open this activity in a new tab</a> and return here to continue the guide.</p>
   </section>`;
 }
 

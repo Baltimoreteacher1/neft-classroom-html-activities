@@ -399,6 +399,7 @@ test("Part 3: one main action on the class card, three quieter ones, the start s
   assert.equal(secondary.length, 3);
   assert.match(secondary[0].textContent, /Open it/);
   assert.match(secondary[0].getAttribute("href"), /intro=tour/, "Open it keeps the way back");
+  assert.equal(new URL(secondary[0].href).hostname, "thelanguagepage.com");
   assert.equal(secondary[0].target, "_blank");
   assert.match(secondary[0].rel, /noopener/);
   assert.ok(card.querySelector(".gt-secondary [data-gt-show]"));
@@ -428,6 +429,7 @@ test("Part 3: one main action on the class card, three quieter ones, the start s
   assert.equal(stops.length, 7);
   for (const a of stops) {
     assert.match(a.getAttribute("href"), /grades=2-3$/);
+    assert.equal(new URL(a.href).hostname, "thelanguagepage.com");
     assert.equal(a.target, "_blank");
     assert.match(a.rel, /noopener/);
   }
