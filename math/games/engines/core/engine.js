@@ -10,8 +10,8 @@
 //    Arrow / Space / Enter behaviour and real screen-reader names and values;
 //  - live regions (polite for readings, assertive for solves and strain);
 //  - English / Spanish toggle that re-binds every string without resetting state;
-//  - CRA tiers 0-2, unlocked by struggle (a miss opens Tier 1, a second opens
-//    Tier 2), never handed out first;
+//  - CRA tiers 0-2, with guided support selected by default and every tier
+//    available from the first round;
 //  - round flow, progress and receipts in IndexedDB;
 //  - test hooks on window.__ewEngines for the keyboard, FPS and GC audits.
 //
@@ -29,6 +29,7 @@
 //   testPlan()             [{ control, key, times? }] that solves this round
 
 import { haptic, Synth } from "./audio.js";
+import { attachEngineScene } from "./scene3d.js";
 import { roundRect, staticLayer } from "./draw.js";
 import { rng } from "./math.js";
 import { addReceipt, loadProgress, saveProgress, storeStatus } from "./store.js";
@@ -109,6 +110,8 @@ const STYLE = `
 h1{font-size:1.15rem;margin:0;letter-spacing:.02em}
 .meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
 .bar-end{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.game-3d{width:92px;height:82px;flex:0 0 92px;overflow:hidden;border:1px solid rgba(112,218,221,.42);border-radius:14px;background:radial-gradient(ellipse at 50% 45%,rgba(46,77,123,.62),rgba(12,20,39,.94) 74%);box-shadow:inset 0 0 22px rgba(86,181,220,.16),0 8px 22px rgba(0,0,0,.22)}
+.game-3d canvas{display:block;width:100%;height:100%;pointer-events:none}
 .campaign{display:flex;align-items:center;gap:8px;flex:1 1 100%;color:var(--muted);font-size:.85rem}
 .campaign-label{margin:0;min-width:170px}
 .campaign-track{display:flex;gap:4px;width:min(220px,100%)}
@@ -201,8 +204,8 @@ export class EduWonderEngine extends HTMLElement {
     }
     this.lang = new URLSearchParams(location.search).get("lang") === "es" ? "es" : "en";
     this.synth = new Synth();
-    this.tier = 0;
-    this.maxTier = 0;
+    this.tier = 1;
+    this.maxTier = 2;
     this.level = 1;
     this.solvedAtLevel = 0;
     this.totalSolved = 0;
@@ -242,6 +245,7 @@ export class EduWonderEngine extends HTMLElement {
               <button id="sound" type="button" aria-pressed="true"></button>
               <button id="lang" type="button" lang=""></button>
             </div>
+            <div class="game-3d" id="game3d" aria-hidden="true"></div>
           </div>
           <div class="campaign">
             <p id="campaign-label" class="campaign-label"></p>
@@ -402,6 +406,7 @@ export class EduWonderEngine extends HTMLElement {
     if (this.started) return;
     this.started = true;
     this.buildChrome();
+    this.scene3d = attachEngineScene(this.$("game3d"), this.meta.gameId, this.reducedMotion);
     this.initWorld();
     this.buildControls(this.$("deck"));
     this.nextButton = this.button({ id: "next", label: "next", onPress: () => this.startRound() });
@@ -436,6 +441,7 @@ export class EduWonderEngine extends HTMLElement {
 
   disconnectedCallback() {
     this.running = false;
+    this.scene3d?.dispose();
   }
 
   buildChrome() {
@@ -459,8 +465,8 @@ export class EduWonderEngine extends HTMLElement {
       input.type = "radio";
       input.name = "tier";
       input.value = String(n);
-      input.checked = n === 0;
-      input.disabled = n > 0;
+      input.checked = n === this.tier;
+      input.disabled = n > this.maxTier;
       const span = document.createElement("span");
       lab.append(input, span);
       tiers.append(lab);
@@ -496,6 +502,7 @@ export class EduWonderEngine extends HTMLElement {
   setLanguage(lang) {
     this.lang = lang;
     document.documentElement.lang = lang;
+    this.onLanguage?.();
     for (const b of this.binders) b();
     this.$("note").textContent = this.t(storeStatus.persistent ? "saved" : "notSaved");
     this.renderMission();
@@ -533,7 +540,9 @@ export class EduWonderEngine extends HTMLElement {
     this.roundStart = performance.now();
     this.nextButton.hidden = true;
     this.setFeedback("");
-    this.newRound(this.level, this.random);
+    // Give students more time in the simpler task bands. Campaign levels still
+    // advance every checkpoint, while challenge numbers step up more gradually.
+    this.newRound(Math.max(1, this.level - 1), this.random);
     for (const b of this.binders) b();
     this.renderMission();
     this.updateCampaign();
@@ -568,7 +577,8 @@ export class EduWonderEngine extends HTMLElement {
       const levelCleared = this.solvedAtLevel + 1 >= SOLVES_PER_LEVEL;
       const wasFinalLevel = this.level === LEVELS;
       this.solved = true;
-      const stars = this.tiersUsed === 0 && this.misses === 0 ? 3 : this.tiersUsed < 2 ? 2 : 1;
+      // Support and retries never reduce a student's reward for finishing.
+      const stars = 3;
       this.cores += stars;
       this.totalSolved++;
       this.solvedAtLevel++;
@@ -580,6 +590,7 @@ export class EduWonderEngine extends HTMLElement {
       }
       this.synth.success();
       haptic([30, 40, 60]);
+      this.scene3d?.celebrate();
       const text = `${this.t(r.key, r.vars)} ${this.t("solvedAt", { stars })}`;
       this.setFeedback(text, true);
       let announcement = text;
@@ -601,6 +612,7 @@ export class EduWonderEngine extends HTMLElement {
         this.misconceptions.push(r.misconception);
       this.synth.strain();
       haptic([15]);
+      this.scene3d?.stumble();
       const text = this.t(r.key, r.vars);
       this.setFeedback(text);
       this.shout(text);
