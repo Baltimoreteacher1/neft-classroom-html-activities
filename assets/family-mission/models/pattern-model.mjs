@@ -1,16 +1,18 @@
 // Pure state for the "pattern" family (no DOM). Two modes share one rule y = m·x + b:
 //  "rule"  (5.OA.B.3) the student picks inputs for a table, tries "start at b, add m each step" or
 //          "multiply by m", and the model compares that rule with every row shown.
-//  "solve" (6.AT.11)  the equation y = m·x is shown; the student says which variable is known,
-//          undoes the multiplication on both sides, and the model checks by substituting back.
+//  "solve" (6.AT.11)  the equation y = m·x (or y = b + m·x) is shown; the student says which variable
+//          is known. With the goal y known they undo the multiplication on both sides (b = 0), or the
+//          addition first and then the multiplication, in reverse order (b > 0). With x known they work
+//          out m × x, then add b. The model checks by substituting back.
 // Every number is an exact rational (core.mjs); decimals in the config are parsed, never floated.
-import { add, cmp, defineFamily, div, eq, frac, mul, parseRational, toDecimalString } from "./core.mjs";
+import { add, cmp, defineFamily, div, eq, frac, mul, parseRational, sub, toDecimalString } from "./core.mjs";
 import { accessibleText, explanationText } from "./pattern-text.mjs";
 
 export const MAX_PRESETS = 4;
 export const MAX_ROWS = 8;
 const MODES = ["rule", "solve"];
-const OPS = ["mul", "add", "sub"];
+const OPS = ["mul", "add", "sub", "div"];
 const BAD_TEXT = /undefined|NaN|\[object/;
 
 // ── Numbers ──────────────────────────────────────────────────────────────────
@@ -50,7 +52,6 @@ export function normalizeProblem(c, mode) {
   const b = parseNum(c.b ?? "0");
   if (!m || m.n === 0) bad("m must be a number above 0");
   if (!b) bad("b must be a number of 0 or more");
-  if (mode === "solve" && b.n !== 0) bad("solve mode uses y = m × x, so b must be 0");
   const letters = { x: letter(c.letters?.x ?? "x"), y: letter(c.letters?.y ?? "y") };
   if (letters.x === letters.y) bad("the two letters must differ");
   const u = c.units || {};
@@ -76,6 +77,7 @@ export function normalizeProblem(c, mode) {
   const target = parseNum(c.target);
   const given = parseNum(c.given);
   if (!target || target.n === 0 || !given || given.n === 0) bad("target and given must be numbers above 0");
+  if (b.n !== 0 && cmp(target, b) <= 0) bad("target must be above b, so the answer is above 0");
   return { ...p, target: canon(target), given: canon(given) };
 }
 
@@ -124,26 +126,39 @@ const positive = (text) => {
   const v = typeof text === "string" ? parseNum(text) : null;
   return !!v && v.n > 0;
 };
-const solveOk = (v) =>
+
+// ── Solve stages ─────────────────────────────────────────────────────────────
+// b = 0: stage 0 substitute · (y known) 1 choose the undo move, 2 result · (x known) 1 work out
+//        m × x · then 2 check · 3 finished.
+// b > 0: stage 0 substitute · (y known) 1 undo the adding, 2 undo the multiplying, 3 result ·
+//        (x known) 1 work out m × x, 2 add b, 3 result · 4 check, finished.
+
+const hasStart = (p) => parseNum(p.b).n !== 0;
+const lastStage = (p) => (hasStart(p) ? 4 : 3);
+const needsOp = (v, p) => v.known === "y" && (v.stage === 1 || (hasStart(p) && v.stage === 2));
+/** The one move that is right at this stage: undo the adding first (b > 0), then the multiplying. */
+const rightOp = (v, p) => (hasStart(p) && v.stage === 1 ? "sub" : "div");
+const aboveStart = (p, text) => !hasStart(p) || cmp(parseNum(text), parseNum(p.b)) > 0;
+
+const solveOk = (v, p) =>
   !!v &&
   ["x", "y"].includes(v.known) &&
   positive(v.values?.x) &&
   positive(v.values?.y) &&
+  aboveStart(p, v.values.y) &&
   Number.isInteger(v.stage) &&
   v.stage >= 0 &&
-  v.stage <= 3 &&
-  (v.tried === null || OPS.includes(v.tried));
+  v.stage <= lastStage(p) &&
+  (v.tried === null || (needsOp(v, p) && OPS.includes(v.tried) && v.tried !== rightOp(v, p)));
 
 function validateState(st) {
   if (!st || !problemOk(st.problem)) return false;
   if (!Array.isArray(st.presets) || st.presets.length > MAX_PRESETS) return false;
   if (!st.presets.every((p) => problemOk(p) && p.mode === st.problem.mode)) return false;
-  return st.problem.mode === "rule" ? ruleOk(st.rule, st.problem) : solveOk(st.solve);
+  return st.problem.mode === "rule" ? ruleOk(st.rule, st.problem) : solveOk(st.solve, st.problem);
 }
 
 // ── Moves ────────────────────────────────────────────────────────────────────
-
-const needsOp = (v) => v.known === "y" && v.stage === 1;
 
 function reduceRule(st, patch) {
   const r = { ...st.rule };
@@ -168,6 +183,7 @@ function reduceRule(st, patch) {
 
 function reduceSolve(st, patch) {
   const v = { ...st.solve };
+  const p = st.problem;
   if (patch.known) {
     if (!["x", "y"].includes(patch.known)) throw new RangeError("pattern: known is x or y");
     return { ...st, solve: { ...v, known: patch.known, stage: 0, tried: null } };
@@ -175,16 +191,17 @@ function reduceSolve(st, patch) {
   if ("value" in patch) {
     const n = parseNum(patch.value);
     if (!n || n.n === 0) throw new RangeError("pattern: the known number must be above 0");
+    if (v.known === "y" && !aboveStart(p, canon(n))) throw new RangeError("pattern: the goal must be above the starting amount");
     return { ...st, solve: { ...v, values: { ...v.values, [v.known]: canon(n) }, stage: 0, tried: null } };
   }
   if (patch.advance) {
-    if (needsOp(v) || v.stage >= 3) throw new RangeError("pattern: nothing to advance");
+    if (needsOp(v, p) || v.stage >= lastStage(p)) throw new RangeError("pattern: nothing to advance");
     return { ...st, solve: { ...v, stage: v.stage + 1, tried: null } };
   }
   if (patch.op) {
-    if (!needsOp(v)) throw new RangeError("pattern: no move to choose now");
-    if (patch.op === "div") return { ...st, solve: { ...v, stage: 2, tried: null } };
+    if (!needsOp(v, p)) throw new RangeError("pattern: no move to choose now");
     if (!OPS.includes(patch.op)) throw new RangeError("pattern: unknown operation");
+    if (patch.op === rightOp(v, p)) return { ...st, solve: { ...v, stage: v.stage + 1, tried: null } };
     return { ...st, solve: { ...v, tried: patch.op } };
   }
   throw new RangeError("pattern: unknown move");
@@ -237,23 +254,30 @@ function deriveRule(st, d) {
 function deriveSolve(st, d) {
   const { solve: v } = st;
   const m = parseNum(st.problem.m, 1e5);
+  const b = parseNum(st.problem.b);
   const value = parseNum(v.values[v.known]);
   const known = v.known;
-  const answer = known === "y" ? div(value, m) : mul(m, value);
-  const back = known === "y" ? mul(m, answer) : div(answer, m);
+  const start = hasStart(st.problem);
+  // y known: undo the adding (rest = y - b), then the multiplying. x known: m × x (product), then add b.
+  const rest = known === "y" ? sub(value, b) : mul(m, value);
+  const answer = known === "y" ? div(rest, m) : add(rest, b);
+  const back = known === "y" ? add(b, mul(m, answer)) : div(sub(answer, b), m);
   return {
     ...d,
     known,
     unknown: known === "y" ? "x" : "y",
     value,
+    rest,
     answer,
     back,
     checkOk: eq(back, value),
     stage: v.stage,
     tried: v.tried,
-    needsOp: needsOp(v),
-    finished: v.stage === 3,
+    needsOp: needsOp(v, st.problem),
+    finished: v.stage === lastStage(st.problem),
+    start,
     m,
+    b,
   };
 }
 

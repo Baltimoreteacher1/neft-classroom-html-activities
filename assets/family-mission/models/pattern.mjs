@@ -1,8 +1,9 @@
 // Family "pattern": a rule y = m·x + b in two modes. "rule" (5.OA.B.3): pick inputs for a table, try
 // "start, then add each step" or "multiply the input", and compare it with every row shown. "solve"
-// (6.AT.11): y = m·x is on the screen; say which number is known, undo the multiplying on both
-// sides, then check by putting the answer back. All arithmetic is exact (pattern-model.mjs); a
-// row that differs is "try another look", never a score.
+// (6.AT.11): y = m·x or y = b + m·x is on the screen; say which number is known, undo the adding
+// (if there is a starting amount) and then the multiplying on both sides, in reverse order, then
+// check by putting the answer back. All arithmetic is exact (pattern-model.mjs); a row that differs
+// or a move in the wrong order is "try another look", never a score.
 import { a11y, button, createView, cmp, field, frac, h, put, s, stext, t } from "./core.mjs";
 import { create } from "./pattern-model.mjs";
 import { STR, badX, checkLine, equationLine, guessLine, header, inputLabel, logLines, num, opLabel, plain, resultText, sayText, stageHint, stepLabel } from "./pattern-text.mjs";
@@ -17,7 +18,8 @@ const LOOK = {
   es: "Mira cómo cambia el resultado cuando la entrada sube 1. Usa las mismas unidades que la tabla.",
 };
 const OP_ORDER = ["add", "mul", "div", "sub"];
-const problemLabel = (p, L) => (p.title ? t(L, p.title) : p.mode === "rule" ? `${t(L, p.quantities.x)} → ${t(L, p.quantities.y)}` : `${p.letters.y} = ${p.m} × ${p.letters.x}`);
+const solveRule = (p) => (p.b === "0" ? `${p.m} × ${p.letters.x}` : `${p.b} + ${p.m} × ${p.letters.x}`);
+const problemLabel = (p, L) => (p.title ? t(L, p.title) : p.mode === "rule" ? `${t(L, p.quantities.x)} → ${t(L, p.quantities.y)}` : `${p.letters.y} = ${solveRule(p)}`);
 
 // ── Graph: points on labelled axes, drawn as shapes (circle = table, diamond = your rule) ────────
 
@@ -224,9 +226,9 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
           : [btn({ class: "fm-btn fm-pattern-next", "data-adv": "1" }, stepLabel(d, L))]),
     );
     if (hadFocus) (ui.acts.querySelector("button") || ui.undo)?.focus({ preventScroll: true });
-    const showLog = d.known === "y" && d.stage >= 2;
-    ui.log.hidden = !showLog;
-    if (showLog) ui.log.replaceChildren(h("p", { class: "fm-label" }, T("logTitle")), ...logLines(d, L).map((line) => h("p", { class: "fm-pattern-line" }, line)));
+    const lines = logLines(d, L);
+    ui.log.hidden = !lines.length;
+    if (lines.length) ui.log.replaceChildren(h("p", { class: "fm-label" }, T("logTitle")), ...lines.map((line) => h("p", { class: "fm-pattern-line" }, line)));
     ui.result.hidden = !d.finished;
     ui.result.textContent = d.finished ? checkLine(d, L) : "";
     if (d.tried) ui.msg.textContent = T("tried");

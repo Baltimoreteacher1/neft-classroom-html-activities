@@ -67,6 +67,16 @@ const posters = {
   target: "1300",
   given: "5",
 };
+const gym = {
+  mode: "solve",
+  m: "3",
+  b: "15",
+  letters: { x: "v", y: "c" },
+  quantities: { x: words("visits", "visitas"), y: words("total cost", "costo total") },
+  units: { x: words("visits", "visitas"), yPrefix: "$" },
+  target: "60",
+  given: "8",
+};
 const named = (root, text) =>
   [...root.querySelectorAll("button")].find((b) => b.textContent === text);
 const guess = (m, g) => m.setState({ guess: g });
@@ -365,7 +375,12 @@ test("bad configs are refused with a TypeError", () => {
     { ...dimes, presets: [{ mode: "solve" }] },
     { ...dimes, presets: [{ m: "0" }] },
     { ...dimes, presets: [{}, {}, {}, {}, {}] },
-    { ...cars, b: "1" },
+    { ...cars, b: "1000" },
+    { ...gym, target: "15" },
+    { ...gym, target: "10" },
+    { ...gym, b: "x" },
+    { ...gym, b: "1000000" },
+    { ...gym, presets: [{ b: "60" }] },
     { ...cars, target: undefined },
     { ...cars, target: "0" },
     { ...cars, given: "x" },
@@ -667,4 +682,324 @@ test("keyboard: Enter in the input adds the row, and the controls are announced 
   assert.equal(root.querySelectorAll(".fm-pattern-table tbody tr").length, 4);
   await new Promise((r) => setTimeout(r, 400));
   assert.match(root.querySelector('.fm-live[aria-live="polite"]').textContent, /4 rows/);
+});
+
+// ── Solve mode with a starting amount: y = b + m × x (two undo steps) ─────────
+
+const lines = (root) => [...root.querySelectorAll(".fm-pattern-line")].map((p) => p.textContent);
+const nothingBroken = (root) => assert.doesNotMatch(root.textContent, /\bnull\b|undefined|NaN/);
+
+test("two-step: 15 + 3x = 60 -> subtract 15 (45), then divide by 3 (x = 15)", () => {
+  const m = create(gym);
+  assert.equal(m.getState().start, true);
+  assert.equal(m.setState({ advance: true }), true); // 15 + 3 × v = 60
+  assert.equal(m.setState({ advance: true }), false, "a move must be chosen");
+  assert.equal(m.getState().needsOp, true);
+  assert.equal(m.setState({ op: "sub" }), true);
+  assert.equal(m.getState().stage, 2);
+  assert.deepEqual(m.getState().rest, { n: 45, d: 1 }, "60 - 15");
+  assert.equal(m.getState().needsOp, true, "the multiplying is still to undo");
+  assert.equal(m.setState({ advance: true }), false);
+  assert.equal(m.setState({ op: "div" }), true);
+  assert.equal(m.getState().stage, 3);
+  assert.deepEqual(m.getState().answer, { n: 15, d: 1 });
+  assert.equal(m.getState().finished, false, "the check is still ahead");
+  assert.equal(m.setState({ advance: true }), true);
+  const d = m.getState();
+  assert.equal(d.finished, true);
+  assert.deepEqual(d.back, { n: 60, d: 1 }, "15 + 3 × 15 = 60");
+  assert.equal(d.checkOk, true);
+  assert.equal(m.setState({ advance: true }), false);
+  const en = m.getMathematicalExplanation("en");
+  assert.match(en, /The equation is c = 15 \+ 3 × v\./);
+  assert.match(en, /15 \+ 3 × v = \$60\. Subtract 15 from both sides\./);
+  assert.match(en, /Left side: 15 \+ 3 × v − 15 = 3 × v\. 1\. Right side: \$60 − \$15 = \$45\./);
+  assert.match(en, /3 × v = \$45\. Divide both sides by 3\./);
+  assert.match(en, /Right side: \$45 ÷ 3 = 15\. v = 15 visits\./);
+  assert.match(en, /Check: 15 \+ 3 × 15 = \$60\. It matches\./);
+  assert.match(m.getMathematicalExplanation("es"), /Restar 15 de ambos lados\./);
+  assert.match(
+    m.getMathematicalExplanation("es"),
+    /Comprobación: 15 \+ 3 × 15 = \$60\. Coincide\./,
+  );
+  assert.match(
+    m.getAccessibleDescription("es"),
+    /Modelo de ecuación de dos pasos\. v = 15 visitas/,
+  );
+});
+
+test("two-step: 20 + 4x = 100 -> subtract 20 (80), divide by 4 (x = 20)", () => {
+  const m = create({ ...gym, m: "4", b: "20", target: "100" });
+  m.setState({ advance: true });
+  m.setState({ op: "sub" });
+  assert.deepEqual(m.getState().rest, { n: 80, d: 1 });
+  m.setState({ op: "div" });
+  assert.deepEqual(m.getState().answer, { n: 20, d: 1 });
+  m.setState({ advance: true });
+  assert.deepEqual(m.getState().back, { n: 100, d: 1 });
+  assert.equal(m.getState().checkOk, true);
+});
+
+test("two-step: wrong order or wrong move is 'tried', never advances, never gives the answer", () => {
+  const m = create(gym);
+  m.setState({ advance: true });
+  for (const op of ["div", "mul", "add"]) {
+    assert.equal(m.setState({ op }), true);
+    assert.equal(m.getState().stage, 1, `${op} first does not advance`);
+    assert.equal(m.getState().tried, op);
+  }
+  const hint = m.getAccessibleDescription("en");
+  assert.match(hint, /Undo the adding first, then the multiplying: reverse order/);
+  assert.doesNotMatch(
+    hint,
+    /\b45\b|= 15 visits|subtract/i,
+    "the hint states the principle, not the answer",
+  );
+  assert.match(
+    m.getAccessibleDescription("es"),
+    /Deshaz primero la suma y luego la multiplicación/,
+  );
+  m.setState({ op: "sub" });
+  assert.equal(m.getState().tried, null);
+  for (const op of ["sub", "add", "mul"]) {
+    assert.equal(m.setState({ op }), true);
+    assert.equal(m.getState().stage, 2, `${op} second does not advance`);
+    assert.equal(m.getState().tried, op);
+  }
+  assert.equal(m.setState({ op: "pow" }), false);
+  m.setState({ op: "div" });
+  assert.equal(m.getState().stage, 3);
+  assert.equal(m.setState({ op: "div" }), false, "no move to choose after both undo steps");
+});
+
+test("two-step: given x, work out 3 × 8 = 24 first, then add 15 -> 39, and check", () => {
+  const m = create(gym);
+  assert.equal(m.setState({ known: "x" }), true);
+  assert.equal(m.setState({ op: "sub" }), false, "no undo moves when x is known");
+  m.setState({ advance: true });
+  assert.equal(m.getState().stage, 1);
+  assert.deepEqual(m.getState().rest, { n: 24, d: 1 }, "3 × 8");
+  m.setState({ advance: true });
+  assert.equal(m.getState().stage, 2);
+  m.setState({ advance: true });
+  assert.deepEqual(m.getState().answer, { n: 39, d: 1 }, "15 + 24");
+  assert.equal(m.getState().finished, false);
+  m.setState({ advance: true });
+  const d = m.getState();
+  assert.equal(d.finished, true);
+  assert.deepEqual(d.back, { n: 8, d: 1 }, "(39 - 15) ÷ 3");
+  const en = m.getMathematicalExplanation("en");
+  assert.match(en, /c = 15 \+ 3 × 8\. c = 15 \+ 24\. c = \$39\./);
+  assert.match(en, /Check: \(\$39 − \$15\) ÷ 3 = 8\. It matches\./);
+});
+
+test("two-step: decimals and fractions stay exact; a typed goal must beat the starting amount", () => {
+  const m = create({ ...gym, m: "0.5", b: "2.5", target: "10" });
+  m.setState({ advance: true });
+  m.setState({ op: "sub" });
+  assert.deepEqual(m.getState().rest, { n: 15, d: 2 }, "10 - 2.5 = 7.5");
+  m.setState({ op: "div" });
+  assert.deepEqual(m.getState().answer, { n: 15, d: 1 }, "7.5 ÷ 0.5");
+  const third = create(gym);
+  assert.equal(third.setState({ value: "20" }), true);
+  third.setState({ advance: true });
+  third.setState({ op: "sub" });
+  third.setState({ op: "div" });
+  assert.deepEqual(third.getState().answer, { n: 5, d: 3 }, "(20 - 15) ÷ 3");
+  third.setState({ advance: true });
+  assert.equal(third.getState().checkOk, true);
+  assert.match(third.getMathematicalExplanation("en"), /v = 5\/3 visits/);
+  for (const bad of ["15", "10", "0"]) assert.equal(third.setState({ value: bad }), false, bad);
+  assert.equal(third.setState({ value: "16" }), true);
+  assert.equal(third.setState({ known: "x" }), true);
+  assert.equal(third.setState({ value: "1" }), true, "any input above 0 works when x is known");
+});
+
+test("two-step: undo, reset, serialize and restore across the new stages", () => {
+  const m = create({ ...gym, task: { answer: "15" } });
+  assert.equal(m.validate().reason, "not-finished");
+  m.setState({ advance: true });
+  m.setState({ op: "sub" });
+  const mid = m.serialize();
+  m.setState({ op: "div" });
+  m.setState({ advance: true });
+  assert.deepEqual(m.validate(), { ok: true, reason: "correct", misconception: null });
+  const done = m.serialize();
+  for (const stage of [3, 2, 1, 0]) {
+    assert.equal(m.undo(), true);
+    assert.equal(m.getState().stage, stage);
+  }
+  assert.equal(m.undo(), false);
+  m.setState({ advance: true });
+  m.setState({ op: "sub" });
+  m.reset();
+  assert.equal(m.getState().stage, 0);
+  const r = create(gym);
+  assert.equal(r.restore(mid), true);
+  assert.equal(r.getState().stage, 2);
+  assert.deepEqual(r.getState().rest, { n: 45, d: 1 });
+  assert.equal(r.restore(done), true);
+  assert.equal(r.getState().finished, true);
+  assert.equal(r.restore(done.replace('"stage":4', '"stage":5')), false);
+  assert.equal(r.restore(mid.replace('"tried":null', '"tried":"sub"')), true, "subtracting twice");
+  assert.equal(
+    r.restore(mid.replace('"tried":null', '"tried":"div"')),
+    false,
+    "div is the right second move",
+  );
+  assert.equal(r.restore(mid.replace('"tried":null', '"tried":"pow"')), false);
+  const first = create(gym);
+  first.setState({ advance: true });
+  const fj = first.serialize();
+  assert.equal(r.restore(fj.replace('"tried":null', '"tried":"div"')), true, "dividing too early");
+  assert.equal(
+    r.restore(fj.replace('"tried":null', '"tried":"sub"')),
+    false,
+    "sub is the right first move",
+  );
+  assert.equal(r.restore(fj.replace('"y":"60"', '"y":"15"')), false, "goal must be above b");
+  assert.equal(r.restore(fj.replace('"b":"15"', '"b":"15.0"')), false, "not the canonical problem");
+  const plain = create(cars);
+  plain.setState({ advance: true });
+  plain.setState({ op: "div" });
+  plain.setState({ advance: true });
+  const pj = plain.serialize();
+  assert.equal(plain.restore(pj), true);
+  assert.equal(
+    plain.restore(pj.replace('"stage":3', '"stage":4')),
+    false,
+    "a b = 0 problem has no stage 4",
+  );
+});
+
+test("two-step: the b = 0 problem is unchanged by the starting-amount stages", () => {
+  const d = create(cars).getState();
+  assert.equal(d.start, false);
+  assert.deepEqual(d.rest, { n: 1000, d: 1 });
+  const m = create(cars);
+  m.setState({ advance: true });
+  assert.equal(m.setState({ op: "div" }), true);
+  assert.equal(m.getState().stage, 2);
+});
+
+test("mounted two-step: goal known, undo the adding then the multiplying, EN then ES", () => {
+  const root = box();
+  const m = mount(root, gym);
+  assert.equal(eq(root), "c = 15 + 3 × v");
+  click(named(root, "Substitute $60 for c"));
+  assert.equal(eq(root), "15 + 3 × v = $60");
+  assert.deepEqual([...root.querySelectorAll("[data-op]")].map((b) => b.textContent).sort(), [
+    "Add 15 to both sides",
+    "Divide both sides by 3",
+    "Multiply both sides by 3",
+    "Subtract 15 from both sides",
+  ]);
+  click(named(root, "Divide both sides by 3"));
+  assert.match(root.querySelector(".fm-msg").textContent, /Try another look/);
+  assert.match(root.querySelector(".fm-explain").textContent, /reverse order/);
+  assert.equal(eq(root), "15 + 3 × v = $60");
+  assert.equal(root.querySelector(".fm-pattern-log").hidden, true);
+  click(named(root, "Add 15 to both sides"));
+  assert.equal(eq(root), "15 + 3 × v = $60");
+  click(named(root, "Subtract 15 from both sides"));
+  assert.equal(root.querySelector(".fm-msg").textContent, "");
+  assert.equal(eq(root), "3 × v = $45");
+  assert.deepEqual(lines(root), [
+    "1. Left side: 15 + 3 × v − 15 = 3 × v",
+    "1. Right side: $60 − $15 = $45",
+  ]);
+  click(named(root, "Subtract 15 from both sides"));
+  assert.match(root.querySelector(".fm-msg").textContent, /Try another look/);
+  assert.equal(eq(root), "3 × v = $45");
+  m.setLang("es");
+  click(named(root, "Dividir ambos lados entre 3"));
+  assert.equal(eq(root), "v = 15 visitas");
+  assert.equal(lines(root).length, 4);
+  assert.equal(lines(root)[3], "2. Lado derecho: $45 ÷ 3 = 15");
+  click(named(root, "Comprobar poniéndolo de nuevo"));
+  assert.equal(
+    root.querySelector(".fm-pattern-result").textContent,
+    "Comprobación: 15 + 3 × 15 = $60. Coincide.",
+  );
+  assert.equal(root.querySelectorAll("[data-op], button[data-adv]").length, 0);
+  nothingBroken(root);
+  m.setLang("en");
+  assert.equal(
+    root.querySelector(".fm-pattern-result").textContent,
+    "Check: 15 + 3 × 15 = $60. It matches.",
+  );
+  assert.match(root.querySelector(".fm-sr").textContent, /Two-step equation model\. v = 15 visits/);
+  click(root.querySelector(".fm-actions button"));
+  assert.equal(m.getState().stage, 3, "undo steps back one stage");
+  m.destroy();
+});
+
+test("mounted two-step: x known, multiply first then add the starting amount", () => {
+  const root = box();
+  const m = mount(root, gym);
+  click(root.querySelector('[data-known="x"]'));
+  click(named(root, "Substitute 8 for v"));
+  assert.equal(eq(root), "c = 15 + 3 × 8");
+  assert.match(root.querySelector(".fm-explain").textContent, /multiplication first/);
+  click(named(root, "Work out 3 × 8"));
+  assert.equal(eq(root), "c = 15 + 24");
+  click(named(root, "Add 15 + 24"));
+  assert.equal(eq(root), "c = $39");
+  click(named(root, "Check by putting it back"));
+  assert.equal(
+    root.querySelector(".fm-pattern-result").textContent,
+    "Check: ($39 − $15) ÷ 3 = 8. It matches.",
+  );
+  assert.equal(root.querySelector(".fm-pattern-log").hidden, true);
+  m.setLang("es");
+  assert.equal(
+    root.querySelector(".fm-pattern-result").textContent,
+    "Comprobación: ($39 − $15) ÷ 3 = 8. Coincide.",
+  );
+  assert.equal(root.querySelector('[data-known="x"]').textContent, "visitas (v)");
+  nothingBroken(root);
+  const input = root.querySelector(".fm-fields input");
+  type(input, "10");
+  assert.equal(m.getState().stage, 0);
+  m.setState({ known: "y" });
+  type(root.querySelector(".fm-fields input"), "12");
+  assert.equal(
+    root.querySelector(".fm-fields input").getAttribute("aria-invalid"),
+    "true",
+    "a goal at or under 15 is refused",
+  );
+  m.destroy();
+});
+
+test("mounted two-step: presets switch between b = 0 and b > 0, labels print the starting amount", () => {
+  const root = box();
+  const fee = { title: words("Fee", "Cuota"), m: "4", b: "20", target: "100", given: "5" };
+  mount(root, {
+    ...gym,
+    b: "0",
+    target: "300",
+    presets: [{ title: words("Posters", "Carteles") }, {}, { ...gym, ...fee }],
+  });
+  assert.equal(eq(root), "c = 3 × v");
+  assert.equal(root.querySelectorAll("[data-pick]").length, 3);
+  assert.equal(root.querySelectorAll("[data-pick]")[1].textContent, "c = 3 × v");
+  click(root.querySelector('[data-pick="2"]'));
+  assert.equal(eq(root), "c = 20 + 4 × v");
+  click(named(root, "Substitute $100 for c"));
+  click(named(root, "Subtract 20 from both sides"));
+  click(named(root, "Divide both sides by 4"));
+  assert.equal(eq(root), "v = 20 visits");
+  click(root.querySelector('[data-pick="0"]'));
+  assert.equal(eq(root), "c = 3 × v");
+  nothingBroken(root);
+});
+
+test("mounted two-step: readonly shows the equation with no live controls", () => {
+  const root = box();
+  mount(root, gym, { readonly: true });
+  assert.equal(root.querySelectorAll("button").length, 0);
+  assert.equal(root.querySelectorAll("input").length, 0);
+  assert.equal(eq(root), "c = 15 + 3 × v");
+  assert.match(root.querySelector(".fm-sr").textContent, /Two-step equation model/);
+  nothingBroken(root);
 });

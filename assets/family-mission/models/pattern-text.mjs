@@ -47,6 +47,14 @@ export const STR = {
   checkIt: { en: "Check by putting it back", es: "Comprobar poniéndolo de nuevo" },
   tried: { en: "Try another look: that does not leave the letter alone.", es: "Mira de otra manera: eso no deja la letra sola." },
   doneSolve: { en: "Solved and checked.", es: "Resuelto y comprobado." },
+  twoMoves: {
+    en: "This rule has a starting amount, so two moves leave the letter alone. Choose the first move for both sides.",
+    es: "Esta regla tiene una cantidad inicial, así que dos pasos dejan la letra sola. Elige el primer paso para ambos lados.",
+  },
+  reverse: {
+    en: "Undo the adding first, then the multiplying: reverse order, one move at a time.",
+    es: "Deshaz primero la suma y luego la multiplicación: en orden inverso, un paso a la vez.",
+  },
 };
 
 // ── Numbers ──────────────────────────────────────────────────────────────────
@@ -105,9 +113,13 @@ export function ruleLine(d) {
 // ── Solve mode ───────────────────────────────────────────────────────────────
 
 const mm = (d) => num(d.m);
+/** The rule as the student sees it: y = m × x, or y = b + m × x when there is a starting amount. */
+const rhs = (d) => (d.start ? `${num(d.b)} + ${mm(d)} × ${d.letters.x}` : `${mm(d)} × ${d.letters.x}`);
+
 export function equationLine(d, lang) {
   const { x, y } = d.letters;
   const rate = mm(d);
+  if (d.start) return startEquation(d, lang);
   if (d.known === "y") {
     if (d.stage === 0) return `${y} = ${rate} × ${x}`;
     if (d.stage === 1) return `${rate} × ${x} = ${plain(d, "y", d.value)}`;
@@ -117,27 +129,55 @@ export function equationLine(d, lang) {
   if (d.stage === 1) return `${y} = ${rate} × ${num(d.value)}`;
   return `${y} = ${withUnit(d, "y", d.answer, lang)}`;
 }
+/** y = b + m × x: the goal side goes where y is and the two undo steps peel b, then m. */
+function startEquation(d, lang) {
+  const { x, y } = d.letters;
+  if (d.stage === 0) return `${y} = ${rhs(d)}`;
+  if (d.known === "y") {
+    if (d.stage === 1) return `${rhs(d)} = ${plain(d, "y", d.value)}`;
+    if (d.stage === 2) return `${mm(d)} × ${x} = ${plain(d, "y", d.rest)}`;
+    return `${x} = ${withUnit(d, "x", d.answer, lang)}`;
+  }
+  if (d.stage === 1) return `${y} = ${num(d.b)} + ${mm(d)} × ${num(d.value)}`;
+  if (d.stage === 2) return `${y} = ${num(d.b)} + ${num(d.rest)}`;
+  return `${y} = ${withUnit(d, "y", d.answer, lang)}`;
+}
+
+/** "What we did to both sides": the lines for every undo move made so far (none when x is known). */
 export function logLines(d, lang) {
+  if (d.known !== "y" || d.stage < 2) return [];
   const { x } = d.letters;
   const rate = mm(d);
-  return [
-    `${pick(STR.left, lang)}: ${rate} × ${x} ÷ ${rate} = ${x}`,
-    `${pick(STR.right, lang)}: ${plain(d, "y", d.value)} ÷ ${rate} = ${num(d.answer)}`,
-  ];
+  const side = (left, right) => [`${pick(STR.left, lang)}: ${left}`, `${pick(STR.right, lang)}: ${right}`];
+  if (!d.start) return side(`${rate} × ${x} ÷ ${rate} = ${x}`, `${plain(d, "y", d.value)} ÷ ${rate} = ${num(d.answer)}`);
+  const b = num(d.b);
+  const first = side(`${rhs(d)} − ${b} = ${rate} × ${x}`, `${plain(d, "y", d.value)} − ${plain(d, "y", d.b)} = ${plain(d, "y", d.rest)}`);
+  const second = side(`${rate} × ${x} ÷ ${rate} = ${x}`, `${plain(d, "y", d.rest)} ÷ ${rate} = ${num(d.answer)}`);
+  const both = d.stage >= 3 ? [...first, ...second] : first;
+  return both.map((line, i) => `${Math.floor(i / 2) + 1}. ${line}`);
 }
 export function checkLine(d, lang) {
   const rate = mm(d);
-  const sum = d.known === "y" ? `${rate} × ${num(d.answer)} = ${plain(d, "y", d.back)}` : `${plain(d, "y", d.answer)} ÷ ${rate} = ${num(d.back)}`;
+  let sum;
+  if (d.start) {
+    sum =
+      d.known === "y"
+        ? `${num(d.b)} + ${rate} × ${num(d.answer)} = ${plain(d, "y", d.back)}`
+        : `(${plain(d, "y", d.answer)} − ${plain(d, "y", d.b)}) ÷ ${rate} = ${num(d.back)}`;
+  } else {
+    sum = d.known === "y" ? `${rate} × ${num(d.answer)} = ${plain(d, "y", d.back)}` : `${plain(d, "y", d.answer)} ÷ ${rate} = ${num(d.back)}`;
+  }
   const tail = d.checkOk ? say2(lang, "It matches.", "Coincide.") : say2(lang, "It does not match.", "No coincide.");
   return `${say2(lang, "Check", "Comprobación")}: ${sum}. ${tail}`;
 }
 export function opLabel(d, op, lang) {
   const rate = mm(d);
+  const start = d.start ? num(d.b) : rate; // adding and subtracting use the starting amount when there is one
   const L = {
     div: { en: `Divide both sides by ${rate}`, es: `Dividir ambos lados entre ${rate}` },
     mul: { en: `Multiply both sides by ${rate}`, es: `Multiplicar ambos lados por ${rate}` },
-    add: { en: `Add ${rate} to both sides`, es: `Sumar ${rate} a ambos lados` },
-    sub: { en: `Subtract ${rate} from both sides`, es: `Restar ${rate} de ambos lados` },
+    add: { en: `Add ${start} to both sides`, es: `Sumar ${start} a ambos lados` },
+    sub: { en: `Subtract ${start} from both sides`, es: `Restar ${start} de ambos lados` },
   };
   return pick(L[op], lang);
 }
@@ -147,14 +187,29 @@ export function stepLabel(d, lang) {
     return say2(lang, `Substitute ${plain(d, who, d.value)} for ${d.letters[who]}`, `Sustituir ${d.letters[who]} por ${plain(d, who, d.value)}`);
   }
   if (d.stage === 1) return say2(lang, `Work out ${mm(d)} × ${num(d.value)}`, `Calcular ${mm(d)} × ${num(d.value)}`);
-  if (d.stage === 2) return pick(STR.checkIt, lang);
+  if (d.start && d.stage === 2) return say2(lang, `Add ${num(d.b)} + ${num(d.rest)}`, `Sumar ${num(d.b)} + ${num(d.rest)}`);
+  if (d.stage === (d.start ? 3 : 2)) return pick(STR.checkIt, lang);
   return "";
 }
 export function stageHint(d, lang) {
   if (d.stage === 0) return say2(lang, "Put the number you know where its letter goes.", "Pon el número que conoces donde va su letra.");
+  if (d.start) return startHint(d, lang);
   if (d.stage === 1 && d.known === "y") return say2(lang, `What undoes × ${mm(d)}? Choose one move for both sides.`, `¿Qué deshace × ${mm(d)}? Elige un paso para ambos lados.`);
   if (d.stage === 1) return say2(lang, "Work out the multiplication.", "Calcula la multiplicación.");
   if (d.stage === 2) return say2(lang, "Now check: put the answer back in the equation.", "Ahora comprueba: pon la respuesta de nuevo en la ecuación.");
+  return pick(STR.doneSolve, lang);
+}
+/** Hints for y = b + m × x. They name the principle (reverse order), never the answer. */
+function startHint(d, lang) {
+  if (d.known === "y") {
+    if (d.stage === 1 && d.tried) return pick(STR.reverse, lang);
+    if (d.stage === 1) return pick(STR.twoMoves, lang);
+    if (d.stage === 2) return say2(lang, `One move is done. What undoes × ${mm(d)}? Choose the next move.`, `Ya hay un paso. ¿Qué deshace × ${mm(d)}? Elige el siguiente paso.`);
+  } else {
+    if (d.stage === 1) return say2(lang, "Work out the multiplication first.", "Primero calcula la multiplicación.");
+    if (d.stage === 2) return say2(lang, "Now add the starting amount.", "Ahora suma la cantidad inicial.");
+  }
+  if (d.stage === 3) return say2(lang, "Now check: put the answer back in the equation.", "Ahora comprueba: pon la respuesta de nuevo en la ecuación.");
   return pick(STR.doneSolve, lang);
 }
 
@@ -173,11 +228,8 @@ export function accessibleText(d, lang) {
       `Modelo de tabla de patrón. ${d.rows.length} filas: ${tableText(d, lang)}. ${rule ? `Tu regla: ${rule}. ` : ""}${tail}`,
     );
   }
-  return say2(
-    lang,
-    `Equation model. ${equationLine(d, lang)}. ${stageHint(d, lang)}`,
-    `Modelo de ecuación. ${equationLine(d, lang)}. ${stageHint(d, lang)}`,
-  );
+  const kind = d.start ? say2(lang, "Two-step equation model", "Modelo de ecuación de dos pasos") : say2(lang, "Equation model", "Modelo de ecuación");
+  return `${kind}. ${equationLine(d, lang)}. ${stageHint(d, lang)}`;
 }
 
 export function explanationText(d, lang) {
@@ -190,11 +242,22 @@ export function explanationText(d, lang) {
   }
   const base = say2(lang, `The equation is ${equationLine({ ...d, stage: 0 }, lang)}.`, `La ecuación es ${equationLine({ ...d, stage: 0 }, lang)}.`);
   if (!d.finished) return `${base} ${stageHint(d, lang)}`;
+  if (d.start) return `${base} ${startSteps(d, lang)} ${checkLine(d, lang)}`;
   const mid = d.known === "y" ? `${equationLine({ ...d, stage: 1 }, lang)}. ${logLines(d, lang).join(". ")}.` : `${equationLine({ ...d, stage: 1 }, lang)}.`;
   return `${base} ${mid} ${equationLine(d, lang)}. ${checkLine(d, lang)}`;
 }
 
+/** The worked steps of a finished y = b + m × x problem, one sentence per move. */
+function startSteps(d, lang) {
+  const at = (stage) => `${equationLine({ ...d, stage }, lang)}.`;
+  if (d.known === "x") return `${at(1)} ${at(2)} ${at(3)}`;
+  const [l1, r1, l2, r2] = logLines(d, lang);
+  const undo = (op) => `${opLabel(d, op, lang)}.`;
+  return `${at(1)} ${undo("sub")} ${l1}. ${r1}. ${at(2)} ${undo("div")} ${l2}. ${r2}. ${at(3)}`;
+}
+
 export function sayText(d, lang) {
   if (d.mode === "rule") return d.result ? resultText(d, lang) : `${d.rows.length} ${say2(lang, "rows", "filas")}.`;
-  return d.tried ? pick(STR.tried, lang) : `${equationLine(d, lang)}. ${stageHint(d, lang)}`;
+  if (d.tried) return d.start && d.stage === 1 ? `${pick(STR.tried, lang)} ${pick(STR.reverse, lang)}` : pick(STR.tried, lang);
+  return `${equationLine(d, lang)}. ${stageHint(d, lang)}`;
 }
