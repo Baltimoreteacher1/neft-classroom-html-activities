@@ -34,6 +34,519 @@ const lead = (en, es) => ({ leadEn: en, leadEs: es });
 /** base lesson id -> { family, config, leadEn, leadEs, part2?: { config?, leadEn?, leadEs? } } */
 export const LESSON_MODELS = {
   /* Unit 1: Fraction & Decimal Operations */
+  "1-4": {
+    ...fam("geometry", { mode: "volume", l: 8, w: 3, h: 10, max: 12 }),
+    ...lead(
+      "Change the edges. The layers show why a box's volume is length times width times height.",
+      "Cambia las aristas. Las capas muestran por qué el volumen de una caja es largo por ancho por alto.",
+    ),
+    part2: {
+      config: { l: 6, w: 4, h: 2, max: 12 },
+      ...lead(
+        "Compare two beds. Change the edges and see which shapes hold the same volume.",
+        "Compara dos camas. Cambia las aristas y mira qué formas tienen el mismo volumen.",
+      ),
+    },
+  },
+  /* Hands-on models written for lessons whose earlier model was about another topic. */
+  "1-3": {
+    ...fam("decimal", {
+      mode: "addsub",
+      terms: ["2.75", "+2.75"],
+      presets: [
+        { terms: ["2.75", "+2.75"] },
+        { terms: ["1.50", "+1.50", "+1.50"] },
+        { terms: ["3.25", "+3.25"] },
+      ],
+    }),
+    ...lead(
+      "Add the equal parts of the tape: line up the decimal points and add one column at a time.",
+      "Suma las partes iguales de la barra: alinea los puntos decimales y suma una columna a la vez.",
+    ),
+    /* Session 2 is a minutes problem (500 minutes after midnight), so it uses long division. */
+    part2: {
+      family: "division",
+      config: {
+        mode: "whole",
+        dividend: 500,
+        divisor: 60,
+        context: { en: "{q} hours and {r} minutes", es: "{q} horas y {r} minutos" },
+        presets: [
+          {
+            dividend: 500,
+            divisor: 60,
+            context: { en: "{q} hours and {r} minutes", es: "{q} horas y {r} minutos" },
+          },
+          {
+            dividend: 150,
+            divisor: 60,
+            context: { en: "{q} hours and {r} minutes", es: "{q} horas y {r} minutos" },
+          },
+          {
+            dividend: 725,
+            divisor: 60,
+            context: { en: "{q} hours and {r} minutes", es: "{q} horas y {r} minutos" },
+          },
+        ],
+      },
+      ...lead(
+        "Count the 60-minute hours in the trip. Choose the digit, then see the minutes left over.",
+        "Cuenta las horas de 60 minutos del viaje. Elige el dígito y mira los minutos que sobran.",
+      ),
+    },
+  },
+  "2-11": {
+    ...fam("decimal", {
+      mode: "addsub",
+      terms: ["128.75", "+46.8", "-19.35"],
+      presets: [
+        { terms: ["128.75", "+46.8", "-19.35"] },
+        { terms: ["342.6", "-128.75", "+56.4"] },
+        { terms: ["3.5", "+2.75"] },
+      ],
+    }),
+    ...lead(
+      "Line up the decimal points, annex zeros, then add or subtract one column at a time from the right.",
+      "Alinea los puntos decimales, agrega ceros y luego suma o resta una columna a la vez, desde la derecha.",
+    ),
+    part2: {
+      config: {
+        mode: "addsub",
+        terms: ["342.6", "-128.75", "+56.4"],
+        presets: [
+          { terms: ["342.6", "-128.75", "+56.4"] },
+          { terms: ["128.75", "+46.8", "-19.35"] },
+          { terms: ["4.5", "-1.25", "+0.8"] },
+        ],
+      },
+      ...lead(
+        "Do the first two numbers, then use that answer with the last one. Line up the points every time.",
+        "Haz los dos primeros números y luego usa esa respuesta con el último. Alinea los puntos cada vez.",
+      ),
+    },
+  },
+  "2-12": {
+    ...fam("decimal", {
+      mode: "multiply",
+      a: "12.60",
+      b: "4.5",
+      trimTo: 2,
+      presets: [
+        { a: "12.60", b: "4.5" },
+        { a: "3.40", b: "2.5" },
+        { a: "6.80", b: "3.5" },
+      ],
+    }),
+    ...lead(
+      "Ignore the points and multiply the whole numbers. Then count the decimal places and place the point.",
+      "Ignora los puntos y multiplica los números enteros. Luego cuenta los lugares decimales y pon el punto.",
+    ),
+    part2: {
+      config: {
+        mode: "multiply",
+        a: "3.40",
+        b: "2.5",
+        trimTo: 2,
+        presets: [
+          { a: "3.40", b: "2.5" },
+          { a: "12.60", b: "4.5" },
+          { a: "6.80", b: "3.5" },
+        ],
+      },
+      ...lead(
+        "Estimate first, then multiply the whole numbers and place the point. Does the total make sense?",
+        "Primero estima, luego multiplica los números enteros y pon el punto. ¿Tiene sentido el total?",
+      ),
+    },
+  },
+  "1-2": {
+    ...fam("division", {
+      mode: "fractionof",
+      n: 2,
+      d: 3,
+      whole: 60,
+      unit: { en: "pea pods", es: "vainas de guisantes" },
+      presets: [
+        { n: 2, d: 3, whole: 60, unit: { en: "pea pods", es: "vainas de guisantes" } },
+        { n: 2, d: 3, whole: 12, unit: { en: "beans", es: "frijoles" } },
+        { n: 3, d: 4, whole: 24, unit: { en: "pea pods", es: "vainas de guisantes" } },
+      ],
+    }),
+    ...lead(
+      "Split the pods into equal groups. Then tap the groups the top number asks for.",
+      "Reparte las vainas en grupos iguales. Luego toca los grupos que pide el numerador.",
+    ),
+  },
+  "2-6": {
+    ...fam("division", {
+      mode: "whole",
+      dividend: 1344,
+      divisor: 12,
+      context: { en: "{q} boxes, with {r} bars left over", es: "{q} cajas, y sobran {r} barras" },
+      presets: [
+        {
+          dividend: 1344,
+          divisor: 12,
+          context: {
+            en: "{q} boxes, with {r} bars left over",
+            es: "{q} cajas, y sobran {r} barras",
+          },
+        },
+        { dividend: 384, divisor: 8 },
+        {
+          dividend: 1205,
+          divisor: 12,
+          context: {
+            en: "{q} boxes, with {r} bars left over",
+            es: "{q} cajas, y sobran {r} barras",
+          },
+        },
+      ],
+    }),
+    ...lead(
+      "Choose each digit of the answer. The model says if it is too big, too small, or just right.",
+      "Elige cada dígito de la respuesta. El modelo dice si es demasiado grande, demasiado pequeño o justo.",
+    ),
+    part2: {
+      config: {
+        mode: "whole",
+        dividend: 621000,
+        divisor: 20,
+        context: { en: "{q} teachers", es: "{q} maestros" },
+        presets: [
+          { dividend: 621000, divisor: 20, context: { en: "{q} teachers", es: "{q} maestros" } },
+          { dividend: 621000, divisor: 15, context: { en: "{q} teachers", es: "{q} maestros" } },
+          { dividend: 621000, divisor: 18, context: { en: "{q} teachers", es: "{q} maestros" } },
+        ],
+      },
+      ...lead(
+        "Divide the students by the number in each group. Choose each digit of the answer, one at a time.",
+        "Divide los estudiantes entre el número de cada grupo. Elige cada dígito de la respuesta, uno por uno.",
+      ),
+    },
+  },
+  "2-7": {
+    ...fam("division", {
+      mode: "decimal",
+      dividend: "18.9",
+      divisor: "6.3",
+      context: { en: "{q} coolers", es: "{q} hieleras" },
+      presets: [
+        { dividend: "18.9", divisor: "6.3", context: { en: "{q} coolers", es: "{q} hieleras" } },
+        { dividend: "9.6", divisor: "0.4", context: { en: "{q} cups", es: "{q} vasos" } },
+        { dividend: "4.5", divisor: "0.15" },
+      ],
+    }),
+    ...lead(
+      "Move both decimal points the same number of places. Then divide as whole numbers.",
+      "Mueve los dos puntos decimales el mismo número de lugares. Luego divide como números enteros.",
+    ),
+    part2: {
+      config: {
+        mode: "decimal",
+        dividend: "9.6",
+        divisor: "0.4",
+        context: { en: "{q} cups", es: "{q} vasos" },
+        presets: [
+          { dividend: "9.6", divisor: "0.4", context: { en: "{q} cups", es: "{q} vasos" } },
+          { dividend: "4.5", divisor: "0.15" },
+          { dividend: "7.2", divisor: "0.9" },
+        ],
+      },
+      ...lead(
+        "Dividing by a number less than 1 gives more groups. Move both points, then divide.",
+        "Dividir entre un número menor que 1 da más grupos. Mueve los dos puntos y luego divide.",
+      ),
+    },
+  },
+  "6-7": {
+    ...fam("numtheory", {
+      mode: "gcf",
+      a: 48,
+      b: 36,
+      labels: {
+        a: { en: "pencils", es: "lápices" },
+        b: { en: "notebooks", es: "cuadernos" },
+      },
+      presets: [
+        { a: 48, b: 36 },
+        { a: 30, b: 45 },
+        { a: 24, b: 16 },
+      ],
+    }),
+    ...lead(
+      "Try pack counts. A pack count works only if it splits both numbers with none left over.",
+      "Prueba cantidades de paquetes. Una cantidad sirve solo si reparte los dos números sin que sobre nada.",
+    ),
+    part2: {
+      config: {
+        mode: "lcm",
+        a: 6,
+        b: 9,
+        labels: {
+          a: { en: "first bus", es: "primer autobús" },
+          b: { en: "second bus", es: "segundo autobús" },
+        },
+        per: { en: "trips", es: "salidas" },
+        unit: { en: "minutes", es: "minutos" },
+        presets: [
+          { a: 6, b: 9 },
+          { a: 4, b: 10 },
+          { a: 8, b: 12 },
+        ],
+      },
+      ...lead(
+        "Count on from each bus, one trip at a time. Find the first minute both buses leave together.",
+        "Avanza con cada autobús, una salida a la vez. Halla el primer minuto en que los dos salen juntos.",
+      ),
+    },
+  },
+  "6-12": {
+    ...fam("numtheory", {
+      mode: "lcm",
+      a: 4,
+      b: 6,
+      labels: {
+        a: { en: "swim class", es: "clase de natación" },
+        b: { en: "art club", es: "club de arte" },
+      },
+      per: { en: "times", es: "veces" },
+      unit: { en: "days", es: "días" },
+      presets: [
+        { a: 4, b: 6 },
+        { a: 3, b: 5 },
+        { a: 6, b: 8 },
+      ],
+    }),
+    ...lead(
+      "Count on one jump at a time. Look for the first number that is on both lines.",
+      "Avanza un salto a la vez. Busca el primer número que está en las dos filas.",
+    ),
+    part2: {
+      config: {
+        mode: "lcm",
+        a: 6,
+        b: 8,
+        labels: {
+          a: { en: "hot dogs", es: "salchichas" },
+          b: { en: "buns", es: "panes" },
+        },
+        per: { en: "packs", es: "paquetes" },
+        presets: [
+          { a: 6, b: 8 },
+          { a: 4, b: 10 },
+          { a: 5, b: 6 },
+        ],
+      },
+      ...lead(
+        "Add one pack at a time to each line. Find the first total that matches.",
+        "Agrega un paquete a la vez a cada fila. Halla el primer total que coincide.",
+      ),
+    },
+  },
+  "6-13": {
+    ...fam("numtheory", { mode: "tree", n: 60, presets: [60, 84, 90] }),
+    ...lead(
+      "Tap a number to split it into a factor pair. Keep going until every leaf is prime, then try another start.",
+      "Toca un número para separarlo en un par de factores. Sigue hasta que cada hoja sea un primo y luego prueba otro inicio.",
+    ),
+    part2: {
+      config: { mode: "tree", n: 84, presets: [84, 60, 90] },
+      ...lead(
+        "Is a tree finished while a piece can still split? Tap the pieces, then try another start.",
+        "¿Un árbol está terminado si una pieza todavía se puede separar? Toca las piezas y luego prueba otro inicio.",
+      ),
+    },
+  },
+  "1-5": {
+    ...fam("pattern", {
+      mode: "rule",
+      m: "0.1",
+      b: "0",
+      maxX: 100,
+      rows: [1, 2, 3],
+      title: { en: "Dimes", es: "Dimes" },
+      quantities: { x: { en: "dimes", es: "dimes" }, y: { en: "value", es: "valor" } },
+      units: { y: { en: "dollars", es: "dólares" }, yPrefix: "$", yDecimals: 2 },
+      presets: [
+        { title: { en: "Dimes", es: "Dimes" } },
+        {
+          title: { en: "Nickels", es: "Nickels" },
+          m: "0.05",
+          quantities: { x: { en: "nickels", es: "nickels" }, y: { en: "value", es: "valor" } },
+        },
+        {
+          title: { en: "Quarters", es: "Quarters" },
+          m: "0.25",
+          quantities: { x: { en: "quarters", es: "quarters" }, y: { en: "value", es: "valor" } },
+        },
+        {
+          title: { en: "Bags of chips", es: "Bolsas de papitas" },
+          m: "2.5",
+          quantities: { x: { en: "bags", es: "bolsas" }, y: { en: "cost", es: "costo" } },
+        },
+      ],
+    }),
+    ...lead(
+      "Add rows to the table, then try a rule and check it against every row.",
+      "Agrega filas a la tabla, prueba una regla y compárala con cada fila.",
+    ),
+    part2: {
+      config: {
+        mode: "rule",
+        m: "0.025",
+        b: "4.5",
+        maxX: 1000,
+        rows: [1, 2, 3],
+        title: { en: "Baby whale", es: "Ballena bebé" },
+        quantities: { x: { en: "days", es: "días" }, y: { en: "length", es: "longitud" } },
+        units: { y: { en: "meters", es: "metros" } },
+        presets: [
+          { title: { en: "Baby whale", es: "Ballena bebé" } },
+          {
+            title: { en: "Puppy", es: "Cachorro" },
+            m: "0.5",
+            b: "3",
+            maxX: 100,
+            quantities: { x: { en: "weeks", es: "semanas" }, y: { en: "weight", es: "peso" } },
+            units: { y: { en: "kilograms", es: "kilogramos" } },
+          },
+          {
+            title: { en: "Savings", es: "Ahorros" },
+            m: "4",
+            b: "15",
+            maxX: 100,
+            quantities: { x: { en: "weeks", es: "semanas" }, y: { en: "savings", es: "ahorros" } },
+            units: { y: { en: "dollars", es: "dólares" }, yPrefix: "$", yDecimals: 2 },
+          },
+        ],
+      },
+      ...lead(
+        "Try a rule for the growing whale. Pick a day far away and test your rule on it.",
+        "Prueba una regla para la ballena que crece. Elige un día lejano y prueba tu regla con él.",
+      ),
+    },
+  },
+  "9-4": {
+    ...fam("pattern", {
+      mode: "solve",
+      m: "2.5",
+      letters: { x: "h", y: "c" },
+      title: { en: "Car factory", es: "Fábrica de autos" },
+      quantities: { x: { en: "hours", es: "horas" }, y: { en: "cars", es: "autos" } },
+      units: { x: { en: "hours", es: "horas" }, y: { en: "cars", es: "autos" } },
+      target: "1000",
+      given: "8",
+      presets: [
+        { title: { en: "Car factory", es: "Fábrica de autos" } },
+        {
+          title: { en: "Printer", es: "Impresora" },
+          m: "15",
+          letters: { x: "m", y: "p" },
+          quantities: { x: { en: "minutes", es: "minutos" }, y: { en: "pages", es: "páginas" } },
+          units: { x: { en: "minutes", es: "minutos" }, y: { en: "pages", es: "páginas" } },
+          target: "300",
+          given: "4",
+        },
+        {
+          title: { en: "Tickets", es: "Boletos" },
+          m: "8",
+          letters: { x: "t", y: "d" },
+          quantities: {
+            x: { en: "tickets", es: "boletos" },
+            y: { en: "money raised", es: "dinero recaudado" },
+          },
+          units: { x: { en: "tickets", es: "boletos" }, yPrefix: "$" },
+          target: "400",
+          given: "6",
+        },
+      ],
+    }),
+    ...lead(
+      "Choose the number you know, then undo the multiplying on both sides to solve.",
+      "Elige el número que conoces y luego deshaz la multiplicación en ambos lados para resolver.",
+    ),
+    part2: {
+      config: {
+        mode: "solve",
+        m: "26",
+        letters: { x: "n", y: "e" },
+        title: { en: "Band posters", es: "Carteles de la banda" },
+        quantities: {
+          x: { en: "posters", es: "carteles" },
+          y: { en: "money earned", es: "dinero ganado" },
+        },
+        units: { x: { en: "posters", es: "carteles" }, yPrefix: "$" },
+        target: "1300",
+        given: "5",
+        presets: [
+          { title: { en: "Band posters", es: "Carteles de la banda" } },
+          {
+            title: { en: "Car wash", es: "Lavado de carros" },
+            m: "18",
+            letters: { x: "c", y: "r" },
+            quantities: {
+              x: { en: "cars washed", es: "carros lavados" },
+              y: { en: "money raised", es: "dinero recaudado" },
+            },
+            units: { x: { en: "cars", es: "carros" }, yPrefix: "$" },
+            target: "720",
+            given: "5",
+          },
+          {
+            title: { en: "Lemonade", es: "Limonada" },
+            m: "3",
+            letters: { x: "k", y: "d" },
+            quantities: {
+              x: { en: "cups sold", es: "vasos vendidos" },
+              y: { en: "money earned", es: "dinero ganado" },
+            },
+            units: { x: { en: "cups", es: "vasos" }, yPrefix: "$" },
+            target: "240",
+            given: "10",
+          },
+        ],
+      },
+      ...lead(
+        "Start from the goal. Undo the multiplying on both sides, then put the answer back to check.",
+        "Empieza desde la meta. Deshaz la multiplicación en ambos lados y pon la respuesta de nuevo para comprobar.",
+      ),
+    },
+  },
+  "5-9": {
+    ...fam("polygon", {
+      n: 6,
+      side: 6,
+      apothem: 5.2,
+      unit: { en: "feet", es: "pies" },
+      presets: [
+        { n: 6, side: 6, apothem: 5.2 },
+        { n: 5, side: 4, apothem: 3, unit: { en: "centimeters", es: "centímetros" } },
+        { n: 8, side: 2, apothem: 2.4 },
+      ],
+    }),
+    ...lead(
+      "Split the polygon into triangles from the center. Find one triangle, then multiply by how many there are.",
+      "Divide el polígono en triángulos desde el centro. Halla un triángulo y multiplica por cuántos hay.",
+    ),
+    part2: {
+      config: {
+        n: 10,
+        side: 3,
+        apothem: 4,
+        unit: { en: "feet", es: "pies" },
+        presets: [
+          { n: 10, side: 3, apothem: 4 },
+          { n: 6, side: 4, apothem: 3.5 },
+          { n: 5, side: 8, apothem: 5.5 },
+        ],
+      },
+      ...lead(
+        "A decagon has 10 sides, so it has 10 triangles. Find one triangle, then multiply.",
+        "Un decágono tiene 10 lados, así que tiene 10 triángulos. Halla uno y luego multiplica.",
+      ),
+    },
+  },
   "3-1": {
     ...ratio(3, 5, "red", "rojas", "blue", "azules", 1),
     ...lead(
@@ -686,7 +1199,7 @@ export function missionModelFor(config) {
   if (!base) return null;
   const over = part2 ? base.part2 || {} : {};
   return {
-    family: base.family,
+    family: over.family || base.family,
     config: { ...base.config, ...(over.config || {}) },
     leadEn: over.leadEn || base.leadEn,
     leadEs: over.leadEs || base.leadEs,

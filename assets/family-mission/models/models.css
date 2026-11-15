@@ -854,7 +854,8 @@
   visibility: hidden;
 }
 .fm-kcf-move.is-next {
-  box-shadow: 0 0 0 3px var(--fm-accent-ink);
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: 2px;
 }
 .fm-kcf-result {
   display: grid;
@@ -868,6 +869,789 @@
   margin: 0;
 }
 .fm-kcf-eq {
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+}
+
+/* ── decimal ── */
+/* ── Decimal operations (decimal) ── */
+.fm-dec-picks,
+.fm-dec-moves,
+.fm-dec-choices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fm-space-2);
+}
+.fm-dec-moves > .fm-cap {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: start;
+}
+.fm-dec-expr {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl, 1.75rem);
+  font-weight: var(--fm-fw-bold);
+  line-height: var(--fm-lh-heading);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.fm-dec-stage {
+  display: grid;
+  gap: var(--fm-space-3);
+  min-width: 0;
+}
+.fm-dec-est,
+.fm-dec-look,
+.fm-dec-trail p {
+  margin: 0;
+}
+.fm-dec-trail {
+  display: grid;
+  gap: var(--fm-space-1);
+}
+.fm-dec-line {
+  font-weight: var(--fm-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+.fm-dec-last {
+  margin: 0;
+  padding: var(--fm-space-3);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+  border-radius: var(--fm-radius-sm);
+  overflow-wrap: anywhere;
+}
+.fm-dec-hint {
+  font-weight: var(--fm-fw-semibold);
+}
+
+/* Numbers as written: left-aligned on purpose, the decimal points do not line up yet. */
+.fm-dec-raw {
+  padding: var(--fm-space-3);
+  background: var(--fm-surface);
+  border: var(--fm-line) dashed var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+}
+.fm-dec-raw p {
+  margin: 0;
+}
+
+/* Place-value chart: one column per place, the point in its own narrow column. */
+.fm-dec-chart {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.fm-dec-chart th,
+.fm-dec-chart td {
+  padding: 0;
+  vertical-align: middle;
+}
+.fm-dec-sign {
+  width: 1.75rem;
+}
+.fm-dec-chart .fm-dec-point {
+  width: 0.75rem;
+  color: var(--fm-highlight-ink);
+}
+.fm-dec-cell {
+  min-height: 2.25rem;
+  height: 2.25rem;
+  background: var(--fm-surface);
+  border: var(--fm-line) solid var(--fm-border);
+  border-radius: var(--fm-radius-xs);
+}
+.fm-dec-res {
+  background: var(--fm-success-tint);
+  border-color: var(--fm-success-ink);
+}
+.fm-dec-answer .fm-dec-res {
+  border-top-width: var(--fm-line-strong);
+}
+.fm-dec-mark {
+  height: auto;
+  min-height: 2.25rem;
+  color: var(--fm-highlight-ink);
+  background: transparent;
+  border-style: dotted;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.1;
+}
+.fm-dec-mark span {
+  display: block;
+}
+.fm-dec-cell.is-annexed,
+.fm-dec-point.is-annexed {
+  color: var(--fm-text-muted);
+  border-style: dashed;
+  font-style: italic;
+}
+.fm-dec-cell.is-look {
+  background: var(--fm-highlight-tint);
+  border-style: dashed;
+  border-color: var(--fm-highlight-ink);
+}
+.fm-dec-cell.is-now {
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: -1px;
+}
+.fm-dec-place {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 0;
+  font-size: var(--fm-fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+.fm-dec-place[aria-pressed="true"]::before {
+  content: none;
+}
+.fm-dec-place[aria-pressed="true"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+span.fm-dec-place {
+  display: block;
+  font-weight: var(--fm-fw-bold);
+}
+
+/* Multiply: the step cards, the digit row and the place-the-point picker. */
+.fm-dec-steps {
+  display: grid;
+  gap: var(--fm-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fm-dec-card {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-surface);
+  border: var(--fm-line) solid var(--fm-border);
+  border-inline-start: 4px solid var(--fm-accent-ink);
+  border-radius: var(--fm-radius-sm);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.fm-dec-card p {
+  margin: 0;
+}
+.fm-dec-card-title {
+  margin: 0;
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-dec-digits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl, 1.75rem);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-dec-digit {
+  min-width: 1.6rem;
+  text-align: center;
+  border-bottom: 3px solid currentcolor;
+}
+.fm-dec-dot {
+  color: var(--fm-highlight-ink);
+  font-size: 2rem;
+  line-height: 1;
+}
+.fm-dec-choice {
+  min-width: var(--fm-target);
+}
+.fm-dec-move.is-next {
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: 2px;
+}
+.fm-dec-result {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-dec-result p {
+  margin: 0;
+}
+.fm-dec-eq {
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+}
+
+/* ── division ── */
+/* ── Dividing (division): long division, decimal division, a fraction of a whole number ──
+   Only --fm-* tokens. Underlines, minus signs, labels and filled-or-hollow dots carry the meaning
+   as well as colour. The board is flex rows of equal cells, so it holds at 320px. */
+.fm-div-picks,
+.fm-div-pad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+}
+.fm-div-expr {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl, 1.75rem);
+  font-weight: var(--fm-fw-bold);
+  overflow-wrap: anywhere;
+}
+.fm-div-sub {
+  margin: 0;
+  text-align: center;
+  color: var(--fm-text-muted);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-div-ctl {
+  display: grid;
+  gap: var(--fm-space-2);
+}
+.fm-div-digit {
+  min-width: var(--fm-target);
+  font-size: var(--fm-fs-lg);
+}
+.fm-div-next.is-next {
+  justify-self: start;
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: 2px;
+}
+
+/* The board */
+.fm-div-board {
+  display: grid;
+  gap: 0;
+  max-width: 100%;
+  padding: var(--fm-space-3);
+  background: var(--fm-sunken);
+  border-radius: var(--fm-radius-sm);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+  line-height: 1.5;
+  overflow: hidden;
+}
+.fm-div-row {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+.fm-div-gut {
+  position: relative;
+  flex: 0 0 auto;
+  padding-inline: var(--fm-space-2);
+  text-align: end;
+}
+.fm-div-gut.is-ghost {
+  visibility: hidden;
+}
+.fm-div-minus {
+  position: absolute;
+  inset-inline-end: var(--fm-space-1);
+  visibility: visible;
+}
+.fm-div-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 2.25rem;
+  min-height: 1.5em;
+  text-align: center;
+}
+.fm-div-pt {
+  flex: 0 0 0.6em;
+  text-align: center;
+}
+.fm-div-row.is-dividend .fm-div-cell {
+  border-top: var(--fm-line-strong) solid var(--fm-text);
+}
+.fm-div-row.is-dividend .fm-div-gut {
+  border-inline-end: var(--fm-line-strong) solid var(--fm-text);
+  border-end-end-radius: var(--fm-radius-sm);
+}
+.fm-div-cell.is-digit {
+  color: var(--fm-m-answer);
+}
+.fm-div-cell.is-work {
+  background: var(--fm-accent-tint);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.fm-div-cell.is-added {
+  color: var(--fm-text-muted);
+}
+.fm-div-cell.is-brought {
+  background: var(--fm-highlight-tint);
+  text-decoration: underline dotted;
+}
+.fm-div-cell.is-ruled {
+  border-bottom: var(--fm-line-strong) solid var(--fm-text);
+}
+
+/* Equal groups */
+.fm-div-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(7.5rem, 100%), 1fr));
+  gap: var(--fm-space-2);
+}
+.fm-div-group {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--fm-space-1);
+  min-width: 0;
+  padding: var(--fm-space-2);
+  border: var(--fm-line-strong) dashed var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  text-align: center;
+}
+.fm-div-group.is-taken {
+  border-style: solid;
+}
+.fm-div-group.is-pile {
+  grid-column: 1 / -1;
+}
+.fm-div-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+}
+.fm-div-dot {
+  box-sizing: border-box;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  border: var(--fm-line-strong) solid currentcolor;
+  border-radius: 50%;
+}
+.fm-div-group.is-taken .fm-div-dot,
+.fm-div-group.is-pile .fm-div-dot {
+  background: currentcolor;
+}
+.fm-div-cap {
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-div-tag {
+  font-size: var(--fm-fs-xs);
+  font-weight: var(--fm-fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fm-div-group.fm-btn[aria-pressed="true"]::before {
+  content: "";
+}
+
+/* Result */
+.fm-div-result {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+  border-radius: var(--fm-radius-sm);
+  overflow-wrap: anywhere;
+}
+.fm-div-result p {
+  margin: 0;
+}
+.fm-div-eq {
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+}
+@media (forced-colors: active) {
+  .fm-div-group.is-taken {
+    outline: 3px solid Highlight;
+  }
+  .fm-div-dot {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+  .fm-div-group.is-taken .fm-div-dot,
+  .fm-div-group.is-pile .fm-div-dot {
+    background: CanvasText;
+  }
+}
+@media (max-width: 22.5rem) {
+  .fm-div-board {
+    padding: var(--fm-space-2);
+    font-size: var(--fm-fs-md);
+  }
+  .fm-div-gut {
+    padding-inline: var(--fm-space-1);
+  }
+}
+
+/* ── numtheory ── */
+/* ── Factors and multiples (numtheory): gcf packs, lcm tracks, factor tree ── */
+.fm-nt-picks,
+.fm-nt-stepper,
+.fm-nt-pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+  align-items: end;
+}
+.fm-nt-stepper .fm-input {
+  width: 5.5rem;
+  min-height: var(--fm-target);
+  text-align: center;
+}
+.fm-nt-h {
+  margin: 0 0 var(--fm-space-2);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-nt-tries {
+  display: grid;
+  gap: var(--fm-space-1);
+}
+.fm-nt-tries:empty {
+  display: none;
+}
+.fm-nt-line {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.fm-nt-line.is-yes {
+  padding: var(--fm-space-2);
+  font-weight: var(--fm-fw-bold);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+}
+.fm-nt-line.is-no {
+  padding: var(--fm-space-2);
+  font-weight: var(--fm-fw-bold);
+  background: var(--fm-highlight-tint);
+  border-inline-start: 4px dashed var(--fm-highlight-ink);
+}
+.fm-nt-lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--fm-space-3);
+}
+.fm-nt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fm-nt-chip {
+  display: inline-grid;
+  justify-items: center;
+  min-width: 2.75rem;
+  padding: var(--fm-space-1) var(--fm-space-2);
+  border: var(--fm-line-strong) solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-raised);
+}
+.fm-nt-chip.is-tagged {
+  background: var(--fm-success-tint);
+  border-color: var(--fm-success-ink);
+  border-width: 3px;
+}
+.fm-nt-val {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-nt-tag {
+  font-size: var(--fm-fs-xs);
+  font-weight: var(--fm-fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fm-nt-empty,
+.fm-nt-missed {
+  margin: 0;
+  color: var(--fm-text-muted);
+}
+.fm-nt-trackbox {
+  display: grid;
+  gap: var(--fm-space-2);
+  justify-items: start;
+  margin-bottom: var(--fm-space-3);
+}
+.fm-nt-track {
+  min-height: 3rem;
+  max-width: 100%;
+}
+.fm-nt-tree {
+  overflow-x: auto;
+}
+.fm-nt-kids {
+  display: grid;
+  gap: var(--fm-space-2);
+  margin: var(--fm-space-2) 0 0;
+  padding: 0 0 0 var(--fm-space-3);
+  list-style: none;
+  border-inline-start: 2px solid var(--fm-border-strong);
+}
+.fm-nt-kids.is-root {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.fm-nt-node {
+  display: inline-flex;
+  gap: var(--fm-space-2);
+  min-height: var(--fm-target);
+  padding: var(--fm-space-1) var(--fm-space-3);
+  align-items: center;
+  border: var(--fm-line-strong) solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-raised);
+}
+.fm-nt-node.is-prime {
+  background: var(--fm-success-tint);
+  border: 3px solid var(--fm-success-ink);
+}
+.fm-nt-node.is-pick {
+  border-style: dashed;
+}
+.fm-nt-pairs {
+  padding: var(--fm-space-3);
+  background: var(--fm-accent-tint);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-nt-pairs .fm-nt-h {
+  flex-basis: 100%;
+  margin: 0;
+}
+.fm-nt-result {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-nt-result p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.fm-nt-eq {
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-nt .fm-actions {
+  flex-wrap: wrap;
+}
+
+/* ── pattern ── */
+/* ── Patterns and equations (pattern) ── */
+.fm-pattern-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+}
+.fm-pattern-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--fm-space-2);
+  align-items: end;
+}
+.fm-pattern-table {
+  table-layout: auto;
+}
+.fm-pattern-table th,
+.fm-pattern-table td {
+  overflow-wrap: anywhere;
+}
+.fm-pattern-table td {
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-pattern-match td:last-child {
+  color: var(--fm-success-ink);
+  background: var(--fm-success-tint);
+}
+.fm-pattern-differs td:last-child {
+  color: var(--fm-highlight-ink);
+  background: var(--fm-highlight-tint);
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+.fm-pattern-fig {
+  display: grid;
+  gap: var(--fm-space-1);
+  margin: 0;
+}
+.fm-pattern-svg {
+  max-width: 24rem;
+  margin-inline: auto;
+}
+.fm-pattern-pt {
+  fill: var(--fm-accent-ink);
+}
+.fm-pattern-guess {
+  fill: var(--fm-raised);
+  stroke: var(--fm-highlight-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 3 2;
+}
+.fm-pattern-eq {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl, 1.75rem);
+  font-weight: var(--fm-fw-bold);
+  overflow-wrap: anywhere;
+}
+.fm-pattern-eq[hidden] {
+  display: none;
+}
+.fm-pattern-log {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-sunken);
+  border: var(--fm-line) solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-pattern-log p {
+  margin: 0;
+}
+.fm-pattern-line {
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-bold);
+  overflow-wrap: anywhere;
+}
+.fm-pattern-next {
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: 2px;
+}
+.fm-pattern-result {
+  border-inline-start-color: var(--fm-success-ink);
+  background: var(--fm-success-tint);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-pattern .fm-btn {
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fm-pattern * {
+    transition: none !important;
+  }
+}
+
+/* ── polygon ── */
+/* ── Area of a regular polygon (polygon) ── */
+.fm-polygon-picks,
+.fm-polygon-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+}
+.fm-polygon-given {
+  margin: 0;
+  font-weight: var(--fm-fw-bold);
+}
+.fm-polygon-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--fm-space-2);
+}
+.fm-polygon-sides {
+  min-width: 6rem;
+  text-align: center;
+}
+.fm-polygon-note {
+  margin: 0;
+}
+.fm-polygon-shape {
+  fill: var(--fm-sunken);
+  stroke: var(--fm-border-strong);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.fm-polygon-wedge {
+  stroke: var(--fm-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.fm-polygon-wedge.is-split {
+  fill: var(--fm-accent-tint);
+}
+.fm-polygon-wedge.is-next {
+  fill: none;
+  stroke-dasharray: 6 4;
+}
+.fm-polygon-wedge.is-dim {
+  fill: var(--fm-raised);
+  stroke: var(--fm-border-strong);
+}
+.fm-polygon-wedge.is-focus {
+  fill: var(--fm-highlight-tint);
+  stroke: var(--fm-highlight-ink);
+  stroke-width: 4;
+}
+.fm-polygon-center {
+  fill: var(--fm-primary);
+}
+.fm-polygon-num {
+  font-weight: var(--fm-fw-bold);
+}
+.fm-polygon-base,
+.fm-polygon-height {
+  stroke: var(--fm-accent-ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.fm-polygon-height {
+  stroke-dasharray: 8 5;
+}
+.fm-polygon-right {
+  fill: none;
+  stroke: var(--fm-accent-ink);
+  stroke-width: 2;
+}
+.fm-polygon-tag {
+  paint-order: stroke;
+  stroke: var(--fm-raised);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.fm-polygon-tally {
+  margin: 0;
+  font-weight: var(--fm-fw-bold);
+}
+.fm-polygon-move.is-next {
+  outline: 3px solid var(--fm-accent-ink);
+  outline-offset: 2px;
+}
+.fm-polygon-result {
+  display: grid;
+  gap: var(--fm-space-1);
+  padding: var(--fm-space-3);
+  background: var(--fm-success-tint);
+  border-inline-start: 4px solid var(--fm-success-ink);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-polygon-result p {
+  margin: 0;
+}
+.fm-polygon-eq {
   font-size: var(--fm-fs-lg);
   font-weight: var(--fm-fw-bold);
 }
