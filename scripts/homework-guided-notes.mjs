@@ -75,6 +75,7 @@ import {
   renderNoticeWonder,
   renderReflect,
 } from "./lib/homework-mission.mjs";
+import { renderMotionHost } from "./lib/homework-motion.mjs";
 import { missionModelFor } from "./lib/homework-mission-models.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
@@ -8339,7 +8340,7 @@ export function renderLearnTab(
   const explore = `
     <div ${tabPanelAttrs("explore", true)}>
       ${renderTryTogether(config, {
-        modelHtml: `<div class="mission-block fp-model" id="hw_learn_try">${renderMissionModelHost(config)}${hasModel ? "" : visualLabHtml}</div>`,
+        modelHtml: `<div class="mission-block fp-model" id="hw_learn_try">${renderMissionModelHost(config)}${renderMotionHost(config.lessonId || "")}${hasModel ? "" : visualLabHtml}</div>`,
         toolHtml: `${workbenchLaunchHtml}${workbenchHtml}`,
         /* The lesson's older picture and big idea stay, one fold down: with an engine model they are a second way to see it. */
         morePicturesHtml: `${hasModel ? visualLabHtml : ""}${block("learn-big-idea-block mission-block", `<div id="hw_learn_idea">${concept}</div>`)}`,

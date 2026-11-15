@@ -7,6 +7,8 @@
  *
  * Everything stays on this device. Nothing here sends data anywhere.
  */
+import { MOTION_INTRO } from "./homework-motion.mjs";
+
 export const MISSION_JS = `
 /* hwFlowCoreSections, hwFlowRecordPick, hwFlowImprove: homework-flow-js.mjs, same page scope. */
 /* ── Family Math Mission ─────────────────────────────────────────────── */
@@ -89,6 +91,38 @@ function hwMissionMountModel() {
     /* The static picture and labs still teach; say so quietly instead of leaving a blank box. */
     if (stage) stage.textContent = hwMissionBi('The interactive model did not load. The picture above still works.', 'El modelo interactivo no cargó. El dibujo de arriba sí funciona.');
   }).then(function () { hwMissionModelLoading = false; });
+}
+
+/* See it move: the lesson's animated figure (shared/motion/figures) loads the first time Try Together opens. The numbers last tried are
+   kept on this device and checked by the figure before use, so an old or damaged save can only fall back to the starting numbers. */
+var HW_MOTION_FIGURES_URL = '/shared/motion/figures/index.mjs';
+var HW_MOTION_MOUNT_URL = '/shared/motion/figures/mount.mjs';
+var HW_MOTION_INTRO = ${JSON.stringify(MOTION_INTRO)};
+var hwMotionView = null;
+var hwMotionLoading = false;
+function hwMotionMount() {
+  var host = document.getElementById('hw_motion');
+  if (!host || hwMotionView || hwMotionLoading) return;
+  if (!host.querySelector('[data-motion-stage]')) {
+    host.className = 'hw-mission-model hw-motion';
+    host.setAttribute('aria-labelledby', 'hw_motion_title');
+    host.innerHTML = '<div class="hw-mm-head"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><h2 class="hw-mm-title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</h2></div><ol class="hw-motion-steps"><li>' + HW_MOTION_INTRO.steps.join('</li><li>') + '</li></ol><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div>';
+    host.hidden = false;
+  }
+  var stage = host.querySelector('[data-motion-stage]');
+  var key = host.getAttribute('data-k');
+  var values;
+  values = (host.getAttribute('data-v') || '').split(',').map(Number);
+  var saved = hwMissionRead('motion', null);
+  hwMotionLoading = true;
+  Promise.all([import(HW_MOTION_FIGURES_URL), import(HW_MOTION_MOUNT_URL)]).then(function (mods) {
+    var fig = mods[0].figureFor(key);
+    if (!fig || !stage) { host.hidden = true; return; }
+    if (Array.isArray(saved) && saved.length === values.length) { try { fig.build(key, saved); values = saved; } catch (e) {} }
+    hwMotionView = mods[1].mountFigure(stage, fig, key, { values: values, lang: hwMissionLang(), controls: true, onValues: function (v) { hwMissionWrite('motion', v); } });
+  }).catch(function () {
+    if (stage) stage.textContent = hwMissionBi('The moving picture did not load. The other pictures on this page still work.', 'El dibujo en movimiento no cargó. Los otros dibujos de esta página sí funcionan.');
+  }).then(function () { hwMotionLoading = false; });
 }
 
 /* Evidence: what the family actually did on each practice problem, kept on this device. */
@@ -267,16 +301,17 @@ function hwMissionBoot() {
   });
   var tabWatch = new MutationObserver(function () {
     var tab = document.body.dataset.activeTab;
-    if (tab === 'explore') hwMissionMountModel();
+    if (tab === 'explore') { hwMissionMountModel(); hwMotionMount(); }
     if (tab === 'improve') hwFlowImprove();
     if (tab === 'done') hwMissionSummary();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
   var langWatch = new MutationObserver(function () {
     if (hwMissionModel && hwMissionModel.setLang) hwMissionModel.setLang(hwMissionLang());
+    if (hwMotionView) hwMotionView.update({ lang: hwMissionLang() });
   });
   langWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  if (document.body.dataset.activeTab === 'explore') hwMissionMountModel();
+  if (document.body.dataset.activeTab === 'explore') { hwMissionMountModel(); hwMotionMount(); }
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwMissionBoot);
 else hwMissionBoot();

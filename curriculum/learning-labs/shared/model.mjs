@@ -182,6 +182,8 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${lockedNote}${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${labelHtml(field, i)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? `readonly aria-describedby="${prefix}-locked"` : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>${spanish() ? 'Reset model<span class="es-line" lang="es">Reiniciar el modelo</span>' : 'Reset model'}</button></div></div><p class="model-error" id="${prefix}-err" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
   const lensView = lens ? mountLens(host, model, { lang, prefix: `${prefix}-lens` }) : null;
   let shown = null;
+  // a lesson-specific motion figure (shared/motion/figures) rides under the picture, drawn from the same values; loaded only where one exists
+  let figureView = null;
   // the power picture is drawn at its container's own width (300-480), so one unit is one pixel and 13px text stays 13px
   const drawWidth = (picture) => {
     const css = getComputedStyle(picture), pad = (parseFloat(css.paddingLeft) || 0) + (parseFloat(css.paddingRight) || 0);
@@ -193,6 +195,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     picture.innerHTML = visual(model, values, r, spanish() ? 'es' : 'en', drawWidth(picture));
     if (model.kind === 'power') { enterLatest(picture, shown, values); shown = [...values]; }
     host.querySelector('.model-readout').innerHTML = `<strong>${esc(r.equation)}</strong><p>${esc(r.note)}</p>`;
+    figureView?.update({ values: [...values], lang: spanish() ? 'es' : 'en' });
     lensView?.update([...values], r);
     onChange([...values], r); return r;
   };
@@ -209,6 +212,19 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const select = host.querySelector('[data-symbol]');
   if (select) { select.value = symbol; select.disabled = free !== null; select.addEventListener('change', () => { symbol = select.value; update(); }); }
   host.querySelector('.model-workspace').dataset.kind = model.kind;
+  if (model.kind !== 'power') {
+    const key = `${model.kind}:${model.mode}`;
+    import('../../../shared/motion/figures/index.mjs').then(async ({ figureFor }) => {
+      const fig = figureFor(key);
+      if (!fig) return;
+      const { mountFigure } = await import('../../../shared/motion/figures/mount.mjs');
+      const box = document.createElement('div');
+      box.className = 'model-motion';
+      box.style.gridColumn = '1 / -1';
+      host.querySelector('.model-workspace').append(box);
+      figureView = mountFigure(box, fig, key, { values: [...values], lang: spanish() ? 'es' : 'en' });
+    }).catch(() => { /* the picture and controls work without the figure */ });
+  }
   if (model.kind === 'power' && typeof ResizeObserver === 'function') {
     const picture = host.querySelector('.model-picture');
     let drawn = 0;

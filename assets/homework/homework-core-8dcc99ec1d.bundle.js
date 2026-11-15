@@ -4718,6 +4718,38 @@ function hwMissionMountModel() {
   }).then(function () { hwMissionModelLoading = false; });
 }
 
+/* See it move: the lesson's animated figure (shared/motion/figures) loads the first time Try Together opens. The numbers last tried are
+   kept on this device and checked by the figure before use, so an old or damaged save can only fall back to the starting numbers. */
+var HW_MOTION_FIGURES_URL = '/shared/motion/figures/index.mjs';
+var HW_MOTION_MOUNT_URL = '/shared/motion/figures/mount.mjs';
+var HW_MOTION_INTRO = {"badge":"<span class=\"lang-en\">See it move</span><span class=\"lang-es\" lang=\"es\">Míralo moverse</span>","title":"<span class=\"lang-en\">Predict, test, talk</span><span class=\"lang-es\" lang=\"es\">Predice, prueba, conversa</span>","steps":["<span class=\"lang-en\"><strong>Predict.</strong> Before you press anything, say what you think will happen.</span><span class=\"lang-es\" lang=\"es\"><strong>Predice.</strong> Antes de tocar nada, di qué crees que pasará.</span>","<span class=\"lang-en\"><strong>Test.</strong> Press “Watch it move,” or change a number and look again.</span><span class=\"lang-es\" lang=\"es\"><strong>Prueba.</strong> Toca “Míralo moverse” o cambia un número y mira otra vez.</span>","<span class=\"lang-en\"><strong>Talk.</strong> Did it match? What changed? What stayed the same?</span><span class=\"lang-es\" lang=\"es\"><strong>Conversa.</strong> ¿Coincidió? ¿Qué cambió? ¿Qué se quedó igual?</span>"],"help":"<span class=\"lang-en\"><strong>Grown-ups:</strong> ask “What do you notice?” and “What would happen if…?” Let your child say it first. You do not need to give the answer.</span><span class=\"lang-es\" lang=\"es\"><strong>Adultos:</strong> pregunten “¿Qué notas?” y “¿Qué pasaría si…?”. Dejen que su hijo o hija lo diga primero. No necesitan dar la respuesta.</span>"};
+var hwMotionView = null;
+var hwMotionLoading = false;
+function hwMotionMount() {
+  var host = document.getElementById('hw_motion');
+  if (!host || hwMotionView || hwMotionLoading) return;
+  if (!host.querySelector('[data-motion-stage]')) {
+    host.className = 'hw-mission-model hw-motion';
+    host.setAttribute('aria-labelledby', 'hw_motion_title');
+    host.innerHTML = '<div class="hw-mm-head"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><h2 class="hw-mm-title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</h2></div><ol class="hw-motion-steps"><li>' + HW_MOTION_INTRO.steps.join('</li><li>') + '</li></ol><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div>';
+    host.hidden = false;
+  }
+  var stage = host.querySelector('[data-motion-stage]');
+  var key = host.getAttribute('data-k');
+  var values;
+  values = (host.getAttribute('data-v') || '').split(',').map(Number);
+  var saved = hwMissionRead('motion', null);
+  hwMotionLoading = true;
+  Promise.all([import(HW_MOTION_FIGURES_URL), import(HW_MOTION_MOUNT_URL)]).then(function (mods) {
+    var fig = mods[0].figureFor(key);
+    if (!fig || !stage) { host.hidden = true; return; }
+    if (Array.isArray(saved) && saved.length === values.length) { try { fig.build(key, saved); values = saved; } catch (e) {} }
+    hwMotionView = mods[1].mountFigure(stage, fig, key, { values: values, lang: hwMissionLang(), controls: true, onValues: function (v) { hwMissionWrite('motion', v); } });
+  }).catch(function () {
+    if (stage) stage.textContent = hwMissionBi('The moving picture did not load. The other pictures on this page still work.', 'El dibujo en movimiento no cargó. Los otros dibujos de esta página sí funcionan.');
+  }).then(function () { hwMotionLoading = false; });
+}
+
 /* Evidence: what the family actually did on each practice problem, kept on this device. */
 function hwMissionSnapshot() {
   var ev = hwMissionRead('evidence', {});
@@ -4894,16 +4926,17 @@ function hwMissionBoot() {
   });
   var tabWatch = new MutationObserver(function () {
     var tab = document.body.dataset.activeTab;
-    if (tab === 'explore') hwMissionMountModel();
+    if (tab === 'explore') { hwMissionMountModel(); hwMotionMount(); }
     if (tab === 'improve') hwFlowImprove();
     if (tab === 'done') hwMissionSummary();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
   var langWatch = new MutationObserver(function () {
     if (hwMissionModel && hwMissionModel.setLang) hwMissionModel.setLang(hwMissionLang());
+    if (hwMotionView) hwMotionView.update({ lang: hwMissionLang() });
   });
   langWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  if (document.body.dataset.activeTab === 'explore') hwMissionMountModel();
+  if (document.body.dataset.activeTab === 'explore') { hwMissionMountModel(); hwMotionMount(); }
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwMissionBoot);
 else hwMissionBoot();
