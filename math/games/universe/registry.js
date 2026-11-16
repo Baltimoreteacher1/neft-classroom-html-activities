@@ -23,6 +23,20 @@ export const GAMES = [
     standards: ["6.AT.5", "6.AT.6c"],
     features: ["time-machine", "apprentice"],
   },
+  {
+    id: "ratio-rush",
+    href: "/math/games/universe/games/ratio-rush/",
+    title: { en: "Ratio Rush", es: "Carrera de Razones" },
+    genre: { en: "Rail adventure", es: "Aventura en tren" },
+    tagline: {
+      en: "Drive the Meridian Line. Keep pace with partner trains, win the junctions and charge the line, one ratio at a time.",
+      es: "Conduce la Línea Meridiana. Lleva el paso de otros trenes, gana los cambios de vía y carga la línea, una razón a la vez.",
+    },
+    unit: 3,
+    lessons: ["3-3", "3-5", "3-8"],
+    standards: ["6.AT.3a", "6.AT.3", "6.AT.2"],
+    features: ["reality-shift", "time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

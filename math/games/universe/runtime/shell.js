@@ -80,6 +80,8 @@ export class UniverseGame extends HTMLElement {
     this.last = 0;
     this.frames = 0;
     this.events = [];
+    /** Follow-up lines and prompts, run in order once their time comes (see later()). */
+    this.queue = [];
     this.pendingMeta = null;
     this.prediction = null;
     this.caption = null;
@@ -232,6 +234,7 @@ export class UniverseGame extends HTMLElement {
     this.save.unlocked = Math.max(this.save.unlocked, index);
     this.persist();
     this.fx.clear();
+    this.queue.length = 0;
     this.prediction = null;
     this.closeVeil();
     this.closePanel();
@@ -277,7 +280,24 @@ export class UniverseGame extends HTMLElement {
     return id;
   }
 
+  /** Run `fn` after `seconds` of display time, so a follow-up never talks over an outcome. */
+  later(seconds, fn) {
+    this.queue.push({ at: this.now + seconds, run: fn });
+    this.queue.sort((a, b) => a.at - b.at);
+  }
+
   handle(e) {
+    // In a Reality Shift, an outcome in the reality the student is NOT in is a
+    // counterfactual: shown, never recorded as the student's evidence.
+    if (
+      e.reality !== undefined &&
+      this.subject instanceof Multiverse &&
+      e.reality !== this.subject.active &&
+      (e.type === "outcome" || e.type === "complete" || e.type === "checkpoint" || e.type === "say" || e.type === "refuse")
+    ) {
+      this.onCounterfactual?.(e);
+      return;
+    }
     switch (e.type) {
       case "outcome": {
         const m = this.pendingMeta || { id: this.timeline.head, mechanic: e.mechanic || "play" };
@@ -667,6 +687,7 @@ export class UniverseGame extends HTMLElement {
   }
 
   render(dt) {
+    while (this.queue.length && this.queue[0].at <= this.now) this.queue.shift().run();
     const ctx = this.ctx;
     const world = this.world;
     const f = this.focus(world);

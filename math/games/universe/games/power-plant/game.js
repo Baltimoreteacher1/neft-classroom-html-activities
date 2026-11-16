@@ -138,7 +138,6 @@ class PowerPlant extends UniverseGame {
   static strings = STRINGS;
 
   rules = rules;
-  queue = [];
   asked = {};
 
   createWorld(index, seed) {
@@ -159,8 +158,6 @@ class PowerPlant extends UniverseGame {
   }
 
   draw(ctx, w, t) {
-    // Follow-up lines wait their turn so they never talk over an outcome.
-    while (this.queue.length && this.queue[0].at <= t) this.queue.shift().run();
     this.words ||= {};
     for (const k of ["needs", "coils", "bench", "load", "stable"]) this.words[k] = this.t(k);
     draw(ctx, w, t, {
@@ -176,12 +173,7 @@ class PowerPlant extends UniverseGame {
     drawOverlay(ctx, w, this.words);
   }
 
-  later(seconds, run) {
-    this.queue.push({ at: this.now + seconds, run });
-  }
-
   onLevelStart() {
-    this.queue.length = 0;
     this.oriMood = "curious";
   }
 
