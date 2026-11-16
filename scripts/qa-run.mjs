@@ -1076,6 +1076,12 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // Math Studio (72 lessons): its runtime, generator, pages, registry and tests. Must precede the lab, /^data\// and
+  // /^math\// rules. The studio imports the lab model, so a lab change also reaches it through the lab rule below.
+  [
+    /^(assets\/math-studio\/|math\/studio\/|data\/math-studio\/|docs\/math-studio\/|scripts\/(generate-math-studio\.mjs|lib\/math-studio-[^/]+\.mjs)$|tools\/(math-studio\.test\.mjs|verify-math-studio-browser\.mjs)$)/,
+    ["validate:math-studio", "validate:math-studio-browser", "validate:static", "test"],
+  ],
   // Learning Labs (77 labs in Chromium, ~35s) — runs when learning lab pages,
   // data, generator, or verifier change. Must precede /^curriculum\// and /^data\//.
   [

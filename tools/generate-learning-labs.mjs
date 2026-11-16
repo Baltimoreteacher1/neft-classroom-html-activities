@@ -3,6 +3,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { controls } from "../curriculum/learning-labs/shared/math.mjs";
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
+import { labBar } from "../scripts/lib/math-studio-page.mjs";
+import { MATH_STUDIO_UNITS } from "../scripts/lib/math-studio-registry.mjs";
 import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
 import { injectUtilityBar } from "./inject-curriculum-utility-bar.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
@@ -19,6 +21,12 @@ import {
   REPO_ROOT,
 } from "./lib/curriculum-source.mjs";
 import { labEmblem } from "./lib/iso-art.mjs";
+
+/** The Math Studio bar for a lab: one link per in-scope lesson, or nothing when every lesson is out of scope. */
+const mathStudioBar = (b) => {
+  const lessons = b.lessons.filter((l) => MATH_STUDIO_UNITS.includes(Number(l.split("-")[0])));
+  return lessons.length ? labBar({ lessons }) : "";
+};
 
 const destination = join(REPO_ROOT, "curriculum/learning-labs");
 const LEVELS = { support: "approaching", core: "onLevel", stretch: "extending" };
@@ -263,8 +271,8 @@ for (const blueprint of blueprints) {
     injectUtilityBar(
       page(
         blueprint.title,
-        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>${assets.body}`,
-        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">${assets.head}`,
+        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}${mathStudioBar(blueprint)}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>${assets.body}`,
+        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">${mathStudioBar(blueprint) ? '<link rel="stylesheet" href="/assets/math-studio/stage-bar.css">' : ""}${assets.head}`,
       ),
       join(dir, "index.html"),
     ),

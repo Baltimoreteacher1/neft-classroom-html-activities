@@ -185,6 +185,9 @@ const HUB = "curriculum/units/index.html";
 const MARK = /\s*<!-- practice-studio:[\w-]+ -->[\s\S]*?<!-- \/practice-studio -->/g;
 /** Unit 4 has hand-built studios, so only the Lesson Path link is spliced for its rows. */
 const MARK_PATH = /\s*<!-- lesson-path:[\w-]+ -->[\s\S]*?<!-- \/lesson-path -->/g;
+/** Math Studio is the lesson's connected experience, so it leads the row. */
+const STUDIO_LINK = (/** @type {string} */ id) =>
+  `<a class="res res--studio" href="/math/studio/${id}/">Start Math Studio</a>`;
 const PATH_LINK = (/** @type {string} */ id) =>
   `<a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a>`;
 /** The lesson's animated figure lives in step 3 of its Lesson Path page (shared/motion); the row links straight to it. */
@@ -326,7 +329,7 @@ export function outputs(opts = {}) {
     if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     hub = hub.replace(
       pattern,
-      `$1\n                <!-- practice-studio:${id} -->${PATH_LINK(id)}<a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a>${SEE_IT_MOVE_LINK(id)}<!-- /practice-studio -->`,
+      `$1\n                <!-- practice-studio:${id} -->${STUDIO_LINK(id)}${PATH_LINK(id)}<a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a>${SEE_IT_MOVE_LINK(id)}<!-- /practice-studio -->`,
     );
   }
   hub = hub.replace(MARK_PATH, "");
@@ -335,7 +338,7 @@ export function outputs(opts = {}) {
     if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     hub = hub.replace(
       pattern,
-      `$1\n                <!-- lesson-path:${id} -->${PATH_LINK(id)}${SEE_IT_MOVE_LINK(id)}<!-- /lesson-path -->`,
+      `$1\n                <!-- lesson-path:${id} -->${STUDIO_LINK(id)}${PATH_LINK(id)}${SEE_IT_MOVE_LINK(id)}<!-- /lesson-path -->`,
     );
   }
   files.set(HUB, hub);
