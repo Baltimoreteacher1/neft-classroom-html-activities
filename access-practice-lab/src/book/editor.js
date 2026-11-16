@@ -14,6 +14,7 @@ import { addBarHTML, onAddBar } from "./editor-add.js";
 import { dockHTML, makeEditorSupportHost, onDirectorSubmit, onDockClick, onDockInput, stageBarHTML } from "./ui-story.js";
 import { isTeacher, setTeacher } from "./lang/ui-teacher.js";
 import { pushProgress, refreshSupports } from "./lang/class-sync.js";
+import { mountCoach } from "./editor-coach.js";
 import { bkIcon } from "./icons.js";
 import { FORMATS, makeElement, plainText } from "./model.js";
 import { esc, pageHTML, preloadMedia } from "./render.js";
@@ -102,6 +103,7 @@ export async function mountEditor(root, ctx, book, I) {
   E.renderAll = () => renderAll();
   E.renderCanvas = () => renderCanvas();
   E.renderInspector = () => renderInspector();
+  const unmountCoach = mountCoach(E);
   E.dialog = $("[data-bk-dialog]");
   E.dialog.__bkEditor = E;
   E.pickFile = (accept) =>
@@ -905,6 +907,7 @@ export async function mountEditor(root, ctx, book, I) {
     clearInterval(pushTimer);
     E.player?.destroy();
     if (S.book.assignment?.classCode) pushProgress(S.book);
+    unmountCoach();
     await core.saveNow();
     core.destroy();
   };

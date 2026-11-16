@@ -10,12 +10,12 @@
  *   POST /join      { code, alias, studentKey? }    -> { studentId, studentKey, alias }
  *   GET  /progress?code=&doc=        (student)      -> { doc, updatedAt, data } | { doc: null }
  *   POST /progress  { code, doc, updatedAt, data, summary }   (student, last-write-wins)
- *   GET  /me?code=                   (student)      -> { alias, studentId, familyToken, support, roadWeek }
+ *   GET  /me?code=                   (student)      -> { alias, studentId, familyToken, support, roadWeek, aiCoach }
  *   GET  /digest?code=&student=&token=  (family)    -> one learner's week, read-only
  *   Teacher (x-teacher-key, or x-class-teacher for that class):
  *   POST /create    { app, title }   (site key)     -> { code, teacherPasscode }
  *   GET  /roster?code=                              -> students + summaries + goal
- *   POST /settings  { code, settings }              -> goal, assignments, digest
+ *   POST /settings  { code, settings }              -> goal, assignments, digest, aiCoach
  *   POST /reset-student  { code, studentId }        -> { studentKey }
  *   POST /remove-student { code, studentId }
  *   POST /delete    { code, confirm }               -> hard delete, everything
@@ -302,6 +302,8 @@ const routes = {
       // This learner's own starting support (support stage names only, never a level) and Road week.
       support: settingsOf(cls).support?.[student.student_id] || null,
       roadWeek: settingsOf(cls).roadWeek ?? null,
+      // Book Studio writing coach: on unless the teacher turned it off for this class.
+      aiCoach: settingsOf(cls).aiCoach !== false,
     };
   },
 

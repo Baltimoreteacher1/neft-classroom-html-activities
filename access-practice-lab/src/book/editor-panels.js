@@ -4,6 +4,7 @@
 import * as db from "./db.js";
 import * as rec from "../recorder.js";
 import { addImageFile } from "./editor-add.js";
+import { coachSectionHTML, coachSettingHTML, onCoachChange, onCoachClick } from "./editor-coach.js";
 import { MediaError, checkAudio, mediaDuration, prepareCaptions } from "./editor-media.js";
 import { bkIcon } from "./icons.js";
 import {
@@ -257,6 +258,7 @@ function pagePanelHTML(E) {
       !prompt,
     ),
   );
+  parts.push(coachSectionHTML(E));
   parts.push(
     section(
       esc(tr("Book settings", "Ajustes del libro")),
@@ -271,6 +273,7 @@ function pagePanelHTML(E) {
       )}
       ${field(esc(tr("Reading direction", "Dirección de lectura")), `<select data-bk-book="dir"><option value="ltr" ${S.book.dir === "ltr" ? "selected" : ""}>${esc(tr("Left to right (English, Spanish)", "Izquierda a derecha (inglés, español)"))}</option><option value="rtl" ${S.book.dir === "rtl" ? "selected" : ""}>${esc(tr("Right to left (Arabic, Hebrew, Urdu…)", "Derecha a izquierda (árabe, hebreo, urdu…)"))}</option></select>`)}
       ${field(esc(tr("Author name on the cover", "Nombre del autor en la portada")), `<input type="text" data-bk-book="author" maxlength="60" value="${esc(S.book.author)}" />`)}
+      ${coachSettingHTML(E)}
       <p class="fine">${esc(tr("Books are saved in this browser on this device. Use Share & export to keep a copy or move it to another device.", "Los libros se guardan en este navegador en este dispositivo. Usa Compartir y exportar para guardar una copia o pasarlo a otro dispositivo."))}</p>`,
       false,
     ),
@@ -317,7 +320,7 @@ export function inspectorHTML(E) {
       <button type="button" class="bk-tbtn" data-bk-act2="lock" aria-pressed="${!!el.locked}" aria-label="${esc(tr("Lock in place", "Fijar en su lugar"))}" title="${esc(tr("Lock in place", "Fijar en su lugar"))}">${bkIcon("lock")}</button>
       <button type="button" class="bk-tbtn" data-bk-act2="delete" aria-label="${esc(tr("Delete (Delete key)", "Eliminar (tecla Supr)"))}" title="${esc(tr("Delete", "Eliminar"))}">${bkIcon("trash")}</button>
       <button type="button" class="bk-tbtn" data-bk-act2="deselect" aria-label="${esc(tr("Back to page settings", "Volver a los ajustes de la página"))}" title="${esc(tr("Done", "Listo"))}">${bkIcon("close")}</button>
-    </div></div>${body}${geometryHTML(E, el)}`;
+    </div></div>${body}${geometryHTML(E, el)}${coachSectionHTML(E)}`;
 }
 
 // ── recording ────────────────────────────────────────────────────────────────
@@ -430,6 +433,7 @@ document.addEventListener("pointerdown", (e) => {
 });
 
 export function onInspectorClick(E, e) {
+  if (onCoachClick(E, e)) return true;
   const t = e.target;
   const { core } = E;
   const tr = E.I.S;
@@ -681,6 +685,7 @@ export function onInspectorInput(E, e) {
 }
 
 export function onInspectorChange(E, e) {
+  if (onCoachChange(E, e)) return;
   const t = e.target;
   const { core } = E;
   const el = core.selectedEl();

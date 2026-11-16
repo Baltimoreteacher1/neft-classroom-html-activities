@@ -57,6 +57,8 @@ const LAB_EXACT = new Set([
   "/api/language-guide/questions",
   // The same log grouped into themes and gaps by a model, teacher key only (functions/api/language-guide/insights.js).
   "/api/language-guide/insights",
+  // The Book Studio writing coach; text is sent only on a learner's button press (functions/api/book-coach.js).
+  "/api/book-coach",
   STUDIOS_APP_BASE,
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */

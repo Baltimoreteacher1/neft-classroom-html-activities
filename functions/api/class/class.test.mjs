@@ -490,3 +490,17 @@ test("language summary accepts Key Language Use counts and refuses bad shapes", 
   assert.equal(validateSummary("language", { byUse: { Argue: { writing: -1 } } }).ok, false);
   assert.equal(validateSummary("language", { byUse: [] }).ok, false);
 });
+
+test("Book Studio writing coach: on by default, the teacher can turn it off, the learner reads it from /me", async () => {
+  const w = world();
+  const c = await newClass(w, "language");
+  const s = await join(w, c.code, "Luna");
+  const me = async () => (await call(w, "me", { query: `?code=${c.code}`, headers: asStudent(s) })).json;
+  assert.equal((await me()).aiCoach, true);
+  const set = (settings) => call(w, "settings", { method: "POST", headers: teacher, body: { code: c.code, settings } });
+  assert.equal((await set({ aiCoach: "off" })).json.error, "invalid-ai-coach");
+  assert.equal((await set({ aiCoach: false })).status, 200);
+  assert.equal((await me()).aiCoach, false);
+  assert.equal((await set({ aiCoach: true })).status, 200);
+  assert.equal((await me()).aiCoach, true);
+});

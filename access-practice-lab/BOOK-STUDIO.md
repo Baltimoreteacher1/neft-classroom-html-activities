@@ -83,7 +83,6 @@ Two real paths, no sample data:
   says so). Cover export falls back to SVG where a browser refuses to rasterise HTML.
 - Read-aloud word highlighting depends on the voice reporting word boundaries; when it does not, the reader says so and
   highlights the text box instead.
-- No AI writing help inside Book Studio yet (the site's AI helpers are selection-only and opt-in elsewhere).
 
 
 ## Book Studio 2.0 — the Living Storyworld and the ESOL Support Studio
@@ -125,11 +124,16 @@ and evidence → animation and reduced motion → playable branch → share link
 tablet/phone overflow → axe).
 
 ### Not built (honest list)
-- No generative AI anywhere: the Designer, the coach, suggestions and "Direct this scene" follow fixed rules on the
-  device. Nothing is sent to any service. No AI illustration or AI character generation.
+- The Designer, the support-tray coach, suggestions and "Direct this scene" follow fixed rules on the device and send
+  nothing. The only generative AI is the opt-in Writing coach (below), which asks questions and offers words. No AI illustration or AI character generation.
 - No machine translation, no speech-to-text, no teacher pronunciation recorder in the builder (the model and the word
   popover support a recorded pronunciation and a "machine translation" label; entering translations is manual).
 - No Classroom Story Universe (shared class world). No server-hosted public publication: "Anyone with the link" is the
   existing hash share link and is gated on a teacher's approval for class, family and public audiences.
 - Right-to-left editing exists at book level (`dir`); support cards and the story map were not verified in RTL.
 - Parallax is a gentle background drift, not layered depth.
+- The Writing coach (`src/book/editor-coach.js`, `src/book/coach-rules.js`, `/api/book-coach`) is opt-in in Book
+  settings, hidden when a class teacher turns it off, and only asks questions or offers words (PLATFORM.md rule 3,
+  fourth exception). Better words, Clarity check and Spanish meaning need the model; Spanish meaning falls back to the
+  Word Lab bank for single words. Organize sees only page headings (or a page's first eight words), so it cannot judge
+  pages whose headings say nothing about their content.
