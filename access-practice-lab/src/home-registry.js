@@ -62,6 +62,14 @@ export const HOME_CARDS = [
     text: ["Create a book, or keep working on one.", "Crea un libro o sigue con uno."],
   },
   {
+    id: "language-labs",
+    group: "explore",
+    href: "language-labs",
+    icon: "construction",
+    title: ["Language Labs", "Laboratorios de lenguaje"],
+    text: ["See how English works: verbs in time, connectors, paragraphs.", "Mira cómo funciona el inglés: verbos en el tiempo, conectores, párrafos."],
+  },
+  {
     id: "join-class",
     group: "start",
     href: "class",

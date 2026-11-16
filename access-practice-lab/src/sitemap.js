@@ -384,6 +384,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "language-labs",
+    section: "practice",
+    skill: "Writing",
+    kind: "studio",
+    for: ST,
+    top: true,
+    href: "language-labs",
+    icon: "construction",
+    title: P("Language Labs", "Laboratorios de lenguaje"),
+    text: P(
+      "Six hands-on labs: verb time, connectors, paragraph X-ray, sentence expansion, evidence and precise words.",
+      "Seis laboratorios prácticos: tiempos verbales, conectores, rayos X del párrafo, oraciones, evidencia y palabras precisas.",
+    ),
+  },
+  {
     id: "sentences",
     section: "practice",
     skill: "Writing",
