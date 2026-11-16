@@ -8,6 +8,9 @@ import * as db from "./db.js";
 import { bkIcon } from "./icons.js";
 import { FORMATS, newId, pageSpeech, readingOrder } from "./model.js";
 import { esc, pageAltText, pageHTML, preloadMedia } from "./render.js";
+import { createSupportHost } from "./lang/ui-support.js";
+import { emptyWork } from "./lang/work.js";
+import { isAdventure } from "./story.js";
 
 const PREFS_KEY = "accessPracticeLab:v1:book-reader";
 const loadPrefs = () => {
@@ -57,6 +60,21 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
     boundarySeen: false,
     destroyed: false,
   };
+  // Published language supports (only those the author or teacher allowed to travel with the book) appear as on-request help.
+  const rwork = emptyWork();
+  const sup = createSupportHost({
+    I,
+    sandbox: true,
+    getBook: () => book,
+    audience: () => ({ profile: 0, plan: { profile: 0, intensity: "heavy", domains: {} }, mode: "reader" }),
+    getWork: () => rwork,
+    setWork: (fn) => Object.assign(rwork, fn(rwork)),
+    insertText: () => {},
+    applyText: () => {},
+    refresh: () => renderTray(),
+    say: (m) => status(m),
+  });
+  const scenePlayers = [];
   const rtl = book.dir === "rtl";
   const n = book.pages.length;
   const reduced = () =>
@@ -84,6 +102,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       ${opts.shared ? `<a class="btn ghost small" href="/access-practice-lab/book-studio">${bkIcon("book")}<span>${esc(tr("Book Studio", "Book Studio"))}</span></a>` : `<a class="btn ghost small" href="/access-practice-lab/book-studio/edit/${book.id}">${bkIcon("draw")}<span>${esc(tr("Back to editing", "Volver a editar"))}</span></a>`}
       <h1 class="bk-reader-title" tabindex="-1">${esc(book.title)}</h1>
       <div class="bk-reader-tools">
+        ${isAdventure(book) && !opts.review ? `<a class="btn small" href="/access-practice-lab/book-studio/play/${book.id}${opts.shared ? "?shared=1" : ""}">${bkIcon("play")}<span>${esc(tr("Play the adventure", "Jugar la aventura"))}</span></a>` : ""}
         <button type="button" class="btn small btn-primary" data-r="read">${bkIcon("play")}<span>${esc(tr("Read to me", "Léeme"))}</span></button>
         <button type="button" class="bk-tbtn" data-r="overview" aria-label="${esc(tr("All pages", "Todas las páginas"))}" title="${esc(tr("All pages", "Todas las páginas"))}">${bkIcon("panel")}</button>
         <button type="button" class="bk-tbtn" data-r="layout" aria-label="${esc(tr("One page or two", "Una página o dos"))}" title="${esc(tr("One page or two", "Una página o dos"))}">${bkIcon(useSpread() ? "single" : "spread")}</button>
@@ -98,6 +117,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       <div class="bk-book" data-r-book aria-live="polite"></div>
       <button type="button" class="bk-turn bk-turn-next" data-r="next" aria-label="${esc(tr("Next page", "Página siguiente"))}">${rtl ? "‹" : "›"}</button>
     </div>
+    <div class="bk-reader-tray" data-r-tray></div>
     <footer class="bk-reader-foot"><span data-r-pos></span><span class="bk-reader-status" role="status" data-r-status></span></footer>
     ${opts.review ? `<section class="bk-review-panel" data-r-review aria-label="${esc(tr("Teacher notes", "Notas del docente"))}"></section>` : ""}
     <dialog class="bk-dialog" data-r-dialog aria-labelledby="bkROverview"></dialog>
@@ -129,7 +149,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
         const label =
           i === 0 ? tr("Cover", "Portada") : `${tr("Page", "Página")} ${i + 1} ${tr("of", "de")} ${n}`;
         const alt = pageAltText(p);
-        return `<div class="bk-leaf${idx.length === 2 ? (i === idx[0] ? " is-left" : " is-right") : ""}" data-leaf="${i}">${pageHTML(book, p, { mode: R.prefs.lowData ? "thumb" : "read", lang, label })}${p.narration ? `<button type="button" class="bk-narr" data-r="narration" data-page="${i}">${bkIcon("play")} ${esc(tr("Author's narration", "Narración del autor"))}</button>` : ""}${alt ? `<p class="sr-only">${esc(alt)}</p>` : ""}</div>`;
+        return `<div class="bk-leaf${idx.length === 2 ? (i === idx[0] ? " is-left" : " is-right") : ""}" data-leaf="${i}">${pageHTML(book, p, { mode: R.prefs.lowData ? "thumb" : "read", lang, label, vocab: sup.vocabFor(p.id) })}${p.scene?.actions?.length && !R.prefs.lowData ? `<button type="button" class="bk-narr bk-scene-btn" data-r="scene" data-page="${i}">${bkIcon("film")} ${esc(tr("Watch this scene", "Ver esta escena"))}</button>` : ""}${p.narration ? `<button type="button" class="bk-narr" data-r="narration" data-page="${i}">${bkIcon("play")} ${esc(tr("Author's narration", "Narración del autor"))}</button>` : ""}${alt ? `<p class="sr-only">${esc(alt)}</p>` : ""}</div>`;
       })
       .join("");
     stage.className = `bk-book${idx.length === 2 ? " is-spread" : ""}${idx[0] === 0 ? " is-cover" : ""}`;
@@ -143,6 +163,8 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       );
     }
     sizeBook();
+    renderTray();
+    startScenes(idx);
     $("[data-r-pos]").textContent =
       idx.length === 2
         ? `${tr("Pages", "Páginas")} ${idx[0] + 1}–${idx[1] + 1} ${tr("of", "de")} ${n}`
@@ -153,6 +175,27 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
     $('[data-r="next"]').disabled = R.spread === s.length - 1;
     if (!opts.shared && !opts.review) db.setReadPage(book.id, idx[0]);
     if (opts.review) renderReview();
+  }
+
+  function renderTray() {
+    const t = $("[data-r-tray]");
+    if (!t) return;
+    const first = book.pages[spreads()[R.spread][0]];
+    t.innerHTML = sup.trayHTML(first.id);
+  }
+
+  async function startScenes(idx) {
+    for (const p of scenePlayers.splice(0)) p.destroy();
+    const animated = idx.filter((i) => book.pages[i].scene?.actions?.length);
+    if (!animated.length || R.prefs.lowData) return;
+    const { createScenePlayer } = await import("./scene-player.js");
+    for (const i of animated) {
+      const el = stage.querySelector(`[data-leaf="${i}"] .bk-page`);
+      if (!el || R.destroyed) continue;
+      const pl = createScenePlayer(el, book.pages[i], { reduced, muted: () => true, voices: () => false, characters: book.characters });
+      scenePlayers.push(pl);
+      pl.play();
+    }
   }
 
   function go(delta) {
@@ -335,6 +378,19 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
 
   // ── events ──
   root.addEventListener("click", async (e) => {
+    if (await sup.onClick(e, book.pages[spreads()[R.spread][0]].id)) return;
+    const sc = e.target.closest('[data-r="scene"]');
+    if (sc) {
+      const i = Number(sc.dataset.page);
+      const { createScenePlayer } = await import("./scene-player.js");
+      const el = stage.querySelector(`[data-leaf="${i}"] .bk-page`);
+      if (el) {
+        const pl = createScenePlayer(el, book.pages[i], { reduced, muted: () => true, voices: () => false, characters: book.characters });
+        scenePlayers.push(pl);
+        pl.play();
+      }
+      return;
+    }
     const t = e.target;
     const goto = t.closest("[data-r-goto]");
     if (goto) {
@@ -413,7 +469,9 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
     } else if (act === "save-copy") opts.onSaveCopy?.(book);
     else if (act === "return-book") opts.onReturn?.(book);
   });
+  root.addEventListener("change", (e) => sup.onChange(e));
   root.addEventListener("input", (e) => {
+    if (sup.onInput(e)) return;
     const k = e.target.dataset?.rp;
     if (!k) return;
     const v =
@@ -488,6 +546,8 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
   $(".bk-reader-title")?.focus({ preventScroll: true });
   return () => {
     R.destroyed = true;
+    for (const p of scenePlayers.splice(0)) p.destroy();
+    sup.closePop();
     stopSpeech();
     window.removeEventListener("resize", onResize);
   };

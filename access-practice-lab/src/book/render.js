@@ -5,6 +5,7 @@ import { ART } from "./art.js";
 import { FONTS, FORMATS, ROLE_DEFAULTS, pick, plainText } from "./model.js";
 import { cachedUrl, mediaUrl } from "./db.js";
 import { bkIcon } from "./icons.js";
+import { markVocab } from "./lang/vocab-mark.js";
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 export const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
@@ -127,7 +128,8 @@ function textBody(el, ctx) {
   if (empty && ctx.mode !== "edit") return "";
   // Colour swatches are stored as data-c (sanitized hex) and painted inline here.
   const body = el.html.replace(/ data-c="(#[0-9a-fA-F]{3,8})"/g, ' data-c="$1" style="color:$1"');
-  return `<div class="bk-txt"${lang}${dir}${editable}${empty && ph ? ` data-ph="${esc(ph)}"` : ""} style="${textStyle(el)}">${body}</div>`;
+  const marked = ctx.vocab?.length && ctx.mode === "read" ? markVocab(body, ctx.vocab) : body;
+  return `<div class="bk-txt"${lang}${dir}${editable}${empty && ph ? ` data-ph="${esc(ph)}"` : ""} style="${textStyle(el)}">${marked}</div>`;
 }
 
 function imageHTML(el, ctx) {
@@ -213,13 +215,35 @@ function elementInner(el, ctx) {
   }
 }
 
+const MOUTH = {
+  happy: "M7 14 Q12 19 17 14",
+  worried: "M7 17 Q12 13 17 17",
+  surprised: "M12 15 m-2 0 a2 2.4 0 1 0 4 0 a2 2.4 0 1 0 -4 0",
+  angry: "M7 16 L17 16",
+  sad: "M7 17 Q12 12 17 17",
+  thinking: "M8 16 L15 15",
+};
+const BROW = { worried: "M6 7 L10 6 M18 7 L14 6", angry: "M6 6 L10 8 M18 6 L14 8", sad: "M6 7 L10 6 M18 7 L14 6", thinking: "M6 7 L10 6 M14 7 L18 6", surprised: "M6 5 L10 5 M14 5 L18 5" };
+/** A small drawn face badge for a changed expression (decorative: the expression is also in the picture's description). */
+export function exprFace(expr) {
+  const m = MOUTH[expr];
+  if (!m) return "";
+  return `<svg class="bk-expr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#fff3c4" stroke="#1b1f3b" stroke-width="1.2"/><circle cx="8.5" cy="10" r="1.2" fill="#1b1f3b"/><circle cx="15.5" cy="10" r="1.2" fill="#1b1f3b"/>${BROW[expr] ? `<path d="${BROW[expr]}" stroke="#1b1f3b" stroke-width="1" fill="none" stroke-linecap="round"/>` : ""}<path d="${m}" stroke="#1b1f3b" stroke-width="1.4" fill="${expr === "surprised" ? "#1b1f3b" : "none"}" stroke-linecap="round"/></svg>`;
+}
+
 export function elementHTML(el, ctx) {
   const inner = elementInner(el, ctx);
   if (!inner && ctx.mode !== "edit") return "";
   const style = `left:${el.x}%;top:${el.y}%;width:${el.w}%;height:${el.h}%${el.rot ? `;transform:rotate(${el.rot}deg)` : ""}`;
   const sel = ctx.mode === "edit" ? ` data-el="${el.id}" tabindex="-1"` : ` data-el="${el.id}"`;
   const roleAttr = el.type === "text" ? ` data-role="${el.role}"` : "";
-  return `<div class="bk-el bk-t-${el.type}${el.locked ? " is-locked" : ""}"${roleAttr}${sel} style="${style}">${inner}</div>`;
+  const hot = el.hotspot && ctx.mode !== "edit" && ctx.mode !== "print" && ctx.mode !== "thumb";
+  const hotAttr = hot ? ` data-hotspot="${el.id}" role="button" tabindex="0" aria-label="${esc(el.hotspot.label || "Clickable object")}"` : "";
+  const char = el.charId ? ` data-char="${esc(el.charId)}"` : "";
+  const anim = el.anim && el.anim !== "none" && ctx.mode === "read" ? ` bk-enter-${el.anim}` : "";
+  const face = el.expression && el.expression !== "neutral" ? exprFace(el.expression) : "";
+  const hotMark = el.hotspot && ctx.mode === "edit" ? `<span class="bk-hot-flag" aria-hidden="true">${bkIcon("search")}</span>` : "";
+  return `<div class="bk-el bk-t-${el.type}${el.locked ? " is-locked" : ""}${hot ? " bk-hot" : ""}${anim}"${roleAttr}${char}${hotAttr}${sel} style="${style}">${inner}${face}${hotMark}</div>`;
 }
 
 /**
@@ -234,7 +258,7 @@ export function pageHTML(book, page, ctx = {}) {
     : "";
   const dir = book.dir === "rtl" ? ' dir="rtl"' : "";
   const label = c.label ? ` role="group" aria-label="${esc(c.label)}"` : "";
-  return `<div class="bk-page bk-fmt-${book.format}" data-page="${page.id}"${dir}${label} style="--ratio:${fmt.ratio};background:${page.bg}">${bgArt}${page.elements.map((e) => elementHTML(e, c)).join("")}</div>`;
+  return `<div class="bk-page bk-fmt-${book.format}${page.scene?.parallax && c.mode === "read" ? " bk-parallax" : ""}" data-page="${page.id}"${dir}${label} style="--ratio:${fmt.ratio};background:${page.bg}"><div class="bk-cam">${bgArt}${page.elements.map((e) => elementHTML(e, c)).join("")}</div>${page.scene?.ambience && c.mode === "read" ? `<div class="bk-amb bk-amb-${page.scene.ambience}" aria-hidden="true"></div>` : ""}</div>`;
 }
 
 /** Description of a page for assistive technology in the reader (reading order: text, pictures' descriptions). */

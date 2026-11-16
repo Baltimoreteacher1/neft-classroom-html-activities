@@ -18,6 +18,7 @@
  * ========================================================================== */
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
+import { BOOK_SCHEMA, bookPruneStatements, bookPurgeStatements } from "./book-schema.js";
 import { SOCIAL_SCHEMA, socialPruneStatements, socialPurgeStatements } from "./social-schema.js";
 
 export const SCHEMA = [
@@ -123,7 +124,9 @@ export const REVIEW_SCHEMA = [
 const ready = new WeakSet();
 export async function ensureSchema(db) {
   if (ready.has(db)) return;
-  await db.batch([...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA].map((sql) => db.prepare(sql)));
+  await db.batch(
+    [...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA, ...BOOK_SCHEMA].map((sql) => db.prepare(sql)),
+  );
   ready.add(db);
 }
 
@@ -181,6 +184,7 @@ export function purgeStatements(db, code) {
   const rooms = `SELECT room_id FROM class_platform_room WHERE code = ?`;
   return [
     ...socialPurgeStatements(db, code),
+    ...bookPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_audio WHERE code = ?`).bind(code),
@@ -198,6 +202,7 @@ export async function pruneExpired(db, now) {
   const oldRooms = `SELECT room_id FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`;
   await db.batch([
     ...socialPruneStatements(db, now, gone),
+    ...bookPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db
       .prepare(`DELETE FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`)

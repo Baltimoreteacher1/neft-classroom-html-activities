@@ -5,6 +5,8 @@
 //   /book-studio/edit/<id>          the editor            (src/book/editor.js)
 //   /book-studio/read/<id>          the reader            (src/book/reader.js)
 //   /book-studio/review/<id>        the reader with teacher notes (for a book file a student handed in)
+//   /book-studio/play/<id>          play a branching story (choices, clues, endings)        (src/book/play.js)
+//   /book-studio/teacher            the teacher workspace: assignments, supports, evidence   (src/book/teacher.js)
 //   /book-studio/shared#b=…         a read-only book from a share link (the hash never reaches a server)
 // Books live on this device (src/book/db.js). Docs: access-practice-lab/BOOK-STUDIO.md.
 import { crumbsHTML } from "../components.js";
@@ -22,6 +24,8 @@ import {
   pick,
 } from "../book/model.js";
 import { esc, pageHTML, preloadMedia } from "../book/render.js";
+import { CREATION_MODES, adventureSkeleton } from "../book/story.js";
+import { makePage } from "../book/model.js";
 import { TEMPLATES, TEMPLATE_GROUPS, templateById, templatesFor } from "../book/templates.js";
 import { BASE, announce, html } from "../util.js";
 
@@ -49,12 +53,16 @@ export async function render(ctx) {
         ? I.S("Read a book", "Leer un libro")
         : sub === "review"
           ? I.S("Review a book", "Revisar un libro")
-          : sub === "new"
+          : sub === "play"
+            ? I.S("Play a story", "Jugar un cuento")
+            : sub === "teacher"
+              ? I.S("Teacher workspace", "Espacio del docente")
+              : sub === "new"
             ? I.S("Create a book", "Crear un libro")
             : sub === "templates"
               ? I.S("Book templates", "Plantillas de libros")
               : I.S("Book Studio", "Book Studio");
-  const full = sub === "edit" || sub === "read" || sub === "shared" || sub === "review";
+  const full = sub === "edit" || sub === "read" || sub === "shared" || sub === "review" || sub === "play";
   return {
     title,
     html: html`${full ? "" : crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], [I.S("Book Studio", "Book Studio"), sub ? `${BASE}/book-studio` : null], ...(sub ? [[title, null]] : [])])}
@@ -85,6 +93,8 @@ export async function mount(root, ctx) {
     if (sub === "read" || sub === "review")
       return await openReader(box, ctx, I, bookId, { review: sub === "review" });
     if (sub === "shared") return await openShared(box, ctx, I);
+    if (sub === "play") return await openPlay(box, ctx, I, bookId);
+    if (sub === "teacher") return await openTeacher(box, ctx, I);
     if (sub === "new") return await renderCreate(box, ctx, I);
     if (sub === "templates") return renderTemplates(box, ctx, I);
     return await renderHome(box, ctx, I);
@@ -204,6 +214,21 @@ async function openReader(box, ctx, I, id, { review = false } = {}) {
       );
     },
   });
+}
+
+async function openPlay(box, ctx, I, id) {
+  const q = new URLSearchParams(location.search);
+  const book = id === "shared" || q.get("shared") === "1" ? await readShared(location.hash).catch(() => null) : await db.getBook(id);
+  if (!book) return notFound(box, I);
+  box.removeAttribute("aria-busy");
+  const { mountPlay } = await import("../book/play.js");
+  current = await mountPlay(box, ctx, book, I, { preview: q.get("test") === "1", shared: id === "shared" || q.get("shared") === "1" });
+}
+
+async function openTeacher(box, ctx, I) {
+  box.removeAttribute("aria-busy");
+  const { mountTeacher } = await import("../book/teacher.js");
+  current = await mountTeacher(box, ctx, I, { go: (path) => go(ctx, path) });
 }
 
 async function openShared(box, ctx, I) {
@@ -326,6 +351,13 @@ async function renderHome(box, ctx, I) {
         .join("")}</div>
     </header>
 
+    <section class="bk-modes" aria-labelledby="bkModesH">
+      <h2 id="bkModesH" class="sr-only">${esc(I.S("Start something new", "Empieza algo nuevo"))}</h2>
+      <ul class="bk-mode-grid">${CREATION_MODES.map((m) => `<li><a class="bk-mode-card is-${m.id}" href="${BASE}/book-studio/new?mode=${m.id}">${bkIcon(m.icon)}<strong>${esc(m[lang])}</strong><span>${esc(m.blurb[lang === "es" ? 1 : 0])}</span></a></li>`).join("")}</ul>
+      <ul class="bk-quick"><li><a class="linklike" href="${BASE}/book-studio/templates">${esc(I.S("Explore examples and templates", "Explorar ejemplos y plantillas"))}</a></li><li><a class="linklike" href="${BASE}/book-studio/teacher">${esc(I.S("Teacher workspace", "Espacio del docente"))}</a></li></ul>
+      <div data-assign-slot></div>
+    </section>
+
     <section class="bk-shelf" aria-labelledby="bkShelfH">
       <div class="bk-shelf-head">
         <h2 id="bkShelfH">${esc(I.S("My books", "Mis libros"))} <span class="bk-count" data-shelf-count></span></h2>
@@ -372,6 +404,15 @@ async function renderHome(box, ctx, I) {
   </section>`;
   draw();
   box.querySelector("h1").focus({ preventScroll: true });
+  // Assignments from a joined class (best effort; the page works the same without a class).
+  import("../book/lang/class-sync.js")
+    .then(async ({ listAssignments }) => {
+      const list = await listAssignments();
+      const slot = box.querySelector("[data-assign-slot]");
+      if (!slot || !list.length) return;
+      slot.innerHTML = `<h3>${esc(I.S("Assignments from your teacher", "Tareas de tu docente"))}</h3><ul class="bk-assign">${list.map((a) => `<li><div><strong>${esc(a.title)}</strong>${a.task ? `<span class="fine">${esc(a.task)}</span>` : ""}</div><button type="button" class="btn small btn-primary" data-start-assignment="${esc(a.id)}">${esc(I.S("Start or continue", "Empezar o continuar"))}</button></li>`).join("")}</ul>`;
+    })
+    .catch(() => {});
   box.addEventListener("input", (e) => {
     if (e.target.matches("[data-shelf-q]")) {
       state.q = e.target.value;
@@ -379,6 +420,18 @@ async function renderHome(box, ctx, I) {
     }
   });
   box.addEventListener("click", async (e) => {
+    const sa = e.target.closest("[data-start-assignment]");
+    if (sa) {
+      sa.disabled = true;
+      try {
+        const { startAssignment } = await import("../book/lang/class-sync.js");
+        go(ctx, `/edit/${await startAssignment(sa.dataset.startAssignment)}`);
+      } catch (error) {
+        sa.disabled = false;
+        announce(error?.userMessage || I.S("Could not open this assignment. Your books are safe.", "No se pudo abrir esta tarea. Tus libros están a salvo."));
+      }
+      return;
+    }
     const st = e.target.closest("[data-shelf-status]");
     if (st) {
       state.status = st.dataset.shelfStatus;
@@ -481,7 +534,8 @@ async function renderCreate(box, ctx, I) {
   const lang = I.mode === "es" ? "es" : "en";
   const q = new URLSearchParams(location.search);
   const tpl = templateById(q.get("template"));
-  const kind = KINDS.find((k) => k.id === q.get("kind"))?.id || "blank";
+  const mode = CREATION_MODES.find((m) => m.id === q.get("mode")) || null;
+  const kind = KINDS.find((k) => k.id === q.get("kind"))?.id || mode?.kind || "blank";
   box.removeAttribute("aria-busy");
   const kindCards = KINDS.map(
     (k) =>
@@ -495,7 +549,7 @@ async function renderCreate(box, ctx, I) {
               const b = bookFromTemplate(tpl, { title: pick(tpl.title, lang), lang });
               return pageHTML(b, b.pages[0], { mode: "thumb" });
             })()}</span><div><p class="eyebrow">${esc(I.S("Template", "Plantilla"))}</p><h2>${esc(pick(tpl.title, lang))}</h2><p>${esc(pick(tpl.summary, lang))}</p><p class="fine"><strong>${esc(I.S("You will make:", "Vas a hacer:"))}</strong> ${esc(pick(tpl.finished, lang))}</p>${tpl.targets?.length ? `<details><summary>${esc(I.S("Language goals", "Metas de lenguaje"))}</summary><ul>${tpl.targets.map((t) => `<li>${esc(pick(t, lang))}</li>`).join("")}</ul></details>` : ""}${tpl.teacherNotes ? `<details><summary>${esc(I.S("Teacher notes", "Notas para docentes"))}</summary><p>${esc(pick(tpl.teacherNotes, lang))}</p></details>` : ""}<p><a href="${BASE}/book-studio/new">${esc(I.S("Use a blank book instead", "Usar un libro en blanco"))}</a></p></div></div><input type="hidden" name="template" value="${tpl.id}" />`
-          : `<fieldset class="bk-kinds"><legend>${esc(I.S("1. What kind of book?", "1. ¿Qué tipo de libro?"))}</legend>${kindCards}</fieldset><p><a href="${BASE}/book-studio/templates">${esc(I.S(`Or choose one of ${TEMPLATES.length} templates with directions →`, `O elige una de ${TEMPLATES.length} plantillas con instrucciones →`))}</a></p>`
+          : `<fieldset class="bk-modes-pick"><legend>${esc(I.S("What do you want to make?", "¿Qué quieres hacer?"))}</legend><div class="bk-mode-radios">${CREATION_MODES.map((m) => `<label class="bk-kind"><input type="radio" name="bk-mode" value="${m.id}" ${(mode?.id || "story") === m.id ? "checked" : ""} /><span aria-hidden="true">${bkIcon(m.icon)}</span><span>${esc(m[lang])}</span></label>`).join("")}</div><p class="fine">${esc(I.S("The same story can be read as a book, played as an adventure, watched as a movie or printed as a comic.", "El mismo cuento se puede leer como libro, jugar como aventura, ver como película o imprimir como cómic."))}</p></fieldset><fieldset class="bk-kinds"><legend>${esc(I.S("1. What kind of book?", "1. ¿Qué tipo de libro?"))}</legend>${kindCards}</fieldset><p><a href="${BASE}/book-studio/templates">${esc(I.S(`Or choose one of ${TEMPLATES.length} templates with directions →`, `O elige una de ${TEMPLATES.length} plantillas con instrucciones →`))}</a></p>`
       }
       <label class="bk-field bk-create-title"><span>${esc(tpl ? I.S("Title of your book", "Título de tu libro") : I.S("2. Title of your book", "2. Título de tu libro"))}</span><input name="title" required maxlength="80" value="${esc(tpl ? pick(tpl.title, lang) : "")}" placeholder="${esc(I.S("My amazing book", "Mi libro increíble"))}" /></label>
       <label class="bk-field"><span>${esc(I.S("Your name for the cover (optional; first name is enough)", "Tu nombre para la portada (opcional; basta con el nombre)"))}</span><input name="author" maxlength="60" autocomplete="off" /></label>
@@ -503,6 +557,12 @@ async function renderCreate(box, ctx, I) {
       <div class="row-actions"><button type="submit" class="btn btn-primary btn-big">${bkIcon("book")} ${esc(I.S("Create and open the editor", "Crear y abrir el editor"))}</button></div>
     </form></section>`;
   box.querySelector("h1").focus({ preventScroll: true });
+  box.querySelector("[data-create]").addEventListener("change", (e) => {
+    if (!e.target.matches('[name="bk-mode"]')) return;
+    const k = CREATION_MODES.find((m) => m.id === e.target.value)?.kind;
+    const radio = box.querySelector(`[name="bk-kind"][value="${k}"]`);
+    if (radio) radio.checked = true;
+  });
   box.querySelector("[data-create]").addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
@@ -523,6 +583,9 @@ async function renderCreate(box, ctx, I) {
           lang,
           purpose: String(f.get("purpose") || ""),
         });
+    const chosen = CREATION_MODES.find((m) => m.id === f.get("bk-mode"))?.id || mode?.id || "story";
+    book.mode = chosen;
+    if (!t && chosen === "adventure") adventureSkeleton(book, makePage);
     const saved = await db.saveBook(book);
     await db.saveVersion(saved, I.S("New book", "Libro nuevo")).catch(() => {});
     go(ctx, `/edit/${saved.id}`);

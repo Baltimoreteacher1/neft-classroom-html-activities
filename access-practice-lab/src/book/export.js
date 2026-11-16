@@ -5,6 +5,7 @@
 //   • Cover image (PNG, or SVG where the browser will not rasterise HTML).
 //   • Book project (.langbook): the book's JSON plus every picture and recording, to back up or move devices.
 //   • Share link: the words, illustrations and drawings packed into a link (pictures and recordings stay here).
+import { publicCopy } from "./lang/supports.js";
 import { zipStore } from "../../../assets/lib/zip-store.js";
 import * as db from "./db.js";
 import {
@@ -456,7 +457,9 @@ async function inflate(bytes) {
 
 /** A read-only link carrying the book's words, illustrations and drawings (no uploaded media, no teacher notes). */
 export async function shareLink(book, origin = location.origin) {
-  const slim = JSON.parse(JSON.stringify(book));
+  // A shared link carries the story and only the supports the teacher allowed to travel. Plans, groups, the support-use
+  // record, revisions and notes stay on the author's device.
+  const slim = JSON.parse(JSON.stringify(publicCopy(book)));
   delete slim.feedback;
   delete slim.submission;
   delete slim.review;

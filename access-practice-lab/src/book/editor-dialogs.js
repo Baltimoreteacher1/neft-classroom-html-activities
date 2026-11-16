@@ -194,6 +194,12 @@ document.addEventListener("click", async (e) => {
         ),
       );
     } else if (act === "link") {
+      // A class assignment, or a book set to class / family / public, needs the teacher's approval before a link exists.
+      const gated = S.book.assignment?.role === "student" || ["class", "family", "public"].includes(S.book.publish?.audience);
+      if (gated && !S.book.publish?.approvedAt) {
+        dialog.querySelector("[data-bk-link-out]").innerHTML = `<p class="bk-warn" role="alert">${esc(tr("A teacher needs to approve this book before it can be shared. Ask your teacher to open it and choose Publish → Approve for sharing.", "Un docente debe aprobar este libro antes de compartirlo. Pide a tu docente que lo abra y elija Publicar → Aprobar para compartir."))}</p>`;
+        return;
+      }
       const { url, dropped, bytes } = await shareLink(S.book);
       const out = dialog.querySelector("[data-bk-link-out]");
       const tooLong = bytes > 60000;

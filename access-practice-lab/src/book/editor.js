@@ -11,6 +11,9 @@ import {
   onInspectorChange,
 } from "./editor-panels.js";
 import { addBarHTML, onAddBar } from "./editor-add.js";
+import { dockHTML, makeEditorSupportHost, onDirectorSubmit, onDockClick, onDockInput, stageBarHTML } from "./ui-story.js";
+import { isTeacher, setTeacher } from "./lang/ui-teacher.js";
+import { pushProgress, refreshSupports } from "./lang/class-sync.js";
 import { bkIcon } from "./icons.js";
 import { FORMATS, makeElement, plainText } from "./model.js";
 import { esc, pageHTML, preloadMedia } from "./render.js";
@@ -33,6 +36,11 @@ export async function mountEditor(root, ctx, book, I) {
     pendingDelete: null,
     panel: "props",
     typingTimer: 0,
+    stage: "create",
+    muted: true,
+    voices: false,
+    player: null,
+    coach: null,
   };
   const core = createEditorState(book, {
     onChange: ({ render }) => render && renderAll(),
@@ -52,6 +60,7 @@ export async function mountEditor(root, ctx, book, I) {
       <div class="bk-top-actions">
         <button type="button" class="bk-tbtn" data-bk-act="undo" aria-label="${esc(tr("Undo", "Deshacer"))}" title="${esc(tr("Undo (Ctrl+Z)", "Deshacer (Ctrl+Z)"))}">${bkIcon("undo")}</button>
         <button type="button" class="bk-tbtn" data-bk-act="redo" aria-label="${esc(tr("Redo", "Rehacer"))}" title="${esc(tr("Redo (Ctrl+Shift+Z)", "Rehacer (Ctrl+Mayús+Z)"))}">${bkIcon("redo")}</button>
+        <button type="button" class="bk-tbtn" data-bk-act="teacher" aria-pressed="${isTeacher()}" aria-label="${esc(tr("Teacher tools", "Herramientas del docente"))}" title="${esc(tr("Teacher tools (language supports)", "Herramientas del docente (apoyos de lenguaje)"))}">${bkIcon("support")}</button>
         <button type="button" class="bk-tbtn" data-bk-act="history" aria-label="${esc(tr("Version history", "Historial de versiones"))}" title="${esc(tr("Version history", "Historial de versiones"))}">${bkIcon("history")}</button>
         <a class="btn small" data-bk-read href="${BASE}/book-studio/read/${S.book.id}">${bkIcon("eye")}<span>${esc(tr("Read", "Leer"))}</span></a>
         <button type="button" class="btn small" data-bk-act="share">${bkIcon("share")}<span>${esc(tr("Share & export", "Compartir y exportar"))}</span></button>
@@ -59,11 +68,13 @@ export async function mountEditor(root, ctx, book, I) {
       </div>
     </header>
     <div class="bk-banner" data-bk-banner hidden></div>
-    ${addBarHTML(E)}
+    <div data-bk-stagebar>${stageBarHTML(E)}</div>
+    <div data-bk-addwrap>${addBarHTML(E)}</div>
     <div class="bk-workspace">
       <nav class="bk-pages" aria-label="${esc(tr("Pages", "Páginas"))}" data-bk-pages></nav>
       <section class="bk-stage" data-bk-stage aria-label="${esc(tr("Page editor", "Editor de páginas"))}">
         <div class="bk-stage-scroll" data-bk-scroll><div class="bk-canvas" data-bk-canvas></div></div>
+        <section class="bk-dock" data-bk-dock aria-label="${esc(tr("Tools for this step", "Herramientas de este paso"))}"></section>
         <div class="bk-zoom" role="group" aria-label="${esc(tr("Zoom", "Zoom"))}">
           <button type="button" class="bk-tbtn" data-bk-zoom="out" aria-label="${esc(tr("Zoom out", "Alejar"))}">${bkIcon("zoomOut")}</button>
           <button type="button" class="bk-tbtn bk-zoom-label" data-bk-zoom="fit" aria-label="${esc(tr("Fit page", "Ajustar página"))}"></button>
@@ -240,10 +251,38 @@ export async function mountEditor(root, ctx, book, I) {
     $('[data-bk-act="redo"]').disabled = !core.canRedo();
   }
 
+  function renderDock() {
+    const dock = $("[data-bk-dock]");
+    if (!dock) return;
+    // Never replace a field the person is typing in.
+    const a = document.activeElement;
+    if (a && dock.contains(a) && a.matches("input:not([type=checkbox]):not([type=radio]), textarea") && !E.forceDock) return;
+    E.spHost = E.spHost || makeEditorSupportHost(E);
+    const keep = dock.contains(a) ? { sel: a.getAttribute("data-sp") || a.getAttribute("data-dock") || a.getAttribute("data-stage"), tag: a.tagName } : null;
+    const before = dock.offsetHeight;
+    dock.innerHTML = dockHTML(E);
+    // The dock and the canvas share the stage: refit the page when the dock grows or shrinks.
+    if (E.zoom === "fit" && dock.offsetHeight !== before) requestAnimationFrame(() => renderCanvas());
+    if (keep?.sel) dock.querySelector(`[data-sp="${keep.sel}"], [data-dock="${keep.sel}"]`)?.focus({ preventScroll: true });
+  }
+  E.renderDock = renderDock;
+  function renderStage() {
+    $("[data-bk-stagebar]").innerHTML = stageBarHTML(E);
+    const add = $("[data-bk-addwrap]");
+    add.hidden = E.stage !== "create";
+    E.forceDock = true;
+    renderDock();
+    E.forceDock = false;
+    $('[data-stage="' + E.stage + '"]')?.focus({ preventScroll: true });
+    E.say(tr("Now: " + E.stage, "Ahora: " + E.stage));
+  }
+  E.renderStage = renderStage;
+
   function renderAll() {
     renderPages();
     renderCanvas();
     renderInspector();
+    renderDock();
     renderStatus();
     const t = $("[data-bk-title]");
     if (t && document.activeElement !== t) t.value = S.book.title;
@@ -310,6 +349,7 @@ export async function mountEditor(root, ctx, book, I) {
     S.selected = id;
     renderCanvas();
     renderInspector();
+    if (E.stage === "imagine" || E.stage === "life") renderDock();
     if (focus && id) canvas.querySelector(`[data-el="${id}"]`)?.focus({ preventScroll: true });
   }
   E.select = select;
@@ -561,6 +601,7 @@ export async function mountEditor(root, ctx, book, I) {
   // ── clicks ──
   root.addEventListener("click", async (e) => {
     const t = e.target;
+    if (await onDockClick(E, e)) return;
     if (await onAddBar(E, { target: t })) return;
     if (onInspectorClick(E, e)) return;
     const pageBtn = t.closest("[data-bk-page]");
@@ -598,6 +639,12 @@ export async function mountEditor(root, ctx, book, I) {
     if (act === "undo") core.undo() && E.say(tr("Undone.", "Deshecho."));
     else if (act === "redo") core.redo() && E.say(tr("Redone.", "Rehecho."));
     else if (act === "retry-save") core.saveNow();
+    else if (act === "teacher") {
+      setTeacher(!isTeacher());
+      t.closest("[data-bk-act]").setAttribute("aria-pressed", String(isTeacher()));
+      E.say(isTeacher() ? tr("Teacher tools on.", "Herramientas del docente activadas.") : tr("Teacher tools off.", "Herramientas del docente desactivadas."));
+      renderDock();
+    }
     else if (act === "dup-page") {
       core.duplicatePage();
       E.say(tr("Page duplicated.", "Página duplicada."));
@@ -626,8 +673,10 @@ export async function mountEditor(root, ctx, book, I) {
       E.titleTimer = setTimeout(() => core.commit({ render: false }), 600);
       return;
     }
+    if (e.target.closest("[data-bk-dock]") && onDockInput(E, e)) return;
     onInspectorInput(E, e);
   });
+  root.addEventListener("submit", (e) => onDirectorSubmit(E, e));
   root.addEventListener("change", (e) => {
     if (e.target.matches("[data-bk-title]")) {
       S.book.title = e.target.value.trim().slice(0, 80) || "My book";
@@ -635,6 +684,7 @@ export async function mountEditor(root, ctx, book, I) {
       core.commit();
       return;
     }
+    if (e.target.closest("[data-bk-dock]") && onDockInput(E, e)) return;
     onInspectorChange(E, e);
   });
   // Page reordering by drag and drop (the ↑ ↓ buttons are the keyboard equivalent).
@@ -799,7 +849,47 @@ export async function mountEditor(root, ctx, book, I) {
       db.getBook(S.book.id).then((b) => b && showConflict(b));
   });
 
+  // Remember the last words selected inside a text box, so "Add Language Support" can anchor to a phrase even
+  // after focus moves to a button.
+  const onSel = () => {
+    const sel = window.getSelection?.();
+    const node = sel?.anchorNode?.parentElement?.closest?.("[data-text-of]");
+    const text = (sel?.toString() || "").trim();
+    if (node && text) E.lastSel = { elementId: node.dataset.textOf, text, at: Date.now() };
+  };
+  document.addEventListener("selectionchange", onSel);
+
+  // Class assignment: fetch this learner's own supports and send support-use records and work back (best effort).
+  let pushTimer = 0;
+  let lastPushSeq = -1;
+  if (S.book.assignment?.classCode) {
+    refreshSupports(S.book)
+      .then((changed) => {
+        if (changed) {
+          core.commit({ render: false, history: false });
+          renderDock();
+        }
+      })
+      .catch(() => {});
+    pushTimer = setInterval(() => {
+      if (S.seq !== lastPushSeq) {
+        lastPushSeq = S.seq;
+        pushProgress(S.book);
+      }
+    }, 30000);
+  }
+
   renderAll();
+  // The teacher workspace can open the Language Support Studio straight away.
+  try {
+    const flag = sessionStorage.getItem("bkOpenStudio");
+    if (flag && flag.split(":")[0] === S.book.id) {
+      sessionStorage.removeItem("bkOpenStudio");
+      setTeacher(true);
+      renderDock();
+      import("./lang/ui-teacher.js").then((m) => m.openStudio(E, flag.split(":")[1] || "manage"));
+    }
+  } catch {}
   // The canvas width depends on layout; render again once the stage has its real size.
   requestAnimationFrame(() => renderCanvas());
 
@@ -811,6 +901,10 @@ export async function mountEditor(root, ctx, book, I) {
     window.removeEventListener("beforeunload", beforeUnload);
     headerObserver?.disconnect();
     offTabs();
+    document.removeEventListener("selectionchange", onSel);
+    clearInterval(pushTimer);
+    E.player?.destroy();
+    if (S.book.assignment?.classCode) pushProgress(S.book);
     await core.saveNow();
     core.destroy();
   };

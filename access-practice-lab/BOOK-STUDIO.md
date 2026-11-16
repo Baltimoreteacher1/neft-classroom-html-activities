@@ -14,6 +14,8 @@ Independently designed and built; no code, templates, artwork or trade dress fro
 | `/book-studio/edit/<id>`                        | Editor                                                                                                                                                                            |
 | `/book-studio/read/<id>`                        | Reader                                                                                                                                                                            |
 | `/book-studio/review/<id>`                      | Reader + teacher page notes, "Return to student" downloads the book with notes                                                                                                    |
+| `/book-studio/play/<id>[?test=1]`               | Play a branching story: choices, clickable clues, inventory, endings, saved progress. `?test=1` is the author's play-test with the story check shown                                |
+| `/book-studio/teacher`                          | Teacher workspace: one guided form for a differentiated assignment, assignment list, learning evidence (class server records or a student's book file)                            |
 | `/book-studio/shared#b=…`                       | Read-only book from a share link (the data is in the hash; it never reaches a server)                                                                                             |
 
 ## Files
@@ -82,3 +84,52 @@ Two real paths, no sample data:
 - Read-aloud word highlighting depends on the voice reporting word boundaries; when it does not, the reader says so and
   highlights the text box instead.
 - No AI writing help inside Book Studio yet (the site's AI helpers are selection-only and opt-in elsewhere).
+
+
+## Book Studio 2.0 — the Living Storyworld and the ESOL Support Studio
+
+One document model (schema 3; schema 2 books migrate on open and nothing is dropped). Four creation modes on the shelf
+(`story`, `adventure`, `comic`, `movie`) are *starting points over the same document*; every book can be read, played,
+narrated, printed or turned into a reader's-theater script. The editor is organised around five stages
+(Imagine · Create · Bring It to Life · Improve · Publish); only the current stage's tools show (`src/book/ui-story.js`).
+
+| File | Owns |
+| --- | --- |
+| `src/book/lang/profiles.js` | WIDA 2020 framing: Key Language Uses, modes, grade clusters, six **support profiles** (recipes, never levels or scores), per-skill intensity, plans. Official expectation ids come only from `src/acc/wida/catalog.js` |
+| `src/book/lang/supports.js` | `LanguageSupport` model (8 types, 100+ kinds across the A–F categories), trusted normalization, **`resolveSupports`** (who sees what, assigned vs help on demand, required, fading), `groupCopy`, `publicCopy`, recommendations with evidence |
+| `src/book/lang/library.js` | Searchable library (`"cause and effect, grade 6, WIDA Level 2"`), packs, suggestions from selected content, and the rule-based **Design Language Supports** command interpreter (preview-then-approve; no network, no AI service) |
+| `src/book/lang/work.js` | What a learner did: support-use records (available/opened/used/completed/hidden/required/independent), first attempts, revisions labelled student / assisted / teacher, evidence report |
+| `src/book/lang/ui-support.js` | The learner's tray and cards (starters, word banks, vocabulary popover, organizers, oral rehearsal with a typing path, reading help, revision side-by-side). One host serves the editor, the preview panes and the reader |
+| `src/book/lang/ui-teacher*.js` | **Add Language Support** builder with live student preview, Language Support Studio (manage, bulk edit, library, packs, designer, plans and groups, fading, evidence export, **Preview as student** incl. two profiles side by side) |
+| `src/book/lang/class-sync.js` | Class delivery: publish an assignment, roster, adjust a plan with a reason, evidence; student side fetches ONLY their own supports and sends events and work |
+| `src/book/story.js` | Character DNA, scene actions and `compileScene` (deterministic animation), choices/state/`takeChoice`, **story validators**, the bounded **Direct this scene** interpreter (`validateOps` is the only gate), `adventureSkeleton` |
+| `src/book/scene-player.js` | Web Animations player: walk/run/turn/look/point/jump/wave/appear/disappear/fade/expression/speak/pause/zoom/pan/sound, scrubbing, reduced motion = final pose, sound only after Play |
+| `src/book/play.js`, `ui-story-map.js`, `teacher.js` | Play mode; characters, choices, clues, items and the visual story map; the teacher workspace |
+| `functions/_lib/class-platform/book-supports.js` | `/api/class/bsupport/*`: server-side resolution per student (migration `0014_class_book_supports.sql`) |
+
+**Where teacher/student separation is enforced.** In a class, the plan (class default, groups, per-student overrides)
+lives on the server; `mine` returns only the supports resolved for that student, with `levels` removed and no profile
+number, group name or classmate plan (`functions/api/class/book-supports.test.mjs`). On a single device (no class) a
+teacher exports **a copy per group** that contains only that group's supports; the browser alone cannot hide data from
+the person holding the file, and the UI says so. Share links, PDF and EPUB carry only supports the teacher marked
+"keep in the published book" (`publicCopy`); plans, groups, use records and revisions never travel.
+
+**Evidence.** Counts describe what happened (opened/used/completed/hidden/independent) and show the student's original
+and revised text side by side. No WIDA level or ACCESS score is ever calculated; fewer clicks, word count and tool use
+are not treated as proficiency. A fading suggestion always shows its evidence and needs the teacher's approval and a
+reason, which is kept in the plan history.
+
+**Tests.** `tools/book-studio-2.test.mjs` (logic), `functions/api/class/book-supports.test.mjs` (server authorization),
+`tools/book-studio-2-e2e.mjs` (browser: modes → teacher support → persistence → Level 1 vs Level 5 preview → student use
+and evidence → animation and reduced motion → playable branch → share link → old book → every authoring surface →
+tablet/phone overflow → axe).
+
+### Not built (honest list)
+- No generative AI anywhere: the Designer, the coach, suggestions and "Direct this scene" follow fixed rules on the
+  device. Nothing is sent to any service. No AI illustration or AI character generation.
+- No machine translation, no speech-to-text, no teacher pronunciation recorder in the builder (the model and the word
+  popover support a recorded pronunciation and a "machine translation" label; entering translations is manual).
+- No Classroom Story Universe (shared class world). No server-hosted public publication: "Anyone with the link" is the
+  existing hash share link and is gated on a teacher's approval for class, family and public audiences.
+- Right-to-left editing exists at book level (`dir`); support cards and the story map were not verified in RTL.
+- Parallax is a gentle background drift, not layered depth.

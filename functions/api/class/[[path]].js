@@ -22,6 +22,7 @@
  *   /room/*, /audio/* and /review/* are live rooms, voice notes and the scoring
  *   queue (see their modules).
  *   /pairs/* and /scenes/* are peer listening pairs and student-made scenes (see their modules).
+ *   /bsupport/* are Book Studio language-support assignments, delivered per student (book-supports.js).
  *   /ai/* are the selection-only AI helpers (writing feedback, hint tutor); no class or D1 needed.
  *
  * GRACEFUL DEGRADATION: without the D1 binding every data route is 503 and both
@@ -46,6 +47,8 @@ import {
 } from "../../../shared/class-platform/contract.js";
 import { handleAi } from "../../_lib/class-platform/ai.js";
 import { handleAudio } from "../../_lib/class-platform/audio.js";
+import { bookStudentStatements } from "../../_lib/class-platform/book-schema.js";
+import { handleBookSupports } from "../../_lib/class-platform/book-supports.js";
 import { handlePairs } from "../../_lib/class-platform/pairs.js";
 import { handleReview } from "../../_lib/class-platform/review.js";
 import { handleRoom } from "../../_lib/class-platform/rooms.js";
@@ -481,6 +484,7 @@ const routes = {
     const code = auth.cls.code;
     await db.batch([
       ...socialStudentStatements(db, code, id),
+      ...bookStudentStatements(db, code, id),
       db.prepare(`DELETE FROM class_platform_doc WHERE code = ? AND student_id = ?`).bind(code, id),
       db
         .prepare(`DELETE FROM class_platform_audio WHERE code = ? AND student_id = ?`)
@@ -546,6 +550,7 @@ export const onRequest = handler({
     if (seg === "review") return handleReview(ctx, parts[1] || "");
     if (seg === "pairs") return handlePairs(ctx, parts[1] || "");
     if (seg === "scenes") return handleScenes(ctx, parts[1] || "");
+    if (seg === "bsupport") return handleBookSupports(ctx, parts[1] || "");
     const route = routes[`${method} ${seg}`];
     return route ? route(ctx) : fail("not-found", 404);
   },

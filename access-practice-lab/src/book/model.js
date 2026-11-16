@@ -5,7 +5,21 @@
 // editor canvas, a bookshelf thumbnail, the reader and a printed PDF page. Text size is in "page-width hundredths"
 // (CSS cqw), for the same reason. Element order in `elements` is the layer order (last = front).
 
-export const SCHEMA = 2;
+import { GRADE_CLUSTER_IDS, KEY_LANGUAGE_USES, normalizePlan } from "./lang/profiles.js";
+import { normalizeSupport } from "./lang/supports.js";
+import { emptyWork, normalizeWork } from "./lang/work.js";
+import {
+  CREATION_MODES,
+  normalizeChoice,
+  normalizeCharacter,
+  normalizeHotspot,
+  normalizeScene,
+  normalizeStory,
+  validateStory,
+} from "./story.js";
+
+/** Schema 3 adds the Living Storyworld layer (supports, characters, scenes, choices, work). Schema 2 books load unchanged. */
+export const SCHEMA = 3;
 
 /** Page shapes. `ratio` is width / height. */
 export const FORMATS = Object.freeze({
@@ -219,6 +233,9 @@ export function makePage(props = {}) {
     narration: "",
     prompt: null,
     elements: [],
+    choices: [],
+    scene: { actions: [], ambience: "", parallax: false },
+    ending: "",
     ...props,
   };
 }
@@ -236,6 +253,11 @@ export function normalizeElement(raw = {}) {
     rot: clampNum(raw.rot, -360, 360, 0),
   };
   if (raw.locked) el.locked = true;
+  if (raw.charId) el.charId = str(raw.charId, 40);
+  if (raw.speaker) el.speaker = str(raw.speaker, 40);
+  if (raw.expression) el.expression = str(raw.expression, 20);
+  if (raw.hotspot) el.hotspot = normalizeHotspot(raw.hotspot);
+  if (raw.anim && ["none", "fade", "rise", "slide"].includes(raw.anim)) el.anim = raw.anim;
   if (raw.ph)
     el.ph = { en: str(raw.ph.en ?? raw.ph, 300), es: str(raw.ph.es ?? raw.ph.en ?? raw.ph, 300) };
   if (type === "text" || type === "bubble") {
@@ -350,6 +372,9 @@ export function normalizePage(raw = {}) {
     elements: (Array.isArray(raw.elements) ? raw.elements : [])
       .slice(0, LIMITS.elementsPerPage)
       .map(normalizeElement),
+    choices: (Array.isArray(raw.choices) ? raw.choices : []).slice(0, 6).map(normalizeChoice),
+    scene: normalizeScene(raw.scene),
+    ending: ["good", "neutral", "open"].includes(raw.ending) ? raw.ending : "",
   };
 }
 
@@ -413,6 +438,45 @@ export function normalizeBook(raw = {}) {
             at: str(raw.review.at, 40),
           }
         : null,
+    mode: CREATION_MODES.some((m) => m.id === raw.mode) ? raw.mode : "story",
+    gradeCluster: GRADE_CLUSTER_IDS.includes(raw.gradeCluster) ? raw.gradeCluster : "",
+    objectives: (Array.isArray(raw.objectives) ? raw.objectives : []).slice(0, 6).map((o) => ({
+      id: /^[a-z0-9]{4,40}$/i.test(o?.id || "") ? o.id : newId("ob"),
+      text: str(o?.text, 300),
+      keyUse: KEY_LANGUAGE_USES.includes(o?.keyUse) ? o.keyUse : "",
+      standard: ["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"].includes(o?.standard) ? o.standard : "",
+    })),
+    assignment:
+      raw.assignment && typeof raw.assignment === "object"
+        ? { id: str(raw.assignment.id, 40), title: str(raw.assignment.title, 120), task: str(raw.assignment.task, 400), classCode: str(raw.assignment.classCode, 12), role: raw.assignment.role === "student" ? "student" : "teacher" }
+        : null,
+    supports: (Array.isArray(raw.supports) ? raw.supports : []).slice(0, 400).map(normalizeSupport),
+    plan: normalizePlan(raw.plan),
+    planLog: (Array.isArray(raw.planLog) ? raw.planLog : []).slice(-50).map((l) => ({
+      at: str(l?.at, 40),
+      domain: str(l?.domain, 20),
+      from: str(l?.from, 20),
+      to: str(l?.to, 20),
+      reason: str(l?.reason, 300),
+      supportId: str(l?.supportId, 40),
+    })),
+    coach: { enabled: raw.coach?.enabled !== false },
+    groups: (Array.isArray(raw.groups) ? raw.groups : []).slice(0, 12).map((g) => ({
+      id: /^[a-z0-9]{4,40}$/i.test(g?.id || "") ? g.id : newId("g"),
+      name: str(g?.name, 40) || "Group",
+      plan: normalizePlan(g?.plan),
+    })),
+    characters: (Array.isArray(raw.characters) ? raw.characters : []).slice(0, 24).map(normalizeCharacter),
+    story: normalizeStory(raw.story),
+    work: raw.work ? normalizeWork(raw.work) : emptyWork(),
+    publish: {
+      // Student work is private by default. Nothing here ever publishes by itself.
+      audience: ["private", "teacher", "class", "family", "public"].includes(raw.publish?.audience) ? raw.publish.audience : "private",
+      approvedBy: str(raw.publish?.approvedBy, 60),
+      approvedAt: str(raw.publish?.approvedAt, 40),
+      includeSupports: raw.publish?.includeSupports === true,
+      editions: (Array.isArray(raw.publish?.editions) ? raw.publish.editions : []).filter((e) => ["narrated", "multilingual", "interactive", "print"].includes(e)).slice(0, 4),
+    },
     pages: pages.length
       ? pages
       : [coverPage(str(raw.title, LIMITS.titleChars) || "My book", raw.author)],
@@ -657,12 +721,52 @@ export function bookFromTemplate(tpl, { title, author = "", lang = "en", band = 
 /** Deep copy with new ids (duplicate, remix, page duplicate). */
 export function cloneWithNewIds(book, patch = {}) {
   const copy = JSON.parse(JSON.stringify(book));
+  const pageMap = new Map();
+  const elMap = new Map();
   copy.id = newId("b");
-  copy.pages = copy.pages.map((p) => ({
-    ...p,
-    id: newId("p"),
-    elements: p.elements.map((e) => ({ ...e, id: newId("e") })),
-  }));
+  copy.pages = copy.pages.map((p) => {
+    const id = newId("p");
+    pageMap.set(p.id, id);
+    return {
+      ...p,
+      id,
+      elements: p.elements.map((e) => {
+        const eid = newId("e");
+        elMap.set(e.id, eid);
+        return { ...e, id: eid };
+      }),
+    };
+  });
+  // Every reference to a page or element follows it to the copy: choices, scene actions, supports, the story start,
+  // and the learner's own work. A copy must behave exactly like the original.
+  const P = (id) => pageMap.get(id) || id;
+  const El = (id) => elMap.get(id) || id;
+  for (const p of copy.pages) {
+    for (const c of p.choices || []) {
+      c.id = newId("c");
+      c.to = P(c.to);
+    }
+    for (const a of p.scene?.actions || []) {
+      a.id = newId("a");
+      a.target = El(a.target);
+      if (a.params?.bubbleId) a.params.bubbleId = El(a.params.bubbleId);
+    }
+  }
+  if (copy.story?.startPageId) copy.story.startPageId = P(copy.story.startPageId);
+  for (const s of copy.supports || []) {
+    if (s.target?.pageId) s.target.pageId = P(s.target.pageId);
+    if (s.target?.elementId) s.target.elementId = El(s.target.elementId);
+  }
+  const w = copy.work;
+  if (w) {
+    for (const r of w.revisions || []) {
+      r.elementId = El(r.elementId);
+      r.pageId = P(r.pageId);
+    }
+    for (const a of w.attempts || []) a.elementId = El(a.elementId);
+    for (const c of w.coach || []) c.elementId = El(c.elementId);
+    for (const r of w.records || []) if (r.target) r.target = El(r.target);
+  }
   copy.feedback = [];
   copy.submission = null;
   copy.review = null;
@@ -673,11 +777,21 @@ export function cloneWithNewIds(book, patch = {}) {
 }
 
 export function duplicatePage(page) {
-  return normalizePage({
-    ...JSON.parse(JSON.stringify(page)),
-    id: newId("p"),
-    elements: page.elements.map((e) => ({ ...JSON.parse(JSON.stringify(e)), id: newId("e") })),
+  const copy = JSON.parse(JSON.stringify(page));
+  const remap = new Map();
+  const elements = page.elements.map((e) => {
+    const id = newId("e");
+    remap.set(e.id, id);
+    return { ...JSON.parse(JSON.stringify(e)), id };
   });
+  // Scene actions follow their elements to the copy; choices get fresh ids so two pages never share one.
+  for (const a of copy.scene?.actions || []) {
+    a.id = newId("a");
+    if (remap.has(a.target)) a.target = remap.get(a.target);
+    if (a.params?.bubbleId && remap.has(a.params.bubbleId)) a.params.bubbleId = remap.get(a.params.bubbleId);
+  }
+  for (const c of copy.choices || []) c.id = newId("c");
+  return normalizePage({ ...copy, id: newId("p"), elements });
 }
 
 /** Every media id a book references (for export, duplication and cleanup). */
@@ -756,7 +870,18 @@ export function finishChecklist(book) {
     p.elements.filter((e) => e.type === "audio" && e.media && !e.transcript),
   );
   const hasTitle = book.title && book.title !== "My book";
+  const storyErrors = validateStory(book).filter((v) => v.level === "error");
   return [
+    ...(storyErrors.length
+      ? [
+          {
+            id: "story",
+            ok: false,
+            en: `${storyErrors.length} story problem(s) to fix before readers can play it (open the Story map).`,
+            es: `${storyErrors.length} problema(s) del cuento por arreglar antes de jugarlo (abre el Mapa del cuento).`,
+          },
+        ]
+      : []),
     {
       id: "title",
       ok: !!hasTitle,
