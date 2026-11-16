@@ -59,6 +59,7 @@ const GAME_DIRS = [
   "math/games/universe/games/power-plant",
   "math/games/universe/games/ratio-rush",
   "math/games/universe/games/balance-breakout",
+  "math/games/universe/games/coordinate-couriers",
   "math/games/engines/u2-pulse-matrix",
   "math/games/engines/u2-circuit-breaker",
   "math/games/engines/u3-ratio-mixer",

@@ -83,7 +83,8 @@ export async function drive({ host, u, fail, axe }) {
   const tag = await u(
     () => window.__universe.evidence.events.filter((e) => e.misconception).at(-1)?.misconception,
   );
-  if (tag !== "equation-answered-with-given-number") fail(`keying the given number was tagged "${tag}"`);
+  if (tag !== "equation-answered-with-given-number")
+    fail(`keying the given number was tagged "${tag}"`);
   await key(r.bx + 470 - 36, 5);
   if (!(await room(1)).solved) return fail("x = 5 did not open the second door");
   const e = await u(() => window.__universe.world.exit);

@@ -184,7 +184,7 @@ export class UniverseGame extends HTMLElement {
       if (document.hidden && this.mode === "play") this.pause();
     });
     // Launched from a lesson: open on that lesson's level.
-    const byLesson = this.def.levels.findIndex((l) => l.lesson === this.lesson);
+    const byLesson = this.def.levels.findIndex((l) => l.lesson === this.lesson || l.lessons?.includes(this.lesson));
     this.levelIndex =
       byLesson >= 0 ? byLesson : Math.min(this.save.level, this.def.levels.length - 1);
     this.previewLevel(this.levelIndex);

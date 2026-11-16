@@ -51,6 +51,20 @@ export const GAMES = [
     standards: ["6.AT.8"],
     features: ["time-machine"],
   },
+  {
+    id: "coordinate-couriers",
+    href: "/math/games/universe/games/coordinate-couriers/",
+    title: { en: "Coordinate Couriers", es: "Mensajeros de Coordenadas" },
+    genre: { en: "Top-down delivery adventure", es: "Aventura de reparto vista desde arriba" },
+    tagline: {
+      en: "Meridia is built on the coordinate plane. Read the streets from the axes, cross the river by cable car, reflect into walled districts.",
+      es: "Meridia está construida sobre el plano de coordenadas. Lee las calles desde los ejes, cruza el río en teleférico y refléjate en los distritos amurallados.",
+    },
+    unit: 7,
+    lessons: ["7-5", "7-6", "7-8", "7-9"],
+    standards: ["6.NOS.6", "6.NOS.7", "6.NOS.9"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

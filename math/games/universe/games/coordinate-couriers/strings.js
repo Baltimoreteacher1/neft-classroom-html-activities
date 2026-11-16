@@ -1,0 +1,108 @@
+// Coordinate Couriers — every word the student reads, English and Spanish (tú register).
+
+export const STRINGS = {
+  en: {
+    parcel: "Deliver to",
+    dispatch: "Dispatch",
+    // objectives
+    objDeliver: "Deliver the parcel to {address}. Read the streets from the axes.",
+    objCable: "{address} is across the water. Find a cable car station.",
+    objMirror: "{address} is in a walled district. Find a mirror pad that reflects into it.",
+    objDone: "Every parcel is delivered.",
+    // use prompts
+    useDeliver: "Deliver here",
+    useCable: "Cable car",
+    usePad: "Mirror pad",
+    whatNext: "the next stop",
+    // cable console
+    cableTitle: "Cable car",
+    cableNote:
+      "This car runs from {from} to {to}, along one street. Set its cable to the distance between the stations, in units.",
+    cableLen: "Cable length (units)",
+    cableGo: "Send the car",
+    cableBack: "Ride back",
+    // mirror console
+    padTitle: "Mirror pad",
+    padNote:
+      "You are on the pad at {at}. A mirror sends you to your reflection across an axis. Only a pad can catch you.",
+    padPredict: "Where will you land?",
+    padAxisX: "Reflect across the x-axis",
+    padAxisY: "Reflect across the y-axis",
+    padGo: "Reflect",
+    // supports
+    sign: "Show me the street sign",
+    signNote: "The doorstep you are looking for is circled.",
+    less: "One fewer",
+    more: "One more",
+    // outcomes
+    delivered: "Delivered to {address}. Thank you!",
+    wrongDoor: "This is {at}, not {address}. The customer points the way.",
+    cableOk: "The car docks exactly at the far station.",
+    cableShort: "{L} units of cable stops the car before the far station. It winds back.",
+    cableLong: "{L} units of cable runs past the station into the buffer. It winds back.",
+    mirrorOk: "Reflected across the {axis}-axis: from {from} to {to}.",
+    mirrorNoPad: "Your reflection, {to}, has no pad to catch you. The mirror stays dark.",
+    // story
+    hello: "Welcome to Meridia! The two lit avenues are the axes. Count the streets from them.",
+    helloCable: "A river runs along the x-axis today. The cable cars are the only way across.",
+    helloMirror: "Some districts are walled. Their mirror pads are the way in.",
+    bump: "Watch the traffic!",
+    shortWater: "The car stopped over the water. Both stations are on opposite sides of the axis.",
+    // reasoning
+    explainCable: "Why was the cable longer than you might expect?",
+    frameCable1: "One station is",
+    frameCable2: "To cross the axis you",
+    explainMirror: "How did you know which axis to reflect across?",
+    frameMirror1: "Reflecting across the x-axis changes",
+    frameMirror2: "I needed the point",
+  },
+  es: {
+    parcel: "Entregar en",
+    dispatch: "Despacho",
+    objDeliver: "Entrega el paquete en {address}. Cuenta las calles desde los ejes.",
+    objCable: "{address} está al otro lado del agua. Busca una estación de teleférico.",
+    objMirror: "{address} está en un distrito amurallado. Busca un espejo que te refleje adentro.",
+    objDone: "Entregaste todos los paquetes.",
+    useDeliver: "Entregar aquí",
+    useCable: "Teleférico",
+    usePad: "Espejo",
+    whatNext: "la próxima parada",
+    cableTitle: "Teleférico",
+    cableNote:
+      "Este teleférico va de {from} a {to}, por una sola calle. Ajusta el cable a la distancia entre las estaciones, en unidades.",
+    cableLen: "Largo del cable (unidades)",
+    cableGo: "Enviar el teleférico",
+    cableBack: "Regresar",
+    padTitle: "Espejo",
+    padNote:
+      "Estás en el espejo de {at}. Un espejo te envía a tu reflexión sobre un eje. Solo otro espejo puede recibirte.",
+    padPredict: "¿Dónde vas a llegar?",
+    padAxisX: "Reflejar sobre el eje x",
+    padAxisY: "Reflejar sobre el eje y",
+    padGo: "Reflejar",
+    sign: "Mostrar el letrero de la calle",
+    signNote: "La puerta que buscas está marcada con un círculo.",
+    less: "Uno menos",
+    more: "Uno más",
+    delivered: "Entregado en {address}. ¡Gracias!",
+    wrongDoor: "Esto es {at}, no {address}. El cliente te indica el camino.",
+    cableOk: "El teleférico llega justo a la estación del otro lado.",
+    cableShort: "{L} unidades de cable dejan el teleférico antes de la otra estación. Regresa.",
+    cableLong: "{L} unidades de cable lo llevan más allá de la estación, hasta el tope. Regresa.",
+    mirrorOk: "Reflejado sobre el eje {axis}: de {from} a {to}.",
+    mirrorNoPad: "Tu reflexión, {to}, no tiene espejo que te reciba. El espejo se queda apagado.",
+    hello:
+      "¡Bienvenido a Meridia! Las dos avenidas iluminadas son los ejes. Cuenta las calles desde ellas.",
+    helloCable: "Hoy un río corre por el eje x. Los teleféricos son la única forma de cruzar.",
+    helloMirror: "Algunos distritos tienen muros. Sus espejos son la entrada.",
+    bump: "¡Cuidado con el tráfico!",
+    shortWater:
+      "El teleférico se detuvo sobre el agua. Las dos estaciones están en lados opuestos del eje.",
+    explainCable: "¿Por qué el cable era más largo de lo que podrías esperar?",
+    frameCable1: "Una estación está",
+    frameCable2: "Para cruzar el eje",
+    explainMirror: "¿Cómo supiste sobre qué eje reflejar?",
+    frameMirror1: "Reflejar sobre el eje x cambia",
+    frameMirror2: "Necesitaba el punto",
+  },
+};
