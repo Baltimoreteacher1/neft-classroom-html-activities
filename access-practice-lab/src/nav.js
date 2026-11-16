@@ -6,6 +6,7 @@ import { langSwitchHTML } from "./i18n.js";
 import { CHROME } from "./acc/copy.js";
 import { DESTINATIONS, SECTIONS, SKILLS, inBand, locate } from "./sitemap.js";
 import { BASE, html, icon, raw } from "./util.js";
+import { gradeSelectHTML } from "./wayfinding.js";
 
 export const LOGO = raw(
   `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="2" width="17" height="17" rx="5.5" fill="#075568"/><rect x="21" y="2" width="17" height="17" rx="5.5" fill="#2e4a94"/><rect x="2" y="21" width="17" height="17" rx="5.5" fill="#8a3a5c"/><rect x="21" y="21" width="17" height="17" rx="5.5" fill="#9a4a26"/><path d="M6.5 14.5v-2a4 4 0 0 1 8 0v2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M26 7.5h8M26 11h8M26 14.5h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><rect x="8.3" y="25" width="4.4" height="7" rx="2.2" fill="#fff"/><path d="M26.5 33.5l7-7" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`,
@@ -118,6 +119,7 @@ export function navHTML(ctx, I) {
   const siteGuideLink = html`<a class="top-link top-expedition top-guide" href="${BASE}/site-guide?grades=${band}" ${view === "site-guide" ? raw('aria-current="page"') : ""}>${icon("help")}<span>${T("Site Guide", "Guía del sitio")}</span></a>`;
   return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${bookLink}${teachersLink}${familiesLink}${siteGuideLink}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
+    ${focused ? "" : gradeSelectHTML(ctx, I)}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
       <summary>${icon("menu")}<span>${T("More", "Más")}</span></summary>

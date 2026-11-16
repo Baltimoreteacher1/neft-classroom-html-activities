@@ -496,3 +496,90 @@
 }
 
 /* Re-addressed 2026-11-12: the edge pinned the previous build of this file under its new hash (see functions/access-practice-lab/[[path]].js). */
+
+/* ── header grade switch ─────────────────── */
+.grade-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.25rem 0 0.8rem;
+  border: 2px solid var(--line-strong, var(--line));
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.grade-select:focus-within {
+  outline: 3px solid var(--focus, #1d2b58);
+  outline-offset: 2px;
+}
+.grade-select select {
+  min-height: 2.5rem;
+  padding: 0 1.6rem 0 0.4rem;
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.grade-select select:focus-visible {
+  outline: none;
+}
+@media (max-width: 1199px) {
+  .lab-tools .grade-select {
+    order: 3;
+  }
+}
+@media (max-width: 559px) {
+  .grade-select-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .grade-select {
+    padding-inline-start: 0.4rem;
+  }
+}
+/* Phones and small tablets: the main doors (Access Prep, Home, Practice, Games, Progress) stay one tap away on every
+   page instead of hiding inside "More". They wrap onto their own row under the language switch. */
+@media (max-width: 959px) {
+  .lab-top .lab-tools > .top-link:not(.top-expedition):not(.lab-search-btn):not(.lab-read-btn):not(.lab-comfort-btn):not(.top-access-prep) {
+    display: inline-flex;
+    order: 4;
+    flex: 1 1 28%;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--line);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 0.85rem;
+  }
+  .lab-top .lab-tools > .top-link:not(.top-expedition):not(.lab-search-btn):not(.lab-read-btn):not(.lab-comfort-btn):not(.top-access-prep) > .ico {
+    display: none;
+  }
+  .lab-top .lab-tools > .top-link[aria-current="page"]:not(.top-expedition):not(.top-access-prep) {
+    background: var(--surface-2);
+    border-color: var(--brand-deep);
+  }
+  /* Access Prep keeps its navy pill (ds.css) and only gets the phone sizing. */
+  .lab-top .lab-tools > .top-access-prep.is-featured {
+    display: inline-flex;
+    order: 4;
+    flex: 1 1 28%;
+    justify-content: center;
+    min-height: 2.75rem;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 0.85rem;
+    background: #142d47;
+    color: #f8d58c !important;
+  }
+}

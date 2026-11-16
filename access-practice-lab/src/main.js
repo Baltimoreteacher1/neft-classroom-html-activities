@@ -9,6 +9,7 @@
 import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
+import { gradeSwitchTarget } from "./wayfinding.js";
 import { isEarlyBand, normalizeBand } from "./bands.js";
 import { namesGradeFocus, normalizeGradeFocus } from "./grade-focus.js";
 import { announceGradeFocus } from "./grade-focus-ui.js";
@@ -639,6 +640,16 @@ document.addEventListener("click", async (e) => {
   common(e);
 });
 document.addEventListener("change", (e) => {
+  // Header grade switch (src/wayfinding.js): change grade from any page without going back home first.
+  const gradePick = e.target?.closest?.("[data-grade-select]");
+  if (gradePick) {
+    const next = gradePick.value;
+    if (next === app.band) return;
+    const from = parseRoute();
+    ctx.setBand(next);
+    navigate(gradeSwitchTarget(from, app.band, { canOpen: (r) => !isEarlyBand(app.band) || earlyCanOpen(r) }));
+    return;
+  }
   if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConversationEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConstructionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
