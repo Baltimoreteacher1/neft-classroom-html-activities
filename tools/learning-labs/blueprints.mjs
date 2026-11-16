@@ -465,9 +465,9 @@ export const blueprints = [
     "equivalence",
     [4, 3, 5],
     [
-      "On paper, evaluate 4x + 3 when x = 5. Compare it with 4(x + 3) in the model. Why are the results different?",
-      "Compare a(x + b) with ax + ab for several values.",
-      "Explain why matching at only one value cannot prove two expressions equivalent.",
+      "Set a = 4, b = 3, and x = 5. Compare 4(x + 3), 4x + 12, and 4x + 3. Which two match? Use the rectangle to explain why.",
+      "Change only x to 2, then to 7. Compare 4(x + 3), 4x + 12, and 4x + 3 each time. What stays true?",
+      "Use the two parts of the rectangle to explain why a(x + b) = ax + ab for every x. Why are a few matching values not enough to prove this?",
     ],
     "Write a situation for an algebraic expression. Give an equivalent expression, justify it with a property, and verify both at two different values.",
     "Remix Match",
