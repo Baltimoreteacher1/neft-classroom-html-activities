@@ -55,6 +55,8 @@ const GAME_DIRS = [
   "math/games/placement-quest",
   "math/games/shared",
   "math/games/engines/core",
+  "math/games/universe/runtime",
+  "math/games/universe/games/power-plant",
   "math/games/engines/u2-pulse-matrix",
   "math/games/engines/u2-circuit-breaker",
   "math/games/engines/u3-ratio-mixer",

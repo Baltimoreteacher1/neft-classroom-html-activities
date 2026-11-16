@@ -326,6 +326,8 @@ export function boostPage(
     assets,
   });
   return html
+    // Not a lesson: no Learning Lab stage bar (it would link /math/studio/0-0/, which does not exist).
+    .replace(/\s*<nav class="ms-stagebar"[\s\S]*?<\/nav>/, "")
     .replace(
       /<div class="brand-sub">[^<]*<\/div>/,
       '<div class="brand-sub">Grade 6 Math · Mixed review from every unit · New set each day</div>',

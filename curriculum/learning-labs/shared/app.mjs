@@ -1,5 +1,5 @@
 import { esc } from './model.mjs';
-import { mountGames } from './games.mjs?v=20261007';
+import { mountGames } from './games.mjs?v=20261116';
 import { create, investigate, learn, practice } from './activities.mjs';
 import { levels, noteLabels, overview, progressStage, progressStageLabel, tabs, timing } from './progress.mjs';
 import { connect } from './ewl-bridge.mjs?v=20261015';

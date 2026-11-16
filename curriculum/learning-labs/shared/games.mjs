@@ -14,7 +14,9 @@ export function mountGames(host, lab, state, save, level) {
   progress.checks ||= 0; progress.hints ||= 0; progress.solutions ||= []; progress.shuffle ||= 0;
   const tier = ['support', 'core', 'stretch'].indexOf(level);
   const mathMission = unitMission(lab);
-  host.innerHTML = `<div class="game-menu"><button type="button" data-game="mission" aria-pressed="true">${esc(lab.finale)}</button>${mathMission ? `<button type="button" data-game="unit${lab.unit}" aria-pressed="false">Math Mission</button>` : ''}<button type="button" data-game="match" aria-pressed="false">Connection Quest</button></div><div class="game-stage"></div>`;
+  // A Math Universe game for this lab's lessons opens first: it is the real game.
+  const universe = (lab.universe || []).map((g) => `<a class="universe-launch" href="${esc(g.href)}"><span class="universe-kicker">Math Universe · ${esc(g.genre.en)}</span><strong>${esc(g.title.en)}</strong><span>${esc(g.tagline.en)}</span><span class="universe-go">Play</span></a>`).join('');
+  host.innerHTML = `${universe}<div class="game-menu"><button type="button" data-game="mission" aria-pressed="true">${esc(lab.finale)}</button>${mathMission ? `<button type="button" data-game="unit${lab.unit}" aria-pressed="false">Math Mission</button>` : ''}<button type="button" data-game="match" aria-pressed="false">Connection Quest</button></div><div class="game-stage"></div>`;
   let active = 'mission';
   const stage = host.querySelector('.game-stage');
   const mission = () => mountExpedition(stage, lab, progress, save, level, choose);

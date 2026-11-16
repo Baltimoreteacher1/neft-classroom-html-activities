@@ -35,7 +35,7 @@ const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const DIST = join(ROOT, "dist");
 
 /** Apps bundled in dist/. Each is a directory whose pages load relative ES module entries. */
-export const APPS = ["math/games/engines", "math/fluency-lab"];
+export const APPS = ["math/games/engines", "math/games/universe", "math/fluency-lab"];
 
 const JS_RE = /\.m?js$/;
 const TEXT_RE = /\.(html|m?js|json|webmanifest|css|txt)$|^_(headers|redirects)$/;

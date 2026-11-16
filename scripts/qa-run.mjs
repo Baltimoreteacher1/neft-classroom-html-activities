@@ -147,6 +147,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * the selected set, `build` is prepended automatically. */
 const NEEDS_DIST = new Set([
   "validate:engine-games-dist",
+  "validate:universe-games-dist",
   "validate:game-transformation-browser",
   "validate:fluency-family-browser",
   "validate:html-experiences-browser",
@@ -180,6 +181,8 @@ const NEEDS_DIST = new Set([
 const EXCLUSIVE = new Set([
   "validate:engine-games-browser",
   "validate:engine-games-dist",
+  "validate:universe-games-browser",
+  "validate:universe-games-dist",
   "validate:game-transformation-browser",
   "validate:language-page-mystery-studio-browser",
   "validate:html-experiences-browser",
@@ -369,6 +372,23 @@ const COVERAGE = [
   // a11y audit; tools/a11y-coverage.test.mjs (in `test`) proves every template
   // still resolves to a page on disk.
   [/^scripts\/lib\/page-templates\.mjs$/, ["test", "check"]],
+  // MATH UNIVERSE — math/games/universe/: real-time games on one shared runtime.
+  // The browser gate PLAYS level 1 of every game through its driver; the node
+  // tests prove each game's mathematics and play every level through the rules.
+  // The hub link generator and the lab generator read the registry. Must precede
+  // the generic /^math\/games\// rule below.
+  [
+    /^(math\/games\/universe\/|tools\/(validate-universe-games-browser\.mjs$|universe\/)|scripts\/generate-universe-links\.mjs$|docs\/math-universe\/)/,
+    [
+      "validate:universe-games-browser",
+      "validate:universe-games-dist",
+      "validate:dist-file-budget",
+      "validate:game-rules",
+      "validate:js-syntax",
+      "test",
+      "check",
+    ],
+  ],
   // ENGINE GAMES — math/games/engines/<slug>/ physics machines on one shared core.
   // The browser gate drives every game by keyboard and audits SR, axe, reflow,
   // FPS under 4x throttle and per-frame heap allocation. Must precede the

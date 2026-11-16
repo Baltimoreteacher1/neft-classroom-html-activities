@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { controls } from "../curriculum/learning-labs/shared/math.mjs";
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
+import { launchHref, GAMES as UNIVERSE_GAMES } from "../math/games/universe/registry.js";
 import { labBar } from "../scripts/lib/math-studio-page.mjs";
 import { MATH_STUDIO_UNITS } from "../scripts/lib/math-studio-registry.mjs";
 import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
@@ -123,6 +124,24 @@ function standalone(question) {
 }
 const lessonTitles = new Set([...sources.values()].map((c) => c.title.trim().toLowerCase()));
 const catalog = [];
+
+/** `{ universe: [...] }` when a Math Universe game teaches one of these lessons, else `{}`. */
+function universeFor(labLessons) {
+  const games = UNIVERSE_GAMES.filter((g) => g.lessons.some((l) => labLessons.includes(l)));
+  if (!games.length) return {};
+  return {
+    universe: games.map((g) => ({
+      id: g.id,
+      title: g.title,
+      genre: g.genre,
+      tagline: g.tagline,
+      href: launchHref(
+        g,
+        labLessons.find((l) => g.lessons.includes(l)),
+      ),
+    })),
+  };
+}
 for (const blueprint of blueprints) {
   const unit = Number(blueprint.lessons[0].split("-")[0]);
   if (
@@ -264,6 +283,8 @@ for (const blueprint of blueprints) {
     lessons,
     vocabulary,
     practice,
+    // Math Universe games for these lessons: the Games stage launches straight into them.
+    ...universeFor(blueprint.lessons),
     source:
       "Instruction and selected practice adapted from the connected EduWonderLab lesson content. Investigations, creation tasks, and model puzzles are original supplementary activities.",
   };
