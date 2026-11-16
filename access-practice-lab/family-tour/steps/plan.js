@@ -3,7 +3,7 @@
 import { demoHTML } from "../demo.js";
 import { byId, recommend } from "../picks.js";
 import { getLang, t } from "../i18n.js";
-import { esc, icon, pictureSrc } from "../util.js";
+import { art, esc, hasArt, icon } from "../util.js";
 import { bandOptions, choiceGroup, focusOptions, minuteOptions } from "./shared.js";
 
 export const view = { preview: "" };
@@ -12,11 +12,10 @@ export const recsFor = (picks, state) => recommend(picks, { band: state.band, fo
 
 function card(p, state) {
   const chosen = state.pick === p.id;
-  const src = pictureSrc(p);
   const skill = getLang() === "es" ? p.skillEs : p.skill;
   const help = t(p.domain === "Speaking" ? "plan.helpSpeaking" : "plan.helpWriting");
   return `<article class="rec ${chosen ? "is-chosen" : ""}" aria-labelledby="rec-${esc(p.id)}">
-    ${src ? `<img src="${esc(src)}" alt="" width="320" height="200" loading="lazy">` : `<div class="rec-noimg" aria-hidden="true">${icon(p.domain === "Speaking" ? "speak" : "write")}</div>`}
+    ${hasArt(p) ? `<div class="rec-art">${art(p, { lang: getLang(), decorative: true })}</div>` : `<div class="rec-noimg" aria-hidden="true">${icon(p.domain === "Speaking" ? "speak" : "write")}</div>`}
     <div class="rec-body">
       <p class="tag">${esc(t(p.domain === "Speaking" ? "choice.speaking" : "choice.writing"))} · ${esc(t("kit.about", { n: p.minutes }))} · ${esc(t(`plan.level${p.level}`))}</p>
       <h3 id="rec-${esc(p.id)}" lang="en">${esc(p.title)}</h3>
@@ -48,7 +47,7 @@ export function render({ state, picks, compact = false }) {
     html: `${compact ? "" : `<p class="lead">${esc(t("plan.lead"))}</p>`}
       ${chosen && !recs.includes(chosen) ? `<p class="current">${esc(t("plan.current"))} <strong lang="en">${esc(chosen.title)}</strong></p>` : ""}
       <div class="plan-controls">
-        ${choiceGroup({ name: "band", legend: t("welcome.bandLegend"), value: state.band, options: bandOptions(), cols: 2 })}
+        ${choiceGroup({ name: "band", legend: t("welcome.bandLegend"), value: state.band, options: bandOptions(), cols: 5 })}
         ${choiceGroup({ name: "focus", legend: t("plan.focusLegend"), value: state.focus, options: focusOptions() })}
         ${choiceGroup({ name: "minutes", legend: t("plan.minutesLegend"), value: state.minutes, options: minuteOptions() })}
       </div>

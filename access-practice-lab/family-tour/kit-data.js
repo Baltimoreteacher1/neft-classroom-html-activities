@@ -34,7 +34,7 @@ export function kitData(state, pick, origin = location.origin) {
       name: pick.title,
       practice: lang === "es" ? pick.skillEs : pick.skill,
       minutes: pick.minutes,
-      steps: t(`kit.a.steps_${kind}`),
+      steps: t(`kit.a.steps_${kind}${["K", "1", "2-3"].includes(pick.band) ? "_early" : ""}`),
       supportsTitle: t("kit.a.supportsTitle"),
       supports: t("kit.a.supports"),
       url,

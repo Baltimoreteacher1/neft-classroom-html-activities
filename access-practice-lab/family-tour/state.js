@@ -3,7 +3,7 @@
 // Another device never sees it: nothing here is sent anywhere.
 export const KEY = "languagePage:familyTour:v1";
 export const STAGES = ["welcome", "explore", "practice", "help", "plan", "kit"];
-export const BANDS = ["3-5", "6-8"];
+export const BANDS = ["K", "1", "2-3", "3-5", "6-8"];
 export const FOCUS = ["speaking", "writing", "both"];
 export const MINUTES = [5, 10, 15];
 

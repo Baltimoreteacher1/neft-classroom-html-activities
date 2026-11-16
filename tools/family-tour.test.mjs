@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { SCENES } from "../access-practice-lab/src/early/scenes.js";
 import { qrModules } from "../shared/qr/qr-code.mjs";
 import { allKeys } from "../access-practice-lab/family-tour/i18n.js";
 import en from "../access-practice-lab/family-tour/lang/en.js";
@@ -46,18 +47,20 @@ test("every t() key used in the tour exists in English", () => {
 
 test("every pick is a real constructed activity with a student link that fits a QR code", () => {
   assert.ok(picks.length >= 40);
-  for (const band of ["3-5", "6-8"])
+  for (const band of ["K", "1", "2-3", "3-5", "6-8"])
     for (const domain of ["Speaking", "Writing"])
-      assert.ok(picks.filter((p) => p.band === band && p.domain === domain).length >= 10, `${band} ${domain} pool`);
+      assert.ok(picks.filter((p) => p.band === band && p.domain === domain).length >= (["K", "1", "2-3"].includes(band) ? 3 : 10), `${band} ${domain} pool`);
   const content = {};
   for (const p of picks) {
-    const dir = p.band === "3-5" ? "g3-5" : "g6-8";
+    const dir = { K: "gK", 1: "g1", "2-3": "g2-3", "3-5": "g3-5", "6-8": "g6-8" }[p.band];
     const set = (content[`${dir}/${p.domain}`] ||= JSON.parse(readFileSync(`access-practice-lab/content/${dir}/${p.domain}.json`, "utf8")));
     const row = set.levels[p.level].activities.find((a) => a.id === p.id);
     assert.ok(row, `${p.id} exists in ${dir}/${p.domain} level ${p.level}`);
     assert.equal(row.type, "constructed");
     assert.equal(row.prompt, p.prompt);
     if (p.picture) assert.ok(existsSync(`access-practice-lab/${p.picture.src}`), `${p.id} picture`);
+    if (p.scene) assert.ok(SCENES.includes(p.scene), `${p.id} scene exists`);
+    if (!["3-5", "6-8"].includes(p.band)) assert.ok(p.scene, `${p.id} (early band) names a drawn scene`);
     assert.ok(p.skillEs, `${p.id} skillEs`);
     const url = `https://thelanguagepage.com${activityPath(p)}`;
     assert.doesNotThrow(() => qrModules(url), `${url} fits a QR code`);
@@ -65,7 +68,7 @@ test("every pick is a real constructed activity with a student link that fits a 
 });
 
 test("recommend gives at most three fitting activities for every choice", () => {
-  for (const band of ["3-5", "6-8"])
+  for (const band of ["K", "1", "2-3", "3-5", "6-8"])
     for (const focus of ["speaking", "writing", "both"])
       for (const minutes of [5, 10, 15]) {
         const r = recommend(picks, { band, focus, minutes });
@@ -75,6 +78,12 @@ test("recommend gives at most three fitting activities for every choice", () => 
         if (focus === "speaking") assert.ok(r.every((p) => p.domain === "Speaking"));
         if (focus === "writing") assert.ok(r.every((p) => p.domain === "Writing"));
       }
+});
+
+test("every grade has a demonstration activity for speaking and writing", () => {
+  const demos = readFileSync(`${TOUR}/picks.js`, "utf8");
+  for (const id of [...demos.matchAll(/"((?:gk|g1|g23|g35|v3|v10)-[\w-]+)"/g)].map((m) => m[1]))
+    assert.ok(picks.some((p) => p.id === id), `demo ${id} is in picks.json`);
 });
 
 test("PDF writer makes a valid document with Spanish text and links", () => {

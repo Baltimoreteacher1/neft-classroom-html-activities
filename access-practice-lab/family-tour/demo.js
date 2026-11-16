@@ -5,7 +5,7 @@ import { canSpeak } from "./audio.js";
 import { tips } from "./feedback.js";
 import { getLang, t } from "./i18n.js";
 import { canRecord } from "./recorder.js";
-import { en, esc, icon, markAdded, pictureSrc } from "./util.js";
+import { art, en, esc, hasArt, icon, markAdded } from "./util.js";
 
 /** Per-activity screen state: kept across language changes and re-renders, dropped when the tour closes. */
 export const ui = { demo: {}, recorders: {}, picks: {} };
@@ -106,16 +106,18 @@ function response(p, st) {
 /** The student's view of one activity. `variant` is "explore", "practice" or "preview"; only the heading line differs. */
 export function demoHTML(p, variant = "explore") {
   const st = demoState(p.id);
-  const src = pictureSrc(p);
+  const es = getLang() === "es";
   ui.picks[p.id] = p;
   return `<article class="demo demo-${variant} d-${p.domain.toLowerCase()}" aria-label="${esc(p.title)}">
     <header class="demo-bar"><span>${esc(t(p.domain === "Speaking" ? "demo.barSpeaking" : "demo.barWriting"))}</span><span class="pill">${esc(t("demo.previewOnly"))}</span></header>
     <div class="demo-body">
       <h3 lang="en">${esc(p.title)}</h3>
-      ${src ? `<figure><img src="${esc(src)}" alt="${esc(p.picture.alt)}" lang="en" loading="lazy" width="640" height="400"></figure>` : ""}
+      ${hasArt(p) ? `<figure>${art(p, { lang: getLang() })}</figure>` : ""}
       <p class="q" lang="en">${esc(p.prompt)}</p>
+      ${es && p.promptEs ? `<p class="fine">${esc(t("demo.inSpanish"))} ${esc(p.promptEs)}</p>` : ""}
       ${listenBtn(p.prompt, t("shell.listenTo", { what: t("demo.question") }))}
       ${p.directions ? `<p class="dir" lang="en">${esc(p.directions)}</p>` : ""}
+      ${es && p.directionsEs ? `<p class="dir">${esc(t("demo.inSpanish"))} ${esc(p.directionsEs)}</p>` : ""}
       <div class="supports"><h4>${esc(t("demo.helpTitle"))}</h4>${supports(p, st, p.domain)}</div>
       ${response(p, st)}
     </div>

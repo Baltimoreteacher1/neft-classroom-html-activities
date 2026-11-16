@@ -4,8 +4,24 @@ export const esc = (s) =>
 /** English words inside a Spanish page: marked so a screen reader switches voice. */
 export const en = (s) => `<span lang="en">${esc(s)}</span>`;
 
+import { sceneSVG } from "../src/early/scenes.js";
+
 export const BASE = "/access-practice-lab";
-export const pictureSrc = (p) => (p?.picture?.src ? `${BASE}/${p.picture.src}` : "");
+export const hasArt = (p) => Boolean(p?.picture?.src || p?.scene);
+
+/**
+ * The picture for an activity: its SVG file (grades 3-8) or its drawn scene (K-3, src/early/scenes.js). `decorative`
+ * hides it from screen readers when the same words are already on the screen.
+ */
+export function art(p, { lang = "en", decorative = false } = {}) {
+  if (p?.picture?.src)
+    return `<img src="${esc(`${BASE}/${p.picture.src}`)}" alt="${decorative ? "" : esc(p.picture.alt)}" lang="en" loading="lazy" width="640" height="400">`;
+  if (p?.scene) {
+    const svg = sceneSVG(p.scene, lang);
+    return `<span class="scene">${decorative ? svg.replace(/ role="img" aria-label="[^"]*"/, ' aria-hidden="true"') : svg}</span>`;
+  }
+  return "";
+}
 
 /** Words in `b` that are not in `a`, wrapped in <mark>, so a family can see what an improved answer added. */
 export function markAdded(a, b) {

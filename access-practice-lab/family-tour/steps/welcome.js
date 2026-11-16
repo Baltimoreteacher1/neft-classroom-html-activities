@@ -1,8 +1,8 @@
 // Step 1: what The Language Page is, in three ideas the family can open, and the two choices that shape the tour.
 import { demoPick } from "../picks.js";
 import { improveHTML } from "../demo.js";
-import { t } from "../i18n.js";
-import { en, esc, icon, pictureSrc } from "../util.js";
+import { getLang, t } from "../i18n.js";
+import { art, en, esc, hasArt, icon } from "../util.js";
 import { bandOptions, callout, choiceGroup, focusOptions } from "./shared.js";
 
 export const view = { concept: "" };
@@ -17,8 +17,7 @@ function conceptPanel(id, picks, band) {
   const speak = demoPick(picks, "speaking", band);
   const write = demoPick(picks, "writing", band);
   if (id === "speak") {
-    const src = pictureSrc(speak);
-    return `<div class="mini">${src ? `<img src="${esc(src)}" alt="${esc(speak.picture.alt)}" lang="en" width="640" height="400" loading="lazy">` : ""}
+    return `<div class="mini">${hasArt(speak) ? art(speak, { lang: getLang() }) : ""}
       <div><p class="tag">${esc(t("welcome.studentSees"))}</p><p class="q" lang="en">${esc(speak.prompt)}</p>
       <p class="tag">${esc(t("welcome.studentSays"))}</p><p class="bubble good" lang="en">${esc(speak.models.A)}</p>
       <p>${esc(t("welcome.speakText"))}</p></div></div>`;
@@ -52,7 +51,7 @@ export function render({ state, picks }) {
       <section class="ask" aria-labelledby="ask-h">
         <h2 id="ask-h">${esc(t("welcome.ask"))}</h2>
         ${choiceGroup({ name: "focus", legend: t("welcome.focusLegend"), value: state.focus, options: focusOptions() })}
-        ${choiceGroup({ name: "band", legend: t("welcome.bandLegend"), value: state.band, options: bandOptions(), cols: 2 })}
+        ${choiceGroup({ name: "band", legend: t("welcome.bandLegend"), value: state.band, options: bandOptions(), cols: 5 })}
       </section>`,
   };
 }

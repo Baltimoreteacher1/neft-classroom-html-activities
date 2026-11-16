@@ -10,7 +10,7 @@ import { kitData } from "./kit-data.js";
 import { cardHTML, kitHTML } from "./kit.js";
 import { byId, loadPicks } from "./picks.js";
 import { createRecorder } from "./recorder.js";
-import { STAGES, hasProgress, load, save, startOver, storageWorks } from "./state.js";
+import { BANDS, STAGES, hasProgress, load, save, startOver, storageWorks } from "./state.js";
 import * as explore from "./steps/explore.js";
 import * as help from "./steps/help.js";
 import * as plan from "./steps/plan.js";
@@ -418,7 +418,7 @@ async function init(retry = false) {
   const lang = params.get("lang");
   if (!retry && (lang === "en" || lang === "es") && !load().lang) save({ lang });
   const g = params.get("grades");
-  if (!retry && (g === "3-5" || g === "6-8") && !load().band) save({ band: g });
+  if (!retry && BANDS.includes(g === "4-5" ? "3-5" : g) && !load().band) save({ band: g === "4-5" ? "3-5" : g });
   flow.loadError = false;
   render({ stageChanged: !retry });
   if (!load().lang) return;

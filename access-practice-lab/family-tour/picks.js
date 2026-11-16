@@ -23,6 +23,9 @@ export const domainUrl = (domain, band, origin = location.origin) => `${origin}$
 
 /** The activity each demonstration uses: a short, picture-first task at the lowest support level. */
 const DEMOS = {
+  K: { speaking: "gk-s-a-garden-see", writing: "gk-w-b-i-see-pond" },
+  1: { speaking: "g1-s-a-garden-name", writing: "g1-w-b-i-see" },
+  "2-3": { speaking: "g23-s-a-garden-see", writing: "g23-w-a-garden-labels" },
   "3-5": { speaking: "g35-s-a-playground", writing: "g35-w-a-park-scene" },
   "6-8": { speaking: "v3-s-a-1", writing: "v10-w-a-caption" },
 };

@@ -19,6 +19,9 @@ export const focusOptions = () => [
   { value: "both", title: t("choice.both") },
 ];
 export const bandOptions = () => [
+  { value: "K", title: t("choice.bandK") },
+  { value: "1", title: t("choice.band1") },
+  { value: "2-3", title: t("choice.band2") },
   { value: "3-5", title: t("choice.band35") },
   { value: "6-8", title: t("choice.band68") },
 ];
