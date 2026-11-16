@@ -93,6 +93,20 @@ export const GAMES = [
     standards: ["6.AT.8", "6.AT.9"],
     features: ["time-machine"],
   },
+  {
+    id: "fraction-food-truck",
+    href: "/math/games/universe/games/fraction-food-truck/",
+    title: { en: "Fraction Food Truck", es: "Food Truck de Fracciones" },
+    genre: { en: "Kitchen game", es: "Juego de cocina" },
+    tagline: {
+      en: "Every order is a batch to portion. Set the serving station and watch the ladle prove your division, one serving at a time.",
+      es: "Cada pedido es una tanda para repartir. Ajusta la estación de servir y mira cómo el cucharón comprueba tu división, porción por porción.",
+    },
+    unit: 6,
+    lessons: ["6-1", "6-2", "6-9", "6-10", "6-11"],
+    standards: ["6.NOS.1"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

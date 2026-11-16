@@ -62,6 +62,7 @@ const GAME_DIRS = [
   "math/games/universe/games/coordinate-couriers",
   "math/games/universe/games/expression-factory",
   "math/games/universe/games/inequality-invasion",
+  "math/games/universe/games/fraction-food-truck",
   "math/games/engines/u2-pulse-matrix",
   "math/games/engines/u2-circuit-breaker",
   "math/games/engines/u3-ratio-mixer",
