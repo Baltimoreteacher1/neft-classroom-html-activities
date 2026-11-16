@@ -845,11 +845,35 @@ export const LESSON_MODELS = {
     },
   },
   "6-5": {
-    ...fam("balance", { combine: [[2, 3]], x: 4 }),
+    ...fam("linear-pricing", {
+      rate: 12,
+      fixed: 50,
+      varName: "t",
+      initial: 3,
+      maxT: 12,
+      compareRate: 15,
+      compareFixed: 20,
+    }),
     ...lead(
-      "Try different values for x. Watch the tiles and the value change.",
-      "Prueba distintos valores de x. Mira cómo cambian los cuadros y el valor.",
+      "Change the number of tickets (t) in 12t + 50. Watch the tickets, expression, table, and graph update together.",
+      "Cambia el número de boletos (t) en 12t + 50. Mira cómo cambian juntos los boletos, la expresión, la tabla y la gráfica.",
     ),
+    part2: {
+      config: {
+        rate: 12,
+        fixed: 50,
+        varName: "t",
+        initial: 4,
+        maxT: 12,
+        compareMode: true,
+        compareRate: 15,
+        compareFixed: 20,
+      },
+      ...lead(
+        "Compare two ticket plans across the table and graph. Find when each plan costs less.",
+        "Compara dos planes de boletos en la tabla y la gráfica. Descubre cuándo cuesta menos cada plan.",
+      ),
+    },
   },
   "6-6": {
     ...fam("balance", { combine: [[3, 2]], x: 3 }),

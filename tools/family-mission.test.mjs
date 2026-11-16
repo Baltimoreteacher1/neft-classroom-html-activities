@@ -42,7 +42,7 @@ test("the five steps are defined once, in teaching order, with the optional stop
   );
   assert.deepEqual(
     MISSION_STAGES.map((s) => s.en),
-    ["Look & Learn", "Try Together", "Your Turn", "Check & Improve", "Finish"],
+    ["Discover", "Build", "Practice", "Improve", "Celebrate"],
   );
   assert.deepEqual(
     OPTIONAL_STOPS.map((s) => s.id),

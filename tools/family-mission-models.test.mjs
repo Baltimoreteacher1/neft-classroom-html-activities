@@ -412,6 +412,7 @@ test("index: families, unknown family, and describeConfig", () => {
     "geometry",
     "exponents",
     "kcf",
+    "linear-pricing",
     "decimal",
     "division",
     "numtheory",

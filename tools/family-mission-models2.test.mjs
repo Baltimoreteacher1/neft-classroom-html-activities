@@ -55,6 +55,7 @@ test("index: all fourteen families are registered and unknown names are refused"
     "geometry",
     "exponents",
     "kcf",
+    "linear-pricing",
     "decimal",
     "division",
     "numtheory",

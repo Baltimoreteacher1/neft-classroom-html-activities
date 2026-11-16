@@ -70,6 +70,7 @@ import { FLOW_JS } from "./lib/homework-flow-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
+import { renderMathMysterySection } from "./lib/homework-mystery-engine.mjs";
 import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
@@ -99,6 +100,7 @@ import {
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
 import { renderStudioButtons, STUDIO_JS } from "./lib/homework-studio.mjs";
+import { STUDIO_PLUS_JS } from "./lib/homework-studio-plus-js.mjs";
 import { renderPrintFooter, renderProblemAsk } from "./lib/homework-v3-learn.mjs";
 import { V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
 import { VOICE_JS } from "./lib/homework-voice.mjs";
@@ -1375,9 +1377,10 @@ function generateHtml(lessonId, config) {
     mystery,
     caseFileHtml,
   );
+  const mysteryStudioHtml = renderMathMysterySection(config, lessonId);
   const tabPanels = [
     mission.connect,
-    mission.explore,
+    mission.explore.replace(/<\/div>\s*$/, `${mysteryStudioHtml}</div>`),
     renderCheckTab(
       quickCheckIntroHtml,
       warmupHtml,
@@ -1607,6 +1610,7 @@ ${EXPERIENCE_JS}
 ${MISSION_JS}
 ${FLOW_JS}
 ${STUDIO_JS}
+${STUDIO_PLUS_JS}
 ${PRACTICE_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}

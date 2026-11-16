@@ -1,4 +1,6 @@
 import { familyGuidance, householdMission } from "./homework-family-guidance.mjs";
+import { renderExplainStudio } from "./lib/homework-explain-studio.mjs";
+import { renderLearningReplayShell } from "./lib/homework-learning-replay.mjs";
 /**
  * Guided family notes content + HTML sections for interactive homework.
  * Derives bilingual EN/ES content from lesson config.json fields.
@@ -8944,7 +8946,7 @@ export function renderDoneTab(config = null, lessonId = "") {
     next: nextFamilyPage(lessonId),
     prereq,
     question: finishQuestion(config?.familyNotes),
-  })}<details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>${inner}${renderFamilyConversationCard(config)}</details></div>`;
+  })}${renderLearningReplayShell(config, lessonId)}${renderExplainStudio(config, lessonId)}<details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>${inner}${renderFamilyConversationCard(config)}</details></div>`;
 }
 
 export function renderPhotoboothTab(config = null, lessonId = "") {
@@ -9252,7 +9254,7 @@ export function renderHomeworkTabs(
   panelsHtml,
   helpDrawerHtml = "",
   unit = null,
-  studioButtonsHtml = "",
+  _studioButtonsHtml = "",
 ) {
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml(unit);
@@ -9284,7 +9286,12 @@ export function renderHomeworkTabs(
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Understand, practice, play" data-aria-en="Understand, practice, play" data-aria-es="Entender, practicar, jugar">${studioButtonsHtml}</div>
+        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Optional tools" data-aria-en="Optional tools" data-aria-es="Herramientas opcionales">
+          <button type="button" class="homework-tab-extra hw-fun-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog">
+            <span class="tab-icon" aria-hidden="true">🧭</span>
+            <span class="tab-label"><span class="tab-en">Explore more</span><span class="tab-es" lang="es">Explorar más</span></span>
+          </button>
+        </div>
         <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.filter(
           (t) => !FUN_STOPS.has(t.id),
         )

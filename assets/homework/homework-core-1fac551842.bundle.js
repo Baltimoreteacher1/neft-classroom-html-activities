@@ -5156,6 +5156,13 @@ function hwStudioPractice() {
 })();
 
 
+var hwSPL = 0;
+function hwLoadSP() { if (hwSPL) return Promise.resolve(); hwSPL = 1; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/assets/homework/studio-plus.css'; document.head.appendChild(l); return import('/assets/homework/studio-plus.mjs').catch(function(){}); }
+function hwSetQuestMode(m) { if (window.__hwSetQuestMode) window.__hwSetQuestMode(m); else hwLoadSP().then(function(){ if (window.__hwSetQuestMode) window.__hwSetQuestMode(m); }); }
+function hwRenderLearningReplay() { if (window.__hwRenderLearningReplay) window.__hwRenderLearningReplay(); }
+document.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('#hw_start_button, .homework-tab-btn, [data-open-sheet]')) hwLoadSP(); }, { once: true });
+
+
 /* ── Levels, challenge round, celebration, Watch it ──────────────────── */
 var HW_LEVELS = [{"id":"warmup","size":3,"en":"Warm-up","es":"Calentamiento","icon":"🔥"},{"id":"build","size":4,"en":"Build","es":"Construir","icon":"🧱"},{"id":"apply","size":3,"en":"Apply","es":"Aplicar","icon":"🚀"}];
 var HW_MISSION_N = 10;
@@ -7700,6 +7707,7 @@ var NTAnswerMatch = (function () {
   function equivalentHomeworkAnswer(input, answer) {
     const typed = comparisonSymbols(input), target = comparisonSymbols(answer);
     if (sharedIsRight(typed, target)) return true;
+    if (typeof window !== "undefined" && typeof window.__hwAlgEq === "function" && window.__hwAlgEq(typed, target)) return true;
     const typedComparison = simpleComparison(typed), targetComparison = simpleComparison(target);
     if (typedComparison && targetComparison) {
       return typedComparison.variable === targetComparison.variable &&

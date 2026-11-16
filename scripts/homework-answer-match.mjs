@@ -43,6 +43,7 @@ function simpleComparison(value) {
 function equivalentHomeworkAnswer(input, answer) {
   const typed = comparisonSymbols(input), target = comparisonSymbols(answer);
   if (sharedIsRight(typed, target)) return true;
+  if (typeof window !== "undefined" && typeof window.__hwAlgEq === "function" && window.__hwAlgEq(typed, target)) return true;
   const typedComparison = simpleComparison(typed), targetComparison = simpleComparison(target);
   if (typedComparison && targetComparison) {
     return typedComparison.variable === targetComparison.variable &&

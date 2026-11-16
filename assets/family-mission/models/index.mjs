@@ -8,6 +8,7 @@ import * as division from "./division.mjs";
 import * as exponents from "./exponents.mjs";
 import * as geometry from "./geometry.mjs";
 import * as kcf from "./kcf.mjs";
+import * as linearPricing from "./linear-pricing.mjs";
 import * as numberline from "./numberline.mjs";
 import * as numtheory from "./numtheory.mjs";
 import * as pattern from "./pattern.mjs";
@@ -15,7 +16,23 @@ import * as percent from "./percent.mjs";
 import * as polygon from "./polygon.mjs";
 import * as ratio from "./ratio.mjs";
 
-export const FAMILIES = { percent, ratio, balance, numberline, coordinate, data, geometry, exponents, kcf, decimal, division, numtheory, pattern, polygon };
+export const FAMILIES = {
+  percent,
+  ratio,
+  balance,
+  numberline,
+  coordinate,
+  data,
+  geometry,
+  exponents,
+  kcf,
+  "linear-pricing": linearPricing,
+  decimal,
+  division,
+  numtheory,
+  pattern,
+  polygon,
+};
 
 export function listFamilies() {
   return Object.values(FAMILIES).map((f) => ({ id: f.id, label: f.label }));

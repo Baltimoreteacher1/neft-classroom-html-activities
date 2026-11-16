@@ -130,10 +130,11 @@
 
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q"><span class="lang-en">Today&#039;s Family Practice</span><span class="lang-es" lang="es">La práctica familiar de hoy</span></h2>
-        <p class="hw-mission-lead fm-hero__promise"><span class="lang-en">Five short steps, about 15–20 minutes: watch the idea, try one together, solve 10 in three levels, check, celebrate.</span><span class="lang-es" lang="es">Cinco pasos cortos, unos 15–20 minutos: miren la idea, prueben uno juntos, resuelvan 10 en tres niveles, revisen y celebren.</span></p>
+        <p class="hw-mission-lead fm-hero__promise"><span class="lang-en">Five steps, about 15–20 min: Discover, Build, solve 10 in three levels, Improve, Celebrate.</span><span class="lang-es" lang="es">Cinco pasos, unos 15–20 min: Descubrir, Construir, resolver 10 en tres niveles, Mejorar y Celebrar.</span></p>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" data-act="startHomework"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Your place is saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Su avance se guarda en este dispositivo.</span></p>
+        <div class="hw-session-routes" id="hw_session_routes"></div>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. No timer. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Sin cronómetro. Se guarda en este dispositivo.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>
@@ -189,57 +190,56 @@
 
             <button type="button" id="hw_tab_connect" class="homework-tab-btn is-active"
               aria-current="step" aria-controls="hw_panel_connect"
-              aria-label="Look &amp; Learn — stop 1 of 5"
-              data-aria-en="Look &amp; Learn — stop 1 of 5" data-aria-es="Mira y aprende — parada 1 de 5"
+              aria-label="Discover — stop 1 of 5"
+              data-aria-en="Discover — stop 1 of 5" data-aria-es="Descubrir — parada 1 de 5"
               data-tab="connect" data-stop="1" data-act="switchHomeworkTab" data-args='["connect"]'>
               <span class="tab-step" aria-hidden="true">1</span>
-              <span class="tab-label"><span class="tab-en">Look & Learn</span><span class="tab-es" lang="es">Mira y aprende</span></span>
+              <span class="tab-label"><span class="tab-en">Discover</span><span class="tab-es" lang="es">Descubrir</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_explore" class="homework-tab-btn"
                aria-controls="hw_panel_explore"
-              aria-label="Try Together — stop 2 of 5"
-              data-aria-en="Try Together — stop 2 of 5" data-aria-es="Prueben juntos — parada 2 de 5"
+              aria-label="Build — stop 2 of 5"
+              data-aria-en="Build — stop 2 of 5" data-aria-es="Construir — parada 2 de 5"
               data-tab="explore" data-stop="2" data-act="switchHomeworkTab" data-args='["explore"]'>
               <span class="tab-step" aria-hidden="true">2</span>
-              <span class="tab-label"><span class="tab-en">Try Together</span><span class="tab-es" lang="es">Prueben juntos</span></span>
+              <span class="tab-label"><span class="tab-en">Build</span><span class="tab-es" lang="es">Construir</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_check" class="homework-tab-btn"
                aria-controls="hw_panel_check"
-              aria-label="Your Turn — stop 3 of 5"
-              data-aria-en="Your Turn — stop 3 of 5" data-aria-es="Tu turno — parada 3 de 5"
+              aria-label="Practice — stop 3 of 5"
+              data-aria-en="Practice — stop 3 of 5" data-aria-es="Practicar — parada 3 de 5"
               data-tab="check" data-stop="3" data-act="switchHomeworkTab" data-args='["check"]'>
               <span class="tab-step" aria-hidden="true">3</span>
-              <span class="tab-label"><span class="tab-en">Your Turn</span><span class="tab-es" lang="es">Tu turno</span></span>
+              <span class="tab-label"><span class="tab-en">Practice</span><span class="tab-es" lang="es">Practicar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_improve" class="homework-tab-btn"
                aria-controls="hw_panel_improve"
-              aria-label="Check &amp; Improve — stop 4 of 5"
-              data-aria-en="Check &amp; Improve — stop 4 of 5" data-aria-es="Revisa y mejora — parada 4 de 5"
+              aria-label="Improve — stop 4 of 5"
+              data-aria-en="Improve — stop 4 of 5" data-aria-es="Mejorar — parada 4 de 5"
               data-tab="improve" data-stop="4" data-act="switchHomeworkTab" data-args='["improve"]'>
               <span class="tab-step" aria-hidden="true">4</span>
-              <span class="tab-label"><span class="tab-en">Check & Improve</span><span class="tab-es" lang="es">Revisa y mejora</span></span>
+              <span class="tab-label"><span class="tab-en">Improve</span><span class="tab-es" lang="es">Mejorar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_done" class="homework-tab-btn"
                aria-controls="hw_panel_done"
-              aria-label="Finish — stop 5 of 5"
-              data-aria-en="Finish — stop 5 of 5" data-aria-es="Terminar — parada 5 de 5"
+              aria-label="Celebrate — stop 5 of 5"
+              data-aria-en="Celebrate — stop 5 of 5" data-aria-es="Celebrar — parada 5 de 5"
               data-tab="done" data-stop="5" data-act="switchHomeworkTab" data-args='["done"]'>
               <span class="tab-step" aria-hidden="true">5</span>
-              <span class="tab-label"><span class="tab-en">Finish</span><span class="tab-es" lang="es">Terminar</span></span>
+              <span class="tab-label"><span class="tab-en">Celebrate</span><span class="tab-es" lang="es">Celebrar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
         </nav>
-        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Understand, practice, play" data-aria-en="Understand, practice, play" data-aria-es="Entender, practicar, jugar">
-            <button type="button" id="hw_understand_btn" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-understand" data-act="openFamilyStudio" data-args='["understand"]' aria-haspopup="dialog"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">📖</span></span>
-              <span class="tab-label"><span class="tab-en">Understand</span><span class="tab-es" lang="es">Entender</span></span></button>
-            <button type="button" id="hw_practice_btn" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-practice" data-act="hwStudioPractice"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">✏️</span></span>
-              <span class="tab-label"><span class="tab-en">Practice</span><span class="tab-es" lang="es">Practicar</span></span></button>
-            <button type="button" id="hw_tab_play" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-play" data-act="openFamilyStudio" data-args='["play"]' data-tab="play" aria-controls="hw_panel_play" aria-haspopup="dialog"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">🎲</span></span>
-              <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span></button></div>
+        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Optional tools" data-aria-en="Optional tools" data-aria-es="Herramientas opcionales">
+          <button type="button" class="homework-tab-extra hw-fun-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog">
+            <span class="tab-icon" aria-hidden="true"><span aria-hidden="true">🧭</span></span>
+            <span class="tab-label"><span class="tab-en">Explore more</span><span class="tab-es" lang="es">Explorar más</span></span>
+          </button>
+        </div>
         <div class="hw-optional-stops" hidden>
             <button type="button" id="hw_tab_talk" class="homework-tab-extra"
               aria-controls="hw_panel_talk"
@@ -305,8 +305,8 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 1 of 5</span><span class="lang-es" lang="es">Paso 1 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Look &amp; Learn</span><span class="lang-es" lang="es">Mira y aprende</span></h2>
-        <p class="fp-lead"><span class="lang-en">Read the goal and look at the picture. Then go through the example one step at a time.</span><span class="lang-es" lang="es">Lean la meta y miren el dibujo. Luego sigan el ejemplo un paso a la vez.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Discover</span><span class="lang-es" lang="es">Descubrir</span></h2>
+        <p class="fp-lead"><span class="lang-en">See the story, predict, and follow the example step by step.</span><span class="lang-es" lang="es">Observa la historia, predice y sigue el ejemplo paso a paso.</span></p>
       </header>
       <section class="family-plain-start" role="group" aria-labelledby="hw_goal_label">
         <span class="family-plain-start-mark" aria-hidden="true">✦</span>
@@ -420,32 +420,16 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 2 of 5</span><span class="lang-es" lang="es">Paso 2 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Try Together</span><span class="lang-es" lang="es">Prueben juntos</span></h2>
-        <p class="fp-lead"><span class="lang-en">Do this one side by side. Use the model, and ask for a hint whenever you want one.</span><span class="lang-es" lang="es">Háganlo lado a lado. Usen el modelo y pidan una pista cuando quieran.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Build</span><span class="lang-es" lang="es">Construir</span></h2>
+        <p class="fp-lead"><span class="lang-en">Move the model, test numbers, and watch every view update together.</span><span class="lang-es" lang="es">Mueve el modelo, prueba números y mira cómo cambian todas las vistas.</span></p>
       </header>
-      <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
-        <p class="fp-label" id="hw_try_label"><span class="lang-en">Try this one together</span><span class="lang-es" lang="es">Prueben este juntos</span></p>
-        <p class="fp-try-scenario"><span class="lang-en">Stay at the concert, but make it simpler: a snack stand sells drinks for $5 each. Let d be the number of drinks.</span><span class="lang-es" lang="es">Sigan en el concierto, pero háganlo más sencillo: un puesto vende bebidas a $5 cada una. Sea d el número de bebidas.</span></p>
-        <ol class="fp-steps fp-steps--try">
-          <li><p><span class="lang-en">Write an expression for the cost of d drinks. What does &quot;$5 each&quot; tell you to do?</span><span class="lang-es" lang="es">Escriban una expresión para el costo de d bebidas. ¿Qué les dice &quot;$5 cada una&quot; que hagan?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">&quot;Each&quot; means multiply, so multiply 5 by d.</span><span class="lang-es" lang="es">&quot;Cada&quot; significa multiplicar, así que multipliquen 5 por d.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Write the 5 and the d right next to each other: 5d. That means 5 times d.</span><span class="lang-es" lang="es">Escriban el 5 y la d juntos: 5d. Eso significa 5 por d.</span></p></details>
-      </details></li><li><p><span class="lang-en">Now suppose they also pay a flat $3 for a cup. Add that fee to your expression.</span><span class="lang-es" lang="es">Ahora supongan que también pagan $3 fijos por un vaso. Sumen esa tarifa a su expresión.</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">The $3 is added once, so write 5d + 3.</span><span class="lang-es" lang="es">Los $3 se suman una sola vez, así que escriban 5d + 3.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">The flat fee never changes, so it has no letter next to it.</span><span class="lang-es" lang="es">La tarifa fija nunca cambia, por eso no tiene letra al lado.</span></p></details>
-      </details></li><li><p><span class="lang-en">Check together: in 5d + 3, which part changes with the number of drinks, and which part stays the same?</span><span class="lang-es" lang="es">Revisen juntos: en 5d + 3, ¿qué parte cambia con el número de bebidas y qué parte se queda igual?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">The 5d grows with more drinks; the 3 stays fixed.</span><span class="lang-es" lang="es">El 5d crece con más bebidas; el 3 se queda fijo.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Talking about what each part means matters more than speed.</span><span class="lang-es" lang="es">Hablar de lo que significa cada parte importa más que la rapidez.</span></p></details>
-      </details></li>
-        </ol>
-      </section>
       <div class="mission-block fp-model" id="hw_learn_try">
-    <section class="hw-mission-model" id="hw_mission_model" aria-labelledby="hw_mm_title" data-mission-model data-family="balance" data-config="{&quot;combine&quot;:[[2,3]],&quot;x&quot;:4}">
+    <section class="hw-mission-model" id="hw_mission_model" aria-labelledby="hw_mm_title" data-mission-model data-family="linear-pricing" data-config="{&quot;rate&quot;:12,&quot;fixed&quot;:50,&quot;varName&quot;:&quot;t&quot;,&quot;initial&quot;:3,&quot;maxT&quot;:12,&quot;compareRate&quot;:15,&quot;compareFixed&quot;:20}">
       <div class="hw-mm-head">
         <span class="hw-mm-badge"><span class="lang-en">Hands-on model</span><span class="lang-es" lang="es">Modelo para tocar</span></span>
         <h2 class="hw-mm-title" id="hw_mm_title"><span class="lang-en">Try it yourself</span><span class="lang-es" lang="es">Pruébalo tú</span></h2>
       </div>
-      <p class="hw-mm-lead"><span class="lang-en">Try different values for x. Watch the tiles and the value change.</span><span class="lang-es" lang="es">Prueba distintos valores de x. Mira cómo cambian los cuadros y el valor.</span></p>
+      <p class="hw-mm-lead"><span class="lang-en">Change the number of tickets (t) in 12t + 50. Watch the tickets, expression, table, and graph update together.</span><span class="lang-es" lang="es">Cambia el número de boletos (t) en 12t + 50. Mira cómo cambian juntos los boletos, la expresión, la tabla y la gráfica.</span></p>
       <p class="hw-mm-howto">
         <span class="lang-en">Change one value. Watch what changes in the picture and answer.</span><span class="lang-es" lang="es">Cambia un valor. Mira qué cambia en el dibujo y la respuesta.</span>
         <span class="hw-mm-frame"><span class="lang-en">Say: “When ___ changes, ___ changes.”</span><span class="lang-es" lang="es">Di: “Cuando ___ cambia, ___ cambia.”</span></span>
@@ -457,6 +441,23 @@
         <button type="button" class="fm-btn fm-btn--primary" data-act="switchHomeworkTab" data-args='["check"]'><span class="lang-en">Ready for Your Turn →</span><span class="lang-es" lang="es">Listo para Tu turno →</span></button>
       </div>
     </section><section id="hw_motion" data-k="expression:equivalence" data-v="3,2,4" hidden></section></div>
+      <section class="fq-quest" id="hw_family_quest" data-fq-mode="solo" data-fq-prompt-en="What does the letter stand for, and which number is multiplied by it?" data-fq-prompt-es="¿Qué representa la letra, y qué número se multiplica por ella?" aria-label="Optional Learning Mode"></section>
+      <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
+        <p class="fp-label" id="hw_try_label"><span class="lang-en">Guided check</span><span class="lang-es" lang="es">Práctica guiada</span></p>
+        <p class="fp-try-scenario"><span class="lang-en">Stay at the concert, but make it simpler: a snack stand sells drinks for $5 each. Let d be the number of drinks.</span><span class="lang-es" lang="es">Sigan en el concierto, pero háganlo más sencillo: un puesto vende bebidas a $5 cada una. Sea d el número de bebidas.</span></p>
+        <ol class="fp-steps fp-steps--try">
+          <li><p><span class="lang-en">Write an expression for the cost of d drinks. What does &quot;$5 each&quot; tell you to do?</span><span class="lang-es" lang="es">Escriban una expresión para el costo de d bebidas. ¿Qué les dice &quot;$5 cada una&quot; que hagan?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">Identify what is changing: every drink adds $5, so d equal groups of $5 is 5 × d.</span><span class="lang-es" lang="es">Identifiquen qué cambia: cada bebida suma $5, así que d grupos iguales de $5 son 5 × d.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Write the 5 and the d right next to each other: 5d. That means 5 times d.</span><span class="lang-es" lang="es">Escriban el 5 y la d juntos: 5d. Eso significa 5 por d.</span></p></details>
+      </details></li><li><p><span class="lang-en">Now suppose they also pay a flat $3 for a cup. Add that fee to your expression.</span><span class="lang-es" lang="es">Ahora supongan que también pagan $3 fijos por un vaso. Sumen esa tarifa a su expresión.</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">The $3 is added once, so write 5d + 3.</span><span class="lang-es" lang="es">Los $3 se suman una sola vez, así que escriban 5d + 3.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">The flat fee never changes, so it has no letter next to it.</span><span class="lang-es" lang="es">La tarifa fija nunca cambia, por eso no tiene letra al lado.</span></p></details>
+      </details></li><li><p><span class="lang-en">Check together: in 5d + 3, which part changes with the number of drinks, and which part stays the same?</span><span class="lang-es" lang="es">Revisen juntos: en 5d + 3, ¿qué parte cambia con el número de bebidas y qué parte se queda igual?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">The 5d grows with more drinks; the 3 stays fixed.</span><span class="lang-es" lang="es">El 5d crece con más bebidas; el 3 se queda fijo.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Talking about what each part means matters more than speed.</span><span class="lang-es" lang="es">Hablar de lo que significa cada parte importa más que la rapidez.</span></p></details>
+      </details></li>
+        </ol>
+      </section>
 
       <details class="fp-optional"><summary><span class="lang-en">More ways to see it (optional)</span><span class="lang-es" lang="es">Más formas de verlo (opcional)</span></summary><section class="family-visual-lab" data-visual-lab="expressions" data-lesson-model="manip" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
@@ -602,16 +603,67 @@
       </details>
       </div>
     </div></div></details>
-      <aside class="fp-family" aria-label="Family question"><p class="fp-label"><span class="lang-en">Ask together (optional)</span><span class="lang-es" lang="es">Pregunten juntos (opcional)</span></p><p><span class="lang-en">What does the letter stand for, and which number is multiplied by it?</span><span class="lang-es" lang="es">¿Qué representa la letra, y qué número se multiplica por ella?</span></p></aside>
-    </div>
+
+    <section class="mm-mystery" id="hw_math_mystery_studio" aria-labelledby="mm_title">
+      <script type="application/json" id="hw_mystery_data">{"id":"missing-concert-budget","titleEn":"The Missing Concert Budget","titleEs":"El presupuesto perdido del concierto","storyEn":"The school concert is tonight, but the treasurer's budget sheet has an error! Inspect all three clues to find the true cost model and check the total for 4 tickets.","storyEs":"El concierto escolar es esta noche, ¡pero la hoja de presupuesto tiene un error! Revisa las tres pistas para hallar el modelo correcto y verificar el total para 4 boletos.","clues":[{"id":"venue-contract","icon":"🏛️","labelEn":"Clue 1: Venue Contract","labelEs":"Pista 1: Contrato del lugar","textEn":"One-time hall setup & sound fee: $50 (paid once for the whole concert, no matter how many tickets sell).","textEs":"Tarifa única de salón y sonido: $50 (se paga una sola vez por todo el concierto, sin importar cuántos boletos se vendan)."},{"id":"ticket-ledger","icon":"🎟️","labelEn":"Clue 2: Ticket Booth Sign","labelEs":"Pista 2: Letrero de taquilla","textEn":"Admission price: $12 for each ticket (let t = number of tickets).","textEs":"Precio de entrada: $12 por cada boleto (sea t = número de boletos)."},{"id":"treasurer-draft","icon":"🧾","labelEn":"Clue 3: Treasurer's Draft","labelEs":"Pista 3: Borrador del tesorero","textEn":"The draft says: 'Total cost = 62t.' Wait — at t = 4 tickets, the draft predicts $248! Something is wrong.","textEs":"El borrador dice: «Costo total = 62t». Espera: con t = 4 boletos, ¡predice $248! Algo anda mal."}],"step1":{"promptEn":"Which algebraic expression models the true concert cost?","promptEs":"¿Qué expresión algebraica modela el costo real del concierto?","options":[{"id":"12t+50","label":"12t + 50","correct":true,"fbEn":"Exact! $12 multiplies each ticket t, and the $50 venue fee is added once.","fbEs":"¡Exacto! $12 multiplica cada boleto t, y la tarifa de $50 se suma una sola vez."},{"id":"62t","label":"62t","correct":false,"fbEn":"Careful! 62t adds 12 + 50 and multiplies the $50 venue fee by EVERY ticket.","fbEs":"¡Cuidado! 62t suma 12 + 50 y multiplica la tarifa de $50 por CADA boleto."},{"id":"12+50t","label":"12 + 50t","correct":false,"fbEn":"Check the roles: $50 is the one-time fee (constant), and $12 is per ticket (multiplies t).","fbEs":"Revisa los roles: $50 es la tarifa única (constante) y $12 es por boleto (multiplica a t)."}]},"step2":{"promptEn":"Now unlock the safe! Using 12t + 50, what is the true total cost for t = 4 tickets (in dollars)?","promptEs":"¡Ahora abre la caja fuerte! Usando 12t + 50, ¿cuál es el costo total real para t = 4 boletos (en dólares)?","answer":98,"unit":"$","hintEn":"Substitute t = 4 into 12t + 50: first 12 × 4 = 48, then add 50.","hintEs":"Sustituye t = 4 en 12t + 50: primero 12 × 4 = 48, luego suma 50.","resolveEn":"Mystery solved! 12(4) + 50 = 48 + 50 = $98 — saving $150 from the treasurer's $248 mistake!","resolveEs":"¡Misterio resuelto! 12(4) + 50 = 48 + 50 = $98, ¡corrigiendo el error de $248 del tesorero!"}}</script>
+      <div class="mm-head">
+        <span class="mm-badge" aria-hidden="true">🕵️</span>
+        <div>
+          <p class="mm-eyebrow"><span class="lang-en">Math Mystery Network</span><span class="lang-es" lang="es">Red de Misterios Matemáticos</span></p>
+          <h3 class="mm-title" id="mm_title"><span class="lang-en">The Missing Concert Budget</span><span class="lang-es" lang="es">El presupuesto perdido del concierto</span></h3>
+        </div>
+      </div>
+      <p class="mm-story"><span class="lang-en">The school concert is tonight, but the treasurer's budget sheet has an error! Inspect all three clues to find the true cost model and check the total for 4 tickets.</span><span class="lang-es" lang="es">El concierto escolar es esta noche, ¡pero la hoja de presupuesto tiene un error! Revisa las tres pistas para hallar el modelo correcto y verificar el total para 4 boletos.</span></p>
+      <div class="mm-clues" role="list" aria-label="Mystery clues">
+
+          <button type="button" class="mm-clue-card" data-mm-clue="0" aria-expanded="false">
+            <span class="mm-clue-top"><span aria-hidden="true"><span aria-hidden="true">🏛️</span></span> <strong><span class="lang-en">Clue 1: Venue Contract</span><span class="lang-es" lang="es">Pista 1: Contrato del lugar</span></strong></span>
+            <span class="mm-clue-body" hidden><span class="lang-en">One-time hall setup &amp; sound fee: $50 (paid once for the whole concert, no matter how many tickets sell).</span><span class="lang-es" lang="es">Tarifa única de salón y sonido: $50 (se paga una sola vez por todo el concierto, sin importar cuántos boletos se vendan).</span></span>
+          </button>
+          <button type="button" class="mm-clue-card" data-mm-clue="1" aria-expanded="false">
+            <span class="mm-clue-top"><span aria-hidden="true"><span aria-hidden="true">🎟️</span></span> <strong><span class="lang-en">Clue 2: Ticket Booth Sign</span><span class="lang-es" lang="es">Pista 2: Letrero de taquilla</span></strong></span>
+            <span class="mm-clue-body" hidden><span class="lang-en">Admission price: $12 for each ticket (let t = number of tickets).</span><span class="lang-es" lang="es">Precio de entrada: $12 por cada boleto (sea t = número de boletos).</span></span>
+          </button>
+          <button type="button" class="mm-clue-card" data-mm-clue="2" aria-expanded="false">
+            <span class="mm-clue-top"><span aria-hidden="true"><span aria-hidden="true">🧾</span></span> <strong><span class="lang-en">Clue 3: Treasurer's Draft</span><span class="lang-es" lang="es">Pista 3: Borrador del tesorero</span></strong></span>
+            <span class="mm-clue-body" hidden><span class="lang-en">The draft says: 'Total cost = 62t.' Wait — at t = 4 tickets, the draft predicts $248! Something is wrong.</span><span class="lang-es" lang="es">El borrador dice: «Costo total = 62t». Espera: con t = 4 boletos, ¡predice $248! Algo anda mal.</span></span>
+          </button>
+      </div>
+      <div class="mm-stage" data-mm-stage="1">
+        <p class="mm-prompt"><span class="lang-en">Which algebraic expression models the true concert cost?</span><span class="lang-es" lang="es">¿Qué expresión algebraica modela el costo real del concierto?</span></p>
+        <div class="mm-options" role="group">
+
+            <button type="button" class="mm-opt-btn" data-mm-opt="12t+50">
+              12t + 50
+            </button>
+            <button type="button" class="mm-opt-btn" data-mm-opt="62t">
+              62t
+            </button>
+            <button type="button" class="mm-opt-btn" data-mm-opt="12+50t">
+              12 + 50t
+            </button>
+        </div>
+        <p class="mm-feedback" data-mm-fb="1" role="status" aria-live="polite" hidden></p>
+      </div>
+      <div class="mm-stage" data-mm-stage="2" hidden>
+              <p class="mm-prompt"><span class="lang-en">Now unlock the safe! Using 12t + 50, what is the true total cost for t = 4 tickets (in dollars)?</span><span class="lang-es" lang="es">¡Ahora abre la caja fuerte! Usando 12t + 50, ¿cuál es el costo total real para t = 4 boletos (en dólares)?</span></p>
+              <div class="mm-input-row">
+                <span class="mm-unit" aria-hidden="true">$</span>
+                <input type="number" class="mm-num-input" data-mm-answer aria-label="Now unlock the safe! Using 12t + 50, what is the true total cost for t = 4 tickets (in dollars)?" />
+                <button type="button" class="mm-check-btn" data-mm-check><span class="lang-en">Unlock</span><span class="lang-es" lang="es">Desbloquear</span></button>
+              </div>
+              <p class="mm-feedback" data-mm-fb="2" role="status" aria-live="polite" hidden></p>
+            </div>
+      <div class="mm-resolved" data-mm-resolved hidden role="status" aria-live="polite"></div>
+    </section></div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
 
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 3 of 5</span><span class="lang-es" lang="es">Paso 3 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Your Turn</span><span class="lang-es" lang="es">Tu turno</span></h2>
-        <p class="fp-lead"><span class="lang-en">One at a time. Work on your own; a grown-up can watch.</span><span class="lang-es" lang="es">Uno a la vez. Trabaja solo; un adulto puede observar.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Practice</span><span class="lang-es" lang="es">Practicar</span></h2>
+        <p class="fp-lead"><span class="lang-en">One problem at a time. Hints and the scratchpad are right here.</span><span class="lang-es" lang="es">Un problema a la vez. Las pistas y la pizarra están aquí.</span></p>
       </header>
 
     <div class="hw-goal-card fp-progress">
@@ -3623,8 +3675,8 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 4 of 5</span><span class="lang-es" lang="es">Paso 4 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Check &amp; Improve</span><span class="lang-es" lang="es">Revisa y mejora</span></h2>
-        <p class="fp-lead"><span class="lang-en">See what each answer shows. Fix one, then try a fresh one.</span><span class="lang-es" lang="es">Vean qué muestra cada respuesta. Corrijan una y prueben una nueva.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Improve</span><span class="lang-es" lang="es">Mejorar</span></h2>
+        <p class="fp-lead"><span class="lang-en">See what each answer shows, fix mistakes, and try a fresh problem.</span><span class="lang-es" lang="es">Mira qué muestra cada respuesta, corrige errores y prueba uno nuevo.</span></p>
       </header>
       <p class="fp-empty" data-improve-empty><span class="lang-en">Finish Your Turn first. Then this page shows what each answer tells us.</span><span class="lang-es" lang="es">Primero terminen Tu turno. Luego esta página muestra qué nos dice cada respuesta.</span></p>
       <div class="fp-improve" id="hw_improve" data-improve-body aria-live="polite"></div>
@@ -3666,7 +3718,7 @@
           <button type="button" class="fm-btn fm-btn--block hw-next-link" data-act="resetWorksheet"><span class="lang-en">Start this practice over</span><span class="lang-es" lang="es">Empezar esta práctica de nuevo</span></button>
         </div>
       </details>
-    </section><details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>
+    </section><section class="lr-replay" id="hw_learning_replay" data-lesson-id="6-5" data-lr-ask-en="Pick a price from a ticket stub or a menu, like $8, and a one-time fee, like $10. Ask your student for the cost of 2 tickets, then 5. What stays the same? What changes?" data-lr-ask-es="Elijan un precio de un boleto o un menú, como $8, y una cuota única, como $10. Pidan a su estudiante el costo de 2 boletos y luego de 5. ¿Qué se queda igual? ¿Qué cambia?" aria-label="Learning Replay"></section><section class="ex-studio" id="hw_explain_studio" data-ex-lesson="6-5" data-ex-vocab="[{&quot;en&quot;:&quot;Write Algebraic Expressions&quot;,&quot;es&quot;:&quot;Escribir expresiones algebraicas&quot;},{&quot;en&quot;:&quot;Variable&quot;,&quot;es&quot;:&quot;Variable&quot;},{&quot;en&quot;:&quot;Algebraic Expression&quot;,&quot;es&quot;:&quot;Expresión algebraica&quot;},{&quot;en&quot;:&quot;Coefficient&quot;,&quot;es&quot;:&quot;Coeficiente&quot;},{&quot;en&quot;:&quot;Constant&quot;,&quot;es&quot;:&quot;Constante&quot;}]" aria-label="Explain My Thinking Studio"></section><details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>
       <h2 class="section-title"><span aria-hidden="true">🎉</span> <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
 
       <section class="hw-teach" aria-labelledby="hw_teach_title">
@@ -4019,7 +4071,7 @@
 
       <details class="hw-copilot-item" id="hw_copilot_stuck">
         <summary><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></summary>
-        <div class="hw-copilot-body"><ul><li><span class="lang-en">What key word do you see? Does it tell us to add, subtract, or multiply?</span><span class="lang-es" lang="es">¿Qué palabra clave ves? ¿Nos dice sumar, restar o multiplicar?</span></li><li><span class="lang-en">Which number stays the same no matter what, and which one changes?</span><span class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</span></li></ul><p class="hw-copilot-avoid"><strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">&quot;5 less than a number&quot; means 5 minus the number.</span><span class="lang-es" lang="es">&quot;5 menos que un número&quot; significa 5 menos el número.</span></p></div>
+        <div class="hw-copilot-body"><ul><li><span class="lang-en">What is changing, how many equal groups are involved, and what does each quantity represent?</span><span class="lang-es" lang="es">¿Qué cantidad cambia, cuántos grupos iguales hay y qué representa cada número?</span></li><li><span class="lang-en">Which number stays the same no matter what, and which one changes?</span><span class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</span></li></ul><p class="hw-copilot-avoid"><strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">&quot;5 less than a number&quot; means 5 minus the number.</span><span class="lang-es" lang="es">&quot;5 menos que un número&quot; significa 5 menos el número.</span></p></div>
       </details>
       <div class="hw-copilot-item" id="hw_copilot_bridge">
         <details class="bridge-card" data-bridge-card>
@@ -5306,7 +5358,7 @@
         <div class="stuck-panel stuck-say">
           <h3 class="stuck-heading"><span aria-hidden="true">✅</span> <span class="lang-en">What to say</span><span class="lang-es" lang="es">Qué decir</span></h3>
           <ul>
-            <li><p class="lang-en">What key word do you see? Does it tell us to add, subtract, or multiply?</p><p class="lang-es" lang="es">¿Qué palabra clave ves? ¿Nos dice sumar, restar o multiplicar?</p></li><li><p class="lang-en">Which number stays the same no matter what, and which one changes?</p><p class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</p></li><li><p class="lang-en">Let&#039;s read the phrase out loud and write it one piece at a time.</p><p class="lang-es" lang="es">Leamos la frase en voz alta y escribámosla parte por parte.</p></li>
+            <li><p class="lang-en">What is changing, how many equal groups are involved, and what does each quantity represent?</p><p class="lang-es" lang="es">¿Qué cantidad cambia, cuántos grupos iguales hay y qué representa cada número?</p></li><li><p class="lang-en">Which number stays the same no matter what, and which one changes?</p><p class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</p></li><li><p class="lang-en">Let&#039;s read the phrase out loud and write it one piece at a time.</p><p class="lang-es" lang="es">Leamos la frase en voz alta y escribámosla parte por parte.</p></li>
           </ul>
         </div>
         <div class="stuck-panel stuck-dont">
@@ -5324,7 +5376,7 @@
       <div class="help-hub card-ish">
         <h3 class="section-title"><span aria-hidden="true">💡</span> <span class="lang-en">Quick help topics</span><span class="lang-es" lang="es">Temas de ayuda</span></h3>
         <ul class="help-topic-list">
-          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"What key word do you see? Does it tell us to add, subtract, or multiply?","es":"¿Qué palabra clave ves? ¿Nos dice sumar, restar o multiplicar?"}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Which number stays the same no matter what, and which one changes?","es":"¿Qué número se queda igual pase lo que pase, y cuál cambia?"}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Let&#39;s read the phrase out loud and write it one piece at a time.","es":"Leamos la frase en voz alta y escribámosla parte por parte."}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
+          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"What is changing, how many equal groups are involved, and what does each quantity represent?","es":"¿Qué cantidad cambia, cuántos grupos iguales hay y qué representa cada número?"}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Which number stays the same no matter what, and which one changes?","es":"¿Qué número se queda igual pase lo que pase, y cuál cambia?"}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Let&#39;s read the phrase out loud and write it one piece at a time.","es":"Leamos la frase en voz alta y escribámosla parte por parte."}' data-act="openHelpModalFromBtn" data-args='["$el"]'><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
         </ul>
       </div>
 
@@ -5462,7 +5514,7 @@
       <div class="hw-print-socratic-inner">
         <h4><span class="lang-en">Questions for the grown-up</span><span class="lang-es" lang="es">Preguntas para el adulto</span></h4>
         <ul>
-          <li><span class="lang-en">What key word do you see? Does it tell us to add, subtract, or multiply?</span><span class="lang-es" lang="es">¿Qué palabra clave ves? ¿Nos dice sumar, restar o multiplicar?</span></li><li><span class="lang-en">Which number stays the same no matter what, and which one changes?</span><span class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</span></li><li><span class="lang-en">Let's read the phrase out loud and write it one piece at a time.</span><span class="lang-es" lang="es">Leamos la frase en voz alta y escribámosla parte por parte.</span></li>
+          <li><span class="lang-en">What is changing, how many equal groups are involved, and what does each quantity represent?</span><span class="lang-es" lang="es">¿Qué cantidad cambia, cuántos grupos iguales hay y qué representa cada número?</span></li><li><span class="lang-en">Which number stays the same no matter what, and which one changes?</span><span class="lang-es" lang="es">¿Qué número se queda igual pase lo que pase, y cuál cambia?</span></li><li><span class="lang-en">Let's read the phrase out loud and write it one piece at a time.</span><span class="lang-es" lang="es">Leamos la frase en voz alta y escribámosla parte por parte.</span></li>
           <li><strong><span class="lang-en">At the table:</span><span class="lang-es" lang="es">En la mesa:</span></strong> <span class="lang-en">Pick a price from a ticket stub or a menu, like $8, and a one-time fee, like $10. Ask your student for the cost of 2 tickets, then 5. What stays the same? What changes?</span><span class="lang-es" lang="es">Elijan un precio de un boleto o un menú, como $8, y una cuota única, como $10. Pidan a su estudiante el costo de 2 boletos y luego de 5. ¿Qué se queda igual? ¿Qué cambia?</span></li>
         </ul>
       </div>
@@ -5483,7 +5535,7 @@
 <section class="fm-th-box"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M5.5 5h13a2 2 0 0 1 2 2v7.4a2 2 0 0 1-2 2h-8.2L6 20v-3.6h-.5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 9.2h8M8 12.4h5"/></g></svg>Talk about it</p><p>What does the letter stand for, and which number is multiplied by it?</p></section>
 <section class="fm-th-box"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M5 10.6h14v6.4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M3 10.6h18"/><path d="M9 7.4c0-1.1 1-1.3 1-2.6M14 7.4c0-1.1 1-1.3 1-2.6"/></g></svg>Home mission</p><p>Pick a price from a ticket stub or a menu, like $8, and a one-time fee, like $10. Ask your student for the cost of 2 tickets, then 5. What stays the same? What changes?</p></section>
 </div>
-<section class="fm-th-box fm-th-stuck"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M12 3.4a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3.4z"/><path d="M9.6 18.9h4.8M10.6 21h2.8"/></g></svg>If we get stuck, ask</p><ul><li>What key word do you see? Does it tell us to add, subtract, or multiply?</li><li>Which number stays the same no matter what, and which one changes?</li><li>Let's read the phrase out loud and write it one piece at a time.</li></ul></section>
+<section class="fm-th-box fm-th-stuck"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M12 3.4a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3.4z"/><path d="M9.6 18.9h4.8M10.6 21h2.8"/></g></svg>If we get stuck, ask</p><ul><li>What is changing, how many equal groups are involved, and what does each quantity represent?</li><li>Which number stays the same no matter what, and which one changes?</li><li>Let's read the phrase out loud and write it one piece at a time.</li></ul></section>
 <footer class="fm-th-foot">
 <a class="fm-th-qr" href="https://eduwonderlab.com/lessons/6-5/homework.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" width="100" height="100" shape-rendering="crispEdges" role="img" aria-label="Do it on a screen: eduwonderlab.com/lessons/6-5/homework.html"><rect width="37" height="37" fill="#fff"/><path d="M4 4h7v1h-7zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h2v1h-2zM21 4h2v1h-2zM26 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h3v1h-3zM16 5h1v1h-1zM20 5h2v1h-2zM23 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h3v1h-3zM18 6h2v1h-2zM21 6h3v1h-3zM26 6h1v1h-1zM28 6h3v1h-3zM32 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h2v1h-2zM17 7h3v1h-3zM22 7h1v1h-1zM26 7h1v1h-1zM28 7h3v1h-3zM32 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM18 8h2v1h-2zM21 8h2v1h-2zM26 8h1v1h-1zM28 8h3v1h-3zM32 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM17 9h2v1h-2zM20 9h1v1h-1zM23 9h2v1h-2zM26 9h1v1h-1zM32 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h7v1h-7zM13 11h1v1h-1zM15 11h2v1h-2zM19 11h1v1h-1zM21 11h4v1h-4zM4 12h2v1h-2zM8 12h3v1h-3zM15 12h2v1h-2zM19 12h1v1h-1zM21 12h2v1h-2zM24 12h1v1h-1zM27 12h1v1h-1zM29 12h4v1h-4zM4 13h1v1h-1zM6 13h4v1h-4zM13 13h3v1h-3zM18 13h2v1h-2zM21 13h2v1h-2zM24 13h1v1h-1zM26 13h7v1h-7zM4 14h1v1h-1zM8 14h4v1h-4zM15 14h1v1h-1zM17 14h4v1h-4zM22 14h1v1h-1zM28 14h1v1h-1zM32 14h1v1h-1zM6 15h4v1h-4zM11 15h2v1h-2zM14 15h3v1h-3zM18 15h1v1h-1zM21 15h3v1h-3zM29 15h1v1h-1zM31 15h2v1h-2zM5 16h2v1h-2zM8 16h3v1h-3zM14 16h1v1h-1zM20 16h2v1h-2zM23 16h3v1h-3zM27 16h1v1h-1zM31 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM12 17h2v1h-2zM15 17h1v1h-1zM18 17h2v1h-2zM21 17h2v1h-2zM26 17h7v1h-7zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h2v1h-2zM18 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM29 18h2v1h-2zM32 18h1v1h-1zM7 19h1v1h-1zM12 19h1v1h-1zM14 19h2v1h-2zM18 19h1v1h-1zM21 19h1v1h-1zM25 19h1v1h-1zM31 19h2v1h-2zM4 20h1v1h-1zM7 20h2v1h-2zM10 20h1v1h-1zM12 20h1v1h-1zM14 20h3v1h-3zM19 20h1v1h-1zM21 20h1v1h-1zM23 20h3v1h-3zM27 20h1v1h-1zM31 20h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM13 21h3v1h-3zM17 21h3v1h-3zM22 21h1v1h-1zM26 21h4v1h-4zM31 21h2v1h-2zM10 22h3v1h-3zM15 22h1v1h-1zM18 22h2v1h-2zM21 22h2v1h-2zM26 22h2v1h-2zM30 22h1v1h-1zM32 22h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM18 23h1v1h-1zM20 23h3v1h-3zM24 23h3v1h-3zM31 23h2v1h-2zM4 24h4v1h-4zM10 24h3v1h-3zM15 24h2v1h-2zM20 24h2v1h-2zM24 24h6v1h-6zM32 24h1v1h-1zM12 25h1v1h-1zM14 25h4v1h-4zM19 25h2v1h-2zM23 25h2v1h-2zM28 25h1v1h-1zM32 25h1v1h-1zM4 26h7v1h-7zM14 26h7v1h-7zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h3v1h-3zM32 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM12 27h3v1h-3zM18 27h1v1h-1zM21 27h4v1h-4zM28 27h1v1h-1zM31 27h1v1h-1zM4 28h1v1h-1zM6 28h3v1h-3zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h3v1h-3zM19 28h1v1h-1zM21 28h1v1h-1zM23 28h7v1h-7zM4 29h1v1h-1zM6 29h3v1h-3zM10 29h1v1h-1zM14 29h2v1h-2zM18 29h3v1h-3zM23 29h1v1h-1zM25 29h1v1h-1zM31 29h2v1h-2zM4 30h1v1h-1zM6 30h3v1h-3zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h3v1h-3zM25 30h1v1h-1zM29 30h4v1h-4zM4 31h1v1h-1zM10 31h1v1h-1zM12 31h3v1h-3zM18 31h1v1h-1zM21 31h4v1h-4zM26 31h1v1h-1zM29 31h1v1h-1zM31 31h2v1h-2zM4 32h7v1h-7zM12 32h1v1h-1zM19 32h1v1h-1zM21 32h1v1h-1zM24 32h2v1h-2zM27 32h3v1h-3zM31 32h1v1h-1z" fill="#000"/></svg><p><span class="b">Do it on a screen</span><span class="d">Scan or type the link. Same lesson, with hints.</span><span class="fm-th-link">eduwonderlab.com/<wbr>lessons/<wbr>6-5/<wbr>homework.html</span></p></a>
 <span></span>
@@ -5503,7 +5555,7 @@
 <section class="fm-th-box"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M5.5 5h13a2 2 0 0 1 2 2v7.4a2 2 0 0 1-2 2h-8.2L6 20v-3.6h-.5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 9.2h8M8 12.4h5"/></g></svg>Conversen</p><p>¿Qué representa la letra, y qué número se multiplica por ella?</p></section>
 <section class="fm-th-box"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M5 10.6h14v6.4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M3 10.6h18"/><path d="M9 7.4c0-1.1 1-1.3 1-2.6M14 7.4c0-1.1 1-1.3 1-2.6"/></g></svg>Misión en casa</p><p>Elijan un precio de un boleto o un menú, como $8, y una cuota única, como $10. Pidan a su estudiante el costo de 2 boletos y luego de 5. ¿Qué se queda igual? ¿Qué cambia?</p></section>
 </div>
-<section class="fm-th-box fm-th-stuck"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M12 3.4a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3.4z"/><path d="M9.6 18.9h4.8M10.6 21h2.8"/></g></svg>Si se atoran, pregunten</p><ul><li>¿Qué palabra clave ves? ¿Nos dice sumar, restar o multiplicar?</li><li>¿Qué número se queda igual pase lo que pase, y cuál cambia?</li><li>Leamos la frase en voz alta y escribámosla parte por parte.</li></ul></section>
+<section class="fm-th-box fm-th-stuck"><p class="fm-th-h2"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="fi-d"><path d="M12 3.4a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3.4z"/><path d="M9.6 18.9h4.8M10.6 21h2.8"/></g></svg>Si se atoran, pregunten</p><ul><li>¿Qué cantidad cambia, cuántos grupos iguales hay y qué representa cada número?</li><li>¿Qué número se queda igual pase lo que pase, y cuál cambia?</li><li>Leamos la frase en voz alta y escribámosla parte por parte.</li></ul></section>
 <footer class="fm-th-foot">
 <a class="fm-th-qr" href="https://eduwonderlab.com/lessons/6-5/homework.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" width="100" height="100" shape-rendering="crispEdges" role="img" aria-label="Hazlo en pantalla: eduwonderlab.com/lessons/6-5/homework.html"><rect width="37" height="37" fill="#fff"/><path d="M4 4h7v1h-7zM12 4h2v1h-2zM16 4h1v1h-1zM18 4h2v1h-2zM21 4h2v1h-2zM26 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h3v1h-3zM16 5h1v1h-1zM20 5h2v1h-2zM23 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h3v1h-3zM18 6h2v1h-2zM21 6h3v1h-3zM26 6h1v1h-1zM28 6h3v1h-3zM32 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h2v1h-2zM17 7h3v1h-3zM22 7h1v1h-1zM26 7h1v1h-1zM28 7h3v1h-3zM32 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM18 8h2v1h-2zM21 8h2v1h-2zM26 8h1v1h-1zM28 8h3v1h-3zM32 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM17 9h2v1h-2zM20 9h1v1h-1zM23 9h2v1h-2zM26 9h1v1h-1zM32 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h7v1h-7zM13 11h1v1h-1zM15 11h2v1h-2zM19 11h1v1h-1zM21 11h4v1h-4zM4 12h2v1h-2zM8 12h3v1h-3zM15 12h2v1h-2zM19 12h1v1h-1zM21 12h2v1h-2zM24 12h1v1h-1zM27 12h1v1h-1zM29 12h4v1h-4zM4 13h1v1h-1zM6 13h4v1h-4zM13 13h3v1h-3zM18 13h2v1h-2zM21 13h2v1h-2zM24 13h1v1h-1zM26 13h7v1h-7zM4 14h1v1h-1zM8 14h4v1h-4zM15 14h1v1h-1zM17 14h4v1h-4zM22 14h1v1h-1zM28 14h1v1h-1zM32 14h1v1h-1zM6 15h4v1h-4zM11 15h2v1h-2zM14 15h3v1h-3zM18 15h1v1h-1zM21 15h3v1h-3zM29 15h1v1h-1zM31 15h2v1h-2zM5 16h2v1h-2zM8 16h3v1h-3zM14 16h1v1h-1zM20 16h2v1h-2zM23 16h3v1h-3zM27 16h1v1h-1zM31 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM12 17h2v1h-2zM15 17h1v1h-1zM18 17h2v1h-2zM21 17h2v1h-2zM26 17h7v1h-7zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h2v1h-2zM18 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM29 18h2v1h-2zM32 18h1v1h-1zM7 19h1v1h-1zM12 19h1v1h-1zM14 19h2v1h-2zM18 19h1v1h-1zM21 19h1v1h-1zM25 19h1v1h-1zM31 19h2v1h-2zM4 20h1v1h-1zM7 20h2v1h-2zM10 20h1v1h-1zM12 20h1v1h-1zM14 20h3v1h-3zM19 20h1v1h-1zM21 20h1v1h-1zM23 20h3v1h-3zM27 20h1v1h-1zM31 20h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM13 21h3v1h-3zM17 21h3v1h-3zM22 21h1v1h-1zM26 21h4v1h-4zM31 21h2v1h-2zM10 22h3v1h-3zM15 22h1v1h-1zM18 22h2v1h-2zM21 22h2v1h-2zM26 22h2v1h-2zM30 22h1v1h-1zM32 22h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM18 23h1v1h-1zM20 23h3v1h-3zM24 23h3v1h-3zM31 23h2v1h-2zM4 24h4v1h-4zM10 24h3v1h-3zM15 24h2v1h-2zM20 24h2v1h-2zM24 24h6v1h-6zM32 24h1v1h-1zM12 25h1v1h-1zM14 25h4v1h-4zM19 25h2v1h-2zM23 25h2v1h-2zM28 25h1v1h-1zM32 25h1v1h-1zM4 26h7v1h-7zM14 26h7v1h-7zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h3v1h-3zM32 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM12 27h3v1h-3zM18 27h1v1h-1zM21 27h4v1h-4zM28 27h1v1h-1zM31 27h1v1h-1zM4 28h1v1h-1zM6 28h3v1h-3zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h3v1h-3zM19 28h1v1h-1zM21 28h1v1h-1zM23 28h7v1h-7zM4 29h1v1h-1zM6 29h3v1h-3zM10 29h1v1h-1zM14 29h2v1h-2zM18 29h3v1h-3zM23 29h1v1h-1zM25 29h1v1h-1zM31 29h2v1h-2zM4 30h1v1h-1zM6 30h3v1h-3zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM17 30h3v1h-3zM25 30h1v1h-1zM29 30h4v1h-4zM4 31h1v1h-1zM10 31h1v1h-1zM12 31h3v1h-3zM18 31h1v1h-1zM21 31h4v1h-4zM26 31h1v1h-1zM29 31h1v1h-1zM31 31h2v1h-2zM4 32h7v1h-7zM12 32h1v1h-1zM19 32h1v1h-1zM21 32h1v1h-1zM24 32h2v1h-2zM27 32h3v1h-3zM31 32h1v1h-1z" fill="#000"/></svg><p><span class="b">Hazlo en pantalla</span><span class="d">Escanea o escribe el enlace. La misma lección, con pistas.</span><span class="fm-th-link">eduwonderlab.com/<wbr>lessons/<wbr>6-5/<wbr>homework.html</span></p></a>
 <span></span>
@@ -5640,7 +5692,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"","titleEs":"","lines":["Tickets cost $12 each, plus a flat $50 venue fee. Let t be the number of tickets.","\"$12 each ticket\" means 12 times t, which I write as 12t.","The flat fee $50 is added once, so I add 50.","I put them together: total revenue = 12t + 50."],"linesEs":["Los boletos cuestan $12 cada uno, más una cuota fija de $50 por el lugar. Sea t el número de boletos.","«$12 por cada boleto» significa 12 por t, que escribo como 12t.","La cuota fija de $50 se suma una sola vez, así que sumo 50.","Los junto: ingreso total = 12t + 50."]};
 </script>
 <script src="/assets/homework/homework-vocab-82a28823c0.bundle.js"></script>
-<script src="/assets/homework/homework-core-ad5d455667.bundle.js"></script>
+<script src="/assets/homework/homework-core-1fac551842.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
