@@ -75,8 +75,8 @@ import {
   renderNoticeWonder,
   renderReflect,
 } from "./lib/homework-mission.mjs";
-import { renderMotionHost } from "./lib/homework-motion.mjs";
 import { missionModelFor } from "./lib/homework-mission-models.mjs";
+import { renderMotionHost } from "./lib/homework-motion.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";

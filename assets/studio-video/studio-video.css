@@ -142,6 +142,13 @@ studio-video {
   outline: 3px solid var(--sv-focus);
   outline-offset: 3px;
 }
+/* Tabbing into the player focuses a native control inside the video's own
+   shadow tree, which neither :focus nor :focus-visible matches on the host, so
+   a keyboard user saw no ring. :focus-within does. */
+.sv .sv-video:focus-within {
+  outline: 3px solid var(--sv-focus);
+  outline-offset: 3px;
+}
 .sv .sv-note {
   margin: 10px 0 0;
   color: var(--sv-muted);

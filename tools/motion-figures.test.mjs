@@ -30,7 +30,7 @@ const startOf = (key) => {
   const reg = registered({ kind, mode });
   return reg ? { kind, mode, values: reg.values } : undefined;
 };
-const benchKeys = () => {
+const _benchKeys = () => {
   const keys = new Set();
   for (const dir of ["data/practice-studio", "data/practice-studio-u4"]) {
     for (const f of readdirSync(dir)) {

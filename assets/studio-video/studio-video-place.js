@@ -20,7 +20,8 @@ function anchorOf(container, { after, up = 0 }) {
   } catch {
     el = null;
   }
-  for (let i = 0; el && i < up; i += 1) el = el.parentElement && el.parentElement !== container ? el.parentElement : null;
+  for (let i = 0; el && i < up; i += 1)
+    el = el.parentElement && el.parentElement !== container ? el.parentElement : null;
   if (!el) console.warn(`[studio-video] anchor "${after}" not found; using the default place`);
   return el;
 }
@@ -38,7 +39,13 @@ export function placeStudioVideo(container, entry, options) {
     block.nextElementSibling.insertAdjacentHTML("afterend", html);
     return block.nextElementSibling.nextElementSibling;
   }
-  while (block && block.parentElement && block.parentElement !== container && block.parentElement.children.length < 3) block = block.parentElement;
+  while (
+    block &&
+    block.parentElement &&
+    block.parentElement !== container &&
+    block.parentElement.children.length < 3
+  )
+    block = block.parentElement;
   if (block && block !== container && block.parentElement) {
     block.insertAdjacentHTML("afterend", html);
     return block.nextElementSibling;
