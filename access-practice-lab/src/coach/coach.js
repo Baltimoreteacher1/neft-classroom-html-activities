@@ -12,6 +12,7 @@
 // a frame that navigated away from the activity shows a "Bring the example back" action instead of a broken ring.
 // The frame grows to its content height, so the page scrolls as one surface and the ring never points into a hidden
 // scroll area.
+import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { esc, icon, toHtml } from "../util.js";
 
 const ic = (name) => toHtml(icon(name));
@@ -360,15 +361,12 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
   /** Read the card aloud in the page's language (the device's own voice; nothing is sent anywhere). */
   function hear() {
     const card = slot.querySelector(".gc-card");
-    if (!card || !("speechSynthesis" in window)) return;
+    if (!card || !canSpeak()) return;
     const say = [card.querySelector(".gc-title")?.textContent, card.querySelector(".gc-body")?.textContent]
       .filter(Boolean)
       .join(". ");
-    const u = new SpeechSynthesisUtterance(say);
-    u.lang = copy.lang || "en-US";
-    u.rate = 0.95;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    // The shared speaker, so the learner's saved voice and speed apply here too.
+    speak(say, { lang: copy.lang || "en-US" });
   }
 
   function onKey(e) {
@@ -390,7 +388,7 @@ export function createCoach({ stage, frame, steps, copy, onFinish, onStep, isHom
   return {
     destroy() {
       detach();
-      if ("speechSynthesis" in window) speechSynthesis.cancel();
+      stopSpeech();
       cancelAnimationFrame(raf);
       slot.removeEventListener("click", onSlotClick);
       document.removeEventListener("keydown", onKey);
