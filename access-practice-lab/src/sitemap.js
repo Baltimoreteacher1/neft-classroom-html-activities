@@ -593,6 +593,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "quest",
+    section: "play",
+    skill: "Mixed",
+    kind: "world",
+    for: STF,
+    top: true,
+    href: "quest",
+    icon: "worlds",
+    title: P("Language Quest", "Misión del lenguaje"),
+    text: P(
+      "Nine worlds where speaking and writing change what happens: investigate, explain, forge words and tell stories.",
+      "Nueve mundos donde hablar y escribir cambia lo que pasa: investiga, explica, forja palabras y cuenta historias.",
+    ),
+  },
+  {
     id: "city",
     section: "play",
     skill: "Mixed",

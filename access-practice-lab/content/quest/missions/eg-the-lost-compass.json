@@ -1,0 +1,150 @@
+{
+  "id": "eg-the-lost-compass",
+  "world": "explorers-guild",
+  "band": "3-5",
+  "domains": ["Reading", "Writing", "Speaking"],
+  "functions": ["Sequence", "Describe", "Inform"],
+  "keyUses": ["Inform"],
+  "minutes": 35,
+  "tags": ["maps", "directions", "adventure"],
+  "title": { "en": "The Lost Compass", "es": "La brújula perdida" },
+  "objective": { "en": "Plan a route on a map, then write clear directions with order words, compass words and landmarks so another explorer can follow them.", "es": "Planear una ruta en un mapa y escribir indicaciones claras con palabras de orden, puntos cardinales y puntos de referencia para que otro explorador pueda seguirlas." },
+  "success": [
+    { "en": "I can plan a route that reaches the goal.", "es": "Puedo planear una ruta que llegue a la meta." },
+    { "en": "I can write steps in order with words like first, next and then.", "es": "Puedo escribir pasos en orden con palabras como first, next y then." },
+    { "en": "I can use north, south, east and west and name landmarks.", "es": "Puedo usar north, south, east y west y nombrar puntos de referencia." },
+    { "en": "I can fix my directions when a friend gets lost.", "es": "Puedo corregir mis indicaciones cuando un amigo se pierde." }
+  ],
+  "narrative": "The Explorers' Guild lost its golden compass. Tala found it in the Cave, but she is stuck at camp. Kai is a new explorer who can only follow written directions. You will plan the way, write the directions, and see if Kai finds the compass. Kai only reads the compass words north, south, east and west, and counts steps.",
+  "characters": ["storyteller"],
+  "scene": { "theme": "map", "alt": "A treasure map on parchment. A camp with a tent sits in the lower left, a river runs from top to bottom with one wooden bridge in the middle, and a cave with a golden star is in the upper right. An oak tree, a red flag and a windmill mark the way.", "objects": [] },
+  "vocab": [
+    { "term": "direction", "def": "The way to go, like north or east." },
+    { "term": "landmark", "def": "A place that is easy to see and remember." },
+    { "term": "sequence", "def": "The order things happen in." },
+    { "term": "route", "def": "The path from the start to the goal." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Read the map",
+      "items": [
+        {
+          "id": "legend",
+          "kind": "read",
+          "prompt": "Read Tala's map notes. Open every note.",
+          "sources": [
+            { "id": "n1", "title": "The river", "text": ["The river runs north and south. You cannot walk through it. There is only one bridge."] },
+            { "id": "n2", "title": "The landmarks", "text": ["The oak tree is two squares east of camp. The red flag is two squares north of the oak tree. The bridge is just east of the red flag. The windmill is one square north of the square just after the bridge."] },
+            { "id": "n3", "title": "The goal", "text": ["The cave with the golden compass is in the far north-east corner of the map. Walk one square at a time."] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Plan the route",
+      "items": [
+        {
+          "id": "route",
+          "kind": "route",
+          "prompt": "Build a route from the camp to the cave. Press the arrows to add steps, then press Walk it. If you stop at the river or the edge, look at what happened and change your route.",
+          "grid": { "w": 6, "h": 5, "start": [0, 4], "goal": [5, 0], "blocked": [[3, 0], [3, 1], [3, 3], [3, 4]], "landmarks": { "0,4": "camp", "2,4": "oak tree", "2,2": "red flag", "3,2": "bridge", "4,1": "windmill", "5,0": "cave" } },
+          "solution": ["E", "E", "N", "N", "E", "E", "N", "N", "E"]
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write the directions",
+      "items": [
+        {
+          "id": "directions",
+          "kind": "write",
+          "world": "walk",
+          "walkFrom": "route",
+          "prompt": "Write directions for Kai. Use the words first, next, then and finally. Use compass words (north, south, east, west) and say how many steps. Name at least two landmarks. Then press Send Kai.",
+          "purpose": "Kai will follow your words, step by step.",
+          "minWords": 30,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 30, "label": "30 or more words" },
+            { "id": "order", "kind": "count", "min": 3, "terms": ["first", "next", "then", "after that", "finally", "last"], "label": "Uses at least three order words (first, next, then, finally)" },
+            { "id": "dir", "kind": "count", "min": 2, "terms": ["north", "south", "east", "west"], "label": "Uses at least two different compass words (north, south, east, west)" },
+            { "id": "land", "kind": "count", "min": 2, "terms": ["oak", "flag", "bridge", "windmill", "cave", "camp"], "label": "Names at least two landmarks" }
+          ],
+          "ladder": {
+            "model": "Model: First, walk east two steps to the oak tree. Next, walk north two steps to the red flag. Then go east across the bridge. Finally, ...",
+            "frame": "First, walk ___ ___ steps to the ___. Next, ___. Then, ___. Finally, ___.",
+            "partial": "First, walk ___. Next, ___. Finally, ___.",
+            "cue": "Order word. Compass word. Number of steps. Landmark."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Help Kai find the cave",
+      "items": [
+        {
+          "id": "revise-directions",
+          "kind": "write",
+          "reviseOf": "directions",
+          "world": "walk",
+          "walkFrom": "route",
+          "requireReach": true,
+          "prompt": "Change your directions so a new explorer with no map could follow them. Add a landmark to each part. If Kai got lost, find the step where it happened and fix it. Kai must reach the cave.",
+          "purpose": "Clear directions get Kai to the compass.",
+          "minWords": 35,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 35, "label": "35 or more words" },
+            { "id": "order", "kind": "count", "min": 3, "terms": ["first", "next", "then", "after that", "finally", "last"], "label": "Still uses at least three order words" },
+            { "id": "land", "kind": "count", "min": 3, "terms": ["oak", "flag", "bridge", "windmill", "cave", "camp"], "label": "Names at least three landmarks" },
+            { "id": "dir", "kind": "count", "min": 2, "terms": ["north", "south", "east", "west"], "label": "Uses at least two different compass words" }
+          ],
+          "ladder": {
+            "model": "Model: First, walk east two steps to the oak tree. Next, walk north two steps to the red flag. Then walk east one step across the bridge...",
+            "frame": "At the ___, turn ___ and walk ___ steps. Then you will see the ___.",
+            "partial": "At the ___, walk ___.",
+            "cue": "One landmark for every part."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Say the way",
+      "items": [
+        {
+          "id": "tell",
+          "kind": "speak",
+          "prompt": "A friend stands at the oak tree and wants to get to the cave. Tell your friend the way out loud.",
+          "typedMin": 15,
+          "ladder": {
+            "frame": "From the oak tree, walk ___ ___ steps. Then ___. Finally, you will reach the ___.",
+            "partial": "From the oak tree, first ___. Then ___.",
+            "cue": "Order word, direction, landmark."
+          },
+          "selfChecks": [
+            { "id": "order", "label": "I used order words." },
+            { "id": "dir", "label": "I used compass words." },
+            { "id": "land", "label": "I named a landmark." }
+          ],
+          "needSelf": 2
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "found", "title": "The compass is found", "when": { "revised": ["revise-directions"] }, "text": "Kai steps into the cave and lifts the golden compass. Tala cheers. 'Your directions were clear enough for a new explorer. Order words, compass words and landmarks did it.'" },
+    { "id": "lost", "title": "Kai needs another try", "text": "Tala studies the map. 'Walk through your directions one step at a time and find where Kai turned. Then add a landmark there.'" }
+  ],
+  "family": {
+    "skill": { "en": "giving step-by-step directions with order words, compass words and landmarks", "es": "dar indicaciones paso a paso con palabras de orden, puntos cardinales y puntos de referencia" },
+    "talk": { "en": "Ask: 'Can you give me directions from our door to the kitchen using first, next, then and a landmark?'", "es": "Pregunta: '¿Me puedes dar indicaciones desde la puerta hasta la cocina usando first, next, then y un punto de referencia?'" },
+    "vocab": [
+      { "term": "direction", "es": "dirección" },
+      { "term": "landmark", "es": "punto de referencia" },
+      { "term": "first, next, then", "es": "primero, luego, después" }
+    ]
+  }
+}

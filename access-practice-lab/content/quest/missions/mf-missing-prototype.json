@@ -1,0 +1,263 @@
+{
+  "id": "mf-missing-prototype",
+  "world": "mystery-files",
+  "band": "6-8",
+  "domains": ["Reading", "Speaking", "Writing"],
+  "functions": ["Question", "Infer", "Argue"],
+  "keyUses": ["Argue", "Explain"],
+  "minutes": 40,
+  "tags": ["science", "mystery", "evidence"],
+  "title": { "en": "The Missing Prototype", "es": "El prototipo desaparecido" },
+  "objective": { "en": "Tell what you observe from what you infer, then write and present a claim backed by evidence.", "es": "Distinguir lo que observas de lo que infieres y luego escribir y presentar una afirmación respaldada con pruebas." },
+  "success": [
+    { "en": "I can say which clues I saw and which ideas I figured out.", "es": "Puedo decir qué pistas vi y qué ideas deduje." },
+    { "en": "I can ask a question that helps solve the mystery.", "es": "Puedo hacer una pregunta que ayude a resolver el misterio." },
+    { "en": "I can write a claim and name at least two clues that support it.", "es": "Puedo escribir una afirmación y nombrar al menos dos pistas que la apoyan." },
+    { "en": "I can revise my claim to answer a different explanation.", "es": "Puedo revisar mi afirmación para responder a otra explicación." }
+  ],
+  "narrative": "At 8 a.m. on Saturday, Lab 4 at the Harbor Science Institute is quiet. The Aqua-Filter prototype, a water cleaner the size of a shoebox, is not in its case. Inspector Wren has come to find out what happened, and you are the lead investigator. Everything in this case is fictional.",
+  "characters": ["investigator"],
+  "scene": {
+    "theme": "lab",
+    "alt": "A science laboratory seen from the front. On the left a window sits above a bench with a stopped cooling fan. In the middle an empty glass display case has a yellow note inside. On the right a door has a badge reader beside it, and a coffee cup and a funding poster are on the far wall.",
+    "objects": []
+  },
+  "vocab": [
+    { "term": "evidence", "def": "Facts or clues that help show something is true." },
+    { "term": "observation", "def": "Something you can see, hear, measure or read for sure." },
+    { "term": "inference", "def": "An idea you figure out from clues. It could be wrong." },
+    { "term": "claim", "def": "The answer you are ready to defend." },
+    { "term": "witness", "def": "A person who saw or heard something that happened." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Search the lab",
+      "items": [
+        {
+          "id": "inspect",
+          "kind": "explore",
+          "prompt": "Select an object to inspect it. Then decide: does it help answer the question, 'What happened to the prototype?'",
+          "need": 5,
+          "objects": [
+            { "id": "window", "label": "Window latch", "glyph": "window", "x": 120, "y": 190, "relevant": true, "terms": ["window", "latch", "sill"], "text": "The window latch is closed from the inside. The dust on the sill has no marks.", "why": "Useful. It helps show whether anyone came in or out through the window." },
+            { "id": "case", "label": "Empty display case", "glyph": "case", "x": 470, "y": 365, "relevant": true, "terms": ["case", "empty", "lid"], "text": "The glass case is open, not broken, and it is empty. The lock is not scratched.", "why": "Useful. It shows what is missing, and that the case was opened with care." },
+            { "id": "note", "label": "Yellow sticky note", "glyph": "note", "x": 400, "y": 200, "relevant": true, "terms": ["note", "sticky", "cold room"], "text": "A yellow note inside the case lid says: 'Fan overheating. Moved to Cold Room. - R.'", "why": "Useful. It is a written message from the person who may have moved the prototype." },
+            { "id": "badge", "label": "Door badge log", "glyph": "badge", "x": 880, "y": 270, "relevant": true, "terms": ["badge", "log", "9:42", "9:51"], "text": "Badge log. 9:42 p.m.: Dr. Reyes opened Lab 4. 9:51 p.m.: Dr. Reyes opened the Cold Room. No other badge was used after 6 p.m.", "why": "Useful. It tells us who opened the doors, and when." },
+            { "id": "fan", "label": "Cooling fan", "glyph": "fan", "x": 240, "y": 405, "relevant": true, "terms": ["fan", "heat", "warning"], "text": "The cooling fan on the bench has stopped. A red light is blinking: HEAT WARNING.", "why": "Useful. A broken fan could be a reason someone moved a machine." },
+            { "id": "cup", "label": "Coffee cup", "glyph": "cup", "x": 700, "y": 405, "relevant": false, "terms": ["cup", "coffee"], "text": "A coffee cup sits on a desk. It belongs to the night guard, who left it there at 6 p.m.", "why": "Not useful. Where the cup is does not help us decide where the prototype went." },
+            { "id": "poster", "label": "Funding poster", "glyph": "board", "x": 680, "y": 140, "relevant": false, "terms": ["poster", "funding"], "text": "A poster about next year's science funding hangs on the wall.", "why": "Not useful by itself. It is about money, not about the missing prototype." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Gather and test the evidence",
+      "items": [
+        {
+          "id": "witnesses",
+          "kind": "read",
+          "prompt": "Read what each witness said. Use Hear it if you want to listen.",
+          "sources": [
+            { "id": "pell", "title": "Night guard Pell", "text": ["I sat at the front desk from 6 p.m. until 10 p.m. Nobody left through the front door with a box or a bag.", "At about 9:40 I heard an alarm beeping down the lab hallway, but it stopped."] },
+            { "id": "jo", "title": "Intern Jo", "text": ["Dr. Reyes seemed upset last week about money.", "I think Dr. Reyes wanted to take the prototype to another company. I did not see anything on Friday night."] },
+            { "id": "mara", "title": "Cleaner Mara", "text": ["I clean the hallway at 9:30. The Cold Room door was locked then.", "The Lab 4 lights were on at 9:45. I check the windows every night and they were shut."] }
+          ]
+        },
+        {
+          "id": "sort-oi",
+          "kind": "sort",
+          "prompt": "Sort each sentence. Is it something you can observe, or something someone infers?",
+          "categories": [
+            { "id": "obs", "label": "Observation: I can see, hear or read it" },
+            { "id": "inf", "label": "Inference: I figured it out" }
+          ],
+          "cards": [
+            { "id": "c1", "text": "The display case is empty.", "cat": "obs", "why": "Ask: could you check this by looking?" },
+            { "id": "c2", "text": "Someone wanted to sell the prototype.", "cat": "inf", "why": "Ask: can anyone see what a person wants? Or is it a guess from clues?" },
+            { "id": "c3", "text": "The badge log shows Dr. Reyes opened the Cold Room at 9:51 p.m.", "cat": "obs", "why": "Ask: is this written down in a record you can read?" },
+            { "id": "c4", "text": "The fan must have overheated, so Dr. Reyes moved the prototype.", "cat": "inf", "why": "The words 'must have' and 'so' show someone connecting clues. Is that seeing, or figuring out?" },
+            { "id": "c5", "text": "The window latch is closed from the inside.", "cat": "obs", "why": "Ask: could you check this by looking at the latch?" },
+            { "id": "c6", "text": "Nobody could have come in through the window.", "cat": "inf", "why": "Ask: did anyone watch the window all night, or is this a conclusion from the latch?" },
+            { "id": "c7", "text": "Jo thinks Dr. Reyes wanted to take it to another company.", "cat": "inf", "why": "Jo is guessing what Dr. Reyes wanted. A guess about wants is an inference." },
+            { "id": "c8", "text": "The guard heard an alarm beeping at about 9:40.", "cat": "obs", "why": "The guard heard it. Hearing something is an observation by the person who heard it." }
+          ]
+        },
+        {
+          "id": "ask-pell",
+          "kind": "ask",
+          "character": "investigator",
+          "prompt": "Question the night guard. Pick questions from the list, and write one question of your own.",
+          "speakers": { "pell": "Guard Pell", "wren": "Inspector Wren" },
+          "needFlags": ["asked-alarm", "asked-bag", "ready"],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "hub": {
+                "who": "wren",
+                "say": ["Guard Pell is ready. Choose a question, or type your own. Ask at least the ones that could change what we think."],
+                "compose": {
+                  "label": "Write your own question for Pell",
+                  "checks": [{ "id": "q", "kind": "question", "label": "Ends with a question mark and asks something" }],
+                  "routes": [
+                    { "terms": ["alarm", "beep", "fan", "noise", "sound"], "next": "alarm", "sets": ["asked-alarm"] },
+                    { "terms": ["bag", "box", "carry", "carried", "leave", "left"], "next": "bag", "sets": ["asked-bag"] },
+                    { "terms": ["badge", "who came", "who entered", "who went"], "next": "who" },
+                    { "terms": ["window"], "next": "window" }
+                  ],
+                  "fallback": "unsure"
+                },
+                "options": [
+                  { "id": "q-who", "label": "Who came into the lab hallway after 6 p.m.?", "once": true, "next": "who" },
+                  { "id": "q-bag", "label": "Did anyone leave the building carrying a box?", "once": true, "sets": ["asked-bag"], "next": "bag" },
+                  { "id": "q-alarm", "label": "What was the beeping you heard at about 9:40?", "once": true, "sets": ["asked-alarm"], "next": "alarm" },
+                  { "id": "q-window", "label": "Did you check the windows?", "once": true, "next": "window" },
+                  { "id": "q-done", "label": "I have enough to compare the explanations.", "requires": ["asked-alarm", "asked-bag"], "sets": ["ready"], "next": "done" }
+                ]
+              },
+              "who": { "who": "pell", "say": ["Only Dr. Reyes. I saw Dr. Reyes arrive at about 9:30 and go straight to the lab."], "options": [{ "id": "back", "label": "Ask something else.", "next": "hub" }] },
+              "bag": { "who": "pell", "say": ["Dr. Reyes left at 10:30 with a laptop only. The prototype is the size of a shoebox, and I would have noticed a box."], "options": [{ "id": "back", "label": "Ask something else.", "next": "hub" }] },
+              "alarm": { "who": "pell", "say": ["It was the fan alarm in Lab 4. That alarm beeps when a machine gets too hot."], "options": [{ "id": "back", "label": "Ask something else.", "next": "hub" }] },
+              "window": { "who": "pell", "say": ["I check the windows at 10 p.m. every night. The Lab 4 window was shut."], "options": [{ "id": "back", "label": "Ask something else.", "next": "hub" }] },
+              "unsure": { "who": "pell", "say": ["I am not sure what you are asking. You could ask about the badge, the window, the alarm or who left the building."], "options": [{ "id": "back", "label": "Try another question.", "next": "hub" }] },
+              "done": { "who": "wren", "say": ["Good. Notice which answer changed your mind. That is the one to build your claim on."], "end": true }
+            }
+          }
+        },
+        {
+          "id": "compare",
+          "kind": "compare",
+          "prompt": "Rate each piece of evidence for each explanation. Then choose the explanation the evidence supports best.",
+          "need": 0.7,
+          "options": [
+            { "id": "e1", "label": "An outsider came in through the window and took it." },
+            { "id": "e2", "label": "Dr. Reyes took it to sell to another company." },
+            { "id": "e3", "label": "Dr. Reyes moved it to the Cold Room because the fan was overheating." }
+          ],
+          "evidence": [
+            { "id": "ev1", "text": "The window latch is closed from the inside and the sill dust is not disturbed." },
+            { "id": "ev2", "text": "The badge log shows only Dr. Reyes opened Lab 4 and the Cold Room after 6 p.m." },
+            { "id": "ev3", "text": "A note in the case says 'Fan overheating. Moved to Cold Room. - R.'" },
+            { "id": "ev4", "text": "The guard saw nobody leave with a box, and the fan alarm beeped at about 9:40." },
+            { "id": "ev5", "text": "Jo thinks Dr. Reyes wanted to take the prototype to another company." },
+            { "id": "ev6", "text": "The cooling fan on the bench has stopped and shows a heat warning." }
+          ],
+          "matrix": {
+            "e1": { "ev1": "contradicts", "ev2": "neutral", "ev3": "contradicts", "ev4": "contradicts", "ev5": "neutral", "ev6": "neutral" },
+            "e2": { "ev1": "neutral", "ev2": "supports", "ev3": "contradicts", "ev4": "contradicts", "ev5": "supports", "ev6": "neutral" },
+            "e3": { "ev1": "neutral", "ev2": "supports", "ev3": "supports", "ev4": "supports", "ev5": "neutral", "ev6": "supports" }
+          },
+          "recheckHint": "Re-read this evidence. Ask: does it make this explanation more likely, less likely, or does it not help decide?"
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Make your claim",
+      "items": [
+        {
+          "id": "claim",
+          "kind": "write",
+          "clueFrom": "inspect",
+          "prompt": "Tell Inspector Wren which explanation you chose and why. Name at least two clues you collected.",
+          "purpose": "Inspector Wren will read your claim and open the case file that matches your reasoning.",
+          "minWords": 35,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 35, "label": "35 or more words" },
+            { "id": "clues", "kind": "clues", "min": 2, "label": "Names at least two clues from your notebook", "hint": "Use the clue's name, like 'the sticky note' or 'the badge log'." },
+            { "id": "why", "kind": "any", "terms": ["because", "since", "this shows", "which shows", "so ", "therefore", "that means"], "label": "Uses a reasoning word like because, so or this shows" },
+            { "id": "claim", "kind": "any", "terms": ["i claim", "i think", "i believe", "my claim", "most likely", "best explanation", "was moved", "was stolen", "took"], "label": "States a clear claim", "required": false },
+            { "id": "inf", "kind": "any", "terms": ["probably", "likely", "suggests", "seems", "might", "may "], "label": "Marks an inference with a word like probably or suggests", "required": false }
+          ],
+          "ladder": {
+            "model": "Model: I claim the prototype was moved, not stolen. The sticky note says it was moved to the Cold Room, and the badge log shows that Dr. Reyes opened that door. This shows the move was planned, because the note explains why.",
+            "frame": "I claim that ___. One clue is ___. Another clue is ___. This shows that ___ because ___.",
+            "partial": "I claim that ___. One clue is ___, which shows ___.",
+            "cue": "State your claim. Name two clues. Say how the clues fit."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Strengthen your reasoning",
+      "items": [
+        {
+          "id": "revise-claim",
+          "kind": "write",
+          "reviseOf": "claim",
+          "clueFrom": "inspect",
+          "prompt": "Inspector Wren asks: 'What would someone who disagrees say?' Revise your claim. Keep what is good, separate what you saw from what you infer, and answer another explanation.",
+          "purpose": "A stronger claim changes how the case file reads.",
+          "minWords": 40,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 40, "label": "40 or more words" },
+            { "id": "clues", "kind": "clues", "min": 2, "label": "Still names at least two clues" },
+            { "id": "see", "kind": "count", "min": 2, "terms": ["the note says", "the log shows", "the badge log", "the guard", "the latch", "i can see", "says that", "shows that", "suggests", "probably", "likely", "infer"], "label": "Separates what a clue shows from what you infer from it" },
+            { "id": "other", "kind": "any", "terms": ["outsider", "window", "sell", "another company", "stole", "stolen", "theft", "someone else", "other explanation", "disagree", "but ", "however", "although"], "label": "Answers a different explanation" }
+          ],
+          "ladder": {
+            "model": "Model: Someone might say an outsider took it. However, the window latch was closed from the inside, so an outsider probably did not come in. The sticky note says it was moved, which suggests it was kept safe.",
+            "frame": "Someone might say ___. However, ___ shows ___. I infer that ___ because ___.",
+            "partial": "Someone might say ___. However, ___.",
+            "cue": "Say what someone else might think. Then answer with a clue."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Present and transfer",
+      "items": [
+        {
+          "id": "present",
+          "kind": "speak",
+          "prompt": "Present your final explanation to Inspector Wren in about 45 seconds. Start with your claim, then give two clues.",
+          "typedMin": 25,
+          "ladder": {
+            "frame": "My claim is ___. First, ___. Second, ___. That is why I think ___.",
+            "partial": "My claim is ___. One clue is ___.",
+            "cue": "Claim, clue, clue, reason."
+          },
+          "selfChecks": [
+            { "id": "claim", "label": "I said my claim first." },
+            { "id": "clues", "label": "I named two clues." },
+            { "id": "reason", "label": "I said why the clues fit." },
+            { "id": "clear", "label": "A partner could follow my order." }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "New case: a classroom hamster's cage door is open and the food bowl is empty. Seeds are on the floor. Which sentence is an inference?",
+          "options": [
+            { "id": "a", "label": "The cage door is open.", "fb": "You can see the door. That is an observation." },
+            { "id": "b", "label": "Seeds are on the floor.", "fb": "You can see the seeds. That is an observation." },
+            { "id": "c", "label": "The hamster got out last night.", "fb": "" },
+            { "id": "d", "label": "The food bowl is empty.", "fb": "You can check the bowl by looking. That is an observation." }
+          ],
+          "answer": "c"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "moved-revised", "title": "Case closed: the prototype was safe", "when": { "choice": { "compare": "e3" }, "revised": ["revise-claim"] }, "text": "Inspector Wren opens the Cold Room. The Aqua-Filter sits in a cool rack, safe. 'You separated what you saw from what you figured out, and you answered the other explanation,' Wren says. 'That is how a claim gets strong.'" },
+    { "id": "moved", "title": "The prototype is found", "when": { "choice": { "compare": "e3" } }, "text": "Inspector Wren opens the Cold Room. The prototype is there, cool and safe. 'Your claim fits the clues,' Wren says. 'Next time, try answering what someone who disagrees would say.'" },
+    { "id": "sold", "title": "Found, but not stolen", "when": { "choice": { "compare": "e2" } }, "text": "Inspector Wren opens the Cold Room and finds the prototype. 'Jo's idea was an inference, not something anyone saw,' Wren says. 'The sticky note and the fan alarm point somewhere else. Which clue could you weigh more next time?'" },
+    { "id": "window", "title": "The window never opened", "when": { "choice": { "compare": "e1" } }, "text": "Inspector Wren points at the latch. 'Closed from the inside, and the sill dust is untouched,' Wren says. 'Look at which clues contradict an outsider, then choose again.' The prototype turns out to be in the Cold Room." },
+    { "id": "open", "title": "The case stays open", "text": "Inspector Wren closes the folder. 'We still need an explanation the clues support,' Wren says. 'Come back and compare the evidence again.'" }
+  ],
+  "family": {
+    "skill": { "en": "telling what you see from what you figure out, and backing a claim with clues", "es": "distinguir lo que ves de lo que deduces y respaldar una afirmación con pistas" },
+    "talk": { "en": "Ask: 'What is one thing you saw for sure, and one thing you guessed? Which clue made you guess it?'", "es": "Pregunta: '¿Qué viste con seguridad y qué supusiste? ¿Qué pista te hizo suponerlo?'" },
+    "vocab": [
+      { "term": "evidence", "es": "evidencia, prueba" },
+      { "term": "observation", "es": "observación" },
+      { "term": "inference", "es": "inferencia" }
+    ]
+  }
+}

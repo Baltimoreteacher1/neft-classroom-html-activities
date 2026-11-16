@@ -1,0 +1,168 @@
+{
+  "id": "hp-the-bell-of-port-alder",
+  "world": "history-portal",
+  "band": "6-8",
+  "domains": ["Reading", "Writing", "Speaking"],
+  "functions": ["Sequence", "Compare", "Narrate"],
+  "keyUses": ["Narrate", "Explain"],
+  "minutes": 40,
+  "tags": ["history", "perspectives", "chronology"],
+  "title": { "en": "The Bell of Port Alder", "es": "La campana de Port Alder" },
+  "objective": { "en": "Compare different perspectives on a past decision and write an account of what happened in time order.", "es": "Comparar distintas perspectivas sobre una decisión del pasado y escribir un relato de lo que ocurrió en orden cronológico." },
+  "success": [
+    { "en": "I can put events in the order they happened using clues in the text.", "es": "Puedo ordenar sucesos según ocurrieron usando pistas del texto." },
+    { "en": "I can explain what each person wanted and why.", "es": "Puedo explicar qué quería cada persona y por qué." },
+    { "en": "I can write a chronological account with time-order words.", "es": "Puedo escribir un relato cronológico con palabras de orden temporal." },
+    { "en": "I can compare two perspectives in one sentence.", "es": "Puedo comparar dos perspectivas en una oración." }
+  ],
+  "narrative": "The History Portal opens onto the fictional harbor town of Port Alder in the year 1887. A storm has damaged the harbor wall. A generous donor offers 500 dollars, and the town can only use it once. Three neighbors have written letters about what to do. Tala the Storyteller will help you piece together what happened. This town, its people and the letters are made up for practice.",
+  "characters": ["storyteller"],
+  "scene": { "theme": "portal", "alt": "A glowing stone archway open onto an old harbor town. Fishing boats sit behind a damaged sea wall, a small unfinished schoolhouse stands on a hill, and a bell hangs in a wooden tower in the town square.", "objects": [] },
+  "vocab": [
+    { "term": "perspective", "def": "A person's point of view, shaped by their situation." },
+    { "term": "chronological", "def": "In the order that events happened in time." },
+    { "term": "primary source", "def": "A document made by someone who was there at the time." },
+    { "term": "decision", "def": "A choice made after thinking about options." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Read the letters",
+      "items": [
+        {
+          "id": "letters",
+          "kind": "read",
+          "prompt": "Read the three letters from Port Alder. Open each one.",
+          "sources": [
+            { "id": "hale", "title": "Captain Hale, ship owner (fictional letter)", "text": ["March 3, 1887. The storm tore a hole in our harbor wall. Without a wall, the next storm will wreck our boats and our work.", "I say we spend the 500 dollars on the wall. A school can wait a year; the sea will not."] },
+            { "id": "okoro", "title": "Ms. Okoro, teacher (fictional letter)", "text": ["April 10, 1887. Sixty children in Port Alder have no school building. We meet in a cold boat shed.", "After the donor's offer, I believe the 500 dollars should build the schoolhouse. A wall protects boats for a few years; an education lasts a lifetime."] },
+            { "id": "lind", "title": "Mrs. Lind, fisher (fictional letter)", "text": ["May 2, 1887. Before the town meeting, I want the council to hear from families who fish. We need the wall because boats are how we eat.", "But my children also need to read. Could the town do the wall first, then start a school fund?"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Sort out the order and the views",
+      "items": [
+        {
+          "id": "timeline",
+          "kind": "timeline",
+          "prompt": "Put the events of Port Alder in the order they happened. Use the dates and clue words in the letters. Use the up and down buttons.",
+          "events": [
+            { "id": "e1", "text": "A storm damages the harbor wall.", "order": 1, "why": "Captain Hale's letter of March 3 says the storm already tore a hole. What came first?" },
+            { "id": "e2", "text": "A donor offers 500 dollars to the town.", "order": 2, "why": "Ms. Okoro's April letter says 'After the donor's offer'. Which is earlier, the storm or the offer?" },
+            { "id": "e3", "text": "Families write letters before the town meeting.", "order": 3, "why": "Mrs. Lind's May 2 letter says 'Before the town meeting'. Look at the dates of the letters." },
+            { "id": "e4", "text": "The town meeting is held to decide how to use the money.", "order": 4, "why": "The letters were written 'before the town meeting', so the meeting comes after them." },
+            { "id": "e5", "text": "The council votes to repair the wall first and begin a school fund.", "order": 5, "why": "A vote happens at the end of a meeting, after people have spoken." }
+          ]
+        },
+        {
+          "id": "sort-view",
+          "kind": "sort",
+          "prompt": "Whose perspective does each statement come from? Sort it to the writer who said it.",
+          "categories": [
+            { "id": "hale", "label": "Captain Hale" },
+            { "id": "okoro", "label": "Ms. Okoro" },
+            { "id": "lind", "label": "Mrs. Lind" }
+          ],
+          "cards": [
+            { "id": "p1", "text": "A school can wait a year; the sea will not.", "cat": "hale", "why": "Who wanted the wall first? Look for the writer who talks about the sea." },
+            { "id": "p2", "text": "Sixty children meet in a cold boat shed.", "cat": "okoro", "why": "Who is the teacher in these letters?" },
+            { "id": "p3", "text": "Could the town do the wall first and then start a school fund?", "cat": "lind", "why": "Which writer asks for a plan that includes both?" },
+            { "id": "p4", "text": "An education lasts a lifetime.", "cat": "okoro", "why": "Which writer cares most about learning?" },
+            { "id": "p5", "text": "Boats are how we eat.", "cat": "lind", "why": "Which writer fishes for a living?" },
+            { "id": "p6", "text": "The next storm will wreck our boats and our work.", "cat": "hale", "why": "Which writer owns ships?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Tell what happened",
+      "items": [
+        {
+          "id": "account",
+          "kind": "write",
+          "prompt": "Write an account of what happened in Port Alder, in time order. Name at least two of the letter writers and say what each one wanted.",
+          "purpose": "The Portal will play back your account as the town's story.",
+          "minWords": 60,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 60, "label": "60 or more words" },
+            { "id": "order", "kind": "count", "min": 4, "terms": ["first", "then", "after", "before", "later", "finally", "next", "during", "once", "in march", "in april", "in may"], "label": "Uses at least four time-order words or months" },
+            { "id": "who", "kind": "count", "min": 2, "terms": ["hale", "okoro", "lind", "captain", "teacher", "fisher"], "label": "Names at least two of the letter writers" },
+            { "id": "why", "kind": "any", "terms": ["because", "since", "so ", "wanted", "worried", "believed", "needed"], "label": "Says why they wanted it" }
+          ],
+          "ladder": {
+            "model": "Model: First, a storm damaged Port Alder's harbor wall in March. After that, a donor offered 500 dollars. Captain Hale wanted the wall because he feared the next storm. Ms. Okoro wanted a school because sixty children had no building. Finally, the council voted to...",
+            "frame": "First, ___. After that, ___. ___ wanted ___ because ___. Finally, ___.",
+            "partial": "First, ___. Then ___. ___ wanted ___.",
+            "cue": "Time word. Who. What they wanted. Why."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Compare two views in one sentence",
+      "items": [
+        {
+          "id": "compare-views",
+          "kind": "write",
+          "reviseOf": "account",
+          "prompt": "Revise your account. Add one sentence that compares two writers' perspectives using a word like while, whereas or in contrast. Keep the time order.",
+          "purpose": "Comparing views shows why people disagreed.",
+          "minWords": 70,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 70, "label": "70 or more words" },
+            { "id": "order", "kind": "count", "min": 4, "terms": ["first", "then", "after", "before", "later", "finally", "next", "during", "once", "in march", "in april", "in may"], "label": "Still uses time-order words" },
+            { "id": "compare", "kind": "any", "terms": ["while", "whereas", "in contrast", "on the other hand", "but ", "however", "unlike", "both"], "label": "Compares two perspectives with a contrast word" },
+            { "id": "who", "kind": "count", "min": 2, "terms": ["hale", "okoro", "lind", "captain", "teacher", "fisher"], "label": "Names at least two letter writers" }
+          ],
+          "ladder": {
+            "model": "Model: While Captain Hale wanted the money for the wall to protect his ships, Ms. Okoro wanted it for the school because sixty children had no building.",
+            "frame": "While ___ wanted ___ because ___, ___ wanted ___ because ___.",
+            "partial": "___ wanted ___, but ___ wanted ___.",
+            "cue": "Two people. Two wants. One contrast word."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "What would you decide?",
+      "items": [
+        {
+          "id": "decide",
+          "kind": "speak",
+          "prompt": "Tell a partner what you would have decided in 1887, and give one reason that connects to one of the letters. Be respectful of the other views.",
+          "typedMin": 25,
+          "ladder": {
+            "frame": "In 1887, I would have ___ because ___. I understand that ___ also needed ___.",
+            "partial": "I would have ___ because ___.",
+            "cue": "Decision. Reason. Other view."
+          },
+          "selfChecks": [
+            { "id": "decision", "label": "I said what I would decide." },
+            { "id": "reason", "label": "I connected my reason to a letter." },
+            { "id": "respect", "label": "I recognized another person's need." }
+          ],
+          "needSelf": 2
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "played", "title": "The bell rings in order", "when": { "revised": ["compare-views"] }, "text": "The Portal hums. In the square, the bell tolls as your account plays back from the storm to the vote. 'You told it in time order and showed why people disagreed,' says Tala. 'History is a story with reasons, and you told it that way.'" },
+    { "id": "told", "title": "The story is told", "text": "The bell rings once. 'You told what happened in order,' says Tala. 'Next time, compare two writers' views so readers see why they disagreed.'" }
+  ],
+  "family": {
+    "skill": { "en": "telling events in time order and explaining why people had different views", "es": "contar sucesos en orden cronológico y explicar por qué las personas tenían distintos puntos de vista" },
+    "talk": { "en": "Ask: 'What happened first, next and last? Who wanted something different, and why?'", "es": "Pregunta: '¿Qué pasó primero, después y al final? ¿Quién quería algo distinto y por qué?'" },
+    "vocab": [
+      { "term": "perspective", "es": "perspectiva" },
+      { "term": "chronological", "es": "cronológico" },
+      { "term": "decision", "es": "decisión" }
+    ]
+  }
+}

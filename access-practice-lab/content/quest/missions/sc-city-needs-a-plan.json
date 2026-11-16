@@ -1,0 +1,204 @@
+{
+  "id": "sc-city-needs-a-plan",
+  "world": "science-city",
+  "band": "6-8",
+  "domains": ["Reading", "Writing"],
+  "functions": ["Explain", "Evaluate", "Argue"],
+  "keyUses": ["Explain", "Argue"],
+  "minutes": 40,
+  "tags": ["science", "environment", "data"],
+  "title": { "en": "The City That Needs a Plan", "es": "La ciudad que necesita un plan" },
+  "objective": { "en": "Read data, compare solutions and write a recommendation that explains causes, effects and trade-offs.", "es": "Leer datos, comparar soluciones y escribir una recomendación que explique causas, efectos y compromisos." },
+  "success": [
+    { "en": "I can read a chart and say what it shows.", "es": "Puedo leer un gráfico y decir lo que muestra." },
+    { "en": "I can compare solutions by their costs and effects.", "es": "Puedo comparar soluciones según sus costos y efectos." },
+    { "en": "I can write a recommendation with a reason and a number from the data.", "es": "Puedo escribir una recomendación con una razón y un número de los datos." },
+    { "en": "I can explain a drawback and what to do about it.", "es": "Puedo explicar una desventaja y qué hacer al respecto." }
+  ],
+  "narrative": "Marlow is a fictional city, and every summer afternoon some neighborhoods feel much hotter than others. The city council has 10 budget points to spend this year. Dr. Sora from the Climate Office has brought data and a simple model of Marlow. Your recommendation will decide what the city looks like next summer. The numbers in this mission are made up to practice the thinking. They are not real measurements.",
+  "characters": ["scientist"],
+  "scene": {
+    "theme": "city",
+    "alt": "A fictional city seen from above on a hot afternoon. Dark roofs and a parking lot in the center, a small park with trees on the left, narrow streets on the right, and a thermometer at the harbor flats in the lower corner.",
+    "objects": []
+  },
+  "vocab": [
+    { "term": "cause", "def": "The reason something happens." },
+    { "term": "effect", "def": "What happens because of a cause." },
+    { "term": "canopy", "def": "The cover that tree leaves make over the ground." },
+    { "term": "trade-off", "def": "A good thing you give up to get another good thing." },
+    { "term": "budget", "def": "The amount you can spend." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Walk the city",
+      "items": [
+        {
+          "id": "survey",
+          "kind": "explore",
+          "prompt": "Select a place in Marlow and read its report. The question is: Why are some neighborhoods hotter than others? Decide if the report helps answer it.",
+          "need": 4,
+          "objects": [
+            { "id": "harbor", "label": "Harbor Flats", "glyph": "sun", "x": 170, "y": 410, "relevant": true, "terms": ["harbor", "98"], "text": "4:00 p.m. on July 12: Harbor Flats is 98°F. There are almost no trees, and the streets are wide and paved.", "why": "Useful. It gives a temperature and describes the place." },
+            { "id": "park", "label": "Riverside Park", "glyph": "tree", "x": 330, "y": 300, "relevant": true, "terms": ["riverside", "park", "88"], "text": "4:00 p.m. on July 12: Riverside is 88°F. Many trees shade the paths and the river runs beside it.", "why": "Useful. It gives a temperature and shows a place with many trees." },
+            { "id": "market", "label": "Market District", "glyph": "factory", "x": 560, "y": 330, "relevant": true, "terms": ["market", "95", "roofs"], "text": "4:00 p.m. on July 12: the Market District is 95°F. It has dark flat roofs and a big parking lot.", "why": "Useful. It gives a temperature and describes dark roofs and pavement." },
+            { "id": "old", "label": "Old Town", "glyph": "house", "x": 780, "y": 330, "relevant": true, "terms": ["old town", "91"], "text": "4:00 p.m. on July 12: Old Town is 91°F. The streets are narrow and a few trees grow in courtyards.", "why": "Useful. It adds a middle case: some trees and a middle temperature." },
+            { "id": "library", "label": "Library cooling center", "glyph": "board", "x": 640, "y": 190, "relevant": false, "terms": ["library", "cooling center"], "text": "The library cooling center is open from 10 a.m. to 8 p.m. during heat waves.", "why": "Not useful for this question. It helps people stay cool but does not explain why places differ." },
+            { "id": "bus", "label": "Bus depot", "glyph": "gears", "x": 420, "y": 170, "relevant": false, "terms": ["bus", "depot"], "text": "Buses leave the depot every 12 minutes.", "why": "Not useful for this question. Bus times do not explain temperatures." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Read the data and test choices",
+      "items": [
+        {
+          "id": "sources",
+          "kind": "read",
+          "prompt": "Read the two sources. One is a briefing. One is a letter. Notice which gives data and which gives an opinion.",
+          "sources": [
+            { "id": "brief", "title": "Climate Office briefing (fictional)", "text": ["On July 12 at 4:00 p.m. we measured the air temperature in four neighborhoods. We also measured how much of each neighborhood is covered by tree leaves, called canopy.", "Harbor Flats: 4 percent canopy, 98°F. Market District: 8 percent, 95°F. Old Town: 15 percent, 91°F. Riverside: 22 percent, 88°F."] },
+            { "id": "letter", "title": "Letter from a resident (fictional)", "text": ["I think the city should build more roads. Roads help people get to work.", "Trees make a mess and cost too much, in my opinion."] }
+          ]
+        },
+        {
+          "id": "chart",
+          "kind": "check",
+          "prompt": "Look at the chart. Which statement does the data support?",
+          "chart": { "title": "Afternoon temperature and tree canopy, July 12, 4:00 p.m. (fictional data)", "unit": "°F", "min": 80, "rows": [
+            { "label": "Riverside (22% canopy)", "value": 88 },
+            { "label": "Old Town (15% canopy)", "value": 91 },
+            { "label": "Market District (8% canopy)", "value": 95 },
+            { "label": "Harbor Flats (4% canopy)", "value": 98 }
+          ] },
+          "options": [
+            { "id": "a", "label": "Neighborhoods with more tree canopy were cooler.", "fb": "" },
+            { "id": "b", "label": "Old Town was the hottest neighborhood.", "fb": "Check the chart again. Which bar is the longest?" },
+            { "id": "c", "label": "Riverside has the least canopy.", "fb": "Read the percent in each label. Which has the smallest percent?" },
+            { "id": "d", "label": "Roads make neighborhoods cooler.", "fb": "The chart does not show roads. A statement must match what the data shows." }
+          ],
+          "answer": "a"
+        },
+        {
+          "id": "plan",
+          "kind": "simulate",
+          "prompt": "Choose up to 10 points of projects, then run the model. Read the model rules first: the city changes because of these numbers, not at random.",
+          "solution": ["trees", "roofs"],
+          "model": {
+            "base": { "temp": 95, "energy": 100 },
+            "budget": 10,
+            "labels": { "temp": "City afternoon temperature (°F)", "energy": "Electricity used for cooling (index)" },
+            "projects": [
+              { "id": "trees", "label": "Plant street trees", "cost": 4, "effect": { "temp": -3, "energy": -4 }, "note": "Shade and leaf evaporation cool the air. They also shade buildings, so less air conditioning is used.", "terms": ["tree", "trees"] },
+              { "id": "roofs", "label": "Paint roofs white", "cost": 3, "effect": { "temp": -2, "energy": -6 }, "note": "White roofs reflect more sunlight, so roofs and the air above them heat less.", "terms": ["roof", "roofs", "white"] },
+              { "id": "park", "label": "Turn a parking lot into a park", "cost": 5, "effect": { "temp": -2.5, "energy": -3 }, "note": "Soil and plants stay cooler than dark pavement.", "terms": ["park", "parking lot"] },
+              { "id": "ac", "label": "Add air conditioners to public buildings", "cost": 5, "effect": { "temp": 0.5, "energy": 12 }, "note": "It cools inside. The machines push heat outdoors and use more electricity.", "terms": ["air condition", "air conditioner", "ac "] },
+              { "id": "roads", "label": "Widen the main roads", "cost": 6, "effect": { "temp": 1.5, "energy": 2 }, "note": "Dark pavement soaks up sunlight and gives it back as heat.", "terms": ["road", "roads", "widen"] }
+            ],
+            "interactions": [
+              { "needs": ["trees", "park"], "effect": { "temp": -0.5 }, "note": "Trees along a park shade more ground." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Recommend a plan",
+      "items": [
+        {
+          "id": "recommend",
+          "kind": "write",
+          "world": "city",
+          "worldFrom": "plan",
+          "pickedFrom": "plan",
+          "prompt": "Write your recommendation to the city council. Name the projects you chose, explain why using a number from the data or the model, and say what you give up.",
+          "purpose": "When you finish, the council votes and Marlow changes to match your plan.",
+          "minWords": 45,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 45, "label": "45 or more words" },
+            { "id": "named", "kind": "picked", "min": 1, "label": "Names a project you chose", "hint": "Use the project's name, like 'trees' or 'white roofs'." },
+            { "id": "data", "kind": "any", "terms": ["°", "degree", "percent", "%", "canopy", "98", "95", "91", "88", "points", "index"], "label": "Uses a number or fact from the data" },
+            { "id": "because", "kind": "any", "terms": ["because", "since", "so ", "therefore", "as a result", "this means"], "label": "Connects a cause to an effect (because, so, as a result)" },
+            { "id": "tradeoff", "kind": "any", "terms": ["but", "however", "although", "cost", "trade-off", "give up", "downside", "on the other hand"], "label": "Says what you give up or what it costs" }
+          ],
+          "ladder": {
+            "model": "Model: I recommend planting trees and painting roofs. The chart shows that neighborhoods with more canopy were cooler, so trees should lower the temperature. However, these projects use 7 of our 10 points, so we cannot also build a park.",
+            "frame": "I recommend ___. The data shows that ___, so ___. However, ___ costs ___, so we give up ___.",
+            "partial": "I recommend ___ because the data shows ___.",
+            "cue": "Name your projects. Give one number. Say a cause and an effect. Say what you give up."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Answer the council's question",
+      "items": [
+        {
+          "id": "revise-recommend",
+          "kind": "write",
+          "reviseOf": "recommend",
+          "world": "city",
+          "worldFrom": "plan",
+          "pickedFrom": "plan",
+          "prompt": "A council member asks: 'What is one drawback of your plan, and what would you do about it?' Revise your recommendation to answer. Keep your best reasons.",
+          "purpose": "A clearer plan helps the council trust it.",
+          "minWords": 55,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 55, "label": "55 or more words" },
+            { "id": "named", "kind": "picked", "min": 1, "label": "Still names a project you chose" },
+            { "id": "drawback", "kind": "any", "terms": ["drawback", "downside", "problem", "however", "although", "but", "risk", "limit", "cost"], "label": "Names a drawback or limit" },
+            { "id": "fix", "kind": "any", "terms": ["to fix", "to solve", "we could", "we can", "we should", "next year", "later", "plan to", "instead", "also add"], "label": "Says what to do about it" },
+            { "id": "num", "kind": "any", "terms": ["°", "degree", "points", "percent", "%", "index", "10 "], "label": "Uses a number from the model or data" }
+          ],
+          "ladder": {
+            "model": "Model: One drawback is that trees take years to grow. Because of this, the city will not cool much next summer. To fix this, we could paint roofs white now, since the model shows they cool the city by 2°F right away.",
+            "frame": "One drawback is ___. This matters because ___. To fix it, we could ___, which the model shows ___.",
+            "partial": "One drawback is ___. To fix it, we could ___.",
+            "cue": "Name a drawback. Say what to do. Use a number."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Use the skill somewhere new",
+      "items": [
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "A scientist in another city measured the surface temperature of three roofs at 3:00 p.m. Which statement is a cause-and-effect claim that the data supports?",
+          "chart": { "title": "Roof surface temperature, 3:00 p.m. (fictional data)", "unit": "°F", "min": 80, "rows": [
+            { "label": "Dark roof", "value": 150 },
+            { "label": "White roof", "value": 105 },
+            { "label": "Roof with plants", "value": 95 }
+          ] },
+          "options": [
+            { "id": "a", "label": "White roofs cause hot weather.", "fb": "The data shows white roofs were cooler than dark roofs, not hotter." },
+            { "id": "b", "label": "The roofs that reflect more sunlight or hold plants had cooler surfaces.", "fb": "" },
+            { "id": "c", "label": "Dark roofs are cheaper to build.", "fb": "The data shows temperature, not cost. A claim must match the data." },
+            { "id": "d", "label": "All roofs reach the same temperature.", "fb": "Compare the three bars. Are they the same length?" }
+          ],
+          "answer": "b"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "cooler", "title": "A cooler Marlow", "when": { "metrics": { "plan": { "temp": { "max": 91 } } } }, "text": "The council votes yes. By next July the city afternoon temperature is lower in your model, and the electricity used for cooling drops too. Dr. Sora says: 'You used the numbers to pick projects that lower the temperature, and you named what you gave up. That is how a plan gets approved.'" },
+    { "id": "little-cooler", "title": "A little cooler", "when": { "metrics": { "plan": { "temp": { "max": 94 } } } }, "text": "The council approves a smaller change. The model shows Marlow only a little cooler. Dr. Sora says: 'Compare the temperature changes in the model rules. Which project lowered the temperature the most for each point spent?'" },
+    { "id": "hotter", "title": "The streets get hotter", "text": "The council follows your plan, and the model shows Marlow getting warmer outdoors. Dr. Sora says: 'Read the model rules again. Which projects raised the temperature? Run the model with a different choice and compare.'" }
+  ],
+  "family": {
+    "skill": { "en": "reading a chart and explaining causes and effects with numbers", "es": "leer un gráfico y explicar causas y efectos con números" },
+    "talk": { "en": "Ask: 'Which number from the chart helped you decide? What did the city give up to get a cooler summer?'", "es": "Pregunta: '¿Qué número del gráfico te ayudó a decidir? ¿Qué sacrificó la ciudad para tener un verano más fresco?'" },
+    "vocab": [
+      { "term": "cause", "es": "causa" },
+      { "term": "effect", "es": "efecto" },
+      { "term": "budget", "es": "presupuesto" }
+    ]
+  }
+}

@@ -104,6 +104,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "language-quest",
+    group: "explore",
+    featured: true,
+    href: "quest",
+    icon: "worlds",
+    title: ["Language Quest", "Misión del lenguaje"],
+    text: [
+      "Nine worlds. Investigate a mystery, debate, forge words or tell a story. Your words change what happens.",
+      "Nueve mundos. Investiga un misterio, debate, forja palabras o cuenta una historia. Tus palabras cambian lo que pasa.",
+    ],
+  },
+  {
     id: "language-city",
     group: "explore",
     featured: true,

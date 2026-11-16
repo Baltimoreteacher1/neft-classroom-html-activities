@@ -1,0 +1,181 @@
+{
+  "id": "ln-signal-from-the-tower",
+  "world": "language-nexus",
+  "band": "6-8",
+  "domains": ["Listening", "Reading", "Speaking", "Writing"],
+  "functions": ["Inform", "Explain", "Sequence"],
+  "keyUses": ["Inform", "Explain"],
+  "minutes": 40,
+  "tags": ["listening", "integrated", "science station"],
+  "title": { "en": "Signal from the Tower", "es": "Señal desde la torre" },
+  "objective": { "en": "Combine what you hear and what you read to write and say an accurate plan, including a detail that changed.", "es": "Combinar lo que escuchas y lo que lees para escribir y decir un plan exacto, incluyendo un detalle que cambió." },
+  "success": [
+    { "en": "I can listen for the main idea and key details.", "es": "Puedo escuchar la idea principal y los detalles clave." },
+    { "en": "I can read a note and find what changed.", "es": "Puedo leer una nota y encontrar qué cambió." },
+    { "en": "I can write a plan that uses information from both the radio and the note.", "es": "Puedo escribir un plan que use información de la radio y de la nota." },
+    { "en": "I can confirm a plan and ask a clarifying question out loud.", "es": "Puedo confirmar un plan y hacer una pregunta aclaratoria en voz alta." }
+  ],
+  "narrative": "You are a new member of Kestrel Station, a fictional weather research station. A radio message has just come from the tower, and a printed note is on the table. Sol, the Conversation Guide, will help you put the two together. You will need to listen, read, write and speak.",
+  "characters": ["guide"],
+  "scene": { "theme": "nexus", "alt": "A hilltop research station at dawn. A tall radio tower with a blinking light stands behind a small building. On a table in front are a radio, a printed note, a red toolbox and two spare batteries.", "objects": [] },
+  "vocab": [
+    { "term": "confirm", "def": "To say that you understand and agree to a plan." },
+    { "term": "postpone", "def": "To move something to a later time." },
+    { "term": "detail", "def": "A small piece of information that matters." },
+    { "term": "clarify", "def": "To ask or explain so the meaning is clear." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Listen to the radio",
+      "items": [
+        {
+          "id": "radio",
+          "kind": "check",
+          "say": "This is Kestrel Station. The weather balloon launch is moved from Tuesday to Thursday, because winds on Tuesday will reach forty kilometers an hour. Please bring the red toolbox and two extra batteries. Meet at gate three at seven in the morning. I repeat: Thursday, gate three, seven a.m.",
+          "transcript": "This is Kestrel Station. The weather balloon launch is moved from Tuesday to Thursday, because winds on Tuesday will reach forty kilometers an hour. Please bring the red toolbox and two extra batteries. Meet at gate three at seven in the morning. I repeat: Thursday, gate three, seven a.m.",
+          "prompt": "Listen to the radio message. You can listen again. Why was the launch moved?",
+          "options": [
+            { "id": "a", "label": "The balloon is broken.", "fb": "Listen again for the word 'because'. What did the message say about the wind?" },
+            { "id": "b", "label": "The winds on Tuesday will be too strong.", "fb": "" },
+            { "id": "c", "label": "The toolbox is missing.", "fb": "The toolbox is something to bring. Listen again for the reason after 'because'." },
+            { "id": "d", "label": "Gate three is closed.", "fb": "That is not in the radio message. Listen again for the reason after 'because'." }
+          ],
+          "answer": "b"
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Read the note and compare",
+      "items": [
+        {
+          "id": "note",
+          "kind": "read",
+          "prompt": "Read the printed note on the table. It was written after the radio message.",
+          "sources": [
+            { "id": "note", "title": "Printed note from the station manager", "text": ["Update: Gate 3 will be closed on Thursday for repairs. Please use Gate 5, next to the green shed.", "The launch time is still 7:00 a.m. Everything else in the radio message is the same."] }
+          ]
+        },
+        {
+          "id": "changed",
+          "kind": "check",
+          "prompt": "Compare the radio message and the note. What changed?",
+          "options": [
+            { "id": "a", "label": "The day changed to Wednesday.", "fb": "Check the note again. It says the launch is still on Thursday." },
+            { "id": "b", "label": "The time changed to 8:00 a.m.", "fb": "The note says the time is still 7:00 a.m." },
+            { "id": "c", "label": "The gate changed from Gate 3 to Gate 5.", "fb": "" },
+            { "id": "d", "label": "The toolbox is no longer needed.", "fb": "The note says everything else in the radio message is the same." }
+          ],
+          "answer": "c"
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write the plan and answer by radio",
+      "items": [
+        {
+          "id": "plan",
+          "kind": "write",
+          "prompt": "Write the plan for the team. Use information from BOTH the radio message and the note: the day, the time, the gate, and what to bring.",
+          "purpose": "The team will follow your plan on Thursday.",
+          "minWords": 25,
+          "flagOn": { "gate": "gate-correct" },
+          "checks": [
+            { "id": "len", "kind": "words", "min": 25, "label": "25 or more words" },
+            { "id": "day", "kind": "any", "terms": ["thursday"], "label": "Says the day: Thursday" },
+            { "id": "time", "kind": "any", "terms": ["7", "seven"], "label": "Says the time: 7:00 a.m." },
+            { "id": "gate", "kind": "any", "terms": ["gate 5", "gate five", "gate #5"], "label": "Says the gate from the note: Gate 5" },
+            { "id": "bring", "kind": "count", "min": 2, "terms": ["toolbox", "batteries", "battery"], "label": "Says what to bring (the toolbox and batteries)" }
+          ],
+          "ladder": {
+            "model": "Model: The balloon launch is on Thursday at 7:00 a.m. because the winds on Tuesday will be too strong. Meet at Gate 5, not Gate 3, because Gate 3 is closed for repairs. Bring the red toolbox and two extra batteries.",
+            "frame": "The launch is on ___ at ___. Meet at ___ because ___. Bring ___ and ___.",
+            "partial": "The launch is on ___. Meet at ___. Bring ___.",
+            "cue": "Day. Time. Gate. What to bring."
+          }
+        },
+        {
+          "id": "reply",
+          "kind": "speak",
+          "prompt": "Reply to the tower by radio. Confirm the plan, say the gate has changed, and ask one clarifying question.",
+          "typedMin": 20,
+          "ladder": {
+            "frame": "Kestrel Station, this is the team. We confirm Thursday at ___. We will meet at ___. Can you tell us ___?",
+            "partial": "We confirm ___. We will meet at ___. Can you ___?",
+            "cue": "Confirm. Gate. Question."
+          },
+          "selfChecks": [
+            { "id": "confirm", "label": "I confirmed the plan." },
+            { "id": "gate", "label": "I said the correct gate." },
+            { "id": "question", "label": "I asked a question." }
+          ],
+          "needSelf": 2
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Make the plan clearer",
+      "items": [
+        {
+          "id": "revise-plan",
+          "kind": "write",
+          "reviseOf": "plan",
+          "flagOn": { "gate": "gate-correct" },
+          "prompt": "A new team member will read your plan with no radio. Revise it to explain why the day and the gate changed, in a few clear sentences.",
+          "purpose": "Reasons help readers trust the plan.",
+          "minWords": 40,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 40, "label": "40 or more words" },
+            { "id": "why", "kind": "any", "terms": ["because", "since", "due to", "so that"], "label": "Gives a reason with because or since" },
+            { "id": "wind", "kind": "any", "terms": ["wind", "forty", "40"], "label": "Explains the day changed because of strong winds" },
+            { "id": "gate", "kind": "any", "terms": ["gate 5", "gate five", "gate #5"], "label": "Still gives Gate 5" },
+            { "id": "repair", "kind": "any", "terms": ["repair", "closed", "closing"], "label": "Explains the gate changed because Gate 3 is closed" }
+          ],
+          "ladder": {
+            "model": "Model: The launch moved from Tuesday to Thursday because winds on Tuesday would reach forty kilometers an hour. The team now meets at Gate 5 instead of Gate 3, since Gate 3 is closed for repairs.",
+            "frame": "The ___ changed because ___. The ___ also changed since ___.",
+            "partial": "The day changed because ___.",
+            "cue": "Two changes. Two reasons."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "A new message",
+      "items": [
+        {
+          "id": "transfer",
+          "kind": "check",
+          "say": "Attention, volunteers. The beach cleanup is moved from Saturday to Sunday, because storms are expected on Saturday. Please bring gloves and a water bottle. Meet at the pier at nine.",
+          "transcript": "Attention, volunteers. The beach cleanup is moved from Saturday to Sunday, because storms are expected on Saturday. Please bring gloves and a water bottle. Meet at the pier at nine.",
+          "prompt": "Listen to a new message. When is the beach cleanup now?",
+          "options": [
+            { "id": "a", "label": "Saturday at nine", "fb": "Listen again. What did the message say about Saturday?" },
+            { "id": "b", "label": "Sunday at nine", "fb": "" },
+            { "id": "c", "label": "Sunday at the pier, with no gloves", "fb": "Listen again for what to bring." },
+            { "id": "d", "label": "Saturday at the pier", "fb": "Listen again. What did the message say about Saturday?" }
+          ],
+          "answer": "b"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "launch-gate5", "title": "Balloon launched", "when": { "flags": ["gate-correct"], "revised": ["revise-plan"] }, "text": "On Thursday at 7:00 a.m., the team meets at Gate 5 with the toolbox and batteries. The balloon rises into a calm sky. 'You combined what you heard and what you read, and you explained what changed,' says Sol. 'That is how a team stays on the same page.'" },
+    { "id": "launch", "title": "A good start", "when": { "flags": ["gate-correct"] }, "text": "The team meets at Gate 5 on Thursday and the launch goes well. 'You used both the radio and the note,' says Sol. 'Next time, revise to explain why things changed.'" },
+    { "id": "gate3", "title": "At the closed gate", "text": "The team arrives at Gate 3 and finds it closed. 'The printed note said something different from the radio,' says Sol. 'When two sources differ, the newer one tells you what changed. Read the note again and revise your plan.'" }
+  ],
+  "family": {
+    "skill": { "en": "combining what you hear and what you read, and explaining what changed and why", "es": "combinar lo que escuchas y lo que lees y explicar qué cambió y por qué" },
+    "talk": { "en": "Ask: 'What did you hear? What did you read? Did they match? What changed?'", "es": "Pregunta: '¿Qué escuchaste? ¿Qué leíste? ¿Coincidían? ¿Qué cambió?'" },
+    "vocab": [
+      { "term": "confirm", "es": "confirmar" },
+      { "term": "detail", "es": "detalle" },
+      { "term": "postpone", "es": "posponer" }
+    ]
+  }
+}
