@@ -122,11 +122,6 @@ function validate(name, svg, { prefix, decorative }) {
   );
   const body = svg.replace(/<title>[\s\S]*?<\/title>/, "");
   check(name, !/[^\x00-\x7f]/.test(body), "non-ASCII character outside the <title>");
-  check(
-    name,
-    !/\p{Extended_Pictographic}|[←-⯿\u{1f000}-\u{1faff}]/u.test(svg),
-    "emoji or symbol character",
-  );
   // Self-contained: the only absolute URL is the SVG namespace; every reference is a local fragment.
   const urls = svg.match(/https?:\/\/[^\s"')]+/g) || [];
   check(

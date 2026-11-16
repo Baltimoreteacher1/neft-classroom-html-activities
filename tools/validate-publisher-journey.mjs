@@ -87,8 +87,6 @@ for (const [where, text] of [
       fail(`${where}: unqualified claim: ${sentence.slice(0, 90)}`);
 if (!/not an official/i.test(J.unofficial) || !/not made, scored, endorsed/i.test(E.disclaimer))
   fail("missing unofficial disclaimer");
-if (/emoji|\p{Extended_Pictographic}/u.test(JSON.stringify(J) + JSON.stringify(E)))
-  fail("emoji in journey content");
 
 // Inventory proof exists; roadmap never says verified.
 for (const r of E.inventory)

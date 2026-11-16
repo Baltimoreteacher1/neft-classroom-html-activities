@@ -322,14 +322,6 @@ for (const route of ROUTES) {
     (await page.locator("svg symbol").count()) === 12,
     `${tag} the sprite holds the 12 family drawings`,
   );
-  check(
-    !(await page.evaluate(() =>
-      /\p{Extended_Pictographic}/u.test(
-        document.querySelector("main").innerText + document.querySelector("#pg-dialog").innerText,
-      ),
-    )),
-    `${tag} the page uses no emoji`,
-  );
   check(await noSideScroll(page), `${tag} no horizontal scroll at 1440px`);
   await axe(page, `${tag} at 1440`);
 

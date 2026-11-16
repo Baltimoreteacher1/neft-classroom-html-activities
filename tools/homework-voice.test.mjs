@@ -72,7 +72,7 @@ test("every stop has a Read-aloud control that speaks each instruction block in 
   }
 });
 
-test("math is spoken the way a teacher says it, with no emoji", async () => {
+test("math is spoken the way a teacher says it, and emoji are not read aloud", async () => {
   const { w } = await homeworkDom("4-3");
   const say = (t, l = "en") => w.hwVoice.prepare(t, l);
   assert.equal(say("3/4 of 12"), "three fourths of 12");

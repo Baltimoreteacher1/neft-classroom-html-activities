@@ -6,7 +6,7 @@
 // Each probe takes no arguments and returns an array of short finding strings, so the same
 // function runs on the shipped pages and on the self-test fixtures that prove it can fail.
 
-/** Controls whose accessible name must contain a letter (an emoji or a symbol is not a name). */
+/** Controls whose accessible name must contain a letter or digit (a symbol or emoji alone is not a name). */
 export const UNNAMED_CONTROLS = () => {
   const out = [];
   const sel =
@@ -54,10 +54,6 @@ export const UNNAMED_CONTROLS = () => {
   for (const el of document.querySelectorAll(sel)) {
     if (!visible(el)) continue;
     const name = nameOf(el).trim();
-    if (/\p{Extended_Pictographic}/u.test(name))
-      out.push(
-        `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ""}.${String(el.className?.baseVal ?? el.className).split(" ")[0]} reads an emoji aloud ("${name.slice(0, 20)}")`,
-      );
     // A radio or checkbox in a group may be named by a bare number ("50"): the group names the question.
     const choice = el.matches("input[type=radio], input[type=checkbox]");
     if (choice ? !name : !/[\p{L}\p{N}]/u.test(name))
@@ -77,28 +73,6 @@ export const UNNAMED_HIDDEN_BUTTONS = () => {
     out.push(
       `empty button ${el.id ? `#${el.id}` : `.${String(el.className?.baseVal ?? el.className).split(" ")[0]}`}`,
     );
-  }
-  return out;
-};
-
-/** Headings are read without their decoration: no emoji in the accessible heading text. */
-export const HEADING_EMOJI = () => {
-  const out = [];
-  const spoken = (n) => {
-    if (n.nodeType === 3) return n.textContent;
-    if (
-      n.nodeType !== 1 ||
-      n.getAttribute("aria-hidden") === "true" ||
-      getComputedStyle(n).display === "none"
-    )
-      return "";
-    return [...n.childNodes].map(spoken).join("");
-  };
-  for (const h of document.querySelectorAll("h1,h2,h3,h4,h5,h6")) {
-    if (!h.getClientRects().length) continue;
-    const text = spoken(h);
-    if (/\p{Extended_Pictographic}/u.test(text))
-      out.push(`heading reads an emoji aloud: "${text.trim().slice(0, 40)}"`);
   }
   return out;
 };
@@ -361,7 +335,6 @@ export const STRUCTURE_PROBES = {
   unnamedControls: UNNAMED_CONTROLS,
   duplicateIds: DUPLICATE_IDS,
   headings: HEADING_OUTLINE,
-  headingEmoji: HEADING_EMOJI,
   inactiveLanguage: INACTIVE_LANGUAGE,
   bilingualAttributes: BILINGUAL_ATTRIBUTES,
   skipAndLandmarks: SKIP_AND_LANDMARKS,

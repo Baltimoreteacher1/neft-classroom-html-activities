@@ -89,5 +89,5 @@ origin/main && git merge --squash feat/family-math-2`, resolve `data/test-reads.
   viewport, console/network clean, linked routes `../`, `tonight.html`, `progress.html`).
 - Never use `$TMPDIR` in a command that also contains `git add` (a hook misreads it); write logs to `/tmp/claude-501/`.
 - Test files over 750 lines violate the repo cap; Biome only formats `tools/**` partly; use `node_modules/.bin/biome` if `npx biome` fails.
-- No timers/countdowns in games, English and Spanish only, no external scripts, no emoji-only content.
+- No timers/countdowns in games, English and Spanish only, no external scripts.
 - Do not push anything other than via ship. Ask Joel before anything outside this scope.

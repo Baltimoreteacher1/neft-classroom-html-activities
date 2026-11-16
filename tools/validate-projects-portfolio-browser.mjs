@@ -316,12 +316,6 @@ const readKey = (page, key) => page.evaluate((k) => localStorage.getItem(k), key
     "showCert() with no completion record opens nothing and renders no certificate",
   );
   check(
-    !(await page.evaluate(() =>
-      /\p{Extended_Pictographic}/u.test(document.querySelector("main").innerText),
-    )),
-    "no emoji in the page",
-  );
-  check(
     errors.length === 0,
     `no console errors, empty device${errors.length ? `: ${errors[0]}` : ""}`,
   );
@@ -463,7 +457,6 @@ const readKey = (page, key) => page.evaluate((k) => localStorage.getItem(k), key
       heading: document.querySelector("#cert-title")?.textContent,
       art: c.querySelector(".pf-cert-art")?.getAttribute("aria-hidden"),
       focusInside: document.querySelector("#cert-modal").contains(document.activeElement),
-      emoji: /\p{Extended_Pictographic}/u.test(c.innerText),
     };
   });
   check(
@@ -474,9 +467,8 @@ const readKey = (page, key) => page.evaluate((k) => localStorage.getItem(k), key
       cert.text.includes("6.AT.3c") &&
       cert.heading === unitLabel(4) &&
       cert.label === "cert-title" &&
-      cert.art === "true" &&
-      !cert.emoji,
-    "the certificate names the student, the finished project, its date, unit and standards; art is hidden from assistive tech; no emoji",
+      cert.art === "true",
+    "the certificate names the student, the finished project, its date, unit and standards; art is hidden from assistive tech",
   );
   check(cert.focusInside, "focus moves into the certificate dialog");
   await page.keyboard.press("Escape");

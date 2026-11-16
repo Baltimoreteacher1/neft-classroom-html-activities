@@ -13,7 +13,7 @@ branch `feat/family-math-2`). Other workers edit other files in the same tree at
 - Do not start servers on fixed ports. The harness uses Vite with port 0. Close browsers/servers when a suite ends.
 - Repo rules that apply to student games: NO timers or countdowns anywhere; no links to other site hubs; no printing the worked
   solution when a learner merely misses (the "Show me" button after three misses and hint tier 3 are the only places an
-  answer is shown); no external scripts; self-contained; no emoji as the only content carrier; no Arabic/French/other languages
+  answer is shown); no external scripts; self-contained; no Arabic/French/other languages
   (English and Spanish only).
 - Files stay ≤ 500 lines (hard cap 750). Split `logic.js`, `copy.js`, `ui.js`, `index.js` as needed.
 - Matching surrounding style: ES modules, 2-space indent, Biome formatting (run `npx biome check --write` on your files).

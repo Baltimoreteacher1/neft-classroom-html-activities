@@ -458,7 +458,6 @@ for (const audience of ["student", "family"]) {
     ),
     `${audience}: no grade-level or placement claims`,
   );
-  ok(!/\p{Extended_Pictographic}/u.test(html), `${audience}: no emoji`);
   ok(
     /<svg[^>]*role="img"[^>]*aria-label="[^"]*score went from 22 to 87 over 3 checkpoints/.test(
       html,

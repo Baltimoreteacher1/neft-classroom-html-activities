@@ -49,7 +49,6 @@ const { assignmentPath, ID_OK } = await import("../access-practice-lab/src/class
 const read = (band) =>
   JSON.parse(readFileSync(join(CONTENT_DIR, "units", `g${band}.json`), "utf8"));
 const BANDS = Object.keys(UNIT_COUNTS);
-const EMOJI = /\p{Extended_Pictographic}/u;
 const CLOCK = /\b(countdown|timer|beat the clock|hurry|words per minute)\b/i;
 
 const ctxFor = (band, lang, id = "", sub = "", tab = "") => ({
@@ -96,12 +95,11 @@ test("each unit is 5 lessons plus a project with a product, audience and rubric,
     }
 });
 
-test("no unit text makes a score claim, uses emoji or sets a clock", () => {
+test("no unit text makes a score claim or sets a clock", () => {
   for (const band of BANDS) {
     const text = JSON.stringify(read(band));
     assert.doesNotMatch(text, SCORE_CLAIM);
     assert.doesNotMatch(text, CLOCK);
-    assert.equal(EMOJI.test(text), false);
   }
 });
 

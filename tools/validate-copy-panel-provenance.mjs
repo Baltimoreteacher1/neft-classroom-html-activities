@@ -4,7 +4,7 @@
  * trace to a string in the lesson it appears on.
  *
  * Why this gate exists. `validate:notebook` checks the SHAPE of a copy panel —
- * 3-5 items, a rule line, no emoji, under 12 words — and it passed on all 84
+ * 3-5 items, a rule line, under 12 words — and it passed on all 84
  * lessons while 39 of the 84 box-2 rules stated mathematics from a different
  * lesson (lesson 2-6, "Divide Multi-Digit Numbers", told students to copy
  * "Interquartile Range: IQR = Q3 − Q1", which is lesson 2-5's content). A shape

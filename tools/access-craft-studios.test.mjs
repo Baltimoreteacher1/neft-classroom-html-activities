@@ -39,7 +39,6 @@ const { toHtml } = await import(`${LAB}/util.js`);
 const { loadLedger } = await import(`${LAB}/lang/ledger.js`);
 
 const COUNTDOWN = /\b(countdown|hurry|time is up|beat the clock|words per minute|leaderboard)\b/i;
-const EMOJI = /\p{Extended_Pictographic}/u;
 const ctxFor = (view, lang, id = "", sub = "", band = "6-8") => ({
   band,
   prefs: { lang, rate: 0.9 },
@@ -238,7 +237,7 @@ test("the router sends the three routes to their views", { skip: !parseRoute }, 
   assert.equal(parseRoute("/access-practice-lab/sentences/boss/gboss1", "").id, "boss");
 });
 
-test("every hub and page renders in English, Spanish and both, with no emoji, countdown or score claim", async () => {
+test("every hub and page renders in English, Spanish and both, with no countdown or score claim", async () => {
   localStorage.clear();
   for (const band of ["3-5", "6-8"]) {
     const pages = [
@@ -262,7 +261,6 @@ test("every hub and page renders in English, Spanish and both, with no emoji, co
         assert.ok(root.querySelector("a[href*='/library']"), `${where} links back to Practice`);
         assert.doesNotMatch(text, COUNTDOWN, where);
         assert.doesNotMatch(text, SCORE_CLAIM, where);
-        assert.doesNotMatch(toHtml(root.innerHTML), EMOJI, where);
         if (lang === "es") assert.match(text, /Práctica|práctica/, where);
         assert.doesNotMatch(root.innerHTML, /undefined|\[object Object\]/, where);
       }

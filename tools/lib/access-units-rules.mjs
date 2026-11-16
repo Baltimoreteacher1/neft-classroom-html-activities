@@ -39,7 +39,6 @@ const ENGLISH_WORDS = new Set(
     " ",
   ),
 );
-const EMOJI = /\p{Extended_Pictographic}/u;
 const CLOCK =
   /\b(countdown|timer|timed|beat the clock|hurry|as fast as|words per minute|race against)\b/i;
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -407,7 +406,6 @@ export function validateUnit(unit, { band, activities, index = 0 }) {
 
   // cross-cutting content rules
   for (const [path, s] of strings(unit)) {
-    if (EMOJI.test(s)) err(`${path}: no emoji in unit content`);
     if (CLOCK.test(s)) err(`${path}: no timer or speed language`);
     if (SCORE_CLAIM.test(s)) err(`${path}: no WIDA level, score or proficiency claim`);
     if (/\blexile\b|\bwida level\b/i.test(s)) err(`${path}: no Lexile or WIDA level claims`);

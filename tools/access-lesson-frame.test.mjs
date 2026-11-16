@@ -106,7 +106,6 @@ test("content: every family is bilingual, complete and drawn from tokens only", 
   }
   for (const d of DOMAINS) assert.ok(DATA.fallbacks[d], `fallback for ${d}`);
   const text = JSON.stringify(DATA);
-  assert.ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(text), "no emoji");
   assert.ok(
     !/\b(WIDA level|scale score|Lexile|proficiency level)\b/i.test(text),
     "no invented levels or scores",

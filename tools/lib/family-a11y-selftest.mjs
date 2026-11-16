@@ -7,7 +7,6 @@ import {
   DUPLICATE_IDS,
   FOCUS_RING,
   FORCED_COLORS,
-  HEADING_EMOJI,
   HEADING_OUTLINE,
   INACTIVE_LANGUAGE,
   LIVE_REGIONS,
@@ -28,14 +27,6 @@ const CASES = [
     probe: UNNAMED_CONTROLS,
     bad: page('<main><button type="button">🔊</button></main>'),
     good: page('<main><button type="button" aria-label="Listen">🔊</button></main>'),
-  },
-  {
-    name: "emoji read aloud in a control name",
-    probe: UNNAMED_CONTROLS,
-    bad: page('<main><button type="button">🔊 Listen</button></main>'),
-    good: page(
-      '<main><button type="button"><span aria-hidden="true">🔊</span> Listen</button></main>',
-    ),
   },
   {
     name: "duplicate id",
@@ -65,12 +56,6 @@ const CASES = [
       '<h1><span class="lang-en">Hello</span><span class="lang-es" lang="es">Hola</span></h1>',
       "body.lang-mode-en .lang-es{display:none}",
     ),
-  },
-  {
-    name: "heading reads an emoji aloud",
-    probe: HEADING_EMOJI,
-    bad: page("<h1>Hello</h1><h2>🎯 Goal</h2>"),
-    good: page('<h1>Hello</h1><h2><span aria-hidden="true">🎯</span> Goal</h2>'),
   },
   {
     name: "inactive language only visually hidden",

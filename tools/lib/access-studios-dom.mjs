@@ -65,6 +65,5 @@ export function type(mod, ctx, root, sel, value, kind = "onChange") {
   Object.defineProperty(e, "target", { value: el });
   return mod[kind]?.(e, ctx);
 }
-export const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F2FF}]/u;
 export const COUNTDOWN =
   /\b(countdown|hurry|time is up|beat the clock|words per minute|seconds left)\b/i;

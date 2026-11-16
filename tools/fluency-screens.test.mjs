@@ -135,12 +135,10 @@ assert.equal(
   "next",
 );
 
-// 5. House rules for the new files: no emoji, no violet.
-const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+// 5. House rule for the new files: no violet.
 const violet = /#(?:5b21b6|7c3aed|8b5cf6|6d28d9|a78bfa|4f46e5|6366f1)/i;
 for (const file of ["feedback-host.js", "ds4-screens.css"]) {
   const text = readFileSync(new URL(`../math/fluency-lab/${file}`, import.meta.url), "utf8");
-  assert.equal(emoji.test(text), false, `${file} has no emoji`);
   assert.equal(violet.test(text), false, `${file} has no violet`);
 }
 

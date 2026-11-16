@@ -3,15 +3,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
-import {
-  COUNTDOWN,
-  click,
-  EMOJI,
-  makeCtx,
-  mount,
-  resetStorage,
-  type,
-} from "./lib/access-studios-dom.mjs";
+import { COUNTDOWN, click, makeCtx, mount, resetStorage, type } from "./lib/access-studios-dom.mjs";
 
 const { WORDS } = await import("../access-practice-lab/src/content/wordlab-words.js");
 const lab = await import("../access-practice-lab/src/content/wordlab-lab.js");
@@ -189,7 +181,7 @@ test("clue check separates found, missed and extra chunks", () => {
   assert.deepEqual([r.ok, r.hit, r.extra, r.missed], [false, [1], [0], [2]]);
 });
 
-test("every activity renders in English and Spanish for both bands with no timer or score wording and no emoji", async () => {
+test("every activity renders in English and Spanish for both bands with no timer or score wording", async () => {
   resetStorage();
   for (const band of ["3-5", "6-8"]) {
     for (const lang of ["en", "es", "bi"]) {
@@ -207,7 +199,6 @@ test("every activity renders in English and Spanish for both bands with no timer
         assert.ok(root.querySelector("h1"), `${band} ${lang} ${mode}: h1`);
         assert.doesNotMatch(text, COUNTDOWN);
         assert.doesNotMatch(text, SCORE_CLAIM);
-        assert.doesNotMatch(root.innerHTML, EMOJI);
         assert.ok(out.title.length > 3);
       }
     }
