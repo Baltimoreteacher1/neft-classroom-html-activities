@@ -429,10 +429,12 @@ export default {
   plan(s, { wrong } = {}, env) {
     if (s.finished) return [];
     const rec = recommended(s);
+    // Whatever leads into explore mode is followed by "Walk me there" in the same step, so steering adds no plan steps.
+    const GO = { click: "[data-lexp-go]" };
     if (s.at === "map" || s.at === "gate")
-      return [{ click: rec >= 0 ? `[data-lexp-land="${rec}"]` : "[data-lexp-summary]" }];
+      return rec >= 0 ? [{ click: `[data-lexp-land="${rec}"]` }, GO] : [{ click: "[data-lexp-summary]" }];
     if (s.at === "summary") return [{ click: "[data-lexp-finish]" }];
-    if (s.at === "walk") return [{ click: "[data-lexp-go]" }];
+    if (s.at === "walk") return [GO];
     const L = s.lands[s.land];
     const r = L.acts[L.i];
     const a = actOf(env, s);
@@ -441,6 +443,7 @@ export default {
         ...(r.said ? [] : [{ click: "[data-lexp-said]" }]),
         ...(r.self.includes(0) ? [] : [{ click: '[data-lexp-self="0"]' }]),
         { click: "[data-lexp-next]" },
+        GO,
       ];
     if (r.type === "write") {
       if (!r.wn || (r.wn < 2 && !r.fb?.every((c) => c.ok)))
@@ -451,9 +454,10 @@ export default {
       return [
         ...(r.self.includes(0) ? [] : [{ click: '[data-lexp-self="0"]' }]),
         { click: "[data-lexp-next]" },
+        GO,
       ];
     }
-    if (settled(r.rs)) return [{ click: "[data-lexp-next]" }];
+    if (settled(r.rs)) return [{ click: "[data-lexp-next]" }, GO];
     if (r.type === "read-order") {
       const want = a.items.map((_, n) => n);
       const seq = wrong ? [...want].reverse() : want;

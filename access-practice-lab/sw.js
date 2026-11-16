@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "2bace62a008c";
+const BUILD_HASH = "015139aa6052";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=96db0e394ffd",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -338,7 +338,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/language-expeditions-rules.js?v=76848249c64c",
   "/access-practice-lab/src/games/language-expeditions-view.js?v=3062cf741d3f",
   "/access-practice-lab/src/games/language-expeditions-world.js?v=014b50e7fe6f",
-  "/access-practice-lab/src/games/language-expeditions.js?v=b85a3cff3325",
+  "/access-practice-lab/src/games/language-expeditions.js?v=d859f3aa7650",
   "/access-practice-lab/src/games/match-mania-view.js?v=0680c8f5e32c",
   "/access-practice-lab/src/games/match-mania.js?v=4b730a482afe",
   "/access-practice-lab/src/games/mystery-word-board.js?v=2b7ae9215986",
