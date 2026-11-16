@@ -116,6 +116,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/start/explore`,
   `${LAB_BASE}/start/guide`,
   `${LAB_BASE}/start/lesson`,
+  `${LAB_BASE}/family-tour/`,
   `${LAB_BASE}/practice-together`,
   `${LAB_BASE}/site-guide`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
@@ -169,6 +170,13 @@ export function languagePageRoute(url) {
       status: 302,
       location: `${url.origin}${LAB_BASE}/access-prep${url.search}`,
     };
+  // The old Family Expedition address opens the Family Tour, which lives inside the lab.
+  if (url.pathname === "/access-family-tour" || url.pathname === "/access-family-tour/")
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/family-tour/${url.search}`,
+    };
   if (url.pathname.startsWith("/access-prep/"))
     return {
       kind: "redirect",
@@ -181,6 +189,17 @@ export function languagePageRoute(url) {
     status: 308,
     location: `https://${LEGACY_HOST}${url.pathname}${url.search}`,
   };
+}
+
+/**
+ * The Family Tour is for thelanguagepage.com only. Every other host served by this project (eduwonderlab.com and
+ * its previews) sends the tour's paths to its own Family Corner instead. Returns the redirect target or null.
+ */
+export function familyTourElsewhere(url) {
+  if (isLanguagePageHost(url.hostname)) return null;
+  const p = url.pathname.toLowerCase();
+  if (p !== `${LAB_BASE}/family-tour` && !p.startsWith(`${LAB_BASE}/family-tour/`)) return null;
+  return `${url.origin}${LAB_BASE}/family`;
 }
 
 /**

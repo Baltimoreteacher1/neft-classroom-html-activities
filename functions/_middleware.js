@@ -20,6 +20,7 @@ import {
   brandLabResponse,
   LAB_HOST_OPEN,
   languagePageRoute,
+  familyTourElsewhere,
   robotsTxt,
   sitemapXml,
 } from "./_lib/language-page.js";
@@ -168,6 +169,11 @@ async function handle(context) {
       headers: { Location: canonical, "Cache-Control": "no-store" },
     });
   }
+
+  // The Family Tour is thelanguagepage.com only (_lib/language-page.js): other hosts go to their own Family Corner.
+  const tourElsewhere = familyTourElsewhere(url);
+  if (tourElsewhere)
+    return new Response(null, { status: 302, headers: { Location: tourElsewhere, "Cache-Control": "no-store" } });
 
   // thelanguagepage.com serves only the ACCESS lab; see _lib/language-page.js. Any other host falls through.
   const lab = languagePageRoute(url);

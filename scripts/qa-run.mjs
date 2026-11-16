@@ -415,6 +415,11 @@ const COVERAGE = [
   // read by the app, the teacher hub, printables and inventory. The gate pins
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
+  // FAMILY TOUR — picks.json is generated from the lab content; the test pins both languages, real activity ids and links.
+  [
+    /^(tools\/(family-tour\.test|build-family-tour-picks)\.mjs|tools\/lib\/family-tour-skill-es\.mjs)$/,
+    ["validate:family-tour", "validate:js-syntax", "check"],
+  ],
   [
     /^(access-teacher\/evidence\.js|access-teacher\/math-fluency-report\.js|tools\/access-teacher-math-report\.test\.mjs)$/,
     ["validate:teacher-math-report", "validate:js-syntax", "check"],

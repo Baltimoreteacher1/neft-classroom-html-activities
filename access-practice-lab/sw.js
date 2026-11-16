@@ -1002,7 +1002,7 @@ function route(request, url, origin) {
   if (path === `${SCOPE}config.json` || path === `${SCOPE}sw.js`) return "network";
   const inScope = path.startsWith(SCOPE);
   if (request.mode === "navigate")
-    return inScope && !path.startsWith(`${SCOPE}printables/`) && !/\.[a-z0-9]+$/i.test(path)
+    return inScope && !path.startsWith(`${SCOPE}printables/`) && !path.startsWith(`${SCOPE}family-tour/`) && !/\.[a-z0-9]+$/i.test(path)
       ? "shell"
       : "network";
   if (inScope) return url.searchParams.has("v") && /\.(js|css)$/.test(path) ? "immutable" : "fresh";

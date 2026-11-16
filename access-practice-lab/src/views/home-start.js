@@ -11,6 +11,7 @@ import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
 import { loadIntro } from "../intro/state.js";
+import { familyTourHost } from "../family-tour-host.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 
 const SKILL_ES = {
@@ -273,7 +274,7 @@ function rolesHTML(I, band) {
     <span class="lph-roles-label" id="lphRolesLabel">${I.T("I am a…", "Soy…")}</span>
     <a class="lph-role is-student" href="#lphFront" aria-current="true">${icon("reading")}<span>${I.T("Student", "Estudiante")}</span></a>
     <a class="lph-role is-teacher" data-tour="${tourState}" title="${teacherHint}" href="${going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`}">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
-    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/practice-together?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
+    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/${familyTourHost() ? "family-tour/" : "practice-together"}?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
   </nav>`;
 }
 

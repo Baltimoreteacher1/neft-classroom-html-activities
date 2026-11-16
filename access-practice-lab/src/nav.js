@@ -5,6 +5,7 @@ import { brandName } from "./brand.js";
 import { langSwitchHTML } from "./i18n.js";
 import { CHROME } from "./acc/copy.js";
 import { DESTINATIONS, SECTIONS, SKILLS, inBand, locate } from "./sitemap.js";
+import { familyTourHost } from "./family-tour-host.js";
 import { BASE, html, icon, raw } from "./util.js";
 import { gradeSelectHTML } from "./wayfinding.js";
 
@@ -66,7 +67,9 @@ function menuGroups(band, T) {
       {
         title: T("Families and teachers", "Familias y docentes"),
         items: [
-          link("families", T("Families: Practice Together", "Familias: Practicar juntos"), "practice-together"),
+          familyTourHost()
+            ? link("families", T("Family Tour", "Recorrido familiar"), "family-tour/")
+            : link("families", T("Families: Practice Together", "Familias: Practicar juntos"), "practice-together"),
           link("families", T("Family Corner", "Rincón de la familia"), "family"),
           link("passport", T("My Passport", "Mi Pasaporte"), "passport"),
           link("classroom", T("My class", "Mi clase"), "class"),
@@ -113,7 +116,7 @@ export function navHTML(ctx, I) {
   // Teachers, Families and the Site Guide are labelled doors on the top row at every width (families are mostly on phones).
   const teachersLink = isEarlyBand(band) ? "" : html`<a class="top-link top-expedition top-teachers" href="${BASE}/start?grades=${band}" ${current === "teachers" ? raw('aria-current="page"') : ""}>${icon("teacher")}<span>${T("Teachers", "Docentes")}</span></a>`;
   // The learner row stays four destinations (tools/access-journey-pages.test.mjs); Families is its own labelled link.
-  const familiesLink = html`<a class="top-link top-expedition top-family" href="${BASE}/practice-together?grades=${band}" ${current === "family" ? raw('aria-current="page"') : ""}>${icon("families")}<span>${T("Families", "Familias")}</span></a>`;
+  const familiesLink = html`<a class="top-link top-expedition top-family" href="${BASE}/${familyTourHost() ? "family-tour/" : "practice-together"}?grades=${band}" ${current === "family" ? raw('aria-current="page"') : ""}>${icon("families")}<span>${T("Families", "Familias")}</span></a>`;
   // Book Studio is a labelled door on the top row at every width (the platform's maker space, for every audience).
   const bookLink = html`<a class="top-link top-expedition top-book" href="${BASE}/book-studio?grades=${band}" ${view === "book-studio" ? raw('aria-current="page"') : ""}>${icon("writing")}<span>${T("Create a Book", "Crear un libro")}</span></a>`;
   const siteGuideLink = html`<a class="top-link top-expedition top-guide" href="${BASE}/site-guide?grades=${band}" ${view === "site-guide" ? raw('aria-current="page"') : ""}>${icon("help")}<span>${T("Site Guide", "Guía del sitio")}</span></a>`;

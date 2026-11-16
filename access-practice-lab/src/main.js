@@ -30,6 +30,7 @@ import { mountReturnBar } from "./intro/return-bar.js";
 import { mountStudioVideo } from "./studio-video-mount.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
+import { familyTourHost } from "./family-tour-host.js";
 
 // Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
 // language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
@@ -236,7 +237,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
 }
 
 // Pages under the lab that are real files, not app routes: a click on a link to one is a normal navigation.
-const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`);
+const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`) || pathname.startsWith(`${BASE}/family-tour`);
 
 const app = {
   route: null,
@@ -341,6 +342,11 @@ function focusKey(el) {
 async function render({ keepFocus = false, scroll = false } = {}) {
   const token = ++app.rendering;
   const route = parseRoute();
+  // The old Practice Together walkthrough is retired: every family entry point opens the one Family Tour.
+  if (route.view === "practice-together" && familyTourHost()) {
+    location.replace(`${BASE}/family-tour/?grades=${normalizeBand(route.grades) || app.band}`);
+    return;
+  }
   const locationKey = location.pathname + location.search;
   const routeChanged = app.location !== locationKey;
   if (routeChanged) {

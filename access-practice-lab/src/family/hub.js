@@ -12,6 +12,7 @@ import { getFamily } from "./state.js";
 import { summarize } from "./summary.js";
 import { SKILLS, crumbs, gradeSwitch, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
 import { award, getEngagement, saveEngagement, weekKey } from "../engagement.js";
+import { familyTourHost } from "../family-tour-host.js";
 
 const tipIcon = (name) => icon(name === "microphone" ? "record" : name || "info");
 const promptReadHTML = (I, en, es) => html`<div class="fam-prompt-audio">${!I.spanish ? html`<button type="button" class="ghost small" data-say="${en}">${I.L("hub.quest.listen.en")}</button>` : ""}${I.spanish || I.bilingual ? html`<button type="button" class="ghost small" data-say-es="${es}">${I.L("hub.quest.listen.es")}</button>` : ""}</div>`;
@@ -68,6 +69,11 @@ export async function render(ctx, I) {
     title: I.S("Families", "Familias"),
     html: html`${crumbs(I)}
       ${journeyHTML(I, "welcome", band)}
+      ${familyTourHost() ? html`<section class="panel fam-tour-card" aria-labelledby="famTourTitle">
+        <h2 id="famTourTitle">${I.T("New to The Language Page?", "¿Es su primera vez en The Language Page?")}</h2>
+        <p>${I.T("Take a short guided tour, explore what your child will practice, and get a free home-practice starter kit.", "Haga un recorrido guiado, conozca las actividades que puede practicar su hijo o hija y obtenga un kit gratuito para practicar en casa.")}</p>
+        <a class="btn btn-primary btn-big" href="${BASE}/family-tour/?grades=${band}&lang=${I.spanish ? "es" : "en"}">${I.T("Start Family Tour", "Comenzar el recorrido familiar")}${icon("arrow-right")}</a>
+      </section>` : ""}
       <section class="prog-hero fam-hero d-writing is-tint" aria-labelledby="famTitle">
         <div class="prog-hero-copy">
           <p class="eyebrow">${icon("families")} ${I.L("hub.eyebrow")}</p>

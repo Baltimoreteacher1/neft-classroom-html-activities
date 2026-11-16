@@ -274,4 +274,22 @@ await t("eduwonderlab.com serves the studios byte for byte", async () => {
   assert.equal(await res.text(), page);
 });
 
+await t("the Family Tour is thelanguagepage.com only: other hosts are sent to their own Family Corner", async () => {
+  for (const host of ["eduwonderlab.com", "preview.eduwonderlab.pages.dev"]) {
+    for (const path of ["/access-practice-lab/family-tour/", "/access-practice-lab/family-tour", "/access-practice-lab/Family-Tour/picks.json"]) {
+      const { fell, res } = await answer(`https://${host}${path}`);
+      assert.equal(fell, false, `${host}${path} must not reach the tour`);
+      assert.equal(res.status, 302);
+      assert.equal(res.headers.get("location"), `https://${host}/access-practice-lab/family`);
+    }
+  }
+  const lab = await answer("https://thelanguagepage.com/access-practice-lab/family-tour/");
+  assert.equal(lab.fell, true, "the lab host serves the tour");
+  assert.ok(SITEMAP_PATHS.includes("/access-practice-lab/family-tour/"));
+  const old = await answer("https://thelanguagepage.com/access-family-tour/");
+  assert.equal(old.res.headers.get("location"), "https://thelanguagepage.com/access-practice-lab/family-tour/");
+  const other = await answer("https://eduwonderlab.com/access-family-tour/");
+  assert.equal(other.fell, true, "eduwonderlab.com keeps its own Family Expedition page");
+});
+
 console.log(`language-page-host: ${passed} checks passed.`);
