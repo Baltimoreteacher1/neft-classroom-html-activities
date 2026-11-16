@@ -107,7 +107,7 @@ export function mapHTML(s, band, env, rec) {
   </div>`;
 }
 
-export function gateHTML(s, band, env, rec) {
+export function gateHTML(s, band, env, rec, extra = "") {
   const I = env.I;
   const land = band.lands[s.land];
   const all = s.lands.every((L) => L.stamp);
@@ -138,12 +138,13 @@ export function gateHTML(s, band, env, rec) {
       <button type="button" class="btn" data-lexp-map>
         ${icon("road")}${I.T("Journey map", "Mapa del viaje")}
       </button>
+      ${extra /* teacher: passport + center finish */}
     </div>
     ${disclaimerHTML(I)}
   </div>`;
 }
 
-export function summaryHTML(s, band, env) {
+export function summaryHTML(s, band, env, extra = "") {
   const I = env.I;
   return html`<div class="lexp-panel lexp-summary">
     <p class="lexp-tag">${icon("flag")}${I.T("Journey summary", "Resumen del viaje")}</p>
@@ -176,6 +177,7 @@ export function summaryHTML(s, band, env) {
       <button type="button" class="btn" data-lexp-map>
         ${icon("road")}${I.T("Back to the journey map", "Volver al mapa del viaje")}
       </button>
+      ${extra /* teacher: passport */}
     </div>
     <p class="lexp-next">
       ${I.T("Want another four-skill adventure?", "¿Quieres otra aventura de cuatro destrezas?")}

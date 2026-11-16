@@ -48,9 +48,14 @@ import { FULL, QUICK, checkWriting, validateContent } from "./language-expeditio
 import { syncGear } from "./language-expeditions-feel-gear.js"; // feel: gear
 import { touchPadHTML } from "./language-expeditions-feel-pad.js"; // feel: phone controls
 import { paintFeel } from "./language-expeditions-feel-world.js"; // feel: restored lands + finale
+// teacher: passport page, one-land links and teacher-written stops
+import { assignedFinish, passportButton, passportClick, passportHTML } from "./language-expeditions-passport.js";
+import { decodeStop, landParam } from "./language-expeditions-links.js";
 const bandOf = (env) =>
   env.content.lands ? env.content : env.content.bands?.[env.band] || { lands: [] };
-const actOf = (env, s, k = s.land, i = s.lands[k].i) => bandOf(env).lands[k].acts[i];
+// teacher: a teacher-written stop (decoded once at init, kept in state) replaces the authored one.
+const actOf = (env, s, k = s.land, i = s.lands[k].i) =>
+  s.custom?.land === k && s.custom.i === i ? s.custom.act : bandOf(env).lands[k].acts[i];
 const recommended = (s) => s.lands.findIndex((L) => !L.stamp);
 
 function actState(a, env) {
@@ -121,6 +126,22 @@ const sceneState = (s) => {
   };
 };
 
+// teacher: land=… opens that land's walk mode once, also for a session resumed from an earlier visit (never mid-stop).
+function assignLand(s, env) {
+  const k = landParam(env.params?.land);
+  if (k < 0 || !s.lands[k] || s.assigned === k || s.at === "land") return;
+  Object.assign(s, { at: "walk", land: k, assigned: k, x: null });
+  ensure(s);
+}
+
+// teacher: a stop link that did not validate falls back to the authored stop, and the learner is told so.
+const customNoteHTML = (s, I) =>
+  s.customNote && (s.at === "map" || s.customNote.land < 0 || s.land === s.customNote.land)
+    ? html`<p class="lexp-custom-note" role="note">
+        ${I.T("Your teacher's stop link could not be opened, so this land uses its usual stops.", "No se pudo abrir el enlace de la parada de tu docente, así que esta tierra usa sus paradas de siempre.")}
+      </p>`
+    : "";
+
 function production(r, env, skill) {
   if (r.done) return;
   r.done = true;
@@ -142,7 +163,7 @@ export default {
 
   init(env) {
     const band = bandOf(env);
-    return {
+    const s = {
       sid: env.rng.int(1e9),
       at: "map",
       land: 0,
@@ -157,6 +178,18 @@ export default {
           .map((a) => actState(a, env)),
       })),
     };
+    // teacher: land=… opens that land's walk mode; stop=… swaps in a teacher-written stop.
+    const params = env.params || {};
+    assignLand(s, env);
+    if (params.stop) {
+      const dom = (n) => band.lands[n]?.domain;
+      const c = decodeStop(params.stop, band, (n) => s.lands[n]?.acts.length);
+      if (c.ok && s.lands[c.land]?.acts[c.i] && dom(c.land) === (c.act.type === "write" ? "writing" : "reading")) {
+        s.custom = { land: c.land, i: c.i, act: c.act };
+        s.lands[c.land].acts[c.i] = actState(c.act, env);
+      } else s.customNote = { land: c.land };
+    }
+    return s;
   },
 
   done: (s) => s.finished,
@@ -168,6 +201,7 @@ export default {
   view(s, env) {
     const I = env.I;
     const band = bandOf(env);
+    assignLand(s, env); // teacher
     ensure(s);
     syncGear(s); // feel: old saves earn the gear their progress already shows
     const b = env.band === "6-8" ? "6-8" : "3-5";
@@ -178,9 +212,12 @@ export default {
     );
     const rec = recommended(s);
     let panel;
+    // teacher: passport button and the center-rotation finish ride on the gate and the summary
+    const extra = html`${assignedFinish(s, I)}${passportButton(I)}`;
     if (s.at === "map") panel = mapHTML(s, band, env, rec);
-    else if (s.at === "gate") panel = gateHTML(s, band, env, rec);
-    else if (s.at === "summary") panel = summaryHTML(s, band, env);
+    else if (s.at === "gate") panel = gateHTML(s, band, env, rec, extra);
+    else if (s.at === "summary") panel = summaryHTML(s, band, env, passportButton(I));
+    else if (s.at === "passport") panel = passportHTML(s, band, env, actOf);
     else if (s.at === "walk") {
       const L = s.lands[s.land];
       panel = walkHTML(s, band.lands[s.land], L.i < L.acts.length ? actOf(env, s) : null, env, b);
@@ -188,7 +225,7 @@ export default {
       const land = band.lands[s.land];
       const L = s.lands[s.land];
       const r = L.acts[L.i];
-      const a = land.acts[L.i];
+      const a = actOf(env, s); // teacher: may be a teacher-written stop
       const body =
         a.type === "speak"
           ? speakHTML(s, r, a, env)
@@ -217,7 +254,7 @@ export default {
       class="lexp lexp-band-${b.replace("-", "")}"
       data-mechanic="four-land-expedition"
     >
-      ${barHTML(s, band, env)}
+      ${barHTML(s, band, env)}${customNoteHTML(s, I)}
       <div class="lexp-feel-stage">
         <div class="lexp-scene lexp-sky-${b.replace("-", "")}" aria-hidden="true">
           ${raw(layers)}
@@ -231,6 +268,8 @@ export default {
   click(el, s, env) {
     const b = el.closest("button");
     if (!b) return false;
+    const pp = passportClick(b, s); // teacher
+    if (pp !== undefined) return ((focusSel = pp ? ".lexp-head" : focusSel), pp);
     const d = b.dataset;
     if (d.lexpLand !== undefined) {
       const k = Number(d.lexpLand);
@@ -443,6 +482,7 @@ export default {
     if (s.at === "map" || s.at === "gate")
       return rec >= 0 ? [{ click: `[data-lexp-land="${rec}"]` }, GO] : [{ click: "[data-lexp-summary]" }];
     if (s.at === "summary") return [{ click: "[data-lexp-finish]" }];
+    if (s.at === "passport") return [{ click: "[data-lexp-pp-back]" }]; // teacher
     if (s.at === "walk") return [GO];
     const L = s.lands[s.land];
     const r = L.acts[L.i];

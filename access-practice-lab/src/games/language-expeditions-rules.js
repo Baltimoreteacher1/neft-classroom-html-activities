@@ -87,7 +87,8 @@ export function validateContent(doc) {
   return errs;
 }
 
-function actErrors(a, at, domain, ids) {
+// teacher: exported so a teacher-written stop is checked by the same rules as authored content.
+export function actErrors(a, at, domain, ids) {
   const e = [];
   if (ids.has(a.id)) e.push(`${at}: duplicate id`);
   ids.add(a.id);

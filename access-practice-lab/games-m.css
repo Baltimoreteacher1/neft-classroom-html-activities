@@ -1141,5 +1141,147 @@
   .lexp-feel-blink,
   .lexp-scene.is-finale-run .lexp-feel-sweep {
     animation: none;
+/* ── teacher ── passport page, teacher-stop note, hub teacher tools, passport print */
+.lexp-custom-note {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-left: 4px solid #f2c15b;
+  background: #f7f4ec;
+  color: #24323f;
+}
+.lexp-pp-land {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid #d9d2c1;
+  border-radius: 12px;
+  background: #fffdf8;
+  color: #24323f;
+}
+.lexp-pp-land.is-stamped {
+  border-color: #1fa6a2;
+}
+.lexp-pp-land h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: #17324d;
+}
+.lexp-pp-stamp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+}
+.lexp-pp-words,
+.lexp-pp-stops {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.lexp-pp-stops {
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+.lexp-pp-l {
+  margin: 0;
+  font-weight: 700;
+  color: #17324d;
+}
+.lexp-pp-task {
+  margin: 0;
+}
+.lexp-pp-text {
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border-left: 4px solid #1fa6a2;
+  background: #f7f4ec;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.lexp-pp-words .btn {
+  justify-self: start;
+  min-height: 44px;
+}
+.lexp-teacher h3 {
+  margin: 1rem 0 0.4rem;
+}
+.lexp-t-links {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+.lexp-t-links li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.lexp-t-links a {
+  min-width: 6rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.lexp-t-form fieldset {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0 0 1rem;
+  border: 1px solid #d9d2c1;
+  border-radius: 10px;
+}
+.lexp-t-form .btn {
+  justify-self: start;
+}
+.lexp-t-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 0.6rem;
+}
+.lexp-t-pair .gs-input,
+.lexp-t-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.lexp-t-out {
+  display: block;
+  overflow-wrap: anywhere;
+}
+@media print {
+  body:has(.lexp-passport) * {
+    visibility: hidden;
+  }
+  body:has(.lexp-passport) .lexp-passport,
+  body:has(.lexp-passport) .lexp-passport * {
+    visibility: visible;
+  }
+  body:has(.lexp-passport) .lexp-passport {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    box-shadow: none;
+    background: #fff;
+  }
+  .lexp-passport .lexp-pp-ctl,
+  .lexp-passport button {
+    display: none !important;
+  }
+  .lexp-pp-land {
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    border-color: #999;
+    color: #000;
+  }
+  .lexp-pp-land:last-of-type {
+    break-after: auto;
+    page-break-after: auto;
   }
 }

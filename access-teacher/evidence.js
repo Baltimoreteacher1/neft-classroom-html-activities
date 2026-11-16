@@ -37,6 +37,7 @@ import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util
 import { createExtras } from "./evidence-extras.js";
 import { copyGroupPlaylist, groupBand } from "./group-playlist.js";
 import { normalizeFluencyReport } from "./math-fluency-report.js";
+import { expeditionsTable } from "./expeditions-table.js"; // teacher: Language Expeditions stamps
 
 const KEY = "accessTeacher:v1:roster";
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
@@ -107,6 +108,7 @@ const slim = (s) => ({
   studio: s.studio,
   records: s.records || {},
   readingLog: s.readingLog || [],
+  expeditions: s.expeditions || null, // teacher: Language Expeditions stamps
 });
 const persist = () => {
   try {
@@ -367,6 +369,7 @@ function classTab(allRows) {
         Print student sheets (${rows.length})
       </button>
     </div>
+    ${expeditionsTable(T.students.filter((st) => rows.some((r) => r.id === st.id)))}
     ${T.pick ? studentPanel(allRows.find((r) => r.id === T.pick), T.students.find((student) => student.id === T.pick)) : ""}`;
 }
 
