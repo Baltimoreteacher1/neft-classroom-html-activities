@@ -119,3 +119,9 @@ export function mountParts(host, cfg, { onChange = () => {} } = {}) {
     result: () => describe(s),
   };
 }
+
+// The shared explorer interface (studio.mjs EXPLORERS).
+export const initialState = (cfg) => ({ a: cfg.a, variable: cfg.variable, op: cfg.op || '+', b: cfg.b, v: cfg.v });
+export const mount = mountParts;
+export const questions = partsQuestions;
+export const transfer = partsTransfer;

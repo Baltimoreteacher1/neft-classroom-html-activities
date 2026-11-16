@@ -174,7 +174,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
 <main id="ms-main" class="ms-wrap">
   <div class="ms-resume" id="ms-resume" hidden></div>
   <section class="ms-stage" id="explore" data-stage="explore" aria-labelledby="h-explore">
-    ${L.explore ? stageHead(1, "explore", "Explore", "Explora", `${L.explore.title}: build an expression, name each part, then evaluate it.`, "Partes de una expresión: construye una expresión, nombra cada parte y luego evalúala.") : stageHead(1, "explore", "Explore", "Explora", `Use the ${L.lab.title} model. Predict first, then change the quantities and watch what stays the same.`, "Usa el modelo. Primero predice; luego cambia las cantidades y observa qué se mantiene igual.")}
+    ${L.explore ? stageHead(1, "explore", "Explore", "Explora", `${L.explore.title}: ${L.explore.lead}`, "Explora el modelo de esta lección: predice, cambia una cantidad a la vez y observa qué cambia.") : stageHead(1, "explore", "Explore", "Explora", `Use the ${L.lab.title} model. Predict first, then change the quantities and watch what stays the same.`, "Usa el modelo. Primero predice; luego cambia las cantidades y observa qué se mantiene igual.")}
     <div class="ms-handoff" id="ms-handoff" hidden></div>
     <div class="ms-explore">
       <div class="ms-explore__model"><div id="ms-model" class="ms-model"><p class="ms-muted">Loading the model…</p></div><p class="ms-guide" id="ms-guide"></p></div>

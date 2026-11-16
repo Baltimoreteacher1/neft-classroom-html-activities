@@ -72,27 +72,41 @@ document.addEventListener('click', (e) => {
 // ---- Explore: the lab's own model, mounted as a component ----
 let model = null;
 let mountModel, guidance;
-let parts = null; // the lesson's own Explore model (data/math-studio/explore-overrides.json), when it has one
+// A lesson whose shared lab models a neighbour's mathematics has its own Explore model
+// (data/math-studio/explore-overrides.json): either another lab model (explore.model) or one of these explorers.
+const EXPLORERS = {
+  'expression-parts': './parts.mjs',
+  'decimal-align': './decimal-align.mjs',
+  'prime-tree': './prime-tree.mjs',
+  'properties': './properties.mjs',
+  'like-terms': './like-terms.mjs',
+  'fair-share': './fair-share.mjs',
+  'stat-question': './stat-question.mjs',
+  'composite': './composite.mjs',
+};
+const labModel = L.explore?.model || L.lab.model;
+let custom = null, customMod = null;
 async function loadModel() {
   const host = $('#ms-model');
   try {
-    if (L.explore?.kind === 'expression-parts') {
-      const { mountParts } = await import('./parts.mjs');
-      parts = mountParts(host, L.explore, { onChange: (st) => { state.explore.parts = st; save(); } });
-      if (state.explore.parts) parts.set(state.explore.parts);
+    if (EXPLORERS[L.explore?.kind]) {
+      customMod = await import(EXPLORERS[L.explore.kind]);
+      custom = customMod.mount(host, L.explore, { onChange: (st) => { state.explore.custom = st; save(); } });
+      const saved = state.explore.custom || state.explore.parts;
+      if (saved) custom.set(saved);
       $('#ms-guide').innerHTML = `<strong>${esc(L.explore.guide[0])}</strong> ${esc(L.explore.guide[1])}`;
       return;
     }
     ({ mountModel, guidance } = await import('../../curriculum/learning-labs/shared/model.mjs'));
-    const initial = state.explore.values?.length === L.lab.model.values.length ? state.explore.values : L.lab.model.values;
-    model = mountModel(host, L.lab.model, {
-      initial: L.lab.model.values,
+    const initial = state.explore.values?.length === labModel.values.length ? state.explore.values : labModel.values;
+    model = mountModel(host, labModel, {
+      initial: labModel.values,
       prefix: 'ms-model',
       lang: () => lang,
       onChange: (values) => { state.explore.values = values; save(); },
     });
-    if (initial !== L.lab.model.values) model.set(initial);
-    const g = guidance(L.lab.model);
+    if (initial !== labModel.values) model.set(initial);
+    const g = L.explore?.guide ? { show: L.explore.guide[0], tip: L.explore.guide[1] } : guidance(labModel);
     $('#ms-guide').innerHTML = `<strong>${esc(g.show)}</strong> ${esc(g.tip)}`;
   } catch (err) {
     host.innerHTML = `<p class="ms-warn">${bi('The model could not load. You can still use every other stage.', 'El modelo no se pudo cargar. Todavía puedes usar las demás etapas.')}</p>`;
@@ -114,7 +128,7 @@ function showHandoff() {
 function openModel(item, rec) {
   const level = levelOf(item.id);
   state.handoff = validate('handoff', {
-    lessonId: L.id, conceptId: L.concept, modelId: L.lab.model.kind, problemId: item.id, params: item.model.values,
+    lessonId: L.id, conceptId: L.concept, modelId: labModel.kind, problemId: item.id, params: item.model.values,
     response: rec.response ?? null, misconception: rec.tags?.[0] || null, hintLevel: rec.hints, supports: ['model'], returnTo: 'practice', level,
   });
   model?.set(item.model.values);
@@ -123,14 +137,14 @@ function openModel(item, rec) {
 }
 /** Model -> practice: a question from the current settings, then a transfer question with no model. */
 function makeQuestion() {
-  if (parts) return makePartsQuestions();
+  if (custom) return makeCustomQuestions();
   if (!model) return;
   const out = $('#ms-test-out');
   const values = model.values;
-  const item = predictItem(L.lab.model, values, L.id);
+  const item = predictItem(labModel, values, L.id);
   const round = (state.explore.round || 0) + 1;
   state.explore.round = round;
-  const transfer = transferTask(L.lab.model, L.id, round, 1);
+  const transfer = transferTask(labModel, L.id, round, 1);
   if (!item && !transfer) { out.innerHTML = `<p class="ms-muted">${bi('This model works best with the investigation questions above.', 'Este modelo funciona mejor con las preguntas de investigación.')}</p>`; return; }
   out.innerHTML = '<div class="ms-test__a"></div><div class="ms-test__b"></div>';
   const runTransfer = () => {
@@ -138,7 +152,7 @@ function makeQuestion() {
     const t = { id: transfer.problemId, kind: 'num', prompt: transfer.prompt, answer: transfer.target, hints: [`Start from the relationship the model uses for the ${transfer.metric.toLowerCase()}.`, `Work backward: which value of “${transfer.field}” gives exactly ${transfer.target}?`], explanation: `Any value that makes the ${transfer.metric.toLowerCase()} equal ${transfer.target} is correct. You can test it in the model.` };
     renderItem($('.ms-test__b', out), t, {
       label: ['Transfer: a new problem, no model', 'Transferencia: un problema nuevo, sin el modelo'],
-      check: (_it, text) => checkTransfer(L.lab.model, transfer, text),
+      check: (_it, text) => checkTransfer(labModel, transfer, text),
       rec: state.explore.checks[t.id],
       onChange: (rec) => { state.explore.checks[t.id] = rec; save(); },
     });
@@ -152,20 +166,21 @@ function makeQuestion() {
     if (state.explore.checks[item.id]?.result) runTransfer();
   } else runTransfer();
 }
-/** The parts model's version: two questions about the parts of the student's expression, an evaluation, then a new expression. */
-async function makePartsQuestions() {
-  const { partsQuestions, partsTransfer } = await import('./parts.mjs');
+/** A lesson explorer's version: questions about what the student built, then a new problem with no model. */
+async function makeCustomQuestions() {
   const out = $('#ms-test-out');
-  const st = parts.state;
+  const st = custom.state;
   const round = (state.explore.round || 0) + 1;
   state.explore.round = round;
-  const queue = [...partsQuestions(st, L.id), partsTransfer(st, round, L.id)];
+  const queue = [...customMod.questions(st, L.id), customMod.transfer(st, round, L.id)];
   out.innerHTML = queue.map((_, i) => `<div class="ms-test__q" data-q="${i}"${i ? ' hidden' : ''}></div>`).join('');
-  const labels = [['From your expression', 'De tu expresión'], ['From your expression', 'De tu expresión'], ['From your expression', 'De tu expresión'], ['Transfer: a new expression, no model', 'Transferencia: una expresión nueva, sin el modelo']];
+  const fromModel = ['From your model', 'De tu modelo'];
+  const transferLabel = ['Transfer: a new problem, no model', 'Transferencia: un problema nuevo, sin el modelo'];
   queue.forEach((item, i) => {
     const slot = $(`[data-q="${i}"]`, out);
     renderItem(slot, item, {
-      label: i === queue.length - 1 ? labels[3] : labels[i],
+      label: i === queue.length - 1 ? transferLabel : fromModel,
+      misconceptions: L.misconceptions,
       rec: state.explore.checks[item.id],
       onChange: (rec) => { state.explore.checks[item.id] = rec; if (rec.result) { const next = $(`[data-q="${i + 1}"]`, out); if (next) next.hidden = false; } save(); },
     });

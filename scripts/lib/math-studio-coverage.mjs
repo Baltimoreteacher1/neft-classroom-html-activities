@@ -57,7 +57,12 @@ export function auditLesson(L, manifestLesson) {
   } catch (e) {
     fail.explore.push(`model error: ${e.message}`);
   }
-  if (!L.lab?.investigate?.length) fail.explore.push("no investigation prompts");
+  if (!(L.explore?.investigate || L.lab?.investigate)?.length)
+    fail.explore.push("no investigation prompts");
+  if (L.explore && !(L.explore.title && L.explore.guide?.length === 2))
+    fail.explore.push("own Explore model needs a title and two guide lines");
+  if (L.explore?.kind === "stat-question" && (L.explore.cards || []).length < 4)
+    fail.explore.push("statistical-question explorer needs at least 4 cards");
   const u = L.understand || {};
   if (!u.iDo?.lines?.length) fail.understand.push("no worked example");
   if (!u.keyIdea && !u.intro) fail.understand.push("no conceptual explanation");

@@ -92,7 +92,9 @@ async function lesson(ctx, id) {
   );
   await page.goto(`${base}/math/studio/${id}/`);
   await page
-    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts, #ms-model .ms-x", {
+      timeout: 15000,
+    })
     .catch(() => fail(id, "model did not mount"));
   // Every stage: visible, lesson content, only one shown.
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
@@ -172,13 +174,16 @@ async function lesson(ctx, id) {
   // Model -> practice -> transfer.
   await page.click('.ms-stagebar [data-stage-link="explore"]');
   if (L.explore?.kind === "expression-parts") await partsPath(page, L, id);
+  else if (L.explore && L.explore.kind !== "lab-model") await explorerPath(page, L, id);
   else await labModelPath(page, L, id);
   // Write something, reload, expect it back on the same stage.
   await page.fill("#ms-prediction", "It will double.");
   await page.waitForTimeout(250);
   await page.reload();
   await page
-    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts, #ms-model .ms-x", {
+      timeout: 15000,
+    })
     .catch(() => {});
   ok(
     (await page.inputValue("#ms-prediction")) === "It will double.",
@@ -204,11 +209,11 @@ async function labModelPath(page, L, id) {
   const values = await page.$$eval("#ms-model [data-control]", (els) =>
     els.map((e) => Number(e.value)),
   );
-  const full = [...L.lab.model.values];
+  const full = [...(L.explore?.model || L.lab.model).values];
   values.forEach((v, i) => {
     full[i] = v;
   });
-  const q = predictItem(L.lab.model, full, id);
+  const q = predictItem(L.explore?.model || L.lab.model, full, id);
   if (q) {
     await page.fill("#ms-test-out .ms-test__a input", String(Number(q.answer.toFixed(4))));
     await page.click('#ms-test-out .ms-test__a [data-act="check"]');
@@ -231,6 +236,34 @@ async function labModelPath(page, L, id) {
 }
 
 /** Parts of an Expression: every part is labelled; naming, editing, evaluating; its questions unlock in order. */
+/** A lesson explorer: it mounts, its first question accepts the answer its own code computes, the next one unlocks. */
+async function explorerPath(page, L, id) {
+  const mod = await import(`../assets/math-studio/${L.explore.kind}.mjs`);
+  const qs = mod.questions(mod.initialState(L.explore), id, L.explore.cards);
+  ok(qs.length >= 1, id, "explorer made no questions");
+  await page.click("#ms-make-question");
+  const first = qs[0];
+  const slot = '#ms-test-out [data-q="0"]';
+  if (first.kind === "mc") await page.check(`${slot} input[value="${first.correct}"]`);
+  else await page.fill(`${slot} input`, String(first.answer));
+  await page.click(`${slot} [data-act="check"]`);
+  ok(
+    await page.$eval(`${slot} .ms-feedback`, (el) => el.classList.contains("ms-ok")),
+    id,
+    `${L.explore.kind}: first question rejected its own answer ${first.answer ?? first.correct}`,
+  );
+  ok(
+    await page.$eval('#ms-test-out [data-q="1"]', (el) => !el.hidden),
+    id,
+    `${L.explore.kind}: next question did not unlock`,
+  );
+  ok(
+    (await page.$eval("#explore", (el) => el.innerText)).includes(L.explore.title),
+    id,
+    "explorer title missing",
+  );
+}
+
 async function partsPath(page, L, id) {
   const x = L.explore;
   const legend = await page.$eval("#ms-model .ms-legend", (el) => el.innerText);
@@ -313,7 +346,9 @@ for (const id of perUnit) {
   const page = await phone.newPage();
   await page.goto(`${base}/math/studio/${id}/`);
   await page
-    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts, #ms-model .ms-x", {
+      timeout: 15000,
+    })
     .catch(() => {});
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
     await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);
@@ -328,7 +363,9 @@ for (const id of perUnit.slice(0, 4)) {
   const page = await desktop.newPage();
   await page.goto(`${base}/math/studio/${id}/`);
   await page
-    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts, #ms-model .ms-x", {
+      timeout: 15000,
+    })
     .catch(() => {});
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
     await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);
@@ -368,7 +405,7 @@ for (const l of registry.lessons.filter((x) => ids.includes(x.id))) {
   const lab = readFileSync(join(REPO_ROOT, l.lab.href.replace(/^\//, ""), "index.html"), "utf8");
   // A lesson with its own Explore model is (correctly) not advertised on the shared lab.
   ok(
-    l.concept === "expression-parts" || lab.includes(`/math/studio/${l.id}/#explore`),
+    l.ownExplore || lab.includes(`/math/studio/${l.id}/#explore`),
     l.id,
     `${l.lab.href} has no link to this lesson's Learning Lab`,
   );

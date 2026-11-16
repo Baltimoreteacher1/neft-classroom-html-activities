@@ -5,7 +5,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { verifyHandoff, verifySolve } from "../../assets/math-studio/core.mjs";
-import { controls } from "../../curriculum/learning-labs/shared/math.mjs";
+import { controls, evaluate } from "../../curriculum/learning-labs/shared/math.mjs";
 import { blueprints } from "../../tools/learning-labs/blueprints.mjs";
 import { loadLessonConfig, REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 import { studioUrls } from "../generate-lesson-paths.mjs";
@@ -175,6 +175,17 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
   const id = lesson.id;
   const cfg = loadLessonConfig(id);
   const P = cfg.practice || {};
+  // An explorer may read its cards from the lesson's own config (2-1: explore.cards, with their answers and Spanish).
+  if (override?.fromConfig === "explore.cards")
+    override = {
+      ...override,
+      cards: (cfg.explore?.cards || []).map((c) => ({
+        text: c.text,
+        textEs: c.textEs,
+        correct: c.correct,
+      })),
+    };
+  if (override?.kind === "lab-model") evaluate(override.model, override.model.values); // throws on a bad model
   const tier = (name) => (P[name] || []).map((it, i) => ({ it, id: `${name}-${i}` }));
   // With its own Explore model, a lesson keeps only the lab items written for it: the untagged items model the lab's
   // own mathematics (the shared neighbour lesson's), not this lesson's.
@@ -263,7 +274,11 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
     objective: cfg.contentObjective || lesson.objective,
     languageObjective: cfg.languageObjective,
     time: cfg.timeEstimate,
-    concept: override ? override.kind : `${model.kind}:${model.mode}`,
+    concept: override?.model
+      ? `${override.model.kind}:${override.model.mode}`
+      : override
+        ? override.kind
+        : `${model.kind}:${model.mode}`,
     explore: override || undefined,
     lab: clean({
       id: lab.id,

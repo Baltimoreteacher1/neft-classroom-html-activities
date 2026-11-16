@@ -50,4 +50,22 @@ No existing URL changed what it answers. Practice studios, Unit 4 studios and Le
 
 ## Lessons with their own Explore model
 
-A shared Learning Lab can model a neighbouring lesson's mathematics. `data/math-studio/explore-overrides.json` gives such a lesson its own Explore model; the registry then keeps only the lab practice items written for that lesson and the lab page stops listing it. Today: **6-5** uses **Parts of an Expression** (`assets/math-studio/parts.mjs`): its own worked example (12t + 50), coefficient / variable / term / constant labelled and named by tapping, evaluation step by step, and "Term" added to its vocabulary. The `expression-remix` lab (distributive property) remains 6-6's Explore model.
+A shared Learning Lab can model a neighbouring lesson's mathematics. `data/math-studio/explore-overrides.json` gives such a lesson its own Explore model, built on the lesson's own worked example; the registry then keeps only the lab practice items written for that lesson, and the shared lab page stops listing it. Audit of all 46 labs (2026-11-16):
+
+| Lesson | Shared lab modelled | Explore model now |
+| --- | --- | --- |
+| 2-1 Statistical questions | histogram | Will the Answers Vary? (`stat-question.mjs`, the lesson's own question cards) |
+| 2-8 Mean | MAD | Mean as a Fair Share (`fair-share.mjs`) |
+| 2-11 Add/subtract decimals | decimal multiplication | Line Up the Decimal Points (`decimal-align.mjs`) |
+| 3-2 Rates and unit rates | juice mixer | lab model `rate:shopping` (unit price) |
+| 3-9 Equivalent ratios | unit conversion | lab model `ratio:mixer` (scale both quantities) |
+| 5-1 Parallelograms | triangle | lab model `area:parallelogram` |
+| 5-4 Composite figures | trapezoid | Composite Figures (`composite.mjs`) |
+| 5-6 Nets and surface area | volume | lab model `solid:surface` |
+| 5-10 Volume of prisms | polygon area | lab model `solid:net` (volume) |
+| 6-5 Write and evaluate expressions | distributive property | Parts of an Expression (`parts.mjs`) |
+| 6-8 Commutative/associative/identity | GCF lists | Properties Machine (`properties.mjs`) |
+| 6-13 Prime factorization | LCM lists | Factor Tree (`prime-tree.mjs`) |
+| 6-15 Combine like terms | distributive property | Like Terms Sorter (`like-terms.mjs`) |
+
+The other lessons' labs match their objectives closely enough to keep. Each explorer exports `initialState`, `mount`, `questions` and `transfer`; `studio.mjs` lists them in `EXPLORERS`.

@@ -62,6 +62,7 @@ export function outputs() {
           standard: L.standard,
           objective: L.objective,
           concept: L.concept,
+          ownExplore: L.explore ? L.explore.kind : undefined,
           route: `/math/studio/${L.id}/`,
           lab: {
             id: L.lab.id,

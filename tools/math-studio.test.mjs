@@ -2,6 +2,7 @@
 // (every lesson's model, many settings), saved-state migration, the registry, and generated-file freshness.
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { areas } from "../assets/math-studio/composite.mjs";
 import {
   checkChoice,
   checkNumber,
@@ -24,18 +25,28 @@ import {
   verifyHandoff,
   verifySolve,
 } from "../assets/math-studio/core.mjs";
+import { compute as decCompute, misaligned } from "../assets/math-studio/decimal-align.mjs";
+import { mean, missingFor } from "../assets/math-studio/fair-share.mjs";
+import { evalTerms, exprText, simplify } from "../assets/math-studio/like-terms.mjs";
 import { describe, partsQuestions, partsTransfer } from "../assets/math-studio/parts.mjs";
+import { expForm, factorize } from "../assets/math-studio/prime-tree.mjs";
+import { MOVES, text as propText, value as propValue } from "../assets/math-studio/properties.mjs";
 import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { buildRegistry } from "../scripts/lib/math-studio-registry.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 let n = 0;
+const pending = [];
 const t = (name, fn) => {
-  try {
-    fn();
-  } catch (e) {
+  const tag = (e) => {
     e.message = `${name}: ${e.message}`;
     throw e;
+  };
+  try {
+    const r = fn();
+    if (r && typeof r.then === "function") pending.push(r.catch(tag));
+  } catch (e) {
+    tag(e);
   }
   n++;
 };
@@ -348,6 +359,87 @@ t(
   },
 );
 
+t(
+  "lesson explorers: the mathematics each one shows is right, and its questions accept their own answers",
+  () => {
+    // 2-11: the lesson's worked example, exactly.
+    assert.deepEqual(decCompute({ a: "128.75", b: "46.8", op: "+" }), {
+      p: 2,
+      value: 175.55,
+      text: "175.55",
+      a: "128.75",
+      b: "46.80",
+      negative: false,
+    });
+    assert.equal(decCompute({ a: "175.55", b: "19.35", op: "-" }).text, "156.20");
+    assert.equal(decCompute({ a: "0.1", b: "0.2", op: "+" }).value, 0.3, "no floating-point drift");
+    assert.equal(misaligned({ a: "128.75", b: "46.8", op: "+" }), 133.43);
+    assert.equal(misaligned({ a: "1.5", b: "2.5", op: "+" }), null);
+    // 2-8: Miguel's $60 over 4 days, and a target mean.
+    assert.equal(mean([12, 18, 10, 20]), 15);
+    assert.equal(missingFor([12, 18, 10, 20], 16), 20);
+    // 5-4: both methods agree with the lesson's 96 + 30 = 126.
+    assert.deepEqual(areas({ W: 12, H: 13, w: 6, h: 5 }), {
+      bottom: 96,
+      top: 30,
+      whole: 156,
+      corner: 30,
+      area: 126,
+    });
+    // 6-13: 60 = 2² × 3 × 5, and every number 4..200 factors back to itself.
+    assert.equal(expForm(factorize(60)), "2² × 3 × 5");
+    for (let n = 4; n <= 200; n++)
+      assert.equal(
+        factorize(n).reduce((a, [p, e]) => a * p ** e, 1),
+        n,
+        `factorize ${n}`,
+      );
+    // 6-15: 12m + 9s, and the simplified form has the same value.
+    const terms = [
+      { c: 4, v: "m" },
+      { c: 3, v: "s" },
+      { c: 2, v: "m" },
+      { c: 5, v: "s" },
+      { c: 6, v: "m" },
+      { c: 1, v: "s" },
+    ];
+    assert.equal(exprText(simplify(terms)), "12m + 9s");
+    assert.equal(evalTerms(terms, { m: 2, s: 3 }), evalTerms(simplify(terms), { m: 2, s: 3 }));
+    // 6-8: every move keeps the value and names the right property.
+    let st = { op: "+", items: ["3", "5", "2"], group: "left", identity: false };
+    for (const k of ["swapInside", "swapSides", "regroup", "identity", "regroup", "swapSides"]) {
+      const next = MOVES[k].run(st);
+      assert.equal(propValue(next), propValue(st), `${k} kept the value`);
+      st = next;
+    }
+    assert.equal(
+      propText(
+        MOVES.regroup.run({ op: "+", items: ["3", "5", "2"], group: "left", identity: false }),
+      ),
+      "3 + (5 + 2)",
+    );
+    assert.equal(MOVES.regroup.prop, "associative");
+    // Every in-scope explorer: its questions and transfer validate and its numeric answers are finite.
+    const explorers = lessons.filter((l) => l.explore && l.explore.kind !== "lab-model");
+    assert.equal(explorers.length, 8);
+    return Promise.all(
+      explorers.map(async (L) => {
+        const mod = await import(`../assets/math-studio/${L.explore.kind === "expression-parts" ? "parts" : L.explore.kind}.mjs`);
+        const s0 = mod.initialState(L.explore);
+        for (const q of [
+          ...mod.questions(s0, L.id, L.explore.cards),
+          ...[1, 2, 3].map((r) => mod.transfer(s0, r, L.id, L.explore.cards)),
+        ]) {
+          validate("item", q);
+          if (q.kind === "num") assert.ok(Number.isFinite(q.answer), `${L.id} ${q.id}`);
+          if (q.kind === "mc")
+            assert.ok(q.correct >= 0 && q.correct < q.choices.length, `${L.id} ${q.id}`);
+        }
+      }),
+    );
+  },
+);
+
 // ---- Registry content ----
 t("registry: every lesson has lesson-specific content in all five stages and valid keys", () => {
   for (const L of lessons) {
@@ -468,6 +560,7 @@ t("generated Math Studio files are current", () => {
   });
 });
 
+await Promise.all(pending);
 console.log(
   `PASS math-studio: ${n} groups; ${lessons.length} lessons; ${stats.verified} verified model hand-offs, ${stats.refused} refused`,
 );
