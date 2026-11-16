@@ -115,8 +115,7 @@ function render(m, { lang, width }) {
   return { body: out, width: W, height: Math.ceil(y + 6) };
 }
 
-/** @type {import("./mount.mjs").Figure} */
-export default {
+const figure = {
   id: "decimal-columns",
   keys: ["decimal:columns"],
   title: { en: "Add and subtract decimals in place-value columns", es: "Suma y resta decimales en columnas de valor posicional" },
@@ -127,6 +126,12 @@ export default {
   ],
   build: (_key, values) => columnsModel(values),
   render,
-  scene: (root) => panelScene(root),
+  scene: (/** @type {ParentNode} */ root) => panelScene(root),
   describe,
+  /** The number the lesson asks for. @param {ColumnsModel} m @param {"en" | "es"} lang */
+  headline: (m, lang) => ({ label: pick(lang, "Answer", "Respuesta"), value: fixed(m.cr, m.dp) }),
+  /** The dashed card: last digits lined up instead of the points. Null when nothing slides. @param {ColumnsModel} m @param {"en" | "es"} lang */
+  wrong: (m, lang) => (m.mistake ? { value: m.mistake.value, say: pick(lang, "Lined up the last digits instead of the decimal points.", "Alineaste los últimos dígitos en vez de los puntos decimales.") } : null),
 };
+
+export default /** @type {import("./mount.mjs").Figure} */ (figure);

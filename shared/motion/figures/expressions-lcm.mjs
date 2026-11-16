@@ -185,4 +185,6 @@ export const lcmFigure = {
   render: (model, o) => renderLcm(model, o),
   scene: (root, model) => stepScene(root, model.steps),
   describe: (model, lang) => describeLcm(model, lang),
+  headline: (model, lang) => ({ label: pick(lang, "Least common multiple", "Mínimo común múltiplo (mcm)"), value: String(model.lcm) }),
+  wrong: (model, lang) => (model.gcf > 1 ? { value: String(model.a * model.b), say: pick(lang, "Multiplied the two numbers instead of finding the first common multiple.", "Multiplicó los dos números en lugar de hallar el primer múltiplo común.") } : null),
 };

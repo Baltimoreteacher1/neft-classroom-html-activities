@@ -166,6 +166,8 @@ export const polygonFigure = {
     ]);
     return { body: c1.svg + c2.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
   },
+  headline: (/** @type {PolyModel} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Area of the polygon", "Área del polígono"), value: m.total.text.replace(/,/g, ""), approx: m.total.sym === "≈" }),
+  wrong: (/** @type {PolyModel} */ m, /** @type {string} */ lang) => ({ value: m.wrong.text.replace(/,/g, ""), say: L(lang, "Used the line from the center to a corner as the height.", "Usaste la línea del centro a una esquina como altura.") }),
   scene(/** @type {ParentNode} */ root, /** @type {PolyModel} */ m) {
     return sceneOf(root, 2, (win) =>
       all(root, ".gm-piece").map((el) => {

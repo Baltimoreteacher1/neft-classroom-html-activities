@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
+import { parse } from "../shared/motion/exact.mjs";
 import decimals from "../shared/motion/figures/decimals.mjs";
 import { digitsOf } from "../shared/motion/figures/decimals-columns.mjs";
 import columnsFigure, { columnsModel } from "../shared/motion/figures/decimals-columns-figure.mjs";
@@ -343,4 +344,117 @@ test("each figure's description and picture mention the headline number in both 
       fig.describe(fig.build(key, values), "es"),
     );
   }
+});
+
+// ---- headline() and wrong() ------------------------------------------------------------------------------------------
+
+/** The exact value a parse()-readable string stands for, as a number for comparison with the lab. @param {string} s */
+const asNumber = (s) => {
+  const r = parse(s);
+  assert.ok(r, `parse() reads "${s}"`);
+  return Number(r.n) / Number(r.d);
+};
+
+/** @param {import("../shared/motion/figures/mount.mjs").Figure & { headline: Function, wrong: Function }} fig @param {string} key @param {number[]} values */
+function checkAt(fig, key, values) {
+  const m = fig.build(key, values);
+  const drawn = (lang) =>
+    figureSvg(fig, key, values, { lang, width: 400 }).svg.includes(
+      lang === "es" ? "No así" : "Not this",
+    );
+  for (const lang of ["en", "es"]) {
+    const h = fig.headline(m, lang);
+    const w = fig.wrong(m, lang);
+    assert.ok(h.label && typeof h.value === "string", `${key} headline`);
+    assert.equal(
+      w !== null,
+      drawn(lang),
+      `${key} ${JSON.stringify(values)} ${lang}: wrong() is non-null exactly when the dashed card is drawn`,
+    );
+    if (w) {
+      assert.ok(w.say.length > 10 && !/undefined|NaN/.test(w.say));
+      assert.notEqual(
+        asNumber(w.value),
+        asNumber(h.value),
+        `${key} ${JSON.stringify(values)}: wrong equals right`,
+      );
+    }
+  }
+  const [he, hs] = [fig.headline(m, "en"), fig.headline(m, "es")];
+  assert.notEqual(he.label, hs.label);
+  assert.equal(he.value, hs.value);
+  assert.equal(!!he.approx, !!hs.approx);
+  const [we, ws] = [fig.wrong(m, "en"), fig.wrong(m, "es")];
+  assert.equal(we === null, ws === null);
+  if (we && ws) {
+    assert.notEqual(we.say, ws.say);
+    assert.equal(we.value, ws.value);
+  }
+  return { m, h: he, w: we };
+}
+
+test("receipt headline() is the lab's order total; wrong() is the forgotten point, exactly when that card is drawn", () => {
+  for (let q = 1; q <= 40; q++) {
+    for (const items of [1, 2, 5, 7, 12]) {
+      const values = [q * 0.25, items];
+      const { h, w, m } = checkAt(receiptFigure, "decimal:receipt", values);
+      const r = lab("decimal", "receipt", values);
+      assert.ok(Math.abs(asNumber(h.value) - r.value) < 1e-9, JSON.stringify(values));
+      assert.equal(!!h.approx, false);
+      assert.equal(w === null, m.c === 0, "the card is drawn exactly when the price has cents");
+    }
+  }
+  const { w } = checkAt(receiptFigure, "decimal:receipt", [2.75, 6]);
+  assert.equal(w?.value, "1650");
+});
+
+test("columns headline() is the lab's answer; wrong() is the misaligned sum, only when the places differ", () => {
+  let some = 0;
+  let none = 0;
+  for (let a = 1000; a <= 20000; a += 215) {
+    for (let b = 5; b <= 995; b += 130) {
+      for (const op of [1, 2]) {
+        const values = [a / 100, b / 100, op];
+        const { h, w } = checkAt(columnsFigure, "decimal:columns", values);
+        const r = lab("decimal", "columns", values);
+        assert.ok(Math.abs(asNumber(h.value) - r.value) < 1e-9, JSON.stringify(values));
+        w ? some++ : none++;
+      }
+    }
+  }
+  assert.ok(some > 0 && none > 0, "both the drawn and the omitted case were exercised");
+  assert.equal(checkAt(columnsFigure, "decimal:columns", [46.8, 3.75, 1]).w?.value, "8.43");
+  assert.equal(checkAt(columnsFigure, "decimal:columns", [46.8, 3.75, 2]).w?.value, "0.93");
+  assert.equal(checkAt(columnsFigure, "decimal:columns", [46.85, 3.75, 1]).w, null);
+  assert.equal(checkAt(columnsFigure, "decimal:columns", [46, 3.75, 2]).w?.value, "−3.29");
+});
+
+test("shipments headline() is the lab's quotient (approx when it does not end); wrong() is the divisor-only slide", () => {
+  let approx = 0;
+  let exact = 0;
+  for (let k = 1; k <= 150; k += 7) {
+    for (let j = 1; j <= 30; j++) {
+      const values = [Math.round(k * 12) / 10, Math.round(j * 6) / 10];
+      const { h, w, m } = checkAt(divisionFigure, "division:shipments", values);
+      const r = lab("division", "shipments", values);
+      assert.equal(!!h.approx, !m.ld.terminates);
+      assert.ok(
+        Math.abs(asNumber(h.value) - r.value) < (h.approx ? 0.00005 + 1e-9 : 1e-9),
+        JSON.stringify(values),
+      );
+      assert.equal(h.value, String(r.equation.split("= ")[1]).replace(/,/g, ""));
+      assert.equal(
+        w === null,
+        m.ld.p === 0,
+        "the card is drawn exactly when the divisor has a decimal place",
+      );
+      h.approx ? approx++ : exact++;
+    }
+  }
+  assert.ok(approx > 0 && exact > 0);
+  const t = checkAt(divisionFigure, "division:shipments", [14.4, 1.2]);
+  assert.deepEqual([t.h.value, t.w?.value], ["12", "1.2"]);
+  const r = checkAt(divisionFigure, "division:shipments", [1.2, 1.8]);
+  assert.deepEqual([r.h.value, r.h.approx, r.w?.value], ["0.6667", true, "0.0667"]);
+  assert.equal(checkAt(divisionFigure, "division:shipments", [14.4, 3]).w, null);
 });

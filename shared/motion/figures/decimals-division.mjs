@@ -33,6 +33,7 @@ export function divisionModel(values) {
     quotientText: rounded.text,
     exact: rounded.exact,
     checkProduct,
+    wrongValue: wrongQ ? wrongQ.text : null,
     wrongText: wrongQ ? `${wrongQ.exact ? "" : "≈ "}${wrongQ.text}` : null,
   };
 }
@@ -225,8 +226,7 @@ function render(m, { lang, width }) {
   return { body: out, width: W, height: Math.ceil(y + 6) };
 }
 
-/** @type {import("./mount.mjs").Figure} */
-export default {
+const figure = {
   id: "division-shipments",
   keys: ["division:shipments"],
   title: { en: "Long division, one step at a time", es: "División larga, un paso a la vez" },
@@ -236,6 +236,12 @@ export default {
   ],
   build: (_key, values) => divisionModel(values),
   render,
-  scene: (root) => panelScene(root),
+  scene: (/** @type {ParentNode} */ root) => panelScene(root),
   describe,
+  /** The quotient the lab shows (rounded to 4 places when it does not end). @param {DivisionModel} m @param {"en" | "es"} lang */
+  headline: (m, lang) => ({ label: pick(lang, "Equal shipments", "Envíos iguales"), value: m.quotientText, approx: !m.ld.terminates }),
+  /** The dashed card: only the divisor's point slid. Null when the divisor is already whole. @param {DivisionModel} m @param {"en" | "es"} lang */
+  wrong: (m, lang) => (m.wrongValue ? { value: m.wrongValue, say: pick(lang, "Slid the decimal point in the divisor only, not in the dividend.", "Moviste el punto decimal solo en el divisor, no en el dividendo.") } : null),
 };
+
+export default /** @type {import("./mount.mjs").Figure} */ (figure);

@@ -1,8 +1,8 @@
 // Lesson 2-4, box plot: order the values, find the median, split into halves for Q1 and Q3, then draw the five-number summary.
 // Quartiles follow the lab: the median of each half, the middle value left out of both halves when the count is odd.
 import { COLOR } from "../tokens.mjs";
-import { cardPanels, cardTracks, cardWords } from "./data-cards.mjs";
-import { dataControls, dataModel, fmt, list, nb } from "./data-model.mjs";
+import { cardPanels, cardTracks, cardWords, middleMistake } from "./data-cards.mjs";
+import { dataControls, dataModel, fmt, list, nb, headlineOf } from "./data-model.mjs";
 import { boxStrip, bracket, dotPlot, FADE, fiveTable, f1, header, PAD, para, POP, sel, stagger, step, T } from "./data-draw.mjs";
 import { cardGeometry } from "./data-cards.mjs";
 
@@ -61,6 +61,8 @@ export default {
     const s4 = step(4, h4.svg + plot.svg + strip.svg + table.svg + `<g class="dm-cap">${cap.svg}</g>`);
     return { body: cards.svg + s3 + s4, width: W, height: Math.ceil(y) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => middleMistake(m, lang),
   scene(root) {
     const tracks = cardTracks(root, 1, 0, 0.4);
     tracks.push({ els: sel(root, '.dm-step[data-step="3"]'), from: 0.4, to: 0.45, keyframes: FADE });

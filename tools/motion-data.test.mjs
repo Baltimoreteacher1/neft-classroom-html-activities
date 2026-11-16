@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
-import { int, Rat } from "../shared/motion/exact.mjs";
+import { int, parse, Rat } from "../shared/motion/exact.mjs";
 import figures from "../shared/motion/figures/data.mjs";
 import { histogramOf } from "../shared/motion/figures/data-histogram.mjs";
 import { dataModel, decimal, fmt } from "../shared/motion/figures/data-model.mjs";
@@ -172,4 +172,121 @@ test("the headline number is printed in the picture, and the odd and non-termina
       assert.ok(svg.includes(needle), `${key} ${lang}: ${needle}`);
     }
   }
+});
+
+// ---- headline() and wrong(): used by the Standard flow and Challenge layers -------------------------------------------------
+const KEYS = [
+  "data:histogram",
+  "data:median",
+  "data:box",
+  "data:spread",
+  "data:mean-mad",
+  "data:outlier",
+];
+const labValue = (key, values) => {
+  const [kind, mode] = key.split(":");
+  return evaluate({ kind, mode, values }, values).value;
+};
+const SETS = [
+  [2, 4, 5, 7, 9, 10, 12, 15],
+  [17, 7, 5, 19, 13, 6, 4, 21],
+  [0, 1, 14, 6, 20, 22, 24, 26],
+  [4, 6, 8, 10, 12, 14, 16, 20],
+  [11, 5, 4, 12, 14, 3, 13, 48],
+  [12, 14, 15, 17, 18, 20, 22, 16],
+  [12, 15, 18, 22, 20, 17, 13, 19],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [15, 15, 15, 15, 15, 15, 15, 15],
+  [50, 50, 50, 50, 50, 50, 50, 49],
+  [3, 9, 27, 1, 44, 13, 31, 8],
+  [5, 10, 15, 20, 25, 30, 35, 40],
+  [1, 2, 3, 4, 5, 6, 7, 8],
+  [20, 1, 2, 3, 4, 5, 6, 7],
+  [2, 2, 3, 3, 4, 4, 5, 5],
+];
+
+test("headline(): equals the lab's evaluate(), reads back exactly, EN and ES labels differ", () => {
+  for (const key of KEYS) {
+    const fig = byKey(key);
+    for (const values of SETS) {
+      const m = fig.build(key, values);
+      const en = fig.headline(m, "en");
+      const es = fig.headline(m, "es");
+      const v = parse(en.value);
+      assert.ok(v, `${key} ${values}: ${en.value} parses`);
+      assert.ok(v.eq(m.headline), `${key} ${values}: ${en.value} is the exact headline`);
+      assert.ok(
+        Math.abs(Number(v.n) / Number(v.d) - labValue(key, values)) < 1e-9,
+        `${key} ${values}: ${en.value} vs lab`,
+      );
+      assert.equal(en.value, es.value);
+      assert.notEqual(en.label, es.label, `${key} label translated`);
+      assert.ok(!en.approx, `${key} ${values}: eight observations are always exact`);
+    }
+  }
+});
+
+test("headline(): a non-terminating value is flagged approx", () => {
+  const m = byKey("data:mean-mad").build("data:mean-mad", [1, 2, 4]);
+  assert.equal(byKey("data:mean-mad").headline(m, "en").approx, true);
+});
+
+test("wrong(): non-null exactly when the dashed card is drawn, never the right answer, translated", () => {
+  /** The card is drawn when its "Not this" text is in the picture. */
+  const drawn = (key, values) =>
+    /Not this/.test(figureSvg(byKey(key), key, values, { lang: "en", width: 400 }).svg);
+  let nonNull = 0;
+  let nulls = 0;
+  for (const key of KEYS) {
+    const fig = byKey(key);
+    for (const values of SETS) {
+      const m = fig.build(key, values);
+      const en = fig.wrong(m, "en");
+      const es = fig.wrong(m, "es");
+      assert.equal(
+        en !== null,
+        drawn(key, values),
+        `${key} ${values}: wrong() iff the card is drawn`,
+      );
+      assert.equal(en === null, es === null);
+      if (!en) {
+        nulls++;
+        continue;
+      }
+      nonNull++;
+      assert.ok(parse(en.value), `${key} ${values}: ${en.value} parses`);
+      assert.ok(
+        !parse(en.value).eq(m.headline),
+        `${key} ${values}: wrong ${en.value} equals the right answer`,
+      );
+      assert.equal(en.value, es.value);
+      assert.ok(en.say && es.say && en.say !== es.say, `${key}: sentence translated`);
+      assert.ok(
+        !/\n/.test(en.say) && en.say.split(/(?<=[.!?])\s/).length === 1,
+        `${key}: one sentence`,
+      );
+    }
+  }
+  assert.ok(
+    nonNull > 20 && nulls > 5,
+    `both cases are exercised (${nonNull} wrong, ${nulls} none)`,
+  );
+});
+
+test("wrong(): hand-worked wrong results", () => {
+  const w = (key, values) => byKey(key).wrong(byKey(key).build(key, values), "en");
+  // median of 4,5,6,7,13,17,19,21 is 10; the list as given has 19 and 13 in the middle, mean 16
+  assert.equal(w("data:median", [17, 7, 5, 19, 13, 6, 4, 21]).value, "16");
+  assert.equal(w("data:box", [17, 7, 5, 19, 13, 6, 4, 21]).value, "16");
+  assert.equal(w("data:box", [2, 4, 5, 7, 9, 10, 12, 15]), null);
+  // range 26, IQR 19.5
+  assert.equal(w("data:spread", [0, 1, 14, 6, 20, 22, 24, 26]).value, "26");
+  // signed deviations average to 0
+  assert.equal(w("data:mean-mad", [2, 4, 6, 8, 10, 12, 14, 16]).value, "0");
+  assert.equal(w("data:mean-mad", [3, 3, 3, 3, 3, 3, 3, 3]), null);
+  // the mean 11.25 used as the middle (median 9)
+  assert.equal(w("data:outlier", [1, 2, 3, 7, 11, 12, 14, 40]).value, "11.25");
+  // 15 counted in 10-14 instead of 15-19: [12,14,15,17,18,20,22,16] has 2 values in 10-14, so the wrong frequency is 3 (range is 10)
+  assert.equal(w("data:histogram", [12, 14, 15, 17, 18, 20, 22, 16]).value, "3");
+  assert.equal(w("data:histogram", [11, 12, 13, 14, 16, 17, 18, 19]), null);
 });

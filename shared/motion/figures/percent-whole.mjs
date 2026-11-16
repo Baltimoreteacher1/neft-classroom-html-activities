@@ -5,6 +5,8 @@ import { Rat } from "../exact.mjs";
 import { COLOR } from "../tokens.mjs";
 import { block, CH, callout, clampWidth, dec, equivalents, f1, fillOf, gcd, nb, PAD, rat, rel, stepScene, T, text } from "./percent-kit.mjs";
 
+/** @typedef {import("./percent-kit.mjs").PercentFigure} PercentFigure */
+
 /** @param {string} key @param {number[]} values */
 function build(key, values) {
   const [p, part] = values;
@@ -166,7 +168,16 @@ function describe(m, lang) {
   return s.join(" ");
 }
 
-/** @type {import("./mount.mjs").Figure} */
+/** @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: T(lang, "Recovered whole", "Total recuperado"), value: m.whole.text, approx: !m.whole.exact });
+
+/**
+ * Multiplying the part by the percent (treating the part as the whole). Null exactly when no "not this" card is drawn.
+ * @param {Model} m @param {"en" | "es"} lang
+ */
+const wrong = (m, lang) => (m.wrong === null ? null : { value: m.wrong, say: T(lang, "Multiplied the part by the percent instead of dividing, treating the part as the whole.", "Multiplicó la parte por el porcentaje en vez de dividir, como si la parte fuera el total.") });
+
+/** @type {PercentFigure} */
 const whole = {
   id: "percent-whole",
   keys: ["percent:whole", "percent:find-whole"],
@@ -179,5 +190,7 @@ const whole = {
   render,
   scene: (root) => stepScene(root),
   describe,
+  headline,
+  wrong,
 };
 export default whole;

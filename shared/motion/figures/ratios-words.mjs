@@ -84,8 +84,8 @@ export function compareWrong(lang, m) {
   const w = /** @type {NonNullable<typeof m.wrong>} */ (m.wrong);
   const [c, k] = [txt(w.color), Math.abs(w.t)];
   return w.t > 0
-    ? t(`Not this: adding ${k} to both numbers of ${REF[0]} : ${REF[1]} gives ${c} : ${m.b}, a different mix. Use × or ÷.`, `No así: sumar ${k} a los dos números de ${REF[0]} : ${REF[1]} da ${c} : ${m.b}, otra mezcla. Usa × o ÷.`)
-    : t(`Not this: taking ${k} off both numbers of ${REF[0]} : ${REF[1]} gives ${c} : ${m.b}, a different mix. Use × or ÷.`, `No así: quitar ${k} a los dos números de ${REF[0]} : ${REF[1]} da ${c} : ${m.b}, otra mezcla. Usa × o ÷.`);
+    ? t(`Not this: adding ${k} to both numbers of ${m.a} : ${m.b} gives ${c} : ${REF[1]}, a different mix. Use × or ÷.`, `No así: sumar ${k} a los dos números de ${m.a} : ${m.b} da ${c} : ${REF[1]}, otra mezcla. Usa × o ÷.`)
+    : t(`Not this: taking ${k} off both numbers of ${m.a} : ${m.b} gives ${c} : ${REF[1]}, a different mix. Use × or ÷.`, `No así: quitar ${k} a los dos números de ${m.a} : ${m.b} da ${c} : ${REF[1]}, otra mezcla. Usa × o ÷.`);
 }
 /** @param {Lang} lang @param {ReturnType<typeof import("./ratios-calc.mjs").rateModel>} m */
 export function rateVerdict(lang, m) {

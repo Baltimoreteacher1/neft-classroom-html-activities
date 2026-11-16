@@ -29,7 +29,8 @@ export function motionSpecFor(lessonId) {
     const m = JSON.parse(readFileSync(file, "utf8")).bench?.model;
     if (!m) return null;
     const key = `${m.kind}:${m.mode}`;
-    return figureFor(key) ? { key, values: m.values } : null;
+    /* the exponent lessons carry the same copies picture in their own Exponent model, with its Predict and Reason step */
+    return key !== "power:order" && figureFor(key) ? { key, values: m.values } : null;
   }
   return null;
 }

@@ -3,7 +3,7 @@
 import { Rat } from "../exact.mjs";
 import { COLOR } from "../tokens.mjs";
 import {
-  FILL, L, P, R, SQ, T, all, answerBox, card, dec, f1, frameOf, halfTurn, line, notBox, poly, rightMark, sceneOf, slideFrom, sqrtText, stackBoxes, sub, textW,
+  FILL, L, P, R, SQ, T, all, plain, answerBox, card, dec, f1, frameOf, halfTurn, line, notBox, poly, rightMark, sceneOf, slideFrom, sqrtText, stackBoxes, sub, textW,
 } from "./geometry-kit.mjs";
 
 /** @param {unknown} values @param {Array<[number, number]>} spec */
@@ -143,6 +143,8 @@ export const parallelogramFigure = {
     const fin = stackBoxes(x, y, w, boxes);
     return { body: c1.svg + c2.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
   },
+  headline: (/** @type {ParaModel} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Area of the parallelogram", "Área del paralelogramo"), value: plain(m.area) }),
+  wrong: (/** @type {ParaModel} */ m, /** @type {string} */ lang) => (m.s > 0 ? { value: m.wrong.text.replace(/,/g, ""), say: L(lang, "Used the slanted side as the height.", "Usaste el lado inclinado como altura.") } : null),
   scene(/** @type {ParentNode} */ root, /** @type {ParaModel} */ _m) {
     return sceneOf(root, 2, (win) =>
       all(root, ".gm-piece").map((el) => {
@@ -243,6 +245,8 @@ export const triangleFigure = {
     ]);
     return { body: c1.svg + c2.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
   },
+  headline: (/** @type {TriModel} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Area of the triangle", "Área del triángulo"), value: plain(m.area) }),
+  wrong: (/** @type {TriModel} */ m, /** @type {string} */ lang) => ({ value: plain(m.twice), say: L(lang, "Forgot to divide by 2, so this is the whole parallelogram.", "Olvidaste dividir entre 2, así que es todo el paralelogramo.") }),
   scene(/** @type {ParentNode} */ root, /** @type {TriModel} */ _m) {
     return sceneOf(root, 2, (win) =>
       all(root, ".gm-piece").map((el) => {
@@ -350,6 +354,8 @@ export const trapezoidFigure = {
     const fin = stackBoxes(x, y, w, boxes);
     return { body: c1.svg + c2.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
   },
+  headline: (/** @type {TrapModel} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Area of the trapezoid", "Área del trapecio"), value: plain(m.area) }),
+  wrong: (/** @type {TrapModel} */ m, /** @type {string} */ lang) => ({ value: plain(m.twice), say: L(lang, "Forgot to divide by 2, so this is two trapezoids.", "Olvidaste dividir entre 2, así que son dos trapecios.") }),
   scene(/** @type {ParentNode} */ root, /** @type {TrapModel} */ _m) {
     return sceneOf(root, 2, (win) =>
       all(root, ".gm-piece").map((el) => {

@@ -245,3 +245,88 @@ test("the Spanish figure uses the lessons' Spanish terms", () => {
   }).svg;
   assert.ok(lcm.includes("mcm") && !lcm.includes("LCM"));
 });
+
+/** headline() is the lab's number; wrong() exists exactly when the dashed "not this" card is drawn. */
+function headlineChecks(id, key, values) {
+  const f = fig(id);
+  const lang = (l) => ({ lang: l, width: 400 });
+  const model = f.build(key, values);
+  const h = f.headline(model, "en");
+  const hEs = f.headline(model, "es");
+  assert.equal(
+    String(parse(h.value)),
+    String(lab(key, values).value),
+    `${key} ${values}: headline vs evaluate()`,
+  );
+  assert.equal(hEs.value, h.value);
+  assert.ok(h.label && hEs.label && h.label !== hEs.label, `${key}: label translated`);
+  assert.equal(h.approx, undefined);
+  const drawn = figureSvg(f, key, values, lang("en")).svg.includes('data-step="4"');
+  const w = f.wrong(model, "en");
+  const wEs = f.wrong(model, "es");
+  assert.equal(w !== null, drawn, `${key} ${values}: wrong() iff the dashed card is drawn`);
+  assert.equal(wEs !== null, drawn);
+  if (w && wEs) {
+    assert.ok(parse(w.value), `${key} ${values}: wrong value reads`);
+    assert.notEqual(
+      String(parse(w.value)),
+      String(parse(h.value)),
+      `${key} ${values}: wrong equals right`,
+    );
+    assert.equal(wEs.value, w.value);
+    assert.ok(w.say && wEs.say && w.say !== wEs.say && !/NaN|undefined/.test(w.say + wEs.say));
+  }
+}
+
+test("headline() equals the lab and wrong() matches the dashed card at every setting", () => {
+  for (let a = 1; a <= 8; a++)
+    for (const b of [1, 4, 10])
+      for (const x of [1, 2, 10]) {
+        headlineChecks("expression-two-forms-one-value", "expression:equivalence", [a, b, x]);
+        headlineChecks("expression-area-distribute", "expression:distribute", [a, b, x]);
+      }
+  for (let a = 2; a <= 36; a += 1)
+    for (const b of [2, 7, 12, 18, 24, 35, 36, a]) {
+      headlineChecks("factors-shared-greatest", "factors:gcf", [a, b]);
+      headlineChecks("factors-hops-primes-lcm", "factors:lcm", [a, b]);
+    }
+  for (const a of [1, 2, 12, 25])
+    for (const b of [1, 2, 8, 25])
+      for (const c of [1, 2, 17])
+        for (const p of [1, 2, 3])
+          headlineChecks("factors-reorder-regroup", "factors:regroup", [a, b, c, p]);
+});
+
+test("headline() and wrong(): hand-checked", () => {
+  const e = fig("expression-two-forms-one-value");
+  assert.equal(e.headline(e.build("expression:equivalence", [3, 4, 2]), "en").value, "18");
+  assert.equal(e.wrong(e.build("expression:equivalence", [3, 4, 2]), "en").value, "10");
+  assert.equal(e.wrong(e.build("expression:equivalence", [1, 4, 2]), "en"), null);
+  const g = fig("factors-shared-greatest");
+  assert.deepEqual(
+    [
+      g.headline(g.build("factors:gcf", [18, 24]), "en").value,
+      g.wrong(g.build("factors:gcf", [18, 24]), "en").value,
+    ],
+    ["6", "72"],
+  );
+  assert.equal(g.wrong(g.build("factors:gcf", [9, 9]), "en"), null);
+  const l = fig("factors-hops-primes-lcm");
+  assert.deepEqual(
+    [
+      l.headline(l.build("factors:lcm", [12, 18]), "en").value,
+      l.wrong(l.build("factors:lcm", [12, 18]), "en").value,
+    ],
+    ["36", "216"],
+  );
+  assert.equal(l.wrong(l.build("factors:lcm", [7, 9]), "en"), null);
+  const r = fig("factors-reorder-regroup");
+  assert.deepEqual(
+    [
+      r.headline(r.build("factors:regroup", [4, 17, 25, 2]), "en").value,
+      r.wrong(r.build("factors:regroup", [4, 17, 25, 2]), "en").value,
+    ],
+    ["100", "29"],
+  );
+  assert.equal(r.wrong(r.build("factors:regroup", [2, 2, 7, 1]), "en"), null);
+});

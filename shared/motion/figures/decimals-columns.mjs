@@ -122,6 +122,7 @@ export function misalign(ca, cb, op) {
   return {
     from: fixed(shiftTop ? ca : cb, shiftTop ? pa : pb),
     to: decimalText(shiftTop ? t : b, dp).text,
+    value: decimalText(wrong, dp).text,
     sum: `${decimalText(t, dp).text} ${op} ${decimalText(b, dp).text} = ${decimalText(wrong, dp).text}`,
   };
 }

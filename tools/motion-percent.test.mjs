@@ -230,3 +230,116 @@ test("settings the lab refuses throw RangeError", () => {
   assert.throws(() => model("percent:discount", [10, 121]), RangeError);
   assert.throws(() => model("percent:tape", [10.5, 60]), RangeError);
 });
+
+// ---- headline() and wrong(): the optional methods the standard flow and the challenge read
+const headlineOf = (key, values, lang = "en") => {
+  const f = figureFor(key);
+  return f.headline(f.build(key, values), lang);
+};
+const wrongOf = (key, values, lang = "en") => {
+  const f = figureFor(key);
+  return f.wrong(f.build(key, values), lang);
+};
+const cardDrawn = (key, values) => count(svgOf(key, values), ">Not this") > 0;
+
+test("headline() is the lab's evaluate() value at every legal setting, and parse() reads it exactly", () => {
+  for (const key of KEYS) {
+    const [kind, mode] = key.split(":");
+    const whole = mode === "whole" || mode === "find-whole";
+    for (let p = whole ? 1 : 0; p <= (mode === "grid" ? 200 : 100); p += 1) {
+      for (const b of [1, 2, 7, 13, 40, 83, 100, 119, 120]) {
+        const lab = evaluate({ kind, mode, values: [p, b] }, [p, b]);
+        const h = headlineOf(key, [p, b]);
+        assert.equal(bare(h.value), bare(fmt(lab.value)), `${key} ${p}, ${b}`);
+        const v = parse(h.value);
+        assert.ok(v, `${key} ${p}, ${b}: ${h.value} does not parse`);
+        // an exact value agrees with the lab's float to rounding error; an approximate one to its four printed places
+        assert.ok(
+          Math.abs(Number(v.n) / Number(v.d) - lab.value) < (h.approx ? 5e-5 : 1e-9),
+          `${key} ${p}, ${b}`,
+        );
+        assert.equal(
+          !!h.approx,
+          whole && Math.abs(lab.value * 1e4 - Math.round(lab.value * 1e4)) >= 1e-6,
+          `${key} approx ${p}, ${b}`,
+        );
+      }
+    }
+  }
+});
+
+test("headline() hand examples", () => {
+  assert.deepEqual(headlineOf("percent:grid", [135, 40]), { label: "Shaded amount", value: "54" });
+  assert.deepEqual(headlineOf("percent:discount", [18, 83]), { label: "Discount", value: "14.94" });
+  assert.deepEqual(headlineOf("percent:whole", [30, 18]), {
+    label: "Recovered whole",
+    value: "60",
+    approx: false,
+  });
+  assert.deepEqual(headlineOf("percent:find-whole", [7, 18]), {
+    label: "Recovered whole",
+    value: "257.1429",
+    approx: true,
+  });
+  assert.equal(headlineOf("percent:whole", [30, 18], "es").label, "Total recuperado");
+});
+
+test("wrong() is null exactly when the figure draws no 'not this' card, and never equals the headline", () => {
+  for (const key of KEYS) {
+    const [, mode] = key.split(":");
+    const whole = mode === "whole" || mode === "find-whole";
+    for (const p of whole ? [1, 7, 30, 50, 99, 100] : [0, 1, 4, 20, 35, 50, 100]) {
+      for (const b of [1, 10, 40, 83, 100, 120]) {
+        const w = wrongOf(key, [p, b]);
+        assert.equal(w !== null, cardDrawn(key, [p, b]), `${key} ${p}, ${b}: wrong() vs card`);
+        if (w) {
+          assert.ok(parse(w.value), `${key} ${p}, ${b}: ${w.value} does not parse`);
+          assert.notEqual(w.value, headlineOf(key, [p, b]).value, `${key} ${p}, ${b}`);
+          assert.ok(
+            !parse(w.value).eq(parse(headlineOf(key, [p, b]).value)),
+            `${key} ${p}, ${b}: wrong equals right by value`,
+          );
+        }
+      }
+    }
+  }
+});
+
+test("wrong() hand examples: the wrong result and what the student did", () => {
+  assert.deepEqual(wrongOf("percent:grid", [35, 40]), {
+    value: "35",
+    say: "Used the percent as the amount instead of finding that share of the whole.",
+  });
+  assert.deepEqual(wrongOf("percent:grid", [35, 100]), {
+    value: "3.5",
+    say: "Moved the decimal point one place instead of two.",
+  });
+  assert.equal(wrongOf("percent:grid", [0, 40]), null);
+  assert.equal(wrongOf("percent:discount", [25, 100]), null);
+  assert.equal(wrongOf("percent:discount", [25, 80]).value, "25");
+  assert.equal(wrongOf("percent:whole", [100, 18]), null);
+  assert.equal(wrongOf("percent:whole", [30, 18]).value, "5.4");
+});
+
+test("headline() and wrong() strings differ between English and Spanish", () => {
+  for (const [key, values] of [
+    ["percent:grid", [35, 40]],
+    ["percent:grid", [35, 100]],
+    ["percent:discount", [25, 80]],
+    ["percent:benchmark", [18, 83]],
+    ["percent:tape", [45, 90]],
+    ["percent:whole", [30, 18]],
+    ["percent:find-whole", [7, 18]],
+  ]) {
+    assert.notEqual(headlineOf(key, values, "en").label, headlineOf(key, values, "es").label, key);
+    assert.equal(headlineOf(key, values, "en").value, headlineOf(key, values, "es").value, key);
+    const en = wrongOf(key, values, "en");
+    const es = wrongOf(key, values, "es");
+    assert.notEqual(en.say, es.say, key);
+    assert.equal(en.value, es.value, key);
+    assert.ok(
+      en.say.length > 20 && es.say.length > 20 && !/undefined|NaN/.test(en.say + es.say),
+      key,
+    );
+  }
+});

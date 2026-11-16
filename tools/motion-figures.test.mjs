@@ -6,8 +6,10 @@ import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { controls as labControls } from "../curriculum/learning-labs/shared/math.mjs";
 import { registered } from "../curriculum/learning-labs/shared/models/index.mjs";
+import { parse } from "../shared/motion/exact.mjs";
 import { FIGURES, figureFor } from "../shared/motion/figures/index.mjs";
 import { figureSvg } from "../shared/motion/figures/mount.mjs";
+import { newProblem, problemAt } from "../shared/motion/figures/think-logic.mjs";
 import { CSS_VARS } from "../shared/motion/tokens.mjs";
 import { blueprints } from "./learning-labs/blueprints.mjs";
 
@@ -56,9 +58,44 @@ test("a figure exists for every lab model of Units 2-9 (MOTION_COVERAGE=1)", {
         .filter((b) => b.lessons.some((l) => /^[2-9]-/.test(l)))
         .map((b) => `${b.model.kind}:${b.model.mode}`),
     ),
-  ].filter((k) => k !== "power:order");
+  ];
   const missing = keys.filter((k) => !figureFor(k));
   assert.deepEqual(missing, [], `no motion figure for: ${missing.join(", ")}`);
+});
+
+test("every figure supports Think it through: headline, wrong move, a new equivalent problem (MOTION_COVERAGE=1)", {
+  skip: !process.env.MOTION_COVERAGE,
+}, () => {
+  for (const fig of FIGURES) {
+    assert.equal(typeof fig.headline, "function", `${fig.id}: headline`);
+    for (const key of fig.keys) {
+      const start = startOf(key);
+      for (const lang of ["en", "es"]) {
+        const p = problemAt(fig, key, start.values, lang);
+        assert.ok(p, `${fig.id} ${key}: no problem at the starting values`);
+        assert.ok(
+          p.head.label && parse(p.head.value),
+          `${fig.id} ${key}: headline ${JSON.stringify(p.head)}`,
+        );
+        if (p.wrong) {
+          assert.ok(parse(p.wrong.value), `${fig.id} ${key}: wrong value ${p.wrong.value}`);
+          assert.notEqual(
+            parse(p.wrong.value).toString(),
+            parse(p.head.value).toString(),
+            `${fig.id} ${key}: wrong equals right`,
+          );
+          assert.ok(p.wrong.say.length > 8, `${fig.id} ${key}: wrong say`);
+        }
+      }
+      const n = newProblem(fig, key, start.values, "check|1", { avoid: [] });
+      assert.ok(n, `${fig.id} ${key}: no new equivalent problem can be generated`);
+      if (fig.thinkWrong !== false)
+        assert.ok(
+          newProblem(fig, key, start.values, "check|2", { needWrong: true }),
+          `${fig.id} ${key}: no setting has a wrong move to analyse`,
+        );
+    }
+  }
 });
 
 for (const fig of figs) {

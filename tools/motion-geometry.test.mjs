@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { fmt } from "../curriculum/learning-labs/shared/models/util.mjs";
-import { Rat } from "../shared/motion/exact.mjs";
+import { parse, Rat } from "../shared/motion/exact.mjs";
 import {
   parallelogramFigure,
   trapezoidFigure,
@@ -297,4 +297,145 @@ test("static pictures carry no transform attribute (the scenes animate transform
       );
     }
   }
+});
+
+/** headline() and wrong() for the Standard flow and Challenge: one number the lesson asks for, and the common wrong result. */
+const FIGS = [
+  [parallelogramFigure, "area:parallelogram", range3([4, 12], [2, 9], [0, 15], 1)],
+  [triangleFigure, "area:triangle", range3([1, 12], [1, 12], [4, 4], 1)],
+  [trapezoidFigure, "area:trapezoid", range3([1, 12], [1, 12], [1, 12], 1)],
+  [
+    polygonFigure,
+    "area:apothem",
+    [3, 4, 5, 6, 7, 8].flatMap((n) => [1, 5, 12].map((side) => [n, side])),
+  ],
+  [
+    polygonFigure,
+    "area:polygon",
+    [3, 4, 5, 6, 7, 8].flatMap((n) => [1, 5, 12].map((side) => [n, side, 3])),
+  ],
+  [
+    volumeFigure,
+    "solid:net",
+    range3([1, 10], [1, 10], [1, 10], 1).concat([
+      [1, 2, 3],
+      [2, 2, 2],
+      [3, 3, 3],
+    ]),
+  ],
+  [
+    prismFigure,
+    "solid:surface",
+    range3([1, 10], [1, 10], [1, 10], 1).concat([
+      [3, 6, 4],
+      [3, 3, 3],
+    ]),
+  ],
+  [
+    prismFigure,
+    "solid:faces",
+    range3([1, 10], [1, 10], [1, 10], 1).concat([
+      [3, 6, 4],
+      [3, 3, 3],
+    ]),
+  ],
+  [
+    triPrismFigure,
+    "solid:tri-prism",
+    [3, 6, 9, 12].flatMap((a) => [1, 2, 5, 10].map((l) => [a, l])),
+  ],
+  [
+    pyramidFigure,
+    "solid:pyramid-net",
+    [1, 3, 6, 10].flatMap((s2) => [6, 9, 12].map((l) => [s2, l])),
+  ],
+];
+
+test("headline() is the lab's number, parse()-readable, labelled in both languages", () => {
+  for (const [fig, key, sets] of FIGS) {
+    const [kind, mode] = key.split(":");
+    for (const values of sets) {
+      const f = /** @type {any} */ (fig);
+      const m = f.build(key, values);
+      const en = f.headline(m, "en");
+      const es = f.headline(m, "es");
+      const v = parse(en.value);
+      assert.ok(v, `${key} ${values}: "${en.value}" does not parse`);
+      assert.equal(es.value, en.value);
+      assert.notEqual(es.label, en.label, `${key}: label not translated`);
+      assert.ok(en.label && es.label);
+      const lab = evaluate({ kind, mode, values }, values).value;
+      const rounded = key === "area:polygon" || key === "area:apothem";
+      if (rounded) {
+        assert.ok(Math.abs(num(v) - lab) < 0.0051, `${key} ${values}: ${en.value} vs ${lab}`);
+        assert.equal(en.approx, polygonModel(values[0], values[1]).total.sym === "≈");
+      } else {
+        near(num(v), lab, `${key} ${values}`);
+        assert.ok(!en.approx);
+      }
+    }
+  }
+  assert.equal(
+    polygonFigure.headline(polygonFigure.build("area:apothem", [4, 6]), "en").approx,
+    false,
+  );
+  assert.equal(
+    polygonFigure.headline(polygonFigure.build("area:apothem", [5, 6]), "en").approx,
+    true,
+  );
+  assert.equal(
+    parallelogramFigure.headline(parallelogramFigure.build("area:parallelogram", [8, 3, 4]), "en")
+      .value,
+    "24",
+  );
+  assert.equal(
+    triangleFigure.headline(triangleFigure.build("area:triangle", [5, 3, 4]), "en").value,
+    "7.5",
+  );
+});
+
+test("wrong() is non-null exactly when the dashed 'not this' card is drawn, and never equals the right answer", () => {
+  for (const [fig, key, sets] of FIGS) {
+    for (const values of sets) {
+      const f = /** @type {any} */ (fig);
+      const m = f.build(key, values);
+      const w = f.wrong(m, "en");
+      const wEs = f.wrong(m, "es");
+      const drawn = (lang) =>
+        /Not this|No así/.test(figureSvg(f, key, values, { lang, width: 400 }).svg);
+      assert.equal(w === null, !drawn("en"), `${key} ${values}: wrong() vs the card (en)`);
+      assert.equal(wEs === null, !drawn("es"), `${key} ${values}: wrong() vs the card (es)`);
+      if (!w) continue;
+      assert.ok(parse(w.value), `${key} ${values}: wrong value "${w.value}" does not parse`);
+      assert.notEqual(w.value, f.headline(m, "en").value, `${key} ${values}: wrong equals right`);
+      assert.ok(
+        !parse(w.value).eq(parse(f.headline(m, "en").value)),
+        `${key} ${values}: wrong equals right by value`,
+      );
+      assert.ok(w.say && wEs.say && w.say !== wEs.say, `${key}: say not translated`);
+      assert.equal(wEs.value, w.value);
+      assert.ok(!/\n/.test(w.say) && w.say.endsWith("."), `${key}: say is one sentence`);
+    }
+  }
+});
+
+test("wrong() values by hand", () => {
+  const at = (fig, key, values) =>
+    /** @type {any} */ (fig).wrong(/** @type {any} */ (fig).build(key, values), "en");
+  assert.equal(at(parallelogramFigure, "area:parallelogram", [8, 3, 4]).value, "40"); // 8 x slant 5
+  assert.equal(at(parallelogramFigure, "area:parallelogram", [8, 3, 0]), null);
+  assert.equal(at(triangleFigure, "area:triangle", [8, 6, 4]).value, "48");
+  assert.equal(at(trapezoidFigure, "area:trapezoid", [10, 4, 6]).value, "84");
+  assert.equal(at(polygonFigure, "area:apothem", [6, 6]).value, "108");
+  assert.equal(at(volumeFigure, "solid:net", [4, 3, 2]).value, "9");
+  assert.equal(at(volumeFigure, "solid:net", [1, 2, 3]), null);
+  assert.equal(at(prismFigure, "solid:surface", [6, 4, 5]).value, "144");
+  assert.equal(at(prismFigure, "solid:faces", [3, 3, 3]), null);
+  assert.equal(at(triPrismFigure, "solid:tri-prism", [6, 3]).value, "96");
+  // pyramid base 6, slant 9: inside height sqrt(72) = 8.485..., so 36 + 2 x 6 x 8.485 = 137.82
+  assert.equal(at(pyramidFigure, "solid:pyramid-net", [6, 9]).value, "137.82");
+  assert.match(
+    figureSvg(pyramidFigure, "solid:pyramid-net", [6, 9], { lang: "en", width: 400 }).svg,
+    /8\.5\) gives ≈ 137\.82/,
+  );
 });

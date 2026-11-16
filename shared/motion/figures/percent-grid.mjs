@@ -4,6 +4,8 @@ import { Rat } from "../exact.mjs";
 import { COLOR } from "../tokens.mjs";
 import { block, benchmarkWord, callout, clampWidth, dec, dashOf, equivalents, f1, fillOf, gcd, legendRow, PAD, pieceExpr, pieces, rat, stepScene, T, tape, text } from "./percent-kit.mjs";
 
+/** @typedef {import("./percent-kit.mjs").PercentFigure} PercentFigure */
+
 const DENOMS = [100, 50, 25, 10, 5, 1];
 
 /** @param {string} key @param {number[]} values */
@@ -144,7 +146,20 @@ function describe(m, lang) {
   return s.join(" ");
 }
 
-/** @type {import("./mount.mjs").Figure} */
+/** @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: T(lang, "Shaded amount", "Cantidad sombreada"), value: m.part.text });
+
+/**
+ * The amount slip when the whole is not 100 (the percent used as the amount); otherwise the decimal slip. Null exactly when no "not this" card is drawn.
+ * @param {Model} m @param {"en" | "es"} lang
+ */
+function wrong(m, lang) {
+  if (m.p === 0) return null;
+  if (m.b !== 100) return { value: String(m.p), say: T(lang, "Used the percent as the amount instead of finding that share of the whole.", "Usó el porcentaje como la cantidad en vez de hallar esa parte del total.") };
+  return { value: m.wrong, say: T(lang, "Moved the decimal point one place instead of two.", "Movió el punto decimal un lugar en vez de dos.") };
+}
+
+/** @type {PercentFigure} */
 const grid = {
   id: "percent-grid",
   keys: ["percent:grid"],
@@ -157,5 +172,7 @@ const grid = {
   render,
   scene: (root) => stepScene(root),
   describe,
+  headline,
+  wrong,
 };
 export default grid;

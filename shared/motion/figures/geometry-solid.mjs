@@ -1,7 +1,8 @@
 // Motion figures for the solid lessons: unit-cube layers building a prism's volume (5-5, 5-6), and nets that unfold with each face
 // counted once into a running surface-area total (5-6 prism, 5-7 triangular prism, 5-8 square pyramid).
+import { Rat } from "../exact.mjs";
 import { COLOR } from "../tokens.mjs";
-import { CU, FILL, L, P, R, SQ, T, all, answerBox, card, dec, f1, frameOf, line, notBox, poly, sceneOf, stackBoxes, sub } from "./geometry-kit.mjs";
+import { CU, FILL, L, P, R, SQ, T, all, answerBox, card, dec, f1, frameOf, isqrt, plain, sqrtText, line, notBox, poly, sceneOf, stackBoxes, sub } from "./geometry-kit.mjs";
 import { drawNet, drawRows, faceSentence, netTracks, prismNet, pyramidNet, triPrismNet } from "./geometry-nets.mjs";
 
 /** @param {unknown} values @param {Array<[number, number]>} spec */
@@ -126,6 +127,8 @@ export const volumeFigure = {
     const fin = stackBoxes(x, y, w, boxes);
     return { body: c1.svg + c2.svg + c3.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
   },
+  headline: (/** @type {VolModel} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Volume", "Volumen"), value: String(m.volume) }),
+  wrong: (/** @type {VolModel} */ m, /** @type {string} */ lang) => (m.sum !== m.volume ? { value: String(m.sum), say: L(lang, "Added the three edges instead of multiplying them.", "Sumaste las tres aristas en vez de multiplicarlas.") } : null),
   scene(/** @type {ParentNode} */ root, /** @type {VolModel} */ m) {
     return sceneOf(root, 3, (win) => {
       const layers = all(root, ".gm-layer").map((el, i) => {
@@ -154,6 +157,7 @@ export const volumeFigure = {
  * @property {(key: string) => any[]} controls @property {(key: string, v: number[]) => any} build
  * @property {(m: any) => import("./geometry-nets.mjs").Net} netOf
  * @property {(m: any, lang: string) => string} unfoldTitle @property {(m: any, lang: string) => string} unfoldNote
+ * @property {(m: any, lang: string) => null | { value: string, say: string }} wrong
  * @property {(m: any, lang: string) => string} answer @property {(m: any, lang: string) => string[]} nots
  * @property {(m: any, lang: "en" | "es") => string} tail text for describe after the faces
  */
@@ -180,6 +184,8 @@ function netFigure(spec) {
       ]);
       return { body: c1.svg + c2.svg + fin.svg, width: W, height: Math.ceil(fin.bottom + 14) };
     },
+    headline: (/** @type {any} */ m, /** @type {string} */ lang) => ({ label: L(lang, "Surface area", "Área de superficie"), value: plain(spec.netOf(m).total) }),
+    wrong: spec.wrong,
     scene(/** @type {ParentNode} */ root, /** @type {any} */ _m) {
       return sceneOf(root, 2, (win) => netTracks(root, win(2)));
     },
@@ -214,6 +220,7 @@ const prismSpec = {
   unfoldNote: (/** @type {any} */ _m, /** @type {string} */ lang) => dashNote(lang),
   answer: (/** @type {any} */ m, /** @type {string} */ lang) => L(lang, `Surface area = ${m.net.sum} ${SQ.en}. In pairs: 2 × (${m.l} × ${m.w} + ${m.l} × ${m.h} + ${m.w} × ${m.h}) = ${dec(R(2).mul(m.pairSum))}.`, `Área de superficie = ${m.net.sum} ${SQ.es}. En pares: 2 × (${m.l} × ${m.w} + ${m.l} × ${m.h} + ${m.w} × ${m.h}) = ${dec(R(2).mul(m.pairSum))}.`),
   nots: (/** @type {any} */ m, /** @type {string} */ lang) => (m.differs ? [L(lang, `Not this: 6 × ${m.l * m.w} = ${dec(m.wrong)}. The six faces are not all the same size.`, `No así: 6 × ${m.l * m.w} = ${dec(m.wrong)}. Las seis caras no son todas del mismo tamaño.`)] : []),
+  wrong: (/** @type {any} */ m, /** @type {string} */ lang) => (m.differs ? { value: plain(m.wrong), say: L(lang, "Multiplied one face by 6 as if all six faces were the same.", "Multiplicaste una cara por 6 como si las seis caras fueran iguales.") } : null),
   tail: (/** @type {any} */ m, /** @type {"en" | "es"} */ lang) => (m.differs ? (lang === "es" ? `No así: 6 × ${m.l * m.w} = ${dec(m.wrong)}, porque las caras no son todas iguales.` : `Not this: 6 × ${m.l * m.w} = ${dec(m.wrong)}, because the faces are not all the same size.`) : lang === "es" ? "Todas las caras son cuadrados iguales." : "All six faces are equal squares."),
 };
 
@@ -247,13 +254,19 @@ export const triPrismFigure = netFigure({
   unfoldNote: (/** @type {any} */ m, /** @type {string} */ lang) => L(lang, `Triangle sides ${m.net.a}, ${m.net.b}, ${m.net.c}. Each rectangle is as wide as one side and ${m.len} long. Dashed lines are folds.`, `Lados del triángulo ${m.net.a}, ${m.net.b}, ${m.net.c}. Cada rectángulo mide de ancho un lado y ${m.len} de largo. Las líneas punteadas son dobleces.`),
   answer: (/** @type {any} */ m, /** @type {string} */ lang) => L(lang, `Surface area = ${m.net.sum} ${SQ.en}`, `Área de superficie = ${m.net.sum} ${SQ.es}`),
   nots: (/** @type {any} */ m, /** @type {string} */ lang) => [L(lang, `Not this: counting only one triangle end gives ${dec(m.one)}. A prism has two ends.`, `No así: contar un solo extremo triangular da ${dec(m.one)}. Un prisma tiene dos extremos.`)],
+  wrong: (/** @type {any} */ m, /** @type {string} */ lang) => ({ value: plain(m.one), say: L(lang, "Counted only one triangle end.", "Contaste solo un extremo triangular.") }),
   tail: (/** @type {any} */ m, /** @type {"en" | "es"} */ lang) => (lang === "es" ? `No así: contar un solo extremo triangular da ${dec(m.one)}.` : `Not this: counting only one triangle end gives ${dec(m.one)}.`),
 });
 
 /** @param {number} s @param {number} l */
 function pyramidModel(s, l) {
   const net = pyramidNet(s, l);
-  return { s, l, net, formula: R(s * s).add(R(4).mul(net.tri)) };
+  // the wrong move: the height straight up inside, sqrt(l^2 - (s/2)^2), used as each triangle's height: s^2 + 2 s h = s^2 + sqrt(s^2 (4 l^2 - s^2))
+  const n = BigInt(s * s * (4 * l * l - s * s));
+  const f = isqrt(n * 10000n);
+  const t = 40000n * n >= (2n * f + 1n) ** 2n ? f + 1n : f;
+  const inside = { height: sqrtText(new Rat(BigInt(4 * l * l - s * s), 4n)), total: plain(new Rat(BigInt(100 * s * s) + t, 100n)), approx: isqrt(n) ** 2n !== n };
+  return { s, l, net, inside, formula: R(s * s).add(R(4).mul(net.tri)) };
 }
 export const pyramidFigure = netFigure({
   id: "solid-net-surface-pyramid",
@@ -271,8 +284,11 @@ export const pyramidFigure = netFigure({
   unfoldTitle: (/** @type {any} */ _m, /** @type {string} */ lang) => L(lang, "Unfold the pyramid: 1 square and 4 triangles", "Despliega la pirámide: 1 cuadrado y 4 triángulos"),
   unfoldNote: (/** @type {any} */ m, /** @type {string} */ lang) => L(lang, `Dashed line l = ${m.l}: the slant height, the height of each triangle, measured along the face.`, `Línea punteada l = ${m.l}: la altura inclinada, la altura de cada triángulo, medida sobre la cara.`),
   answer: (/** @type {any} */ m, /** @type {string} */ lang) => L(lang, `Surface area = ${m.net.sum} ${SQ.en}. Same as ${m.s} × ${m.s} + 4 × ${dec(m.net.tri)}.`, `Área de superficie = ${m.net.sum} ${SQ.es}. Es igual a ${m.s} × ${m.s} + 4 × ${dec(m.net.tri)}.`),
-  nots: (/** @type {any} */ m, /** @type {string} */ lang) => [L(lang, `Not this: the height straight up inside the pyramid. Each triangle's height is the slant height ${m.l}, along the face.`, `No así: la altura que sube recta por dentro de la pirámide. La altura de cada triángulo es la altura inclinada ${m.l}, sobre la cara.`)],
-  tail: (/** @type {any} */ m, /** @type {"en" | "es"} */ lang) => (lang === "es" ? `No así: la altura recta por dentro de la pirámide; la altura de cada triángulo es la altura inclinada ${m.l}.` : `Not this: the height straight up inside the pyramid; each triangle's height is the slant height ${m.l}.`),
+  nots: (/** @type {any} */ m, /** @type {string} */ lang) => [
+    L(lang, `Not this: the height straight up inside the pyramid (${m.inside.height.approx ? "about " : ""}${m.inside.height.text}) gives ${m.inside.approx ? "≈" : "="} ${m.inside.total}. Each triangle's height is the slant height ${m.l}, along the face.`, `No así: la altura que sube recta por dentro de la pirámide (${m.inside.height.approx ? "aprox. " : ""}${m.inside.height.text}) da ${m.inside.approx ? "≈" : "="} ${m.inside.total}. La altura de cada triángulo es la altura inclinada ${m.l}, sobre la cara.`),
+  ],
+  wrong: (/** @type {any} */ m, /** @type {string} */ lang) => ({ value: m.inside.total, say: L(lang, "Used the height inside the pyramid instead of the slant height.", "Usaste la altura de dentro de la pirámide en vez de la altura inclinada.") }),
+  tail: (/** @type {any} */ m, /** @type {"en" | "es"} */ lang) => (lang === "es" ? `No así: la altura recta por dentro de la pirámide (${m.inside.height.text}) da ${m.inside.approx ? "≈" : "="} ${m.inside.total}; la altura de cada triángulo es la altura inclinada ${m.l}.` : `Not this: the height straight up inside the pyramid (${m.inside.height.text}) gives ${m.inside.approx ? "≈" : "="} ${m.inside.total}; each triangle's height is the slant height ${m.l}.`),
 });
 
 export default [volumeFigure, prismFigure, triPrismFigure, pyramidFigure];

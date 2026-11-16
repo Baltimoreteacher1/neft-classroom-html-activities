@@ -208,7 +208,29 @@ function describe(m, lang) {
   return out.join(" ");
 }
 
-/** @type {import("./mount.mjs").Figure} */
+/** The number the student sets that the whole graph hangs on: the boundary. @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: pick(lang, "Boundary", "Límite"), value: String(m.a) });
+
+/**
+ * The wrong circle: an open circle drops the boundary from the solutions (a closed one would add it), so the nearest whole number the
+ * student believes qualifies moves one step in from the boundary. Every default rule here is closed, so the card is always drawn.
+ * @param {Model} m @param {"en" | "es"} lang
+ */
+function wrong(m, lang) {
+  if (!m.closed) return null;
+  const near = m.right ? m.a + 1 : m.a - 1;
+  const dirEs = m.right ? "primer" : "último";
+  return {
+    value: String(near),
+    say: pick(
+      lang,
+      `Used an open circle, so ${m.a} was left out and the ${m.right ? "first" : "last"} number that counts looks like ${near}.`,
+      `Usaste un círculo abierto, así que el ${m.a} quedó fuera y el ${dirEs} número que cuenta parece ser ${near}.`,
+    ),
+  };
+}
+
+/** @type {import("./equations-kit.mjs").EqFigure} */
 export default {
   id: "inequality-number-line",
   keys: KEYS,
@@ -218,4 +240,6 @@ export default {
   render,
   scene,
   describe,
+  headline,
+  wrong,
 };

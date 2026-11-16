@@ -19,6 +19,24 @@ export const HEADLINE = Object.freeze({
   "data:outlier": "median",
 });
 
+const LABELS = {
+  range: { en: "Range", es: "Rango" },
+  median: { en: "Median", es: "Mediana" },
+  iqr: { en: "Interquartile range (IQR)", es: "Rango intercuartílico (RIC)" },
+  mad: { en: "Mean absolute deviation (MAD)", es: "Desviación media absoluta (DAM)" },
+};
+
+/**
+ * The one number the lesson asks for, in the language given: what evaluate() returns for the key. value reads back exactly through parse().
+ * @param {{ key: string, headline: Rat }} m @param {"en" | "es"} lang
+ * @returns {{ label: string, value: string, approx?: boolean }}
+ */
+export function headlineOf(m, lang) {
+  const d = decimal(m.headline);
+  const label = LABELS[/** @type {"range" | "median" | "iqr" | "mad"} */ (HEADLINE[/** @type {keyof typeof HEADLINE} */ (m.key)])][lang === "es" ? "es" : "en"];
+  return d.exact ? { label, value: d.text } : { label, value: d.text, approx: true };
+}
+
 /** The lab's controls for any data model: Observation 1..8, 0 to 50. */
 export function dataControls() {
   return Array.from({ length: OBSERVATIONS }, (_, i) => ({ label: `Observation ${i + 1}`, labelEs: `Observación ${i + 1}`, min: LIMITS.min, max: LIMITS.max, step: 1 }));

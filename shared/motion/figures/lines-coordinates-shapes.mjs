@@ -2,7 +2,7 @@
 // each axis (7-9). Pure exact models, SVG renderers, scenes and text equivalents.
 import { int } from "../exact.mjs";
 import { COLOR, COPY_FILLS } from "../tokens.mjs";
-import { abs, clampW, f1, Flow, fmt, marker, minus, nb, neg, num, pair, pick, quadrantOf, quadrantWords, step, stepScene, txt, wrongGap } from "./lines-coordinates-kit.mjs";
+import { abs, clampW, f1, Flow, fmt, gapSay, marker, minus, nb, neg, num, pair, pick, quadrantOf, quadrantWords, step, stepScene, txt, wrongGap } from "./lines-coordinates-kit.mjs";
 import { FILL, gridGeom, gridSvg, labelsFor, pointControls, points } from "./lines-coordinates-plane.mjs";
 
 /** @typedef {import("../exact.mjs").Rat} Rat */
@@ -96,6 +96,14 @@ function describeRectangle(m, lang) {
   return [pick(lang, "A coordinate grid with a rectangle whose opposite corners are A and B.", "Una cuadrícula con un rectángulo cuyas esquinas opuestas son A y B."), `${pick(lang, "Corners", "Esquinas")}: ${corners}.`, ...sideLines(m, lang).map((s) => `${s}.`), `${rowsLine(m, lang)}.`, `${areaLine(m, lang)}.`, ...rectWrongs(m, lang)].join(" ");
 }
 
+/** The area when the most common slip is made: adding width and height; else a side found by adding. Null when no card is drawn. @param {RectangleModel} m @param {"en" | "es"} lang */
+function rectangleWrong(m, lang) {
+  if (m.sumWrong) return { value: fmt(m.w.add(m.h)), say: pick(lang, "Added the width and the height instead of multiplying them.", "Sumó el ancho y el alto en vez de multiplicarlos.") };
+  if (m.wrongH && !m.wrongH.value.mul(m.h).eq(m.area)) return { value: fmt(m.wrongH.value.mul(m.h)), say: gapSay(m.a, m.c, "x", lang) };
+  if (m.wrongV && !m.w.mul(m.wrongV.value).eq(m.area)) return { value: fmt(m.w.mul(m.wrongV.value)), say: gapSay(m.b, m.d, "y", lang) };
+  return null;
+}
+
 // ======================================================================================================================
 // coordinates:reflect  (7-9)
 // ======================================================================================================================
@@ -111,6 +119,11 @@ export function reflectModel(values) {
   return { ...p, overX, overY, flipped, bothSigns, bAt: isB(overX) ? "x" : isB(overY) ? "y" : a.eq(c) && b.eq(d) ? "A" : null, movesX: b.n !== 0n, movesY: a.n !== 0n };
 }
 /** @typedef {ReturnType<typeof reflectModel>} ReflectModel */
+
+/** The lesson's one number: the x-coordinate of A's reflection across the x-axis (it stays). The card is the both-signs slip. @param {ReflectModel} m @param {"en" | "es"} lang */
+const reflectHeadline = (m, lang) => ({ label: pick(lang, "x-coordinate of the reflection of A across the x-axis", "Coordenada x del reflejo de A sobre el eje x"), value: fmt(m.overX.x) });
+/** @param {ReflectModel} m @param {"en" | "es"} lang */
+const reflectWrong = (m, lang) => (m.bothSigns ? { value: fmt(m.flipped.x), say: pick(lang, "Changed both signs, which is two reflections, not one.", "Cambió los dos signos, que son dos reflexiones, no una.") } : null);
 
 /** @param {ReflectModel} m @param {"x" | "y"} axis @param {"en" | "es"} lang */
 function axisText(m, axis, lang) {
@@ -202,6 +215,8 @@ export default [
     render: renderRectangle,
     scene: (/** @type {ParentNode} */ root) => stepScene(root, 4, 6400),
     describe: describeRectangle,
+    headline: (/** @type {RectangleModel} */ m, /** @type {"en" | "es"} */ lang) => ({ label: pick(lang, "Area of the rectangle", "Área del rectángulo"), value: fmt(m.area) }),
+    wrong: rectangleWrong,
   },
   {
     id: "plane-reflection",
@@ -212,5 +227,7 @@ export default [
     render: renderReflect,
     scene: (/** @type {ParentNode} */ root) => stepScene(root, 4, 6400),
     describe: describeReflect,
+    headline: reflectHeadline,
+    wrong: reflectWrong,
   },
 ];

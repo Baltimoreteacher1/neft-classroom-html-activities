@@ -50,3 +50,16 @@ Verify with: `FIG=<id> node --test tools/motion-figures.test.mjs`, your own test
 (Playwright is in node_modules; see `/private/tmp/claude-501/motion-shots/shoot.mjs` for how the exponent figure was screenshotted) and fix
 overlaps, clipped or wrapped labels, text with no fill set, and stray marks. Report which keys you finished, anything you could not make
 correct, and any content you found ambiguous (flag it; do not change it).
+
+## Think it through (optional methods)
+
+`headline(model, lang) -> { label, value, approx? }` and `wrong(model, lang) -> null | { value, say }` make a figure usable by the Standard,
+Challenge and Family flows (`shared/motion/figures/think-ui.mjs`, logic in `think-logic.mjs`). `headline.value` and `wrong.value` are plain strings
+`exact.mjs parse()` reads; `wrong` is non-null exactly when the figure draws its dashed "not this" card and never equals the headline;
+`thinkWrong: false` on a figure says its `wrong` does not answer the headline question, so Challenge skips error analysis for it.
+`MOTION_COVERAGE=1 node --test tools/motion-figures.test.mjs` requires every registered figure to support the flow.
+
+- **Standard (Practice):** See one (watch the figure) -> Try one (predict a NEW setting; a miss is diagnosed, never answered; the figure keeps
+  showing the numbers already seen, and shows the new setting only once it is solved) -> Explain (the student's own sentence, kept on the device) -> Apply (another new equivalent problem).
+- **Challenge:** Spot the slip (error analysis built from `wrong`) -> Build it (set the controls so the headline is exactly a target; any setting that works is accepted; too high / too low feedback) -> Explain.
+- **Family:** See one -> Try one, ungraded wording.

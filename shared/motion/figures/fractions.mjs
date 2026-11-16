@@ -6,7 +6,7 @@ import { windows } from "../motion.mjs";
 import { describe, howMany, questionText, resultText } from "./fractions-describe.mjs";
 import { expr, f1, flow, fr, num, op, w, words } from "./fractions-flow.mjs";
 import { build, controlsFor } from "./fractions-model.mjs";
-import { fracWords, nounFor, unitFor } from "./fractions-words.mjs";
+import { completeWord, fracWords, nounFor, unitFor } from "./fractions-words.mjs";
 
 /** @typedef {import("./fractions-model.mjs").FractionModel} FractionModel */
 
@@ -211,6 +211,25 @@ function scene(root, m) {
   return { durationMs: Math.min(9000, 5200 + 55 * groups.length), tracks };
 }
 
+/** The one number the lesson asks for, as a parse()-readable string. @param {FractionModel} m @param {"en" | "es"} lang */
+function headline(m, lang) {
+  return { label: lang === "es" ? `¿${howMany(m, lang).replace(/^./, (c) => c.toUpperCase())}?` : `${howMany(m, lang).replace(/^./, (c) => c.toUpperCase())}?`, value: m.q.toString() };
+}
+
+/** The wrong move the dashed card shows (null when the card is not drawn). value is the wrong RESULT. @param {FractionModel} m @param {"en" | "es"} lang */
+function wrong(m, lang) {
+  const wr = m.wrong;
+  if (!wr) return null;
+  const es = lang === "es";
+  const { ctx } = m;
+  const noun = nounFor(ctx, lang, false);
+  const del = ctx.noun.g === "m" ? "del" : "de la";
+  if (wr.kind === "multiply") return { value: wr.value.toString(), say: es ? `Multiplicaste el total por el tamaño ${del} ${noun} en vez de dividir.` : `Multiplied the supply by the ${noun} size instead of dividing.` };
+  if (wr.kind === "flip") return { value: wr.value.toString(), say: es ? `Dividiste el tamaño ${del} ${noun} entre el total, al revés.` : `Divided the ${noun} size by the supply, the wrong way round.` };
+  const done = completeWord(ctx, lang, true);
+  return { value: String(m.complete), say: es ? `Contaste solo ${ctx.noun.g === "m" ? "los" : "las"} ${nounFor(ctx, lang, true)} ${done} e ignoraste el sobrante.` : `Counted only the ${done} ${nounFor(ctx, lang, true)} and ignored the leftover.` };
+}
+
 export default [
   {
     id: "fraction-partition-count",
@@ -221,5 +240,7 @@ export default [
     render,
     scene,
     describe,
+    headline,
+    wrong,
   },
 ];

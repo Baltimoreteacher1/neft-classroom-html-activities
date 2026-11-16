@@ -1,11 +1,14 @@
-# Motion ledger (running)
+# Motion ledger
 
-| # | Step | Status | Evidence |
-| - | --- | --- | --- |
-| 1 | Audit: sources, contracts, manifest | done | docs/motion-audit.md, docs/motion-manifest.json (84 lessons), `validate:motion-manifest` |
-| 2 | Shared foundation: exact arithmetic, model, renderer, scene runtime, tokens | done | shared/motion/*; 33 unit tests (tools/motion-*.test.mjs) |
-| 3 | Exponent-copies model, lab bench (Practice + Challenge 6-3, 6-4) | done, partial scope | model.mjs `powerPicture`, direct.mjs drag zones |
-| 4 | Exponent-copies model, Family Exponent model | done, partial scope | assets/family-mission/models/exponents.mjs |
-| 5 | Browser verification, 4 viewports x EN/ES | done | `npm run validate:motion-exponents-browser` all clear |
-| 6 | Other 7 representation families | NOT STARTED | manifest `planned` |
-| 7 | Standard see-one/try-one flow, new Challenge reasoning tasks, Family talk prompts, ES math review | NOT STARTED | see final report |
+| Step | Status | Evidence |
+| --- | --- | --- |
+| Audit, manifest, contracts | done | docs/motion-audit.md, docs/motion-manifest.json |
+| Foundation: exact math, model, renderer, scene runtime, tokens | done | shared/motion/*, tools/motion-exact/render tests |
+| Exponent copies (6-3, 6-4): lab bench, Family Exponent model | done | shared/motion/exponent-copies*.mjs |
+| 44 lesson-specific animated figures, Units 2-9 (all 72 lessons) | done | shared/motion/figures/*, tools/motion-figures.test.mjs |
+| Standard flow (See one, Try one, Explain, Apply) | done | shared/motion/figures/think-*.mjs, tools/motion-think.test.mjs |
+| Challenge (Spot the slip, Build it, Explain) | done | same |
+| Family See it move + Try one (ungraded) | done | scripts/lib/homework-motion.mjs |
+| Phone: tall figures fold behind one button | done | shared/motion/figures/mount.mjs |
+| Spanish review sheet | done, NOT reviewed by a person | docs/motion-spanish-review.md |
+| Units 1 and 10 | out of scope by request | n/a |

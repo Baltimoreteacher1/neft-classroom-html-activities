@@ -1,7 +1,7 @@
 // Lesson 2-10, choose appropriate measures: the value farthest from the middle is pulled in next to its neighbor, and the mean and the
 // median each show how they react. The mean and median markers slide to their new places; the median usually stays put.
 import { COLOR } from "../tokens.mjs";
-import { cmp, dataControls, dataModel, eqSign, fmt, abs, nb } from "./data-model.mjs";
+import { cmp, dataControls, dataModel, eqSign, fmt, abs, nb, headlineOf } from "./data-model.mjs";
 import { dotPlot, FADE, f1, header, meanTriangle, note, num, PAD, para, POP, RISE, SLIDE, sel, stagger, step, T } from "./data-draw.mjs";
 
 const asNumber = (/** @type {import("../exact.mjs").Rat} */ r) => Number(r.n) / Number(r.d);
@@ -24,6 +24,13 @@ export function pullIn(m) {
   const moved = [...m.sorted];
   moved[idx] = m.sorted[nb2];
   return { idx, from: m.sorted[idx], to: m.sorted[nb2], after: dataModel(m.key, moved) };
+}
+
+/** Using the mean as the middle; shown only when the mean is not the median and not a true middle (half the values below it). @param {import("./data-model.mjs").DataModel} m @param {"en" | "es"} lang @returns {null | { value: string, say: string, below: number }} */
+export function meanMistake(m, lang) {
+  const below = m.R.filter((x) => cmp(x, m.mean) < 0).length;
+  if (cmp(m.mean, m.median.value) === 0 || below * 2 === m.n) return null;
+  return { value: fmt(m.mean), below, say: lang === "es" ? "Usó la media como el valor del medio, aunque un valor atípico la jala." : "Used the mean as the middle value, even though an unusual value pulls it." };
 }
 
 /** @type {import("./mount.mjs").Figure} */
@@ -125,8 +132,9 @@ export default {
     }
     y += 6;
     let cue = "";
-    const below = m.R.filter((x) => cmp(x, m.mean) < 0).length;
-    if (cmp(m.mean, m.median.value) !== 0 && below * 2 !== m.n) {
+    const mm = meanMistake(m, lang);
+    if (mm) {
+      const below = mm.below;
       const c = note(W, y, L(`Not this: the mean is not the middle. ${below} of ${m.n} values are less than the mean, ${fmt(m.mean)}.`, `No así: la media no es el medio. ${below} de ${m.n} valores son menores que la media, ${fmt(m.mean)}.`), "not");
       cue = c.svg;
       y += c.h;
@@ -134,6 +142,8 @@ export default {
     const s3 = step(3, h3.svg + `<g class="dm-read">${txt}</g>${cue}`);
     return { body: s1 + s2 + s3, width: W, height: Math.ceil(y + 6) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => meanMistake(m, lang),
   scene(root, m) {
     /** @type {Array<import("../motion.mjs").Track & { els: Element[] }>} */
     const tracks = [];

@@ -2,11 +2,17 @@
 // distance to the mean is drawn, and the distances are added and shared equally to give the MAD. Everything is exact rational arithmetic.
 import { COLOR } from "../tokens.mjs";
 import { int } from "../exact.mjs";
-import { dataControls, dataModel, eqSign, fmt, joined, nb } from "./data-model.mjs";
+import { dataControls, dataModel, eqSign, fmt, joined, nb, headlineOf } from "./data-model.mjs";
 import { dotPlot, FADE, f1, GROW, header, meanTriangle, note, num, PAD, para, POP, RISE, SLIDE, sel, stagger, step, T } from "./data-draw.mjs";
 
 const asNumber = (/** @type {import("../exact.mjs").Rat} */ r) => Number(r.n) / Number(r.d);
 const GUTTER = 52;
+
+/** Keeping the minus signs: the differences cancel to 0. Null when every value equals the mean (the MAD is 0 anyway). @param {import("./data-model.mjs").DataModel} m @param {"en" | "es"} lang @returns {null | { value: string, say: string }} */
+export function signMistake(m, lang) {
+  if (m.mad.n === 0n) return null;
+  return { value: fmt(m.devs.reduce((t, d) => t.add(d.dev), int(0)).div(int(m.n))), say: lang === "es" ? "Conservó los signos menos, así que las diferencias se cancelan y dan 0." : "Kept the minus signs, so the differences cancel to 0." };
+}
 
 /** @type {import("./mount.mjs").Figure} */
 export default {
@@ -81,7 +87,7 @@ export default {
     const res = note(W, y, L(`MAD = ${nb(`${fmt(m.absSum)} ÷ ${m.n} ${eqSign(m.mad)} ${fmt(m.mad)}`)}`, `DAM = ${nb(`${fmt(m.absSum)} ÷ ${m.n} ${eqSign(m.mad)} ${fmt(m.mad)}`)}`), "yes", "dm-result");
     y += res.h;
     let cue = "";
-    if (m.mad.n !== 0n) {
+    if (signMistake(m, lang)) {
       const c = note(W, y, L(`Not this: keeping the minus signs. −${fmt(below)} + ${fmt(above)} = 0, which says nothing about spread. Use distances.`, `No así: conservar los signos menos. −${fmt(below)} + ${fmt(above)} = 0, y eso no dice nada de la dispersión. Usa distancias.`), "not");
       cue = c.svg;
       y += c.h;
@@ -89,6 +95,8 @@ export default {
     const s3 = step(3, h3.svg + `<g class="dm-read">${add.svg}</g>${res.svg}${cue}`);
     return { body: s1 + s2 + s3, width: W, height: Math.ceil(y + 6) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => signMistake(m, lang),
   scene(root, m) {
     /** @type {Array<import("../motion.mjs").Track & { els: Element[] }>} */
     const tracks = [];

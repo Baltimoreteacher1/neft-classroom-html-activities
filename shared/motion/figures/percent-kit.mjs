@@ -294,3 +294,9 @@ export function benchmarkWord(lang, size, count, whole) {
 
 /** "+ 2 × 10%" for the i-th piece. @param {{ size: number, count: number, i: number }} g */
 export const pieceExpr = (g) => `${g.i ? "+ " : ""}${g.count > 1 ? `${g.count} × ` : ""}${g.size}%`;
+
+/**
+ * A percent figure: the contract's Figure plus the two optional methods the standard flow and the challenge use.
+ * headline: the one number the lesson asks for (parse()-readable). wrong: the common wrong result, or null when no "not this" card is drawn.
+ * @typedef {import("./mount.mjs").Figure & { headline: (m: any, lang: "en" | "es") => { label: string, value: string, approx?: boolean }, wrong: (m: any, lang: "en" | "es") => null | { value: string, say: string } }} PercentFigure
+ */

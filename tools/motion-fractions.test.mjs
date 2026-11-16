@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
+import { parse } from "../shared/motion/exact.mjs";
 import fractions from "../shared/motion/figures/fractions.mjs";
 import { figureSvg } from "../shared/motion/figures/mount.mjs";
 
@@ -144,4 +145,54 @@ test("the scene tracks the picture: every share pops once and the static picture
     assert.equal(last.opacity, 1, "last keyframe is the natural state");
   }
   assert.ok(!svg.includes('opacity="0"'), "nothing is hidden in the static picture");
+});
+
+test("headline() is the lab's number and wrong() is non-null exactly when the dashed card is drawn", () => {
+  for (const k of KEYS) {
+    const [kind, mode] = k.split(":");
+    for (let a = 0.5; a <= 8; a += 0.5)
+      for (let b = 1; b <= 5; b++)
+        for (let c = 2; c <= 8; c++) {
+          const m = fig.build(k, [a, b, c]);
+          const h = fig.headline(m, "en");
+          const v = parse(h.value);
+          assert.ok(v, `${k} ${a} ${b}/${c}: headline value "${h.value}" parses`);
+          const lab = evaluate({ kind, mode, values: [a, b, c] }, [a, b, c]).value;
+          assert.ok(
+            Math.abs(Number(v.n) / Number(v.d) - lab) < 1e-9,
+            `${k} ${a} ${b}/${c}: headline ${h.value} vs ${lab}`,
+          );
+          assert.notEqual(h.label, fig.headline(m, "es").label);
+          const drawn = figureSvg(fig, k, [a, b, c], { lang: "en" }).svg.includes("fp-miss");
+          for (const lang of ["en", "es"]) {
+            const w = fig.wrong(m, lang);
+            assert.equal(
+              w !== null,
+              drawn,
+              `${k} ${a} ${b}/${c} ${lang}: wrong() iff the card is drawn`,
+            );
+            if (w) {
+              const wv = parse(w.value);
+              assert.ok(wv, `wrong value "${w.value}" parses`);
+              assert.ok(!wv.eq(v), `${k} ${a} ${b}/${c}: wrong equals right`);
+              assert.ok(w.say.length > 10 && !/undefined|NaN/.test(w.say));
+            }
+          }
+          const we = fig.wrong(m, "en");
+          if (we) assert.notEqual(we.say, fig.wrong(m, "es").say);
+        }
+  }
+  // hand-worked: 3 / (1/2) = 6, multiplying gives 3/2; 5 1/2 / (3/4) = 22/3 and stopping at the 7 complete pieces gives 7
+  assert.deepEqual(fig.headline(fig.build("fraction:servings", [3, 1, 2]), "en"), {
+    label: "How many servings?",
+    value: "6",
+  });
+  assert.equal(fig.wrong(fig.build("fraction:servings", [3, 1, 2]), "en").value, "3/2");
+  assert.equal(fig.headline(fig.build("fraction:ribbon", [5.5, 3, 4]), "es").value, "22/3");
+  assert.equal(fig.wrong(fig.build("fraction:ribbon", [5.5, 3, 4]), "en").value, "7");
+  assert.equal(fig.wrong(fig.build("fraction:field", [3, 1, 2]), "es").value, "1/6");
+  assert.equal(
+    fig.headline(fig.build("fraction:ribbon", [5.5, 3, 4]), "es").label,
+    "¿Cuántos trozos?",
+  );
 });

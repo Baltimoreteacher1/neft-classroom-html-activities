@@ -10,6 +10,7 @@ import { R, compareModel, convModel, doubleLine, graphModel, num, OFFER, rateMod
 import { answerBox, atomsOf, caption, notBox, PAD, sceneOf, table, tw, weights } from "./ratios-draw.mjs";
 import { compareLine, dnl } from "./ratios-lines.mjs";
 import { chain, flipped, graph, ratioRows, swatch, tape } from "./ratios-views.mjs";
+import * as F from "./ratios-flow.mjs";
 import * as WD from "./ratios-words.mjs";
 
 /** @typedef {import("./mount.mjs").Figure} Figure */
@@ -115,9 +116,9 @@ function renderCompare(m, o) {
   /** @type {import("./ratios-draw.mjs").TRow[]} */
   const rows = [row(t("yours", "tuya"), show(R(m.a)), show(R(m.b)), "given", steps.given)];
   if (hasMineK) rows.push(row(`×${m.kMine}`, show(m.mine), show(R(m.L)), "step", steps.scale));
+  if (m.wrong) rows.push(row(WD.signed(m.wrong.t, true), show(m.wrong.color), show(m.wrong.white), "wrong", steps.wrong));
   rows.push(row(t("ref.", "ref."), show(R(REF[0])), show(R(REF[1])), "given", steps.given));
   if (hasRefK) rows.push(row(`×${m.kRef}`, show(m.ref), show(R(m.L)), "step", steps.scale));
-  if (m.wrong) rows.push(row(WD.signed(m.wrong.t, true), show(m.wrong.color), show(m.wrong.white), "wrong", steps.wrong));
   col.add((y) => table(x, y, w, { heads: [[t("Mix", "Mezcla")], [nm.a, nm.unit], [nm.b, nm.unit]], weights: weights(3, 0.8), rows }));
   const inner = w - 50;
   col.add((y) =>
@@ -352,6 +353,8 @@ export default [
     build: (key, values) => tapeModel(key, values),
     ...withScene(renderTape, () => 5),
     describe: (m, lang) => WD.describeTape(m, lang),
+    headline: (m, lang) => F.tapeHeadline(m, lang),
+    wrong: (m, lang) => F.tapeWrong(m, lang),
   },
   {
     id: "ratio-double-line",
@@ -361,6 +364,8 @@ export default [
     build: (key, values) => doubleLine(key, values),
     ...withScene(renderDouble, (m) => WD.stepsOf(m.rows.map((/** @type {{ id: string }} */ r) => r.id), !!m.wrong).head),
     describe: (m, lang) => WD.describeDouble(m, lang),
+    headline: (m, lang) => F.doubleHeadline(m, lang),
+    wrong: (m, lang) => F.doubleWrong(m, lang),
   },
   {
     id: "ratio-compare",
@@ -370,6 +375,8 @@ export default [
     build: (key, values) => compareModel(key, values),
     ...withScene(renderCompare, (m) => (m.wrong ? 3 : 2)),
     describe: (m, lang) => WD.describeCompare(m, lang),
+    headline: (m, lang) => F.compareHeadline(m, lang),
+    wrong: (m, lang) => F.compareWrong(m, lang),
   },
   {
     id: "rate-unit-price",
@@ -379,6 +386,8 @@ export default [
     build: (key, values) => rateModel(key, values),
     ...withScene(renderRate, (m) => (m.wrong ? 4 : 3)),
     describe: (m, lang) => WD.describeRate(m, lang),
+    headline: (m, lang) => F.rateHeadline(m, lang),
+    wrong: (m, lang) => F.rateWrong(m, lang),
   },
   {
     id: "ratio-graph",
@@ -392,6 +401,8 @@ export default [
     build: (key, values) => graphModel(key, values),
     ...withScene(renderGraph, (m) => m.rows.length + (m.wrong ? 1 : 0)),
     describe: (m, lang) => WD.describeGraph(m, lang),
+    headline: (m, lang) => F.graphHeadline(m, lang),
+    wrong: (m, lang) => F.graphWrong(m, lang),
   },
   {
     id: "conversion-chain",
@@ -404,5 +415,7 @@ export default [
     build: (key, values) => convModel(key, values),
     ...withScene(renderConv, (m) => WD.convSteps(m.L > 1, !!m.wrong).last),
     describe: (m, lang) => WD.describeConv(m, lang),
+    headline: (m, lang) => F.convHeadline(m, lang),
+    wrong: (m, lang) => F.convWrong(m, lang),
   },
 ];

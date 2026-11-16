@@ -166,8 +166,7 @@ function render(m, { lang, width }) {
   return { body: out, width: W, height: Math.ceil(y + 6) };
 }
 
-/** @type {import("./mount.mjs").Figure} */
-export default {
+const figure = {
   id: "decimal-receipt",
   keys: ["decimal:receipt"],
   title: { en: "Price times items: partial products and place-value columns", es: "Precio por artículos: productos parciales y columnas de valor posicional" },
@@ -177,6 +176,12 @@ export default {
   ],
   build: (_key, values) => receiptModel(values),
   render,
-  scene: (root) => panelScene(root),
+  scene: (/** @type {ParentNode} */ root) => panelScene(root),
   describe,
+  /** The order total. @param {ReceiptModel} m @param {"en" | "es"} lang */
+  headline: (m, lang) => ({ label: pick(lang, "Order total ($)", "Total del pedido ($)"), value: m.totalText }),
+  /** The dashed card: the digits multiplied and the point forgotten. @param {ReceiptModel} m @param {"en" | "es"} lang */
+  wrong: (m, lang) => (m.noPoint ? { value: String(m.priceC * m.n), say: pick(lang, "Multiplied the digits and forgot to put the decimal point back.", "Multiplicaste los dígitos y olvidaste volver a poner el punto decimal.") } : null),
 };
+
+export default /** @type {import("./mount.mjs").Figure} */ (figure);

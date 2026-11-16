@@ -212,7 +212,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const select = host.querySelector('[data-symbol]');
   if (select) { select.value = symbol; select.disabled = free !== null; select.addEventListener('change', () => { symbol = select.value; update(); }); }
   host.querySelector('.model-workspace').dataset.kind = model.kind;
-  if (model.kind !== 'power') {
+  {
     const key = `${model.kind}:${model.mode}`;
     import('../../../shared/motion/figures/index.mjs').then(async ({ figureFor }) => {
       const fig = figureFor(key);
@@ -222,7 +222,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
       box.className = 'model-motion';
       box.style.gridColumn = '1 / -1';
       host.querySelector('.model-workspace').append(box);
-      figureView = mountFigure(box, fig, key, { values: [...values], lang: spanish() ? 'es' : 'en' });
+      figureView = mountFigure(box, fig, key, { values: [...values], lang: spanish() ? 'es' : 'en', think: level === 'stretch' ? 'challenge' : 'standard' });
     }).catch(() => { /* the picture and controls work without the figure */ });
   }
   if (model.kind === 'power' && typeof ResizeObserver === 'function') {

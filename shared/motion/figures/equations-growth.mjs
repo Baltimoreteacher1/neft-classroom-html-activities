@@ -17,6 +17,7 @@ const CTX = {
     start: { en: ["start,", "once"], es: ["inicio,", "una vez"] },
     y: { en: ["liters"], es: ["litros"] },
     names: { en: "x = minutes, y = liters in the tank", es: "x = minutos, y = litros en el tanque" },
+    out: { en: "Liters in the tank", es: "Litros en el tanque" },
     perBox: { en: "per minute", es: "por minuto" },
     startBox: { en: "start", es: "inicio" },
     labels: [
@@ -31,6 +32,7 @@ const CTX = {
     start: { en: ["fee,", "once"], es: ["tarifa,", "una vez"] },
     y: { en: ["cost", "($)"], es: ["costo", "($)"] },
     names: { en: "x = items, y = cost ($)", es: "x = artículos, y = costo ($)" },
+    out: { en: "Cost ($)", es: "Costo ($)" },
     perBox: { en: "per item", es: "por artículo" },
     startBox: { en: "fee", es: "tarifa" },
     labels: [
@@ -45,6 +47,7 @@ const CTX = {
     start: { en: ["start,", "once"], es: ["inicio,", "una vez"] },
     y: { en: ["reading", "(mm)"], es: ["lectura", "(mm)"] },
     names: { en: "x = hours, y = reading (mm)", es: "x = horas, y = lectura (mm)" },
+    out: { en: "Reading (mm)", es: "Lectura (mm)" },
     perBox: { en: "per hour", es: "por hora" },
     startBox: { en: "start", es: "inicio" },
     labels: [
@@ -279,7 +282,19 @@ function describe(m, lang) {
   return out.join(" ");
 }
 
-/** @type {import("./mount.mjs").Figure} */
+/** The output at the chosen input, a·x + b. @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: CTX[m.ck].out[lang], value: m.valueText });
+
+/** The start multiplied as if it were per step: (a + b) × x. Null when it lands on the same number. @param {Model} m @param {"en" | "es"} lang */
+function wrong(m, lang) {
+  if (!m.wrong) return null;
+  return {
+    value: String(m.wrong.total),
+    say: pick(lang, `Multiplied the start ${m.b} by ${m.c} too: (${m.a} + ${m.b}) × ${m.c}.`, `Multiplicaste también el inicio ${m.b} por ${m.c}: (${m.a} + ${m.b}) × ${m.c}.`),
+  };
+}
+
+/** @type {import("./equations-kit.mjs").EqFigure} */
 export default {
   id: "growth-table-graph-rule",
   keys: KEYS,
@@ -289,4 +304,6 @@ export default {
   render,
   scene,
   describe,
+  headline,
+  wrong,
 };

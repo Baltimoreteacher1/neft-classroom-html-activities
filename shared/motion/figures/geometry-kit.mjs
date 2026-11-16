@@ -33,6 +33,9 @@ export function dec(r) {
   throw new RangeError("not a terminating decimal");
 }
 
+/** Plain decimal text with no thousands separators, as shared/motion/exact.mjs parse() reads it. @param {Rat} r */
+export const plain = (r) => dec(r).replace(/,/g, "");
+
 /** Floor square root of a bigint. @param {bigint} n */
 export function isqrt(n) {
   if (n < 2n) return n;

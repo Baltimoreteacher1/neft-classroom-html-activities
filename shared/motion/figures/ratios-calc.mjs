@@ -76,6 +76,12 @@ export const plainApprox = (s, es) => (s.t !== undefined ? plain(s) : `${plain(s
 /** "= 1.25" or "≈ 1.97": the value after its equals sign, never an inline fraction. @param {Show} s */
 export const eqVal = (s) => (s.t !== undefined ? `= ${plain(s)}` : `≈ ${s.approx}`);
 
+/** A value a parser reads exactly: a whole number or short decimal, else "n/d". @param {Rat} r */
+export const exactText = (r) => {
+  const s = show(r);
+  return s.t !== undefined ? plain(s).replaceAll(",", "") : `${r.n}/${r.d}`;
+};
+
 /** The ratio words a figure uses, in both languages. */
 export const WORDS = {
   juice: { en: "Juice", es: "Jugo" },
@@ -124,7 +130,7 @@ export function compareModel(key, values) {
   const mine = R(a * kMine);
   const ref = R(REF[0] * kRef);
   const verdict = cmp(R(a * REF[1]), R(REF[0] * b));
-  const t = b - REF[1];
+  const t = REF[1] - b;
   return {
     key,
     a,
@@ -137,8 +143,8 @@ export function compareModel(key, values) {
     verdict,
     value: R(a, b),
     refValue: R(REF[0], REF[1]),
-    /** Adding the same amount to both reference numbers to reach b cups of white, which is not scaling. */
-    wrong: t === 0 ? null : { t, color: R(REF[0] + t), white: R(b) },
+    /** Adding the same amount to both of your numbers to reach the reference's 5 cups of white, which is not scaling. Equal numbers stay equal either way. */
+    wrong: t === 0 || a === b ? null : { t, color: R(a + t), white: R(REF[1]) },
   };
 }
 

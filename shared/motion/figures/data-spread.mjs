@@ -2,8 +2,14 @@
 // and the identity range = left whisker + box + right whisker. Quartiles follow the lab's median-of-halves rule.
 import { COLOR } from "../tokens.mjs";
 import { fiveNumbers } from "./data-box.mjs";
-import { dataControls, dataModel, eqSign, fmt, joined } from "./data-model.mjs";
+import { dataControls, dataModel, eqSign, fmt, joined, headlineOf } from "./data-model.mjs";
 import { boxStrip, bracket, dotPlot, FADE, fiveTable, f1, GROW, header, note, PAD, para, POP, RISE, sel, stagger, step } from "./data-draw.mjs";
+
+/** Using the two ends (the range) for the IQR; null when the range happens to equal the IQR. @param {import("./data-model.mjs").DataModel} m @param {"en" | "es"} lang @returns {null | { value: string, say: string }} */
+export function rangeMistake(m, lang) {
+  if (m.range.eq(m.iqr)) return null;
+  return { value: fmt(m.range), say: lang === "es" ? "Restó el valor menor del mayor, que es el rango, en vez de Q3 − Q1." : "Subtracted the least from the greatest, which is the range, instead of Q3 − Q1." };
+}
 
 /** @type {import("./mount.mjs").Figure} */
 export default {
@@ -51,13 +57,15 @@ export default {
     y += p.h + 10;
     s3svg += `<g class="dm-read">${p.svg}</g>`;
     let cue = "";
-    if (m.range.n !== m.iqr.n || m.range.d !== m.iqr.d) {
+    if (rangeMistake(m, lang)) {
       const c = note(W, y, L(`Not this: ${fmt(m.max)} − ${fmt(m.min)} = ${fmt(m.range)} uses the two ends. That is the range. The IQR uses Q1 and Q3.`, `No así: ${fmt(m.max)} − ${fmt(m.min)} = ${fmt(m.range)} usa los dos extremos. Eso es el rango. El RIC usa Q1 y Q3.`), "not");
       cue = c.svg;
       y += c.h;
     }
     return { body: s1 + s2 + step(3, s3svg) + cue, width: W, height: Math.ceil(y + 6) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => rangeMistake(m, lang),
   scene(root) {
     /** @type {Array<import("../motion.mjs").Track & { els: Element[] }>} */
     const tracks = [];

@@ -119,4 +119,6 @@ export const gcfFigure = {
   render: (model, o) => renderGcf(model, o),
   scene: (root, model) => stepScene(root, model.steps),
   describe: (model, lang) => describeGcf(model, lang),
+  headline: (model, lang) => ({ label: pick(lang, "Greatest common factor", "Máximo común divisor (MCD)"), value: String(model.gcf) }),
+  wrong: (model, lang) => (model.a !== model.b ? { value: String(model.lcm), say: pick(lang, "Gave the least common multiple, a multiple of both, instead of a factor of both.", "Dio el mínimo común múltiplo, un múltiplo de los dos, en lugar de un factor de los dos.") } : null),
 };

@@ -5,6 +5,8 @@ import { Rat } from "../exact.mjs";
 import { COLOR } from "../tokens.mjs";
 import { benchmarkWord, block, callout, clampWidth, dec, legendRow, nb, PAD, pieceExpr, pieces, rat, stepScene, T, tape } from "./percent-kit.mjs";
 
+/** @typedef {import("./percent-kit.mjs").PercentFigure} PercentFigure */
+
 const DENOMS = [100, 50, 25, 10, 5, 1];
 const MARKS = [1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100];
 
@@ -129,12 +131,21 @@ function describe(m, lang) {
   return s.join(" ");
 }
 
+/** @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: T(lang, "Discount", "Descuento"), value: m.discount.text });
+
+/**
+ * Taking off the percent number itself as the discount. Null exactly when no "not this" card is drawn.
+ * @param {Model} m @param {"en" | "es"} lang
+ */
+const wrong = (m, lang) => (m.wrong === null ? null : { value: String(m.p), say: T(lang, "Took off the percent as a plain amount instead of taking that share of the price.", "Quitó el porcentaje como una cantidad en vez de tomar esa parte del precio.") });
+
 const controls = () => [
   { label: "Percent", labelEs: "Porcentaje", min: 0, max: 100, step: 1 },
   { label: "Whole amount", labelEs: "Cantidad total", min: 1, max: 120, step: 1 },
 ];
 
-/** @type {import("./mount.mjs").Figure[]} */
+/** @type {PercentFigure[]} */
 export default [
   {
     id: "percent-discount",
@@ -145,6 +156,8 @@ export default [
     render,
     scene: (root) => stepScene(root),
     describe,
+    headline,
+    wrong,
   },
   {
     id: "percent-tape",
@@ -155,5 +168,7 @@ export default [
     render,
     scene: (root) => stepScene(root),
     describe,
+    headline,
+    wrong,
   },
 ];

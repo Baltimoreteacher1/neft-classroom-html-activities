@@ -1,7 +1,7 @@
 // Coordinate-plane pieces shared by the plane figures (grid, labelled points, the counted street route) and two of the figures:
 // distance on the plane (7-5, 7-6) and the reflect-predict bench (7-9).
 import { COLOR, COPY_FILLS } from "../tokens.mjs";
-import { abs, clampW, f1, Flow, fmt, marker, minus, MINUS, nb, num, PAD, pair, pick, sgn, step, stepScene, tw, txt, whole, wrongGap } from "./lines-coordinates-kit.mjs";
+import { abs, clampW, f1, Flow, fmt, gapSay, marker, minus, MINUS, nb, num, PAD, pair, pick, sgn, step, stepScene, tw, txt, whole, wrongGap } from "./lines-coordinates-kit.mjs";
 
 /** @typedef {import("../exact.mjs").Rat} Rat */
 
@@ -131,6 +131,14 @@ export function legWrongs(m, lang) {
   if (m.wrongV) out.push(pick(lang, `Not this: up or down = ${nb(m.wrongV.expr)} = ${fmt(m.wrongV.value)}. Find the gap between the y-values.`, `No: vertical = ${nb(m.wrongV.expr)} = ${fmt(m.wrongV.value)}. Halla el espacio entre los valores de y.`));
   return out;
 }
+/** The street-route total when ONE leg is found by adding (across first, the most common). Null when no leg card is drawn. @param {DistanceModel} m @param {"en" | "es"} lang */
+export function routeWrong(m, lang) {
+  if (m.wrongH) return { value: fmt(m.wrongH.value.add(m.h)), say: gapSay(m.a, m.c, "x", lang) };
+  if (m.wrongV) return { value: fmt(m.w.add(m.wrongV.value)), say: gapSay(m.b, m.d, "y", lang) };
+  return null;
+}
+/** @param {"en" | "es"} lang */
+const routeLabel = (lang) => pick(lang, "Street-route distance", "Distancia por las calles");
 /** @param {DistanceModel} m @param {"en" | "es"} lang */
 const totalLine = (m, lang) => pick(lang, `Total: ${fmt(m.w)} + ${fmt(m.h)} = ${fmt(m.total)} units`, `Total: ${fmt(m.w)} + ${fmt(m.h)} = ${fmt(m.total)} unidades`);
 
@@ -254,6 +262,8 @@ export default [
     render: renderDistance,
     scene: (/** @type {ParentNode} */ root) => stepScene(root, 4, 6000),
     describe: describeDistance,
+    headline: (/** @type {DistanceModel} */ m, /** @type {"en" | "es"} */ lang) => ({ label: routeLabel(lang), value: fmt(m.total) }),
+    wrong: routeWrong,
   },
   {
     id: "plane-reflect-predict",
@@ -264,5 +274,7 @@ export default [
     render: renderPredict,
     scene: (/** @type {ParentNode} */ root) => stepScene(root, 4, 6000),
     describe: describePredict,
+    headline: (/** @type {PredictModel} */ m, /** @type {"en" | "es"} */ lang) => ({ label: routeLabel(lang), value: fmt(m.total) }),
+    wrong: routeWrong,
   },
 ];

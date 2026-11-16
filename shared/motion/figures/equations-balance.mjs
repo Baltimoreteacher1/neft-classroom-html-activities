@@ -316,7 +316,24 @@ function describe(m, lang) {
   return out.join(" ");
 }
 
-/** @type {import("./mount.mjs").Figure} */
+/** The number the lesson asks for: the solution of the equation. @param {Model} m @param {"en" | "es"} lang */
+const headline = (m, lang) => ({ label: pick(lang, "Solution x", "Solución x"), value: m.X.toString() });
+
+/**
+ * One-sided move: the operation lands on the left pan only, so the right side is still b and the student writes x = b.
+ * @param {Model} m @param {"en" | "es"} lang
+ */
+function wrong(m, lang) {
+  if (!m.wrong) return null;
+  const b = m.B.toString();
+  const add = m.md === "add";
+  const say = add
+    ? pick(lang, `Subtracted ${m.a} from the left side only, so x looks like ${b}.`, `Restaste ${m.a} solo del lado izquierdo, y x parece valer ${b}.`)
+    : pick(lang, `Divided only the left side by ${m.a}, so x looks like ${b}.`, `Dividiste solo el lado izquierdo entre ${m.a}, y x parece valer ${b}.`);
+  return { value: b, say };
+}
+
+/** @type {import("./equations-kit.mjs").EqFigure} */
 export default {
   id: "balance-same-both-sides",
   keys: KEYS,
@@ -326,4 +343,6 @@ export default {
   render,
   scene,
   describe,
+  headline,
+  wrong,
 };

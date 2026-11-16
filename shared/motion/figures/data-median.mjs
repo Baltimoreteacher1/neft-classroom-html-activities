@@ -1,8 +1,8 @@
 // Lesson 2-3, describe the data using the median: the values slide into order, are crossed off in pairs from both ends until the
 // middle is left, and the median is marked on the number line. Key: data:median (the Practice bench's ordered dot plot).
 import { COLOR } from "../tokens.mjs";
-import { cardTracks, cardPanels, cardWords } from "./data-cards.mjs";
-import { cmp, dataControls, dataModel, fmt } from "./data-model.mjs";
+import { cardPanels, cardTracks, cardWords, middleMistake } from "./data-cards.mjs";
+import { cmp, dataControls, dataModel, fmt, headlineOf } from "./data-model.mjs";
 import { f1, FADE, header, num, PAD, para, POP, SLIDE, sel, stagger, step, T } from "./data-draw.mjs";
 import { dotPlot } from "./data-draw.mjs";
 
@@ -41,6 +41,8 @@ export default {
     const body = cards.svg + step(3, h3.svg + plot.svg + mark + `<g class="dm-count">${p.svg}</g>`);
     return { body, width: W, height: Math.ceil(y) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => middleMistake(m, lang),
   scene(root, m) {
     /** @type {Array<import("../motion.mjs").Track & { els: Element[] }>} */
     const tracks = cardTracks(root, 1, 0, 0.62);

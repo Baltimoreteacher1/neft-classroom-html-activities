@@ -158,4 +158,6 @@ export const compareFigure = {
   render: (model, o) => renderCompare(model, o),
   scene: (root, model) => stepScene(root, model.steps),
   describe: (model, lang) => describeCompare(model, lang),
+  headline: (model, lang) => ({ label: pick(lang, "Value of both expressions", "Valor de las dos expresiones"), value: String(model.total) }),
+  wrong: (model, lang) => (model.differs ? { value: String(model.feeN), say: pick(lang, `Added the ${model.b} once instead of multiplying it by ${model.a}.`, `Sumó el ${model.b} una sola vez en lugar de multiplicarlo por ${model.a}.`) } : null),
 };

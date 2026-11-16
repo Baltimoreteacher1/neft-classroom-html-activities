@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { registered } from "../curriculum/learning-labs/shared/models/index.mjs";
+import { equivalent, parse } from "../shared/motion/exact.mjs";
 import { figureSvg } from "../shared/motion/figures/mount.mjs";
 import ratios from "../shared/motion/figures/ratios.mjs";
 import {
@@ -94,7 +95,7 @@ test("ratio:compare / patterns: the common white, the multipliers and the verdic
     [m.L, m.kMine, m.kRef, String(m.mine), String(m.ref), m.verdict],
     [60, 5, 12, "20", "36", -1],
   );
-  assert.deepEqual([String(m.wrong.color), m.wrong.t], ["10", 7]); // 3+7 : 12
+  assert.deepEqual([String(m.wrong.color), String(m.wrong.white), m.wrong.t], ["-3", "5", -7]); // 4-7 : 12-7, to reach the reference's 5 cups of white
   m = compareModel("ratio:patterns", [9, 5]);
   assert.deepEqual(
     [m.L, m.kMine, m.kRef, String(m.mine), String(m.ref), m.verdict, m.wrong],
@@ -107,8 +108,10 @@ test("ratio:compare / patterns: the common white, the multipliers and the verdic
     [m.L, m.kMine, m.kRef, String(m.mine), String(m.ref), m.verdict],
     [10, 1, 2, "6", "6", 0],
   );
-  m = compareModel("ratio:compare", [2, 1]); // adding to reach 1 cup of white takes 4 off: 3 - 4 = -1
-  assert.deepEqual([m.L, String(m.wrong.color), m.wrong.t], [5, "-1", -4]);
+  assert.deepEqual([String(m.wrong.color), m.wrong.t], ["1", -5]);
+  m = compareModel("ratio:compare", [2, 1]);
+  assert.deepEqual([m.L, String(m.wrong.color), m.wrong.t], [5, "6", 4]);
+  assert.equal(compareModel("ratio:compare", [7, 7]).wrong, null); // equal numbers stay equal when the same amount is added
 });
 
 test("rate:shopping: unit price, the offer and the subtract-from-both wrong move", () => {
@@ -230,7 +233,7 @@ test("the pictures show the computed numbers, in both languages", () => {
     "no wrong move for equal quantities",
   );
   const cmp = t(svgOf("ratio-compare", "ratio:compare", [4, 12]));
-  for (const s of ["20", "36", "60", "×5", "×12", "4 ÷ 12 =", "0.33", "0.6"])
+  for (const s of ["20", "36", "60", "×5", "×12", "4 ÷ 12 =", "0.33", "0.6", "−7, −7"])
     assert.ok(cmp.includes(s), `compare: ${s}`);
   const rate = t(svgOf("rate-unit-price", "rate:shopping", [12, 8]));
   for (const s of ["$1.50", "$12", "÷8", "$1.67", "$10", "÷6", "−7, −7"])
@@ -260,4 +263,83 @@ test("descriptions carry every headline number", () => {
     /12 × 2\.54 = 30\.48 cm/,
   );
   assert.match(d("ratio-part-whole", "ratio:tape", [6, 3]), /6 \+ 3 = 9 cups/);
+});
+
+test("headline() is the lab's number and wrong() is the dashed card's wrong result (every setting of the first and last control)", () => {
+  const settings = (c) =>
+    Array.from({ length: Math.round((c.max - c.min) / c.step) + 1 }, (_, i) =>
+      Number((c.min + i * c.step).toFixed(6)),
+    );
+  for (const f of ratios) {
+    for (const key of f.keys) {
+      const [kind, mode] = key.split(":");
+      const base = startOf(key);
+      const cs = f.controls(key);
+      for (const i of new Set([0, cs.length - 1])) {
+        for (const v of settings(cs[i])) {
+          const values = base.map((x, j) => (j === i ? v : x));
+          const where = `${key} ${JSON.stringify(values)}`;
+          const model = f.build(key, values);
+          const h = f.headline(model, "en");
+          const want = evaluate({ kind, mode, values }).value;
+          const got = parse(h.value);
+          assert.ok(
+            got && Math.abs(Number(got.n) / Number(got.d) - want) < 1e-9,
+            `${where}: headline ${h.value} vs ${want}`,
+          );
+          assert.ok(
+            h.label && h.label !== f.headline(model, "es").label,
+            `${where}: headline label not translated`,
+          );
+          const w = f.wrong(model, "en");
+          const drawn = texts(svgOf(f.id, key, values)).some((s) => s.startsWith("Not this"));
+          assert.equal(
+            w !== null,
+            drawn,
+            `${where}: wrong() is non-null exactly when the dashed card is drawn`,
+          );
+          if (w) {
+            const wv = parse(w.value);
+            assert.ok(wv, `${where}: wrong value ${w.value} does not parse`);
+            assert.ok(!equivalent(w.value, h.value), `${where}: wrong equals right (${w.value})`);
+            assert.ok(
+              w.say && w.say !== f.wrong(model, "es").say,
+              `${where}: wrong say not translated`,
+            );
+          }
+        }
+      }
+    }
+  }
+});
+
+test("headline() and wrong() values, written by hand", () => {
+  const f = (id, key, values) => {
+    const x = fig(id);
+    const m = x.build(key, values);
+    return [x.headline(m, "en").value, x.wrong(m, "en")?.value ?? null];
+  };
+  assert.deepEqual(f("ratio-part-whole", "ratio:tape", [6, 3]), ["9", "3"]);
+  assert.deepEqual(f("ratio-double-line", "ratio:mixer", [5, 4]), ["1.25", "1.125"]);
+  assert.deepEqual(f("ratio-double-line", "ratio:unit-rate", [5, 5]), ["1", null]);
+  assert.deepEqual(f("ratio-compare", "ratio:compare", [4, 12]), ["1/3", "−0.6"]);
+  assert.deepEqual(f("ratio-compare", "ratio:patterns", [2, 5]), ["0.4", null]);
+  assert.deepEqual(f("rate-unit-price", "rate:shopping", [12, 8]), ["1.5", "5"]);
+  assert.deepEqual(f("rate-unit-price", "rate:shopping", [9, 9]), ["1", null]);
+  assert.deepEqual(f("ratio-graph", "growth:ratio-graph", [3, 0, 4]), ["12", "6"]);
+  assert.deepEqual(f("ratio-graph", "growth:ratio-graph", [1, 0, 4]), ["4", null]);
+  assert.deepEqual(f("ratio-graph", "growth:rider", [3, 2, 4]), ["14", "12"]);
+  assert.deepEqual(f("conversion-chain", "conversion:expedition", [12, 2.54]), [
+    "30.48",
+    "600/127",
+  ]);
+  assert.deepEqual(f("conversion-chain", "conversion:scale", [4, 12]), ["48", "1/3"]);
+  assert.match(
+    fig("ratio-double-line").wrong(fig("ratio-double-line").build("ratio:mixer", [5, 4]), "en").say,
+    /^Added 4 to both/,
+  );
+  assert.match(
+    fig("ratio-double-line").wrong(fig("ratio-double-line").build("ratio:mixer", [5, 4]), "es").say,
+    /^Sumó 4 a las dos/,
+  );
 });

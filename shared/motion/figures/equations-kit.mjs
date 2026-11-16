@@ -3,6 +3,15 @@ import { COLOR } from "../tokens.mjs";
 
 /** @typedef {string | { n: string, d: string }} Seg a piece of a line: plain text or a stacked fraction */
 
+/**
+ * A figure plus the two optional methods the Standard flow and Challenge read: `headline` is the one number the lesson asks for, as a
+ * string shared/motion/exact.mjs parse() reads exactly; `wrong` is the common wrong move the figure draws as a dashed card (null when none).
+ * @typedef {import("./mount.mjs").Figure & {
+ *   headline: (model: any, lang: "en" | "es") => { label: string, value: string, approx?: boolean },
+ *   wrong: (model: any, lang: "en" | "es") => null | { value: string, say: string },
+ * }} EqFigure
+ */
+
 export const CHAR = 0.58; // average glyph width per font-size unit, with slack
 export const MINUS = "−";
 

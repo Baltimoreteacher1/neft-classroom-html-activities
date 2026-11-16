@@ -42,6 +42,7 @@ export function expressionModel(values) {
     expandedText: show(ax.add(ab)),
     /** the look-alike a x + b, where b is not multiplied */
     fee: show(fee),
+    feeN: fee.n,
     short: show(short),
     /** the look-alike is a different value only when a is not 1 */
     differs: !fee.eq(total),

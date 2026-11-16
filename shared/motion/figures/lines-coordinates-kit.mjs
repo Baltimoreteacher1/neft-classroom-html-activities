@@ -90,6 +90,15 @@ export function wrongGap(p, q) {
   return { expr: opposite ? plus(p, q) : `${bars(p)} + ${bars(q)}`, value };
 }
 
+/**
+ * One sentence naming the wrong move behind wrongGap(p, q): adding the coordinates (opposite sides) or adding their distances
+ * from 0 (same side), instead of finding the gap. @param {Rat} p @param {Rat} q @param {"x" | "y"} axis @param {"en" | "es"} lang
+ */
+export function gapSay(p, q, axis, lang) {
+  if (sgn(p) * sgn(q) < 0) return pick(lang, `Added the ${axis}-coordinates instead of finding the gap between them.`, `Sumó las coordenadas ${axis} en vez de hallar el espacio entre ellas.`);
+  return pick(lang, `Added the distances of the ${axis}-coordinates from 0 instead of finding the gap between them.`, `Sumó las distancias al 0 de las coordenadas ${axis} en vez de hallar el espacio entre ellas.`);
+}
+
 // ---- text ----------------------------------------------------------------------------------------------------------
 /** @param {string} s @param {number} size @param {number} weight */
 export const tw = (s, size, weight = 400) => [...s].length * size * (weight >= 600 ? 0.62 : 0.57);

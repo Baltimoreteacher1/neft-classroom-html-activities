@@ -47,6 +47,7 @@ export function regroupModel(values) {
     totalText: s(total),
     total: total.n,
     sumText: s(sum),
+    sumN: sum.n,
     wrongText: s(wrongTotal),
     /** adding the pair instead of multiplying it changes the value unless x + y = x × y (2 and 2) */
     differs: !sum.eq(pp),
@@ -182,4 +183,6 @@ export const regroupFigure = {
   render: (model, o) => renderRegroup(model, o),
   scene: (root, model) => stepScene(root, model.steps),
   describe: (model, lang) => describeRegroup(model, lang),
+  headline: (model, lang) => ({ label: pick(lang, "Grouped pair", "Par agrupado"), value: String(model.pairProduct) }),
+  wrong: (model, lang) => (model.differs ? { value: String(model.sumN), say: pick(lang, "Added the pair instead of multiplying it.", "Sumó el par en lugar de multiplicarlo.") } : null),
 };

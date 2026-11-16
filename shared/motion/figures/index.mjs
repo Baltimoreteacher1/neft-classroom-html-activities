@@ -4,6 +4,7 @@ import data from "./data.mjs";
 import decimals from "./decimals.mjs";
 import equations from "./equations.mjs";
 import expressions from "./expressions.mjs";
+import exponents from "./exponents.mjs";
 import fractions from "./fractions.mjs";
 import geometry from "./geometry.mjs";
 import linesCoordinates from "./lines-coordinates.mjs";
@@ -13,7 +14,7 @@ import ratios from "./ratios.mjs";
 /** @typedef {import("./mount.mjs").Figure} Figure */
 
 /** @type {Figure[]} */
-export const FIGURES = [...fractions, ...ratios, ...percent, ...expressions, ...data, ...decimals, ...geometry, ...linesCoordinates, ...equations];
+export const FIGURES = [...fractions, ...ratios, ...percent, ...expressions, ...data, ...decimals, ...geometry, ...linesCoordinates, ...equations, ...exponents];
 
 /** @type {Map<string, Figure>} */
 const byKey = new Map();

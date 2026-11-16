@@ -4745,7 +4745,7 @@ function hwMotionMount() {
     var fig = mods[0].figureFor(key);
     if (!fig || !stage) { host.hidden = true; return; }
     if (Array.isArray(saved) && saved.length === values.length) { try { fig.build(key, saved); values = saved; } catch (e) {} }
-    hwMotionView = mods[1].mountFigure(stage, fig, key, { values: values, lang: hwMissionLang(), controls: true, onValues: function (v) { hwMissionWrite('motion', v); } });
+    hwMotionView = mods[1].mountFigure(stage, fig, key, { values: values, lang: hwMissionLang(), controls: true, think: 'family', onValues: function (v) { hwMissionWrite('motion', v); } });
   }).catch(function () {
     if (stage) stage.textContent = hwMissionBi('The moving picture did not load. The other pictures on this page still work.', 'El dibujo en movimiento no cargó. Los otros dibujos de esta página sí funcionan.');
   }).then(function () { hwMotionLoading = false; });

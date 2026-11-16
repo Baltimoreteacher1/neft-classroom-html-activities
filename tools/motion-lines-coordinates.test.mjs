@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
-import { Rat } from "../shared/motion/exact.mjs";
+import { parse, Rat } from "../shared/motion/exact.mjs";
 import figures from "../shared/motion/figures/lines-coordinates.mjs";
 import {
   fmt,
@@ -339,4 +339,109 @@ test("the counted steps match the lab's arithmetic", () => {
     width: 400,
   }).svg;
   assert.equal((r.match(/data-step="3" data-seq=/g) || []).length, 6); // six rows of squares
+});
+
+// ---- headline() and wrong(): the one number each lesson asks for, and the wrong result of the dashed card ----------------
+const HALVES = [-10, -2.5, -1, -0.5, 0, 0.5, 3, 7.5, 10];
+const WHOLES4 = [-6, -3, -1, 0, 1, 2, 6];
+const grid = (vals, len) => {
+  let acc = [[]];
+  for (let i = 0; i < len; i++) acc = acc.flatMap((a) => vals.map((v) => [...a, v]));
+  return acc;
+};
+const SETTINGS = {
+  "line:opposites": grid(HALVES, 2),
+  "line:absolute": grid(HALVES, 2),
+  "line:order": grid([-10, -7, -3, -1, 0, 1, 4, 10], 2),
+  "coordinates:distance": grid(WHOLES4, 4),
+  "coordinates:rectangle": grid(WHOLES4, 4),
+  "coordinates:reflect": grid(WHOLES4, 4),
+  "coordinates:reflect-predict": grid(WHOLES4, 4),
+};
+const parsed = (s) => {
+  const v = parse(s);
+  assert.ok(v, `parse() cannot read "${s}"`);
+  return v;
+};
+const toNum = (r) => Number(r.n) / Number(r.d);
+/** The lab's own number for the key, reached through evaluate(). */
+const labNumber = (key, v) => {
+  const [kind, mode] = key.split(":");
+  const r = lab(kind, mode, v);
+  return key === "coordinates:reflect" ? r.reflectedX[0] : r.value;
+};
+const dashedCards = (svg) =>
+  (svg.match(/stroke="#b3402a" stroke-width="2" stroke-dasharray="6 4"/g) || []).length;
+
+test("headline() is the lab's number, wrong() is non-null exactly when the dashed card is drawn and never equals the right answer", () => {
+  for (const [key, list] of Object.entries(SETTINGS)) {
+    const f = fig(key);
+    let wrongs = 0;
+    for (const v of list) {
+      const en = figureSvg(f, key, v, { lang: "en", width: 400 });
+      const m = en.model;
+      const h = f.headline(m, "en");
+      assert.equal(toNum(parsed(h.value)), labNumber(key, v) + 0, `${key} ${v}: headline`);
+      assert.ok(h.label && h.label !== f.headline(m, "es").label, `${key}: label not translated`);
+      assert.equal(
+        f.headline(m, "es").value,
+        h.value,
+        `${key}: the number is the same in both languages`,
+      );
+      const w = f.wrong(m, "en");
+      // the absolute-value figure also draws a card about ORDER; wrong() is about the distance, so only the distance cards count
+      const drawn =
+        key === "line:absolute"
+          ? /gap between A and B|never negative/.test(en.svg)
+          : dashedCards(en.svg) > 0;
+      assert.equal(
+        w !== null,
+        drawn,
+        `${key} ${v}: wrong() is ${w ? "set" : "null"} but the card is ${drawn ? "drawn" : "not drawn"}`,
+      );
+      if (!w) {
+        assert.equal(f.wrong(m, "es"), null);
+        continue;
+      }
+      wrongs++;
+      assert.notEqual(
+        parsed(w.value).toString(),
+        parsed(h.value).toString(),
+        `${key} ${v}: wrong equals right (${w.value})`,
+      );
+      const es = f.wrong(m, "es");
+      assert.ok(es && es.value === w.value, `${key}: same wrong number in Spanish`);
+      assert.ok(
+        w.say.length > 15 && es.say.length > 15 && w.say !== es.say,
+        `${key} ${v}: say not translated`,
+      );
+    }
+    assert.ok(wrongs > 0, `${key}: wrong() never fired in the sweep`);
+  }
+});
+
+test("headline and wrong, worked by hand", () => {
+  const h = (key, v, lang = "en") => fig(key).headline(fig(key).build(key, v), lang);
+  const w = (key, v, lang = "en") => fig(key).wrong(fig(key).build(key, v), lang);
+  assert.equal(h("line:opposites", [-2.5, 0]).value, "2.5");
+  assert.equal(w("line:opposites", [-2.5, 0]).value, "−2.5");
+  assert.equal(w("line:opposites", [2.5, 0]), null);
+  assert.equal(h("line:absolute", [-7, -3]).value, "4");
+  assert.equal(w("line:absolute", [-7, -3]).value, "10");
+  assert.equal(w("line:absolute", [-3, 5]).value, "2");
+  assert.equal(w("line:absolute", [0, -5]), null); // only the order card is drawn here
+  assert.equal(h("line:order", [-3, -8]).value, "−5");
+  assert.equal(w("line:order", [-3, -8]).value, "5");
+  assert.equal(w("line:order", [2, 7]), null);
+  assert.equal(h("coordinates:distance", [-3, 4, 2, -1]).value, "10");
+  assert.equal(w("coordinates:distance", [-3, 4, 2, -1]).value, "4"); // across by adding: −3 + 2 = −1, plus 5 down
+  assert.equal(h("coordinates:rectangle", [-4, -2, 3, 4]).value, "42");
+  assert.equal(w("coordinates:rectangle", [-4, -2, 3, 4]).value, "13");
+  assert.equal(h("coordinates:reflect", [-3, 4, 3, -4]).value, "−3");
+  assert.equal(w("coordinates:reflect", [-3, 4, 3, -4]).value, "3");
+  assert.equal(w("coordinates:reflect", [0, 4, 3, -4]), null);
+  assert.equal(h("coordinates:reflect-predict", [-4, 3, 3, -2]).value, "12");
+  assert.equal(w("coordinates:reflect-predict", [-4, 3, 3, -2]).value, "4"); // across by adding: −4 + 3 = −1, plus 5 down
+  assert.match(w("coordinates:rectangle", [-4, -2, 3, 4], "es").say, /Sumó el ancho y el alto/);
+  assert.match(h("coordinates:distance", [0, 0, 1, 1], "es").label, /calles/);
 });

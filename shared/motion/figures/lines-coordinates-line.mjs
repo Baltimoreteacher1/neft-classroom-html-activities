@@ -1,7 +1,7 @@
 // Number-line figures: opposites (7-1, 7-2), absolute value (7-3), compare and order (7-4).
 // Each figure is a pure model (exact Rat arithmetic), a renderer that writes SVG only, a scene, and a text equivalent.
 import { COLOR, COPY_FILLS } from "../tokens.mjs";
-import { abs, bars, clampW, cmp, f1, Flow, fmt, half, marker, minus, MINUS, nb, neg, num, PAD, pick, step, stepScene, sym, tw, txt, whole, wrongGap } from "./lines-coordinates-kit.mjs";
+import { abs, bars, clampW, cmp, f1, Flow, fmt, half, marker, minus, MINUS, nb, neg, num, PAD, pick, sgn, step, stepScene, sym, tw, txt, whole, wrongGap } from "./lines-coordinates-kit.mjs";
 
 /** @param {unknown[]} values @param {number} n */
 function need(values, n) {
@@ -312,6 +312,28 @@ function describeOrder(m, lang) {
     .join(" ");
 }
 
+// ---- headline and wrong: the one number each lesson asks for, and the wrong result of the dashed card -------------------
+/** @param {OppositesModel} m @param {"en" | "es"} lang */
+const oppositesHeadline = (m, lang) => ({ label: pick(lang, "Distance of the first location from 0", "Distancia de la primera ubicación al 0"), value: fmt(m.rows[0].distance) });
+/** The card says the opposite of a negative number is that same number. @param {OppositesModel} m @param {"en" | "es"} lang */
+const oppositesWrong = (m, lang) => (m.wrong ? { value: fmt(m.rows[0].x), say: pick(lang, "Kept the same sign, so the opposite stayed on the same side of 0.", "Dejó el mismo signo, así que el opuesto quedó del mismo lado del 0.") } : null);
+
+/** @param {AbsoluteModel} m @param {"en" | "es"} lang */
+const absoluteHeadline = (m, lang) => ({ label: pick(lang, "Distance between the two locations", "Distancia entre las dos ubicaciones"), value: fmt(m.between) });
+/** The distance cards (adding, or a negative distance); the "greater absolute value" card is about order, not about this number. @param {AbsoluteModel} m @param {"en" | "es"} lang */
+function absoluteWrong(m, lang) {
+  const s = m.second;
+  if (!s) return null;
+  if (s.kind === "sign") return { value: s.b, say: pick(lang, "Subtracted without taking the absolute value, so the distance came out negative.", "Restó sin usar el valor absoluto, y la distancia salió negativa.") };
+  const same = sgn(m.A) * sgn(m.B) > 0;
+  return { value: s.b, say: same ? pick(lang, "Added the distances from 0 instead of finding the gap between the locations.", "Sumó las distancias al 0 en vez de hallar el espacio entre las ubicaciones.") : pick(lang, "Added the two numbers instead of finding the gap between the locations.", "Sumó los dos números en vez de hallar el espacio entre las ubicaciones.") };
+}
+
+/** @param {OrderModel} m @param {"en" | "es"} lang */
+const orderHeadline = (m, lang) => ({ label: pick(lang, "Steps from the first to the second location (right is positive)", "Pasos de la primera a la segunda ubicación (a la derecha es positivo)"), value: fmt(m.gap) });
+/** Judging by digits puts the locations the wrong way round, so the steps come out with the wrong sign. @param {OrderModel} m @param {"en" | "es"} lang */
+const orderWrong = (m, lang) => (m.digitsWrong && m.gap.n !== 0n ? { value: fmt(neg(m.gap)), say: pick(lang, "Compared the digits instead of the places on the line, so counted the steps the wrong way.", "Comparó los dígitos en vez de los lugares en la recta, y contó los pasos en el sentido equivocado.") } : null);
+
 // ======================================================================================================================
 /** @param {string} id @param {string[]} keys @param {{en: string, es: string}} title @param {number} stepSize @param {number} count @param {number} ms */
 const make = (id, keys, title, stepSize, count, ms) => ({ id, keys, title, controls: () => locationControls(stepSize), scene: (/** @type {ParentNode} */ root) => stepScene(root, count, ms) });
@@ -321,18 +343,25 @@ export default [
     ...make("number-line-opposites", ["line:opposites"], { en: "Opposites: the same distance from 0, on opposite sides", es: "Opuestos: la misma distancia del 0, en lados opuestos" }, 0.5, 3, 4200),
     build: (/** @type {string} */ _key, /** @type {number[]} */ values) => oppositesModel(values),
     render: renderOpposites,
+    thinkWrong: false, // the dashed card is about which side the opposite is on, the question asks for a distance
     describe: describeOpposites,
+    headline: oppositesHeadline,
+    wrong: oppositesWrong,
   },
   {
     ...make("number-line-absolute", ["line:absolute"], { en: "Absolute value: the distance walked to 0", es: "Valor absoluto: la distancia que se camina hasta el 0" }, 0.5, 4, 5600),
     build: (/** @type {string} */ _key, /** @type {number[]} */ values) => absoluteModel(values),
     render: renderAbsolute,
     describe: describeAbsolute,
+    headline: absoluteHeadline,
+    wrong: absoluteWrong,
   },
   {
     ...make("number-line-order", ["line:order"], { en: "Compare and order: farther right is greater", es: "Comparar y ordenar: más a la derecha es mayor" }, 1, 3, 4600),
     build: (/** @type {string} */ _key, /** @type {number[]} */ values) => orderModel(values),
     render: renderOrder,
     describe: describeOrder,
+    headline: orderHeadline,
+    wrong: orderWrong,
   },
 ];

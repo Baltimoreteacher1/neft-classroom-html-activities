@@ -172,4 +172,6 @@ export const distributeFigure = {
   render: (model, o) => renderDistribute(model, o),
   scene: (root, model) => stepScene(root, model.steps),
   describe: (model, lang) => describeDistribute(model, lang),
+  headline: (model, lang) => ({ label: pick(lang, "Value of both expressions", "Valor de las dos expresiones"), value: String(model.total) }),
+  wrong: (model, lang) => (model.differs ? { value: String(model.feeN), say: pick(lang, `Multiplied only the first term: the ${model.a} did not reach the ${model.b}.`, `Multiplicó solo el primer término: el ${model.a} no llegó al ${model.b}.`) } : null),
 };

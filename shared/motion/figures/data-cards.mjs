@@ -24,6 +24,16 @@ export function enteredMiddle(m) {
 }
 
 /**
+ * The "middle of the list as given" mistake the dashed card shows, or null when that middle happens to be the median.
+ * @param {DataModel} m @param {"en" | "es"} lang @returns {null | { value: string, say: string }}
+ */
+export function middleMistake(m, lang) {
+  const em = enteredMiddle(m);
+  if (cmp(em.value, m.median.value) === 0) return null;
+  return { value: fmt(em.value), say: lang === "es" ? "Tomó el medio de la lista tal como está, antes de ordenarla." : "Used the middle of the list as given, before putting it in order." };
+}
+
+/**
  * Steps `s` (order) and `s + 1` (count in). Returns the SVG and the y below the last thing drawn.
  * @param {{ W: number, y: number, m: DataModel, lang: "en" | "es", s: number, cue?: boolean }} o
  */
@@ -74,7 +84,7 @@ export function cardPanels({ W, y, m, lang, s, cue = true }) {
   out += r.svg;
   y += r.h;
   const em = enteredMiddle(m);
-  if (cue && cmp(em.value, md.value) !== 0) {
+  if (cue && middleMistake(m, "en")) {
     const c = note(
       W,
       y,

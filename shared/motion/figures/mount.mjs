@@ -2,6 +2,7 @@
 // and (for the family page) labelled number controls. Figures never touch the DOM themselves; this file does.
 import { CSS_VARS, FONT } from "../tokens.mjs";
 import { playScene } from "../motion.mjs";
+import { mountThink } from "./think-ui.mjs";
 
 /**
  * @typedef {object} Control
@@ -22,6 +23,9 @@ import { playScene } from "../motion.mjs";
  * @property {(model: any, o: { lang: "en" | "es", width: number }) => { body: string, width: number, height: number }} render SVG body; hex colours from tokens.mjs
  * @property {(root: ParentNode, model: any) => { durationMs: number, tracks: Array<import("../motion.mjs").Track & { els: Element[] }> }} scene
  * @property {(model: any, lang: "en" | "es") => string} describe full text equivalent
+ * @property {(model: any, lang: "en" | "es") => { label: string, value: string, approx?: boolean }} [headline] the one number the lesson asks for; value is read by exact.mjs parse()
+ * @property {boolean} [thinkWrong] false when `wrong` does not answer the headline question, so Challenge skips error analysis for this figure
+ * @property {(model: any, lang: "en" | "es") => { value: string, say: string } | null} [wrong] the common wrong move's result and a sentence naming it; null when the figure draws no such card
  */
 
 const esc = (/** @type {unknown} */ s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] || c);
@@ -68,7 +72,7 @@ let uid = 0;
 
 /**
  * @param {HTMLElement} host @param {Figure} fig @param {string} key
- * @param {{ values: number[], lang?: "en" | "es", controls?: boolean, onValues?: (v: number[]) => void }} opts
+ * @param {{ values: number[], lang?: "en" | "es", controls?: boolean, onValues?: (v: number[]) => void, think?: "standard" | "challenge" | "family" | null }} opts
  */
 export function mountFigure(host, fig, key, opts) {
   const doc = host.ownerDocument;
@@ -158,6 +162,25 @@ export function mountFigure(host, fig, key, opts) {
   host.append(stage, sr, status);
   if (opts.controls) host.append(controlsBox, msg);
   host.append(tools);
+  /** The Think it through flow, when the figure can support it (it needs headline). */
+  const thinkHost = doc.createElement("div");
+  let think = null;
+  if (opts.think && typeof fig.headline === "function") {
+    host.append(thinkHost);
+    think = mountThink(thinkHost, {
+      fig,
+      key,
+      mode: opts.think,
+      lang: () => lang,
+      base: [...opts.values],
+      setValues(v) {
+        values = [...v];
+        opts.onValues?.([...values]);
+        draw();
+      },
+      watch: () => watch(),
+    });
+  }
 
   const stop = () => {
     anim?.cancel();
@@ -228,11 +251,13 @@ export function mountFigure(host, fig, key, opts) {
       if (next.lang) lang = next.lang === "es" ? "es" : "en";
       if (next.values) values = [...next.values];
       draw();
+      think?.update();
     },
     watch,
     stop,
     destroy() {
       stop();
+      think?.destroy();
       ro?.disconnect();
       host.textContent = "";
       host.classList.remove("mc-figure");

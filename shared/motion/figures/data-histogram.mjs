@@ -1,7 +1,7 @@
 // Lessons 2-1 and 2-2, statistical questions and histograms: dots on a number line fly into bins of width 5 and stack into bars.
 // Bins follow the lab: width 5 from 0, up to the last occupied interval, at least four of them.
 import { COLOR } from "../tokens.mjs";
-import { dataControls, dataModel, eqSign, fmt, joined, nb } from "./data-model.mjs";
+import { dataControls, dataModel, eqSign, fmt, joined, nb, headlineOf } from "./data-model.mjs";
 import { bracket, dotPlot, FADE, f1, header, note, num, PAD, para, POP, RISE, SLIDE, sel, stagger, step, T } from "./data-draw.mjs";
 
 /** @param {import("./data-model.mjs").DataModel} m */
@@ -13,8 +13,35 @@ export function histogramOf(m) {
   return { count, bins, binOf, slot };
 }
 
+/**
+ * The edge mistake the dashed card shows: the smallest positive multiple of 5 is counted in the interval below the one it starts.
+ * The wrong result is the frequency that comes out wrong, the lower interval's (too high) or, if that happens to equal the range,
+ * the upper interval's (too low). Null when there is no edge value or neither wrong frequency can be told from the range.
+ * @param {import("./data-model.mjs").DataModel} m @param {"en" | "es"} lang
+ * @returns {null | { edge: number, value: string, say: string }}
+ */
+export function edgeMistake(m, lang) {
+  const edge = m.sorted.find((v) => v > 0 && v % 5 === 0);
+  if (edge === undefined) return null;
+  const h = histogramOf(m);
+  const k = edge / 5;
+  const e = m.sorted.filter((v) => v === edge).length;
+  const range = fmt(m.range);
+  const lower = { text: `${edge - 5}–${edge - 1}`, value: String(h.bins[k - 1] + e) };
+  const upper = { text: `${edge}–${edge + 4}`, value: String(h.bins[k] - e) };
+  const pick = [lower, upper].find((c) => c.value !== range);
+  if (!pick) return null;
+  return {
+    edge,
+    value: pick.value,
+    say: lang === "es" ? `Contó el ${edge} en ${edge - 5}–${edge - 1} en vez de en ${edge}–${edge + 4}, así que la frecuencia de ${pick.text} sale mal.` : `Counted ${edge} in ${edge - 5}–${edge - 1} instead of ${edge}–${edge + 4}, so the frequency of ${pick.text} comes out wrong.`,
+  };
+}
+
 /** @type {import("./mount.mjs").Figure} */
 export default {
+  // the dashed card is about an interval edge, not about the range this figure asks for, so it is no error to analyse in Challenge
+  thinkWrong: false,
   id: "data-histogram",
   keys: ["data:histogram"],
   title: { en: "From data to a histogram", es: "De los datos al histograma" },
@@ -85,8 +112,9 @@ export default {
     );
     y += vary.h + 8;
     let cue = "";
-    const edge = m.sorted.find((v) => v > 0 && v % 5 === 0);
-    if (edge !== undefined) {
+    const mistake = edgeMistake(m, lang);
+    if (mistake) {
+      const edge = mistake.edge;
       const c = note(W, y, L(`Not this: ${edge} is not in ${edge - 5}–${edge - 1}. A value on an edge starts the next interval, ${edge}–${edge + 4}.`, `No así: el ${edge} no está en ${edge - 5}–${edge - 1}. Un valor en el borde empieza el intervalo siguiente, ${edge}–${edge + 4}.`), "not");
       cue = c.svg;
       y += c.h;
@@ -94,6 +122,8 @@ export default {
     const s3 = step(3, h3.svg + `<g class="dm-read">${sum.svg}${vary.svg}</g>${cue}`);
     return { body: s1 + s2 + s3, width: W, height: Math.ceil(y + 6) };
   },
+  headline: (m, lang) => headlineOf(m, lang),
+  wrong: (m, lang) => edgeMistake(m, lang),
   scene(root, m) {
     /** @type {Array<import("../motion.mjs").Track & { els: Element[] }>} */
     const tracks = [];

@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "../curriculum/learning-labs/shared/math.mjs";
+import { parse } from "../shared/motion/exact.mjs";
 import equations from "../shared/motion/figures/equations.mjs";
 import { figureSvg } from "../shared/motion/figures/mount.mjs";
 
@@ -191,4 +192,117 @@ test("rendering is deterministic and every Spanish picture differs from the Engl
     assert.notEqual(svgOf(key, values), svgOf(key, values, "es"), key);
     assert.ok(!/NaN|undefined|Infinity/.test(svgOf(key, values, "es", 340)), key);
   }
+});
+
+/** Every setting of every control, one at a time from the lab's start values. */
+function* settings() {
+  for (const [key, start] of Object.entries(KEYS)) {
+    const fig = figOf(key);
+    for (const [i, c] of fig.controls(key).entries()) {
+      for (let v = c.min; v <= c.max; v += c.step)
+        yield { key, fig, values: start.map((x, j) => (j === i ? v : x)) };
+    }
+  }
+}
+/** True when the drawing contains the dashed "not this" card. @param {string} key @param {string} svg */
+const drawsWrongCard = (key, svg) =>
+  key.startsWith("balance") ? svg.includes('data-step="x"') : svg.includes('class="eq-wrong"');
+
+test("headline: the number the lesson asks for, read exactly, in both languages", () => {
+  for (const { key, fig, values } of settings()) {
+    const m = fig.build(key, values);
+    const en = fig.headline(m, "en");
+    const es = fig.headline(m, "es");
+    const v = parse(en.value);
+    assert.ok(v, `${key} ${values}: "${en.value}" is not readable`);
+    assert.equal(es.value, en.value);
+    assert.notEqual(en.label, es.label, `${key}: label not translated`);
+    const [a, b] = values;
+    if (key === "balance:add") assert.equal(v.toString(), String(b - a), `${key} ${values}`);
+    if (key === "balance:multiply") {
+      // by substitution, a different route from b / a: a times the solution gives back the right side
+      assert.equal(v.mul(parse(String(a))).toString(), String(b), `${key} ${values}`);
+    }
+    if (key.startsWith("inequality"))
+      assert.equal(en.value, String(a), `${key} ${values}: the boundary`);
+    if (key.startsWith("growth"))
+      assert.equal(en.value, String(evaluate(labModel(key), values).value), `${key} ${values}`);
+  }
+});
+
+test("wrong: non-null exactly when the dashed card is drawn, never the right answer, one sentence in each language", () => {
+  let drawn = 0;
+  let hidden = 0;
+  for (const { key, fig, values } of settings()) {
+    const m = fig.build(key, values);
+    const w = fig.wrong(m, "en");
+    const card = drawsWrongCard(key, svgOf(key, values));
+    assert.equal(w !== null, card, `${key} ${values}: wrong() vs the dashed card`);
+    assert.equal(fig.wrong(m, "es") !== null, card, `${key} ${values}: ES agrees`);
+    if (!w) {
+      hidden++;
+      continue;
+    }
+    drawn++;
+    const es = fig.wrong(m, "es");
+    assert.ok(parse(w.value), `${key} ${values}: "${w.value}" is not readable`);
+    assert.equal(es.value, w.value);
+    assert.notEqual(w.value, fig.headline(m, "en").value, `${key} ${values}: wrong equals right`);
+    assert.notEqual(w.say, es.say, `${key} ${values}: not translated`);
+    assert.ok(/[.]$/.test(w.say) && !/[.].+[.]$/.test(w.say), `${key} ${values}: one sentence`);
+  }
+  assert.ok(drawn > 0 && hidden > 0, "the sweep covers both the drawn and the hidden case");
+});
+
+test("wrong: exact values reached by a different route", () => {
+  // balance: the operation lands on the left only, so the right side is untouched and x looks like b
+  assert.equal(balance.wrong(balance.build("balance:add", [7, 19, 3]), "en").value, "19");
+  assert.equal(balance.wrong(balance.build("balance:multiply", [4, 36, 9]), "en").value, "36");
+  assert.match(
+    balance.wrong(balance.build("balance:add", [7, 19, 3]), "es").say,
+    /Restaste 7 solo del lado izquierdo/,
+  );
+  assert.equal(balance.wrong(balance.build("balance:multiply", [1, 10, 3]), "en"), null);
+  // growth: (a + b) x c
+  assert.equal(growth.wrong(growth.build("growth:fees", [3, 5, 4]), "en").value, "32");
+  assert.equal(growth.wrong(growth.build("growth:fees", [3, 5, 1]), "en"), null);
+  assert.equal(growth.wrong(growth.build("growth:table", [3, 0, 4]), "en"), null);
+  // inequality: the nearest whole number that qualifies under the OTHER circle, found by trying the lab's own evaluate()
+  for (const [key, symbol] of [
+    ["inequality:entry", ">"],
+    ["inequality:budget", "<"],
+  ]) {
+    for (const a of [1, 12, 24]) {
+      const model = { kind: "inequality", mode: key.split(":")[1] };
+      const ok = (n) => evaluate(model, [a, n], { symbol }).pass;
+      const ns = Array.from({ length: 31 }, (_, n) => n).filter(ok);
+      const nearest = symbol === ">" ? Math.min(...ns) : Math.max(...ns);
+      assert.equal(
+        inequality.wrong(inequality.build(key, [a, 5]), "en").value,
+        String(nearest),
+        `${key} ${a}`,
+      );
+    }
+  }
+});
+
+test("headline labels are the student's words for the number, per key", () => {
+  assert.equal(
+    balance.headline(balance.build("balance:add", [7, 19, 3]), "en").label,
+    "Solution x",
+  );
+  assert.equal(
+    balance.headline(balance.build("balance:add", [7, 19, 3]), "es").label,
+    "Solución x",
+  );
+  assert.equal(balance.headline(balance.build("balance:multiply", [7, 36, 3]), "en").value, "36/7");
+  assert.equal(
+    inequality.headline(inequality.build("inequality:entry", [12, 10]), "es").label,
+    "Límite",
+  );
+  assert.equal(growth.headline(growth.build("growth:fees", [3, 5, 4]), "en").label, "Cost ($)");
+  assert.equal(
+    growth.headline(growth.build("growth:weather", [2, 4, 3]), "es").label,
+    "Litros en el tanque",
+  );
 });
