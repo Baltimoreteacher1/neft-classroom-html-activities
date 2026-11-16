@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "5e719f021024";
+const BUILD_HASH = "cda67aa6e02f";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=96db0e394ffd",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -170,7 +170,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-j.css?v=940ae002a469",
   "/access-practice-lab/games-k.css?v=03cfed78fc90",
   "/access-practice-lab/games-l.css?v=f435dc71ed3e",
-  "/access-practice-lab/games-m.css?v=332cc9dae9f2",
+  "/access-practice-lab/games-m.css?v=c8e6eb7dadd0",
   "/access-practice-lab/labs.css?v=70e4170c8ffa",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/path.css?v=95e1a443bf59",
@@ -335,18 +335,21 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/language-arcade.js?v=06310ad10d3e",
   "/access-practice-lab/src/games/language-expeditions-art.js?v=521dcd36a6c4",
   "/access-practice-lab/src/games/language-expeditions-assign.js?v=962230c5d278",
-  "/access-practice-lab/src/games/language-expeditions-explore.js?v=fbe4f2ea087e",
+  "/access-practice-lab/src/games/language-expeditions-encounters-art.js?v=d6f18b0c34f4",
+  "/access-practice-lab/src/games/language-expeditions-encounters-view.js?v=0124b1079fba",
+  "/access-practice-lab/src/games/language-expeditions-encounters.js?v=493a951ecd23",
+  "/access-practice-lab/src/games/language-expeditions-explore.js?v=6c54238d547d",
   "/access-practice-lab/src/games/language-expeditions-feel-gear.js?v=96a2c8a4ec08",
   "/access-practice-lab/src/games/language-expeditions-feel-pad.js?v=cab16add4d43",
   "/access-practice-lab/src/games/language-expeditions-feel-sound.js?v=f88532a039ee",
   "/access-practice-lab/src/games/language-expeditions-feel-world.js?v=b903acc919bb",
   "/access-practice-lab/src/games/language-expeditions-links.js?v=26b5bedd382b",
   "/access-practice-lab/src/games/language-expeditions-passport.js?v=9936eb347811",
-  "/access-practice-lab/src/games/language-expeditions-rules.js?v=8ad924951374",
+  "/access-practice-lab/src/games/language-expeditions-rules.js?v=502368e9bedb",
   "/access-practice-lab/src/games/language-expeditions-stamps.js?v=6b723925a18a",
-  "/access-practice-lab/src/games/language-expeditions-view.js?v=ff596e4488a6",
-  "/access-practice-lab/src/games/language-expeditions-world.js?v=9c70662a045f",
-  "/access-practice-lab/src/games/language-expeditions.js?v=5e6a96c7df60",
+  "/access-practice-lab/src/games/language-expeditions-view.js?v=e8850c914583",
+  "/access-practice-lab/src/games/language-expeditions-world.js?v=2a1d76d1d65a",
+  "/access-practice-lab/src/games/language-expeditions.js?v=b5f6921ad734",
   "/access-practice-lab/src/games/match-mania-view.js?v=0680c8f5e32c",
   "/access-practice-lab/src/games/match-mania.js?v=4b730a482afe",
   "/access-practice-lab/src/games/mystery-word-board.js?v=2b7ae9215986",

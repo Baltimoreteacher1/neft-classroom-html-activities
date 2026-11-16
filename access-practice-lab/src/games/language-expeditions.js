@@ -51,6 +51,19 @@ import { paintFeel } from "./language-expeditions-feel-world.js"; // feel: resto
 // teacher: passport page, one-land links and teacher-written stops
 import { assignedFinish, passportButton, passportClick, passportHTML } from "./language-expeditions-passport.js";
 import { decodeStop, landParam } from "./language-expeditions-links.js";
+// encounters: obstacles, characters, word cards, the world crop and continuous save
+import {
+  blockGo,
+  cropHTML,
+  encClick,
+  encHooks,
+  encInput,
+  encMount,
+  goSteps,
+  walkExtraHTML,
+  walkPlan,
+  wordBagHTML,
+} from "./language-expeditions-encounters.js";
 const bandOf = (env) =>
   env.content.lands ? env.content : env.content.bands?.[env.band] || { lands: [] };
 // teacher: a teacher-written stop (decoded once at init, kept in state) replaces the authored one.
@@ -215,12 +228,20 @@ export default {
     // teacher: passport button and the center-rotation finish ride on the gate and the summary
     const extra = html`${assignedFinish(s, I)}${passportButton(I)}`;
     if (s.at === "map") panel = mapHTML(s, band, env, rec);
-    else if (s.at === "gate") panel = gateHTML(s, band, env, rec, extra);
-    else if (s.at === "summary") panel = summaryHTML(s, band, env, passportButton(I));
+    else if (s.at === "gate") panel = gateHTML(s, band, env, rec, extra, wordBagHTML(s, env));
+    else if (s.at === "summary")
+      panel = summaryHTML(s, band, env, passportButton(I), wordBagHTML(s, env));
     else if (s.at === "passport") panel = passportHTML(s, band, env, actOf);
     else if (s.at === "walk") {
       const L = s.lands[s.land];
-      panel = walkHTML(s, band.lands[s.land], L.i < L.acts.length ? actOf(env, s) : null, env, b);
+      panel = walkHTML(
+        s,
+        band.lands[s.land],
+        L.i < L.acts.length ? actOf(env, s) : null,
+        env,
+        b,
+        walkExtraHTML(s, env, b), // encounters
+      );
     } else {
       const land = band.lands[s.land];
       const L = s.lands[s.land];
@@ -228,7 +249,7 @@ export default {
       const a = actOf(env, s); // teacher: may be a teacher-written stop
       const body =
         a.type === "speak"
-          ? speakHTML(s, r, a, env)
+          ? html`${cropHTML(a, env) /* encounters: the place you walked to */}${speakHTML(s, r, a, env)}`
           : a.type === "write"
             ? writeHTML(s, r, a, env)
             : judgedHTML(s, r, a, env, land.domain);
@@ -271,6 +292,8 @@ export default {
     const pp = passportClick(b, s); // teacher
     if (pp !== undefined) return ((focusSel = pp ? ".lexp-head" : focusSel), pp);
     const d = b.dataset;
+    const enc = encClick(b, s, env); // encounters
+    if (enc !== undefined) return enc;
     if (d.lexpLand !== undefined) {
       const k = Number(d.lexpLand);
       if (!s.lands[k]) return false;
@@ -291,6 +314,8 @@ export default {
     if (s.at === "walk" && (b.hasAttribute("data-lexp-go") || b.hasAttribute("data-lexp-open"))) {
       ensure(s);
       if (b.hasAttribute("data-lexp-open") && !isNear(s)) return false;
+      // encounters: "Walk me" stops at a closed obstacle and opens its prompt
+      if (blockGo(s, env, targetX(s))) return ((focusSel = ".lexp-ob-head"), true);
       const L = s.lands[s.land];
       s.x = targetX(s);
       if (L.i >= L.acts.length) L.stamp = true;
@@ -420,6 +445,7 @@ export default {
   },
 
   input(el, s) {
+    if (s.at === "walk" && encInput(el, s)) return false; // encounters: kept in state, no re-render
     if (s.at !== "land" || !el.matches?.("[data-lexp-text]")) return false;
     const L = s.lands[s.land];
     L.acts[L.i].text = String(el.value || "").slice(0, 800);
@@ -451,6 +477,7 @@ export default {
     paint(scene, sceneState(s));
     live = { band: b, node: scene, x };
     const feelStop = paintFeel(scene, s, b, { motion: motionOK(), live }); // feel: restored lands, gear, finale
+    encMount(root, scene, s, env); // encounters
     const L = s.lands[s.land];
     const r = s.at === "land" ? L.acts[L.i] : null;
     const a = r ? actOf(env, s) : null;
@@ -471,7 +498,7 @@ export default {
     const land = bandOf(env).lands[s.land];
     const L2 = s.lands[s.land];
     const where = whereOf(s, land, L2.i < L2.acts.length ? actOf(env, s) : null);
-    return drive(root, scene, s, env, b, live, where);
+    return drive(root, scene, s, env, b, live, where, encHooks(root, s, env, changed));
   },
 
   plan(s, { wrong } = {}, env) {
@@ -479,12 +506,19 @@ export default {
     const rec = recommended(s);
     // Whatever leads into explore mode is followed by "Walk me there" in the same step, so steering adds no plan steps.
     const GO = { click: "[data-lexp-go]" };
-    if (s.at === "map" || s.at === "gate")
-      return rec >= 0 ? [{ click: `[data-lexp-land="${rec}"]` }, GO] : [{ click: "[data-lexp-summary]" }];
+    if (s.at === "map" || s.at === "gate") {
+      if (rec < 0) return [{ click: "[data-lexp-summary]" }];
+      const at = ensure({ ...s, land: rec });
+      return [{ click: `[data-lexp-land="${rec}"]` }, GO, ...goSteps(s, env, rec, at.x, targetX(at))];
+    }
     if (s.at === "summary") return [{ click: "[data-lexp-finish]" }];
     if (s.at === "passport") return [{ click: "[data-lexp-pp-back]" }]; // teacher
-    if (s.at === "walk") return [GO];
+    // encounters: an open obstacle prompt is answered first; a walk that reaches one clears it in the same step
+    if (s.at === "walk")
+      return walkPlan(s, env, wrong) || [GO, ...goSteps(s, env, s.land, s.x, targetX(s))];
     const L = s.lands[s.land];
+    const nextX = targetX({ ...s, lands: s.lands.map((M, k) => (k === s.land ? { ...M, i: M.i + 1 } : M)) });
+    const WALK = [GO, ...goSteps(s, env, s.land, s.x, nextX)];
     const r = L.acts[L.i];
     const a = actOf(env, s);
     if (r.type === "speak")
@@ -492,7 +526,7 @@ export default {
         ...(r.said ? [] : [{ click: "[data-lexp-said]" }]),
         ...(r.self.includes(0) ? [] : [{ click: '[data-lexp-self="0"]' }]),
         { click: "[data-lexp-next]" },
-        GO,
+        ...WALK,
       ];
     if (r.type === "write") {
       if (!r.wn || (r.wn < 2 && !r.fb?.every((c) => c.ok)))
@@ -503,10 +537,10 @@ export default {
       return [
         ...(r.self.includes(0) ? [] : [{ click: '[data-lexp-self="0"]' }]),
         { click: "[data-lexp-next]" },
-        GO,
+        ...WALK,
       ];
     }
-    if (settled(r.rs)) return [{ click: "[data-lexp-next]" }, GO];
+    if (settled(r.rs)) return [{ click: "[data-lexp-next]" }, ...WALK];
     if (r.type === "read-order") {
       const want = a.items.map((_, n) => n);
       const seq = wrong ? [...want].reverse() : want;

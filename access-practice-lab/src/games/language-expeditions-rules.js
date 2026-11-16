@@ -3,6 +3,7 @@
 import { detect } from "../lang/errors.js";
 import { countWords, hasPhrase } from "../lang/scaffold-check.js";
 import { hasPic, hasSpots } from "./language-expeditions-art.js";
+import { validateEncounters } from "./language-expeditions-encounters.js";
 
 export const ORDER = ["listening", "reading", "speaking", "writing"];
 export const TYPES = {
@@ -84,6 +85,7 @@ export function validateContent(doc) {
       );
     });
   }
+  errs.push(...validateEncounters(doc)); // encounters
   return errs;
 }
 

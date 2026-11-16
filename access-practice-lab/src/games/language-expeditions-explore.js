@@ -4,8 +4,8 @@
 // rather not steer, and it is the QA plan's step. Collectibles are for fun: they are counted, never scored.
 //
 // The loop mutates state.x and state.got in place and repaints the scene and the walk panel directly, without a
-// re-render, so a held button keeps its pointer and focus. Both are saved with the next real action (Open, a land
-// button). Reduced motion keeps steering (the learner moves the explorer) but drops the walk bob and the twinkle.
+// re-render, so a held button keeps its pointer and focus. The encounters hooks (…-encounters.js) save them once the
+// explorer rests, after a pickup and when the page is hidden, and add the obstacle, the character and word cards. Reduced motion keeps steering (the learner moves the explorer) but drops the walk bob and the twinkle.
 import { html } from "./engine.js";
 import { H, aim, gateX, gems, stopX, trailX } from "./language-expeditions-world.js";
 import { newGearHTML } from "./language-expeditions-feel-gear.js"; // feel: gear
@@ -66,7 +66,7 @@ export const whereOf = (s, land, a) =>
     ? { en: `the stop "${a.title.en}"`, es: `la parada «${a.title.es}»` }
     : { en: `the gate of ${land.name.en}`, es: `la puerta de ${land.name.es}` };
 
-export function walkHTML(s, land, a, env, b) {
+export function walkHTML(s, land, a, env, b, extra = "") {
   const I = env.I;
   const near = isNear(s);
   const where = whereOf(s, land, a);
@@ -86,6 +86,7 @@ export function walkHTML(s, land, a, env, b) {
         `Recorre el sendero y reúne las ${GEM[b][1]}. Salta para alcanzar las altas. Llega a la lámpara encendida para abrir la siguiente parada.`,
       )}
     </p>
+    ${extra /* encounters: obstacle prompt, talk, word card */}
     <div
       class="lexp-pad"
       role="group"
@@ -127,7 +128,7 @@ const typing = (t) => t?.closest?.("input, textarea, select, [contenteditable]")
 const onControl = (t) => t?.closest?.("button, a, summary");
 
 /** Starts steering in walk mode. `live.x` follows the explorer so a later re-render resumes from the same spot. */
-export function drive(root, scene, s, env, b, live, where) {
+export function drive(root, scene, s, env, b, live, where, hk = null) {
   const I = env.I;
   const hero = scene.querySelector(".lexp-hero");
   const ui = {
@@ -170,7 +171,8 @@ export function drive(root, scene, s, env, b, live, where) {
     const pd = fx.poll(); // feel: gamepad
     const dir = (held.r ? 1 : 0) - (held.l ? 1 : 0) || pd || (tap > 0 ? tapDir : 0);
     if (dir) {
-      s.x = Math.min(hi, Math.max(lo, s.x + dir * SPEED * dt));
+      const nx = Math.min(hi, Math.max(lo, s.x + dir * SPEED * dt));
+      s.x = hk ? hk.move(s.x, nx) : nx; // encounters: a closed obstacle stops the explorer
       hero?.classList.toggle("is-back", dir < 0);
     }
     hero?.classList.toggle("is-walking", Boolean(dir) && jy === 0);
@@ -198,6 +200,7 @@ export function drive(root, scene, s, env, b, live, where) {
       dirty = true;
     }
     if (dirty) refresh();
+    hk?.tick(s.x, held.l || held.r || tap > 0 || jy > 0, t); // encounters: talk, word cards, saving
     raf = requestAnimationFrame(frame);
   };
 
@@ -209,7 +212,7 @@ export function drive(root, scene, s, env, b, live, where) {
     else if (k === "ArrowUp" || k === "w" || k === "W" || (k === " " && !onControl(e.target)))
       jump();
     else if (k === "Enter" && !onControl(e.target) && near) ui.open?.click();
-    else return;
+    else if (k !== "Enter" || onControl(e.target) || !hk?.enter()) return; // encounters: Enter talks
     e.preventDefault();
   };
   const up = (e) => {
@@ -253,6 +256,7 @@ export function drive(root, scene, s, env, b, live, where) {
   return () => {
     cancelAnimationFrame(raf);
     fx.stop(); // feel
+    hk?.stop();
     document.removeEventListener("keydown", down);
     document.removeEventListener("keyup", up);
     window.removeEventListener("blur", release);

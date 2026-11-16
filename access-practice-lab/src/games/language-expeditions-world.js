@@ -8,6 +8,7 @@
 // at the centre: k < 1 moves slower (far), k > 1 faster (foreground). Decorative only (aria-hidden).
 import { rng } from "./engine.js";
 import { gearSVG } from "./language-expeditions-feel-gear.js"; // feel: gear on the explorer
+import { encounterArt, wordGemMark, wordSlot } from "./language-expeditions-encounters-art.js";
 
 export const H = 1000;
 export const LW = 4000;
@@ -193,7 +194,8 @@ function layers(band) {
     near += LANDMARKS[band][land](land * LW) + arch(gateX(land), p.stone, land);
     for (let k = 0; k < n; k += 1) near += lamp(stopX(land, k, n) - 170, land, k, band);
   }
-  for (const g of gems(band)) near += gemMark(g, band);
+  near += encounterArt(band); // encounters: obstacles and characters on the trail
+  for (const g of gems(band)) near += wordSlot(g.id) >= 0 ? wordGemMark(g, band) : gemMark(g, band);
   if (night)
     for (let i = 0; i < 70; i += 1)
       near += `<circle class="lexp-fly" cx="${LAYERS.near.x0 + r() * (LAYERS.near.x1 - LAYERS.near.x0)}" cy="${420 + r() * 340}" r="${2 + r() * 2.5}" fill="${p.fly}" style="animation-delay:${(-r() * 4).toFixed(2)}s"/>`;

@@ -107,7 +107,7 @@ export function mapHTML(s, band, env, rec) {
   </div>`;
 }
 
-export function gateHTML(s, band, env, rec, extra = "") {
+export function gateHTML(s, band, env, rec, extra = "", bag = "") {
   const I = env.I;
   const land = band.lands[s.land];
   const all = s.lands.every((L) => L.stamp);
@@ -140,11 +140,12 @@ export function gateHTML(s, band, env, rec, extra = "") {
       </button>
       ${extra /* teacher: passport + center finish */}
     </div>
+    ${bag /* encounters: words you found */}
     ${disclaimerHTML(I)}
   </div>`;
 }
 
-export function summaryHTML(s, band, env, extra = "") {
+export function summaryHTML(s, band, env, extra = "", bag = "") {
   const I = env.I;
   return html`<div class="lexp-panel lexp-summary">
     <p class="lexp-tag">${icon("flag")}${I.T("Journey summary", "Resumen del viaje")}</p>
@@ -170,6 +171,7 @@ export function summaryHTML(s, band, env, extra = "") {
     <p class="lexp-not-score">
       ${I.T("Stamps are not a score.", "Los sellos no son una calificación.")}
     </p>
+    ${bag /* encounters: words you found */}
     <div class="gs-actions">
       <button type="button" class="btn btn-primary btn-big" data-lexp-finish>
         ${icon("check")}${I.T("Finish the expedition", "Terminar la expedición")}
