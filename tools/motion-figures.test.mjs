@@ -28,7 +28,9 @@ const startOf = (key) => {
   if (bp) return bp;
   const [kind, mode] = key.split(":");
   const reg = registered({ kind, mode });
-  return reg ? { kind, mode, values: reg.values } : undefined;
+  if (reg) return { kind, mode, values: reg.values };
+  const own = FIGURES.find((f) => f.keys.includes(key) && f.standalone);
+  return own ? { kind, mode, values: own.standalone.values } : undefined;
 };
 const _benchKeys = () => {
   const keys = new Set();
@@ -112,15 +114,28 @@ for (const fig of figs) {
   for (const key of fig.keys) {
     test(`${fig.id} ${key}: controls match the lab's, every setting renders to the contract`, () => {
       const start = startOf(key);
-      const lab = labControls({ kind: start.kind, mode: start.mode, values: start.values });
       const mine = fig.controls(key);
-      assert.equal(mine.length, lab.length, "same number of controls as the lab");
-      mine.forEach((c, i) => {
-        assert.equal(c.min, lab[i].min, `control ${i} min`);
-        assert.equal(c.max, lab[i].max, `control ${i} max`);
-        assert.equal(c.step, lab[i].step, `control ${i} step`);
-        assert.ok(c.label && c.labelEs && c.label !== c.labelEs, `control ${i} labels`);
-      });
+      if (fig.standalone)
+        assert.equal(mine.length, fig.standalone.values.length, "one starting value per control");
+      else {
+        const lab = labControls({ kind: start.kind, mode: start.mode, values: start.values });
+        assert.equal(mine.length, lab.length, "same number of controls as the lab");
+        mine.forEach((c, i) => {
+          assert.equal(c.min, lab[i].min, `control ${i} min`);
+          assert.equal(c.max, lab[i].max, `control ${i} max`);
+          assert.equal(c.step, lab[i].step, `control ${i} step`);
+        });
+      }
+      mine.forEach((c, i) =>
+        assert.ok(
+          c.label &&
+            c.labelEs &&
+            c.label !== c.labelEs &&
+            c.min <= start.values[i] &&
+            start.values[i] <= c.max,
+          `control ${i} labels and starting value`,
+        ),
+      );
       const seen = new Set();
       for (const [i, c] of mine.entries()) {
         if (c.min === c.max) continue;

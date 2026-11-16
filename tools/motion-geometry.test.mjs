@@ -11,6 +11,12 @@ import {
   trapezoidFigure,
   triangleFigure,
 } from "../shared/motion/figures/geometry-area.mjs";
+import { compositeFigure, compositeModel } from "../shared/motion/figures/geometry-composite.mjs";
+import {
+  fractionalFigure,
+  fractionalModel,
+  mixed,
+} from "../shared/motion/figures/geometry-fractional.mjs";
 import { dec, isqrt, sqrtText } from "../shared/motion/figures/geometry-kit.mjs";
 import {
   hundText,
@@ -438,4 +444,120 @@ test("wrong() values by hand", () => {
     figureSvg(pyramidFigure, "solid:pyramid-net", [6, 9], { lang: "en", width: 400 }).svg,
     /8\.5\) gives ≈ 137\.82/,
   );
+});
+
+test("composite L-shape: add and subtract strategies agree at every setting, with hand-worked values", () => {
+  const m = compositeFigure.build("area:composite", [10, 8, 3, 2]);
+  assert.deepEqual([m.a, m.b, m.addTotal], [56, 18, 74]); // 7 x 8, 3 x 6
+  assert.deepEqual([m.whole, m.notch, m.subTotal], [80, 6, 74]);
+  const small = compositeFigure.build("area:composite", [4, 4, 3, 3]);
+  assert.deepEqual([small.a, small.b, small.whole, small.notch, small.total], [4, 3, 16, 9, 7]); // 1 x 4 + 3 x 1, and 16 - 9
+  const [c0, c1, c2, c3] = compositeFigure.controls("area:composite");
+  let count = 0;
+  for (let W = c0.min; W <= c0.max; W++) {
+    for (let H = c1.min; H <= c1.max; H++) {
+      for (let w = c2.min; w <= c2.max; w++) {
+        for (let h = c3.min; h <= c3.max; h++) {
+          const x = compositeModel(W, H, w, h);
+          assert.equal(x.addTotal, x.subTotal, `${W} ${H} ${w} ${h}`);
+          assert.ok(x.total >= 1 && w < W && h < H);
+          // a third route: count the unit squares of the L cell by cell
+          let cells = 0;
+          for (let i = 0; i < W; i++)
+            for (let j = 0; j < H; j++) if (!(i >= W - w && j >= H - h)) cells++;
+          assert.equal(cells, x.total);
+          const f = /** @type {any} */ (compositeFigure);
+          assert.equal(f.headline(x, "en").value, String(x.total));
+          assert.equal(f.headline(x, "en").label, "Area of the shape");
+          assert.equal(f.headline(x, "es").label, "Área de la figura");
+          const wr = f.wrong(x, "en");
+          assert.ok(wr && wr.value === String(W * H) && wr.value !== f.headline(x, "en").value);
+          assert.notEqual(wr.say, f.wrong(x, "es").say);
+          assert.equal(wr.say, "Used the whole rectangle and forgot to subtract the notch.");
+          count++;
+        }
+      }
+    }
+  }
+  assert.equal(count, 11 * 9 * 3 * 3);
+  for (const bad of [
+    [3, 8, 1, 1],
+    [15, 8, 1, 1],
+    [10, 8, 0, 1],
+    [10, 8, 4, 1],
+    [10, 8, 1, 4],
+    [10, 8, 1.5, 1],
+    [10, 8, 3],
+  ])
+    assert.throws(() => compositeFigure.build("area:composite", bad), RangeError);
+  const en = figureSvg(compositeFigure, "area:composite", [10, 8, 3, 2], {
+    lang: "en",
+    width: 400,
+  });
+  const es = figureSvg(compositeFigure, "area:composite", [10, 8, 3, 2], {
+    lang: "es",
+    width: 400,
+  });
+  assert.notEqual(en.svg, es.svg);
+  assert.match(en.svg, /Not this: 10 × 8 = 80/);
+  assert.match(es.svg, /No así: 10 × 8 = 80/);
+  assert.notEqual(
+    compositeFigure.describe(en.model, "en"),
+    compositeFigure.describe(en.model, "es"),
+  );
+  assert.ok(
+    compositeFigure.standalone.values.length === compositeFigure.controls("area:composite").length,
+  );
+});
+
+test("fractional-edge volume: half-unit cubes and base area x height agree, with hand-worked values", () => {
+  const f = /** @type {any} */ (fractionalFigure);
+  // 3, 2, 2 halves: edges 1 1/2, 1, 1; 12 half-cubes of 1/8 each = 3/2 cubic units
+  let m = f.build("solid:fractional", [3, 2, 2]);
+  assert.deepEqual([m.layer, m.count], [6, 12]);
+  assert.equal(m.byCubes.toString(), "3/2");
+  assert.equal(m.base.toString(), "3/2");
+  assert.equal(m.byBase.toString(), "3/2");
+  assert.equal(f.headline(m, "en").value, "3/2");
+  assert.equal(mixed(m.volume), "1 1/2");
+  assert.equal(mixed(m.l), "1 1/2");
+  m = f.build("solid:fractional", [12, 12, 12]); // 6 x 6 x 6 = 216 cubic units from 1,728 small cubes
+  assert.equal(m.count, 1728);
+  assert.equal(m.volume.toString(), "216");
+  m = f.build("solid:fractional", [3, 3, 3]); // 1 1/2 each: 27/8
+  assert.equal(f.headline(m, "en").value, "27/8");
+  assert.equal(f.headline(m, "es").label, "Volumen (unidades cúbicas)");
+  assert.equal(f.headline(m, "en").label, "Volume (cubic units)");
+  assert.equal(f.wrong(m, "en").value, "27"); // 27 small cubes taken as 27 cubic units
+  for (let a = 1; a <= 12; a++) {
+    for (let b = 1; b <= 12; b++) {
+      for (let c = 1; c <= 12; c++) {
+        const x = fractionalModel(a, b, c);
+        assert.ok(x.byCubes.eq(x.byBase), `${a} ${b} ${c}: methods disagree`);
+        assert.equal(x.count, a * b * c);
+        // a third route: (a/2)(b/2)(c/2) in floating point is exact for these dyadic values
+        assert.equal((a / 2) * (b / 2) * (c / 2), Number(x.volume.n) / Number(x.volume.d));
+        const w = f.wrong(x, "en");
+        assert.ok(w && w.value === String(x.count) && w.value !== f.headline(x, "en").value);
+        assert.ok(!parse(w.value).eq(parse(f.headline(x, "en").value)));
+        assert.ok(parse(f.headline(x, "en").value).eq(x.volume));
+        assert.notEqual(w.say, f.wrong(x, "es").say);
+      }
+    }
+  }
+  for (const bad of [
+    [0, 2, 2],
+    [13, 2, 2],
+    [3, 2, 0],
+    [3, 2.5, 2],
+    [3, 2],
+  ])
+    assert.throws(() => f.build("solid:fractional", bad), RangeError);
+  const en = figureSvg(f, "solid:fractional", [3, 2, 2], { lang: "en", width: 400 });
+  const es = figureSvg(f, "solid:fractional", [3, 2, 2], { lang: "es", width: 400 });
+  assert.notEqual(en.svg, es.svg);
+  assert.match(en.svg, /Not this: 12 is the number of small cubes/);
+  assert.match(es.svg, /No así: 12 es el número de cubos pequeños/);
+  assert.notEqual(f.describe(en.model, "en"), f.describe(en.model, "es"));
+  assert.equal(f.standalone.values.length, f.controls("solid:fractional").length);
 });

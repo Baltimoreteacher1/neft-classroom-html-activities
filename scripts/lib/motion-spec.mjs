@@ -21,11 +21,12 @@ export function motionSpecFor(lessonId) {
     if (!m) return null;
     const key = figureKeyFor(base, `${m.kind}:${m.mode}`);
     if (!figureFor(key)) return null;
-    // an overridden key brings its own starting values from the lab that owns it
+    // an overridden key brings its starting values from the lab that owns it, or from the figure itself when it has no lab
     const values =
       key === `${m.kind}:${m.mode}`
         ? m.values
-        : blueprints.find((b) => `${b.model.kind}:${b.model.mode}` === key)?.model.values;
+        : (blueprints.find((b) => `${b.model.kind}:${b.model.mode}` === key)?.model.values ??
+          figureFor(key)?.standalone?.values);
     return values ? { key, values } : null;
   }
   return null;

@@ -38,7 +38,10 @@ const startOf = (key) => {
   const bp = blueprints.find((b) => `${b.model.kind}:${b.model.mode}` === key)?.model;
   if (bp) return bp.values;
   const [kind, mode] = key.split(":");
-  return registered({ kind, mode }).values;
+  return (
+    registered({ kind, mode })?.values ??
+    FIGURES.find((f) => f.keys.includes(key))?.standalone?.values
+  );
 };
 
 test("answers are judged by value, approximate headlines by rounding, never by string", () => {

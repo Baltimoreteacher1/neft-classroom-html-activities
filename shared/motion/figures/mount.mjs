@@ -24,6 +24,7 @@ import { mountThink } from "./think-ui.mjs";
  * @property {(root: ParentNode, model: any) => { durationMs: number, tracks: Array<import("../motion.mjs").Track & { els: Element[] }> }} scene
  * @property {(model: any, lang: "en" | "es") => string} describe full text equivalent
  * @property {(model: any, lang: "en" | "es") => { label: string, value: string, approx?: boolean }} [headline] the one number the lesson asks for; value is read by exact.mjs parse()
+ * @property {{ values: number[] }} [standalone] for a figure whose key is not a lab model (so it has no lab bench): its starting values; it appears on the Lesson Path page and the Family card only
  * @property {boolean} [thinkWrong] false when `wrong` does not answer the headline question, so Challenge skips error analysis for this figure
  * @property {(model: any, lang: "en" | "es") => { value: string, say: string } | null} [wrong] the common wrong move's result and a sentence naming it; null when the figure draws no such card
  */
