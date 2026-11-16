@@ -10,10 +10,19 @@
 // typing always works), says "I said it", ticks a self-check and can hear a model. Writing gets the lab's rule-based
 // checks (length, sentences, a required connector, capitals and end punctuation via lang/errors.js), a self-check and
 // a model. Each finished land earns a stamp; stamps are not a score. Any land can be opened from the journey bar.
+// Inside a land the learner steers the explorer to each stop and gathers collectibles (…-explore.js).
 import { cancelDictation, toggleDictation } from "../dictation-ui.js";
 import { isRecording, start as startRec, stop as stopRec, takesFor } from "../recorder.js";
 import { playRecording, speak } from "../speech.js";
 import { html, judge, newRound, raw, settled, shuffle, takeHint } from "./engine.js";
+import {
+  drive,
+  ensure,
+  isNear,
+  targetX,
+  walkHTML,
+  whereOf,
+} from "./language-expeditions-explore.js";
 import {
   aim,
   camPct,
@@ -84,6 +93,7 @@ const playAct = (a, env) => {
 };
 const camX = (s) => {
   if (s.at === "map") return trailX(s.land);
+  if (s.at === "walk") return s.x;
   if (s.at !== "land") return gateX(s.land);
   return stopX(s.land, s.lands[s.land].i, s.land < 2 ? 3 : 2);
 };
@@ -104,6 +114,7 @@ const sceneState = (s) => {
     lit,
     open: new Set(s.lands.flatMap((L, k) => (L.stamp ? [k] : []))),
     glow: total ? n / total : 0,
+    got: new Set(s.got || []),
   };
 };
 
@@ -132,6 +143,8 @@ export default {
       sid: env.rng.int(1e9),
       at: "map",
       land: 0,
+      x: null,
+      got: [],
       finished: false,
       lands: band.lands.map((land) => ({
         i: 0,
@@ -152,6 +165,7 @@ export default {
   view(s, env) {
     const I = env.I;
     const band = bandOf(env);
+    ensure(s);
     const b = env.band === "6-8" ? "6-8" : "3-5";
     const x = live?.band === b && live.x != null ? live.x : camX(s);
     const layers = sceneMarkup(b).replace(
@@ -163,7 +177,10 @@ export default {
     if (s.at === "map") panel = mapHTML(s, band, env, rec);
     else if (s.at === "gate") panel = gateHTML(s, band, env, rec);
     else if (s.at === "summary") panel = summaryHTML(s, band, env);
-    else {
+    else if (s.at === "walk") {
+      const L = s.lands[s.land];
+      panel = walkHTML(s, band.lands[s.land], L.i < L.acts.length ? actOf(env, s) : null, env, b);
+    } else {
       const land = band.lands[s.land];
       const L = s.lands[s.land];
       const r = L.acts[L.i];
@@ -213,7 +230,8 @@ export default {
       if (!s.lands[k]) return false;
       s.land = k;
       const L = s.lands[k];
-      s.at = L.i >= L.acts.length ? "gate" : "land";
+      ensure(s);
+      s.at = L.stamp ? "gate" : "walk";
       focusSel = ".lexp-head";
       return true;
     }
@@ -224,6 +242,16 @@ export default {
         : false;
     if (b.hasAttribute("data-lexp-finish"))
       return s.at === "summary" ? ((s.finished = true), true) : false;
+    if (s.at === "walk" && (b.hasAttribute("data-lexp-go") || b.hasAttribute("data-lexp-open"))) {
+      ensure(s);
+      if (b.hasAttribute("data-lexp-open") && !isNear(s)) return false;
+      const L = s.lands[s.land];
+      s.x = targetX(s);
+      if (L.i >= L.acts.length) L.stamp = true;
+      s.at = L.i >= L.acts.length ? "gate" : "land";
+      focusSel = ".lexp-head";
+      return true;
+    }
     if (s.at !== "land") return false;
     const L = s.lands[s.land];
     const r = L.acts[L.i];
@@ -235,8 +263,7 @@ export default {
         return false;
       if (r.type === "speak" || r.type === "write") production(r, env, domain);
       L.i += 1;
-      if (L.i >= L.acts.length) L.stamp = true;
-      s.at = L.stamp ? "gate" : "land";
+      s.at = "walk";
       focusSel = ".lexp-head";
       return true;
     }
@@ -362,10 +389,12 @@ export default {
       scene.replaceWith(live.node);
       scene = live.node;
     }
+    ensure(s);
+    scene.classList.toggle("is-driving", s.at === "walk");
     const x = camX(s);
     const from = live?.band === b ? live.x : null;
     const hero = scene.querySelector(".lexp-hero");
-    if (from != null && from !== x && motionOK()) {
+    if (from != null && from !== x && motionOK() && s.at !== "walk") {
       clearTimeout(walkTimer);
       hero?.classList.add("is-walking");
       hero?.classList.toggle("is-back", x < from);
@@ -385,10 +414,16 @@ export default {
       const n = root.querySelector(focusSel);
       if (n && !n.hasAttribute("tabindex") && !/^(BUTTON|A|INPUT|TEXTAREA)$/.test(n.tagName))
         n.setAttribute("tabindex", "-1");
-      n?.focus({ preventScroll: false });
+      // In explore mode keep the trail in view: the learner is about to steer it.
+      n?.focus({ preventScroll: s.at === "walk" });
+      if (s.at === "walk") scene.scrollIntoView({ block: "start", behavior: motionOK() ? "smooth" : "auto" });
       focusSel = "";
     }
-    return null;
+    if (s.at !== "walk") return null;
+    const land = bandOf(env).lands[s.land];
+    const L2 = s.lands[s.land];
+    const where = whereOf(s, land, L2.i < L2.acts.length ? actOf(env, s) : null);
+    return drive(root, scene, s, env, b, live, where);
   },
 
   plan(s, { wrong } = {}, env) {
@@ -397,6 +432,7 @@ export default {
     if (s.at === "map" || s.at === "gate")
       return [{ click: rec >= 0 ? `[data-lexp-land="${rec}"]` : "[data-lexp-summary]" }];
     if (s.at === "summary") return [{ click: "[data-lexp-finish]" }];
+    if (s.at === "walk") return [{ click: "[data-lexp-go]" }];
     const L = s.lands[s.land];
     const r = L.acts[L.i];
     const a = actOf(env, s);

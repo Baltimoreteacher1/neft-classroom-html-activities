@@ -24,6 +24,32 @@ export const trailX = (land) => land * LW + 300;
 export const gateX = (land) => land * LW + 3700;
 export const stopX = (land, k, n) => land * LW + (SLOTS[n] || SLOTS[3])[k];
 
+/** Collectibles: seven per land (fireflies at night, signal sparks in the canyon); every third floats high and needs a
+ *  jump. World units, so the explore loop can test them against the explorer without reading the DOM. */
+export const GEM_LOW = 640;
+export const GEM_HIGH = 400;
+const gemCache = new Map();
+export function gems(band) {
+  if (!gemCache.has(band)) {
+    const r = rng(band === "6-8" ? 29 : 23);
+    const out = [];
+    for (let land = 0; land < 4; land += 1)
+      for (let n = 0; n < 7; n += 1)
+        out.push({
+          id: `${land}-${n}`,
+          land,
+          x: land * LW + 650 + n * 430 + Math.round(r() * 140),
+          y: n % 3 === 2 ? GEM_HIGH : GEM_LOW,
+        });
+    gemCache.set(band, out);
+  }
+  return gemCache.get(band);
+}
+const gemMark = (g, band) =>
+  band === "6-8"
+    ? `<g class="lexp-gem" data-gem="${g.id}" transform="translate(${g.x} ${g.y})"><circle r="34" fill="#1fa6a2" opacity=".22"/><path d="M0 -26L18 0L0 26L-18 0Z" fill="#1fa6a2" stroke="#f7f4ec" stroke-width="4"/></g>`
+    : `<g class="lexp-gem" data-gem="${g.id}" transform="translate(${g.x} ${g.y})"><circle r="34" fill="#f2c15b" opacity=".25"/><circle r="13" fill="#ffe9a0"/></g>`;
+
 /** translateX percentage for one layer when the camera centres world point x. */
 export const camPct = (name, x) => {
   const L = LAYERS[name];
@@ -166,6 +192,7 @@ function layers(band) {
     near += LANDMARKS[band][land](land * LW) + arch(gateX(land), p.stone, land);
     for (let k = 0; k < n; k += 1) near += lamp(stopX(land, k, n) - 170, land, k, band);
   }
+  for (const g of gems(band)) near += gemMark(g, band);
   if (night)
     for (let i = 0; i < 70; i += 1)
       near += `<circle class="lexp-fly" cx="${LAYERS.near.x0 + r() * (LAYERS.near.x1 - LAYERS.near.x0)}" cy="${420 + r() * 340}" r="${2 + r() * 2.5}" fill="${p.fly}" style="animation-delay:${(-r() * 4).toFixed(2)}s"/>`;
@@ -215,8 +242,11 @@ export function aim(sceneEl, x) {
     n.style.transform = `translateX(${camPct(n.dataset.layer, x).toFixed(3)}%)`;
   });
 }
-/** Lights finished stops and opened gates, and sets the explorer's glow (0..1). */
-export function paint(sceneEl, { lit, open, glow }) {
+/** Lights finished stops and opened gates, hides gathered collectibles, and sets the explorer's glow (0..1). */
+export function paint(sceneEl, { lit, open, glow, got = new Set() }) {
+  sceneEl
+    .querySelectorAll("[data-gem]")
+    .forEach((n) => n.classList.toggle("is-got", got.has(n.dataset.gem)));
   sceneEl
     .querySelectorAll("[data-mark]")
     .forEach((n) => n.classList.toggle("is-lit", lit.has(n.dataset.mark)));

@@ -119,6 +119,7 @@
 /* ── the painted scene ───────────────────────────────────────────────────── */
 .lexp-scene {
   position: relative;
+  scroll-margin-top: 180px;
   height: clamp(190px, 34vw, 330px);
   overflow: hidden;
   border-radius: 18px;
@@ -198,7 +199,7 @@
 .lexp-hero {
   position: absolute;
   left: 50%;
-  bottom: 19%;
+  bottom: calc(19% + var(--lexp-jump, 0px));
   height: 30%;
   width: auto;
   max-width: none;
@@ -833,7 +834,68 @@
   margin-top: 0.15rem;
 }
 
+/* ── explore mode: the learner steers; the camera follows with no glide ─────── */
+.lexp-scene.is-driving .lexp-layer {
+  transition: none;
+}
+.lexp-gem {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.3s;
+}
+.lexp-gem > :first-child {
+  animation: lexp-twinkle 1.6s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.lexp-gem.is-got {
+  opacity: 0;
+}
+@keyframes lexp-twinkle {
+  to {
+    transform: scale(1.35);
+    opacity: 0.45;
+  }
+}
+.lexp-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-width: 30rem;
+}
+.lexp-pad-btn {
+  min-height: 52px;
+  min-width: 0;
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+  justify-content: center;
+  font-weight: 700;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.lexp-walk-status {
+  font-weight: 700;
+  margin: 0;
+}
+.lexp-count {
+  margin: 0;
+  color: var(--lexp-teal-dk);
+  font-weight: 700;
+}
+.lexp-keys-help {
+  margin: 0;
+  font-size: 0.9375rem;
+}
 @media (max-width: 560px) {
+  .lexp-pad-btn {
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.9375rem;
+  }
+  .lexp-scene {
+    scroll-margin-top: 12px;
+  }
   .lexp-bar ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -856,6 +918,7 @@
   .lexp-pulse,
   .lexp-wind,
   .lexp-fog,
+  .lexp-gem > :first-child,
   .lexp-hero.is-walking,
   .lexp-hero.is-walking .lexp-leg-l,
   .lexp-hero.is-walking .lexp-leg-r {
