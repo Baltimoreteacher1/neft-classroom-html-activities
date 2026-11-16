@@ -1,0 +1,190 @@
+{
+  "id": "wf-word-forge-35",
+  "world": "word-forge",
+  "band": "3-5",
+  "domains": ["Reading", "Writing"],
+  "functions": ["Define", "Describe"],
+  "keyUses": ["Explain", "Inform"],
+  "minutes": 30,
+  "tags": ["words", "morphology", "prefixes"],
+  "title": { "en": "Word Forge Workshop: Word Parts", "es": "Taller de la Fragua: partes de palabras" },
+  "objective": { "en": "Build words from a prefix, a base word and a suffix, explain what each part means, and use the new words in your own sentences.", "es": "Construir palabras con prefijo, palabra base y sufijo, explicar qué significa cada parte y usar las palabras nuevas en tus propias oraciones." },
+  "success": [
+    { "en": "I can say what re-, un-, -er, -ful and -less mean.", "es": "Puedo decir qué significan re-, un-, -er, -ful y -less." },
+    { "en": "I can build a word to match a meaning.", "es": "Puedo construir una palabra que coincida con un significado." },
+    { "en": "I can use the clues in a sentence to pick the right word.", "es": "Puedo usar las pistas de una oración para elegir la palabra correcta." },
+    { "en": "I can write my own sentence with a word I built.", "es": "Puedo escribir mi propia oración con una palabra que construí." }
+  ],
+  "narrative": "Bram the Word Architect runs a forge where words are built from parts. Put a beginning, a middle and an ending together and watch the new word glow. If the parts do not make a word, the forge stays dark. That is not a mistake. It tells you to try other parts.",
+  "characters": ["architect"],
+  "scene": { "theme": "forge", "alt": "A warm workshop with a glowing forge, an anvil and shelves of labeled word-part tiles. Bram the Word Architect stands by the anvil holding a small hammer.", "objects": [] },
+  "vocab": [
+    { "term": "prefix", "def": "A word part added to the beginning of a word." },
+    { "term": "suffix", "def": "A word part added to the end of a word." },
+    { "term": "base word", "def": "The main word that the parts are added to." },
+    { "term": "meaning", "def": "What a word or a word part tells you." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Light the forge",
+      "items": [
+        {
+          "id": "parts",
+          "kind": "forge",
+          "prompt": "Build words. Pick a beginning (optional), a base word and an ending (optional). Press Forge it. Build at least four real words and open each meaning.",
+          "mode": "explore",
+          "need": 4,
+          "parts": {
+            "prefixes": [
+              { "id": "re", "text": "re-", "meaning": "again" },
+              { "id": "un", "text": "un-", "meaning": "not, or the opposite" }
+            ],
+            "roots": [
+              { "id": "play", "text": "play" },
+              { "id": "pack", "text": "pack" },
+              { "id": "lock", "text": "lock" },
+              { "id": "write", "text": "write" },
+              { "id": "help", "text": "help" },
+              { "id": "care", "text": "care" }
+            ],
+            "suffixes": [
+              { "id": "er", "text": "-er", "meaning": "a person who does it" },
+              { "id": "ful", "text": "-ful", "meaning": "full of" },
+              { "id": "less", "text": "-less", "meaning": "without" }
+            ]
+          },
+          "table": {
+            "re|play|": { "word": "replay", "meaning": "to play again" },
+            "|play|er": { "word": "player", "meaning": "a person who plays" },
+            "|play|ful": { "word": "playful", "meaning": "full of fun, ready to play" },
+            "re|pack|": { "word": "repack", "meaning": "to pack again" },
+            "un|pack|": { "word": "unpack", "meaning": "to take things out of a bag or box" },
+            "un|lock|": { "word": "unlock", "meaning": "to open a lock; the opposite of lock" },
+            "re|lock|": { "word": "relock", "meaning": "to lock again" },
+            "re|write|": { "word": "rewrite", "meaning": "to write again" },
+            "|write|er": { "word": "writer", "meaning": "a person who writes" },
+            "|help|ful": { "word": "helpful", "meaning": "full of help; giving help" },
+            "|help|less": { "word": "helpless", "meaning": "without help; not able to help yourself" },
+            "un|help|ful": { "word": "unhelpful", "meaning": "not helpful" },
+            "|care|ful": { "word": "careful", "meaning": "full of care; paying attention" },
+            "|care|less": { "word": "careless", "meaning": "without care; not paying attention" }
+          }
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Match meaning and parts",
+      "items": [
+        {
+          "id": "build-tasks",
+          "kind": "forge",
+          "prompt": "Bram gives you four word orders. Build the word that matches each meaning.",
+          "mode": "tasks",
+          "tasksFrom": "parts",
+          "tasks": [
+            { "id": "t1", "ask": "Build a word that means 'to write again'.", "want": "re|write|" },
+            { "id": "t2", "ask": "Build a word that means 'full of help'.", "want": "|help|ful" },
+            { "id": "t3", "ask": "Build a word that means 'not helpful'.", "want": "un|help|ful" },
+            { "id": "t4", "ask": "Build a word that means 'without care'.", "want": "|care|less" }
+          ]
+        },
+        {
+          "id": "clue",
+          "kind": "check",
+          "prompt": "Use the clues. Which word fits? 'Mia was ___ with her new puppy. She gave it water, a soft bed and a gentle pat.'",
+          "options": [
+            { "id": "a", "label": "careless", "fb": "'Careless' means without care. Do the clues show care?" },
+            { "id": "b", "label": "careful", "fb": "" },
+            { "id": "c", "label": "helpless", "fb": "'Helpless' means without help. Mia is the one giving help." },
+            { "id": "d", "label": "unpack", "fb": "'Unpack' is an action word, and this sentence needs a describing word." }
+          ],
+          "answer": "b"
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Use your words",
+      "items": [
+        {
+          "id": "sentence",
+          "kind": "write",
+          "pickedFrom": "build-tasks",
+          "prompt": "Write your own sentence with at least one word you built. Make the sentence show what the word means.",
+          "purpose": "Words you use in a sentence stay with you.",
+          "minWords": 8,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 8, "label": "8 or more words" },
+            { "id": "word", "kind": "picked", "min": 1, "label": "Uses a word you built", "hint": "Use any word you forged in this mission." },
+            { "id": "end", "kind": "any", "terms": ["."], "label": "Is a complete sentence with an end mark" }
+          ],
+          "ladder": {
+            "model": "Model: Leo was helpful because he carried the heavy boxes for his neighbor.",
+            "frame": "___ was ___ because ___.",
+            "partial": "I used the word ___ when ___.",
+            "cue": "Use your word. Show what it means."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Stretch the sentence",
+      "items": [
+        {
+          "id": "expand",
+          "kind": "write",
+          "reviseOf": "sentence",
+          "pickedFrom": "build-tasks",
+          "prompt": "Make your sentence longer and clearer. Add where, when or why.",
+          "purpose": "More detail makes your meaning clearer.",
+          "minWords": 12,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 12, "label": "12 or more words" },
+            { "id": "word", "kind": "picked", "min": 1, "label": "Still uses a word you built" },
+            { "id": "detail", "kind": "any", "terms": ["because", "when", "after", "before", "while", "at ", "in ", "on ", "yesterday", "today", "so "], "label": "Adds where, when or why" }
+          ],
+          "ladder": {
+            "model": "Model: Leo was helpful yesterday because he carried the heavy boxes up the stairs for his neighbor.",
+            "frame": "My sentence with a new detail: ___ (where / when / why) ___.",
+            "partial": "I added ___ to tell where, when or why.",
+            "cue": "Add one detail."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "A word the forge has never seen",
+      "items": [
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Bram has a new word: 'rethink'. You know re- and you know think. What does 'rethink' most likely mean?",
+          "options": [
+            { "id": "a", "label": "to think again", "fb": "" },
+            { "id": "b", "label": "not to think", "fb": "Does re- mean 'not'? Check what re- meant in the forge." },
+            { "id": "c", "label": "a person who thinks", "fb": "That meaning comes from an ending like -er. Look at the beginning of the word instead." },
+            { "id": "d", "label": "without thinking", "fb": "That meaning comes from -less. Look at the beginning of the word instead." }
+          ],
+          "answer": "a"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "forged", "title": "The forge glows", "when": { "revised": ["expand"] }, "text": "Bram hammers the last tile into place. 'You built the word, explained its parts, and then made your sentence clearer. Parts plus meaning plus your own sentence: that is word power.'" },
+    { "id": "lit", "title": "The forge is lit", "text": "Bram nods. 'You built real words from parts and used them in your own sentence. Next time, add a detail to make the sentence tell more.'" }
+  ],
+  "family": {
+    "skill": { "en": "building words from a prefix, a base word and a suffix, and knowing what each part means", "es": "construir palabras con prefijo, palabra base y sufijo y saber qué significa cada parte" },
+    "talk": { "en": "Ask: 'What word did you build? What does each part mean? Can you use it in a sentence?'", "es": "Pregunta: '¿Qué palabra construiste? ¿Qué significa cada parte? ¿La puedes usar en una oración?'" },
+    "vocab": [
+      { "term": "prefix", "es": "prefijo" },
+      { "term": "suffix", "es": "sufijo" },
+      { "term": "meaning", "es": "significado" }
+    ]
+  }
+}

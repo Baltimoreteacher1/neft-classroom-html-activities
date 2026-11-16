@@ -1,0 +1,192 @@
+{
+  "id": "cl-build-the-perfect-story",
+  "world": "communication-lab",
+  "band": "3-5",
+  "domains": ["Writing", "Speaking"],
+  "functions": ["Describe", "Narrate", "Sequence"],
+  "keyUses": ["Narrate"],
+  "minutes": 35,
+  "tags": ["story", "creative", "animals"],
+  "title": { "en": "Build the Perfect Story", "es": "Construye el cuento perfecto" },
+  "objective": { "en": "Write a story with a character, setting, problem, events, dialogue and ending, in your own sentences.", "es": "Escribir un cuento con personaje, lugar, problema, sucesos, diálogo y final, con tus propias oraciones." },
+  "success": [
+    { "en": "I can tell who the story is about and where it happens.", "es": "Puedo decir de quién trata el cuento y dónde ocurre." },
+    { "en": "I can write what goes wrong and what happens next, in order.", "es": "Puedo escribir qué sale mal y qué pasa después, en orden." },
+    { "en": "I can write what a character says with quotation marks.", "es": "Puedo escribir lo que dice un personaje con comillas." },
+    { "en": "I can make my story clearer when I read it again.", "es": "Puedo aclarar mi cuento cuando lo vuelvo a leer." }
+  ],
+  "narrative": "Tala the Storyteller has an empty stage and a trunk full of story pieces. Choose a character, a place and a problem. Then write the story yourself, one part at a time, and watch the stage act out your words.",
+  "characters": ["storyteller"],
+  "scene": {
+    "theme": "studio",
+    "alt": "A small theater stage with red curtains and a wooden floor. A trunk full of story pieces sits to one side. Tala the Storyteller stands at the edge of the stage holding a book.",
+    "objects": []
+  },
+  "vocab": [
+    { "term": "character", "def": "A person or animal in a story." },
+    { "term": "setting", "def": "Where and when the story happens." },
+    { "term": "problem", "def": "What goes wrong in the story." },
+    { "term": "dialogue", "def": "The exact words that characters say." },
+    { "term": "resolution", "def": "How the problem is solved at the end." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Meet the story parts",
+      "items": [
+        {
+          "id": "model-story",
+          "kind": "read",
+          "prompt": "Read Tala's short model story. Open every part and notice what each part does.",
+          "sources": [
+            { "id": "p1", "title": "Who and where", "text": ["Rosa the owl lived in a tall pine tree at the edge of a quiet forest."] },
+            { "id": "p2", "title": "The problem", "text": ["One windy night, her lantern fell and its light went out."] },
+            { "id": "p3", "title": "Events", "text": ["First, Rosa looked on the ground, but it was too dark. Then she asked the fireflies for help."] },
+            { "id": "p4", "title": "Dialogue", "text": ["\"Please light my lantern,\" said Rosa. \"I cannot find my way home.\""] },
+            { "id": "p5", "title": "Resolution", "text": ["In the end, the fireflies lit the lantern, and Rosa flew home safely."] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Find the parts",
+      "items": [
+        {
+          "id": "sort-parts",
+          "kind": "sort",
+          "prompt": "Sort each sentence from a new story. Which part of a story is it?",
+          "categories": [
+            { "id": "setting", "label": "Who and where" },
+            { "id": "problem", "label": "The problem" },
+            { "id": "events", "label": "What happens" },
+            { "id": "end", "label": "The ending" }
+          ],
+          "cards": [
+            { "id": "s1", "text": "Kofi the fox lived in a cozy den by the river.", "cat": "setting", "why": "This tells you who and where. Look for a name and a place." },
+            { "id": "s2", "text": "One morning, the bridge over the river was gone!", "cat": "problem", "why": "Something goes wrong here. What changed?" },
+            { "id": "s3", "text": "First, Kofi tried to jump across, but the water was too wide.", "cat": "events", "why": "A character tries something. Look for 'first' or 'then'." },
+            { "id": "s4", "text": "Then he asked the beaver to help him build a new bridge.", "cat": "events", "why": "This is the next thing that happens. Look for 'then'." },
+            { "id": "s5", "text": "At last, the new bridge was ready, and Kofi walked across happily.", "cat": "end", "why": "The problem is solved here. Look for 'at last' or 'in the end'." },
+            { "id": "s6", "text": "A little rabbit named Lulu lived on a hill near the sea.", "cat": "setting", "why": "This tells you who and where." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write your story",
+      "items": [
+        {
+          "id": "story",
+          "kind": "story",
+          "prompt": "Pick your character, place and problem. Then write one sentence for each part in your own words. After each sentence, the stage acts it out.",
+          "elements": {
+            "character": [
+              { "id": "fox", "label": "Kofi the fox", "glyph": "fox", "terms": ["kofi", "fox"] },
+              { "id": "owl", "label": "Rosa the owl", "glyph": "owl", "terms": ["rosa", "owl"] },
+              { "id": "robot", "label": "Beep the robot", "glyph": "robot", "terms": ["beep", "robot"] }
+            ],
+            "setting": [
+              { "id": "forest", "label": "a forest", "glyph": "tree", "terms": ["forest", "woods", "tree"] },
+              { "id": "beach", "label": "a beach", "glyph": "sun", "terms": ["beach", "sea", "sand", "ocean"] },
+              { "id": "space", "label": "outer space", "glyph": "star", "terms": ["space", "planet", "star", "moon"] }
+            ],
+            "problem": [
+              { "id": "kite", "label": "a kite stuck high up", "glyph": "kite", "terms": ["kite"] },
+              { "id": "key", "label": "a lost golden key", "glyph": "key", "terms": ["key"] },
+              { "id": "bridge", "label": "a broken bridge", "glyph": "bridge", "terms": ["bridge"] }
+            ]
+          },
+          "slots": [
+            { "id": "who", "label": "Who and where", "hint": "Tell who the story is about and where they are.", "reveals": "enter", "picks": ["character", "setting"], "checks": [
+              { "id": "len", "kind": "words", "min": 6, "label": "6 or more words" },
+              { "id": "named", "kind": "picked", "min": 2, "label": "Names your character and your place", "hint": "Use the names you picked, or a word that means the same." }
+            ] },
+            { "id": "problem", "label": "The problem", "hint": "What goes wrong?", "reveals": "problem", "picks": ["problem"], "checks": [
+              { "id": "len", "kind": "words", "min": 6, "label": "6 or more words" },
+              { "id": "named", "kind": "picked", "min": 1, "label": "Names your problem" }
+            ] },
+            { "id": "first", "label": "First event", "hint": "What does your character try first?", "reveals": "approach", "checks": [
+              { "id": "len", "kind": "words", "min": 6, "label": "6 or more words" },
+              { "id": "order", "kind": "any", "terms": ["first", "at first", "began", "started"], "label": "Uses a time word like first" }
+            ] },
+            { "id": "next", "label": "Next event", "hint": "What happens next? Show a different try.", "reveals": "attempt", "checks": [
+              { "id": "len", "kind": "words", "min": 6, "label": "6 or more words" },
+              { "id": "order", "kind": "any", "terms": ["then", "next", "after", "later", "suddenly"], "label": "Uses a time word like then or next" }
+            ] },
+            { "id": "talk", "label": "Dialogue", "hint": "What does your character say? Put the exact words in quotation marks.", "reveals": "speak", "checks": [
+              { "id": "len", "kind": "words", "min": 5, "label": "5 or more words" },
+              { "id": "quote", "kind": "quote", "label": "Uses quotation marks around the spoken words" }
+            ] },
+            { "id": "end", "label": "The ending", "hint": "How is the problem solved?", "reveals": "resolve", "checks": [
+              { "id": "len", "kind": "words", "min": 6, "label": "6 or more words" },
+              { "id": "closing", "kind": "any", "terms": ["finally", "at last", "in the end", "solved", "fixed", "found", "safe", "happy"], "label": "Shows the problem is solved" }
+            ] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Make it better",
+      "items": [
+        {
+          "id": "revise-story",
+          "kind": "write",
+          "reviseOf": "story",
+          "prompt": "Read your whole story. Change at least three words to make it clearer or more exciting. You could add a describing word, a feeling or a sound.",
+          "purpose": "Tala will read your best version.",
+          "minWords": 40,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 40, "label": "40 or more words" },
+            { "id": "quote", "kind": "quote", "label": "Still has the character's spoken words in quotation marks" },
+            { "id": "time", "kind": "any", "terms": ["first", "then", "next", "finally", "at last", "in the end", "suddenly"], "label": "Still shows the order with time words" }
+          ],
+          "ladder": {
+            "model": "Model: change 'the dark night' to 'the cold, dark night'. Change 'said Rosa' to 'whispered Rosa'.",
+            "frame": "I added the describing word ___ before ___. I changed ___ to ___.",
+            "partial": "I changed ___ to ___.",
+            "cue": "Find one plain word. Swap it for a stronger word."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Tell it again",
+      "items": [
+        {
+          "id": "retell",
+          "kind": "speak",
+          "prompt": "Tell your story to a partner in your own words. Use the words first, then, and in the end.",
+          "typedMin": 20,
+          "ladder": {
+            "frame": "My story is about ___. The problem is ___. First, ___. Then, ___. In the end, ___.",
+            "partial": "My story is about ___. First, ___. In the end, ___.",
+            "cue": "Who? Problem? First? Then? End?"
+          },
+          "selfChecks": [
+            { "id": "order", "label": "I told the parts in order." },
+            { "id": "words", "label": "I used first, then or in the end." },
+            { "id": "voice", "label": "I used a clear, steady voice." }
+          ],
+          "needSelf": 2
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "revised", "title": "The curtain rises", "when": { "revised": ["revise-story"] }, "text": "Tala claps. 'You wrote the parts in order, and you made your own changes to improve it. Every word on that stage is yours.'" },
+    { "id": "plain", "title": "A story on the stage", "text": "Tala smiles as the curtain rises. 'You built every part of your story. Next time, try changing a few words to make it even clearer.'" }
+  ],
+  "family": {
+    "skill": { "en": "writing a story with a beginning, a problem, events in order, dialogue and an ending", "es": "escribir un cuento con inicio, problema, sucesos en orden, diálogo y final" },
+    "talk": { "en": "Ask: 'Who is your story about? What problem did your character have? How did it end?'", "es": "Pregunta: '¿De quién trata tu cuento? ¿Qué problema tuvo tu personaje? ¿Cómo terminó?'" },
+    "vocab": [
+      { "term": "character", "es": "personaje" },
+      { "term": "setting", "es": "escenario, lugar" },
+      { "term": "problem", "es": "problema" }
+    ]
+  }
+}

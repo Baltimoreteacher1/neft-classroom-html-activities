@@ -1,0 +1,193 @@
+{
+  "id": "md-newsroom-investigation",
+  "world": "media-detectives",
+  "band": "6-8",
+  "domains": ["Reading", "Writing"],
+  "functions": ["Evaluate", "Compare", "Inform"],
+  "keyUses": ["Inform", "Argue"],
+  "minutes": 40,
+  "tags": ["news", "sources", "fact and opinion"],
+  "title": { "en": "Newsroom Investigation", "es": "Investigación en la sala de redacción" },
+  "objective": { "en": "Compare conflicting reports, tell fact from opinion, judge sources, and write a balanced report with precise wording.", "es": "Comparar noticias que se contradicen, distinguir hechos de opiniones, evaluar fuentes y escribir un informe equilibrado con palabras precisas." },
+  "success": [
+    { "en": "I can tell a fact from an opinion in a news report.", "es": "Puedo distinguir un hecho de una opinión en una noticia." },
+    { "en": "I can point out where two sources disagree.", "es": "Puedo señalar dónde dos fuentes no coinciden." },
+    { "en": "I can judge a source by what it names, checks and shows.", "es": "Puedo evaluar una fuente por lo que nombra, comprueba y muestra." },
+    { "en": "I can write a fair report that gives both perspectives and attributes information.", "es": "Puedo escribir un informe justo que da ambas perspectivas y atribuye la información." }
+  ],
+  "narrative": "In the fictional town of Lakeview, the old bridge has been closed. Two newspapers reported it very differently, and a post online is spreading fast. Penn, the news editor, has asked you to read all three and write a report that gives readers the facts fairly. All names, places and reports in this mission are made up for practice.",
+  "characters": ["editor"],
+  "scene": { "theme": "newsroom", "alt": "A busy newsroom with desks, a large wall corkboard pinned with three clippings, and a window showing a closed bridge in the distance. Penn the editor stands beside the corkboard holding a pencil.", "objects": [] },
+  "vocab": [
+    { "term": "fact", "def": "A statement that can be checked and shown true or false." },
+    { "term": "opinion", "def": "What someone thinks or feels. It cannot be proven true or false." },
+    { "term": "source", "def": "Where information comes from." },
+    { "term": "attribute", "def": "To say who said or wrote something." },
+    { "term": "perspective", "def": "A person's point of view." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Read the three sources",
+      "items": [
+        {
+          "id": "reports",
+          "kind": "read",
+          "prompt": "Read all three sources. Open each one. Notice what is the same and what is different.",
+          "sources": [
+            { "id": "ledger", "title": "The Lakeview Ledger: \"Bridge Closure a Disaster for Local Business\"", "text": ["The Lakeview Bridge was closed on Monday after inspectors found cracks in two support beams. City engineer Dana Ortiz said the closure will last at least six weeks.", "The reckless decision has wrecked the week for shop owners. Sam Patel, who owns Patel's Hardware, called the closure \"outrageous\" and said his sales dropped 40 percent. Mayor Hale told the Ledger, \"Safety comes first.\" Traffic on Route 9 backed up for two miles."] },
+            { "id": "hourly", "title": "Harbor Hourly: \"City Acts Fast to Protect Drivers\"", "text": ["Inspectors found cracks in two beams of the Lakeview Bridge on Monday, and the city closed it that day. Mayor Hale said repairs should take about four weeks.", "According to the city traffic office, the detour adds 12 minutes to a trip across town. Parent Lena Cho said, \"I am glad they did not wait.\" Some shop owners said they were worried about losing customers."] },
+            { "id": "post", "title": "Online post by @LakeviewGuy", "text": ["Everyone knows the city ignored warnings about this bridge for years!! Total corruption. Don't believe what the papers tell you."] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Test the sources",
+      "items": [
+        {
+          "id": "sort-fo",
+          "kind": "sort",
+          "prompt": "Sort each sentence from the reports. Is it a fact that could be checked, or an opinion?",
+          "categories": [
+            { "id": "fact", "label": "Fact: it can be checked" },
+            { "id": "opinion", "label": "Opinion: what someone thinks" }
+          ],
+          "cards": [
+            { "id": "f1", "text": "Inspectors found cracks in two support beams.", "cat": "fact", "why": "Could you check this with an inspection report?" },
+            { "id": "f2", "text": "The closure was a reckless decision.", "cat": "opinion", "why": "'Reckless' shows what the writer thinks. Could anyone prove it true or false?" },
+            { "id": "f3", "text": "The detour adds 12 minutes to a trip across town.", "cat": "fact", "why": "You could time the trip. It has a number that can be checked." },
+            { "id": "f4", "text": "Sam Patel said his sales dropped 40 percent.", "cat": "fact", "why": "That Patel said it can be checked. Think about what is being reported: a statement, with a number." },
+            { "id": "f5", "text": "Everyone knows the city ignored warnings for years.", "cat": "opinion", "why": "'Everyone knows' has no source or number. Can it be checked?" },
+            { "id": "f6", "text": "The closure was the responsible choice.", "cat": "opinion", "why": "'Responsible' is a judgment. Different people could disagree." },
+            { "id": "f7", "text": "Traffic on Route 9 backed up for two miles.", "cat": "fact", "why": "Distance can be measured. Could someone check this?" }
+          ]
+        },
+        {
+          "id": "credible",
+          "kind": "compare",
+          "noKey": true,
+          "labels": { "supports": "Yes", "contradicts": "No", "neutral": "Cannot tell" },
+          "pickPrompt": "Which source would you trust most for facts about the closure? (Your judgment. Explain it in your report.)",
+          "prompt": "For each source, answer each question about it. Then choose which source you trust most for facts.",
+          "need": 0.75,
+          "options": [
+            { "id": "ledger", "label": "The Lakeview Ledger" },
+            { "id": "hourly", "label": "Harbor Hourly" },
+            { "id": "post", "label": "The online post" }
+          ],
+          "evidence": [
+            { "id": "k1", "text": "Does it name the people it quotes?" },
+            { "id": "k2", "text": "Does it include numbers or dates that could be checked?" },
+            { "id": "k3", "text": "Does the writer keep opinion words out of the reporting voice?" },
+            { "id": "k4", "text": "Does it say where its information came from?" }
+          ],
+          "matrix": {
+            "ledger": { "k1": "supports", "k2": "supports", "k3": "contradicts", "k4": "supports" },
+            "hourly": { "k1": "supports", "k2": "supports", "k3": "supports", "k4": "supports" },
+            "post": { "k1": "contradicts", "k2": "contradicts", "k3": "contradicts", "k4": "contradicts" }
+          },
+          "recheckHint": "Re-read this source with this question in mind. Look for a name, a number, an opinion word or a stated source."
+        },
+        {
+          "id": "disagree",
+          "kind": "check",
+          "prompt": "The Ledger and the Hourly report a different fact. Which one?",
+          "options": [
+            { "id": "a", "label": "How many beams had cracks", "fb": "Both say two beams. Look for a fact where the numbers differ." },
+            { "id": "b", "label": "How long the bridge will be closed", "fb": "" },
+            { "id": "c", "label": "Which day the bridge closed", "fb": "Both say Monday. Look for a fact where the numbers differ." },
+            { "id": "d", "label": "Who the mayor is", "fb": "Both name Mayor Hale. Look for a fact where the numbers differ." }
+          ],
+          "answer": "b"
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write the balanced report",
+      "items": [
+        {
+          "id": "report",
+          "kind": "write",
+          "prompt": "Write a short, balanced news report about the closure. Include both the business owners' and the city's perspectives, say who said what, and use neutral words.",
+          "purpose": "Penn will run your report on the front page of the practice newsroom.",
+          "minWords": 60,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 60, "label": "60 or more words" },
+            { "id": "biz", "kind": "any", "terms": ["business", "shop", "owner", "patel", "sales", "customers"], "label": "Includes the business owners' perspective" },
+            { "id": "city", "kind": "any", "terms": ["safety", "inspector", "cracks", "ortiz", "hale", "mayor", "city", "parent", "cho"], "label": "Includes the city's or drivers' perspective" },
+            { "id": "attr", "kind": "any", "terms": ["according to", "said", "says", "reported", "told", "stated"], "label": "Says who said it (attribution)" },
+            { "id": "fact", "kind": "any", "terms": ["six weeks", "four weeks", "12 minutes", "40 percent", "two miles", "two beams", "monday"], "label": "Includes a fact that could be checked (a number or a date)" },
+            { "id": "neutral", "kind": "avoid", "terms": ["disaster", "outrageous", "reckless", "wrecked", "corrupt", "corruption", "terrible", "awful", "heroic", "amazing"], "label": "Keeps loaded words out of your own voice" }
+          ],
+          "ladder": {
+            "model": "Model: Inspectors found cracks in two beams of the Lakeview Bridge, and the city closed it Monday. According to Mayor Hale, repairs should take about four weeks. Shop owner Sam Patel said his sales dropped 40 percent. The city traffic office reported that the detour adds 12 minutes.",
+            "frame": "Inspectors found ___. According to ___, ___. ___ said that ___. However, ___.",
+            "partial": "The bridge was closed because ___. According to ___, ___.",
+            "cue": "Fact. Who said it. The other side. A number."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Revise for clarity and precision",
+      "items": [
+        {
+          "id": "precise-report",
+          "kind": "write",
+          "reviseOf": "report",
+          "prompt": "Revise your report. Replace vague words with exact ones, and tell readers where the sources disagree.",
+          "purpose": "A precise report lets readers decide for themselves.",
+          "minWords": 65,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 65, "label": "65 or more words" },
+            { "id": "vague", "kind": "avoid", "terms": ["a lot", "thing", "stuff", "very bad", "really", "kind of", "some people say", "everyone", "nobody"], "label": "Avoids vague words (a lot, thing, everyone)" },
+            { "id": "attr", "kind": "any", "terms": ["according to", "said", "says", "reported", "told", "stated"], "label": "Still says who said it" },
+            { "id": "conflict", "kind": "any", "terms": ["however", "but ", "while ", "whereas", "disagree", "differs", "different", "conflict", "although", "at least six weeks", "about four weeks"], "label": "Shows where the sources disagree (for example how long the closure will last)" },
+            { "id": "neutral", "kind": "avoid", "terms": ["disaster", "outrageous", "reckless", "wrecked", "corrupt", "corruption", "terrible", "awful", "heroic", "amazing"], "label": "Still keeps loaded words out of your own voice" }
+          ],
+          "ladder": {
+            "model": "Model: The Ledger reports that the closure will last at least six weeks, while the Hourly reports about four weeks. The two sources disagree about the length, so readers should watch for the city's official update.",
+            "frame": "The ___ reports that ___, while the ___ reports that ___. The sources disagree about ___.",
+            "partial": "The sources disagree about ___. One says ___. The other says ___.",
+            "cue": "Name one disagreement. Give both numbers."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "A new headline",
+      "items": [
+        {
+          "id": "headline",
+          "kind": "check",
+          "prompt": "A different town's council voted to shorten library hours. Which headline reports it most neutrally?",
+          "options": [
+            { "id": "a", "label": "Council Wrecks Library Hours", "fb": "'Wrecks' is a loaded word that shows an opinion." },
+            { "id": "b", "label": "Council Votes to Shorten Library Hours", "fb": "" },
+            { "id": "c", "label": "Heroic Council Saves Money at Last", "fb": "'Heroic' and 'at last' show an opinion." },
+            { "id": "d", "label": "Everyone Furious as Library Shuts Early", "fb": "'Everyone' and 'furious' are not checked facts." }
+          ],
+          "answer": "b"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "front-page", "title": "Front page", "when": { "revised": ["precise-report"] }, "text": "Penn pins your report to the front of the practice newsroom. 'You gave both perspectives, said who said what, and noted where the sources disagree,' Penn says. 'Readers can decide for themselves. That is fair reporting.'" },
+    { "id": "draft", "title": "Ready for a second look", "text": "Penn reads your report and nods. 'You gave readers facts and attributed them. Next time, revise to show exactly where the sources disagree.'" }
+  ],
+  "family": {
+    "skill": { "en": "telling fact from opinion and writing a fair report that says who said what", "es": "distinguir hecho de opinión y escribir un informe justo que dice quién dijo qué" },
+    "talk": { "en": "Ask: 'Which sentence was a fact you could check? How could you check it? Did the sources agree?'", "es": "Pregunta: '¿Qué oración era un hecho que se podía comprobar? ¿Cómo lo comprobarías? ¿Coincidían las fuentes?'" },
+    "vocab": [
+      { "term": "fact", "es": "hecho" },
+      { "term": "opinion", "es": "opinión" },
+      { "term": "source", "es": "fuente" }
+    ]
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "id": "dc-the-great-debate",
+  "world": "diplomacy-chronicles",
+  "band": "6-8",
+  "domains": ["Reading", "Speaking", "Writing"],
+  "functions": ["Argue", "Counter", "Negotiate"],
+  "keyUses": ["Argue"],
+  "minutes": 40,
+  "tags": ["community", "debate", "respect"],
+  "title": { "en": "The Great Debate", "es": "El gran debate" },
+  "objective": { "en": "Understand two viewpoints, write a claim with reasons and evidence, and respond to the other side with respect.", "es": "Entender dos puntos de vista, escribir una afirmación con razones y pruebas y responder a la otra postura con respeto." },
+  "success": [
+    { "en": "I can explain what each side cares about.", "es": "Puedo explicar qué le importa a cada postura." },
+    { "en": "I can state my claim and give a reason with evidence.", "es": "Puedo expresar mi afirmación y dar una razón con pruebas." },
+    { "en": "I can answer the other side without insulting anyone.", "es": "Puedo responder a la otra postura sin insultar a nadie." },
+    { "en": "I can give a clear closing statement out loud.", "es": "Puedo dar una declaración final clara en voz alta." }
+  ],
+  "narrative": "In the fictional town of Fairhaven, the old field next to Maple Park is empty. The council must decide what to build there: a community garden or a sports court. Both ideas are good, and neighbors disagree. Sol, the Conversation Guide, will help you prepare. Three council members will listen for the same four things from every speaker, no matter which side you choose.",
+  "characters": ["guide"],
+  "scene": {
+    "theme": "forum",
+    "alt": "A town council chamber. Three council members sit behind a curved wooden table with name cards. A lectern stands in front of them. On one wall is a drawing of a garden and on the other a drawing of a sports court.",
+    "objects": []
+  },
+  "vocab": [
+    { "term": "claim", "def": "What you want people to believe or do." },
+    { "term": "reason", "def": "Why your claim makes sense." },
+    { "term": "evidence", "def": "A fact or example that backs up your reason." },
+    { "term": "counterargument", "def": "A reason that the other side gives." },
+    { "term": "respectful", "def": "Treating people's ideas and feelings with care." }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Hear both sides",
+      "items": [
+        {
+          "id": "briefing",
+          "kind": "read",
+          "prompt": "Read what three Fairhaven neighbors told the council. Open every statement.",
+          "sources": [
+            { "id": "aguilar", "title": "Ms. Aguilar, garden supporter", "text": ["A garden gives families fresh vegetables and a quiet place to meet. Last year 40 families asked for garden plots.", "I worry that a court would be loud and fenced off."] },
+            { "id": "brandt", "title": "Mr. Brandt, court supporter", "text": ["Our town has only one court, and teams wait weeks to play. A new court gives 120 students a place to exercise.", "I worry that a garden would only help a few families."] },
+            { "id": "chen", "title": "Dr. Chen, council member", "text": ["I have not decided. I will listen for a clear claim, a reason about what the community needs, evidence, and respect for the other view.", "Both of these ideas could help Fairhaven."] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Understand and prepare",
+      "items": [
+        {
+          "id": "sort-view",
+          "kind": "sort",
+          "prompt": "Whose concern is each statement? Sort it to the group that raised it.",
+          "categories": [
+            { "id": "garden", "label": "Garden supporters" },
+            { "id": "court", "label": "Court supporters" },
+            { "id": "both", "label": "Both sides" }
+          ],
+          "cards": [
+            { "id": "v1", "text": "Fresh vegetables should be easier for families to get.", "cat": "garden", "why": "Which side talked about vegetables?" },
+            { "id": "v2", "text": "Teams wait weeks for a place to play.", "cat": "court", "why": "Which side talked about teams?" },
+            { "id": "v3", "text": "The field should help many people in Fairhaven.", "cat": "both", "why": "Did only one side say that the town should benefit? Check both statements." },
+            { "id": "v4", "text": "Forty families asked for garden plots last year.", "cat": "garden", "why": "Whose statement includes the number 40?" },
+            { "id": "v5", "text": "A new court would give 120 students a place to exercise.", "cat": "court", "why": "Whose statement includes the number 120?" },
+            { "id": "v6", "text": "The neighborhood should stay a safe and welcoming place.", "cat": "both", "why": "Both Ms. Aguilar and Mr. Brandt worry about the neighborhood. Who else shares this concern?" }
+          ]
+        },
+        {
+          "id": "sort-parts",
+          "kind": "sort",
+          "prompt": "Strong arguments have parts. Sort each sentence from a sample argument.",
+          "categories": [
+            { "id": "claim", "label": "Claim" },
+            { "id": "reason", "label": "Reason" },
+            { "id": "evidence", "label": "Evidence" }
+          ],
+          "cards": [
+            { "id": "a1", "text": "The town should build a library branch on the old lot.", "cat": "claim", "why": "This says what the speaker wants the council to do." },
+            { "id": "a2", "text": "Many students have no quiet place to study after school.", "cat": "reason", "why": "This says why the claim makes sense. It explains a need." },
+            { "id": "a3", "text": "A survey of 90 students found that 61 study at home with no desk.", "cat": "evidence", "why": "This is a fact with numbers that backs up the reason." },
+            { "id": "a4", "text": "A branch near the school would let students stay and work.", "cat": "reason", "why": "This explains how the claim solves the need." },
+            { "id": "a5", "text": "The town of Brookfield opened a branch last year, and 200 students use it each week.", "cat": "evidence", "why": "This is an example with a number from a real-sounding case." }
+          ]
+        },
+        {
+          "id": "side",
+          "kind": "choose",
+          "prompt": "Choose your position. You can support the garden, support the court, or propose a plan that uses both.",
+          "pick": 1,
+          "options": [
+            { "id": "garden", "label": "Build the community garden.", "detail": "A garden for growing food and meeting neighbors.", "terms": ["garden", "vegetable", "plot", "grow"], "sets": ["side-garden"] },
+            { "id": "court", "label": "Build the sports court.", "detail": "A court for teams and exercise.", "terms": ["court", "team", "exercise", "sport", "play"], "sets": ["side-court"] },
+            { "id": "both", "label": "Share the field: part garden, part court.", "detail": "A plan that tries to meet both concerns.", "terms": ["both", "share", "half", "part", "garden", "court"], "sets": ["side-both"] }
+          ]
+        },
+        {
+          "id": "cards",
+          "kind": "choose",
+          "prompt": "Pick two evidence cards to use in your argument. Choose the ones that fit your position best.",
+          "pick": 2,
+          "options": [
+            { "id": "g40", "label": "Forty families asked for garden plots last year.", "detail": "Supports a garden.", "terms": ["40 families", "forty families", "garden plots", "plots"] },
+            { "id": "gveg", "label": "A garden of this size can grow food for about 25 households.", "detail": "Supports a garden. (Fictional estimate.)", "terms": ["25 households", "food", "households"] },
+            { "id": "c120", "label": "A new court gives 120 students a place to exercise.", "detail": "Supports a court.", "terms": ["120 students", "exercise", "120"] },
+            { "id": "cwait", "label": "Teams wait about three weeks to use the only court.", "detail": "Supports a court.", "terms": ["three weeks", "wait", "only court"] },
+            { "id": "bshare", "label": "Maple Park already has room for both if the field is split.", "detail": "Supports sharing the field.", "terms": ["split", "both", "room"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Make your argument",
+      "items": [
+        {
+          "id": "argument",
+          "kind": "write",
+          "pickedFrom": "cards",
+          "prompt": "Write your argument for the council. State your claim, give a reason about what Fairhaven needs, and use at least one of your evidence cards.",
+          "purpose": "The council listens for the same four things from every speaker.",
+          "minWords": 50,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 50, "label": "50 or more words" },
+            { "id": "claim", "kind": "any", "terms": ["i believe", "i think", "i support", "we should", "the council should", "i propose", "should build", "should use", "should share"], "label": "States a clear claim (what the council should do)" },
+            { "id": "reason", "kind": "any", "terms": ["because", "since", "need", "so that", "this would", "helps", "benefit"], "label": "Gives a reason about what the community needs" },
+            { "id": "evidence", "kind": "picked", "min": 1, "label": "Uses one of your evidence cards", "hint": "Use the number or fact from the card in your own words." }
+          ],
+          "listeners": [
+            { "id": "aguilar", "name": "Ms. Aguilar", "listensFor": ["claim"], "met": "I heard a clear request. I know exactly what you want the council to do.", "unmet": "I did not hear a clear request yet. Say what you want the council to do." },
+            { "id": "brandt", "name": "Mr. Brandt", "listensFor": ["reason"], "met": "You explained a community need. That helps me understand why it matters.", "unmet": "I did not hear what the community needs. Add a reason." },
+            { "id": "chen", "name": "Dr. Chen", "listensFor": ["evidence"], "met": "You gave a fact or number to back up your reason. Thank you.", "unmet": "I would like a fact or a number to back up your reason." }
+          ],
+          "ladder": {
+            "model": "Model: I believe the council should build the garden. Fairhaven families need affordable fresh food, because many shop far from home. Forty families asked for garden plots last year, so people want this.",
+            "frame": "I believe the council should ___. Fairhaven needs ___ because ___. For example, ___.",
+            "partial": "I believe ___ because ___. For example, ___.",
+            "cue": "Claim. Reason. Evidence."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Answer the other side",
+      "items": [
+        {
+          "id": "respond",
+          "kind": "write",
+          "reviseOf": "argument",
+          "pickedFrom": "cards",
+          "prompt": "Dr. Chen asks you to respond to the other side. Revise your argument: say what the other side cares about, then explain why your position still works or what you would change. Keep it respectful.",
+          "purpose": "Respectful listening is the fourth thing the council listens for.",
+          "minWords": 60,
+          "checks": [
+            { "id": "len", "kind": "words", "min": 60, "label": "60 or more words" },
+            { "id": "other", "kind": "any", "terms": ["some people", "others", "the other side", "supporters", "i understand", "i hear", "they worry", "they care", "opponents", "some say", "ms. aguilar", "mr. brandt"], "label": "Says what the other side cares about" },
+            { "id": "turn", "kind": "any", "terms": ["however", "but", "although", "even so", "at the same time", "while", "i would change", "i would add", "compromise"], "label": "Answers it with a reason, or offers a change" },
+            { "id": "kind", "kind": "avoid", "terms": ["stupid", "dumb", "ridiculous", "idiot", "silly", "selfish", "lazy", "crazy", "ignorant"], "label": "Avoids insulting words" },
+            { "id": "evidence", "kind": "picked", "min": 1, "label": "Still uses evidence from your cards" }
+          ],
+          "listeners": [
+            { "id": "aguilar", "name": "Ms. Aguilar", "listensFor": ["other", "kind"], "met": "You described my concern accurately and respectfully. Even if we disagree, I feel heard.", "unmet": "I did not hear my side's concern described, or a word was not respectful. Please try again." },
+            { "id": "brandt", "name": "Mr. Brandt", "listensFor": ["turn"], "met": "You gave a reason or offered a change in response. That moves the conversation forward.", "unmet": "I did not hear a response to the other side. Add a reason or a change." },
+            { "id": "chen", "name": "Dr. Chen", "listensFor": ["evidence", "len"], "met": "Your evidence is still there and the argument is complete.", "unmet": "I would like to see your evidence and a fuller argument." }
+          ],
+          "ladder": {
+            "model": "Model: Some people worry that a garden would only help a few families. I understand that concern. However, forty families asked for plots, and a garden can also host classes for students, so more people could benefit.",
+            "frame": "Some people worry that ___. I understand that concern. However, ___ because ___.",
+            "partial": "Some people worry ___. However, ___.",
+            "cue": "Say their concern. Answer with a reason."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Closing statement",
+      "items": [
+        {
+          "id": "closing",
+          "kind": "speak",
+          "prompt": "Give your closing statement to the council in about 30 seconds. State your position, give your best reason, and thank the council for listening.",
+          "typedMin": 25,
+          "ladder": {
+            "frame": "Council members, I believe ___. My best reason is ___. I respect the other side's concern about ___. Thank you for listening.",
+            "partial": "I believe ___. My best reason is ___. Thank you.",
+            "cue": "Position, reason, thanks."
+          },
+          "selfChecks": [
+            { "id": "claim", "label": "I stated my position first." },
+            { "id": "reason", "label": "I gave one clear reason." },
+            { "id": "respect", "label": "I spoke respectfully about the other side." },
+            { "id": "pace", "label": "I spoke slowly enough to be understood." }
+          ],
+          "needSelf": 2
+        }
+      ]
+    }
+  ],
+  "endings": [
+    { "id": "heard", "title": "The council listened", "when": { "revised": ["respond"] }, "text": "The council thanks every speaker. 'Whichever side you chose, we listened for the same four things,' says Dr. Chen: a clear claim, a reason about the community, evidence, and respect for the other view. 'You answered the other side and kept your own position. That is hard to do.'" },
+    { "id": "more", "title": "The council asks for more", "text": "The council thanks you. 'Whichever side you chose, we listen for the same four things,' says Dr. Chen. 'Next time, say what the other side cares about and answer it.'" }
+  ],
+  "family": {
+    "skill": { "en": "stating a position, giving reasons and evidence, and answering a different view respectfully", "es": "expresar una postura, dar razones y pruebas y responder con respeto a otra opinión" },
+    "talk": { "en": "Ask: 'What did the other side care about? How did you answer them without being unkind?'", "es": "Pregunta: '¿Qué le importaba a la otra postura? ¿Cómo le respondiste sin ser desagradable?'" },
+    "vocab": [
+      { "term": "claim", "es": "afirmación" },
+      { "term": "evidence", "es": "evidencia, prueba" },
+      { "term": "respectful", "es": "respetuoso" }
+    ]
+  }
+}
