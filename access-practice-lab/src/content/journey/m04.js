@@ -63,6 +63,22 @@ const g35 = {
     kind: "scene",
     prompt:
       "Ms. Okafor cannot see the leaf from her desk. What would she need to know to draw it exactly?",
+    descriptionMatch: {
+      target: "a",
+      dimensions: [
+        { id: "shape", label: "Shape", options: [{ id: "five", label: "five pointed lobes" }, { id: "three", label: "three pointed lobes" }, { id: "oval", label: "oval" }] },
+        { id: "color", label: "Top color", options: [{ id: "dark", label: "dark green" }, { id: "light", label: "light green" }] },
+        { id: "length", label: "Length", options: [{ id: "12", label: "12 centimeters" }, { id: "8", label: "8 centimeters" }] },
+        { id: "texture", label: "Texture", options: [{ id: "smooth", label: "smooth" }, { id: "rough", label: "rough" }] },
+      ],
+      specimens: [
+        { id: "a", label: "Specimen A", shape: "five", color: "dark", length: "12", texture: "smooth" },
+        { id: "b", label: "Specimen B", shape: "five", color: "light", length: "12", texture: "rough" },
+        { id: "c", label: "Specimen C", shape: "three", color: "dark", length: "12", texture: "rough" },
+        { id: "d", label: "Specimen D", shape: "five", color: "dark", length: "8", texture: "smooth" },
+        { id: "e", label: "Specimen E", shape: "oval", color: "light", length: "8", texture: "smooth" },
+      ],
+    },
     objects: [
       {
         id: "leaf",

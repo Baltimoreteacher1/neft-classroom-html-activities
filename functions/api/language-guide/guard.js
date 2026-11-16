@@ -66,21 +66,30 @@ function writeCount(cache, url, n, ttlSeconds) {
  */
 export async function overCap(
   request,
-  { cache = globalThis.caches?.default, now = new Date() } = {},
+  {
+    cache = globalThis.caches?.default,
+    now = new Date(),
+    // Another endpoint (the Book Studio writing coach) passes its own scope and caps, so its counters never share
+    // the guide's budget.
+    scope = "lp-guide",
+    perIpCap = PER_IP_HOURLY_CAP,
+    dailyCap = GLOBAL_DAILY_CAP,
+  } = {},
 ) {
   if (!cache) return false;
   try {
     const iso = now.toISOString();
     const hour = iso.slice(0, 13); // YYYY-MM-DDTHH
     const day = iso.slice(0, 10);
-    const ip = await sha256Hex(`lp-guide:${clientIp(request)}`);
-    const ipUrl = `${COUNTER_ORIGIN}/ip/${ip.slice(0, 32)}/${hour}`;
-    const dayUrl = `${COUNTER_ORIGIN}/day/${day}`;
+    const ip = await sha256Hex(`${scope}:${clientIp(request)}`);
+    const base = scope === "lp-guide" ? COUNTER_ORIGIN : `${COUNTER_ORIGIN}/${scope}`;
+    const ipUrl = `${base}/ip/${ip.slice(0, 32)}/${hour}`;
+    const dayUrl = `${base}/day/${day}`;
     const [ipCount, dayCount] = await Promise.all([
       readCount(cache, ipUrl),
       readCount(cache, dayUrl),
     ]);
-    if (ipCount >= PER_IP_HOURLY_CAP || dayCount >= GLOBAL_DAILY_CAP) return true;
+    if (ipCount >= perIpCap || dayCount >= dailyCap) return true;
     const ms = now.getTime();
     const toHourEnd = (3_600_000 - (ms % 3_600_000)) / 1000;
     const toDayEnd = (86_400_000 - (ms % 86_400_000)) / 1000;

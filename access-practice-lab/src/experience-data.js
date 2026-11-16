@@ -45,6 +45,7 @@ export async function loadExperience(ctx) {
     reading,
     games: loadGames(),
     flashcards,
+    adventures: safeJson(storage.get(`${PREFIX}:adventures`), {}) || {},
     exhibition: exhibitionRaw?.v === 1 ? exhibitionRaw : { v: 1, bands: {} },
     records: allRecords(),
     practice: practiceDays(),

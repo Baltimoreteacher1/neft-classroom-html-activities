@@ -1,0 +1,227 @@
+/* Motion figures (shared/motion). Tokens come from engine/design/tokens.json via tokens.mjs; this file only sizes and
+   lays out the controls. Targets are 44px, text is 13px or larger, nothing shifts when the picture redraws. */
+.mc-figure {
+  /* the figure's palette, resolved from the site's design tokens (engine/design/tokens.json) with the same values as fallback */
+  --mc-navy: var(--ds-color-navy, #17324d);
+  --mc-ink: var(--ds-color-diagram-ink, #0d273d);
+  --mc-white: var(--ds-color-white, #ffffff);
+  --mc-teal-ink: var(--ds-color-teal-ink, #177b78);
+  --mc-muted: var(--ds-color-muted, #4a555e);
+  --mc-success: var(--ds-color-success, #0f7c4a);
+  --mc-error: var(--ds-color-error, #b3402a);
+  --mc-c0: var(--ds-color-teal, #1fa6a2);
+  --mc-c1: var(--ds-color-amber, #f2c15b);
+  --mc-c2: var(--ds-tint-navy-64, #6b7c8d);
+  --mc-c3: var(--ds-tint-success-64, #65ab8b);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  font-family: "Nunito", "Avenir Next", Calibri, system-ui, sans-serif;
+  color: #24323f;
+}
+.mc-stage {
+  min-width: 0;
+  /* reserve the picture's height before it is drawn so a redraw never moves the page */
+  min-height: var(--mc-min-height, 320px);
+}
+.mc-stage > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin-inline: auto;
+}
+.mc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mc-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  background: #17324d;
+  border: 2px solid #17324d;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.mc-btn[data-quiet] {
+  color: #17324d;
+  background: #ffffff;
+}
+.mc-btn:focus-visible {
+  outline: 3px solid #17324d;
+  outline-offset: 3px;
+}
+.mc-btn[aria-pressed="true"] {
+  background: #886c33;
+  border-color: #886c33;
+}
+.mc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (forced-colors: active) {
+  .mc-exponent text {
+    fill: CanvasText;
+  }
+  .mc-exponent rect,
+  .mc-exponent path {
+    stroke: CanvasText;
+  }
+  .mc-btn {
+    border-color: ButtonText;
+  }
+}
+.mc-controls {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.mc-field {
+  display: grid;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.mc-field input {
+  min-height: 44px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 16px;
+  color: #24323f;
+  background: #ffffff;
+  border: 2px solid #17324d;
+  border-radius: 8px;
+}
+.mc-field input[aria-invalid] {
+  border-style: dashed;
+  border-color: #b3402a;
+}
+.mc-msg {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 14px;
+  color: #b3402a;
+}
+/* Think it through (shared/motion/figures/think-ui.mjs) */
+.mc-think {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid #17324d;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #24323f;
+}
+.mc-think-title {
+  margin: 0;
+  font-size: 18px;
+  color: #17324d;
+}
+.mc-steps {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mc-step-head {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  text-align: start;
+  font: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  color: #17324d;
+  background: #f7f4ec;
+  border: 2px solid #17324d;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.mc-step.is-active .mc-step-head {
+  color: #ffffff;
+  background: #17324d;
+}
+.mc-step-head:focus-visible,
+.mc-field input:focus-visible,
+.mc-field textarea:focus-visible,
+.mc-choice input:focus-visible {
+  outline: 3px solid #17324d;
+  outline-offset: 3px;
+}
+.mc-stage-body {
+  display: grid;
+  gap: 10px;
+  padding: 10px 4px 4px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.mc-stage-body p {
+  margin: 0;
+}
+.mc-numbers {
+  font-weight: 700;
+}
+.mc-field textarea {
+  min-height: 80px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 16px;
+  color: #24323f;
+  background: #ffffff;
+  border: 2px solid #17324d;
+  border-radius: 8px;
+}
+.mc-choices {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.mc-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 2px solid #17324d;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.mc-choice input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.mc-fb {
+  margin: 0;
+  min-height: 1.2em;
+  padding: 0;
+}
+.mc-fb-ok,
+.mc-fb-miss {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.mc-fb-ok {
+  border: 2px solid #0f7c4a;
+}
+.mc-fb-miss {
+  border: 2px dashed #b3402a;
+}

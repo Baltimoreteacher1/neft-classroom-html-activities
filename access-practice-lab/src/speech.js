@@ -35,7 +35,21 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
   });
 }
 
-const QUALITY = /natural|neural|google|enhanced|premium|samantha|aria|jenny/i;
+// A short, curated allowlist: voices that read clearly. Novelty voices (Zarvox, Bubbles...) stay out of every picker.
+const QUALITY =
+  /natural|neural|google|enhanced|premium|samantha|aria|jenny|daniel|karen|moira|tessa|fiona|allison|ava|susan|zoe|serena|oliver|zira|paulina|monica|marisol|angelica|jorge|diego/i;
+
+// The learner's saved choice, set by src/voice.js on every render. speak() falls back to it whenever a caller
+// does not name a voice (or a speed) itself, so one choice reaches every read-aloud button on the site.
+let defaults = { en: "", es: "", rate: 0 };
+export function setVoiceDefaults({ en = "", es = "", rate = 0 } = {}) {
+  defaults = { en: String(en || ""), es: String(es || ""), rate: Number(rate) || 0 };
+}
+export const getVoiceDefaults = () => ({ ...defaults });
+const defaultVoiceFor = (lang) => (String(lang).toLowerCase().startsWith("es") ? defaults.es : defaults.en);
+/** A voice a caller named wins; the bare "default" and "" fall back to the learner's saved choice. */
+const chosenVoice = (voiceURI, lang) =>
+  voiceURI && voiceURI !== "default" ? voiceURI : defaultVoiceFor(lang) || voiceURI;
 
 /**
  * Return all available voices, optionally filtered by language prefix.
@@ -128,7 +142,7 @@ export function speak(
   segments,
   {
     lang = "en-US",
-    rate = 0.9,
+    rate = defaults.rate || 0.9,
     pitch = 1.0,
     voiceURI = "",
     persona = "narrator",
@@ -143,7 +157,7 @@ export function speak(
   if (!canSpeak() || !list.length) return Promise.resolve(false);
   const token = {};
   current = token;
-  const voice = pickVoice(lang, { voiceURI, persona });
+  const voice = pickVoice(lang, { voiceURI: chosenVoice(voiceURI, lang), persona });
 
   return new Promise((resolve) => {
     let i = 0;
@@ -205,7 +219,7 @@ export function speak(
  */
 export function speakDialogue(
   lines,
-  { rate = 0.9, lang = "en-US", voiceURI = "", onLineChange } = {},
+  { rate = defaults.rate || 0.9, lang = "en-US", voiceURI = "", onLineChange } = {},
 ) {
   stop();
   const list = (Array.isArray(lines) ? lines : [lines])
@@ -248,6 +262,7 @@ export function speakDialogue(
       if (current !== token) return finish(false);
       if (i >= parsed.length) return finish(true);
       const entry = parsed[i];
+      // Dialogue keeps a different voice per speaker (so a listener can tell who is talking); only an explicit voice overrides that.
       const voice = pickVoice(lang, { voiceURI, persona: entry.persona });
       const u = new SpeechSynthesisUtterance(entry.text);
       u.lang = lang;
@@ -335,7 +350,7 @@ export const isSpeaking = () => current !== null;
  * Spanish (es-US first, then es-MX, es-419, es-ES) for vocabulary previews. Resolves "no-voice" without speaking
  * when the device has voices but none is Spanish, so the caller can say so instead of mispronouncing it.
  */
-export function speakSpanish(text, { rate = 0.9 } = {}) {
+export function speakSpanish(text, { rate = defaults.rate || 0.9 } = {}) {
   if (!voices.length) refreshVoices();
   if (spanishVoiceStatus() === "none") return Promise.resolve("no-voice");
   return speak(text, { lang: "es-US", rate });

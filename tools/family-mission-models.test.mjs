@@ -411,6 +411,13 @@ test("index: families, unknown family, and describeConfig", () => {
     "data",
     "geometry",
     "exponents",
+    "kcf",
+    "linear-pricing",
+    "decimal",
+    "division",
+    "numtheory",
+    "pattern",
+    "polygon",
   ];
   assert.deepEqual(Object.keys(FAMILIES).sort(), [...all].sort());
   assert.deepEqual(

@@ -16,6 +16,7 @@ export const ROUTES = {
   guide: "/start/guide",
   lesson: "/start/lesson",
   activities: "/start/activities",
+  quickStart: "/start/quick-start",
   together: "/practice-together",
   siteGuide: "/site-guide",
 };

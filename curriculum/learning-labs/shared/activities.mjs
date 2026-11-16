@@ -22,7 +22,7 @@ import {
   VisualLogicRewind,
 } from './nextgen.mjs';
 import { renderSnapshotsCard } from './scratchpad.mjs';
-import { mountUnit2 } from './unit2.mjs';
+import { unitMission } from './unit-missions.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
 /** Taught-unit explanations use lesson fields verbatim; no example numbers are introduced here. */
@@ -249,7 +249,8 @@ export function investigate(ctx, host) {
     lang: () => state.lang,
   });
   if (bridge) bridgeCtl = mountBridge(host.querySelector('.studio-stage'), { bridge, getValues: () => invModel.values, apply: (v) => invModel.set(full(v)), record: (e) => recorder.add(e), lang: () => state.lang });
-  if (lab.unit === 2) { const slot = document.createElement('div'); host.querySelector('.studio-stage').append(slot); mountUnit2(slot, lab, state, save); }
+  const mission = unitMission(lab);
+  if (mission) { const slot = document.createElement('div'); host.querySelector('.studio-stage').append(slot); mission.mount(slot, lab, state, save); }
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);
@@ -267,6 +268,26 @@ export function investigate(ctx, host) {
   // A tool appears only where its mathematics belongs: the net/3D inspector on solid-figure labs; the partner station
   // (a collaboration tool, not lab mathematics) tucked into one closed disclosure instead of the student's main path.
   if (lab.model.kind === 'solid') mountSpatialInspector(host, ctx, 'spatial-inv');
+  if (lab.id === 'mixture-matchup') {
+    import('../mixture-matchup/delivery-network.mjs')
+      .then(({ mountDeliveryNetwork }) => { if (host.isConnected) mountDeliveryNetwork(host, ctx); })
+      .catch(() => { /* The existing investigation remains usable in self-contained packages. */ });
+  }
+  if (lab.id === 'expression-remix') {
+    import('../expression-remix/expression-factory.mjs')
+      .then(({ mountExpressionFactory }) => { if (host.isConnected) mountExpressionFactory(host, ctx); })
+      .catch(() => { /* The existing investigation remains usable in self-contained packages. */ });
+  }
+  if (lab.id === 'packaging-workshop') {
+    import('../packaging-workshop/district-design.mjs')
+      .then(({ mountDistrictDesign }) => { if (host.isConnected) mountDistrictDesign(host, ctx); })
+      .catch(() => { /* The original lab remains usable if optional assets are unavailable. */ });
+  }
+  if (lab.id === 'hundred-square-studio') {
+    import('../hundred-square-studio/power-grid.mjs')
+      .then(({ mountPowerGrid }) => { if (host.isConnected) mountPowerGrid(host, ctx); })
+      .catch(() => { /* The original lab remains usable if optional assets are unavailable. */ });
+  }
   const partner = document.createElement('details');
   partner.className = 'studio-how studio-partner';
   partner.innerHTML = '<summary>Partner and small-group tools</summary>';

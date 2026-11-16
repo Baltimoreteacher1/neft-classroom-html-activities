@@ -21,6 +21,7 @@ const SOURCE = {
   writing: ["Writing Studio", "Estudio de escritura"],
   world: ["Language World", "Mundo del lenguaje"],
   warmup: ["Daily warm-up", "Calentamiento diario"],
+  adventure: ["Adventure Worlds", "Mundos de aventura"],
 };
 const STAGE = { 1: ["seed", "semilla"], 2: ["sprout", "brote"], 3: ["bloom", "flor"] };
 const day = (t) =>

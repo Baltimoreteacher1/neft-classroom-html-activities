@@ -11,6 +11,7 @@ export const TEACHER_NAV = [
   { id: "activities", label: "Activity Guide", route: ROUTES.activities, icon: "library" },
   { id: "lesson", label: "Lesson", route: ROUTES.lesson, icon: "conversation" },
   { id: "guide", label: "Quick Guide", route: ROUTES.guide, icon: "print" },
+  { id: "quickstart", label: "Quick Start", route: ROUTES.quickStart, icon: "list" },
 ];
 
 const BASE = "/access-practice-lab";

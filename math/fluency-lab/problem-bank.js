@@ -53,14 +53,16 @@ function decimalDivisionSteps(dividend, divisor) {
   const shift = decimalPlaces(divisor);
   if (!shift) {
     return [
-      `The divisor ${divisor} is a whole number. Keep both numbers as they are. Put the decimal point in the answer straight above the one in ${dividend}.${decimalPlaces(dividend) ? "" : ` Write ${dividend} as ${dividend}.0 to see it.`}`,
-      "Divide one place at a time. If a remainder is left, bring down a zero.",
+      `Set up ${dividend} ÷ ${divisor}. Put the decimal point in the quotient straight above the point in ${dividend}.`,
+      "Divide one place at a time. Bring down the next digit; add a zero if you need to keep dividing.",
     ];
   }
   const factor = 10 ** shift;
+  const shiftedDividend = decimalText(Number(dividend) * factor, 4);
+  const shiftedDivisor = decimalText(Number(divisor) * factor, 4);
   return [
-    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply ${dividend} and ${divisor} by ${factor} to make the divisor whole. Both change the same way, so the answer stays the same.`,
-    `Now divide as whole numbers: ${decimalText(Number(dividend) * factor, 4)} ÷ ${decimalText(Number(divisor) * factor, 4)}.`,
+    `Move both decimal points ${shift} place${shift === 1 ? "" : "s"} right so the divisor is whole: ${dividend} ÷ ${divisor} becomes ${shiftedDividend} ÷ ${shiftedDivisor}.`,
+    `Divide: ${shiftedDividend} ÷ ${shiftedDivisor}. The quotient stays the same because both numbers moved equally.`,
   ];
 }
 
@@ -714,6 +716,12 @@ const generators = {
             ? "Multiply the tops. Multiply the bottoms. Then simplify."
             : DIVIDE_FRACTIONS_HINT,
       explanation: `${n1}/${d1} ${symbol} ${second} = ${answer}.`,
+      model: op === "mul"
+        ? { type: "chain", prompt: "Stack the fractions and multiply straight across.", rows: [
+          { text: `Multiply the numerators: ${n1} × ${n2} =`, expect: n1 * n2 },
+          { text: `Multiply the denominators: ${d1} × ${d2} =`, expect: d1 * d2 },
+        ] }
+        : undefined,
     });
   },
 
@@ -785,7 +793,20 @@ const generators = {
       explanation: `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`,
       steps: op === "div" ? [...decimalDivisionSteps(shownA, shownB), `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`] : undefined,
       model:
-        op === "add" || op === "sub"
+        op === "div" && !Number.isInteger(b)
+          ? (() => {
+              const shift = decimalPlaces(shownB);
+              const factor = 10 ** shift;
+              return {
+                type: "chain",
+                prompt: "Move both decimal points until the divisor is whole. Type each new number.",
+                rows: [
+                  { text: `Dividend after moving ${shift} place${shift === 1 ? "" : "s"} right:`, expect: decimalText(a * factor, 4) },
+                  { text: `Divisor after moving ${shift} place${shift === 1 ? "" : "s"} right:`, expect: decimalText(b * factor, 4) },
+                ],
+              };
+            })()
+          : op === "add" || op === "sub"
           ? { type: "vertical", op: op === "add" ? "+" : "-", terms: [shownA, shownB] }
           : op === "mul"
             ? {

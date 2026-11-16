@@ -47,6 +47,7 @@ import { cardHref, continueTarget, pickBand, recentRoom, skillPickHTML, startHTM
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
 import { latestModuleResume } from "../home-resume.js";
 import { sectionTilesHTML } from "../sitemap-ui.js";
+import { onLanguagePage } from "../brand.js";
 
 const reviewHref = (item, plan, band, ctx) => {
   const row = plan.find((r) => r.review?.key === item.key);
@@ -263,6 +264,16 @@ export async function render(ctx) {
   return {
     title: "",
     html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, target, missions, resume, dueCount: due.length })}
+      ${onLanguagePage() ? html`<details class="language-intro">
+        <summary><span class="language-intro-play" aria-hidden="true">▶</span><span><strong>${I.T("Prepare for WIDA ACCESS", "Prepárate para WIDA ACCESS")}</strong><span>${I.T("See practice for grades 3–5 and 6–8 in 30 seconds", "Mira la práctica para los grados 3–5 y 6–8 en 30 segundos")}</span></span></summary>
+        <div class="language-intro-body">
+          <video controls preload="none" playsinline width="1920" height="1080" poster="/assets/language-intro/poster.jpg?v=wida-20261115" aria-label="${I.S("WIDA ACCESS practice for grades 3–5 and 6–8", "Práctica de WIDA ACCESS para los grados 3–5 y 6–8")}">
+            <source src="/assets/language-intro/language-page-intro.mp4?v=wida-20261115" type="video/mp4" />
+            ${I.T("Your browser cannot play this video.", "Tu navegador no puede reproducir este video.")}
+          </video>
+          <details class="language-intro-transcript"><summary>${I.T("Read the video text", "Leer el texto del video")}</summary><div lang="en"><p>Prepare for WIDA ACCESS. Practice English. Grow your confidence. Grades 3–5 and 6–8: listen, read, speak, write.</p><p>Choose your grade band. Grades 3–5: shorter texts and picture support. Grades 6–8: longer texts, evidence and reasons.</p><p>Four language domains. Hear it. Read it. Say it. Write it. Practice the language tasks students meet on WIDA ACCESS.</p><p>Try real practice. Choose a skill and keep moving. Choose a grade band and practice each language domain at your pace.</p><p>Build each response, from a word to a whole idea. Grades 3–5: describe and sequence. Grades 6–8: explain with evidence. Both bands: listen, read, speak, write.</p><p>Practice for ACCESS, one step at a time. The Language Page: thelanguagepage.com.</p></div><p>${I.T("Music plays throughout; there is no spoken narration.", "Hay música durante todo el video; no hay narración hablada.")}</p></details>
+        </div>
+      </details>` : ""}
       <div class="cls-prompt-host" id="labJoinPrompt" data-nsr-ignore></div>
       ${
         familyMessage

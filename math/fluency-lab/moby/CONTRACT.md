@@ -34,7 +34,7 @@ Extend and integrate; never duplicate or replace a working engine. Everything ne
   wires the import. Follow `i18n-es-lab4-adaptive.js` for shape.
 - Design: use existing CSS vars where present; new CSS in your own `moby/<area>.css`, scoped under a unique class prefix.
   NO violet/purple/magenta/indigo (hue 255-335; `node tools/validate-no-purple.mjs`). AA contrast, 44px targets, visible
-  `:focus-visible`, `prefers-reduced-motion` alternatives, keyboard operable, no emoji as art (original inline SVG),
+  `:focus-visible`, `prefers-reduced-motion` alternatives, keyboard operable, original inline SVG art (emoji are allowed),
   no horizontal scroll at 375px. Grade look: Grades 1-2 big/tactile/illustrated; 3-4 interactive models; 5-6 diagrams and
   ratios; 7-8 mature, restrained, algebraic. Read `grade-experience.js` for the existing per-grade architecture
   (`html[data-grade-experience="N"]`) and reuse it. Another session is redesigning visuals in `~/wt-fl5` (`fl5/`): do not

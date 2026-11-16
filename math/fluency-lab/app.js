@@ -10,7 +10,7 @@ import {
 } from "./problem-bank.js";
 import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
 import { paintActions, paintFeedback } from "./feedback-panel.js";
-import { itemSignature } from "./mastery-model.js";
+import { itemSignature, masterySummary, recordMasteryEvent, recordMasteryReflection } from "./mastery-model.js";
 import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, markExampleViewed, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
 import { adaptiveItem, builtAnswerItem } from "./adaptive-item.js"; // fl4:adaptive
@@ -466,6 +466,30 @@ function recordFor(skill) {
   };
 }
 
+function renderMasteryReflection(eventId, skill, strategy) {
+  const record = state.tutor.records[tutorSkillKey(skill)];
+  if (!record || !els.feedbackCopy) return;
+  const fieldset = document.createElement("fieldset");
+  fieldset.className = "mastery-reflection";
+  fieldset.innerHTML = `<legend>${t("Did that strategy help?")}</legend>
+    <label><input type="radio" name="mastery-help-${escapeHtml(eventId)}" value="yes"> ${t("Yes")}</label>
+    <label><input type="radio" name="mastery-help-${escapeHtml(eventId)}" value="no"> ${t("Not sure yet")}</label>
+    <button type="button" class="outline-action" data-save-mastery disabled>${t("Save reflection")}</button>
+    <span class="sr-only" data-reflection-status aria-live="polite"></span>`;
+  const button = fieldset.querySelector("[data-save-mastery]");
+  fieldset.addEventListener("change", () => {
+    button.disabled = !fieldset.querySelector('input[type="radio"]:checked');
+  });
+  button.addEventListener("click", () => {
+    const helped = fieldset.querySelector('input[type="radio"]:checked')?.value === "yes";
+    if (!recordMasteryReflection(record, eventId, strategy, helped)) return;
+    saveProgress();
+    button.remove();
+    fieldset.querySelector("[data-reflection-status]").textContent = t("Reflection saved on this device.");
+  });
+  els.feedbackCopy.append(fieldset);
+}
+
 function accuracy(record) {
   return record.attempts ? Math.round((record.correct / record.attempts) * 100) : 0;
 }
@@ -847,16 +871,73 @@ function renderModeTabs(mixed = false) {
   renderStageUi();
 }
 
-// Learn it: one sentence, one interactive model, and "Watch me solve it" steps revealed one tap at a time.
+function learnRoutine(skill, example) {
+  const question = String(example.question || "");
+  if (skill.generator === "fact" && skill.grade >= 4 && skill.config?.op === "div") {
+    return getLang() === "es"
+      ? ["Divide: ¿cuántas veces cabe el divisor?", "Multiplica: divisor × dígito del cociente.", "Resta el producto.", "Baja el siguiente dígito. Repite."]
+      : ["Divide: how many times does the divisor fit?", "Multiply: divisor × quotient digit.", "Subtract the product.", "Bring down the next digit. Repeat."];
+  }
+  const fractionProduct = /[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(question);
+  if (skill.id === "fraction-mul" || fractionProduct) {
+    return getLang() === "es"
+      ? ["Escribe las fracciones una sobre otra.", "Multiplica directo: arriba por arriba y abajo por abajo.", "Simplifica la fracción si puedes."]
+      : ["Stack the fractions vertically.", "Multiply straight across: top × top and bottom × bottom.", "Simplify the fraction if you can."];
+  }
+  const decimalDivision = question.match(/([\d.]+) ÷ ([\d.]+)/);
+  if (decimalDivision) {
+    const [, dividend, divisor] = decimalDivision;
+    const places = (divisor.split(".")[1] || "").length;
+    if (places) {
+      const factor = 10 ** places;
+      const shiftedDividend = String(Number(dividend) * factor);
+      const shiftedDivisor = String(Number(divisor) * factor);
+      return getLang() === "es"
+        ? [`Mueve ambos puntos ${places === 1 ? "un lugar" : `${places} lugares`} a la derecha: ${dividend} ÷ ${divisor} → ${shiftedDividend} ÷ ${shiftedDivisor}.`, "Divide los números enteros.", "Comprueba: cociente × divisor original = dividendo original."]
+        : [`Move both decimal points ${places === 1 ? "one place" : `${places} places`} right: ${dividend} ÷ ${divisor} → ${shiftedDividend} ÷ ${shiftedDivisor}.`, "Divide the whole numbers.", "Check: quotient × original divisor = original dividend."];
+    }
+    return getLang() === "es"
+      ? ["Divide como siempre.", "Coloca el punto del cociente justo arriba del punto del dividendo.", "Comprueba multiplicando el cociente por el divisor."]
+      : ["Divide as usual.", "Put the quotient's decimal point straight above the dividend's decimal point.", "Check by multiplying the quotient by the divisor."];
+  }
+  return (skill.learn?.steps || [skill.learn?.rule]).filter(Boolean).slice(0, 3);
+}
+
+function learnHeadline(skill, example) {
+  const question = String(example.question || "");
+  if (/[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(question))
+    return getLang() === "es"
+      ? "Multiplica los numeradores. Multiplica los denominadores. Simplifica si puedes."
+      : "Multiply the top numbers. Multiply the bottom numbers. Simplify if you can.";
+  if (skill.id === "decimal-ops" && / ÷ [\d]*\.[\d]+ = \?/.test(question))
+    return getLang() === "es"
+      ? "Mueve ambos puntos decimales el mismo número de lugares. Luego divide."
+      : "Move both decimal points the same number of places. Then divide.";
+  if (skill.generator === "fact" && skill.grade >= 4 && skill.config?.op === "div")
+    return getLang() === "es"
+      ? "Repite estos cuatro pasos con cada dígito."
+      : "Repeat these four steps for each digit.";
+  return t(skill.learn.rule);
+}
+
+// Learn it: a short process, a matching visual and "Watch me solve it" steps revealed one tap at a time.
 function renderLearn() {
   const skill = state.skill;
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
   const draws = Array.from({ length: 12 }, () => generateProblem(skill, rng));
   // A worked example about zero ("10 + 0 = 10") shows nothing; prefer a draw with real numbers when there is one.
   const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
-  const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const usefulDraws = draws.filter((item) => !trivial(item));
+  const pool = usefulDraws.length ? usefulDraws : draws;
+  const decimalDivision = skill.id === "decimal-ops" ? pool.find((item) => / ÷ [\d]*\.[\d]+ = \?/.test(item.question)) : null;
+  const example = decimalDivision || pool.reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const routine = learnRoutine(skill, example);
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || renderInlineProblemModel(skill, example) || fractionPicture(example.question, { worked: true });
+  const modelPicture = interactivePicture({ ...example.model, worked: true });
+  const fractionProduct = /[−-]?\d+\/\d+\s×\s*\(?[−-]?\d+\/\d+/.test(example.question);
+  const picture = fractionProduct
+    ? `${fractionPicture(example.question, { worked: true })}${modelPicture}`
+    : modelPicture || trailPicture(example.model) || renderInlineProblemModel(skill, example) || fractionPicture(example.question, { worked: true });
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
   // Understand It keeps one worked example in view. The interactive model lives in
@@ -869,10 +950,14 @@ function renderLearn() {
     : "";
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
-      <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
+      <h3 class="tr-idea">${highlightVocab(escapeHtml(learnHeadline(skill, example)))}</h3>
       <div class="tr-lesson">
+        <section class="learn-routine" aria-label="${escapeHtml(getLang() === "es" ? "Una forma sencilla de resolverlo" : "A simple way to solve it" )}">
+          <p class="learn-routine-title">${getLang() === "es" ? "Una forma sencilla de resolverlo" : "A simple way to solve it"}</p>
+          <ol>${routine.map((line) => `<li>${formatVerticalFractions(mathText(line))}</li>`).join("")}</ol>
+        </section>
         <div class="tr-example">
-          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
+          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(formatVerticalFractions(mathText(example.question)))}</p>
           ${picture}
         </div>
         <div class="tr-guide">
@@ -7697,6 +7782,19 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         // Practice is untimed. This is a descriptive first-response sample, never a speed score.
         calm: true,
       });
+      const event = recordMasteryEvent(state.tutor.records[tutorSkillKey(state.item.skill)], {
+        eventId: `${session.id}:${session.answered}:${state.itemAttempts}`,
+        sessionId: session.id,
+        at: Date.now(),
+        correct: independent ? firstCorrect : correct,
+        independent,
+        hintsUsed: Number(Boolean(state.initialSupport)) + Number(Boolean(state.hintBeforeFirst)),
+        strategy: strategyTags[0],
+        explained: strategyTags.length > 0,
+        responseMs: state.firstResponseMs,
+      });
+      if (event?.correct && event.independent && event.strategy)
+        renderMasteryReflection(event.eventId, state.item.skill, event.strategy);
     }
     if (session.unitId && !isRevision) {
       const tally = (session.unitResults[tutorSkillKey(state.item.skill)] ||= { right: 0, total: 0 }); // fl-teacher:unit-check
@@ -8495,7 +8593,13 @@ function renderSkillFluencyMetrics(skill) {
   const paceCopy = Number.isFinite(pace.medianResponseMs)
     ? t("Typical calm thinking time: {time} seconds · {trend}", { time: Math.max(1, Math.round(pace.medianResponseMs / 1000)), trend: trendCopy })
     : t("No calm response samples yet");
-  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p></div>`;
+  const mastery = masterySummary(record?.masteryEvents || []);
+  const threshold = (met) => t(met ? "Evidence threshold reached" : "Building evidence");
+  const threePart = record?.masteryEvents?.length ? `<p class="three-part-evidence"><strong>${t("Three-part fluency evidence")}</strong><br>
+    ${t("Accuracy")}: ${threshold(mastery.dimensions.accuracy)} (${mastery.evidence.independentSessions} ${t("independent sessions")}) ·
+    ${t("Strategy flexibility")}: ${threshold(mastery.dimensions.flexibility)} (${mastery.evidence.explainedStrategies} ${t("strategies named")}) ·
+    ${t("Helpful strategies")}: ${threshold(mastery.dimensions.efficiency)} (${mastery.evidence.helpfulStrategySessions} ${t("sessions where a strategy helped")}; ${t(mastery.privateMetrics.hintsTrend === "increasing" ? "hint use is rising" : "hint use is not rising")})</p>` : "";
+  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p>${threePart}</div>`;
 }
 
 function renderPath() {

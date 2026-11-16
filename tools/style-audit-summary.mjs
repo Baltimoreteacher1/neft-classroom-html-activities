@@ -63,7 +63,6 @@ function summarise(data, state, viewport) {
     smallTargetLessons: lessonsWith((s) => s.smallTargetCount > 0),
     smallTargets: sum(col((s) => s.smallTargetCount)),
     smallTextElements: sum(col((s) => s.smallTextCount)),
-    emojiControls: sum(col((s) => s.emojiControlCount)),
     collisionLessons: lessonsWith((s) => s.collisions.length > 0),
     overflowLessons: lessonsWith((s) => s.overflowX > 0),
     leakedRootVars: lessonsWith((s) => s.rootBackgroundVarLeak),
@@ -101,7 +100,6 @@ const rowsDef = [
   ["Pages with a target under 44px", "smallTargetLessons"],
   ["Targets under 44px (total)", "smallTargets"],
   ["Text under 12px (elements, total)", "smallTextElements"],
-  ["Emoji-led controls (total)", "emojiControls"],
   ["Pages where two fixed controls overlap", "collisionLessons"],
   ["Pages with horizontal overflow", "overflowLessons"],
 ];

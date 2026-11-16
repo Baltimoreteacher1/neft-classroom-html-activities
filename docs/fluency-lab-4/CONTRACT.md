@@ -12,7 +12,7 @@ parallel, each in its own worktree and branch, and are merged by the integrator.
    Evidence and review = `tutor-engine.js`. Spanish = `t()` from `i18n.js`. Do not create a second progress system.
 3. **Preserve** existing routes, content, saves (`sanitizeTutor` stays backward compatible), family features and tests.
 4. **Palette and tokens:** `ds4.css` variables only (navy/teal/blue/warm neutral, 8px spacing). No violet, purple or
-   indigo (`npm run validate:no-purple`). No emoji in new art or UI. Fraunces headings, Lexend body.
+   indigo (`npm run validate:no-purple`). Emoji are allowed. Fraunces headings, Lexend body.
 5. **Accessibility (WCAG AA):** keyboard operable, 44px targets, visible focus, `prefers-reduced-motion` respected,
    screen-reader names/descriptions, never colour alone. Interactive graphics need a keyboard alternative.
 6. **Spanish:** every learner-facing `t("literal")` string needs a Spanish entry in YOUR table

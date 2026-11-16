@@ -141,6 +141,14 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     const supportBox = el("div");
     const queueBox = el("div");
     const socialBox = el("div");
+    // Book Studio writing coach (AI): on for the class unless the teacher turns it off here.
+    const coachToggle = el("input", { type: "checkbox", id: "ctAiCoach", "data-nsr-ignore": "", checked: true });
+    coachToggle.onchange = async () => {
+      const res = await api.settings({ aiCoach: coachToggle.checked });
+      live.textContent = res.ok ? (coachToggle.checked ? S("The writing coach is available to this class.", "El asesor de escritura está disponible para esta clase.") : S("The writing coach is turned off for this class.", "El asesor de escritura está apagado para esta clase.")) : errorText(S, res.error);
+      if (!res.ok) coachToggle.checked = !coachToggle.checked;
+    };
+    const booksBox = el("div");
     const header = el(
       "div",
       { class: "cls-card" },
@@ -168,9 +176,13 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       el("section", { class: "cls-card" }, el("h4", {}, S("Scoring queue", "Cola de revisión")), queueBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Family reports", "Informes para las familias")), familyReportControls(S, () => roster?.students || [])),
       el("section", { class: "cls-card" }, el("h4", {}, S("Assignments", "Tareas")), assignBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Book Studio writing coach (AI)", "Asesor de escritura de Book Studio (IA)")),
+        el("p", { class: "fine" }, S("When on, a student can choose to send the words of one page or sentence to this site's coach, which only asks questions and suggests words. It never writes for them and nothing is kept.", "Si está activado, un estudiante puede enviar las palabras de una página u oración al asesor de este sitio, que solo hace preguntas y sugiere palabras. Nunca escribe por el estudiante y no se guarda nada.")),
+        el("label", { for: "ctAiCoach", class: "row-actions" }, coachToggle, S("Allow the writing coach in Book Studio", "Permitir el asesor de escritura en Book Studio"))),
       el("section", { class: "cls-card" }, el("h4", {}, S("Live class quiz", "Cuestionario de clase en vivo")), quizBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Recordings and voice notes", "Grabaciones y notas de voz")), notesBox),
       socialBox,
+      booksBox,
       el("section", { class: "cls-card" }, el("button", { type: "button", class: "btn ghost", onclick: async () => {
         const typed = prompt(S("Type the class code to delete this class and everything in it.", "Escribe el código de clase para eliminar esta clase y todo lo que contiene."));
         if (typed && (await api.remove(typed)).ok) { store.write(store.read().filter((c) => c.code !== current.code)); entry(); }
@@ -186,6 +198,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         return;
       }
       roster = res;
+      coachToggle.checked = res.settings?.aiCoach !== false;
       cards.update(res.students);
       const nextHeat = JSON.stringify(res.students.map((s) => [s.studentId, s.alias, s.docs?.language?.summary?.byUse ?? null]));
       if (nextHeat !== heatSig) {
@@ -241,6 +254,10 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       const social = m.mountSocialPanel(socialBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
       // The social panel polls on its own timer; stop it with the panel's other timers.
       if (social?.unmount) timers.push({ unmount: social.unmount });
+    });
+    import("./book-collab-panel.js").then((m) => {
+      const books = m.mountBookCollabPanel(booksBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
+      if (books?.unmount) timers.push({ unmount: books.unmount });
     });
   }
 

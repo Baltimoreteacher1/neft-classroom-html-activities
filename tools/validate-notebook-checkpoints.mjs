@@ -71,9 +71,6 @@ function check(ok, msg) {
   }
 }
 
-const EMOJI_OR_ICON =
-  /[\p{Extended_Pictographic}\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
-
 /* ── detector, used by both the self-test and the sweep ──────────────────── */
 
 /** @returns {{errors: string[], authored: number, hasCopyPanel: boolean}} */
@@ -151,10 +148,6 @@ function inspect(config) {
             errors.push(`box 1: term "${it.term}" must not end with a period`);
             hasCopyPanel = false;
           }
-          if (EMOJI_OR_ICON.test(it.term) || EMOJI_OR_ICON.test(it.meaning)) {
-            errors.push(`box 1: item "${it.term}" contains emoji or icon`);
-            hasCopyPanel = false;
-          }
           const wordCount = it.meaning.trim().split(/\s+/).length;
           if (wordCount >= 12) {
             errors.push(
@@ -165,29 +158,18 @@ function inspect(config) {
         }
       }
     } else if (cp.box === 2) {
-      const { rule, meaning, example } = cp.copyPanel;
+      const { rule, example } = cp.copyPanel;
       if (!rule || !String(rule).trim()) {
         errors.push("box 2: copyPanel missing rule line");
-        hasCopyPanel = false;
-      } else if (EMOJI_OR_ICON.test(rule)) {
-        errors.push("box 2: rule contains emoji or icon");
         hasCopyPanel = false;
       }
       // OPTIONAL. A formula, an equation, a procedure step or a pattern is a
       // complete note on its own — "V = length × width × height" needs no
       // second line, and requiring one is how a lesson gets given prose it
       // never wrote. Only the anchor itself is mandatory.
-      if (meaning && EMOJI_OR_ICON.test(meaning)) {
-        errors.push("box 2: meaning contains emoji or icon");
-        hasCopyPanel = false;
-      }
       if (example) {
         if (example.includes("\n")) {
           errors.push("box 2: example must be a single line");
-          hasCopyPanel = false;
-        }
-        if (EMOJI_OR_ICON.test(example)) {
-          errors.push("box 2: example contains emoji or icon");
           hasCopyPanel = false;
         }
       }
@@ -293,25 +275,6 @@ const cases = [
     },
     /must be under 12/,
     "box 1 meaning with 12 or more words",
-  ],
-  [
-    {
-      ...base,
-      notebook: {
-        checkpoints: [
-          cp(1, "launch", {
-            items: [
-              { term: "📓 book", meaning: "meaning" },
-              { term: "word2", meaning: "short" },
-              { term: "word3", meaning: "short" },
-            ],
-          }),
-          cp(2, "explore", validBox2),
-        ],
-      },
-    },
-    /contains emoji or icon/,
-    "box 1 item containing emoji",
   ],
   [
     {

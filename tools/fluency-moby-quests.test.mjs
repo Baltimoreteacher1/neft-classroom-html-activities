@@ -1249,7 +1249,7 @@ check("unlocks lists what is earned and by what, without paying for speed or vol
   assert.equal(A.earnedSet(null).size, 0);
 });
 
-check("avatarSVG draws original, valid, grade-appropriate art with no emoji and no purple", () => {
+check("avatarSVG draws original, valid, grade-appropriate art with no purple", () => {
   const base = A.defaultAvatar(4);
   const outfits = Object.keys({
     tee: 1,
@@ -1301,13 +1301,11 @@ check("avatarSVG draws original, valid, grade-appropriate art with no emoji and 
             : (r - g) / d + 4;
     return { h: h * 60, s };
   };
-  const emoji = /[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
   for (const sample of samples) {
     const svg = A.avatarSVG(sample, 88);
     assert.match(svg, /^<svg [^>]*viewBox="0 0 120 120"[^>]*width="88" height="88"[^>]*role="img"/);
     assert.match(svg, /aria-label="Your avatar: /);
     assert.ok(svg.endsWith("</svg>"));
-    assert.doesNotMatch(svg, emoji);
     assert.doesNotMatch(svg, /<script|<image|<foreignObject|href=|on\w+=/i);
     const stack = [];
     for (const [, close, name, self] of svg.matchAll(/<(\/?)([a-zA-Z]+)\b[^>]*?(\/?)>/g)) {

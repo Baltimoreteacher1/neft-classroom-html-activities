@@ -9,6 +9,7 @@ import { loadReadingState } from "../reading-state.js";
 import { loadLedger } from "./ledger.js";
 import { loadStudio } from "./studio.js";
 import { loadGames } from "../games/state.js";
+import { cleanExpedition, expeditionSummary } from "../games/language-expeditions-stamps.js"; // teacher: expedition stamps
 
 export const SHARE_PREFIX = "ACCESST1.";
 /** Saved-level key in a share code: grades 6-8 are unprefixed (older codes), every other band is `g<band>:`. */
@@ -26,7 +27,7 @@ const cleanLog = (log) =>
     .map((r) => ({ t: r.t.slice(0, 30), title: r.title.slice(0, 80), minutes: Number.isInteger(r.minutes) && r.minutes >= 1 && r.minutes <= 240 ? r.minutes : null, note: String(r.note || "").slice(0, 140) }));
 
 /** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean,readingListening?:boolean}}} o */
-export function buildShare({ alias = "", band = "6-8", include = {}, postcards = [] } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords()) {
+export function buildShare({ alias = "", band = "6-8", include = {}, postcards = [] } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords(), games = loadGames()) {
   band = codeBand(band);
   const inc = { writing: true, speaking: true, missions: true, detective: true, readingListening: true, games: true, ...include };
   const keep = (obj, on) => (on ? obj : {});
@@ -49,7 +50,9 @@ export function buildShare({ alias = "", band = "6-8", include = {}, postcards =
     records: practice,
     readingLog: inc.readingListening ? cleanLog(loadReadingState().log) : [],
     postcards: postcards.slice(0, 6),
-    games: inc.games ? cleanGameSummary(loadGames(), band) : { history: [] },
+    games: inc.games ? cleanGameSummary(games, band) : { history: [] },
+    // teacher: where the learner practiced in Language Expeditions (stamps and counts only, never answers).
+    ...(inc.games && expeditionSummary(games, band) ? { expeditions: expeditionSummary(games, band) } : {}),
     studio: { v: 1, writing: keep(studio.writing, inc.writing), speaking, missions: keep(studio.missions, inc.missions), detective: keep(studio.detective, inc.detective), portfolio: studio.portfolio },
   };
 }
@@ -123,6 +126,7 @@ export function normalize(o) {
     readingLog: cleanLog(o.readingLog),
     postcards,
     games: cleanGameSummary(o.games, codeBand(o.band)),
+    expeditions: cleanExpedition(o.expeditions), // teacher: null for older codes
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
   };
 }

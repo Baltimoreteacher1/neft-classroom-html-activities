@@ -113,7 +113,7 @@ export function pictureBox(pic, cls = "") {
   const box = el(
     "details",
     `fs-pic ${cls}`,
-    `<summary>🖼️ ${bi("Picture it", "Imagínalo")}</summary><figure>${pic.svg}<figcaption>${bi(pic.caption.en, pic.caption.es)}</figcaption></figure>`,
+    `<summary><span aria-hidden="true">🖼️</span> ${bi("Picture it", "Imagínalo")}</summary><figure>${pic.svg}<figcaption>${bi(pic.caption.en, pic.caption.es)}</figcaption></figure>`,
   );
   box.open = true;
   const groups = [...box.querySelectorAll("svg")].map((svg) =>
@@ -121,7 +121,7 @@ export function pictureBox(pic, cls = "") {
   );
   const steps = Math.max(0, ...groups.map((g) => g.length));
   if (steps < 2) return box;
-  const btn = el("button", "fs-btn fs-btn-soft fs-build", `▶ ${bi("Build it step by step", "Ármenlo paso a paso")}`);
+  const btn = el("button", "fs-btn fs-btn-soft fs-build", `<span aria-hidden="true">▶</span> ${bi("Build it step by step", "Ármenlo paso a paso")}`);
   btn.type = "button";
   let shown = steps;
   btn.addEventListener("click", () => {

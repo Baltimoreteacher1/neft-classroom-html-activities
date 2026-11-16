@@ -12,6 +12,11 @@ import {
   unitCheck,
 } from "../curriculum/projects/studio/builders.mjs";
 import {
+  checkExpressionChallenge,
+  expressionChallenge,
+  ratioChallenge,
+} from "../curriculum/projects/studio/challenge-preview.mjs";
+import {
   addCheckpoint,
   changedFields,
   cleanCheckpoints,
@@ -19,12 +24,14 @@ import {
   reasonFrames,
   removeCheckpoint,
   restoreDesign,
+  reviseCheckpoint,
 } from "../curriculum/projects/studio/checkpoints.mjs";
 import * as X from "../curriculum/projects/studio/exact.mjs";
 import { V2_FAMILIES } from "../curriculum/projects/studio/feedback.mjs";
 import { createHistory } from "../curriculum/projects/studio/history.mjs";
 import { fieldsFor, model } from "../curriculum/projects/studio/math.mjs";
 import {
+  customExpressionTest,
   equivalenceRows,
   hasModels,
   modelsHTML,
@@ -36,6 +43,28 @@ import { getProject, PROJECTS } from "../curriculum/projects/studio/projects.mjs
 import { clean, fresh } from "../curriculum/projects/studio/state.mjs";
 import { attachExtras } from "../curriculum/projects/studio/workbench.js";
 import { Rat } from "../scripts/lib/rational.mjs";
+
+{
+  const project = getProject("unit-6-a");
+  const challenge = expressionChallenge(project, project.defaults, "7");
+  assert.equal(challenge.answer, 44, "4(7 + 3) + 2² is 44");
+  assert.equal(checkExpressionChallenge(challenge, "44"), "correct");
+  assert.equal(checkExpressionChallenge(challenge, "42"), "revise");
+  assert.equal(checkExpressionChallenge(challenge, ""), "invalid");
+  assert.match(expressionChallenge(project, project.defaults, "5").error, /reserved/);
+  assert.match(expressionChallenge(project, project.defaults, "6").error, /reserved/);
+  assert.match(expressionChallenge(project, { ...project.defaults, a: 0 }, "7").error, /valid/);
+}
+{
+  const project = getProject("unit-3-a");
+  const challenge = ratioChallenge(project, project.defaults, "7");
+  assert.match(challenge.prompt, /14 parts of B/);
+  assert.equal(challenge.answer, 21);
+  assert.equal(checkExpressionChallenge(challenge, "21"), "correct");
+  assert.equal(checkExpressionChallenge(challenge, "14"), "revise");
+  assert.match(ratioChallenge(project, project.defaults, "6").error, /reserved/);
+  assert.match(ratioChallenge(project, project.defaults, "21").error, /2 to 20/);
+}
 
 // ---- history
 {
@@ -92,6 +121,19 @@ const p = getProject("unit-4-a");
     changedFields(p, r.list[0].design, r.list[1].design).map((f) => f.key),
     ["b"],
   );
+  const revised = reviseCheckpoint(r.list, "cp-1", "A stronger reason\nwith evidence.");
+  assert.equal(revised[0].reason, "A stronger reason with evidence.");
+  assert.deepEqual(
+    revised[0].design,
+    r.list[0].design,
+    "revising the explanation preserves the saved design",
+  );
+  assert.equal(
+    r.list[0].reason,
+    "I changed the discount.",
+    "the original checkpoint is not mutated",
+  );
+  assert.equal(reviseCheckpoint(r.list, "cp-1", "x".repeat(600))[0].reason.length, 500);
   const removed = removeCheckpoint(r.list, "cp-1");
   assert.equal(
     addCheckpoint(p, removed, { name: "x", reason: "", design: p.defaults, matched: 0 }).entry.id,
@@ -207,6 +249,23 @@ for (const project of PROJECTS.filter((x) => V2_FAMILIES.includes(x.family))) {
     !testInputs(6).includes(6) && !testInputs(6).includes(7),
     "test inputs avoid the check inputs",
   );
+  assert.deepEqual(customExpressionTest(v, 4, 16, "-2"), {
+    status: "ready",
+    x: -2,
+    original: 8,
+    yours: 8,
+    same: true,
+  });
+  assert.equal(
+    customExpressionTest(v, 4, 12, "-2").same,
+    false,
+    "a counterexample identifies an incorrect rule",
+  );
+  assert.equal(customExpressionTest(v, 4, 16, String(v.c)).status, "reserved");
+  assert.equal(customExpressionTest(v, 4, 16, String(v.c + 1)).status, "reserved");
+  assert.equal(customExpressionTest(v, 4, 16, "31").status, "invalid");
+  assert.equal(customExpressionTest(v, 4, 16, "1.5").status, "invalid");
+  assert.equal(customExpressionTest(v, NaN, 16, "0").status, "incomplete");
 }
 
 // ---- stage 3C: exact arithmetic, builders, plane and graph geometry, reveal rules, save tolerance

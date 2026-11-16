@@ -3,15 +3,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
-import {
-  COUNTDOWN,
-  click,
-  EMOJI,
-  makeCtx,
-  mount,
-  resetStorage,
-  type,
-} from "./lib/access-studios-dom.mjs";
+import { COUNTDOWN, click, makeCtx, mount, resetStorage, type } from "./lib/access-studios-dom.mjs";
 
 const { BUILDINGS, MISSIONS, missionsAt, missionOf } = await import(
   "../access-practice-lab/src/content/city.js"
@@ -85,7 +77,7 @@ test("every mission chains read, listen, a reply or question, a repair and a say
   );
 });
 
-test("every learner string is written in English and Spanish, with no emoji, countdown or score claim", () => {
+test("every learner string is written in English and Spanish, with no countdown or score claim", () => {
   const all = pairs([BUILDINGS, MISSIONS]);
   assert.ok(all.length > 800, `only ${all.length} pairs`);
   for (const p of all) {
@@ -93,7 +85,6 @@ test("every learner string is written in English and Spanish, with no emoji, cou
     // "Total · $8.00" is the same word in both languages; anything with more words must be translated
     if ((p.en.match(/[a-z]{3,}/gi) || []).length > 1)
       assert.notEqual(norm(p.en), norm(p.es), `Spanish copied: ${p.en}`);
-    assert.ok(!EMOJI.test(p.en + p.es), p.en);
     assert.ok(!COUNTDOWN.test(p.en + p.es), p.en);
     assert.ok(!SCORE_CLAIM.test(p.en + p.es), p.en);
   }

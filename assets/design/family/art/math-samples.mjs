@@ -99,4 +99,6 @@ export const SAMPLES = [
       ],
     },
   },
+  { id: "kcf", kind: "kcf", data: { dividend: "3/4", divisor: "6" } },
+  { id: "kcf-mixed", kind: "kcf", data: { dividend: "1 1/2", divisor: "3/4" } },
 ];

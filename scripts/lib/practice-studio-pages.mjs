@@ -1,5 +1,7 @@
 // HTML templates for the Practice Studio v2 pages: a lesson's Practice page, its Challenge twin, and the finder.
 // The runtime (assets/studio/*.js) draws the problems from the JSON this page ships; this file only lays out the shell.
+
+import { stageBar } from "./math-studio-page.mjs";
 import { FAVICON } from "./practice-studio-worlds.mjs";
 
 export const esc = (/** @type {any} */ s) =>
@@ -216,10 +218,12 @@ export function pageFor({
   <link rel="icon" href="${FAVICON(world.emoji)}">
 ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
 ${NSR_HEAD}
+  <link rel="stylesheet" href="/assets/math-studio/stage-bar.css">
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
+  ${stageBar(id, "practice")}
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">
@@ -322,6 +326,8 @@ export function boostPage(
     assets,
   });
   return html
+    // Not a lesson: no Learning Lab stage bar (it would link /math/studio/0-0/, which does not exist).
+    .replace(/\s*<nav class="ms-stagebar"[\s\S]*?<\/nav>/, "")
     .replace(
       /<div class="brand-sub">[^<]*<\/div>/,
       '<div class="brand-sub">Grade 6 Math · Mixed review from every unit · New set each day</div>',

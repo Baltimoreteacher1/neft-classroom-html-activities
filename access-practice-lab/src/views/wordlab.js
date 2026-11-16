@@ -324,6 +324,7 @@ function gardenHTML(ctx, I, st) {
       <p>
         ${ids.length ? I.T(`Words grow when you remember them on your own, on days that are spaced out: tomorrow, then after 3, 7 and 14 days. Help is fine, but a word grows only after a review without help. ${due.length} ${due.length === 1 ? "word is" : "words are"} ready.`, `Las palabras crecen cuando las recuerdas por tu cuenta, en días espaciados: mañana y luego a los 3, 7 y 14 días. La ayuda está bien, pero una palabra crece solo después de un repaso sin ayuda. ${due.length} ${due.length === 1 ? "palabra está lista" : "palabras están listas"}.`) : I.T("Your garden is empty. Plant words from Explore Words, the Builder, or any word card.", "Tu jardín está vacío. Planta palabras desde Explorar palabras, el Constructor o cualquier tarjeta.")}
       </p>
+      ${ids.length ? html`<p><button type="button" class="btn" data-wl-book>${icon("bookmark")} ${I.T("Make a picture dictionary of my words", "Hacer un diccionario ilustrado con mis palabras")}</button></p>` : ""}
       ${due.length && !rev ? html`<button type="button" class="btn btn-primary" data-wl-rstart>${icon("growth")} ${I.T(`Water ${due.length} ${due.length === 1 ? "word" : "words"}`, `Regar ${due.length} ${due.length === 1 ? "palabra" : "palabras"}`)}</button>` : ""}
       <ul class="wl-plots">
         ${ids.map((w) => {
@@ -392,6 +393,29 @@ export function onClick(e, ctx) {
   const I = i18nFor(ctx);
   const st = wlState();
   const t = e.target;
+  const toBook = t.closest("[data-wl-book]");
+  if (toBook) {
+    // Garden words become a vocabulary picture book: the word and its meaning; the learner writes their own example,
+    // draws or adds a picture, and records the pronunciation (src/book/handoff.js).
+    const words = Object.keys(st.garden)
+      .map((id) => WORDS.find((w) => w.id === id))
+      .filter(Boolean)
+      .slice(0, 12);
+    if (!words.length) return true;
+    toBook.disabled = true;
+    const pages = words.map((w) => ({
+      heading: w.w,
+      text: `${w.pos ? `(${w.pos}) ` : ""}${w.d}`,
+      prompt: { en: `Write your OWN sentence with “${w.w}”, add a picture or drawing that shows it, and record yourself saying the word. Optional: show a non-example.`, es: `Escribe TU PROPIA oración con «${w.w}», agrega una imagen o dibujo que lo muestre y grábate diciendo la palabra. Opcional: muestra un no ejemplo.` },
+      audioLabel: I.S("Say it", "Pronúncialo"),
+    }));
+    import("../book/handoff.js")
+      .then(({ openInBookStudio }) => openInBookStudio({ source: { kind: "vocabulary", id: "garden", label: I.S("My Word Garden", "Mi jardín de palabras") }, title: I.S("My Picture Dictionary", "Mi diccionario ilustrado"), templateId: "vocabulary-picture-book", band: ctx.band, pages, keepTemplatePages: false }, (url) => ctx.navigate(url)))
+      .catch(() => {
+        toBook.disabled = false;
+      });
+    return true;
+  }
   const lvl = t.closest("[data-sk-level]");
   if (lvl && LEVELS.includes(lvl.dataset.skLevel)) {
     st.level = lvl.dataset.skLevel;

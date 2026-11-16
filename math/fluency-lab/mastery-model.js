@@ -118,6 +118,38 @@ export function itemSignature(text) {
 // The new three-dimension fluency rule coexists with the established numeric
 // meter until every practice mode can record strategy and explanation evidence.
 export const REVIEW_GAPS_DAYS = REVIEW_LADDER;
+const EVIDENCE_STRATEGIES = new Set(["visual", "decomposition", "fact"]);
+
+export function normalizeMasteryEvent(event) {
+  if (!event || !Number.isFinite(event.at) || typeof event.sessionId !== "string" || !event.sessionId ||
+    typeof event.eventId !== "string" || typeof event.correct !== "boolean" || typeof event.independent !== "boolean") return null;
+  return {
+    at: event.at, sessionId: event.sessionId.slice(0, 80), eventId: event.eventId.slice(0, 100),
+    correct: event.correct, independent: event.independent,
+    hintsUsed: Math.min(20, Math.max(0, Number(event.hintsUsed) || 0)),
+    ...(Number.isFinite(event.responseMs) && event.responseMs >= 0 && event.responseMs <= 300000 ? { responseMs: event.responseMs } : {}),
+    ...(EVIDENCE_STRATEGIES.has(event.strategy) ? { strategy: event.strategy, explained: event.explained === true } : {}),
+    ...(typeof event.strategyHelped === "boolean" ? { strategyHelped: event.strategyHelped } : {}),
+  };
+}
+
+export function recordMasteryEvent(record, event) {
+  const clean = normalizeMasteryEvent(event);
+  if (!record || !clean) return null;
+  const history = Array.isArray(record.masteryEvents) ? record.masteryEvents : [];
+  record.masteryEvents = [...history.filter((entry) => entry?.eventId !== clean.eventId), clean].slice(-100);
+  return clean;
+}
+
+export function recordMasteryReflection(record, eventId, strategy, strategyHelped) {
+  if (!record || !EVIDENCE_STRATEGIES.has(strategy) || typeof strategyHelped !== "boolean") return false;
+  const event = record.masteryEvents?.find((entry) => entry.eventId === eventId && entry.correct && entry.independent);
+  if (!event) return false;
+  event.strategy = strategy;
+  event.explained = true;
+  event.strategyHelped = strategyHelped;
+  return true;
+}
 
 export function masterySummary(history, now = Date.now()) {
   const events = (Array.isArray(history) ? history : [])
@@ -128,7 +160,7 @@ export function masterySummary(history, now = Date.now()) {
   const independentCorrect = events.filter((event) => event.correct && event.independent);
   const sessions = new Set(independentCorrect.map((event) => event.sessionId));
   const strategies = new Set(independentCorrect.filter((event) => event.explained && event.strategy).map((event) => event.strategy));
-  const appropriate = new Set(independentCorrect.filter((event) => event.appropriateStrategy === true).map((event) => event.sessionId));
+  const helpful = new Set(independentCorrect.filter((event) => event.strategyHelped === true).map((event) => event.sessionId));
   const halfway = Math.ceil(events.length / 2);
   const hintTotal = (rows) => rows.reduce((sum, event) => sum + (Number(event.hintsUsed) || 0), 0);
   const earlyHints = hintTotal(events.slice(0, halfway));
@@ -136,7 +168,7 @@ export function masterySummary(history, now = Date.now()) {
   const dimensions = {
     accuracy: sessions.size >= 3,
     flexibility: strategies.size >= 2,
-    efficiency: appropriate.size >= 2 && lateHints <= earlyHints,
+    efficiency: helpful.size >= 2 && lateHints <= earlyHints,
   };
   const responseTimes = independentCorrect.map((event) => event.responseMs)
     .filter((value) => Number.isFinite(value) && value >= 0).toSorted((a, b) => a - b);
@@ -144,14 +176,14 @@ export function masterySummary(history, now = Date.now()) {
   let fluentAt = null;
   const seenSessions = new Set();
   const seenStrategies = new Set();
-  const seenAppropriate = new Set();
+  const seenHelpful = new Set();
   for (const event of events) {
     if (event.correct && event.independent) {
       seenSessions.add(event.sessionId);
       if (event.explained && event.strategy) seenStrategies.add(event.strategy);
-      if (event.appropriateStrategy === true) seenAppropriate.add(event.sessionId);
+      if (event.strategyHelped === true) seenHelpful.add(event.sessionId);
     }
-    if (seenSessions.size >= 3 && seenStrategies.size >= 2 && seenAppropriate.size >= 2) {
+    if (seenSessions.size >= 3 && seenStrategies.size >= 2 && seenHelpful.size >= 2) {
       fluentAt = event.at;
       break;
     }
@@ -173,7 +205,7 @@ export function masterySummary(history, now = Date.now()) {
   return {
     state,
     dimensions,
-    evidence: { independentSessions: sessions.size, explainedStrategies: strategies.size, appropriateSessions: appropriate.size },
+    evidence: { independentSessions: sessions.size, explainedStrategies: strategies.size, helpfulStrategySessions: helpful.size },
     retention: { completedGaps: reviews, nextDueAt: fluentAt !== null && reviews < REVIEW_LADDER.length ? lastReview + REVIEW_LADDER[reviews] * DAY : null },
     privateMetrics: { medianResponseMs: responseTimes.length ? responseTimes[Math.floor(responseTimes.length / 2)] : null,
       hintsTrend: lateHints < earlyHints ? "decreasing" : lateHints === earlyHints ? "steady" : "increasing" },

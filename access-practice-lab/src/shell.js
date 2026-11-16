@@ -4,6 +4,7 @@ import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { comfortButtonHTML, installComfort } from "./comfort.js";
 import { footerHTML, navHTML } from "./nav.js";
 import { installReadPage, readPageButtonHTML } from "./read-page.js";
+import { installVoice, voiceButtonHTML } from "./voice.js";
 import { installShortcuts } from "./shortcuts.js";
 import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
@@ -163,8 +164,10 @@ export function mountShell(ctx) {
     // Site search: a header button (palette) and a search box at the top of the More menu (results page).
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(searchButtonHTML(I)));
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(readPageButtonHTML(I)));
+    nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(voiceButtonHTML(I)));
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(comfortButtonHTML(I)));
     installReadPage(ctx, I);
+    installVoice(ctx, I);
     installComfort(ctx, I);
     installShortcuts(ctx, I);
     nav.querySelector(".lab-utilities-body")?.insertAdjacentHTML("afterbegin", toHtml(searchFormHTML(I)));

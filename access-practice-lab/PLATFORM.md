@@ -134,6 +134,21 @@ stored. Opening any help marks the work supported. Help items are written so the
    theme label and reason; every number is checked against the input, and its text is shown only to the teacher-key
    holder, never to a student, to help a person decide what to author next. With no model, too few questions or an
    unusable reply, it returns the plain frequency list. Students' activity pages never call it.
+   **Fourth exception, decided by Joel on 2026-11-16 ("build all of them", for the Book Studio brief item
+   "AI-assisted book creation"): the Book Studio writing coach** (`src/book/editor-coach.js`, rules shared with the
+   server in `src/book/coach-rules.js`). It is OFF until the learner turns it on in Book settings, and hidden when the
+   learner's class has the teacher setting `aiCoach: false`. Only when the learner presses a coach button, the editor
+   sends what that button needs to this site's own `/api/book-coach` (`functions/api/book-coach.js`): the words of the
+   current page or selected text box (≤ 2,000 characters), ONE chosen sentence, a chosen word or phrase, the page
+   headings (Organize), or a built-in illustration's catalogue name (never a picture, drawing or recording), plus the
+   template purpose and page prompt. No name, no identifiers, no media. The model (Claude Haiku, else Workers AI;
+   never Gemini) must answer in a fixed JSON shape of questions, observations that quote the learner, or word choices;
+   the server drops the whole reply if any item is over 30 words, repeats an 8+ word run of the learner's text, is a
+   "question" that is not one, or looks like a score. Nothing is stored (no text, answer or IP); the only state is the
+   anonymous per-IP-hour and per-day counters of the shared cap guard. Nothing enters the book unless the learner
+   presses "Use this word" (one undoable word swap). With no model or no internet, Brainstorm, Organize, Expand, Genre
+   and Picture show built-in tips labelled "Built-in tips (no AI)"; ledger entries record `feedbackSource: "ai"` or
+   `"local-rule"`.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,

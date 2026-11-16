@@ -9,8 +9,7 @@
  *   2. tools.json is current (a new /curriculum/<tool>/ page cannot go unlisted).
  *   3. The page script flattens EVERY manifest resource — row count equals the
  *      manifest's, none lacks a url, and every type group has an icon in the sprite.
- *   4. The stylesheet stays scoped, light-only, and free of pictographs; the page
- *      and script carry none either (one SVG icon family, no decorative emoji).
+ *   4. The stylesheet stays scoped and light-only.
  *   5. The hub links here, so the directory is reachable from the front door.
  *
  * Detectors are self-tested against known-bad fixtures before the real files are
@@ -24,7 +23,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (rel) => readFileSync(join(ROOT, rel), "utf8");
-const PICTOGRAPH = /\p{Extended_Pictographic}/u;
 const SCOPE = /(^|[\s,>+~(])(\.ar\b|body\.ar-page|\.skip-link)/;
 
 /** Split a selector list on commas that are not inside :is(...) / :not(...). */
@@ -71,7 +69,6 @@ if (unscopedSelectors(".ar .x,\n.skip-link:focus-visible {\n}\n@media (x) {\n}")
   selfFail.push("unscopedSelectors flagged a scoped selector list");
 if (!missingIcons(["slides", "nope"], '<symbol id="i-slides">').includes("nope"))
   selfFail.push("missingIcons missed an absent icon");
-if (!PICTOGRAPH.test("Family 👪")) selfFail.push("pictograph detector does not fire");
 if (selfFail.length) {
   console.error(`validate-all-resources self-test FAILED:\n  ${selfFail.join("\n  ")}`);
   process.exit(1);
@@ -108,7 +105,6 @@ if (failures.length) {
 }
 const html = files.get("curriculum/all-resources/index.html");
 const css = files.get("curriculum/all-resources/all-resources.css");
-const js = files.get("curriculum/all-resources/all-resources.js");
 
 /* --- 2. tools.json is current ---------------------------------------------- */
 const gen = spawnSync(process.execPath, ["scripts/generate-all-resources-tools.mjs", "--check"], {
@@ -147,7 +143,7 @@ const missing = missingIcons(
 );
 check(!missing.length, `sprite has no icon for type group(s): ${missing.join(", ")}`);
 
-/* --- 4. Stylesheet scoped; light-only; no pictographs ----------------------- */
+/* --- 4. Stylesheet scoped; light-only ---------------------------------------- */
 for (const sel of unscopedSelectors(css)) fail(`unscoped selector "${sel}" in all-resources.css`);
 for (const [rel, body] of files) {
   check(
@@ -157,16 +153,6 @@ for (const [rel, body] of files) {
   check(
     !/\bESOL\b/.test(body),
     `${rel} uses the discouraged label; say "support" or "Level 1" instead`,
-  );
-}
-for (const [rel, body] of [
-  ["index.html", html],
-  ["all-resources.css", css],
-  ["all-resources.js", js],
-]) {
-  check(
-    !PICTOGRAPH.test(body.replace(/\\p\{Extended_Pictographic\}/g, "")),
-    `${rel} contains a pictograph; use the SVG icon family`,
   );
 }
 check(

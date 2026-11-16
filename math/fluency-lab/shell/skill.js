@@ -12,7 +12,7 @@ import { eqIn } from "../studio/eq-language.js";
 import { anotherWay, helpLadder, teach } from "./content.js";
 import { explainFrame, wordsToKnow } from "./language.js";
 import { bindListen, listenButton, readAloudOn } from "./prefs.js";
-import { loadTutor, recordPractice, saveLastVisit, skillMeter } from "./store.js";
+import { loadTutor, recordMasteryReflection, recordPractice, saveLastVisit, skillMeter } from "./store.js";
 import { meterHtml } from "./meter.js";
 import { afterAnswer, afterSolution, loadAwards } from "./practice-cheer.js";
 import { esc, gradeName, lang, named, pickL, tr } from "./words.js";
@@ -156,6 +156,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
   let streakIndependent = 0;
   let missesInRow = 0;
   let count = 0;
+  const sessionId = globalThis.crypto?.randomUUID?.() || `s-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   function nextItem() {
     if (streakIndependent >= 3) {
       streakIndependent = 0;
@@ -184,6 +185,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     let sawAnother = false;
     let tries = 0;
     count += 1;
+    const itemStartedAt = Date.now();
     const es = lang() === "es";
     const question = es ? questionEs(item) || item.question : item.question;
     const labels = (es && choicesEs(item)) || item.choices;
@@ -266,6 +268,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
         firstTry: tries === 1,
         raw,
         level: item.level ?? 1,
+        masteryEvent: { sessionId, eventId: `${sessionId}:${count}`, hintsUsed: helpUsed + Number(sawAnother), responseMs: Date.now() - itemStartedAt },
       });
       if (tries === 1) missesInRow = correct ? 0 : missesInRow + 1;
       const fb = body.querySelector("[data-fb]");
@@ -274,6 +277,31 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
         fb.className = "feedback is-right";
         fb.innerHTML = `<p><span class="cheer-mark" aria-hidden="true">✓</span><strong>${esc(tr("Correct."))}</strong> ${esc(independent ? tr("Solved on your own.") : tr("You solved it with help. Try one on your own to show what you know."))}</p>
           ${whyHtml(item, solved, es)}`;
+        if (independent) {
+          const eventId = `${sessionId}:${count}`;
+          fb.insertAdjacentHTML("beforeend", `<fieldset class="strategy-reflection"><legend>${esc(tr("Strategies I used"))}</legend>
+            <label><input type="radio" name="strategy-${count}" value="visual"/> ${esc(tr("I used a visual"))}</label>
+            <label><input type="radio" name="strategy-${count}" value="decomposition"/> ${esc(tr("I broke numbers apart"))}</label>
+            <label><input type="radio" name="strategy-${count}" value="fact"/> ${esc(tr("I recalled a fact"))}</label>
+            <p>${esc(tr("Did that strategy help?"))}</p>
+            <label><input type="radio" name="helped-${count}" value="yes"/> ${esc(tr("Yes"))}</label>
+            <label><input type="radio" name="helped-${count}" value="no"/> ${esc(tr("Not sure yet"))}</label>
+            <button type="button" class="btn btn-quiet" data-save-reflection disabled>${esc(tr("Save reflection"))}</button>
+          </fieldset>`);
+          const reflection = fb.querySelector(".strategy-reflection");
+          const saveReflection = reflection.querySelector("[data-save-reflection]");
+          const updateReflectionButton = () => {
+            saveReflection.disabled = !reflection.querySelector(`[name="strategy-${count}"]:checked`) || !reflection.querySelector(`[name="helped-${count}"]:checked`);
+          };
+          reflection.addEventListener("change", updateReflectionButton);
+          saveReflection.addEventListener("click", () => {
+            const strategy = reflection.querySelector(`[name="strategy-${count}"]:checked`)?.value;
+            const helped = reflection.querySelector(`[name="helped-${count}"]:checked`)?.value === "yes";
+            if (recordMasteryReflection(skill, eventId, strategy, helped)) {
+              reflection.innerHTML = `<p>${esc(tr("Reflection saved on this device."))}</p>`;
+            }
+          });
+        }
         finishProblem(fb, true);
       } else if (tries < 2) {
         streakIndependent = 0;

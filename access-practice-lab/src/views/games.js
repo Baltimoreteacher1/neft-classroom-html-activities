@@ -9,6 +9,7 @@ import { SUP, rng, supOf } from "../games/engine.js";
 import { hubHTML, hubHref } from "../games/hub.js";
 import { nextInPath, newAwards, parsePath, pathwayProgress, recommend, suggestSupport } from "../games/plan.js";
 import { GAME } from "../games/registry.js";
+import { expeditionsHubClick } from "../games/language-expeditions-assign.js";
 import { doneHTML, frameHTML, startHTML, transferHTML } from "../games/screens.js";
 import { loadGames, saveGames, sessionKey, summarizeRounds } from "../games/state.js";
 
@@ -44,6 +45,7 @@ function envFor(live) {
   const sup = supOf(session.support);
   const env = {
     ctx, I, band, def, sup, support: session.support, len: session.len || "full", qa: qaOn(),
+    params: query(), // URL parameters a game may read at init (Language Expeditions: land, stop)
     content: live.content.bands?.[band] || {}, contentAll: live.content,
     rng: rng(session.seed),
     count: (full, quick) => ((session.len || "full") === "quick" ? quick : full),
@@ -190,6 +192,8 @@ function changed() {
 export function onClick(e, ctx) {
   const t = e.target;
   if (!LIVE) {
+    // hub: Language Expeditions teacher stop builder
+    if (expeditionsHubClick(t, i18nFor(ctx))) return true;
     // hub: teacher sequence builder
     const build = t.closest("[data-g-assign-build]");
     if (build) {

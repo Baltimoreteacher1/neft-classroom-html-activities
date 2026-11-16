@@ -130,10 +130,11 @@
 
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q"><span class="lang-en">Today&#039;s Family Practice</span><span class="lang-es" lang="es">La práctica familiar de hoy</span></h2>
-        <p class="hw-mission-lead fm-hero__promise"><span class="lang-en">Five short steps, about 15–20 minutes: watch the idea, try one together, solve 10 in three levels, check, celebrate.</span><span class="lang-es" lang="es">Cinco pasos cortos, unos 15–20 minutos: miren la idea, prueben uno juntos, resuelvan 10 en tres niveles, revisen y celebren.</span></p>
+        <p class="hw-mission-lead fm-hero__promise"><span class="lang-en">Five steps, about 15–20 min: Discover, Build, solve 10 in three levels, Improve, Celebrate.</span><span class="lang-es" lang="es">Cinco pasos, unos 15–20 min: Descubrir, Construir, resolver 10 en tres niveles, Mejorar y Celebrar.</span></p>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" data-act="startHomework"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Your place is saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Su avance se guarda en este dispositivo.</span></p>
+        <div class="hw-session-routes" id="hw_session_routes"></div>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. No timer. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Sin cronómetro. Se guarda en este dispositivo.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>
@@ -189,57 +190,56 @@
 
             <button type="button" id="hw_tab_connect" class="homework-tab-btn is-active"
               aria-current="step" aria-controls="hw_panel_connect"
-              aria-label="Look &amp; Learn — stop 1 of 5"
-              data-aria-en="Look &amp; Learn — stop 1 of 5" data-aria-es="Mira y aprende — parada 1 de 5"
+              aria-label="Discover — stop 1 of 5"
+              data-aria-en="Discover — stop 1 of 5" data-aria-es="Descubrir — parada 1 de 5"
               data-tab="connect" data-stop="1" data-act="switchHomeworkTab" data-args='["connect"]'>
               <span class="tab-step" aria-hidden="true">1</span>
-              <span class="tab-label"><span class="tab-en">Look & Learn</span><span class="tab-es" lang="es">Mira y aprende</span></span>
+              <span class="tab-label"><span class="tab-en">Discover</span><span class="tab-es" lang="es">Descubrir</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_explore" class="homework-tab-btn"
                aria-controls="hw_panel_explore"
-              aria-label="Try Together — stop 2 of 5"
-              data-aria-en="Try Together — stop 2 of 5" data-aria-es="Prueben juntos — parada 2 de 5"
+              aria-label="Build — stop 2 of 5"
+              data-aria-en="Build — stop 2 of 5" data-aria-es="Construir — parada 2 de 5"
               data-tab="explore" data-stop="2" data-act="switchHomeworkTab" data-args='["explore"]'>
               <span class="tab-step" aria-hidden="true">2</span>
-              <span class="tab-label"><span class="tab-en">Try Together</span><span class="tab-es" lang="es">Prueben juntos</span></span>
+              <span class="tab-label"><span class="tab-en">Build</span><span class="tab-es" lang="es">Construir</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_check" class="homework-tab-btn"
                aria-controls="hw_panel_check"
-              aria-label="Your Turn — stop 3 of 5"
-              data-aria-en="Your Turn — stop 3 of 5" data-aria-es="Tu turno — parada 3 de 5"
+              aria-label="Practice — stop 3 of 5"
+              data-aria-en="Practice — stop 3 of 5" data-aria-es="Practicar — parada 3 de 5"
               data-tab="check" data-stop="3" data-act="switchHomeworkTab" data-args='["check"]'>
               <span class="tab-step" aria-hidden="true">3</span>
-              <span class="tab-label"><span class="tab-en">Your Turn</span><span class="tab-es" lang="es">Tu turno</span></span>
+              <span class="tab-label"><span class="tab-en">Practice</span><span class="tab-es" lang="es">Practicar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_improve" class="homework-tab-btn"
                aria-controls="hw_panel_improve"
-              aria-label="Check &amp; Improve — stop 4 of 5"
-              data-aria-en="Check &amp; Improve — stop 4 of 5" data-aria-es="Revisa y mejora — parada 4 de 5"
+              aria-label="Improve — stop 4 of 5"
+              data-aria-en="Improve — stop 4 of 5" data-aria-es="Mejorar — parada 4 de 5"
               data-tab="improve" data-stop="4" data-act="switchHomeworkTab" data-args='["improve"]'>
               <span class="tab-step" aria-hidden="true">4</span>
-              <span class="tab-label"><span class="tab-en">Check & Improve</span><span class="tab-es" lang="es">Revisa y mejora</span></span>
+              <span class="tab-label"><span class="tab-en">Improve</span><span class="tab-es" lang="es">Mejorar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
             <button type="button" id="hw_tab_done" class="homework-tab-btn"
                aria-controls="hw_panel_done"
-              aria-label="Finish — stop 5 of 5"
-              data-aria-en="Finish — stop 5 of 5" data-aria-es="Terminar — parada 5 de 5"
+              aria-label="Celebrate — stop 5 of 5"
+              data-aria-en="Celebrate — stop 5 of 5" data-aria-es="Celebrar — parada 5 de 5"
               data-tab="done" data-stop="5" data-act="switchHomeworkTab" data-args='["done"]'>
               <span class="tab-step" aria-hidden="true">5</span>
-              <span class="tab-label"><span class="tab-en">Finish</span><span class="tab-es" lang="es">Terminar</span></span>
+              <span class="tab-label"><span class="tab-en">Celebrate</span><span class="tab-es" lang="es">Celebrar</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
         </nav>
-        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Understand, practice, play" data-aria-en="Understand, practice, play" data-aria-es="Entender, practicar, jugar">
-            <button type="button" id="hw_understand_btn" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-understand" data-act="openFamilyStudio" data-args='["understand"]' aria-haspopup="dialog"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">📖</span></span>
-              <span class="tab-label"><span class="tab-en">Understand</span><span class="tab-es" lang="es">Entender</span></span></button>
-            <button type="button" id="hw_practice_btn" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-practice" data-act="hwStudioPractice"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">✏️</span></span>
-              <span class="tab-label"><span class="tab-en">Practice</span><span class="tab-es" lang="es">Practicar</span></span></button>
-            <button type="button" id="hw_tab_play" class="homework-tab-extra hw-fun-btn hw-studio-btn hw-studio-play" data-act="openFamilyStudio" data-args='["play"]' data-tab="play" aria-controls="hw_panel_play" aria-haspopup="dialog"><span class="tab-icon" aria-hidden="true"><span aria-hidden="true">🎲</span></span>
-              <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span></button></div>
+        <div class="hw-fun-zone hw-studio-zone" role="group" aria-label="Optional tools" data-aria-en="Optional tools" data-aria-es="Herramientas opcionales">
+          <button type="button" class="homework-tab-extra hw-fun-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog">
+            <span class="tab-icon" aria-hidden="true"><span aria-hidden="true">🧭</span></span>
+            <span class="tab-label"><span class="tab-en">Explore more</span><span class="tab-es" lang="es">Explorar más</span></span>
+          </button>
+        </div>
         <div class="hw-optional-stops" hidden>
             <button type="button" id="hw_tab_talk" class="homework-tab-extra"
               aria-controls="hw_panel_talk"
@@ -305,8 +305,8 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 1 of 5</span><span class="lang-es" lang="es">Paso 1 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Look &amp; Learn</span><span class="lang-es" lang="es">Mira y aprende</span></h2>
-        <p class="fp-lead"><span class="lang-en">Read the goal and look at the picture. Then go through the example one step at a time.</span><span class="lang-es" lang="es">Lean la meta y miren el dibujo. Luego sigan el ejemplo un paso a la vez.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Discover</span><span class="lang-es" lang="es">Descubrir</span></h2>
+        <p class="fp-lead"><span class="lang-en">See the story, predict, and follow the example step by step.</span><span class="lang-es" lang="es">Observa la historia, predice y sigue el ejemplo paso a paso.</span></p>
       </header>
       <section class="family-plain-start" role="group" aria-labelledby="hw_goal_label">
         <span class="family-plain-start-mark" aria-hidden="true">✦</span>
@@ -420,25 +420,9 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 2 of 5</span><span class="lang-es" lang="es">Paso 2 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Try Together</span><span class="lang-es" lang="es">Prueben juntos</span></h2>
-        <p class="fp-lead"><span class="lang-en">Do this one side by side. Use the model, and ask for a hint whenever you want one.</span><span class="lang-es" lang="es">Háganlo lado a lado. Usen el modelo y pidan una pista cuando quieran.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Build</span><span class="lang-es" lang="es">Construir</span></h2>
+        <p class="fp-lead"><span class="lang-en">Move the model, test numbers, and watch every view update together.</span><span class="lang-es" lang="es">Mueve el modelo, prueba números y mira cómo cambian todas las vistas.</span></p>
       </header>
-      <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
-        <p class="fp-label" id="hw_try_label"><span class="lang-en">Try this one together</span><span class="lang-es" lang="es">Prueben este juntos</span></p>
-        <p class="fp-try-scenario"><span class="lang-en">A sunflower is 1.5 times as tall as a cornstalk.</span><span class="lang-es" lang="es">Un girasol mide 1.5 veces lo que una planta de maíz.</span></p>
-        <ol class="fp-steps fp-steps--try">
-          <li><p><span class="lang-en">What is the whole in this problem, and what percent does it stand for?</span><span class="lang-es" lang="es">¿Cuál es el total en este problema, y qué porcentaje representa?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">The cornstalk is the whole, so it stands for 100%.</span><span class="lang-es" lang="es">La planta de maíz es el total, así que representen el 100%.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">The thing you are comparing TO is always the whole.</span><span class="lang-es" lang="es">La cosa con la que comparan siempre es el total.</span></p></details>
-      </details></li><li><p><span class="lang-en">Break 1.5 apart. What percent is each piece?</span><span class="lang-es" lang="es">Separen 1.5. ¿Qué porcentaje es cada parte?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">1 whole = 100%, and half a whole = 50%.</span><span class="lang-es" lang="es">1 entero = 100%, y medio entero = 50%.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Picture one full bar (100%) and half of a second bar (50%).</span><span class="lang-es" lang="es">Imaginen una barra completa (100%) y la mitad de una segunda barra (50%).</span></p></details>
-      </details></li><li><p><span class="lang-en">Add the pieces. What percent of the cornstalk's height is the sunflower?</span><span class="lang-es" lang="es">Sumen las partes. ¿Qué porcentaje de la altura del maíz es el girasol?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
-        <p><span class="lang-en">100% + 50% = 150%.</span><span class="lang-es" lang="es">100% + 50% = 150%.</span></p>
-        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Above 100% means taller than the cornstalk — check that it sounds right.</span><span class="lang-es" lang="es">Más de 100% significa más alto que el maíz — revisen que suene bien.</span></p></details>
-      </details></li>
-        </ol>
-      </section>
       <div class="mission-block fp-model" id="hw_learn_try">
     <section class="hw-mission-model" id="hw_mission_model" aria-labelledby="hw_mm_title" data-mission-model data-family="percent" data-config="{&quot;whole&quot;:20,&quot;unit&quot;:{&quot;en&quot;:&quot;books&quot;,&quot;es&quot;:&quot;libros&quot;},&quot;percent&quot;:150,&quot;maxPercent&quot;:400}">
       <div class="hw-mm-head">
@@ -456,7 +440,24 @@
         <p class="hw-mm-predict"><span class="lang-en">Before you go on: say one thing the model showed you.</span><span class="lang-es" lang="es">Antes de seguir: digan una cosa que les mostró el modelo.</span></p>
         <button type="button" class="fm-btn fm-btn--primary" data-act="switchHomeworkTab" data-args='["check"]'><span class="lang-en">Ready for Your Turn →</span><span class="lang-es" lang="es">Listo para Tu turno →</span></button>
       </div>
-    </section></div>
+    </section><section id="hw_motion" data-k="percent:grid" data-v="20,100" hidden></section></div>
+      <section class="fq-quest" id="hw_family_quest" data-fq-mode="solo" data-fq-prompt-en="Which amount is the goal (100%)? Is the new amount more or less than that whole?" data-fq-prompt-es="¿Qué cantidad es la meta (100%)? ¿La cantidad nueva es mayor o menor que ese entero?" aria-label="Optional Learning Mode"></section>
+      <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
+        <p class="fp-label" id="hw_try_label"><span class="lang-en">Guided check</span><span class="lang-es" lang="es">Práctica guiada</span></p>
+        <p class="fp-try-scenario"><span class="lang-en">A sunflower is 1.5 times as tall as a cornstalk.</span><span class="lang-es" lang="es">Un girasol mide 1.5 veces lo que una planta de maíz.</span></p>
+        <ol class="fp-steps fp-steps--try">
+          <li><p><span class="lang-en">What is the whole in this problem, and what percent does it stand for?</span><span class="lang-es" lang="es">¿Cuál es el total en este problema, y qué porcentaje representa?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">The cornstalk is the whole, so it stands for 100%.</span><span class="lang-es" lang="es">La planta de maíz es el total, así que representen el 100%.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">The thing you are comparing TO is always the whole.</span><span class="lang-es" lang="es">La cosa con la que comparan siempre es el total.</span></p></details>
+      </details></li><li><p><span class="lang-en">Break 1.5 apart. What percent is each piece?</span><span class="lang-es" lang="es">Separen 1.5. ¿Qué porcentaje es cada parte?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">1 whole = 100%, and half a whole = 50%.</span><span class="lang-es" lang="es">1 entero = 100%, y medio entero = 50%.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Picture one full bar (100%) and half of a second bar (50%).</span><span class="lang-es" lang="es">Imaginen una barra completa (100%) y la mitad de una segunda barra (50%).</span></p></details>
+      </details></li><li><p><span class="lang-en">Add the pieces. What percent of the cornstalk's height is the sunflower?</span><span class="lang-es" lang="es">Sumen las partes. ¿Qué porcentaje de la altura del maíz es el girasol?</span></p><details class="fp-hint"><summary><span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></summary>
+        <p><span class="lang-en">100% + 50% = 150%.</span><span class="lang-es" lang="es">100% + 50% = 150%.</span></p>
+        <details class="fp-hint fp-hint--more"><summary><span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></summary><p><span class="lang-en">Above 100% means taller than the cornstalk — check that it sounds right.</span><span class="lang-es" lang="es">Más de 100% significa más alto que el maíz — revisen que suene bien.</span></p></details>
+      </details></li>
+        </ol>
+      </section>
 
       <details class="fp-optional"><summary><span class="lang-en">More ways to see it (optional)</span><span class="lang-es" lang="es">Más formas de verlo (opcional)</span></summary><section class="family-visual-lab" data-family-paper-model="percent-over-whole"><h3><span class="lang-en">Beyond one whole</span><span class="lang-es" lang="es">Más de un entero</span></h3><p><span class="lang-en">A reading goal is 20 books. That goal is 100%: one outlined box. The shaded boxes below show amounts above the goal. Count the wholes and halves, then work out the number of books before opening the check.</span><span class="lang-es" lang="es">Una meta de lectura es 20 libros. Esa meta es el 100%: una caja delineada. Las cajas sombreadas muestran cantidades mayores que la meta. Cuenta los enteros y las mitades y calcula los libros antes de abrir la comprobación.</span></p><div class="question-model-grid"><article class="question-model-card"><h4>150%</h4><svg viewBox="0 0 400 55" role="img" aria-label="150% shown as whole boxes and halves" data-aria-en="150% shown as whole boxes and halves" data-aria-es="150% representado con cajas enteras y mitades"><rect x="5" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="5" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M65 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/><rect x="135" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="135" y="5" width="60" height="40" fill="var(--fm-m-part)"/><path d="M195 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/></svg><p><span class="lang-en">One whole and one half</span><span class="lang-es" lang="es">Un entero y una mitad</span></p><details><summary><span class="lang-en">Check the number of books</span><span class="lang-es" lang="es">Comprueba la cantidad de libros</span></summary><p>150/100 × 20 = 30 <span class="lang-en">books</span><span class="lang-es" lang="es">libros</span></p></details></article><article class="question-model-card"><h4>250%</h4><svg viewBox="0 0 400 55" role="img" aria-label="250% shown as whole boxes and halves" data-aria-en="250% shown as whole boxes and halves" data-aria-es="250% representado con cajas enteras y mitades"><rect x="5" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="5" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M65 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/><rect x="135" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="135" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M195 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/><rect x="265" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="265" y="5" width="60" height="40" fill="var(--fm-m-part)"/><path d="M325 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/></svg><p><span class="lang-en">Two wholes and one half</span><span class="lang-es" lang="es">Dos enteros y una mitad</span></p><details><summary><span class="lang-en">Check the number of books</span><span class="lang-es" lang="es">Comprueba la cantidad de libros</span></summary><p>250/100 × 20 = 50 <span class="lang-en">books</span><span class="lang-es" lang="es">libros</span></p></details></article><article class="question-model-card"><h4>300%</h4><svg viewBox="0 0 400 55" role="img" aria-label="300% shown as whole boxes and halves" data-aria-en="300% shown as whole boxes and halves" data-aria-es="300% representado con cajas enteras y mitades"><rect x="5" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="5" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M65 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/><rect x="135" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="135" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M195 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/><rect x="265" y="5" width="120" height="40" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/><rect x="265" y="5" width="120" height="40" fill="var(--fm-m-part)"/><path d="M325 5v40" stroke="var(--fm-primary)" stroke-dasharray="3 3"/></svg><p><span class="lang-en">Three wholes</span><span class="lang-es" lang="es">Tres enteros</span></p><details><summary><span class="lang-en">Check the number of books</span><span class="lang-es" lang="es">Comprueba la cantidad de libros</span></summary><p>300/100 × 20 = 60 <span class="lang-en">books</span><span class="lang-es" lang="es">libros</span></p></details></article></div><p><span class="lang-en">Explain: 150% is 1.5 times the goal because ___. Draw your own model for 200%.</span><span class="lang-es" lang="es">Explica: el 150% es 1.5 veces la meta porque ___. Dibuja tu propio modelo del 200%.</span></p></section><div class="learn-big-idea-block mission-block"><div id="hw_learn_idea">
 
@@ -582,16 +583,15 @@
       </details>
       </div>
     </div></div></details>
-      <aside class="fp-family" aria-label="Family question"><p class="fp-label"><span class="lang-en">Ask together (optional)</span><span class="lang-es" lang="es">Pregunten juntos (opcional)</span></p><p><span class="lang-en">Which amount is the goal (100%)? Is the new amount more or less than that whole?</span><span class="lang-es" lang="es">¿Qué cantidad es la meta (100%)? ¿La cantidad nueva es mayor o menor que ese entero?</span></p></aside>
-    </div>
+    <section class="mm-mystery" id="hw_math_mystery_studio" data-mm-lesson="4-1-part2" aria-label="Math Mystery Network"></section></div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
 
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 3 of 5</span><span class="lang-es" lang="es">Paso 3 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Your Turn</span><span class="lang-es" lang="es">Tu turno</span></h2>
-        <p class="fp-lead"><span class="lang-en">One at a time. Work on your own; a grown-up can watch.</span><span class="lang-es" lang="es">Uno a la vez. Trabaja solo; un adulto puede observar.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Practice</span><span class="lang-es" lang="es">Practicar</span></h2>
+        <p class="fp-lead"><span class="lang-en">One problem at a time. Hints and the scratchpad are right here.</span><span class="lang-es" lang="es">Un problema a la vez. Las pistas y la pizarra están aquí.</span></p>
       </header>
 
     <div class="hw-goal-card fp-progress">
@@ -2321,8 +2321,8 @@
 
       <header class="fp-head">
         <p class="fp-kicker"><span class="lang-en">Step 4 of 5</span><span class="lang-es" lang="es">Paso 4 de 5</span></p>
-        <h2 class="fp-title"><span class="lang-en">Check &amp; Improve</span><span class="lang-es" lang="es">Revisa y mejora</span></h2>
-        <p class="fp-lead"><span class="lang-en">See what each answer shows. Fix one, then try a fresh one.</span><span class="lang-es" lang="es">Vean qué muestra cada respuesta. Corrijan una y prueben una nueva.</span></p>
+        <h2 class="fp-title"><span class="lang-en">Improve</span><span class="lang-es" lang="es">Mejorar</span></h2>
+        <p class="fp-lead"><span class="lang-en">See what each answer shows, fix mistakes, and try a fresh problem.</span><span class="lang-es" lang="es">Mira qué muestra cada respuesta, corrige errores y prueba uno nuevo.</span></p>
       </header>
       <p class="fp-empty" data-improve-empty><span class="lang-en">Finish Your Turn first. Then this page shows what each answer tells us.</span><span class="lang-es" lang="es">Primero terminen Tu turno. Luego esta página muestra qué nos dice cada respuesta.</span></p>
       <div class="fp-improve" id="hw_improve" data-improve-body aria-live="polite"></div>
@@ -2364,7 +2364,7 @@
           <button type="button" class="fm-btn fm-btn--block hw-next-link" data-act="resetWorksheet"><span class="lang-en">Start this practice over</span><span class="lang-es" lang="es">Empezar esta práctica de nuevo</span></button>
         </div>
       </details>
-    </section><details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>
+    </section><section class="lr-replay" id="hw_learning_replay" data-lesson-id="4-1-part2" data-lr-ask-en="Hold up one glass of water and call it 100%. Ask your student: if I pour 1 and a half glasses, what percent is that? What about 2 glasses? 2 and a half?" data-lr-ask-es="Sostengan un vaso de agua y díganle 100%. Pregunten: si sirvo 1 vaso y medio, ¿qué porcentaje es? ¿Y 2 vasos? ¿Y 2 vasos y medio?" aria-label="Learning Replay"></section><section class="ex-studio" id="hw_explain_studio" data-ex-lesson="4-1" data-ex-vocab="[{&quot;en&quot;:&quot;Percent&quot;,&quot;es&quot;:&quot;Porcentaje&quot;},{&quot;en&quot;:&quot;Greater than 100%&quot;,&quot;es&quot;:&quot;Mayor que 100%&quot;},{&quot;en&quot;:&quot;Part-to-whole&quot;,&quot;es&quot;:&quot;Parte a total&quot;},{&quot;en&quot;:&quot;Whole&quot;,&quot;es&quot;:&quot;Total&quot;},{&quot;en&quot;:&quot;Decimal&quot;,&quot;es&quot;:&quot;Decimal&quot;}]" aria-label="Explain My Thinking Studio"></section><details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>
       <h2 class="section-title"><span aria-hidden="true">🎉</span> <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
 
       <section class="hw-teach" aria-labelledby="hw_teach_title">
@@ -4036,7 +4036,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"How to divide with fractions","titleEs":"","lines":["1. Percent means 'per hundred' (% = /100)","2. On a 100-grid, each square represents 1% = 0.01 = 1/100","3. Fraction to Percent: Scale fraction to a denominator of 100"],"linesEs":null};
 </script>
 <script src="/assets/homework/homework-vocab-82a28823c0.bundle.js"></script>
-<script src="/assets/homework/homework-core-cb292de595.bundle.js"></script>
+<script src="/assets/homework/homework-core-1fac551842.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

@@ -605,14 +605,13 @@ async function main() {
   ok(/Correct!/.test(q("[data-fm2-feedback]").textContent) && !q("[data-fm2-next]").hidden, "a correct board ends the round in the shell");
   session.destroy();
 
-  // ---- 8. repo rules for student games: small files, no timers, links, external scripts or emoji (FM-017) -----------
+  // ---- 8. repo rules for student games: small files, no timers, links or external scripts (FM-017) -----------
   const folder = new URL(`${dir}/`, import.meta.url);
   for (const [where, name] of [...fs.readdirSync(folder).map((n) => [folder, n]), [new URL(`${base}/art/`, import.meta.url), "puzzles.js"]]) {
     const source = fs.readFileSync(new URL(name, where), "utf8");
     ok(source.split("\n").length <= 500, `${name} stays within 500 lines (${source.split("\n").length})`);
     ok(!/\b(setInterval|setTimeout|requestAnimationFrame|Date\.now|countdown|timer)\b/i.test(source.replace(/\/\/.*$/gm, "")), `${name} has no timers or countdowns`);
     ok(!/<a\s|href=|https?:\/\/(?!www\.w3\.org)/.test(source), `${name} has no links or external resources`);
-    ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(source.replace(/[✓•→−×÷¢]/g, "")), `${name} uses no emoji`);
   }
   console.log(`math-puzzle-studio math suite: ${checks} checks, ${rounds} rounds (${game.skills.length} skills), ${wrongTried} wrong boards tried, ${exhaustiveRuns} boards enumerated passed.`);
 }

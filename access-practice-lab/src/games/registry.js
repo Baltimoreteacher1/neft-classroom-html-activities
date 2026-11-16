@@ -1,4 +1,4 @@
-// The 21 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
+// The 22 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
 // teacher view need to know without loading the game: its language objective, skill, WIDA 2020 Key
 // Language Use, grade-band objectives and which module and content file drive it.
 //
@@ -204,6 +204,36 @@ export const GAMES = [
     art: "detective",
     module: "evidence-hunt",
     mechanic: "evidence-case-file",
+  },
+  {
+    id: "language-expeditions",
+    n: 22,
+    inspired: "original",
+    flagship: true,
+    skill: "Integrated",
+    skills: ["Listening", "Reading", "Speaking", "Writing"],
+    klu: ["Narrate", "Inform", "Explain", "Argue"],
+    title: ["Language Expeditions", "Expediciones de lenguaje"],
+    tag: [
+      "Walk a painted trail through four lands and practice listening, reading, speaking and writing at each stop.",
+      "Recorre un sendero ilustrado por cuatro tierras y practica escuchar, leer, hablar y escribir en cada parada.",
+    ],
+    obj: {
+      "3-5": [
+        "I can listen for where things are and the main idea, read a sign and a short story in order, tell what I see and how to do something using where words and first, next, last, and write sentences that use because.",
+        "Puedo escuchar dónde están las cosas y la idea principal, leer un letrero y un cuento corto en orden, decir lo que veo y cómo hacer algo con palabras de lugar y first, next, last, y escribir oraciones que usen because.",
+      ],
+      "6-8": [
+        "I can follow multi-step spoken directions, use text details and time words to choose evidence and order events, state and explain a choice out loud with reasons, and write a sequenced report and a claim with a reason and evidence.",
+        "Puedo seguir indicaciones orales de varios pasos, usar detalles del texto y palabras de tiempo para elegir evidencia y ordenar hechos, decir y explicar una decisión en voz alta con razones, y escribir un informe en secuencia y una afirmación con razón y evidencia.",
+      ],
+    },
+    minutes: 15,
+    difficulty: 2,
+    home: true,
+    art: "expedition",
+    module: "language-expeditions",
+    mechanic: "four-land-expedition",
   },
 ];
 

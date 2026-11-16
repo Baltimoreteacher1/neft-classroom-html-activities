@@ -9,6 +9,7 @@ import {
   lastVisit,
   loadTutor,
   progressSummary,
+  masteryForGrade,
   saveGrade,
   savedGrade,
   selectLearner,
@@ -322,6 +323,7 @@ function progress() {
   if (grade === null) return route("library");
   const s = progressSummary(grade);
   const meters = skillMeters(grade);
+  const masteryRows = masteryForGrade(grade);
   const list = (rows) =>
     `<ul class="plist">${rows.map(({ skill }) => `<li><a href="?grade=${grade}&skill=${esc(skill.id)}&stage=practice">${esc(titleOf(skill))}</a> ${meterMini(meters[skill.id])}</li>`).join("")}</ul>`;
   const next = topicsFor(grade)
@@ -331,6 +333,15 @@ function progress() {
     ${s.practiced.length ? "" : `<p class="lead">${esc(tr("Nothing practiced yet in this grade. Pick a skill to begin."))}</p>`}
     ${s.remembered.length ? `<div class="panel"><h2>${esc(tr("Remembered on my own"))}</h2>${list(s.remembered)}</div>` : ""}
     ${s.improving.length ? `<div class="panel"><h2>${esc(tr("What I am getting stronger at"))}</h2>${list(s.improving)}</div>` : ""}
+    <details class="panel"><summary>${esc(tr("Three-part fluency evidence"))}</summary>
+      <p class="note">${esc(tr("This evidence uses independent first tries in Practice it and the full Fluency Lab. Older activity and other modes are not included. Strategy choices are the learner’s reflection."))}</p>
+      ${masteryRows.length ? `<ul class="plist">${masteryRows.map(({ skill, summary }) => `<li><strong>${esc(titleFor(skill))}</strong><ul>
+        <li>${esc(tr("Accuracy"))}: ${esc(tr(summary.dimensions.accuracy ? "Evidence threshold reached" : "Building evidence"))} (${summary.evidence.independentSessions} ${esc(tr("independent sessions"))})</li>
+        <li>${esc(tr("Strategy flexibility"))}: ${esc(tr(summary.dimensions.flexibility ? "Evidence threshold reached" : "Building evidence"))} (${summary.evidence.explainedStrategies} ${esc(tr("strategies named"))})</li>
+        <li>${esc(tr("Helpful strategies"))}: ${esc(tr(summary.dimensions.efficiency ? "Evidence threshold reached" : "Building evidence"))} (${summary.evidence.helpfulStrategySessions} ${esc(tr("sessions where a strategy helped"))}; ${esc(tr(summary.privateMetrics.hintsTrend === "increasing" ? "hint use is rising" : "hint use is not rising"))})</li>
+      </ul></li>`).join("")}</ul>` : `<p>${esc(tr("Answer a practice problem to begin collecting this evidence."))}</p>`}
+      <p class="note">${esc(tr("Response time is not shown or used to rank learners."))}</p>
+    </details>
     <div class="panel"><h2>${esc(tr("What I can try next"))}</h2><ul class="plist">
       ${s.refresh
         .slice(0, 2)

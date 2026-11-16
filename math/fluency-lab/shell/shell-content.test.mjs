@@ -70,6 +70,16 @@ for (const [q, which] of [["6:10 = □:90", "second"], ["2:3 = 8:□", "first"]]
 const keys = new Set();
 for (const file of readdirSync(new URL(".", import.meta.url)).filter((f) => f.endsWith(".js")))
   for (const m of readFileSync(new URL(file, import.meta.url), "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)+)"/g)) keys.add(m[1]);
+for (const key of [
+  "Strategies I used", "I used a visual", "I broke numbers apart", "I recalled a fact",
+  "Did that strategy help?", "Yes", "Not sure yet", "Save reflection", "Reflection saved on this device.",
+  "Three-part fluency evidence",
+  "This evidence uses independent first tries in Practice it and the full Fluency Lab. Older activity and other modes are not included. Strategy choices are the learner’s reflection.",
+  "Answer a practice problem to begin collecting this evidence.", "Accuracy", "Strategy flexibility",
+  "Helpful strategies", "Evidence developing", "Evidence threshold reached", "Building evidence",
+  "independent sessions", "strategies named", "sessions where a strategy helped", "hint use is rising",
+  "hint use is not rising", "Response time is not shown or used to rank learners.",
+]) keys.add(key);
 const missing = missingSpanish([...keys]);
 assert.deepEqual(missing, [], `interface strings without Spanish: ${missing.join(" | ")}`);
 console.log(`authored ${Object.keys(AUTHORED).length}, interface strings ${keys.size}, all with Spanish`);

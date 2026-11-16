@@ -1,0 +1,267 @@
+/* Language Labs (/language-labs): hub, five-step path, timeline, bridge, paragraph X-ray. Layout only; tokens and
+   shared components come from ds.css (DESIGN-SYSTEM.md). */
+.ll-hub,
+.ll-lab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5, 1.5rem);
+}
+.ll-hub-head h1,
+.ll-head h1 {
+  margin: 0.2rem 0 0.4rem;
+}
+.ll-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--s-4, 1rem);
+}
+.ll-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 1.1rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.ll-card .ico {
+  width: 2rem;
+  height: 2rem;
+  color: var(--writing, #9a4a26);
+}
+.ll-card strong {
+  font-size: 1.1rem;
+}
+.ll-card-meta {
+  margin-top: auto;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--writing-ink, #6b2f12);
+}
+.ll-steps ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.ll-steps a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.9rem 0.3rem 0.35rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.ll-steps a[aria-current="step"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.ll-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.ll-steps a.is-seen .ll-step-n {
+  background: var(--sage-200, #d9ead5);
+}
+.ll-step-n .ico {
+  width: 1rem;
+  height: 1rem;
+}
+.ll-timeline,
+.ll-bridge {
+  display: block;
+  width: 100%;
+  max-width: 44rem;
+  height: auto;
+  margin: 0.5rem 0;
+}
+.ll-sentence {
+  margin: 0.6rem 0;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  background: var(--ivory, #fffaf0);
+  border-inline-start: 4px solid var(--writing, #9a4a26);
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+.ll-sentence mark,
+mark.ll-conn {
+  padding: 0 0.2em;
+  border-radius: 4px;
+  background: #fff3c4;
+  color: inherit;
+  font-weight: 700;
+}
+.ll-forms,
+.ll-jobs,
+.ll-shows {
+  padding-inline-start: 1.2rem;
+  line-height: 1.6;
+}
+.ll-jobs li::marker {
+  color: var(--job);
+}
+.ll-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+.ll-palette .chip {
+  border-color: var(--job, var(--line-control));
+}
+.ll-palette .chip[aria-pressed="true"] {
+  background: var(--job, var(--brand));
+  border-color: var(--job, var(--brand));
+  color: #fff;
+}
+.ll-fit {
+  color: var(--right, #1f6b3a);
+  font-weight: 700;
+}
+.ll-misfit {
+  color: var(--writing-ink, #6b2f12);
+  font-weight: 700;
+}
+.ll-guided-steps {
+  line-height: 1.6;
+}
+.ll-guided-steps li.is-final {
+  font-weight: 700;
+  color: var(--right, #1f6b3a);
+}
+.ll-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-inline-start: 1.4rem;
+}
+.ll-item p {
+  margin: 0 0 0.35rem;
+}
+.ll-item.is-done > p:first-child {
+  color: var(--ink-2);
+}
+.ll-item input[type="text"] {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.6rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: 8px;
+  font: inherit;
+  min-width: 12rem;
+}
+.ll-base {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.ll-item select {
+  min-height: 2.75rem;
+  border-radius: 8px;
+  font: inherit;
+}
+.ll-para {
+  line-height: 1.9;
+  font-size: 1.1rem;
+}
+.ll-para.is-xray .ll-s {
+  background: var(--tint);
+  border-radius: 6px;
+  padding: 0.15rem 0.3rem;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.ll-para .ll-s small {
+  display: inline-block;
+  margin-inline-end: 0.3rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  vertical-align: middle;
+}
+.ll-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+}
+.ll-skeleton div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem;
+  border-radius: var(--radius);
+}
+.ll-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.ll-toggle input {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+.ll-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-inline-start: 1.4rem;
+}
+.ll-order li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.ll-order-btns {
+  display: flex;
+  gap: 0.25rem;
+  flex: none;
+}
+.ll-frame {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: var(--sage-200, #e6f0e3);
+}
+.ll-done {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  background: var(--right-soft, #e6f0e3);
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .ll-order li {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ll-sentence {
+    font-size: 1.05rem;
+  }
+}

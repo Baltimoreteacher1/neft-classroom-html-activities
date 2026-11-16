@@ -41,7 +41,7 @@ and the family digest; the progress document itself is never returned to anyone 
 
 ## Retention
 
-A class unused for 120 days is deleted whole (students, documents, rooms, audio); the sweep runs on every class
+A class unused for 120 days is deleted whole (students, documents, rooms, audio, shared books); the sweep runs on every class
 creation. Live rooms last 6 hours. Shared recordings and voice notes last 30 days. A teacher can delete a class at
 any time (`POST /delete` with the code typed again) or remove one student.
 
@@ -82,6 +82,22 @@ the device after an in-page confirm (it warns, and waits, when work has not reac
 printable join cards (one class QR, a slip per student, reset key) and a Google Classroom public share link; posting or
 roster import through the Classroom API is not built (the existing Google OAuth app has read-only scopes for another app).
 
+## Book Studio: writing together (`/books/*`)
+
+`functions/_lib/class-platform/books.js` (routes), `book-schema.js` (tables), `shared/class-platform/book-merge.js`
+(merge rules, server rich-text sanitizer, limits). Language classes only. A learner shares a book (`POST books/share`)
+and gets a 6-character book code; classmates of the SAME class join by code (`POST books/join`, wrong codes counted
+durably: 20 per learner per hour) as editors. Editing is `POST books/sync { bookId, since, ops, presence }`: one call
+per poll carries the device's ops, its presence and returns classmates' changes since `since` (paged by whole
+revisions) plus presence and members, so 30 learners polling every 2 s stay inside the per-IP read ceiling (the route is
+limited per learner instead: 120/min). Ops are element-granular with per-item base revisions; the book's `rev` is
+claimed atomically (optimistic `UPDATE ... WHERE rev = ?` plus a write token that guards every item write in the same
+D1 batch). Text is re-sanitized on the server to the Book Studio allow-list and again by every device. Owner or teacher:
+`POST books/member` (viewer/editor/remove), `POST books/unshare`; teacher: `GET books/class`, `POST books/lock`
+(read-only), `POST books/space` (on/off for the class; default on). Pictures: `POST/GET books/media` (JPEG, ≤ 350 KB,
+≤ 30 per book). Schema of record `migrations/0015_book_collab.sql` (pinned by `functions/api/class/books.test.mjs`).
+Retention: 30 days after the last change or open, with the class, and with the owner when the teacher removes them.
+
 ## AI helpers (selection only)
 
 `POST /api/class/ai/writing` classifies a learner's draft into the lab's authored next-move and error-pattern ids;
@@ -92,5 +108,5 @@ receives only the learner's own words, never a prompt, passage or test item (no 
 
 ## Local testing
 
-`node --test functions/api/class/class.test.mjs functions/api/class/ai.test.mjs tools/fluency-class.test.mjs tools/language-class.test.mjs tools/access-class-first.test.mjs tools/fluency-ai-hint.test.mjs`. To exercise with wrangler: `npx wrangler d1 execute
+`node --test functions/api/class/class.test.mjs functions/api/class/books.test.mjs tools/book-collab.test.mjs functions/api/class/ai.test.mjs tools/fluency-class.test.mjs tools/language-class.test.mjs tools/access-class-first.test.mjs tools/fluency-ai-hint.test.mjs`. To exercise with wrangler: `npx wrangler d1 execute
 neft-student-progress --local --file migrations/0011_class_platform.sql`. Never apply with `--remote` without Joel.

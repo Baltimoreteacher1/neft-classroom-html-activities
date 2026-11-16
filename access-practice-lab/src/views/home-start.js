@@ -11,6 +11,8 @@ import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
 import { loadIntro } from "../intro/state.js";
+import { tourStatus } from "../intro/tour/model.js";
+import { familyTourHost } from "../family-tour-host.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 
 const SKILL_ES = {
@@ -265,15 +267,14 @@ export function frontDoorHTML(I, { target, missions = [], resume = null, dueCoun
 
 /** "I am a… Student / Teacher / Family": Teacher follows the tour on this device; Family opens Practice Together. */
 function rolesHTML(I, band) {
-  const tour = loadIntro().guided || {};
-  const going = tour.part > 1 && !tour.done;
-  const tourState = going ? "continue" : tour.done ? "again" : "start";
+  const tourState = tourStatus(loadIntro()).state;
+  const going = tourState === "continue";
   const teacherHint = { continue: I.S("Continue the Teacher Tour", "Continuar el recorrido para docentes"), again: I.S("Take the Teacher Tour again", "Repetir el recorrido para docentes"), start: I.S("Start the Teacher Tour", "Empezar el recorrido para docentes") }[tourState];
   return html`<nav class="lph-roles" aria-labelledby="lphRolesLabel">
     <span class="lph-roles-label" id="lphRolesLabel">${I.T("I am a…", "Soy…")}</span>
     <a class="lph-role is-student" href="#lphFront" aria-current="true">${icon("reading")}<span>${I.T("Student", "Estudiante")}</span></a>
     <a class="lph-role is-teacher" data-tour="${tourState}" title="${teacherHint}" href="${going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`}">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
-    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/practice-together?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
+    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/${familyTourHost() ? "family-tour/" : "practice-together"}?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
   </nav>`;
 }
 

@@ -555,6 +555,9 @@ function resultsHTML(task, state, take, prev) {
         >
           ${I.T("Save my review", "Guardar mi revisión")}
         </button>
+        <button type="button" class="btn" data-speak-book>
+          ${icon("bookmark")} ${I.T("Make it a narrated book page", "Convertirlo en una página de libro narrada")}
+        </button>
         <button type="button" class="btn" data-again ${focusSelected ? "" : raw("disabled")}>
           ${icon("retry")} ${I.T("Record again to try this focus", "Grabar otra vez para probar este enfoque")}
         </button>
@@ -932,6 +935,33 @@ export function onClick(e, ctx) {
   if (!S?.task) return false;
   I = i18nFor(ctx);
   const t = e.target;
+  const toBook = t.closest("[data-speak-book]");
+  if (toBook) {
+    // My words and my own recording become a narrated page in Book Studio (src/book/handoff.js).
+    const task = S.task;
+    const take = S.state.takes.at(-1);
+    const audio = takesFor(task.id).at(-1);
+    if (!take?.transcript) return true;
+    toBook.disabled = true;
+    import("../book/handoff.js")
+      .then(({ openInBookStudio }) =>
+        openInBookStudio(
+          {
+            source: { kind: "speaking", id: task.id, label: task.title },
+            title: task.title,
+            templateId: "conversation-book",
+            band: ctx.band,
+            keepTemplatePages: false,
+            pages: [{ heading: task.title, text: take.transcript, transcript: take.transcript, audio: audio?.blob, audioSeconds: audio?.seconds || 0, audioLabel: I.S("Hear me say it", "Escúchame decirlo"), prompt: { en: "These are your words and your voice from the Speaking Studio. Add a picture, and revise the words if you want.", es: "Estas son tus palabras y tu voz del Estudio de habla. Agrega una imagen y revisa las palabras si quieres." } }],
+          },
+          (url) => ctx.navigate(url),
+        ),
+      )
+      .catch(() => {
+        toBook.disabled = false;
+      });
+    return true;
+  }
   // While a take records, recognize the words too, so the learner checks words instead of typing them.
   if (t.closest("[data-rec-start]") && autoDictationReady() && !dictating(`rec:${S.task.id}`)) {
     const task = S.task;

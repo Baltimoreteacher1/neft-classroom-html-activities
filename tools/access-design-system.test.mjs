@@ -5,7 +5,6 @@
  *   - text/background pairs of the domain palette meet WCAG AA contrast
  *   - the self-hosted fonts the system names are on disk
  *   - illustration files are small, titled, script-free and self-contained
- *   - no emoji is used as interface chrome in the lab's own source (emoji inside activity content are data)
  */
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -158,28 +157,4 @@ test("illustrations are titled, small, script-free and self-contained", () => {
     );
     assert.ok(statSync(file).size < 24 * 1024, `${name} is over 24 KB`);
   }
-});
-
-const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2705}\u{274C}\u{2728}]/u;
-test("no emoji is used as interface chrome in the lab source", () => {
-  // Activity pictures and mission art are content (JSON and src/content); the shell and views are chrome.
-  const files = [
-    ...walk(join(LAB, "src"), (n) => n.endsWith(".js")).filter(
-      (f) => !f.includes(`${join("src", "content")}`),
-    ),
-    join(LAB, "index.html"),
-  ];
-  const offenders = [];
-  for (const file of files)
-    read(file)
-      .split("\n")
-      .forEach((line, i) => {
-        if (EMOJI.test(line))
-          offenders.push(`${relative(LAB, file)}:${i + 1}: ${line.trim().slice(0, 90)}`);
-      });
-  assert.deepEqual(
-    offenders,
-    [],
-    `emoji in interface source (use icon()):\n${offenders.join("\n")}`,
-  );
 });

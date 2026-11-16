@@ -17,9 +17,20 @@ import {
   validateCustomMission,
 } from "../reality-engine.js";
 import { canSpeak, speak } from "../speech.js";
-import { ART, BASE, TIERS, announce, bandLabel, html, icon, raw, wordCount } from "../util.js";
+import { ART, BASE, TIERS, announce, bandLabel, html, icon, raw, storage, wordCount } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
+const STORY_DEFAULTS = {
+  setting: "School Science Greenhouse",
+  character: "Leo & Maya (Student Investigators)",
+  problem: "The automatic misting timer stopped before the weekend.",
+  sequence1: "At first, Leo noticed the fern leaves curling in the dry air.",
+  sequence2: "However, the water tank was still full, so Maya inspected the timer relay.",
+  resolution: "Finally, they reset the solar timer and explained the checklist to the garden club.",
+  choiceA: "", outcomeA: "", choiceB: "", outcomeB: "", published: false,
+  sceneTitleA: "", scenePlaceA: "", sceneObjectA: "",
+  sceneTitleB: "", scenePlaceB: "", sceneObjectB: "",
+};
 
 // Transient UI state for active tab / studio forms
 let activeTab = "worlds"; // "worlds" | "story-builder" | "collab" | "game-maker" | "teacher-builder"
@@ -87,23 +98,16 @@ function aiCoachInsight(mission, mProg, tier, I) {
 
 function renderStoryBuilder(state, band, I) {
   const { T, S } = I;
-  const sb = state.storyBuilder || {
-    setting: "School Science Greenhouse",
-    character: "Leo & Maya",
-    problem: "The automatic misting timer stopped before the weekend.",
-    sequence1: "At first, Leo noticed the fern leaves curling in the dry air.",
-    sequence2: "However, the water tank was still full, so Maya inspected the timer relay.",
-    resolution: "Finally, they reset the solar timer and explained the checklist to the garden club.",
-    published: false,
-  };
-  return html`<section class="panel reality-substudio" aria-labelledby="storyBuilderTitle" data-content>
+  const sb = { ...STORY_DEFAULTS, ...(state.storyBuilder || {}) };
+  for (const key of ["setting", "character", "problem", "sequence1", "sequence2", "resolution", "choiceA", "outcomeA", "choiceB", "outcomeB", "sceneTitleA", "scenePlaceA", "sceneObjectA", "sceneTitleB", "scenePlaceB", "sceneObjectB"]) sb[key] = String(sb[key] ?? "");
+  return html`<section class="panel reality-substudio" aria-labelledby="storyBuilderTitle" data-story-builder data-content>
     <div class="learn-wb-head">
       <div>
         <p class="eyebrow">${icon("writing")} ${T("Innovation 11 · WIDA Key Language Use: Narrate", "Innovación 11 · Uso clave del lenguaje WIDA: Narrar")}</p>
         <h2 id="storyBuilderTitle">${T("Interactive Visual Story Builder", "Constructor interactivo de historias visuales")}</h2>
         <p class="fine">${T(
-          "Select characters and settings, sequence events with transitions, revise your narration, and publish to your portfolio.",
-          "Selecciona personajes y escenarios, ordena eventos con transiciones, revisa tu narración y publícala en tu portafolio.",
+          "Select a setting, sequence events, and make a choice that changes what happens. Your work stays on this device.",
+          "Elige un escenario, ordena los eventos y crea una decisión que cambie lo que sucede. Tu trabajo queda en este dispositivo.",
         )}</p>
       </div>
     </div>
@@ -152,19 +156,25 @@ function renderStoryBuilder(state, band, I) {
         </label>
       </div>
     </div>
+    <details class="learn-stimulus-box"><summary>${T("Add a branching choice", "Agrega una decisión con dos caminos")}</summary>
+      <p>${T("Write two choices and a scene for each one. A reader can try both paths before the shared ending.", "Escribe dos decisiones y una escena para cada una. Un lector puede probar ambos caminos antes del final compartido.")}</p>
+      ${[["A", "First", "Primera"], ["B", "Second", "Segunda"]].map(([key, en, es]) => html`<div class="learn-step-card"><h3>${T(`${en} path`, `${es} opción`)}</h3><label class="field"><span>${T("Reader's choice", "Decisión del lector")}</span><input data-sb-field="choice${key}" maxlength="120" value="${sb[`choice${key}`]}" ${IGN}></label><label class="field"><span>${T("Scene title (optional)", "Título de la escena (opcional)")}</span><input data-sb-field="sceneTitle${key}" maxlength="80" value="${sb[`sceneTitle${key}`]}" ${IGN}></label><label class="field"><span>${T("Where does this scene happen? (optional)", "¿Dónde ocurre esta escena? (opcional)")}</span><input data-sb-field="scenePlace${key}" maxlength="120" value="${sb[`scenePlace${key}`]}" ${IGN}></label><label class="field"><span>${T("A useful object in the scene (optional)", "Un objeto útil en la escena (opcional)")}</span><input data-sb-field="sceneObject${key}" maxlength="120" value="${sb[`sceneObject${key}`]}" ${IGN}></label><label class="field"><span>${T("What happens next?", "¿Qué sucede después?")}</span><textarea data-sb-field="outcome${key}" maxlength="300" rows="2" ${IGN}>${sb[`outcome${key}`]}</textarea></label></div>`)}
+    </details>
     <div class="learn-stimulus-box">
       <div class="learn-stimulus-head">
-        <strong>${icon("reading")} ${T("Live Illustrated Story Preview", "Vista previa de la historia ilustrada")} · ${sb.setting}</strong>
-        ${canSpeak() ? html`<button type="button" class="btn small" data-reality-say="${`${sb.sequence1} ${sb.sequence2} ${sb.resolution}`}">${icon("volume")} ${T("Listen to story", "Escuchar historia")}</button>` : ""}
+        <strong>${icon("reading")} ${T("Story preview", "Vista previa de la historia")} · <span data-sb-preview="setting">${sb.setting}</span></strong>
+        ${canSpeak() ? html`<button type="button" class="btn small" data-sb-audio data-reality-say="${`${sb.sequence1} ${sb.sequence2} ${sb.resolution}`}">${icon("volume")} ${T("Listen to story", "Escuchar historia")}</button>` : ""}
       </div>
-      <p lang="en"><strong>${sb.character}</strong> · <em>${sb.problem}</em></p>
-      <blockquote class="learn-quote" lang="en">${sb.sequence1} ${sb.sequence2} ${sb.resolution}</blockquote>
+      <p lang="en"><strong data-sb-preview="character">${sb.character}</strong> · <em data-sb-preview="problem">${sb.problem}</em></p>
+      <blockquote class="learn-quote" lang="en"><span data-sb-preview="sequence1">${sb.sequence1}</span> <span data-sb-preview="sequence2">${sb.sequence2}</span></blockquote>
+      <div><h3>${T("Try a path", "Prueba un camino")}</h3><p>${T("Complete a choice and its outcome to try it.", "Completa una decisión y su resultado para probarla.")}</p><div class="row-actions">${["A", "B"].map((key) => html`<button type="button" class="btn" data-sb-path="${key}" ${!sb[`choice${key}`].trim() || !sb[`outcome${key}`].trim() ? raw("disabled") : ""}>${sb[`choice${key}`] || T(`Path ${key}`, `Camino ${key}`)}</button>`)}</div><section data-sb-scene hidden aria-live="polite"><div class="learn-step-card"><h4 data-sb-scene-title></h4><p data-sb-scene-place></p><p data-sb-scene-object></p><p data-sb-path-result></p></div></section></div>
+      <p><strong>${T("Shared ending", "Final compartido")}:</strong> <span data-sb-preview="resolution">${sb.resolution}</span></p>
       <div class="row-actions">
         <button type="button" class="btn btn-primary" data-sb-publish>
-          ${icon("check")} ${T("Publish Story to My Portfolio", "Publicar historia en mi portafolio")}
+          ${icon("check")} ${T("Save this story", "Guardar esta historia")}
         </button>
       </div>
-      ${sb.published ? html`<p class="feedback is-ok" role="status">${icon("check")} ${T("Story saved to your local Language Portfolio and Evidence Ledger!", "¡Historia guardada en tu Portafolio de lenguaje y registro de evidencia!")}</p>` : ""}
+      ${sb.published ? html`<p class="feedback is-ok" role="status" data-sb-saved>${icon("check")} ${storage.isVolatile ? T("Your story is in this tab; this device could not save it for later.", "Tu historia está en esta pestaña; el dispositivo no pudo guardarla para después.") : T("Story saved on this device.", "Historia guardada en este dispositivo.")}</p>` : ""}
     </div>
   </section>`;
 }
@@ -776,8 +786,26 @@ export function onInput(e, ctx) {
     state.storyBuilder = {
       ...(state.storyBuilder || {}),
       [f]: e.target.value,
+      published: false,
     };
     saveRealityState(state);
+    const story = { ...STORY_DEFAULTS, ...state.storyBuilder };
+    const root = e.target.closest("[data-story-builder]");
+    const preview = root?.querySelector(`[data-sb-preview="${f}"]`);
+    if (preview) preview.textContent = e.target.value;
+    const audio = root?.querySelector("[data-sb-audio]");
+    if (audio) audio.dataset.realitySay = `${story.sequence1} ${story.sequence2} ${story.resolution}`;
+    for (const key of ["A", "B"]) {
+      const button = root?.querySelector(`[data-sb-path="${key}"]`);
+      if (!button) continue;
+      button.textContent = String(story[`choice${key}`] || "").trim() || i18nFor(ctx).S(`Path ${key}`, `Camino ${key}`);
+      button.disabled = !String(story[`choice${key}`] || "").trim() || !String(story[`outcome${key}`] || "").trim();
+    }
+    const pathResult = root?.querySelector("[data-sb-path-result]");
+    if (pathResult) pathResult.textContent = "";
+    const scene = root?.querySelector("[data-sb-scene]");
+    if (scene) scene.hidden = true;
+    root?.querySelector("[data-sb-saved]")?.remove();
     return;
   }
   if (e.target.matches?.("[data-collab-draft]")) {
@@ -811,6 +839,26 @@ export function onClick(e, ctx) {
   const mission = resolveMission(state, world, band);
   const mKey = `${band}:${world.id}:${mission.id}`;
   const cur = state.progress[mKey] || {};
+
+  const storyPath = e.target.closest?.("[data-sb-path]");
+  if (storyPath) {
+    const key = storyPath.dataset.sbPath;
+    if (!["A", "B"].includes(key)) return false;
+    const story = { ...STORY_DEFAULTS, ...(state.storyBuilder || {}) };
+    const root = storyPath.closest("[data-story-builder]");
+    const output = root?.querySelector("[data-sb-path-result]");
+    if (!output || !String(story[`choice${key}`] || "").trim() || !String(story[`outcome${key}`] || "").trim()) return false;
+    const scene = root.querySelector("[data-sb-scene]");
+    const title = String(story[`sceneTitle${key}`] || "").trim();
+    const place = String(story[`scenePlace${key}`] || "").trim();
+    const object = String(story[`sceneObject${key}`] || "").trim();
+    root.querySelector("[data-sb-scene-title]").textContent = title || I.S(`Path ${key}`, `Camino ${key}`);
+    root.querySelector("[data-sb-scene-place]").textContent = place ? `${I.S("Place", "Lugar")}: ${place}` : "";
+    root.querySelector("[data-sb-scene-object]").textContent = object ? `${I.S("Object", "Objeto")}: ${object}` : "";
+    output.textContent = String(story[`outcome${key}`]);
+    scene.hidden = false;
+    return true;
+  }
 
   const tabBtn = e.target.closest?.("[data-reality-tab]");
   if (tabBtn) {
@@ -1026,9 +1074,9 @@ export function onClick(e, ctx) {
       domain: "Writing",
       use: "Narrate",
       kind: "first",
-      stage: "independent",
-      supports: {},
-      m: { words: 28, moves: 3, link: 2 },
+      stage: "guided",
+      supports: { model: true },
+      m: {},
     });
     saveLedger(ledger);
     ctx.rerender({ keepFocus: true });

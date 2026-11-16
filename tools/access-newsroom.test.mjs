@@ -6,7 +6,6 @@ import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
 import {
   COUNTDOWN,
   click,
-  EMOJI,
   makeCtx,
   mount,
   resetStorage,
@@ -125,7 +124,7 @@ test("front page is print-ready, escapes learner text and includes the picture",
   assert.doesNotMatch(doc, /<script/);
 });
 
-test("hub and all four steps render in English, Spanish and bilingual without timers, scores or emoji", async () => {
+test("hub and all four steps render in English, Spanish and bilingual without timers or scores", async () => {
   resetStorage();
   for (const band of ["3-5", "6-8"]) {
     for (const lang of ["en", "es", "bi"]) {
@@ -138,7 +137,6 @@ test("hub and all four steps render in English, Spanish and bilingual without ti
         assert.ok(m.root.querySelector("h1"), `${band} ${lang} ${step}`);
         assert.doesNotMatch(m.text, COUNTDOWN);
         assert.doesNotMatch(m.text, SCORE_CLAIM);
-        assert.doesNotMatch(m.root.innerHTML, EMOJI);
       }
     }
   }

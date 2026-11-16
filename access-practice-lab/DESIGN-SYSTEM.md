@@ -79,7 +79,7 @@ text and for control borders). `--ink-3` is the lightest allowed body-adjacent t
 
 ## Icons and illustration
 
-- No emoji as UI. Use `icon("name")` from `src/util.js` (sprite `pictures/ui-icons.svg`, 24 px grid, 1.8 stroke,
+- Emoji are allowed anywhere, interface chrome included (Joel, 2026-11-16). The icon sprite is still available: `icon("name")` from `src/util.js` (sprite `pictures/ui-icons.svg`, 24 px grid, 1.8 stroke,
   `currentColor`). The list of names is the `<symbol id>` set in that file. Icons are decorative (`aria-hidden`);
   keep a visible text label next to them.
 - Emoji that are part of _activity content_ (picture labels on answer choices, e.g. `.opt-visual`) are content, not
@@ -119,7 +119,7 @@ chevron, progress bars, the listening bars while audio is playing, the recording
 - `node tools/access-visual-qa.mjs --base http://localhost:4577 --out <dir> --only <screen-name> --widths 1440,1024,768,390,320`
   writes full-page PNGs per screen and width and reports horizontal overflow and console errors. Screen names are the
   keys in `SCREENS` inside that file; add a screen there when you add a route. `--y/--h` crop a long page.
-- Always open the PNGs and look: spacing, alignment, contrast, emoji left over, text clipping, empty areas.
+- Always open the PNGs and look: spacing, alignment, contrast, text clipping, empty areas.
 - Keyboard: tab through the screen, confirm a visible focus ring and no trap.
 - `node tools/access-studio-e2e.mjs` and `node tools/access-lab-e2e.mjs` drive the real flows (slow; run the one that
   covers your screens before you finish).

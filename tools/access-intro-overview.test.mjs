@@ -171,20 +171,26 @@ test("no on-site link to /start/present or presenter notes: /start, teacher nav,
   assert.ok(present.html);
 });
 
-test("Pick up where you left off follows the three-part teacher tour", () => {
-  const [item] = O.progressItems({ guided: { part: 2, pick: "2-3", skill: "reading" } });
-  assert.equal(item.text, "Teacher tour: Part 2 of 3, Try it as a student");
+test("Pick up where you left off follows the Teacher Tour 2.0 state", () => {
+  const [item] = O.progressItems({ tour2: { v: 1, step: "support", furthest: 2 } });
+  assert.equal(item.text, "Teacher Tour: Support, step 3 of 5");
   assert.match(item.href, /\/start\/tour$/);
-  assert.equal(item.cta, "Resume the tour");
-  assert.deepEqual(O.progressItems({ guided: { part: 1 } }), [], "Part 1 is not progress");
-  assert.deepEqual(O.progressItems({ guided: { part: 3, done: true } }), [], "a finished tour");
-  // A device saved by the old four-part tour must not break the overview.
+  assert.equal(item.cta, "Continue where I left off");
+  assert.deepEqual(
+    O.progressItems({ tour2: { v: 1, step: "welcome", furthest: 0 } }),
+    [],
+    "no progress yet",
+  );
+  const [done] = O.progressItems({ tour2: { v: 1, step: "kit", furthest: 6 } });
+  assert.equal(done.text, "Teacher Tour: Lesson kit ready");
+  assert.equal(done.cta, "Open my lesson kit");
+  // Devices saved by the earlier three-part tour must not break the overview, and their old record is ignored.
   assert.doesNotThrow(() => O.progressItems({ guided: { part: 4, skill: "reading" } }));
+  assert.deepEqual(O.progressItems({ guided: { part: 2 } }), []);
   assert.deepEqual(
     O.progressItems({ tour: { stop: 3 } }),
     [],
     "the old six-stop record is ignored",
   );
   assert.deepEqual(O.progressItems({}), []);
-  intro.clearIntro?.("guided");
 });

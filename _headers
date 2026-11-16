@@ -105,6 +105,10 @@
   Cache-Control: public, no-cache, must-revalidate
 /access-teacher/
   Cache-Control: public, no-cache, must-revalidate
+# The Family Tour's modules are not content-hashed, so they revalidate on every load (a 304 is cheap): a family
+# returning after a deploy never runs a mix of old and new files.
+/access-practice-lab/family-tour/*
+  Cache-Control: public, no-cache, must-revalidate
 
 # The *.pages.dev mirror (production + every preview/branch deployment) serves
 # the same pages as https://eduwonderlab.com. Keep it out of search results so

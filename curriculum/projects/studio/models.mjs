@@ -172,6 +172,19 @@ export function equivalenceRows(v, A, B) {
     return { x, original, yours, same: Number.isFinite(yours) && Math.abs(original - yours) < 1e-9 };
   });
 }
+/** A learner-selected input supplements the fixed examples without exposing the six-check inputs. */
+export function customExpressionTest(v, A, B, raw) {
+  const input = String(raw ?? "").trim();
+  if (!input) return { status: "empty" };
+  if (!/^-?\d+$/.test(input)) return { status: "invalid" };
+  const x = Number(input);
+  if (!Number.isSafeInteger(x) || x < -10 || x > 30) return { status: "invalid" };
+  if (x === v.c || x === v.c + 1) return { status: "reserved" };
+  if (!Number.isFinite(A) || !Number.isFinite(B)) return { status: "incomplete" };
+  const original = v.a * (x + v.b) + v.d ** 2;
+  const yours = A * x + B;
+  return { status: "ready", x, original, yours, same: Math.abs(original - yours) < 1e-9 };
+}
 function expressionModels(project, v, ctx) {
   const { a, b, c, d } = v;
   const ux = 150, ub = 130, rowH = Math.min(26, 150 / a), h = a * rowH, left = 40, top = 34;
@@ -190,8 +203,15 @@ function expressionModels(project, v, ctx) {
   const nA = Number(String(A).trim() === "" ? NaN : A), nB = Number(String(B).trim() === "" ? NaN : B);
   const rows = equivalenceRows(v, nA, nB);
   const complete = Number.isFinite(nA) && Number.isFinite(nB);
+  const test = customExpressionTest(v, nA, nB, ctx.builder?.C);
+  const customFeedback = test.status === "ready" ? `At x = ${test.x}, the original gives ${test.original} and your rule gives ${test.yours}. ${test.same ? "They match at this input." : "They differ at this input; use it to revise your rule."}` : {
+    empty: "Choose a whole-number input to test your rule.",
+    invalid: "Choose a whole number from −10 to 30.",
+    reserved: "That input is used in your math checks. Choose another to explore.",
+    incomplete: "Complete both parts of your rule first.",
+  }[test.status];
   const verdict = !complete ? "Type a number for both boxes to test your expanded rule." : rows.every((r) => r.same) ? `Your rule ${f2(nA)}x + ${f2(nB)} matches the original at all ${rows.length} test inputs.` : `Your rule does not match the original at ${rows.filter((r) => !r.same).map((r) => `x = ${r.x}`).join(" and ")}.`;
-  const builder = `<div class="wb-controls"><p>Original rule: <strong>${a}(x + ${b}) + ${d}²</strong></p><div class="wb-builder"><label for="wb-A">Number in front of x</label><input id="wb-A" data-wb-builder="A" type="text" inputmode="decimal" value="${esc(A)}" maxlength="10" autocomplete="off"><label for="wb-B">Number added at the end</label><input id="wb-B" data-wb-builder="B" type="text" inputmode="decimal" value="${esc(B)}" maxlength="10" autocomplete="off"></div><p class="wb-expanded" aria-live="polite">Your expanded rule: <strong>${complete ? `${f2(nA)}x + ${f2(nB)}` : "?x + ?"}</strong></p><div class="table-scroll"><table class="wb-table"><caption>Your rule compared with the original at three inputs</caption><thead><tr><th scope="col">x</th><th scope="col">Original</th><th scope="col">Your rule</th><th scope="col">Equal</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r.x}</th><td>${r.original}</td><td>${complete ? f2(r.yours) : "?"}</td><td>${!complete ? "Not tested" : r.same ? "Same" : "Different"}</td></tr>`).join("")}</tbody></table></div><p class="wb-verdict" role="status">${esc(verdict)}</p></div>`;
+  const builder = `<div class="wb-controls"><p>Original rule: <strong>${a}(x + ${b}) + ${d}²</strong></p><div class="wb-builder"><label for="wb-A">Number in front of x</label><input id="wb-A" data-wb-builder="A" type="text" inputmode="decimal" value="${esc(A)}" maxlength="10" autocomplete="off"><label for="wb-B">Number added at the end</label><input id="wb-B" data-wb-builder="B" type="text" inputmode="decimal" value="${esc(B)}" maxlength="10" autocomplete="off"></div><p class="wb-expanded" aria-live="polite">Your expanded rule: <strong>${complete ? `${f2(nA)}x + ${f2(nB)}` : "?x + ?"}</strong></p><div class="table-scroll"><table class="wb-table"><caption>Your rule compared with the original at three inputs</caption><thead><tr><th scope="col">x</th><th scope="col">Original</th><th scope="col">Your rule</th><th scope="col">Equal</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r.x}</th><td>${r.original}</td><td>${complete ? f2(r.yours) : "?"}</td><td>${!complete ? "Not tested" : r.same ? "Same" : "Different"}</td></tr>`).join("")}</tbody></table></div><p class="wb-verdict" role="status">${esc(verdict)}</p><label for="wb-C">Choose another whole-number input (−10 to 30)</label><input id="wb-C" data-wb-builder="C" type="text" inputmode="numeric" value="${esc(ctx.builder?.C ?? "")}" maxlength="3" autocomplete="off" aria-describedby="wb-custom-result"><p id="wb-custom-result" role="status">${esc(customFeedback)}</p></div>`;
   return [
     figure("Area model of the rule", areaSvg, `The ${a} multiplies BOTH parts of (x + ${b}); the square is added after.`),
     figure("Equivalent expression builder", builder, "Matching a few inputs is evidence. Your explanation of why they always match is judged by your teacher."),

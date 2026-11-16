@@ -10,7 +10,6 @@ import { LAB_DIR } from "./access-lab-content.mjs";
 const LEVELS = ["A", "B", "C"];
 const TIMER =
   /\b(timer|countdown|stopwatch|seconds? left|race the clock|beat the clock|speed run|as fast as you can)\b/i;
-const EMOJI = /\p{Extended_Pictographic}/u;
 const WIDA_LEVEL = /\b(Entering|Emerging|Developing|Expanding|Bridging|Reaching)\s*:/i;
 const KEBAB = /^[a-z0-9][a-z0-9-]*$/;
 const GLOSS = /^[^:]+:\s*\S/;
@@ -41,8 +40,7 @@ function choiceProblems(w, s, minOpts, maxOpts, nRight, p) {
     return p(`${w}: opts needs ${minOpts}-${maxOpts} entries (right answer(s) first)`);
   const texts = s.opts.map((o) => String(o).trim().toLowerCase());
   if (new Set(texts).size !== texts.length) p(`${w}: duplicate options`);
-  if (s.opts.some((o) => EMOJI.test(o) || String(o).includes("|")))
-    p(`${w}: options are plain text (no emoji, no "|")`);
+  if (s.opts.some((o) => String(o).includes("|"))) p(`${w}: options carry no "|"`);
   const wrong = s.opts.length - nRight;
   if (!Array.isArray(s.why) || s.why.length !== wrong)
     return p(`${w}: why needs one note per wrong option (${wrong}), in order`);

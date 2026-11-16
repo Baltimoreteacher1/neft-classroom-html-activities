@@ -369,6 +369,51 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "book-studio",
+    section: "practice",
+    skill: "Writing",
+    kind: "studio",
+    for: STF,
+    top: true,
+    href: "book-studio",
+    icon: "writing",
+    title: P("Book Studio: create a book", "Book Studio: crea un libro"),
+    text: P(
+      "Make multimedia books and comics with your words, pictures, drawings and voice. Read them aloud, print or share them.",
+      "Haz libros y cómics multimedia con tus palabras, imágenes, dibujos y voz. Léelos en voz alta, imprímelos o compártelos.",
+    ),
+  },
+  {
+    id: "language-labs",
+    section: "practice",
+    skill: "Writing",
+    kind: "studio",
+    for: ST,
+    top: true,
+    href: "language-labs",
+    icon: "construction",
+    title: P("Language Labs", "Laboratorios de lenguaje"),
+    text: P(
+      "Six hands-on labs: verb time, connectors, paragraph X-ray, sentence expansion, evidence and precise words.",
+      "Seis laboratorios prácticos: tiempos verbales, conectores, rayos X del párrafo, oraciones, evidencia y palabras precisas.",
+    ),
+  },
+  {
+    id: "adventure-worlds",
+    section: "play",
+    skill: "Mixed",
+    kind: "world",
+    for: ST,
+    top: true,
+    href: "adventures",
+    icon: "worlds",
+    title: P("Adventure Worlds", "Mundos de aventura"),
+    text: P(
+      "Story worlds played in missions: read, listen, collect clues, decide, then speak and write to solve the case.",
+      "Mundos de historias en misiones: lee, escucha, reúne pistas, decide y luego habla y escribe para resolver el caso.",
+    ),
+  },
+  {
     id: "sentences",
     section: "practice",
     skill: "Writing",
@@ -562,6 +607,36 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   // ── Games & Worlds ────────────────────────────────────────────────────────────────────────
+  {
+    id: "signal-quest",
+    section: "play",
+    skill: "Mixed",
+    kind: "game",
+    for: STF,
+    bands: UPPER,
+    href: "/language-adventures/signal-quest/",
+    icon: "worlds",
+    title: P("Signal Quest", "Misión Señal"),
+    text: P(
+      "Explore an island and restore its signal through four language challenges.",
+      "Explora una isla y restaura su señal con cuatro retos de lenguaje.",
+    ),
+  },
+  {
+    id: "language-games",
+    section: "play",
+    skill: "Mixed",
+    kind: "game",
+    for: STF,
+    top: true,
+    href: "language-games",
+    icon: "lock",
+    title: P("Language Games", "Juegos de lenguaje"),
+    text: P(
+      "Four story games: an escape room, a detective case, real conversations and a newsroom.",
+      "Cuatro juegos de historias: una sala de escape, un caso de detective, conversaciones reales y una redacción.",
+    ),
+  },
   {
     id: "games",
     section: "play",
@@ -1024,6 +1099,21 @@ export const DESTINATIONS = Object.freeze([
   },
   // ── For Teachers ──────────────────────────────────────────────────────────────────────────
   {
+    id: "book-templates",
+    section: "teach",
+    skill: "Mixed",
+    kind: "tool",
+    for: T_,
+    href: "book-studio/templates",
+    icon: "library",
+    match: [["book-studio", "templates"]],
+    title: P("Book Studio templates", "Plantillas de Book Studio"),
+    text: P(
+      "26 book templates with page-by-page directions, language goals and teacher notes; review books students send.",
+      "26 plantillas de libros con instrucciones por página, metas de lenguaje y notas docentes; revisen los libros que envían los estudiantes.",
+    ),
+  },
+  {
     id: "start",
     section: "teach",
     skill: "Mixed",
@@ -1226,6 +1316,22 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "What each part of the site does and how to try it.",
       "Qué hace cada parte del sitio y cómo probarla.",
+    ),
+  },
+  {
+    // A generated static page (scripts/generate-studio-videos.mjs), not an app route.
+    id: "videos",
+    section: "help",
+    skill: "Mixed",
+    kind: "guide",
+    for: STF,
+    href: "/access-practice-lab/videos/",
+    icon: "sparkle",
+    match: [],
+    title: P("Videos", "Videos"),
+    text: P(
+      "Short animated videos with English captions and a written copy.",
+      "Videos animados cortos con subtítulos en inglés y una copia escrita.",
     ),
   },
   {

@@ -509,14 +509,13 @@ async function main() {
   ok(/Solución/.test(q("[data-fm2-hintbox]").textContent), "the solution switches to Spanish");
   session.destroy();
 
-  // ---- 7. repo rules for student games: no timers, links, external scripts or emoji; files stay small (FM-017) ------
+  // ---- 7. repo rules for student games: no timers, links or external scripts; files stay small (FM-017) ------
   const folder = new URL(`${base}/games/math-market/`, import.meta.url);
   for (const [dir, name] of [...fs.readdirSync(folder).map((n) => [folder, n]), [new URL(`${base}/art/`, import.meta.url), "money.js"]]) {
     const source = fs.readFileSync(new URL(name, dir), "utf8");
     ok(source.split("\n").length <= 500, `${name} stays within 500 lines`);
     ok(!/\b(setInterval|setTimeout|requestAnimationFrame|Date\.now|countdown|timer)\b/i.test(source), `${name} has no timers or countdowns`);
     ok(!/<a\s|href=|https?:\/\//.test(source), `${name} has no links or external resources`);
-    ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(source.replace(/[✓•→−×÷¢]/g, "")), `${name} uses no emoji`);
   }
   console.log(`math-market math suite: ${checks} checks, ${rounds} rounds (${game.skills.length} skills) passed.`);
 }

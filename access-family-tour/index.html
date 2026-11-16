@@ -259,6 +259,10 @@
       .welcome-copy {
         padding: 28px 22px;
       }
+      .tour-film { border: 1px solid #b8dcd8; border-radius: 14px; padding: 14px; background: #f2faf7; }
+      .tour-film summary { cursor: pointer; font-weight: 700; color: #17324d; padding: 8px; }
+      .tour-film summary:focus-visible { outline: 3px solid #17324d; outline-offset: 2px; }
+      .tour-film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #17324d; border-radius: 8px; margin-top: 12px; }
       .welcome-visual {
         display: none;
         background: #dfeff5;
@@ -906,8 +910,8 @@
             [
               "02 · See it for real",
               "Véanlo de verdad",
-              "Each stop opens a real part of the site, with a guide beside you.",
-              "Cada parada abre una parte real del sitio, con una guía a su lado.",
+              "Each stop opens a real part of the site in a new tab. This guide stays here.",
+              "Cada parada abre una parte real del sitio en una pestaña nueva. Esta guía queda aquí.",
             ],
             [
               "03 · Check it off",
@@ -942,10 +946,10 @@
           changeGrade: ["Change grade", "Cambiar de grado"],
           stopOf: (n) => [`Stop ${n} of ${TOTAL}`, `Parada ${n} de ${TOTAL}`],
           about: ["About 2 minutes", "Unos 2 minutos"],
-          open: ["Open this part of the site", "Abrir esta parte del sitio"],
+          open: ["Open this part of the site (new tab)", "Abrir esta parte del sitio (pestaña nueva)"],
           comeBack: [
-            "A guide stays with you while you look around: beside the page on a computer, at the bottom on a phone. Tap “Back to the tour” in it any time.",
-            "Una guía los acompaña mientras exploran: al lado de la página en una computadora, abajo en un teléfono. Toquen “Volver al recorrido” cuando quieran.",
+            "This guide stays open here. Switch back to this tab to choose another stop.",
+            "Esta guía queda abierta aquí. Vuelvan a esta pestaña para elegir otra parada.",
           ],
           where: ["Where to next?", "¿A dónde ahora?"],
           didNext: (name) => [`I know this one. Next: ${name[0]}`, `Ya lo conozco. Sigue: ${name[1]}`],
@@ -1059,6 +1063,10 @@
             `<button type="button" class="grade" data-band="${band}" aria-pressed="${state.band === band}"><strong>${T(title)}</strong><span>${T(sub)}</span></button>`;
           return `<section class="welcome"><div class="welcome-copy stack"><span class="tag">${esc(S(COPY.tagline))}</span>
   <h1>${T(COPY.welcomeTitle)}</h1><p class="lead">${T(COPY.welcomeLead)}</p>
+  <details class="tour-film"><summary>${T(["▶ Watch the 30-second family tour introduction", "▶ Miren la introducción de 30 segundos al recorrido familiar"])}</summary>
+    <video controls preload="none" playsinline width="1920" height="1080" poster="/assets/language-intro/family-poster.jpg" aria-label="${esc(S(["Family tour introduction", "Introducción al recorrido familiar"]))}"><source src="/assets/language-intro/family-tour.mp4" type="video/mp4"></video>
+    <details><summary>${T(["Read the video text", "Leer el texto del video"])}</summary><p>${T(["Welcome, families. Explore together. Choose a stop, visit a real part of the site with a guide, and check it off. Practice listening, speaking, reading, and writing together. Music plays throughout; there is no spoken narration.", "Bienvenidas, familias. Exploren juntos. Elijan una parada, visiten una parte real del sitio con una guía y márquenla. Practiquen juntos escuchar, hablar, leer y escribir. Hay música durante todo el video; no hay narración hablada."])}</p></details>
+  </details>
   <h2>${T(COPY.pickGrade)}</h2>
   <div class="grades">${grade("3-5", COPY.g35, COPY.g35s)}${grade("6-8", COPY.g68, COPY.g68s)}</div>
   <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></div>
@@ -1114,7 +1122,7 @@
   <div class="destination-body">${miniMap(state.stop)}
   <p class="lead">${T(s.what)}</p>
   <section class="playcard"><ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
-  <a class="btn primary" href="${stopUrl(state.stop, state.band)}">${T(COPY.open)}</a>
+  <a class="btn primary" href="${esc(new URL(stopUrl(state.stop, state.band).replace(/&tour=\d+$/, ""), "https://thelanguagepage.com").href)}" target="_blank" rel="noopener">${T(COPY.open)}</a>
   <p class="note">${T(COPY.comeBack)}</p></section>
   <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.tip)}</p></div>
   ${done ? `<p class="collected">${T(COPY.doneHere)}</p>` : ""}
@@ -1123,11 +1131,11 @@
         function end() {
           const n = state.done.length;
           const link = (href, title, help) =>
-            `<a class="btn" href="${href}">${T(title)}<span class="note">${T(help)}</span></a>`;
+            `<a class="btn" href="${href}" target="_blank" rel="noopener">${T(title)} <span class="note">${T(["Opens in a new tab", "Se abre en una pestaña nueva"])}</span><span class="note">${T(help)}</span></a>`;
           return `<section class="outro stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (isDone(i) ? "★" : "☆")).join("")}</div>
   <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
   <h2>${T(COPY.readyTitle)}</h2>
-  <div class="row">${link("/access-family-expedition/", COPY.adventure, COPY.adventureHelp)}${link(`${LAB}/?grades=${state.band}`, COPY.mission, COPY.missionHelp)}</div>
+  <div class="row">${link("/access-family-expedition/", COPY.adventure, COPY.adventureHelp)}${link(`https://thelanguagepage.com${LAB}/?grades=${state.band}`, COPY.mission, COPY.missionHelp)}</div>
   <div class="row two"><button type="button" data-view="map">${T(COPY.backMap)}</button><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
         }
 

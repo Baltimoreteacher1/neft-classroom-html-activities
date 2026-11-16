@@ -382,6 +382,14 @@ const g35 = {
         valid: ["s2", "s3", "s4", "s5"],
         minValid: 3,
         weak: ["s6", "s7"],
+        rationales: {
+          s2: ["The litter count shows a problem, though it does not by itself show where to put the cans.", "El conteo muestra un problema, aunque por sí solo no indica dónde poner los basureros."],
+          s3: ["The litter and the current cans are in different places; this connects location to the recommendation.", "La basura y los basureros actuales están en lugares distintos; esto conecta la ubicación con la recomendación."],
+          s4: ["The survey reports that many students consider the cans too far away.", "La encuesta informa que muchos estudiantes consideran que los basureros están demasiado lejos."],
+          s5: ["This is a reason: it explains how a closer can might help, rather than reporting a measurement.", "Esta es una razón: explica cómo podría ayudar un basurero más cercano, en vez de informar una medición."],
+          s6: ["The tables' color does not tell us whether a nearby can would help with litter.", "El color de las mesas no indica si un basurero cercano ayudaría con la basura."],
+          s7: ["The team's meeting time does not show why cans should be near the tables.", "La hora de reunión del equipo no muestra por qué los basureros deben estar cerca de las mesas."],
+        },
         explainFrame: "This evidence shows the claim is true because ___.",
         explainTerms: ["because", "shows", "so"],
         transfer: {
@@ -1030,6 +1038,15 @@ const g68 = {
         valid: ["s2", "s3", "s4", "s5"],
         minValid: 3,
         weak: ["s6", "s7", "s9"],
+        rationales: {
+          s2: ["The number arriving exceeds the number of seats, showing the crowding the claim addresses.", "La cantidad de estudiantes supera los asientos disponibles, lo que muestra la aglomeración que aborda la afirmación."],
+          s3: ["The estimated group size fits the available seats, connecting the proposal to capacity.", "El tamaño estimado del grupo cabe en los asientos disponibles, lo que conecta la propuesta con la capacidad."],
+          s4: ["The survey reports students' experiences of crowding; it does not by itself prove that a third period will solve it.", "La encuesta informa las experiencias de aglomeración; por sí sola no demuestra que un tercer turno la resolverá."],
+          s5: ["This is a reason about a possible benefit of having a seat, not a measured result of a third period.", "Esta es una razón sobre un posible beneficio de tener asiento, no un resultado medido de un tercer turno."],
+          s6: ["A second serving line addresses waiting; it does not show that a third period will relieve seating crowding.", "Una segunda fila aborda la espera; no muestra que un tercer turno reducirá la falta de asientos."],
+          s7: ["The wall color does not explain cafeteria crowding or the proposed solution.", "El color de las paredes no explica la aglomeración ni la solución propuesta."],
+          s9: ["This is a relevant tradeoff to consider, but it does not support the claim that a third period relieves crowding.", "Esta es una desventaja relevante, pero no apoya la afirmación de que un tercer turno reduce la aglomeración."],
+        },
         explainFrame: "This evidence supports the recommendation because ___, which shows ___.",
         explainTerms: ["because", "shows", "so", "which"],
         transfer: {

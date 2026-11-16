@@ -9,6 +9,7 @@
 import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
+import { gradeSwitchTarget } from "./wayfinding.js";
 import { isEarlyBand, normalizeBand } from "./bands.js";
 import { namesGradeFocus, normalizeGradeFocus } from "./grade-focus.js";
 import { announceGradeFocus } from "./grade-focus-ui.js";
@@ -26,8 +27,10 @@ import { registerSaveResume } from "./sync.js";
 import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js";
 import { initStartFresh } from "./reset.js";
 import { mountReturnBar } from "./intro/return-bar.js";
+import { mountStudioVideo } from "./studio-video-mount.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
+import { familyTourHost } from "./family-tour-host.js";
 
 // Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
 // language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
@@ -113,6 +116,10 @@ const VIEW_LOADERS = {
   "site-guide": () => import("./intro/site-guide.js"),
   privacy: () => import("./views/privacy.js"),
   accessibility: () => import("./views/accessibility.js"),
+  "book-studio": () => import("./views/book-studio.js"),
+  "language-labs": () => import("./views/language-labs.js"),
+  adventures: () => import("./views/adventures.js"),
+  "language-games": () => import("./views/language-games.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -162,6 +169,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
+  if (a === "language-games") return { ...r, view: a, id: b || "", chapter: c || "" };
   if (a === "language-studios")
     return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
   if (a === "science-of-reading" && b === "lesson")
@@ -174,7 +182,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "explore"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "explore", "language-labs"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")
@@ -206,6 +214,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };
   if (a === "warmup") return { ...r, view: "warmup", id: b || "", date: q.get("date") || "" };
   if (a === "search") return { ...r, view: "search", id: b || "", q: q.get("q") || "", kind: q.get("kind") || "", all: q.get("all") || "" };
+  if (a === "adventures") return { ...r, view: "adventures", id: b || "", worldId: b || "", missionId: c || "", scene: q.get("scene") || "" };
+  if (a === "book-studio") return { ...r, view: "book-studio", id: b || "", sub: c || "" };
   if (a === "portfolio") return { ...r, view: "portfolio", id: b || "", mode: q.get("view") || "" };
   if (a === "collection") return { ...r, view: "collection", id: b || "" };
   if (a === "units") return { ...r, view: "units", id: b || "", sub: c || "", tab: q.get("tab") || "" };
@@ -232,6 +242,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (c) return { ...r, view: "activity", domain: a, level: b, id: c };
   return { ...r, view: "room", domain: a, level: b || "" };
 }
+
+// Pages under the lab that are real files, not app routes: a click on a link to one is a normal navigation.
+const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`) || pathname.startsWith(`${BASE}/family-tour`);
 
 const app = {
   route: null,
@@ -336,6 +349,11 @@ function focusKey(el) {
 async function render({ keepFocus = false, scroll = false } = {}) {
   const token = ++app.rendering;
   const route = parseRoute();
+  // The old Practice Together walkthrough is retired: every family entry point opens the one Family Tour.
+  if (route.view === "practice-together" && familyTourHost()) {
+    location.replace(`${BASE}/family-tour/?grades=${normalizeBand(route.grades) || app.band}`);
+    return;
+  }
   const locationKey = location.pathname + location.search;
   const routeChanged = app.location !== locationKey;
   if (routeChanged) {
@@ -395,6 +413,8 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
   root.removeAttribute("aria-busy");
+  // A route listed in data/studio-videos.json gets its video card; every other route does nothing here.
+  void mountStudioVideo(root, location.pathname, () => token === app.rendering);
   // Orientation on navigation only: the new screen settles in place (reduced motion turns this off).
   if (routeChanged && app.rendered) {
     root.classList.remove("is-entering");
@@ -406,7 +426,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   // Shared links carry their grade context into a fresh browser.
   for (const link of root.querySelectorAll("a[href]")) {
     const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || url.pathname.startsWith(`${BASE}/printables/`)) continue;
+    if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || isStaticPage(url.pathname)) continue;
     if (!url.searchParams.has("grades")) url.searchParams.set("grades", app.band);
     const mode = new URLSearchParams(location.search).get("mode");
     if (mode && !url.searchParams.has("mode")) url.searchParams.set("mode", mode);
@@ -614,7 +634,7 @@ function interceptLink(e) {
     url.origin !== location.origin ||
     !url.pathname.startsWith(`${BASE}/`) ||
     /\.[a-z0-9]+$/i.test(url.pathname) ||
-    url.pathname.startsWith(`${BASE}/printables/`)
+    isStaticPage(url.pathname)
   )
     return false;
   e.preventDefault();
@@ -633,6 +653,16 @@ document.addEventListener("click", async (e) => {
   common(e);
 });
 document.addEventListener("change", (e) => {
+  // Header grade switch (src/wayfinding.js): change grade from any page without going back home first.
+  const gradePick = e.target?.closest?.("[data-grade-select]");
+  if (gradePick) {
+    const next = gradePick.value;
+    if (next === app.band) return;
+    const from = parseRoute();
+    ctx.setBand(next);
+    navigate(gradeSwitchTarget(from, app.band, { canOpen: (r) => !isEarlyBand(app.band) || earlyCanOpen(r) }));
+    return;
+  }
   if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConversationEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConstructionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }

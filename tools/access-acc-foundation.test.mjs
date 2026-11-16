@@ -175,7 +175,18 @@ test("no file the student Practice Lab loads is behind the teacher gate", () => 
     readdirSync(d).flatMap((f) =>
       statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)],
     );
-  const allowed = new Set(["access-practice-lab/paper-passport/language-passport-teacher-key.pdf"]);
+  // The social panel is dynamically imported only by the teacher roster. Keep it gated;
+  // its source is not a dependency of a student view.
+  const allowed = new Set([
+    "access-practice-lab/paper-passport/language-passport-teacher-key.pdf",
+    "access-practice-lab/src/class/social-teacher.js",
+  ]);
+  const panel = readFileSync("access-practice-lab/src/class/roster-panel.js", "utf8");
+  assert.match(panel, /import\("\.\/social-teacher\.js"\)/);
+  const importers = walk("access-practice-lab/src").filter(
+    (f) => f.endsWith(".js") && readFileSync(f, "utf8").includes("./social-teacher.js"),
+  );
+  assert.deepEqual(importers, ["access-practice-lab/src/class/roster-panel.js"]);
   const gated = walk("access-practice-lab")
     .filter((f) => !/\.(md|test\.mjs)$/.test(f) && isTeacherSurface(`/${f}`))
     .filter((f) => !allowed.has(f));

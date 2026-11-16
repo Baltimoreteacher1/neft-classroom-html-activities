@@ -223,7 +223,6 @@ check("every diagnosis labels what was observed and what is only possible", () =
   const html = exportsMod.classReportHtml(result, { title: "Period 3", now: NOW });
   assert.match(html, /<b>Observed:<\/b> /);
   assert.ok(/Possible reason \(inferred\)/.test(html));
-  assert.doesNotMatch(html, /[\u{1F300}-\u{1FAFF}☀-➿]/u, "no emoji in the printout");
 });
 
 check("by-level grouping on one skill uses current scores only", () => {

@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { withCurriculumShell } from "../tools/lib/curriculum-shell.mjs";
+import { motionSpecFor } from "./lib/motion-spec.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
@@ -219,6 +220,16 @@ const sprint = (
         <p class="lp-actions"><label for="lp-code">${bi("Class code (optional)", "Código de clase (opcional)")}</label> <input id="lp-code" type="text" autocomplete="off" maxlength="14" placeholder="KITE-4821"> <button type="button" class="lp-start" id="lp-sprint-start">${bi("Start", "Empezar")}</button></p>
         <div id="lp-sprint-host"></div></details>`;
 
+/** The lesson's animated figure and Think it through flow (shared/motion); the client module mounts it. Empty when a lesson has no figure. */
+function motionBlock(id) {
+  const spec = motionSpecFor(id);
+  if (!spec) return "";
+  return `<div class="lp-motion" id="lp-motion" data-k="${esc(spec.key)}" data-v="${spec.values.join(",")}">
+          <h3>${bi("See it move", "Míralo moverse")}</h3>
+          <p>${bi("Watch the idea happen, then predict, test and explain. The Challenge level adds finding a mistake and building to a target.", "Mira la idea en movimiento y luego predice, prueba y explica. El nivel Reto añade encontrar un error y construir hasta una meta.")}</p>
+          <div data-motion-stage></div></div>`;
+}
+
 export function pageFor(lesson, map, stamp) {
   const id = lesson.id;
   const p = pathFor(lesson, map);
@@ -297,6 +308,7 @@ export function pageFor(lesson, map, stamp) {
       "Practica y explora",
       `<div class="lp-levels" role="tablist" aria-label="Level">${tabs}</div>
         ${lv}
+        ${motionBlock(id)}
         ${p.explore.length ? `<h3>${bi("Explore the idea", "Explora la idea")}</h3>${list(p.explore)}` : ""}
         ${p.more.length ? `<details class="lp-more"><summary>${bi("More practice", "Más práctica")}</summary>${list(p.more)}</details>` : ""}`,
     )}
@@ -318,6 +330,7 @@ ${body}
 <script src="/assets/ewl/state-store.js?v=${stamp["state-store.js"]}"></script>
 <script src="/assets/ewl/lesson-path.js?v=${stamp["lesson-path.js"]}" defer></script>
 <script src="/assets/ewl/reference-loader.js" defer></script>
+<script type="module" src="/shared/motion/lesson-path-motion.mjs"></script>
 ${NSR_BODY}
 </body></html>
 `;

@@ -13,6 +13,7 @@ import {
 } from "../tutor-engine.js";
 import { validLastVisit } from "../skill-path.js";
 import { meterFor } from "./meter.js";
+import { masterySummary, recordMasteryEvent, recordMasteryReflection as reflectMastery } from "../mastery-model.js";
 
 const PROGRESS = "ewl-fluency-progress-v1";
 const TUTOR = "ewl-fluency-tutor-v2";
@@ -94,11 +95,15 @@ export const skillEvidence = (skill) => evidence(loadTutor(), skill);
 
 // One answered practice problem. `independent` is false whenever any help was opened before the answer, so
 // supported work never counts toward "Remembered independently" (tutor-engine evidence()).
-export function recordPractice(skill, item, { correct, independent, firstTry, raw, level = 1 }) {
+export function recordPractice(skill, item, { correct, independent, firstTry, raw, level = 1, masteryEvent = null }) {
   const tutor = loadTutor();
   if (firstTry)
     recordAnswer(tutor, skill, { correct, independent, level, viewedExample: !independent });
   if (!correct) rememberMistake(tutor, skill, item, raw);
+  if (firstTry && masteryEvent) {
+    const record = tutor.records[`${skill.grade}:${skill.id}`];
+    recordMasteryEvent(record, { ...masteryEvent, correct, independent, at: Date.now() });
+  }
   write(key(TUTOR), tutor);
   if (!firstTry) return;
   const progress = loadProgress();
@@ -125,6 +130,22 @@ export function recordPractice(skill, item, { correct, independent, firstTry, ra
   record.lastPracticed = new Date().toISOString();
   progress[id] = record;
   write(key(PROGRESS), progress);
+}
+
+export function recordMasteryReflection(skill, eventId, strategy, strategyHelped) {
+  const tutor = loadTutor();
+  const record = tutor.records[`${skill.grade}:${skill.id}`];
+  if (!reflectMastery(record, eventId, strategy, strategyHelped)) return false;
+  write(key(TUTOR), tutor);
+  return true;
+}
+
+export function masteryForGrade(grade) {
+  const tutor = loadTutor();
+  return ALL_SKILLS.filter((skill) => skill.grade === grade).flatMap((skill) => {
+    const events = tutor.records[`${skill.grade}:${skill.id}`]?.masteryEvents || [];
+    return events.length ? [{ skill, summary: masterySummary(events) }] : [];
+  });
 }
 
 // Student-facing progress: what I practiced, what I am improving, what to try next. No scores.

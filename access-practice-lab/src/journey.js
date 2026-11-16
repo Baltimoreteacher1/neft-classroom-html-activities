@@ -73,7 +73,7 @@ export function journeyHTML(I, routes) {
   return html`<section class="panel pass-journey" aria-labelledby="journeyTitle">
     <h2 id="journeyTitle">${I.T("My journey", "Mi viaje")}</h2>
     <p class="fine">${I.T("Each country is one skill. A stop is finished when its activities are finished. Every third stop opens a culture card. Finish all the stops to earn the country sticker for your paper passport.", "Cada país es una destreza. Una parada está terminada cuando sus actividades están terminadas. Cada tercera parada abre una tarjeta de cultura. Termina todas las paradas para ganar la calcomanía del país para tu pasaporte de papel.")}</p>
-    <p class="row-actions"><a class="btn small" href="${BASE}/passport/journal?grades=${routes[0]?.band || ""}">${icon("book")} ${I.T("Open my trip journal", "Abrir mi diario del viaje")}</a></p>
+    <p class="row-actions"><a class="btn small" href="${BASE}/passport/journal?grades=${routes[0]?.band || ""}">${icon("reading")} ${I.T("Open my trip journal", "Abrir mi diario del viaje")}</a></p>
     <ul class="journey-grid">${cards}</ul>
   </section>`;
 }

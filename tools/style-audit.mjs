@@ -101,13 +101,11 @@ function measure() {
   const purple = [],
     lowContrast = [],
     smallText = [],
-    smallTargets = [],
-    emojiControls = [];
+    smallTargets = [];
   const buttonVariants = {};
   const bump = (o, k) => {
     o[k] = (o[k] || 0) + 1;
   };
-  const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
   let visualSmall = 0;
   let textNodes = 0,
     unknownBg = 0;
@@ -205,9 +203,6 @@ function measure() {
           w: Math.round(effW),
           h: Math.round(effH),
         });
-      const lead = (e.innerText || e.textContent || "").trim();
-      if (emoji.test(lead.slice(0, 3)) || (e.querySelector("span, i") && emoji.test(lead)))
-        emojiControls.push(lead.replace(/\s+/g, " ").slice(0, 24));
       const key = [
         hex(bg || { r: 0, g: 0, b: 0 }),
         s.borderRadius.split(" ")[0],
@@ -278,8 +273,6 @@ function measure() {
     smallTargets: smallTargets.slice(0, 12),
     smallTargetCount: smallTargets.length,
     visualSmallTargetCount: visualSmall,
-    emojiControls: emojiControls.slice(0, 12),
-    emojiControlCount: emojiControls.length,
     fixedCount: fixed.length,
     collisions,
     overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,

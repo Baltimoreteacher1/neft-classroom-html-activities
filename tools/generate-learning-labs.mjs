@@ -3,10 +3,14 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { controls } from "../curriculum/learning-labs/shared/math.mjs";
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
+import { launchHref, GAMES as UNIVERSE_GAMES } from "../math/games/universe/registry.js";
+import { labBar } from "../scripts/lib/math-studio-page.mjs";
+import { MATH_STUDIO_UNITS } from "../scripts/lib/math-studio-registry.mjs";
 import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
 import { injectUtilityBar } from "./inject-curriculum-utility-bar.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { catalogBody } from "./learning-labs/catalog-page.mjs";
+import { labAssets } from "./learning-labs/lab-assets.mjs";
 import { modelQuestion } from "./learning-labs/model-question.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
 import { isLessonName, vocabKey } from "./learning-labs/vocabulary.mjs";
@@ -18,6 +22,18 @@ import {
   REPO_ROOT,
 } from "./lib/curriculum-source.mjs";
 import { labEmblem } from "./lib/iso-art.mjs";
+
+/** The Math Studio bar for a lab: one link per in-scope lesson, or nothing when every lesson is out of scope. */
+// A lesson with its own Explore model (data/math-studio/explore-overrides.json) does not use this lab as its Explore stage.
+const ownExplore = JSON.parse(
+  readFileSync(join(REPO_ROOT, "data/math-studio/explore-overrides.json"), "utf8"),
+).lessons;
+const mathStudioBar = (b) => {
+  const lessons = b.lessons.filter(
+    (l) => MATH_STUDIO_UNITS.includes(Number(l.split("-")[0])) && !ownExplore[l],
+  );
+  return lessons.length ? labBar({ lessons }) : "";
+};
 
 const destination = join(REPO_ROOT, "curriculum/learning-labs");
 const LEVELS = { support: "approaching", core: "onLevel", stretch: "extending" };
@@ -56,6 +72,14 @@ const version = createHash("sha256")
       "model.mjs",
       "games.mjs",
       "unit2.mjs",
+      "unit3.mjs",
+      "unit4.mjs",
+      "unit5.mjs",
+      "unit6.mjs",
+      "unit7.mjs",
+      "unit8.mjs",
+      "unit9.mjs",
+      "unit-missions.mjs",
       "expedition.mjs",
       "expedition-worlds.mjs",
       "catalog.mjs",
@@ -100,6 +124,24 @@ function standalone(question) {
 }
 const lessonTitles = new Set([...sources.values()].map((c) => c.title.trim().toLowerCase()));
 const catalog = [];
+
+/** `{ universe: [...] }` when a Math Universe game teaches one of these lessons, else `{}`. */
+function universeFor(labLessons) {
+  const games = UNIVERSE_GAMES.filter((g) => g.lessons.some((l) => labLessons.includes(l)));
+  if (!games.length) return {};
+  return {
+    universe: games.map((g) => ({
+      id: g.id,
+      title: g.title,
+      genre: g.genre,
+      tagline: g.tagline,
+      href: launchHref(
+        g,
+        labLessons.find((l) => g.lessons.includes(l)),
+      ),
+    })),
+  };
+}
 for (const blueprint of blueprints) {
   const unit = Number(blueprint.lessons[0].split("-")[0]);
   if (
@@ -241,6 +283,8 @@ for (const blueprint of blueprints) {
     lessons,
     vocabulary,
     practice,
+    // Math Universe games for these lessons: the Games stage launches straight into them.
+    ...universeFor(blueprint.lessons),
     source:
       "Instruction and selected practice adapted from the connected EduWonderLab lesson content. Investigations, creation tasks, and model puzzles are original supplementary activities.",
   };
@@ -248,13 +292,14 @@ for (const blueprint of blueprints) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "content.json"), `${JSON.stringify(lab, null, 2)}\n`);
   const label = blueprint.lessons.map((x) => x.replace("-", ".")).join(" & ");
+  const assets = labAssets(blueprint.id);
   writeFileSync(
     join(dir, "index.html"),
     injectUtilityBar(
       page(
         blueprint.title,
-        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
-        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">`,
+        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}${mathStudioBar(blueprint)}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>${assets.body}`,
+        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">${mathStudioBar(blueprint) ? '<link rel="stylesheet" href="/assets/math-studio/stage-bar.css">' : ""}${assets.head}`,
       ),
       join(dir, "index.html"),
     ),

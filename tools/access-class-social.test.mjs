@@ -197,7 +197,7 @@ test("routes, loaders, sitemap and the minimal hooks are wired", async () => {
   assert.ok(cls.includes("${BASE}/pairs") && cls.includes("${BASE}/scenes"));
   assert.match(
     read("src/class/roster-panel.js"),
-    /import\("\.\/social-teacher\.js"\)\.then\(\(m\) => m\.mountSocialPanel\(socialBox/,
+    /import\("\.\/social-teacher\.js"\)\.then\(\(m\) => \{\s*const social = m\.mountSocialPanel\(socialBox/,
   );
 });
 

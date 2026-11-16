@@ -1591,6 +1591,61 @@ button.tp-row.counted .tp-dot {
   max-width: 40ch;
 }
 
+.learn-routine {
+  grid-column: 1 / -1;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--t-practice) 25%, var(--line));
+  border-left: 5px solid var(--t-practice);
+  border-radius: 14px;
+  background: var(--t-practice-soft);
+}
+
+.learn-routine-title {
+  margin: 0 0 0.6rem;
+  color: var(--t-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.learn-routine ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: learn-step;
+}
+
+.learn-routine li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--t-ink);
+  font-size: 1rem;
+  line-height: 1.4;
+  counter-increment: learn-step;
+}
+
+.learn-routine li::before {
+  display: grid;
+  flex: 0 0 1.65rem;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--t-practice);
+  color: #fff;
+  content: counter(learn-step);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .learn-watch {
   max-width: 60ch;
   margin: 1rem auto 0;
@@ -1705,6 +1760,10 @@ body.working-on-skill .learn-watch {
 
 @media (max-width: 860px) {
   body.working-on-skill .learn-simple .tr-lesson {
+    grid-template-columns: 1fr;
+  }
+
+  .learn-routine ol {
     grid-template-columns: 1fr;
   }
 }

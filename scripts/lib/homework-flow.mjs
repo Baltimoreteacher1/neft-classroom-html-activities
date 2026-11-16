@@ -13,6 +13,7 @@
  * homework-flow-js.mjs.
  */
 import { act } from "./homework-actions.mjs";
+import { renderFamilyQuest } from "./homework-family-quest.mjs";
 
 const esc = (s) =>
   String(s ?? "")
@@ -70,7 +71,7 @@ export function renderLookAndLearn(
   const steps = Array.isArray(notes.conceptSteps) ? notes.conceptSteps : [];
   const why = notes.bridge?.why;
   return `
-      ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal and look at the picture. Then go through the example one step at a time.", "Lean la meta y miren el dibujo. Luego sigan el ejemplo un paso a la vez.")}
+      ${stepHead(1, "Discover", "Descubrir", "See the story, predict, and follow the example step by step.", "Observa la historia, predice y sigue el ejemplo paso a paso.")}
       ${
         goal
           ? `<section class="family-plain-start" role="group" aria-labelledby="hw_goal_label">
@@ -113,31 +114,31 @@ export function renderTryTogether(
   const steps = Array.isArray(t.steps) ? t.steps : [];
   const q = tryQuestion(notes);
   return `
-      ${stepHead(2, "Try Together", "Prueben juntos", "Do this one side by side. Use the model, and ask for a hint whenever you want one.", "Háganlo lado a lado. Usen el modelo y pidan una pista cuando quieran.")}
+      ${stepHead(2, "Build", "Construir", "Move the model, test numbers, and watch every view update together.", "Mueve el modelo, prueba números y mira cómo cambian todas las vistas.")}
+      ${modelHtml}
+      ${renderFamilyQuest(config, q)}
       <section class="fp-card fp-try" aria-labelledby="hw_try_label" data-reveal>
-        <p class="fp-label" id="hw_try_label">${bi("Try this one together", "Prueben este juntos")}</p>
+        <p class="fp-label" id="hw_try_label">${bi("Guided check", "Práctica guiada")}</p>
         ${t.scenarioEn ? `<p class="fp-try-scenario">${bi(t.scenarioEn, t.scenarioEs)}</p>` : ""}
         <ol class="fp-steps fp-steps--try">
           ${steps.map((s) => `<li><p>${pair(s)}</p>${hint(s.hint, s.hintEs, s.helpEn, s.helpEs)}</li>`).join("")}
         </ol>
       </section>
-      ${modelHtml}
       ${toolHtml}
-      ${morePicturesHtml ? `<details class="fp-optional"><summary>${bi("More ways to see it (optional)", "Más formas de verlo (opcional)")}</summary>${morePicturesHtml}</details>` : ""}
-      ${q ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Ask together (optional)", "Pregunten juntos (opcional)")}</p><p>${pair(q)}</p></aside>` : ""}`;
+      ${morePicturesHtml ? `<details class="fp-optional"><summary>${bi("More ways to see it (optional)", "Más formas de verlo (opcional)")}</summary>${morePicturesHtml}</details>` : ""}`;
 }
 
 /** Step 3's header and its A/B/C key. The problems themselves come from the problem renderer. */
 export function renderYourTurnHead() {
   return `
-      ${stepHead(3, "Your Turn", "Tu turno", "One at a time. Work on your own; a grown-up can watch.", "Uno a la vez. Trabaja solo; un adulto puede observar.")}`;
+      ${stepHead(3, "Practice", "Practicar", "One problem at a time. Hints and the scratchpad are right here.", "Un problema a la vez. Las pistas y la pizarra están aquí.")}`;
 }
 
 /** Step 4: filled by the runtime from what the family did. Empty until there is something to review. */
 export function renderImprove() {
   return `
     <div class="tab-panel-inner" data-tab-panel="improve" id="hw_panel_improve" role="tabpanel" hidden>
-      ${stepHead(4, "Check & Improve", "Revisa y mejora", "See what each answer shows. Fix one, then try a fresh one.", "Vean qué muestra cada respuesta. Corrijan una y prueben una nueva.")}
+      ${stepHead(4, "Improve", "Mejorar", "See what each answer shows, fix mistakes, and try a fresh problem.", "Mira qué muestra cada respuesta, corrige errores y prueba uno nuevo.")}
       <p class="fp-empty" data-improve-empty>${bi("Finish Your Turn first. Then this page shows what each answer tells us.", "Primero terminen Tu turno. Luego esta página muestra qué nos dice cada respuesta.")}</p>
       <div class="fp-improve" id="hw_improve" data-improve-body aria-live="polite"></div>
     </div>`;

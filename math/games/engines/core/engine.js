@@ -10,8 +10,8 @@
 //    Arrow / Space / Enter behaviour and real screen-reader names and values;
 //  - live regions (polite for readings, assertive for solves and strain);
 //  - English / Spanish toggle that re-binds every string without resetting state;
-//  - CRA tiers 0-2, unlocked by struggle (a miss opens Tier 1, a second opens
-//    Tier 2), never handed out first;
+//  - CRA tiers 0-2, with guided support selected by default and every tier
+//    available from the first round;
 //  - round flow, progress and receipts in IndexedDB;
 //  - test hooks on window.__ewEngines for the keyboard, FPS and GC audits.
 //
@@ -29,6 +29,7 @@
 //   testPlan()             [{ control, key, times? }] that solves this round
 
 import { haptic, Synth } from "./audio.js";
+import { attachEngineScene } from "./scene3d.js";
 import { roundRect, staticLayer } from "./draw.js";
 import { rng } from "./math.js";
 import { addReceipt, loadProgress, saveProgress, storeStatus } from "./store.js";
@@ -58,6 +59,9 @@ const CHROME = {
     next: "Next machine",
     round: "Machine {n}",
     level: "Level {n} of 4",
+    levelProgress: "Level {level} · {done} of 3 machines",
+    checkpoint: "Sector restored · Level {level} unlocked!",
+    masteryCheckpoint: "Elite circuit cleared · A fresh wave is ready!",
     cores: "Energy cores: {n}",
     saved: "Progress saves on this device.",
     notSaved: "Progress stays for this visit only.",
@@ -81,6 +85,9 @@ const CHROME = {
     next: "Siguiente máquina",
     round: "Máquina {n}",
     level: "Nivel {n} de 4",
+    levelProgress: "Nivel {level} · {done} de 3 máquinas",
+    checkpoint: "¡Sector restaurado · Nivel {level} desbloqueado!",
+    masteryCheckpoint: "¡Circuito de élite completado · comienza otra ronda!",
     cores: "Núcleos de energía: {n}",
     saved: "El progreso se guarda en este dispositivo.",
     notSaved: "El progreso queda solo durante esta visita.",
@@ -102,6 +109,18 @@ const STYLE = `
 .bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--edge)}
 h1{font-size:1.15rem;margin:0;letter-spacing:.02em}
 .meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+.bar-end{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.game-3d{width:92px;height:82px;flex:0 0 92px;overflow:hidden;border:1px solid rgba(112,218,221,.42);border-radius:14px;background:radial-gradient(ellipse at 50% 45%,rgba(46,77,123,.62),rgba(12,20,39,.94) 74%);box-shadow:inset 0 0 22px rgba(86,181,220,.16),0 8px 22px rgba(0,0,0,.22)}
+.game-3d canvas{display:block;width:100%;height:100%;pointer-events:none}
+.campaign{display:flex;align-items:center;gap:8px;flex:1 1 100%;color:var(--muted);font-size:.85rem}
+.campaign-label{margin:0;min-width:170px}
+.campaign-track{display:flex;gap:4px;width:min(220px,100%)}
+.campaign-track i{height:8px;flex:1;border-radius:99px;background:var(--rail);border:1px solid var(--edge);transition:background .18s ease,box-shadow .18s ease}
+.campaign-track i[aria-current="step"]{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(70,194,184,.45)}
+.campaign-track i[data-complete="true"]{background:var(--ok);border-color:var(--ok)}
+.checkpoint{margin:0;color:var(--warn);font-weight:800}
+.checkpoint.pop{animation:checkpoint-pop .42s ease-out}
+@keyframes checkpoint-pop{0%{transform:scale(.94);opacity:.35}55%{transform:scale(1.04);opacity:1}100%{transform:scale(1)}}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .stage{position:relative;aspect-ratio:16/9;background:#050a14}
 canvas{display:block;width:100%;height:100%}
@@ -128,6 +147,8 @@ legend{font-size:.8rem;color:var(--muted);padding:0 4px}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .note{color:var(--muted);font-size:.85rem;padding:0 16px 12px}
 @media (forced-colors:active){button,.ctl,fieldset{border:1px solid CanvasText}}
+@media(max-width:560px){.bar{align-items:flex-start}.bar-end{width:100%}.campaign-label{min-width:0}.campaign-track{flex:1}}
+@media(prefers-reduced-motion:reduce){.campaign-track i,.checkpoint.pop{animation:none;transition:none}}
 `;
 
 /**
@@ -183,8 +204,8 @@ export class EduWonderEngine extends HTMLElement {
     }
     this.lang = new URLSearchParams(location.search).get("lang") === "es" ? "es" : "en";
     this.synth = new Synth();
-    this.tier = 0;
-    this.maxTier = 0;
+    this.tier = 1;
+    this.maxTier = 2;
     this.level = 1;
     this.solvedAtLevel = 0;
     this.totalSolved = 0;
@@ -218,10 +239,18 @@ export class EduWonderEngine extends HTMLElement {
         <div class="bar">
           <h1 id="title"></h1>
           <div class="meta"><span id="round"></span><span id="level"></span><span id="cores"></span></div>
-          <div class="tools">
-            <fieldset id="tiers"><legend id="tierLegend"></legend></fieldset>
-            <button id="sound" type="button" aria-pressed="true"></button>
-            <button id="lang" type="button" lang=""></button>
+          <div class="bar-end">
+            <div class="tools">
+              <fieldset id="tiers"><legend id="tierLegend"></legend></fieldset>
+              <button id="sound" type="button" aria-pressed="true"></button>
+              <button id="lang" type="button" lang=""></button>
+            </div>
+            <div class="game-3d" id="game3d" aria-hidden="true"></div>
+          </div>
+          <div class="campaign">
+            <p id="campaign-label" class="campaign-label"></p>
+            <div id="campaign-track" class="campaign-track" role="progressbar" aria-valuemin="0" aria-valuemax="${LEVELS * SOLVES_PER_LEVEL}" aria-valuenow="0"></div>
+            <p id="checkpoint" class="checkpoint" role="status" aria-live="polite" hidden></p>
           </div>
         </div>
         <div class="stage"><canvas id="stage" width="${W}" height="${H}" role="img"></canvas></div>
@@ -377,6 +406,7 @@ export class EduWonderEngine extends HTMLElement {
     if (this.started) return;
     this.started = true;
     this.buildChrome();
+    this.scene3d = attachEngineScene(this.$("game3d"), this.meta.gameId, this.reducedMotion);
     this.initWorld();
     this.buildControls(this.$("deck"));
     this.nextButton = this.button({ id: "next", label: "next", onPress: () => this.startRound() });
@@ -384,7 +414,10 @@ export class EduWonderEngine extends HTMLElement {
     const saved = await loadProgress(this.meta.gameId);
     if (saved) {
       this.level = Math.min(LEVELS, Math.max(1, saved.level | 0 || 1));
-      this.solvedAtLevel = saved.solvedAtLevel | 0;
+      const savedSolvedAtLevel = Math.max(0, saved.solvedAtLevel | 0);
+      this.solvedAtLevel = this.level === LEVELS
+        ? savedSolvedAtLevel % SOLVES_PER_LEVEL
+        : Math.min(SOLVES_PER_LEVEL - 1, savedSolvedAtLevel);
       this.totalSolved = saved.totalSolved | 0;
       this.cores = saved.cores | 0;
     }
@@ -408,6 +441,7 @@ export class EduWonderEngine extends HTMLElement {
 
   disconnectedCallback() {
     this.running = false;
+    this.scene3d?.dispose();
   }
 
   buildChrome() {
@@ -415,6 +449,12 @@ export class EduWonderEngine extends HTMLElement {
     this.bindText(this.$("round"), "round", () => ({ n: this.roundIndex }));
     this.bindText(this.$("level"), "level", () => ({ n: this.level }));
     this.bindText(this.$("cores"), "cores", () => ({ n: this.cores }));
+    this.campaignPips = Array.from({ length: LEVELS * SOLVES_PER_LEVEL }, () => {
+      const pip = document.createElement("i");
+      pip.setAttribute("aria-hidden", "true");
+      this.$("campaign-track").append(pip);
+      return pip;
+    });
     this.bindText(this.$("tierLegend"), "tierGroup");
     this.bindText(this.$("deckLabel"), "controls");
     const tiers = this.$("tiers");
@@ -425,8 +465,8 @@ export class EduWonderEngine extends HTMLElement {
       input.type = "radio";
       input.name = "tier";
       input.value = String(n);
-      input.checked = n === 0;
-      input.disabled = n > 0;
+      input.checked = n === this.tier;
+      input.disabled = n > this.maxTier;
       const span = document.createElement("span");
       lab.append(input, span);
       tiers.append(lab);
@@ -462,9 +502,11 @@ export class EduWonderEngine extends HTMLElement {
   setLanguage(lang) {
     this.lang = lang;
     document.documentElement.lang = lang;
+    this.onLanguage?.();
     for (const b of this.binders) b();
     this.$("note").textContent = this.t(storeStatus.persistent ? "saved" : "notSaved");
     this.renderMission();
+    this.updateCampaign();
     this.sync(false);
   }
 
@@ -498,9 +540,13 @@ export class EduWonderEngine extends HTMLElement {
     this.roundStart = performance.now();
     this.nextButton.hidden = true;
     this.setFeedback("");
-    this.newRound(this.level, this.random);
+    // Give students more time in the simpler task bands. Campaign levels still
+    // advance every checkpoint, while challenge numbers step up more gradually.
+    this.newRound(Math.max(1, this.level - 1), this.random);
     for (const b of this.binders) b();
     this.renderMission();
+    this.updateCampaign();
+    this.$("checkpoint").hidden = true;
     this.sync(false);
     if (announce) this.shout(this.missionText());
   }
@@ -528,20 +574,35 @@ export class EduWonderEngine extends HTMLElement {
     if (this.solved) return;
     const r = this.evaluate();
     if (r.ok) {
+      const levelCleared = this.solvedAtLevel + 1 >= SOLVES_PER_LEVEL;
+      const wasFinalLevel = this.level === LEVELS;
       this.solved = true;
-      const stars = this.tiersUsed === 0 && this.misses === 0 ? 3 : this.tiersUsed < 2 ? 2 : 1;
+      // Support and retries never reduce a student's reward for finishing.
+      const stars = 3;
       this.cores += stars;
       this.totalSolved++;
       this.solvedAtLevel++;
-      if (this.solvedAtLevel >= SOLVES_PER_LEVEL && this.level < LEVELS) {
-        this.level++;
+      if (levelCleared) {
         this.solvedAtLevel = 0;
+        if (this.level < LEVELS) this.level++;
+        // Level 4 stays replayable; each three-machine circuit earns a fresh
+        // milestone instead of silently continuing an unbounded counter.
       }
       this.synth.success();
       haptic([30, 40, 60]);
+      this.scene3d?.celebrate();
       const text = `${this.t(r.key, r.vars)} ${this.t("solvedAt", { stars })}`;
       this.setFeedback(text, true);
-      this.shout(text);
+      let announcement = text;
+      if (levelCleared) {
+        const milestone = wasFinalLevel
+          ? this.t("masteryCheckpoint")
+          : this.t("checkpoint", { level: this.level });
+        this.showCheckpoint(milestone);
+        announcement += ` ${milestone}`;
+      }
+      this.shout(announcement);
+      this.updateCampaign();
       this.nextButton.hidden = false;
       this.onSolved();
       this.persist(true);
@@ -551,6 +612,7 @@ export class EduWonderEngine extends HTMLElement {
         this.misconceptions.push(r.misconception);
       this.synth.strain();
       haptic([15]);
+      this.scene3d?.stumble();
       const text = this.t(r.key, r.vars);
       this.setFeedback(text);
       this.shout(text);
@@ -560,6 +622,36 @@ export class EduWonderEngine extends HTMLElement {
     }
     for (const b of this.binders) b();
     this.sync(false);
+  }
+
+  /** Reflect solved machines in the current three-step level objective. */
+  updateCampaign() {
+    const label = this.$("campaign-label");
+    const track = this.$("campaign-track");
+    if (!label || !track) return;
+    const value = this.t("levelProgress", { level: this.level, done: this.solvedAtLevel });
+    const completed = (this.level - 1) * SOLVES_PER_LEVEL + this.solvedAtLevel;
+    label.textContent = value;
+    track.setAttribute("aria-valuenow", String(completed));
+    track.setAttribute("aria-label", value);
+    track.setAttribute("aria-valuetext", value);
+    this.campaignPips.forEach((pip, i) => {
+      pip.dataset.complete = String(i < completed);
+      if (i === completed && !this.solved) pip.setAttribute("aria-current", "step");
+      else pip.removeAttribute("aria-current");
+    });
+  }
+
+  /** Keep checkpoint praise visible until the learner advances to the next machine. */
+  showCheckpoint(text) {
+    const node = this.$("checkpoint");
+    node.hidden = false;
+    node.textContent = text;
+    node.classList.remove("pop");
+    if (!this.reducedMotion) {
+      void node.offsetWidth;
+      node.classList.add("pop");
+    }
   }
 
   onSolved() {}

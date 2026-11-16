@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { masterySummary, REVIEW_GAPS_DAYS } from "./mastery-model.js";
+import { masterySummary, recordMasteryEvent, recordMasteryReflection, REVIEW_GAPS_DAYS } from "./mastery-model.js";
 
 const day = 86_400_000;
 const at = (dayNumber, sessionId, extra = {}) => ({
@@ -12,6 +12,16 @@ const at = (dayNumber, sessionId, extra = {}) => ({
 });
 
 assert.equal(masterySummary([], 100 * day).state, "Explore");
+const stored = {};
+const storedEvent = recordMasteryEvent(stored, {
+  at: day, sessionId: "full-lab-session", eventId: "full-lab-session:1", correct: true,
+  independent: true, hintsUsed: 0, strategy: "visual", explained: true,
+});
+assert.equal(storedEvent.strategy, "visual");
+assert.equal(recordMasteryReflection(stored, storedEvent.eventId, "visual", true), true);
+assert.equal(masterySummary(stored.masteryEvents, 100 * day).evidence.helpfulStrategySessions, 1);
+assert.equal(recordMasteryEvent(stored, { ...storedEvent, hintsUsed: -500 }).hintsUsed, 0);
+assert.equal(recordMasteryEvent(stored, { ...storedEvent, eventId: "bad", sessionId: "", at: NaN }), null);
 const supported = [at(1, "guided", { independent: false, hintsUsed: 2 })];
 assert.equal(masterySummary(supported, 100 * day).evidence.independentSessions, 0);
 
@@ -23,9 +33,9 @@ assert.deepEqual(masterySummary(accuracyOnly, 100 * day).dimensions, {
 });
 
 const fluent = [
-  at(1, "a", { strategy: "make-ten", explained: true, appropriateStrategy: true, responseMs: 9000 }),
-  at(2, "b", { strategy: "decompose", explained: true, appropriateStrategy: true, responseMs: 7000 }),
-  at(3, "c", { strategy: "make-ten", explained: true, appropriateStrategy: true, responseMs: 6000 }),
+  at(1, "a", { strategy: "visual", explained: true, strategyHelped: true, responseMs: 9000 }),
+  at(2, "b", { strategy: "decomposition", explained: true, strategyHelped: true, responseMs: 7000 }),
+  at(3, "c", { strategy: "visual", explained: true, strategyHelped: false, responseMs: 6000 }),
 ];
 const ready = masterySummary(fluent, 100 * day);
 assert.equal(ready.state, "Fluent");

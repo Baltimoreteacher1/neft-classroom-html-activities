@@ -262,19 +262,19 @@ test("the Teacher switch follows the tour on this device: start, continue, take 
     return [link.dataset.tour, link.getAttribute("title"), link.getAttribute("href")];
   };
   try {
-    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 3, goal: "show" } }));
+    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "support", furthest: 2 } }));
     assert.deepEqual(await card(), [
       "continue",
       "Continue the Teacher Tour",
       "/access-practice-lab/start/tour",
     ]);
-    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 4, done: true } }));
+    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "kit", furthest: 6 } }));
     assert.deepEqual(await card(), [
       "again",
       "Take the Teacher Tour again",
       "/access-practice-lab/start/tour?part=1&grades=6-8",
     ]);
-    localStorage.setItem(KEY, JSON.stringify({ guided: { part: 1 } }));
+    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "welcome", furthest: 0 } }));
     assert.deepEqual(await card(), [
       "start",
       "Start the Teacher Tour",

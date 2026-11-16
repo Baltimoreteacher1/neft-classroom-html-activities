@@ -133,6 +133,8 @@ export const SKIP_FILE_RE =
 //     generic widget would add a second save control and two more live regions.
 //   - Fluency Lab art/graphics galleries → read-only development previews with no
 //     student work to persist
+//   - Fluency Lab adults.html and privacy.html → informational pages with no
+//     student work to save.
 //   - today/index.html           → the daily front door: a nav screen that READS
 //     save/resume state (via /api/progress/mine) to decide what to link to. It
 //     holds no student work of its own, so a Save widget on it would offer to
@@ -142,7 +144,19 @@ export const SKIP_FILE_RE =
 //     IndexedDB (level, solves and energy cores per game, plus round receipts) and
 //     restore it on load; every control lives in the machine's shadow root, which
 //     the generic widget cannot see, so it would offer to save an empty page.
+//   - videos/index.html and access-practice-lab/videos/index.html → the generated studio video hubs
+//     (scripts/generate-studio-videos.mjs): read-only lists of videos with no student work to save.
+//   - math/studio/ → Math Studio keeps its own versioned, validated save (ewl:math-studio:v1:<lesson>: stage,
+//     predictions, every practice/reflect record, apply writing, the model hand-off) and resumes the exact stage; the
+//     finder only reads it. The generic widget would offer a second, conflicting "save this page".
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
+// access-practice-lab/family-tour/: the bilingual Family Tour, the same product as the exempt
+// top-level access-family-tour/ (links out to the lab, saves only its own place).
+// math/games/universe/: the Math Universe games keep their own versioned save
+// (math/games/universe/runtime/save.js: level progress, checkpoint snapshot,
+// timeline and Ori's learning state) and resume the exact checkpoint; their
+// controls live in a shadow root. The arcade and teacher pages beside them hold
+// no student state. The generic widget would offer a second, conflicting save.
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/games\/engines\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|mathsense\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|(?:access-practice-lab\/)?videos\/index\.html$|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/games\/engines\/|math\/games\/universe\/|access-practice-lab\/family-tour\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:(?:adults|privacy)\.html|family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|mathsense\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|math\/studio\/|today\/index\.html$)/i;

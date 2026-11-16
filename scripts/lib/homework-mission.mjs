@@ -39,11 +39,11 @@ export const ROUTE_TIMES = { quick: "15–20", full: "25–35" };
 export const DEFAULT_ROUTE = "quick";
 
 export const MISSION_STAGES = [
-  { id: "connect", icon: "", en: "Look & Learn", es: "Mira y aprende" },
-  { id: "explore", icon: "", en: "Try Together", es: "Prueben juntos" },
-  { id: "check", icon: "", en: "Your Turn", es: "Tu turno" },
-  { id: "improve", icon: "", en: "Check & Improve", es: "Revisa y mejora" },
-  { id: "done", icon: "", en: "Finish", es: "Terminar" },
+  { id: "connect", icon: "", en: "Discover", es: "Descubrir" },
+  { id: "explore", icon: "", en: "Build", es: "Construir" },
+  { id: "check", icon: "", en: "Practice", es: "Practicar" },
+  { id: "improve", icon: "", en: "Improve", es: "Mejorar" },
+  { id: "done", icon: "", en: "Celebrate", es: "Celebrar" },
 ];
 
 /** Optional destinations: panels that exist but are not steps. */
@@ -111,12 +111,13 @@ export function renderMissionStart() {
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Practice", "La práctica familiar de hoy")}</h2>
         <p class="hw-mission-lead fm-hero__promise">${bi(
-          `Five short steps, about ${ROUTE_TIMES.quick} minutes: watch the idea, try one together, solve ${MISSION_PRACTICE_COUNT} in three levels, check, celebrate.`,
-          `Cinco pasos cortos, unos ${ROUTE_TIMES.quick} minutos: miren la idea, prueben uno juntos, resuelvan ${MISSION_PRACTICE_COUNT} en tres niveles, revisen y celebren.`,
+          `Five steps, about ${ROUTE_TIMES.quick} min: Discover, Build, solve ${MISSION_PRACTICE_COUNT} in three levels, Improve, Celebrate.`,
+          `Cinco pasos, unos ${ROUTE_TIMES.quick} min: Descubrir, Construir, resolver ${MISSION_PRACTICE_COUNT} en tres niveles, Mejorar y Celebrar.`,
         )}</p>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Your place is saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Su avance se guarda en este dispositivo.</span></p>
+        <div class="hw-session-routes" id="hw_session_routes"></div>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. No timer. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Sin cronómetro. Se guarda en este dispositivo.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;

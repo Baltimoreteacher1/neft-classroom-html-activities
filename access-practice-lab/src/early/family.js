@@ -3,6 +3,7 @@
 // language: talk in any language builds the ideas the English words attach to.
 import { BAND_INFO } from "../bands.js";
 import { speak, stop as stopSpeech } from "../speech.js";
+import { familyTourHost } from "../family-tour-host.js";
 import { BASE, html, icon } from "../util.js";
 
 /** { id, title, minutes, need, steps, talk } each as [english, spanish]. */
@@ -147,6 +148,7 @@ export function render(ctx, I) {
         <p class="lead">
           ${I.T("Five to ten minutes, no screen needed. You can talk in English, Spanish or both: every language you share helps your child learn.", "De cinco a diez minutos, sin pantalla. Pueden hablar en inglés, en español o en los dos: cada idioma que comparten ayuda a su hijo a aprender.")}
         </p>
+        ${familyTourHost() ? html`<p class="early-tour"><a class="btn btn-primary btn-big" href="${BASE}/family-tour/?grades=${ctx.band}&lang=${I.spanish ? "es" : "en"}">${I.T("New here? Start the Family Tour", "¿Es su primera vez? Comenzar el recorrido familiar")}</a></p>` : ""}
         <p class="early-switch">
           <a class="btn small" href="${BASE}/early?grades=${info.picker || ctx.band}"
             >${I.T("Practice home", "Página de práctica")}</a

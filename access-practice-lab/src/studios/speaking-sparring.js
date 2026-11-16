@@ -6,6 +6,7 @@
  */
 
 import { diagnostics } from "../../../shared/diagnostics-overlay.js";
+import { canSpeak, speak } from "../speech.js";
 
 export const DISCOURSE_TARGETS = [
   "according to the diagram",
@@ -270,15 +271,11 @@ export class SpeakingSparringPartner {
 
     const text = "I notice that only 10% of energy transfers between each trophic level. But why does that force wolves and eagles to hunt over square miles rather than a single forest plot?";
 
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
-      utterance.pitch = 1.05;
-      utterance.onend = () => {
+    if (canSpeak()) {
+      // The shared speaker, so the learner's saved voice applies; the slightly higher pitch keeps the peer distinct.
+      speak(text, { pitch: 1.05 }).then(() => {
         if (avatar) avatar.classList.remove("speaking");
-      };
-      window.speechSynthesis.speak(utterance);
+      });
     } else {
       // Audio synth chime fallback
       this.playSyntheticChime();

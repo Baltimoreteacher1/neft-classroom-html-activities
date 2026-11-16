@@ -1,4 +1,15 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
+import {
+  lessonPath,
+  listLessonDirs,
+  loadLessonConfig,
+  REPO_ROOT,
+} from "../tools/lib/curriculum-source.mjs";
+import { typographizeItems } from "./lib/math-typography.mjs";
 /**
  * Generate Practice Studio v2 for every core lesson in Units 2-9 (Unit 4 has its own hand-built set):
  *
@@ -15,17 +26,7 @@
  * misconceptions behind wrong choices, shown in "My thinking"), and data/practice-studio/generator-traps.json (which trap
  * each generator's own wrong-answer tag means). `--check` fails if any generated file is stale.
  */
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { pathToFileURL } from "node:url";
-import {
-  lessonPath,
-  listLessonDirs,
-  loadLessonConfig,
-  REPO_ROOT,
-} from "../tools/lib/curriculum-source.mjs";
-import { typographizeItems } from "./lib/math-typography.mjs";
+import { motionSpecFor } from "./lib/motion-spec.mjs";
 import { benchProblems } from "./lib/practice-studio-bench.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
 import {
@@ -184,8 +185,16 @@ const HUB = "curriculum/units/index.html";
 const MARK = /\s*<!-- practice-studio:[\w-]+ -->[\s\S]*?<!-- \/practice-studio -->/g;
 /** Unit 4 has hand-built studios, so only the Lesson Path link is spliced for its rows. */
 const MARK_PATH = /\s*<!-- lesson-path:[\w-]+ -->[\s\S]*?<!-- \/lesson-path -->/g;
+/** Math Studio is the lesson's connected experience, so it leads the row. */
+const STUDIO_LINK = (/** @type {string} */ id) =>
+  `<a class="res res--studio" href="/math/studio/${id}/">Learning Lab (Practice HTML)</a>`;
 const PATH_LINK = (/** @type {string} */ id) =>
   `<a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a>`;
+/** The lesson's animated figure lives in step 3 of its Lesson Path page (shared/motion); the row links straight to it. */
+const SEE_IT_MOVE_LINK = (/** @type {string} */ id) =>
+  motionSpecFor(id)
+    ? `<a class="res" href="/math/lesson-path/${id}/#lp-motion">See it move</a>`
+    : "";
 
 /** Every file this generator owns, as path → content. */
 /** @param {{only?: string[]}} [opts] `only` builds a subset of lessons (smoke tests); the real build never passes it. */
@@ -320,7 +329,7 @@ export function outputs(opts = {}) {
     if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     hub = hub.replace(
       pattern,
-      `$1\n                <!-- practice-studio:${id} -->${PATH_LINK(id)}<a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
+      `$1\n                <!-- practice-studio:${id} -->${STUDIO_LINK(id)}${PATH_LINK(id)}<a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a>${SEE_IT_MOVE_LINK(id)}<!-- /practice-studio -->`,
     );
   }
   hub = hub.replace(MARK_PATH, "");
@@ -329,7 +338,7 @@ export function outputs(opts = {}) {
     if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     hub = hub.replace(
       pattern,
-      `$1\n                <!-- lesson-path:${id} -->${PATH_LINK(id)}<!-- /lesson-path -->`,
+      `$1\n                <!-- lesson-path:${id} -->${STUDIO_LINK(id)}${PATH_LINK(id)}${SEE_IT_MOVE_LINK(id)}<!-- /lesson-path -->`,
     );
   }
   files.set(HUB, hub);

@@ -17,14 +17,14 @@ Generated 2026-11-13 from `data/learning-labs.json`, the Bridge registry (`share
 | --- | --- | --- |
 | Bilingual Representation Bridge with predict-first "Test an idea" | 21 labs across ratio, percent, power, balance, area, fraction, number-line, coordinate, inequality, expression and growth models | 21 |
 | Source-backed Learn sequence: concept, prediction, one-step reveal, live model, observation, notation, explanation and new context | Units 2–9 (all taught labs) | 40 |
-| Source-data math centerpiece in Investigate and a Math Mission in Games | All seven Unit 2 labs | 7 |
+| Source-data math challenge in Investigate and a Math Mission in Games | Units 2–9 (all taught labs) | 40 |
 | Control on the first Chromebook screen | all labs | 46 |
 | First control on the phone's first screen | 41 labs; the five remaining labs use full-width data plots | 41 |
 | Model picture at least 60% visible on a phone's first screen | median 78.5%; see per-lab values | 40 |
 
 ## Remaining work
 
-Content-specific interactive centerpieces and math missions remain for the 33 taught labs in Units 3–9. The Strategy Comparator, Design Studio, Discovery Portfolio and teacher view have not been built for any lab. The six Unit 1 and Unit 10 labs keep their existing Learn stage because those units are not taught. See QA-REPORT.md.
+The challenge cards use a shared answer form; richer per-lab interactive centerpieces and varied game mechanics from Section 11 remain unfinished. The Strategy Comparator, Design Studio, Discovery Portfolio and teacher view have not been built for any lab. The six Unit 1 and Unit 10 labs keep their existing Learn stage because those units are not taught. See QA-REPORT.md.
 
 ## Per lab
 

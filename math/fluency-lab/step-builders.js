@@ -217,17 +217,9 @@ const BUILDERS = [
       const g = gcd(top, bot);
       const simpT = top / g;
       const simpB = bot / g;
-      const steps = [
-        `Multiply the numerators across: ${a} × ${c} = ${top}.`,
-        `Multiply the denominators across: ${b} × ${d} = ${bot}.`,
-        `Raw unreduced product = ${top}/${bot}.`,
-      ];
-      if (g > 1) {
-        steps.push(`Find the common factor to reduce: GCF = ${g}.`);
-        steps.push(`Divide top and bottom by ${g}: (${top} ÷ ${g}) / (${bot} ÷ ${g}) = ${simpT}/${simpB}.`);
-      } else {
-        steps.push(`${top}/${bot} is already in simplest form (GCF = 1).`);
-      }
+      const steps = [`Multiply straight across: ${a} × ${c} = ${top}; ${b} × ${d} = ${bot}.`, `The product is ${top}/${bot}.`];
+      if (g > 1) steps.push(`Simplify: divide the top and bottom by ${g} to get ${simpT}/${simpB}.`);
+      else steps.push(`${top}/${bot} is already in simplest form.`);
       if (simpT > simpB && simpB > 1) {
         const w = Math.floor(simpT / simpB);
         const r = simpT % simpB;

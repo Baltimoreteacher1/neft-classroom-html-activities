@@ -43,6 +43,7 @@ const COPY = {
   guide: ["Open the Site Guide", "Abrir la Guía del sitio"],
   clear: ["Clear answers", "Borrar respuestas"],
   hear: ["Hear it", "Escuchar"],
+  voice: ["Change voice", "Cambiar voz"],
   stopHear: ["Stop", "Parar"],
 };
 
@@ -54,7 +55,7 @@ let index = null;
 const canHear = (lang) => canSpeak() && !(lang === "es" && spanishVoiceStatus() === "none");
 const hearButton = (lang) =>
   canHear(lang)
-    ? `<button type="button" class="pg-hear" data-pg-hear>${toHtml(icon("volume"))}<span>${esc(pair(COPY.hear, lang))}</span></button>`
+    ? `<button type="button" class="pg-hear" data-pg-hear>${toHtml(icon("volume"))}<span>${esc(pair(COPY.hear, lang))}</span></button><button type="button" class="pg-hear pg-voice" data-voice-open aria-haspopup="dialog">${toHtml(icon("speaking"))}<span>${esc(pair(COPY.voice, lang))}</span></button>`
     : "";
 
 /**

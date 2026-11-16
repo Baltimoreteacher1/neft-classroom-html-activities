@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
-import { click, EMOJI, makeCtx, mount, resetStorage, type } from "./lib/access-studios-dom.mjs";
+import { click, makeCtx, mount, resetStorage, type } from "./lib/access-studios-dom.mjs";
 
 const { SCENES } = await import("../access-practice-lab/src/content/scenarios.js");
 const logic = await import("../access-practice-lab/src/lang/scenarios.js");
@@ -184,7 +184,7 @@ test("transcript and summary report the language used and the stronger alternati
   assert.ok(t.turns.every((x) => x.strong?.q === 2));
 });
 
-test("hub and every scene render in English, Spanish and bilingual with no timers, scores or emoji", async () => {
+test("hub and every scene render in English, Spanish and bilingual with no timers or scores", async () => {
   resetStorage();
   for (const band of ["3-5", "6-8"]) {
     for (const lang of ["en", "es", "bi"]) {
@@ -204,7 +204,6 @@ test("hub and every scene render in English, Spanish and bilingual with no timer
       const m = await mount(sc, ctxFor(lang, s.id, s.b));
       assert.ok(m.root.querySelector("svg.scn-svg"), `${s.id}: art`);
       assert.equal(m.root.querySelectorAll("[data-sc-choose]").length, 3, s.id);
-      assert.doesNotMatch(m.root.innerHTML, EMOJI);
       assert.doesNotMatch(m.text, COUNTDOWN);
     }
   }

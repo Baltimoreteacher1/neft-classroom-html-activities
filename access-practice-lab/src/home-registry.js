@@ -54,6 +54,31 @@ export const HOME_CARDS = [
   },
 
   {
+    id: "my-books",
+    group: "start",
+    href: "book-studio",
+    icon: "writing",
+    title: ["My books", "Mis libros"],
+    text: ["Create a book, or keep working on one.", "Crea un libro o sigue con uno."],
+  },
+  {
+    id: "language-labs",
+    group: "explore",
+    href: "language-labs",
+    icon: "construction",
+    title: ["Language Labs", "Laboratorios de lenguaje"],
+    text: ["See how English works: verbs in time, connectors, paragraphs.", "Mira cómo funciona el inglés: verbos en el tiempo, conectores, párrafos."],
+  },
+  {
+    id: "adventure-worlds",
+    group: "explore",
+    featured: true,
+    href: "adventures",
+    icon: "worlds",
+    title: ["Adventure Worlds", "Mundos de aventura"],
+    text: ["Solve a museum mystery or explore a science island, one mission at a time.", "Resuelve un misterio en un museo o explora una isla científica, misión por misión."],
+  },
+  {
     id: "join-class",
     group: "start",
     href: "class",
@@ -113,6 +138,18 @@ export const HOME_CARDS = [
     text: [
       "Nine worlds. Investigate a mystery, debate, forge words or tell a story. Your words change what happens.",
       "Nueve mundos. Investiga un misterio, debate, forja palabras o cuenta una historia. Tus palabras cambian lo que pasa.",
+    ],
+  },
+  {
+    id: "language-games",
+    group: "explore",
+    featured: true,
+    href: "language-games",
+    icon: "lock",
+    title: ["Language Games", "Juegos de lenguaje"],
+    text: [
+      "Escape rooms, detective cases, real conversations and a newsroom: explain your thinking to unlock the story.",
+      "Salas de escape, casos de detective, conversaciones reales y una redacción: explica lo que piensas para abrir la historia.",
     ],
   },
   {
@@ -469,6 +506,14 @@ export const HOME_CARDS = [
     text: ["Class evidence, rubrics and review.", "Evidencia de la clase, rúbricas y revisión."],
   },
   {
+    id: "book-studio-teach",
+    group: "teach",
+    href: "book-studio/templates",
+    icon: "library",
+    title: ["Book Studio for classes", "Book Studio para la clase"],
+    text: ["26 book templates with language goals; students send books to your review queue.", "26 plantillas con metas de lenguaje; los estudiantes envían libros a su cola de revisión."],
+  },
+  {
     id: "units-plan",
     group: "teach",
     href: "units",
@@ -696,6 +741,14 @@ export const HOME_CARDS = [
       "A plain-language guide, in English and Spanish.",
       "Una guía en lenguaje sencillo, en inglés y español.",
     ],
+  },
+  {
+    id: "family-book",
+    group: "family",
+    href: "book-studio/templates",
+    icon: "families",
+    title: ["Create a family book", "Hagan un libro en familia"],
+    text: ["Family stories, traditions and recipes, in your languages. Private on your device.", "Historias, tradiciones y recetas de la familia, en sus idiomas. Privado en su dispositivo."],
   },
   {
     id: "family-units",

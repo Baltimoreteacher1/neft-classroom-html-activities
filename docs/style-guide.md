@@ -129,8 +129,8 @@ school) are inclusive and appropriate for grade 6 English learners.
 ## 7. Iconography
 
 One line-icon set (2px stroke, rounded caps), inline SVG, paired with a text label wherever meaning matters.
-Emoji are not used as functional icons (controls, tabs, status). Decorative emoji in lesson stories are allowed
-but never carry meaning alone.
+Emoji are allowed anywhere, including controls, tabs and status (Joel, 2026-11-16). Where an emoji carries
+meaning, keep a text label or `aria-label` beside it so the control still has an accessible name.
 
 ## 8. Motion
 

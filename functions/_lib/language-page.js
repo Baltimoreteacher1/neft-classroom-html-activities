@@ -57,6 +57,8 @@ const LAB_EXACT = new Set([
   "/api/language-guide/questions",
   // The same log grouped into themes and gaps by a model, teacher key only (functions/api/language-guide/insights.js).
   "/api/language-guide/insights",
+  // The Book Studio writing coach; text is sent only on a learner's button press (functions/api/book-coach.js).
+  "/api/book-coach",
   STUDIOS_APP_BASE,
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */
@@ -103,6 +105,8 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/vocabulary/mastery`,
   `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
+  // The video hub: a generated static page (scripts/generate-studio-videos.mjs), not an app route.
+  `${LAB_BASE}/videos/`,
   // The Learning Studios app (proxied at /studios), one public page each, from access-practice-lab/src/studio-app.js.
   // Teacher-only pages are left out of the crawler sitemap.
   ...STUDIO_APP_PAGES.filter((page) => page.for.some((who) => who !== "teacher")).map(
@@ -114,6 +118,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/start/explore`,
   `${LAB_BASE}/start/guide`,
   `${LAB_BASE}/start/lesson`,
+  `${LAB_BASE}/family-tour/`,
   `${LAB_BASE}/practice-together`,
   `${LAB_BASE}/site-guide`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
@@ -167,6 +172,13 @@ export function languagePageRoute(url) {
       status: 302,
       location: `${url.origin}${LAB_BASE}/access-prep${url.search}`,
     };
+  // The old Family Expedition address opens the Family Tour, which lives inside the lab.
+  if (url.pathname === "/access-family-tour" || url.pathname === "/access-family-tour/")
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/family-tour/${url.search}`,
+    };
   if (url.pathname.startsWith("/access-prep/"))
     return {
       kind: "redirect",
@@ -179,6 +191,17 @@ export function languagePageRoute(url) {
     status: 308,
     location: `https://${LEGACY_HOST}${url.pathname}${url.search}`,
   };
+}
+
+/**
+ * The Family Tour is for thelanguagepage.com only. Every other host served by this project (eduwonderlab.com and
+ * its previews) sends the tour's paths to its own Family Corner instead. Returns the redirect target or null.
+ */
+export function familyTourElsewhere(url) {
+  if (isLanguagePageHost(url.hostname)) return null;
+  const p = url.pathname.toLowerCase();
+  if (p !== `${LAB_BASE}/family-tour` && !p.startsWith(`${LAB_BASE}/family-tour/`)) return null;
+  return `${url.origin}${LAB_BASE}/family`;
 }
 
 /**

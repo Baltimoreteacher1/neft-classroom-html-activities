@@ -67,7 +67,7 @@ test("every lab route parses to a real view and locates back to its own destinat
     if (d.href.startsWith("/")) {
       assert.ok(
         d.external ||
-          /^\/(graphic-novels|language-adventures|language-studio|access-teacher|learning-studios|studios)\//.test(
+          /^\/(graphic-novels|language-adventures|language-studio|access-teacher|learning-studios|studios|access-practice-lab\/videos)\//.test(
             d.href,
           ),
         `${d.id}: site path served on the lab host or marked external`,
@@ -142,6 +142,8 @@ test("navigation reads the site map: four learner links, audience doors, site gu
     "Practice",
     "Games & Worlds",
     "My Progress",
+    // Book Studio's "Create a Book" is a required top-row door (Joel, 2026-11-16 platform brief).
+    "Create a Book",
     "Teachers",
     "Families",
     "Site Guide",

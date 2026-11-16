@@ -7,6 +7,7 @@ import { ACHIEVEMENTS, GAME, GAMES, KLUS, PATHWAYS, SKILLS } from "./registry.js
 import { KLU_ES, SKILL_ES, chips } from "./screens.js";
 import { SUP } from "./engine.js";
 import { summarizeRounds } from "./state.js";
+import { expeditionsTeacherHTML } from "./language-expeditions-assign.js"; // teacher: Expeditions links
 
 const pair = (I, p) => I.T(p[0], p[1]);
 const bandQ = (b) => `grades=${b}`;
@@ -107,7 +108,7 @@ export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
       <div class="gs-hero-copy">
         <p class="gm-kicker">${icon("sparkle")}${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</p>
         <h1 tabindex="-1">${I.T("Play with language. Practice what matters.", "Juega con el lenguaje. Practica lo que importa.")}</h1>
-        <p class="lead">${I.T("Fifteen games for listening, reading, speaking and writing. Pick a support mode, play at your pace, then use the words on your own. There is no timer.", "Quince juegos para escuchar, leer, hablar y escribir. Elige un modo de apoyo, juega a tu ritmo y luego usa las palabras por tu cuenta. No hay temporizador.")}</p>
+        <p class="lead">${I.T(`${GAMES.length} games for listening, reading, speaking and writing. Pick a support mode, play at your pace, then use the words on your own. There is no timer.`, `${GAMES.length} juegos para escuchar, leer, hablar y escribir. Elige un modo de apoyo, juega a tu ritmo y luego usa las palabras por tu cuenta. No hay temporizador.`)}</p>
         <div class="gs-hero-actions">
           ${quick ? html`<a class="btn btn-primary btn-big" href="${playHref(quick.game, band, q, "&len=quick")}">${icon("play")}${I.T("5-minute mission: ", "Misión de 5 minutos: ")}${pair(I, GAME[quick.game].title)}</a>` : ""}
           <a class="btn btn-big" href="#gs-all">${I.T("Browse all games", "Ver todos los juegos")}</a>
@@ -132,6 +133,7 @@ export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
       <p><a class="btn" href="${hubHref(band, q, { home: "1" })}">${I.T("Show games that work well at home", "Mostrar juegos que funcionan bien en casa")}</a> <a class="btn" href="${BASE}/family?${bandQ(band)}">${I.T("Family Corner", "Rincón familiar")}</a></p></section>
     ${historyPanel(I, band, games)}
     ${teacherBox(I, band, q)}
+    ${expeditionsTeacherHTML(I, band, q) /* teacher: one-land links and teacher-written stops */}
     <p class="gs-note fine">${I.T("Game performance, learning progress and official WIDA ACCESS scores are three different things. These games show what you practiced and how much help you used. They never predict an ACCESS score, and they do not replace speaking, writing, reading and listening practice on your own. This lab is not made or endorsed by WIDA.", "El desempeño en el juego, el progreso de aprendizaje y las puntuaciones oficiales de WIDA ACCESS son cosas distintas. Estos juegos muestran lo que practicaste y cuánta ayuda usaste. Nunca predicen una puntuación ACCESS ni reemplazan la práctica de hablar, escribir, leer y escuchar por tu cuenta. Este laboratorio no es creado ni respaldado por WIDA.")}</p>
   </div>`;
 }

@@ -3,7 +3,7 @@ import { cleanResponse } from "./response-check.js";
 import { sanitizeAbility, updateAbility } from "./ability.js";
 import { isTier, levelToTier, tierToLevel } from "./difficulty-levels.js";
 import { sanitizeRescues } from "./rescue-history.js";
-import { REVIEW_LADDER, ladderIndex, masteryScore, masteryState, nextInterval } from "./mastery-model.js";
+import { REVIEW_LADDER, ladderIndex, masteryScore, masteryState, nextInterval, normalizeMasteryEvent } from "./mastery-model.js";
 import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 import { storyFor } from "./story-problems.js";
@@ -619,6 +619,7 @@ export function sanitizeTutor(value) {
       dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(REVIEW_LADDER.at(-1), Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
       strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
+      masteryEvents: (Array.isArray(record.masteryEvents) ? record.masteryEvents : []).map(normalizeMasteryEvent).filter(Boolean).slice(-100),
       metrics: summarizeMetrics({ recent, strategyTags }),
       ...(sanitizeAbility(record.ability) ? { ability: sanitizeAbility(record.ability) } : {}), // fl4:adaptive
     };

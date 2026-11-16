@@ -227,6 +227,11 @@ export function validateSettings(raw, app) {
     }
   }
   if (raw.digest != null) out.digest = raw.digest === true;
+  // Book Studio writing coach (Language Page): the teacher can turn the AI coach off for the whole class.
+  if (raw.aiCoach !== undefined) {
+    if (typeof raw.aiCoach !== "boolean") return { ok: false, error: "invalid-ai-coach" };
+    out.aiCoach = raw.aiCoach;
+  }
   if (raw.roadWeek !== undefined) {
     if (raw.roadWeek !== null && !intIn(raw.roadWeek, 1, MAX_ROAD_WEEK))
       return { ok: false, error: "invalid-road-week" };

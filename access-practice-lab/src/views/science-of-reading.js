@@ -7,6 +7,7 @@
 //   - CLOVER 6 Syllable Types & Syllable Division Rules
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
+import { canSpeak, speak } from "../speech.js";
 import { BASE, esc, icon as rawIcon, raw } from "../util.js";
 import { readingLessonHTML, mountReadingLesson } from "../sor/player.js";
 import { readingPathHTML } from "../sor/path.js";
@@ -1048,12 +1049,7 @@ export function mount(root, ctx) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const text = btn.dataset.say;
-      if (text && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 0.85;
-        window.speechSynthesis.speak(utter);
-      }
+      if (text && canSpeak()) speak(text, { rate: 0.85 });
     });
   });
 

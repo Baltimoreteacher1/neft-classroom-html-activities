@@ -41,9 +41,13 @@ export function frameHTML({ g, I, band, session, content, stage, progress, ctxBu
       <nav class="crumbs" aria-label="${I.S("Breadcrumb", "Ruta de navegación")}"><ol><li><a href="${BASE}/?grades=${band}">${I.S("Home", "Inicio")}</a></li><li><a href="${BASE}/games?grades=${band}">${I.T("Language Game Studio", "Estudio de juegos de lenguaje")}</a></li><li><span aria-current="page">${pair(I, g.title)}</span></li></ol></nav>
       <div class="gs-top-right">
         <span class="gs-progress-t" aria-hidden="true">${progress.done}/${progress.total}</span>
+        <span class="gs-progress-label">${I.T(`${progress.done} of ${progress.total} challenges complete`, `${progress.done} de ${progress.total} retos completados`)}</span>
         ${supportSwitch(I, session.support, { inline: true })}
       </div>
     </header>
+    <div class="gs-journey-track" role="progressbar" aria-label="${I.S("Game challenges complete", "Retos del juego completados")}" aria-valuemin="0" aria-valuemax="${progress.total}" aria-valuenow="${progress.done}">
+      <span style="width:${progress.total ? (progress.done / progress.total) * 100 : 0}%"></span>
+    </div>
     <section class="gs-brief" aria-label="${I.S("Language goal", "Meta de lenguaje")}">
       <p class="gs-goal"><strong>${I.T("Language goal:", "Meta de lenguaje:")}</strong> ${pair(I, ob)}</p>
       ${rulesHTML(content, band, I)}

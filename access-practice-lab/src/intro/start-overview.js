@@ -23,7 +23,7 @@ import { ROUTINES, SHARING } from "./site-guide-more.js";
 import { familiesHTML, resourcesHTML } from "./start-resources.js";
 import { loadIntro } from "./state.js";
 import { tourRoute } from "./tour-bands.js";
-import { PARTS } from "./tour-data.js";
+import { tourStatus } from "./tour/model.js";
 import { activityHref, copyWithNote, labHref } from "./ui.js";
 
 /** The teacher tour: a skill opens Part 2 (try it as a student) with that skill chosen; no skill opens the tour where the teacher left it. */
@@ -42,12 +42,12 @@ const sections = (pick) => [
 /** What this device remembers about the tour, the exploration and the lesson. Shown only when something is saved. */
 export function progressItems(intro) {
   const items = [];
-  const t = intro.guided;
-  if (t && t.part > 1 && !t.done) {
+  const t = tourStatus(intro);
+  if (t.state !== "start") {
     items.push({
-      text: `Teacher tour: Part ${Math.min(t.part, PARTS.length)} of ${PARTS.length}, ${PARTS[Math.min(t.part, PARTS.length) - 1].name}`,
+      text: `Teacher Tour: ${t.label}`,
       href: labHref(ROUTES.tour),
-      cta: "Resume the tour",
+      cta: t.state === "again" ? "Open my lesson kit" : "Continue where I left off",
     });
   }
   const x = intro.explore;

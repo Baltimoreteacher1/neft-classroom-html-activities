@@ -240,6 +240,8 @@ function summaryHTML(ctx, I, st, scene, cur, end) {
         ><a class="btn" href="${href("", band)}">${I.T("All scenes", "Todas las escenas")}</a
         ><button type="button" class="btn" data-print>
           ${icon("print")} ${I.T("Print the summary", "Imprimir el resumen")}
+        </button><button type="button" class="btn" data-sc-book>
+          ${icon("bookmark")} ${I.T("Make it a comic book", "Convertirlo en cómic")}
         </button>
       </div>
     </section>
@@ -320,6 +322,23 @@ export function onClick(e, ctx) {
     st.cur && st.cur.id === scene.id
       ? st.cur
       : (st.cur = { id: scene.id, path: [], ack: true, retries: 0 });
+  const toBook = t.closest("[data-sc-book]");
+  if (toBook) {
+    // The conversation the learner actually had becomes a narrated comic (src/book/handoff.js).
+    const { turns } = transcript(scene, cur.path);
+    if (!turns.length) return true;
+    toBook.disabled = true;
+    const me = I.S("Me", "Yo");
+    const pages = [];
+    for (const turn of turns) pages.push({ bubbles: [{ who: scene.npc.name, text: turn.npcSaid }, { who: me, text: turn.ch.say }] });
+    import("../book/handoff.js")
+      .then(({ openInBookStudio }) => openInBookStudio({ source: { kind: "scenario", id: scene.id, label: scene.title }, title: I.S(scene.title, scene.titleEs || scene.title), templateId: "conversation-book", band: ctx.band, pages }, (url) => ctx.navigate(url)))
+      .catch(() => {
+        toBook.disabled = false;
+        announce(I.S("Could not open Book Studio.", "No se pudo abrir Book Studio."));
+      });
+    return true;
+  }
   const choose = t.closest("[data-sc-choose]");
   if (choose && cur.ack !== false) {
     const nodeId = currentNode(scene, cur.path, true);
