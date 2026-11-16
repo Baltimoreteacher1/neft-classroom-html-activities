@@ -9,7 +9,7 @@ export const esc = (s) =>
   );
 /** English always; Spanish beside it, shown by the language switch. */
 const bi = (en, es) =>
-  `<span class="t-en">${esc(en)}</span>${es ? `<span class="t-es" lang="es">${esc(es)}</span>` : ""}`;
+  `<span class="t-en">${esc(en)}</span>${es && es !== en ? `<span class="t-es" lang="es">${esc(es)}</span>` : ""}`;
 const json = (o) => JSON.stringify(o).replace(/</g, "\\u003c");
 
 export const STAGE_INFO = [
@@ -146,14 +146,14 @@ export function lessonPage(L, stamp) {
       </div>
       <div class="ms-hero__tools">
         <button type="button" class="ms-btn ms-btn--quiet" id="ms-lang" aria-pressed="false">Español</button>
-        <p class="ms-saved" id="ms-saved" role="status">Your work saves on this device.</p>
+        <p class="ms-saved" id="ms-saved" role="status">${bi("Your work saves on this device.", "Tu trabajo se guarda en este dispositivo.")}</p>
       </div>
     </div>
     <div class="ms-entry">
-      <a class="ms-btn" href="#explore" data-goto="explore" id="ms-start">Start the Learning Lab</a>
-      <span class="ms-entry__or">or go straight to practice:</span>
-      <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="regular">Regular</a>
-      <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="challenge">Challenge</a>
+      <a class="ms-btn" href="#explore" data-goto="explore" id="ms-start">${bi("Start the Learning Lab", "Empezar el Learning Lab")}</a>
+      <span class="ms-entry__or">${bi("or go straight to practice:", "o ve directo a practicar:")}</span>
+      <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="regular">${bi("Regular", "")}</a>
+      <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="challenge">${bi("Challenge", "Reto")}</a>
     </div>
   </div>
 </header>
@@ -179,7 +179,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
         <div class="ms-test" id="ms-test"><h3>${bi("4. Test it without the model", "4. Pruébalo sin el modelo")}</h3><p class="ms-muted">${bi("Turn the model's current settings into a question, then try a new one on your own.", "Convierte la configuración del modelo en una pregunta y luego intenta una nueva por tu cuenta.")}</p><button type="button" class="ms-btn" id="ms-make-question">${bi("Make a question from my model", "Crear una pregunta con mi modelo")}</button><div id="ms-test-out"></div></div>
       </div>
     </div>
-    <p class="ms-more"><a href="${esc(L.lab.href)}">Open the full ${esc(L.lab.title)} lab</a>${L.lab.lessons.length > 1 ? ` <span class="ms-muted">(shared by lessons ${L.lab.lessons.map(esc).join(" and ")})</span>` : ""}</p>
+    <p class="ms-more"><a href="${esc(L.lab.href)}">${bi(`Open the full ${L.lab.title} lab`, `Abrir el laboratorio completo: ${L.lab.title}`)}</a>${L.lab.lessons.length > 1 ? ` <span class="ms-muted">(shared by lessons ${L.lab.lessons.map(esc).join(" and ")})</span>` : ""}</p>
   </section>
   <section class="ms-stage" id="understand" data-stage="understand" aria-labelledby="h-understand">
     ${stageHead(2, "understand", "Understand", "Comprende", "Read the idea, follow the worked examples, and connect the picture to the numbers.", "Lee la idea, sigue los ejemplos resueltos y conecta el dibujo con los números.")}
@@ -195,7 +195,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
     <aside class="ms-full">
       <h3>${bi("Full practice studios", "Estudios de práctica completos")}</h3>
       <p class="ms-muted">${bi("Five sections of practice with hands-on activities, fresh problems and your saved progress.", "Cinco secciones de práctica con actividades, problemas nuevos y tu progreso guardado.")}</p>
-      <div class="ms-row"><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.regular)}">Open Regular Practice Studio</a><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.challenge)}">Open Challenge Practice Studio</a></div>
+      <div class="ms-row"><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.regular)}">${bi("Open Regular Practice Studio", "Abrir el estudio de práctica Regular")}</a><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.challenge)}">${bi("Open Challenge Practice Studio", "Abrir el estudio de práctica de Reto")}</a></div>
     </aside>
   </section>
   <section class="ms-stage" id="apply" data-stage="apply" aria-labelledby="h-apply">

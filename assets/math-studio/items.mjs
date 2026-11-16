@@ -3,7 +3,7 @@
 import { checkChoice, checkNumber, checkStep, freshRecord, nextSupport, recordAttempt, revealWorked } from './core.mjs';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-export const bi = (en, es) => `<span class="t-en">${esc(en)}</span>${es ? `<span class="t-es" lang="es">${esc(es)}</span>` : ''}`;
+export const bi = (en, es) => `<span class="t-en">${esc(en)}</span>${es && es !== en ? `<span class="t-es" lang="es">${esc(es)}</span>` : ''}`;
 let uid = 0;
 
 /**
@@ -31,7 +31,7 @@ export function renderItem(host, item, opts = {}) {
             .join('')}</fieldset>`
         : `<label class="ms-label" for="ms-in${n}">${bi('Your answer', 'Tu respuesta')}${item.unit ? ` <span class="ms-muted">(${esc(item.unit)})</span>` : ''}</label><input id="ms-in${n}" class="ms-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">`;
   host.innerHTML = `<article class="ms-item" data-item="${esc(item.id)}">
-    ${opts.label ? `<p class="ms-eyebrow">${esc(opts.label)}</p>` : ''}
+    ${opts.label ? `<p class="ms-eyebrow">${Array.isArray(opts.label) ? bi(...opts.label) : esc(opts.label)}</p>` : ''}
     <p class="ms-prompt">${bi(item.prompt, item.promptEs)}</p>
     ${body}
     <div class="ms-row ms-item__actions">
@@ -73,6 +73,8 @@ export function renderItem(host, item, opts = {}) {
     const s = nextSupport(rec, item, hasModel);
     hintBtn.hidden = !hints.length || rec.hints >= hints.length || (opts.independentOnly && rec.attempts === 0);
     hintBtn.querySelector('.t-en').textContent = rec.hints ? `Next hint (${rec.hints + 1} of ${hints.length})` : 'Hint';
+    const es = hintBtn.querySelector('.t-es');
+    if (es) es.textContent = rec.hints ? `Siguiente pista (${rec.hints + 1} de ${hints.length})` : 'Pista';
     workedBtn.hidden = Boolean(rec.result) || !(rec.wrong >= 2 || rec.hints >= hints.length && rec.hints > 0 || s.level === 'worked');
   };
   const showHints = () => {
