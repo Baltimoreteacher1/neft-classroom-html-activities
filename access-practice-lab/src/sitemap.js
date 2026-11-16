@@ -623,6 +623,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "language-games",
+    section: "play",
+    skill: "Mixed",
+    kind: "game",
+    for: STF,
+    top: true,
+    href: "language-games",
+    icon: "lock",
+    title: P("Language Games", "Juegos de lenguaje"),
+    text: P(
+      "Four story games: an escape room, a detective case, real conversations and a newsroom.",
+      "Cuatro juegos de historias: una sala de escape, un caso de detective, conversaciones reales y una redacción.",
+    ),
+  },
+  {
     id: "games",
     section: "play",
     skill: "Mixed",

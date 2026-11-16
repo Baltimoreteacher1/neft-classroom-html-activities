@@ -129,6 +129,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "language-games",
+    group: "explore",
+    featured: true,
+    href: "language-games",
+    icon: "lock",
+    title: ["Language Games", "Juegos de lenguaje"],
+    text: [
+      "Escape rooms, detective cases, real conversations and a newsroom: explain your thinking to unlock the story.",
+      "Salas de escape, casos de detective, conversaciones reales y una redacción: explica lo que piensas para abrir la historia.",
+    ],
+  },
+  {
     id: "language-city",
     group: "explore",
     featured: true,

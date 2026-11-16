@@ -118,6 +118,7 @@ const VIEW_LOADERS = {
   "book-studio": () => import("./views/book-studio.js"),
   "language-labs": () => import("./views/language-labs.js"),
   adventures: () => import("./views/adventures.js"),
+  "language-games": () => import("./views/language-games.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -167,6 +168,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
+  if (a === "language-games") return { ...r, view: a, id: b || "", chapter: c || "" };
   if (a === "language-studios")
     return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
   if (a === "science-of-reading" && b === "lesson")
