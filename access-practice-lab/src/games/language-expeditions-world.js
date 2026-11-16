@@ -7,6 +7,7 @@
 // the camera math never needs the scene's pixel size. A layer with depth k shows world point XREF + k*(x - XREF)
 // at the centre: k < 1 moves slower (far), k > 1 faster (foreground). Decorative only (aria-hidden).
 import { rng } from "./engine.js";
+import { gearSVG } from "./language-expeditions-feel-gear.js"; // feel: gear on the explorer
 
 export const H = 1000;
 export const LW = 4000;
@@ -230,7 +231,7 @@ export function sceneMarkup(band) {
         : "";
     cache.set(
       band,
-      `<div class="lexp-stars">${stars}</div><div class="lexp-orb"></div>${layer("far")}<div class="lexp-fog"></div>${layer("mid")}${layer("near")}<svg class="lexp-hero" viewBox="0 0 100 150" focusable="false">${HERO[band]}</svg>${layer("front")}`,
+      `<div class="lexp-stars">${stars}</div><div class="lexp-orb"></div>${layer("far")}<div class="lexp-fog"></div>${layer("mid")}${layer("near")}<svg class="lexp-hero" viewBox="0 0 100 150" focusable="false">${HERO[band]}${gearSVG(band)}</svg>${layer("front")}`,
     );
   }
   return cache.get(band);

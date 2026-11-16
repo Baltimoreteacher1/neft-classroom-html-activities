@@ -15,6 +15,7 @@ import {
   settled,
 } from "./engine.js";
 import { pic, spotScene } from "./language-expeditions-art.js";
+import { gearStripHTML } from "./language-expeditions-feel-gear.js"; // feel: gear strip
 
 export const DOMAINS = {
   listening: { icon: "listening", name: ["Listening", "Escuchar"] },
@@ -117,6 +118,7 @@ export function gateHTML(s, band, env, rec) {
     </h2>
     <p class="lexp-guide">${say(I, land.gate)}</p>
     <p class="lexp-glow">${say(I, band.glow)}</p>
+    ${gearStripHTML(s, env)}
     <p class="lexp-not-score">
       ${I.T("Stamps are not a score.", "Los sellos no son una calificación.")}
       ${I.T("A stamp shows where you practiced.", "Un sello muestra dónde practicaste.")}
@@ -163,6 +165,7 @@ export function summaryHTML(s, band, env) {
         </li>`;
       })}
     </ul>
+    ${gearStripHTML(s, env)}
     <p class="lexp-not-score">
       ${I.T("Stamps are not a score.", "Los sellos no son una calificación.")}
     </p>

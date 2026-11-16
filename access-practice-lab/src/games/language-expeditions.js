@@ -45,6 +45,9 @@ import {
 } from "./language-expeditions-view.js";
 
 import { FULL, QUICK, checkWriting, validateContent } from "./language-expeditions-rules.js";
+import { syncGear } from "./language-expeditions-feel-gear.js"; // feel: gear
+import { touchPadHTML } from "./language-expeditions-feel-pad.js"; // feel: phone controls
+import { paintFeel } from "./language-expeditions-feel-world.js"; // feel: restored lands + finale
 const bandOf = (env) =>
   env.content.lands ? env.content : env.content.bands?.[env.band] || { lands: [] };
 const actOf = (env, s, k = s.land, i = s.lands[k].i) => bandOf(env).lands[k].acts[i];
@@ -166,6 +169,7 @@ export default {
     const I = env.I;
     const band = bandOf(env);
     ensure(s);
+    syncGear(s); // feel: old saves earn the gear their progress already shows
     const b = env.band === "6-8" ? "6-8" : "3-5";
     const x = live?.band === b && live.x != null ? live.x : camX(s);
     const layers = sceneMarkup(b).replace(
@@ -214,8 +218,11 @@ export default {
       data-mechanic="four-land-expedition"
     >
       ${barHTML(s, band, env)}
-      <div class="lexp-scene lexp-sky-${b.replace("-", "")}" aria-hidden="true">
-        ${raw(layers)}
+      <div class="lexp-feel-stage">
+        <div class="lexp-scene lexp-sky-${b.replace("-", "")}" aria-hidden="true">
+          ${raw(layers)}
+        </div>
+        ${s.at === "walk" ? touchPadHTML(I, isNear(s)) : "" /* feel: phone trail controls */}
       </div>
       ${panel}
     </section>`;
@@ -263,6 +270,7 @@ export default {
         return false;
       if (r.type === "speak" || r.type === "write") production(r, env, domain);
       L.i += 1;
+      syncGear(s); // feel: finishing a stop (any answer path) earns the land's gear
       s.at = "walk";
       focusSel = ".lexp-head";
       return true;
@@ -403,6 +411,7 @@ export default {
     aim(scene, x);
     paint(scene, sceneState(s));
     live = { band: b, node: scene, x };
+    const feelStop = paintFeel(scene, s, b, { motion: motionOK(), live }); // feel: restored lands, gear, finale
     const L = s.lands[s.land];
     const r = s.at === "land" ? L.acts[L.i] : null;
     const a = r ? actOf(env, s) : null;
@@ -419,7 +428,7 @@ export default {
       if (s.at === "walk") scene.scrollIntoView({ block: "start", behavior: motionOK() ? "smooth" : "auto" });
       focusSel = "";
     }
-    if (s.at !== "walk") return null;
+    if (s.at !== "walk") return feelStop;
     const land = bandOf(env).lands[s.land];
     const L2 = s.lands[s.land];
     const where = whereOf(s, land, L2.i < L2.acts.length ? actOf(env, s) : null);

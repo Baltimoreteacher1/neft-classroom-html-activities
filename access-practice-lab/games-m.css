@@ -930,3 +930,216 @@
 .lexp-panel > .btn {
   justify-self: start;
 }
+
+/* ── feel ── restored lands, gear, finale, sound toggle, phone trail controls ───────────────── */
+.lexp-feel-stage {
+  position: relative;
+}
+.lexp-feel-r {
+  opacity: 0;
+  transition: opacity 1.2s;
+}
+.lexp-scene.is-restored-0 [data-feel-land="0"],
+.lexp-scene.is-restored-1 [data-feel-land="1"],
+.lexp-scene.is-restored-2 [data-feel-land="2"],
+.lexp-scene.is-restored-3 [data-feel-land="3"] {
+  opacity: 1;
+}
+.lexp-feel-beam {
+  animation: lexp-feel-sweep-beam 6s ease-in-out infinite alternate;
+}
+.lexp-feel-dish {
+  transform: rotate(0deg);
+  transition: transform 1.6s ease-out;
+}
+.lexp-scene.is-restored-3 .lexp-feel-dish {
+  transform: rotate(-28deg);
+}
+.lexp-feel-blink {
+  animation: lexp-feel-blink 1.6s steps(2, jump-none) infinite;
+}
+@keyframes lexp-feel-sweep-beam {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(6deg);
+  }
+}
+@keyframes lexp-feel-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.lexp-gear {
+  display: none;
+}
+.lexp-gear.is-on {
+  display: inline;
+}
+/* finale: the beacon (3-5) or signal (6-8) sweeps across the trail while the camera pans all four lands */
+.lexp-feel-finale {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: none;
+  overflow: hidden;
+}
+.lexp-scene.is-finale .lexp-feel-finale {
+  display: block;
+}
+.lexp-scene.is-finale-run .lexp-layer {
+  transition: none;
+}
+.lexp-feel-sweep {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgb(255 233 160 / 38%), transparent);
+  transform: translateX(-110%) skewX(-14deg);
+}
+.lexp-band-68 .lexp-feel-sweep {
+  background: linear-gradient(90deg, transparent, rgb(127 224 208 / 40%), transparent);
+}
+.lexp-scene.is-finale-run .lexp-feel-sweep {
+  animation: lexp-feel-sweep 2.6s ease-in-out 2 both;
+}
+.lexp-scene.is-finale-done .lexp-feel-sweep {
+  left: 0;
+  width: 100%;
+  transform: none;
+  background: radial-gradient(ellipse at 50% 30%, rgb(255 233 160 / 30%), transparent 65%);
+}
+.lexp-band-68 .lexp-scene.is-finale-done .lexp-feel-sweep {
+  background: radial-gradient(ellipse at 50% 30%, rgb(127 224 208 / 32%), transparent 65%);
+}
+@keyframes lexp-feel-sweep {
+  from {
+    transform: translateX(-110%) skewX(-14deg);
+  }
+  to {
+    transform: translateX(310%) skewX(-14deg);
+  }
+}
+/* gear in the panels */
+.lexp-feel-gicon {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  border-radius: 10px;
+  background: var(--lexp-navy);
+  padding: 0.15rem;
+}
+.lexp-feel-newgear {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border: 2px dashed var(--lexp-teal-dk);
+  border-radius: 12px;
+  font-weight: 700;
+}
+.lexp-feel-gearstrip {
+  display: grid;
+  gap: 0.35rem;
+}
+.lexp-feel-gearhead,
+.lexp-feel-gearnote {
+  margin: 0;
+}
+.lexp-feel-gearhead {
+  font-weight: 700;
+}
+.lexp-feel-gearnote {
+  font-size: 0.9375rem;
+}
+.lexp-feel-gearstrip ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lexp-feel-gearstrip li {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+  border: 1px solid var(--lexp-navy);
+  border-radius: 999px;
+  background: var(--lexp-paper);
+}
+.lexp-feel-sound {
+  justify-self: start;
+  min-height: 44px;
+}
+/* phone trail controls over the scene (hidden on wider screens: the panel pad is enough there) */
+.lexp-feel-tpad {
+  display: none;
+}
+@media (max-width: 560px) {
+  .lexp-feel-tpad {
+    position: absolute;
+    left: 0.4rem;
+    right: 0.4rem;
+    bottom: 0.4rem;
+    z-index: 6;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+  }
+  .lexp-feel-tpad-l,
+  .lexp-feel-tpad-r {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-end;
+  }
+  .lexp-feel-tbtn {
+    pointer-events: auto;
+    min-width: 52px;
+    min-height: 52px;
+    padding: 0 0.6rem;
+    border: 2px solid rgb(247 244 236 / 85%);
+    border-radius: 14px;
+    background: rgb(23 50 77 / 62%);
+    color: #f7f4ec;
+    font: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+  }
+  .lexp-feel-tbtn[hidden] {
+    display: none;
+  }
+  .lexp-feel-tbtn:focus-visible {
+    outline: 3px solid var(--lexp-amber);
+    outline-offset: 2px;
+  }
+  .lexp-feel-tbtn:active {
+    background: rgb(31 166 162 / 75%);
+  }
+  .lexp-feel-topen {
+    font-size: 1rem;
+    background: rgb(18 110 108 / 85%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lexp-feel-r,
+  .lexp-feel-dish {
+    transition: none;
+  }
+  .lexp-feel-beam,
+  .lexp-feel-blink,
+  .lexp-scene.is-finale-run .lexp-feel-sweep {
+    animation: none;
+  }
+}

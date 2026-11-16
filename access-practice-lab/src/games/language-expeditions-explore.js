@@ -8,6 +8,8 @@
 // button). Reduced motion keeps steering (the learner moves the explorer) but drops the walk bob and the twinkle.
 import { html } from "./engine.js";
 import { H, aim, gateX, gems, stopX, trailX } from "./language-expeditions-world.js";
+import { newGearHTML } from "./language-expeditions-feel-gear.js"; // feel: gear
+import { feelDrive, soundBtnHTML } from "./language-expeditions-feel-pad.js"; // feel: pad, gamepad, sound
 
 const SPEED = 950; // world units per second
 const JUMP_V = 1500; // jump launch speed; peak = JUMP_V^2 / (2 * GRAV), about 270 units
@@ -114,6 +116,7 @@ export function walkHTML(s, land, a, env, b) {
       </button>
     </div>
     <p class="lexp-count" data-lexp-count>${countText(I, b, got, mine.length)}</p>
+    ${newGearHTML(s, env)}${soundBtnHTML(I)}
     <p class="lexp-keys-help">
       ${I.T("Keys: ← → or A D to walk · ↑, W or Space to jump · Enter to open.", "Teclas: ← → o A D para caminar · ↑, W o Espacio para saltar · Enter para abrir.")}
     </p>
@@ -143,6 +146,8 @@ export function drive(root, scene, s, env, b, live, where) {
   let raf = 0;
   let near = isNear(s);
   scene.classList.add("is-driving");
+  // feel: gamepad, phone trail controls and sound share this loop's steering.
+  const fx = feelDrive(root, b, I, { jump: () => jump(), open: () => near && ui.open?.click() });
 
   const jump = () => {
     if (jy > 0) return;
@@ -151,6 +156,7 @@ export function drive(root, scene, s, env, b, live, where) {
   };
   const refresh = () => {
     if (ui.open) ui.open.disabled = !near;
+    fx.near(near); // feel: phone Open button
     if (ui.status) ui.status.innerHTML = statusText(I, near, where);
     if (ui.count) {
       const got = mine.filter((g) => s.got.includes(g.id)).length;
@@ -161,7 +167,8 @@ export function drive(root, scene, s, env, b, live, where) {
     const dt = Math.min(0.05, last ? (t - last) / 1000 : 0);
     last = t;
     if (tap > 0) tap -= dt;
-    const dir = (held.r ? 1 : 0) - (held.l ? 1 : 0) || (tap > 0 ? tapDir : 0);
+    const pd = fx.poll(); // feel: gamepad
+    const dir = (held.r ? 1 : 0) - (held.l ? 1 : 0) || pd || (tap > 0 ? tapDir : 0);
     if (dir) {
       s.x = Math.min(hi, Math.max(lo, s.x + dir * SPEED * dt));
       hero?.classList.toggle("is-back", dir < 0);
@@ -182,6 +189,7 @@ export function drive(root, scene, s, env, b, live, where) {
         s.got.push(g.id);
         scene.querySelector(`[data-gem="${g.id}"]`)?.classList.add("is-got");
         dirty = true;
+        fx.gathered(); // feel: chime
       }
     }
     const n = isNear(s);
@@ -229,18 +237,22 @@ export function drive(root, scene, s, env, b, live, where) {
     tapDir = Number(btn.dataset.lexpMove) || 0;
     tap = TAP;
   };
-  const pad = root.querySelector(".lexp-pad");
+  // feel: the panel pad and the phone trail controls over the scene share the same handlers.
+  const pads = root.querySelectorAll(".lexp-pad, .lexp-feel-tpad");
   document.addEventListener("keydown", down);
   document.addEventListener("keyup", up);
   window.addEventListener("blur", release);
-  pad?.addEventListener("pointerdown", press);
-  pad?.addEventListener("pointerup", release);
-  pad?.addEventListener("pointercancel", release);
-  pad?.addEventListener("lostpointercapture", release);
-  pad?.addEventListener("click", keyClick);
+  for (const pad of pads) {
+    pad.addEventListener("pointerdown", press);
+    pad.addEventListener("pointerup", release);
+    pad.addEventListener("pointercancel", release);
+    pad.addEventListener("lostpointercapture", release);
+    pad.addEventListener("click", keyClick);
+  }
   raf = requestAnimationFrame(frame);
   return () => {
     cancelAnimationFrame(raf);
+    fx.stop(); // feel
     document.removeEventListener("keydown", down);
     document.removeEventListener("keyup", up);
     window.removeEventListener("blur", release);
