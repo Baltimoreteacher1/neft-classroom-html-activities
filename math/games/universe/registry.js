@@ -65,6 +65,20 @@ export const GAMES = [
     standards: ["6.NOS.6", "6.NOS.7", "6.NOS.9"],
     features: ["time-machine"],
   },
+  {
+    id: "expression-factory",
+    href: "/math/games/universe/games/expression-factory/",
+    title: { en: "Expression Factory", es: "Fábrica de Expresiones" },
+    genre: { en: "Automation puzzle", es: "Rompecabezas de automatización" },
+    tagline: {
+      en: "The production line is the expression. Build it, run crates of x through it, and prove two lines agree for every x.",
+      es: "La línea de producción es la expresión. Ármala, pasa cajas de x por ella y demuestra que dos líneas coinciden para cada x.",
+    },
+    unit: 6,
+    lessons: ["6-5", "6-6", "6-8", "6-14", "6-15"],
+    standards: ["6.AT.6a", "6.AT.7"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */
