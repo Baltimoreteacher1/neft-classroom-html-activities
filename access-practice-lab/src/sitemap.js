@@ -369,6 +369,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "book-studio",
+    section: "practice",
+    skill: "Writing",
+    kind: "studio",
+    for: STF,
+    top: true,
+    href: "book-studio",
+    icon: "writing",
+    title: P("Book Studio: create a book", "Book Studio: crea un libro"),
+    text: P(
+      "Make multimedia books and comics with your words, pictures, drawings and voice. Read them aloud, print or share them.",
+      "Haz libros y cómics multimedia con tus palabras, imágenes, dibujos y voz. Léelos en voz alta, imprímelos o compártelos.",
+    ),
+  },
+  {
     id: "sentences",
     section: "practice",
     skill: "Writing",
@@ -1023,6 +1038,21 @@ export const DESTINATIONS = Object.freeze([
     text: P("Carry your work to another device.", "Lleva tu trabajo a otro dispositivo."),
   },
   // ── For Teachers ──────────────────────────────────────────────────────────────────────────
+  {
+    id: "book-templates",
+    section: "teach",
+    skill: "Mixed",
+    kind: "tool",
+    for: T_,
+    href: "book-studio/templates",
+    icon: "library",
+    match: [["book-studio", "templates"]],
+    title: P("Book Studio templates", "Plantillas de Book Studio"),
+    text: P(
+      "26 book templates with page-by-page directions, language goals and teacher notes; review books students send.",
+      "26 plantillas de libros con instrucciones por página, metas de lenguaje y notas docentes; revisen los libros que envían los estudiantes.",
+    ),
+  },
   {
     id: "start",
     section: "teach",

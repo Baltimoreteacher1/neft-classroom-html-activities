@@ -81,9 +81,11 @@ test("relative dependency URLs resolve through the map to a single versioned mod
     for (const specifier of specifiers.filter((value) => value.startsWith("."))) {
       const importer = new URL(imports[prefix + file], origin);
       const normalized = new URL(specifier, importer);
-      // /shared/, /engine/, and /math/ modules are shared implementations used by both apps.
-      // They sit outside the versioned lab map and are served with Pages' default revalidating cache headers.
+      // /shared/, /engine/, /math/ and /assets/lib/ modules are shared implementations used by several apps
+      // (Book Studio's exports use the one zip writer, assets/lib/zip-store.js). They sit outside the versioned lab
+      // map and are served with revalidating cache headers (_headers: /assets/* must-revalidate).
       if (
+        normalized.pathname.startsWith("/assets/lib/") ||
         normalized.pathname.startsWith("/shared/") ||
         normalized.pathname.startsWith("/engine/") ||
         normalized.pathname.startsWith("/math/")

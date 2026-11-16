@@ -113,6 +113,7 @@ const VIEW_LOADERS = {
   "site-guide": () => import("./intro/site-guide.js"),
   privacy: () => import("./views/privacy.js"),
   accessibility: () => import("./views/accessibility.js"),
+  "book-studio": () => import("./views/book-studio.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -205,6 +206,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };
   if (a === "warmup") return { ...r, view: "warmup", id: b || "", date: q.get("date") || "" };
   if (a === "search") return { ...r, view: "search", id: b || "", q: q.get("q") || "", kind: q.get("kind") || "", all: q.get("all") || "" };
+  if (a === "book-studio") return { ...r, view: "book-studio", id: b || "", sub: c || "" };
   if (a === "portfolio") return { ...r, view: "portfolio", id: b || "", mode: q.get("view") || "" };
   if (a === "collection") return { ...r, view: "collection", id: b || "" };
   if (a === "units") return { ...r, view: "units", id: b || "", sub: c || "", tab: q.get("tab") || "" };

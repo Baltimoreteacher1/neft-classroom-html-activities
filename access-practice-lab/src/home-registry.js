@@ -54,6 +54,14 @@ export const HOME_CARDS = [
   },
 
   {
+    id: "my-books",
+    group: "start",
+    href: "book-studio",
+    icon: "writing",
+    title: ["My books", "Mis libros"],
+    text: ["Create a book, or keep working on one.", "Crea un libro o sigue con uno."],
+  },
+  {
     id: "join-class",
     group: "start",
     href: "class",
@@ -457,6 +465,14 @@ export const HOME_CARDS = [
     text: ["Class evidence, rubrics and review.", "Evidencia de la clase, rúbricas y revisión."],
   },
   {
+    id: "book-studio-teach",
+    group: "teach",
+    href: "book-studio/templates",
+    icon: "library",
+    title: ["Book Studio for classes", "Book Studio para la clase"],
+    text: ["26 book templates with language goals; students send books to your review queue.", "26 plantillas con metas de lenguaje; los estudiantes envían libros a su cola de revisión."],
+  },
+  {
     id: "units-plan",
     group: "teach",
     href: "units",
@@ -684,6 +700,14 @@ export const HOME_CARDS = [
       "A plain-language guide, in English and Spanish.",
       "Una guía en lenguaje sencillo, en inglés y español.",
     ],
+  },
+  {
+    id: "family-book",
+    group: "family",
+    href: "book-studio/templates",
+    icon: "families",
+    title: ["Create a family book", "Hagan un libro en familia"],
+    text: ["Family stories, traditions and recipes, in your languages. Private on your device.", "Historias, tradiciones y recetas de la familia, en sus idiomas. Privado en su dispositivo."],
   },
   {
     id: "family-units",

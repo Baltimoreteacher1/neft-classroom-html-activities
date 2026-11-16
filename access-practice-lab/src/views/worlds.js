@@ -245,7 +245,7 @@ function transferHTML(world, band, mission, list, idx, completed) {
     <p>${mission.independent}</p>
     ${
       missionSession.transferDone
-        ? html`<p class="ms-recorded" role="status">${icon("check")} ${I.T("Mission recorded on this device.", "Misión guardada en este dispositivo.")}</p>`
+        ? html`<p class="ms-recorded" role="status">${icon("check")} ${I.T("Mission recorded on this device.", "Misión guardada en este dispositivo.")}</p><p class="ms-actions"><button type="button" class="btn" data-world-book="${world.id}:${mission.baseId}">${icon("bookmark")} ${I.T("Write the mission report in Book Studio", "Escribir el informe de la misión en Book Studio")}</button></p>`
         : html`<div class="ms-actions"><button type="button" class="btn btn-primary btn-domain" data-world-complete="${world.id}:${mission.baseId}">${icon("check")} ${completed ? I.T("Mission completed (update progress)", "Misión completada (actualizar progreso)") : I.T("Complete mission & record transfer", "Completar la misión y guardar la transferencia")}</button></div>`
     }
     <div class="ms-actions">
@@ -482,6 +482,23 @@ async function onWorldClick(e, ctx) {
     missionSession.emptyDraft = !missionSession.draftText.trim();
     missionSession.checked = !missionSession.emptyDraft;
     ctx.rerender();
+    return true;
+  }
+
+  if (button.hasAttribute("data-world-book")) {
+    // The finished mission becomes a mission-report book with the learner's own conclusion (src/book/handoff.js).
+    const [worldId, baseId] = button.dataset.worldBook.split(":");
+    const mission = missionsOf(worldId, ctx.band).find((m) => m.baseId === baseId);
+    if (!mission) return true;
+    button.disabled = true;
+    const pages = [{ heading: I.S("The mission", "La misión"), text: [mission.title, mission.contentArea].filter(Boolean).join(" · "), art: "obj-map" }];
+    if (missionSession.draftText?.trim()) pages.push({ heading: I.S("What I concluded and why", "Qué concluí y por qué"), text: missionSession.draftText.trim() });
+    if (mission.independent) pages.push({ heading: I.S("Carrying it further", "Llevarlo más lejos"), text: "", prompt: { en: `Transfer challenge: ${mission.independent}`, es: `Reto de transferencia: ${mission.independent}` } });
+    import("../book/handoff.js")
+      .then(({ openInBookStudio }) => openInBookStudio({ source: { kind: "world", id: `${worldId}:${baseId}`, label: mission.title }, title: `${I.S("Mission report", "Informe de misión")}: ${mission.title}`.slice(0, 80), templateId: "mission-report", band: ctx.band, pages }, (url) => ctx.navigate(url)))
+      .catch(() => {
+        button.disabled = false;
+      });
     return true;
   }
 

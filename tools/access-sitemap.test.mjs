@@ -142,6 +142,8 @@ test("navigation reads the site map: four learner links, audience doors, site gu
     "Practice",
     "Games & Worlds",
     "My Progress",
+    // Book Studio's "Create a Book" is a required top-row door (Joel, 2026-11-16 platform brief).
+    "Create a Book",
     "Teachers",
     "Families",
     "Site Guide",
