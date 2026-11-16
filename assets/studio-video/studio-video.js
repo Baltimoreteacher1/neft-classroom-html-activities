@@ -5,7 +5,7 @@
  * poster link to the MP4, the description and the full captions text. With it:
  *   - nothing is downloaded until the card is near the viewport (IntersectionObserver), and then only
  *     the poster: the <video> is built with preload="none";
- *   - native controls, an English captions <track> read from the VTT (off until chosen: the films already show their words), and a real <button> that
+ *   - native controls, an English captions <track> read from the VTT (off until chosen for a silent film, which already shows its words; showing for a narrated one), and a real <button> that
  *     starts playback on a click or key press. Nothing ever autoplays, with or without sound;
  *   - prefers-reduced-motion: no animation or transition, and the captions text opens by default so
  *     the poster and the words are what the reader gets.
@@ -51,7 +51,7 @@ class StudioVideo extends HTMLElement {
     const fallback = frame?.querySelector(".sv-fallback");
     if (!frame || !fallback) return;
     this.upgraded = true;
-    const { mp4, poster, vtt, title, width, height, id } = this.dataset;
+    const { mp4, poster, vtt, title, width, height, id, narrated } = this.dataset;
 
     const stage = document.createElement("div");
     stage.className = "sv-stage";
@@ -60,7 +60,7 @@ class StudioVideo extends HTMLElement {
     video.className = "sv-video";
     video.controls = true;
     video.preload = "none";
-    video.muted = true; // click-to-play only; the films are silent
+    video.muted = !narrated; // click-to-play only; silent films stay muted, a narrated film plays its voice
     video.playsInline = true;
     video.poster = poster;
     video.width = Number(width) || 1920;
@@ -75,10 +75,12 @@ class StudioVideo extends HTMLElement {
     track.srclang = "en";
     track.label = "English captions";
     track.src = vtt;
-    // The films carry their captions in the picture, so the track is NOT default: a showing track would
+    // A silent film carries its captions in the picture, so its track is NOT default: a showing track would
     // draw every line twice. It stays disabled until the viewer picks it in the player's captions menu.
+    // A narrated film has no burned-in captions, so its track shows from the first word (the viewer can turn it off).
+    if (narrated) track.default = true;
     video.append(source, track);
-    for (const t of video.textTracks) t.mode = "disabled";
+    for (const t of video.textTracks) t.mode = narrated ? "showing" : "disabled";
 
     const button = document.createElement("button");
     button.type = "button";

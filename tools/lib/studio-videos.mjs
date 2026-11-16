@@ -57,6 +57,8 @@ const ENTRY_KEYS = [
   "height",
   "pages",
 ];
+/** Optional: `narrated: true` marks a film with a spoken track (the default is a silent film). */
+const OPTIONAL_KEYS = ["narrated"];
 
 /** "/math" and "/math/" are one page; "/" stays "/". */
 export function normalizePage(page) {
@@ -176,7 +178,10 @@ export function validateManifest(manifest, { root = null, isTeacherSurface = nul
       continue;
     }
     for (const key of Object.keys(v))
-      if (!ENTRY_KEYS.includes(key)) add(at, `unknown key "${key}"`);
+      if (!ENTRY_KEYS.includes(key) && !OPTIONAL_KEYS.includes(key))
+        add(at, `unknown key "${key}"`);
+    if ("narrated" in v && typeof v.narrated !== "boolean")
+      add(at, "narrated must be true or false");
     for (const key of ENTRY_KEYS) if (!(key in v)) add(at, `missing "${key}"`);
 
     if (typeof v.id !== "string" || !ID.test(v.id)) add(at, "id must be a lowercase slug");

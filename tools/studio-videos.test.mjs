@@ -428,11 +428,14 @@ test("component promises hold, and each detector fires on a mutation of the real
   const cases = [
     [mutate("js", 'video.preload = "none"', 'video.preload = "auto"'), /preload/],
     [mutate("js", "video.controls = true", "video.controls = false"), /native controls/],
-    [{ ...base, js: `${base.js}\ntrack.default = true;` }, /not be default/],
-    [{ ...base, markup: `${base.markup}<track kind="captions" default>` }, /not be default/],
-    [mutate("js", 't.mode = "disabled"', 't.mode = "showing"'), /disabled/],
+    [{ ...base, js: `${base.js}\ntrack.default = true;` }, /default only for a narrated/],
+    [
+      { ...base, markup: `${base.markup}<track kind="captions" default>` },
+      /default only for a narrated/,
+    ],
+    [mutate("js", 't.mode = narrated ? "showing" : "disabled"', 't.mode = "showing"'), /disabled/],
     [mutate("js", 'track.kind = "captions"', 'track.kind = "subtitles"'), /captions <track>/],
-    [mutate("js", "video.muted = true", "video.muted = false"), /muted/],
+    [mutate("js", "video.muted = !narrated", "video.muted = false"), /muted/],
     [mutate("js", /IntersectionObserver/g, "Nope"), /IntersectionObserver/],
     [mutate("js", "transcript.open = true", "transcript.open = false"), /reduced-motion/],
     [{ ...base, js: `${base.js}\nvideo.autoplay = true;` }, /autoplay/],

@@ -5,7 +5,7 @@
  * (studio-video.js); without JavaScript the card is a poster link, the description and the full
  * transcript, which is a complete page on its own.
  *
- * Entry shape: { id, brand, title, description, mp4, poster, vtt, durationSec, width, height,
+ * Entry shape: { id, brand, title, description, mp4, poster, vtt, durationSec, width, height, narrated?,
  *                cues: [{ start, text }], hub: { path, name } }
  */
 
@@ -33,10 +33,10 @@ export function cardHtml(entry, { headingLevel = 2 } = {}) {
   const hub = entry.hub
     ? `<p class="sv-more"><a href="${esc(entry.hub.path)}">All ${esc(entry.hub.name)} videos</a></p>`
     : "";
-  return `<studio-video class="sv" data-brand="${esc(entry.brand)}" data-id="${esc(entry.id)}" data-title="${esc(entry.title)}" data-mp4="${esc(entry.mp4)}" data-poster="${esc(entry.poster)}" data-vtt="${esc(entry.vtt)}" data-width="${entry.width}" data-height="${entry.height}">
+  return `<studio-video class="sv" data-brand="${esc(entry.brand)}" data-id="${esc(entry.id)}" data-title="${esc(entry.title)}" data-mp4="${esc(entry.mp4)}" data-poster="${esc(entry.poster)}" data-vtt="${esc(entry.vtt)}" data-width="${entry.width}" data-height="${entry.height}"${entry.narrated ? ' data-narrated="true"' : ""}>
 <div class="sv-copy"><p class="sv-eyebrow">Video &middot; ${clock(entry.durationSec)}</p><${h} class="sv-title" id="${id}-title">${esc(entry.title)}</${h}><p class="sv-desc" id="${id}-desc">${esc(entry.description)}</p></div>
 <div class="sv-frame"><a class="sv-fallback" href="${esc(entry.mp4)}"><img class="sv-poster" src="${esc(entry.poster)}" width="${POSTER_WIDTH}" height="${POSTER_HEIGHT}" alt="" loading="lazy" decoding="async"><span class="sv-fallback-label">Play video: ${esc(entry.title)} (MP4)</span></a></div>
-<p class="sv-note">This video has no sound. Words appear on screen and as captions; the same words are listed below.</p>
+<p class="sv-note">${entry.narrated ? "This video has narration. Captions are on by default and can be turned off in the player; the same words are listed below." : "This video has no sound. Words appear on screen and as captions; the same words are listed below."}</p>
 <details class="sv-transcript"><summary>Captions text</summary><ol class="sv-cues" aria-label="Captions text for ${esc(entry.title)}">${cues}</ol></details>
 ${hub}
 </studio-video>`;

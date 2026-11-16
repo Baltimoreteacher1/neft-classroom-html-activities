@@ -43,13 +43,25 @@ export function componentProblems(sources) {
   need(/preload\s*=\s*"none"/.test(js), 'the <video> must be built with preload = "none"');
   need(/video\.controls\s*=\s*true/.test(js), "the <video> must have native controls");
   need(/track\.kind\s*=\s*"captions"/.test(js), "a captions <track> from the VTT is required");
+  // A silent film (the default) carries its captions in the picture: its track is never default, starts
+  // disabled, and the video is muted. Only an entry marked narrated may differ, and only through the one
+  // `narrated` branch, so a silent film can never start showing a doubled caption or playing sound.
+  const defaults = js.match(/\.default\s*=\s*true/g) || [];
+  const narratedDefaults = js.match(/if\s*\(narrated\)\s*track\.default\s*=\s*true/g) || [];
   need(
-    !/\.default\s*=\s*true|setAttribute\("default"/.test(js) &&
+    defaults.length === narratedDefaults.length &&
+      !/setAttribute\("default"/.test(js) &&
       !/<track[^>]*\bdefault\b/.test(markup),
-    "the captions track must not be default: the films have burned-in captions and a showing track doubles every line",
+    "the captions track may be default only for a narrated film (silent films have burned-in captions and a showing track doubles every line)",
   );
-  need(/t\.mode\s*=\s*"disabled"/.test(js), 'the captions track must start with mode "disabled"');
-  need(/video\.muted\s*=\s*true/.test(js), "the <video> must start muted (click-to-play only)");
+  need(
+    /t\.mode\s*=\s*narrated\s*\?\s*"showing"\s*:\s*"disabled"/.test(js),
+    'the captions track must start "disabled", or "showing" for a narrated film only',
+  );
+  need(
+    /video\.muted\s*=\s*!narrated/.test(js),
+    "the <video> must start muted unless the entry is narrated (click-to-play only)",
+  );
   need(
     /IntersectionObserver/.test(js),
     "the player must load lazily through an IntersectionObserver",

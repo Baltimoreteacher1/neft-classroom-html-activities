@@ -61,7 +61,7 @@ A `pages` item is a path (`"/math/unit-9/"`) or an object:
 | Video | Page and place | Why it belongs there |
 | --- | --- | --- |
 | Mathematics Comes to Life (film) | `/math/`, `/math/games/` (default) | Site-wide math overview |
-| Language Learning Through Exploration (film) | `/access-practice-lab/` | Lab overview |
+| Welcome to The Language Page (narrated film, 1:21) | `/access-practice-lab/` | Lab overview: the home screen's first video card |
 | Exponents: 2^5 (film) | `/math/unit-6/6-ee-a-1-onramp/` after `header.hero` | The "What Exponents Mean" on-ramp page |
 | Exponents: repeated multiplication | `/math/unit-6/` after `#unit-6-lessons-heading` up 1 | Lesson 6.1 Powers and Exponents is the first lesson listed |
 | Order of operations | `/math/unit-6/pemdas-alchemy/` after `header` | The PEMDAS Alchemy game teaches this order |
@@ -104,6 +104,12 @@ and the MP4 only after Play). Native controls, an English captions `<track>` fro
 click or key to play, never autoplay. `prefers-reduced-motion`: no transitions and the captions text opens by
 default. Without JavaScript the card is a labelled link to the MP4 plus the full captions text. The films are
 silent, and the card says so.
+
+**Narrated films.** An entry with `"narrated": true` is a film with a spoken track and no burned-in captions: its
+card says it has narration, the player does not force the video muted, and the captions track is `default`
+(showing from the first word; the viewer can turn it off). Everything else is unchanged: click to play, no
+autoplay, `preload="none"`, the full cue list under "Captions text". `tools/language-intro/overview/` holds the
+source of the one narrated film (script, real-site capture, narration, Remotion composition; see its README).
 
 ## Checking it in a browser (not part of the gate: needs a browser with H.264)
 
