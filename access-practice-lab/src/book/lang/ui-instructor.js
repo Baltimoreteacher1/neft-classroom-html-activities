@@ -560,7 +560,7 @@ export function openStudio(E, tab = "manage") {
     let body;
     if (bodyFn) body = bodyFn(E, st);
     else {
-      const mod = await import("./ui-teacher-plan.js");
+      const mod = await import("./ui-instructor-plan.js");
       body = mod.tabHTML(E, st);
     }
     show(
@@ -571,7 +571,7 @@ export function openStudio(E, tab = "manage") {
     );
     E.spStudioRender = render;
     panel(E).querySelector(".bk-sp-tab.is-on")?.focus({ preventScroll: true });
-    if (st.tab === "preview") (await import("./ui-teacher-plan.js")).afterPreview(E, st);
+    if (st.tab === "preview") (await import("./ui-instructor-plan.js")).afterPreview(E, st);
   };
   const d = panel(E);
   if (!d.__spBound) {
@@ -855,7 +855,7 @@ function studioClick(E, e) {
     return re();
   }
   // plan / designer / preview actions live in the second module
-  import("./ui-teacher-plan.js").then((m) => m.onClick(E, e, b, act));
+  import("./ui-instructor-plan.js").then((m) => m.onClick(E, e, b, act));
 }
 
 function studioInput(E, e) {
@@ -924,7 +924,7 @@ function studioInput(E, e) {
     if (kind === "flag" && t.value === "delete:1") st.sel.clear();
     return re();
   }
-  import("./ui-teacher-plan.js").then((m) => m.onInput(E, e));
+  import("./ui-instructor-plan.js").then((m) => m.onInput(E, e));
 }
 
 export {

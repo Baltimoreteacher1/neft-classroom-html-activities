@@ -19,7 +19,7 @@ import {
 import { groupCopy, recommendAdjustment, stepIntensity } from "./supports.js";
 import { createSupportHost } from "./ui-support.js";
 import { markVocab } from "./vocab-mark.js";
-import { applySupport, openBuilder, panel, sandboxHost } from "./ui-teacher.js";
+import { applySupport, openBuilder, panel, sandboxHost } from "./ui-instructor.js";
 import { evidenceReport } from "./work.js";
 
 const EXAMPLES = [

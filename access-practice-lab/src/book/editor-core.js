@@ -11,7 +11,7 @@ const HISTORY = 100;
 const SAVE_DELAY = 700;
 const VERSION_EVERY_MS = 10 * 60 * 1000;
 
-export function createEditorState(book, { onChange, onStatus, onConflict } = {}) {
+export function createEditorState(book, { onChange, onStatus, onConflict, onCommit } = {}) {
   const S = {
     book: normalizeBook(book),
     pageIndex: 0,
@@ -27,6 +27,7 @@ export function createEditorState(book, { onChange, onStatus, onConflict } = {})
     saving: null,
     lastVersionAt: Date.now(),
     seq: 0,
+    readOnly: false, // a viewer of a shared class book (collab.js): local changes are refused
   };
   const snapshot = () => JSON.stringify(S.book);
   let lastSnap = snapshot();
@@ -78,9 +79,15 @@ export function createEditorState(book, { onChange, onStatus, onConflict } = {})
   }
 
   /** Record a change: push undo, write recovery, schedule save, notify. `render` false while typing. */
-  function commit({ render = true, history = true } = {}) {
+  function commit({ render = true, history = true, remote = false } = {}) {
     const snap = snapshot();
     if (snap === lastSnap) return;
+    if (S.readOnly && !remote) {
+      S.book = normalizeBook(JSON.parse(lastSnap));
+      S.editingText = null;
+      onChange?.({ render: true });
+      return;
+    }
     if (history) {
       S.undo.push(lastSnap);
       if (S.undo.length > HISTORY) S.undo.shift();
@@ -92,11 +99,14 @@ export function createEditorState(book, { onChange, onStatus, onConflict } = {})
     db.writeRecovery(S.book);
     scheduleSave();
     onChange?.({ render });
+    if (!remote) onCommit?.();
   }
 
   function restore(snap) {
+    const collab = S.book.collab;
     S.book = normalizeBook(JSON.parse(snap));
     S.book.rev = S.baseRev;
+    S.book.collab = collab; // undo never moves this copy's place in a shared book
     lastSnap = snapshot();
     S.seq++;
     S.pageIndex = Math.min(S.pageIndex, S.book.pages.length - 1);
@@ -106,6 +116,7 @@ export function createEditorState(book, { onChange, onStatus, onConflict } = {})
     db.writeRecovery(S.book);
     scheduleSave();
     onChange?.({ render: true });
+    onCommit?.();
   }
 
   const page = () => S.book.pages[S.pageIndex];
@@ -279,6 +290,27 @@ export function createEditorState(book, { onChange, onStatus, onConflict } = {})
         bottom: { y: 96 - el.h },
       }[how];
       if (patch) api.update(id, patch);
+    },
+    /**
+     * Write a collaborator's changes (collab.js) into the book. The same change is written into every undo and redo
+     * step, so Undo only ever takes back this learner's own edits, never a classmate's. Not an undo step itself.
+     */
+    applyRemote(mutate) {
+      const pageId = page()?.id;
+      mutate(S.book);
+      const rebase = (snap) => {
+        const b = JSON.parse(snap);
+        mutate(b);
+        return JSON.stringify(normalizeBook(b));
+      };
+      S.undo = S.undo.map(rebase);
+      S.redo = S.redo.map(rebase);
+      const at = S.book.pages.findIndex((p) => p.id === pageId);
+      S.pageIndex = at >= 0 ? at : Math.min(S.pageIndex, S.book.pages.length - 1);
+      const els = page().elements;
+      if (S.selected && !els.some((e) => e.id === S.selected)) S.selected = null;
+      if (S.editingText && !els.some((e) => e.id === S.editingText)) S.editingText = null;
+      commit({ history: false, remote: true });
     },
     setBook(patch) {
       Object.assign(S.book, patch);

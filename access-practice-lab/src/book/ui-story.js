@@ -3,7 +3,7 @@
 // "Direct this scene". "Improve" holds the optional language coach and revision help. Loaded with the editor; the player
 // itself loads only when someone presses Play.
 import { bkIcon } from "./icons.js";
-import { isTeacher } from "./lang/ui-teacher.js";
+import { isTeacher } from "./lang/ui-instructor.js";
 import { plainText } from "./model.js";
 import { createScenePlayer } from "./scene-player.js";
 import { esc } from "./render.js";
@@ -299,9 +299,9 @@ export async function onDockClick(E, e) {
   const page = core.page();
   const book = core.S.book;
   const redock = () => E.renderDock();
-  if (act === "add-support") (await import("./lang/ui-teacher.js")).openBuilder(E, {});
-  else if (act === "studio") (await import("./lang/ui-teacher.js")).openStudio(E, "manage");
-  else if (act === "preview") (await import("./lang/ui-teacher.js")).openStudio(E, "preview");
+  if (act === "add-support") (await import("./lang/ui-instructor.js")).openBuilder(E, {});
+  else if (act === "studio") (await import("./lang/ui-instructor.js")).openStudio(E, "manage");
+  else if (act === "preview") (await import("./lang/ui-instructor.js")).openStudio(E, "preview");
   else if (act === "characters") (await import("./ui-story-map.js")).openCharacters(E);
   else if (act === "map") (await import("./ui-story-map.js")).openStoryMap(E);
   else if (act === "choices") (await import("./ui-story-map.js")).openChoices(E);

@@ -148,6 +148,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       live.textContent = res.ok ? (coachToggle.checked ? S("The writing coach is available to this class.", "El asesor de escritura está disponible para esta clase.") : S("The writing coach is turned off for this class.", "El asesor de escritura está apagado para esta clase.")) : errorText(S, res.error);
       if (!res.ok) coachToggle.checked = !coachToggle.checked;
     };
+    const booksBox = el("div");
     const header = el(
       "div",
       { class: "cls-card" },
@@ -181,6 +182,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       el("section", { class: "cls-card" }, el("h4", {}, S("Live class quiz", "Cuestionario de clase en vivo")), quizBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Recordings and voice notes", "Grabaciones y notas de voz")), notesBox),
       socialBox,
+      booksBox,
       el("section", { class: "cls-card" }, el("button", { type: "button", class: "btn ghost", onclick: async () => {
         const typed = prompt(S("Type the class code to delete this class and everything in it.", "Escribe el código de clase para eliminar esta clase y todo lo que contiene."));
         if (typed && (await api.remove(typed)).ok) { store.write(store.read().filter((c) => c.code !== current.code)); entry(); }
@@ -252,6 +254,10 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       const social = m.mountSocialPanel(socialBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
       // The social panel polls on its own timer; stop it with the panel's other timers.
       if (social?.unmount) timers.push({ unmount: social.unmount });
+    });
+    import("./book-collab-panel.js").then((m) => {
+      const books = m.mountBookCollabPanel(booksBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
+      if (books?.unmount) timers.push({ unmount: books.unmount });
     });
   }
 

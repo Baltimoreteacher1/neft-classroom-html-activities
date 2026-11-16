@@ -247,7 +247,7 @@ export const BAND_68 = {
           prompt: "Write the lead for your story. Answer who, what, when, where and why.",
           help: "El primer párrafo de una noticia responde las 5 preguntas: ¿quién? (la ciudad), ¿qué? (abrió el cruce), ¿cuándo? (el día), ¿dónde? (las calles) y ¿por qué? (los casos de casi accidentes). Usa la entrevista, la gráfica y el aviso.",
           check: {
-            min: 25,
+            min: 18,
             ideas: [
               {
                 any: ["city", "council", "workers", "safety team", "students", "eastbrook"],
@@ -572,7 +572,7 @@ export const BAND_68 = {
           prompt: "Write the lead for your story. Answer who, what, when, where and why.",
           help: "Responde las 5 preguntas en una o dos oraciones: ¿quién donó? ¿qué (cuánta comida)? ¿cuándo terminó? ¿dónde (los lugares)? ¿por qué (para qué es la comida)? Usa la entrevista con el Sr. Reyes.",
           check: {
-            min: 28,
+            min: 20,
             ideas: [
               {
                 any: [
@@ -917,7 +917,7 @@ export const BAND_68 = {
             "Write a two-sentence lead. The first sentence answers who, what, when, where and why. The second tells readers what happens next.",
           help: "Primera oración: ¿qué pasó?, ¿cuándo?, ¿dónde?, ¿por qué? (cuánta lluvia). Segunda oración: ¿qué pasa ahora? (cuánto tiempo estará cerrado, a dónde va la tutoría). Usa la entrevista, la gráfica y el informe.",
           check: {
-            min: 30,
+            min: 22,
             ideas: [
               {
                 any: [

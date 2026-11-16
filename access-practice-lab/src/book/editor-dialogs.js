@@ -48,14 +48,18 @@ async function historyDialog(E, { refresh = false } = {}) {
   );
 }
 
-async function shareDialog(E) {
+async function shareDialog(E, { refresh = false } = {}) {
   const tr = E.I.S;
   const { core } = E;
   const S = core.S;
+  // Writing together with the class (collab.js): only offered to a learner who joined a class.
+  const { collabSectionHTML } = await import("./collab.js");
+  if (refresh && !E.dialog.open) return;
   shell(
     E,
     tr("Share & export", "Compartir y exportar"),
-    `<div class="bk-share-grid">
+    `${collabSectionHTML(E)}
+    <div class="bk-share-grid">
       <section><h3>${bkIcon("export")} ${esc(tr("Print or save as PDF", "Imprimir o guardar como PDF"))}</h3><p class="fine">${esc(tr("Every page prints on its own sheet at the book's size. Choose “Save as PDF” in the print window to make a PDF.", "Cada página se imprime en su propia hoja al tamaño del libro. Elige “Guardar como PDF” en la ventana de impresión para hacer un PDF."))}</p><button type="button" class="btn" data-bk-dlg="print">${esc(tr("Print / PDF", "Imprimir / PDF"))}</button></section>
       <section><h3>${bkIcon("book")} ${esc(tr("E-book (EPUB)", "Libro electrónico (EPUB)"))}</h3><p class="fine">${esc(tr("Opens in Apple Books, Thorium, Google Play Books and most e-readers, with your recordings and picture descriptions.", "Se abre en Apple Books, Thorium, Google Play Libros y la mayoría de los lectores, con tus grabaciones y descripciones de imágenes."))}</p><button type="button" class="btn" data-bk-dlg="epub">${esc(tr("Download EPUB", "Descargar EPUB"))}</button></section>
       <section><h3>${bkIcon("image")} ${esc(tr("Cover picture", "Imagen de la portada"))}</h3><p class="fine">${esc(tr("A picture of your cover to use as a thumbnail or poster.", "Una imagen de tu portada para usar como miniatura o cartel."))}</p><button type="button" class="btn" data-bk-dlg="cover">${esc(tr("Download cover", "Descargar portada"))}</button></section>
@@ -144,7 +148,12 @@ document.addEventListener("click", async (e) => {
   btn.disabled = true;
   try {
     await core.saveNow();
-    if (act === "save-version") {
+    if (act.startsWith("collab-")) {
+      const { onCollabAction } = await import("./collab.js");
+      const msg = await onCollabAction(E, act, btn);
+      await shareDialog(E, { refresh: true });
+      status(msg);
+    } else if (act === "save-version") {
       await db.saveVersion(S.book, dialog.querySelector("[data-bk-vname]")?.value || "");
       await historyDialog(E, { refresh: true });
       E.say(tr("Version saved.", "Versión guardada."));

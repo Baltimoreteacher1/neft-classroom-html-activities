@@ -418,6 +418,16 @@ export function normalizeBook(raw = {}) {
           }
         : null,
     remix: raw.remix === true,
+    // Writing together (collab.js): which class book this copy is joined to and the last server revision applied.
+    collab:
+      raw.collab && typeof raw.collab === "object" && /^k[a-f0-9]{12}$/.test(raw.collab.bookId || "")
+        ? {
+            code: str(raw.collab.code, 6),
+            bookId: raw.collab.bookId,
+            bookCode: str(raw.collab.bookCode, 6),
+            lastRev: clampNum(raw.collab.lastRev, 0, 1e12, 0),
+          }
+        : null,
     feedback: (Array.isArray(raw.feedback) ? raw.feedback : []).slice(0, 200).map((f) => ({
       id: str(f.id, 40) || newId("f"),
       pageId: str(f.pageId, 40),
@@ -768,6 +778,7 @@ export function cloneWithNewIds(book, patch = {}) {
     for (const r of w.records || []) if (r.target) r.target = El(r.target);
   }
   copy.feedback = [];
+  copy.collab = null; // a copy is this learner's own book, not another seat in the shared one
   copy.submission = null;
   copy.review = null;
   copy.status = "draft";

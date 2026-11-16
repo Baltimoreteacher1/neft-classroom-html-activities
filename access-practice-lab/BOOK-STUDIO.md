@@ -30,6 +30,7 @@ Independently designed and built; no code, templates, artwork or trade dress fro
 | `src/book/editor*.js`                                     | editor shell and canvas (`editor.js`), state/undo/autosave (`editor-core.js`), Add toolbar (`editor-add.js`), inspector (`editor-panels.js`), dialogs (`editor-dialogs.js`), media and drawing (`editor-media.js`) |
 | `src/book/reader.js`                                      | reader                                                                                                                                                                                                             |
 | `src/book/export.js`                                      | Print/PDF, EPUB 3, cover PNG, `.langbook` project export/import, share links                                                                                                                                       |
+| `src/book/collab.js`, `src/book/collab-model.js`          | writing together with the class: session, presence, sharing, bookshelf section; the device half of the merge (pure)                                                                                               |
 | `src/book/handoff.js`                                     | `createBookFromContent()`, the one contract other studios use to start a book from real work                                                                                                                       |
 | `src/book/templates*.js`, `src/book/art.js`               | 26 templates; 72 original illustrations                                                                                                                                                                            |
 | `book-studio.css`                                         | all Book Studio styles (loaded by the view)                                                                                                                                                                        |
@@ -64,6 +65,44 @@ Two real paths, no sample data:
 2. **Book file**: a student downloads the `.langbook`; the teacher opens it, uses `/book-studio/review/<id>` to leave
    page notes and downloads it back; the student opens it and sees each note on its page ("I revised this").
 
+## Writing together (class collaboration)
+
+Real co-editing for learners in the same joined class (`src/book/collab.js`, `collab-model.js`; server
+`functions/_lib/class-platform/books.js`, merge rules `shared/class-platform/book-merge.js`, schema
+`migrations/0015_book_collab.sql`). Nothing is simulated: every collaborator, edit and presence mark comes from the class
+server.
+
+- **Who.** Only a learner who joined a class (`/class`) can share or join, and only inside that class. Share & export →
+  "Share with my class" stores the book on the class server and shows a 6-character **book code**; a classmate in the
+  same class types it under "Shared with my class → Join a classmate's book" on the bookshelf and joins as an
+  **editor**. The owner can make a collaborator view-only, let them edit again, remove them, or stop sharing (every
+  device keeps its own copy). Up to 12 writers per book, 6 shared books per owner.
+- **Teacher.** The class dashboard (`/class/teacher` and the Teacher Hub, `src/class/book-collab-panel.js`) lists the
+  class's shared books with owner, code, pages, participants, their edit counts and who is in the book now; it can
+  set a book read-only, make a learner view-only, remove a learner, delete the shared copy, or turn writing together
+  off for the class. All of it is enforced server-side on every route.
+- **Sync.** The book is items with their own revisions: book details, each page, each element. Each device sends the
+  difference between its book and the last server copy it saw (so typing, dragging, undo and a restored version all
+  become element-level ops) and polls for classmates' changes: every 2 s while the tab is visible, every 15 s when
+  hidden. Concurrent edits to different elements, or different properties of one element (one moves a box while the
+  other types in it), both survive. The same property changed on two devices: the later arrival at the server wins, on
+  every device. A delete beats a stale edit; deleting a page deletes its elements. Order is a fractional number per
+  page/element, so two people adding pages never rewrite each other's order. Undo only takes back the learner's own
+  edits (remote changes are written into the undo history too). Each write records who made it ("Last changed by …").
+- **Typing safety.** A classmate's change to the box this learner is typing in is held ("Ana also changed this box…")
+  and shown when they leave it; changes never arrive mid-drag.
+- **Presence.** Initials of the classmates in the book (with their page and whether they are typing) in a bar under the
+  top bar; a coloured outline with the classmate's name on the element they selected (dashed while typing); initials on
+  the page thumbnails.
+- **Media.** Pictures are shared as JPEG copies ≤ 1200 px and ≤ 350 KB, at most 30 per book (D1 BLOBs; the original
+  stays on the device). Recordings and videos stay on the device that made them (the dialog says so).
+- **Offline / no server.** Each copy is still a normal Book Studio book (autosave, versions, offline). Offline edits are
+  sent when the device is back. If the class server is not configured (503) the bar says writing together is not
+  available and solo editing is unchanged. If a device was away while others edited, the newer server items win for
+  those items and this device's previous copy is saved in Version history first.
+- **Retention.** A shared book is deleted 30 days after anyone last opened or changed it, with its class (120 days
+  unused, or the teacher's class delete), and with its owner when the teacher removes that learner.
+
 ## Integrations (real content through `handoff.js`)
 
 | From                                                      | Button                    | Becomes                                                                                                                                                                                         |
@@ -75,9 +114,12 @@ Two real paths, no sample data:
 
 ## Honest limits
 
-- No online accounts: books live in the browser. Real-time multi-user co-editing is NOT built (no identity/sync
-  infrastructure for it on this site); collaboration is turn-taking through the class queue and book files, and
-  conflicting edits from two tabs are detected, never merged silently.
+- No online accounts: books live in the browser. Writing together (above) needs a joined class; it is polling over
+  Cloudflare D1 (no WebSockets/Durable Objects on this site), so a classmate's edit appears within about 2-4 seconds,
+  not instantly, and the same text box typed in by two people at once keeps one person's words (the later save), not
+  a character-level merge. Two tabs of the same book on one device are still detected, never merged silently.
+- A device that slept past a large burst of deletions (over 1,500 deletion markers in one book) reloads the whole
+  book; an element it still had locally and never synced can come back in that rare case.
 - Share links carry words, illustrations and drawings; uploaded pictures, recordings and videos stay on the device.
 - PDF is the browser's print-to-PDF (real text). EPUB is reflowable (reading order kept, exact layout not; the export
   says so). Cover export falls back to SVG where a browser refuses to rasterise HTML.
@@ -99,11 +141,11 @@ narrated, printed or turned into a reader's-theater script. The editor is organi
 | `src/book/lang/library.js` | Searchable library (`"cause and effect, grade 6, WIDA Level 2"`), packs, suggestions from selected content, and the rule-based **Design Language Supports** command interpreter (preview-then-approve; no network, no AI service) |
 | `src/book/lang/work.js` | What a learner did: support-use records (available/opened/used/completed/hidden/required/independent), first attempts, revisions labelled student / assisted / teacher, evidence report |
 | `src/book/lang/ui-support.js` | The learner's tray and cards (starters, word banks, vocabulary popover, organizers, oral rehearsal with a typing path, reading help, revision side-by-side). One host serves the editor, the preview panes and the reader |
-| `src/book/lang/ui-teacher*.js` | **Add Language Support** builder with live student preview, Language Support Studio (manage, bulk edit, library, packs, designer, plans and groups, fading, evidence export, **Preview as student** incl. two profiles side by side) |
+| `src/book/lang/ui-instructor*.js` | **Add Language Support** builder with live student preview, Language Support Studio (manage, bulk edit, library, packs, designer, plans and groups, fading, evidence export, **Preview as student** incl. two profiles side by side) |
 | `src/book/lang/class-sync.js` | Class delivery: publish an assignment, roster, adjust a plan with a reason, evidence; student side fetches ONLY their own supports and sends events and work |
 | `src/book/story.js` | Character DNA, scene actions and `compileScene` (deterministic animation), choices/state/`takeChoice`, **story validators**, the bounded **Direct this scene** interpreter (`validateOps` is the only gate), `adventureSkeleton` |
 | `src/book/scene-player.js` | Web Animations player: walk/run/turn/look/point/jump/wave/appear/disappear/fade/expression/speak/pause/zoom/pan/sound, scrubbing, reduced motion = final pose, sound only after Play |
-| `src/book/play.js`, `ui-story-map.js`, `teacher.js` | Play mode; characters, choices, clues, items and the visual story map; the teacher workspace |
+| `src/book/play.js`, `ui-story-map.js`, `instructor.js` | Play mode; characters, choices, clues, items and the visual story map; the teacher workspace |
 | `functions/_lib/class-platform/book-supports.js` | `/api/class/bsupport/*`: server-side resolution per student (migration `0014_class_book_supports.sql`) |
 
 **Where teacher/student separation is enforced.** In a class, the plan (class default, groups, per-student overrides)

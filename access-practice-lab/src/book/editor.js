@@ -12,7 +12,7 @@ import {
 } from "./editor-panels.js";
 import { addBarHTML, onAddBar } from "./editor-add.js";
 import { dockHTML, makeEditorSupportHost, onDirectorSubmit, onDockClick, onDockInput, stageBarHTML } from "./ui-story.js";
-import { isTeacher, setTeacher } from "./lang/ui-teacher.js";
+import { isTeacher, setTeacher } from "./lang/ui-instructor.js";
 import { pushProgress, refreshSupports } from "./lang/class-sync.js";
 import { mountCoach } from "./editor-coach.js";
 import { bkIcon } from "./icons.js";
@@ -47,6 +47,7 @@ export async function mountEditor(root, ctx, book, I) {
     onChange: ({ render }) => render && renderAll(),
     onStatus: () => renderStatus(),
     onConflict: (stored) => showConflict(stored),
+    onCommit: () => E.collab?.nudge(),
   });
   E.core = core;
   const { S } = core;
@@ -68,6 +69,7 @@ export async function mountEditor(root, ctx, book, I) {
         <button type="button" class="btn btn-primary small" data-bk-act="finish">${bkIcon("check")}<span>${esc(tr("Finish", "Terminar"))}</span></button>
       </div>
     </header>
+    <div class="bk-collab-bar" data-bk-collab role="group" aria-label="${esc(tr("Writing together", "Escribir juntos"))}" hidden></div>
     <div class="bk-banner" data-bk-banner hidden></div>
     <div data-bk-stagebar>${stageBarHTML(E)}</div>
     <div data-bk-addwrap>${addBarHTML(E)}</div>
@@ -179,6 +181,7 @@ export async function mountEditor(root, ctx, book, I) {
     });
     if (S.editingText) beginTextEdit(S.editingText, { keepCaret: true });
     if (E.drawing) mountDrawSurface();
+    E.collab?.decorate();
     $(".bk-zoom-label").textContent =
       E.zoom === "fit" ? tr("Fit", "Ajustar") : `${Math.round(E.zoom * 100)}%`;
   }
@@ -228,6 +231,7 @@ export async function mountEditor(root, ctx, book, I) {
   }
 
   function renderInspector() {
+    E.collab?.renderBar?.();
     $("[data-bk-inspector]").innerHTML = inspectorHTML(E);
   }
 
@@ -332,6 +336,7 @@ export async function mountEditor(root, ctx, book, I) {
     renderInspector();
     renderPages();
     canvas.querySelector(`[data-el="${id}"]`)?.focus({ preventScroll: true });
+    E.collab?.idle();
   }
   E.beginTextEdit = beginTextEdit;
   E.endTextEdit = endTextEdit;
@@ -889,13 +894,20 @@ export async function mountEditor(root, ctx, book, I) {
       sessionStorage.removeItem("bkOpenStudio");
       setTeacher(true);
       renderDock();
-      import("./lang/ui-teacher.js").then((m) => m.openStudio(E, flag.split(":")[1] || "manage"));
+      import("./lang/ui-instructor.js").then((m) => m.openStudio(E, flag.split(":")[1] || "manage"));
     }
   } catch {}
   // The canvas width depends on layout; render again once the stage has its real size.
   requestAnimationFrame(() => renderCanvas());
+  // A book shared with the class syncs while it is open (collab.js); every other book is untouched.
+  if (S.book.collab)
+    import("./collab.js").then((m) => {
+      if (!E.destroyed) E.collab = m.attachCollab(E);
+    });
 
   return async function destroy() {
+    E.destroyed = true;
+    E.collab?.stop();
     flushTyping();
     if (S.editingText) core.commit({ render: false });
     E.drawing?.stop?.();

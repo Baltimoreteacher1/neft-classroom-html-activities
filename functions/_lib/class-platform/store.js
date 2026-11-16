@@ -18,6 +18,11 @@
  * ========================================================================== */
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
+import {
+  COLLAB_SCHEMA,
+  collabPruneStatements,
+  collabPurgeStatements,
+} from "./book-collab-schema.js";
 import { BOOK_SCHEMA, bookPruneStatements, bookPurgeStatements } from "./book-schema.js";
 import { SOCIAL_SCHEMA, socialPruneStatements, socialPurgeStatements } from "./social-schema.js";
 
@@ -125,7 +130,9 @@ const ready = new WeakSet();
 export async function ensureSchema(db) {
   if (ready.has(db)) return;
   await db.batch(
-    [...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA, ...BOOK_SCHEMA].map((sql) => db.prepare(sql)),
+    [...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA, ...BOOK_SCHEMA, ...COLLAB_SCHEMA].map((sql) =>
+      db.prepare(sql),
+    ),
   );
   ready.add(db);
 }
@@ -185,6 +192,7 @@ export function purgeStatements(db, code) {
   return [
     ...socialPurgeStatements(db, code),
     ...bookPurgeStatements(db, code),
+    ...collabPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_audio WHERE code = ?`).bind(code),
@@ -203,6 +211,7 @@ export async function pruneExpired(db, now) {
   await db.batch([
     ...socialPruneStatements(db, now, gone),
     ...bookPruneStatements(db, now, gone),
+    ...collabPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db
       .prepare(`DELETE FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`)

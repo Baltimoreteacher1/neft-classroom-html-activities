@@ -6,7 +6,7 @@
 //   /book-studio/read/<id>          the reader            (src/book/reader.js)
 //   /book-studio/review/<id>        the reader with teacher notes (for a book file a student handed in)
 //   /book-studio/play/<id>          play a branching story (choices, clues, endings)        (src/book/play.js)
-//   /book-studio/teacher            the teacher workspace: assignments, supports, evidence   (src/book/teacher.js)
+//   /book-studio/teacher            the teacher workspace: assignments, supports, evidence   (src/book/instructor.js)
 //   /book-studio/shared#b=…         a read-only book from a share link (the hash never reaches a server)
 // Books live on this device (src/book/db.js). Docs: access-practice-lab/BOOK-STUDIO.md.
 import { crumbsHTML } from "../components.js";
@@ -227,7 +227,7 @@ async function openPlay(box, ctx, I, id) {
 
 async function openTeacher(box, ctx, I) {
   box.removeAttribute("aria-busy");
-  const { mountTeacher } = await import("../book/teacher.js");
+  const { mountTeacher } = await import("../book/instructor.js");
   current = await mountTeacher(box, ctx, I, { go: (path) => go(ctx, path) });
 }
 
@@ -264,8 +264,9 @@ function notFound(box, I) {
 function coverCard(book, I, { pending } = {}) {
   const lang = I.mode === "es" ? "es" : "en";
   const st = STATUSES[book.status] || STATUSES.draft;
-  const from =
-    book.source?.kind === "import"
+  const from = book.collab
+    ? `${I.S("Shared with my class", "Compartido con mi clase")} · ${book.collab.bookCode}`
+    : book.source?.kind === "import"
       ? I.S("Opened from a file", "Abierto desde un archivo")
       : book.source?.kind === "remix"
         ? I.S("Remix", "Remezcla")
@@ -387,6 +388,8 @@ async function renderHome(box, ctx, I) {
       <p class="fine bk-storage-note">${esc(I.S("Your books are saved in this browser on this device, not in an online account. To keep a backup or move a book to another device, download its book file.", "Tus libros se guardan en este navegador en este dispositivo, no en una cuenta en línea. Para tener una copia o pasar un libro a otro dispositivo, descarga su archivo."))} ${persisted ? esc(I.S("This browser has agreed to keep them.", "Este navegador aceptó conservarlos.")) : ""}</p>
     </section>
 
+    <section class="bk-shelf bk-collab-shelf" aria-labelledby="bkCollabH" data-bk-collab-shelf hidden></section>
+
     <section class="bk-templates-strip" aria-labelledby="bkTplH">
       <div class="bk-shelf-head"><h2 id="bkTplH">${esc(I.S("Start from a template", "Empieza con una plantilla"))}</h2><a class="btn small" href="${BASE}/book-studio/templates">${esc(I.S(`See all ${TEMPLATES.length} templates`, `Ver las ${TEMPLATES.length} plantillas`))} →</a></div>
       <ul class="bk-tpl-grid">${featured.map((t) => templateCard(t, I)).join("")}</ul>
@@ -413,6 +416,10 @@ async function renderHome(box, ctx, I) {
       slot.innerHTML = `<h3>${esc(I.S("Assignments from your teacher", "Tareas de tu docente"))}</h3><ul class="bk-assign">${list.map((a) => `<li><div><strong>${esc(a.title)}</strong>${a.task ? `<span class="fine">${esc(a.task)}</span>` : ""}</div><button type="button" class="btn small btn-primary" data-start-assignment="${esc(a.id)}">${esc(I.S("Start or continue", "Empezar o continuar"))}</button></li>`).join("")}</ul>`;
     })
     .catch(() => {});
+  // Books written together with classmates (src/book/collab.js); a learner without a class sees how to join one.
+  import("../book/collab.js")
+    .then((m) => m.mountShelfCollab(box.querySelector("[data-bk-collab-shelf]"), ctx, I, books))
+    .catch((error) => console.error("[book-studio] collab shelf", error));
   box.addEventListener("input", (e) => {
     if (e.target.matches("[data-shelf-q]")) {
       state.q = e.target.value;

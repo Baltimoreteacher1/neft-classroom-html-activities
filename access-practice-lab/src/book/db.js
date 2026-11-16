@@ -172,6 +172,15 @@ export async function putMedia(bookId, blob, { name = "", kind = "" } = {}) {
   return id;
 }
 
+/** Store a picture received from a shared class book under the id every collaborator's book already uses. */
+export async function putMediaWithId(id, bookId, blob, { kind = "image" } = {}) {
+  await tx("media", "readwrite", (s) =>
+    s.put({ id, bookId, blob, type: blob.type, name: "", kind, bytes: blob.size, at: new Date().toISOString() }),
+  );
+  urls.delete(id);
+  return id;
+}
+
 export async function getMedia(id) {
   if (!id) return null;
   try {
