@@ -3,6 +3,18 @@
 // from that activity's own prompt, frames, word bank, success criteria, hint and teacher notes. Nothing is invented.
 import { MINUTES, PROFILES, bandName, domainName, resourceRoute, studentUrl } from "./model.js";
 
+/**
+ * Per-skill wording. Speaking and Writing make language, so the lesson models an answer and then revises it.
+ * Listening and Reading are answer-choice tasks: students choose, get guidance, and choose again, so the lesson
+ * models what to listen or look for and never a finished answer.
+ */
+const KINDS = {
+  listening: { doing: "listen, then choose an answer", watch: "watch", gear: " and check the speakers", cue: "listen for", again: "Listen again", source: "the audio" },
+  speaking: { doing: "speak and record", watch: "listen to", gear: " and check the microphone and speakers", cue: "", again: "", source: "" },
+  reading: { doing: "read, then choose an answer", watch: "watch", gear: "", cue: "look for", again: "Read again", source: "the text" },
+  writing: { doing: "write", watch: "read", gear: "", cue: "", again: "", source: "" },
+};
+
 const lowerFirst = (s) => (s ? s[0].toLowerCase() + s.slice(1) : s);
 const stripEnd = (s) => String(s || "").replace(/[.\s]+$/, "");
 /** Ends a sentence with one terminal mark (keeps a question mark or exclamation point). */
@@ -30,6 +42,11 @@ export function defaultTarget(act) {
   return `I can ${plain ? lowerFirst(skill) : `practice ${lowerFirst(skill)}`}${terms.length ? ` using the words ${nice(terms)}` : ""}.`;
 }
 
+/** True for an answer-choice record (Listening, Reading): it has things to listen or look for, not a model answer. */
+export const isReceptive = (act) => act?.type === "multipleChoice";
+/** What a Listening or Reading activity tells students to listen or look for. */
+export const lookFor = (act) => list(act?.listenFor || act?.readFor);
+
 /** The model answer a student at `level` hears: the activity's own model, or its support line. */
 export function modelFor(act, level) {
   const m = act.models?.[level] || act.model || "";
@@ -40,7 +57,28 @@ export function modelFor(act, level) {
 /* ── support profiles ── */
 
 const termLine = (v) => `${v[0]}: ${v[1]}`;
+const receptiveItems = (act, id) => {
+  const frames = list(act.frames);
+  const vocab = list(act.vocabulary);
+  if (id === "starting")
+    return [
+      { id: "vocab", label: "Vocabulary with meanings", value: vocab.slice(0, 5).map(termLine) },
+      { id: "frames", label: "Sentence frames", value: frames },
+      { id: "model", label: "A guided question to try first", value: [act.support].filter(Boolean) },
+    ];
+  if (id === "growing")
+    return [
+      { id: "vocab", label: "Vocabulary words only", value: vocab.slice(0, 5).map((v) => v[0]) },
+      { id: "frames", label: "One sentence starter", value: frames.slice(0, 1) },
+      { id: "hint", label: "A hint when stuck", value: [act.hint].filter(Boolean) },
+    ];
+  return [
+    { id: "criteria", label: "A look-for list to self-check", value: lookFor(act) },
+    { id: "extension", label: "An extension to elaborate", value: [act.extension].filter(Boolean) },
+  ];
+};
 const supportItems = (act, id) => {
+  if (isReceptive(act)) return receptiveItems(act, id);
   const frames = list(act.frames);
   const bank = list(act.wordBank);
   const vocab = list(act.vocabulary);
@@ -80,6 +118,8 @@ const BLURB = {
   expanding: "Least help: students work from the success criteria, then compare with a model.",
 };
 
+const RECEPTIVE_EXPANDING = "Least help: students work from a look-for list, then check themselves.";
+
 /** What the three profiles look like for one activity. The learning goal is the same in all three. */
 export function profilesFor(act, target = defaultTarget(act)) {
   const t = act.teacher || {};
@@ -87,7 +127,7 @@ export function profilesFor(act, target = defaultTarget(act)) {
   return PROFILES.map((p) => ({
     ...p,
     goal: target,
-    blurb: BLURB[p.id],
+    blurb: isReceptive(act) && p.id === "expanding" ? RECEPTIVE_EXPANDING : BLURB[p.id],
     items: supportItems(act, p.id).filter((i) => i.value.length),
     expect: expect[p.id] || "",
   }));
@@ -153,74 +193,115 @@ function startLevel(approach) {
 export function buildLesson({ res, act, minutes, approach, edits = {} }) {
   const mins = MINUTES.includes(Number(minutes)) ? Number(minutes) : 10;
   const T = TIMING[mins];
+  const K = KINDS[res.domain];
+  const receptive = isReceptive(act);
   const speaking = res.domain === "speaking";
   const verb = speaking ? "say" : "write";
   const target = edits.target?.trim() || defaultTarget(act);
   const url = studentUrl(res);
   const profiles = profilesFor(act, target);
   const level = startLevel(approach);
-  const model = modelFor(act, level);
+  const model = receptive ? "" : modelFor(act, level);
   const frames = list(act.frames);
   const bank = list(act.wordBank);
-  const crit = list(act.successCriteria);
+  const look = lookFor(act).map((x) => String(x).replace(/[.!?\s]+$/, ""));
+  const look0 = look[0] || "the key words in the prompt";
+  // Speaking and Writing are judged against the activity's success criteria; Listening and Reading against what
+  // students could point to or name from the audio or text.
+  const crit = receptive
+    ? [
+        "Chooses an answer and can say which clue led to it",
+        ...(look.length ? look.slice(0, 3).map((x) => `Can point to or name ${x}`) : ["Uses the hint or word help to try again"]),
+      ]
+    : list(act.successCriteria);
   const vocab = list(act.vocabulary);
   const expected = list(act.sayFor || act.writeFor);
   const prompt = end(act.prompt);
   const directions = end(act.directions);
   const hint = end(act.hint);
   const praise = end(String(act.correct || "").split(/(?<=[.!?])\s+/).slice(0, 2).join(" "));
-  const unmet = crit[1] || crit[0] || "";
+  const unmet = receptive ? `Look again for ${look0}` : crit[1] || crit[0] || "";
   const sup = supportSummary(profiles, approach);
   const where = `${res.title} (${bandName(res.band)}, ${domainName(res.domain)}, ${res.support})`;
   const teacherLine = edits.launch?.trim();
+  const retry = receptive
+    ? `${K.again} for ${look0} and choose once more. Press the check button again.`
+    : speaking
+      ? `Say it again with one change: ${lowerFirst(stripEnd(unmet))}.`
+      : `Revise one sentence: ${lowerFirst(stripEnd(unmet))}.`;
 
   const launch = [
     teacherLine || `Write the target on the board and read it with students: “${target}”`,
     `Show the task and read the prompt aloud: “${prompt}”`,
-    ...(T.model ? [] : [`Model one sentence aloud: “${firstSentence(model || frames[0] || "")}”`]),
+    ...(T.model
+      ? []
+      : receptive
+        ? [`Tell students what to ${K.cue}: “${look0}”`]
+        : [`Model one sentence aloud: “${firstSentence(model || frames[0] || "")}”`]),
   ];
-  const modelSteps = T.model
-    ? [
-        `Say or show this model: “${model || frames.join(" ")}”`,
-        `Think aloud: “I will use ${frames[0] ? `‘${frames[0]}’` : "the prompt"} so I can ${lowerFirst(stripEnd(unmet || "answer the task"))}.”`,
-        ...(T.model >= 3
-          ? [`Students echo the model with a partner, then ${verb} their own first sentence.`]
-          : []),
-      ]
-    : [];
+  const modelSteps = !T.model
+    ? []
+    : receptive
+      ? [
+          `Think aloud without giving the answer: “I will ${K.cue} ${look0}.”`,
+          ...(frames[0] ? [`Read a frame together: “${frames[0]}”`] : []),
+          ...(T.model >= 3
+            ? [`Students tell a partner what they will ${K.cue} before they choose.`]
+            : []),
+        ]
+      : [
+          `Say or show this model: “${model || frames.join(" ")}”`,
+          `Think aloud: “I will use ${frames[0] ? `‘${frames[0]}’` : "the prompt"} so I can ${lowerFirst(stripEnd(unmet || "answer the task"))}.”`,
+          ...(T.model >= 3
+            ? [`Students echo the model with a partner, then ${verb} their own first sentence.`]
+            : []),
+        ];
   const activityMin = parseInt(act.time, 10) || res.minutes;
   const practice = [
     `Students open ${res.title} (link on the Student Activity Card) and follow the directions on screen: “${directions}”`,
     activityMin > T.practice
       ? `The activity takes about ${activityMin} minutes. At ${T.practice} minutes, call time: a first attempt is enough for the feedback step.`
       : `The activity takes about ${activityMin} minutes, so students can finish and start a second try.`,
-    mins >= 15
-      ? `Circulate and ${speaking ? "listen to" : "read"} at least four students; note one strength and one next step for each.`
-      : `Circulate and ${speaking ? "listen to" : "read"} two or three students.`,
+    receptive
+      ? mins >= 15
+        ? "Circulate and watch at least four students; note which clue each one used."
+        : "Circulate and watch two or three students; note which clue each one used."
+      : mins >= 15
+        ? `Circulate and ${K.watch} at least four students; note one strength and one next step for each.`
+        : `Circulate and ${K.watch} two or three students.`,
     ...(mins >= 20 && speaking
       ? [
           "Before students record, pairs rehearse aloud once so the first recording is not the first try.",
         ]
       : []),
-    ...(mins >= 20 && !speaking
+    ...(mins >= 20 && res.domain === "writing"
       ? ["Before students write, pairs say their first sentence aloud to a partner."]
+      : []),
+    ...(mins >= 20 && receptive
+      ? [`Before students begin, pairs predict one word they expect to find in ${K.source}.`]
       : []),
   ];
   const feedback = [
     `Start with what worked: “${praise || "You answered the prompt."}”`,
-    `Name one next step from the criteria: “${end(unmet)}” ${hint ? `Point students to the hint: ${hint}` : ""}`.trim(),
-    speaking
-      ? "Students say it again with the one change, or record a second take."
-      : "Students revise one sentence and use “Check my work” again.",
+    `Name one next step${receptive ? "" : " from the criteria"}: “${end(unmet)}” ${hint ? `Point students to the hint: ${hint}` : ""}`.trim(),
+    receptive
+      ? `Students ${K.again.toLowerCase()} and choose once more, then use the check button again.`
+      : speaking
+        ? "Students say it again with the one change, or record a second take."
+        : "Students revise one sentence and use “Check my work” again.",
     ...(mins >= 15 && act.extension ? [`Early finishers: ${end(act.extension)}`] : []),
   ];
-  const closeText = speaking
+  const closeText = receptive
     ? mins >= 15
-      ? `Partner share: say your best sentence again. Exit question: “Which word or frame helped you most, and why?”`
-      : `Quick share: say your best sentence to a partner. Exit question: “Which word helped you most?”`
-    : mins >= 15
-      ? `Exit ticket: underline the sentence you revised and finish: “I made it clearer by ___ because ___.”`
-      : `Exit ticket: underline the sentence you revised. Write the one word that made it clearer.`;
+      ? `Partner share: tell your partner the word or sentence that proved your answer. Exit question: “Which clue helped you most, and why?”`
+      : `Quick share: tell a partner the one word that helped you. Exit question: “Which clue proved your answer?”`
+    : speaking
+      ? mins >= 15
+        ? `Partner share: say your best sentence again. Exit question: “Which word or frame helped you most, and why?”`
+        : `Quick share: say your best sentence to a partner. Exit question: “Which word helped you most?”`
+      : mins >= 15
+        ? `Exit ticket: underline the sentence you revised and finish: “I made it clearer by ___ because ___.”`
+        : `Exit ticket: underline the sentence you revised. Write the one word that made it clearer.`;
 
   const blocks = [
     { id: "launch", name: "Teacher launch", minutes: T.launch, steps: launch },
@@ -229,7 +310,7 @@ export function buildLesson({ res, act, minutes, approach, edits = {} }) {
     { id: "feedback", name: "Feedback and revision", minutes: T.feedback, steps: feedback },
     { id: "close", name: "Closing", minutes: T.close, steps: [closeText] },
   ];
-  const modeling = firstSentence(model) || frames[0] || "";
+  const modeling = receptive ? frames[0] || "" : firstSentence(model) || frames[0] || "";
   return {
     title: "My First Lesson with The Language Page",
     resource: { ...res, url, route: resourceRoute(res), where },
@@ -240,7 +321,7 @@ export function buildLesson({ res, act, minutes, approach, edits = {} }) {
     target,
     profiles,
     prep: [
-      `Open the student link once on your device${speaking ? " and check the microphone and speakers" : ""}: ${url}`,
+      `Open the student link once on your device${K.gear}: ${url}`,
       "Print the Student Activity Card or display the Classroom Projection View.",
       `Decide which support profile each student starts with (${approach === "mixed" ? "Starting, Growing or Expanding" : `${profileById(profiles, approach).name} for everyone`}).`,
       act.teacher?.noTech ? `No devices? ${end(act.teacher.noTech)}` : "",
@@ -255,21 +336,36 @@ export function buildLesson({ res, act, minutes, approach, edits = {} }) {
     evidenceNote: act.teacher?.onLevel
       ? `On-level look-for: ${end(act.teacher.onLevel)}`
       : "",
-    feedback: {
-      praise,
-      next: unmet,
-      hint,
-      revise: speaking
-        ? `Say it again with one change: ${lowerFirst(stripEnd(unmet))}.`
-        : `Revise one sentence: ${lowerFirst(stripEnd(unmet))}.`,
-    },
+    feedback: { praise, next: unmet, hint, revise: retry },
     closing: closeText,
+    checkAct: receptive
+      ? "Watch which answers students choose and which clue each one can name. Use the look-fors as your checklist."
+      : "Look at the work students produced. Use the success criteria as your checklist.",
+    // The Prepare step's Model card: a heard or read model for Speaking and Writing, a look-for cue for the others.
+    modelMove: receptive
+      ? {
+          act: `Think aloud about the first clue you ${K.cue}. Do not say the answer.`,
+          say: `“I will ${K.cue} ${look0}.”`,
+          note: frames[0] ? `Read a frame together: ${frames[0]}` : "",
+        }
+      : {
+          act: "Say or show a model, then think aloud about how you used a frame.",
+          say: `“${modelFor(act, res.level) || frames.join(" ")}”`,
+          note: frames[0] ? `Think aloud with: ${frames[0]}` : "",
+        },
     student: {
       title: res.title,
+      doing: K.doing,
       directions,
       prompt,
       url,
-      expected: expected.length ? `Your answer should include: ${nice(expected)}.` : "",
+      expected: receptive
+        ? look.length
+          ? `${K.cue[0].toUpperCase()}${K.cue.slice(1)}: ${nice(look)}.`
+          : ""
+        : expected.length
+          ? `Your answer should include: ${nice(expected)}.`
+          : "",
       optional: end(act.support),
       picture: act.picture?.src ? { src: act.picture.src, alt: act.picture.alt || "" } : null,
     },
@@ -285,12 +381,14 @@ export function buildLesson({ res, act, minutes, approach, edits = {} }) {
       vocab: vocab.map((v) => ({ term: v[0], def: v[1] })),
       frames,
       bank,
-      modeling: modeling ? `Say it, then have students echo it: “${modeling}”` : "",
+      modeling: modeling
+        ? receptive
+          ? `Read the frame together, then let students use it: “${modeling}”`
+          : `Say it, then have students echo it: “${modeling}”`
+        : "",
       evidence: crit,
       feedbackExample: `“${praise || "You answered the prompt."}” Next step: “${end(unmet)}”`,
-      revisionPrompt: speaking
-        ? `Say it again and change one thing: ${lowerFirst(stripEnd(unmet))}.`
-        : `Revise one sentence: ${lowerFirst(stripEnd(unmet))}.`,
+      revisionPrompt: retry,
     },
   };
 }

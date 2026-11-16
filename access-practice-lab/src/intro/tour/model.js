@@ -9,10 +9,15 @@ export const BANDS = [
   { id: "3-5", short: "3–5", name: "Grades 3–5" },
   { id: "6-8", short: "6–8", name: "Grades 6–8" },
 ];
+// `produce` skills ask students to make language (the activity's constructed item); the others ask them to
+// understand it and choose an answer (the activity's multiple-choice item), so they have no model answer to hear.
 export const DOMAINS = [
-  { id: "speaking", name: "Speaking", verb: "say" },
-  { id: "writing", name: "Writing", verb: "write" },
+  { id: "listening", name: "Listening", verb: "listen", produce: false, item: "multipleChoice" },
+  { id: "speaking", name: "Speaking", verb: "say", produce: true, item: "constructed" },
+  { id: "reading", name: "Reading", verb: "read", produce: false, item: "multipleChoice" },
+  { id: "writing", name: "Writing", verb: "write", produce: true, item: "constructed" },
 ];
+export const domainOf = (id) => DOMAINS.find((d) => d.id === id) || null;
 export const LEVELS = { A: "Starting support", B: "Building support", C: "Stretching support" };
 
 /** The seven internal states of the one workspace. Only the first five are "the tour"; Build and Kit follow. */
@@ -84,7 +89,7 @@ export const freshState = () => ({
   v: 1,
   step: "welcome",
   furthest: 0,
-  focus: "", // "speaking" | "writing" | "both"
+  focus: "", // a skill id from DOMAINS, or "all"
   band: "6-8",
   tab: "speaking", // Step 2 and Step 3 task
   profile: "starting",
@@ -107,7 +112,8 @@ export function normalizeState(raw) {
   const s = { ...base, ...raw };
   if (!STEP_IDS.includes(s.step)) s.step = "welcome";
   s.furthest = Math.max(0, Math.min(STEP_IDS.length - 1, Number(s.furthest) || 0));
-  if (!["", "speaking", "writing", "both"].includes(s.focus)) s.focus = "";
+  if (s.focus === "both") s.focus = "all"; // saved before Listening and Reading joined the tour
+  if (s.focus !== "all" && s.focus !== "" && !isDomain(s.focus)) s.focus = "";
   if (!isBand(s.band)) s.band = base.band;
   if (!isDomain(s.tab)) s.tab = "speaking";
   if (!PROFILES.some((p) => p.id === s.profile)) s.profile = "starting";
@@ -133,16 +139,17 @@ export function normalizeState(raw) {
 /** A step is finished once the teacher has moved past it. */
 export const isUnfinished = (s) => s.furthest > 0 && s.step !== "kit";
 
-/** The domain the teacher said they care about; "both" starts with speaking. */
-export const focusDomain = (s) => (s.focus === "writing" ? "writing" : "speaking");
+/** The domain the teacher said they care about; "all" starts with speaking, as "both" always did. */
+export const focusDomain = (s) => (isDomain(s.focus) ? s.focus : "speaking");
 
 /* ── resource registry ── */
 
 const cap = (d) => d[0].toUpperCase() + d.slice(1);
 
 /**
- * Every constructed Speaking and Writing activity for Grades 3–5 and 6–8 in content/index.json, as plain rows.
- * `constructed` is the item type where the student produces language (the other types are answer-choice items).
+ * Every Listening, Speaking, Reading and Writing activity of the tour's item type for Grades 3–5 and 6–8 in
+ * content/index.json, as plain rows. Speaking and Writing use `constructed` (the student produces language);
+ * Listening and Reading use `multipleChoice` (one answer with a check and guidance).
  */
 export function buildRegistry(index) {
   const rows = [];
@@ -152,7 +159,7 @@ export function buildRegistry(index) {
       for (const [level, lv] of Object.entries(levels)) {
         if (!LEVELS[level] || !lv?.tier) continue;
         for (const [id, title, type, focus, minutes] of lv.activities || []) {
-          if (type !== "constructed") continue;
+          if (type !== d.item) continue;
           const row = {
             key: `${band.id}/${d.id}/${level}/${id}`,
             id,
@@ -242,7 +249,7 @@ export function tourStatus(intro) {
 /** What Mr. Neft, the tour guide, says at the top of each screen, and the question buttons he offers there. */
 export const NEFT = {
   gate: { say: "Welcome back! Want to pick up where we stopped?", chips: ["saved", "account", "time"] },
-  welcome: { say: "Hi, I’m Mr. Neft, your tour guide. I’ll walk you through the site in five short steps. First, take a look at the three kinds of practice.", chips: ["time", "what", "account", "scored"] },
+  welcome: { say: "Hi, I’m Mr. Neft, your tour guide. I’ll walk you through the site in five short steps. First, take a look at the kinds of practice.", chips: ["time", "what", "account", "scored"] },
   experience: { say: "Now you’re the student. Try the real activity. I’ll be right here if you have a question.", chips: ["mic", "norecord", "sound", "saved"] },
   support: { say: "This is my favorite part: the goal stays the same and the supports change. Switch between the three and watch what moves.", chips: ["language", "students", "scored"] },
   implement: { say: "Let’s find something you can use tomorrow. Pick your grades, a skill and a purpose, then preview a result.", chips: ["share", "families", "saved"] },

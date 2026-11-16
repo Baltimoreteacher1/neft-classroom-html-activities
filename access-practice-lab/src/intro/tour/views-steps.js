@@ -4,7 +4,7 @@
 import { ART, BASE, html, icon } from "../../util.js";
 import { DEST_BY_ID } from "../../sitemap.js";
 import { ROUTES } from "../data.js";
-import { buildLesson, defaultTarget, diffProfiles, modelFor, profilesFor } from "./lesson.js";
+import { buildLesson, defaultTarget, diffProfiles, profilesFor } from "./lesson.js";
 import {
   BANDS,
   DOMAINS,
@@ -14,6 +14,7 @@ import {
   WHY,
   bandName,
   domainName,
+  domainOf,
   findRow,
   focusDomain,
   pickOf,
@@ -54,10 +55,22 @@ export function exampleFor(D, S, domain, purpose = "warmup") {
 
 const CARDS = [
   {
+    id: "listening",
+    name: "Listening Practice",
+    art: "domain-listening.svg",
+    text: "Students hear a short talk or direction, choose what they understood, and read guidance on what to listen for.",
+  },
+  {
     id: "speaking",
     name: "Speaking Practice",
     art: "domain-speaking.svg",
     text: "Students practice expressing ideas, using academic language, and building oral responses.",
+  },
+  {
+    id: "reading",
+    name: "Reading Practice",
+    art: "domain-reading.svg",
+    text: "Students read a short text, find the answer in it, and use guidance that points back to the words.",
   },
   {
     id: "writing",
@@ -72,6 +85,34 @@ const CARDS = [
     text: "Students build words and skills in games and studios, and see their progress over time.",
   },
 ];
+
+/** One line per skill: how a teacher uses it in class (the Welcome card's "In your classroom" line). */
+const CLASS_USE = {
+  listening: "Listening practice works as a warm-up: play it, students choose, then share the detail that proved it.",
+  speaking: "Speaking practice works as a warm-up or a partner response.",
+  reading: "Reading practice works in a small group: read together, point to the sentence that proves the answer, then check.",
+  writing: "Writing practice works as a short exit task or a guided paragraph.",
+};
+
+/** What the Experience step tells a teacher to do, and what the check gives back, for each skill. */
+const TRY = {
+  listening: {
+    directions: "Press the activity’s Hear button, listen, then choose an answer and use the check button.",
+    note: "Students can replay what they hear. The check points back to what to listen for. Nothing is scored.",
+  },
+  speaking: {
+    directions: "Press the activity’s Record or Hear buttons, then answer the prompt.",
+    note: "If the microphone is blocked, students can still say the answer aloud to a partner and type notes in the activity. Nothing is scored.",
+  },
+  reading: {
+    directions: "Read the text and the prompt, choose an answer, then use the activity’s check button.",
+    note: "The check points back to the text without giving the answer away. Nothing is scored.",
+  },
+  writing: {
+    directions: "Read the prompt, type a sentence or two, then use the activity’s check button.",
+    note: "The check names one thing to add or fix. Nothing is scored.",
+  },
+};
 
 function peekHTML(D, S, id) {
   if (id === "growth")
@@ -122,14 +163,12 @@ export function welcome(D, S, ui) {
       minutes: 2,
       title: "Welcome! Here’s How The Language Page Works",
       objective:
-        "see the three kinds of practice on the site and choose what you want to use first.",
+        "see the kinds of practice on the site and choose the skill you want to use first.",
       directions: "Select a card to look inside. Then tell us what you want to use with students.",
       classroom:
         ui.peek === "growth"
           ? "Use practice time for words and skills students need again."
-          : ui.peek === "writing"
-            ? "Writing practice works as a short exit task or a guided paragraph."
-            : "Speaking practice works as a warm-up or a partner response.",
+          : CLASS_USE[ui.peek] || CLASS_USE.speaking,
       extra: html`<div class="t2-field">
         ${seg({ label: "Which grades do you teach?", attr: "band", value: S.band, options: BANDS.map((b) => ({ id: b.id, name: b.name })) })}
       </div>`,
@@ -172,11 +211,7 @@ export function welcome(D, S, ui) {
           label: "What would you most like to use with students?",
           attr: "focus",
           value: S.focus,
-          options: [
-            { id: "speaking", name: "Speaking" },
-            { id: "writing", name: "Writing" },
-            { id: "both", name: "Both" },
-          ],
+          options: [...DOMAINS.map((d) => ({ id: d.id, name: d.name })), { id: "all", name: "All four" }],
           hint: S.focus
             ? "Saved. We will start there in the next steps."
             : "Choose one to personalize the next steps.",
@@ -191,15 +226,16 @@ export function experience(D, S, ui) {
   const domain = S.tab;
   const { res, act } = exampleFor(D, S, domain);
   const sp = domain === "speaking";
+  const makes = domainOf(domain)?.produce;
   return {
     guide: guide({
       n: 2,
       minutes: 3,
       title: "Try an Activity Just Like a Student",
-      objective: "see what a student sees, does and produces.",
-      directions: sp
-        ? "Press the activity’s Record or Hear buttons, then answer the prompt."
-        : "Read the prompt, type a sentence or two, then use the activity’s check button.",
+      objective: makes
+        ? "see what a student sees, does and produces."
+        : "see what a student sees and does, and the guidance they get.",
+      directions: TRY[domain].directions,
       classroom: act?.teacher?.use
         ? `Try this tomorrow: ${act.teacher.use}`
         : "Try this tomorrow: use it as a short warm-up, partner response, or guided practice.",
@@ -207,14 +243,15 @@ export function experience(D, S, ui) {
         <div>
           <dt>What students see</dt>
           <dd>
-            The prompt${act?.picture ? ", a picture," : ""} directions, and supports they can open.
+            The prompt,${act?.picture ? " a picture," : ""} directions, and supports they can open.
           </dd>
         </div>
         <div>
           <dt>What teachers do</dt>
           <dd>
-            Choose the task, model what a good answer sounds like, and look at what students
-            produced.
+            ${makes
+              ? "Choose the task, model what a good answer sounds like, and look at what students produced."
+              : "Choose the task, preview the key words, and use the guidance to see what to reteach."}
           </dd>
         </div>
       </dl>`,
@@ -233,7 +270,7 @@ export function experience(D, S, ui) {
               ${sp ? html`<p class="t2-mic" data-t2-mic role="status">Checking microphone access…</p>` : ""}
               ${frameHTML(res)}
               <p class="t2-note">
-                ${sp ? "If the microphone is blocked, students can still say the answer aloud to a partner and type notes in the activity. Nothing is scored." : "The check names one thing to add or fix. Nothing is scored."}
+                ${TRY[domain].note}
                 If the activity looks lost,
                 <button type="button" class="t2-linkbtn" data-t2="reload-frame">
                   restart the preview</button
@@ -480,7 +517,7 @@ export function prepare(D, S, ui) {
     minutes: 10,
     approach: PROFILES.find((p) => p.level === res.level)?.id || "mixed",
   });
-  const speaking = res.domain === "speaking";
+  const doing = L.student.doing;
   const crit = L.evidence;
   const models = act.models || {};
   const step = SEQUENCE.some((s) => s.id === ui.seq) ? ui.seq : "introduce";
@@ -491,17 +528,17 @@ export function prepare(D, S, ui) {
       note: `Prompt: ${act.prompt}`,
     },
     model: {
-      act: "Say or show a model, then think aloud about how you used a frame.",
-      say: `“${modelFor(act, res.level) || (act.frames || []).join(" ")}”`,
-      note: act.frames?.[0] ? `Think aloud with: ${act.frames[0]}` : "",
+      act: L.modelMove.act,
+      say: L.modelMove.say,
+      note: L.modelMove.note,
     },
     practice: {
-      act: `Students open the link and ${speaking ? "speak and record" : "write"} on their own device while you circulate.`,
+      act: `Students open the link and ${doing} on their own device while you circulate.`,
       say: act.directions,
       note: `They use “${res.title}” (about ${res.minutes} minutes).`,
     },
     check: {
-      act: `Look at the work students produced. Use the success criteria as your checklist.`,
+      act: L.checkAct,
       list: crit,
     },
     feedback: {

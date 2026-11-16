@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "1be0345e9765";
+const BUILD_HASH = "8a3b6d04df15";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=7158bb8ad0b6",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -112,7 +112,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/journey/resources.js?v=01acc935e878",
   "/access-practice-lab/src/journey/resources-data.js?v=5658b3709ec3",
   "/access-practice-lab/src/intro/state.js?v=2a0eaa7390fe",
-  "/access-practice-lab/src/intro/tour/model.js?v=9a6bd8c55845",
+  "/access-practice-lab/src/intro/tour/model.js?v=abdef7c44ca0",
   "/access-practice-lab/src/home-resume.js?v=10ef580543da",
   "/access-practice-lab/src/sitemap-ui.js?v=08f6b58fb6f1",
 ];
@@ -440,16 +440,16 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/start.js?v=c4db98a0dbc8",
   "/access-practice-lab/src/intro/tour/export-docx.js?v=7ee40517d5b9",
   "/access-practice-lab/src/intro/tour/export-pdf.js?v=0a91ee87efe5",
-  "/access-practice-lab/src/intro/tour/lesson.js?v=44fc96721c3b",
-  "/access-practice-lab/src/intro/tour/quickref.js?v=27182d9ef4fa",
+  "/access-practice-lab/src/intro/tour/lesson.js?v=5d315b97c738",
+  "/access-practice-lab/src/intro/tour/quickref.js?v=e872eab62107",
   "/access-practice-lab/src/intro/tour/ui.js?v=0af8de6c6dc6",
   "/access-practice-lab/src/intro/tour/views-kit.js?v=24721dbedd7d",
-  "/access-practice-lab/src/intro/tour/views-steps.js?v=a7e72e62e29f",
+  "/access-practice-lab/src/intro/tour/views-steps.js?v=d41d17cc444e",
   "/access-practice-lab/src/intro/tour/views-studio.js?v=398506b03999",
   "/access-practice-lab/src/intro/tour-bands.js?v=3336b6bd9e44",
   "/access-practice-lab/src/intro/tour-data.js?v=9f28af736ee7",
   "/access-practice-lab/src/intro/tour-help.js?v=5974813cb94e",
-  "/access-practice-lab/src/intro/tour.js?v=65204a135b36",
+  "/access-practice-lab/src/intro/tour.js?v=314b9d295bc7",
   "/access-practice-lab/src/intro/ui.js?v=9a5c1c9351e5",
   "/access-practice-lab/src/journey/engines/cause-compare.js?v=9e74dc93ab60",
   "/access-practice-lab/src/journey/engines/compose-notes.js?v=f7765b02b033",

@@ -1,4 +1,4 @@
-// "I want to…": the seven things a teacher does after the tour, each with one verified lab page. This one list feeds
+// "I want to…": the nine things a teacher does after the tour, each with one verified lab page. This one list feeds
 // the kit's Quick Reference card (Component E), its PDF and DOCX pages, and the permanent Quick Start page
 // (/start/quick-start), so a link is written once. Every `to` is a destination id from sitemap.js or a route
 // from intro/data.js (tools/access-tour2.test.mjs checks that each one exists).
@@ -10,6 +10,16 @@ const routes = ROUTES;
 
 export const QUICK_TASKS = [
   {
+    id: "listening",
+    icon: "listening",
+    want: "Find a listening activity",
+    text: "Open the Activity library, choose Listening, then pick a grade band and a support level.",
+    links: [
+      { label: "Activity library", route: dest("library") },
+      { label: "Listening practice", route: dest("listening") },
+    ],
+  },
+  {
     id: "speaking",
     icon: "speaking",
     want: "Find a speaking activity",
@@ -17,6 +27,16 @@ export const QUICK_TASKS = [
     links: [
       { label: "Activity library", route: dest("library") },
       { label: "Speaking Studio", route: dest("speak") },
+    ],
+  },
+  {
+    id: "reading",
+    icon: "reading",
+    want: "Find a reading activity",
+    text: "Open the Activity library, choose Reading, or open the Immersive Reader to read any text with audio and word help.",
+    links: [
+      { label: "Activity library", route: dest("library") },
+      { label: "Immersive Reader", route: dest("reader") },
     ],
   },
   {

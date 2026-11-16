@@ -1,6 +1,6 @@
 /**
  * Teacher Tour 2.0 engine, exhaustively and without a browser (access-practice-lab/src/intro/tour/):
- *   - the registry is built from content/index.json: every Grades 3–5 and 6–8 constructed Speaking/Writing activity;
+ *   - the registry is built from content/index.json: every Grades 3–5 and 6–8 Listening and Reading (multiple-choice) and Speaking and Writing (constructed) activity;
  *   - every registry row has a real activity record, a student link that fits the QR encoder, and the finder returns
  *     one to three rows for every band x skill x purpose;
  *   - for EVERY activity x length x support approach the lesson blocks add up to the requested minutes, the text has no
@@ -34,7 +34,7 @@ const doms = {};
 for (const b of M.BANDS) for (const d of M.DOMAINS) doms[`${b.id}/${d.id}`] = read(`content/g${b.id}/${cap(d.id)}.json`);
 const actOf = (r) => doms[`${r.band}/${r.domain}`].levels[r.level].activities.find((a) => a.id === r.id);
 
-test("registry: both bands, both skills, every level, constructed items only", () => {
+test("registry: both bands, all four skills, every level, the skill's own item type only", () => {
   assert.ok(rows.length > 150, `${rows.length} rows`);
   for (const b of M.BANDS) for (const d of M.DOMAINS) for (const lv of ["A", "B", "C"])
     assert.ok(rows.some((r) => r.band === b.id && r.domain === d.id && r.level === lv), `${b.id} ${d.id} ${lv}`);
@@ -45,10 +45,12 @@ test("every row is a real activity with the fields the lesson needs, and a stude
   for (const r of rows) {
     const a = actOf(r);
     assert.ok(a, r.key);
-    assert.equal(a.type, "constructed", r.key);
-    for (const f of ["prompt", "directions", "skill", "successCriteria", "frames", "hint", "correct"]) assert.ok(a[f]?.length, `${r.key} has ${f}`);
+    assert.equal(a.type, M.domainOf(r.domain).item, r.key);
+    const need = M.domainOf(r.domain).produce ? "successCriteria" : "listenFor"; // Reading files use listenFor or readFor
+    for (const f of ["prompt", "directions", "skill", "frames", "hint", "correct"]) assert.ok(a[f]?.length, `${r.key} has ${f}`);
+    assert.ok((a[need] || a.readFor)?.length, `${r.key} has ${need}`);
     const url = M.studentUrl(r);
-    assert.match(url, /^https:\/\/thelanguagepage\.com\/access-practice-lab\/(Speaking|Writing)\/[ABC]\/[\w-]+\?grades=(3-5|6-8)$/, url);
+    assert.match(url, /^https:\/\/thelanguagepage\.com\/access-practice-lab\/(Listening|Speaking|Reading|Writing)\/[ABC]\/[\w-]+\?grades=(3-5|6-8)$/, url);
     assert.ok(new TextEncoder().encode(url).length <= MAX_BYTES, `${r.key}: link fits a QR code`);
   }
 });
@@ -147,9 +149,9 @@ test("DOCX: a stored zip with the Word parts, escaped text and one hyperlink per
   }
 });
 
-test("quick reference: seven tasks, every link a page the lab answers", async () => {
+test("quick reference: nine tasks, every link a page the lab answers", async () => {
   const { DEST_BY_ID } = await import("../access-practice-lab/src/sitemap.js");
-  assert.equal(Q.QUICK_TASKS.length, 7);
+  assert.equal(Q.QUICK_TASKS.length, 9);
   const known = new Set([...Object.values(ROUTES), ...Object.values(DEST_BY_ID).map((d) => `/${d.href}`)]);
   for (const t of [...Q.QUICK_TASKS.flatMap((q) => q.links), ...Q.MORE_RESOURCES]) assert.ok(known.has(t.route), `${t.label}: ${t.route}`);
   assert.ok(Q.quickRows().every((q) => q.url.startsWith("https://thelanguagepage.com/access-practice-lab/")));
@@ -171,4 +173,12 @@ test("saved state: damaged or old records become a complete, valid state", () =>
 
 test("Mr. Neft speaks on every screen", () => {
   for (const id of [...M.STEP_IDS, "gate"]) assert.ok(M.NEFT[id]?.say?.length > 20 && M.NEFT[id].chips.length >= 3, id);
+});
+
+test("saved focus: the old \"both\" choice becomes \"all\", and any of the four skills is kept", () => {
+  assert.equal(M.normalizeState({ v: 1, focus: "both" }).focus, "all");
+  for (const d of M.DOMAINS) assert.equal(M.normalizeState({ v: 1, focus: d.id }).focus, d.id);
+  assert.equal(M.normalizeState({ v: 1, focus: "x" }).focus, "");
+  assert.equal(M.focusDomain({ focus: "all" }), "speaking");
+  assert.equal(M.focusDomain({ focus: "reading" }), "reading");
 });

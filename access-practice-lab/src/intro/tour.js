@@ -16,6 +16,7 @@ import { buildLesson, lessonText } from "./tour/lesson.js";
 import {
   APPROACHES,
   BANDS,
+  DOMAINS,
   NEFT,
   STEPS,
   STEP_IDS,
@@ -42,7 +43,7 @@ const ACTIVE = "lp-t2-active";
 const cap = (d) => d[0].toUpperCase() + d.slice(1);
 const STEP_VIEWS = { welcome, experience, support, implement, prepare };
 const HELP = {
-  welcome: "Select a card to look inside. Choose Speaking, Writing or Both, then press Continue.",
+  welcome: "Select a card to look inside. Choose Listening, Speaking, Reading, Writing or All four, then press Continue.",
   experience:
     "The activity below is the real student page. Answer it, then press Continue. Your answers are not saved.",
   support:
@@ -104,8 +105,7 @@ async function prepareData() {
   const need = new Set();
   const add = (b, d) => need.add(`${b}|${d}`);
   if (S.step === "welcome") {
-    add(S.band, "speaking");
-    add(S.band, "writing");
+    for (const d of DOMAINS) add(S.band, d.id);
   }
   if (S.step === "experience" || S.step === "support") add(S.band, S.tab);
   if (S.step === "implement") add(S.band, S.finder.domain || focusDomain(S));
@@ -332,11 +332,11 @@ export async function render(ctx) {
   ui = freshUi();
   const r = ctx.route || {};
   const fresh = S.furthest === 0 && !S.pick;
-  // Older links (?grades=, ?skill=speaking|writing, ?part=2) still land somewhere sensible, but never override saved work.
+  // Older links (?grades=, ?skill=listening|speaking|reading|writing, ?part=2) still land somewhere sensible, but never override saved work.
   if (fresh) {
     const asked = teacherPick(ctx);
     S.band = asked === "6-8" ? "6-8" : "3-5";
-    if (["speaking", "writing"].includes(r.skill)) {
+    if (DOMAINS.some((d) => d.id === r.skill)) {
       S.focus = r.skill;
       S.tab = r.skill;
       if (r.part === "2") S.step = "experience";
@@ -415,7 +415,7 @@ async function setField(field, v) {
   else if (field === "profile") S.profile = v;
   else if (field === "focus") {
     S.focus = v;
-    S.tab = v === "writing" ? "writing" : "speaking";
+    S.tab = focusDomain(S);
     f.domain = "";
   } else if (field === "finder-domain") f.domain = v;
   else if (field === "finder-purpose") f.purpose = v;
