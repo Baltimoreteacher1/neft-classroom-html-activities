@@ -35,5 +35,6 @@ Safer Hallways: Speak, Write, Improve, anchored on `hallway`. Change `FEATURED_L
 - guide: https://thelanguagepage.com/access-practice-lab/start/guide
 - lesson: https://thelanguagepage.com/access-practice-lab/start/lesson
 - activities: https://thelanguagepage.com/access-practice-lab/start/activities
+- quickStart: https://thelanguagepage.com/access-practice-lab/start/quick-start
 - together: https://thelanguagepage.com/access-practice-lab/practice-together
 - siteGuide: https://thelanguagepage.com/access-practice-lab/site-guide

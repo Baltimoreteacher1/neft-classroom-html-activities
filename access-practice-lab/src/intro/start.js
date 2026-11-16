@@ -11,6 +11,7 @@ import { bandPickerHTML, onBandClick, pickName, teacherPick } from "./band.js";
 import { START_CHOICES } from "./data.js";
 import { bindGuide } from "./guide.js";
 import { loadIntro } from "./state.js";
+import { tourStatus } from "./tour/model.js";
 import { onOverviewClick, overviewHTML, tourHref } from "./start-overview.js";
 import { teacherBand } from "./shell.js";
 import { labHref } from "./ui.js";
@@ -21,12 +22,13 @@ const PAGES = {
   guide: () => import("./quick-guide.js"),
   lesson: () => import("./lesson.js"),
   activities: () => import("./activities.js"),
+  "quick-start": () => import("./quick-start.js"),
 };
 
 let current = null;
 
 function choiceHTML(c, resume, pick) {
-  const label = c.id === "tour" && resume ? `Resume the tour at Part ${resume}` : c.name;
+  const label = c.id === "tour" && resume ? "Continue the Teacher Tour" : c.name;
   const href = c.id === "tour" ? tourHref(pick) : labHref(c.route);
   return html`<li>
     <a class="in-choice is-${c.id}" href="${href}">
@@ -42,8 +44,7 @@ const TITLE = "Start here: The Language Page for teachers";
 
 function hubHTML(ctx) {
   const pick = teacherPick(ctx);
-  const saved = loadIntro().guided;
-  const resume = saved && !saved.done && saved.part > 1 ? saved.part : 0;
+  const resume = tourStatus(loadIntro()).state === "continue";
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
     ${teacherBand({
       active: "overview",

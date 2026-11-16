@@ -72,8 +72,18 @@ export function safeJson(text, fallback) {
 
 // If device storage fails, preserve edits in this tab and tell the learner.
 const volatile = new Map();
+// The Teacher Tour opens real activities in a frame named "lp-tour-preview". In that frame nothing is read from or
+// written to this device: a teacher trying an activity must not add attempts to their own progress, Passport or class
+// data. The name survives reloads inside the frame, so a refresh cannot turn preview mode off.
+const PREVIEW = (() => {
+  try {
+    return typeof window !== "undefined" && window.name === "lp-tour-preview" && window.self !== window.top;
+  } catch {
+    return false;
+  }
+})();
 function storageWarning() {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined" || PREVIEW) return;
   const node = document.getElementById("labStorageWarning");
   if (node) {
     node.hidden = !volatile.size;
@@ -97,9 +107,10 @@ export const storage = {
     writeListeners.add(fn);
     return () => writeListeners.delete(fn);
   },
-  get isVolatile() { return volatile.size > 0; },
+  get isVolatile() { return !PREVIEW && volatile.size > 0; },
   refreshWarning: storageWarning,
   get(key) {
+    if (PREVIEW) return volatile.has(key) ? volatile.get(key) : null;
     if (volatile.has(key)) return volatile.get(key);
     try {
       return localStorage.getItem(key);
@@ -108,6 +119,11 @@ export const storage = {
     }
   },
   set(key, value) {
+    if (PREVIEW) {
+      volatile.set(key, value);
+      notifyWrite(key);
+      return true;
+    }
     try {
       localStorage.setItem(key, value);
       volatile.delete(key);
@@ -122,6 +138,10 @@ export const storage = {
     }
   },
   remove(key) {
+    if (PREVIEW) {
+      volatile.set(key, null);
+      return;
+    }
     try {
       localStorage.removeItem(key);
       volatile.delete(key);
@@ -130,6 +150,7 @@ export const storage = {
     notifyWrite(key);
   },
   keys() {
+    if (PREVIEW) return [...volatile.keys()].filter((key) => volatile.get(key) !== null);
     try {
       return [...new Set([...Object.keys(localStorage), ...volatile.keys()])].filter((key) => !volatile.has(key) || volatile.get(key) !== null);
     } catch {
