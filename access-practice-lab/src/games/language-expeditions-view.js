@@ -145,13 +145,17 @@ export function summaryHTML(s, band, env) {
   const I = env.I;
   return html`<div class="lexp-panel lexp-summary">
     <p class="lexp-tag">${icon("flag")}${I.T("Journey summary", "Resumen del viaje")}</p>
-    <h2 class="lexp-head" tabindex="-1">${I.T("Lands you visited", "Las tierras que visitaste")}</h2>
+    <h2 class="lexp-head" tabindex="-1">
+      ${I.T("Lands you visited", "Las tierras que visitaste")}
+    </h2>
     <ul class="lexp-sum-list">
       ${band.lands.map((land, k) => {
         const L = s.lands[k];
         const done = L.acts.filter(complete).length;
         return html`<li class="lexp-dom-${land.domain}${L.stamp ? " is-stamped" : ""}">
-          <span class="lexp-land-dom">${icon(DOMAINS[land.domain].icon)}${dom(I, land.domain)}</span>
+          <span class="lexp-land-dom"
+            >${icon(DOMAINS[land.domain].icon)}${dom(I, land.domain)}</span
+          >
           <strong>${say(I, land.name)}</strong>
           <span
             >${L.stamp ? html`${icon("medal")}${I.T("Stamped", "Con sello")}` : done ? I.T(`${done} of ${L.acts.length} stops`, `${done} de ${L.acts.length} paradas`) : I.T("Not visited this time", "Sin visitar esta vez")}</span
@@ -170,6 +174,12 @@ export function summaryHTML(s, band, env) {
         ${icon("road")}${I.T("Back to the journey map", "Volver al mapa del viaje")}
       </button>
     </div>
+    <p class="lexp-next">
+      ${I.T("Want another four-skill adventure?", "¿Quieres otra aventura de cuatro destrezas?")}
+      <a href="/language-adventures/signal-quest/"
+        >${I.T("Try Signal Quest: explore an island and bring its signal back.", "Prueba Misión Señal: explora una isla y recupera su señal.")}</a
+      >
+    </p>
     ${disclaimerHTML(I)}
   </div>`;
 }
@@ -235,7 +245,12 @@ function choicesHTML(r, a, env) {
     ${r.order.map(
       (i) =>
         html`<div class="lexp-opt">
-          <button type="button" class="lexp-opt-t${choiceCls(r, i, a)}" data-lexp-pick="${i}" ${lock}>
+          <button
+            type="button"
+            class="lexp-opt-t${choiceCls(r, i, a)}"
+            data-lexp-pick="${i}"
+            ${lock}
+          >
             ${a.drawers ? icon("library") : ""}<span lang="en">${a.options[i].en}</span>
           </button>
           ${listen ? html`<button type="button" class="btn small ghost lexp-opt-say" data-say="${a.options[i].en}" aria-label="${I.S("Hear this answer", "Escuchar esta respuesta")}">${icon("volume")}</button>` : ""}
@@ -367,7 +382,9 @@ export function speakHTML(s, r, a, env) {
   const takes = typeof window === "undefined" ? [] : takesFor(key);
   const voice = typeof window !== "undefined" && canRecord();
   return html`<figure class="lexp-figure">${pic(a.art)}</figure>
-    <p class="lexp-prompt"><strong>${I.T("Your task:", "Tu tarea:")}</strong> ${say(I, a.prompt)}</p>
+    <p class="lexp-prompt">
+      <strong>${I.T("Your task:", "Tu tarea:")}</strong> ${say(I, a.prompt)}
+    </p>
     ${audioBtn(a.prompt.en, I, I.S("Listen to the task", "Escuchar la tarea"))}
     ${frameBox(a.frame, env)}${bankHTML(a, env)}
     ${
@@ -401,7 +418,9 @@ export function speakHTML(s, r, a, env) {
 export function writeHTML(s, r, a, env) {
   const I = env.I;
   return html`<figure class="lexp-figure">${pic(a.art)}</figure>
-    <p class="lexp-prompt"><strong>${I.T("Your task:", "Tu tarea:")}</strong> ${say(I, a.prompt)}</p>
+    <p class="lexp-prompt">
+      <strong>${I.T("Your task:", "Tu tarea:")}</strong> ${say(I, a.prompt)}
+    </p>
     ${frameBox(a.frame, env)}${bankHTML(a, env)}
     ${textBox(s, r, I, I.T("My writing", "Mi escritura"))}
     <div class="gs-actions">

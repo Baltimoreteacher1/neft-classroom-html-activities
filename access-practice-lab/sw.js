@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "d52171a701d1";
+const BUILD_HASH = "653944b03ae7";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=96db0e394ffd",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -170,7 +170,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-j.css?v=940ae002a469",
   "/access-practice-lab/games-k.css?v=03cfed78fc90",
   "/access-practice-lab/games-l.css?v=f435dc71ed3e",
-  "/access-practice-lab/games-m.css?v=e274a70ee5b7",
+  "/access-practice-lab/games-m.css?v=befa9d3fbb46",
   "/access-practice-lab/labs.css?v=70e4170c8ffa",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/path.css?v=95e1a443bf59",
@@ -335,7 +335,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/language-arcade.js?v=06310ad10d3e",
   "/access-practice-lab/src/games/language-expeditions-art.js?v=521dcd36a6c4",
   "/access-practice-lab/src/games/language-expeditions-rules.js?v=76848249c64c",
-  "/access-practice-lab/src/games/language-expeditions-view.js?v=a7b2f24f7a2f",
+  "/access-practice-lab/src/games/language-expeditions-view.js?v=3062cf741d3f",
   "/access-practice-lab/src/games/language-expeditions-world.js?v=25d0c776c2cf",
   "/access-practice-lab/src/games/language-expeditions.js?v=bcabefba722a",
   "/access-practice-lab/src/games/match-mania-view.js?v=0680c8f5e32c",
