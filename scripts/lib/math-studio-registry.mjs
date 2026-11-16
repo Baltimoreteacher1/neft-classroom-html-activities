@@ -109,6 +109,29 @@ function paramValues(model, parameters) {
   return { values, missing };
 }
 
+/** A lab "repair" item ("Label: work" steps and the wrong step's index) in the error-analysis shape. */
+function repairItem(it) {
+  if (
+    it.type !== "repair" ||
+    !Array.isArray(it.steps) ||
+    !Number.isInteger(it.answer) ||
+    it.answer >= it.steps.length
+  )
+    return null;
+  return clean({
+    id: `lab-${it.id}`,
+    kind: "ea",
+    prompt: it.prompt,
+    steps: it.steps.map((line) => {
+      const m = /^([^:]{1,40}):\s*(.+)$/.exec(line);
+      return m ? { label: m[1], work: m[2] } : { label: "Step", work: line };
+    }),
+    errorStep: it.answer,
+    hints: it.hints,
+    explanation: it.explanation,
+  });
+}
+
 /** A lab numeric item, with a model hand-off when (and only when) its settings verify. */
 function numItem(it, model, stats) {
   if (it.type !== "number" || !Number.isFinite(it.answer)) return null;
@@ -148,13 +171,17 @@ const firstUnique = (items, n) => {
     .slice(0, n);
 };
 
-export function lessonRecord(lesson, lab, labContent, traps, stats) {
+export function lessonRecord(lesson, lab, labContent, traps, stats, override = null) {
   const id = lesson.id;
   const cfg = loadLessonConfig(id);
   const P = cfg.practice || {};
   const tier = (name) => (P[name] || []).map((it, i) => ({ it, id: `${name}-${i}` }));
+  // With its own Explore model, a lesson keeps only the lab items written for it: the untagged items model the lab's
+  // own mathematics (the shared neighbour lesson's), not this lesson's.
   const labItems = (level) =>
-    (labContent.practice?.[level] || []).filter((it) => !it.lesson || it.lesson === id);
+    (labContent.practice?.[level] || []).filter((it) =>
+      override ? it.lesson === id : !it.lesson || it.lesson === id,
+    );
   const model = lab.model;
 
   const regular = firstUnique(
@@ -176,6 +203,19 @@ export function lessonRecord(lesson, lab, labContent, traps, stats) {
     ],
     6,
   );
+  // A short Challenge set is topped up with this lesson's other "find the mistake" items (lab, then config tiers).
+  if (challenge.length < 3)
+    challenge.push(
+      ...firstUnique(
+        [
+          ...labItems("stretch").map(repairItem),
+          ...labItems("core").map(repairItem),
+          ...tier("optional").map(({ it, id: k }) => eaItem(it, k)),
+          ...tier("approaching").map(({ it, id: k }) => eaItem(it, k)),
+        ].filter((it) => it && !challenge.some((c) => c.prompt === it.prompt)),
+        3 - challenge.length,
+      ),
+    );
 
   const tags = new Set([...regular, ...challenge].flatMap((it) => it.tags || []).filter(Boolean));
   const exit = mcItem({ ...cfg.reflect?.exitTicket, type: "multiple-choice" }, "exit");
@@ -223,7 +263,8 @@ export function lessonRecord(lesson, lab, labContent, traps, stats) {
     objective: cfg.contentObjective || lesson.objective,
     languageObjective: cfg.languageObjective,
     time: cfg.timeEstimate,
-    concept: `${model.kind}:${model.mode}`,
+    concept: override ? override.kind : `${model.kind}:${model.mode}`,
+    explore: override || undefined,
     lab: clean({
       id: lab.id,
       title: lab.title,
@@ -254,7 +295,10 @@ export function lessonRecord(lesson, lab, labContent, traps, stats) {
               contextEs: cfg.noticeAndWonder.contextEs,
             })
           : undefined,
-      vocabulary: (cfg.vocabulary || []).slice(0, 8).map((v) =>
+      vocabulary: [
+        ...(cfg.vocabulary || []).slice(0, 8),
+        ...(override?.term ? [{ ...override.term, visual: override.term.example }] : []),
+      ].map((v) =>
         clean({
           term: v.term,
           termEs: v.termEs,
@@ -343,6 +387,7 @@ export function buildRegistry() {
   const { traps } = readJson("data/practice-studio/misconceptions.json");
   const labFor = new Map(blueprints.flatMap((b) => b.lessons.map((l) => [l, b])));
   const stats = { verified: 0, refused: 0 };
+  const overrides = readJson("data/math-studio/explore-overrides.json").lessons;
   const lessons = [];
   const skipped = [];
   for (const lesson of manifest.lessons) {
@@ -359,7 +404,7 @@ export function buildRegistry() {
         `Math Studio: lesson ${lesson.id} has no Learning Lab in tools/learning-labs/blueprints.mjs`,
       );
     const labContent = readJson(`curriculum/learning-labs/${lab.id}/content.json`);
-    lessons.push(lessonRecord(lesson, lab, labContent, traps, stats));
+    lessons.push(lessonRecord(lesson, lab, labContent, traps, stats, overrides[lesson.id] || null));
   }
   const ids = lessons.map((l) => l.id);
   if (new Set(ids).size !== ids.length)

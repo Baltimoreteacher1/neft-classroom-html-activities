@@ -72,9 +72,17 @@ document.addEventListener('click', (e) => {
 // ---- Explore: the lab's own model, mounted as a component ----
 let model = null;
 let mountModel, guidance;
+let parts = null; // the lesson's own Explore model (data/math-studio/explore-overrides.json), when it has one
 async function loadModel() {
   const host = $('#ms-model');
   try {
+    if (L.explore?.kind === 'expression-parts') {
+      const { mountParts } = await import('./parts.mjs');
+      parts = mountParts(host, L.explore, { onChange: (st) => { state.explore.parts = st; save(); } });
+      if (state.explore.parts) parts.set(state.explore.parts);
+      $('#ms-guide').innerHTML = `<strong>${esc(L.explore.guide[0])}</strong> ${esc(L.explore.guide[1])}`;
+      return;
+    }
     ({ mountModel, guidance } = await import('../../curriculum/learning-labs/shared/model.mjs'));
     const initial = state.explore.values?.length === L.lab.model.values.length ? state.explore.values : L.lab.model.values;
     model = mountModel(host, L.lab.model, {
@@ -115,6 +123,7 @@ function openModel(item, rec) {
 }
 /** Model -> practice: a question from the current settings, then a transfer question with no model. */
 function makeQuestion() {
+  if (parts) return makePartsQuestions();
   if (!model) return;
   const out = $('#ms-test-out');
   const values = model.values;
@@ -142,6 +151,26 @@ function makeQuestion() {
     });
     if (state.explore.checks[item.id]?.result) runTransfer();
   } else runTransfer();
+}
+/** The parts model's version: two questions about the parts of the student's expression, an evaluation, then a new expression. */
+async function makePartsQuestions() {
+  const { partsQuestions, partsTransfer } = await import('./parts.mjs');
+  const out = $('#ms-test-out');
+  const st = parts.state;
+  const round = (state.explore.round || 0) + 1;
+  state.explore.round = round;
+  const queue = [...partsQuestions(st, L.id), partsTransfer(st, round, L.id)];
+  out.innerHTML = queue.map((_, i) => `<div class="ms-test__q" data-q="${i}"${i ? ' hidden' : ''}></div>`).join('');
+  const labels = [['From your expression', 'De tu expresión'], ['From your expression', 'De tu expresión'], ['From your expression', 'De tu expresión'], ['Transfer: a new expression, no model', 'Transferencia: una expresión nueva, sin el modelo']];
+  queue.forEach((item, i) => {
+    const slot = $(`[data-q="${i}"]`, out);
+    renderItem(slot, item, {
+      label: i === queue.length - 1 ? labels[3] : labels[i],
+      rec: state.explore.checks[item.id],
+      onChange: (rec) => { state.explore.checks[item.id] = rec; if (rec.result) { const next = $(`[data-q="${i + 1}"]`, out); if (next) next.hidden = false; } save(); },
+    });
+    if (state.explore.checks[item.id]?.result) { const next = $(`[data-q="${i + 1}"]`, out); if (next) next.hidden = false; }
+  });
 }
 $('#ms-make-question').addEventListener('click', makeQuestion);
 for (const [id, key] of [['#ms-prediction', 'prediction'], ['#ms-notes', 'notes']]) {

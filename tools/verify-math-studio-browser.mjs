@@ -92,7 +92,7 @@ async function lesson(ctx, id) {
   );
   await page.goto(`${base}/math/studio/${id}/`);
   await page
-    .waitForSelector("#ms-model .model-workspace", { timeout: 15000 })
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
     .catch(() => fail(id, "model did not mount"));
   // Every stage: visible, lesson content, only one shown.
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
@@ -171,6 +171,35 @@ async function lesson(ctx, id) {
   }
   // Model -> practice -> transfer.
   await page.click('.ms-stagebar [data-stage-link="explore"]');
+  if (L.explore?.kind === "expression-parts") await partsPath(page, L, id);
+  else await labModelPath(page, L, id);
+  // Write something, reload, expect it back on the same stage.
+  await page.fill("#ms-prediction", "It will double.");
+  await page.waitForTimeout(250);
+  await page.reload();
+  await page
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .catch(() => {});
+  ok(
+    (await page.inputValue("#ms-prediction")) === "It will double.",
+    id,
+    "prediction not restored",
+  );
+  ok(await page.$eval("#ms-resume", (el) => !el.hidden), id, "no resume prompt after reload");
+  // Spanish.
+  await page.click("#ms-lang");
+  ok(
+    await page.$eval(".t-es", (el) => getComputedStyle(el).display !== "none"),
+    id,
+    "Spanish did not show",
+  );
+  await page.click("#ms-lang");
+  ok(errors.length === 0, id, `console: ${errors.slice(0, 3).join(" | ")}`);
+  await page.close();
+}
+
+/** Lab model: the model's own readout question, then a transfer question appears. */
+async function labModelPath(page, L, id) {
   await page.click("#ms-make-question");
   const values = await page.$$eval("#ms-model [data-control]", (els) =>
     els.map((e) => Number(e.value)),
@@ -199,27 +228,71 @@ async function lesson(ctx, id) {
     id,
     "no transfer question after the model question",
   );
-  // Write something, reload, expect it back on the same stage.
-  await page.fill("#ms-prediction", "It will double.");
-  await page.waitForTimeout(250);
-  await page.reload();
-  await page.waitForSelector("#ms-model .model-workspace", { timeout: 15000 }).catch(() => {});
+}
+
+/** Parts of an Expression: every part is labelled; naming, editing, evaluating; its questions unlock in order. */
+async function partsPath(page, L, id) {
+  const x = L.explore;
+  const legend = await page.$eval("#ms-model .ms-legend", (el) => el.innerText);
+  for (const word of ["Coefficient", "Variable", "Constant", "Terms"])
+    ok(legend.includes(word), id, `parts legend missing ${word}`);
+  ok((await page.$$("#ms-model .ms-term")).length === 2, id, "expected two terms");
   ok(
-    (await page.inputValue("#ms-prediction")) === "It will double.",
+    (await page.$eval("#ms-model .ms-parts__eval", (el) => el.innerText)).includes(
+      String(x.a * x.v + x.b),
+    ),
     id,
-    "prediction not restored",
+    "evaluation wrong",
   );
-  ok(await page.$eval("#ms-resume", (el) => !el.hidden), id, "no resume prompt after reload");
-  // Spanish.
-  await page.click("#ms-lang");
+  await page.click("#ms-model .ms-tok--constant");
   ok(
-    await page.$eval(".t-es", (el) => getComputedStyle(el).display !== "none"),
+    await page.$eval("#ms-model .ms-parts__fb", (el) => el.classList.contains("is-no")),
     id,
-    "Spanish did not show",
+    "tapping the constant when asked for the coefficient was not corrected",
   );
-  await page.click("#ms-lang");
-  ok(errors.length === 0, id, `console: ${errors.slice(0, 3).join(" | ")}`);
-  await page.close();
+  await page.click("#ms-model .ms-tok--coefficient");
+  ok(
+    await page.$eval("#ms-model .ms-parts__fb", (el) => el.classList.contains("is-ok")),
+    id,
+    "tapping the coefficient was not accepted",
+  );
+  await page.fill('#ms-model [data-k="a"]', "1");
+  ok(
+    (await page.$$("#ms-model .ms-tok--coefficient")).length === 0,
+    id,
+    "a coefficient of 1 is still written",
+  );
+  ok(
+    (await page.$eval("#ms-model .ms-legend", (el) => el.innerText)).includes("not written"),
+    id,
+    "coefficient 1 not explained",
+  );
+  await page.click("#ms-model [data-reset]");
+  await page.click("#ms-make-question");
+  await page.fill('#ms-test-out [data-q="0"] input', String(x.a));
+  await page.click('#ms-test-out [data-q="0"] [data-act="check"]');
+  ok(
+    await page.$eval('#ms-test-out [data-q="0"] .ms-feedback', (el) =>
+      el.classList.contains("ms-ok"),
+    ),
+    id,
+    "coefficient question rejected the coefficient",
+  );
+  ok(
+    await page.$eval('#ms-test-out [data-q="1"]', (el) => !el.hidden),
+    id,
+    "next parts question did not unlock",
+  );
+  ok(
+    (
+      await page.$eval("#ms-understand-parts, #understand .ms-partsfig", (el) => el.innerText)
+    ).includes("Coefficient"),
+    id,
+    "Understand has no parts figure",
+  );
+  const vocab = await page.$eval("#understand .ms-vocab", (el) => el.innerText);
+  for (const word of ["Coefficient", "Variable", "Constant", "Term"])
+    ok(vocab.includes(word), id, `vocabulary missing ${word}`);
 }
 
 const desktop = await browser.newContext({ viewport: { width: 1366, height: 800 } });
@@ -239,7 +312,9 @@ const perUnit = [
 for (const id of perUnit) {
   const page = await phone.newPage();
   await page.goto(`${base}/math/studio/${id}/`);
-  await page.waitForSelector("#ms-model .model-workspace", { timeout: 15000 }).catch(() => {});
+  await page
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .catch(() => {});
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
     await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -252,7 +327,9 @@ for (const id of perUnit) {
 for (const id of perUnit.slice(0, 4)) {
   const page = await desktop.newPage();
   await page.goto(`${base}/math/studio/${id}/`);
-  await page.waitForSelector("#ms-model .model-workspace", { timeout: 15000 }).catch(() => {});
+  await page
+    .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts", { timeout: 15000 })
+    .catch(() => {});
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
     await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);
     const r = await new AxeBuilder({ page })
@@ -289,8 +366,9 @@ for (const l of registry.lessons.filter((x) => ids.includes(x.id))) {
     );
   }
   const lab = readFileSync(join(REPO_ROOT, l.lab.href.replace(/^\//, ""), "index.html"), "utf8");
+  // A lesson with its own Explore model is (correctly) not advertised on the shared lab.
   ok(
-    lab.includes(`/math/studio/${l.id}/#explore`),
+    l.concept === "expression-parts" || lab.includes(`/math/studio/${l.id}/#explore`),
     l.id,
     `${l.lab.href} has no link to this lesson's Learning Lab`,
   );

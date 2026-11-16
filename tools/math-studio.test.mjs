@@ -24,6 +24,7 @@ import {
   verifyHandoff,
   verifySolve,
 } from "../assets/math-studio/core.mjs";
+import { describe, partsQuestions, partsTransfer } from "../assets/math-studio/parts.mjs";
 import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { buildRegistry } from "../scripts/lib/math-studio-registry.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
@@ -295,6 +296,57 @@ function solveIndex(model, it) {
       !it.prompt.includes(`${f.label}:`),
   );
 }
+
+t(
+  "parts of an expression: text, value, coefficient 1, subtraction, no constant, questions and transfer",
+  () => {
+    assert.deepEqual(describe({ a: 12, variable: "t", op: "+", b: 50, v: 4 }), {
+      text: "12t + 50",
+      varTerm: "12t",
+      value: 98,
+      steps: "12 × 4 + 50 = 48 + 50 = 98",
+      terms: 2,
+    });
+    assert.equal(describe({ a: 1, variable: "n", op: "+", b: 3, v: 5 }).text, "n + 3");
+    assert.equal(describe({ a: 3, variable: "x", op: "-", b: 20, v: 4 }).value, -8);
+    assert.equal(describe({ a: 3, variable: "x", op: "-", b: 20, v: 4 }).text, "3x − 20");
+    assert.equal(describe({ a: 5, variable: "m", op: "+", b: 0, v: 2 }).terms, 1);
+    const qs = partsQuestions({ a: 12, variable: "t", op: "+", b: 50, v: 4 }, "6-5");
+    assert.deepEqual(
+      qs.map((q) => q.answer),
+      [12, 50, 98],
+    );
+    for (const q of qs) validate("item", q);
+    assert.equal(
+      checkNumber(qs[2], "124").feedback.includes("12t means"),
+      true,
+      "the digits-side-by-side slip is named",
+    );
+    assert.equal(
+      partsQuestions({ a: 4, variable: "x", op: "+", b: 0, v: 2 }, "6-5").length,
+      2,
+      "no constant question without a constant",
+    );
+    for (let round = 1; round <= 20; round++) {
+      const tq = partsTransfer({ a: 12, variable: "t", op: "+", b: 50, v: 4 }, round, "6-5");
+      const m = /: (\d+)([a-z]) ([+−]) (\d+)\./.exec(tq.prompt);
+      assert.ok(m, tq.prompt);
+      const v = Number(/when [a-z] = (\d+)/.exec(tq.prompt)[1]);
+      const want = Number(m[1]) * v + (m[3] === "+" ? 1 : -1) * Number(m[4]);
+      assert.equal(tq.answer, want, `transfer ${round}`);
+    }
+    const L = lessons.find((l) => l.id === "6-5");
+    assert.equal(L.explore.kind, "expression-parts");
+    assert.ok(L.understand.vocabulary.some((v) => v.term === "Term"));
+    assert.ok(
+      ![...L.practice.regular, ...L.practice.challenge].some((it) => it.model),
+      "no distributive-model hand-offs on 6-5",
+    );
+    assert.ok(L.practice.challenge.length >= 3);
+    const six = lessons.find((l) => l.id === "6-6");
+    assert.equal(six.explore, undefined, "6-6 keeps the shared lab model");
+  },
+);
 
 // ---- Registry content ----
 t("registry: every lesson has lesson-specific content in all five stages and valid keys", () => {

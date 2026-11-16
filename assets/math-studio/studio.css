@@ -1026,3 +1026,44 @@ body.ms .ms-h1-sub {
     padding-top: 16px;
   }
 }
+
+/* Parts of an Expression (lesson-specific Explore model). Part colours: coefficient terracotta, variable teal,
+   constant mustard; every label is text, so colour is never the only cue. */
+.ms-parts { display: grid; gap: 14px; }
+.ms-parts__context { margin: 0; font-size: 1rem; color: var(--ms-ink); background: var(--ms-cream); border-radius: 10px; padding: 8px 12px; }
+.ms-parts__stage { display: grid; gap: 12px; }
+.ms-expr { display: flex; align-items: flex-start; justify-content: center; gap: 14px; flex-wrap: wrap; padding: 18px 8px 4px; font: 800 clamp(2.4rem, 7vw, 3.6rem)/1 "Nunito", "Atkinson Hyperlegible", sans-serif; color: var(--ms-navy); }
+.ms-term { display: inline-grid; grid-auto-flow: column; justify-items: center; align-items: end; position: relative; padding-bottom: 42px; gap: 2px; }
+.ms-term__brace { position: absolute; left: 4px; right: 4px; bottom: 26px; height: 10px; border: 3px solid var(--ms-navy); border-top: 0; border-radius: 0 0 8px 8px; }
+.ms-term__label { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font: 700 0.9rem/1.2 "Nunito", sans-serif; color: var(--ms-navy); white-space: nowrap; }
+.ms-term.is-picked .ms-term__brace { border-color: var(--ms-sage-ink); border-width: 5px; }
+.ms-op { padding-top: 6px; }
+body.ms .ms-tok { font: inherit; line-height: 1; min-width: 48px; min-height: 64px; padding: 4px 10px; border-radius: 12px; border: 3px solid transparent; cursor: pointer; color: var(--ms-navy); }
+body.ms .ms-tok--coefficient { background: var(--ms-terra-soft); border-color: var(--ms-terra); }
+body.ms .ms-tok--variable { background: var(--ms-teal-soft); border-color: var(--ms-teal); font-style: italic; }
+body.ms .ms-tok--constant { background: var(--ms-mustard-soft); border-color: var(--ms-mustard); }
+body.ms .ms-tok:hover { filter: brightness(0.96); }
+.ms-expr--static .ms-tok { display: inline-grid; place-items: center; min-width: 48px; min-height: 64px; padding: 4px 10px; border-radius: 12px; border: 3px solid transparent; cursor: default; }
+.ms-expr--static .ms-tok--coefficient { background: var(--ms-terra-soft); border-color: var(--ms-terra); }
+.ms-expr--static .ms-tok--variable { background: var(--ms-teal-soft); border-color: var(--ms-teal); font-style: italic; }
+.ms-expr--static .ms-tok--constant { background: var(--ms-mustard-soft); border-color: var(--ms-mustard); }
+.ms-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.98rem; }
+.ms-legend li { padding: 6px 10px; border-inline-start: 6px solid var(--ms-line); background: #fff; border-radius: 6px; }
+.ms-legend li.ms-legend--coefficient { border-inline-start-color: var(--ms-terra); }
+.ms-legend li.ms-legend--variable { border-inline-start-color: var(--ms-teal); }
+.ms-legend li.ms-legend--constant { border-inline-start-color: var(--ms-mustard); }
+.ms-legend li.ms-legend--term { border-inline-start-color: var(--ms-navy); }
+.ms-parts__name { background: var(--ms-sage-soft); border-radius: 10px; padding: 8px 12px; }
+.ms-parts__name p { margin: 2px 0; }
+.ms-parts__fb.is-ok { color: var(--ms-sage-ink); font-weight: 700; }
+.ms-parts__fb.is-no { color: var(--ms-terra-ink); font-weight: 700; }
+.ms-parts__controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; align-items: end; }
+.ms-parts__controls label { display: grid; gap: 4px; font-weight: 700; color: var(--ms-navy); font-size: 0.95rem; }
+body.ms .ms-parts__controls input, body.ms .ms-parts__controls select { min-height: 46px; border: 2px solid #7d8794; border-radius: 10px; padding: 6px 10px; font: inherit; background: #fff; }
+.ms-parts__eval { background: var(--ms-navy); color: #fff; border-radius: 10px; padding: 10px 14px; }
+.ms-parts__eval strong { color: #fff; }
+.ms-parts__steps { margin: 4px 0 0; font: 700 1.2rem/1.4 "Nunito", sans-serif; color: #fff; }
+.ms.ms-es .ms-parts__eval .t-es { color: #d6e2ee; }
+.ms-partsfig { margin: 12px 0 18px; background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: var(--ms-radius); padding: 14px; display: grid; gap: 10px; }
+.ms-partsfig figcaption { color: var(--ms-navy); }
+.ms-test__q + .ms-test__q { margin-top: 12px; }

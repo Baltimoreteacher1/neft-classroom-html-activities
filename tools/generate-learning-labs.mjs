@@ -23,8 +23,10 @@ import {
 import { labEmblem } from "./lib/iso-art.mjs";
 
 /** The Math Studio bar for a lab: one link per in-scope lesson, or nothing when every lesson is out of scope. */
+// A lesson with its own Explore model (data/math-studio/explore-overrides.json) does not use this lab as its Explore stage.
+const ownExplore = JSON.parse(readFileSync(join(REPO_ROOT, "data/math-studio/explore-overrides.json"), "utf8")).lessons;
 const mathStudioBar = (b) => {
-  const lessons = b.lessons.filter((l) => MATH_STUDIO_UNITS.includes(Number(l.split("-")[0])));
+  const lessons = b.lessons.filter((l) => MATH_STUDIO_UNITS.includes(Number(l.split("-")[0])) && !ownExplore[l]);
   return lessons.length ? labBar({ lessons }) : "";
 };
 

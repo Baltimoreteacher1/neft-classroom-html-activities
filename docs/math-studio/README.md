@@ -47,3 +47,7 @@ No existing URL changed what it answers. Practice studios, Unit 4 studios and Le
 
 - Spanish shows wherever the source has Spanish; lab investigation prompts, Create missions, word problems and some vocabulary examples are English-only in the source. No native-speaker review.
 - The full Practice Studio engine is linked, not embedded: its runtime is ~40 global scripts and its own save; embedding it would duplicate the engine.
+
+## Lessons with their own Explore model
+
+A shared Learning Lab can model a neighbouring lesson's mathematics. `data/math-studio/explore-overrides.json` gives such a lesson its own Explore model; the registry then keeps only the lab practice items written for that lesson and the lab page stops listing it. Today: **6-5** uses **Parts of an Expression** (`assets/math-studio/parts.mjs`): its own worked example (12t + 50), coefficient / variable / term / constant labelled and named by tapping, evaluation step by step, and "Term" added to its vocabulary. The `expression-remix` lab (distributive property) remains 6-6's Explore model.
