@@ -79,6 +79,20 @@ export const GAMES = [
     standards: ["6.AT.6a", "6.AT.7"],
     features: ["time-machine"],
   },
+  {
+    id: "inequality-invasion",
+    href: "/math/games/universe/games/inequality-invasion/",
+    title: { en: "Inequality Invasion", es: "Invasión de Desigualdades" },
+    genre: { en: "Gentle strategy", es: "Estrategia tranquila" },
+    tagline: {
+      en: "Glimmers drift through Lantern Valley, each carrying a number. Set the gates' inequalities so every garden lights with exactly the glimmers it wants.",
+      es: "Los destellos cruzan el Valle de los Faroles, cada uno con un número. Pon las desigualdades de las puertas para que cada jardín se encienda con los destellos que quiere.",
+    },
+    unit: 8,
+    lessons: ["8-4", "8-5", "8-6", "8-7"],
+    standards: ["6.AT.8", "6.AT.9"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */
