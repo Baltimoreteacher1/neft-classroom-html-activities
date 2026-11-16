@@ -70,6 +70,15 @@ export const HOME_CARDS = [
     text: ["See how English works: verbs in time, connectors, paragraphs.", "Mira cómo funciona el inglés: verbos en el tiempo, conectores, párrafos."],
   },
   {
+    id: "adventure-worlds",
+    group: "explore",
+    featured: true,
+    href: "adventures",
+    icon: "worlds",
+    title: ["Adventure Worlds", "Mundos de aventura"],
+    text: ["Solve a museum mystery or explore a science island, one mission at a time.", "Resuelve un misterio en un museo o explora una isla científica, misión por misión."],
+  },
+  {
     id: "join-class",
     group: "start",
     href: "class",

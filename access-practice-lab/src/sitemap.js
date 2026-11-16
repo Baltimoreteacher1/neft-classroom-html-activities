@@ -399,6 +399,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "adventure-worlds",
+    section: "play",
+    skill: "Mixed",
+    kind: "world",
+    for: ST,
+    top: true,
+    href: "adventures",
+    icon: "worlds",
+    title: P("Adventure Worlds", "Mundos de aventura"),
+    text: P(
+      "Story worlds played in missions: read, listen, collect clues, decide, then speak and write to solve the case.",
+      "Mundos de historias en misiones: lee, escucha, reúne pistas, decide y luego habla y escribe para resolver el caso.",
+    ),
+  },
+  {
     id: "sentences",
     section: "practice",
     skill: "Writing",

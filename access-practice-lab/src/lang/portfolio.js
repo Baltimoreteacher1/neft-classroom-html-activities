@@ -14,7 +14,7 @@ const wc = (t) =>
     .split(/\s+/)
     .filter(Boolean).length;
 /** Writing samples: one per piece of work, showing its latest version and whether it was revised. */
-export function writingSamples({ band, studio, exhibition, warmup, titles = {} }) {
+export function writingSamples({ band, studio, exhibition, warmup, titles = {}, adventures = {} }) {
   const out = [];
   for (const [id, w] of Object.entries(studio?.writing || {})) {
     const versions = asArray(w.versions).filter((v) => v?.text?.trim());
@@ -64,6 +64,23 @@ export function writingSamples({ band, studio, exhibition, warmup, titles = {} }
       tier: k.split("|")[0],
     });
   }
+  // Adventure Worlds: each finished mission's artifact (the learner's own text), accessPracticeLab:v1:adventures.
+  for (const [world, bands] of Object.entries(adventures || {}))
+    for (const [mission, e] of Object.entries(bands?.[band] || {})) {
+      const text = String(e?.artifact?.text || "").trim();
+      if (!text) continue;
+      out.push({
+        key: `a:${world}:${band}:${mission}`,
+        source: "adventure",
+        title: e.artifact.title?.en || mission,
+        first: text,
+        text,
+        t: e.artifact.at || "",
+        revised: false,
+        versions: 1,
+        reflection: "",
+      });
+    }
   return out.sort((a, b) => String(b.t).localeCompare(String(a.t)));
 }
 
