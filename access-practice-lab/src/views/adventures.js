@@ -1,4 +1,4 @@
-// Adventure Worlds (/adventures, /adventures/<world>, /adventures/<world>/<mission>?scene=<n|done>): six story worlds
+// Adventure Worlds (/adventures, /adventures/<world>, /adventures/<world>/<mission>?scene=<n|done>): seven story worlds
 // where each mission chains input (read, listen), thinking (clues, choice, order) and production (respond), one scene
 // per screen. Schema: ADVENTURE-SCHEMA.md; engine src/adventures/engine.js; checks src/adventures/checks.js; scene
 // screens src/views/adventures-scenes.js; worlds src/adventures/worlds/. Progress is one key

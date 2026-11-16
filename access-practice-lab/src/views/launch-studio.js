@@ -135,7 +135,8 @@ export async function render(ctx) {
     <div class="ls">
     <section class="ls-hero">
       <div><p class="eyebrow">${icon("launch")} ${I.T("Teacher workspace", "Espacio docente")}</p><h1 tabindex="-1">${I.T("Teacher Launch Studio", "Estudio de lanzamiento docente")}</h1>
-      <p class="lead">${I.T("Build a focused, direct classroom link in a few steps. Learners can open it without an account.", "Cree un enlace directo y enfocado para la clase en pocos pasos. Los estudiantes pueden abrirlo sin cuenta.")}</p></div>
+      <p class="lead">${I.T("Build a focused, direct classroom link in a few steps. Learners can open it without an account.", "Cree un enlace directo y enfocado para la clase en pocos pasos. Los estudiantes pueden abrirlo sin cuenta.")}</p>
+      <p class="fine"><a href="${BASE}/lesson-builder">${icon("teacher")} ${I.T("Need a whole lesson? Open the Lesson Builder", "¿Necesita una lección completa? Abra el Creador de lecciones")}</a></p></div>
       <ol class="ls-flow" aria-label="${I.S("Steps", "Pasos")}"><li>${I.T("Choose an activity", "Elija una actividad")}</li><li>${I.T("Copy the link", "Copie el enlace")}</li><li>${I.T("Share or print a ticket", "Comparta o imprima un boleto")}</li></ol>
     </section>
     <div class="ls-layout">

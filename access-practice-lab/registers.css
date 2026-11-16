@@ -1,0 +1,286 @@
+/* Audience registers and the compact header. Loads after every screen sheet.
+   One design system (ds.css tokens), three deliberate registers set by src/register.js on body[data-lab-register]:
+   - student (default): the immersive Living Language Studio atmosphere, unchanged here.
+   - teacher: calm professional workspace — flat paper, hairline structure, no grain, restrained colour.
+   - family: warm and simple — ivory paper, large calm actions, generous line height.
+   Never redefine tokens in a screen sheet; registers only re-point tokens and flatten decoration. */
+
+/* ── header: one quiet row on desktop ──────────────────────────────────── */
+/* The audience doors were four outlined pills competing with the learner row. They become plain labelled links
+   separated by one hairline; Create a Book keeps the single accent outline as the maker door. */
+@media (min-width: 1200px) {
+  .lab-tools > .top-teachers,
+  .lab-tools > .top-family,
+  .lab-tools > .top-guide {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+  .lab-tools > .top-teachers {
+    margin-inline-start: 0.35rem;
+  }
+  .lab-tools > .top-teachers::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -0.3rem;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: var(--line-strong, var(--line));
+  }
+  .lab-tools > .top-teachers[aria-current="page"]::before {
+    inset-inline-start: -0.3rem;
+    left: auto;
+    right: auto;
+    height: auto;
+    border-radius: 0;
+  }
+}
+
+/* ── header: compact on phones and small tablets ───────────────────────── */
+/* Before: every door stretched to a full-width pill and the header stacked ~370px of buttons above the content.
+   After: brand row, then one swipeable strip of labelled doors with More pinned at its end. Every door keeps its
+   label; the audience doors come first so families and teachers see them without swiping. */
+@media (max-width: 719px) {
+  .lab-top {
+    flex-wrap: wrap;
+    /* no backdrop filter: it would make the fixed More menu position against the bar, not the screen */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface);
+    gap: 0.35rem 0.5rem;
+    padding-block: 0.5rem 0.35rem;
+  }
+  .lab-tools {
+    display: flex;
+    order: 10;
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: 0.35rem;
+    margin-inline: calc(-1 * clamp(1rem, 2.4vw, 1.75rem));
+    padding: 0.15rem clamp(1rem, 2.4vw, 1.75rem) 0.4rem;
+    position: relative; /* contains the absolutely placed labels so they cannot widen the page */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
+  }
+  .lab-tools::-webkit-scrollbar {
+    display: none;
+  }
+  .lab-tools > * {
+    flex: none !important;
+    order: 5;
+  }
+  .lab-tools > .top-link:not([data-tier="low"]):not(.lab-search-btn, .lab-read-btn, .lab-comfort-btn),
+  .lab-tools > .top-link.top-expedition {
+    display: inline-flex !important;
+    min-width: 0 !important;
+    min-height: 2.75rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    white-space: nowrap !important;
+    line-height: 1.1;
+    font-size: 0.9rem;
+  }
+  .lab-tools > .top-link > .ico {
+    display: inline-block;
+  }
+  .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-comfort-btn) > span {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip: auto !important;
+    overflow: visible !important;
+  }
+  .lab-tools > .top-link[aria-current="page"] {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+  }
+  .lab-tools > .top-link[aria-current="page"]::after {
+    display: none;
+  }
+  .lab-tools > .top-family {
+    order: 1;
+  }
+  .lab-tools > .top-teachers {
+    order: 2;
+  }
+  .lab-tools > .top-book {
+    order: 3;
+    border-color: color-mix(in srgb, var(--writing) 55%, var(--line));
+  }
+  .lab-tools > :is(.lab-search-btn, .lab-read-btn, .lab-comfort-btn) {
+    order: 7 !important;
+  }
+  /* Read-aloud leads the strip: multilingual learners use it on every screen. */
+  .lab-tools > .lab-read-btn {
+    order: 0 !important;
+  }
+  .lab-tools > .grade-select,
+  .lab-tools > .lang-switch {
+    order: 8;
+    margin-inline-start: 0 !important;
+  }
+  .lab-tools > .lab-utilities {
+    position: sticky;
+    order: 9;
+    right: 0;
+    z-index: 2;
+    padding-inline-start: 0.35rem;
+    background: linear-gradient(90deg, transparent, var(--surface) 0.6rem);
+  }
+  .lab-tools > .lab-utilities > .lab-utilities-body {
+    position: fixed;
+    inset: 7.5rem 0.75rem auto;
+    width: auto;
+    max-height: calc(100dvh - 8.5rem);
+    overflow-y: auto;
+  }
+}
+
+/* ── teacher register: calm, flat, efficient ───────────────────────────── */
+body[data-lab-register="teacher"] {
+  --bg: #f5f5f2;
+  --shadow: 0 1px 2px rgb(16 26 59 / 7%);
+  --shadow-lift: 0 2px 6px rgb(16 26 59 / 9%);
+  --shadow-float: 0 8px 24px rgb(16 26 59 / 12%);
+  background: var(--bg);
+}
+body[data-lab-register="teacher"] .lab-top {
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+body[data-lab-register="teacher"] main :is(.panel, .card, .ls-hero, .lb-hero) {
+  background-image: none;
+  box-shadow: var(--shadow);
+}
+body[data-lab-register="teacher"] .ls-hero {
+  background: #fff;
+  border-color: var(--line);
+}
+body[data-lab-register="teacher"] main h1 {
+  letter-spacing: -0.02em;
+}
+body[data-lab-register="teacher"] main :is(.btn, .ghost, .chip, .card, .panel) {
+  transition-duration: 0.12s;
+}
+body[data-lab-register="teacher"] main :is(.btn, .ghost, .card):hover {
+  transform: none;
+}
+
+/* ── family register: warm and simple ──────────────────────────────────── */
+body[data-lab-register="family"] {
+  --bg: #fbf6ec;
+  --surface-2: #f6eedf;
+  background:
+    radial-gradient(900px 420px at 15% -80px, rgb(245 214 168 / 38%), transparent 70%), var(--bg);
+}
+body[data-lab-register="family"] main {
+  line-height: 1.6;
+}
+body[data-lab-register="family"] main :is(.btn, .btn-primary, .btn-secondary) {
+  min-height: 3.25rem;
+  padding-inline: 1.4rem;
+  font-size: 1.05rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-tools {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── palette accents (Deep Harbor: navy ground, teal interaction, gold highlight, terracotta maker) ── */
+.top-link[aria-current="page"]::after {
+  background: var(--teal);
+}
+.lang-banner {
+  background: var(--surface-2);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+.eyebrow {
+  color: var(--teal);
+}
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: #0b4f5e;
+  border-color: #0b4f5e;
+}
+.top-access-prep.is-featured .ico {
+  color: var(--accent);
+}
+.top-book {
+  border-color: var(--coral);
+}
+.bar > i {
+  background: var(--teal);
+}
+
+/* ── home first screen: the Deep Harbor stage ─────────────────────────────
+   The front door is the strongest expression of the identity: a deep navy stage with a teal tide and a
+   gold sunrise, ivory display type, and light cards (video, today's mission) floating on it. */
+body[data-lab-view="home"] .lph {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background:
+    radial-gradient(700px 360px at 88% -10%, rgb(226 167 46 / 32%), transparent 70%),
+    radial-gradient(820px 420px at 0% 110%, rgb(15 118 110 / 55%), transparent 70%),
+    linear-gradient(160deg, #0b2339 0%, #123a5c 58%, #0f4c5c 100%);
+  color: #f3efe6;
+  box-shadow: var(--shadow-float);
+}
+body[data-lab-view="home"] .lph::before {
+  content: "";
+  position: absolute;
+  inset: auto -10% -1px;
+  height: 46%;
+  pointer-events: none;
+  background: repeating-radial-gradient(ellipse at 50% 140%, rgb(255 255 255 / 0%) 0 22px, rgb(156 200 198 / 9%) 23px 24px);
+}
+body[data-lab-view="home"] .lph > * {
+  position: relative;
+}
+body[data-lab-view="home"] .lph :is(h1, .lph-intro h1) {
+  color: #fffaf0;
+}
+body[data-lab-view="home"] .lph-lead {
+  color: #d2e2e4;
+}
+body[data-lab-view="home"] .lph-roles-label {
+  color: #d2e2e4;
+}
+body[data-lab-view="home"] .lph-role {
+  border-color: rgb(255 255 255 / 38%);
+  background: rgb(255 255 255 / 8%);
+  color: #fffaf0;
+}
+body[data-lab-view="home"] .lph-role .ico {
+  color: var(--accent);
+}
+body[data-lab-view="home"] .lph-role[aria-current="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #0b2339;
+}
+body[data-lab-view="home"] .lph-role[aria-current="true"] .ico {
+  color: #0b2339;
+}
+body[data-lab-view="home"] .lph-role:hover {
+  background: rgb(255 255 255 / 16%);
+}
+body[data-lab-view="home"] .lph-role[aria-current="true"]:hover {
+  background: #edb84a;
+}
+body[data-lab-view="home"] .lph :is(.lph-continue, .lph-front) {
+  border: 0;
+  box-shadow: var(--shadow-float);
+}

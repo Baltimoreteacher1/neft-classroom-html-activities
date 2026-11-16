@@ -30,6 +30,7 @@ import { mountReturnBar } from "./intro/return-bar.js";
 import { mountStudioVideo } from "./studio-video-mount.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
+import { registerFor } from "./register.js";
 import { familyTourHost } from "./family-tour-host.js";
 
 // Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
@@ -88,6 +89,7 @@ const VIEW_LOADERS = {
   detective: () => import("./views/detective.js"),
   diagnostic: () => import("./views/diagnostic.js"),
   launch: () => import("./views/launch-studio.js"),
+  "lesson-builder": () => import("./views/lesson-builder.js"),
   worlds: () => import("./views/worlds.js"),
   classroom: () => import("./views/classroom.js"),
   vocabulary: () => import("./views/vocabulary.js"),
@@ -118,6 +120,7 @@ const VIEW_LOADERS = {
   accessibility: () => import("./views/accessibility.js"),
   "book-studio": () => import("./views/book-studio.js"),
   "language-labs": () => import("./views/language-labs.js"),
+  communication: () => import("./views/communication.js"),
   adventures: () => import("./views/adventures.js"),
   "language-games": () => import("./views/language-games.js"),
 };
@@ -182,7 +185,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "explore", "language-labs"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "explore", "language-labs", "communication"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")
@@ -435,6 +438,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   document.title = brandTitle(out.title);
   document.body.dataset.labView = route.view;
   document.body.dataset.labBand = app.band;
+  document.body.dataset.labRegister = registerFor(route.view);
   mountShell(ctx);
   mountReturnBar(ctx);
   view.mount?.(root, ctx);

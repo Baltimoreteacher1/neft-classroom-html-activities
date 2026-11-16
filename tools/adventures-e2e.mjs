@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Adventure Worlds (/adventures) in a real browser: hub (six cards) → Mystery Museum map → mission 1 in Grades 6-8
+ * Adventure Worlds (/adventures) in a real browser: hub (seven cards) → Mystery Museum map → mission 1 in Grades 6-8
  * end to end (start choice, read with glossary, clue board with a set-aside clue, a wrong choice then the right one,
  * order with the arrow buttons, a respond check that fails then passes, reload-resume mid-mission, completion
  * artifact, mission log, mission 2 unlocked) → "Write this up in Book Studio" lands the learner's text in the editor →
@@ -199,7 +199,7 @@ try {
 
   // Hub
   await go("adventures?grades=6-8");
-  ok((await page.locator(".adv-cards > li").count()) === 6, "hub shows six world cards");
+  ok((await page.locator(".adv-cards > li").count()) === 7, "hub shows seven world cards");
   ok((await page.locator("a.adv-card").count()) >= 2, "the built worlds are links");
   await axe(page, ".adv-hub", "hub");
   await shot(page, "hub-1280");

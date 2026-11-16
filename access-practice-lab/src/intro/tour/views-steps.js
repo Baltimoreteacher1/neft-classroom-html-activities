@@ -34,9 +34,19 @@ const pic = (act) =>
       />`
     : "";
 
+/** One line per step that says where this lives on the real site, so the tour builds a map, not just a memory. */
+const WHERE = {
+  1: "On the site: Practice, in the top bar. Every activity sits under Listening, Reading, Speaking or Writing.",
+  2: "On the site: this is what a student sees after opening your link. No account, no sign-in.",
+  3: "On the site: every activity has a Help choice at the top. Students can change it any time.",
+  4: "On the site: Teachers → Launch Studio, where you find an activity and share its link.",
+  5: "On the site: Teachers → Lesson Builder turns one activity into a full lesson.",
+};
+
 const guide = ({ n, minutes, title, objective, directions, classroom, extra = "" }) =>
   html` <p class="t2-eyebrow">Step ${n} of 5 · about ${minutes} minutes</p>
     <h1 id="t2Title" tabindex="-1">${title}</h1>
+    ${WHERE[n] ? html`<p class="t2-where"><span aria-hidden="true">📍</span> ${WHERE[n]}</p>` : ""}
     <p class="t2-objective"><strong>You will:</strong> ${objective}</p>
     <p class="t2-directions">${directions}</p>
     ${extra}

@@ -1,0 +1,274 @@
+/* Culture & Communication Explorer (/communication): hub, five-step scenario path, message comparison, shift
+   choices, reflection and writing. Layout only; tokens and shared components come from ds.css (DESIGN-SYSTEM.md). */
+.cm-hub,
+.cm-scenario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5, 1.5rem);
+}
+.cm-hub-head h1,
+.cm-head h1 {
+  margin: 0.2rem 0 0.4rem;
+}
+.cm-principles {
+  margin: 0;
+  padding: 0.9rem 1.1rem 0.9rem 2.2rem;
+  border-radius: var(--radius);
+  background: var(--sage-200, #e6f0e3);
+  line-height: 1.55;
+}
+.cm-dial-list,
+.cm-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-3, 0.75rem);
+}
+.cm-dial-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+}
+.cm-dial-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cm-dial-emoji {
+  grid-row: span 2;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.cm-dial-list span:last-child {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.cm-cards {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.cm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 1.1rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.cm-card-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+.cm-card strong {
+  font-size: 1.1rem;
+}
+.cm-card-theme {
+  color: var(--ink-2);
+}
+.cm-card-meta {
+  margin-top: auto;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--reading-ink, #1f3570);
+}
+.cm-steps ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.cm-steps a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.9rem 0.3rem 0.35rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.cm-steps a[aria-current="step"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.cm-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.cm-steps a.is-seen .cm-step-n {
+  background: var(--sage-200, #d9ead5);
+}
+.cm-situation-text,
+.cm-task,
+.cm-shift-change,
+.cm-reflect-prompt {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  background: var(--ivory, #fffaf0);
+  border-inline-start: 4px solid var(--reading, #2e4a94);
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+.cm-dials {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.cm-dial {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.cm-dial dt {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.cm-dial dd {
+  margin: 0.2rem 0 0;
+}
+.cm-versions,
+.cm-shift-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0.6rem 0;
+  padding: 0;
+  list-style: none;
+}
+.cm-version {
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cm-version.is-fit {
+  border-color: var(--right, #1f6b3a);
+}
+.cm-version.is-other {
+  border-color: var(--writing, #9a4a26);
+}
+.cm-version-label {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.cm-message {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: var(--pearl, #f6f7fb);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.cm-version .feedback p {
+  margin: 0.3rem 0;
+}
+.cm-try {
+  font-weight: 700;
+}
+.cm-shift-items {
+  counter-reset: none;
+  padding-inline-start: 1.4rem;
+  list-style: decimal;
+}
+.cm-shift-part {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+}
+.cm-choice,
+.cm-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.cm-choice .chip[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.cm-ok,
+.cm-think {
+  margin: 0.4rem 0 0;
+}
+.cm-ok {
+  color: var(--right, #1f6b3a);
+}
+.cm-think {
+  color: var(--writing-ink, #6b2f12);
+}
+.cm-supports {
+  margin: 0.6rem 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cm-supports summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cm-supports h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 1rem;
+}
+.cm-bank .chip small {
+  color: var(--ink-2);
+}
+.cm-write textarea,
+.cm-reflect textarea {
+  width: 100%;
+  font: inherit;
+  line-height: 1.5;
+}
+.cm-shows {
+  padding-inline-start: 0.2rem;
+  list-style: none;
+  line-height: 1.6;
+}
+.cm-shows li + li {
+  margin-top: 0.3rem;
+}
+.cm-model {
+  margin-top: 0.8rem;
+}
+.cm-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+@media (max-width: 560px) {
+  .cm-situation-text,
+  .cm-task,
+  .cm-shift-change,
+  .cm-reflect-prompt {
+    font-size: 1.05rem;
+  }
+  .cm-nav .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

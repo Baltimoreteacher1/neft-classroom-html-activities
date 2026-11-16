@@ -1629,3 +1629,77 @@ html.is-framed .act-step {
     flex-basis: 100%;
   }
 }
+
+/* ── Mr. Neft, alive: a real speech tail, a hello wave, blinks, and lips that move while he reads aloud ── */
+.nb-main {
+  border-color: var(--teal, var(--brand));
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card), inset 0 3px 0 color-mix(in srgb, var(--teal, var(--brand)) 18%, transparent);
+}
+.nb-main::before {
+  content: "";
+  position: absolute;
+  top: 1.3rem;
+  inset-inline-start: -0.62rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 2px solid var(--teal, var(--brand));
+  border-inline-end: 0;
+  border-block-start: 0;
+  background: var(--surface);
+  transform: rotate(45deg);
+}
+.nb-name strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--brand-deep);
+}
+.nb-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+.nb-line .nb-say {
+  flex: 1 1 18rem;
+}
+.nb-face {
+  filter: drop-shadow(0 6px 10px rgb(6 22 38 / 18%));
+}
+.mn-art .mn-eyes {
+  transform-origin: 60px 53px;
+  animation: mn-blink 5.5s infinite;
+}
+.mn-art .mn-wave {
+  transform-origin: 96px 96px;
+}
+.nb .mn-art .mn-wave {
+  animation: mn-wave 1.4s 0.35s ease-in-out 1 both;
+}
+.nb:has(.pg-hear.is-speaking) .mn-art .mn-mouth,
+.nb:has(.pg.is-thinking) .mn-art .mn-mouth {
+  animation: mn-talk 0.32s ease-in-out infinite alternate;
+}
+.nb:has(.pg-hear.is-speaking) .nb-face {
+  animation: nb-bob 0.9s ease-in-out infinite alternate;
+}
+@keyframes mn-blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+@keyframes mn-wave {
+  0%, 100% { transform: rotate(0deg); }
+  20%, 60% { transform: rotate(-16deg); }
+  40%, 80% { transform: rotate(12deg); }
+}
+@keyframes nb-bob {
+  to { transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nb .mn-art .mn-wave,
+  .mn-art .mn-eyes,
+  .nb:has(.pg-hear.is-speaking) .mn-art .mn-mouth,
+  .nb:has(.pg-hear.is-speaking) .nb-face {
+    animation: none;
+  }
+}

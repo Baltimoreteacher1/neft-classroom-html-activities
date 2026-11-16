@@ -152,6 +152,64 @@ const ART_LIST = [
         `<path d="M150 170l26 -40l8 6l-26 40l-10 4z" fill="${AMBER}"/><path d="M176 130l8 6" stroke-width="2"/>`,
     ),
   },
+  // ── The Lost City (worlds/lost-city.js) ──
+  {
+    key: "adv-carved-gate",
+    en: "An ancient stone gate with carved panels and a water channel",
+    es: "Una antigua puerta de piedra con paneles tallados y un canal de agua",
+    svg: sq(
+      `<rect width="200" height="200" fill="${SKY}" ${NS}/>` +
+        `<path d="M-4 150q50 -14 104 -4q56 -12 104 2v56H-4z" fill="${SAGE}"/>` +
+        `<rect x="30" y="58" width="40" height="122" fill="${SAND}"/>${shade("M58 59h11v120h-11z")}` +
+        `<rect x="130" y="58" width="40" height="122" fill="${SAND}"/>${shade("M158 59h11v120h-11z")}` +
+        `<rect x="22" y="30" width="156" height="30" rx="3" fill="${SAND}"/>${shade("M23 52h154v7H23z", 0.1)}` +
+        `<circle cx="100" cy="45" r="9" fill="${AMBER}"/><path d="M97 30v6h6v-6" fill="${SKY}"/>` +
+        `<path d="M84 45h-8M116 45h8M88 35l-5 -4M112 35l5 -4" stroke="${COPPER}" stroke-width="2"/>` +
+        `<circle cx="50" cy="76" r="7" fill="${AQUA}"/><path d="M50 84q-6 6 0 12q6 6 0 12" stroke="${TEAL}" stroke-width="2.5"/>` +
+        `<path d="M36 128h10v-8h10v-8h10" stroke-width="2"/>` +
+        `<g fill="${COPPER}"><path d="M136 78h8l-1 9h-6z"/><path d="M146 78h8l-1 9h-6z"/><path d="M156 78h8l-1 9h-6z"/><path d="M141 92h8l-1 9h-6z"/><path d="M151 92h8l-1 9h-6z"/></g>` +
+        `<path d="M142 112h16v26h-16z" fill="${D}" opacity=".25" ${NS}/><path d="M142 138v-26h16v26"/>` +
+        `<path d="M140 156q6 -10 10 -4l6 -2" stroke-width="2"/><path d="M146 160l4 -8" stroke-width="2"/>` +
+        `<path d="M74 196v-14h52v14" fill="#8d8f9e"/><path d="M80 196v-8h40v8" fill="${AQUA}"/>` +
+        `<path d="M86 192q5 -3 10 0q5 3 10 0q5 -3 10 0" stroke="${IVORY}" stroke-width="2"/>` +
+        `<path d="M30 62q-10 20 -4 44M170 66q10 18 4 40" stroke="${LEAF}" stroke-width="4"/>` +
+        `<g fill="${LEAF}"><circle cx="27" cy="82" r="4"/><circle cx="25" cy="98" r="4"/><circle cx="175" cy="84" r="4"/></g>`,
+    ),
+  },
+  {
+    key: "adv-water-journal",
+    en: "An old water-keeper's notebook with a sketch of a stone channel",
+    es: "Un cuaderno antiguo de guardiana del agua con un dibujo de un canal de piedra",
+    svg: sq(
+      `<path d="M20 44q40 -10 80 4q40 -14 80 -4v124q-40 -10 -80 4q-40 -14 -80 -4z" fill="${IVORY}"/>` +
+        `<path d="M100 48v124" stroke-width="2"/>${shade("M100 48q40 -14 80 -4v12q-40 -10 -80 4z", 0.08)}` +
+        `<path d="M20 44q40 -10 80 4q40 -14 80 -4" fill="none"/>` +
+        `<path d="M32 64h54M32 76h46M32 88h52M32 100h40M32 112h50M32 124h36M32 136h48" stroke="${STEEL}" stroke-width="2"/>` +
+        `<path d="M114 140l14 -14h14l14 -14h14" stroke-width="2.5"/>` +
+        `<path d="M112 70q8 -10 18 0q8 10 18 0q8 -10 18 0" stroke="${AQUA}" stroke-width="3"/>` +
+        `<circle cx="124" cy="96" r="7" fill="${AQUA}"/><path d="M131 96q14 4 18 16q4 12 18 14" stroke="${TEAL}" stroke-width="2.5"/>` +
+        `<path d="M150 182l30 -40l8 6l-30 40l-10 4z" fill="${AMBER}"/><path d="M180 142l8 6" stroke-width="2"/>` +
+        `<path d="M58 20q4 16 0 30" stroke="${CORAL}" stroke-width="4"/>`,
+    ),
+  },
+  {
+    key: "adv-route-map",
+    en: "A hand-drawn map of three routes up a ridge: river steps, a cliff path and a channel path",
+    es: "Un mapa dibujado a mano de tres rutas por una colina: escalones del río, un sendero del acantilado y un sendero del canal",
+    svg: sq(
+      `<path d="M16 30l56 -10l56 10l56 -10v150l-56 10l-56 -10l-56 10z" fill="${SAND}"/>` +
+        `<path d="M72 20v150M128 30v150" stroke-width="1.5" opacity=".35"/>` +
+        `<path d="M30 176q14 -40 4 -80q-8 -40 10 -70" stroke="${AQUA}" stroke-width="7"/>` +
+        `<path d="M44 150h8M44 140h8M46 130h8M46 120h8" stroke="${D}" stroke-width="2"/>` +
+        `<path d="M96 168l-6 -20l8 -14l-8 -18l8 -16l-6 -18l8 -20" stroke="${COPPER}" stroke-width="3"/>` +
+        `<path d="M84 98l14 14M98 98l-14 14" stroke="${CORAL}" stroke-width="4"/>` +
+        `<path d="M118 172q30 -10 40 -36q8 -22 -10 -40q-16 -18 4 -40" stroke="${LEAF}" stroke-width="3.5" stroke-dasharray="7 6"/>` +
+        `<g fill="${SAGE}"><path d="M136 44h36v8h-36z"/><path d="M140 54h32v8h-32z"/></g>` +
+        `<circle cx="154" cy="34" r="7" fill="${AQUA}"/>` +
+        `<path d="M100 178l-10 -12h20z" fill="${AMBER}"/>` +
+        star(176, 160, 9, AMBER),
+    ),
+  },
 ];
 
 export const ADV_ART = Object.freeze(

@@ -14,6 +14,7 @@ export const WORLD_IDS = [
   "newsroom-studio",
   "community-design-lab",
   "storyverse",
+  "lost-city",
 ];
 export const KINDS = [
   "story",

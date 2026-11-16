@@ -10,6 +10,7 @@ import { loadDomain, loadIndex } from "../content.js";
 import { BASE, announce, copyText, html, icon, toHtml } from "../util.js";
 import { teacherPick } from "./band.js";
 import { bindGuide, guideBubbleHTML } from "./guide.js";
+import { NUDGE, NUDGE_AFTER_MS, neftReact } from "./tour/neft-coach.js";
 import { kitDocx } from "./tour/export-docx.js";
 import { kitPdf } from "./tour/export-pdf.js";
 import { buildLesson, lessonText } from "./tour/lesson.js";
@@ -92,6 +93,7 @@ function go(step) {
   S.step = step;
   S.furthest = Math.max(S.furthest, STEP_IDS.indexOf(step));
   ui.previewKey = "";
+  ui.neftSay = "";
   save();
 }
 
@@ -167,7 +169,7 @@ function gateParts() {
 function withNeft(p, key) {
   const n = NEFT[key] || NEFT.welcome;
   const bubble = guideBubbleHTML({
-    say: n.say,
+    say: ui.neftSay || n.say,
     role: "Your tour guide",
     chips: n.chips,
     context: { page: "tour", step: key, pick: S.band === "3-5" ? "4-5" : "6-8", domain: S.tab },
@@ -192,11 +194,13 @@ function progressHTML() {
       const done = i < S.furthest || (i === S.furthest && i < stepIndex());
       const now = i === stepIndex();
       const label = s.id === "studio" ? "Build" : s.id === "kit" ? "Kit" : s.name;
+      // Steps 1-5 learn the site; Build and Kit make your lesson. They read as a second group, not steps 6 and 7.
+      const make = s.n > TOUR_STEPS;
       const dot = html`<span class="t2-dot" aria-hidden="true"
-          >${done && !now ? icon("check") : i + 1}</span
+          >${done && !now ? icon("check") : make ? icon(s.id === "kit" ? "save" : "writing") : i + 1}</span
         ><span class="t2-dot-name">${label}</span>`;
       return html`<li
-        class="${now ? "is-now" : done ? "is-done" : ""}"
+        class="${now ? "is-now" : done ? "is-done" : ""}${make ? " is-make" : ""}${make && s.id === "studio" ? " is-make-start" : ""}"
         ${now ? html`aria-current="step"` : ""}
       >
         ${i <= S.furthest && !now && !ui.gate ? html`<button type="button" data-t2="goto" data-t2-value="${s.id}">${dot}<span class="visually-hidden"> (go back to this step)</span></button>` : html`<span>${dot}</span>`}
@@ -279,7 +283,41 @@ function draw({ all = true, focus = false } = {}) {
   afterDraw();
 }
 
+/** Mr. Neft's line changes in place (no redraw), with a small pop so the eye goes to him. */
+function neftSays(text, { point = false } = {}) {
+  const say = q("[data-t2-guide] .nb-say");
+  const bubble = q("[data-t2-guide] .nb");
+  if (!say || !text) return;
+  say.textContent = text;
+  bubble?.classList.remove("is-reacting");
+  void bubble?.offsetWidth;
+  bubble?.classList.add("is-reacting");
+  const nextBtn = q('[data-t2="next"]');
+  if (point && nextBtn && nextBtn.getAttribute("aria-disabled") !== "true") nextBtn.classList.add("is-nudged");
+}
+
+let nudgeTimer = 0;
+let nudgeBound = false;
+/** After a quiet stretch on a screen, Mr. Neft suggests the next useful action and points at Continue. */
+function armNudge() {
+  clearTimeout(nudgeTimer);
+  q('[data-t2="next"]')?.classList.remove("is-nudged");
+  const step = ui.gate ? "gate" : S.step;
+  nudgeTimer = setTimeout(() => {
+    if (!q("[data-t2-root]")?.isConnected) return;
+    neftSays(NUDGE[step], { point: true });
+  }, NUDGE_AFTER_MS);
+}
+
 function afterDraw() {
+  armNudge();
+  if (!nudgeBound) {
+    nudgeBound = true;
+    for (const type of ["pointerdown", "keydown"])
+      document.addEventListener(type, (e) => {
+        if (e.target.closest?.("[data-t2-root]")) armNudge();
+      });
+  }
   const mic = q("[data-t2-mic]");
   if (!mic) return;
   const say = (t) => (mic.textContent = t);
@@ -522,7 +560,12 @@ export function onClick(e) {
   const el = e.target.closest?.("[data-t2]");
   if (!el || !el.closest("[data-t2-root], #t2Dialog")) return false;
   e.preventDefault();
-  handle(el).catch(() => announce("Something went wrong. Your tour is saved; try again."));
+  handle(el)
+    .then(() => {
+      if (ui.neftFresh) neftSays(ui.neftFresh);
+      ui.neftFresh = "";
+    })
+    .catch(() => announce("Something went wrong. Your tour is saved; try again."));
   return true;
 }
 
@@ -534,6 +577,8 @@ async function handle(el) {
   const act = el.dataset.t2;
   const v = el.dataset.t2Value;
   const L = () => currentLesson(D, S);
+  const reaction = neftReact(act, v, el.dataset.t2Field);
+  if (reaction) ui.neftSay = ui.neftFresh = reaction;
   switch (act) {
     case "set":
       await setField(el.dataset.t2Field, v);

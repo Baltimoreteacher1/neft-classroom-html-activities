@@ -1140,15 +1140,74 @@ html.t2-focus .lab-main {
   line-height: 1.4;
 }
 .t2-guide .nb-face {
-  width: 3.5rem;
+  width: 4.75rem;
+  height: 4.75rem;
 }
 .t2-guide .nb {
-  grid-template-columns: 3rem minmax(0, 1fr);
-  gap: 0.6rem;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  gap: 0.75rem;
 }
 .t2-guide .nb-main {
   padding: 0.6rem 0.8rem;
 }
 .t2-guide .nb-ask summary {
   font-size: 0.95rem;
+}
+
+/* Mr. Neft coaching: a small pop when he reacts, and a glow on the button he is pointing at. */
+.t2-guide .nb.is-reacting .nb-main {
+  animation: nb-pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.t2-guide .nb.is-reacting .mn-art .mn-mouth {
+  animation: mn-talk 0.32s ease-in-out 4 alternate;
+}
+[data-t2="next"].is-nudged {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, #e2a72e) 55%, transparent);
+  animation: t2-nudge 1.6s ease-in-out infinite;
+}
+@keyframes nb-pop {
+  40% { transform: scale(1.02); }
+}
+@keyframes t2-nudge {
+  50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent, #e2a72e) 25%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .t2-guide .nb.is-reacting .nb-main,
+  .t2-guide .nb.is-reacting .mn-art .mn-mouth,
+  [data-t2="next"].is-nudged {
+    animation: none;
+  }
+}
+
+/* The tour's two groups: steps 1-5 learn the site, Build and Kit make your lesson. */
+.t2-progress li.is-make-start {
+  margin-inline-start: 0.6rem;
+  position: relative;
+}
+.t2-progress li.is-make-start::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -0.45rem;
+  top: -4px;
+  bottom: 0.3rem;
+  width: 2px;
+  background: rgb(255 255 255 / 30%);
+}
+.t2-progress li.is-make .t2-dot .ico {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.t2-where {
+  margin: 0 0 0.6rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--teal-soft, var(--brand-soft));
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.t2-guide .nb-line .pg-hear {
+  min-height: 2.5rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.875rem;
 }

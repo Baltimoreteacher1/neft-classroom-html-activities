@@ -399,6 +399,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "communication",
+    section: "practice",
+    skill: "Speaking",
+    kind: "studio",
+    for: ST,
+    top: true,
+    href: "communication",
+    icon: "conversation",
+    title: P("Culture & Communication Explorer", "Explorador de cultura y comunicación"),
+    text: P(
+      "Compare messages for different audiences, purposes and media, connect them to the languages you know, and write your own.",
+      "Compara mensajes para distintas audiencias, propósitos y medios, conéctalos con los idiomas que conoces y escribe el tuyo.",
+    ),
+  },
+  {
     id: "adventure-worlds",
     section: "play",
     skill: "Mixed",
@@ -1073,7 +1088,10 @@ export const DESTINATIONS = Object.freeze([
     href: "pairs",
     icon: "classroom",
     title: P("Listening partners", "Parejas para escuchar"),
-    text: P("Share a short recording with my class partner.", "Comparte una grabación corta con tu pareja de la clase."),
+    text: P(
+      "Share a short recording with my class partner.",
+      "Comparte una grabación corta con tu pareja de la clase.",
+    ),
   },
   {
     id: "scenes",
@@ -1084,7 +1102,10 @@ export const DESTINATIONS = Object.freeze([
     href: "scenes",
     icon: "conversation",
     title: P("Class scenes", "Escenas de la clase"),
-    text: P("Play and write real-life scenes with my class.", "Juega y escribe escenas de la vida real con tu clase."),
+    text: P(
+      "Play and write real-life scenes with my class.",
+      "Juega y escribe escenas de la vida real con tu clase.",
+    ),
   },
   {
     id: "move",
@@ -1173,6 +1194,21 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "Pick an activity and settings, then share one link or QR code.",
       "Elijan una actividad y ajustes, y compartan un enlace o código QR.",
+    ),
+  },
+  {
+    id: "lesson-builder",
+    section: "teach",
+    skill: "Mixed",
+    kind: "tool",
+    for: T_,
+    href: "lesson-builder",
+    icon: "teacher",
+    match: [["lesson-builder"]],
+    title: P("Lesson Builder", "Creador de lecciones"),
+    text: P(
+      "Build a whole editable lesson from real activities in one click.",
+      "Creen una lección completa y editable con actividades reales en un clic.",
     ),
   },
   {

@@ -1,0 +1,230 @@
+/* ACCESS Practice Lab — Lesson Builder: a whole lesson sequence from real activities, editable, printable, shareable.
+   Reuses the Launch Studio hero (.ls, .ls-hero) and the shared panel/field/button components from ds.css. */
+
+.lb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-3) var(--s-4);
+}
+.lb-fieldset {
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  border: 0;
+}
+.lb-fieldset legend {
+  margin-bottom: var(--s-2);
+  font-weight: 700;
+}
+.lb-row,
+.lb-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.lb-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+.lb-check,
+.lb-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: #fff;
+  cursor: pointer;
+}
+.lb-check:has(input:checked),
+.lb-choice:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.lb-check:focus-within,
+.lb-choice:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.lb-choice input,
+.lb-check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  accent-color: var(--brand);
+}
+.lb-choice span {
+  display: grid;
+  gap: 0.2rem;
+}
+.lb-choice small {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.lb-durations .lb-choice {
+  align-items: center;
+}
+.lb-saved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px dashed var(--line);
+}
+.lb-privacy {
+  flex: 1 1 18rem;
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-lg);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+}
+.lb-meta {
+  margin: 0 0 var(--s-3);
+}
+.lb-objectives {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-3);
+}
+.lb textarea {
+  width: 100%;
+  min-height: 3.2rem;
+  font: inherit;
+  resize: vertical;
+}
+.lb-phases {
+  display: grid;
+  gap: var(--s-3);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lb-phase {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--brand);
+  border-radius: var(--r-lg);
+  background: #fff;
+}
+.lb-phase-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.lb-phase h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.15rem;
+}
+.lb-num {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--brand-deep);
+  color: #fff;
+  font-size: 0.95rem;
+}
+.lb-min {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.lb-tools {
+  display: flex;
+  gap: 0.35rem;
+}
+.lb-activity {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+}
+.lb-activity-name {
+  margin: 0;
+}
+.lb-activity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-2);
+}
+.lb-swap {
+  flex: 1 1 18rem;
+  margin: 0;
+}
+.lb-swap select {
+  width: 100%;
+}
+.lb-supports p,
+.lb-supports ul {
+  margin: 0.2rem 0;
+}
+.lb-removed {
+  margin-top: var(--s-4);
+}
+.lb-save-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-3);
+}
+.lb-save-row .field {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+.lb-share input[type="url"] {
+  width: 100%;
+}
+#lessonPrint {
+  display: none;
+}
+
+@media print {
+  body[data-printing="lesson"] > :not(#lessonPrint) {
+    display: none !important;
+  }
+  body[data-printing="lesson"] #lessonPrint {
+    display: block;
+    padding: 0.3in;
+    color: #000;
+    font-size: 11pt;
+  }
+  #lessonPrint h1 {
+    margin: 0 0 0.1in;
+    font-size: 18pt;
+  }
+  #lessonPrint h2 {
+    margin: 0.12in 0 0.04in;
+    font-size: 13pt;
+  }
+  #lessonPrint li {
+    break-inside: avoid;
+  }
+  #lessonPrint p {
+    margin: 0.03in 0;
+  }
+  #lessonPrint .lb-print-note {
+    margin-top: 0.2in;
+    font-size: 9.5pt;
+  }
+}

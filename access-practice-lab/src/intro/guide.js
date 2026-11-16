@@ -114,11 +114,11 @@ export function guideHTML({ say, chips = [], context = {}, lang = "en", talking 
  */
 export function guideBubbleHTML({ say, chips = [], context = {}, lang = "en", role }) {
   const label = lang === "es" ? "Pregúntenle a Mr. Neft" : "Ask Mr. Neft a question";
-  return html`<section class="nb" aria-label="Mr. Neft">
+  return html`<section class="nb" aria-label="Mr. Neft" data-pg data-pg-lang="${lang}">
     <div class="nb-face" aria-hidden="true">${raw(guideArtSVG())}</div>
     <div class="nb-main">
       <p class="nb-name"><strong>${GUIDE.name}</strong><span>${role || pair(COPY.role, lang)}</span></p>
-      <p class="nb-say">${say}</p>
+      <div class="nb-line" data-pg-say aria-live="polite"><p class="nb-say">${say}</p>${raw(hearButton(lang))}</div>
       <details class="nb-ask">
         <summary>${icon("sparkle")}<span>${label}</span></summary>
         ${guideHTML({ say: lang === "es" ? "¿Qué quieren saber?" : "What would you like to know?", chips, context, lang })}

@@ -1,14 +1,21 @@
 #!/usr/bin/env node
-// Standalone content check for four Adventure Worlds (City of Conversations, Newsroom Studio, Community Design Lab,
-// Storyverse). Validates each world against the shared Adventure schema (ADVENTURE-SCHEMA.md) and proves that every
+// Standalone content check for five Adventure Worlds (City of Conversations, Newsroom Studio, Community Design Lab,
+// Storyverse, The Lost City). Validates each world against the shared Adventure schema (ADVENTURE-SCHEMA.md) and proves that every
 // `respond` scene's model answer passes its own check rules while an empty answer, a copied prompt, and the frames
 // pasted together do not. The engine ships its own validator (src/adventures/validate.js); this script exists so
 // the content can be verified before the engine lands. Usage: node tools/adventure-content.check.mjs
+import { ADV_ART } from "../access-practice-lab/src/adventures/art.js";
 import { ART } from "../access-practice-lab/src/book/art.js";
 import { connectorsIn } from "../access-practice-lab/src/lang/labs-check.js";
 import { CONNECTORS } from "../access-practice-lab/src/lang/lexicon.js";
 
-const ALL = ["city-of-conversations", "newsroom-studio", "community-design-lab", "storyverse"];
+const ALL = [
+  "city-of-conversations",
+  "newsroom-studio",
+  "community-design-lab",
+  "storyverse",
+  "lost-city",
+];
 const FILES = process.argv.length > 2 ? process.argv.slice(2) : ALL;
 const WORLD_IDS = [
   "mystery-museum",
@@ -17,6 +24,7 @@ const WORLD_IDS = [
   "newsroom-studio",
   "community-design-lab",
   "storyverse",
+  "lost-city",
 ];
 const BGS = [
   "bg-city",
@@ -49,7 +57,8 @@ const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
 const KINDS = ["story", "read", "listen", "clues", "choice", "order", "respond", "checkpoint"];
 const BANDS = ["3-5", "6-8"];
 const PASSAGE = { "3-5": [60, 180], "6-8": [120, 260] };
-const ART_KEYS = new Set(ART.map((a) => a.key));
+// The view resolves art from both libraries (src/views/adventures-scenes.js), so either is a valid key.
+const ART_KEYS = new Set([...ART, ...ADV_ART].map((a) => a.key));
 const BANNED = /\b(timers?|scores?|points|wida levels?|puntos|puntaje)\b/i;
 
 const norm = (s) =>

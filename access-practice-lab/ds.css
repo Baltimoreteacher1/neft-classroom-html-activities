@@ -84,13 +84,13 @@
   /* ── material families: The Living Language Studio ──────────────────────
      Art-direction anchors. Screens use the semantic tokens below; reach for a
      material token only to paint an environment (hero, studio portal, art). */
-  --mi-950: #080e25; /* Midnight Indigo */
-  --mi-900: #121c3f;
-  --mi-800: #1a2f78;
-  --mi-600: #2d4691;
-  --mi-500: #4261b3;
-  --mi-300: #9aa6d2;
-  --ivory: #fffdf8; /* Ivory & Pearl */
+  --mi-950: #061626; /* Deep Harbor navy (was Midnight Indigo) */
+  --mi-900: #0b2339;
+  --mi-800: #123a5c;
+  --mi-600: #1d5a78;
+  --mi-500: #2b7a88;
+  --mi-300: #9cc8c6;
+  --ivory: #fffcf5; /* Ivory & Pearl */
   --pearl: #efe9e4;
   --pearl-blue: #d5dceb;
   --ocean-900: #075568; /* Ocean Glass — Listening */
@@ -107,25 +107,27 @@
   --sage-200: #d0e3cd;
 
   /* ink and surfaces */
-  --ink: #111a3b;
-  --ink-2: #3a4566;
-  --ink-3: #59637f;
-  --bg: #f2f5fb;
-  --surface: #fffdf8;
-  --surface-2: #f3f0ea;
-  --surface-3: #e7e3dc;
-  --line: #dde1ec;
-  --line-strong: #aab1c6;
-  --line-control: #7f89a3; /* 3:1 on paper: borders of inputs, buttons, choices */
+  --ink: #0d1c2e;
+  --ink-2: #33475c;
+  --ink-3: #53636f;
+  --bg: #f8f3ea;
+  --surface: #fffcf5;
+  --surface-2: #f2ebde;
+  --surface-3: #e6dccb;
+  --line: #e2d9c8;
+  --line-strong: #b3a690;
+  --line-control: #7d7262; /* 3:1 on paper: borders of inputs, buttons, choices */
 
   /* action */
-  --brand: #1a2f78;
-  --brand-ink: #1a2f78;
-  --brand-deep: #080e25;
-  --brand-soft: #e6ecfb;
+  --brand: #123a5c;
+  --brand-ink: #123a5c;
+  --brand-deep: #061626;
+  --brand-soft: #e0eef0;
   --on-brand: #ffffff;
-  --accent: #d28b58;
-  --coral: #dba3b9;
+  --accent: #e2a72e; /* harbor gold: highlights, featured doors, celebration */
+  --coral: #e07a5f; /* terracotta: the maker accent */
+  --teal: #0f766e; /* interactive accent: current page, selection, progress */
+  --teal-soft: #d7efe9;
 
   /* language domains: fill (white text on it), ink (text on white), soft (tint) */
   --listening: #075568;
@@ -151,7 +153,7 @@
   --wrong-soft: #fde8e4;
   --hint: #7a4108;
   --hint-soft: #fcefd3;
-  --focus: #1a2f78;
+  --focus: #0f766e;
 
   /* shape and depth */
   --r-xs: 6px;
@@ -161,12 +163,12 @@
   --r-xl: 30px;
   --target: 3rem;
   --shadow:
-    0 1px 1px rgb(16 30 90 / 6%), 0 3px 8px rgb(16 30 90 / 6%), 0 14px 28px -14px rgb(16 30 90 / 20%);
-  --shadow-card: 0 1px 2px rgb(16 30 90 / 7%), 0 8px 22px -10px rgb(16 30 90 / 16%);
+    0 1px 1px rgb(12 34 52 / 6%), 0 3px 8px rgb(12 34 52 / 6%), 0 14px 28px -14px rgb(12 34 52 / 20%);
+  --shadow-card: 0 1px 2px rgb(12 34 52 / 7%), 0 8px 22px -10px rgb(12 34 52 / 16%);
   --shadow-lift:
-    0 1px 2px rgb(16 30 90 / 8%), 0 10px 20px -6px rgb(16 30 90 / 18%),
-    0 30px 50px -24px rgb(26 47 120 / 32%);
-  --shadow-float: 0 24px 60px -18px rgb(8 14 37 / 38%), 0 6px 16px rgb(8 14 37 / 10%);
+    0 1px 2px rgb(12 34 52 / 8%), 0 10px 20px -6px rgb(12 34 52 / 18%),
+    0 30px 50px -24px rgb(18 58 92 / 32%);
+  --shadow-float: 0 24px 60px -18px rgb(6 22 38 / 38%), 0 6px 16px rgb(6 22 38 / 10%);
   /* light: a soft top edge catches light on raised material; never a glow for its own sake */
   --edge-light: inset 0 1px 0 rgb(255 255 255 / 70%);
   --edge-light-dark: inset 0 1px 0 rgb(255 255 255 / 12%);
@@ -244,7 +246,8 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(1300px 560px at 50% -140px, rgb(205 220 252 / 75%), transparent 72%) no-repeat,
+    radial-gradient(1300px 560px at 50% -140px, rgb(198 232 226 / 60%), transparent 72%) no-repeat,
+    radial-gradient(900px 420px at 92% -60px, rgb(250 220 170 / 45%), transparent 70%) no-repeat,
     var(--grain),
     var(--bg);
   color: var(--ink);
@@ -356,7 +359,7 @@ a:hover {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: var(--ink);
   border-bottom: 1px solid var(--line);
-  box-shadow: var(--edge-light), 0 6px 22px -10px rgb(16 30 90 / 16%);
+  box-shadow: var(--edge-light), 0 6px 22px -10px rgb(12 34 52 / 16%);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .lab-brand {
@@ -378,7 +381,7 @@ a:hover {
   flex: none;
   background: none;
   box-shadow: none;
-  filter: drop-shadow(0 2px 6px rgb(29 43 88 / 15%));
+  filter: drop-shadow(0 2px 6px rgb(12 34 52 / 15%));
 }
 .lab-logo svg {
   display: block;
@@ -395,7 +398,7 @@ a:hover {
   font-weight: 650;
   font-size: 1.2rem;
   letter-spacing: -0.02em;
-  color: var(--brand, #1a2f78);
+  color: var(--brand, #123a5c);
 }
 .lab-wordmark small {
   font-size: 0.8125rem;
@@ -446,7 +449,7 @@ a:hover {
 .top-link[aria-current="page"] {
   background: var(--brand-soft);
   color: var(--brand-deep);
-  box-shadow: 0 1px 3px rgb(29 43 88 / 8%);
+  box-shadow: 0 1px 3px rgb(12 34 52 / 8%);
 }
 .top-link[aria-current="page"] .ico {
   color: var(--brand);
@@ -698,7 +701,7 @@ a:hover {
   font: 700 1rem/1.2 var(--font);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: var(--edge-light), 0 1px 2px rgb(16 30 90 / 8%);
+  box-shadow: var(--edge-light), 0 1px 2px rgb(12 34 52 / 8%);
   transition:
     background-color var(--dur-2) var(--ease-out),
     border-color var(--dur-2) var(--ease-out),
@@ -710,7 +713,7 @@ a:hover {
   background: var(--surface-2);
   color: var(--ink);
   transform: translateY(-1px);
-  box-shadow: var(--edge-light), 0 6px 14px -4px rgb(16 30 90 / 18%);
+  box-shadow: var(--edge-light), 0 6px 14px -4px rgb(12 34 52 / 18%);
 }
 .btn:active,
 .ghost:active {
@@ -722,8 +725,8 @@ a:hover {
   color: #ffffff;
   box-shadow:
     var(--edge-light-dark),
-    0 1px 3px rgb(8 14 37 / 20%),
-    0 10px 22px -8px rgb(26 47 120 / 55%);
+    0 1px 3px rgb(6 22 38 / 20%),
+    0 10px 22px -8px rgb(18 58 92 / 55%);
 }
 .btn-primary:hover {
   background: linear-gradient(180deg, var(--mi-500) 0%, var(--mi-800) 100%);
@@ -731,8 +734,8 @@ a:hover {
   color: #ffffff;
   transform: translateY(-1.5px);
   box-shadow:
-    0 2px 5px rgb(8 14 37 / 25%),
-    0 12px 28px -6px rgb(29 43 88 / 50%);
+    0 2px 5px rgb(6 22 38 / 25%),
+    0 12px 28px -6px rgb(12 34 52 / 50%);
 }
 .btn-secondary {
   background: var(--brand-soft);
@@ -1049,7 +1052,7 @@ details > summary + * {
 .band-btn[aria-pressed="true"] {
   background: var(--brand);
   color: #fff;
-  box-shadow: var(--edge-light-dark), 0 2px 6px -1px rgb(26 47 120 / 45%);
+  box-shadow: var(--edge-light-dark), 0 2px 6px -1px rgb(18 58 92 / 45%);
 }
 .grade-focus {
   display: grid;
@@ -1079,7 +1082,7 @@ details > summary + * {
   height: 0.65rem;
   border-radius: 999px;
   background: var(--surface-3);
-  box-shadow: inset 0 1px 2px rgb(16 30 90 / 14%);
+  box-shadow: inset 0 1px 2px rgb(12 34 52 / 14%);
   overflow: hidden;
 }
 .bar > i {
@@ -1359,7 +1362,7 @@ body[data-lab-band="3-5"] .ghost {
   font-size: 1.0625rem;
 }
 body[data-lab-band="6-8"] {
-  --bg: #f1f4fb;
+  --bg: #f5f0e6;
   --radius: 14px;
   --r-lg: 18px;
   --r-xl: 24px;
@@ -1385,8 +1388,8 @@ body[data-lab-band="6-8"] h1 {
 body[data-lab-view="test"],
 body[data-lab-view="assess"] {
   background: #f6f6f3;
-  --shadow: 0 1px 2px rgb(8 14 37 / 8%);
-  --shadow-lift: 0 1px 3px rgb(8 14 37 / 10%);
+  --shadow: 0 1px 2px rgb(6 22 38 / 8%);
+  --shadow-lift: 0 1px 3px rgb(6 22 38 / 10%);
 }
 body[data-lab-view="test"] .lab-top,
 body[data-lab-view="assess"] .lab-top {
