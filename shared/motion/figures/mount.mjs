@@ -255,6 +255,8 @@ export function mountFigure(host, fig, key, opts) {
     },
     watch,
     stop,
+    /** the numbers the figure shows now */
+    values: () => [...values],
     destroy() {
       stop();
       think?.destroy();
