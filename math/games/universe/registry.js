@@ -121,6 +121,20 @@ export const GAMES = [
     standards: ["6.DS.1", "6.DS.3", "6.DS.4", "6.DS.5", "6.DS.6d"],
     features: ["time-machine"],
   },
+  {
+    id: "netfold-engineer",
+    href: "/math/games/universe/games/netfold-engineer/",
+    title: { en: "NetFold Engineer", es: "Ingeniería de Plantillas" },
+    genre: { en: "3D construction", es: "Construcción en 3D" },
+    tagline: {
+      en: "The Kinetic Workshop builds in 3D. Fold nets on their real hinges, wrap with exactly the surface area, and pack crates cube by cube.",
+      es: "El Taller Cinético construye en 3D. Dobla plantillas por sus bisagras reales, envuelve con el área total justa y empaca cubo por cubo.",
+    },
+    unit: 5,
+    lessons: ["5-5", "5-6", "5-7", "5-8", "5-10"],
+    standards: ["6.GR.2", "6.GR.4"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */
