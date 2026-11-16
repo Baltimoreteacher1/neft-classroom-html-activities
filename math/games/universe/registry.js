@@ -107,6 +107,20 @@ export const GAMES = [
     standards: ["6.NOS.1"],
     features: ["time-machine"],
   },
+  {
+    id: "data-chase",
+    href: "/math/games/universe/games/data-chase/",
+    title: { en: "The Data Chase", es: "La Caza de Datos" },
+    genre: { en: "Investigative adventure", es: "Aventura de investigación" },
+    tagline: {
+      en: "Report for the Meridian Ledger: chase down the data, then publish only what the numbers really say.",
+      es: "Reporta para el Meridian Ledger: persigue los datos y publica solo lo que los números de verdad dicen.",
+    },
+    unit: 2,
+    lessons: ["2-1", "2-2", "2-3", "2-4", "2-5", "2-8", "2-10"],
+    standards: ["6.DS.1", "6.DS.3", "6.DS.4", "6.DS.5", "6.DS.6d"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

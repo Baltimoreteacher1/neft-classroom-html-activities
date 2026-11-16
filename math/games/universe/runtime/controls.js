@@ -2,11 +2,14 @@
 
 import { el } from "./chrome.js";
 
-/** A − value + stepper with a live output. `g` supplies t() and the tick sound. */
-export function stepper(g, label, get, set, min, max) {
+/**
+ * A − value + stepper with a live output. `g` supplies t() and the tick sound.
+ * `inc` is the step size (halves for quartiles); values are kept exact to 1/1000.
+ */
+export function stepper(g, label, get, set, min, max, inc = 1) {
   const out = el("output", null, String(get()));
   const step = (d) => () => {
-    const v = Math.max(min, Math.min(max, get() + d));
+    const v = Math.max(min, Math.min(max, Math.round((get() + d * inc) * 1000) / 1000));
     if (v === get()) return;
     set(v);
     out.textContent = String(v);
