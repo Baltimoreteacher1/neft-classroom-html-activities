@@ -14,6 +14,7 @@
 // compare them on a distance-time graph.
 
 import { el } from "../../runtime/chrome.js";
+import { chips, stepper } from "../../runtime/controls.js";
 import { Multiverse, PRIME } from "../../runtime/multiverse.js";
 import { define, UniverseGame } from "../../runtime/shell.js";
 import { createWorld, LANE_Y, LEVELS, MI } from "./levels.js";
@@ -277,67 +278,6 @@ class RatioRush extends UniverseGame {
   }
 
   // ---------- consoles ----------
-  stepper(label, get, set, min, max) {
-    const out = el("output", null, String(get()));
-    const step = (d) => () => {
-      const v = Math.max(min, Math.min(max, get() + d));
-      if (v === get()) return;
-      set(v);
-      out.textContent = String(v);
-      this.audio.sfx("tick");
-    };
-    return el(
-      "div.stepper",
-      null,
-      el("span", null, label),
-      el(
-        "button",
-        {
-          type: "button",
-          "aria-label": this.t("less"),
-          on: { click: step(-1) },
-        },
-        "−",
-      ),
-      out,
-      el(
-        "button",
-        {
-          type: "button",
-          "aria-label": this.t("more"),
-          on: { click: step(1) },
-        },
-        "+",
-      ),
-    );
-  }
-
-  chips(options, isOn, pick) {
-    const row = el("div.chips");
-    const paint = () => {
-      row.textContent = "";
-      for (const o of options)
-        row.append(
-          el(
-            "button",
-            {
-              type: "button",
-              "aria-pressed": String(isOn(o)),
-              on: {
-                click: () => {
-                  pick(o);
-                  paint();
-                },
-              },
-            },
-            o.label,
-          ),
-        );
-    };
-    paint();
-    return row;
-  }
-
   gearConsole(s) {
     let d = s.gear.d;
     let t = s.gear.t;
@@ -394,7 +334,7 @@ class RatioRush extends UniverseGame {
         ),
         math,
         el("p.muted", null, this.t("gearD")),
-        this.chips(
+        chips(
           s.dOptions.map((v) => ({ label: String(v), value: v })),
           (o) => o.value === d,
           (o) => {
@@ -402,7 +342,7 @@ class RatioRush extends UniverseGame {
             refresh();
           },
         ),
-        this.stepper(
+        stepper(this, 
           this.t("gearT"),
           () => t,
           (v) => {
@@ -512,7 +452,7 @@ class RatioRush extends UniverseGame {
         el("p", null, line(s.upper, this.t("upper"))),
         el("p", null, line(s.lower, this.t("lower"))),
         el("h3", null, this.t("juncPredict")),
-        this.chips(
+        chips(
           [
             { label: this.t("upper"), value: 1 },
             { label: this.t("lower"), value: 2 },
@@ -524,7 +464,7 @@ class RatioRush extends UniverseGame {
           },
         ),
         el("h3", null, this.t("juncTitle")),
-        this.chips(
+        chips(
           [
             { label: this.t("pickUpper"), value: 1 },
             { label: this.t("pickLower"), value: 2 },
@@ -587,7 +527,7 @@ class RatioRush extends UniverseGame {
           this.t("depotNote", { d: s.rate.d, t: s.rate.t, span: s.span }),
         ),
         math,
-        this.stepper(
+        stepper(this, 
           this.t("depotCells"),
           () => cells,
           (v) => {
@@ -674,8 +614,8 @@ class RatioRush extends UniverseGame {
       body.append(
         el("h3", null, this.t("shiftGear")),
         math,
-        this.chips(s.dOptions.map((v) => ({ label: String(v), value: v })), (o) => o.value === d, pickD),
-        this.stepper(this.t("gearT"), () => t, setT, 1, s.tMax),
+        chips(s.dOptions.map((v) => ({ label: String(v), value: v })), (o) => o.value === d, pickD),
+        stepper(this, this.t("gearT"), () => t, setT, 1, s.tMax),
         el("p.muted", null, this.t("shiftHint")),
         openBtn(() => go("gear", { ...s.gear }, { d, t }, { en: `Shift: gear ${d}:${t}`, es: `Cambio: engranaje ${d}:${t}` })),
       );
@@ -704,7 +644,7 @@ class RatioRush extends UniverseGame {
       body.append(
         el("h3", null, this.t("shiftCells")),
         math,
-        this.stepper(this.t("depotCells"), () => cells, setCells, 1, 20),
+        stepper(this, this.t("depotCells"), () => cells, setCells, 1, 20),
         el("p.muted", null, this.t("shiftHint")),
         openBtn(() => go("cells", s.cells, cells, { en: `Shift: ${cells} cells`, es: `Cambio: ${cells} celdas` })),
       );

@@ -12,7 +12,12 @@ import {
   table,
   timeFor,
 } from "../../math/games/universe/games/ratio-rush/math.js";
-import { arrivalTicks, rules, standingAt, stopAt } from "../../math/games/universe/games/ratio-rush/rules.js";
+import {
+  arrivalTicks,
+  rules,
+  standingAt,
+  stopAt,
+} from "../../math/games/universe/games/ratio-rush/rules.js";
 import { Multiverse, PRIME, SHIFTED } from "../../math/games/universe/runtime/multiverse.js";
 import { IN } from "../../math/games/universe/runtime/sim.js";
 import { Timeline } from "../../math/games/universe/runtime/timeline.js";
@@ -48,15 +53,23 @@ for (const s of LEVELS[0].stops) {
   for (const d of s.dOptions)
     for (let t = 1; t <= s.tMax; t++) if (equivalent({ d, t }, s.partner)) good.push(`${d}:${t}`);
   assert.ok(good.length > 0, `${s.id} has an equivalent gear`);
-  assert.ok(!s.dOptions.includes(s.partner.d) || s.partner.t > s.tMax || s.id !== "c1", "c1 cannot copy the partner");
+  assert.ok(
+    !s.dOptions.includes(s.partner.d) || s.partner.t > s.tMax || s.id !== "c1",
+    "c1 cannot copy the partner",
+  );
 }
 const branchTime = (b) => (b.len * b.rate.t) / b.rate.d;
 const answers = LEVELS[1].stops.map((s) => (branchTime(s.upper) < branchTime(s.lower) ? 1 : 2));
 assert.deepEqual(answers, [2, 1, 2], "junction answers vary, so 'always lower' does not work");
-for (const s of LEVELS[1].stops) assert.notEqual(branchTime(s.upper), branchTime(s.lower), `${s.id} is not a tie`);
+for (const s of LEVELS[1].stops)
+  assert.notEqual(branchTime(s.upper), branchTime(s.lower), `${s.id} is not a tie`);
 const need = LEVELS[2].stops.map((s) => (s.span * s.rate.t) / s.rate.d);
 assert.ok(need.every(Number.isInteger), "every leg needs a whole number of cells");
-assert.equal(LEVELS[2].budget, need.reduce((a, b) => a + b) + 2, "the budget allows exactly one small mistake");
+assert.equal(
+  LEVELS[2].budget,
+  need.reduce((a, b) => a + b) + 2,
+  "the budget allows exactly one small mistake",
+);
 
 // ---------- a driver that plays through the real rules ----------
 function play(index) {
@@ -81,15 +94,23 @@ function play(index) {
       const cart = w().carts.find((c) => c.lane === 0 && c.x > tr.x && c.x - tr.x < 2.4);
       const xo = w().crossovers.find((c) => Math.abs(c - tr.x) < 0.3);
       const clear = !w().carts.some((c) => c.lane === 0 && Math.abs(c.x - tr.x) < 0.9);
-      const fwd = tr.x < x - 0.9 ? IN.RIGHT : tr.v > 0.006 ? IN.LEFT : tr.x < x - 0.02 ? IN.RIGHT : 0;
+      const fwd =
+        tr.x < x - 0.9 ? IN.RIGHT : tr.v > 0.006 ? IN.LEFT : tr.x < x - 0.02 ? IN.RIGHT : 0;
       let mask = fwd;
       if (tr.laneT) mask = 0;
       else if (tr.lane === 0 && cart && xo !== undefined) mask = IN.UP;
       else if (tr.lane === 0 && cart && cart.x - tr.x < 1) mask = tr.v > 0 ? IN.LEFT : 0;
-      else if (tr.lane === 1 && xo !== undefined && !w().carts.some((c) => c.lane === 0 && c.x > tr.x)) mask = clear ? IN.DOWN : tr.v > 0 ? IN.LEFT : 0;
+      else if (
+        tr.lane === 1 &&
+        xo !== undefined &&
+        !w().carts.some((c) => c.lane === 0 && c.x > tr.x)
+      )
+        mask = clear ? IN.DOWN : tr.v > 0 ? IN.LEFT : 0;
       tick(mask);
     }
-    assert.fail(`level ${index}: driver stuck at ${w().train.x.toFixed(2)} lane ${w().train.lane} (target ${x})`);
+    assert.fail(
+      `level ${index}: driver stuck at ${w().train.x.toFixed(2)} lane ${w().train.lane} (target ${x})`,
+    );
   };
   const settle = (limit = 4000) => {
     for (let i = 0; i < limit && w().train.mode !== "drive"; i++) tick();
@@ -107,17 +128,34 @@ function play(index) {
   assert.equal(standingAt(w())?.id, "c1", "the train stops at the first signal");
 
   // The additive misconception: 3:2 + 2 → 5:4 is not in the gear box, but 4:3 (3:2 + 1) is.
-  const wrong = tl.mark("ratio", { en: "4:3", es: "4:3" }, { type: "gear", stop: "c1", d: 4, t: 3 });
+  const wrong = tl.mark(
+    "ratio",
+    { en: "4:3", es: "4:3" },
+    { type: "gear", stop: "c1", d: 4, t: 3 },
+  );
   g.settle();
   let o = g.outcomes().at(-1);
-  assert.deepEqual([o.ok, o.key, o.misconception], [false, "coupleLate", "ratio-scaled-additively"]);
+  assert.deepEqual(
+    [o.ok, o.key, o.misconception],
+    [false, "coupleLate", "ratio-scaled-additively"],
+  );
   assert.equal(w().train.x, 4, "a missed coupling returns the train to the signal");
 
   // Reality Shift: open a second reality with 6:4; both realities run the same departure.
-  tl.mark("shift", { en: "shift", es: "shift" }, { type: "shift", change: { stop: "c1", variable: "gear", from: { d: 4, t: 3 }, to: { d: 6, t: 4 } } });
+  tl.mark(
+    "shift",
+    { en: "shift", es: "shift" },
+    {
+      type: "shift",
+      change: { stop: "c1", variable: "gear", from: { d: 4, t: 3 }, to: { d: 6, t: 4 } },
+    },
+  );
   const inv = mv.investigate();
   assert.deepEqual(inv.changed.map((c) => c.key).sort(), ["after2", "arrive", "yourRate"]);
-  assert.ok(inv.invariant.some((c) => c.key === "partnerRate") && inv.invariant.some((c) => c.key === "distance"));
+  assert.ok(
+    inv.invariant.some((c) => c.key === "partnerRate") &&
+      inv.invariant.some((c) => c.key === "distance"),
+  );
   tl.mark("ratio", { en: "run", es: "run" }, { type: "gear", stop: "c1", d: 4, t: 3, only: PRIME });
   // Mid-run, the shifted train is exactly level with its partner; the prime one is not.
   for (let i = 0; i < 90; i++) g.tick();
@@ -156,7 +194,10 @@ function play(index) {
   g.settle();
   assert.equal(g.outcomes().at(-1).ok, true);
   g.driveTo(43.5);
-  assert.ok(g.log.some((e) => e.type === "complete"), "level 1 completes");
+  assert.ok(
+    g.log.some((e) => e.type === "complete"),
+    "level 1 completes",
+  );
   const r = tl.replay(tl.head);
   while (r.pump());
   assert.ok(r.verify(), "the whole run replays deterministically across rewinds and shifts");
@@ -174,7 +215,11 @@ function play(index) {
   };
   g.driveTo(4);
   let o = pick("j1", 1);
-  assert.deepEqual([o.ok, o.key], [false, "junctionLose"], "the longer-but-faster-looking upper branch loses");
+  assert.deepEqual(
+    [o.ok, o.key],
+    [false, "junctionLose"],
+    "the longer-but-faster-looking upper branch loses",
+  );
   o = pick("j1", 2);
   assert.equal(o.ok, true);
   g.driveTo(18);
@@ -182,7 +227,10 @@ function play(index) {
   g.driveTo(32);
   assert.equal(pick("j3", 2).ok, true);
   g.driveTo(45.5);
-  assert.ok(g.log.some((e) => e.type === "complete"), "level 2 completes");
+  assert.ok(
+    g.log.some((e) => e.type === "complete"),
+    "level 2 completes",
+  );
 }
 
 // ---------- Level 3: Charge Line ----------
@@ -197,7 +245,10 @@ function play(index) {
   g.driveTo(3);
   // 15 / 5 = 3 cells: "per one" forgotten. Coasts 7.5 of 15 miles.
   let o = load("d1", 3);
-  assert.deepEqual([o.ok, o.key, o.vars.reach, o.misconception], [false, "chargeShort", 7.5, "rate-not-per-one"]);
+  assert.deepEqual(
+    [o.ok, o.key, o.vars.reach, o.misconception],
+    [false, "chargeShort", 7.5, "rate-not-per-one"],
+  );
   assert.equal(w().budget, 17, "spent cells are gone");
   assert.equal(w().train.x, 3, "the tow brings the train back to the depot");
   o = load("d1", 6);
@@ -219,7 +270,10 @@ function play(index) {
   assert.equal(load("d3", 8).ok, true);
   assert.equal(w().budget, 2);
   g.driveTo(53.8);
-  assert.ok(g.log.some((e) => e.type === "complete"), "level 3 completes");
+  assert.ok(
+    g.log.some((e) => e.type === "complete"),
+    "level 3 completes",
+  );
 }
 
 console.log("PASS ratio rush: mathematics, three levels played, reality shift and rewind");

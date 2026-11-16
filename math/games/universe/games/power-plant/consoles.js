@@ -4,6 +4,7 @@
 // produce: the facility shows that.
 
 import { el } from "../../runtime/chrome.js";
+import { chips, stepper } from "../../runtime/controls.js";
 import { evaluate, factors, leftToRight, power, running, show } from "./math.js";
 import { clamps as clampsOf } from "./math.js";
 import { deviceOf } from "./rules.js";
@@ -17,53 +18,6 @@ function chain(base, n) {
     if (i) row.append(el("i.op", null, "×"));
     row.append(el("i", null, String(f)));
   });
-  return row;
-}
-
-/** A − value + stepper with a live output. */
-function stepper(g, label, get, set, min, max) {
-  const out = el("output", null, String(get()));
-  const step = (d) => () => {
-    const v = Math.max(min, Math.min(max, get() + d));
-    if (v === get()) return;
-    set(v);
-    out.textContent = String(v);
-    g.audio.sfx("tick");
-  };
-  return el(
-    "div.stepper",
-    null,
-    el("span", null, label),
-    el("button", { type: "button", "aria-label": g.t("less"), on: { click: step(-1) } }, "−"),
-    out,
-    el("button", { type: "button", "aria-label": g.t("more"), on: { click: step(1) } }, "+"),
-  );
-}
-
-function chips(options, isOn, pick) {
-  const row = el("div.chips");
-  const paint = () => {
-    row.textContent = "";
-    options.forEach((o, i) =>
-      row.append(
-        el(
-          "button",
-          {
-            type: "button",
-            "aria-pressed": String(isOn(o, i)),
-            on: {
-              click: () => {
-                pick(o, i);
-                paint();
-              },
-            },
-          },
-          o.label,
-        ),
-      ),
-    );
-  };
-  paint();
   return row;
 }
 

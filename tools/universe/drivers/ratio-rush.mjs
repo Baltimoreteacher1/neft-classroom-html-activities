@@ -26,14 +26,20 @@ const STEP_TO = `(x) => {
 export async function drive({ host, u, fail, axe }) {
   await u(`window.driveTo = ${STEP_TO}`);
   const world = () => u(() => window.__universe.world);
-  const settle = () => u(() => {
-    const g = window.__universe;
-    for (let i = 0; i < 3000 && g.subject.worlds.some((w) => w.train.mode !== "drive"); i++) g.stepFrames(1, 0);
-  });
+  const settle = () =>
+    u(() => {
+      const g = window.__universe;
+      for (let i = 0; i < 3000 && g.subject.worlds.some((w) => w.train.mode !== "drive"); i++)
+        g.stepFrames(1, 0);
+    });
   const gear = async (d, t) => {
     await u(() => window.__universe.tryInteract());
-    if ((await u(() => window.__universe.mode)) !== "panel") return fail("the gear console did not open at the signal");
-    await host.locator("#panel").getByRole("button", { name: String(d), exact: true }).click();
+    if ((await u(() => window.__universe.mode)) !== "panel")
+      return fail("the gear console did not open at the signal");
+    await host
+      .locator("#panel")
+      .getByRole("button", { name: String(d), exact: true })
+      .click();
     let now = Number(await host.locator("#panel .stepper output").innerText());
     while (now < t) {
       await host.locator("#panel").getByRole("button", { name: "One more" }).click();
@@ -50,13 +56,23 @@ export async function drive({ host, u, fail, axe }) {
   if (!(await u(() => window.driveTo(4)))) return fail("the train never reached the first signal");
   await u(() => window.__universe.tryInteract());
   await axe("gear console");
-  if (await host.locator("#panel").getByText(/you(?:'ll| will)? arrive|llegas/i).count()) fail("the gear console predicts the arrival before the run");
+  if (
+    await host
+      .locator("#panel")
+      .getByText(/you(?:'ll| will)? arrive|llegas/i)
+      .count()
+  )
+    fail("the gear console predicts the arrival before the run");
   await host.locator("#panel").getByRole("button", { name: "Close" }).click();
 
   // Additive misconception: 4 : 3 is 3 : 2 with one added to each.
   await gear(4, 3);
   if ((await world()).stops[0].done) fail("4 : 3 coupled with 3 : 2");
-  const tag = await u(() => window.__universe.evidence.events.at(-1)?.misconception || window.__universe.evidence.events.find((e) => e.misconception)?.misconception);
+  const tag = await u(
+    () =>
+      window.__universe.evidence.events.at(-1)?.misconception ||
+      window.__universe.evidence.events.find((e) => e.misconception)?.misconception,
+  );
   if (tag !== "ratio-scaled-additively") fail(`the additive gear was tagged "${tag}"`);
 
   // Reality Shift: same run with 6 : 4 in a second reality.
@@ -64,26 +80,39 @@ export async function drive({ host, u, fail, axe }) {
   await host.locator("#veil").getByRole("button", { name: "6", exact: true }).click();
   await host.locator("#veil").getByRole("button", { name: "One more" }).click();
   await host.getByRole("button", { name: "Open it" }).click();
-  if (!(await u(() => window.__universe.subject.shifted))) return fail("Reality Shift did not open a second reality");
+  if (!(await u(() => window.__universe.subject.shifted)))
+    return fail("Reality Shift did not open a second reality");
   await u(() => window.__universe.tryInteract());
   await host.getByRole("button", { name: "Release the brake" }).click();
   await u(() => window.__universe.stepFrames(90, 0));
-  const mid = await u(() => window.__universe.subject.worlds.map((w) => w.run && [w.run.you, w.run.them]));
-  if (!mid[1] || mid[1][0] !== mid[1][1]) fail("in the shifted reality 6 : 4 did not stay level with 3 : 2");
+  const mid = await u(() =>
+    window.__universe.subject.worlds.map((w) => w.run && [w.run.you, w.run.them]),
+  );
+  if (!mid[1] || mid[1][0] !== mid[1][1])
+    fail("in the shifted reality 6 : 4 did not stay level with 3 : 2");
   await settle();
   await host.locator("#btnShift").click();
   const changed = await host.getByRole("row", { name: /Your rate/ }).innerText();
-  if (!/4 : 3[\s\S]*6 : 4/.test(changed)) fail(`the investigation table does not compare the two gears: ${changed}`);
-  if (!(await host.locator("#veil canvas").count())) fail("no distance-time graph in the investigation view");
+  if (!/4 : 3[\s\S]*6 : 4/.test(changed))
+    fail(`the investigation table does not compare the two gears: ${changed}`);
+  if (!(await host.locator("#veil canvas").count()))
+    fail("no distance-time graph in the investigation view");
   await axe("reality shift");
   await host.getByRole("button", { name: "Switch reality" }).click();
-  const after = await u(() => [window.__universe.subject.active, window.__universe.world.stops[0].done]);
+  const after = await u(() => [
+    window.__universe.subject.active,
+    window.__universe.world.stops[0].done,
+  ]);
   if (after[0] !== 1 || after[1] !== 1) fail("switching reality did not show the coupled train");
 
   // Time Machine back to before the wrong gear: the second reality closes.
   await host.locator("#btnTime").click();
-  await host.getByRole("button", { name: /Rewind to before “Gear 4:3/ }).first().click();
-  if (await u(() => window.__universe.subject.shifted)) fail("rewinding before the shift kept the second reality");
+  await host
+    .getByRole("button", { name: /Rewind to before “Gear 4:3/ })
+    .first()
+    .click();
+  if (await u(() => window.__universe.subject.shifted))
+    fail("rewinding before the shift kept the second reality");
   await gear(6, 4);
   if (!(await world()).stops[0].done) return fail("6 : 4 did not couple");
   await u(() => window.driveTo(16));

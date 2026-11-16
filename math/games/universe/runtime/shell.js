@@ -277,6 +277,11 @@ export class UniverseGame extends HTMLElement {
     const id = this.timeline.mark(kind, label, action);
     this.pendingMeta = { id, ...meta };
     this.save.timeline = null;
+    // What the decision changed at once (an outcome, a refusal) is handled now,
+    // not on the next frame: feedback never waits on the render loop.
+    this.subject.drain(this.events);
+    for (let i = 0; i < this.events.length; i++) this.handle(this.events[i]);
+    this.events.length = 0;
     return id;
   }
 

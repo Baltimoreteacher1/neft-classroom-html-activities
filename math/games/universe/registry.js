@@ -37,6 +37,20 @@ export const GAMES = [
     standards: ["6.AT.3a", "6.AT.3", "6.AT.2"],
     features: ["reality-shift", "time-machine"],
   },
+  {
+    id: "balance-breakout",
+    href: "/math/games/universe/games/balance-breakout/",
+    title: { en: "Balance Breakout", es: "Fuga del Equilibrio" },
+    genre: { en: "Physics puzzle platformer", es: "Plataformas y rompecabezas de física" },
+    tagline: {
+      en: "Every door in the Equilibrium Vault is locked by a balance. The balance is the equation: keep it level and get x alone.",
+      es: "Cada puerta de la Bóveda del Equilibrio está cerrada con una balanza. La balanza es la ecuación: mantenla nivelada y deja x sola.",
+    },
+    unit: 8,
+    lessons: ["8-1", "8-2", "8-3"],
+    standards: ["6.AT.8"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

@@ -489,9 +489,6 @@ export function openShift(g) {
             { type: "switch", reality: mv.active === PRIME ? SHIFTED : PRIME },
             { mechanic: "reality-shift" },
           );
-          g.subject.drain(g.events);
-          for (const e of g.events) g.handle(e);
-          g.events.length = 0;
           g.resume();
         }),
         btn(g, "", "shiftClose", () => {
@@ -501,8 +498,6 @@ export function openShift(g) {
             { type: "collapse" },
             { mechanic: "reality-shift" },
           );
-          g.subject.drain(g.events);
-          g.events.length = 0;
           g.refreshHud();
           g.resume();
         }),
@@ -517,9 +512,6 @@ export function openShift(g) {
       { type: "shift", change },
       { mechanic: "reality-shift", detail: change },
     );
-    g.subject.drain(g.events);
-    for (const e of g.events) g.handle(e);
-    g.events.length = 0;
     g.resume();
   });
   g.openVeil(
