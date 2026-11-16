@@ -23,7 +23,7 @@ export const STAGE_INFO = [
 /** The compact five-stage bar. `current` is a stage key; on the studio page the runtime keeps aria-current in step. */
 export function stageBar(id, current, { inPage = false, label = "" } = {}) {
   const base = `/math/studio/${id}/`;
-  return `<nav class="ms-stagebar" aria-label="Math Studio stages for lesson ${esc(id)}" data-ms-lesson="${esc(id)}"><a class="ms-stagebar__home" href="${base}">Math Studio <span>${esc(label || `Lesson ${id}`)}</span></a><ol>${STAGE_INFO.map(
+  return `<nav class="ms-stagebar" aria-label="Learning Lab stages for lesson ${esc(id)}" data-ms-lesson="${esc(id)}"><a class="ms-stagebar__home" href="${base}">Learning Lab <span>${esc(label || `Lesson ${id}`)}</span></a><ol>${STAGE_INFO.map(
     ([key, en, es], i) =>
       `<li><a href="${inPage ? `#${key}` : `${base}#${key}`}" data-stage-link="${key}"${key === current ? ' aria-current="step"' : ""}><span class="ms-step" aria-hidden="true">${i + 1}</span>${bi(en, es)}</a></li>`,
   ).join("")}</ol></nav>`;
@@ -31,9 +31,9 @@ export function stageBar(id, current, { inPage = false, label = "" } = {}) {
 
 /** The bar for a Learning Lab, which serves several lessons: one Math Studio link per lesson. */
 export function labBar(lab) {
-  return `<nav class="ms-stagebar ms-stagebar--lab" aria-label="Use this lab in Math Studio"><a class="ms-stagebar__home" href="/math/studio/">Math Studio</a><p>This lab is the Explore stage for ${lab.lessons
+  return `<nav class="ms-stagebar ms-stagebar--lab" aria-label="Use this lab in Learning Lab (Practice HTML)"><a class="ms-stagebar__home" href="/math/studio/">Learning Lab (Practice HTML)</a><p>This model is the Explore stage for ${lab.lessons
     .map((l) => `<a href="/math/studio/${esc(l)}/#explore">Lesson ${esc(l)}</a>`)
-    .join(" and ")}. Open a lesson to practise, apply and reflect with it.</p></nav>`;
+    .join(" and ")}. Open a lesson to explore, practice, apply and reflect in one place.</p></nav>`;
 }
 
 const steps = (s) =>
@@ -126,8 +126,8 @@ export function lessonPage(L, stamp) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Math Studio · ${esc(L.id)} ${esc(L.title)} | EduWonderLab</title>
-<meta name="description" content="${esc(`Math Studio for Grade 6 lesson ${L.id}: explore, understand, practice, apply and reflect. ${L.objective || ""}`)}">
+<title>Learning Lab (Practice HTML) · ${esc(L.id)} ${esc(L.title)} | EduWonderLab</title>
+<meta name="description" content="${esc(`Learning Lab (Practice HTML) for Grade 6 lesson ${L.id}: explore, understand, practice, apply and reflect. ${L.objective || ""}`)}">
 <link rel="icon" href="/assets/favicon.svg">
 <link rel="canonical" href="https://eduwonderlab.com/math/studio/${esc(L.id)}/">
 <link rel="stylesheet" href="/curriculum/learning-labs/shared/lab.css?v=${stamp}">
@@ -137,10 +137,10 @@ export function lessonPage(L, stamp) {
 <body class="ms" data-lesson="${esc(L.id)}">
 <header class="ms-hero">
   <div class="ms-wrap">
-    <nav class="ms-crumbs" aria-label="Breadcrumb"><a href="/curriculum/units/">Lessons</a><a href="/lessons/${esc(L.id)}/">Lesson ${esc(L.id)}</a><span aria-current="page">Math Studio</span></nav>
+    <nav class="ms-crumbs" aria-label="Breadcrumb"><a href="/curriculum/units/">Lessons</a><a href="/lessons/${esc(L.id)}/">Lesson ${esc(L.id)}</a><span aria-current="page">Learning Lab</span></nav>
     <div class="ms-hero__row">
       <div>
-        <p class="ms-eyebrow">Math Studio · Unit ${esc(L.unit)} · Lesson ${esc(L.id)}${L.standard ? ` · ${esc(L.standard)}` : ""}</p>
+        <p class="ms-eyebrow">Learning Lab (Practice HTML) · Unit ${esc(L.unit)} · Lesson ${esc(L.id)}${L.standard ? ` · ${esc(L.standard)}` : ""}</p>
         <h1>${esc(L.title)}</h1>
         ${L.objective ? `<p class="ms-objective">${esc(L.objective)}</p>` : ""}
       </div>
@@ -150,7 +150,7 @@ export function lessonPage(L, stamp) {
       </div>
     </div>
     <div class="ms-entry">
-      <a class="ms-btn" href="#explore" data-goto="explore" id="ms-start">Start Math Studio</a>
+      <a class="ms-btn" href="#explore" data-goto="explore" id="ms-start">Start the Learning Lab</a>
       <span class="ms-entry__or">or go straight to practice:</span>
       <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="regular">Regular</a>
       <a class="ms-btn ms-btn--quiet" href="#practice" data-goto="practice" data-level="challenge">Challenge</a>
@@ -227,14 +227,14 @@ export function finderPage(lessons, stamp) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Math Studio | EduWonderLab</title>
-<meta name="description" content="Math Studio: one connected place to explore, understand, practice, apply and reflect for every Grade 6 lesson.">
+<title>Learning Lab (Practice HTML) | EduWonderLab</title>
+<meta name="description" content="Learning Lab (Practice HTML): one connected place to explore, understand, practice, apply and reflect for every Grade 6 lesson.">
 <link rel="icon" href="/assets/favicon.svg">
 <link rel="canonical" href="https://eduwonderlab.com/math/studio/">
 <link rel="stylesheet" href="/assets/math-studio/studio.css?v=${stamp}">
 </head>
 <body class="ms ms--finder">
-<header class="ms-hero"><div class="ms-wrap"><p class="ms-eyebrow">Grade 6 mathematics</p><h1>Math Studio</h1><p class="ms-objective">Explore a model, understand the idea, practice at your level, apply it, and show what you know. One lesson, one place.</p></div></header>
+<header class="ms-hero"><div class="ms-wrap"><p class="ms-eyebrow">Grade 6 mathematics</p><h1>Learning Lab <span class="ms-h1-sub">(Practice HTML)</span></h1><p class="ms-objective">Explore a model, understand the idea, practice at your level, apply it, and show what you know. One lesson, one place.</p></div></header>
 <main id="ms-main" class="ms-wrap">
 ${units
   .map(

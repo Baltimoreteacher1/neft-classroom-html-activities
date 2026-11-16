@@ -88,7 +88,7 @@ async function loadModel() {
     $('#ms-guide').innerHTML = `<strong>${esc(g.show)}</strong> ${esc(g.tip)}`;
   } catch (err) {
     host.innerHTML = `<p class="ms-warn">${esc('The model could not load. You can still use every other stage.')}</p>`;
-    console.warn('Math Studio model', err);
+    console.warn('Learning Lab model', err);
   }
 }
 function showHandoff() {

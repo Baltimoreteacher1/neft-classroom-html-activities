@@ -22,6 +22,7 @@ import {
   transferTask,
   validate,
   verifyHandoff,
+  verifySolve,
 } from "../assets/math-studio/core.mjs";
 import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { buildRegistry } from "../scripts/lib/math-studio-registry.mjs";
@@ -225,7 +226,14 @@ t(
       for (const it of [...L.practice.regular, ...L.practice.challenge]) {
         if (!it.model) continue;
         assert.ok(
-          verifyHandoff(L.lab.model, it.model.values, it.answer, it.tolerance),
+          verifyHandoff(L.lab.model, it.model.values, it.answer, it.tolerance) ||
+            verifySolve(
+              L.lab.model,
+              it.model.values,
+              solveIndex(L.lab.model, it),
+              it.answer,
+              it.prompt,
+            ),
           `${L.id} ${it.id}`,
         );
         validate("handoff", {
@@ -247,6 +255,46 @@ t(
     assert.equal(verifyHandoff(L.lab.model, [300, 2], 150), false, "out of the control's range");
   },
 );
+
+t("solve-for-missing hand-offs accept only a real solution", () => {
+  const add = { kind: "balance", mode: "add", values: [7, 19, 12] };
+  assert.equal(verifySolve(add, [8, 19, 12], 2, 11), true);
+  assert.equal(verifySolve(add, [8, 19, 12], 2, 12), false);
+  const mul = { kind: "balance", mode: "multiply", values: [4, 36, 9] };
+  assert.equal(verifySolve(mul, [5, 36, 9], 2, 7.2), true);
+  assert.equal(verifySolve(mul, [5, 36, 9], 2, 7), false);
+  const ge = { kind: "inequality", mode: "entry", values: [12, 10] };
+  assert.equal(verifySolve(ge, [13, 10], 1, 13, "x ≥ 13. What is the smallest whole number"), true);
+  assert.equal(
+    verifySolve(ge, [13, 10], 1, 14, "x ≥ 13. What is the smallest whole number"),
+    false,
+    "follows the rule but is not the smallest",
+  );
+  assert.equal(
+    verifySolve(ge, [13, 10], 1, 13, "Name a number that works"),
+    false,
+    "no smallest/greatest: not decidable",
+  );
+  const le = { kind: "inequality", mode: "budget", values: [15, 6] };
+  assert.equal(verifySolve(le, [16, 6], 1, 16, "x ≤ 16. What is the greatest whole number"), true);
+  assert.equal(verifySolve(le, [16, 6], 1, 17, "x ≤ 16. What is the greatest whole number"), false);
+  assert.equal(
+    verifySolve({ kind: "ratio", mode: "mixer", values: [3, 2] }, [3, 2], 1, 2),
+    false,
+    "other kinds never pass",
+  );
+});
+
+/** The control a solve item leaves open: the one whose setting the item never states. */
+function solveIndex(model, it) {
+  const fields = controls(model);
+  return fields.findIndex(
+    (f) =>
+      f.label !== "Unused" &&
+      !it.prompt.includes(`${f.label} =`) &&
+      !it.prompt.includes(`${f.label}:`),
+  );
+}
 
 // ---- Registry content ----
 t("registry: every lesson has lesson-specific content in all five stages and valid keys", () => {

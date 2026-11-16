@@ -187,7 +187,7 @@ const MARK = /\s*<!-- practice-studio:[\w-]+ -->[\s\S]*?<!-- \/practice-studio -
 const MARK_PATH = /\s*<!-- lesson-path:[\w-]+ -->[\s\S]*?<!-- \/lesson-path -->/g;
 /** Math Studio is the lesson's connected experience, so it leads the row. */
 const STUDIO_LINK = (/** @type {string} */ id) =>
-  `<a class="res res--studio" href="/math/studio/${id}/">Start Math Studio</a>`;
+  `<a class="res res--studio" href="/math/studio/${id}/">Learning Lab (Practice HTML)</a>`;
 const PATH_LINK = (/** @type {string} */ id) =>
   `<a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a>`;
 /** The lesson's animated figure lives in step 3 of its Lesson Path page (shared/motion); the row links straight to it. */

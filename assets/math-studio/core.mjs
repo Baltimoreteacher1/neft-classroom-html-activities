@@ -173,6 +173,25 @@ export function checkTransfer(model, task, text) {
 }
 
 /** Build-time check that a practice item's stated settings really produce its answer in the model. */
+/**
+ * Build-time check for a "find the missing quantity" item: the given settings plus `answer` in the missing control must
+ * solve it. A balance must balance; an inequality's answer must follow the rule while the next whole number past it
+ * does not (the smallest/greatest value). The model itself still opens on the lab's default for the unknown.
+ */
+export function verifySolve(model, values, missing, answer, prompt = '') {
+  const fields = controls(model);
+  if (!Number.isInteger(missing) || !fields[missing] || !Number.isFinite(answer)) return false;
+  const at = (v) => evaluate(model, values.map((x, i) => (i === missing ? v : x)));
+  try {
+    if (model.kind === 'balance') return Math.abs(at(answer).value) < 1e-6;
+    if (model.kind === 'inequality') {
+      const away = /greatest|largest|most/i.test(prompt) ? 1 : /smallest|least|fewest/i.test(prompt) ? -1 : 0;
+      return Boolean(away) && at(answer).pass === true && at(answer + away).pass === false;
+    }
+  } catch { return false; }
+  return false;
+}
+
 export function verifyHandoff(model, values, answer, tolerance = 1e-4) {
   if (!Array.isArray(values) || values.length !== model.values.length) return false;
   const fields = controls(model);

@@ -285,14 +285,14 @@ for (const l of registry.lessons.filter((x) => ids.includes(x.id))) {
     ok(
       html.includes(`href="/math/studio/${l.id}/#explore"`),
       l.id,
-      `${url} has no Math Studio bar`,
+      `${url} has no Learning Lab stage bar`,
     );
   }
   const lab = readFileSync(join(REPO_ROOT, l.lab.href.replace(/^\//, ""), "index.html"), "utf8");
   ok(
     lab.includes(`/math/studio/${l.id}/#explore`),
     l.id,
-    `${l.lab.href} has no link to this lesson's Math Studio`,
+    `${l.lab.href} has no link to this lesson's Learning Lab`,
   );
 }
 for (const url of [

@@ -4,7 +4,7 @@
 // model hand-off only when its stated settings reproduce its answer in that model (verifyHandoff).
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { verifyHandoff } from "../../assets/math-studio/core.mjs";
+import { verifyHandoff, verifySolve } from "../../assets/math-studio/core.mjs";
 import { controls } from "../../curriculum/learning-labs/shared/math.mjs";
 import { blueprints } from "../../tools/learning-labs/blueprints.mjs";
 import { loadLessonConfig, REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
@@ -92,14 +92,21 @@ function eaItem(it, id) {
 function paramValues(model, parameters) {
   const fields = controls(model);
   const values = [...model.values];
-  const used = fields.map((f, i) => ({ f, i })).filter(({ f }) => f.label !== "Unused");
-  if (!Array.isArray(parameters) || parameters.length !== used.length) return null;
-  for (const [k, { f, i }] of used.entries()) {
-    const m = /^(.*):\s*(-?\d+(?:\.\d+)?)\s*$/.exec(parameters[k]);
-    if (!m || m[1].trim() !== f.label) return null;
+  if (!Array.isArray(parameters)) return null;
+  const given = new Set();
+  for (const line of parameters) {
+    const m = /^(.*):\s*(-?\d+(?:\.\d+)?)\s*$/.exec(line);
+    if (!m) return null;
+    const i = fields.findIndex((f) => f.label === m[1].trim());
+    // A line naming no control (the polygon's "Apothem") is information the model computes itself.
+    if (i < 0 || fields[i].label === "Unused") continue;
     values[i] = Number(m[2]);
+    given.add(i);
   }
-  return values;
+  const missing = fields
+    .map((_, i) => i)
+    .filter((i) => fields[i].label !== "Unused" && !given.has(i));
+  return { values, missing };
 }
 
 /** A lab numeric item, with a model hand-off when (and only when) its settings verify. */
@@ -107,8 +114,15 @@ function numItem(it, model, stats) {
   if (it.type !== "number" || !Number.isFinite(it.answer)) return null;
   let values = null;
   if (it.parameters) {
-    values = paramValues(model, it.parameters);
-    if (values && !verifyHandoff(model, values, it.answer, it.tolerance)) values = null;
+    const p = paramValues(model, it.parameters);
+    // Settings -> readout, or settings -> the one missing quantity (solve for x, find the boundary).
+    const ok =
+      p &&
+      (p.missing.length === 0
+        ? verifyHandoff(model, p.values, it.answer, it.tolerance)
+        : p.missing.length === 1 &&
+          verifySolve(model, p.values, p.missing[0], it.answer, it.prompt));
+    values = ok ? p.values : null;
     stats[values ? "verified" : "refused"]++;
   }
   return clean({
@@ -240,18 +254,16 @@ export function lessonRecord(lesson, lab, labContent, traps, stats) {
               contextEs: cfg.noticeAndWonder.contextEs,
             })
           : undefined,
-      vocabulary: (cfg.vocabulary || [])
-        .slice(0, 8)
-        .map((v) =>
-          clean({
-            term: v.term,
-            termEs: v.termEs,
-            definition: v.definition,
-            definitionEs: v.definitionEs,
-            image: v.image && has(v.image) ? v.image : undefined,
-            example: v.visual,
-          }),
-        ),
+      vocabulary: (cfg.vocabulary || []).slice(0, 8).map((v) =>
+        clean({
+          term: v.term,
+          termEs: v.termEs,
+          definition: v.definition,
+          definitionEs: v.definitionEs,
+          image: v.image && has(v.image) ? v.image : undefined,
+          example: v.visual,
+        }),
+      ),
       mistake: P.commonMistake,
       frame: cfg.explore?.discourse?.sentenceFrame,
       frameEs: cfg.explore?.discourse?.sentenceFrameEs,

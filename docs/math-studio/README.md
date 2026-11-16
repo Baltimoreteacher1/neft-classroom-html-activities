@@ -1,4 +1,6 @@
-# Math Studio
+# Learning Lab (Practice HTML)
+
+Student-facing name since 2026-11-16 (Joel): **Learning Lab**, written "Learning Lab (Practice HTML)" where it is offered from a lesson row. The code, URLs (`/math/studio/`) and storage keys keep the original "Math Studio" name so no link or save changed.
 
 One connected experience per lesson at `/math/studio/<lesson>/` (Units 2–9, 72 lessons), in five stages:
 **Explore → Understand → Practice → Apply → Reflect**. Finder: `/math/studio/`. Coverage: [COVERAGE.md](COVERAGE.md).
@@ -21,7 +23,7 @@ One connected experience per lesson at `/math/studio/<lesson>/` (Units 2–9, 72
 
 ## Model ↔ practice
 
-- **Practice → model**: a lab numeric item whose stated settings reproduce its answer in the model (`verifyHandoff`, checked at build time) gets "See it in the model". The hand-off is a validated `handoff` contract; the model opens on the item's numbers and "Back to my question" returns to the same item. Items that do not verify get no hand-off (18 refused). Multiple-choice items never claim a model state.
+- **Practice → model**: a lab numeric item whose stated settings reproduce its answer in the model (`verifyHandoff`, checked at build time) gets "See it in the model". The hand-off is a validated `handoff` contract; the model opens on the item's numbers and "Back to my question" returns to the same item. Two shapes verify: settings → readout (`verifyHandoff`), and settings → the one missing quantity, e.g. solve for x or find the boundary (`verifySolve`: the balance must balance; an inequality answer must follow the rule while the next whole number does not). For the second shape the model opens on the given settings with the unknown at the lab default, so it never shows the answer. All 144 lab model items verify; an item that did not would get no hand-off. Multiple-choice items never claim a model state.
 - **Model → practice**: "Make a question from my model" asks for the readout at the current settings (`predictItem`), then a transfer task from the lab's own `puzzle()` (`transferTask`), checked through the relationship so every valid answer counts.
 
 ## Support and evidence
@@ -43,6 +45,5 @@ No existing URL changed what it answers. Practice studios, Unit 4 studios and Le
 
 ## Known limits
 
-- Lessons 5-9, 5-10 and 8-1…8-7 have no practice item with a verified model hand-off; model → practice still works there.
 - Spanish shows wherever the source has Spanish; lab investigation prompts, Create missions, word problems and some vocabulary examples are English-only in the source. No native-speaker review.
 - The full Practice Studio engine is linked, not embedded: its runtime is ~40 global scripts and its own save; embedding it would duplicate the engine.
