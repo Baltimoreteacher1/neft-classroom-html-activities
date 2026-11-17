@@ -16,14 +16,17 @@ const check = args.includes("--check");
 const only = (args.find((a) => a.startsWith("--only=")) || "").slice(7).split(",").filter(Boolean);
 
 const dir = join(here, "scenes");
-const files = readdirSync(dir).filter((f) => f.endsWith(".mjs")).sort();
+// Scene file name = picture stem, so --only never imports (or trips over) another scene.
+const files = readdirSync(dir)
+  .filter((f) => f.endsWith(".mjs") && (!only.length || only.includes(f.slice(0, -4))))
+  .sort();
 let stale = 0;
 let wrote = 0;
 for (const f of files) {
   const scene = (await import(pathToFileURL(join(dir, f)).href)).default;
   if (!scene?.file || !scene.draw) throw new Error(`${f}: missing file or draw()`);
-  const stem = scene.file.replace(/\.svg$/, "").split("/").pop();
-  if (only.length && !only.includes(stem)) continue;
+  const stem = f.slice(0, -4);
+  if (scene.file.replace(/\.svg$/, "").split("/").pop() !== stem) throw new Error(`${f}: file name must match ${scene.file}`);
   resetIds();
   const out = svg({ w: scene.w, h: scene.h, title: scene.title, body: scene.draw(), grain: scene.grain !== false });
   const target = join(OUT, scene.file);
