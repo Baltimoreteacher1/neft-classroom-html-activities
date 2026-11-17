@@ -4,7 +4,7 @@
 //   node tools/lp-art/build.mjs --only=a,b      write the named scenes (file stem, e.g. 35-reading-park)
 //   node tools/lp-art/build.mjs --check         fail if any output differs from its scene
 // A scene module exports default { file, w, h, title, draw }, where draw() returns the picture body.
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resetIds, svg } from "../../access-practice-lab/src/art/kit.js";
@@ -26,13 +26,27 @@ for (const f of files) {
   const scene = (await import(pathToFileURL(join(dir, f)).href)).default;
   if (!scene?.file || !scene.draw) throw new Error(`${f}: missing file or draw()`);
   const stem = f.slice(0, -4);
-  if (scene.file.replace(/\.svg$/, "").split("/").pop() !== stem) throw new Error(`${f}: file name must match ${scene.file}`);
+  if (
+    scene.file
+      .replace(/\.svg$/, "")
+      .split("/")
+      .pop() !== stem
+  )
+    throw new Error(`${f}: file name must match ${scene.file}`);
   resetIds();
-  const out = svg({ w: scene.w, h: scene.h, title: scene.title, body: scene.draw(), grain: scene.grain !== false });
+  const out = svg({
+    w: scene.w,
+    h: scene.h,
+    title: scene.title,
+    body: scene.draw(),
+    grain: scene.grain !== false,
+  });
   const target = join(OUT, scene.file);
   if (check) {
     if (!existsSync(target) || readFileSync(target, "utf8") !== out) {
-      console.error(`stale: pictures/${scene.file} (run node tools/lp-art/build.mjs --only=${stem})`);
+      console.error(
+        `stale: pictures/${scene.file} (run node tools/lp-art/build.mjs --only=${stem})`,
+      );
       stale++;
     }
     continue;

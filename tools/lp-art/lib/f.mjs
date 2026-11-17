@@ -1,6 +1,27 @@
 // Illustrator F helpers: lab, classroom and science-diagram props for the Grades 6-8 pictures.
 // Built only on kit primitives; same art direction (no outlines, lit/shade sides, contact shadows).
-import { P, def, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, vgrad, rgrad, shade, light, mix, rng, text } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  circle,
+  contact,
+  def,
+  ellipse,
+  g,
+  light,
+  line,
+  mix,
+  P,
+  path,
+  poly,
+  rect,
+  rgrad,
+  rng,
+  rrect,
+  shade,
+  stroke,
+  text,
+  tr,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
@@ -49,9 +70,14 @@ export function goggles(x, y, h, o = {}) {
   const r = H.r;
   const fx = H.x + facing * r * 0.28;
   const ey = H.y + r * 0.08;
-  const lens = (cx) => rrect(cx - r * 0.27, ey - r * 0.24, r * 0.54, r * 0.46, r * 0.18, "#d8f1f6", 'opacity=".85"');
+  const lens = (cx) =>
+    rrect(cx - r * 0.27, ey - r * 0.24, r * 0.54, r * 0.46, r * 0.18, "#d8f1f6", 'opacity=".85"');
   return g(
-    stroke(`M${f(H.x - facing * r * 0.98)} ${f(ey - r * 0.05)}Q${f(H.x)} ${f(ey - r * 0.2)} ${f(fx - facing * r * 0.5)} ${f(ey)}`, "#2f6b7a", r * 0.2) +
+    stroke(
+      `M${f(H.x - facing * r * 0.98)} ${f(ey - r * 0.05)}Q${f(H.x)} ${f(ey - r * 0.2)} ${f(fx - facing * r * 0.5)} ${f(ey)}`,
+      "#2f6b7a",
+      r * 0.2,
+    ) +
       rrect(fx - r * 0.62, ey - r * 0.32, r * 1.26, r * 0.62, r * 0.26, "#2f8f97") +
       lens(fx - r * 0.3) +
       lens(fx + r * 0.32) +
@@ -64,16 +90,37 @@ export function goggles(x, y, h, o = {}) {
 
 /** Warm interior wall with a skirting board and a wood floor from floorY down. */
 export function room(W, H, floorY, { wall = P.wall, floor = "floor" } = {}) {
-  const fl = { floor: ["#e2c39a", P.floor, "#c49e70"], tile: ["#e9e4da", "#dcd6ca", "#c8c1b3"] }[floor];
-  let s = rect(0, 0, W, floorY, vgrad([[0, light(wall, 0.12)], [1, wall]]));
+  const fl = { floor: ["#e2c39a", P.floor, "#c49e70"], tile: ["#e9e4da", "#dcd6ca", "#c8c1b3"] }[
+    floor
+  ];
+  let s = rect(
+    0,
+    0,
+    W,
+    floorY,
+    vgrad([
+      [0, light(wall, 0.12)],
+      [1, wall],
+    ]),
+  );
   s += rect(0, floorY - 10, W, 10, shade(wall, 0.12));
-  s += rect(0, floorY, W, H - floorY, vgrad([[0, fl[0]], [1, fl[2]]]));
+  s += rect(
+    0,
+    floorY,
+    W,
+    H - floorY,
+    vgrad([
+      [0, fl[0]],
+      [1, fl[2]],
+    ]),
+  );
   let d = "";
   if (floor === "tile") {
-    for (let x = -40; x <= W + 40; x += 64) d += `M${f(W / 2 + (x - W / 2) * 0.55)} ${floorY}L${f(x)} ${H}`;
-    for (let k = 1; k < 4; k++) d += `M0 ${f(floorY + (H - floorY) * (k * k) / 12)}H${W}`;
+    for (let x = -40; x <= W + 40; x += 64)
+      d += `M${f(W / 2 + (x - W / 2) * 0.55)} ${floorY}L${f(x)} ${H}`;
+    for (let k = 1; k < 4; k++) d += `M0 ${f(floorY + ((H - floorY) * (k * k)) / 12)}H${W}`;
   } else {
-    for (let k = 1; k < 5; k++) d += `M0 ${f(floorY + (H - floorY) * (k * k) / 22)}H${W}`;
+    for (let k = 1; k < 5; k++) d += `M0 ${f(floorY + ((H - floorY) * (k * k)) / 22)}H${W}`;
   }
   s += stroke(d, shade(fl[1], 0.25), 1.2, 'opacity=".35"');
   return s;
@@ -92,22 +139,38 @@ export function labBench(x, y, w, bottom, { top = "#4d5f72", body = "#c7d0d6", d
     s += rrect(dx, y + 30, dw, Math.min(56, bottom - y - 44), 4, light(body, 0.18));
     s += rrect(dx + dw / 2 - 18, y + 42, 36, 6, 3, shade(body, 0.35));
   }
-  s += rrect(x, y, w, 12, 3, top) + rect(x, y, w, 3, light(top, 0.3)) + rect(x, y + 10, w, 2, shade(top, 0.3));
+  s +=
+    rrect(x, y, w, 12, 3, top) +
+    rect(x, y, w, 3, light(top, 0.3)) +
+    rect(x, y + 10, w, 2, shade(top, 0.3));
   return s;
 }
 
 /** Wall shelf with jars / bottles. */
-export function shelfJars(x, y, w, { seed = 2, colors = [P.teal, P.gold, P.coral, "#9fc9d6", P.purple] } = {}) {
+export function shelfJars(
+  x,
+  y,
+  w,
+  { seed = 2, colors = [P.teal, P.gold, P.coral, "#9fc9d6", P.purple] } = {},
+) {
   const R = rng(seed);
-  let s = rect(x, y, w, 7, P.woodDark) + rect(x, y, w, 2, light(P.wood, 0.1)) + rect(x + 10, y + 7, 5, 12, P.woodDark) + rect(x + w - 15, y + 7, 5, 12, P.woodDark);
+  let s =
+    rect(x, y, w, 7, P.woodDark) +
+    rect(x, y, w, 2, light(P.wood, 0.1)) +
+    rect(x + 10, y + 7, 5, 12, P.woodDark) +
+    rect(x + w - 15, y + 7, 5, 12, P.woodDark);
   let bx = x + 10;
   let i = 0;
   while (bx < x + w - 26) {
     const c = colors[i % colors.length];
     const bw = 16 + R() * 10;
     const bh = 22 + R() * 18;
-    s += rrect(bx, y - bh, bw, bh, 4, "#e9f3f5", 'opacity=".9"') + rrect(bx + 2, y - bh * 0.62, bw - 4, bh * 0.62 - 2, 3, c, 'opacity=".85"');
-    s += rect(bx + bw * 0.25, y - bh - 5, bw * 0.5, 6, shade(c, 0.3)) + rect(bx + 3, y - bh + 4, 3, bh - 8, "#ffffff", 'opacity=".5"');
+    s +=
+      rrect(bx, y - bh, bw, bh, 4, "#e9f3f5", 'opacity=".9"') +
+      rrect(bx + 2, y - bh * 0.62, bw - 4, bh * 0.62 - 2, 3, c, 'opacity=".85"');
+    s +=
+      rect(bx + bw * 0.25, y - bh - 5, bw * 0.5, 6, shade(c, 0.3)) +
+      rect(bx + 3, y - bh + 4, 3, bh - 8, "#ffffff", 'opacity=".5"');
     bx += bw + 8 + R() * 8;
     i++;
   }
@@ -124,16 +187,24 @@ export function microscope(x, y, s = 1, { dir = -1 } = {}) {
   b += rrect(-34, -11, 66, 11, 4, body) + rect(-34, -11, 66, 3, lit);
   b += circle(-6, -17, 6, "#f3e3a2") + ellipse(-6, -15, 10, 3, shade(body, 0.2));
   // C-arm
-  b += path("M10 -11 C26 -30 26 -64 8 -80 L-2 -72 C12 -60 12 -34 0 -11Z", body) + path("M10 -11 C26 -30 26 -64 8 -80 L5 -77 C20 -62 20 -32 6 -11Z", lit, 'opacity=".55"');
+  b +=
+    path("M10 -11 C26 -30 26 -64 8 -80 L-2 -72 C12 -60 12 -34 0 -11Z", body) +
+    path("M10 -11 C26 -30 26 -64 8 -80 L5 -77 C20 -62 20 -32 6 -11Z", lit, 'opacity=".55"');
   // stage + clips
-  b += rrect(-30, -42, 42, 6, 2, shade(body, 0.15)) + rect(-24, -45, 14, 3, "#e8eef2") + rect(-21, -46, 8, 1.5, P.coralLight);
+  b +=
+    rrect(-30, -42, 42, 6, 2, shade(body, 0.15)) +
+    rect(-24, -45, 14, 3, "#e8eef2") +
+    rect(-21, -46, 8, 1.5, P.coralLight);
   // nosepiece + objective
   b += rrect(-12, -60, 14, 7, 2, "#c9d1d9") + rrect(-9, -55, 7, 9, 2, "#9aa7b4");
   // tube to eyepiece
   b += line(-4, -62, -18, -94, body, 13) + line(-6, -64, -18, -92, lit, 3, 'opacity=".6"');
   b += rrect(-27, -104, 16, 10, 3, "#c9d1d9", 'transform="rotate(-24 -19 -99)"');
   // focus knobs
-  b += circle(14, -48, 8, shade(body, 0.1)) + circle(14, -48, 4, "#c9d1d9") + circle(12, -50, 1.6, "#ffffff", 'opacity=".7"');
+  b +=
+    circle(14, -48, 8, shade(body, 0.1)) +
+    circle(14, -48, 4, "#c9d1d9") +
+    circle(12, -50, 1.6, "#ffffff", 'opacity=".7"');
   return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(-dir * s)} ${f(s)})">${b}</g>`;
 }
 /** Eyepiece tip of microscope(x, y, s, dir) in world units. */
@@ -162,20 +233,36 @@ export function tubeRack(x, y, colors, { gap = 18 } = {}) {
 export function beaker(x, y, w, h, { liquid = P.green, fill = 0.4, marks = true } = {}) {
   let s = contact(x, y, w * 0.6, 3.5, 0.2);
   const x0 = x - w / 2;
-  s += path(`M${f(x0)} ${f(y - h)}h${f(w)}v${f(h - 6)}q0 6 -6 6h${f(-w + 12)}q-6 0 -6 -6Z`, "#e9f4f7", 'opacity=".92"');
-  s += path(`M${f(x0)} ${f(y - h * fill)}h${f(w)}v${f(h * fill - 6)}q0 6 -6 6h${f(-w + 12)}q-6 0 -6 -6Z`, liquid, 'opacity=".9"');
+  s += path(
+    `M${f(x0)} ${f(y - h)}h${f(w)}v${f(h - 6)}q0 6 -6 6h${f(-w + 12)}q-6 0 -6 -6Z`,
+    "#e9f4f7",
+    'opacity=".92"',
+  );
+  s += path(
+    `M${f(x0)} ${f(y - h * fill)}h${f(w)}v${f(h * fill - 6)}q0 6 -6 6h${f(-w + 12)}q-6 0 -6 -6Z`,
+    liquid,
+    'opacity=".9"',
+  );
   s += ellipse(x, y - h * fill, w / 2, 2.5, light(liquid, 0.35));
-  s += rect(x0 - 3, y - h - 3, w + 6, 4, "#dbe8ec") + path(`M${f(x0 - 3)} ${f(y - h - 3)}l-5 -4h6Z`, "#dbe8ec");
-  if (marks) for (let k = 1; k < 4; k++) s += line(x + w / 2 - 12, y - (h * k) / 4, x + w / 2 - 4, y - (h * k) / 4, "#7f98a6", 1.6);
+  s +=
+    rect(x0 - 3, y - h - 3, w + 6, 4, "#dbe8ec") +
+    path(`M${f(x0 - 3)} ${f(y - h - 3)}l-5 -4h6Z`, "#dbe8ec");
+  if (marks)
+    for (let k = 1; k < 4; k++)
+      s += line(x + w / 2 - 12, y - (h * k) / 4, x + w / 2 - 4, y - (h * k) / 4, "#7f98a6", 1.6);
   s += rect(x0 + 4, y - h + 4, 3.5, h - 12, "#ffffff", 'opacity=".7"');
   return s;
 }
 
 /** Wooden ruler lying on a bench, front edge at y. */
 export function ruler(x, y, w, { color = P.goldLight } = {}) {
-  let s = rect(x, y - 9, w, 9, color) + rect(x, y - 9, w, 2, light(color, 0.35)) + rect(x, y - 2, w, 2, shade(color, 0.25));
+  let s =
+    rect(x, y - 9, w, 9, color) +
+    rect(x, y - 9, w, 2, light(color, 0.35)) +
+    rect(x, y - 2, w, 2, shade(color, 0.25));
   let d = "";
-  for (let i = 0; i * 7 <= w - 8; i++) d += `M${f(x + 4 + i * 7)} ${f(y - 9)}v${i % 5 === 0 ? 6 : 3.5}`;
+  for (let i = 0; i * 7 <= w - 8; i++)
+    d += `M${f(x + 4 + i * 7)} ${f(y - 9)}v${i % 5 === 0 ? 6 : 3.5}`;
   return s + stroke(d, shade(color, 0.55), 1.1);
 }
 
@@ -197,7 +284,16 @@ export function computer(x, y, s = 1, { screen = "#cfe6f2" } = {}) {
     rect(-4, -14, 8, 14, "#5d6772") +
     rrect(-16, -3, 32, 4, 2, "#4b5560") +
     rrect(-30, -54, 60, 42, 4, "#2c3a4a") +
-    rect(-26, -50, 52, 34, vgrad([[0, light(screen, 0.2)], [1, screen]])) +
+    rect(
+      -26,
+      -50,
+      52,
+      34,
+      vgrad([
+        [0, light(screen, 0.2)],
+        [1, screen],
+      ]),
+    ) +
     rect(-21, -44, 22, 4, P.blue) +
     rect(-21, -36, 34, 3, "#8fb3cc") +
     rect(-21, -30, 28, 3, "#8fb3cc") +
@@ -210,40 +306,75 @@ export function computer(x, y, s = 1, { screen = "#cfe6f2" } = {}) {
 /** Artist's easel standing on y, with a small painting. */
 export function easel(x, y, s = 1, { art = "sun" } = {}) {
   let b = contact(0, 0, 30, 5, 0.18);
-  b += line(-22, 0, -6, -112, P.woodDark, 5) + line(22, 0, 6, -112, P.woodDark, 5) + line(0, 0, 0, -60, shade(P.woodDark, 0.2), 4);
+  b +=
+    line(-22, 0, -6, -112, P.woodDark, 5) +
+    line(22, 0, 6, -112, P.woodDark, 5) +
+    line(0, 0, 0, -60, shade(P.woodDark, 0.2), 4);
   b += rect(-30, -50, 60, 5, P.wood);
-  b += rect(-28, -100, 56, 50, "#fbf8f1") + rect(-25, -97, 50, 44, art === "sun" ? "#cfe6ee" : "#f6ead6");
-  if (art === "sun") b += circle(-10, -85, 7, P.gold) + path("M-25 -53 Q-6 -74 10 -62 T25 -66 V-53Z", P.grass);
-  else b += path("M-25 -53 L-8 -80 L6 -62 L14 -72 L25 -53Z", P.tealLight) + circle(12, -86, 6, P.coral);
+  b +=
+    rect(-28, -100, 56, 50, "#fbf8f1") +
+    rect(-25, -97, 50, 44, art === "sun" ? "#cfe6ee" : "#f6ead6");
+  if (art === "sun")
+    b += circle(-10, -85, 7, P.gold) + path("M-25 -53 Q-6 -74 10 -62 T25 -66 V-53Z", P.grass);
+  else
+    b +=
+      path("M-25 -53 L-8 -80 L6 -62 L14 -72 L25 -53Z", P.tealLight) + circle(12, -86, 6, P.coral);
   return tr(x, y, b, s);
 }
 
 /** Paint palette lying flat-ish on a table top at y. */
 export function palette(x, y, s = 1) {
   const b =
-    path("M-30 -2 C-34 -14 -16 -20 2 -18 C22 -16 34 -10 30 -2 C26 4 14 0 8 4 C2 8 -26 8 -30 -2Z", "#e2c08f") +
+    path(
+      "M-30 -2 C-34 -14 -16 -20 2 -18 C22 -16 34 -10 30 -2 C26 4 14 0 8 4 C2 8 -26 8 -30 -2Z",
+      "#e2c08f",
+    ) +
     ellipse(14, -6, 4, 2.4, shade("#e2c08f", 0.25)) +
-    [[-20, -7, P.red], [-10, -12, P.gold], [2, -12, P.blue], [-14, 0, P.green], [22, -12, P.purple]].map(([a, b2, c]) => ellipse(a, b2, 4.5, 2.6, c)).join("");
+    [
+      [-20, -7, P.red],
+      [-10, -12, P.gold],
+      [2, -12, P.blue],
+      [-14, 0, P.green],
+      [22, -12, P.purple],
+    ]
+      .map(([a, b2, c]) => ellipse(a, b2, 4.5, 2.6, c))
+      .join("");
   return tr(x, y, b, s);
 }
 
 /** Cup of brushes on a table top at y. */
 export function brushCup(x, y, s = 1) {
   const b =
-    line(-4, -16, -10, -42, P.woodDark, 2.4) + line(0, -16, 2, -46, P.wood, 2.4) + line(4, -16, 12, -40, P.woodDark, 2.4) +
-    ellipse(-10, -44, 2.6, 4, P.coral) + ellipse(2, -48, 2.6, 4, P.blue) + ellipse(12, -42, 2.6, 4, P.gold) +
-    path("M-9 -18h18l-2 18h-14Z", "#6aa2c2") + rect(-9, -18, 18, 3, light("#6aa2c2", 0.3));
+    line(-4, -16, -10, -42, P.woodDark, 2.4) +
+    line(0, -16, 2, -46, P.wood, 2.4) +
+    line(4, -16, 12, -40, P.woodDark, 2.4) +
+    ellipse(-10, -44, 2.6, 4, P.coral) +
+    ellipse(2, -48, 2.6, 4, P.blue) +
+    ellipse(12, -42, 2.6, 4, P.gold) +
+    path("M-9 -18h18l-2 18h-14Z", "#6aa2c2") +
+    rect(-9, -18, 18, 3, light("#6aa2c2", 0.3));
   return tr(x, y, b, s);
 }
 
 /** Paint jar with a coloured lid, on y. */
-export const paintJar = (x, y, c, s = 1) => tr(x, y, rrect(-8, -16, 16, 16, 3, "#eef3f5") + rrect(-7, -10, 14, 9, 2, c) + rrect(-9, -20, 18, 5, 2, shade(c, 0.15)), s);
+export const paintJar = (x, y, c, s = 1) =>
+  tr(
+    x,
+    y,
+    rrect(-8, -16, 16, 16, 3, "#eef3f5") +
+      rrect(-7, -10, 14, 9, 2, c) +
+      rrect(-9, -20, 18, 5, 2, shade(c, 0.15)),
+    s,
+  );
 
 /* ------------------------------------------------------------ diagrams */
 
 /** Earth as a globe of radius r with a tilted axis (deg, + leans the north pole right) and a dark night side. */
 export function earth(x, y, r, { tilt = 23.5, nightSide = 1 } = {}) {
-  const ocean = vgrad([[0, "#62b3d8"], [1, "#2c7aa3"]]);
+  const ocean = vgrad([
+    [0, "#62b3d8"],
+    [1, "#2c7aa3"],
+  ]);
   const land = "#6fae6a";
   // simple continents in the globe's own (tilted) frame, unit radius
   const shapes = [
@@ -256,7 +387,9 @@ export function earth(x, y, r, { tilt = 23.5, nightSide = 1 } = {}) {
   b += circle(0, 0, r, ocean);
   b += `<g clip-path="url(#${clipId})"><g transform="rotate(${f(tilt)})">`;
   b += `<g transform="scale(${f(r)})">${shapes.map((d) => `<path d="${d}" fill="${land}"/>`).join("")}</g>`;
-  b += ellipse(0, -r * 0.98, r * 0.4, r * 0.13, "#f2f7fa") + ellipse(0, r * 0.99, r * 0.42, r * 0.12, "#f2f7fa");
+  b +=
+    ellipse(0, -r * 0.98, r * 0.4, r * 0.13, "#f2f7fa") +
+    ellipse(0, r * 0.99, r * 0.42, r * 0.12, "#f2f7fa");
   b += stroke(`M${f(-r)} 0H${f(r)}`, "#ffffff", 1.8, 'opacity=".85" stroke-dasharray="5 4"');
   b += `</g>`;
   b += rect(nightSide > 0 ? 0 : -r, -r, r, r * 2, "#0a1830", 'opacity=".6"') + `</g>`;
@@ -271,7 +404,13 @@ export function earth(x, y, r, { tilt = 23.5, nightSide = 1 } = {}) {
 
 /** Cut tree stump on ground at y. */
 export function stump(x, y, s = 1) {
-  const b = contact(0, 0, 14, 3, 0.2) + path("M-11 0 L-9 -14 h18 L11 0Z", P.bark) + path("M3 -14 h6 L11 0 h-7Z", P.barkDark, 'opacity=".6"') + ellipse(0, -14, 9, 3.6, "#d9b48a") + ellipse(0, -14, 4.5, 1.8, "#c49a6c") + path("M-11 0 l-5 2 l6 0Z", P.barkDark);
+  const b =
+    contact(0, 0, 14, 3, 0.2) +
+    path("M-11 0 L-9 -14 h18 L11 0Z", P.bark) +
+    path("M3 -14 h6 L11 0 h-7Z", P.barkDark, 'opacity=".6"') +
+    ellipse(0, -14, 9, 3.6, "#d9b48a") +
+    ellipse(0, -14, 4.5, 1.8, "#c49a6c") +
+    path("M-11 0 l-5 2 l6 0Z", P.barkDark);
   return tr(x, y, b, s);
 }
 
@@ -282,21 +421,48 @@ export { mix, rgrad, text };
  * right (its facing:-1 flips the body but double-flips the face), so a figure that must LOOK left is drawn
  * facing 1 and mirrored with this.
  */
-export const mirrorX = (x, body) => `<g transform="translate(${f(2 * x)} 0) scale(-1 1)">${body}</g>`;
+export const mirrorX = (x, body) =>
+  `<g transform="translate(${f(2 * x)} 0) scale(-1 1)">${body}</g>`;
 
 /* ------------------------------------------------------------ geometry stimuli */
 
 /** Plain card background for a geometry stimulus: soft paper with a faint centre glow, no grid. */
 export const shapeCard = (W, H) =>
-  rect(0, 0, W, H, vgrad([[0, "#fafbfc"], [1, "#eef2f5"]])) + ellipse(W / 2, H / 2, W * 0.42, H * 0.4, rgrad([[0, "#ffffff", 0.9], [1, "#ffffff", 0]]));
+  rect(
+    0,
+    0,
+    W,
+    H,
+    vgrad([
+      [0, "#fafbfc"],
+      [1, "#eef2f5"],
+    ]),
+  ) +
+  ellipse(
+    W / 2,
+    H / 2,
+    W * 0.42,
+    H * 0.4,
+    rgrad([
+      [0, "#ffffff", 0.9],
+      [1, "#ffffff", 0],
+    ]),
+  );
 
 /**
  * One flat geometric shape with a soft drop shadow, a gentle top-lit gradient and a crisp edge in a deep tone
  * of its own colour. `shape(attrs)` returns the SVG element for the exact geometry (so proportions never move).
  */
 export function solidShape(shape, base) {
-  const blur = def((i) => `<filter id="${i}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>`, "bl");
-  const fill = vgrad([[0, light(base, 0.35)], [1, base]]);
+  const blur = def(
+    (i) =>
+      `<filter id="${i}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>`,
+    "bl",
+  );
+  const fill = vgrad([
+    [0, light(base, 0.35)],
+    [1, base],
+  ]);
   return g(
     `<g transform="translate(0 8)" opacity=".18">${shape(`fill="#1c2f4a" filter="url(#${blur})"`)}</g>` +
       shape(`fill="${fill}"`) +
@@ -305,4 +471,5 @@ export function solidShape(shape, base) {
 }
 
 /** Camera push-in: scale a whole composed scene by k about the point (ax, ay) so figures read larger. */
-export const cam = (ax, ay, k, body) => `<g transform="translate(${f(ax)} ${f(ay)}) scale(${f(k)}) translate(${f(-ax)} ${f(-ay)})">${body}</g>`;
+export const cam = (ax, ay, k, body) =>
+  `<g transform="translate(${f(ax)} ${f(ay)}) scale(${f(k)}) translate(${f(-ax)} ${f(-ay)})">${body}</g>`;

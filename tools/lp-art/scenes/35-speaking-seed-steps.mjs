@@ -1,5 +1,21 @@
-import { P, rect, rrect, ellipse, path, sky, sun, cloud, ground, badge, arrow, vgrad, shade, light, g } from "../../../access-practice-lab/src/art/kit.js";
-import { pot, plant, wateringCan } from "../lib/c.mjs";
+import {
+  arrow,
+  badge,
+  cloud,
+  ellipse,
+  g,
+  ground,
+  light,
+  P,
+  path,
+  rect,
+  rrect,
+  shade,
+  sky,
+  sun,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { plant, pot, wateringCan } from "../lib/c.mjs";
 
 const XS = [85, 245, 405, 565];
 const TOP = 316; // table top / pot base
@@ -28,12 +44,28 @@ export default {
     // potting bench
     rect(0, TOP - 4, 640, 14, P.wood) +
     rect(0, TOP - 4, 640, 4, P.woodLight) +
-    rect(0, TOP + 10, 640, 90, vgrad([[0, "#c99b6c"], [1, "#a97b4f"]])) +
+    rect(
+      0,
+      TOP + 10,
+      640,
+      90,
+      vgrad([
+        [0, "#c99b6c"],
+        [1, "#a97b4f"],
+      ]),
+    ) +
     rect(0, TOP + 10, 640, 6, shade(P.wood, 0.35), 'opacity=".5"') +
     // 1 seed + water
     seedPot(XS[0]) +
     wateringCan(XS[0] + 52, TOP - 168, 1.5, { color: P.blue, facing: -1 }) +
-    [0, 1, 2, 3, 4].map((i) => path(`M${XS[0] - 4 + (i % 2) * 6} ${TOP - 130 + i * 11} q-2 4 0 6 q2 -2 0 -6Z`, P.waterLight)).join("") +
+    [0, 1, 2, 3, 4]
+      .map((i) =>
+        path(
+          `M${XS[0] - 4 + (i % 2) * 6} ${TOP - 130 + i * 11} q-2 4 0 6 q2 -2 0 -6Z`,
+          P.waterLight,
+        ),
+      )
+      .join("") +
     // 2 sprout
     pot(XS[1], TOP, 1.5) +
     plant(XS[1], TOP - 75, 38, { pairs: 1, leaf: 26 }) +

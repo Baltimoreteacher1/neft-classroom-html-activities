@@ -1,4 +1,4 @@
-import { solidShape, shapeCard } from "../lib/f.mjs";
+import { shapeCard, solidShape } from "../lib/f.mjs";
 
 // Answer-choice picture: a rectangle (same position and 300 by 180 proportions as the original).
 export default {
@@ -7,5 +7,7 @@ export default {
   h: 400,
   title: "a rectangle",
   grain: false,
-  draw: () => shapeCard(640, 400) + solidShape((a) => `<rect x="170" y="110" width="300" height="180" ${a}/>`, "#8fc6de"),
+  draw: () =>
+    shapeCard(640, 400) +
+    solidShape((a) => `<rect x="170" y="110" width="300" height="180" ${a}/>`, "#8fc6de"),
 };

@@ -1,4 +1,24 @@
-import { P, sky, sun, cloud, hills, ground, tree, tuft, rain, arrow, stroke, path, ellipse, rect, g, vgrad, shade, light, haze } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  arrow,
+  cloud,
+  ellipse,
+  g,
+  ground,
+  haze,
+  hills,
+  light,
+  P,
+  path,
+  rain,
+  rect,
+  shade,
+  sky,
+  stroke,
+  sun,
+  tree,
+  tuft,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 import { mountain, reeds } from "../lib/a.mjs";
 
 const wavy = (x, y0, y1) => {
@@ -28,12 +48,34 @@ export default {
     mountain(500, 292, 330, 196, { color: "#6f9a82" }) +
     ground(640, 284, 116, "grass", { seed: 6 }) +
     // river from the mountain slope down into the lake
-    stroke("M548 186 C530 214 552 236 528 258 C506 278 478 278 452 296 C432 308 410 316 384 326", P.waterDark, 15) +
-    stroke("M548 186 C530 214 552 236 528 258 C506 278 478 278 452 296 C432 308 410 316 384 326", P.water, 11) +
-    stroke("M543 204 C536 222 546 236 532 252M500 276 C484 282 470 286 456 294M430 308 C418 314 404 318 392 322", P.waterLight, 2.4, 'opacity=".85"') +
+    stroke(
+      "M548 186 C530 214 552 236 528 258 C506 278 478 278 452 296 C432 308 410 316 384 326",
+      P.waterDark,
+      15,
+    ) +
+    stroke(
+      "M548 186 C530 214 552 236 528 258 C506 278 478 278 452 296 C432 308 410 316 384 326",
+      P.water,
+      11,
+    ) +
+    stroke(
+      "M543 204 C536 222 546 236 532 252M500 276 C484 282 470 286 456 294M430 308 C418 314 404 318 392 322",
+      P.waterLight,
+      2.4,
+      'opacity=".85"',
+    ) +
     // lake
     ellipse(236, 338, 200, 50, shade(P.grass, 0.3), 'opacity=".45"') +
-    ellipse(232, 334, 192, 46, vgrad([[0, P.waterLight], [1, P.waterDark]])) +
+    ellipse(
+      232,
+      334,
+      192,
+      46,
+      vgrad([
+        [0, P.waterLight],
+        [1, P.waterDark],
+      ]),
+    ) +
     stroke("M120 330h40M210 346h52M300 326h34M160 356h30", "#ffffff", 2.4, 'opacity=".7"') +
     reeds(54, 336, 0.7, { seed: 2 }) +
     tree(600, 300, 0.42, { kind: "pine", tone: "#3f7a5a" }) +
@@ -47,7 +89,10 @@ export default {
     arrow(wavy(170, 302, 168), P.navy, 4) +
     arrow(wavy(232, 296, 150), P.navy, 4) +
     arrow(wavy(294, 302, 168), P.navy, 4) +
-    arrow("M300 128 Q360 76 420 86", P.navy, 3.2).replace("<path ", '<path stroke-dasharray="7 9" ') +
+    arrow("M300 128 Q360 76 420 86", P.navy, 3.2).replace(
+      "<path ",
+      '<path stroke-dasharray="7 9" ',
+    ) +
     tuft(470, 384, 1.1) +
     tuft(30, 390),
 };

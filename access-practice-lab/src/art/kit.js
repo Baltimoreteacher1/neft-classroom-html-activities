@@ -54,7 +54,7 @@ export const P = {
   yellow: "#f2c335",
   green: "#4f9d5d",
   blue: "#3b7dc4",
-  purple: "#7a5aa6",
+  purple: "#6b7f3a",
   pink: "#e58fb0",
 };
 
@@ -65,7 +65,7 @@ export const CLOTH = [
   "#3b7dc4",
   "#e2a72e",
   "#0f766e",
-  "#7a5aa6",
+  "#6b7f3a",
   "#ea8a2b",
   "#e58fb0",
   "#4f9d5d",
@@ -693,7 +693,7 @@ export function kid(i, extra = {}) {
   const skins = [SKIN[1], SKIN[3], SKIN[0], SKIN[4], SKIN[2], SKIN[5], SKIN[1], SKIN[3], SKIN[2]];
   const hairs = [HAIR[0], HAIR[1], HAIR[3], HAIR[0], HAIR[2], HAIR[1], HAIR[4], "#2f6b7a", P.coral];
   const tops = [P.coral, P.teal, P.gold, P.blue, P.purple, P.orange, P.green, "#e58fb0", P.navy];
-  const bottoms = [P.navy, "#3e4a5c", "#5a6b8c", P.navy, "#4a3f5c", "#2f4858", "#3e4a5c", P.navy, "#4e5d6c"];
+  const bottoms = [P.navy, "#3e4a5c", "#5a6b8c", P.navy, "#3f4a52", "#2f4858", "#3e4a5c", P.navy, "#4e5d6c"];
   const k = i % styles.length;
   return {
     hairStyle: styles[k],

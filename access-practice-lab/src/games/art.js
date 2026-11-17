@@ -1,66 +1,979 @@
 // Original vector art for the Language Game Studio: scenes, two recurring guides and shared pieces.
 // Everything is drawn here (no stock images, no raster), so it is crisp at any size, weighs a few
-// kilobytes and carries no license question. Two house styles share one palette:
-//   3-5  "Storybook"      rounded shapes, a navy outline, warm saturated fills
-//   6-8  "Field Journal"  outline-free flat shapes, cooler duotone fills, finer detail
+// kilobytes and carries no license question. Scenes and guides use the site illustration kit
+// (src/art/kit.js): editorial picture-book flat shapes with no outlines, form from a lit and a shade
+// side, soft contact shadows and one warm light. Two band house styles share that drawing:
+//   3-5  "Storybook"      warm morning light and a soft sun glow, full Deep Harbor colour
+//   6-8  "Field Journal"  the same scene cooler and quieter (every fill eased toward slate), a fine
+//                         journal grid and an inset paper rule
+// Gradient ids are unique per call, so a page can show the same scene many times.
 // No violet, purple or magenta anywhere (validate:no-purple).
+//
+// The small legacy helpers at the bottom (stroke, sky, cloud, hill, tree, star, book) are kept with their
+// old output for the other game modules that import them.
+import {
+  FONT,
+  P,
+  circle,
+  contact,
+  ellipse,
+  ground,
+  hills,
+  house,
+  cloud as kCloud,
+  stroke as kStroke,
+  tree as kTree,
+  haze,
+  light,
+  line,
+  moon,
+  noDefs,
+  path,
+  person,
+  poly,
+  rect,
+  rrect,
+  shade,
+  stars,
+  tr,
+  tuft,
+  flower,
+  kid,
+} from "../art/kit.js";
+import { chip, collect, coolAll, lg, magnifier, rg, tile, word } from "../art/i-scene.js";
 import { raw } from "../util.js";
 
 export const C = {
-  navy: "#17324d", ink: "#14263d", teal: "#1fa6a2", tealDk: "#126e6c", tealLt: "#bfe9e6", coral: "#f2765a", coralDk: "#c94f3b",
-  gold: "#f2c15b", goldDk: "#d99a22", sand: "#f6e9cc", paper: "#fbf4e2", leaf: "#3f9b5f", leafDk: "#2b7447", leafLt: "#9fd8a8",
-  sky: "#8fc7e8", skyLt: "#d6ecf8", cloud: "#ffffff", stone: "#9aa9b8", stoneDk: "#6d7e90", wood: "#b9814a", woodDk: "#8a5a2f", night: "#10243b", white: "#ffffff",
+  navy: "#17324d",
+  ink: "#14263d",
+  teal: "#1fa6a2",
+  tealDk: "#126e6c",
+  tealLt: "#bfe9e6",
+  coral: "#f2765a",
+  coralDk: "#c94f3b",
+  gold: "#f2c15b",
+  goldDk: "#d99a22",
+  sand: "#f6e9cc",
+  paper: "#fbf4e2",
+  leaf: "#3f9b5f",
+  leafDk: "#2b7447",
+  leafLt: "#9fd8a8",
+  sky: "#8fc7e8",
+  skyLt: "#d6ecf8",
+  cloud: "#ffffff",
+  stone: "#9aa9b8",
+  stoneDk: "#6d7e90",
+  wood: "#b9814a",
+  woodDk: "#8a5a2f",
+  night: "#10243b",
+  white: "#ffffff",
 };
 const styleOf = (band) => (band === "6-8" ? "journal" : "storybook");
-const stroke = (band, w = 3) => (styleOf(band) === "storybook" ? `stroke="${C.navy}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"` : 'stroke="none"');
-let uid = 0;
-const nid = (p) => `${p}${(uid += 1)}`;
+const stroke = (band, w = 3) =>
+  styleOf(band) === "storybook"
+    ? `stroke="${C.navy}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`
+    : 'stroke="none"';
 
 export const svg = (vb, body, { label = "", cls = "", style = "" } = {}) =>
-  raw(`<svg class="gs-art ${cls}" ${style ? `style="${style}"` : ""} viewBox="${vb}" ${label ? `role="img" aria-label="${label.replace(/"/g, "&quot;")}"` : 'aria-hidden="true" focusable="false"'} xmlns="http://www.w3.org/2000/svg">${body}</svg>`);
+  raw(
+    `<svg class="gs-art ${cls}" ${style ? `style="${style}"` : ""} viewBox="${vb}" ${label ? `role="img" aria-label="${label.replace(/"/g, "&quot;")}"` : 'aria-hidden="true" focusable="false"'} xmlns="http://www.w3.org/2000/svg">${body}</svg>`,
+  );
 
-const sky = (id, a, b) => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="480" height="270" fill="url(#${id})"/>`;
-const cloud = (x, y, s = 1, o = 1) => `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o}"><ellipse cx="0" cy="0" rx="30" ry="12" fill="#fff"/><circle cx="-12" cy="-8" r="13" fill="#fff"/><circle cx="8" cy="-12" r="16" fill="#fff"/></g>`;
-const hill = (y, fill, amp = 24, k = 0) => `<path d="M0 270V${y}C90 ${y - amp + k} 170 ${y + amp / 2} 260 ${y}S400 ${y - amp} 480 ${y + 6}V270Z" fill="${fill}"/>`;
-const tree = (x, y, s, a, b, band) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-6" width="8" height="30" rx="3" fill="${C.woodDk}"/><circle cx="0" cy="-22" r="22" fill="${a}" ${stroke(band, 2.4)}/><circle cx="-14" cy="-10" r="14" fill="${b}"/><circle cx="14" cy="-12" r="13" fill="${b}"/></g>`;
-const star = (x, y, r, f) => `<path transform="translate(${x} ${y})" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} ${-r * 0.2}L${r * 0.45} ${r * 0.25}L${r * 0.6} ${r}L0 ${r * 0.55}L${-r * 0.6} ${r}L${-r * 0.45} ${r * 0.25}L${-r} ${-r * 0.2}L${-r * 0.3} ${-r * 0.3}Z" fill="${f}"/>`;
-const book = (x, y, w, h, a, b, band) => `<g transform="translate(${x} ${y})"><path d="M0 4Q${w / 2 - 4} -6 ${w / 2} 6V${h}Q${w / 4} ${h - 6} 0 ${h - 2}Z" fill="${a}" ${stroke(band, 2)}/><path d="M${w} 4Q${w / 2 + 4} -6 ${w / 2} 6V${h}Q${w * 0.75} ${h - 6} ${w} ${h - 2}Z" fill="${b}" ${stroke(band, 2)}/><path d="M${w * 0.12} 16h${w * 0.28}M${w * 0.12} 24h${w * 0.24}M${w * 0.6} 16h${w * 0.26}M${w * 0.6} 24h${w * 0.22}" stroke="${C.navy}" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/></g>`;
+/* ── band treatment ─────────────────────────────────────────────────────────────────────── */
+/** Draw with local gradients, then apply the band's house style. */
+function banded(band, draw, { w = 480, h = 270, frame = true } = {}) {
+  const journal = styleOf(band) === "journal";
+  const [defs, body] = collect(() =>
+    noDefs(() => {
+      let s = draw();
+      if (!frame) return s;
+      if (journal) {
+        let d = "";
+        for (let x = 30; x < w; x += 30) d += `M${x} 0V${h}`;
+        for (let y = 30; y < h; y += 30) d += `M0 ${y}H${w}`;
+        s += `<path d="${d}" stroke="#123a5c" stroke-width=".6" opacity=".07" fill="none"/>`;
+        s += `<rect x="9" y="9" width="${w - 18}" height="${h - 18}" rx="6" fill="none" stroke="#fbf6ec" stroke-width="1.3" opacity=".6"/>`;
+      } else
+        s += rect(
+          0,
+          0,
+          w,
+          h,
+          rg(
+            [
+              [0, "#fff1c9", 0.3],
+              [0.6, "#fff1c9", 0.08],
+              [1, "#fff1c9", 0],
+            ],
+            { cx: 0.82, cy: 0.08, r: 0.75 },
+          ),
+        );
+      return s;
+    }),
+  );
+  const out = (defs ? `<defs>${defs}</defs>` : "") + body;
+  return journal ? coolAll(out) : out;
+}
+
+/* ── scene pieces ───────────────────────────────────────────────────────────────────────── */
+const W = 480;
+const H = 270;
+const skyG = (a, b, c, h = H) =>
+  rect(
+    0,
+    0,
+    W,
+    h,
+    lg([
+      [0, a],
+      [0.6, b],
+      [1, c],
+    ]),
+  );
+const sunG = (x, y, r = 20) =>
+  circle(
+    x,
+    y,
+    r * 3.4,
+    rg([
+      [0, "#fff3c4", 0.8],
+      [1, "#fff3c4", 0],
+    ]),
+  ) +
+  circle(x, y, r, P.gold) +
+  circle(x - r * 0.12, y - r * 0.12, r * 0.82, P.goldLight) +
+  circle(x - r * 0.3, y - r * 0.32, r * 0.3, "#fff6cf", 'opacity=".7"');
+/** Soft studio backdrop with a tabletop, for scenes built from cards and boards. */
+const backdrop = (a, b, top = 214) =>
+  skyG(a, b, light(b, 0.2)) +
+  circle(
+    390,
+    40,
+    190,
+    rg([
+      [0, "#ffffff", 0.55],
+      [1, "#ffffff", 0],
+    ]),
+  ) +
+  rect(
+    0,
+    top,
+    W,
+    H - top,
+    lg([
+      [0, P.woodLight],
+      [1, P.wood],
+    ]),
+  ) +
+  rect(0, top, W, 4, light(P.woodLight, 0.35)) +
+  kStroke(`M0 ${top + 22}H${W}M0 ${top + 42}H${W}`, shade(P.wood, 0.12), 1.2, 'opacity=".5"');
+const dark = (a, b) =>
+  rect(
+    0,
+    0,
+    W,
+    H,
+    lg([
+      [0, a],
+      [1, b],
+    ]),
+  );
+const starG = (x, y, r, c) => {
+  let d = "";
+  for (let i = 0; i < 10; i++) {
+    const a = ((-90 + 36 * i) * Math.PI) / 180;
+    const k = i % 2 ? r * 0.45 : r;
+    d += `${i ? "L" : "M"}${(x + k * Math.cos(a)).toFixed(1)} ${(y + k * Math.sin(a)).toFixed(1)}`;
+  }
+  return (
+    path(`${d}Z`, c) +
+    path(
+      `M${x} ${y - r}L${x} ${y + r * 0.5}L${(x - r * 0.95).toFixed(1)} ${(y - r * 0.3).toFixed(1)}Z`,
+      light(c, 0.35),
+      'opacity=".55"',
+    )
+  );
+};
+/** A stone or rock: shade base, lit top. */
+const stone = (x, y, rx, ry, c = P.stone) =>
+  ellipse(x + 2, y + ry * 0.55, rx, ry, shade(c, 0.35)) +
+  ellipse(x, y, rx, ry, c) +
+  ellipse(x - rx * 0.22, y - ry * 0.35, rx * 0.5, ry * 0.38, light(c, 0.45), 'opacity=".8"');
+const mountain = (x, top, base, hw, c = P.stoneDark, snow = true) =>
+  poly(
+    [
+      [x - hw, base],
+      [x, top],
+      [x + hw, base],
+    ],
+    light(c, 0.12),
+  ) +
+  poly(
+    [
+      [x, top],
+      [x + hw, base],
+      [x + hw * 0.1, base],
+    ],
+    shade(c, 0.2),
+  ) +
+  (snow
+    ? poly(
+        [
+          [x - hw * 0.26, top + (base - top) * 0.26],
+          [x, top],
+          [x + hw * 0.26, top + (base - top) * 0.26],
+          [x + hw * 0.08, top + (base - top) * 0.2],
+          [x - hw * 0.06, top + (base - top) * 0.3],
+        ],
+        "#f7fbfd",
+      )
+    : "");
+const gear = (x, y, r, n, c) => {
+  const body = (dx, dy, col) =>
+    `<g transform="translate(${x + dx} ${y + dy})">${Array.from({ length: n }, (_, i) => rrect(-r * 0.18, -r * 1.28, r * 0.36, r * 0.42, r * 0.08, col, `transform="rotate(${(360 / n) * i})"`)).join("")}${circle(0, 0, r, col)}</g>`;
+  return (
+    
+    body(0, 3, shade(c, 0.3)) +
+    body(0, 0, c) +
+    circle(x - r * 0.25, y - r * 0.3, r * 0.42, light(c, 0.35), 'opacity=".55"') +
+    circle(x, y + 1, r * 0.38, shade(c, 0.45)) +
+    circle(x, y, r * 0.34, P.ivory)
+  );
+};
+const wave = (x0, y0, n, step, wdt, amp, c) =>
+  Array.from({ length: n }, (_, i) => {
+    const h = (((i * 13 + amp) % 34) * 2 + 12) | 0;
+    return rrect(x0 + i * step, y0 - h / 2, wdt, h, wdt / 2, c);
+  }).join("");
+const leafPair = (x, y, c = P.leafLight) =>
+  path(`M${x} ${y}q-24 -8 -30 12q20 6 30 -12Z`, c) +
+  path(`M${x} ${y}q24 -8 30 12q-20 6 -30 -12Z`, shade(c, 0.15)) +
+  kStroke(`M${x - 26} ${y + 9}Q${x - 14} ${y + 1} ${x} ${y}`, shade(c, 0.35), 1);
+
+/* ── guides ─────────────────────────────────────────────────────────────────────────────── */
+const eyesFor = (mood, dx = 10) =>
+  mood === "cheer"
+    ? kStroke(`M${-dx - 5} -4q5 -7 10 0M${dx - 5} -4q5 -7 10 0`, P.navy, 3)
+    : [-dx, dx]
+        .map((x) => {
+          const px = x + (mood === "think" ? 2 : 0);
+          const py = mood === "think" ? -6 : -4;
+          return (
+            circle(x, -4, 6.4, "#ffffff") +
+            circle(px, py, 3.4, P.navy) +
+            circle(px + 1.2, py - 1.3, 1.1, "#ffffff")
+          );
+        })
+        .join("");
 
 /** Guides: Pip the owl (teal) and Juno the fox (coral). mood: "hi" | "think" | "cheer". */
 export function mascot(name = "pip", band = "3-5", mood = "hi", size = 120) {
-  const s = stroke(band, 3);
-  const eyes = mood === "cheer" ? `<path d="M-14 -6q5 -7 10 0M4 -6q5 -7 10 0" fill="none" stroke="${C.navy}" stroke-width="3" stroke-linecap="round"/>` : `<circle cx="-9" cy="-4" r="6" fill="#fff"/><circle cx="9" cy="-4" r="6" fill="#fff"/><circle cx="${mood === "think" ? -7 : -9}" cy="${mood === "think" ? -6 : -4}" r="3" fill="${C.navy}"/><circle cx="${mood === "think" ? 11 : 9}" cy="${mood === "think" ? -6 : -4}" r="3" fill="${C.navy}"/>`;
-  const owl = `<g><ellipse cx="0" cy="22" rx="30" ry="34" fill="${C.teal}" ${s}/><ellipse cx="0" cy="30" rx="19" ry="24" fill="${C.tealLt}"/><path d="M-26 -8L-22 -30L-8 -18ZM26 -8L22 -30L8 -18Z" fill="${C.teal}" ${s}/><ellipse cx="0" cy="-4" rx="30" ry="26" fill="${C.teal}" ${s}/>${eyes}<path d="M-5 4L0 12L5 4Z" fill="${C.gold}" ${s}/><path d="M-30 18Q-44 30 -32 46Q-24 34 -26 20ZM30 18Q44 30 32 46Q24 34 26 20Z" fill="${C.tealDk}"/><path d="M-12 56l-4 8h12ZM12 56l4 8h-12Z" fill="${C.gold}" ${s}/>${band === "6-8" ? `<path d="M-14 -22h28" stroke="${C.gold}" stroke-width="3" stroke-linecap="round"/>` : ""}</g>`;
-  const fox = `<g><path d="M26 34Q58 28 54 60Q40 54 24 50Z" fill="${C.coral}" ${s}/><path d="M48 52Q54 56 54 60Q44 58 40 54Z" fill="#fff"/><ellipse cx="0" cy="26" rx="26" ry="32" fill="${C.coral}" ${s}/><ellipse cx="0" cy="34" rx="15" ry="22" fill="${C.sand}"/><path d="M-28 -6L-26 -32L-8 -16ZM28 -6L26 -32L8 -16Z" fill="${C.coral}" ${s}/><path d="M-24 -10L-23 -24L-14 -16ZM24 -10L23 -24L14 -16Z" fill="${C.sand}"/><path d="M-28 -4Q0 -26 28 -4Q26 22 0 26Q-26 22 -28 -4Z" fill="${C.coral}" ${s}/><path d="M-20 4Q0 8 20 4Q10 22 0 24Q-10 22 -20 4Z" fill="${C.sand}"/>${eyes.replace(/-9/g, "-10").replace(/9/g, "10")}<ellipse cx="0" cy="8" rx="4" ry="3" fill="${C.navy}"/></g>`;
-  return svg("-60 -42 120 118", name === "juno" ? fox : owl, { cls: `gs-mascot gs-mascot-${name}`, style: `width:${size}px;height:auto;max-width:100%` });
+  const T = P.teal;
+  const owl = () =>
+    contact(0, 66, 30, 5, 0.22) +
+    path("M-30 18Q-46 32 -34 50Q-24 36 -26 20Z", shade(T, 0.3)) +
+    path("M30 18Q46 32 34 50Q24 36 26 20Z", shade(T, 0.35)) +
+    ellipse(0, 24, 30, 34, T) +
+    path("M6 -8Q30 4 30 24Q30 52 4 58Q22 40 6 -8Z", shade(T, 0.18), 'opacity=".8"') +
+    ellipse(0, 32, 19, 23, "#c9ebe5") +
+    kStroke(
+      "M-10 26q4 4 8 0M2 26q4 4 8 0M-6 36q4 4 8 0M-12 44q4 3 8 0M4 44q4 3 8 0",
+      "#8fcfc6",
+      1.6,
+    ) +
+    poly(
+      [
+        [-27, -8],
+        [-23, -32],
+        [-8, -18],
+      ],
+      T,
+    ) +
+    poly(
+      [
+        [27, -8],
+        [23, -32],
+        [8, -18],
+      ],
+      shade(T, 0.15),
+    ) +
+    ellipse(0, -4, 30, 26, T) +
+    path("M12 -26Q30 -18 30 -4Q30 14 12 22Q26 4 12 -26Z", shade(T, 0.16), 'opacity=".8"') +
+    circle(-16, -16, 5, light(T, 0.4), 'opacity=".5"') +
+    ellipse(-10, -3, 11, 10, light(T, 0.55)) +
+    ellipse(10, -3, 11, 10, light(T, 0.48)) +
+    eyesFor(mood, 10) +
+    poly(
+      [
+        [-5, 5],
+        [0, 13],
+        [5, 5],
+      ],
+      P.gold,
+    ) +
+    poly(
+      [
+        [0, 5],
+        [0, 13],
+        [5, 5],
+      ],
+      shade(P.gold, 0.25),
+    ) +
+    ellipse(-10, 60, 7, 3.4, shade(P.gold, 0.1)) +
+    ellipse(10, 60, 7, 3.4, shade(P.gold, 0.1)) +
+    (band === "6-8" ? kStroke("M-15 -21q7 -4 13 -1M2 -22q7 -3 13 1", P.gold, 3) : "");
+  const F = P.coral;
+  const cream = "#f7e6cc";
+  const fox = () =>
+    contact(4, 66, 34, 5, 0.22) +
+    path("M22 36Q60 26 56 62Q40 58 22 52Z", shade(F, 0.12)) +
+    path("M44 54Q56 58 56 62Q44 62 38 56Z", "#fbf6ec") +
+    ellipse(0, 28, 26, 32, F) +
+    path("M8 -2Q26 8 26 28Q26 52 6 60Q20 36 8 -2Z", shade(F, 0.2), 'opacity=".8"') +
+    ellipse(0, 36, 15, 22, cream) +
+    ellipse(-9, 62, 7, 3.6, shade(F, 0.35)) +
+    ellipse(9, 62, 7, 3.6, shade(F, 0.35)) +
+    poly(
+      [
+        [-28, -6],
+        [-26, -32],
+        [-8, -16],
+      ],
+      F,
+    ) +
+    poly(
+      [
+        [28, -6],
+        [26, -32],
+        [8, -16],
+      ],
+      shade(F, 0.18),
+    ) +
+    poly(
+      [
+        [-24, -10],
+        [-23, -25],
+        [-14, -16],
+      ],
+      "#3a2a2a",
+    ) +
+    poly(
+      [
+        [24, -10],
+        [23, -25],
+        [14, -16],
+      ],
+      "#3a2a2a",
+    ) +
+    ellipse(0, -6, 28.5, 14, F) +
+    path("M-28 -4Q0 -26 28 -4Q26 22 0 26Q-26 22 -28 -4Z", F) +
+    path("M10 -16Q28 -10 28 -4Q26 18 6 25Q20 8 10 -16Z", shade(F, 0.18), 'opacity=".8"') +
+    circle(-17, -10, 4, light(F, 0.4), 'opacity=".5"') +
+    path("M-22 4Q0 9 22 4Q12 22 0 24Q-12 22 -22 4Z", cream) +
+    eyesFor(mood, 10) +
+    ellipse(0, 8, 4.4, 3.2, P.navy) +
+    ellipse(-1.2, 7, 1.4, 0.9, "#ffffff", 'opacity=".7"') +
+    (band === "6-8" ? path("M-20 22Q0 32 20 22L18 30Q0 38 -18 30Z", P.teal) : "");
+  return svg("-60 -42 120 118", banded(band, name === "juno" ? fox : owl, { frame: false }), {
+    cls: `gs-mascot gs-mascot-${name}`,
+    style: `width:${size}px;height:auto;max-width:100%`,
+  });
 }
 export const mascotHTML = mascot;
 
-// ── scenes ─────────────────────────────────────────────────────────────────────────────────
+/* ── scenes ─────────────────────────────────────────────────────────────────────────────── */
+const parrot = (x, y) =>
+  tr(
+    x,
+    y,
+    path("M-14 6L-40 30L-34 32L-10 14Z", P.teal) +
+      path("M-14 6L-40 30L-30 24Z", shade(P.teal, 0.25)) +
+      ellipse(0, 0, 18, 13, P.coral) +
+      ellipse(2, 4, 12, 7, P.coralLight, 'opacity=".6"') +
+      path("M-14 -4Q-4 -10 8 -2Q0 10 -14 6Z", P.teal) +
+      circle(13, -10, 10, P.coral) +
+      circle(10, -14, 4, light(P.coral, 0.35), 'opacity=".6"') +
+      path("M21 -12l11 4l-10 5Z", P.gold) +
+      circle(16, -12, 2.4, P.ink) +
+      circle(16.8, -12.8, 0.8, "#ffffff"),
+  );
+const canopy = () =>
+  [
+    [20, 0, 38],
+    [80, -10, 36],
+    [150, -6, 30],
+    [230, -14, 34],
+    [300, -8, 30],
+    [370, -12, 38],
+    [450, 0, 40],
+  ]
+    .map(
+      ([x, y, r]) =>
+        circle(x, y + 6, r, shade(P.leaf, 0.3)) +
+        circle(x - 4, y, r * 0.86, P.leaf) +
+        ellipse(x - 10, y - r * 0.2, r * 0.4, r * 0.2, P.leafLight, 'opacity=".6"'),
+    )
+    .join("");
+
 const SCENES = {
-  jungle: (b) => `${sky("sj", "#bfe9e6", "#e8f6d8")}${cloud(70, 44, 1.1, 0.9)}${cloud(380, 62, 0.8, 0.8)}<circle cx="396" cy="48" r="22" fill="${C.gold}" opacity=".9"/>${hill(170, "#8fcf9a", 26)}${hill(205, C.leaf, 20, 8)}<g ${stroke(b, 2.4)}><path d="M60 0Q74 70 56 130" fill="none" stroke="${C.leafDk}" stroke-width="5"/><path d="M150 0Q132 60 150 110" fill="none" stroke="${C.leafDk}" stroke-width="5"/><path d="M400 0Q420 60 396 120" fill="none" stroke="${C.leafDk}" stroke-width="5"/></g>${[[56, 128], [150, 108], [396, 118]].map(([x, y]) => `<path d="M${x} ${y}q-26 -6 -30 14q20 6 30 -14ZM${x} ${y}q26 -6 30 14q-20 6 -30 -14Z" fill="${C.leafLt}" ${stroke(b, 2)}/>`).join("")}${tree(250, 196, 1.5, C.leaf, C.leafDk, b)}${tree(100, 214, 1.1, C.leafDk, C.leaf, b)}${[[120, 244], [190, 232], [262, 246], [334, 230]].map(([x, y], i) => `<ellipse cx="${x}" cy="${y}" rx="32" ry="11" fill="${i % 2 ? C.stone : C.stoneDk}" ${stroke(b, 2.4)}/>`).join("")}<g transform="translate(406 160)"><ellipse cx="0" cy="0" rx="20" ry="14" fill="${C.coral}" ${stroke(b, 2.4)}/><circle cx="14" cy="-10" r="10" fill="${C.coral}" ${stroke(b, 2.4)}/><path d="M22 -10l14 4l-12 4Z" fill="${C.gold}" ${stroke(b, 2)}/><circle cx="17" cy="-12" r="2.4" fill="${C.navy}"/><path d="M-20 4l-24 20l22 -4Z" fill="${C.teal}" ${stroke(b, 2.4)}/></g>`,
-  quest: (b) => `<rect width="480" height="270" fill="${C.paper}"/><rect x="14" y="14" width="452" height="242" rx="14" fill="${C.sand}" ${stroke(b, 3)}/><path d="M40 190q60 -70 130 -30t120 -50t150 10" fill="none" stroke="${C.coralDk}" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round"/><path d="M30 214Q110 180 180 212T330 216Q410 190 452 224V246H30Z" fill="${C.sky}"/><path d="M60 110l40 -50l36 50ZM120 110l34 -34l34 34Z" fill="${C.stone}" ${stroke(b, 2.4)}/><path d="M92 76l8 -10l8 10Z" fill="#fff"/>${tree(330, 138, 0.9, C.leaf, C.leafDk, b)}${tree(366, 150, 0.7, C.leafDk, C.leaf, b)}<circle cx="410" cy="76" r="28" fill="#fff" ${stroke(b, 3)}/><path d="M410 52l6 24l-6 -4l-6 4Z" fill="${C.coral}"/><path d="M410 100l-6 -24l6 4l6 -4Z" fill="${C.navy}"/><text x="410" y="48" text-anchor="middle" font-size="10" font-weight="700" fill="${C.navy}">N</text>${[[170, 160], [290, 160], [440, 160]].map(([x, y], i) => `<g transform="translate(${x} ${y})"><circle r="13" fill="${i === 2 ? C.coral : C.gold}" ${stroke(b, 2.4)}/>${i === 2 ? `<path d="M-6 -6l12 12M6 -6l-12 12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>` : `<text y="5" text-anchor="middle" font-size="14" font-weight="800" fill="${C.navy}">${i + 1}</text>`}</g>`).join("")}`,
-  detective: (b) => `${sky("sd", "#0f2338", "#27506d")}${star(60, 40, 5, "#fff")}${star(150, 24, 3, "#fff")}${star(300, 36, 4, "#fff")}<circle cx="410" cy="48" r="20" fill="${C.gold}"/><circle cx="418" cy="42" r="19" fill="#27506d"/><path d="M0 205H480V270H0Z" fill="#1c3550"/>${[[30, 80, 70], [120, 110, 60], [200, 70, 84], [300, 96, 66], [380, 84, 80]].map(([x, h, w], i) => `<g><rect x="${x}" y="${205 - h}" width="${w}" height="${h}" fill="${i % 2 ? "#2b4a68" : "#223f5c"}"/>${Array.from({ length: Math.floor(h / 26) }, (_, r) => Array.from({ length: Math.floor(w / 26) }, (_, c) => `<rect x="${x + 8 + c * 24}" y="${205 - h + 10 + r * 24}" width="12" height="14" rx="2" fill="${(r + c + i) % 3 ? C.gold : "#35536f"}"/>`).join("")).join("")}</g>`).join("")}<g transform="translate(330 196)"><circle r="40" fill="${C.skyLt}" fill-opacity=".16"/><circle r="26" fill="none" stroke="${C.gold}" stroke-width="7"/><path d="M19 19l26 26" stroke="${C.goldDk}" stroke-width="9" stroke-linecap="round"/></g><g fill="#6f8aa3">${[[70, 238], [92, 230], [114, 238], [136, 230]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="7" ry="4"/>`).join("")}</g>`,
-  strategy: (b) => `${sky("ss", "#e8f6f5", "#fdf3da")}<g transform="translate(240 140)"><rect x="-110" y="-96" width="220" height="192" rx="18" fill="${C.paper}" ${stroke(b, 3)}/><path d="M-36 -86V86M36 -86V86M-100 -32H100M-100 32H100" stroke="${C.navy}" stroke-width="5" stroke-linecap="round"/>${[[-72, -64, "x"], [0, -64, "o"], [72, 0, "x"], [0, 64, "o"], [-72, 64, "x"]].map(([x, y, k]) => k === "x" ? `<path d="M${x - 14} ${y - 14}l28 28M${x + 14} ${y - 14}l-28 28" stroke="${C.coralDk}" stroke-width="8" stroke-linecap="round"/>` : `<circle cx="${x}" cy="${y}" r="15" fill="none" stroke="${C.tealDk}" stroke-width="8"/>`).join("")}${star(0, 0, 12, C.gold)}</g><g transform="translate(76 70)"><path d="M0 0l8 -16l8 16l-8 -4Z" fill="${C.teal}" ${stroke(b, 2)}/><rect x="-18" y="-2" width="52" height="12" rx="6" fill="${C.gold}" ${stroke(b, 2)}/></g>`,
-  studio: (b) => `<rect width="480" height="270" fill="#16314a"/><rect x="26" y="150" width="428" height="96" rx="16" fill="#233f5a" ${stroke(b, 3)}/>${Array.from({ length: 8 }, (_, i) => `<g><rect x="${52 + i * 50}" y="166" width="8" height="64" rx="4" fill="#0f2338"/><rect x="${46 + i * 50}" y="${176 + ((i * 17) % 40)}" width="20" height="12" rx="4" fill="${i % 2 ? C.teal : C.gold}" ${stroke(b, 2)}/></g>`).join("")}<g transform="translate(60 40)">${Array.from({ length: 26 }, (_, i) => `<rect x="${i * 14}" y="${50 - ((i * 7 + (i % 5) * 11) % 38)}" width="8" height="${((i * 7 + (i % 5) * 11) % 38) * 2 + 8}" rx="4" fill="${i < 15 ? C.teal : "#4a6a86"}"/>`).join("")}</g><g transform="translate(404 54)"><path d="M-30 20a30 30 0 0 1 60 0" fill="none" stroke="${C.coral}" stroke-width="9" stroke-linecap="round"/><rect x="-38" y="14" width="16" height="30" rx="8" fill="${C.coral}"/><rect x="22" y="14" width="16" height="30" rx="8" fill="${C.coral}"/></g><text x="64" y="132" font-size="26" font-weight="800" fill="${C.gold}" font-family="Atkinson Hyperlegible,sans-serif">sh · ch · th</text>`,
-  theater: (b) => `<rect width="480" height="270" fill="#1a2d44"/><path d="M0 0H480V34Q240 56 0 34Z" fill="${C.coralDk}"/><path d="M0 34Q70 90 30 270H0ZM480 34Q410 90 450 270H480Z" fill="${C.coral}" ${stroke(b, 2.4)}/><path d="M30 34Q60 120 40 270" fill="none" stroke="${C.coralDk}" stroke-width="4"/><path d="M450 34Q420 120 440 270" fill="none" stroke="${C.coralDk}" stroke-width="4"/><path d="M130 270L190 60H290L350 270Z" fill="${C.gold}" opacity=".16"/><rect x="40" y="226" width="400" height="44" fill="${C.wood}"/><path d="M40 226H440" stroke="${C.woodDk}" stroke-width="4"/>${book(190, 150, 100, 72, C.paper, "#fff", b)}<g transform="translate(120 170)"><circle r="22" fill="${C.teal}" ${stroke(b, 2.4)}/><path d="M-9 -4h2M7 -4h2" stroke="${C.navy}" stroke-width="3" stroke-linecap="round"/><path d="M-8 6q8 6 16 0" fill="none" stroke="${C.navy}" stroke-width="2.4" stroke-linecap="round"/><rect x="-16" y="20" width="32" height="40" rx="10" fill="${C.tealDk}" ${stroke(b, 2.4)}/></g>${star(350, 120, 14, C.gold)}${star(380, 84, 8, "#fff")}`,
-  echo: (b) => `${sky("se", "#dff4f3", "#fff3d6")}<g transform="translate(240 135)"><rect x="-188" y="-70" width="168" height="140" rx="16" fill="#fff" ${stroke(b, 3)}/><rect x="20" y="-70" width="168" height="140" rx="16" fill="#fff" ${stroke(b, 3)}/>${Array.from({ length: 14 }, (_, i) => `<rect x="${-176 + i * 11.5}" y="${-((i * 13) % 34) - 6}" width="6" height="${((i * 13) % 34) * 2 + 12}" rx="3" fill="${C.tealDk}"/>`).join("")}${Array.from({ length: 14 }, (_, i) => `<rect x="${32 + i * 11.5}" y="${-((i * 9 + 7) % 34) - 6}" width="6" height="${((i * 9 + 7) % 34) * 2 + 12}" rx="3" fill="${C.coralDk}"/>`).join("")}<path d="M-14 0H14M6 -8l8 8l-8 8" fill="none" stroke="${C.navy}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g><g transform="translate(240 236)"><rect x="-10" y="-30" width="20" height="36" rx="10" fill="${C.navy}"/><path d="M-18 -6a18 18 0 0 0 36 0" fill="none" stroke="${C.navy}" stroke-width="4"/><path d="M0 12v10" stroke="${C.navy}" stroke-width="4"/></g>`,
-  world: (b) => `${sky("sw", C.skyLt, "#f9f1d7")}${cloud(90, 40, 1)}${cloud(390, 56, 0.9)}${hill(160, "#a8dca8", 30)}<path d="M0 214Q120 190 240 214T480 206V270H0Z" fill="#7cc3e6"/><path d="M200 204h96v22h-96Z" fill="${C.wood}" ${stroke(b, 2.4)}/>${[[60, 150], [130, 168], [370, 156]].map(([x, y], i) => `<g transform="translate(${x} ${y})"><rect x="-26" y="0" width="52" height="40" fill="${i === 1 ? C.gold : C.sand}" ${stroke(b, 2.4)}/><path d="M-32 2L0 -24L32 2Z" fill="${C.coral}" ${stroke(b, 2.4)}/><rect x="-7" y="14" width="14" height="26" rx="3" fill="${C.woodDk}"/></g>`).join("")}${tree(300, 168, 1.1, C.leaf, C.leafDk, b)}${tree(430, 190, 0.9, C.leafDk, C.leaf, b)}<circle cx="248" cy="196" r="9" fill="${C.gold}" ${stroke(b, 2.4)}/><path d="M248 190v12M242 196h12" stroke="${C.navy}" stroke-width="2" stroke-linecap="round"/>`,
-  jeopardy: (b) => `<rect width="480" height="270" fill="${C.navy}"/>${Array.from({ length: 20 }, (_, i) => { const x = 40 + (i % 5) * 80; const y = 40 + Math.floor(i / 5) * 50; const head = i < 5; return `<rect x="${x}" y="${y}" width="72" height="42" rx="8" fill="${head ? C.teal : C.gold}" ${stroke(b, 2)}/>${head ? "" : `<text x="${x + 36}" y="${y + 28}" text-anchor="middle" font-size="20" font-weight="800" fill="${C.navy}">${i < 10 ? 100 : i < 15 ? 200 : 300}</text>`}`; }).join("")}<circle cx="440" cy="30" r="16" fill="${C.coral}" ${stroke(b, 2)}/><text x="440" y="37" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">?</text>`,
-  memory: (b) => `${sky("sm", "#e6f6f4", "#fff3d6")}${Array.from({ length: 8 }, (_, i) => { const x = 70 + (i % 4) * 88; const y = 50 + Math.floor(i / 4) * 100; const up = i === 1 || i === 6; return `<rect x="${x}" y="${y}" width="72" height="88" rx="12" fill="${up ? "#fff" : C.teal}" ${stroke(b, 3)}/>${up ? `<circle cx="${x + 36}" cy="${y + 44}" r="20" fill="${C.gold}" ${stroke(b, 2)}/><path d="M${x + 26} ${y + 44}l7 8 13-16" fill="none" stroke="${C.navy}" stroke-width="5" stroke-linecap="round"/>` : `<path d="M${x + 36} ${y + 28}l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="${C.tealLt}"/>`}`; }).join("")}`,
-  mystery: (b) => `${sky("sy", "#fdf3da", "#dff4f3")}${["W", "O", "R", "D", "?"].map((c, i) => { const x = 50 + i * 78; const f = i === 0 ? C.leaf : i === 1 ? C.gold : i === 2 ? C.stone : i === 3 ? C.leaf : C.sand; return `<rect x="${x}" y="90" width="68" height="76" rx="10" fill="${f}" ${stroke(b, 3)}/><text x="${x + 34}" y="140" text-anchor="middle" font-size="40" font-weight="800" fill="${i === 2 || i === 4 ? C.navy : "#fff"}">${c}</text>`; }).join("")}<g transform="translate(400 60)"><circle r="26" fill="none" stroke="${C.navy}" stroke-width="6"/><path d="M18 18l22 22" stroke="${C.navy}" stroke-width="8" stroke-linecap="round"/></g>`,
-  bingo: (b) => `${sky("sb", "#fff3d6", "#dff4f3")}<g transform="translate(240 140)"><rect x="-120" y="-100" width="240" height="200" rx="16" fill="#fff" ${stroke(b, 3)}/>${Array.from({ length: 16 }, (_, i) => { const x = -102 + (i % 4) * 51; const y = -84 + Math.floor(i / 4) * 46; const on = [0, 5, 10, 15, 3].includes(i); return `<rect x="${x}" y="${y}" width="44" height="38" rx="8" fill="${on ? C.tealLt : C.sand}"/>${on ? `<circle cx="${x + 22}" cy="${y + 19}" r="13" fill="${C.coral}" ${stroke(b, 2)}/>` : `<path d="M${x + 8} ${y + 19}h28" stroke="${C.navy}" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/>`}`; }).join("")}</g><g transform="translate(60 62)"><circle r="30" fill="${C.gold}" ${stroke(b, 3)}/><text y="9" text-anchor="middle" font-size="26" font-weight="800" fill="${C.navy}">B</text></g>`,
-  factory: (b) => `${sky("sf", "#e7eef2", "#f6e9cc")}<rect x="0" y="176" width="480" height="94" fill="#51647a"/><rect x="0" y="176" width="480" height="14" fill="#3b4c60"/>${Array.from({ length: 12 }, (_, i) => `<rect x="${i * 42 + 4}" y="196" width="32" height="6" rx="3" fill="#6b7f95"/>`).join("")}${[["The", C.gold, 40], ["owl", C.teal, 150], ["reads", C.coral, 258]].map(([w, c, x]) => `<g transform="translate(${x} 128)"><rect width="84" height="46" rx="10" fill="${c}" ${stroke(b, 3)}/><text x="42" y="30" text-anchor="middle" font-size="22" font-weight="800" fill="${c === C.gold ? C.navy : "#fff"}" font-family="Atkinson Hyperlegible,sans-serif">${w}</text></g>`).join("")}<g transform="translate(404 70)"><circle r="40" fill="${C.stone}" ${stroke(b, 3)}/>${Array.from({ length: 8 }, (_, i) => `<rect x="-6" y="-52" width="12" height="16" rx="3" fill="${C.stone}" ${stroke(b, 2)} transform="rotate(${i * 45})"/>`).join("")}<circle r="14" fill="#fff" ${stroke(b, 2.4)}/></g><g transform="translate(70 70)"><circle r="26" fill="${C.goldDk}" ${stroke(b, 3)}/>${Array.from({ length: 6 }, (_, i) => `<rect x="-5" y="-36" width="10" height="13" rx="3" fill="${C.goldDk}" ${stroke(b, 2)} transform="rotate(${i * 60})"/>`).join("")}<circle r="9" fill="#fff"/></g>`,
-  expedition: (b) => `${sky("sx", "#bfe3f5", "#fdf3da")}${cloud(360, 50, 1)}<path d="M-10 270L120 96L190 170L290 40L420 270Z" fill="${C.stone}" ${stroke(b, 3)}/><path d="M290 40L252 110L290 90L318 118Z" fill="#fff"/><path d="M120 96L96 134L120 124L142 140Z" fill="#fff"/>${hill(220, C.leaf, 18)}<path d="M60 250q90 -30 150 -70t100 -110" fill="none" stroke="${C.coralDk}" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/><g transform="translate(292 36)"><path d="M0 0v-34" stroke="${C.navy}" stroke-width="3"/><path d="M0 -34l26 8l-26 10Z" fill="${C.coral}" ${stroke(b, 2)}/></g><g transform="translate(64 236)"><path d="M0 0L22 -34L44 0Z" fill="${C.gold}" ${stroke(b, 2.4)}/><path d="M22 -34V0" stroke="${C.navy}" stroke-width="2"/></g>`,
-  search: (b) => `${sky("sr", "#e6f6f4", "#fff3d6")}<g transform="translate(150 134)"><rect x="-130" y="-110" width="260" height="220" rx="16" fill="#fff" ${stroke(b, 3)}/>${"SEARCHFINDWORDS".split("").concat("LETTERSGRIDPUZZLE".split("")).slice(0, 36).map((ch, i) => `<text x="${-108 + (i % 6) * 43}" y="${-80 + Math.floor(i / 6) * 38}" font-size="22" font-weight="800" text-anchor="middle" fill="${[7, 8, 9, 10].includes(i) ? "#fff" : C.navy}" font-family="Atkinson Hyperlegible,sans-serif">${ch}</text>`).join("")}<rect x="-130" y="-32" width="260" height="0" /><rect x="-1" y="-27" width="190" height="0" /><rect x="14" y="-96" width="170" height="34" rx="17" fill="${C.teal}" opacity=".9"/></g><g transform="translate(396 120)"><rect x="-44" y="-58" width="88" height="120" rx="12" fill="${C.sand}" ${stroke(b, 3)}/><circle cx="0" cy="-22" r="14" fill="${C.gold}" ${stroke(b, 2.4)}/><path d="M-26 22l16 -20l12 14l10 -12l16 18Z" fill="${C.leaf}" ${stroke(b, 2.4)}/></g>`,
-  creator: (b) => `${sky("sc", "#fdf3da", "#dff4f3")}${[0, 1, 2].map((i) => `<g transform="translate(${30 + i * 150} 62)"><rect width="130" height="100" rx="10" fill="#fff" ${stroke(b, 3)}/><rect x="8" y="8" width="114" height="64" rx="6" fill="${[C.skyLt, C.tealLt, "#fde1d8"][i]}"/>${i === 1 ? `<circle cx="65" cy="44" r="12" fill="${C.coral}" ${stroke(b, 2)}/><rect x="52" y="54" width="26" height="18" rx="6" fill="${C.teal}" ${stroke(b, 2)}/>` : i === 0 ? tree(65, 70, 0.6, C.leaf, C.leafDk, b) : `<path d="M20 64q45 -34 90 0Z" fill="${C.leaf}"/>`}<path d="M10 84h60M10 92h40" stroke="${C.navy}" stroke-opacity=".4" stroke-width="4" stroke-linecap="round"/></g>`).join("")}<g transform="translate(330 206) rotate(-30)"><rect width="110" height="16" rx="8" fill="${C.gold}" ${stroke(b, 3)}/><path d="M110 0l16 8l-16 8Z" fill="${C.sand}" ${stroke(b, 2.4)}/><rect width="22" height="16" rx="6" fill="${C.coral}" ${stroke(b, 2.4)}/></g>`,
-  arcade: (b) => `<rect width="480" height="270" fill="#16314a"/>${Array.from({ length: 6 }, (_, r) => Array.from({ length: 10 }, (_, c) => ((r * 7 + c * 3) % 4 === 0 || r === 0 || c === 0 || r === 5 || c === 9) && !(r === 1 && c === 1) && !(r === 4 && c === 8) ? `<rect x="${40 + c * 40}" y="${28 + r * 34}" width="36" height="30" rx="6" fill="#2b5273"/>` : "").join("")).join("")}<circle cx="78" cy="62" r="11" fill="${C.gold}"/><path d="M60 62l14 -12v24Z" fill="#16314a"/><g transform="translate(402 164)"><rect x="-10" y="-8" width="20" height="16" rx="4" fill="${C.teal}"/><path d="M0 -8v-12" stroke="#fff" stroke-width="3"/><path d="M-8 -22h16" stroke="${C.coral}" stroke-width="6" stroke-linecap="round"/></g><g transform="translate(230 236)"><rect x="-94" y="-20" width="188" height="40" rx="20" fill="#0f2338"/><circle cx="-56" cy="0" r="12" fill="${C.coral}"/><circle cx="-24" cy="0" r="12" fill="${C.gold}"/><rect x="14" y="-8" width="64" height="16" rx="8" fill="${C.teal}"/></g>`,
-  escape: (b) => `<rect width="480" height="270" fill="#1b2f48"/><rect x="40" y="30" width="400" height="210" rx="14" fill="#233f5a" ${stroke(b, 3)}/><g transform="translate(240 146)"><rect x="-58" y="-90" width="116" height="170" rx="10" fill="${C.wood}" ${stroke(b, 3)}/><rect x="-44" y="-76" width="88" height="62" rx="6" fill="${C.woodDk}" opacity=".5"/><rect x="-44" y="-4" width="88" height="70" rx="6" fill="${C.woodDk}" opacity=".5"/><circle cx="34" cy="20" r="6" fill="${C.gold}" ${stroke(b, 2)}/><g transform="translate(0 -30)"><rect x="-22" y="0" width="44" height="34" rx="8" fill="${C.gold}" ${stroke(b, 3)}/><path d="M-12 0v-12a12 12 0 0 1 24 0v12" fill="none" stroke="${C.goldDk}" stroke-width="7" stroke-linecap="round"/><circle cx="0" cy="17" r="5" fill="${C.navy}"/></g></g>${[[94, 90, "A", C.teal], [94, 158, "B", C.coral], [386, 90, "C", C.gold], [386, 158, "D", "#7cc3e6"]].map(([x, y, t, c]) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-24" width="60" height="48" rx="8" fill="${c}" ${stroke(b, 3)}/><text y="9" text-anchor="middle" font-size="26" font-weight="800" fill="${c === C.gold ? C.navy : "#fff"}" font-family="Atkinson Hyperlegible,sans-serif">${t}</text></g>`).join("")}`,
+  jungle: () =>
+    skyG("#9fd3cf", "#d3eedd", "#f3efd2") +
+    sunG(400, 64, 18) +
+    hills(W, 152, { color: P.leaf, far: 0.5, seed: 5, amp: 30 }) +
+    
+    kTree(330, 176, 0.62, { kind: "palm" }) +
+    kTree(446, 182, 0.72, { tone: "#4f8f5b", seed: 3 }) +
+    rect(0, 176, W, 94, lg([[0, P.grassLight], [0.4, P.grass], [1, P.grassDark]])) +
+    kTree(236, 200, 0.95, { seed: 9 }) +
+    path(
+      "M0 214C120 200 200 234 300 222S440 206 480 214V252C400 244 300 262 200 252S60 242 0 250Z",
+      P.water,
+    ) +
+    kStroke("M30 226h40M160 236h30M330 228h44M420 222h24", P.waterLight, 2.4, 'opacity=".8"') +
+    [
+      [96, 230],
+      [172, 238],
+      [248, 236],
+      [324, 230],
+    ]
+      .map(([x, y]) => stone(x, y, 30, 9))
+      .join("") +
+    canopy() +
+    [
+      [60, "M60 0Q74 60 58 112", 112],
+      [150, "M150 0Q134 56 150 100", 100],
+      [404, "M404 0Q420 60 398 116", 116],
+    ]
+      .map(([x, d, y]) => kStroke(d, P.leafDark, 4) + leafPair(x, y * 0.45) + leafPair(x - 2, y))
+      .join("") +
+    kStroke("M372 162Q406 154 444 160", P.bark, 6) +
+    parrot(406, 146) +
+    tuft(30, 266, 1.2) +
+    flower(456, 268, 0.9, { color: P.coral }) +
+    flower(20, 214, 0.7, { color: P.gold, center: P.coral }),
+  quest: () =>
+    rect(
+      0,
+      0,
+      W,
+      H,
+      lg([
+        [0, "#c9955f"],
+        [1, "#a87442"],
+      ]),
+    ) +
+    kStroke("M0 40h480M0 120h480M0 200h480", "#9a683c", 1.4, 'opacity=".45"') +
+    rrect(20, 20, 448, 240, 10, "#1c2f4a", 'opacity=".22"') +
+    rrect(14, 12, 452, 240, 10, "#f6ead0") +
+    rect(162, 12, 8, 240, shade("#f6ead0", 0.1), 'opacity=".7"') +
+    rect(318, 12, 8, 240, light("#f6ead0", 0.4)) +
+    path(
+      "M14 214Q110 180 180 212T330 216Q410 190 466 224V242a10 10 0 0 1 -10 10H24a10 10 0 0 1 -10 -10Z",
+      "#9fcfe0",
+    ) +
+    kStroke("M30 220Q110 188 180 220T330 224Q410 198 460 230", "#ffffff", 2, 'opacity=".6"') +
+    mountain(100, 60, 112, 40) +
+    mountain(156, 76, 112, 36) +
+    kTree(330, 140, 0.32, { seed: 4 }) +
+    kTree(364, 152, 0.26, { kind: "pine" }) +
+    kStroke("M40 190q60 -70 130 -30t120 -50t150 10", P.coral, 4, 'stroke-dasharray="2 10"') +
+    circle(412, 80, 32, "#1c2f4a", 'opacity=".18"') +
+    circle(410, 76, 31, P.gold) +
+    circle(410, 76, 26, P.ivory) +
+    poly(
+      [
+        [410, 54],
+        [416, 76],
+        [404, 76],
+      ],
+      P.coral,
+    ) +
+    poly(
+      [
+        [410, 98],
+        [404, 76],
+        [416, 76],
+      ],
+      P.navy,
+    ) +
+    circle(410, 76, 3.5, P.gold) +
+    word(410, 64, "N", 9, P.navy) +
+    chip(170, 158, 13, P.gold) +
+    word(170, 163, "1", 14, P.navy) +
+    chip(290, 158, 13, P.gold) +
+    word(290, 163, "2", 14, P.navy) +
+    chip(440, 158, 13, P.coral) +
+    kStroke("M434 152l12 12M446 152l-12 12", "#ffffff", 3.4),
+  detective: () =>
+    dark("#0c1d36", "#2b4f78") +
+    stars(W, 140, 22, 4) +
+    moon(410, 48, 18) +
+    [
+      [10, 60, 60],
+      [90, 80, 50],
+      [250, 50, 70],
+      [350, 70, 60],
+    ]
+      .map(([x, h, w]) => rect(x, 205 - h - 30, w, h + 30, "#1f3a5c"))
+      .join("") +
+    [
+      [30, 80, 70],
+      [120, 110, 60],
+      [200, 70, 84],
+      [300, 96, 66],
+      [380, 84, 80],
+    ]
+      .map(([x, h, w], i) => {
+        const c = i % 2 ? "#2b4a68" : "#24405e";
+        let s =
+          rect(x, 205 - h, w, h, c) +
+          rect(x + w * 0.72, 205 - h, w * 0.28, h, shade(c, 0.25)) +
+          rect(x - 3, 199 - h, w + 6, 7, light(c, 0.12));
+        for (let r = 0; r < Math.floor(h / 26); r++)
+          for (let k = 0; k < Math.floor(w / 26); k++) {
+            const on = (r + k + i) % 3;
+            s += rect(
+              x + 8 + k * 24,
+              215 - h + r * 24,
+              12,
+              14,
+              on ? P.goldLight : "#35536f",
+              'rx="1.5"',
+            );
+          }
+        return s;
+      })
+      .join("") +
+    rect(0, 205, W, 65, "#1a2f47") +
+    rect(0, 205, W, 6, "#2f4c6b") +
+    path("M122 212L158 126H174L210 212Z", P.goldLight, 'opacity=".14"') +
+    rect(163, 112, 6, 100, "#14263d") +
+    rrect(156, 106, 20, 12, 4, "#14263d") +
+    circle(166, 120, 6, P.goldLight) +
+    [
+      [70, 240],
+      [92, 232],
+      [114, 240],
+      [136, 232],
+    ]
+      .map(([x, y]) => ellipse(x, y, 7, 4, "#6f8aa3", 'opacity=".7"'))
+      .join("") +
+    magnifier(330, 192, 26),
+  strategy: () =>
+    backdrop("#e8f4f2", "#f7efdc") +
+    contact(240, 238, 120, 8, 0.2) +
+    tile(130, 44, 220, 192, 18, P.ivory) +
+    kStroke("M204 56V226M276 56V226M142 108H338M142 172H338", P.navy, 5, 'opacity=".75"') +
+    [
+      [168, 82, "x"],
+      [240, 82, "o"],
+      [312, 140, "x"],
+      [240, 200, "o"],
+      [168, 200, "x"],
+    ]
+      .map(([x, y, k]) =>
+        k === "x"
+          ? kStroke(
+              `M${x - 14} ${y - 12}l28 28M${x + 14} ${y - 12}l-28 28`,
+              "#1c2f4a",
+              8,
+              'opacity=".15"',
+            ) + kStroke(`M${x - 14} ${y - 14}l28 28M${x + 14} ${y - 14}l-28 28`, P.coral, 8)
+          : `<circle cx="${x}" cy="${y + 2}" r="15" fill="none" stroke="#1c2f4a" stroke-width="8" opacity=".15"/><circle cx="${x}" cy="${y}" r="15" fill="none" stroke="${P.teal}" stroke-width="8"/>`,
+      )
+      .join("") +
+    starG(240, 140, 13, P.gold) +
+    [
+      [76, 200, P.teal],
+      [404, 206, P.coral],
+    ]
+      .map(
+        ([x, y, c]) =>
+          contact(x, y, 22, 5, 0.22) +
+          ellipse(x, y - 4, 20, 7, shade(c, 0.25)) +
+          path(
+            `M${x - 16} ${y - 6}Q${x - 10} ${y - 30} ${x - 6} ${y - 40}H${x + 6}Q${x + 10} ${y - 30} ${x + 16} ${y - 6}Z`,
+            c,
+          ) +
+          path(
+            `M${x + 2} ${y - 40}H${x + 6}Q${x + 10} ${y - 30} ${x + 16} ${y - 6}H${x + 6}Z`,
+            shade(c, 0.2),
+            'opacity=".7"',
+          ) +
+          circle(x, y - 48, 12, c) +
+          circle(x - 4, y - 52, 4, light(c, 0.45), 'opacity=".7"'),
+      )
+      .join(""),
+  studio: () =>
+    dark("#1b4468", "#0c2840") +
+    [40, 120, 200, 280, 360]
+      .map((x) => rrect(x, 18, 70, 108, 8, "#1f4a70", 'opacity=".55"'))
+      .join("") +
+    `<g transform="translate(60 40)">${Array.from({ length: 26 }, (_, i) => {
+      const k = (i * 7 + (i % 5) * 11) % 38;
+      return rrect(i * 14, 50 - k, 8, k * 2 + 8, 4, i < 15 ? P.tealLight : "#4a6a86");
+    }).join("")}</g>` +
+    word(64, 134, "sh · ch · th", 26, P.goldLight).replace(
+      'text-anchor="middle"',
+      'text-anchor="start"',
+    ) +
+    `<path d="M374 74a30 30 0 0 1 60 0" fill="none" stroke="${shade(P.coral, 0.2)}" stroke-width="10" stroke-linecap="round"/><path d="M374 72a30 30 0 0 1 60 0" fill="none" stroke="${P.coral}" stroke-width="7" stroke-linecap="round"/>` +
+    tile(364, 68, 18, 32, 8, P.coral, { lift: 2, glow: 0.4 }) +
+    tile(426, 68, 18, 32, 8, P.coral, { lift: 2, glow: 0.4 }) +
+    tile(26, 150, 428, 96, 16, "#23415f", { glow: 0.12 }) +
+    Array.from(
+      { length: 8 },
+      (_, i) =>
+        rrect(52 + i * 50, 166, 8, 64, 4, "#0f2338") +
+        tile(46 + i * 50, 176 + ((i * 17) % 40), 20, 12, 4, i % 2 ? P.teal : P.gold, { lift: 2 }),
+    ).join(""),
+  theater: () =>
+    dark("#20385a", "#14263d") +
+    path(
+      "M130 270L196 52H284L350 270Z",
+      rg(
+        [
+          [0, "#fff1c9", 0.5],
+          [1, "#fff1c9", 0.05],
+        ],
+        { cy: 0.1, r: 1 },
+      ),
+    ) +
+    path("M130 270L196 52H284L350 270Z", P.goldLight, 'opacity=".1"') +
+    rect(
+      40,
+      222,
+      400,
+      48,
+      lg([
+        [0, P.woodLight],
+        [1, P.wood],
+      ]),
+    ) +
+    rect(40, 222, 400, 5, light(P.woodLight, 0.35)) +
+    kStroke("M40 244H440M40 260H440", shade(P.wood, 0.15), 1.2, 'opacity=".6"') +
+    ellipse(240, 240, 120, 14, "#fff1c9", 'opacity=".25"') +
+    contact(240, 224, 46, 6) +
+    rect(236, 186, 8, 38, P.woodDark) +
+    path("M192 160Q216 150 240 164V194Q216 182 192 190Z", P.ivory) +
+    path("M288 160Q264 150 240 164V194Q264 182 288 190Z", shade(P.ivory, 0.08)) +
+    kStroke("M202 170h26M202 178h22M252 170h26M252 178h22", "#9aa7b4", 1.6) +
+    person(130, 228, 100, kid(1, { top: P.teal, pose: "wave", mouth: "open" })) +
+    starG(354, 120, 14, P.gold) +
+    starG(386, 84, 8, P.goldLight) +
+    path("M0 0H480V36Q240 58 0 36Z", shade(P.coral, 0.2)) +
+    [0, 1, 2, 3, 4, 5, 6, 7]
+      .map((i) => path(`M${i * 60} 36q30 22 60 0`, shade(P.coral, 0.32)))
+      .join("") +
+    ["L", "R"]
+      .map((s) => {
+        const m = s === "L" ? "" : ' transform="translate(480 0) scale(-1 1)"';
+        return `<g${m}>${path("M0 30Q76 90 34 270H0Z", P.coral)}${path("M14 34Q52 110 22 270H8Q36 110 0 34Z", shade(P.coral, 0.22))}${path("M38 40Q66 100 40 160", "none", `stroke="${light(P.coral, 0.3)}" stroke-width="5" opacity=".6"`)}</g>`;
+      })
+      .join(""),
+  echo: () =>
+    backdrop("#dff2f0", "#fbf0d6") +
+    tile(52, 66, 168, 140, 16, P.white) +
+    tile(260, 66, 168, 140, 16, P.white) +
+    wave(66, 136, 14, 11.5, 6, 0, P.teal) +
+    `<g transform="translate(272 136)">${Array.from({ length: 14 }, (_, i) => {
+      const h = ((i * 9 + 7) % 34) * 2 + 12;
+      return rrect(i * 11.5, -h / 2, 6, h, 3, P.coral);
+    }).join("")}</g>` +
+    kStroke("M226 136H254M244 126l10 10l-10 10", P.navy, 5) +
+    contact(240, 262, 20, 4) +
+    rect(237, 238, 6, 22, shade(P.navy, 0.1)) +
+    rrect(226, 258, 28, 5, 2, P.navy) +
+    `<path d="M222 222a18 18 0 0 0 36 0" fill="none" stroke="${P.navy}" stroke-width="4" stroke-linecap="round"/>` +
+    tile(230, 196, 20, 36, 10, P.navy, { lift: 2, glow: 0.45 }),
+  world: () =>
+    skyG(P.skyTop, P.sky, "#f6ecd6") +
+    sunG(80, 52, 18) +
+    kCloud(200, 42, 0.6) +
+    kCloud(392, 56, 0.7) +
+    hills(W, 160, { color: P.grass, far: 0.45, seed: 8, amp: 32 }) +
+    ground(W, 168, 50, "grass", { seed: 3 }) +
+    house(32, 200, 64, 44, { color: P.ivory, roof: P.coral }) +
+    house(110, 206, 60, 40, { color: P.goldLight, roof: P.navy, window: false }) +
+    house(350, 198, 66, 46, { color: P.wall, roof: P.teal }) +
+    kTree(300, 198, 0.42, { seed: 5 }) +
+    kTree(446, 204, 0.36, { kind: "pine" }) +
+    path(
+      "M0 210Q120 194 240 212T480 204V270H0Z",
+      lg([
+        [0, P.waterLight],
+        [1, P.water],
+      ]),
+    ) +
+    kStroke("M40 236h40M300 230h30M160 252h50M400 250h30", "#ffffff", 2, 'opacity=".6"') +
+    rect(206, 214, 6, 22, P.woodDark) +
+    rect(284, 214, 6, 22, P.woodDark) +
+    rect(198, 206, 100, 10, P.wood) +
+    rect(198, 206, 100, 3, light(P.wood, 0.3)) +
+    chip(248, 196, 9, P.gold) +
+    kStroke("M248 191v10M243 196h10", P.navy, 2),
+  jeopardy: () =>
+    dark("#1b4468", "#0c2840") +
+    Array.from({ length: 20 }, (_, i) => {
+      const x = 40 + (i % 5) * 80;
+      const y = 40 + Math.floor(i / 5) * 50;
+      const head = i < 5;
+      return (
+        tile(x, y, 72, 42, 8, head ? P.teal : P.gold, { lift: 3, glow: head ? 0.25 : 0 }) +
+        (head ? "" : word(x + 36, y + 28, i < 10 ? 100 : i < 15 ? 200 : 300, 19, P.navy))
+      );
+    }).join("") +
+    chip(440, 26, 15, P.coral) +
+    word(440, 33, "?", 20, "#ffffff"),
+  memory: () =>
+    backdrop("#e3f3f1", "#fbf0d6", 228) +
+    Array.from({ length: 8 }, (_, i) => {
+      const x = 70 + (i % 4) * 88;
+      const y = 40 + Math.floor(i / 4) * 100;
+      const up = i === 1 || i === 6;
+      return up
+        ? tile(x, y, 72, 88, 12, P.white) +
+            chip(x + 36, y + 44, 20, P.gold) +
+            kStroke(`M${x + 26} ${y + 44}l7 8 13-16`, P.navy, 5)
+        : tile(x, y, 72, 88, 12, P.teal, { glow: 0.25 }) + starG(x + 36, y + 46, 18, "#9fdcd4");
+    }).join(""),
+  mystery: () =>
+    backdrop("#fbf0d6", "#dff2f0") +
+    ["W", "O", "R", "D", "?"]
+      .map((c, i) => {
+        const x = 50 + i * 78;
+        const f = [P.green, P.gold, P.stoneDark, P.green, P.sand || "#ecd9b0"][i] || "#ecd9b0";
+        return (
+          tile(x, 92, 68, 76, 10, f) +
+          word(x + 34, 143, c, 40, i === 2 || i === 4 ? P.navy : "#ffffff")
+        );
+      })
+      .join("") +
+    magnifier(398, 56, 24),
+  bingo: () =>
+    backdrop("#fbf0d6", "#dff2f0", 236) +
+    tile(120, 38, 240, 200, 16, P.white) +
+    Array.from({ length: 16 }, (_, i) => {
+      const x = 138 + (i % 4) * 51;
+      const y = 54 + Math.floor(i / 4) * 46;
+      const on = [0, 5, 10, 15, 3].includes(i);
+      return (
+        rrect(x, y, 44, 38, 8, on ? "#cdeee9" : "#f4e9d2") +
+        (on ? chip(x + 22, y + 18, 13, P.coral) : rrect(x + 8, y + 17, 28, 5, 2.5, "#c9bfa9"))
+      );
+    }).join("") +
+    chip(60, 62, 30, P.gold) +
+    circle(60, 62, 18, P.ivory) +
+    word(60, 71, "B", 24, P.navy),
+  factory: () =>
+    skyG("#e4edf1", "#eef0ea", "#f6e9cc") +
+    rect(0, 176, W, 94, "#51647a") +
+    rect(0, 176, W, 14, "#3b4c60") +
+    rect(0, 190, W, 3, "#6b7f95") +
+    Array.from({ length: 12 }, (_, i) => chip(i * 42 + 20, 214, 8, "#8296ab")).join("") +
+    [
+      ["The", P.gold, 40],
+      ["owl", P.teal, 150],
+      ["reads", P.coral, 258],
+    ]
+      .map(
+        ([w, c, x]) =>
+          tile(x, 128, 84, 46, 10, c) + word(x + 42, 159, w, 22, c === P.gold ? P.navy : "#ffffff"),
+      )
+      .join("") +
+    gear(404, 70, 40, 8, "#8fa1b3") +
+    gear(70, 70, 26, 6, P.gold),
+  expedition: () =>
+    skyG("#9fd0ea", "#cfe8ef", "#fbeed4") +
+    kCloud(380, 52, 0.7) +
+    mountain(290, 40, 270, 140) +
+    mountain(120, 96, 270, 120, haze(P.stoneDark, 0.1)) +
+    hills(W, 222, { color: P.grass, far: 0.1, seed: 2, amp: 18 }) +
+    kStroke("M60 250q90 -30 150 -70t100 -110", P.coral, 4, 'stroke-dasharray="2 9"') +
+    line(292, 40, 292, 6, P.navy, 3) +
+    path("M292 6l26 8l-26 10Z", P.coral) +
+    contact(86, 238, 30, 5) +
+    poly(
+      [
+        [62, 238],
+        [86, 202],
+        [110, 238],
+      ],
+      P.gold,
+    ) +
+    poly(
+      [
+        [86, 202],
+        [110, 238],
+        [86, 238],
+      ],
+      shade(P.gold, 0.25),
+    ) +
+    poly(
+      [
+        [80, 238],
+        [86, 222],
+        [92, 238],
+      ],
+      shade(P.gold, 0.55),
+    ) +
+    tuft(30, 262) +
+    tuft(450, 258, 1.2),
+  search: () =>
+    backdrop("#e3f3f1", "#fbf0d6") +
+    tile(20, 24, 260, 220, 16, P.white) +
+    rrect(28, 78, 172, 34, 17, P.teal) +
+    "SEARCHFINDWORDS"
+      .split("")
+      .concat("LETTERSGRIDPUZZLE".split(""))
+      .slice(0, 36)
+      .map((ch, i) =>
+        word(
+          42 + (i % 6) * 43,
+          62 + Math.floor(i / 6) * 38,
+          ch,
+          22,
+          i >= 6 && i <= 9 ? "#ffffff" : P.navy,
+        ),
+      )
+      .join("") +
+    tile(352, 62, 88, 120, 12, "#f4e6c4") +
+    rect(362, 72, 68, 70, "#bfe0ee") +
+    circle(380, 92, 10, P.gold) +
+    poly(
+      [
+        [362, 142],
+        [384, 108],
+        [406, 142],
+      ],
+      P.green,
+    ) +
+    poly(
+      [
+        [392, 142],
+        [412, 116],
+        [430, 142],
+      ],
+      shade(P.green, 0.2),
+    ) +
+    rrect(364, 154, 54, 6, 3, "#d6c39c") +
+    rrect(364, 166, 36, 6, 3, "#d6c39c"),
+  creator: () =>
+    backdrop("#fbf0d6", "#dff2f0") +
+    [0, 1, 2]
+      .map((i) => {
+        const x = 30 + i * 150;
+        const inner = [
+          kTree(x + 65, 128, 0.32, { seed: 3 }) + rect(x + 8, 126, 114, 8, P.grass),
+          person(x + 65, 132, 54, kid(3, { pose: "wave" })),
+          path(`M${x + 8} 134Q${x + 65} 92 ${x + 122} 134Z`, P.grass) +
+            circle(x + 98, 86, 8, P.gold),
+        ][i];
+        return (
+          tile(x, 62, 130, 100, 10, P.white) +
+          rect(x + 8, 70, 114, 64, ["#cfe7f2", "#cdeee9", "#fbe3d6"][i], 'rx="5"') +
+          `<g>${inner}</g>` +
+          rrect(x + 10, 142, 60, 5, 2.5, "#c4ccd4") +
+          rrect(x + 10, 151, 40, 5, 2.5, "#c4ccd4")
+        );
+      })
+      .join("") +
+    `<g transform="translate(330 214) rotate(-30)">${rrect(2, 4, 110, 16, 8, "#1c2f4a", 'opacity=".18"')}${rrect(0, 0, 110, 16, 8, P.gold)}${rect(0, 8, 110, 8, shade(P.gold, 0.2), 'rx="4"')}${path("M110 0l16 8l-16 8Z", "#f0d6b0")}${path("M120 5l6 3l-6 3Z", P.ink)}${rrect(0, 0, 22, 16, 6, P.coral)}</g>`,
+  arcade: () =>
+    dark("#1b4468", "#0c2840") +
+    Array.from({ length: 6 }, (_, r) =>
+      Array.from({ length: 10 }, (_, c) =>
+        ((r * 7 + c * 3) % 4 === 0 || r === 0 || c === 0 || r === 5 || c === 9) &&
+        !(r === 1 && c === 1) &&
+        !(r === 4 && c === 8)
+          ? rrect(40 + c * 40, 31 + r * 34, 36, 30, 6, "#16334f") +
+            rrect(40 + c * 40, 28 + r * 34, 36, 28, 6, "#2f5a7d")
+          : "",
+      ).join(""),
+    ).join("") +
+    circle(78, 62, 11, P.gold) +
+    path("M60 62l14 -12v24Z", "#16314a") +
+    circle(76, 56, 1.6, P.navy) +
+    contact(402, 174, 12, 3) +
+    rrect(392, 156, 20, 16, 4, P.teal) +
+    rect(404, 156, 8, 16, shade(P.teal, 0.2)) +
+    line(402, 156, 402, 144, "#ffffff", 3) +
+    line(394, 142, 410, 142, P.coral, 6) +
+    tile(136, 216, 188, 40, 20, "#0f2338", { glow: 0.15 }) +
+    chip(174, 234, 11, P.coral) +
+    chip(206, 234, 11, P.gold) +
+    tile(244, 228, 64, 14, 7, P.teal, { lift: 2 }),
+  escape: () =>
+    dark("#2a4a6c", "#1b2f48") +
+    rect(
+      0,
+      226,
+      W,
+      44,
+      lg([
+        [0, "#3a5878"],
+        [1, "#24405e"],
+      ]),
+    ) +
+    rect(0, 226, W, 4, "#4a6a8c") +
+    circle(
+      240,
+      120,
+      150,
+      rg([
+        [0, P.goldLight, 0.22],
+        [1, P.goldLight, 0],
+      ]),
+    ) +
+    contact(240, 236, 70, 6, 0.3) +
+    rect(176, 50, 128, 186, "#14263d") +
+    rect(182, 56, 116, 180, P.wood) +
+    rect(268, 56, 30, 180, shade(P.wood, 0.15)) +
+    rrect(196, 70, 88, 62, 6, shade(P.wood, 0.14)) +
+    rrect(196, 70, 88, 4, 2, light(P.wood, 0.25)) +
+    rrect(196, 142, 88, 76, 6, shade(P.wood, 0.14)) +
+    rrect(196, 142, 88, 4, 2, light(P.wood, 0.25)) +
+    chip(274, 168, 6, P.gold) +
+    `<path d="M228 120v-12a12 12 0 0 1 24 0v12" fill="none" stroke="${shade(P.stone, 0.15)}" stroke-width="7" stroke-linecap="round"/>` +
+    tile(218, 116, 44, 34, 8, P.gold) +
+    circle(240, 131, 5, P.navy) +
+    rect(238.5, 131, 3, 9, P.navy) +
+    [
+      [94, 90, "A", P.teal],
+      [94, 158, "B", P.coral],
+      [386, 90, "C", P.gold],
+      [386, 158, "D", P.blue],
+    ]
+      .map(
+        ([x, y, t, c]) =>
+          tile(x - 30, y - 24, 60, 48, 8, c) +
+          word(x, y + 9, t, 26, c === P.gold ? P.navy : "#ffffff"),
+      )
+      .join(""),
 };
 
 /** A full scene (16:9). `key` is a registry art key; `band` selects the house style. */
 export function scene(key, band = "3-5", label = "") {
   const draw = SCENES[key] || SCENES.quest;
-  return svg("0 0 480 270", draw(band), { label, cls: `gs-scene gs-scene-${key}` });
+  return svg(
+    "0 0 480 270",
+    banded(band, () => draw(band)),
+    { label, cls: `gs-scene gs-scene-${key}` },
+  );
 }
-export { SCENES, tree, cloud, hill, star, book, stroke, sky };
+
+/* ── legacy helpers (unchanged output; imported by other game modules) ──────────────────── */
+const sky = (id, a, b) =>
+  `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="480" height="270" fill="url(#${id})"/>`;
+const cloud = (x, y, s = 1, o = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o}"><ellipse cx="0" cy="0" rx="30" ry="12" fill="#fff"/><circle cx="-12" cy="-8" r="13" fill="#fff"/><circle cx="8" cy="-12" r="16" fill="#fff"/></g>`;
+const hill = (y, fill, amp = 24, k = 0) =>
+  `<path d="M0 270V${y}C90 ${y - amp + k} 170 ${y + amp / 2} 260 ${y}S400 ${y - amp} 480 ${y + 6}V270Z" fill="${fill}"/>`;
+const tree = (x, y, s, a, b, band) =>
+  `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-6" width="8" height="30" rx="3" fill="${C.woodDk}"/><circle cx="0" cy="-22" r="22" fill="${a}" ${stroke(band, 2.4)}/><circle cx="-14" cy="-10" r="14" fill="${b}"/><circle cx="14" cy="-12" r="13" fill="${b}"/></g>`;
+const star = (x, y, r, f) =>
+  `<path transform="translate(${x} ${y})" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} ${-r * 0.2}L${r * 0.45} ${r * 0.25}L${r * 0.6} ${r}L0 ${r * 0.55}L${-r * 0.6} ${r}L${-r * 0.45} ${r * 0.25}L${-r} ${-r * 0.2}L${-r * 0.3} ${-r * 0.3}Z" fill="${f}"/>`;
+const book = (x, y, w, h, a, b, band) =>
+  `<g transform="translate(${x} ${y})"><path d="M0 4Q${w / 2 - 4} -6 ${w / 2} 6V${h}Q${w / 4} ${h - 6} 0 ${h - 2}Z" fill="${a}" ${stroke(band, 2)}/><path d="M${w} 4Q${w / 2 + 4} -6 ${w / 2} 6V${h}Q${w * 0.75} ${h - 6} ${w} ${h - 2}Z" fill="${b}" ${stroke(band, 2)}/><path d="M${w * 0.12} 16h${w * 0.28}M${w * 0.12} 24h${w * 0.24}M${w * 0.6} 16h${w * 0.26}M${w * 0.6} 24h${w * 0.22}" stroke="${C.navy}" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/></g>`;
+
+export { SCENES, tree, cloud, hill, star, book, stroke, sky, banded };

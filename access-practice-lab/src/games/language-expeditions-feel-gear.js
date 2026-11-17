@@ -1,6 +1,7 @@
 // Language Expeditions gear (feature "feel"): one cosmetic item per land, drawn on the explorer. Gear is earned by
 // PRACTICE, not by being right: finishing any stop of a land (a first-try answer, a revised one or a revealed one all
 // count) earns that land's item. Gear is counted, never scored. It lives in state as `s.gear` (land indexes).
+// Art: flat layered shapes with a lit and a shade side, no outlines (the site illustration kit style).
 import { html, raw } from "./engine.js";
 
 /** Item names and the svg drawn over the explorer (hero viewBox 0 0 100 150), plus a crop box for the gear strip. */
@@ -14,17 +15,17 @@ export const GEAR = {
     {
       name: { en: "a scarf", es: "una bufanda" },
       box: "26 52 44 36",
-      svg: `<path d="M33 58h34v8H33z" fill="#1fa6a2"/><path d="M36 64l-5 18 9-3 2-15z" fill="#1fa6a2"/><path d="M36 61h28" stroke="#f7f4ec" stroke-width="1.5" stroke-dasharray="3 3"/>`,
+      svg: `<path d="M36 64l-5 18 9-3 2-15z" fill="#178a87"/><path d="M33 58h34v8H33z" fill="#1fa6a2"/><path d="M52 58h15v8H52z" fill="#178a87"/><path d="M33 58h34v2.5H33z" fill="#5fc9c2"/><path d="M38 58h3v8h-3zM46 58h3v8h-3zM34 70l3 1-.6 2.6-3-1z" fill="#f7f4ec" opacity=".75"/>`,
     },
     {
       name: { en: "a map case", es: "un portamapas" },
       box: "14 58 56 46",
-      svg: `<path d="M66 62L26 80" stroke="#5a3f2b" stroke-width="3"/><rect x="17" y="74" width="14" height="26" rx="4" fill="#8a5f3c"/><rect x="17" y="74" width="14" height="6" rx="3" fill="#5a3f2b"/><path d="M21 86h6M21 91h6" stroke="#f2c15b" stroke-width="1.5"/>`,
+      svg: `<path d="M66 62L26 80" stroke="#5a3f2b" stroke-width="3" stroke-linecap="round"/><rect x="17" y="74" width="14" height="26" rx="4" fill="#8a5f3c"/><rect x="25" y="74" width="6" height="26" rx="3" fill="#6e4a2e"/><rect x="17" y="74" width="14" height="6" rx="3" fill="#5a3f2b"/><rect x="20" y="85" width="7" height="2" rx="1" fill="#f2c15b"/><rect x="20" y="90" width="7" height="2" rx="1" fill="#f2c15b"/>`,
     },
     {
       name: { en: "a feather pen", es: "una pluma para escribir" },
       box: "16 0 30 34",
-      svg: `<path d="M40 26Q34 8 20 1Q28 14 37 28Z" fill="#f7f4ec" stroke="#17324d" stroke-width="1.5"/><path d="M38 27L24 5" stroke="#17324d" stroke-width="1"/>`,
+      svg: `<path d="M40 26Q34 8 20 1Q28 14 37 28Z" fill="#f7f4ec"/><path d="M40 26Q35 10 20 1Q31 16 38.5 27Z" fill="#c9d3dc"/><path d="M39 28L23 4" stroke="#8a6343" stroke-width="1.2" stroke-linecap="round"/><path d="M37 27l3 3" stroke="#17324d" stroke-width="2" stroke-linecap="round"/>`,
     },
   ],
   "6-8": [
@@ -36,17 +37,17 @@ export const GEAR = {
     {
       name: { en: "a field notebook", es: "una libreta de campo" },
       box: "20 86 26 28",
-      svg: `<rect x="25" y="90" width="15" height="19" rx="2" fill="#f2c15b" stroke="#5a2f25" stroke-width="1.5"/><path d="M28 96h9M28 100h9M28 104h6" stroke="#5a2f25" stroke-width="1.2"/>`,
+      svg: `<rect x="25" y="90" width="15" height="19" rx="2" fill="#f2c15b"/><rect x="25" y="90" width="4" height="19" rx="1.5" fill="#c98b2a"/><rect x="34" y="90" width="6" height="19" rx="2" fill="#e0a83c"/><path d="M31 96h7M31 100h7M31 104h5" stroke="#7a4a2a" stroke-width="1.2" stroke-linecap="round"/>`,
     },
     {
       name: { en: "a headset", es: "unos auriculares con micrófono" },
       box: "28 10 48 40",
-      svg: `<path d="M36 33Q52 12 68 33" stroke="#1fa6a2" stroke-width="4" fill="none"/><rect x="32" y="30" width="7" height="12" rx="3" fill="#f2c15b" stroke="#17324d" stroke-width="1.5"/><path d="M38 41q6 7 14 5" stroke="#1fa6a2" stroke-width="2" fill="none"/><circle cx="53" cy="46" r="2.4" fill="#f2c15b"/>`,
+      svg: `<path d="M36 33Q52 12 68 33" stroke="#1fa6a2" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M38 41q6 7 14 5" stroke="#178a87" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="31.5" y="29.5" width="8" height="13" rx="3.5" fill="#d99a2b"/><rect x="34" y="29.5" width="5.5" height="13" rx="2.7" fill="#f2c15b"/><circle cx="53" cy="46" r="2.6" fill="#f2c15b"/>`,
     },
     {
       name: { en: "a compass", es: "una brújula" },
       box: "38 66 24 24",
-      svg: `<path d="M44 52L50 72L56 52" stroke="#2a3a48" stroke-width="1.2" fill="none"/><circle cx="50" cy="78" r="7" fill="#f7f4ec" stroke="#c98b3a" stroke-width="2.2"/><path d="M50 72.5l2 5.5-2 5.5-2-5.5z" fill="#c94f3b"/>`,
+      svg: `<path d="M44 52L50 72L56 52" stroke="#2a3a48" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="50" cy="78" r="8.1" fill="#c98b3a"/><circle cx="50.6" cy="77.4" r="6" fill="#f7f4ec"/><path d="M50 72.5l2 5.5-2 5.5-2-5.5z" fill="#2a3a48"/><path d="M50 72.5l2 5.5h-4z" fill="#c94f3b"/>`,
     },
   ],
 };

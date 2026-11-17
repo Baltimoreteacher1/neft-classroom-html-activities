@@ -1,7 +1,26 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, tuft, flower, ellipse, circle, path, rgrad, stroke, g } from "../../../access-practice-lab/src/art/kit.js";
-import { BP, plate, iceCube } from "../lib/b.mjs";
+import {
+  circle,
+  cloud,
+  ellipse,
+  flower,
+  g,
+  ground,
+  HAIR,
+  hills,
+  P,
+  path,
+  person,
+  rgrad,
+  SKIN,
+  sky,
+  stroke,
+  sun,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { BP, iceCube, plate } from "../lib/b.mjs";
 
-const pencil = `<g transform="translate(-4 -4) rotate(-40)">${"<rect x=\"-1.6\" y=\"-12\" width=\"3.2\" height=\"14\" fill=\"#f2c335\"/><polygon points=\"-1.6,2 1.6,2 0,6\" fill=\"#f0d6b0\"/>"}</g>`;
+const pencil = `<g transform="translate(-4 -4) rotate(-40)">${'<rect x="-1.6" y="-12" width="3.2" height="14" fill="#f2c335"/><polygon points="-1.6,2 1.6,2 0,6" fill="#f0d6b0"/>'}</g>`;
 
 export default {
   file: "35-speaking-ice-melt.svg",
@@ -15,7 +34,15 @@ export default {
     hills(640, 240, { seed: 5 }) +
     ground(640, 236, 164, "grass", { seed: 3 }) +
     // sunshine on the left
-    circle(96, 70, 260, rgrad([[0, "#fff1b8", 0.55], [1, "#fff1b8", 0]])) +
+    circle(
+      96,
+      70,
+      260,
+      rgrad([
+        [0, "#fff1b8", 0.55],
+        [1, "#fff1b8", 0],
+      ]),
+    ) +
     sun(96, 70, 30) +
     stroke("M130 102 L176 300M108 112 L132 296M150 92 L214 288", "#f6d77a", 4, 'opacity=".45"') +
     ellipse(170, 334, 110, 26, "#fff4c9", 'opacity=".45"') +
@@ -29,7 +56,9 @@ export default {
     // plate in the shade: three small ice cubes
     plate(456, 350, 58, 16) +
     ellipse(456, 350, 30, 6, P.waterLight, 'opacity=".55"') +
-    iceCube(434, 352, 1.05) + iceCube(458, 345, 1.05) + iceCube(480, 353, 1.05) +
+    iceCube(434, 352, 1.05) +
+    iceCube(458, 345, 1.05) +
+    iceCube(480, 353, 1.05) +
     person(316, 388, 132, {
       pose: "read",
       skin: SKIN[4],
@@ -42,6 +71,9 @@ export default {
       item: BP.clipboard() + pencil,
       mouth: "flat",
     }) +
-    tuft(30, 390, 1.2) + tuft(260, 396) + tuft(610, 392, 1.1) +
-    flower(46, 400, 0.8, { color: P.pink }) + flower(590, 398, 0.8, { color: "#ffffff", center: P.gold }),
+    tuft(30, 390, 1.2) +
+    tuft(260, 396) +
+    tuft(610, 392, 1.1) +
+    flower(46, 400, 0.8, { color: P.pink }) +
+    flower(590, 398, 0.8, { color: "#ffffff", center: P.gold }),
 };

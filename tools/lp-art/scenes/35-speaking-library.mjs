@@ -1,5 +1,22 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, bookshelf, wallWindow, person, shade, light, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
-import { BP, room, frontDesk, beanbag, pottedPlant, sideTable, lightPool } from "../lib/b.mjs";
+import {
+  bookshelf,
+  circle,
+  contact,
+  ellipse,
+  g,
+  HAIR,
+  light,
+  P,
+  path,
+  person,
+  rect,
+  rrect,
+  SKIN,
+  shade,
+  stroke,
+  wallWindow,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { BP, beanbag, frontDesk, lightPool, pottedPlant, room, sideTable } from "../lib/b.mjs";
 
 export default {
   file: "35-speaking-library.svg",
@@ -15,15 +32,50 @@ export default {
     lightPool(330, 330, 120, 18, 0.35) +
     sideTable(348, 318, 62, 56) +
     pottedPlant(348, 260, 1.05, { pot: P.coral }) +
-    rect(470, 84, 112, 84, P.woodDark) + rect(477, 91, 98, 70, "#cfe6d8") + circle(526, 116, 16, P.goldLight) + path("M477 161 L510 128 L530 146 L548 132 L575 161Z", P.teal) +
+    rect(470, 84, 112, 84, P.woodDark) +
+    rect(477, 91, 98, 70, "#cfe6d8") +
+    circle(526, 116, 16, P.goldLight) +
+    path("M477 161 L510 128 L530 146 L548 132 L575 161Z", P.teal) +
     // librarian behind the desk
-    person(548, 316, 160, { pose: "hold", age: "adult", facing: -1, skin: SKIN[4], hair: "#2f6b7a", hairStyle: "hijab", top: P.navy, bottom: P.navy, glasses: true }) +
+    person(548, 316, 160, {
+      pose: "hold",
+      age: "adult",
+      facing: -1,
+      skin: SKIN[4],
+      hair: "#2f6b7a",
+      hairStyle: "hijab",
+      top: P.navy,
+      bottom: P.navy,
+      glasses: true,
+    }) +
     frontDesk(440, 330, 170, 74, { color: P.wood }) +
     `<g transform="translate(588 250)">${BP.book(P.gold)}</g>` +
-    rect(452, 248, 34, 8, P.coral, 'rx="1"') + rect(454, 240, 30, 8, P.teal, 'rx="1"') + rect(450, 232, 36, 8, P.gold, 'rx="1"') +
+    rect(452, 248, 34, 8, P.coral, 'rx="1"') +
+    rect(454, 240, 30, 8, P.teal, 'rx="1"') +
+    rect(450, 232, 36, 8, P.gold, 'rx="1"') +
     // girl checking out a book
-    person(420, 388, 124, { pose: "hold", facing: 1, skin: SKIN[1], hair: HAIR[3], hairStyle: "braid", top: P.coral, bottom: "#3e4a5c", sleeve: "short", item: BP.book(P.blue) }) +
+    person(420, 388, 124, {
+      pose: "hold",
+      facing: 1,
+      skin: SKIN[1],
+      hair: HAIR[3],
+      hairStyle: "braid",
+      top: P.coral,
+      bottom: "#3e4a5c",
+      sleeve: "short",
+      item: BP.book(P.blue),
+    }) +
     // boy reading on the beanbag
     beanbag(218, 388, 1.25, "#4f9d5d") +
-    person(214, 356, 120, { pose: "sit", facing: 1, skin: SKIN[3], hair: HAIR[0], hairStyle: "curly", top: P.gold, bottom: P.navy, sleeve: "short", item: `<g transform="translate(-4 -8)">${BP.bookOpen(P.red)}</g>` }),
+    person(214, 356, 120, {
+      pose: "sit",
+      facing: 1,
+      skin: SKIN[3],
+      hair: HAIR[0],
+      hairStyle: "curly",
+      top: P.gold,
+      bottom: P.navy,
+      sleeve: "short",
+      item: `<g transform="translate(-4 -8)">${BP.bookOpen(P.red)}</g>`,
+    }),
 };

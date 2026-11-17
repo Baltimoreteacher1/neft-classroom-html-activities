@@ -1,11 +1,30 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, swings, tuft, flower, pathway } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  ball,
+  bench,
+  cloud,
+  dog,
+  flower,
+  ground,
+  HAIR,
+  hills,
+  P,
+  pathway,
+  person,
+  SKIN,
+  sky,
+  sun,
+  swings,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
 
 const G = 262;
 export default {
   file: "35-writing-park.svg",
   w: 640,
   h: 400,
-  title: "A sunny park with a tree, a girl on a swing, a boy kicking a red ball, a brown dog, and a bench.",
+  title:
+    "A sunny park with a tree, a girl on a swing, a boy kicking a red ball, a brown dog, and a bench.",
   draw: () =>
     sky(640, 280) +
     sun(560, 66, 26) +
@@ -18,8 +37,25 @@ export default {
     tree(108, 318, 1.3, { seed: 3 }) +
     bench(30, 352, 128) +
     swings(214, 330, 150, 150, { seats: 2 }) +
-    person(254, 300, 112, { pose: "sit", skin: SKIN[3], hair: HAIR[0], hairStyle: "puffs", top: P.coral, bottom: P.navy, sleeve: "short", mouth: "open" }) +
-    person(430, 364, 128, { pose: "kick", skin: SKIN[1], hair: HAIR[2], hairStyle: "short", top: P.blue, bottom: "#3e4a5c", mouth: "open" }) +
+    person(254, 300, 112, {
+      pose: "sit",
+      skin: SKIN[3],
+      hair: HAIR[0],
+      hairStyle: "puffs",
+      top: P.coral,
+      bottom: P.navy,
+      sleeve: "short",
+      mouth: "open",
+    }) +
+    person(430, 364, 128, {
+      pose: "kick",
+      skin: SKIN[1],
+      hair: HAIR[2],
+      hairStyle: "short",
+      top: P.blue,
+      bottom: "#3e4a5c",
+      mouth: "open",
+    }) +
     ball(498, 360, 12, P.red) +
     dog(574, 372, 1.15, { pose: "run", facing: -1 }) +
     tuft(612, 300) +

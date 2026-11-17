@@ -1,85 +1,299 @@
-// Word-card pictures for the Daily Warm-Up: twelve themed scenes drawn in code from a few flat shapes (original
-// EduWonderLab art, no image files). A word's picture shows the theme it belongs to, so the learner links the new
-// word to a place or a feeling before reading its meaning. Pure strings, no DOM: Node tests import THEMES.
+// Word-card pictures for the Daily Warm-Up: twelve themed scenes drawn in code (original EduWonderLab art, no image
+// files). A word's picture shows the theme it belongs to, so the learner links the new word to a place or a feeling
+// before reading its meaning. Pure strings, no DOM: Node tests import THEMES.
 //
+// Art: the site illustration kit (./art/kit.js) in its picture-book style: no outlines, a lit and a shade side on
+// each shape, a soft contact shadow, Deep Harbor colours. Drawn inside noDefs(): many cards share a page, so no ids.
 // Every scene carries a <title> (and the card names the theme in words), so colour and shape are never the only signal.
+
+import {
+  P,
+  circle,
+  contact,
+  ellipse,
+  light,
+  noDefs,
+  path,
+  poly,
+  rect,
+  rrect,
+  shade,
+  stroke,
+  tr,
+} from "./art/kit.js";
 
 const frame = (title, bg, body) =>
   `<svg class="wu-art" viewBox="0 0 240 150" role="img" aria-label="${title}" focusable="false"><title>${title}</title><rect width="240" height="150" rx="14" fill="${bg}"/>${body}</svg>`;
-const line = 'stroke="#1d2b58" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+
+/** A soft round spot behind the subject and a floor shadow, so every card reads as one family. */
+const stage = (tone, y = 128) =>
+  circle(120, 74, 56, tone, 'opacity=".55"') + contact(120, y, 70, 7, 0.14);
+
+const book = (x, y, w, h, c) =>
+  rrect(x, y, w, h, 4, c) +
+  rect(x + 6, y + h - 7, w - 10, 5, "#fbf6ec") +
+  rect(x, y, w, 5, light(c, 0.25), 'rx="2"') +
+  rect(x + w - 16, y, 10, h - 7, shade(c, 0.15));
 
 const DRAW = {
   school: () =>
     frame(
       "Books and a pencil",
-      "#dde6f6",
-      `<rect x="52" y="78" width="110" height="22" rx="4" fill="#2e4a94" ${line}/><rect x="62" y="56" width="96" height="22" rx="4" fill="#f5d6a8" ${line}/><rect x="72" y="36" width="80" height="20" rx="4" fill="#91e2d6" ${line}/><path d="M176 112 204 54l10 5-28 58-12 2Z" fill="#f2c15b" ${line}/><path d="M174 114l12 3" ${line}/>`,
+      "#e4eef2",
+      stage("#cfe2ea") +
+        book(52, 96, 110, 24, P.navy) +
+        book(62, 72, 96, 24, P.coral) +
+        book(72, 50, 80, 22, P.teal) +
+        `<g transform="rotate(26 190 84)">${rect(182, 40, 16, 70, P.yellow)}${rect(190, 40, 8, 70, shade(P.yellow, 0.15))}${poly(
+          [
+            [182, 110],
+            [198, 110],
+            [190, 126],
+          ],
+          "#f0d6b0",
+        )}${poly(
+          [
+            [187, 120],
+            [193, 120],
+            [190, 126],
+          ],
+          P.ink,
+        )}${rect(182, 30, 16, 10, P.pink, 'rx="3"')}${rect(182, 38, 16, 4, "#b9c0c8")}</g>`,
     ),
   food: () =>
     frame(
       "An apple in a bowl",
-      "#fbf0e0",
-      `<path d="M60 90h120c0 26-24 40-60 40S60 116 60 90Z" fill="#9a4a26" ${line}/><circle cx="104" cy="66" r="26" fill="#d9503f" ${line}/><circle cx="138" cy="70" r="22" fill="#f2c15b" ${line}/><path d="M104 40c0-8 4-14 10-16" ${line} fill="none"/><path d="M110 34c8-8 18-6 20 0-8 6-16 6-20 0Z" fill="#6aa84f" ${line}/>`,
+      "#f8ecd8",
+      stage("#f1d9b8") +
+        circle(140, 72, 22, P.yellow) +
+        path("M150 52 A22 22 0 0 1 150 92 A16 22 0 0 0 150 52Z", shade(P.yellow, 0.14)) +
+        circle(104, 68, 27, P.red) +
+        path("M112 42 A27 27 0 0 1 112 94 A20 27 0 0 0 112 42Z", shade(P.red, 0.2)) +
+        ellipse(94, 58, 6, 10, "#fff", 'opacity=".45"') +
+        stroke("M104 42 q2 -10 10 -14", P.barkDark, 3.5) +
+        path("M110 32 q10 -10 20 -2 q-10 8 -20 2Z", P.leaf) +
+        path("M58 88 H182 Q178 128 120 130 Q62 128 58 88Z", P.teal) +
+        path("M120 88 H182 Q178 128 120 130Z", shade(P.teal, 0.18)) +
+        rect(56, 86, 128, 7, light(P.teal, 0.3), 'rx="3.5"'),
     ),
   home: () =>
     frame(
       "A house with a door",
-      "#e9f2ee",
-      `<rect x="62" y="68" width="116" height="62" fill="#f5d6a8" ${line}/><path d="M50 72 120 22l70 50Z" fill="#9a4a26" ${line}/><rect x="104" y="92" width="32" height="38" rx="3" fill="#2e4a94" ${line}/><rect x="72" y="84" width="22" height="20" fill="#cfe9f6" ${line}/><rect x="146" y="84" width="22" height="20" fill="#cfe9f6" ${line}/>`,
+      "#e6f0ea",
+      stage("#cfe3d6") +
+        rect(64, 66, 112, 62, "#f1e4cf") +
+        rect(136, 66, 40, 62, shade("#f1e4cf", 0.1)) +
+        poly(
+          [
+            [52, 70],
+            [120, 22],
+            [188, 70],
+          ],
+          P.coral,
+        ) +
+        poly(
+          [
+            [120, 22],
+            [188, 70],
+            [120, 70],
+          ],
+          shade(P.coral, 0.2),
+        ) +
+        rect(152, 30, 14, 26, P.brick) +
+        rrect(104, 88, 32, 40, 3, P.navy) +
+        circle(130, 110, 2.2, P.goldLight) +
+        rect(74, 80, 22, 20, "#fbf6ec") +
+        rect(77, 83, 16, 14, "#a8d3ea") +
+        rect(146, 80, 22, 20, "#fbf6ec") +
+        rect(149, 83, 16, 14, "#a8d3ea"),
     ),
-  body: () =>
-    frame(
+  body: () => {
+    const S = "#e0a98a";
+    const D = shade(S, 0.16);
+    const finger = (x, y, h) =>
+      rrect(x, y, 14, h, 7, S) +
+      rect(x + 9, y + 6, 5, h - 8, D, 'rx="2.5"') +
+      ellipse(x + 7, y + 6, 4, 3, light(S, 0.3));
+    return frame(
       "An open hand",
-      "#f6e3ea",
-      `<rect x="92" y="34" width="14" height="52" rx="7" fill="#e0a98a" ${line}/><rect x="110" y="24" width="14" height="60" rx="7" fill="#e0a98a" ${line}/><rect x="128" y="30" width="14" height="56" rx="7" fill="#e0a98a" ${line}/><rect x="146" y="44" width="13" height="44" rx="6" fill="#e0a98a" ${line}/><path d="M92 82h66c4 30-14 50-34 50s-40-16-34-44Z" fill="#e0a98a" ${line}/><path d="M92 90 74 70c-6-6-14 2-9 9l22 30" fill="#e0a98a" ${line}/>`,
-    ),
+      "#f6e6dc",
+      stage("#efd2c2") +
+        finger(92, 34, 54) +
+        finger(109, 24, 62) +
+        finger(126, 30, 58) +
+        finger(143, 44, 46) +
+        path("M90 80 H158 Q164 116 130 132 Q96 136 90 112Z", S) +
+        path("M140 80 H158 Q164 116 130 132 Q148 110 140 80Z", D) +
+        path("M92 92 L72 70 Q64 64 60 72 Q60 78 66 84 L88 116Z", S) +
+        stroke("M104 100 q10 12 26 14", D, 2),
+    );
+  },
   nature: () =>
     frame(
       "A tree on grass",
-      "#dff0e2",
-      `<rect x="0" y="112" width="240" height="38" fill="#9cc97a"/><rect x="110" y="70" width="20" height="50" fill="#9a4a26" ${line}/><circle cx="120" cy="52" r="34" fill="#6aa84f" ${line}/><circle cx="92" cy="68" r="22" fill="#7fbf63" ${line}/><circle cx="148" cy="68" r="22" fill="#7fbf63" ${line}/><circle cx="195" cy="38" r="14" fill="#f2c15b" ${line}/>`,
+      "#e2efe2",
+      rect(0, 112, 240, 38, P.grass) +
+        rect(0, 112, 240, 6, P.grassLight) +
+        circle(196, 36, 18, "#fff4c9", 'opacity=".5"') +
+        circle(196, 36, 13, "#f4c54a") +
+        contact(120, 116, 44, 6, 0.2) +
+        path("M112 116 C113 100 112 86 115 70 L125 70 C128 86 127 100 128 116Z", P.bark) +
+        path(
+          "M121 70 C124 86 125 100 128 116 L122 116 C121 100 120 86 119 70Z",
+          P.barkDark,
+          'opacity=".6"',
+        ) +
+        circle(94, 66, 24, shade(P.leaf, 0.16)) +
+        circle(146, 66, 24, shade(P.leaf, 0.16)) +
+        circle(120, 46, 32, shade(P.leaf, 0.12)) +
+        circle(114, 40, 26, P.leaf) +
+        circle(90, 62, 18, P.leaf) +
+        circle(140, 60, 18, P.leaf) +
+        ellipse(106, 30, 12, 7, P.leafLight, 'opacity=".8"'),
     ),
   weather: () =>
     frame(
       "A sun behind a cloud with rain",
-      "#d6e9f6",
-      `<circle cx="80" cy="52" r="26" fill="#f2c15b" ${line}/><path d="M70 96a22 22 0 0 1 4-43 30 30 0 0 1 58 6 20 20 0 0 1 2 37Z" fill="#fff" ${line}/><path d="M92 108l-6 16M118 108l-6 16M144 108l-6 16" stroke="#2e4a94" stroke-width="4" stroke-linecap="round"/>`,
+      "#dcebf4",
+      circle(82, 52, 34, "#fff4c9", 'opacity=".55"') +
+        circle(82, 52, 25, "#f4c54a") +
+        circle(76, 46, 10, "#fde39a", 'opacity=".8"') +
+        tr(
+          128,
+          76,
+          ellipse(0, 8, 52, 15, "#d5e5ee") +
+            circle(-26, 0, 20, "#fff") +
+            circle(2, -12, 28, "#fff") +
+            circle(30, 0, 19, "#fff") +
+            ellipse(0, 6, 52, 14, "#fff"),
+        ) +
+        [
+          [100, 104],
+          [126, 112],
+          [152, 104],
+          [114, 128],
+          [140, 128],
+        ]
+          .map(([x, y]) =>
+            path(
+              `M${x} ${y - 10} Q${x + 6} ${y} ${x} ${y + 4} Q${x - 6} ${y} ${x} ${y - 10}Z`,
+              P.water,
+            ),
+          )
+          .join(""),
     ),
   community: () =>
     frame(
       "Three buildings on a street",
-      "#ece6f3",
-      `<rect x="30" y="70" width="48" height="60" fill="#2e4a94" ${line}/><rect x="86" y="46" width="52" height="84" fill="#8a3a5c" ${line}/><rect x="146" y="82" width="62" height="48" fill="#9a4a26" ${line}/><g fill="#fbf0e0"><rect x="40" y="82" width="10" height="10"/><rect x="58" y="82" width="10" height="10"/><rect x="96" y="58" width="10" height="10"/><rect x="116" y="58" width="10" height="10"/><rect x="96" y="82" width="10" height="10"/><rect x="116" y="82" width="10" height="10"/><rect x="158" y="94" width="10" height="10"/><rect x="186" y="94" width="10" height="10"/></g><rect x="0" y="130" width="240" height="20" fill="#cfd6e3"/>`,
+      "#e8ebf0",
+      rect(0, 128, 240, 22, "#c9ced6") +
+        rect(0, 126, 240, 4, "#dfe3e8") +
+        [
+          [28, 68, 52, P.teal],
+          [86, 42, 58, P.coral],
+          [150, 80, 64, P.navy],
+        ]
+          .map(([x, y, w, c]) => {
+            let b =
+              rect(x, y, w, 128 - y, c) +
+              rect(x + w * 0.7, y, w * 0.3, 128 - y, shade(c, 0.15)) +
+              rect(x - 3, y - 5, w + 6, 6, shade(c, 0.3));
+            for (let wy = y + 10; wy < 112; wy += 20)
+              for (let wx = x + 9; wx < x + w - 14; wx += 18) b += rect(wx, wy, 10, 11, "#fbe9b8");
+            return b;
+          })
+          .join(""),
     ),
   feelings: () =>
     frame(
       "A smiling face",
-      "#fbf0e0",
-      `<circle cx="120" cy="76" r="48" fill="#f2c15b" ${line}/><circle cx="104" cy="66" r="5" fill="#1d2b58"/><circle cx="136" cy="66" r="5" fill="#1d2b58"/><path d="M98 88c10 16 34 16 44 0" fill="none" ${line}/>`,
+      "#f8ecd8",
+      contact(120, 130, 40, 5, 0.12) +
+        circle(120, 74, 50, P.gold) +
+        path("M132 25 A50 50 0 0 1 132 123 A38 50 0 0 0 132 25Z", shade(P.gold, 0.14)) +
+        ellipse(100, 46, 14, 8, P.goldLight, 'opacity=".8" transform="rotate(-25 100 46)"') +
+        ellipse(104, 66, 5, 7, P.ink) +
+        ellipse(136, 66, 5, 7, P.ink) +
+        ellipse(92, 86, 8, 5, P.coralLight, 'opacity=".6"') +
+        ellipse(148, 86, 8, 5, P.coralLight, 'opacity=".6"') +
+        path("M98 88 Q120 112 142 88 Q120 98 98 88Z", "#7a2f2a"),
     ),
   science: () =>
     frame(
       "A flask with bubbles",
-      "#dff4f1",
-      `<path d="M104 24h32v34l32 54c4 8-1 16-10 16H82c-9 0-14-8-10-16l32-54Z" fill="#cfe9f6" ${line}/><path d="M86 108h68l10 18H76Z" fill="#91e2d6" ${line}/><circle cx="112" cy="94" r="5" fill="#fff" ${line}/><circle cx="130" cy="82" r="4" fill="#fff" ${line}/><circle cx="124" cy="104" r="3" fill="#fff" ${line}/>`,
+      "#dff0ee",
+      stage("#c6e4e0") +
+        path("M106 24 H134 V58 L166 112 Q172 128 156 128 H84 Q68 128 74 112 L106 58Z", "#e3f2f6") +
+        path("M90 92 H150 L166 112 Q172 128 156 128 H84 Q68 128 74 112Z", P.tealLight) +
+        path("M134 92 H150 L166 112 Q172 128 156 128 H140Z", P.teal) +
+        rect(102, 18, 36, 8, "#c4dde4", 'rx="4"') +
+        path("M110 30 V60 L84 104", "none", 'stroke="#ffffff" stroke-width="4" opacity=".7"') +
+        circle(112, 108, 6, "#ffffff", 'opacity=".75"') +
+        circle(130, 98, 4.5, "#ffffff", 'opacity=".75"') +
+        circle(122, 76, 4, P.tealLight) +
+        circle(128, 58, 3, P.tealLight),
     ),
   math: () =>
     frame(
       "A triangle, a square and a circle",
-      "#e5eaf7",
-      `<path d="M30 118 70 44l40 74Z" fill="#91e2d6" ${line}/><rect x="116" y="58" width="56" height="56" fill="#f5d6a8" ${line}/><circle cx="204" cy="92" r="24" fill="#dba3b9" ${line}/>`,
+      "#e4ebf4",
+      contact(120, 124, 100, 6, 0.12) +
+        poly(
+          [
+            [30, 118],
+            [70, 44],
+            [110, 118],
+          ],
+          P.teal,
+        ) +
+        poly(
+          [
+            [70, 44],
+            [110, 118],
+            [70, 118],
+          ],
+          shade(P.teal, 0.15),
+        ) +
+        rect(116, 62, 56, 56, P.gold) +
+        rect(152, 62, 20, 56, shade(P.gold, 0.15)) +
+        circle(204, 94, 24, P.coral) +
+        path("M210 70 A24 24 0 0 1 210 118 A17 24 0 0 0 210 70Z", shade(P.coral, 0.18)),
     ),
   story: () =>
     frame(
       "An open book with a star",
-      "#f1e6f0",
-      `<path d="M120 46c-18-12-44-14-70-8v78c26-6 52-4 70 8Z" fill="#fff" ${line}/><path d="M120 46c18-12 44-14 70-8v78c-26-6-52-4-70 8Z" fill="#f5d6a8" ${line}/><path d="M120 46v78" ${line}/><path d="m120 14 5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1Z" fill="#f2c15b" ${line}/>`,
+      "#f4ead8",
+      stage("#ecd9b8", 130) +
+        path("M120 52 C102 40 76 38 50 44 V122 C76 116 102 118 120 130Z", "#ffffff") +
+        path("M120 52 C138 40 164 38 190 44 V122 C164 116 138 118 120 130Z", "#f1e4cf") +
+        path("M120 52 V130", "none", `stroke="${shade("#f1e4cf", 0.25)}" stroke-width="2"`) +
+        stroke(
+          "M62 62 q24 -4 46 4M62 76 q24 -4 46 4M62 90 q24 -4 46 4M132 66 q24 -8 46 -4M132 80 q24 -8 46 -4",
+          "#c9bfae",
+          2.4,
+        ) +
+        path(
+          "M120 10 L126 23 L140 24 L129 33 L133 47 L120 40 L107 47 L111 33 L100 24 L114 23Z",
+          P.gold,
+        ) +
+        path("M120 10 L126 23 L140 24 L129 33 L133 47 L120 40Z", shade(P.gold, 0.12)),
     ),
   movement: () =>
     frame(
       "A ball bouncing along a path",
-      "#e3f1dd",
-      `<path d="M20 120c40-70 80-70 100 0 20-70 60-70 100 0" fill="none" stroke="#2e4a94" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/><circle cx="120" cy="58" r="22" fill="#d9503f" ${line}/><path d="M104 52c10 6 24 6 32 0" fill="none" ${line}/><rect x="0" y="124" width="240" height="26" fill="#9cc97a"/>`,
+      "#e2efdf",
+      rect(0, 124, 240, 26, P.grass) +
+        rect(0, 124, 240, 5, P.grassLight) +
+        path(
+          "M20 120c40-70 80-70 100 0 20-70 60-70 100 0",
+          "none",
+          'stroke="#123a5c" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round" opacity=".55"',
+        ) +
+        contact(120, 124, 18, 4, 0.18) +
+        circle(120, 58, 22, P.coral) +
+        stroke("M100 50 Q120 62 140 50M120 36 Q110 58 120 80", shade(P.coral, 0.3), 2.4) +
+        path("M126 36 A22 22 0 0 1 126 80 A16 22 0 0 0 126 36Z", shade(P.coral, 0.2)) +
+        circle(112, 48, 5, "#ffffff", 'opacity=".5"'),
     ),
 };
 
@@ -98,4 +312,4 @@ export const THEME_NAMES = {
   story: ["Stories", "Cuentos"],
   movement: ["Moving and playing", "Moverse y jugar"],
 };
-export const themeSVG = (theme) => (DRAW[theme] || DRAW.story)();
+export const themeSVG = (theme) => noDefs(DRAW[theme] || DRAW.story);

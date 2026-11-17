@@ -1,13 +1,45 @@
-import { P, sky, sun, cloud, hills, rect, path, stroke, ellipse, circle, g, tr, vgrad, shade, light, rng, haze } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  circle,
+  cloud,
+  ellipse,
+  g,
+  haze,
+  hills,
+  light,
+  P,
+  path,
+  rect,
+  rng,
+  shade,
+  sky,
+  stroke,
+  sun,
+  tr,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const SURFACE = 252;
 
 function soil() {
   const R = rng(11);
-  let s = rect(0, SURFACE, 640, 400 - SURFACE, vgrad([[0, "#a2714b"], [0.25, P.soil], [1, "#5e3c25"]]));
+  let s = rect(
+    0,
+    SURFACE,
+    640,
+    400 - SURFACE,
+    vgrad([
+      [0, "#a2714b"],
+      [0.25, P.soil],
+      [1, "#5e3c25"],
+    ]),
+  );
   // soil layers and pebbles
-  s += path(`M0 ${SURFACE + 70} Q160 ${SURFACE + 60} 320 ${SURFACE + 74} T640 ${SURFACE + 66}V400H0Z`, "#6b452b", 'opacity=".45"');
+  s += path(
+    `M0 ${SURFACE + 70} Q160 ${SURFACE + 60} 320 ${SURFACE + 74} T640 ${SURFACE + 66}V400H0Z`,
+    "#6b452b",
+    'opacity=".45"',
+  );
   for (let i = 0; i < 26; i++) {
     const x = R() * 640;
     const y = SURFACE + 18 + R() * 128;
@@ -22,7 +54,14 @@ function soil() {
     const h = 5 + R() * 9;
     d += `M${f(x)} ${SURFACE + 3}q${f(-1 - R() * 2)} ${f(-h * 0.6)} ${f(-2 - R() * 3)} ${f(-h)}`;
   }
-  s += stroke(d, P.grassDark, 2) + stroke(d.replace(/M([\d.]+)/g, (m, x) => `M${f(+x + 2.5)}`), P.grassLight, 1.6, 'opacity=".8"');
+  s +=
+    stroke(d, P.grassDark, 2) +
+    stroke(
+      d.replace(/M([\d.]+)/g, (m, x) => `M${f(+x + 2.5)}`),
+      P.grassLight,
+      1.6,
+      'opacity=".8"',
+    );
   s += rect(0, SURFACE + 4, 640, 3, "#5e3c25", 'opacity=".35"');
   return s;
 }
@@ -37,11 +76,19 @@ function roots() {
     "M300 290 C290 292 278 290 266 294M342 292 C354 292 366 290 378 296" +
     "M316 330 C310 344 302 352 296 372M318 336 C326 350 332 362 340 376" +
     "M270 306 C262 304 254 306 246 304M374 316 C384 312 394 314 402 312";
-  return stroke(main, c, 5) + stroke(side, c, 2.6) + stroke("M316 352 C314 362 318 372 314 384", c, 2);
+  return (
+    stroke(main, c, 5) + stroke(side, c, 2.6) + stroke("M316 352 C314 362 318 372 314 384", c, 2)
+  );
 }
 
 function leaf(x, y, len, ang, c = P.leaf) {
-  const body = path(`M0 0 Q${len * 0.45} ${-len * 0.32} ${len} 0 Q${len * 0.45} ${len * 0.28} 0 0Z`, c) + path(`M0 0 Q${len * 0.45} ${len * 0.28} ${len} 0 Q${len * 0.5} ${len * 0.08} 0 0Z`, shade(c, 0.18)) + stroke(`M2 0 Q${len * 0.5} -2 ${len - 4} 0`, light(c, 0.35), 1.6);
+  const body =
+    path(`M0 0 Q${len * 0.45} ${-len * 0.32} ${len} 0 Q${len * 0.45} ${len * 0.28} 0 0Z`, c) +
+    path(
+      `M0 0 Q${len * 0.45} ${len * 0.28} ${len} 0 Q${len * 0.5} ${len * 0.08} 0 0Z`,
+      shade(c, 0.18),
+    ) +
+    stroke(`M2 0 Q${len * 0.5} -2 ${len - 4} 0`, light(c, 0.35), 1.6);
   return `<g transform="translate(${f(x)} ${f(y)}) rotate(${ang})">${body}</g>`;
 }
 
@@ -63,7 +110,8 @@ function flowerHead(x, y) {
     s += `<ellipse cx="${f(px)}" cy="${f(py)}" rx="14" ry="6" fill="${shade(P.yellow, 0.14)}" opacity=".55" transform="rotate(${f(a)} ${f(px)} ${f(py)})"/>`;
   }
   s += circle(x, y, 18, "#c76b2e") + circle(x - 4, y - 4, 9, "#e08a3e", 'opacity=".8"');
-  for (let i = 0; i < 8; i++) s += circle(x + Math.cos(i) * 10, y + Math.sin(i) * 10, 1.6, "#8a4720");
+  for (let i = 0; i < 8; i++)
+    s += circle(x + Math.cos(i) * 10, y + Math.sin(i) * 10, 1.6, "#8a4720");
   return s;
 }
 
@@ -71,7 +119,8 @@ export default {
   file: "35-listening-plant.svg",
   w: 640,
   h: 400,
-  title: "A plant growing in the soil, with roots under the ground, a green stem, leaves, and a yellow flower on top.",
+  title:
+    "A plant growing in the soil, with roots under the ground, a green stem, leaves, and a yellow flower on top.",
   draw: () =>
     sky(640, SURFACE) +
     sun(560, 68, 26) +

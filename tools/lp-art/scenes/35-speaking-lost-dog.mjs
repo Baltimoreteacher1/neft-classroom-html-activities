@@ -1,14 +1,73 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, panels, cloud, sun, hills, ground, tree, fence, house, person, dog, tuft, flower, tr, shade, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
-import { BP, openGate, heart, hands } from "../lib/b.mjs";
+import {
+  circle,
+  cloud,
+  contact,
+  dog,
+  ellipse,
+  fence,
+  flower,
+  g,
+  ground,
+  HAIR,
+  hills,
+  house,
+  P,
+  panels,
+  path,
+  person,
+  rect,
+  rrect,
+  SKIN,
+  shade,
+  stroke,
+  sun,
+  tr,
+  tree,
+  tuft,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { BP, hands, heart, openGate } from "../lib/b.mjs";
 
 // The same girl, dad and dog in every panel.
-const GIRL = { skin: SKIN[3], hair: HAIR[0], hairStyle: "puffs", top: P.coral, bottom: "#3e4a5c", sleeve: "short" };
-const DAD = { age: "adult", skin: SKIN[3], hair: HAIR[0], hairStyle: "short", top: P.teal, bottom: "#2f3b4a", beard: HAIR[0] };
-const NEIGHBOR = { age: "adult", skin: SKIN[0], hair: HAIR[4], hairStyle: "long", top: P.gold, bottom: P.navy };
+const GIRL = {
+  skin: SKIN[3],
+  hair: HAIR[0],
+  hairStyle: "puffs",
+  top: P.coral,
+  bottom: "#3e4a5c",
+  sleeve: "short",
+};
+const DAD = {
+  age: "adult",
+  skin: SKIN[3],
+  hair: HAIR[0],
+  hairStyle: "short",
+  top: P.teal,
+  bottom: "#2f3b4a",
+  beard: HAIR[0],
+};
+const NEIGHBOR = {
+  age: "adult",
+  skin: SKIN[0],
+  hair: HAIR[4],
+  hairStyle: "long",
+  top: P.gold,
+  bottom: P.navy,
+};
 const DOG = "#a8703f";
 
 const backdrop = (x, y, w, h, gy, seed) =>
-  rect(x, y, w, h, vgrad([[0, P.skyTop], [0.7, P.sky], [1, P.skyLow]])) +
+  rect(
+    x,
+    y,
+    w,
+    h,
+    vgrad([
+      [0, P.skyTop],
+      [0.7, P.sky],
+      [1, P.skyLow],
+    ]),
+  ) +
   cloud(x + w * 0.6, y + 60, 0.5) +
   hills(640, gy, { seed }) +
   ground(640, gy, h, "grass", { seed });
@@ -21,8 +80,16 @@ function one(x, y, w, h) {
     rect(x + 10, gy + 2, 7, 38, shade("#f4efe6", 0.2)) +
     fence(x + 66, x + w + 10, gy + 40, 36) +
     openGate(x + 62, gy + 40, 34) +
-    flower(x + 78, gy + 80, 0.9, { color: P.pink }) + flower(x + 92, gy + 86, 0.9, { color: P.gold, center: P.coral }) + flower(x + 106, gy + 82, 0.9, { color: P.purple }) +
-    person(x + 160, gy + 122, 110, { ...GIRL, pose: "hold", facing: -1, item: BP.wateringCan(P.teal, true), mouth: "o" }) +
+    flower(x + 78, gy + 80, 0.9, { color: P.pink }) +
+    flower(x + 92, gy + 86, 0.9, { color: P.gold, center: P.coral }) +
+    flower(x + 106, gy + 82, 0.9, { color: P.purple }) +
+    person(x + 160, gy + 122, 110, {
+      ...GIRL,
+      pose: "hold",
+      facing: -1,
+      item: BP.wateringCan(P.teal, true),
+      mouth: "o",
+    }) +
     dog(x + 58, gy + 128, 0.9, { color: DOG, pose: "run", facing: -1 }) +
     tuft(x + w - 16, gy + 132)
   );
@@ -51,9 +118,14 @@ function three(x, y, w, h) {
     person(x + 158, gy + 120, 158, { ...NEIGHBOR, pose: "stand", facing: -1 }) +
     person(girl.x, girl.y, girl.h, { ...GIRL, pose: "hold", facing: 1, mouth: "open" }) +
     // the dog jumps up into the girl's hug
-    stroke(`M${nh[0]} ${nh[1]} Q${nh[0] - 14} ${nh[1] + 50} ${girl.x + 31} ${girl.y - 54}`, P.coral, 2) +
+    stroke(
+      `M${nh[0]} ${nh[1]} Q${nh[0] - 14} ${nh[1] + 50} ${girl.x + 31} ${girl.y - 54}`,
+      P.coral,
+      2,
+    ) +
     `<g transform="translate(${girl.x + 42} ${girl.y}) rotate(45) translate(-20 0)">${dog(0, 0, 0.92, { color: DOG, facing: -1 }).replace(/<ellipse[^>]*opacity="0.2"\/>/, "")}</g>` +
-    heart(girl.x + 44, girl.y - 104, 1.4) + heart(girl.x + 64, girl.y - 120, 1) +
+    heart(girl.x + 44, girl.y - 104, 1.4) +
+    heart(girl.x + 64, girl.y - 120, 1) +
     tuft(x + 16, gy + 130)
   );
 }

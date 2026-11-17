@@ -1,9 +1,37 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, pond, fence, person, tuft, flower, path, vgrad } from "../../../access-practice-lab/src/art/kit.js";
-import { joints, barn, chicken, cropRows, sunHat } from "../lib/d.mjs";
+import {
+  cloud,
+  fence,
+  flower,
+  ground,
+  HAIR,
+  hills,
+  P,
+  path,
+  person,
+  pond,
+  SKIN,
+  sky,
+  sun,
+  tree,
+  tuft,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { barn, chicken, cropRows, joints, sunHat } from "../lib/d.mjs";
 
 // Farm tour stops: big red barn with chickens in front; apple orchard behind the barn; vegetable garden next
 // to a blue pond; Farmer Amara waving hello.
-const farmer = { pose: "wave", age: "adult", skin: SKIN[4], hair: HAIR[0], hairStyle: "braid", top: P.coral, bottom: "#3b6ea5", apron: "#3b6ea5", sleeve: "short", mouth: "open" };
+const farmer = {
+  pose: "wave",
+  age: "adult",
+  skin: SKIN[4],
+  hair: HAIR[0],
+  hairStyle: "braid",
+  top: P.coral,
+  bottom: "#3b6ea5",
+  apron: "#3b6ea5",
+  sleeve: "short",
+  mouth: "open",
+};
 const FX = 352;
 const FY = 382;
 const FH = 156;
@@ -12,7 +40,8 @@ export default {
   file: "35t-farm.svg",
   w: 640,
   h: 400,
-  title: "A farm with a big red barn and chickens in front of it. Apple trees with red apples grow behind the barn. A vegetable garden with rows of small plants is next to a blue pond, and a farmer waves hello.",
+  title:
+    "A farm with a big red barn and chickens in front of it. Apple trees with red apples grow behind the barn. A vegetable garden with rows of small plants is next to a blue pond, and a farmer waves hello.",
   draw: () => {
     const J = joints(FX, FY, FH, farmer);
     return (

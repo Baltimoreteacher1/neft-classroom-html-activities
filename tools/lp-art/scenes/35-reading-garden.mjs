@@ -1,10 +1,40 @@
-import { P, SKIN, HAIR, sky, sun, cloud, ground, rect, fence, building, person, flower, planter, stroke, circle, ellipse, path, tuft, haze } from "../../../access-practice-lab/src/art/kit.js";
-import { wateringCan, tomatoPlant } from "../lib/a.mjs";
+import {
+  building,
+  circle,
+  cloud,
+  ellipse,
+  fence,
+  flower,
+  ground,
+  HAIR,
+  haze,
+  P,
+  path,
+  person,
+  planter,
+  rect,
+  SKIN,
+  sky,
+  stroke,
+  sun,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { tomatoPlant, wateringCan } from "../lib/a.mjs";
 
 // water arcing from the spout down onto the first tomato plants
 const water = () => {
-  let s = stroke("M352 262 Q368 270 376 300", "#8fd0e6", 3.2, 'opacity=".85"') + stroke("M350 266 Q362 278 366 302", "#8fd0e6", 2.4, 'opacity=".75"') + stroke("M354 262 Q378 268 388 294", "#8fd0e6", 2, 'opacity=".7"');
-  for (const [x, y] of [[378, 308], [366, 310], [390, 302], [374, 316], [360, 306]]) s += ellipse(x, y, 2.2, 3.2, "#8fd0e6");
+  let s =
+    stroke("M352 262 Q368 270 376 300", "#8fd0e6", 3.2, 'opacity=".85"') +
+    stroke("M350 266 Q362 278 366 302", "#8fd0e6", 2.4, 'opacity=".75"') +
+    stroke("M354 262 Q378 268 388 294", "#8fd0e6", 2, 'opacity=".7"');
+  for (const [x, y] of [
+    [378, 308],
+    [366, 310],
+    [390, 302],
+    [374, 316],
+    [360, 306],
+  ])
+    s += ellipse(x, y, 2.2, 3.2, "#8fd0e6");
   return s;
 };
 
@@ -19,7 +49,13 @@ export default {
     sun(560, 58, 24) +
     cloud(330, 54, 0.7) +
     // the school behind the garden
-    building(150, 276, 340, 150, { color: haze(P.brick, 0.45), windows: [6, 2], door: false, trim: haze(P.ivory, 0.3), roof: "flat" }) +
+    building(150, 276, 340, 150, {
+      color: haze(P.brick, 0.45),
+      windows: [6, 2],
+      door: false,
+      trim: haze(P.ivory, 0.3),
+      roof: "flat",
+    }) +
     ground(640, 262, 138, "soil", { seed: 3 }) +
     rect(0, 262, 640, 22, haze(P.grass, 0.25)) +
     fence(0, 640, 290, 40) +
@@ -36,7 +72,16 @@ export default {
     tomatoPlant(414, 370, 0.82, { seed: 8 }) +
     tomatoPlant(454, 368, 0.76, { seed: 5 }) +
     // Amara waters the tomatoes
-    person(196, 384, 172, { pose: "point", skin: SKIN[4], hair: HAIR[0], hairStyle: "puffs", top: P.coral, bottom: P.navy, sleeve: "short", item: wateringCan("#3f9a52", 15, 0.78) }) +
+    person(196, 384, 172, {
+      pose: "point",
+      skin: SKIN[4],
+      hair: HAIR[0],
+      hairStyle: "puffs",
+      top: P.coral,
+      bottom: P.navy,
+      sleeve: "short",
+      item: wateringCan("#3f9a52", 15, 0.78),
+    }) +
     water() +
     tuft(250, 396, 0.9, "#8a7a5a") +
     tuft(18, 396, 1.1, "#8a7a5a"),

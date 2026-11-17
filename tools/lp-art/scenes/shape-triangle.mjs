@@ -1,4 +1,4 @@
-import { solidShape, shapeCard } from "../lib/f.mjs";
+import { shapeCard, solidShape } from "../lib/f.mjs";
 
 // Answer-choice picture: a triangle (same three vertices as the original).
 export default {
@@ -7,5 +7,6 @@ export default {
   h: 400,
   title: "a triangle",
   grain: false,
-  draw: () => shapeCard(640, 400) + solidShape((a) => `<path d="M320 82L455 316L185 316Z" ${a}/>`, "#8fc6de"),
+  draw: () =>
+    shapeCard(640, 400) + solidShape((a) => `<path d="M320 82L455 316L185 316Z" ${a}/>`, "#8fc6de"),
 };

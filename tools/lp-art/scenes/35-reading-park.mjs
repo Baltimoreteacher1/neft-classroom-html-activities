@@ -1,4 +1,21 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, pathway, tuft, flower } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  ball,
+  bench,
+  cloud,
+  dog,
+  flower,
+  ground,
+  HAIR,
+  hills,
+  P,
+  pathway,
+  person,
+  SKIN,
+  sky,
+  sun,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
 
 export default {
   file: "35-reading-park.svg",
@@ -30,9 +47,28 @@ export default {
       beard: HAIR[5],
       facing: -1,
     }) +
-    person(140, 340, 128, { pose: "kick", skin: SKIN[1], hair: HAIR[1], hairStyle: "short", top: P.coral, bottom: P.navy, sleeve: "short", mouth: "open" }) +
+    person(140, 340, 128, {
+      pose: "kick",
+      skin: SKIN[1],
+      hair: HAIR[1],
+      hairStyle: "short",
+      top: P.coral,
+      bottom: P.navy,
+      sleeve: "short",
+      mouth: "open",
+    }) +
     ball(226, 346, 11) +
-    person(282, 348, 122, { pose: "run", skin: SKIN[4], hair: HAIR[0], hairStyle: "puffs", top: P.gold, bottom: "#3e4a5c", sleeve: "short", facing: -1, mouth: "open" }) +
+    person(282, 348, 122, {
+      pose: "run",
+      skin: SKIN[4],
+      hair: HAIR[0],
+      hairStyle: "puffs",
+      top: P.gold,
+      bottom: "#3e4a5c",
+      sleeve: "short",
+      facing: -1,
+      mouth: "open",
+    }) +
     dog(372, 366, 1.25, { pose: "run", facing: 1 }) +
     tuft(40, 372) +
     tuft(600, 384, 1.2) +

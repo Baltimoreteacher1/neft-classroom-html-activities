@@ -1,12 +1,28 @@
-import { P, rect, ellipse, circle, arrow, stroke, path, g, vgrad, rgrad, shade, light } from "../../../access-practice-lab/src/art/kit.js";
-import { frogEggs, tadpole, frog, lilyPad } from "../lib/a.mjs";
+import {
+  arrow,
+  circle,
+  ellipse,
+  g,
+  light,
+  P,
+  path,
+  rect,
+  rgrad,
+  shade,
+  stroke,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { frog, frogEggs, lilyPad, tadpole } from "../lib/a.mjs";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const CX = 320;
 const CY = 204;
 const RX = 200;
 const RY = 128;
-const at = (deg) => [CX + Math.cos((deg * Math.PI) / 180) * RX, CY + Math.sin((deg * Math.PI) / 180) * RY];
+const at = (deg) => [
+  CX + Math.cos((deg * Math.PI) / 180) * RX,
+  CY + Math.sin((deg * Math.PI) / 180) * RY,
+];
 // clockwise arc between two angles on the ring
 const arc = (a0, a1) => {
   const [x0, y0] = at(a0);
@@ -14,7 +30,19 @@ const arc = (a0, a1) => {
   return `M${f(x0)} ${f(y0)}A${RX} ${RY} 0 0 1 ${f(x1)} ${f(y1)}`;
 };
 const bubble = (x, y, r = 62) =>
-  g(circle(x + 2, y + 5, r, "#1c2f4a", 'opacity=".1"') + circle(x, y, r, rgrad([[0, "#f4fbfc"], [1, "#d7edf2"]])) + circle(x, y, r, "none", `stroke="#ffffff" stroke-width="4"`));
+  g(
+    circle(x + 2, y + 5, r, "#1c2f4a", 'opacity=".1"') +
+      circle(
+        x,
+        y,
+        r,
+        rgrad([
+          [0, "#f4fbfc"],
+          [1, "#d7edf2"],
+        ]),
+      ) +
+      circle(x, y, r, "none", `stroke="#ffffff" stroke-width="4"`),
+  );
 
 export default {
   file: "35-reading-frog-cycle.svg",
@@ -28,9 +56,36 @@ export default {
     const [lx, ly] = at(90);
     const [fx, fy] = at(180);
     return (
-      rect(0, 0, 640, 400, rgrad([[0, "#eef6ef"], [1, "#dcebe2"]], { cx: 0.5, cy: 0.5, r: 0.7 })) +
-      ellipse(CX, CY, RX + 40, RY + 40, vgrad([[0, "#cfe8ee"], [1, "#a9d3e0"]]), 'opacity=".55"') +
-      stroke("M200 200 q14 -5 28 0M380 230 q14 -5 28 0M300 150 q14 -5 28 0", "#ffffff", 2, 'opacity=".7"') +
+      rect(
+        0,
+        0,
+        640,
+        400,
+        rgrad(
+          [
+            [0, "#eef6ef"],
+            [1, "#dcebe2"],
+          ],
+          { cx: 0.5, cy: 0.5, r: 0.7 },
+        ),
+      ) +
+      ellipse(
+        CX,
+        CY,
+        RX + 40,
+        RY + 40,
+        vgrad([
+          [0, "#cfe8ee"],
+          [1, "#a9d3e0"],
+        ]),
+        'opacity=".55"',
+      ) +
+      stroke(
+        "M200 200 q14 -5 28 0M380 230 q14 -5 28 0M300 150 q14 -5 28 0",
+        "#ffffff",
+        2,
+        'opacity=".7"',
+      ) +
       arrow(arc(-62, -24), P.teal, 6) +
       arrow(arc(26, 64), P.teal, 6) +
       arrow(arc(118, 154), P.teal, 6) +

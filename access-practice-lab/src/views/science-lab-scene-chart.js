@@ -7,7 +7,9 @@ const W = 640;
 const H = 330;
 const PAD = { l: 64, r: 16, t: 34, b: 58 };
 const PLOT_H = H - PAD.t - PAD.b;
-const FILLS = [C.copper, C.sage, "#15969a", "#455a9a", C.wool];
+const FILLS = [C.copper, C.sage, "#15969a", "#2d5a7b", C.wool];
+/** Axes are line details: crisp navy, unlike the soft tonal edges of the bars. */
+const AXIS = `stroke="${C.navy}" stroke-width="3" stroke-linecap="round"`;
 const both = (I, o) => (o ? I.S(o.en, o.es) : "");
 
 export const chartAxisMax = (caseDef, rows) =>
@@ -109,7 +111,7 @@ export function barChartHTML(
       const sel = highlight.includes(r.id);
       const fill = FILLS[Math.max(0, fv.indexOf(r.conditions[focus])) % FILLS.length];
       const bar = has
-        ? `<rect class="slx-bar" data-row="${r.id}" data-value="${Number(got)}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${fill}" ${ln(sel ? 5 : 2.5)}/><text x="${(x + bw / 2).toFixed(1)}" y="${(y - 8).toFixed(1)}" text-anchor="middle" font-size="18" font-weight="700" fill="${C.ink}">${Number(got)}</text>`
+        ? `<rect class="slx-bar" data-row="${r.id}" data-value="${Number(got)}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${fill}" ${sel ? `stroke="${C.navy}" stroke-width="5" stroke-linejoin="round"` : ln(2.5)}/><text x="${(x + bw / 2).toFixed(1)}" y="${(y - 8).toFixed(1)}" text-anchor="middle" font-size="18" font-weight="700" fill="${C.ink}">${Number(got)}</text>`
         : `<rect class="slx-bar is-empty" data-row="${r.id}" data-value="" x="${x.toFixed(1)}" y="${PAD.t + PLOT_H - 22}" width="${bw.toFixed(1)}" height="22" rx="5" fill="none" stroke="${C.navy}" stroke-width="2" stroke-dasharray="5 4"/><text x="${(x + bw / 2).toFixed(1)}" y="${PAD.t + PLOT_H - 30}" text-anchor="middle" font-size="18" fill="${C.ink}">?</text>`;
       const mark = sel
         ? `<path d="M${(x + bw / 2 - 9).toFixed(1)} ${PAD.t - 26} h18 l-9 12 z" fill="${C.navy}"/>`
@@ -117,7 +119,7 @@ export function barChartHTML(
       return `${bar}${mark}<text x="${(x + bw / 2).toFixed(1)}" y="${H - PAD.b + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="${C.ink}">${num}</text>`;
     })
     .join("");
-  const axes = `<line x1="${PAD.l}" y1="${PAD.t + PLOT_H}" x2="${W - PAD.r}" y2="${PAD.t + PLOT_H}" ${ln()}/><line x1="${PAD.l}" y1="${PAD.t - 6}" x2="${PAD.l}" y2="${PAD.t + PLOT_H}" ${ln()}/><text x="${(PAD.l + W - PAD.r) / 2}" y="${H - 6}" text-anchor="middle" font-size="17" fill="${C.ink}">${esc(I.S("Test number", "Número de prueba"))}</text><text x="18" y="${PAD.t + PLOT_H / 2}" text-anchor="middle" font-size="17" fill="${C.ink}" transform="rotate(-90 18 ${PAD.t + PLOT_H / 2})">${esc(unit)}</text>`;
+  const axes = `<line x1="${PAD.l}" y1="${PAD.t + PLOT_H}" x2="${W - PAD.r}" y2="${PAD.t + PLOT_H}" ${AXIS}/><line x1="${PAD.l}" y1="${PAD.t - 6}" x2="${PAD.l}" y2="${PAD.t + PLOT_H}" ${AXIS}/><text x="${(PAD.l + W - PAD.r) / 2}" y="${H - 6}" text-anchor="middle" font-size="17" fill="${C.ink}">${esc(I.S("Test number", "Número de prueba"))}</text><text x="18" y="${PAD.t + PLOT_H / 2}" text-anchor="middle" font-size="17" fill="${C.ink}" transform="rotate(-90 18 ${PAD.t + PLOT_H / 2})">${esc(unit)}</text>`;
   const line = (r) => {
     const num = all.findIndex((x) => x.id === r.id) + 1;
     const lead = `${I.S("Test", "Prueba")} ${num} · ${condText(I, caseDef, r.conditions)}`;

@@ -1,9 +1,28 @@
-import { P, panels, sky, cloud, hills, ground, tree, fence, flower, tuft, swings, slide, ellipse } from "../../../access-practice-lab/src/art/kit.js";
-import { raisedBed, canOnGround } from "../lib/d.mjs";
+import {
+  cloud,
+  ellipse,
+  fence,
+  flower,
+  ground,
+  hills,
+  P,
+  panels,
+  sky,
+  slide,
+  swings,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { canOnGround, raisedBed } from "../lib/d.mjs";
 
 // Two ideas for the same empty space: left a community garden (raised vegetable beds, tall sunflowers,
 // a watering can); right a playground (two swings and a yellow slide). No people, no labels.
-const back = (x, y, w, h, i) => sky(x + w, y + h * 0.62) + cloud(x + w * (i ? 0.3 : 0.7), y + 64, 0.6) + hills(x + w + 300, y + h * 0.5, { seed: 6 + i }) + (i ? tree(x + w - 40, y + h * 0.56, 0.5, { tone: "#6aa275", seed: 3 }) : "") + ground(x + w, y + h * 0.54, h, "grass", { seed: 3 + i });
+const back = (x, y, w, h, i) =>
+  sky(x + w, y + h * 0.62) +
+  cloud(x + w * (i ? 0.3 : 0.7), y + 64, 0.6) +
+  hills(x + w + 300, y + h * 0.5, { seed: 6 + i }) +
+  (i ? tree(x + w - 40, y + h * 0.56, 0.5, { tone: "#6aa275", seed: 3 }) : "") +
+  ground(x + w, y + h * 0.54, h, "grass", { seed: 3 + i });
 
 const garden = (x, y, w, h) => {
   const gy = y + h - 30;
@@ -38,6 +57,10 @@ export default {
   file: "35t-park-choice.svg",
   w: 640,
   h: 400,
-  title: "Two ideas for an empty space in the park. On the left side is a community garden with raised beds of vegetables, tall sunflowers, and a watering can. On the right side is a playground with two swings and a yellow slide.",
-  draw: () => panels(640, 400, 2, (i, x, y, w, h) => (i ? playground(x, y, w, h) : garden(x, y, w, h)), { numbered: false }),
+  title:
+    "Two ideas for an empty space in the park. On the left side is a community garden with raised beds of vegetables, tall sunflowers, and a watering can. On the right side is a playground with two swings and a yellow slide.",
+  draw: () =>
+    panels(640, 400, 2, (i, x, y, w, h) => (i ? playground(x, y, w, h) : garden(x, y, w, h)), {
+      numbered: false,
+    }),
 };

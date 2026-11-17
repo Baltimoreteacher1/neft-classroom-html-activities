@@ -1,7 +1,36 @@
-import { P, SKIN, HAIR, rect, sky, sun, cloud, hills, ground, rain, puddle, person, umbrella, tuft, flower, tree, line, stroke } from "../../../access-practice-lab/src/art/kit.js";
-import { frameCard, handAt, overlay, shorts, boots, kite } from "../lib/c.mjs";
+import {
+  cloud,
+  flower,
+  ground,
+  HAIR,
+  hills,
+  line,
+  P,
+  person,
+  puddle,
+  rain,
+  rect,
+  SKIN,
+  sky,
+  stroke,
+  sun,
+  tree,
+  tuft,
+  umbrella,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { boots, frameCard, handAt, kite, overlay, shorts } from "../lib/c.mjs";
 
-const boy = { pose: "reach", facing: 1, skin: SKIN[4], hair: HAIR[0], hairStyle: "curly", top: P.gold, bottom: SKIN[4], sleeve: "short", mouth: "open" };
+const boy = {
+  pose: "reach",
+  facing: 1,
+  skin: SKIN[4],
+  hair: HAIR[0],
+  hairStyle: "curly",
+  top: P.gold,
+  bottom: SKIN[4],
+  sleeve: "short",
+  mouth: "open",
+};
 const BX = 120;
 const BY = 352;
 const BH = 142;
@@ -16,7 +45,11 @@ const sunny = () =>
   hills(640, 266, { seed: 4 }) +
   tree(260, 268, 0.42, { seed: 2 }) +
   ground(640, 262, 140, "grass", { seed: 3 }) +
-  stroke(`M${hx.toFixed(1)} ${hy.toFixed(1)} Q${(hx + 70).toFixed(1)} ${(hy - 60).toFixed(1)} ${KX} ${KY}`, "#4e5d6c", 1.4) +
+  stroke(
+    `M${hx.toFixed(1)} ${hy.toFixed(1)} Q${(hx + 70).toFixed(1)} ${(hy - 60).toFixed(1)} ${KX} ${KY}`,
+    "#4e5d6c",
+    1.4,
+  ) +
   kite(KX, KY, 1.15, { color: P.coral, alt: P.teal }) +
   person(BX, BY, BH, boy) +
   overlay(BX, BY, BH, 1, shorts(P.blue)) +
@@ -24,7 +57,18 @@ const sunny = () =>
   flower(268, 380, 0.8, { color: P.gold, center: P.coral }) +
   tuft(190, 388, 1.1);
 
-const girl = { pose: "reach", facing: -1, skin: SKIN[1], hair: HAIR[1], hairStyle: "long", top: P.yellow, coat: P.yellow, skirt: true, bottom: "#e9b52a", mouth: "smile" };
+const girl = {
+  pose: "reach",
+  facing: -1,
+  skin: SKIN[1],
+  hair: HAIR[1],
+  hairStyle: "long",
+  top: P.yellow,
+  coat: P.yellow,
+  skirt: true,
+  bottom: "#e9b52a",
+  mouth: "smile",
+};
 const GX = 470;
 const GY = 346;
 const GH = 140;
@@ -53,5 +97,8 @@ export default {
   h: 400,
   title:
     "Two weather scenes. On the left, the sun shines in a blue sky and a boy in a T-shirt and shorts flies a kite. On the right, dark clouds drop rain, and a girl in a yellow raincoat and boots holds an umbrella next to a puddle.",
-  draw: () => rect(0, 0, 640, 400, P.ivory) + frameCard(14, 14, 298, 372, sunny()) + frameCard(328, 14, 298, 372, rainy()),
+  draw: () =>
+    rect(0, 0, 640, 400, P.ivory) +
+    frameCard(14, 14, 298, 372, sunny()) +
+    frameCard(328, 14, 298, 372, rainy()),
 };

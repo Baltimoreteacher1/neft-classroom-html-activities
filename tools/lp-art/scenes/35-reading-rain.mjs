@@ -1,4 +1,23 @@
-import { P, SKIN, HAIR, sky, cloud, rain, puddle, building, road, ground, rect, ellipse, person, umbrella, haze, stroke, tree, g } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  building,
+  cloud,
+  ellipse,
+  g,
+  ground,
+  HAIR,
+  haze,
+  P,
+  person,
+  puddle,
+  rain,
+  rect,
+  road,
+  SKIN,
+  sky,
+  stroke,
+  tree,
+  umbrella,
+} from "../../../access-practice-lab/src/art/kit.js";
 import { bus, busStop, hands } from "../lib/b.mjs";
 
 const girl = { x: 222, y: 388, h: 126, pose: "reach", facing: 1 };
@@ -9,7 +28,8 @@ export default {
   file: "35-reading-rain.svg",
   w: 640,
   h: 400,
-  title: "A girl holds a red umbrella in the rain next to her dad at a bus stop. A yellow school bus is coming down the street.",
+  title:
+    "A girl holds a red umbrella in the rain next to her dad at a bus stop. A yellow school bus is coming down the street.",
   draw: () =>
     sky(640, 260, "overcast") +
     cloud(110, 54, 1.3, { dark: true }) +
@@ -26,7 +46,12 @@ export default {
     ellipse(320, 276, 330, 6, "#ffffff", 'opacity=".08"') +
     bus(330, 302, 0.82, { facing: -1 }) +
     ground(640, 316, 84, "pavement") +
-    stroke("M0 352 H640M70 316 L40 400M230 316 L214 400M400 316 L404 400M560 316 L590 400", "#a19e96", 1.2, 'opacity=".55"') +
+    stroke(
+      "M0 352 H640M70 316 L40 400M230 316 L214 400M400 316 L404 400M560 316 L590 400",
+      "#a19e96",
+      1.2,
+      'opacity=".55"',
+    ) +
     rect(0, 316, 640, 84, "#4c6c86", 'opacity=".08"') +
     puddle(330, 372, 54) +
     puddle(70, 386, 40) +

@@ -1,4 +1,19 @@
-import { P, rect, rrect, circle, poly, path, line, stroke, text, tag, g, shade, light, vgrad } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  circle,
+  g,
+  light,
+  line,
+  P,
+  path,
+  poly,
+  rect,
+  rrect,
+  shade,
+  stroke,
+  tag,
+  text,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 import { mapTree } from "../lib/c.mjs";
 
 // Geometry kept from the original map: Main St y 180-220; Oak St x 260-300; Pine Ave x 460-500.
@@ -11,9 +26,32 @@ const roof = (x, y, w, h, c) => {
   return (
     drop(x, y, w, h, 2) +
     rect(x, y, w, h, c) +
-    poly([[x, y], [x + w, y], [x + w - inset, y + h / 2], [x + inset, y + h / 2]], light(c, 0.22)) +
-    poly([[x + w, y], [x + w, y + h], [x + w - inset, y + h / 2]], shade(c, 0.12)) +
-    poly([[x, y + h], [x + w, y + h], [x + w - inset, y + h / 2], [x + inset, y + h / 2]], shade(c, 0.2)) +
+    poly(
+      [
+        [x, y],
+        [x + w, y],
+        [x + w - inset, y + h / 2],
+        [x + inset, y + h / 2],
+      ],
+      light(c, 0.22),
+    ) +
+    poly(
+      [
+        [x + w, y],
+        [x + w, y + h],
+        [x + w - inset, y + h / 2],
+      ],
+      shade(c, 0.12),
+    ) +
+    poly(
+      [
+        [x, y + h],
+        [x + w, y + h],
+        [x + w - inset, y + h / 2],
+        [x + inset, y + h / 2],
+      ],
+      shade(c, 0.2),
+    ) +
     line(x + inset, y + h / 2, x + w - inset, y + h / 2, shade(c, 0.3), 1.4)
   );
 };
@@ -22,7 +60,20 @@ const house = (x, y, c) => roof(x, y, 40, 34, c) + rect(x + 26, y + 6, 6, 8, "#8
 const lot = (x, y, w, h, label) =>
   rrect(x, y, w, h, 6, "#e3d9b8") +
   rrect(x, y, w, h, 6, "none", `stroke="${P.navy}" stroke-width="2" stroke-dasharray="7 5"`) +
-  [[0.2, 0.3], [0.75, 0.7], [0.4, 0.8], [0.85, 0.25]].map(([a, b]) => path(`M${x + w * a} ${y + h * b} l-3 -6 M${x + w * a} ${y + h * b} l3 -7`, "none", `stroke="#9bb07a" stroke-width="1.6"`)).join("") +
+  [
+    [0.2, 0.3],
+    [0.75, 0.7],
+    [0.4, 0.8],
+    [0.85, 0.25],
+  ]
+    .map(([a, b]) =>
+      path(
+        `M${x + w * a} ${y + h * b} l-3 -6 M${x + w * a} ${y + h * b} l3 -7`,
+        "none",
+        `stroke="#9bb07a" stroke-width="1.6"`,
+      ),
+    )
+    .join("") +
   tag(x + w / 2, y + h / 2 + 2, label, { size: 14 });
 
 const roadLabel = (x, y, str, rot = 0) =>
@@ -33,8 +84,22 @@ const compass = (x, y) =>
     circle(x + 2, y + 3, 26, "#1c2f4a", 'opacity=".16"') +
       circle(x, y, 26, P.ivory) +
       circle(x, y, 26, "none", `stroke="${P.navy}" stroke-width="2"`) +
-      poly([[x, y - 21], [x + 6, y], [x - 6, y]], P.red) +
-      poly([[x, y + 21], [x + 6, y], [x - 6, y]], P.navy) +
+      poly(
+        [
+          [x, y - 21],
+          [x + 6, y],
+          [x - 6, y],
+        ],
+        P.red,
+      ) +
+      poly(
+        [
+          [x, y + 21],
+          [x + 6, y],
+          [x - 6, y],
+        ],
+        P.navy,
+      ) +
       circle(x, y, 2.5, P.ivory) +
       rrect(x - 9, y - 50, 18, 18, 4, P.navy) +
       text(x, y - 36, "N", { size: 14, fill: P.white }),
@@ -56,13 +121,24 @@ export default {
     rect(0, 180, 640, 40, ROAD) +
     rect(260, 0, 40, 400, ROAD) +
     rect(460, 0, 40, 400, ROAD) +
-    stroke("M0 200H240M320 200H440M520 200H640M280 0V160M280 240V400M480 0V160M480 240V400", "#f3dd8a", 2.6, 'stroke-dasharray="12 10"') +
+    stroke(
+      "M0 200H240M320 200H440M520 200H640M280 0V160M280 240V400M480 0V160M480 240V400",
+      "#f3dd8a",
+      2.6,
+      'stroke-dasharray="12 10"',
+    ) +
     // crosswalks
-    [280, 480].map((cx) => [-1, 1].map((sd) => {
-      let d = "";
-      for (let i = -16; i <= 16; i += 8) d += `M${cx + i} ${200 + sd * 26}v${sd * 8}`;
-      return stroke(d, "#f6f3ea", 4);
-    }).join("")).join("") +
+    [280, 480]
+      .map((cx) =>
+        [-1, 1]
+          .map((sd) => {
+            let d = "";
+            for (let i = -16; i <= 16; i += 8) d += `M${cx + i} ${200 + sd * 26}v${sd * 8}`;
+            return stroke(d, "#f6f3ea", 4);
+          })
+          .join(""),
+      )
+      .join("") +
     // Lot 1 (next to the school)
     lot(20, 90, 96, 80, "Lot 1") +
     // School with flag
@@ -102,7 +178,15 @@ export default {
     // Library
     drop(150, 236, 100, 90) +
     rect(150, 236, 100, 90, "#9cc3e6") +
-    poly([[150, 236], [250, 236], [230, 266], [170, 266]], light("#9cc3e6", 0.2)) +
+    poly(
+      [
+        [150, 236],
+        [250, 236],
+        [230, 266],
+        [170, 266],
+      ],
+      light("#9cc3e6", 0.2),
+    ) +
     rect(170, 266, 60, 44, "#7fa9d0") +
     [178, 192, 206, 220].map((x) => rect(x, 300, 6, 22, P.ivory)).join("") +
     tag(200, 282, "Library", { size: 15 }) +

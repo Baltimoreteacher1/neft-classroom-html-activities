@@ -1,9 +1,40 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, panels, flower, tuft, g } from "../../../access-practice-lab/src/art/kit.js";
-import { bottle, sodaCan, wrapper, crumpledPaper, trashBag, gloved, handAt } from "../lib/c.mjs";
+import {
+  bench,
+  cloud,
+  flower,
+  g,
+  ground,
+  HAIR,
+  hills,
+  P,
+  panels,
+  person,
+  SKIN,
+  sky,
+  sun,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { bottle, crumpledPaper, gloved, handAt, sodaCan, trashBag, wrapper } from "../lib/c.mjs";
 
 // The same two neighbors in every panel.
-const GIRL = { skin: SKIN[2], hair: HAIR[1], hairStyle: "braid", top: P.teal, bottom: P.navy, sleeve: "short" };
-const MAN = { age: "adult", skin: SKIN[4], hair: HAIR[0], hairStyle: "short", top: P.gold, bottom: "#4e5d6c", beard: true };
+const GIRL = {
+  skin: SKIN[2],
+  hair: HAIR[1],
+  hairStyle: "braid",
+  top: P.teal,
+  bottom: P.navy,
+  sleeve: "short",
+};
+const MAN = {
+  age: "adult",
+  skin: SKIN[4],
+  hair: HAIR[0],
+  hairStyle: "short",
+  top: P.gold,
+  bottom: "#4e5d6c",
+  beard: true,
+};
 const GLOVE = "#f2a93b";
 
 const park = (x, y, w, sunny = true) =>
@@ -24,7 +55,10 @@ const litter = (x, y) =>
   crumpledPaper(x + 120, y + 330, 1) +
   sodaCan(x + 74, y + 372, 0.9, { band: P.blue, lying: true });
 
-const p1 = (x, y, w) => park(x, y, w, false) + litter(x, y) + person(x + 120, y + 350, 132, { ...GIRL, pose: "stand", facing: -1, mouth: "flat" });
+const p1 = (x, y, w) =>
+  park(x, y, w, false) +
+  litter(x, y) +
+  person(x + 120, y + 350, 132, { ...GIRL, pose: "stand", facing: -1, mouth: "flat" });
 
 const p2 = (x, y, w) => {
   const man = { ...MAN, pose: "stand", facing: 1, item: trashBag(0, 46, 0.62) };
@@ -43,7 +77,9 @@ const p2 = (x, y, w) => {
 
 const p3 = (x, y, w) =>
   park(x, y, w, true) +
-  [16, 36, 56, 76, 96].map((dx, i) => flower(x + dx, y + 270 + (i % 2) * 6, 1.1, { color: P.pink, center: P.gold })).join("") +
+  [16, 36, 56, 76, 96]
+    .map((dx, i) => flower(x + dx, y + 270 + (i % 2) * 6, 1.1, { color: P.pink, center: P.gold }))
+    .join("") +
   flower(x + 170, y + 380, 1, { color: P.pink }) +
   person(x + 66, y + 356, 156, { ...MAN, pose: "cheer", facing: 1 }) +
   person(x + 146, y + 362, 124, { ...GIRL, pose: "wave", facing: -1, mouth: "open" }) +

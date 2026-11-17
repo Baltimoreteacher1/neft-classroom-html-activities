@@ -1,10 +1,34 @@
-import { P, SKIN, HAIR, sky, sun, cloud, building, ground, tree, person, tuft, flower, ellipse, haze, fence, tr, g, path, line } from "../../../access-practice-lab/src/art/kit.js";
-import { BP, tomatoBed, sunflowerBed, hands } from "../lib/b.mjs";
+import {
+  building,
+  cloud,
+  ellipse,
+  fence,
+  flower,
+  g,
+  ground,
+  HAIR,
+  haze,
+  line,
+  P,
+  path,
+  person,
+  SKIN,
+  sky,
+  sun,
+  tr,
+  tree,
+  tuft,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { BP, hands, sunflowerBed, tomatoBed } from "../lib/b.mjs";
 
 const girl = { x: 286, y: 386, h: 128, pose: "hold", facing: -1 };
 const boy = { x: 364, y: 392, h: 124, pose: "hold", facing: 1 };
 // A child's garden shovel held at the hand, blade down in the soil in front of the boy.
-const shovel = g(line(0, -4, 22, 44, P.woodDark, 3.4) + path("M14 40 L32 36 L36 52 Q30 62 22 58Z", "#8f9aa5") + path("M24 38 L32 36 L36 52 Q33 58 28 59Z", "#6f7a85"));
+const shovel = g(
+  line(0, -4, 22, 44, P.woodDark, 3.4) +
+    path("M14 40 L32 36 L36 52 Q30 62 22 58Z", "#8f9aa5") +
+    path("M24 38 L32 36 L36 52 Q33 58 28 59Z", "#6f7a85"),
+);
 const bh = hands(boy.x, boy.y, boy.h, boy).front;
 
 export default {
@@ -49,6 +73,8 @@ export default {
       sleeve: "short",
       item: shovel,
     }) +
-    tuft(20, 392, 1.2) + tuft(620, 388, 1.1) +
-    flower(256, 398, 0.8, { color: P.pink }) + flower(612, 400, 0.8, { color: P.gold, center: P.coral }),
+    tuft(20, 392, 1.2) +
+    tuft(620, 388, 1.1) +
+    flower(256, 398, 0.8, { color: P.pink }) +
+    flower(612, 400, 0.8, { color: P.gold, center: P.coral }),
 };

@@ -1,10 +1,56 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, rain, puddle, person, panels, rect, wallWindow, tuft, flower, contact, bookshelf, PROPS, circle, ellipse, g } from "../../../access-practice-lab/src/art/kit.js";
-import { picnicBasket, blanket } from "../lib/c.mjs";
+import {
+  bookshelf,
+  circle,
+  cloud,
+  contact,
+  ellipse,
+  flower,
+  g,
+  ground,
+  HAIR,
+  hills,
+  P,
+  PROPS,
+  panels,
+  person,
+  puddle,
+  rain,
+  rect,
+  SKIN,
+  sky,
+  sun,
+  tree,
+  tuft,
+  wallWindow,
+} from "../../../access-practice-lab/src/art/kit.js";
+import { blanket, picnicBasket } from "../lib/c.mjs";
 
 // The same three people in every panel.
-const MOM = { age: "adult", skin: SKIN[3], hair: HAIR[0], hairStyle: "bun", top: P.coral, bottom: P.teal, skirt: true };
-const GIRL = { skin: SKIN[3], hair: HAIR[0], hairStyle: "puffs", top: P.gold, bottom: P.navy, sleeve: "short" };
-const BOY = { skin: SKIN[3], hair: HAIR[0], hairStyle: "short", top: P.blue, bottom: "#3e4a5c", sleeve: "short" };
+const MOM = {
+  age: "adult",
+  skin: SKIN[3],
+  hair: HAIR[0],
+  hairStyle: "bun",
+  top: P.coral,
+  bottom: P.teal,
+  skirt: true,
+};
+const GIRL = {
+  skin: SKIN[3],
+  hair: HAIR[0],
+  hairStyle: "puffs",
+  top: P.gold,
+  bottom: P.navy,
+  sleeve: "short",
+};
+const BOY = {
+  skin: SKIN[3],
+  hair: HAIR[0],
+  hairStyle: "short",
+  top: P.blue,
+  bottom: "#3e4a5c",
+  sleeve: "short",
+};
 
 const basketItem = picnicBasket(0.9);
 
@@ -34,7 +80,13 @@ const p2 = (x, y, w, h) =>
   puddle(x + 46, y + 352, 34, 7) +
   rain(x, y + 40, w, h, { n: 70, seed: 4, color: "#e3eef5", o: 0.75 }) +
   person(x + 30, y + 360, 92, { ...GIRL, pose: "run", facing: -1, mouth: "open" }) +
-  person(x + 112, y + 340, 150, { ...MOM, pose: "run", facing: -1, mouth: "open", item: basketItem }) +
+  person(x + 112, y + 340, 150, {
+    ...MOM,
+    pose: "run",
+    facing: -1,
+    mouth: "open",
+    item: basketItem,
+  }) +
   person(x + 170, y + 350, 94, { ...BOY, pose: "run", facing: -1, mouth: "open" });
 
 const p3 = (x, y, w, h) =>

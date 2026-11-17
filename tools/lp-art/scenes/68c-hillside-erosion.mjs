@@ -1,4 +1,18 @@
-import { P, sky, cloud, path, stroke, vgrad, tree, tuft, ellipse, g, rng, shade, light } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  cloud,
+  ellipse,
+  g,
+  light,
+  P,
+  path,
+  rng,
+  shade,
+  sky,
+  stroke,
+  tree,
+  tuft,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 import { stump } from "../lib/f.mjs";
 
 // Cause and effect after one storm. LEFT: hillside covered in trees and grass; the river beside it stays blue and
@@ -23,7 +37,8 @@ const gully = (x0, y0, x1, seed) => {
   }
   const L = pts.map(([x, y, w]) => [x - w, y]);
   const Rt = pts.map(([x, y, w]) => [x + w, y]).reverse();
-  const poly = (a) => a.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join("");
+  const poly = (a) =>
+    a.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join("");
   const mid = poly(pts.map(([x, y]) => [x, y]));
   let side = "";
   for (const k of [2, 4]) {
@@ -40,7 +55,12 @@ const gully = (x0, y0, x1, seed) => {
 };
 
 /** Mud spreading from a gully mouth and drifting downstream in the river. */
-const mudFan = (x) => path(`M${x - 16} 327 C${x - 18} 340 ${x + 10} 350 ${x + 44} 350 C${x + 30} 342 ${x + 22} 334 ${x + 16} 327Z`, "#6f4524", 'opacity=".55"');
+const mudFan = (x) =>
+  path(
+    `M${x - 16} 327 C${x - 18} 340 ${x + 10} 350 ${x + 44} 350 C${x + 30} 342 ${x + 22} 334 ${x + 16} 327Z`,
+    "#6f4524",
+    'opacity=".55"',
+  );
 
 /** Grass flecks scattered over the green hill. */
 const grassFlecks = () => {
@@ -80,7 +100,14 @@ export default {
     cloud(330, 40, 0.6, { tone: "#eef2f5" }) +
     cloud(520, 60, 1, { tone: "#e7ecef" }) +
     // LEFT hillside: grass and trees
-    path(leftHill, vgrad([[0, P.grassLight], [0.5, P.grass], [1, P.grassDark]])) +
+    path(
+      leftHill,
+      vgrad([
+        [0, P.grassLight],
+        [0.5, P.grass],
+        [1, P.grassDark],
+      ]),
+    ) +
     path("M0 172 C70 128 180 122 262 170 C220 150 120 146 0 196Z", "#ffffff", 'opacity=".14"') +
     grassFlecks() +
     tree(64, 214, 0.5, { seed: 2 }) +
@@ -91,7 +118,14 @@ export default {
     tuft(30, 320, 1.1) +
     tuft(282, 318, 1) +
     // RIGHT hillside: bare soil, stumps, gullies
-    path(rightHill, vgrad([[0, light(soil, 0.2)], [0.6, soil], [1, shade(soil, 0.15)]])) +
+    path(
+      rightHill,
+      vgrad([
+        [0, light(soil, 0.2)],
+        [0.6, soil],
+        [1, shade(soil, 0.15)],
+      ]),
+    ) +
     soilTexture() +
     gully(452, 176, 404, 3) +
     gully(526, 160, 478, 7) +
@@ -102,15 +136,39 @@ export default {
     stump(538, 270, 1.4) +
     stump(452, 284, 1.4) +
     // river: clear blue on the left, brown with mud on the right
-    path("M0 326 H640 V400 H0Z", vgrad([[0, P.waterLight], [1, P.waterDark]])) +
-    path("M330 326 H640 V400 H372 C356 376 352 352 330 326Z", vgrad([[0, "#b5844f"], [1, "#8a5a30"]])) +
-    path("M330 326 C352 352 356 376 372 400 H392 C372 372 368 350 352 326Z", mix2(), 'opacity=".55"') +
-    stroke("M40 354 q15 -6 30 0M150 378 q15 -6 30 0M232 350 q15 -6 30 0", "#ffffff", 2.2, 'opacity=".7"') +
+    path(
+      "M0 326 H640 V400 H0Z",
+      vgrad([
+        [0, P.waterLight],
+        [1, P.waterDark],
+      ]),
+    ) +
+    path(
+      "M330 326 H640 V400 H372 C356 376 352 352 330 326Z",
+      vgrad([
+        [0, "#b5844f"],
+        [1, "#8a5a30"],
+      ]),
+    ) +
+    path(
+      "M330 326 C352 352 356 376 372 400 H392 C372 372 368 350 352 326Z",
+      mix2(),
+      'opacity=".55"',
+    ) +
+    stroke(
+      "M40 354 q15 -6 30 0M150 378 q15 -6 30 0M232 350 q15 -6 30 0",
+      "#ffffff",
+      2.2,
+      'opacity=".7"',
+    ) +
     stroke("M430 360 q15 -5 30 0M540 380 q15 -5 30 0", "#d6b48a", 2, 'opacity=".6"') +
     mudFan(404) +
     mudFan(478) +
     mudFan(566) +
-    g(path("M0 322 H330 V330 H0Z", shade(P.grassDark, 0.1)) + path("M318 322 H640 V330 H318Z", shade(soil, 0.25))),
+    g(
+      path("M0 322 H330 V330 H0Z", shade(P.grassDark, 0.1)) +
+        path("M318 322 H640 V330 H318Z", shade(soil, 0.25)),
+    ),
 };
 
 function mix2() {

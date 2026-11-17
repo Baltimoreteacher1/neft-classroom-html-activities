@@ -1,4 +1,4 @@
-import { solidShape, shapeCard } from "../lib/f.mjs";
+import { shapeCard, solidShape } from "../lib/f.mjs";
 
 // Math-talk stimulus: an isosceles triangle (3 sides) and a square (4 equal sides). Geometry is the original's, exactly.
 export default {

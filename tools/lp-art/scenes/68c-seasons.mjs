@@ -1,4 +1,17 @@
-import { P, rect, circle, ellipse, stroke, rgrad, vgrad, stars, arrow, tag, text, g } from "../../../access-practice-lab/src/art/kit.js";
+import {
+  arrow,
+  circle,
+  ellipse,
+  g,
+  P,
+  rect,
+  rgrad,
+  stars,
+  stroke,
+  tag,
+  text,
+  vgrad,
+} from "../../../access-practice-lab/src/art/kit.js";
 import { earth } from "../lib/f.mjs";
 
 // Seasons diagram, accurate first. The Sun sits at the centre of Earth's orbit. Earth is drawn at two opposite
@@ -33,14 +46,46 @@ export default {
     "A diagram of the Sun in the center with Earth shown at two places in its orbit. On the left, Earth's tilted axis leans its northern half toward the Sun, and sunlight hits the north directly. On the right, on the opposite side of the orbit, the same tilt now leans the northern half away from the Sun, and sunlight hits the north at a low slant.",
   grain: false,
   draw: () =>
-    rect(0, 0, 640, 400, vgrad([[0, "#0c1d36"], [1, "#1a2c50"]])) +
+    rect(
+      0,
+      0,
+      640,
+      400,
+      vgrad([
+        [0, "#0c1d36"],
+        [1, "#1a2c50"],
+      ]),
+    ) +
     stars(640, 400, 46, 7) +
     // orbit (far half behind the Sun)
-    ellipse(cx, cy, rx, ry, "none", 'stroke="#9fb4cc" stroke-width="2" stroke-dasharray="7 7" opacity=".7"') +
+    ellipse(
+      cx,
+      cy,
+      rx,
+      ry,
+      "none",
+      'stroke="#9fb4cc" stroke-width="2" stroke-dasharray="7 7" opacity=".7"',
+    ) +
     arrow(`M${cx + 40} ${cy - ry}H${cx - 40}`, "#c9d6e4", 3) +
     // the Sun
-    circle(cx, cy, 104, rgrad([[0, "#ffe9a8", 0.55], [1, "#ffe9a8", 0]])) +
-    circle(cx, cy, 48, vgrad([[0, "#ffe58a"], [1, P.gold]])) +
+    circle(
+      cx,
+      cy,
+      104,
+      rgrad([
+        [0, "#ffe9a8", 0.55],
+        [1, "#ffe9a8", 0],
+      ]),
+    ) +
+    circle(
+      cx,
+      cy,
+      48,
+      vgrad([
+        [0, "#ffe58a"],
+        [1, P.gold],
+      ]),
+    ) +
     circle(cx - 14, cy - 14, 18, "#fff6cf", 'opacity=".5"') +
     // near half of the orbit passes in front of the Sun
     `<path d="M${cx - rx} ${cy} A${rx} ${ry} 0 0 0 ${cx + rx} ${cy}" fill="none" stroke="#9fb4cc" stroke-width="2" stroke-dasharray="7 7" opacity=".7"/>` +

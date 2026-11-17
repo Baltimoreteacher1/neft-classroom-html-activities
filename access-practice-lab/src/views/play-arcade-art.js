@@ -1,84 +1,453 @@
 // Original scenes for the story worlds and conversation worlds on the Games & Worlds arcade, so a world
-// card never repeats a quick-game picture. Same palette and band house styles as src/games/art.js.
-import { C, cloud, hill, sky, star, stroke, svg, tree } from "../games/art.js";
+// card never repeats a quick-game picture. Same art direction and band house styles as src/games/art.js:
+// the site illustration kit (no outlines, lit and shade sides, soft contact shadows, one warm light),
+// 3-5 Storybook warm light, 6-8 Field Journal cooler with a journal grid.
+import {
+  P,
+  building,
+  circle,
+  contact,
+  ellipse,
+  hills,
+  kid,
+  light,
+  line,
+  moon,
+  path,
+  person,
+  poly,
+  rect,
+  rrect,
+  shade,
+  stars,
+  tr,
+  tuft,
+  cloud as kCloud,
+  stroke as kStroke,
+  tree as kTree,
+  road,
+} from "../art/kit.js";
+import { chip, lg, magnifier, rg, tile, word } from "../art/i-scene.js";
+import { banded, svg } from "../games/art.js";
 
-const bubble = (x, y, w, h, fill, b, tail = "l") =>
-  `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="16" fill="${fill}" ${stroke(b, 3)}/><path d="${tail === "l" ? `M24 ${h - 2}l-10 22l30 -22` : `M${w - 24} ${h - 2}l10 22l-30 -22`}" fill="${fill}" ${stroke(b, 3)}/><rect x="${w - (w - 18)}" y="${h - 3}" width="${w - 36}" height="6" fill="${fill}"/>${[0, 1].map((i) => `<rect x="18" y="${18 + i * 18}" width="${(w - 36) * (i ? 0.6 : 1)}" height="8" rx="4" fill="${C.navy}" opacity=".35"/>`).join("")}</g>`;
-
-const house = (x, y, w, h, wall, roof, b) =>
-  `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" fill="${wall}" ${stroke(b, 2.6)}/><path d="M-8 0L${w / 2} ${-h * 0.45}L${w + 8} 0Z" fill="${roof}" ${stroke(b, 2.6)}/><rect x="${w / 2 - 9}" y="${h - 26}" width="18" height="26" fill="${C.woodDk}"/>${[0, 1].map((i) => `<rect x="${8 + i * (w - 30)}" y="12" width="14" height="14" fill="${C.gold}"/>`).join("")}</g>`;
+const W = 480;
+const H = 270;
+const skyG = (a, b, c, h = H) =>
+  rect(
+    0,
+    0,
+    W,
+    h,
+    lg([
+      [0, a],
+      [0.6, b],
+      [1, c],
+    ]),
+  );
+const lines = (x, y, w, c, n = 2) =>
+  Array.from({ length: n }, (_, i) => rrect(x, y + i * 16, w * (i ? 0.6 : 1), 7, 3.5, c)).join("");
+/** Speech bubble with a tail on the left or right, lit top band, soft shadow. */
+const bubble = (x, y, w, h, fill, tail = "l") => {
+  const t =
+    tail === "l"
+      ? `M${x + 26} ${y + h - 4}l-12 22l34 -22Z`
+      : `M${x + w - 26} ${y + h - 4}l12 22l-34 -22Z`;
+  return (
+    rrect(x + 2, y + 5, w, h, 16, "#1c2f4a", 'opacity=".16"') +
+    path(t, shade(fill, 0.08)) +
+    rrect(x, y, w, h, 16, fill) +
+    rrect(x + 10, y + 3, w - 20, 10, 5, "#ffffff", 'opacity=".35"') +
+    lines(x + 18, y + 20, w - 36, shade(fill, 0.3))
+  );
+};
+const flag = (x, y, c) =>
+  line(x, y, x, y - 30, P.navyDeep, 3) +
+  path(`M${x} ${y - 30}h24l-6 7l6 7h-24Z`, c) +
+  path(`M${x} ${y - 23}h18l6 7h-24Z`, shade(c, 0.2), 'opacity=".6"') +
+  contact(x, y, 8, 2);
+const pot = (x, y, w = 80) =>
+  contact(x, y + 40, w * 0.55, 5) +
+  path(`M${x - w / 2 + 8} ${y + 6}h${w - 16}l-10 34h${-(w - 36)}Z`, P.coral) +
+  path(
+    `M${x + 6} ${y + 6}h${w / 2 - 14}l-10 34h-${w / 2 - 28}Z`,
+    shade(P.coral, 0.2),
+    'opacity=".7"',
+  ) +
+  rrect(x - w / 2, y - 4, w, 12, 3, light(P.coral, 0.15)) +
+  rect(x - w / 2, y + 4, w, 4, shade(P.coral, 0.25)) +
+  ellipse(x, y - 3, w / 2 - 6, 3, P.soilDark);
+const leaf = (x, y, rx, ry, c, flip = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${flip} 1) rotate(-14)">${ellipse(0, 0, rx, ry, c)}${ellipse(-rx * 0.15, -ry * 0.3, rx * 0.6, ry * 0.4, light(c, 0.3), 'opacity=".6"')}${kStroke(`M${-rx} 0H${rx * 0.8}`, shade(c, 0.3), 1)}</g>`;
+const column = (x, y, h) =>
+  rect(x, y, 22, h, P.ivory) +
+  rect(x + 14, y, 8, h, shade(P.ivory, 0.12)) +
+  rect(x + 3, y, 3, h, "#ffffff", 'opacity=".7"') +
+  rect(x - 3, y + h - 6, 28, 6, shade(P.ivory, 0.08));
 
 export const WORLD_SCENES = {
   // Adventure Worlds: a museum hall with a missing compass on a pedestal
-  museum: (b) =>
-    `<rect width="480" height="270" fill="#f3e6c8"/><path d="M60 92L240 30L420 92Z" fill="${C.sand}" ${stroke(b, 3)}/><rect x="70" y="92" width="340" height="16" fill="${C.paper}" ${stroke(b, 3)}/>${[0, 1, 2, 3, 4].map((i) => `<rect x="${86 + i * 70}" y="108" width="22" height="120" fill="${C.paper}" ${stroke(b, 2.6)}/>`).join("")}<rect x="40" y="228" width="400" height="42" fill="${C.wood}" ${stroke(b, 3)}/><g transform="translate(240 196)"><rect x="-34" y="0" width="68" height="34" fill="${C.stone}" ${stroke(b, 3)}/><rect x="-44" y="-56" width="88" height="56" rx="6" fill="${C.skyLt}" opacity=".85" ${stroke(b, 3)}/><circle cx="0" cy="-28" r="16" fill="none" stroke="${C.coral}" stroke-width="4" stroke-dasharray="6 5"/><text x="0" y="-21" text-anchor="middle" font-size="22" font-weight="800" fill="${C.coralDk}" font-family="system-ui">?</text></g><g transform="translate(360 150) rotate(-20)"><circle r="20" fill="none" stroke="${C.navy}" stroke-width="6"/><rect x="12" y="12" width="30" height="9" rx="4" transform="rotate(45 12 12)" fill="${C.navy}"/></g>`,
+  museum: () =>
+    rect(
+      0,
+      0,
+      W,
+      H,
+      lg([
+        [0, "#ecd3a4"],
+        [1, "#dcb986"],
+      ]),
+    ) +
+    circle(
+      240,
+      150,
+      200,
+      rg([
+        [0, "#fff6dc", 0.7],
+        [1, "#fff6dc", 0],
+      ]),
+    ) +
+    poly(
+      [
+        [56, 94],
+        [240, 30],
+        [424, 94],
+      ],
+      light(P.stoneDark, 0.1),
+    ) +
+    poly(
+      [
+        [240, 30],
+        [424, 94],
+        [240, 94],
+      ],
+      shade(P.stoneDark, 0.12),
+    ) +
+    poly(
+      [
+        [210, 74],
+        [240, 60],
+        [270, 74],
+      ],
+      P.gold,
+      'opacity=".6"',
+    ) +
+    rect(66, 92, 348, 16, P.ivory) +
+    rect(66, 104, 348, 4, shade(P.ivory, 0.15)) +
+    [0, 1, 2, 3, 4].map((i) => column(86 + i * 70, 108, 120)).join("") +
+    rect(
+      0,
+      228,
+      W,
+      42,
+      lg([
+        [0, P.woodLight],
+        [1, P.wood],
+      ]),
+    ) +
+    rect(0, 228, W, 4, light(P.woodLight, 0.3)) +
+    contact(240, 232, 48, 6, 0.28) +
+    rect(206, 196, 68, 36, P.stone) +
+    rect(250, 196, 24, 36, shade(P.stone, 0.15)) +
+    rect(202, 190, 76, 8, light(P.stone, 0.2)) +
+    rrect(196, 136, 88, 56, 5, "#cfe9f0", 'opacity=".75"') +
+    rrect(196, 136, 88, 6, 3, "#ffffff", 'opacity=".6"') +
+    kStroke("M206 182l22 -36M222 182l14 -22", "#ffffff", 3, 'opacity=".6"') +
+    `<circle cx="240" cy="166" r="16" fill="none" stroke="${P.coral}" stroke-width="4" stroke-dasharray="6 5"/>` +
+    word(240, 174, "?", 22, P.coral) +
+    magnifier(360, 150, 20, 25),
   // Language Games: a locked door with glowing clue cards
-  vault: (b) =>
-    `<rect width="480" height="270" fill="#1b2f48"/>${[60, 150, 330, 420].map((x, i) => star(x, 30 + (i % 2) * 20, 4, C.gold)).join("")}<rect x="170" y="44" width="140" height="196" rx="70" fill="#2c4d6f" ${stroke(b, 3)}/><circle cx="240" cy="142" r="44" fill="${C.stoneDk}" ${stroke(b, 3)}/><circle cx="240" cy="142" r="28" fill="${C.stone}"/>${[0, 60, 120, 180, 240, 300].map((a) => `<rect x="237" y="100" width="6" height="14" fill="${C.gold}" transform="rotate(${a} 240 142)"/>`).join("")}${[
-      [70, 90, C.teal, "A"],
-      [70, 170, C.coral, "B"],
-      [370, 90, C.gold, "C"],
-      [370, 170, C.leaf, "D"],
+  vault: () =>
+    rect(
+      0,
+      0,
+      W,
+      H,
+      lg([
+        [0, "#1b3554"],
+        [1, "#0f2338"],
+      ]),
+    ) +
+    [60, 150, 330, 420].map((x, i) => circle(x, 30 + (i % 2) * 20, 2.4, P.goldLight)).join("") +
+    circle(
+      240,
+      142,
+      130,
+      rg([
+        [0, P.teal, 0.35],
+        [1, P.teal, 0],
+      ]),
+    ) +
+    contact(240, 242, 80, 6, 0.3) +
+    rrect(166, 40, 148, 204, 74, "#1c3b5a") +
+    rrect(170, 44, 140, 196, 70, "#2c4d6f") +
+    circle(240, 146, 46, shade(P.stoneDark, 0.3)) +
+    circle(240, 142, 44, P.stoneDark) +
+    circle(240, 142, 30, P.stone) +
+    circle(232, 134, 12, light(P.stone, 0.4), 'opacity=".6"') +
+    [0, 60, 120, 180, 240, 300]
+      .map((a) => rrect(237, 100, 6, 14, 2, P.gold, `transform="rotate(${a} 240 142)"`))
+      .join("") +
+    [
+      [70, 90, P.teal, "A"],
+      [70, 170, P.coral, "B"],
+      [366, 90, P.gold, "C"],
+      [366, 170, P.green, "D"],
     ]
       .map(
         ([x, y, f, t]) =>
-          `<g transform="translate(${x} ${y})"><rect width="44" height="52" rx="8" fill="${f}" ${stroke(b, 2.6)}/><text x="22" y="34" text-anchor="middle" font-size="22" font-weight="800" fill="#fff" font-family="system-ui">${t}</text></g>`,
+          circle(
+            x + 22,
+            y + 26,
+            40,
+            rg([
+              [0, f, 0.35],
+              [1, f, 0],
+            ]),
+          ) +
+          tile(x, y, 44, 52, 8, f) +
+          word(x + 22, y + 34, t, 22, f === P.gold ? P.navy : "#ffffff"),
       )
-      .join("")}`,
+      .join(""),
   // Language Quest: a glowing portal between two worlds
-  portal: (b) =>
-    `${sky("pq", "#16314a", "#2f6f8f")}${star(70, 40, 4, "#fff")}${star(410, 60, 5, "#fff")}${star(300, 30, 3, "#fff")}${hill(210, "#2b7447", 22)}<ellipse cx="240" cy="140" rx="80" ry="100" fill="${C.gold}" opacity=".25"/><ellipse cx="240" cy="140" rx="62" ry="84" fill="${C.tealLt}" ${stroke(b, 4)}/><ellipse cx="240" cy="140" rx="40" ry="58" fill="${C.teal}" opacity=".6"/>${[0, 1, 2].map((i) => `<path d="M${200 + i * 30} ${100 + i * 20}q10 -10 20 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`).join("")}${tree(90, 200, 1, C.leaf, C.leafDk, b)}${tree(390, 205, 0.9, C.leaf, C.leafDk, b)}`,
+  portal: () =>
+    skyG("#0f2440", "#1d4a6a", "#2f6f8f") +
+    stars(W, 150, 12, 7) +
+    hills(W, 210, { color: "#2b6a4a", far: 0.15, seed: 4, amp: 22 }) +
+    ellipse(
+      240,
+      140,
+      110,
+      128,
+      rg([
+        [0, P.goldLight, 0.6],
+        [1, P.goldLight, 0],
+      ]),
+    ) +
+    contact(240, 236, 70, 7, 0.3) +
+    ellipse(242, 144, 64, 86, shade(P.gold, 0.3)) +
+    ellipse(240, 140, 64, 86, P.gold) +
+    ellipse(
+      240,
+      140,
+      54,
+      76,
+      lg([
+        [0, "#d5f3ee"],
+        [1, P.tealLight],
+      ]),
+    ) +
+    ellipse(240, 150, 40, 56, P.teal, 'opacity=".55"') +
+    [0, 1, 2]
+      .map((i) => kStroke(`M${206 + i * 26} ${104 + i * 22}q12 -12 24 0`, "#ffffff", 3))
+      .join("") +
+    ellipse(214, 92, 12, 22, "#ffffff", 'opacity=".35" transform="rotate(-20 214 92)"') +
+    kTree(90, 214, 0.5, { seed: 3, tone: "#3f7f58" }) +
+    kTree(392, 218, 0.46, { kind: "pine", tone: "#2f6b4f" }),
   // Signal Quest: an island with a radio tower
-  island: (b) =>
-    `${sky("si", C.skyLt, "#fdf3da")}${cloud(90, 50, 1)}${cloud(380, 40, 0.8)}<rect y="190" width="480" height="80" fill="#7cc3e6"/><path d="M110 200Q240 120 370 200Z" fill="${C.sand}" ${stroke(b, 3)}/><path d="M150 196Q240 140 330 196Z" fill="${C.leafLt}"/><g transform="translate(240 168)"><path d="M-18 0L0 -110L18 0Z" fill="none" stroke="${C.navy}" stroke-width="4"/><path d="M-12 -30H12M-8 -60H8" stroke="${C.navy}" stroke-width="3"/><circle cy="-114" r="7" fill="${C.coral}"/>${[22, 36, 50].map((r) => `<path d="M${r} -128a${r} ${r} 0 0 0 0 -${r * 0.0001 + 1}" fill="none"/><path d="M${-r * 0.7} ${-114 - r * 0.7}a${r} ${r} 0 0 1 ${r * 1.4} 0" fill="none" stroke="${C.gold}" stroke-width="4" stroke-linecap="round"/>`).join("")}</g>${tree(150, 186, 0.6, C.leaf, C.leafDk, b)}`,
+  island: () =>
+    skyG("#9fd0ea", "#d6ecf4", "#fbeed4", 196) +
+    kCloud(90, 52, 0.7) +
+    kCloud(380, 40, 0.55) +
+    rect(
+      0,
+      190,
+      W,
+      80,
+      lg([
+        [0, P.waterLight],
+        [1, P.waterDark],
+      ]),
+    ) +
+    kStroke("M30 220h40M380 214h50M120 250h40M330 252h60", "#ffffff", 2, 'opacity=".55"') +
+    ellipse(240, 202, 140, 10, P.waterLight) +
+    path("M110 202Q240 120 370 202Z", "#ecd3a0") +
+    path("M240 140Q330 150 370 202H250Z", shade("#ecd3a0", 0.12)) +
+    path("M150 196Q240 142 330 196Q240 186 150 196Z", P.grass) +
+    kTree(162, 192, 0.42, { kind: "palm" }) +
+    `<g transform="translate(240 170)">${contact(0, 2, 22, 4)}${kStroke("M-18 0L0 -110L18 0M-12 -30H12M-8 -60H8M-14 -16L10 -44M-10 -48L6 -74", P.navy, 4)}${circle(0, -114, 8, P.coral)}${circle(-2, -116, 3, light(P.coral, 0.5))}${[
+      22, 36, 50,
+    ]
+      .map((r) => kStroke(`M${-r * 0.7} ${-114 - r * 0.7}a${r} ${r} 0 0 1 ${r * 1.4} 0`, P.gold, 4))
+      .join("")}</g>`,
   // Language Adventures: a winding path through story worlds
-  path: (b) =>
-    `${sky("sp", "#e6f6f4", "#fff3d6")}${cloud(400, 48, 0.9)}${hill(150, "#a8dca8", 26)}${hill(190, C.leafLt, 18, 6)}<path d="M40 270C120 210 80 180 200 170S340 150 300 110S380 70 440 60" fill="none" stroke="${C.sand}" stroke-width="22" stroke-linecap="round"/><path d="M40 270C120 210 80 180 200 170S340 150 300 110S380 70 440 60" fill="none" stroke="${C.goldDk}" stroke-width="3" stroke-dasharray="8 10"/>${[
-      [200, 170],
-      [300, 110],
-      [440, 60],
-    ]
-      .map(
-        ([x, y], i) =>
-          `<g transform="translate(${x} ${y - 20})"><path d="M0 0v20" stroke="${C.navy}" stroke-width="3"/><path d="M0 0h22l-6 7l6 7h-22Z" fill="${[C.coral, C.teal, C.gold][i]}" ${stroke(b, 2)}/></g>`,
-      )
-      .join("")}`,
+  path: () =>
+    skyG("#bfe0ee", "#e2f1ee", "#fbeed4") +
+    kCloud(400, 46, 0.6) +
+    hills(W, 150, { color: P.grass, far: 0.5, seed: 6, amp: 26 }) +
+    path(
+      "M0 190Q120 170 240 186T480 178V270H0Z",
+      lg([
+        [0, P.grassLight],
+        [1, P.grass],
+      ]),
+    ) +
+    kStroke(
+      "M40 270C120 210 80 180 200 170S340 150 300 110S380 70 440 60",
+      shade("#ecd3a0", 0.15),
+      26,
+    ) +
+    kStroke("M40 270C120 210 80 180 200 170S340 150 300 110S380 70 440 60", "#ecd3a0", 20) +
+    kStroke(
+      "M40 270C120 210 80 180 200 170S340 150 300 110S380 70 440 60",
+      P.gold,
+      3,
+      'stroke-dasharray="8 10"',
+    ) +
+    kTree(100, 168, 0.3, { seed: 2 }) +
+
+    flag(200, 168, P.coral) +
+    flag(300, 108, P.teal) +
+    flag(440, 58, P.gold),
   // Reality Engine: characters talking in a story frame
-  stage: (b) =>
-    `${sky("sr2", "#fdf3da", "#e6f6f4")}<rect x="30" y="30" width="420" height="210" rx="18" fill="none" stroke="${C.navy}" stroke-width="3" stroke-dasharray="10 8"/>${hill(215, C.leafLt, 10)}<g transform="translate(150 190)"><circle r="26" cy="-60" fill="${C.wood}" ${stroke(b, 3)}/><rect x="-26" y="-34" width="52" height="60" rx="18" fill="${C.teal}" ${stroke(b, 3)}/></g><g transform="translate(330 190)"><circle r="26" cy="-60" fill="#f1c7a5" ${stroke(b, 3)}/><rect x="-26" y="-34" width="52" height="60" rx="18" fill="${C.coral}" ${stroke(b, 3)}/></g>${bubble(60, 40, 130, 62, "#fff", b, "r")}${bubble(290, 40, 130, 62, C.tealLt, b, "l")}`,
+  stage: () =>
+    skyG("#fbeed4", "#f2f2e4", "#e2f1ee") +
+    `<rect x="30" y="30" width="420" height="210" rx="18" fill="none" stroke="${P.navy}" stroke-width="2.4" stroke-dasharray="10 8" opacity=".55"/>` +
+    path("M30 214Q240 200 450 214V240H30Z", P.grassLight) +
+    person(150, 226, 110, kid(3, { top: P.teal, pose: "point", mouth: "open" })) +
+    person(330, 226, 110, kid(1, { top: P.coral, facing: -1, pose: "stand" })) +
+    bubble(60, 40, 130, 62, P.white, "r") +
+    bubble(290, 40, 130, 62, "#cdeee9", "l"),
   // Language City: a street of buildings
-  city: (b) =>
-    `${sky("sc2", C.skyLt, "#fdf3da")}${cloud(380, 44, 0.9)}<rect y="222" width="480" height="48" fill="#51647a"/><path d="M0 244H480" stroke="#fff" stroke-width="4" stroke-dasharray="20 16"/>${house(30, 150, 90, 72, C.paper, C.coral, b)}${house(140, 120, 90, 102, "#e8d7b5", C.teal, b)}${house(250, 140, 90, 82, C.paper, C.gold, b)}${house(360, 130, 90, 92, "#e8d7b5", C.leaf, b)}`,
+  city: () =>
+    skyG(P.skyTop, P.sky, "#f6ecd6", 230) +
+    kCloud(380, 44, 0.6) +
+    rect(0, 150, W, 80, "#a9c4d4", 'opacity=".5"') +
+    building(30, 222, 90, 76, {
+      color: P.ivory,
+      roof: "gable",
+      roofColor: P.coral,
+      windows: [2, 1],
+    }) +
+    building(140, 222, 90, 104, {
+      color: "#e8d7b5",
+      roofColor: P.teal,
+      roof: "gable",
+      windows: [2, 1],
+    }) +
+    building(250, 222, 90, 84, {
+      color: P.wall,
+      roof: "gable",
+      roofColor: P.gold,
+      windows: [2, 1],
+    }) +
+    building(360, 222, 90, 96, {
+      color: "#e8d7b5",
+      roof: "gable",
+      roofColor: P.green,
+      windows: [2, 1],
+    }) +
+    road(W, 232, 38),
   // Scenarios: a conversation
-  talk: (b) =>
-    `${sky("st", "#e6f6f4", "#fff3d6")}${bubble(50, 40, 200, 80, "#fff", b, "l")}${bubble(230, 130, 200, 80, C.tealLt, b, "r")}<circle cx="70" cy="200" r="26" fill="${C.coral}" ${stroke(b, 3)}/><circle cx="410" cy="60" r="26" fill="${C.teal}" ${stroke(b, 3)}/>`,
+  talk: () =>
+    skyG("#e2f1ee", "#f4f0e2", "#fbeed4") +
+    circle(
+      380,
+      60,
+      160,
+      rg([
+        [0, "#ffffff", 0.5],
+        [1, "#ffffff", 0],
+      ]),
+    ) +
+    bubble(50, 40, 200, 80, P.white, "l") +
+    bubble(230, 130, 200, 80, "#cdeee9", "r") +
+    [
+      [70, 200, P.coral, 1],
+      [410, 60, P.teal, 0],
+    ]
+      .map(
+        ([x, y, c, i]) =>
+          chip(x, y, 26, c) +
+          `<g opacity=".9">${circle(x, y - 6, 9, light(c, 0.55))}${path(`M${x - 15} ${y + 18}a15 13 0 0 1 30 0Z`, light(c, 0.55))}</g>`,
+      )
+      .join(""),
   // Language Worlds: a map of connected stations
-  map: (b) =>
-    `<rect width="480" height="270" fill="${C.paper}"/><rect x="16" y="16" width="448" height="238" rx="14" fill="${C.sand}" ${stroke(b, 3)}/><path d="M90 200L180 90L290 170L390 80" fill="none" stroke="${C.navy}" stroke-width="4" stroke-dasharray="10 8"/>${[
-      [90, 200, C.teal],
-      [180, 90, C.coral],
-      [290, 170, C.gold],
-      [390, 80, C.leaf],
+  map: () =>
+    rect(
+      0,
+      0,
+      W,
+      H,
+      lg([
+        [0, "#c9955f"],
+        [1, "#a87442"],
+      ]),
+    ) +
+    rrect(22, 22, 448, 238, 14, "#1c2f4a", 'opacity=".22"') +
+    rrect(16, 16, 448, 238, 14, "#f6ead0") +
+    path(
+      "M16 200Q120 170 220 210T464 196V240a14 14 0 0 1 -14 14H30a14 14 0 0 1 -14 -14Z",
+      "#c8dfc0",
+    ) +
+    path("M300 16Q330 70 400 60T464 90V30a14 14 0 0 0 -14 -14Z", "#cfe6ee") +
+    kStroke("M90 200L180 90L290 170L390 80", P.navy, 4, 'stroke-dasharray="10 8" opacity=".75"') +
+    [
+      [90, 200, P.teal],
+      [180, 90, P.coral],
+      [290, 170, P.gold],
+      [390, 80, P.green],
     ]
-      .map(
-        ([x, y, f]) =>
-          `<circle cx="${x}" cy="${y}" r="22" fill="${f}" ${stroke(b, 3)}/><circle cx="${x}" cy="${y}" r="8" fill="#fff"/>`,
-      )
-      .join("")}`,
+      .map(([x, y, f]) => chip(x, y, 22, f) + circle(x, y, 8, P.ivory))
+      .join(""),
   // Science Exhibition: two bean plants, one in light, one in the dark
-  beans: (b) =>
-    `<rect width="480" height="270" fill="#fdf3da"/><rect x="250" y="0" width="230" height="270" fill="#20364f"/><circle cx="80" cy="56" r="28" fill="${C.gold}"/>${star(400, 50, 5, "#fff")}${[
-      [140, 140, 1],
-      [360, 190, 0.45],
+  beans: () =>
+    rect(
+      0,
+      0,
+      250,
+      H,
+      lg([
+        [0, "#fdf0d0"],
+        [1, "#f6e2b8"],
+      ]),
+    ) +
+    circle(
+      80,
+      56,
+      90,
+      rg([
+        [0, "#fff3c4", 0.8],
+        [1, "#fff3c4", 0],
+      ]),
+    ) +
+    circle(80, 56, 26, P.gold) +
+    circle(76, 52, 20, P.goldLight) +
+    rect(
+      250,
+      0,
+      230,
+      H,
+      lg([
+        [0, "#16304f"],
+        [1, "#20364f"],
+      ]),
+    ) +
+    circle(400, 50, 2.6, "#fff7d6") +
+    circle(440, 90, 1.8, "#fff7d6") +
+    circle(310, 40, 1.6, "#fff7d6") +
+    rect(0, 236, W, 34, "#e6d2a8") +
+    rect(250, 236, 230, 34, "#2a4560") +
+    [
+      [140, 140, 1, P.leaf],
+      [360, 190, 0.45, "#b9c98a"],
     ]
       .map(
-        ([x, top, s]) =>
-          `<g transform="translate(${x} 0)"><path d="M0 220V${top}" stroke="${s > 0.6 ? C.leaf : "#b9c98a"}" stroke-width="6"/><ellipse cx="-22" cy="${top + 18}" rx="${24 * s + 6}" ry="${10 * s + 4}" fill="${s > 0.6 ? C.leaf : "#b9c98a"}" ${stroke(b, 2)}/><ellipse cx="22" cy="${top + 40}" rx="${24 * s + 6}" ry="${10 * s + 4}" fill="${s > 0.6 ? C.leafDk : "#a7b878"}" ${stroke(b, 2)}/><path d="M-40 220h80l-10 40h-60Z" fill="${C.coral}" ${stroke(b, 3)}/></g>`,
+        ([x, top, s, c]) =>
+          kStroke(`M${x} 214V${top}`, shade(c, 0.15), 6) +
+          leaf(x - 24, top + 18, 24 * s + 6, 10 * s + 4, c, -1) +
+          leaf(x + 24, top + 40 * s, 24 * s + 6, 10 * s + 4, shade(c, 0.1)) +
+          pot(x, 216),
       )
-      .join("")}`,
+      .join(""),
 };
 
 export function worldScene(key, band) {
   const draw = WORLD_SCENES[key];
-  return draw ? svg("0 0 480 270", draw(band), { cls: `gs-scene pa-scene-${key}` }) : "";
+  return draw
+    ? svg(
+        "0 0 480 270",
+        banded(band, () => draw(band)),
+        { cls: `gs-scene pa-scene-${key}` },
+      )
+    : "";
 }
