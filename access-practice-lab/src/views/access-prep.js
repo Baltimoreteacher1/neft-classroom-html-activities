@@ -6,6 +6,10 @@ import { loadIndex } from "../content.js";
 import { i18nFor } from "../i18n.js";
 import { STUDIOS, studioPath } from "../studios.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon } from "../util.js";
+import { PREP_SKILL_LIST, isPrepSkill } from "../prep/registry.js";
+
+// /access-prep/<skill>[/<set>] is a skill builder (src/prep/view.js), loaded only when opened.
+let prepView = null;
 
 const DOMAIN_ICONS = {
   Listening: "listening",
@@ -168,7 +172,34 @@ function activityRowHTML(act, I) {
   `;
 }
 
+/** The skill builders: short guided sets that teach one test move each (src/prep/). */
+function skillBuildersHTML(I, band) {
+  return html`<section class="prep-builders" aria-labelledby="prepBuildersH">
+    <h2 id="prepBuildersH">${I.T("Skill builders", "Constructores de destrezas")}</h2>
+    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS. Sin tiempo y con ayuda en cada paso.")}</p>
+    <ul class="prep-builder-cards">
+      ${PREP_SKILL_LIST.map(
+        (s) => html`<li class="prep-builder-card">
+          <a href="${BASE}/access-prep/${s.slug}?grades=${band}">
+            <span class="prep-builder-ico">${icon(s.icon)}</span>
+            <span class="prep-builder-domain">${I.T(s.domainLabel[0], s.domainLabel[1])}</span>
+            <span class="prep-builder-title">${I.T(s.title, s.titleEs)}</span>
+            <span class="prep-builder-blurb">${I.T(s.blurb[0], s.blurb[1])}</span>
+            <span class="prep-builder-go">${I.T("Start", "Empezar")} ${icon("arrow-right")}</span>
+          </a>
+        </li>`,
+      )}
+    </ul>
+  </section>`;
+}
+
 export async function render(ctx) {
+  if (isPrepSkill(ctx.route?.id)) {
+    prepView = await import("../prep/view.js");
+    return prepView.render(ctx, ctx.route.id, ctx.route.setId);
+  }
+  prepView?.unmount();
+  prepView = null;
   const I = i18nFor(ctx);
   if (ctx.route?.grades) {
     currentBandSelection = bandFromRoute(ctx.route.grades);
@@ -278,6 +309,8 @@ export async function render(ctx) {
             </div>
           </div>
         </header>
+
+        ${skillBuildersHTML(I, currentBandSelection)}
 
         <!-- Grade Band Selector Tabs -->
         <section class="prep-band-selector-section" style="margin-bottom:2rem;">
@@ -542,6 +575,7 @@ export async function render(ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (prepView) return prepView.onClick(e, ctx);
   const bandBtn = e.target.closest("[data-prep-band]");
   if (bandBtn) {
     currentBandSelection = bandBtn.dataset.prepBand;
@@ -571,7 +605,16 @@ export function onClick(e, ctx) {
   return false;
 }
 
+export function onChange(e, ctx) {
+  prepView?.onChange(e, ctx);
+}
+
+export function unmount() {
+  prepView?.unmount();
+}
+
 export function onInput(e, ctx) {
+  if (prepView) return prepView.onInput(e, ctx);
   if (e.target.id === "prepSearchInput") {
     searchQuery = e.target.value;
     ctx.rerender();

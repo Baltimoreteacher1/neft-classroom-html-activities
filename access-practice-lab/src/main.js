@@ -170,6 +170,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "reading" || a === "reading-room")
     return { ...r, view: "reading-room", id: b || "" };
   if (a === "test") return { ...r, view: "test", testId: b || "" };
+  // Access Prep skill builders: /access-prep/<skill>/<set> (src/prep/view.js); /access-prep alone is the hub.
+  if (a === "access-prep") return { ...r, view: a, id: b || "", setId: c || "", tab: q.get("tab") || "" };
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }

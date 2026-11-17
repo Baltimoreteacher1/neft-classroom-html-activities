@@ -21,6 +21,8 @@ async function getJson(path) {
 }
 
 export const loadIndex = () => getJson("index.json");
+/** Access Prep skill builders (content/prep/<slug>.json: sets keyed by "3-5" and "6-8"). */
+export const loadPrep = (slug) => getJson(`prep/${slug}.json`);
 /** Daily warm-up sets: "early" holds tiers K-1 and 2-3, "upper" holds 3-5 and 6-8 (60 days each). */
 export const loadWarmup = (file) => getJson(`warmup-${file === "early" ? "early" : "upper"}.json`);
 export const loadShared = () => getJson("shared.json");
