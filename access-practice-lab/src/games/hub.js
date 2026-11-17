@@ -121,14 +121,14 @@ export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
     <section class="gs-next" aria-labelledby="gs-next-h"><h2 id="gs-next-h">${I.T("Recommended for you", "Recomendado para ti")}</h2>
       <p class="fine">${I.T("Chosen from the games you have played. It is a suggestion, not a test result.", "Elegido a partir de los juegos que has jugado. Es una sugerencia, no un resultado de prueba.")}</p>
       <div class="gs-grid gs-grid-3">${recs.map((r) => card(GAME[r.game], I, band, games, q, { why: r.why }))}</div></section>
-    <section class="gs-paths" aria-labelledby="gs-paths-h"><h2 id="gs-paths-h">${I.T("Learning pathways", "Recorridos de aprendizaje")}</h2>
+    <section class="gs-paths" id="gs-paths" data-fold aria-labelledby="gs-paths-h"><h2 id="gs-paths-h">${I.T("Learning pathways", "Recorridos de aprendizaje")}</h2>
       <div class="gs-grid gs-grid-2">${PATHWAYS.map((p) => { const ids = p.ids.filter((id) => GAME[id].obj[band]); const prog = pathwayProgress(games, ids, band); return html`<article class="gs-path panel"><h3>${pair(I, p.title)}</h3><p>${pair(I, p.blurb)}</p><ol class="gs-seq">${ids.map((id) => html`<li class="${prog.done.includes(id) ? "is-done" : id === prog.next ? "is-next" : ""}">${prog.done.includes(id) ? icon("check") : ""}${pair(I, GAME[id].title)}</li>`)}</ol>
         <a class="btn ${prog.complete ? "" : "btn-primary"}" href="${BASE}/games/${prog.next || ids[0]}?${new URLSearchParams({ grades: band, path: ids.join(","), ...(q.mode ? { mode: q.mode } : {}) })}">${icon("road")}${prog.complete ? I.T("Play the path again", "Repetir el recorrido") : prog.done.length ? I.T("Continue the path", "Continuar el recorrido") : I.T("Start the path", "Empezar el recorrido")}</a></article>`; })}</div></section>
-    <section id="gs-all" class="gs-all" aria-labelledby="gs-all-h"><h2 id="gs-all-h">${I.T("All games", "Todos los juegos")}${filtered ? html` <small>(${list.length})</small>` : ""}</h2>
+    <section id="gs-all" class="gs-all" data-fold="${filtered ? "open" : ""}" aria-labelledby="gs-all-h"><h2 id="gs-all-h">${I.T("All games", "Todos los juegos")} <small>(${list.length})</small></h2>
       ${filterBar(I, band, q)}
       ${list.length ? html`<div class="gs-grid">${list.map((g) => card(g, I, band, games, q))}</div>` : html`<p class="panel empty-state">${I.T("No games match those filters.", "Ningún juego coincide con esos filtros.")} <a href="${hubHref(band, {}, {})}">${I.T("Clear filters", "Quitar filtros")}</a></p>`}
     </section>
-    <section class="gs-family panel" aria-labelledby="gs-fam-h"><h2 id="gs-fam-h">${icon("families")}${I.T("Playing at home", "Jugar en casa")}</h2>
+    <section class="gs-family panel" id="gs-family" data-fold aria-labelledby="gs-fam-h"><h2 id="gs-fam-h">${icon("families")}${I.T("Playing at home", "Jugar en casa")}</h2>
       <p>${I.T("Families do not need to speak English to help. Sit together, press Listen, and let your child explain what they chose in any language. Then ask them to say it again in English.", "Las familias no necesitan hablar inglés para ayudar. Siéntense juntos, presionen Escuchar y dejen que su hijo explique lo que eligió en cualquier idioma. Luego pídanle que lo diga otra vez en inglés.")}</p>
       <p><a class="btn" href="${hubHref(band, q, { home: "1" })}">${I.T("Show games that work well at home", "Mostrar juegos que funcionan bien en casa")}</a> <a class="btn" href="${BASE}/family?${bandQ(band)}">${I.T("Family Corner", "Rincón familiar")}</a></p></section>
     ${historyPanel(I, band, games)}

@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "b147b22951d3";
+const BUILD_HASH = "3fa07110033c";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -203,7 +203,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/reader.css?v=c397de86b397",
   "/access-practice-lab/language-labs.css?v=5e554126f014",
   "/access-practice-lab/communication.css?v=30822da0842f",
-  "/access-practice-lab/prep.css?v=69db2b8c9358",
+  "/access-practice-lab/prep.css?v=7339d831afa2",
   "/access-practice-lab/adventures.css?v=cad47555bf30",
   "/access-practice-lab/language-games.css?v=e79a35061d11",
   "/access-practice-lab/book-collab.css?v=dea5714036f5",
@@ -450,7 +450,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/fluency-echo-view.js?v=f3dfff9c9f05",
   "/access-practice-lab/src/games/fluency-echo.js?v=5bda182b9a97",
   "/access-practice-lab/src/games/grammar-jungle.js?v=ffac19a23d58",
-  "/access-practice-lab/src/games/hub.js?v=22b51361b280",
+  "/access-practice-lab/src/games/hub.js?v=bec644dcaa5a",
   "/access-practice-lab/src/games/icons.js?v=2f4ebdac778e",
   "/access-practice-lab/src/games/language-arcade-maze.js?v=62e446a2f5e7",
   "/access-practice-lab/src/games/language-arcade-view.js?v=5facaeb4f2c2",
@@ -769,7 +769,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/tour-dock.js?v=99483d90801c",
   "/access-practice-lab/src/transfer.js?v=088ee1d199d1",
   "/access-practice-lab/src/trip-journal.js?v=a82fc915a141",
-  "/access-practice-lab/src/views/access-prep.js?v=d7e455084de3",
+  "/access-practice-lab/src/views/access-prep.js?v=02ab21938f01",
   "/access-practice-lab/src/views/accessibility.js?v=512c6e8154d2",
   "/access-practice-lab/src/views/activity.js?v=8a7e489bf233",
   "/access-practice-lab/src/views/adventures-scenes.js?v=afe5915ab03d",

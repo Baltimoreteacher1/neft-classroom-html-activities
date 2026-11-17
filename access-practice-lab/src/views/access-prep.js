@@ -240,11 +240,11 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
   const bankTiles = duoSet.forge.parts.filter((p) => typeof p === "object").flatMap((p) => p.options);
   const lowerExt = inlineExtText.toLowerCase();
 
-  return html`<section class="prep-live-workbench" aria-labelledby="prepWbH">
+  return html`<section class="prep-live-workbench" id="prep-workbench" data-fold aria-labelledby="prepWbH">
     <div class="prep-wb-header">
       <div>
         <p class="prep-eyebrow">${icon("sparkle")} ${I.T("Interactive Live Practice Stage", "Escenario interactivo de práctica en vivo")}</p>
-        <h2 id="prepWbH">${I.T("Try the Duolingo Skill Path & Extempore Speaking Studio right here", "Prueba la Ruta estilo Duolingo y el Estudio Oral Extempore aquí mismo")}</h2>
+        <h2 id="prepWbH">${I.T("Try a Skill Path or Extempore Speaking right here", "Prueba una Ruta de destrezas o el Estudio Oral Extempore aquí mismo")}</h2>
       </div>
       <div class="prep-wb-tabs" role="tablist" aria-label="${I.S("Choose live practice mode", "Elige modo de práctica en vivo")}">
         <button
@@ -254,7 +254,7 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
           data-prep-wb="duo"
           aria-selected="${String(workbenchTab === "duo")}"
         >
-          ${icon("sparkle")} ${I.T("1. Duolingo Skill Path & Word Bank", "1. Ruta y Banco de Palabras")}
+          ${icon("sparkle")} ${I.T("1. Skill Path & Word Bank", "1. Ruta y Banco de Palabras")}
         </button>
         <button
           type="button"
@@ -445,7 +445,7 @@ function skillBuildersHTML(I, band, duoSets = [], extSets = []) {
   ${liveWorkbenchHTML(I, band, duoSets, extSets)}
   <section class="prep-builders" aria-labelledby="prepBuildersH">
     <h2 id="prepBuildersH">${I.T("Skill builders & interactive labs", "Constructores de destrezas y laboratorios interactivos")}</h2>
-    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Duolingo-style Micro-Drills and Extempore Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral Extempore. Sin tiempo y con ayuda en cada paso.")}</p>
+    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Micro-Drills and Extempore Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral Extempore. Sin tiempo y con ayuda en cada paso.")}</p>
     <ul class="prep-builder-cards">
       ${PREP_SKILL_LIST.map(
         (s) => html`<li class="prep-builder-card ${s.slug === "daily-drill" || s.slug === "extempore-speak" ? "is-featured" : ""}">
@@ -724,7 +724,7 @@ export async function render(ctx) {
               const domainDescEs = DOMAIN_DESCRIPTIONS[d]?.[1] || "";
 
               return html`
-                <section class="prep-domain-block" data-domain="${d}" style="background:#ffffff; border:1px solid #e2ddd3; border-radius:20px; padding:1.75rem; box-shadow:0 2px 12px rgba(0,0,0,0.03);">
+                <section class="prep-domain-block" id="prep-domain-${d}" data-fold="${currentDomainFilter !== "all" || searchQuery.trim() ? "open" : ""}" data-domain="${d}" style="background:#ffffff; border:1px solid #e2ddd3; border-radius:20px; padding:1.75rem; box-shadow:0 2px 12px rgba(0,0,0,0.03);">
                   <!-- Domain Header -->
                   <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #f1ece1;">
                     <div style="display:flex; align-items:center; gap:0.85rem;">
@@ -807,7 +807,7 @@ export async function render(ctx) {
         </div>
 
         <!-- Classroom Practice Studios Spotlight -->
-        <section class="prep-studios-section" style="margin-top:3rem; background:#f4efe6; border-radius:20px; padding:2rem; border:1px solid #e5dfd3;">
+        <section class="prep-studios-section" id="prep-studios" data-fold style="margin-top:3rem; background:#f4efe6; border-radius:20px; padding:2rem; border:1px solid #e5dfd3;">
           <div style="margin-bottom:1.25rem;">
             <h3 style="font-size:1.4rem; font-weight:800; color:#142d47; margin:0 0 0.5rem;">
               ${I.T("Integrated WIDA Practice Studios", "Estudios integrados de práctica WIDA")}
