@@ -234,6 +234,8 @@ try {
   ok((await panelText(page)).includes("Nobody knows all of it"), "a typed question is matched to the nearest authored topic");
   await page.fill("[data-sim-question]", "What is your favorite pizza topping?");
   await page.keyboard.press("Enter");
+  // Against a deployed site the helper is really asked (the character "thinks" for up to AI_TIMEOUT_MS = 4 s).
+  await page.waitForSelector("[data-sim-thinking]", { state: "detached", timeout: 6000 });
   await settle(page);
   ok((await panelText(page)).includes("I cannot help with that one"), "an off-topic question gets the in-role fallback");
   ok(!(await panelText(page)).includes("Is the Emergency Operations Room ready"), "a gated topic is not offered yet");
