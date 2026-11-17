@@ -62,7 +62,16 @@ page.on(
 );
 
 const WS = "/access-teacher/predictive/";
-const TABS = ["overview", "students", "growth", "forecasts", "classroom", "planner", "reports"];
+const TABS = [
+  "overview",
+  "students",
+  "growth",
+  "forecasts",
+  "classroom",
+  "planner",
+  "reports",
+  "toolkit",
+];
 const open = async (q = "") => {
   await page.goto(`${origin}${WS}${q}`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[role="tablist"]', { timeout: 15000 });
@@ -300,6 +309,51 @@ ok(
   "demo data is never written to the real store",
 );
 
+// 8b. Outlook, practice links, class outlook, toolkit.
+await tab("overview");
+await page.click('[data-subnav="student"]');
+ok((await page.locator("[data-outlook]").count()) >= 1, "each student has an Outlook card");
+const acts = await page.$$eval(".pi-practice [data-activity]", (x) =>
+  x.map((a) => a.getAttribute("href")),
+);
+ok(
+  acts.length >= 3 && acts.every((u) => /^\/access-practice-lab\/.+grades=/.test(u)),
+  "Practice next links go to Language Page activities at the student's grade band",
+);
+await page.click('[data-student="DEMO-0002"]');
+ok(
+  (await page.locator('[data-outlook="concordance"]').count()) === 1,
+  "Bao's MODEL Online score shows WIDA's concordance estimate",
+);
+await tab("forecasts");
+await sub("outlook");
+ok((await page.locator(".pi-ranges").count()) === 1, "Class outlook draws every student's range");
+await sub("concordance");
+ok(
+  (await page.locator('[data-concordance="available"]').count()) === 1,
+  "MODEL to ACCESS shows the WIDA estimate for an applicable result",
+);
+await tab("toolkit");
+ok((await page.locator("[data-tool]").count()) === 8, "the Toolkit offers eight tools");
+for (const t of [
+  "levels",
+  "words",
+  "families",
+  "conference",
+  "library",
+  "year",
+  "official",
+  "templates",
+]) {
+  await page.click(`[data-tool="${t}"]`);
+  ok(
+    (await page.locator("#pi-panel .pi-error").count()) === 0 &&
+      (await page.locator("[data-toolkit-back]").count()) === 1,
+    `Toolkit: ${t} opens`,
+  );
+  await page.click("[data-toolkit-back]");
+}
+
 // 9. Data Explorer.
 await tab("classroom");
 await sub("explorer");
@@ -326,8 +380,8 @@ while (await page.locator('[data-tour="next"]').count()) {
   steps++;
 }
 ok(
-  steps === 10 && (await page.locator('#pi-tab-reports[aria-selected="true"]').count()) === 1,
-  "Part 2 walks ten steps and ends on Reports",
+  steps === 11 && (await page.locator('#pi-tab-toolkit[aria-selected="true"]').count()) === 1,
+  "Part 2 walks eleven steps and ends on the Toolkit",
 );
 await page.click('[data-tour="finish"]');
 ok((await page.locator("#piTour").count()) === 0, "finishing closes the tour");

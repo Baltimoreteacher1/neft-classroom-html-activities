@@ -30,6 +30,7 @@ import {
   SCALE_WORDS,
 } from "./rules.js";
 import { usageSummary, weeklyActivity } from "./usage.js";
+import { outlookCard, practiceCard } from "./view-outlook.js";
 import {
   assessmentLabel,
   emptyState,
@@ -225,6 +226,7 @@ function studentOverview(ws) {
         ),
       ),
     ),
+    h("div", { class: "pi-twocards" }, outlookCard(ws, st), practiceCard(ws, st)),
     h(
       "div",
       { class: "pi-composites" },

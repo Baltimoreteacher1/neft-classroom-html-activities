@@ -4,7 +4,9 @@
 import { h, s, table } from "./dom.js";
 import { ANCHOR_LEVELS, CONCORDANCES, concordanceFor, MODEL_ACCESS_TABLE } from "./concordance.js";
 import { fmt1 } from "./dom.js";
+import { outlookFor } from "./outlook.js";
 import { recordsOf } from "./records.js";
+import { rangeRows } from "./charts2.js";
 import { ASSESSMENTS, COMPOSITE_INFO, COMPOSITES, DOMAINS, SCALE_RESET_YEAR } from "./rules.js";
 import { applyScenario, SCENARIO_LIMITS } from "./scenario.js";
 import {
@@ -291,10 +293,28 @@ function concordance(ws) {
   );
 }
 
+/** Class outlook: every student's current level and any honest estimate, in one chart and one table. */
+function classOutlook(ws) {
+  const rows = ws.students.map((st) => {
+    const o = outlookFor(ws, st);
+    const now = o.access?.composites.Overall.level ?? null;
+    if (o.forecast) return { name: st.name, now, lo: o.forecast.numbers.interval80[0], hi: o.forecast.numbers.interval80[1], kind: "forecast", note: `Validated forecast for ${o.forecast.targetYear}`, o };
+    if (o.concordance) return { name: st.name, now, lo: o.concordance.estimate.range.lo, hi: o.concordance.estimate.range.hi, kind: "concordance", note: "WIDA MODEL estimate", o };
+    return { name: st.name, now, lo: null, hi: null, kind: "none", note: o.math ? (o.math.reached ? "Goal met" : `Goal math: +${o.math.perYear.toFixed(2)} a year to ${o.goal.toFixed(1)}`) : "No ACCESS result", o };
+  });
+  return h(
+    "div",
+    { class: "pi-stack" },
+    h("section", { class: "pi-card" }, h("h3", {}, "Where each student is, and where they are likely headed"), h("div", { class: "pi-scroll" }, rangeRows({ title: "Current Overall level (dot) and likely range (bar)", rows })), h("p", { class: "fine" }, "Dot: latest reported Overall. Solid bar: validated forecast range. Light bar: WIDA's MODEL-to-ACCESS estimate. No bar: no honest estimate yet; goal math is in the table.")),
+    table("Class outlook", ["Student", "Overall now", "Likely range", "Source"], rows.map((r) => [r.name, r.now == null ? "—" : r.now.toFixed(1), r.lo == null ? "—" : `${r.lo.toFixed(1)} to ${r.hi.toFixed(1)}`, r.note])),
+  );
+}
+
 export function renderForecasts(ws) {
   if (!ws.students.length) return emptyState(ws);
-  const view = ws.sub.forecasts || "forecast";
+  const view = ws.sub.forecasts || "outlook";
   const views = {
+    outlook: () => classOutlook(ws),
     forecast: () => h("div", {}, kindBadge("validated"), renderForecastTable(ws)),
     targets: () => renderProbability(ws),
     scenarios: () => scenarios(ws),
@@ -308,6 +328,7 @@ export function renderForecasts(ws) {
       ws,
       "forecasts",
       [
+        ["outlook", "Class outlook"],
         ["forecast", "Forecast ranges"],
         ["targets", "Targets"],
         ["scenarios", "Scenario Studio"],

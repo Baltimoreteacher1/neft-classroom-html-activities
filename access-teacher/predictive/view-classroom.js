@@ -1,6 +1,7 @@
 // Classroom Intelligence: level distributions, evidence coverage, flexible groups, recurring needs and the
 // Language Bottleneck Detector.
 import { classSummary, quartiles } from "./interpret.js";
+import { activitiesFor, bandForGrade } from "./practice.js";
 import { DOMAINS } from "./rules.js";
 import { renderAnalyst } from "./view-analyst.js";
 import { explain, subnav } from "./view-common.js";
@@ -133,6 +134,20 @@ function domainSpread(ws) {
   );
 }
 
+/** Practice playlist for a group: activities for the domain at the group's median level and band. */
+function playlist(domain, members) {
+  const q = quartiles(members.map((m) => m.level));
+  const band = bandForGrade(members[0]?.grade);
+  const acts = activitiesFor(domain, q?.median ?? null, band, 3);
+  if (!acts.length) return null;
+  return h(
+    "div",
+    { class: "pi-playlist" },
+    h("p", { class: "fine" }, `Practice playlist (grades ${band}):`),
+    h("ul", {}, acts.map((a) => h("li", {}, h("a", { href: a.href, "data-activity": a.id }, a.title)))),
+  );
+}
+
 /** Temporary groups suggested from each student's lowest reported domain; the teacher approves or edits. */
 function scoreGroups(ws) {
   const saved = ws.state.groups || {};
@@ -142,7 +157,7 @@ function scoreGroups(ws) {
     if (ds.length < 2) continue;
     const low = ds.sort((a, b) => record.domains[a].level - record.domains[b].level)[0];
     if (!suggested.has(low)) suggested.set(low, []);
-    suggested.get(low).push(student);
+    suggested.get(low).push({ student, level: record.domains[low].level, grade: record.grade });
   }
   return h(
     "section",
@@ -156,7 +171,7 @@ function scoreGroups(ws) {
         const id = `g-${d}`;
         const state = saved[id];
         const name = h("input", { type: "text", value: state?.name || GROUP_NAMES[d], "aria-label": `Name of the ${d} group`, maxlength: "80" });
-        const boxes = members.map((m) => h("label", { class: "pi-check" }, h("input", { type: "checkbox", value: m.id, checked: state ? state.members.includes(m.id) : true }), ` ${m.name}`));
+        const boxes = members.map(({ student: m }) => h("label", { class: "pi-check" }, h("input", { type: "checkbox", value: m.id, checked: state ? state.members.includes(m.id) : true }), ` ${m.name}`));
         return h(
           "div",
           { class: "pi-card", "data-group": d },
@@ -179,6 +194,7 @@ function scoreGroups(ws) {
             state ? "Update group" : "Approve group",
           ),
           state ? h("span", { class: "pi-chip" }, "Approved") : null,
+          playlist(d, members),
         );
       }),
     ),

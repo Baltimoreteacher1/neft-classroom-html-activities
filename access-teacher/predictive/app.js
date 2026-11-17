@@ -14,6 +14,7 @@ import { renderOverview } from "./view-overview.js";
 import { renderPlanner } from "./view-planner.js";
 import { renderReports } from "./view-reports.js";
 import { renderStudents } from "./view-students.js";
+import { renderToolkit } from "./view-toolkit.js";
 import { showStep, tourCard } from "./tour.js";
 
 const TABS = [
@@ -24,6 +25,7 @@ const TABS = [
   { id: "classroom", label: "Classroom Insights", render: renderClassroom },
   { id: "planner", label: "Instructional Planner", render: renderPlanner },
   { id: "reports", label: "Reports", render: renderReports },
+  { id: "toolkit", label: "Toolkit", render: renderToolkit },
   { id: "data", label: "Import data", render: renderData, hidden: true },
 ];
 const DEMO_TODAY = new Date("2024-05-15T12:00:00Z");
@@ -142,6 +144,7 @@ const ICONS = {
   planner: "M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9",
   reports: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6",
   data: "M12 3v12M7 10l5 5 5-5M4 21h16",
+  toolkit: "M14 7l3-3 3 3-3 3M3 21l8-8M9 3l2 2-6 6-2-2zM15 13l6 6-2 2-6-6",
 };
 export const icon = (id) =>
   s("svg", { viewBox: "0 0 24 24", class: "pi-ico", "aria-hidden": "true", focusable: "false" }, s("path", { d: ICONS[id] || ICONS.overview }));
@@ -279,7 +282,7 @@ function render() {
   document.body.dataset.mode = ws.mode;
   const tab = TABS.find((t) => t.id === ws.tab);
   let panel;
-  if (!ws.students.length && ws.mode === "real" && tab.id !== "data") panel = welcome();
+  if (!ws.students.length && ws.mode === "real" && !["data", "toolkit"].includes(tab.id)) panel = welcome();
   else
     try {
       panel = tab.render(ws);

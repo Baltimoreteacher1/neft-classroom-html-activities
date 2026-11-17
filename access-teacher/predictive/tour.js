@@ -63,7 +63,12 @@ export const TOUR2 = Object.freeze([
     tab: "reports",
     sub: ["report", "family"],
     title: "Share it well",
-    body: "Reports print or save as PDF. The family summary uses plain words, in English or Spanish. That’s the tour! Switch to My class whenever you are ready to use your own scores.",
+    body: "Reports print or save as PDF. The family summary uses plain words, in English or Spanish, with practice links for home.",
+  },
+  {
+    tab: "toolkit",
+    title: "Your toolkit",
+    body: "Level guides, words to know, a family conversation guide, conference sheets and the practice library are all here. That’s the tour! Switch to My class whenever you are ready to use your own scores.",
     final: true,
   },
 ]);

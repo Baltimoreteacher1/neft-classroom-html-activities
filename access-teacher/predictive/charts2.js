@@ -392,3 +392,24 @@ export function independenceBars({ title, rows }) {
   });
   return el;
 }
+
+/** Range chart: one row per student, a bar from lo to hi on the 1-6 level scale, a dot at the current level. */
+export function rangeRows({ title, rows }) {
+  const left = 130;
+  const W = 640;
+  const rh = 30;
+  const H = 40 + rows.length * rh;
+  const x = (v) => left + ((v - 1) / 5) * (W - left - 20);
+  const el = svg(W, H, title, rows.map((r) => `${r.name}: now ${r.now == null ? "none" : r.now.toFixed(1)}${r.lo != null ? `, likely ${r.lo.toFixed(1)} to ${r.hi.toFixed(1)}` : ", no estimate"}`).join("; "), "pi-ranges");
+  for (let v = 1; v <= 6; v++) {
+    el.append(s("line", { x1: x(v), x2: x(v), y1: 6, y2: H - 22, class: "pi-grid" }));
+    el.append(s("text", { x: x(v), y: H - 6, "text-anchor": "middle", class: "pi-axis" }, `${v}.0`));
+  }
+  rows.forEach((r, i) => {
+    const y = 14 + i * rh;
+    el.append(s("text", { x: left - 10, y: y + 5, "text-anchor": "end", class: "pi-axis" }, r.name));
+    if (r.lo != null) el.append(s("rect", { x: x(r.lo), y: y - 7, width: Math.max(4, x(r.hi) - x(r.lo)), height: 14, rx: 7, class: r.kind === "concordance" ? "pi-range-alt" : "pi-range-fill" }));
+    if (r.now != null) el.append(s("circle", { cx: x(r.now), cy: y, r: 5, class: "pi-range-now" }));
+  });
+  return el;
+}

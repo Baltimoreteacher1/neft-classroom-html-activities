@@ -7,6 +7,7 @@ import { recordsToCSV } from "./import.js";
 import { classSummary, comparableSteps, domainProfile, levelName } from "./interpret.js";
 import { SERIES_KEYS } from "./forecast.js";
 import { findingsFor } from "./planner.js";
+import { practicePlan } from "./practice.js";
 import { recordsOf } from "./records.js";
 import { audit } from "./store.js";
 import { ASSESSMENTS, DOMAINS } from "./rules.js";
@@ -267,6 +268,14 @@ function familyReport(ws, st) {
           "ul",
           {},
           T.ideas.map((x) => h("li", {}, x)),
+        ),
+        h("h3", {}, lang === "es" ? "Practiquen juntos en The Language Page (gratis, sin cuenta)" : "Practice together on The Language Page (free, no account)"),
+        h(
+          "ul",
+          { class: "pi-family-links" },
+          practicePlan(rec, { max: 1 }).map((p) =>
+            h("li", {}, h("a", { href: `${location.origin}${p.activities[0].href}` }, p.activities[0].title), ` · ${p.domain === "Vocabulary" ? (lang === "es" ? "palabras" : "words") : lang === "es" ? DOMAIN_ES[p.domain] : p.domain.toLowerCase()}`),
+          ),
         ),
         h("p", { class: "fine" }, T.note),
         lang === "es"

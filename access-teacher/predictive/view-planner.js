@@ -151,14 +151,11 @@ function findingCard(ws, f, grade) {
           f.teach.map((t) => h("li", {}, t)),
         ),
       ),
-      h("dt", {}, "Language Page resources"),
+      h("dt", {}, "Language Page activities for this level and grade"),
       h(
         "dd",
-        { class: "pi-res-list" },
-        f.resources
-          .map((id) => resourceLink(id))
-          .filter(Boolean)
-          .flatMap((a) => [a, " "]),
+        {},
+        h("ul", { class: "pi-actlist" }, f.activities.map((a) => h("li", {}, h("a", { href: a.href, class: "pi-res", "data-activity": a.id }, a.title), h("span", { class: "fine" }, ` ${a.why}`)))),
       ),
     ),
     h("label", { class: "pi-field" }, h("span", {}, "My plan"), note),

@@ -15,6 +15,7 @@
 | Classroom Insights | `view-classroom.js` | Domain spread (median, middle half), temporary groups the teacher approves, distributions, coverage, practice-evidence groups, Data Explorer (`view-analyst.js`, `analyst.js`). |
 | Instructional Planner | `view-planner.js`, `planner.js` | Findings → evidence to gather → what to teach → Language Page resources (`src/sitemap.js` ids) → assignment in the Teacher Hub's own format (`src/acc/adapt/assign.js`, saved to the hub's `assignments` setting). Practice-evidence bottlenecks below. |
 | Reports | `view-reports.js` | Student, growth, classroom, family (English or Spanish), forecast (only when validated). Print/PDF via the browser, CSV export. |
+| Toolkit | `view-toolkit.js` | Level guide (EN/ES), words to know, talking with families (EN/ES), student conference sheet, practice library by domain and band, the testing year, official WIDA links, templates. |
 | Import data (header) | `view-data.js` | Seven-step wizard, data quality, record deletion, undo, audit log. |
 
 ## Logic modules
@@ -24,7 +25,10 @@
 - `import.js` — CSV/TSV parsing, header mapping, wide and long tables, validation against stores, apply, undo, CSV export.
 - `file-readers.js` — XLSX (ZIP + XML via `DecompressionStream`), PDF text layer, score-report text parser.
 - `interpret.js` — profile, comparable steps, guidance bands, class summary, quartiles.
-- `scenario.js`, `concordance.js`, `planner.js`, `tour.js`.
+- `scenario.js`, `concordance.js` (WIDA TR-2019-4 table), `planner.js`, `tour.js`.
+- `practice.js` — Language Page activities for a domain, level and grade band, read from `src/sitemap.js` and `src/prep/registry.js` (no second list); links carry `?grades=`.
+- `outlook.js` / `view-outlook.js` — Outlook card (validated forecast, WIDA MODEL estimate, goal math) and Practice next card on each student; Class outlook range chart under Forecasts.
+- `usage.js`, `charts2.js` — practice-usage analytics and the visual kit.
 - Forecast engine (unchanged, gated): `access-practice-lab/src/predict/*`; workspace layer `forecast.js`.
 
 ## Storage (browser, this device)

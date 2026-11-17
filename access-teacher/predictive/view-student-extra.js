@@ -4,7 +4,7 @@
 import { activityColumns, DOMAIN_COLORS, independenceBars } from "./charts2.js";
 import { h, pct, table } from "./dom.js";
 import { levelName, LEVEL_NAMES } from "./interpret.js";
-import { hrefOf, RESOURCES, titleOf } from "./planner.js";
+import { activitiesFor, bandForGrade } from "./practice.js";
 import { recordsOf } from "./records.js";
 import { DOMAINS } from "./rules.js";
 import { independenceByDomain, usageSummary, weeklyActivity } from "./usage.js";
@@ -178,12 +178,10 @@ export function studentView(ws, st) {
                   "p",
                   { class: "pi-kid-next" },
                   "Practice next: ",
-                  ...RESOURCES[d]
-                    .slice(0, 2)
-                    .flatMap((id, i) => [
-                      i ? " or " : "",
-                      h("a", { href: hrefOf(id) }, titleOf(id)),
-                    ]),
+                  ...activitiesFor(d, lv, bandForGrade(rec.grade), 2).flatMap((a, i) => [
+                    i ? " or " : "",
+                    h("a", { href: a.href }, a.title),
+                  ]),
                 ),
               );
             }),
