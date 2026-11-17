@@ -151,8 +151,8 @@ export function continueTarget(I, { band, resume, openMission, journey, recent, 
   };
 }
 
-function rulerHTML(I, ctx, band, available, focusCounts) {
-  const picks = pickerState(band, ctx.prefs.gradePick, available);
+function rulerHTML(I, ctx, band, available, focusCounts, { unchosen = false } = {}) {
+  const picks = pickerState(band, ctx.prefs.gradePick, available).map((p) => (unchosen ? { ...p, chosen: false } : p));
   const chosen = picks.find((p) => p.chosen);
   const own = chosen && chosen.serves === band && chosen.ready && chosen.content[0] === band;
   let note = "";
@@ -185,7 +185,7 @@ function rulerHTML(I, ctx, band, available, focusCounts) {
       )}
     </div>
     <p class="lph-note fine" aria-live="polite">${note}</p>
-    ${band === "6-8" ? gradeFocusHTML(I, activeGradeFocus(ctx.prefs, band), { labelId: "lphGradeFocus", counts: focusCounts }) : ""}
+    ${band === "6-8" && !unchosen ? gradeFocusHTML(I, activeGradeFocus(ctx.prefs, band), { labelId: "lphGradeFocus", counts: focusCounts }) : ""}
   </div>`;
 }
 
@@ -296,6 +296,30 @@ export function startHTML(I, ctx, data) {
     </div>
     <div class="lph-student">${frontDoorHTML(I, { target, missions, resume, dueCount })}</div>
     <div class="lph-grade">${rulerHTML(I, ctx, band, available, focusCounts)}</div>
+  </section>`;
+}
+
+/**
+ * The home with no grade in the URL: nothing is pre-chosen from an earlier visit. The learner picks a grade, which
+ * opens the full home for that grade (?grades=). Same header, roles and ruler as startHTML.
+ */
+export function chooseGradeHTML(I, ctx, { band, available }) {
+  return html`<section class="lph lph-choose" aria-labelledby="homeTitle">
+    ${rolesHTML(I, band)}
+    <div class="lph-intro">
+      <h1 id="homeTitle" tabindex="-1">
+        ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
+      </h1>
+      <p class="lph-lead">
+        ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
+      </p>
+    </div>
+    <div class="lph-student lph-continue lph-front" id="lphFront" data-focus-first tabindex="-1">
+      <p class="lph-label">${I.T("Start here", "Empieza aquí")}</p>
+      <h2>${I.T("Choose your grade", "Elige tu grado")}</h2>
+      <p class="lph-why">${I.T("Pick a grade to see your practice, missions and saved work.", "Elige un grado para ver tu práctica, tus misiones y tu trabajo guardado.")}</p>
+    </div>
+    <div class="lph-grade">${rulerHTML(I, ctx, band, available, null, { unchosen: true })}</div>
   </section>`;
 }
 

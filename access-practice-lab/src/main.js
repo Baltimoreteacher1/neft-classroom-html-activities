@@ -404,8 +404,10 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   try {
     // Grades K-3 have their own home and player; rooms built for grades 3-8 say so instead of showing older
     // children's content under a K-3 label (src/early/gate.js).
-    const gated = isEarlyBand(app.band) && !earlyCanOpen(route);
-    view = gated ? { render: (c) => earlyGateHTML(c, i18nFor(c)) } : await loadView(isEarlyBand(app.band) && (route.view === "home" || (route.view === "family" && !route.id)) ? "early" : route.view);
+    // Home with no ?grades= is the grade chooser (views/home.js), whatever band this device last used.
+    const chooser = route.view === "home" && !route.grades;
+    const gated = !chooser && isEarlyBand(app.band) && !earlyCanOpen(route);
+    view = gated ? { render: (c) => earlyGateHTML(c, i18nFor(c)) } : await loadView(isEarlyBand(app.band) && ((route.view === "home" && !chooser) || (route.view === "family" && !route.id)) ? "early" : route.view);
     if (token !== app.rendering) return;
     if (view !== app.view) {
       stopSpeech();
@@ -439,7 +441,8 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   for (const link of root.querySelectorAll("a[href]")) {
     const url = new URL(link.href, location.href);
     if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || isStaticPage(url.pathname)) continue;
-    if (!url.searchParams.has("grades")) url.searchParams.set("grades", app.band);
+    // The home link stays bare so returning home always opens the grade chooser.
+    if (!url.searchParams.has("grades") && url.pathname !== `${BASE}/`) url.searchParams.set("grades", app.band);
     const mode = new URLSearchParams(location.search).get("mode");
     if (mode && !url.searchParams.has("mode")) url.searchParams.set("mode", mode);
     link.href = url.pathname + url.search + url.hash;
@@ -696,8 +699,8 @@ document.addEventListener("change", (e) => {
   const gradePick = e.target?.closest?.("[data-grade-select]");
   if (gradePick) {
     const next = gradePick.value;
-    if (next === app.band) return;
     const from = parseRoute();
+    if (!next || (next === app.band && !(from.view === "home" && !from.grades))) return;
     ctx.setBand(next);
     navigate(gradeSwitchTarget(from, app.band, { canOpen: (r) => !isEarlyBand(app.band) || earlyCanOpen(r) }));
     return;

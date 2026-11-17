@@ -35,14 +35,15 @@ globalThis.fetch = async (url) => ({
 const home = await import("../access-practice-lab/src/views/home.js");
 const start = await import("../access-practice-lab/src/views/home-start.js");
 
-const ctxFor = (band, lang = "en", prefs = {}) => {
+// The full home is the ?grades= route; a bare home (grades: "") is the grade chooser.
+const ctxFor = (band, lang = "en", prefs = {}, grades = band) => {
   const calls = { prefs: [], band: [], nav: [], rerender: 0 };
   return {
     calls,
     band,
     bands: SHIPPED,
     prefs: { lang, ...prefs },
-    route: { view: "home" },
+    route: { view: "home", grades },
     setPrefs(p) {
       calls.prefs.push(p);
       Object.assign(this.prefs, p);
@@ -561,6 +562,46 @@ test("choosing a grade remembers the pick and switches to the band that serves i
   const c = ctxFor("6-8");
   click(c, "bogus");
   assert.deepEqual(c.calls.prefs, [], "an unknown pick changes nothing");
+});
+
+test("bare home never pre-picks a grade; choosing one opens that grade's home", async () => {
+  const ctx = ctxFor("6-8", "en", { gradePick: "6-8" }, "");
+  const doc = dom((await home.render(ctx)).html);
+  assert.equal(doc.querySelectorAll("h1").length, 1);
+  const steps = [...doc.querySelectorAll("button[data-grade-pick]")];
+  assert.ok(steps.length > 1, "the grade ruler is shown");
+  assert.equal(
+    doc.querySelectorAll('[data-grade-pick][aria-pressed="true"]').length,
+    0,
+    "no grade is pre-chosen",
+  );
+  assert.equal(
+    doc.querySelector("[data-start-mission], [data-continue]"),
+    null,
+    "no band content before a choice",
+  );
+  const btn = new JSDOM('<button data-grade-pick="6-8">x</button>').window.document.querySelector(
+    "button",
+  );
+  assert.equal(home.onClick({ target: btn }, ctx), true);
+  assert.deepEqual(ctx.calls.band, [], "same band as last time: no band switch");
+  assert.match(ctx.calls.nav[0], /grades=6-8/, "but the chosen grade's home opens");
+});
+
+test("home links are bare: breadcrumbs and the header Home never carry ?grades=", async () => {
+  const { crumbsHTML } = await import("../access-practice-lab/src/components.js");
+  const { primaryLinks } = await import("../access-practice-lab/src/nav.js");
+  const trail = dom(
+    crumbsHTML([
+      ["Lab", "/access-practice-lab/?grades=6-8"],
+      ["Here", null],
+    ]),
+  );
+  assert.equal(trail.querySelector("a").getAttribute("href"), "/access-practice-lab/");
+  assert.equal(
+    primaryLinks("6-8", (en) => en).find((l) => l.id === "continue").href,
+    "/access-practice-lab/",
+  );
 });
 
 test("styles: the start sheet is critical, uses tokens and keeps 48px targets", () => {

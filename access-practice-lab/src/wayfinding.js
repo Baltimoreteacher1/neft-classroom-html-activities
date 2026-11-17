@@ -46,11 +46,14 @@ export function gradeSwitchTarget(route = {}, band, { canOpen = () => true } = {
 export function gradeSelectHTML(ctx, I) {
   const bands = ctx.bands || [];
   if (bands.length < 2) return "";
+  // The bare home is the grade chooser: nothing is selected until the learner picks.
+  const choosing = ctx.route?.view === "home" && !ctx.route?.grades;
   return html`<label class="grade-select"
     ><span class="grade-select-label">${I.T("Grade", "Grado")}</span
     ><select data-grade-select aria-label="${I.S("Change grade", "Cambiar de grado")}">
+      ${choosing ? html`<option value="" selected disabled>${I.S("Choose", "Elige")}</option>` : ""}
       ${bands.map(
-        (b) => html`<option value="${b}" ${b === ctx.band ? raw("selected") : ""}>${BAND_INFO[b]?.short || b}</option>`,
+        (b) => html`<option value="${b}" ${!choosing && b === ctx.band ? raw("selected") : ""}>${BAND_INFO[b]?.short || b}</option>`,
       )}
     </select></label
   >`;

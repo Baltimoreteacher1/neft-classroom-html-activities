@@ -37,7 +37,7 @@ export function primaryLinks(band, T) {
       { id: "growth", icon: "passport", label: T("My Passport", "Mi Pasaporte"), href: `${BASE}/passport${q}` },
     ];
   return [
-    { id: "continue", icon: "road", label: T("Home", "Inicio"), href: `${BASE}/${q}` },
+    { id: "continue", icon: "road", label: T("Home", "Inicio"), href: `${BASE}/` },
     { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/explore/practice${q}` },
     { id: "explore", icon: "sparkle", label: T("Games & Worlds", "Juegos y mundos"), href: `${BASE}/explore/play${q}` },
     { id: "growth", icon: "growth", label: T("My Progress", "Mi progreso"), href: `${BASE}/explore/progress${q}` },

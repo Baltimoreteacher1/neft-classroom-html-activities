@@ -44,7 +44,7 @@ import { cardsFor } from "../home-registry.js";
 import { domT, nextActivity, planOptionsHTML, portalHTML, reasonT, tierFor } from "./home-panels.js";
 
 export { nextActivity, tierFor };
-import { cardHref, continueTarget, pickBand, recentRoom, skillPickHTML, startHTML } from "./home-start.js";
+import { cardHref, chooseGradeHTML, continueTarget, pickBand, recentRoom, skillPickHTML, startHTML } from "./home-start.js";
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
 import { latestModuleResume } from "../home-resume.js";
 import { sectionTilesHTML } from "../sitemap-ui.js";
@@ -99,6 +99,8 @@ export async function render(ctx) {
   if (ctx.route.view === "session-done") return renderSessionDone(ctx);
   const I = i18nFor(ctx);
   const band = ctx.band;
+  // Home without ?grades= never picks a grade on its own (Joel 2026-11-17): the learner chooses each time.
+  if (!ctx.route.grades) return { title: "", html: chooseGradeHTML(I, ctx, { band, available: ctx.bands }) };
   const [domains, road, shared] = await Promise.all([
     bandDomains(band),
     loadRoad(),
@@ -641,11 +643,11 @@ export function onClick(e, ctx) {
       document
         .querySelector(`[data-grade-pick="${CSS.escape(pick)}"]`)
         ?.focus({ preventScroll: true });
-    if (band !== ctx.band) {
-      ctx.setBand(band);
+    if (band !== ctx.band || !ctx.route.grades) {
+      if (band !== ctx.band) ctx.setBand(band);
       const url = new URL(location.href);
       url.searchParams.set("grades", band);
-      Promise.resolve(ctx.navigate(url.pathname + url.search, { replace: true })).then(restore);
+      Promise.resolve(ctx.navigate(url.pathname + url.search, { replace: !!ctx.route.grades })).then(restore);
     } else Promise.resolve(ctx.rerender()).then(restore);
     return true;
   }
