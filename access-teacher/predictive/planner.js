@@ -90,6 +90,8 @@ export function findingsFor(record) {
         ...activitiesFor("Vocabulary", record.domains[d].level, bandForGrade(record.grade), 1),
       ],
       basis: primary ? "relative need" : "lower domain",
+      level: record.domains[d].level,
+      grade: record.grade,
     });
   }
   return out;

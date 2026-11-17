@@ -5,6 +5,7 @@ import { h } from "./dom.js";
 import { goalMath, outlookFor } from "./outlook.js";
 import { bandForGrade, practicePlan } from "./practice.js";
 import { recordsOf } from "./records.js";
+import { assignButton, liveFor } from "./view-class-live.js";
 
 const f1 = (x) => (x == null ? "—" : Number(x).toFixed(1));
 const yearsAhead = (y, n) =>
@@ -108,6 +109,12 @@ export function outlookCard(ws, st) {
   );
 }
 
+function liveLine(ws, st) {
+  const l = liveFor(ws, st);
+  if (!l) return null;
+  return h("p", { class: "pi-liveline", "data-live-student": "" }, h("strong", {}, "In class: "), `last practice ${l.lastSeen}, ${l.member.summary.weekEvidence ?? 0} activities this week`, l.total ? `, ${l.done} of ${l.total} assignments done.` : ".");
+}
+
 export function practiceCard(ws, st) {
   const rec = recordsOf(st).at(-1);
   const plan = practicePlan(rec);
@@ -146,9 +153,11 @@ export function practiceCard(ws, st) {
               ),
             ),
           ),
+          assignButton(ws, { domain: p.domain, level: p.level, grade: rec.grade, label: "Assign to my class" }),
         ),
       ),
     ),
+    liveLine(ws, st),
     h(
       "p",
       { class: "pi-row" },

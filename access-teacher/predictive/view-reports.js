@@ -20,7 +20,71 @@ const TYPES = [
   ["class", "Classroom"],
   ["family", "Family summary"],
   ["forecast", "Forecast"],
+  ["story", "Language story"],
 ];
+const BULK = new Set(["family", "story", "student"]);
+
+/** Every result, grouped into eras that may be compared, with a sentence per era. */
+function storyReport(ws, st) {
+  const recs = recordsOf(st);
+  if (!recs.length) return h("p", { class: "pi-note" }, "No results on file for this student.");
+  const eras = new Map();
+  for (const r of recs) {
+    const key = `${ASSESSMENTS[r.assessmentType].short}|${r.scaleVersion}|${r.levelVersion}`;
+    if (!eras.has(key)) eras.set(key, []);
+    eras.get(key).push(r);
+  }
+  const sections = [...eras.entries()].map(([key, list]) => {
+    const [test] = key.split("|");
+    const first = list[0].composites.Overall.level;
+    const last = list.at(-1).composites.Overall.level;
+    const span = list.length > 1 && first != null && last != null ? Math.round((last - first) * 10) / 10 : null;
+    return h(
+      "section",
+      { class: "pi-story-era" },
+      h("h3", {}, `${test}: ${list[0].academicYear}${list.length > 1 ? ` to ${list.at(-1).academicYear}` : ""}`),
+      h(
+        "p",
+        {},
+        span == null
+          ? `${list.length} result${list.length === 1 ? "" : "s"} in this group.`
+          : `Overall went from ${first.toFixed(1)} to ${last.toFixed(1)} (${span > 0 ? "+" : ""}${span.toFixed(1)}) across ${list.length} results.`,
+      ),
+      table(
+        `${test} results`,
+        ["Year", "Date", ...DOMAINS, "Overall"],
+        list.map((r) => [r.academicYear, r.administrationDate || "—", ...DOMAINS.map((d) => fmt1(r.domains[d].level)), fmt1(r.composites.Overall.level)]),
+      ),
+    );
+  });
+  return frame(
+    ws,
+    `Language story: ${st.name}`,
+    h(
+      "div",
+      {},
+      h("p", {}, `${recs.length} result${recs.length === 1 ? "" : "s"} on file. Groups are kept apart where WIDA changed the test, the scale or the cut scores, so numbers are only compared inside a group.`),
+      ...sections,
+      notes(ws, `story:${st.id}`),
+    ),
+    recs,
+  );
+}
+
+/** The same report for every student, one per printed page. */
+function bulkReports(ws, make) {
+  return h(
+    "div",
+    { class: "pi-bulk", id: "piReport" },
+    ws.students.map((st) => {
+      const node = make(st);
+      const inner = node.querySelector?.("#piReport") || node;
+      inner.removeAttribute?.("id");
+      inner.querySelectorAll?.(".no-print, .pi-subnav").forEach((x) => x.remove());
+      return h("div", { class: "pi-bulk-page" }, inner);
+    }),
+  );
+}
 
 function frame(ws, title, body, recs) {
   const dates = [...new Set(recs.map((r) => assessmentLabel(r, ASSESSMENTS)))];
@@ -354,13 +418,16 @@ export function renderReports(ws) {
   if (!ws.students.length) return emptyState(ws);
   const type = ws.sub.report || "student";
   const st = ws.student();
-  const body = {
-    student: () => studentReport(ws, st),
-    growth: () => growthReport(ws, st),
+  const makers = {
+    student: (x) => studentReport(ws, x),
+    growth: (x) => growthReport(ws, x),
     class: () => classReport(ws),
-    family: () => familyReport(ws, st),
-    forecast: () => forecastReport(ws, st),
-  }[type]();
+    family: (x) => familyReport(ws, x),
+    forecast: (x) => forecastReport(ws, x),
+    story: (x) => storyReport(ws, x),
+  };
+  const all = BULK.has(type) && ws.sub.reportAll === "all";
+  const body = all ? bulkReports(ws, makers[type]) : makers[type](st);
   const rows = (type === "class" ? ws.students : [st]).flatMap((s) =>
     recordsOf(s).map((record) => ({ name: s.name, record })),
   );
@@ -368,7 +435,9 @@ export function renderReports(ws) {
     "div",
     { class: "pi-stack" },
     subnav(ws, "report", TYPES, type),
-    type === "class" ? null : studentPicker(ws),
+    BULK.has(type) ? subnav(ws, "reportAll", [["one", "One student"], ["all", "Whole class (one page each)"]], ws.sub.reportAll || "one") : null,
+    type === "class" || all ? null : studentPicker(ws),
+    type === "family" && all ? subnav(ws, "familyLang", [["en", "English"], ["es", "Español"]], ws.sub.familyLang || "en") : null,
     h(
       "div",
       { class: "pi-row no-print" },

@@ -8,6 +8,7 @@ import { buildAssignment, findingsFor, resourceLink, RESOURCES } from "./planner
 import { recordsOf } from "./records.js";
 import { ASSESSMENTS } from "./rules.js";
 import { renderBottlenecks } from "./view-bottleneck.js";
+import { assignButton } from "./view-class-live.js";
 import { assessmentLabel, emptyState, explain, heading, studentPicker } from "./view-common.js";
 
 let bankIndex = null;
@@ -182,6 +183,7 @@ function findingCard(ws, f, grade) {
       ),
     ),
     assignBox(ws, f, grade),
+    assignButton(ws, { domain: f.domain, level: f.level, grade: f.grade, label: `Assign ${f.domain.toLowerCase()} to my class` }),
   );
 }
 

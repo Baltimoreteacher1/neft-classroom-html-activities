@@ -402,12 +402,47 @@ function classOverview(ws) {
   );
 }
 
+/** One line per result added since the teacher last looked; "Got it" marks them seen. */
+function newSince(ws) {
+  const all = ws.students.flatMap((st) => recordsOf(st).map((r) => ({ st, r })));
+  if (!ws.state.seen) {
+    ws.state.seen = all.map((x) => x.r.assessmentId);
+    ws.save();
+    return null;
+  }
+  const seen = new Set(ws.state.seen);
+  const fresh = all.filter((x) => !seen.has(x.r.assessmentId));
+  if (!fresh.length) return null;
+  return h(
+    "section",
+    { class: "pi-card pi-new", "aria-labelledby": "piNewT", "data-new-since": String(fresh.length) },
+    h("h3", { id: "piNewT" }, `${fresh.length} new result${fresh.length === 1 ? "" : "s"} since your last visit`),
+    h(
+      "ul",
+      {},
+      fresh.slice(0, 6).map(({ st, r }) => {
+        const step = comparableSteps(st).find((x) => x.to.assessmentId === r.assessmentId);
+        const ch = step?.levelsComparable ? step.rows.find((x) => x.key === "Overall")?.levelChange : null;
+        return h(
+          "li",
+          {},
+          h("button", { type: "button", class: "linkish", on: { click: () => ((ws.selected = st.id), (ws.sub.overview = "student"), ws.rerender()) } }, st.name),
+          `: ${ASSESSMENTS[r.assessmentType].short} ${r.academicYear}, Overall ${r.composites.Overall.level != null ? r.composites.Overall.level.toFixed(1) : "not reported"}${ch != null ? ` (${ch > 0 ? "▲ +" : ch < 0 ? "▼ " : "= "}${ch === 0 ? "no change" : ch.toFixed(1)})` : ""}`,
+        );
+      }),
+    ),
+    fresh.length > 6 ? h("p", { class: "fine" }, `and ${fresh.length - 6} more.`) : null,
+    h("button", { type: "button", class: "btn small", "data-new-seen": "", on: { click: () => ((ws.state.seen = all.map((x) => x.r.assessmentId)), ws.save(), ws.rerender()) } }, "Got it"),
+  );
+}
+
 export function renderOverview(ws) {
   if (!ws.students.length) return emptyState(ws);
   const view = ws.sub.overview || "student";
   return h(
     "div",
     {},
+    newSince(ws),
     subnav(
       ws,
       "overview",

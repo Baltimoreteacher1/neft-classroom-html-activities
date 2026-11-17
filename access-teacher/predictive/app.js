@@ -80,6 +80,7 @@ function sessionSet(k, v) {
 }
 
 function load() {
+  ws.live = null;
   if (ws.mode === "demo") {
     demoCache ||= (() => {
       const byKey = transitionsByKey(demoTrainingCohort());

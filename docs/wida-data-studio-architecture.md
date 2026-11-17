@@ -29,6 +29,9 @@
 - `practice.js` — Language Page activities for a domain, level and grade band, read from `src/sitemap.js` and `src/prep/registry.js` (no second list); links carry `?grades=`.
 - `outlook.js` / `view-outlook.js` — Outlook card (validated forecast, WIDA MODEL estimate, goal math) and Practice next card on each student; Class outlook range chart under Forecasts.
 - `usage.js`, `charts2.js` — practice-usage analytics and the visual kit.
+- `classlink.js` / `view-class-live.js` — live class: reads the Teacher Hub's own class list (`accessPracticeLabClass:v1:teacher-classes`, code + teacher passcode), the class API client (`shared/class-platform/client.js`) for the roster and the practice summaries students' devices send, and writes assignments in the hub's format (`src/class/assign.js`; lab content-index activities so completion is tracked; support level A/B/C from the WIDA level). Counts only, never a level. The Sample class uses sample numbers and makes no calls. Test: `tools/access-studio-classlink.test.mjs`.
+- `view-exit.js` — the state exit criterion from `src/predict/policy.js` (Maryland, Overall 4.5) against each latest reported Overall: a comparison, not a forecast or a decision.
+- Overview "new since your last visit" (`state.seen`); Reports: Language story (results grouped into comparable eras) and whole-class printing (one page per student) for student, family and story reports.
 - Forecast engine (unchanged, gated): `access-practice-lab/src/predict/*`; workspace layer `forecast.js`.
 
 ## Storage (browser, this device)

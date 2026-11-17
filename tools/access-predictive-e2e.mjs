@@ -354,6 +354,36 @@ for (const t of [
   await page.click("[data-toolkit-back]");
 }
 
+// 8c. Live class (sample), exit criterion, story report, whole-class print.
+await tab("classroom");
+await sub("patterns");
+ok(
+  (await page.locator('[data-class-live="ok"]').count()) === 1,
+  "the sample class shows live class practice",
+);
+ok(
+  (await page.locator("[data-exit]").count()) === 1,
+  "Classroom Insights shows the state exit criterion panel",
+);
+ok(
+  (await page.locator("[data-assign-class]").count()) >= 1,
+  "group playlists offer Assign to my class",
+);
+await tab("reports");
+await sub("story");
+ok(
+  (await page.locator(".pi-story-era").count()) >= 1,
+  "the Language story groups results into comparable eras",
+);
+await sub("family");
+await page.click('[data-subnav="all"]');
+ok(
+  (await page.locator(".pi-bulk-page").count()) === 12 &&
+    (await page.locator("#piReport").count()) === 1,
+  "Whole class prints one family page per student with one report root",
+);
+await page.click('[data-subnav="one"]');
+
 // 9. Data Explorer.
 await tab("classroom");
 await sub("explorer");

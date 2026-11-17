@@ -2,6 +2,8 @@
 // Language Bottleneck Detector.
 import { classSummary, quartiles } from "./interpret.js";
 import { activitiesFor, bandForGrade } from "./practice.js";
+import { assignButton, classLivePanel } from "./view-class-live.js";
+import { exitPanel } from "./view-exit.js";
 import { DOMAINS } from "./rules.js";
 import { renderAnalyst } from "./view-analyst.js";
 import { explain, subnav } from "./view-common.js";
@@ -135,7 +137,7 @@ function domainSpread(ws) {
 }
 
 /** Practice playlist for a group: activities for the domain at the group's median level and band. */
-function playlist(domain, members) {
+function playlist(domain, members, ws) {
   const q = quartiles(members.map((m) => m.level));
   const band = bandForGrade(members[0]?.grade);
   const acts = activitiesFor(domain, q?.median ?? null, band, 3);
@@ -145,6 +147,7 @@ function playlist(domain, members) {
     { class: "pi-playlist" },
     h("p", { class: "fine" }, `Practice playlist (grades ${band}):`),
     h("ul", {}, acts.map((a) => h("li", {}, h("a", { href: a.href, "data-activity": a.id }, a.title)))),
+    ws ? assignButton(ws, { domain, level: q?.median ?? null, grade: members[0]?.grade, label: `Assign ${domain.toLowerCase()} practice to my class` }) : null,
   );
 }
 
@@ -194,7 +197,7 @@ function scoreGroups(ws) {
             state ? "Update group" : "Approve group",
           ),
           state ? h("span", { class: "pi-chip" }, "Approved") : null,
-          playlist(d, members),
+          playlist(d, members, ws),
         );
       }),
     ),
@@ -215,6 +218,8 @@ export function renderClassroom(ws) {
           "div",
           { class: "pi-stack" },
           h("p", { class: "lead" }, "Class patterns from reported scores and practice evidence. Practice evidence is never turned into a level."),
+          classLivePanel(ws),
+          exitPanel(ws),
           domainSpread(ws),
           scoreGroups(ws),
           h("div", { class: "pi-grid-2" }, distributions(ws), coverage(ws)),
