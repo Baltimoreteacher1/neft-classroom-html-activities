@@ -69,7 +69,6 @@ export const SCREENS = [
   { id: "family-tour", path: "/access-family-tour/" },
   { id: "family-adventure", path: "/access-family-expedition/" },
   { id: "teacher", path: "/access-teacher/" },
-  { id: "teacher-flight-deck", path: "/access-teacher/flight-deck/" },
   { id: "expedition", path: "/access-expedition/" },
 ];
 

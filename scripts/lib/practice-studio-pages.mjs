@@ -325,26 +325,28 @@ export function boostPage(
     sections,
     assets,
   });
-  return html
-    // Not a lesson: no Learning Lab stage bar (it would link /math/studio/0-0/, which does not exist).
-    .replace(/\s*<nav class="ms-stagebar"[\s\S]*?<\/nav>/, "")
-    .replace(
-      /<div class="brand-sub">[^<]*<\/div>/,
-      '<div class="brand-sub">Grade 6 Math · Mixed review from every unit · New set each day</div>',
-    )
-    .replace(
-      /<strong>Grade 6 Mathematics · Lesson 0-0: Daily Boost<\/strong>/,
-      "<strong>Grade 6 Mathematics · Daily Boost</strong>",
-    )
-    .replace(
-      / · <a href="\/lessons\/0-0\/">Open the full lesson<\/a> · <a href="[^"]*">(?:Practice|Challenge) version<\/a>/,
-      ' · <a href="/math/practice-studio/">All practice studios</a>',
-    )
-    .replaceAll("/math/practice-studio/0-0/challenge/", "/math/practice-studio/")
-    .replace(
-      "</body>",
-      `  <script type="application/json" id="boost-catalog">${json(catalog)}</script>\n</body>`,
-    );
+  return (
+    html
+      // Not a lesson: no Learning Lab stage bar (it would link /math/studio/0-0/, which does not exist).
+      .replace(/\s*<nav class="ms-stagebar"[\s\S]*?<\/nav>/, "")
+      .replace(
+        /<div class="brand-sub">[^<]*<\/div>/,
+        '<div class="brand-sub">Grade 6 Math · Mixed review from every unit · New set each day</div>',
+      )
+      .replace(
+        /<strong>Grade 6 Mathematics · Lesson 0-0: Daily Boost<\/strong>/,
+        "<strong>Grade 6 Mathematics · Daily Boost</strong>",
+      )
+      .replace(
+        / · <a href="\/lessons\/0-0\/">Open the full lesson<\/a> · <a href="[^"]*">(?:Practice|Challenge) version<\/a>/,
+        ' · <a href="/math/practice-studio/">All practice studios</a>',
+      )
+      .replaceAll("/math/practice-studio/0-0/challenge/", "/math/practice-studio/")
+      .replace(
+        "</body>",
+        `  <script type="application/json" id="boost-catalog">${json(catalog)}</script>\n</body>`,
+      )
+  );
 }
 
 /** The finder at /math/practice-studio/: every lesson, both versions, and the student's own passport stamps. */

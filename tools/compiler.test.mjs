@@ -5,8 +5,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  ID_RE,
   compileExperience,
+  ID_RE,
   missionIdFor,
   newExperienceId,
   studentCopy,
@@ -22,7 +22,7 @@ import {
   loadPassages,
   readUpload,
 } from "../access-practice-lab/src/compiler/editor-inputs.js";
-import { OP_TYPES, applyOp } from "../access-practice-lab/src/compiler/editor-ops.js";
+import { applyOp, OP_TYPES } from "../access-practice-lab/src/compiler/editor-ops.js";
 import {
   newPreview,
   previewAct,
@@ -30,10 +30,10 @@ import {
   previewOpen,
 } from "../access-practice-lab/src/compiler/editor-preview.js";
 import {
-  MAX_UPLOAD_BYTES,
   checkUpload,
   cleanSource,
   extractSource,
+  MAX_UPLOAD_BYTES,
   overlap,
 } from "../access-practice-lab/src/compiler/extract.js";
 import { playScript, reachOutcomes } from "../access-practice-lab/src/compiler/play.js";
@@ -46,16 +46,16 @@ import {
 import {
   ASSIGN_ID_RE,
   ASSIGN_PATH_RE,
-  DRAFTS_KEY,
   assignmentFor,
+  DRAFTS_KEY,
   exportDraft,
   importDraft,
   loadDrafts,
   saveDraft,
 } from "../access-practice-lab/src/compiler/store.js";
 import {
-  MAX_DEF_BYTES,
   conditionText,
+  MAX_DEF_BYTES,
   standardsFor,
   traceText,
   validateExperience,

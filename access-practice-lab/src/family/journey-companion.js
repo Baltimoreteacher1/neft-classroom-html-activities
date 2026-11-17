@@ -2,6 +2,8 @@
 // companion detail view at /family?mission=mNN. Text first, no images. Everything shown here is bilingual through
 // the page's language mode; progress is counts and step names from this device only.
 import { MISSIONS, MISSION_IDS, STEPS, missionNumber, stepInfo } from "../journey/curriculum.js";
+import { findActivity, loadEsGuide } from "../content.js";
+import { langSwitchHTML } from "../i18n.js";
 import { getStudentName } from "../store.js";
 import { BASE, html, icon } from "../util.js";
 import {
@@ -247,7 +249,114 @@ async function companionPage(ctx, I, missionId) {
   };
 }
 
+/** Contextual Family Companion for any teacher-shared activity (?companion=<activityId>). */
+async function activityCompanionPage(ctx, I, activityId) {
+  const [found, esGuide] = await Promise.all([
+    findActivity(activityId).catch(() => null),
+    loadEsGuide().catch(() => ({})),
+  ]);
+  const band = found?.band || ctx.band || "6-8";
+  if (!found || !found.activity) {
+    return {
+      title: I.S("Family Activity Companion", "Guía familiar de la actividad"),
+      html: html`<div class="jf-companion">
+        ${crumbs(I, I.S("Activity Companion", "Guía de la actividad"))}
+        <section class="panel">
+          <h1 tabindex="-1">${I.T("Choose a family activity", "Elija una actividad en familia")}</h1>
+          <p>${I.T("We could not find that specific activity link, but you can start a short activity right now.", "No encontramos ese enlace específico, pero pueden empezar una actividad corta ahora mismo.")}</p>
+          <a class="btn btn-primary btn-big" href="${BASE}/family/practice?grades=${band}">${I.T("Start an Activity", "Empezar una actividad")}${icon("arrow-right")}</a>
+        </section>
+      </div>`,
+    };
+  }
+  const { activity: act, domain, level } = found;
+  const esInfo = esGuide?.[act.id] || {};
+  const minutes = Number(act.time) || 5;
+  const actHref = `${BASE}/${domain}/${level}/${act.id}?grades=${band}`;
+  const plainGoalEn = act.skill ? `Practice how to ${act.skill.toLowerCase()}.` : `Practice ${domain.toLowerCase()} together.`;
+  const plainGoalEs = esInfo.goal || `Practicar ${domain === "Listening" ? "escuchar" : domain === "Speaking" ? "hablar" : domain === "Reading" ? "leer" : "escribir"} juntos.`;
+  const dirEn = act.directions || "Read or listen to the question together, then talk about your idea.";
+  const dirEs = esInfo.directions || act.directionsEs || "Lean o escuchen la pregunta juntos y conversen sobre su idea.";
+
+  return {
+    title: I.S(`Family Companion: ${act.title}`, `Guía familiar: ${act.title}`),
+    html: html`<div class="jf-companion jf-act-companion">
+      ${crumbs(I, act.title)} ${subnavHTML(I, "", band)}
+      <header class="jf-head panel">
+        <p class="eyebrow">
+          ${icon("families")} ${I.T("Family Companion · Teacher-Shared Activity", "Guía familiar · Actividad compartida por el maestro")}
+        </p>
+        <h1 id="jfTitle" tabindex="-1"><span lang="en">${act.title}</span></h1>
+        <p class="lead">
+          ${I.T(
+            "You do not need teaching experience to help. Sit together, listen to your child's ideas, and encourage them to explain their thinking.",
+            "No necesita experiencia docente para ayudar. Siéntense juntos, escuche las ideas de su hijo o hija y anímele a explicar lo que piensa.",
+          )}
+        </p>
+        <div class="fam-lang">
+          <p class="fam-lang-label">${I.T("Choose your preferred language:", "Elija su idioma preferido:")}</p>
+          ${langSwitchHTML(I.mode, { large: true, idPrefix: "comp" })}
+        </div>
+        <p class="fine">
+          ${I.T(`Approximate time: about ${minutes} minutes · No timer`, `Tiempo aproximado: unos ${minutes} minutos · Sin cronómetro`)}
+        </p>
+        <div class="fam-cta">
+          <a class="btn btn-primary btn-big" href="${actHref}">
+            ${I.T("Begin Activity Now", "Comenzar la actividad ahora")}${icon("arrow-right")}
+          </a>
+          <a class="btn btn-big" href="${BASE}/family?grades=${band}">
+            ${I.T("Return to Family Home", "Volver al inicio para familias")}
+          </a>
+        </div>
+      </header>
+
+      <div class="jf-cards">
+        <article class="panel">
+          <h2>${I.T("What your child will practice", "Lo que practicará su hijo o hija")}</h2>
+          <p>${I.T(plainGoalEn, plainGoalEs)}</p>
+        </article>
+        <article class="panel">
+          <h2>${I.T("Simple directions", "Instrucciones sencillas")}</h2>
+          <p>${I.T(dirEn, dirEs)}</p>
+          <div class="fam-prompt-audio">
+            <button type="button" class="btn small" data-say="${dirEn}">
+              ${icon("volume")} ${I.T("Hear directions in English", "Escuchar en inglés")}
+            </button>
+            <button type="button" class="btn small" data-say-es="${dirEs}">
+              ${icon("volume")} ${I.T("Hear in Spanish", "Escuchar en español")}
+            </button>
+          </div>
+        </article>
+        <article class="panel">
+          <h2>${I.T("Questions you can ask together", "Preguntas para conversar juntos")}</h2>
+          <ul class="jf-frames">
+            <li>
+              <strong>${I.T("“What do you notice first?”", "«¿Qué notas primero?»")}</strong>
+            </li>
+            <li>
+              <strong>${I.T("“Can you tell me more about your idea?”", "«¿Puedes contarme más sobre tu idea?»")}</strong>
+            </li>
+            <li>
+              <strong>${I.T("“Which word or detail helped you decide?”", "«¿Qué palabra o detalle te ayudó a decidir?»")}</strong>
+            </li>
+          </ul>
+          <p class="fine">
+            ${I.T(
+              "Tip: You can talk together in your home language first, then help your child try the sentence in English.",
+              "Consejo: Pueden conversar primero en el idioma de casa y luego intentar la oración en inglés.",
+            )}
+          </p>
+        </article>
+      </div>
+      ${spanishNote(I)}
+    </div>`,
+  };
+}
+
 export const companionPageFor = (ctx, I) => {
+  const q = new URLSearchParams(location.search);
+  const actId = (q.get("companion") || "").trim();
+  if (actId && /^[a-z0-9-]+$/i.test(actId)) return activityCompanionPage(ctx, I, actId);
   const id = missionFromSearch(location.search);
   return id ? companionPage(ctx, I, id) : null;
 };

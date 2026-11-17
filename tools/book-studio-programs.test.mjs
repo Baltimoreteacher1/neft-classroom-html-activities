@@ -10,7 +10,9 @@ import test from "node:test";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 
 const BOOK = join(REPO_ROOT, "access-practice-lab/src/book");
-const { PROGRAMS, programFor, bookBand, clusterForBand, EDITOR_STAGE_MAP } = await import(join(BOOK, "programs.js"));
+const { PROGRAMS, programFor, bookBand, clusterForBand, EDITOR_STAGE_MAP } = await import(
+  join(BOOK, "programs.js")
+);
 const { rubricFor } = await import(join(BOOK, "rubrics.js"));
 const { templateForBand, BAND_LAYER_IDS } = await import(join(BOOK, "template-bands.js"));
 const { templateById } = await import(join(BOOK, "templates.js"));
@@ -45,7 +47,8 @@ test("bands resolve to programs, clusters and stage guides", () => {
   assert.equal(bookBand({ gradeCluster: "4-5" }, "6-8"), "3-5");
   assert.equal(bookBand({ gradeCluster: "" }, "6-8"), "6-8");
   assert.equal(clusterForBand("3-5"), "4-5");
-  for (const idx of Object.values(EDITOR_STAGE_MAP)) for (const i of idx) assert.ok(i >= 0 && i < 5);
+  for (const idx of Object.values(EDITOR_STAGE_MAP))
+    for (const i of idx) assert.ok(i >= 0 && i < 5);
 });
 
 test("every band and key language use has a four-item self-check", () => {

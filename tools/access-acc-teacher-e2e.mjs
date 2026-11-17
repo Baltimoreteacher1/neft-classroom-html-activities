@@ -10,8 +10,8 @@
  */
 import { readFileSync } from "node:fs";
 import { FIXTURE_LEARNERS, seedEvidence } from "./lib/access-acc-fixtures.mjs";
-import { serveAccess } from "./lib/access-serve.mjs";
 import { openHubSections } from "./lib/access-hub.mjs";
+import { serveAccess } from "./lib/access-serve.mjs";
 
 let chromium;
 let AxeBuilder;

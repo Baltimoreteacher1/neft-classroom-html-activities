@@ -14,7 +14,12 @@ const voices = [
 test("voice: saved choice applies to speak(); explicit and automatic previews win", async () => {
   const spoken = [];
   globalThis.window = {
-    speechSynthesis: { getVoices: () => voices, addEventListener() {}, cancel() {}, speak: (u) => (spoken.push(u), u.onend?.()) },
+    speechSynthesis: {
+      getVoices: () => voices,
+      addEventListener() {},
+      cancel() {},
+      speak: (u) => (spoken.push(u), u.onend?.()),
+    },
   };
   globalThis.SpeechSynthesisUtterance = class {
     constructor(text) {

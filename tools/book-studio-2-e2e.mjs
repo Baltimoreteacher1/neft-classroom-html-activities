@@ -436,7 +436,10 @@ try {
   await page.locator('[data-st="done-char"]').click();
   await page.locator('[data-st="place"]').first().click();
   await page.waitForSelector(".bk-canvas [data-char]");
-  ok((await page.locator(".bk-canvas [data-char]").count()) === 1, "a character is made once and placed on the page");
+  ok(
+    (await page.locator(".bk-canvas [data-char]").count()) === 1,
+    "a character is made once and placed on the page",
+  );
   await page.locator('[data-dock="items"]').click();
   await page.waitForSelector('[data-st="add-item"]');
   await page.locator('[data-st="add-item"]').click();
@@ -450,34 +453,61 @@ try {
   await page.fill('[data-hs="reveal"]', "The key fits the hidden door.");
   await page.locator('[data-st="save-hs"]').click();
   await page.waitForTimeout(1200);
-  const hs = await withBook(page, `const b = await db.getBook(arg); const el = b.pages[1].elements.find((e) => e.hotspot); return el && el.hotspot;`, id);
-  ok(hs?.give && hs.reveal.includes("hidden door"), "a clickable clue saves with the author's own explanation");
+  const hs = await withBook(
+    page,
+    `const b = await db.getBook(arg); const el = b.pages[1].elements.find((e) => e.hotspot); return el && el.hotspot;`,
+    id,
+  );
+  ok(
+    hs?.give && hs.reveal.includes("hidden door"),
+    "a clickable clue saves with the author's own explanation",
+  );
   await page.locator('[data-dock="choices"]').click();
   await page.waitForSelector('[data-ch="label"]');
   await page.locator('[data-ch="label"]').first().fill("Open the door");
   await page.keyboard.press("Escape");
   await page.waitForTimeout(1200);
-  const lab = await withBook(page, `const b = await db.getBook(arg); return b.pages[1].choices.map((c) => c.label);`, id);
+  const lab = await withBook(
+    page,
+    `const b = await db.getBook(arg); return b.pages[1].choices.map((c) => c.label);`,
+    id,
+  );
   ok(lab[0] === "Open the door", "choice words are saved");
 
   await page.locator('[data-stage="improve"]').click();
   await page.waitForSelector("[data-coach-el]");
   await page.locator('[data-dock="coach-ask"]').click();
   await page.waitForSelector(".bk-coach-q");
-  ok((await page.locator(".bk-coach-q strong").innerText()).includes("?"), "the coach asks a question instead of rewriting");
+  ok(
+    (await page.locator(".bk-coach-q strong").innerText()).includes("?"),
+    "the coach asks a question instead of rewriting",
+  );
   await page.fill("[data-coach-rev]", "The fox froze when it heard footsteps.");
   await page.locator('[data-dock="coach-apply"]').click();
   await page.waitForTimeout(1200);
-  const rev = await withBook(page, `const b = await db.getBook(arg); return b.work.revisions.map((r) => [r.by, r.before, r.after]);`, id);
-  ok(rev.at(-1)?.[0] === "student" && rev.at(-1)[1].includes("scared") && rev.at(-1)[2].includes("froze"), "the original and the student's revision are both kept, labelled as the student's");
+  const rev = await withBook(
+    page,
+    `const b = await db.getBook(arg); return b.work.revisions.map((r) => [r.by, r.before, r.after]);`,
+    id,
+  );
+  ok(
+    rev.at(-1)?.[0] === "student" &&
+      rev.at(-1)[1].includes("scared") &&
+      rev.at(-1)[2].includes("froze"),
+    "the original and the student's revision are both kept, labelled as the student's",
+  );
 
   await page.locator('[data-stage="publish"]').click();
   await page.locator('[data-dock-aud][value="class"]').check();
-  ok((await page.locator(".bk-dock .bk-warn").count()) === 1, "sharing with a class needs a teacher's approval first");
+  ok(
+    (await page.locator(".bk-dock .bk-warn").count()) === 1,
+    "sharing with a class needs a teacher's approval first",
+  );
   await page.locator('[data-stage="create"]').click();
 
   // the Support Studio: library search, packs, designer, plans and groups
-  if ((await page.locator('[data-bk-act="teacher"]').getAttribute("aria-pressed")) !== "true") await page.locator('[data-bk-act="teacher"]').click();
+  if ((await page.locator('[data-bk-act="teacher"]').getAttribute("aria-pressed")) !== "true")
+    await page.locator('[data-bk-act="teacher"]').click();
   await page.locator('[data-dock="studio"]').click();
   await page.waitForSelector(".bk-sp-dialog[open] .bk-sp-tabs");
   const before = await page.locator(".bk-sp-row").count();
@@ -488,14 +518,20 @@ try {
   ok(hits >= 1, `the library answers “Cause and effect, grade 6, WIDA Level 2” (${hits})`);
   await page.locator('[data-spx="lib-page"]').first().click();
   await page.locator('[data-spx="tab"][data-tab="manage"]').click();
-  ok((await page.locator(".bk-sp-row").count()) === before + 1, "Add to this page puts the library support in the book");
+  ok(
+    (await page.locator(".bk-sp-row").count()) === before + 1,
+    "Add to this page puts the library support in the book",
+  );
   await page.locator('[data-spx="tab"][data-tab="packs"]').click();
   await page.locator('[data-spx="pack-book"]').first().click();
   await page.locator('[data-spx="tab"][data-tab="designer"]').click();
   await page.fill("[data-dz-text]", "Add Level 1 and 2 sentence starters to the first two pages.");
   await page.locator('[data-spx="dz-plan"]').click();
   await page.waitForSelector("[data-spx='dz-apply']");
-  ok((await page.locator("[data-dz-inc]").count()) >= 2, "Design Language Supports previews exactly which pages change before adding");
+  ok(
+    (await page.locator("[data-dz-inc]").count()) >= 2,
+    "Design Language Supports previews exactly which pages change before adding",
+  );
   await page.locator('[data-spx="dz-apply"]').click();
   await page.waitForSelector(".bk-sp-row");
   await page.locator('[data-spx="tab"][data-tab="plan"]').click();
@@ -512,39 +548,66 @@ try {
   await page.waitForSelector(".bk-sp-form");
   await page.selectOption('[data-f="typekind"]', "vocab:bank");
   await page.locator('[data-spx="suggest-words"]').click();
-  ok((await page.locator(".bk-sp-wordrow").count()) >= 1, "words are suggested from the selected content for the teacher to complete");
+  ok(
+    (await page.locator(".bk-sp-wordrow").count()) >= 1,
+    "words are suggested from the selected content for the teacher to complete",
+  );
   await page.locator('[data-wf="0.def"]').first().fill("Not safe");
   await page.locator('[data-spx="save"]').click();
   await page.waitForFunction(() => !document.querySelector(".bk-sp-dialog[open]"));
 
   // ── 12. tablet and phone: nothing overflows sideways; mobile reading works; axe on the new pages ──
   await page.waitForTimeout(1500); // let the editor finish saving so leaving it raises no unsaved-changes prompt
-  for (const [w, h, label] of [[768, 1024, "tablet"], [390, 844, "phone"]]) {
+  for (const [w, h, label] of [
+    [768, 1024, "tablet"],
+    [390, 844, "phone"],
+  ]) {
     await page.setViewportSize({ width: w, height: h });
-    for (const path of [`/book-studio`, `/book-studio/edit/${id}`, `/book-studio/play/${playId}`, `/book-studio/read/${playId}`, `/book-studio/teacher`]) {
+    for (const path of [
+      `/book-studio`,
+      `/book-studio/edit/${id}`,
+      `/book-studio/play/${playId}`,
+      `/book-studio/read/${playId}`,
+      `/book-studio/teacher`,
+    ]) {
       await page.goto(`${origin}${LAB}${path}`);
       await page.waitForSelector(".bk-root h1, .bk-reader, [data-bk-editor]", { timeout: 15000 });
       await page.waitForTimeout(500);
-      const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      ok(over <= 2, `${label} ${path.replace(/[a-z0-9]{12,}/i, ":id")}: no sideways overflow (${over}px)`);
+      const over = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      ok(
+        over <= 2,
+        `${label} ${path.replace(/[a-z0-9]{12,}/i, ":id")}: no sideways overflow (${over}px)`,
+      );
     }
   }
   await page.setViewportSize({ width: 1280, height: 900 });
   if (AxeBuilder) {
-    for (const [path, sel, name] of [[`/book-studio/play/${playId}`, ".bk-play", "play mode"], [`/book-studio/teacher`, ".bk-teacher", "teacher workspace"], [`/book-studio`, ".bk-modes", "creation modes"]]) {
+    for (const [path, sel, name] of [
+      [`/book-studio/play/${playId}`, ".bk-play", "play mode"],
+      [`/book-studio/teacher`, ".bk-teacher", "teacher workspace"],
+      [`/book-studio`, ".bk-modes", "creation modes"],
+    ]) {
       await page.goto(`${origin}${LAB}${path}`);
       await page.waitForSelector(sel, { timeout: 15000 });
       await page.waitForTimeout(400);
       const axe = await new AxeBuilder({ page }).include(sel).analyze();
       const bad = axe.violations.filter((v) => ["serious", "critical"].includes(v.impact));
-      ok(bad.length === 0, `axe: ${name} has no serious/critical violations ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(",")}`);
+      ok(
+        bad.length === 0,
+        `axe: ${name} has no serious/critical violations ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(",")}`,
+      );
     }
     await page.goto(`${origin}${LAB}/book-studio/edit/${id}`);
     await page.waitForSelector("[data-bk-editor] .bk-canvas .bk-page");
     await page.locator('[data-stage="life"]').click();
     const axe = await new AxeBuilder({ page }).include("[data-bk-dock]").analyze();
     const bad = axe.violations.filter((v) => ["serious", "critical"].includes(v.impact));
-    ok(bad.length === 0, `axe: the animation dock has no serious/critical violations ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(",")}`);
+    ok(
+      bad.length === 0,
+      `axe: the animation dock has no serious/critical violations ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(",")}`,
+    );
   }
 } catch (error) {
   failures.push(`crashed: ${error.message}`);

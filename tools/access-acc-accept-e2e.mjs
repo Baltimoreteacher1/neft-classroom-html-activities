@@ -6,8 +6,8 @@
  * time budget. Numbers are printed so a regression is visible, not just a pass.
  */
 import { fixtureRows, seedEvidence } from "./lib/access-acc-fixtures.mjs";
-import { serveAccess } from "./lib/access-serve.mjs";
 import { openHubSections } from "./lib/access-hub.mjs";
+import { serveAccess } from "./lib/access-serve.mjs";
 
 let chromium;
 let AxeBuilder;

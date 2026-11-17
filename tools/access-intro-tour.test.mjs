@@ -9,12 +9,16 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { JSDOM } from "jsdom";
 
-const win = new JSDOM("<main id='app'></main>", { url: "https://lab.test/access-practice-lab/start/tour" }).window;
+const win = new JSDOM("<main id='app'></main>", {
+  url: "https://lab.test/access-practice-lab/start/tour",
+}).window;
 for (const key of ["window", "document", "localStorage", "sessionStorage", "location", "history"])
   globalThis[key] = win[key];
 
 const T = await import("../access-practice-lab/src/intro/tour-data.js");
-const { completes, findTarget, isShown } = await import("../access-practice-lab/src/coach/coach.js");
+const { completes, findTarget, isShown } = await import(
+  "../access-practice-lab/src/coach/coach.js"
+);
 const { loopSteps, SEL } = await import("../access-practice-lab/src/coach/activity-steps.js");
 
 test("coach: completes() matches the step's action, findTarget() takes the first shown target", () => {

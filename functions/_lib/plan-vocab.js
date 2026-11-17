@@ -5552,12 +5552,6 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
-    path: "/access-teacher/flight-deck/",
-    title: "Grade 6 Teacher Flight Deck",
-    category: "Tool",
-    unit: null,
-  },
-  {
     path: "/access-teacher/predictive/",
     title: "WIDA Data Intelligence Studio — Teacher Hub",
     category: "Tool",

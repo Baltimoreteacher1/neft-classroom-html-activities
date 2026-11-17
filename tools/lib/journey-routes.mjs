@@ -19,8 +19,8 @@ export function routeFacts() {
   );
   const roots = new Set();
   for (const m of body.matchAll(/\ba === "([\w-]+)"/g)) roots.add(m[1]);
-  const list = /\[((?:"[\w-]+",?\s*)+)\]\.includes\(a\)/.exec(body);
-  for (const r of quoted(list?.[1] || "")) roots.add(r);
+  for (const list of body.matchAll(/\[((?:"[\w-]+",?\s*)+)\]\.includes\(a\)/g))
+    for (const r of quoted(list[1])) roots.add(r);
   const domains = quoted(/const DOMAINS = \[([^\]]*)\]/.exec(main)?.[1] || "");
   const journey = read("src/views/journey.js");
   const sub = quoted(/\["map", "guide", "growth"\]/.exec(journey)?.[0] || "");
@@ -69,6 +69,7 @@ export function hrefProblem(href, facts, content) {
   const band = new URLSearchParams(query).get("grades") || "";
   const external = [
     "/access-teacher/",
+    "/access-teacher/predictive/",
     "/access-expedition/",
     "/access-family-expedition/",
     "/access-family-tour/",

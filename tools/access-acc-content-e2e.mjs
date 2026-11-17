@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import { openHubSections } from "./lib/access-hub.mjs";
 /** Teacher Hub content library: live coverage matrix, filters, previews, Spanish, axe, phone width. */
 import { serveAccess } from "./lib/access-serve.mjs";
-import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;

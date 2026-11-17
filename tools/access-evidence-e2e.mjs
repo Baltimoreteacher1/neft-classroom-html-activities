@@ -10,8 +10,8 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
-import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { openHubSections } from "./lib/access-hub.mjs";
+import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 
 let chromium;
 let AxeBuilder;

@@ -14,8 +14,16 @@ const parseRoute = new Function(
   "readMathLanguageBridge",
   "DOMAINS",
   `${mainSrc.slice(start, mainSrc.indexOf("\n}\n", start) + 2).replace("export ", "")};return parseRoute;`,
-)("/access-practice-lab", () => null, ["Listening", "Reading", "Speaking", "Writing", "Model-Test"]);
-const baseline = JSON.parse(readFileSync(new URL("fixtures/part2-route-baseline.json", import.meta.url), "utf8"));
+)("/access-practice-lab", () => null, [
+  "Listening",
+  "Reading",
+  "Speaking",
+  "Writing",
+  "Model-Test",
+]);
+const baseline = JSON.parse(
+  readFileSync(new URL("fixtures/part2-route-baseline.json", import.meta.url), "utf8"),
+);
 const parse = (p) => {
   const [path, q = ""] = p.split("?");
   return parseRoute(`/access-practice-lab/${path}`, q ? `?${q}` : "");
@@ -28,10 +36,29 @@ test("every existing URL answers exactly as it did before Part 2", () => {
 });
 
 test("every view that existed is still loadable", () => {
-  const views = new Set([...mainSrc.matchAll(/^\s+"?([a-z-]+)"?: \(\) => import\(/gm)].map((m) => m[1]));
-  for (const v of ["home", "speak", "write", "passport", "portfolio", "book-studio", "adventures", "language-games", "activity", "assess", "class", "lesson-builder", "family", "city", "worlds"])
+  const views = new Set(
+    [...mainSrc.matchAll(/^\s+"?([a-z-]+)"?: \(\) => import\(/gm)].map((m) => m[1]),
+  );
+  for (const v of [
+    "home",
+    "speak",
+    "write",
+    "passport",
+    "portfolio",
+    "book-studio",
+    "adventures",
+    "language-games",
+    "activity",
+    "assess",
+    "class",
+    "lesson-builder",
+    "family",
+    "city",
+    "worlds",
+  ])
     assert.ok(views.has(v) || v === "home", `view ${v}`);
-  for (const v of ["simulations", "experience-builder", "time-machine", "pathways"]) assert.ok(views.has(v), `new view ${v}`);
+  for (const v of ["simulations", "experience-builder", "time-machine", "pathways"])
+    assert.ok(views.has(v), `new view ${v}`);
 });
 
 test("the new routes parse to their own views", () => {
@@ -43,8 +70,20 @@ test("the new routes parse to their own views", () => {
 });
 
 test("Part 2 stores use new keys and never reuse an existing progress key", () => {
-  const keys = ["accessPracticeLab:v1:intel", "accessPracticeLab:v1:sim", "accessPracticeLab:v1:experiences", "accessPracticeLab:v1:time-machine", "accessPracticeLab:v1:pathways"];
-  const existing = ["accessPracticeLab:v1:ledger", "accessPracticeLab:v1:adventures", "accessPracticeLab:v1:flagship", "accessPracticeLab:v1:city", "accessPracticeLab:v1:language-labs"];
+  const keys = [
+    "accessPracticeLab:v1:intel",
+    "accessPracticeLab:v1:sim",
+    "accessPracticeLab:v1:experiences",
+    "accessPracticeLab:v1:time-machine",
+    "accessPracticeLab:v1:pathways",
+  ];
+  const existing = [
+    "accessPracticeLab:v1:ledger",
+    "accessPracticeLab:v1:adventures",
+    "accessPracticeLab:v1:flagship",
+    "accessPracticeLab:v1:city",
+    "accessPracticeLab:v1:language-labs",
+  ];
   for (const k of keys) assert.ok(!existing.includes(k), k);
   // Every Part 2 key keeps the accessPracticeLab: prefix, so the Passport export and class backup carry it.
   for (const k of keys) assert.ok(k.startsWith("accessPracticeLab:"), k);

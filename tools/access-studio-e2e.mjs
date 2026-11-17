@@ -13,8 +13,8 @@
 import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
-import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { openHubSections } from "./lib/access-hub.mjs";
+import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
 
 const alignmentCounts = JSON.parse(
   readFileSync(join(CONTENT_DIR, "alignment-index.json"), "utf8"),

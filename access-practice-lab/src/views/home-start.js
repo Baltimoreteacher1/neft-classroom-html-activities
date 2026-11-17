@@ -278,6 +278,25 @@ function rolesHTML(I, band) {
   </nav>`;
 }
 
+/** Four direct access shortcuts: Explore Activities, Practice ACCESS, Create a Book, Find My Next Step. */
+export function shortcutsHTML(I, band = "6-8") {
+  const q = `?grades=${band}`;
+  const items = [
+    { id: "explore", icon: "grid", href: `${BASE}/explore${q}`, label: ["Explore Activities", "Explorar actividades"] },
+    { id: "access-prep", icon: "tests", href: `${BASE}/access-prep${q}`, label: ["Practice ACCESS", "Practicar ACCESS"] },
+    { id: "book-studio", icon: "writing", href: `${BASE}/book-studio${q}`, label: ["Create a Book", "Crear un libro"] },
+    { id: "next-step", icon: "growth", href: `${BASE}/path${q}`, label: ["Find My Next Step", "Encontrar mi próximo paso"] },
+  ];
+  return html`<nav class="lph-shortcuts" aria-label="${I.S("Direct access shortcuts", "Accesos directos")}">
+    ${items.map(
+      (it) =>
+        html`<a class="lph-shortcut" data-home-shortcut="${it.id}" href="${it.href}">
+          ${icon(it.icon)}<span>${I.T(it.label[0], it.label[1])}</span>
+        </a>`,
+    )}
+  </nav>`;
+}
+
 /**
  * The start screen: who you are, the title, ONE primary action, and the grade. Everything else on the home sits
  * below it behind "More ways to practice" (home.js). `data` carries what home.js already loaded.
@@ -296,7 +315,23 @@ export function startHTML(I, ctx, data) {
     </div>
     <div class="lph-student">${frontDoorHTML(I, { target, missions, resume, dueCount })}</div>
     <div class="lph-grade">${rulerHTML(I, ctx, band, available, focusCounts)}</div>
+    ${shortcutsHTML(I, band)}
   </section>`;
+}
+
+/** The grade choice as large named buttons inside the Start here card (same data-grade-pick hook as the ruler). */
+function gradeCardsHTML(I, band, available) {
+  const picks = pickerState(band, "", available);
+  return html`<div class="lph-grade-cards" role="group" aria-labelledby="lphChooseTitle">
+    ${picks.map(
+      (p) =>
+        html`<button type="button" class="lph-grade-card${p.ready ? "" : " is-soon"}" data-grade-pick="${p.id}">
+          <span class="lph-grade-card-n" aria-hidden="true">${p.short[0]}</span>
+          <span class="lph-grade-card-name">${I.T(p.name[0], p.name[1])}</span>
+          ${p.ready ? "" : html`<span class="lph-step-soon">${I.T("coming soon", "próximamente")}</span>`}
+        </button>`,
+    )}
+  </div>`;
 }
 
 /**
@@ -316,10 +351,11 @@ export function chooseGradeHTML(I, ctx, { band, available }) {
     </div>
     <div class="lph-student lph-continue lph-front" id="lphFront" data-focus-first tabindex="-1">
       <p class="lph-label">${I.T("Start here", "Empieza aquí")}</p>
-      <h2>${I.T("Choose your grade", "Elige tu grado")}</h2>
-      <p class="lph-why">${I.T("Pick a grade to see your practice, missions and saved work.", "Elige un grado para ver tu práctica, tus misiones y tu trabajo guardado.")}</p>
+      <h2 id="lphChooseTitle">${I.T("Choose your grade", "Elige tu grado")}</h2>
+      <p class="lph-why">${I.T("Tap your grade to open your practice, missions and saved work.", "Toca tu grado para abrir tu práctica, tus misiones y tu trabajo guardado.")}</p>
+      ${gradeCardsHTML(I, band, available)}
     </div>
-    <div class="lph-grade">${rulerHTML(I, ctx, band, available, null, { unchosen: true })}</div>
+    ${shortcutsHTML(I, band)}
   </section>`;
 }
 

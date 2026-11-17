@@ -32,7 +32,10 @@ const { initialOrder } = await import(join(LAB, "src/items.js"));
 const { sceneAlt } = await import(join(LAB, "src/early/scenes.js"));
 
 const parser = new new JSDOM("").window.DOMParser();
-const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
+const norm = (s) =>
+  String(s ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
 const asList = (x) => (Array.isArray(x) ? x : x ? [x] : []);
 
 // ── a small reader for stored ZIPs (independent of the writer) ───────────────
@@ -78,12 +81,20 @@ function unzip(bytes) {
 /** Open a .docx, parse word/document.xml, return its paragraph text (one line per w:p). */
 function docxText(bytes, label) {
   const files = unzip(bytes);
-  for (const part of ["[Content_Types].xml", "_rels/.rels", "word/document.xml", "word/styles.xml", "word/_rels/document.xml.rels"])
+  for (const part of [
+    "[Content_Types].xml",
+    "_rels/.rels",
+    "word/document.xml",
+    "word/styles.xml",
+    "word/_rels/document.xml.rels",
+  ])
     assert.ok(files.has(part), `${label}: ${part}`);
   const xml = new TextDecoder().decode(files.get("word/document.xml"));
   const dom = parser.parseFromString(xml, "application/xml");
   assert.equal(dom.getElementsByTagName("parsererror").length, 0, `${label}: document.xml parses`);
-  const paras = [...dom.getElementsByTagName("w:p")].map((p) => [...p.getElementsByTagName("w:t")].map((t) => t.textContent).join(""));
+  const paras = [...dom.getElementsByTagName("w:p")].map((p) =>
+    [...p.getElementsByTagName("w:t")].map((t) => t.textContent).join(""),
+  );
   return paras.join("\n");
 }
 
@@ -96,11 +107,21 @@ for (const [band, B0] of Object.entries(index.bands))
     for (const level of Object.keys(D.levels)) {
       const list = ordered(data.levels[level]);
       const indexed = D.levels[level].activities.map((r) => r[0]);
-      assert.deepEqual(new Set(list.map((a) => a.id)), new Set(indexed), `${band}/${domain}/${level} index matches file`);
+      assert.deepEqual(
+        new Set(list.map((a) => a.id)),
+        new Set(indexed),
+        `${band}/${domain}/${level} index matches file`,
+      );
       for (const a of list) all.push({ a, band, domain, level, list });
     }
   }
-const optsOf = ({ band, domain, level, a }, lang = "en") => ({ band, domain, level, lang, url: `https://thelanguagepage.com/access-practice-lab/${domain}/${level}/${a.id}` });
+const optsOf = ({ band, domain, level, a }, lang = "en") => ({
+  band,
+  domain,
+  level,
+  lang,
+  url: `https://thelanguagepage.com/access-practice-lab/${domain}/${level}/${a.id}`,
+});
 
 /** Text a learner sees for the item: the title and every stem. */
 function stems(a, domain) {
@@ -113,21 +134,58 @@ function stems(a, domain) {
     ...(a.sentences || []).map((s) => s.text),
     ...(a.segments || []).filter((s) => !s.blank).map((s) => s.text),
     ...(a.sheet || []).flatMap((p) => [p.heading, ...asList(p.items)]),
-    ...(listening ? asList(a.adminScript).length ? asList(a.adminScript) : asList(a.script) : asList(a.passage)),
+    ...(listening
+      ? asList(a.adminScript).length
+        ? asList(a.adminScript)
+        : asList(a.script)
+      : asList(a.passage)),
   ]
     .map(norm)
     .filter((s) => s.length > 1);
 }
 
-const ANSWER_FIELDS = ["answer", "answers", "correct", "distractorFeedback", "itemFeedback", "models", "modelStudent", "modelNotes", "answerKey", "model", "tracker", "teacher", "teacherNote"];
-const strings = (v) => (v == null ? [] : typeof v === "string" ? [v] : typeof v === "object" ? Object.values(v).flatMap(strings) : []);
+const ANSWER_FIELDS = [
+  "answer",
+  "answers",
+  "correct",
+  "distractorFeedback",
+  "itemFeedback",
+  "models",
+  "modelStudent",
+  "modelNotes",
+  "answerKey",
+  "model",
+  "tracker",
+  "teacher",
+  "teacherNote",
+];
+const strings = (v) =>
+  v == null
+    ? []
+    : typeof v === "string"
+      ? [v]
+      : typeof v === "object"
+        ? Object.values(v).flatMap(strings)
+        : [];
 /** Answer-only text: strings in answer fields that do not also appear in what the learner is shown. */
 function answerOnly(a) {
   const shown = { ...a };
   for (const k of ANSWER_FIELDS) delete shown[k];
   // The K-3 scene's alt text is shown too (it lives in early/scenes.js, not in the record).
-  const visible = norm(`${JSON.stringify(shown).replace(/\\"/g, '"')} ${a.scene ? asList(sceneAlt(a.scene)).join(" ") : ""}`);
-  const text = [a.correct, ...strings(a.distractorFeedback), ...strings(a.itemFeedback), ...strings(a.models), a.modelStudent?.text, ...strings(a.modelNotes), ...strings(a.answerKey), a.model, ...asList(a.tracker).map((r) => asList(r)[1])];
+  const visible = norm(
+    `${JSON.stringify(shown).replace(/\\"/g, '"')} ${a.scene ? asList(sceneAlt(a.scene)).join(" ") : ""}`,
+  );
+  const text = [
+    a.correct,
+    ...strings(a.distractorFeedback),
+    ...strings(a.itemFeedback),
+    ...strings(a.models),
+    a.modelStudent?.text,
+    ...strings(a.modelNotes),
+    ...strings(a.answerKey),
+    a.model,
+    ...asList(a.tracker).map((r) => asList(r)[1]),
+  ];
   return text.map(norm).filter((s) => s.length >= 8 && !visible.includes(s));
 }
 
@@ -139,29 +197,52 @@ test(`all ${all.length} activities: student .docx is valid, complete and answer-
     const { a, domain } = row;
     const doc = M.activityDocument(a, optsOf(row));
     const text = norm(docxText(toDocx(doc), a.id));
-    for (const s of stems(a, domain)) if (!text.includes(s)) problems.push(`${a.id}: missing stem "${s.slice(0, 60)}"`);
+    for (const s of stems(a, domain))
+      if (!text.includes(s)) problems.push(`${a.id}: missing stem "${s.slice(0, 60)}"`);
     for (const s of answerOnly(a)) {
       leaksChecked++;
-      if (text.includes(s)) problems.push(`${a.id}: answer text in the student file "${s.slice(0, 60)}"`);
+      if (text.includes(s))
+        problems.push(`${a.id}: answer text in the student file "${s.slice(0, 60)}"`);
     }
-    if (/Answer key|Correct answer|Clave de respuestas/.test(text)) problems.push(`${a.id}: answer-key label in the student file`);
+    if (/Answer key|Correct answer|Clave de respuestas/.test(text))
+      problems.push(`${a.id}: answer-key label in the student file`);
     if (a.type === "order" && (a.items || []).length > 1) {
-      const solved = (a.answer || []).map((id) => norm([a.items.find((i) => i.id === id)?.visual, a.items.find((i) => i.id === id)?.text].filter(Boolean).join(" ")));
-      const listed = doc.blocks.find((b) => b.t === "list" && b.box === "____")?.items.map(norm) || [];
-      if (listed.length !== solved.length) problems.push(`${a.id}: order list has ${listed.length} of ${solved.length} steps`);
-      if (listed.join("|") === solved.join("|")) problems.push(`${a.id}: the file lists the steps in the solved order`);
+      const solved = (a.answer || []).map((id) =>
+        norm(
+          [a.items.find((i) => i.id === id)?.visual, a.items.find((i) => i.id === id)?.text]
+            .filter(Boolean)
+            .join(" "),
+        ),
+      );
+      const listed =
+        doc.blocks.find((b) => b.t === "list" && b.box === "____")?.items.map(norm) || [];
+      if (listed.length !== solved.length)
+        problems.push(`${a.id}: order list has ${listed.length} of ${solved.length} steps`);
+      if (listed.join("|") === solved.join("|"))
+        problems.push(`${a.id}: the file lists the steps in the solved order`);
     }
     // Teacher edition: the answers are there.
     const key = norm(docxText(toDocx(K.answerKeyDocument(a, optsOf(row))), `${a.id} key`));
-    const want = [correctAnswerText(a), a.correct, ...strings(a.models), ...strings(a.answerKey), a.model].map(norm).filter(Boolean);
-    for (const s of want) if (!key.includes(s)) problems.push(`${a.id}: teacher key missing "${s.slice(0, 60)}"`);
+    const want = [
+      correctAnswerText(a),
+      a.correct,
+      ...strings(a.models),
+      ...strings(a.answerKey),
+      a.model,
+    ]
+      .map(norm)
+      .filter(Boolean);
+    for (const s of want)
+      if (!key.includes(s)) problems.push(`${a.id}: teacher key missing "${s.slice(0, 60)}"`);
   }
   assert.deepEqual(problems.slice(0, 30), [], `${problems.length} problems`);
   assert.ok(leaksChecked > 1000, `answer strings checked: ${leaksChecked}`);
 });
 
 test("the leak check fires: an answer put into a student document is caught", () => {
-  const row = all.find((r) => r.a.type === "multipleChoice" && r.a.correct && answerOnly(r.a).length);
+  const row = all.find(
+    (r) => r.a.type === "multipleChoice" && r.a.correct && answerOnly(r.a).length,
+  );
   const doc = M.activityDocument(row.a, optsOf(row));
   const bad = { ...doc, blocks: [...doc.blocks, { t: "p", text: row.a.correct }] };
   const text = norm(docxText(toDocx(bad), "mutant"));
@@ -191,13 +272,19 @@ test("supports are optional help, apart from the task", () => {
   assert.ok(help, "a help box");
   assert.match(help.title, /Optional help/);
   assert.ok(M.documentText({ ...doc, blocks: help.blocks }).includes(row.a.frames[0]));
-  assert.ok(!doc.blocks.some((b) => b !== help && b.t === "list" && b.items.includes(row.a.frames[0])), "frames only inside help");
+  assert.ok(
+    !doc.blocks.some((b) => b !== help && b.t === "list" && b.items.includes(row.a.frames[0])),
+    "frames only inside help",
+  );
 });
 
 test("print view: one HTML page with the title, a QR to the activity, pictures and no answers", () => {
   const row = all.find((r) => r.a.picture && r.domain === "Listening");
   const doc = M.activityDocument(row.a, optsOf(row, "es"));
-  const page = P.printDocumentHTML(doc, { origin: "https://thelanguagepage.com", ui: { print: "Imprimir", close: "Cerrar", howTo: "Guardar como PDF" } });
+  const page = P.printDocumentHTML(doc, {
+    origin: "https://thelanguagepage.com",
+    ui: { print: "Imprimir", close: "Cerrar", howTo: "Guardar como PDF" },
+  });
   const dom = new JSDOM(page).window.document;
   assert.equal(dom.documentElement.lang, "es");
   assert.equal(dom.querySelector("h1").getAttribute("lang"), "en");
@@ -205,7 +292,10 @@ test("print view: one HTML page with the title, a QR to the activity, pictures a
   assert.ok(dom.querySelector("footer svg"), "QR code");
   assert.ok(dom.querySelector(`a[href="${optsOf(row).url}"]`), "the online link");
   const img = dom.querySelector("figure img");
-  assert.ok(img?.src.startsWith("https://thelanguagepage.com/access-practice-lab/pictures/"), "the lab's own picture");
+  assert.ok(
+    img?.src.startsWith("https://thelanguagepage.com/access-practice-lab/pictures/"),
+    "the lab's own picture",
+  );
   assert.ok(img.alt.length > 10);
   assert.ok(dom.querySelector("[data-pv-print]"));
   for (const s of answerOnly(row.a)) assert.ok(!norm(dom.body.textContent).includes(s));
@@ -215,15 +305,28 @@ test("print view: one HTML page with the title, a QR to the activity, pictures a
 });
 
 test("Studio tasks: every speaking and writing task builds, with no model answers or teacher notes", () => {
-  for (const [file, kind] of [["speaking", "speaking-task"], ["writing", "writing-task"]]) {
+  for (const [file, kind] of [
+    ["speaking", "speaking-task"],
+    ["writing", "writing-task"],
+  ]) {
     const tasks = json(`content/studio/${file}.json`).tasks;
     assert.ok(tasks.length > 5);
     for (const task of tasks) {
       const doc = S.studioTaskDocument(task, kind, { lang: "es", url: "https://x/y" });
       const text = norm(docxText(toDocx(doc), task.id));
-      assert.ok(text.includes(norm(task.title)) && text.includes(norm(task.prompt)), `${task.id}: title and prompt`);
-      const hidden = [task.stages?.guided?.model, ...strings(task.teacher), ...asList(task.turns).map((t) => t.expects)].map(norm).filter((s) => s.length >= 12);
-      for (const s of hidden) assert.ok(!text.includes(s), `${task.id}: hidden text leaked "${s.slice(0, 50)}"`);
+      assert.ok(
+        text.includes(norm(task.title)) && text.includes(norm(task.prompt)),
+        `${task.id}: title and prompt`,
+      );
+      const hidden = [
+        task.stages?.guided?.model,
+        ...strings(task.teacher),
+        ...asList(task.turns).map((t) => t.expects),
+      ]
+        .map(norm)
+        .filter((s) => s.length >= 12);
+      for (const s of hidden)
+        assert.ok(!text.includes(s), `${task.id}: hidden text leaked "${s.slice(0, 50)}"`);
       assert.match(text, /Tu tarea/);
     }
   }
@@ -236,15 +339,28 @@ test("simulation: the mission handout has map, people, evidence and tasks, never
       const def = missionById(id, band);
       const doc = S.simulationDocument(def, { lang: "en", url: "https://x/sim" });
       const text = norm(docxText(toDocx(doc), `${id}/${band}`));
-      for (const s of [def.title[0], def.summary[0], ...def.scenes.map((x) => x.title[0]), ...def.characters.map((c) => c.name), ...def.evidence.map((e) => e.title[0]), ...def.tasks.map((t) => t.prompt[0])])
+      for (const s of [
+        def.title[0],
+        def.summary[0],
+        ...def.scenes.map((x) => x.title[0]),
+        ...def.characters.map((c) => c.name),
+        ...def.evidence.map((e) => e.title[0]),
+        ...def.tasks.map((t) => t.prompt[0]),
+      ])
         assert.ok(text.includes(norm(s)), `${id}: missing "${String(s).slice(0, 50)}"`);
       const secret = [
         ...def.outcomes.flatMap((o) => [...strings(o.text), JSON.stringify(o.when)]),
         ...def.tasks.flatMap((t) => asList(t.options).flatMap((o) => strings(o.reply))),
         ...def.characters.flatMap((c) => asList(c.topics).flatMap((tp) => strings(tp.answer))),
-      ].map(norm).filter((s) => s.length >= 12);
-      for (const s of secret) assert.ok(!text.includes(s), `${id}: outcome/reply/answer leaked "${s.slice(0, 50)}"`);
-      assert.ok(!/"(supports|contradicts|strength|when|sets|reply)":/.test(JSON.stringify(doc.blocks)), "no evidence weights or outcome rules");
+      ]
+        .map(norm)
+        .filter((s) => s.length >= 12);
+      for (const s of secret)
+        assert.ok(!text.includes(s), `${id}: outcome/reply/answer leaked "${s.slice(0, 50)}"`);
+      assert.ok(
+        !/"(supports|contradicts|strength|when|sets|reply)":/.test(JSON.stringify(doc.blocks)),
+        "no evidence weights or outcome rules",
+      );
       const lines = doc.blocks.filter((b) => b.t === "lines").length;
       assert.ok(lines >= def.tasks.length, "answer lines for every task");
     }
@@ -256,7 +372,9 @@ test("room .zip: one .docx per room activity, for every room", async () => {
   let files = 0;
   for (const r of rooms.values()) {
     const seen = [];
-    const { bytes, names } = await B.roomZip(r.list, (a) => optsOf({ ...r, a }), { onProgress: (n, total) => seen.push(`${n}/${total}`) });
+    const { bytes, names } = await B.roomZip(r.list, (a) => optsOf({ ...r, a }), {
+      onProgress: (n, total) => seen.push(`${n}/${total}`),
+    });
     const zip = unzip(bytes);
     assert.equal(zip.size, r.list.length, `${r.band}/${r.domain}/${r.level}`);
     assert.deepEqual([...zip.keys()], names);
@@ -269,14 +387,22 @@ test("room .zip: one .docx per room activity, for every room", async () => {
   assert.equal(files, all.length, "every activity is in exactly one room zip");
   const r = [...rooms.values()][0];
   let calls = 0;
-  await assert.rejects(B.roomZip(r.list, (a) => optsOf({ ...r, a }), { cancelled: () => ++calls > 2 }), B.Cancelled);
+  await assert.rejects(
+    B.roomZip(r.list, (a) => optsOf({ ...r, a }), { cancelled: () => ++calls > 2 }),
+    B.Cancelled,
+  );
 });
 
 test("menu: every kind renders Word + PDF controls (room: zip + cancel + status); clicks are claimed only for its controls", async () => {
   const ctx = { prefs: { lang: "es" }, route: { view: "activity" } };
   const task = json("content/studio/speaking.json").tasks[0];
   const def = missionById(MISSION_IDS[0], "6-8");
-  for (const [kind, src] of [["activity", { id: "gk-l-a-find-seed", band: "K", domain: "Listening", level: "A" }], ["speaking-task", task], ["writing-task", json("content/studio/writing.json").tasks[0]], ["simulation", def]]) {
+  for (const [kind, src] of [
+    ["activity", { id: "gk-l-a-find-seed", band: "K", domain: "Listening", level: "A" }],
+    ["speaking-task", task],
+    ["writing-task", json("content/studio/writing.json").tasks[0]],
+    ["simulation", def],
+  ]) {
     const out = toHtml(MENU.downloadMenuHTML(ctx, kind, src));
     assert.match(out, /data-dl="docx"/, kind);
     assert.match(out, /data-dl="pdf"/, kind);
@@ -285,7 +411,13 @@ test("menu: every kind renders Word + PDF controls (room: zip + cancel + status)
     assert.equal(MENU.downloadSource(key).source, src);
     assert.match(out, new RegExp(`role="status" data-dl-status="${key}"`));
   }
-  const room = toHtml(MENU.downloadMenuHTML({ prefs: {}, route: {} }, "room", { band: "6-8", domain: "Reading", level: "B" }));
+  const room = toHtml(
+    MENU.downloadMenuHTML({ prefs: {}, route: {} }, "room", {
+      band: "6-8",
+      domain: "Reading",
+      level: "B",
+    }),
+  );
   assert.match(room, /data-dl="room-zip"/);
   assert.match(room, /data-dl="cancel"[^>]*hidden/);
   assert.match(room, /Download all activities in this room/);
@@ -294,7 +426,13 @@ test("menu: every kind renders Word + PDF controls (room: zip + cancel + status)
   assert.throws(() => MENU.downloadMenuHTML(ctx, "activity", null));
   // Clicks: anything that is not a registered control is left to the view.
   assert.equal(MENU.onDownloadClick({ target: { closest: () => null } }, ctx), false);
-  assert.equal(MENU.onDownloadClick({ target: { closest: () => ({ dataset: { dl: "docx", dlKey: "nope" } }) } }, ctx), false);
+  assert.equal(
+    MENU.onDownloadClick(
+      { target: { closest: () => ({ dataset: { dl: "docx", dlKey: "nope" } }) } },
+      ctx,
+    ),
+    false,
+  );
   // A registered PDF control opens the print window synchronously, inside the click (pop-up rules), and claims it.
   let opened = 0;
   const prev = globalThis.window;
@@ -302,8 +440,16 @@ test("menu: every kind renders Word + PDF controls (room: zip + cancel + status)
   const warn = console.warn;
   console.warn = () => {};
   try {
-    const key = toHtml(MENU.downloadMenuHTML(ctx, "speaking-task", task)).match(/data-dl-key="([^"]+)"/)[1];
-    assert.equal(MENU.onDownloadClick({ target: { closest: () => ({ dataset: { dl: "pdf", dlKey: key } }) } }, ctx), true);
+    const key = toHtml(MENU.downloadMenuHTML(ctx, "speaking-task", task)).match(
+      /data-dl-key="([^"]+)"/,
+    )[1];
+    assert.equal(
+      MENU.onDownloadClick(
+        { target: { closest: () => ({ dataset: { dl: "pdf", dlKey: key } }) } },
+        ctx,
+      ),
+      true,
+    );
     assert.equal(opened, 1);
     await new Promise((r) => setTimeout(r, 50));
   } finally {
@@ -321,11 +467,22 @@ test("lazy loading and no keys on student surfaces: views import only menu.js; n
   }
   assert.match(read("src/download/menu.js"), /import\("\.\/run\.js"\)/);
   assert.doesNotMatch(read("src/download/menu.js"), /^import .*\.\/(run|model|docx|print)\.js/m);
-  for (const f of ["menu.js", "run.js", "model.js", "docx.js", "print.js", "bundle.js", "studio.js"])
+  for (const f of [
+    "menu.js",
+    "run.js",
+    "model.js",
+    "docx.js",
+    "print.js",
+    "bundle.js",
+    "studio.js",
+  ])
     assert.doesNotMatch(read(`src/download/${f}`), /(from\s+|import\(\s*)"[^"]*answer-key/, f);
   const hub = readFileSync(join(REPO_ROOT, "access-teacher/activity-downloads.js"), "utf8");
   assert.match(hub, /download\/answer-key\.js/);
-  assert.match(readFileSync(join(REPO_ROOT, "access-teacher/index.html"), "utf8"), /activity-downloads\.js"\)\.then\(\(m\) => m\.mountActivityDownloads\(\)\)/);
+  assert.match(
+    readFileSync(join(REPO_ROOT, "access-teacher/index.html"), "utf8"),
+    /activity-downloads\.js"\)\.then\(\(m\) => m\.mountActivityDownloads\(\)\)/,
+  );
 });
 
 test("the shared Word writer keeps the lesson kit's exports", async () => {

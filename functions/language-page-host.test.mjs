@@ -125,7 +125,6 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
     "/lessons/5-6/",
     "/curriculum/units/",
     "/teacher-tools/",
-    "/access-teacher/flight-deck/",
     "/access-teacher-evil/",
     "/api/pacing/days",
     "/family-app/",
@@ -138,7 +137,7 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
   }
 });
 
-await t("the Teacher Hub and WIDA Data Studio are served on the lab host with no password; the Flight Deck is not", async () => {
+await t("the Teacher Hub and WIDA Data Studio are served on the lab host with no password", async () => {
   for (const path of ["/access-teacher/", "/access-teacher", "/access-teacher/teacher.js", "/access-teacher/class-panel.js", "/access-teacher/predictive/", "/access-teacher/predictive/app.js"])
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
   for (const path of ["/access-teacher/", "/access-teacher/predictive/", "/access-practice-lab/teacher"]) {

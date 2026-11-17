@@ -93,6 +93,8 @@ function hubHTML(ctx, I, cat, qs) {
       <p class="fine">${I.T("These are suggestions, not a track. Every mission is open.", "Son sugerencias, no un camino fijo. Todas las misiones están abiertas.")}</p>
       <div class="q-grid">${recs.map((r) => html`<div class="q-rec">${missionCard(I, qs, cat, r.mission, band)}<ul class="q-why">${r.reasons.map((x) => html`<li>${bi(I, x)}</li>`)}</ul></div>`)}</div></section>
     <nav class="panel q-more-links" aria-label="${I.S("More in Language Quest", "Más en Misión del lenguaje")}">
+      <a class="btn btn-primary" href="${BASE}/book-studio?grades=${band}">${icon("writing")} ${I.T("Open Book Studio", "Abrir Book Studio")}</a>
+      <a class="btn" href="${BASE}/pathways?grades=${band}">${icon("road")} ${I.T("Connected Pathways", "Rutas conectadas")}</a>
       <a class="btn" href="${questHref("portfolio", band)}">${icon("bookmark")} ${I.T("My portfolio", "Mi portafolio")}</a>
       <a class="btn" href="${questHref("teacher", band)}">${icon("teacher")} ${I.T("Teacher Mission Hub", "Centro de misiones para docentes")}</a>
       <a class="btn" href="${BASE}/city?grades=${band}">${icon("worlds")} ${I.T("Language City", "Ciudad del lenguaje")}</a>
@@ -211,7 +213,7 @@ function missionNav(I, mission, prog, si, run, ending, qs, cat, band) {
     ${ending
       ? html`<section class="panel q-ending" role="region" aria-label="${I.S("Ending", "Final")}"><h2>${ending.title}</h2><p>${ending.text}</p>
           <p class="fine">${I.T("Support: ", "Apoyo: ")}${bi(I, RUNG_COPY[run.rung])}${run.helpUsed ? I.T(" · extra support used", " · se usó apoyo adicional") : ""}</p>
-          <div class="q-actions"><a class="btn" href="${questHref("portfolio", band)}">${icon("bookmark")} ${I.T("See my portfolio", "Ver mi portafolio")}</a><a class="btn" href="${questHref(`family/${mission.id}`, band)}">${icon("families")} ${I.T("Family summary", "Resumen para la familia")}</a><button type="button" class="btn" data-q-act="replay">${icon("retry")} ${I.T("Play again", "Jugar otra vez")}</button><a class="btn" href="${questHref("", band)}">${I.T("More missions", "Más misiones")}</a></div></section>`
+          <div class="q-actions"><a class="btn btn-primary" href="${BASE}/book-studio?grades=${band}">${icon("writing")} ${I.T("Create an alternate ending in Book Studio", "Crear un final alternativo en Book Studio")}</a><a class="btn" href="${questHref("portfolio", band)}">${icon("bookmark")} ${I.T("See my portfolio", "Ver mi portafolio")}</a><a class="btn" href="${questHref(`family/${mission.id}`, band)}">${icon("families")} ${I.T("Family summary", "Resumen para la familia")}</a><button type="button" class="btn" data-q-act="replay">${icon("retry")} ${I.T("Play again", "Jugar otra vez")}</button><a class="btn" href="${questHref("", band)}">${I.T("More missions", "Más misiones")}</a></div></section>`
       : ""}`;
 }
 

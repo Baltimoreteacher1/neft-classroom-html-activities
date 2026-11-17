@@ -237,8 +237,10 @@ test("grades 3-5 speak in the Speaking Studio's own 3-5 tasks; grades 6-8 never 
   );
   // an objective's 3-5 activities never reach a 6-8 learner, and the other way round
   for (const o of G.OBJECTIVES) {
-    for (const a of G.activitiesFor(o, "6-8", data)) assert.notEqual(a.band, "3-5", `${o.id} ${a.key}`);
-    for (const a of G.activitiesFor(o, "3-5", data)) assert.notEqual(a.band, "6-8", `${o.id} ${a.key}`);
+    for (const a of G.activitiesFor(o, "6-8", data))
+      assert.notEqual(a.band, "3-5", `${o.id} ${a.key}`);
+    for (const a of G.activitiesFor(o, "3-5", data))
+      assert.notEqual(a.band, "6-8", `${o.id} ${a.key}`);
   }
 });
 

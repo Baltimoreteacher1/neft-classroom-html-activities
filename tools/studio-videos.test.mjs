@@ -453,7 +453,10 @@ test("component promises hold, and each detector fires on a mutation of the real
       mutate("css", "prefers-reduced-motion: reduce", "prefers-reduced-motion: none"),
       /reduced-motion/,
     ],
-    [{ ...base, markup: `${base.markup}<p class="sv-note">Captions are on.</p>` }, /no text under the video/],
+    [
+      { ...base, markup: `${base.markup}<p class="sv-note">Captions are on.</p>` },
+      /no text under the video/,
+    ],
     [mutate("markup", 'alt=""', 'alt="x" data-x'), /alt/],
     [mutate("markup", "sv-fallback-label", "sv-x"), /labelled link/],
   ];

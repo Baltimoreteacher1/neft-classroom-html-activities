@@ -836,3 +836,64 @@ body.printing-quickstart #labLangBanner {
   margin: 0 0 var(--s-2);
   color: var(--room-ink);
 }
+
+/* ── Four Primary Family Actions (src/family/hub.js) ───────────────────── */
+.fam-primary-doors {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+}
+@media (max-width: 899px) {
+  .fam-primary-doors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 479px) {
+  .fam-primary-doors {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.fam-door-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  min-height: 4.5rem;
+  padding: 1rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+.fam-door-card:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.fam-door-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.fam-door-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+.fam-door-card > span:last-child {
+  display: grid;
+  gap: 0.2rem;
+}
+.fam-door-card strong {
+  font-size: 1.05rem;
+}
+.fam-door-card > span:last-child > span {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  line-height: 1.35;
+}

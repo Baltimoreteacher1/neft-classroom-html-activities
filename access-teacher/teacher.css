@@ -1213,3 +1213,409 @@ body.th-body .fold-toggle {
   width: 100%;
   text-align: start;
 }
+
+/* ── Teaching Command Center (command-center.js) ──────────────────────── */
+.tc-center {
+  margin-block: var(--s-5);
+}
+.tc-shell {
+  display: grid;
+  gap: var(--s-4);
+  padding: clamp(1.1rem, 2.5vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.tc-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.tc-head h2 {
+  margin: 0.15rem 0 var(--s-2);
+  font: 700 clamp(1.4rem, 1.1rem + 1vw, 1.85rem)/1.2 var(--font-display, var(--font));
+}
+.tc-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+@media (max-width: 899px) {
+  .tc-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 559px) {
+  .tc-action-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.tc-action-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  min-height: 4.5rem;
+  padding: 0.9rem 1rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.tc-action-card:hover {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+}
+.tc-action-card.is-active {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  box-shadow: inset 0 0 0 1px var(--brand);
+}
+.tc-action-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--brand-deep);
+}
+.tc-action-body {
+  display: grid;
+  gap: 0.2rem;
+}
+.tc-action-body strong {
+  font-size: 1.05rem;
+}
+.tc-action-body span {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  line-height: 1.35;
+}
+.tc-workspace {
+  display: grid;
+  gap: var(--s-4);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+}
+.tc-ws-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.tc-ws-head h3 {
+  margin: 0 0 0.25rem;
+}
+.tc-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--s-3);
+}
+.tc-field-wide {
+  grid-column: span 2;
+}
+@media (max-width: 599px) {
+  .tc-field-wide {
+    grid-column: span 1;
+  }
+}
+.tc-stages-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-2);
+}
+.tc-stages-head h4 {
+  margin: 0;
+}
+.tc-stage-list {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tc-stage-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-stage-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.tc-stage-badge {
+  display: inline-block;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.tc-stage-time {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.tc-stage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: 0.35rem;
+}
+.tc-share-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-share-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.tc-status {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-weight: 700;
+}
+.tc-what-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.tc-next-link {
+  color: var(--brand-ink);
+  text-decoration: none;
+}
+.tc-next-link:hover {
+  text-decoration: underline;
+}
+.tc-wida-banner {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.tc-scaffold-checks {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-scaffold-checks legend {
+  font-weight: 700;
+  padding: 0 0.35rem;
+}
+.tc-check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+.tc-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  cursor: pointer;
+}
+.tc-check-item span {
+  display: grid;
+  gap: 0.15rem;
+}
+.tc-check-item small {
+  color: var(--ink-2);
+  line-height: 1.35;
+}
+.tc-fade-tip {
+  color: var(--brand-deep);
+}
+.tc-rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tc-rec-card {
+  display: grid;
+  align-content: space-between;
+  gap: 0.45rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-assign-card {
+  display: grid;
+  gap: var(--s-3);
+  padding: 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tc-stat-card {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-stat-card strong {
+  font-size: 1.65rem;
+  color: var(--brand-deep);
+}
+.tc-res-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--s-4);
+}
+.tc-res-box {
+  display: grid;
+  align-content: start;
+  gap: var(--s-3);
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tc-res-box h4 {
+  margin: 0;
+}
+.tc-res-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tc-res-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.tc-res-list li > div:first-child {
+  display: grid;
+  gap: 0.15rem;
+}
+
+/* ── Embedded 8-Step Hub Tour (hub-tour.js) ──────────────────────────── */
+.ht-drawer {
+  display: grid;
+  gap: var(--s-4);
+  padding: clamp(1rem, 2.2vw, 1.6rem);
+  border: 2px solid var(--brand);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+}
+.ht-top,
+.ht-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+}
+.ht-top h3 {
+  margin: 0.15rem 0 0;
+  font-size: 1.35rem;
+}
+.ht-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ht-step-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.4rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ht-progress .is-now .ht-step-dot {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.ht-progress .is-done .ht-step-dot {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+.ht-step-body {
+  display: grid;
+  gap: var(--s-3);
+}
+.tc-rec-card.is-picked {
+  border-color: var(--brand);
+  box-shadow: inset 0 0 0 1px var(--brand);
+}
+.tc-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}

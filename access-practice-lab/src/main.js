@@ -771,7 +771,33 @@ function registerOffline() {
   else window.addEventListener("load", register, { once: true });
 }
 
+/**
+ * The Family Tour is its own page, but a service worker installed before the tour existed answers its URL with this
+ * app shell, so the lab home renders where the tour should be. Fetch the current worker (it sends the tour to the
+ * network; skipWaiting + clients.claim make it take this page over), then load the URL again. At most once per tab.
+ */
+async function leaveStaleShell() {
+  if (!location.pathname.startsWith(`${BASE}/family-tour`) || !navigator.serviceWorker?.controller) return false;
+  const key = "lab:stale-shell-reload";
+  try {
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, "1");
+  } catch {
+    return false;
+  }
+  try {
+    const registration = await navigator.serviceWorker.getRegistration(`${BASE}/`);
+    const changed = new Promise((resolve) => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true }));
+    await registration?.update();
+    const replaced = await Promise.race([changed.then(() => true), new Promise((resolve) => setTimeout(() => resolve(false), 4000))]);
+    if (!replaced) await registration?.unregister();
+  } catch {}
+  location.reload();
+  return true;
+}
+
 async function boot() {
+  if (await leaveStaleShell()) return;
   initStartFresh();
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   try {

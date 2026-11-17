@@ -41,7 +41,10 @@ function rng(seed) {
     return s / 4294967296;
   };
 }
-const BITS = "plants sunlight because energy the a so first then finally for example I believe according to the chart 40% 3 thing good very students should however although is are was make food water grows quickly ecosystem evidence , . ! ? yesterday he go dont no las porque y".split(" ");
+const BITS =
+  "plants sunlight because energy the a so first then finally for example I believe according to the chart 40% 3 thing good very students should however although is are was make food water grows quickly ecosystem evidence , . ! ? yesterday he go dont no las porque y".split(
+    " ",
+  );
 function synthetic(n, seed = 7) {
   const r = rng(seed);
   return Array.from({ length: n }, () => {
@@ -71,7 +74,18 @@ const allObs = (f) => ["discourse", "sentence", "word"].flatMap((d) => f.dimensi
 function assertShape(f, text, label) {
   assert.deepEqual(
     Object.keys(f).sort(),
-    ["dimensions", "explanation", "grounded", "nextStep", "revisionPrompt", "scaffold", "strength", "transfer", "uncertainty", "version"],
+    [
+      "dimensions",
+      "explanation",
+      "grounded",
+      "nextStep",
+      "revisionPrompt",
+      "scaffold",
+      "strength",
+      "transfer",
+      "uncertainty",
+      "version",
+    ],
     label,
   );
   assert.equal(f.version, 1);
@@ -80,14 +94,26 @@ function assertShape(f, text, label) {
   assert.ok(f.strength.id && isPair(f.strength.text) && f.strength.text[0], `${label}: strength`);
   assert.equal(typeof f.strength.quote, "string");
   assert.ok(f.nextStep.id && isPair(f.nextStep.text) && f.nextStep.text[0], `${label}: next step`);
-  assert.ok(["discourse", "sentence", "word"].includes(f.nextStep.dimension), `${label}: dimension`);
+  assert.ok(
+    ["discourse", "sentence", "word"].includes(f.nextStep.dimension),
+    `${label}: dimension`,
+  );
   assert.ok(isPair(f.explanation) && f.explanation[0] && f.explanation[1], `${label}: explanation`);
   if (f.scaffold !== null) {
-    assert.ok(["frame", "connector", "word", "model-move"].includes(f.scaffold.kind), `${label}: scaffold kind`);
+    assert.ok(
+      ["frame", "connector", "word", "model-move"].includes(f.scaffold.kind),
+      `${label}: scaffold kind`,
+    );
     assert.ok(isPair(f.scaffold.text) && f.scaffold.text[0], `${label}: scaffold text`);
   }
-  assert.ok(isPair(f.revisionPrompt) && f.revisionPrompt[0] && f.revisionPrompt[1], `${label}: revision prompt`);
-  assert.ok(isPair(f.transfer.prompt) && f.transfer.prompt[0] && f.transfer.prompt[1], `${label}: transfer`);
+  assert.ok(
+    isPair(f.revisionPrompt) && f.revisionPrompt[0] && f.revisionPrompt[1],
+    `${label}: revision prompt`,
+  );
+  assert.ok(
+    isPair(f.transfer.prompt) && f.transfer.prompt[0] && f.transfer.prompt[1],
+    `${label}: transfer`,
+  );
   assert.ok(KEY_USES.includes(f.transfer.keyUse));
   assert.equal(typeof f.transfer.route, "string");
   assert.deepEqual(Object.keys(f.dimensions).sort(), ["discourse", "sentence", "word"]);
@@ -104,7 +130,11 @@ test("every feedback result has all seven parts in the documented shape, for eve
   for (const keyUse of KEY_USES)
     for (const source of ["typed", "transcript"])
       for (const [i, text] of FIXED.entries())
-        assertShape(E.buildFeedback(input(text, { keyUse, source })), text.slice(0, 6000), `${keyUse}/${source}/${i}`);
+        assertShape(
+          E.buildFeedback(input(text, { keyUse, source })),
+          text.slice(0, 6000),
+          `${keyUse}/${source}/${i}`,
+        );
 });
 
 test("property: every quote is a verbatim substring of the response (312 responses x 2 sources)", () => {
@@ -112,7 +142,9 @@ test("property: every quote is a verbatim substring of the response (312 respons
   for (const [i, text] of RESPONSES.entries())
     for (const source of ["typed", "transcript"]) {
       const keyUse = KEY_USES[i % 4];
-      const f = E.buildFeedback(input(text, { keyUse, source, domain: i % 3 ? "Writing" : "Speaking" }));
+      const f = E.buildFeedback(
+        input(text, { keyUse, source, domain: i % 3 ? "Writing" : "Speaking" }),
+      );
       const src = text.slice(0, E.MAX_TEXT);
       assertShape(f, src, `#${i}`);
       for (const q of [f.strength.quote, f.nextStep.quote, ...allObs(f).map((o) => o.quote)]) {
@@ -149,11 +181,19 @@ test("isGrounded rejects a result whose quote is not in the text; unsupported cl
     ],
     GOOD,
   );
-  assert.deepEqual(kept.map((o) => o.id), ["a"]);
+  assert.deepEqual(
+    kept.map((o) => o.id),
+    ["a"],
+  );
   // a response with no cause word gets no "links a cause" strength or observation
-  const plain = E.buildFeedback(input("Plants are green. Plants are tall. Plants are in the garden."));
+  const plain = E.buildFeedback(
+    input("Plants are green. Plants are tall. Plants are in the garden."),
+  );
   assert.ok(![plain.strength.id, ...allObs(plain).map((o) => o.id)].includes("move-cause"));
-  assert.equal(plain.dimensions.discourse.find((o) => o.id === "evidence-integration"), undefined);
+  assert.equal(
+    plain.dimensions.discourse.find((o) => o.id === "evidence-integration"),
+    undefined,
+  );
 });
 
 test("one strength and at most one next step; the next step is authored wording, never the learner's text", () => {
@@ -170,26 +210,36 @@ test("one strength and at most one next step; the next step is authored wording,
 });
 
 test("transcripts: uncertainty is represented; spelling, capitals and punctuation are never flagged; dialect is not judged", () => {
-  const messy = "yesterday he go to the store. he dont have no money becuase he is spend it. she walk home and they was tired";
+  const messy =
+    "yesterday he go to the store. he dont have no money becuase he is spend it. she walk home and they was tired";
   for (const keyUse of KEY_USES) {
     const f = E.buildFeedback(input(messy, { keyUse, source: "transcript", domain: "Speaking" }));
     assert.equal(f.uncertainty.level, "transcript");
     assert.match(f.uncertainty.note[0], /speech recognition/);
     assert.match(f.uncertainty.note[0], /Fix any words it got wrong first/);
     assert.match(f.uncertainty.note[1], /reconocimiento de voz/);
-    const options = E.nextStepOptions(input(messy, { keyUse, source: "transcript", domain: "Speaking" }));
+    const options = E.nextStepOptions(
+      input(messy, { keyUse, source: "transcript", domain: "Speaking" }),
+    );
     for (const id of [...E.WRITING_ONLY_PATTERNS, ...E.DIALECT_PATTERNS])
       assert.ok(!options.includes(`fix-${id}`), `${keyUse}: ${id} offered for a transcript`);
     assert.ok(!E.WRITING_ONLY_PATTERNS.some((id) => f.nextStep.id === `fix-${id}`));
   }
   // the same words typed as writing may name a writing convention; that is the difference being tested
   const typed = E.nextStepOptions(input(messy, { source: "typed" }));
-  assert.ok(typed.some((id) => E.WRITING_ONLY_PATTERNS.includes(id.replace("fix-", ""))), typed.join());
+  assert.ok(
+    typed.some((id) => E.WRITING_ONLY_PATTERNS.includes(id.replace("fix-", ""))),
+    typed.join(),
+  );
   // every transcript in the sweep, including the short ones
   for (const text of RESPONSES.slice(0, 120)) {
     const f = E.buildFeedback(input(text, { source: "transcript" }));
     assert.equal(f.uncertainty.level, "transcript");
-    assert.ok(!/^fix-(capital-punct|common-misspelling|confused-word|comma-splice|fragment-subordinate)$/.test(f.nextStep.id));
+    assert.ok(
+      !/^fix-(capital-punct|common-misspelling|confused-word|comma-splice|fragment-subordinate)$/.test(
+        f.nextStep.id,
+      ),
+    );
   }
   assert.equal(E.buildFeedback(input(GOOD)).uncertainty.level, "none");
   assert.deepEqual(E.buildFeedback(input(GOOD)).uncertainty.note, ["", ""]);
@@ -197,16 +247,25 @@ test("transcripts: uncertainty is represented; spelling, capitals and punctuatio
   for (const id of [...E.WRITING_ONLY_PATTERNS, ...E.DIALECT_PATTERNS])
     assert.ok(ERRORS.DETECTOR_IDS.includes(id), id);
   for (const d of ERRORS.DETECTORS)
-    if ((d.confidence || "high") === "high") assert.ok(W.PATTERN_TEXT[d.id], `no wording for ${d.id}`);
+    if ((d.confidence || "high") === "high")
+      assert.ok(W.PATTERN_TEXT[d.id], `no wording for ${d.id}`);
 });
 
 test("short responses: uncertainty 'short', no sentence-variety claims, and the step asks for more", () => {
-  for (const text of ["Plants need sun to grow.", "plants", "The sun. It is hot. Plants like it."]) {
+  for (const text of [
+    "Plants need sun to grow.",
+    "plants",
+    "The sun. It is hot. Plants like it.",
+  ]) {
     for (const keyUse of KEY_USES) {
       const f = E.buildFeedback(input(text, { keyUse }));
       assert.equal(f.uncertainty.level, "short", text);
       assert.match(f.uncertainty.note[0], /short/);
-      assert.deepEqual(f.dimensions.sentence, [], `${text}: sentence observations on a short response`);
+      assert.deepEqual(
+        f.dimensions.sentence,
+        [],
+        `${text}: sentence observations on a short response`,
+      );
       assert.ok(!E.SENTENCE_VARIETY_IDS.includes(f.nextStep.id), `${text}: ${f.nextStep.id}`);
       assert.ok(!["complex", "noun-phrase"].includes(f.strength.id));
       for (const id of E.nextStepOptions(input(text, { keyUse })))
@@ -226,30 +285,76 @@ test("short responses: uncertainty 'short', no sentence-variety claims, and the 
 test("prompt-injection safety: instructions inside the text change nothing but the quotes", () => {
   const f = E.buildFeedback(input(INJECTION));
   assertShape(f, INJECTION, "injection");
-  const authored = JSON.stringify([f.strength.text, f.nextStep.text, f.explanation, f.scaffold, f.revisionPrompt, f.transfer, f.uncertainty, allObs(f).map((o) => o.text)]);
-  for (const bad of ["Perfect", "level 6", "score", "100", "grader", "Ignore"]) assert.ok(!authored.includes(bad), bad);
+  const authored = JSON.stringify([
+    f.strength.text,
+    f.nextStep.text,
+    f.explanation,
+    f.scaffold,
+    f.revisionPrompt,
+    f.transfer,
+    f.uncertainty,
+    allObs(f).map((o) => o.text),
+  ]);
+  for (const bad of ["Perfect", "level 6", "score", "100", "grader", "Ignore"])
+    assert.ok(!authored.includes(bad), bad);
   // unknown fields and wrong types in the input are ignored, not copied through
-  const odd = E.buildFeedback({ text: { toString: () => "Plants grow because of sun." }, keyUse: "Hack", domain: 7, source: "ai", task: "x", band: null, strength: { text: "forged" }, version: 99 });
+  const odd = E.buildFeedback({
+    text: { toString: () => "Plants grow because of sun." },
+    keyUse: "Hack",
+    domain: 7,
+    source: "ai",
+    task: "x",
+    band: null,
+    strength: { text: "forged" },
+    version: 99,
+  });
   assertShape(odd, "Plants grow because of sun.", "odd input");
   assert.equal(odd.transfer.keyUse, "Explain");
   assertShape(E.buildFeedback(undefined), "", "undefined input");
 });
 
 test("no score, level or proficiency language in any authored wording", () => {
-  const all = JSON.stringify([W.MOVE_TEXT, W.STRENGTH_TEXT, W.STEP_TEXT, W.OBS_TEXT, W.UNCERTAINTY_TEXT, W.REVISION_TEXT, W.CHANGE_TEXT, W.CAUTION_TEXT, E.TRANSFER_BANK]);
-  for (const re of [/\bscore\b/i, /\blevel\b/i, /proficien/i, /\b(earn|score|win)\w* \d* ?points?\b/i, /\bstreak\b/i, /\brank/i, /\bpuntaje\b/i, /\bnivel\b/i, /%/, /\bWIDA\b/, /\bACCESS\b/, /\baccent\b/i])
+  const all = JSON.stringify([
+    W.MOVE_TEXT,
+    W.STRENGTH_TEXT,
+    W.STEP_TEXT,
+    W.OBS_TEXT,
+    W.UNCERTAINTY_TEXT,
+    W.REVISION_TEXT,
+    W.CHANGE_TEXT,
+    W.CAUTION_TEXT,
+    E.TRANSFER_BANK,
+  ]);
+  for (const re of [
+    /\bscore\b/i,
+    /\blevel\b/i,
+    /proficien/i,
+    /\b(earn|score|win)\w* \d* ?points?\b/i,
+    /\bstreak\b/i,
+    /\brank/i,
+    /\bpuntaje\b/i,
+    /\bnivel\b/i,
+    /%/,
+    /\bWIDA\b/,
+    /\bACCESS\b/,
+    /\baccent\b/i,
+  ])
     assert.ok(!re.test(all), String(re));
   // every Key Language Use move has wording in both languages
   for (const keyUse of KEY_USES)
     for (const m of PURPOSE.MOVES[keyUse]) {
       const t = W.MOVE_TEXT[`${keyUse}:${m.id}`];
-      assert.ok(t && isPair(t.did) && isPair(t.todo) && isPair(t.why) && t.frame, `${keyUse}:${m.id}`);
+      assert.ok(
+        t && isPair(t.did) && isPair(t.todo) && isPair(t.why) && t.frame,
+        `${keyUse}:${m.id}`,
+      );
       assert.notEqual(t.did[0], t.did[1]);
     }
 });
 
 test("a second look can only re-rank among next steps the rules already support", () => {
-  const text = "he go to store yesterday. he dont have no money. the thing was big. it was good. it was nice.";
+  const text =
+    "he go to store yesterday. he dont have no money. the thing was big. it was good. it was nice.";
   const options = E.nextStepOptions(input(text));
   assert.ok(options.length >= 3, options.join());
   const base = E.buildFeedback(input(text));
@@ -259,9 +364,14 @@ test("a second look can only re-rank among next steps the rules already support"
   assert.equal(picked.nextStep.id, other);
   assert.ok(E.isGrounded(picked, text));
   // an id the rules do not support for this text is ignored
-  const ignored = E.buildFeedback(input(text), { prefer: ["move-counter", "fix-not-a-pattern", "<script>"] });
+  const ignored = E.buildFeedback(input(text), {
+    prefer: ["move-counter", "fix-not-a-pattern", "<script>"],
+  });
   assert.equal(ignored.nextStep.id, base.nextStep.id);
-  assert.deepEqual(E.preferFromSecondLook({ ok: true, move: { id: "cause" }, patterns: [{ id: "past-marker" }] }), ["move-cause", "fix-past-marker"]);
+  assert.deepEqual(
+    E.preferFromSecondLook({ ok: true, move: { id: "cause" }, patterns: [{ id: "past-marker" }] }),
+    ["move-cause", "fix-past-marker"],
+  );
   assert.deepEqual(E.preferFromSecondLook({ ok: false, offline: true }), []);
   assert.deepEqual(E.preferFromSecondLook(null), []);
 });
@@ -274,9 +384,18 @@ test("transferFor: at least six prompts per Key Language Use in both languages, 
     for (const e of bank) {
       assert.ok(isPair(e.prompt) && e.prompt[0] !== e.prompt[1], e.id);
       assert.match(e.route, /^(|\/[a-z][a-z-]*)$/, e.id);
-      if (e.pair) assert.ok(bank.some((x) => x.id === e.pair && x.pair === e.id), `${e.id} pair`);
+      if (e.pair)
+        assert.ok(
+          bank.some((x) => x.id === e.pair && x.pair === e.id),
+          `${e.id} pair`,
+        );
       // the task is a bank prompt (by id, by English wording, by Spanish wording, with different case and spacing)
-      for (const q of [{ taskId: e.id }, { prompt: e.prompt[0] }, { prompt: `  ${e.prompt[1].toUpperCase()} ` }, { taskId: e.id, prompt: e.prompt }]) {
+      for (const q of [
+        { taskId: e.id },
+        { prompt: e.prompt[0] },
+        { prompt: `  ${e.prompt[1].toUpperCase()} ` },
+        { taskId: e.id, prompt: e.prompt },
+      ]) {
         const t = E.transferFor({ keyUse, band: "6-8", ...q });
         assert.notEqual(t.id, e.id, `${e.id} returned itself`);
         assert.notEqual(t.prompt[0], e.prompt[0]);
@@ -291,7 +410,11 @@ test("transferFor: at least six prompts per Key Language Use in both languages, 
       assert.ok(bank.some((e) => e.id === a.id));
     }
   }
-  const pair = E.transferFor({ keyUse: "Explain", taskId: "x", prompt: "Explain why plants need sunlight." });
+  const pair = E.transferFor({
+    keyUse: "Explain",
+    taskId: "x",
+    prompt: "Explain why plants need sunlight.",
+  });
   assert.equal(pair.prompt[0], "Explain how reduced sunlight could affect an ecosystem.");
   assert.equal(E.transferFor({ keyUse: "Nonsense" }).keyUse, "Explain");
   assert.equal(E.transferFor().keyUse, "Explain");
@@ -299,7 +422,9 @@ test("transferFor: at least six prompts per Key Language Use in both languages, 
   const used = E.TRANSFER_BANK.Argue.slice(0, 5).map((e) => e.id);
   assert.ok(!used.includes(E.transferFor({ keyUse: "Argue", taskId: "z", exclude: used }).id));
   // buildFeedback uses it
-  const f = E.buildFeedback(input(GOOD, { task: { id: "e-plants-sun", prompt: "Explain why plants need sunlight." } }));
+  const f = E.buildFeedback(
+    input(GOOD, { task: { id: "e-plants-sun", prompt: "Explain why plants need sunlight." } }),
+  );
   assert.equal(f.transfer.prompt[0], "Explain how reduced sunlight could affect an ecosystem.");
 });
 
@@ -319,7 +444,11 @@ test("compareWork: meaningful changes with quotes; never 'longer is better'", ()
   assert.ok(c.kept.some((k) => k.quote === "It is a good thing."));
   assert.equal(c.caution, null);
   // longer with nothing else that can be named is NOT a change
-  const padded = E.compareWork("Plants are green.", "Plants are green green green green green green.", { keyUse: "Inform" });
+  const padded = E.compareWork(
+    "Plants are green.",
+    "Plants are green green green green green green.",
+    { keyUse: "Inform" },
+  );
   assert.deepEqual(padded.changes, []);
   assert.match(padded.caution[0], /length alone does not make/);
   // a move that was lost is cautioned, not praised
@@ -327,22 +456,37 @@ test("compareWork: meaningful changes with quotes; never 'longer is better'", ()
   assert.match(lost.caution[0], /missing now/);
   assert.equal(E.compareWork("Same words.", " Same words. ").caution[0], W.CAUTION_TEXT.same[0]);
   assert.equal(E.compareWork("", "x").caution[0], W.CAUTION_TEXT.empty[0]);
-  assert.equal(E.compareWork(before, after, { sameTask: false }).caution[0], W.CAUTION_TEXT.context[0]);
+  assert.equal(
+    E.compareWork(before, after, { sameTask: false }).caution[0],
+    W.CAUTION_TEXT.context[0],
+  );
   // a transcript never reports a spelling or dialect pattern as fixed
-  const spoken = E.compareWork("i go there becuase he dont have no money", "I went there because he does not have any money", { source: "transcript" });
-  assert.ok(!spoken.changes.some((ch) => /control:(common-misspelling|capital-punct|double-negative)/.test(ch.id)));
+  const spoken = E.compareWork(
+    "i go there becuase he dont have no money",
+    "I went there because he does not have any money",
+    { source: "transcript" },
+  );
+  assert.ok(
+    !spoken.changes.some((ch) =>
+      /control:(common-misspelling|capital-punct|double-negative)/.test(ch.id),
+    ),
+  );
   // quotes stay verbatim across the synthetic sweep
   const s = synthetic(60, 11);
   for (let i = 0; i + 1 < s.length; i += 2) {
     const r = E.compareWork(s[i], s[i + 1], { keyUse: KEY_USES[i % 4] });
-    for (const ch of r.changes) assert.ok(s[i].includes(ch.beforeQuote) && s[i + 1].includes(ch.afterQuote));
+    for (const ch of r.changes)
+      assert.ok(s[i].includes(ch.beforeQuote) && s[i + 1].includes(ch.afterQuote));
     for (const k of r.kept) assert.ok(s[i + 1].includes(k.quote) && k.quote);
   }
 });
 
 test("guided practice is built from the learner's own sentences and checked by a visible rule", () => {
   const text = "The ice melted. The sun was hot. We went home. It was late.";
-  const fb = E.buildFeedback(input(text, { task: { id: "e-ice", prompt: "Explain why ice melts." } }), { prefer: ["combine"] });
+  const fb = E.buildFeedback(
+    input(text, { task: { id: "e-ice", prompt: "Explain why ice melts." } }),
+    { prefer: ["combine"] },
+  );
   const p = P.buildPractice({ ...fb, nextStep: { id: "combine", quote: "" } }, text);
   assert.equal(p.kind, "combine");
   assert.deepEqual(p.given, ["The ice melted.", "The sun was hot."]);
@@ -350,11 +494,17 @@ test("guided practice is built from the learner's own sentences and checked by a
   assert.equal(P.checkPractice(p, "The ice melted and it was gone").ok, false); // lost the second idea
   assert.equal(P.checkPractice(p, "The ice melted. The sun was hot.").ok, false); // no joining word
   assert.equal(P.checkPractice(p, "The ice melted because the sun was hot.").ok, true);
-  const because = P.buildPractice({ nextStep: { id: "move-cause", quote: "" } }, "Plants need sun. They are green.");
+  const because = P.buildPractice(
+    { nextStep: { id: "move-cause", quote: "" } },
+    "Plants need sun. They are green.",
+  );
   assert.equal(because.kind, "because");
   assert.equal(P.checkPractice(because, "Plants need sun because they make food.").ok, true);
   assert.equal(P.checkPractice(because, "Dogs bark because they are loud.").ok, false);
-  const word = P.buildPractice({ nextStep: { id: "precise-words", quote: "thing" } }, "The thing was broken. It was bad.");
+  const word = P.buildPractice(
+    { nextStep: { id: "precise-words", quote: "thing" } },
+    "The thing was broken. It was bad.",
+  );
   assert.equal(word.kind, "word");
   assert.equal(P.checkPractice(word, "The thing was broken").ok, false);
   assert.equal(P.checkPractice(word, "The engine was broken").ok, true);
@@ -372,12 +522,32 @@ test("guided practice is built from the learner's own sentences and checked by a
 // ── the loop store ───────────────────────────────────────────────────────────
 function loopWith(text, { help = false, source = "typed" } = {}) {
   const state = { v: 1, loops: {} };
-  const loop = LOOP.startLoop(state, { src: "speak", band: "6-8", task: { id: "t-plants", title: "Plants", prompt: "Explain why plants need sunlight.", keyUse: "Explain", domain: "Speaking" } });
+  const loop = LOOP.startLoop(state, {
+    src: "speak",
+    band: "6-8",
+    task: {
+      id: "t-plants",
+      title: "Plants",
+      prompt: "Explain why plants need sunlight.",
+      keyUse: "Explain",
+      domain: "Speaking",
+    },
+  });
   LOOP.recordStage(state, loop.id, "response", { text, source, supports: {} });
-  LOOP.recordStage(state, loop.id, "feedback", { feedback: E.buildFeedback(input(text, { source, domain: "Speaking" })), feedbackSource: "local-rule" });
+  LOOP.recordStage(state, loop.id, "feedback", {
+    feedback: E.buildFeedback(input(text, { source, domain: "Speaking" })),
+    feedbackSource: "local-rule",
+  });
   LOOP.recordStage(state, loop.id, "practice", { kind: "because", done: true });
-  LOOP.recordStage(state, loop.id, "revision", { text: `${text} It also gives them energy.`, supports: { coach: true } });
-  LOOP.recordStage(state, loop.id, "transfer", { prompt: "Explain how reduced sunlight could affect an ecosystem.", text: "With less light, plants make less food, so animals have less to eat.", supports: help ? { frame: true } : {} });
+  LOOP.recordStage(state, loop.id, "revision", {
+    text: `${text} It also gives them energy.`,
+    supports: { coach: true },
+  });
+  LOOP.recordStage(state, loop.id, "transfer", {
+    prompt: "Explain how reduced sunlight could affect an ecosystem.",
+    text: "With less light, plants make less food, so animals have less to eat.",
+    supports: help ? { frame: true } : {},
+  });
   return { state, loop };
 }
 
@@ -387,10 +557,18 @@ test("revision and transfer stay separate records; a revision is never independe
   const s = loop.stages;
   assert.notEqual(s.response.text, s.revision.text);
   assert.notEqual(s.revision.text, s.transfer.text);
-  assert.equal(s.response.text, "Plants need sun because they make food.", "the first response is kept as written");
+  assert.equal(
+    s.response.text,
+    "Plants need sun because they make food.",
+    "the first response is kept as written",
+  );
   assert.equal(s.revision.independent, undefined, "a revision carries no independence claim");
   assert.equal(s.transfer.independent, true);
-  assert.equal(loopWith("Plants need sun.", { help: true }).loop.stages.transfer.independent, false, "opened help marks the transfer supported");
+  assert.equal(
+    loopWith("Plants need sun.", { help: true }).loop.stages.transfer.independent,
+    false,
+    "opened help marks the transfer supported",
+  );
   // a second write to the response or the transfer does not change the first
   LOOP.recordStage(state, loop.id, "response", { text: "REPLACED" });
   LOOP.recordStage(state, loop.id, "transfer", { text: "REPLACED", supports: {} });
@@ -427,58 +605,128 @@ test("a loop survives save and load at the same stage", () => {
   const l = LOOP.getLoop(back, loop.id);
   assert.equal(LOOP.nextStage(l), "transfer");
   assert.equal(l.panel.drafts.transfer, "half a sen");
-  assert.ok(E.isGrounded(l.stages.feedback.feedback, l.stages.response.text), "stored feedback is still grounded");
+  assert.ok(
+    E.isGrounded(l.stages.feedback.feedback, l.stages.response.text),
+    "stored feedback is still grounded",
+  );
 });
 
 test("the teacher's decision travels in the existing comment, persists in the loop and wins over the suggestion", () => {
-  assert.equal(R.encodeDecision({ decision: "replace", next: "/speak", comment: "Add the step after the leaves make food." }), "[LP replace next=/speak] Add the step after the leaves make food.");
-  assert.deepEqual(R.decodeDecision("[LP replace next=/speak] Add the step."), { decision: "replace", next: "/speak", comment: "Add the step." });
+  assert.equal(
+    R.encodeDecision({
+      decision: "replace",
+      next: "/speak",
+      comment: "Add the step after the leaves make food.",
+    }),
+    "[LP replace next=/speak] Add the step after the leaves make food.",
+  );
+  assert.deepEqual(R.decodeDecision("[LP replace next=/speak] Add the step."), {
+    decision: "replace",
+    next: "/speak",
+    comment: "Add the step.",
+  });
   assert.deepEqual(R.decodeDecision("[LP accept]"), { decision: "accept", next: "", comment: "" });
-  assert.deepEqual(R.decodeDecision("Nice work on your claim."), { decision: "", next: "", comment: "Nice work on your claim." }, "an old review is a plain comment");
+  assert.deepEqual(
+    R.decodeDecision("Nice work on your claim."),
+    { decision: "", next: "", comment: "Nice work on your claim." },
+    "an old review is a plain comment",
+  );
   assert.deepEqual(R.decodeDecision("[LP hack next=javascript:alert(1)] x").decision, "");
-  assert.equal(R.encodeDecision({ decision: "again", next: "https://evil.example", comment: "x" }), "[LP again] x", "only a lab route is kept");
+  assert.equal(
+    R.encodeDecision({ decision: "again", next: "https://evil.example", comment: "x" }),
+    "[LP again] x",
+    "only a lab route is kept",
+  );
   assert.equal(R.encodeDecision({ decision: "", comment: "plain" }), "plain");
   for (const d of R.DECISIONS)
     for (const r of ["", ...R.NEXT_ROUTES.map((x) => x.route)]) {
       const stored = R.encodeDecision({ decision: d, next: r, comment: "c".repeat(220) });
       assert.ok(stored.length <= 280, `${d} ${r}: ${stored.length}`);
-      assert.deepEqual(R.decodeDecision(stored), { decision: d, next: r, comment: "c".repeat(220) });
+      assert.deepEqual(R.decodeDecision(stored), {
+        decision: d,
+        next: r,
+        comment: "c".repeat(220),
+      });
     }
 
   const { state, loop } = loopWith("Plants need sun because they make food.");
-  LOOP.recordStage(state, loop.id, "review", { shared: true, workId: "w0123456789ab", teacher: null });
+  LOOP.recordStage(state, loop.id, "review", {
+    shared: true,
+    workId: "w0123456789ab",
+    teacher: null,
+  });
   const auto = R.effectiveFeedback(loop);
   assert.equal(auto.source, "auto");
   assert.equal(auto.nextStep[0], loop.stages.feedback.feedback.nextStep.text[0]);
 
   const reviews = [
-    { itemId: "w0123456789ab", kind: "writing", comment: "[LP replace next=/evidence] Name the gas the leaves take in.", chips: {}, reviewedAt: 1794000000000 },
-    { itemId: "wffffffffffff", kind: "writing", comment: "someone else's", reviewedAt: 1794000000000 },
+    {
+      itemId: "w0123456789ab",
+      kind: "writing",
+      comment: "[LP replace next=/evidence] Name the gas the leaves take in.",
+      chips: {},
+      reviewedAt: 1794000000000,
+    },
+    {
+      itemId: "wffffffffffff",
+      kind: "writing",
+      comment: "someone else's",
+      reviewedAt: 1794000000000,
+    },
   ];
   assert.equal(R.applyTeacherReviews(state, reviews), 1);
-  assert.equal(R.applyTeacherReviews(state, reviews), 0, "applying the same review twice changes nothing");
-  assert.deepEqual(loop.stages.review.teacher, { comment: "Name the gas the leaves take in.", decision: "replace", next: "/evidence", at: new Date(1794000000000).toISOString() });
+  assert.equal(
+    R.applyTeacherReviews(state, reviews),
+    0,
+    "applying the same review twice changes nothing",
+  );
+  assert.deepEqual(loop.stages.review.teacher, {
+    comment: "Name the gas the leaves take in.",
+    decision: "replace",
+    next: "/evidence",
+    at: new Date(1794000000000).toISOString(),
+  });
   const eff = R.effectiveFeedback(loop);
   assert.equal(eff.source, "teacher");
-  assert.deepEqual(eff.nextStep, ["Name the gas the leaves take in.", "Name the gas the leaves take in."]);
+  assert.deepEqual(eff.nextStep, [
+    "Name the gas the leaves take in.",
+    "Name the gas the leaves take in.",
+  ]);
   assert.equal(eff.next, "/evidence");
 
   // it persists through save and load, and the automated feedback is still stored underneath
   const box = new Map();
   LOOP.saveIntel(state, (k, v) => box.set(k, v));
-  const back = LOOP.getLoop(LOOP.loadIntel((k) => box.get(k)), loop.id);
+  const back = LOOP.getLoop(
+    LOOP.loadIntel((k) => box.get(k)),
+    loop.id,
+  );
   assert.equal(R.effectiveFeedback(back).source, "teacher");
   assert.equal(back.stages.review.teacher.decision, "replace");
   assert.ok(back.stages.feedback.feedback.nextStep.text[0]);
   assert.equal(LOOP.nextStage(back), "done");
 
   // accept keeps the suggestion; again asks for a new attempt; a later review replaces an earlier one
-  R.applyTeacherReviews(state, [{ itemId: "w0123456789ab", comment: "[LP accept] Good next step.", reviewedAt: 1794000100000 }]);
+  R.applyTeacherReviews(state, [
+    { itemId: "w0123456789ab", comment: "[LP accept] Good next step.", reviewedAt: 1794000100000 },
+  ]);
   assert.equal(R.effectiveFeedback(loop).source, "auto");
   assert.equal(R.effectiveFeedback(loop).comment, "Good next step.");
-  R.applyTeacherReviews(state, [{ itemId: "w0123456789ab", comment: "[LP again] Say it once more with the steps in order.", reviewedAt: 1794000200000 }]);
+  R.applyTeacherReviews(state, [
+    {
+      itemId: "w0123456789ab",
+      comment: "[LP again] Say it once more with the steps in order.",
+      reviewedAt: 1794000200000,
+    },
+  ]);
   assert.equal(R.effectiveFeedback(loop).again, true);
-  R.applyTeacherReviews(state, [{ itemId: "w0123456789ab", comment: "Plain comment from an older client.", reviewedAt: 1794000300000 }]);
+  R.applyTeacherReviews(state, [
+    {
+      itemId: "w0123456789ab",
+      comment: "Plain comment from an older client.",
+      reviewedAt: 1794000300000,
+    },
+  ]);
   assert.equal(loop.stages.review.teacher.decision, "comment");
 });
 
@@ -498,14 +746,27 @@ test("a shared loop digest is recognised and read back into its labelled parts",
 });
 
 test("the server accepts a comment that carries a decision (no schema change)", async () => {
-  const SERVER = await import(new URL("../functions/_lib/class-platform/review.js", import.meta.url));
-  const stored = R.encodeDecision({ decision: "replace", next: "/speak", comment: "Add the next step in the chain." });
+  const SERVER = await import(
+    new URL("../functions/_lib/class-platform/review.js", import.meta.url)
+  );
+  const stored = R.encodeDecision({
+    decision: "replace",
+    next: "/speak",
+    comment: "Add the next step in the chain.",
+  });
   const checked = SERVER.validateReview({ rubric: "writing-practice", chips: {}, comment: stored });
   assert.equal(checked.ok, true);
   assert.equal(checked.review.comment, stored);
   assert.deepEqual(R.decodeDecision(checked.review.comment).decision, "replace");
-  const longest = R.encodeDecision({ decision: "replace", next: "/conversation", comment: "c".repeat(220) });
-  assert.equal(SERVER.validateReview({ rubric: "writing-practice", chips: {}, comment: longest }).ok, true);
+  const longest = R.encodeDecision({
+    decision: "replace",
+    next: "/conversation",
+    comment: "c".repeat(220),
+  });
+  assert.equal(
+    SERVER.validateReview({ rubric: "writing-practice", chips: {}, comment: longest }).ok,
+    true,
+  );
   // a loop digest fits what the share endpoint accepts
   const { loop } = loopWith("x ".repeat(2900));
   assert.equal(SERVER.cleanWriting(LOOP.loopDigest(loop)).ok, true);
@@ -519,11 +780,22 @@ test("the instructor's queue: a decision on a loop is saved (the decision radios
   const saved = { document: globalThis.document, fetch: globalThis.fetch };
   globalThis.document = dom.window.document;
   globalThis.fetch = async (url) =>
-    new Response(readFileSync(new URL(`.${String(url).replace("/access-practice-lab", "")}`, LAB)), { status: 200 });
+    new Response(
+      readFileSync(new URL(`.${String(url).replace("/access-practice-lab", "")}`, LAB)),
+      { status: 200 },
+    );
   try {
     const Q = await import(new URL("src/class/review-queue.js", LAB));
-    const digest = "Task: Explain\n\nFIRST RESPONSE [on my own]:\nThe sun was hot.\n\nFEEDBACK SHOWN: Add because.";
-    const item = { itemId: "w0123456789ab", kind: "writing", alias: "Robin", label: "Explain", text: digest, review: null };
+    const digest =
+      "Task: Explain\n\nFIRST RESPONSE [on my own]:\nThe sun was hot.\n\nFEEDBACK SHOWN: Add because.";
+    const item = {
+      itemId: "w0123456789ab",
+      kind: "writing",
+      alias: "Robin",
+      label: "Explain",
+      text: digest,
+      review: null,
+    };
     const marks = [];
     const api = {
       reviewQueue: async () => ({ ok: true, items: [item] }),
@@ -533,7 +805,10 @@ test("the instructor's queue: a decision on a loop is saved (the decision radios
     const live = dom.window.document.createElement("p");
     await Q.drawReviewQueue(box, { S: (en) => en, api, live });
     const card = box.querySelector(`[data-item="${item.itemId}"]`);
-    assert.ok(card.querySelector("[data-intel-digest]"), "a loop digest gets the decision controls");
+    assert.ok(
+      card.querySelector("[data-intel-digest]"),
+      "a loop digest gets the decision controls",
+    );
     assert.ok(card.querySelectorAll("input[data-dim]").length > 0, "the practice rubric loaded");
     card.querySelector('input[data-decision][value="replace"]').checked = true;
     card.querySelector("select[data-next]").value = "/write";
@@ -543,11 +818,17 @@ test("the instructor's queue: a decision on a loop is saved (the decision radios
     card.querySelector(".row-actions .btn-primary").click();
     await new Promise((r) => setTimeout(r, 20));
     assert.equal(marks.length, 1);
-    assert.deepEqual(Object.keys(marks[0].chips), [rubricRadio.dataset.dim], "only rubric radios are chips");
+    assert.deepEqual(
+      Object.keys(marks[0].chips),
+      [rubricRadio.dataset.dim],
+      "only rubric radios are chips",
+    );
     assert.equal(marks[0].comment, "[LP replace next=/write] Give the number you measured.");
     assert.equal(validateReview(marks[0]).ok, true, "the server accepts the review");
     // With only the default decision checked and no rubric pick, nothing stray is sent either.
-    assert.deepEqual(Q.chipsOf(card.querySelector(".cls-review-form").cloneNode(true)), { [rubricRadio.dataset.dim]: Number(rubricRadio.value) });
+    assert.deepEqual(Q.chipsOf(card.querySelector(".cls-review-form").cloneNode(true)), {
+      [rubricRadio.dataset.dim]: Number(rubricRadio.value),
+    });
   } finally {
     Object.assign(globalThis, saved);
   }

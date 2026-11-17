@@ -38,9 +38,17 @@ const spanishWord = (gloss) =>
 function toPick(a, band, domain, level, early) {
   const minutes = minutesOf(a.time);
   const vocab = (a.vocabulary || []).filter((v) => Array.isArray(v) && v[0]);
-  const sample = a.models?.A || a.modelStudent?.text || (a.support || "").replace(/^Model:\s*/i, "");
+  const sample =
+    a.models?.A || a.modelStudent?.text || (a.support || "").replace(/^Model:\s*/i, "");
   const skillEs = early ? SKILL_ES_EARLY[a.skill] : SKILL_ES[a.id];
-  if (a.type !== "constructed" || !minutes || !a.prompt || (a.frames || []).length < (early ? 1 : 2) || !sample) return null;
+  if (
+    a.type !== "constructed" ||
+    !minutes ||
+    !a.prompt ||
+    (a.frames || []).length < (early ? 1 : 2) ||
+    !sample
+  )
+    return null;
   if (early && !a.scene) return null;
   if (!skillEs) return null;
   return {
@@ -78,7 +86,12 @@ export function buildPicks() {
         const rows = set.levels[level].activities
           .map((a) => toPick(a, band, domain, level, early))
           .filter(Boolean)
-          .sort((x, y) => Number(Boolean(y.picture)) - Number(Boolean(x.picture)) || x.minutes - y.minutes || x.id.localeCompare(y.id));
+          .sort(
+            (x, y) =>
+              Number(Boolean(y.picture)) - Number(Boolean(x.picture)) ||
+              x.minutes - y.minutes ||
+              x.id.localeCompare(y.id),
+          );
         picks.push(...rows.slice(0, early ? PER_LEVEL_EARLY : PER_LEVEL));
       }
     }
@@ -88,7 +101,9 @@ export function buildPicks() {
 
 // One activity per line keeps the file diffable.
 export const picksJson = () =>
-  `{"schema":1,"picks":[\n${buildPicks().map((p) => JSON.stringify(p)).join(",\n")}\n]}\n`;
+  `{"schema":1,"picks":[\n${buildPicks()
+    .map((p) => JSON.stringify(p))
+    .join(",\n")}\n]}\n`;
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const next = picksJson();

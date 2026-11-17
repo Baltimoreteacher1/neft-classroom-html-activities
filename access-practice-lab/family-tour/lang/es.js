@@ -252,6 +252,8 @@ export default {
     min: "{n} min",
     about: "Unos {n} min",
     start: "Comenzar nuestra primera actividad",
+    chooseAnother: "Elegir otra actividad",
+    returnFamilyHome: "Volver al inicio para familias",
     download: "Descargar nuestro kit de práctica",
     print: "Imprimir nuestra tarjeta de práctica",
     copy: "Copiar el enlace de la actividad",

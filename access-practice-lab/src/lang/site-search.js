@@ -8,6 +8,7 @@
 // one-letter typo), a Spanish word also finds the English word the glossary pairs it with (and the reverse), and a
 // title that begins with or contains the whole query gets a bonus. Nothing here uses learner data.
 import { BASE } from "../util.js";
+import { EDUCATIONAL_SYNONYMS } from "../resource-intelligence.js";
 
 export const KINDS = ["page", "practice", "studio", "word", "command"];
 const STOP = new Set([
@@ -476,6 +477,9 @@ function wordScore(w, d, bridge) {
   let s = own(w, 1, true);
   // The paired word from the other language counts, but a typo of it would only add noise.
   for (const alt of bridge?.get(w) || []) s = Math.max(s, own(alt, 0.7, false));
+  if (!s && EDUCATIONAL_SYNONYMS[w]) {
+    for (const syn of EDUCATIONAL_SYNONYMS[w]) s = Math.max(s, own(syn, 0.55, false));
+  }
   return s;
 }
 

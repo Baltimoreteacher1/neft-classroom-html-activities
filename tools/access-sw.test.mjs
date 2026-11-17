@@ -78,6 +78,8 @@ test("routing: what the worker serves, and what it never touches", () => {
   assert.equal(kind(sw, nav(`${S}/`)), "shell");
   assert.equal(kind(sw, nav(`${S}/Speaking/B/some-activity`)), "shell");
   assert.equal(kind(sw, nav(`${S}/printables/packet.html`)), "network");
+  assert.equal(kind(sw, nav(`${S}/family-tour/?grades=3-5`)), "network");
+  assert.equal(kind(sw, nav(`${S}/family-tour`)), "network");
   assert.equal(kind(sw, nav("/lessons/1-1/")), "network");
   assert.equal(kind(sw, req(`${S}/src/main.js?v=abc123abc123`)), "immutable");
   assert.equal(kind(sw, req(`${S}/styles.css?v=abc123abc123`)), "immutable");

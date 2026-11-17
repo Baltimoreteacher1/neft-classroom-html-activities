@@ -325,8 +325,11 @@ test("library: the focus filters search results, keeps shared picks, and tags ro
   );
 });
 
+// The home answers only a URL that names the grade (?grades=); without one it opens the grade chooser.
 test("home: the 6-8 picker shows the focus with counts; other bands do not; next activity follows it", async () => {
-  const doc = dom((await home.render(ctxFor({ view: "home" }, { gradeFocus: "7" }))).html);
+  const doc = dom(
+    (await home.render(ctxFor({ view: "home", grades: "6-8" }, { gradeFocus: "7" }))).html,
+  );
   const buttons = [...doc.querySelectorAll(".lph [data-grade-focus]")];
   assert.deepEqual(
     buttons.map((b) => b.dataset.gradeFocus),
@@ -342,9 +345,11 @@ test("home: the 6-8 picker shows the focus with counts; other bands do not; next
     5,
     "the five picker ids are unchanged",
   );
-  const early = dom((await home.render(ctxFor({ view: "home" }, { gradeFocus: "7" }, "3-5"))).html);
+  const early = dom(
+    (await home.render(ctxFor({ view: "home", grades: "3-5" }, { gradeFocus: "7" }, "3-5"))).html,
+  );
   assert.equal(early.querySelectorAll(".lph [data-grade-focus]").length, 0);
-  const es = dom((await home.render(ctxFor({ view: "home" }, { lang: "es" }))).html);
+  const es = dom((await home.render(ctxFor({ view: "home", grades: "6-8" }, { lang: "es" }))).html);
   assert.match(es.querySelector(".lph .grade-focus").textContent, /Enfoque por grado/);
 });
 

@@ -19,6 +19,7 @@ import {
 } from "../sitemap.js";
 import { BASE, announce, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
+import { EDUCATIONAL_SYNONYMS } from "../resource-intelligence.js";
 import { arcadeHTML } from "./play-arcade.js";
 
 const state = { section: "", for: "", skill: "", kind: "", q: "" };
@@ -86,7 +87,14 @@ export function matches(d, f = state, b = band) {
       !norm(f.q)
         .split(/\s+/)
         .filter(Boolean)
-        .every((w) => hay.includes(w))
+        .every((w) => {
+          if (hay.includes(w)) return true;
+          const anyLiteral = DESTINATIONS.some((dest) =>
+            norm([...dest.title, ...dest.text, dest.skill, ...(KINDS[dest.kind] || [])].join(" ")).includes(w),
+          );
+          if (anyLiteral) return false;
+          return (EDUCATIONAL_SYNONYMS[w] || []).some((syn) => hay.includes(syn));
+        })
     )
       return false;
   }

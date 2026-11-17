@@ -6,8 +6,8 @@
  * a learner reads, and feedback kinds are labelled.
  */
 import { fixtureRows, seedEvidence } from "./lib/access-acc-fixtures.mjs";
-import { serveAccess } from "./lib/access-serve.mjs";
 import { openHubSections } from "./lib/access-hub.mjs";
+import { serveAccess } from "./lib/access-serve.mjs";
 
 let chromium;
 try {

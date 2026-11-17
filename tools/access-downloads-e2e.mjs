@@ -22,14 +22,25 @@ try {
   process.exit(process.env.CI ? 1 : 3);
 }
 
-const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".png": "image/png" };
+const TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript",
+  ".mjs": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".svg": "image/svg+xml",
+  ".woff2": "font/woff2",
+  ".png": "image/png",
+};
 function serve() {
   const server = http.createServer((req, res) => {
     const p = decodeURIComponent(new URL(req.url, "http://x").pathname);
     let file = join(REPO_ROOT, p.endsWith("/") ? `${p}index.html` : p);
-    if (!existsSync(file) && existsSync(join(REPO_ROOT, "public", p))) file = join(REPO_ROOT, "public", p);
+    if (!existsSync(file) && existsSync(join(REPO_ROOT, "public", p)))
+      file = join(REPO_ROOT, "public", p);
     if (!existsSync(file) || statSync(file).isDirectory()) {
-      if (p.startsWith("/access-practice-lab/") && !/\.[a-z0-9]+$/i.test(p)) file = join(REPO_ROOT, "access-practice-lab/index.html");
+      if (p.startsWith("/access-practice-lab/") && !/\.[a-z0-9]+$/i.test(p))
+        file = join(REPO_ROOT, "access-practice-lab/index.html");
       else {
         res.writeHead(404);
         return res.end();
@@ -68,7 +79,14 @@ function unzip(buf) {
 }
 const docText = (zipBuf) => {
   const xml = unzip(zipBuf).get("word/document.xml")?.toString("utf8") || "";
-  return [...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map((m) => m[1]).join(" ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'");
+  return [...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)]
+    .map((m) => m[1])
+    .join(" ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#39;/g, "'");
 };
 const readDownload = async (dl) => {
   const path = await dl.path();
@@ -76,8 +94,11 @@ const readDownload = async (dl) => {
 };
 
 const LAB = "/access-practice-lab";
-const index = JSON.parse(readFileSync(join(REPO_ROOT, "access-practice-lab/content/index.json"), "utf8"));
-const firstRow = (band, domain = "Listening", level = "A") => index.bands[band].domains[domain].levels[level].activities[0];
+const index = JSON.parse(
+  readFileSync(join(REPO_ROOT, "access-practice-lab/content/index.json"), "utf8"),
+);
+const firstRow = (band, domain = "Listening", level = "A") =>
+  index.bands[band].domains[domain].levels[level].activities[0];
 
 let server = null;
 let origin = process.env.BASE;
@@ -90,12 +111,16 @@ const errors = [];
 const watch = (page) => {
   page.on("pageerror", (e) => !/web-vitals/.test(String(e)) && errors.push(e.stack || String(e)));
   page.on("console", (m) => {
-    if (m.type() === "error" && !/web-vitals|favicon|Failed to load resource/.test(m.text())) errors.push(m.text());
+    if (m.type() === "error" && !/web-vitals|favicon|Failed to load resource/.test(m.text()))
+      errors.push(m.text());
   });
 };
 
 try {
-  const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1280, height: 900 } });
+  const ctx = await browser.newContext({
+    acceptDownloads: true,
+    viewport: { width: 1280, height: 900 },
+  });
   const page = await ctx.newPage();
   watch(page);
 
@@ -108,10 +133,16 @@ try {
     const buf = await readDownload(dl);
     const files = unzip(buf);
     const text = docText(buf);
-    ok(dl.suggestedFilename().endsWith(".docx") && files.has("word/document.xml"), `${band}: Word file downloads (${dl.suggestedFilename()})`);
+    ok(
+      dl.suggestedFilename().endsWith(".docx") && files.has("word/document.xml"),
+      `${band}: Word file downloads (${dl.suggestedFilename()})`,
+    );
     ok(text.includes(title), `${band}: the file holds the title "${title}"`);
     ok(!/Answer key|Correct answer/.test(text), `${band}: no answer key in the student file`);
-    ok(/Word file downloaded/.test(await page.locator('[data-dl-status]').first().innerText()), `${band}: status line confirms`);
+    ok(
+      /Word file downloaded/.test(await page.locator("[data-dl-status]").first().innerText()),
+      `${band}: status line confirms`,
+    );
   }
 
   // Print / PDF view (6-8, the classic page).
@@ -123,11 +154,25 @@ try {
     await popup.waitForSelector("h1");
     ok((await popup.locator("h1").innerText()).includes(title), "print view: the title");
     ok((await popup.locator("footer svg").count()) === 1, "print view: QR code to the activity");
-    ok((await popup.locator("[data-pv-print]").count()) === 1, "print view: Print / Save as PDF button");
-    ok(/Save as PDF/.test(await popup.locator(".pv-bar").innerText()), "print view: Save as PDF explained");
-    ok((await popup.evaluate(() => getComputedStyle(document.querySelector(".pv-bar")).display)) !== "none", "print view: toolbar on screen");
+    ok(
+      (await popup.locator("[data-pv-print]").count()) === 1,
+      "print view: Print / Save as PDF button",
+    );
+    ok(
+      /Save as PDF/.test(await popup.locator(".pv-bar").innerText()),
+      "print view: Save as PDF explained",
+    );
+    ok(
+      (await popup.evaluate(() => getComputedStyle(document.querySelector(".pv-bar")).display)) !==
+        "none",
+      "print view: toolbar on screen",
+    );
     await popup.emulateMedia({ media: "print" });
-    ok((await popup.evaluate(() => getComputedStyle(document.querySelector(".pv-bar")).display)) === "none", "print view: toolbar hidden in print");
+    ok(
+      (await popup.evaluate(() => getComputedStyle(document.querySelector(".pv-bar")).display)) ===
+        "none",
+      "print view: toolbar hidden in print",
+    );
     await popup.close();
   }
 
@@ -136,16 +181,30 @@ try {
     const level = index.bands["3-5"].domains.Reading.levels.B;
     await page.goto(`${origin}${LAB}/Reading/B?grades=3-5`, { waitUntil: "load" });
     await page.waitForSelector('[data-dl="room-zip"]');
-    ok(await page.locator('[data-dl="cancel"]').isHidden(), "room: Cancel is hidden until a download runs");
-    const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 60000 }), page.click('[data-dl="room-zip"]')]);
+    ok(
+      await page.locator('[data-dl="cancel"]').isHidden(),
+      "room: Cancel is hidden until a download runs",
+    );
+    const [dl] = await Promise.all([
+      page.waitForEvent("download", { timeout: 60000 }),
+      page.click('[data-dl="room-zip"]'),
+    ]);
     const zip = unzip(await readDownload(dl));
     const docs = [...zip.keys()].filter((n) => n.endsWith(".docx"));
     ok(dl.suggestedFilename().endsWith(".zip"), `room: a .zip (${dl.suggestedFilename()})`);
-    ok(docs.length === level.activities.length, `room: one .docx per activity (${docs.length} of ${level.activities.length})`);
+    ok(
+      docs.length === level.activities.length,
+      `room: one .docx per activity (${docs.length} of ${level.activities.length})`,
+    );
     ok(docText(zip.get(docs[0])).length > 40, "room: the first .docx has text");
-    await page.waitForFunction(() => /ready/.test(document.querySelector('[data-dl-status^="room:"]')?.textContent || ""));
+    await page.waitForFunction(() =>
+      /ready/.test(document.querySelector('[data-dl-status^="room:"]')?.textContent || ""),
+    );
     ok(await page.locator('[data-dl="cancel"]').isHidden(), "room: Cancel hides when done");
-    ok((await page.locator('a[href$=".docx"][download]').count()) === 1, "room: the existing Word packet link is kept");
+    ok(
+      (await page.locator('a[href$=".docx"][download]').count()) === 1,
+      "room: the existing Word packet link is kept",
+    );
   }
 
   // Keyboard: Tab to the Word control and press Enter.
@@ -172,18 +231,30 @@ try {
     await page.goto(`${origin}/access-teacher/`, { waitUntil: "load" });
     await page.waitForSelector('[data-actdl-go="key-docx"]', { state: "attached", timeout: 20000 });
     // Hub sections start folded: open this one.
-    if (!(await page.locator('[data-actdl-go="key-docx"]').isVisible())) await page.click("#activityDownloads .fold-toggle");
+    if (!(await page.locator('[data-actdl-go="key-docx"]').isVisible()))
+      await page.click("#activityDownloads .fold-toggle");
     await page.waitForSelector('[data-actdl-go="key-docx"]');
     await page.selectOption('[data-actdl="band"]', "3-5");
     await page.selectOption('[data-actdl="domain"]', "Reading");
-    const [dl] = await Promise.all([page.waitForEvent("download"), page.click('[data-actdl-go="key-docx"]')]);
+    const [dl] = await Promise.all([
+      page.waitForEvent("download"),
+      page.click('[data-actdl-go="key-docx"]'),
+    ]);
     const text = docText(await readDownload(dl));
-    ok(/Answer key \(teacher only\)/.test(text) && /Correct answer/.test(text), `teacher hub: the answer-key Word file (${dl.suggestedFilename()})`);
+    ok(
+      /Answer key \(teacher only\)/.test(text) && /Correct answer/.test(text),
+      `teacher hub: the answer-key Word file (${dl.suggestedFilename()})`,
+    );
   }
   await ctx.close();
 
   // Phone width + Spanish.
-  const phone = await browser.newContext({ acceptDownloads: true, viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  const phone = await browser.newContext({
+    acceptDownloads: true,
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+  });
   await phone.addInitScript(() => {
     try {
       const k = "accessPracticeLab:v1:prefs";
@@ -193,23 +264,46 @@ try {
   });
   const p2 = await phone.newPage();
   watch(p2);
-  for (const [band, domain, level] of [["K", "Listening", "A"], ["6-8", "Reading", "B"]]) {
+  for (const [band, domain, level] of [
+    ["K", "Listening", "A"],
+    ["6-8", "Reading", "B"],
+  ]) {
     const [id] = firstRow(band, domain, level);
     await p2.goto(`${origin}${LAB}/${domain}/${level}/${id}?grades=${band}`, { waitUntil: "load" });
     await p2.waitForSelector('[data-dl="docx"]');
     const over = await p2.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     ok(over <= 1, `375px ${band}: no sideways scroll (${over}px)`);
-    const small = await p2.evaluate(() => [...document.querySelectorAll("[data-dl]:not([hidden])")].map((b) => b.getBoundingClientRect()).filter((r) => r.height < 44 || r.width < 44).length);
+    const small = await p2.evaluate(
+      () =>
+        [...document.querySelectorAll("[data-dl]:not([hidden])")]
+          .map((b) => b.getBoundingClientRect())
+          .filter((r) => r.height < 44 || r.width < 44).length,
+    );
     ok(small === 0, `375px ${band}: download controls are at least 44px`);
-    ok(/Archivo de Word/.test(await p2.locator('[data-dl="docx"]').innerText()), `Spanish ${band}: "Archivo de Word"`);
-    ok(/Imprimir o guardar como PDF/.test(await p2.locator('[data-dl="pdf"]').innerText()), `Spanish ${band}: "Imprimir o guardar como PDF"`);
+    ok(
+      /Archivo de Word/.test(await p2.locator('[data-dl="docx"]').innerText()),
+      `Spanish ${band}: "Archivo de Word"`,
+    );
+    ok(
+      /Imprimir o guardar como PDF/.test(await p2.locator('[data-dl="pdf"]').innerText()),
+      `Spanish ${band}: "Imprimir o guardar como PDF"`,
+    );
     const [dl] = await Promise.all([p2.waitForEvent("download"), p2.click('[data-dl="docx"]')]);
-    ok(/Instrucciones/.test(docText(await readDownload(dl))), `Spanish ${band}: the file's headings are Spanish`);
-    ok(/descargado/.test(await p2.locator("[data-dl-status]").first().innerText()), `Spanish ${band}: status in Spanish`);
+    ok(
+      /Instrucciones/.test(docText(await readDownload(dl))),
+      `Spanish ${band}: the file's headings are Spanish`,
+    );
+    ok(
+      /descargado/.test(await p2.locator("[data-dl-status]").first().innerText()),
+      `Spanish ${band}: status in Spanish`,
+    );
   }
   await p2.goto(`${origin}${LAB}/Writing/A?grades=3-5`, { waitUntil: "load" });
   await p2.waitForSelector('[data-dl="room-zip"]');
-  ok(/Descarga todas las actividades de esta sala/.test(await p2.locator(".dl-room h2").innerText()), "Spanish room: heading");
+  ok(
+    /Descarga todas las actividades de esta sala/.test(await p2.locator(".dl-room h2").innerText()),
+    "Spanish room: heading",
+  );
   const over = await p2.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   ok(over <= 1, `375px room: no sideways scroll (${over}px)`);
   await phone.close();
@@ -221,5 +315,9 @@ try {
   server?.close();
 }
 ok(errors.length === 0, `no console or page errors ${errors.slice(0, 3).join(" | ")}`);
-console.log(failures.length ? `\naccess-downloads-e2e: ${failures.length} FAILED` : "\naccess-downloads-e2e: all passed");
+console.log(
+  failures.length
+    ? `\naccess-downloads-e2e: ${failures.length} FAILED`
+    : "\naccess-downloads-e2e: all passed",
+);
 process.exit(failures.length ? 1 : 0);

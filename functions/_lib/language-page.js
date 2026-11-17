@@ -7,7 +7,7 @@
 // IS served here, with no password (LAB_HOST_OPEN), so a teacher can run a class on thelanguagepage.com: its Class panel is
 // backed by /api/class, which lives on this origin next to the students' progress. Its browser-local panels (rosters
 // and typed scores) are per origin, as before. The WIDA Data Studio (/access-teacher/predictive/) is served here
-// too, open like the Hub (Joel, 2026-11-17: "just this site"). The Hub's math Flight Deck stays on eduwonderlab.com.
+// too, open like the Hub (Joel, 2026-11-17: "just this site").
 //
 // Redirects the other way (eduwonderlab.com/access-practice-lab -> thelanguagepage.com) are deliberately not
 // here. Student progress lives in each origin's localStorage and does not cross origins, so the old origin must
@@ -63,12 +63,9 @@ const LAB_EXACT = new Set([
   "/api/experience-compile",
   STUDIOS_APP_BASE,
 ]);
-/** The Teacher Hub and its WIDA Data Studio (/predictive), minus the math Flight Deck. */
+/** The Teacher Hub and its WIDA Data Studio (/predictive). */
 export const HUB_BASE = "/access-teacher";
-const HUB_EXCLUDED = [`${HUB_BASE}/flight-deck`];
-const isHubPath = (p) =>
-  (p === HUB_BASE || p.startsWith(`${HUB_BASE}/`)) &&
-  !HUB_EXCLUDED.some((x) => p === x || p.startsWith(`${x}/`));
+const isHubPath = (p) => p === HUB_BASE || p.startsWith(`${HUB_BASE}/`);
 
 /** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */
 export const SITEMAP_PATHS = [

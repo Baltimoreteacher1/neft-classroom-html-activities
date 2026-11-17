@@ -70,7 +70,7 @@ export async function render(ctx, I) {
     html: html`${crumbs(I)}
       ${journeyHTML(I, "welcome", band)}
       ${familyTourHost() ? html`<section class="panel fam-tour-card" aria-labelledby="famTourTitle">
-        <h2 id="famTourTitle">${I.T("New to The Language Page?", "¿Es su primera vez en The Language Page?")}</h2>
+        <h2 id="famTourTitle">${I.spanish ? html`¿Es su primera vez en <span lang="en">The Language Page</span>?` : I.T("New to The Language Page?", "¿Es su primera vez en The Language Page?")}</h2>
         <p>${I.T("Take a short guided tour, explore what your child will practice, and get a free home-practice starter kit.", "Haga un recorrido guiado, conozca las actividades que puede practicar su hijo o hija y obtenga un kit gratuito para practicar en casa.")}</p>
         <a class="btn btn-primary btn-big" href="${BASE}/family-tour/?grades=${band}&lang=${I.spanish ? "es" : "en"}">${I.T("Start Family Tour", "Comenzar el recorrido familiar")}${icon("arrow-right")}</a>
       </section>` : ""}
@@ -96,6 +96,36 @@ export async function render(ctx, I) {
         </div>
         <div class="prog-hero-art"><img src="${ART}/family-home.svg" alt="" width="420" height="300" /></div>
       </section>
+      <nav class="fam-primary-doors" aria-label="${I.S("Four family actions", "Cuatro acciones para la familia")}">
+        <a class="fam-door-card" data-fam-action="start" href="${BASE}/family/practice?grades=${band}">
+          <span class="fam-door-ico" aria-hidden="true">${icon("play")}</span>
+          <span>
+            <strong>${I.T("Start an Activity", "Empezar una actividad")}</strong>
+            <span>${I.T("Short 5-to-10-minute language activities for home.", "Actividades breves de 5 a 10 minutos para el hogar.")}</span>
+          </span>
+        </a>
+        <a class="fam-door-card" data-fam-action="read" href="${BASE}/reading-room?grades=${band}">
+          <span class="fam-door-ico" aria-hidden="true">${icon("reading")}</span>
+          <span>
+            <strong>${I.T("Read Together", "Leer juntos")}</strong>
+            <span>${I.T("Explore illustrated stories and talk about them.", "Exploren cuentos ilustrados y conversen sobre ellos.")}</span>
+          </span>
+        </a>
+        <a class="fam-door-card" data-fam-action="help" href="${BASE}/family/help?grades=${band}">
+          <span class="fam-door-ico" aria-hidden="true">${icon("help")}</span>
+          <span>
+            <strong>${I.T("Help in My Language", "Ayuda en mi idioma")}</strong>
+            <span>${I.T("Simple tips and questions in English and Spanish.", "Consejos sencillos y preguntas en inglés y español.")}</span>
+          </span>
+        </a>
+        <a class="fam-door-card" data-fam-action="progress" href="${BASE}/family/progress?grades=${band}">
+          <span class="fam-door-ico" aria-hidden="true">${icon("growth")}</span>
+          <span>
+            <strong>${I.T("See Progress", "Ver el progreso")}</strong>
+            <span>${I.T("See what your child practiced on this device.", "Vea lo que practicó su hijo o hija en este dispositivo.")}</span>
+          </span>
+        </a>
+      </nav>
       ${subnavHTML(I, "", band)}
 
       ${encouragement ? html`<section class="fam-encouragement panel" aria-label="${I.L("hub.encourage.heading")}"><p class="eyebrow">${I.L("hub.encourage.heading")}</p><p lang="${I.spanish ? "es" : "en"}">“${encouragement}”</p><a href="${BASE}/?grades=${band}">${I.L("hub.encourage.child")}</a></section>` : ""}

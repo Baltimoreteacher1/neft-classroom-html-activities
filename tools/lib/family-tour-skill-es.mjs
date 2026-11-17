@@ -30,7 +30,8 @@ export const SKILL_ES = {
   "g35-w-c-bird-feeder": "explicar un procedimiento con verbos precisos y palabras de transición",
   "g35-w-c-cleanup-story": "contar una historia desarrollada con transiciones y un cierre",
   "g35-w-c-argue-uniform": "escribir un argumento con una postura, evidencia y una objeción",
-  "g35-w-c-explain-experiment": "escribir una explicación de ciencias con afirmación, evidencia y razonamiento",
+  "g35-w-c-explain-experiment":
+    "escribir una explicación de ciencias con afirmación, evidencia y razonamiento",
   "g35-w-c-letter-request": "escribir una carta formal con una petición y razones",
   "v3-s-a-1": "describir oralmente lo que ven",
   "sv5-describe-lunch-tray": "describir objetos en voz alta con detalles",
@@ -46,7 +47,8 @@ export const SKILL_ES = {
   "68c-s-water-filter-explain": "explicar un proceso a partir de un diagrama",
   "68c-s-counterclaim-service": "reconocer una opinión contraria y responder a ella",
   "68c-s-heat-island-summary": "resumir en voz alta un texto informativo",
-  "68c-s-story-summary-bridge": "resumir con sus propias palabras los sucesos principales de un cuento",
+  "68c-s-story-summary-bridge":
+    "resumir con sus propias palabras los sucesos principales de un cuento",
   "v3-w-a-1": "escribir oraciones descriptivas sencillas",
   "v10-w-a-caption": "escribir un pie de foto que explique una imagen",
   "v10-w-a-describe-frames": "escribir de 2 a 3 oraciones descriptivas con frases de apoyo",
@@ -61,7 +63,8 @@ export const SKILL_ES = {
   "v3-w-c-1": "escribir una afirmación con evidencia",
   "v3-w-c-2": "escribir una respuesta que compare y contraste",
   "68c-w-ana-lights-out-narrative": "desarrollar una narración con orden, diálogo y detalles",
-  "68c-w-athens-sparta-compare": "escribir un párrafo que compare y contraste a partir de una tabla",
+  "68c-w-athens-sparta-compare":
+    "escribir un párrafo que compare y contraste a partir de una tabla",
 };
 
 // Early bands (K, 1, 2–3): keyed by the activity's English skill line, which repeats across activities.
@@ -82,20 +85,23 @@ export const SKILL_ES_EARLY = {
   "Telling a feeling and a reason": "decir un sentimiento y la razón",
   "Describing people and what they do": "describir a las personas y lo que hacen",
   "Explaining with because": "explicar con «porque» (because)",
-  "Telling how you help, with first and next": "contar cómo ayudan, con «primero» y «después» (first, next)",
+  "Telling how you help, with first and next":
+    "contar cómo ayudan, con «primero» y «después» (first, next)",
   "Telling what happens in order": "contar lo que pasa en orden",
   "Writing a label": "escribir una palabra para rotular",
   "Writing a weather word": "escribir una palabra sobre el clima",
   "Writing a sentence about what you can do": "escribir una oración sobre lo que pueden hacer",
   "Writing a sentence about a picture": "escribir una oración sobre una imagen",
   "Writing a short thank-you": "escribir una nota corta de agradecimiento",
-  "Writing two steps with first and then": "escribir dos pasos con «primero» y «luego» (first, then)",
+  "Writing two steps with first and then":
+    "escribir dos pasos con «primero» y «luego» (first, then)",
   "Writing what happens in a science picture": "escribir lo que pasa en una imagen de ciencias",
   "Writing two sentences about family": "escribir dos oraciones sobre la familia",
   "Describing what people are doing": "describir lo que hacen las personas",
   "Naming people and objects in a scene": "nombrar personas y objetos en una escena",
   "Telling what is happening and what comes next": "decir qué está pasando y qué sigue",
-  "Describing a community helper's job": "describir el trabajo de una persona que ayuda a la comunidad",
+  "Describing a community helper's job":
+    "describir el trabajo de una persona que ayuda a la comunidad",
   "Narrating a sequence from pictures": "contar una secuencia a partir de imágenes",
   "Giving a short tour with directions": "hacer un recorrido corto dando indicaciones",
   "Telling what you would say and do, and why": "decir qué dirían y harían, y por qué",
@@ -103,7 +109,8 @@ export const SKILL_ES_EARLY = {
   "Writing a feeling sentence": "escribir una oración sobre un sentimiento",
   "Writing labels for a picture": "escribir palabras para rotular una imagen",
   "Writing a list and a sentence": "escribir una lista y una oración",
-  "Writing three sentences about a family meal": "escribir tres oraciones sobre una comida en familia",
+  "Writing three sentences about a family meal":
+    "escribir tres oraciones sobre una comida en familia",
   "Writing what animals do": "escribir lo que hacen los animales",
   "Writing a how-to with order words": "escribir cómo se hace algo, con palabras de orden",
   "Writing steps with signal words": "escribir pasos con palabras que marcan el orden",

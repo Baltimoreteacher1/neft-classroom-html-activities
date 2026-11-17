@@ -424,7 +424,9 @@ t(
     assert.equal(explorers.length, 8);
     return Promise.all(
       explorers.map(async (L) => {
-        const mod = await import(`../assets/math-studio/${L.explore.kind === "expression-parts" ? "parts" : L.explore.kind}.mjs`);
+        const mod = await import(
+          `../assets/math-studio/${L.explore.kind === "expression-parts" ? "parts" : L.explore.kind}.mjs`
+        );
         const s0 = mod.initialState(L.explore);
         for (const q of [
           ...mod.questions(s0, L.id, L.explore.cards),

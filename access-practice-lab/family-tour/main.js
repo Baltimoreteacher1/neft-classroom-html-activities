@@ -356,6 +356,12 @@ const ACTIONS = {
     home.view.open = "";
     render({ stageChanged: true });
   },
+  "choose-another": () => {
+    closeMedia();
+    flow.kitView = false;
+    save({ mode: "tour", stage: "plan" });
+    render({ stageChanged: true });
+  },
   "home-open": ({ v }) => {
     home.view.open = home.view.open === v ? "" : v;
     render();

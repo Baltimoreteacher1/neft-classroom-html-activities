@@ -31,13 +31,20 @@ const index = read("content/index.json");
 const rows = M.buildRegistry(index);
 const cap = (d) => d[0].toUpperCase() + d.slice(1);
 const doms = {};
-for (const b of M.BANDS) for (const d of M.DOMAINS) doms[`${b.id}/${d.id}`] = read(`content/g${b.id}/${cap(d.id)}.json`);
-const actOf = (r) => doms[`${r.band}/${r.domain}`].levels[r.level].activities.find((a) => a.id === r.id);
+for (const b of M.BANDS)
+  for (const d of M.DOMAINS) doms[`${b.id}/${d.id}`] = read(`content/g${b.id}/${cap(d.id)}.json`);
+const actOf = (r) =>
+  doms[`${r.band}/${r.domain}`].levels[r.level].activities.find((a) => a.id === r.id);
 
 test("registry: both bands, all four skills, every level, the skill's own item type only", () => {
   assert.ok(rows.length > 150, `${rows.length} rows`);
-  for (const b of M.BANDS) for (const d of M.DOMAINS) for (const lv of ["A", "B", "C"])
-    assert.ok(rows.some((r) => r.band === b.id && r.domain === d.id && r.level === lv), `${b.id} ${d.id} ${lv}`);
+  for (const b of M.BANDS)
+    for (const d of M.DOMAINS)
+      for (const lv of ["A", "B", "C"])
+        assert.ok(
+          rows.some((r) => r.band === b.id && r.domain === d.id && r.level === lv),
+          `${b.id} ${d.id} ${lv}`,
+        );
   assert.equal(new Set(rows.map((r) => r.key)).size, rows.length, "unique keys");
 });
 
@@ -47,48 +54,77 @@ test("every row is a real activity with the fields the lesson needs, and a stude
     assert.ok(a, r.key);
     assert.equal(a.type, M.domainOf(r.domain).item, r.key);
     const need = M.domainOf(r.domain).produce ? "successCriteria" : "listenFor"; // Reading files use listenFor or readFor
-    for (const f of ["prompt", "directions", "skill", "frames", "hint", "correct"]) assert.ok(a[f]?.length, `${r.key} has ${f}`);
+    for (const f of ["prompt", "directions", "skill", "frames", "hint", "correct"])
+      assert.ok(a[f]?.length, `${r.key} has ${f}`);
     assert.ok((a[need] || a.readFor)?.length, `${r.key} has ${need}`);
     const url = M.studentUrl(r);
-    assert.match(url, /^https:\/\/thelanguagepage\.com\/access-practice-lab\/(Listening|Speaking|Reading|Writing)\/[ABC]\/[\w-]+\?grades=(3-5|6-8)$/, url);
+    assert.match(
+      url,
+      /^https:\/\/thelanguagepage\.com\/access-practice-lab\/(Listening|Speaking|Reading|Writing)\/[ABC]\/[\w-]+\?grades=(3-5|6-8)$/,
+      url,
+    );
     assert.ok(new TextEncoder().encode(url).length <= MAX_BYTES, `${r.key}: link fits a QR code`);
   }
 });
 
 test("finder: one to three activities for every band x skill x purpose, best fit first, distinct skills", () => {
-  for (const b of M.BANDS) for (const d of M.DOMAINS) for (const p of M.PURPOSES) {
-    const rec = M.recommend(rows, { band: b.id, domain: d.id, purpose: p.id });
-    assert.ok(rec.length >= 1 && rec.length <= 3, `${b.id} ${d.id} ${p.id}: ${rec.length}`);
-    assert.equal(new Set(rec.map((r) => r.focus)).size, rec.length);
-    assert.ok(rec.every((r) => r.band === b.id && r.domain === d.id));
-  }
+  for (const b of M.BANDS)
+    for (const d of M.DOMAINS)
+      for (const p of M.PURPOSES) {
+        const rec = M.recommend(rows, { band: b.id, domain: d.id, purpose: p.id });
+        assert.ok(rec.length >= 1 && rec.length <= 3, `${b.id} ${d.id} ${p.id}: ${rec.length}`);
+        assert.equal(new Set(rec.map((r) => r.focus)).size, rec.length);
+        assert.ok(rec.every((r) => r.band === b.id && r.domain === d.id));
+      }
   const warm = M.recommend(rows, { band: "6-8", domain: "speaking", purpose: "warmup" });
   const indep = M.recommend(rows, { band: "6-8", domain: "speaking", purpose: "independent" });
-  assert.ok(warm[0].minutes <= indep[0].minutes + 3 && indep[0].level === "C", "independent prefers stretching support");
+  assert.ok(
+    warm[0].minutes <= indep[0].minutes + 3 && indep[0].level === "C",
+    "independent prefers stretching support",
+  );
 });
 
 test("lessons: for every activity x length x approach the blocks add up, text is clean, and the goal never changes", () => {
   const seen = new Map();
   for (const r of rows) {
     const act = actOf(r);
-    for (const minutes of M.MINUTES) for (const approach of M.APPROACHES.map((a) => a.id)) {
-      const les = L.buildLesson({ res: r, act, minutes, approach });
-      assert.equal(L.totalMinutes(les), minutes, `${r.key} ${minutes}`);
-      const text = L.lessonText(les, Q.quickRows());
-      assert.doesNotMatch(text, /undefined|null|NaN|\[object|\?\.|(?<!\.)\.\.(?!\.)|\?\?|!\.|I can (using|describing|writing|explaining)/, `${r.key} ${minutes} ${approach}`);
-      assert.match(les.target, /^I can /);
-      assert.ok(les.evidence.length >= 2 && les.blocks.every((b) => b.steps.length >= 1 && b.minutes >= 1));
-      assert.ok(text.includes(les.student.url) && text.includes(r.title), "names the real activity and link");
-      if (approach === "mixed") seen.set(`${r.key}|${minutes}`, text);
-    }
+    for (const minutes of M.MINUTES)
+      for (const approach of M.APPROACHES.map((a) => a.id)) {
+        const les = L.buildLesson({ res: r, act, minutes, approach });
+        assert.equal(L.totalMinutes(les), minutes, `${r.key} ${minutes}`);
+        const text = L.lessonText(les, Q.quickRows());
+        assert.doesNotMatch(
+          text,
+          /undefined|null|NaN|\[object|\?\.|(?<!\.)\.\.(?!\.)|\?\?|!\.|I can (using|describing|writing|explaining)/,
+          `${r.key} ${minutes} ${approach}`,
+        );
+        assert.match(les.target, /^I can /);
+        assert.ok(
+          les.evidence.length >= 2 &&
+            les.blocks.every((b) => b.steps.length >= 1 && b.minutes >= 1),
+        );
+        assert.ok(
+          text.includes(les.student.url) && text.includes(r.title),
+          "names the real activity and link",
+        );
+        if (approach === "mixed") seen.set(`${r.key}|${minutes}`, text);
+      }
     const goals = new Set(L.profilesFor(act).map((p) => p.goal));
     assert.equal(goals.size, 1, `${r.key}: one learning goal across Starting, Growing, Expanding`);
     const ps = L.profilesFor(act);
-    assert.equal(new Set(ps.map((p) => JSON.stringify(p.items))).size, 3, `${r.key}: supports differ`);
+    assert.equal(
+      new Set(ps.map((p) => JSON.stringify(p.items))).size,
+      3,
+      `${r.key}: supports differ`,
+    );
   }
   const r0 = rows[0];
   assert.notEqual(seen.get(`${r0.key}|5`), seen.get(`${r0.key}|20`), "5 and 20 minutes differ");
-  assert.notEqual(seen.get(`${rows[0].key}|10`).replace(rows[0].title, ""), seen.get(`${rows[40].key}|10`).replace(rows[40].title, ""), "different activities differ");
+  assert.notEqual(
+    seen.get(`${rows[0].key}|10`).replace(rows[0].title, ""),
+    seen.get(`${rows[40].key}|10`).replace(rows[40].title, ""),
+    "different activities differ",
+  );
 });
 
 test("a five-minute lesson is a micro-lesson and a twenty-minute lesson a fuller cycle", () => {
@@ -96,15 +132,29 @@ test("a five-minute lesson is a micro-lesson and a twenty-minute lesson a fuller
   const a = actOf(r);
   const five = L.buildLesson({ res: r, act: a, minutes: 5, approach: "growing" });
   const twenty = L.buildLesson({ res: r, act: a, minutes: 20, approach: "growing" });
-  assert.deepEqual(five.blocks.map((b) => b.id), ["launch", "practice", "feedback", "close"]);
-  assert.deepEqual(twenty.blocks.map((b) => b.id), ["launch", "model", "practice", "feedback", "close"]);
-  assert.ok(twenty.blocks.flatMap((b) => b.steps).length > five.blocks.flatMap((b) => b.steps).length);
+  assert.deepEqual(
+    five.blocks.map((b) => b.id),
+    ["launch", "practice", "feedback", "close"],
+  );
+  assert.deepEqual(
+    twenty.blocks.map((b) => b.id),
+    ["launch", "model", "practice", "feedback", "close"],
+  );
+  assert.ok(
+    twenty.blocks.flatMap((b) => b.steps).length > five.blocks.flatMap((b) => b.steps).length,
+  );
 });
 
 test("edits: the teacher's target and launch directions survive a change of length or approach", () => {
   const r = rows[3];
   const a = actOf(r);
-  const les = L.buildLesson({ res: r, act: a, minutes: 15, approach: "expanding", edits: { target: "I can try my own words.", launch: "Gather on the rug." } });
+  const les = L.buildLesson({
+    res: r,
+    act: a,
+    minutes: 15,
+    approach: "expanding",
+    edits: { target: "I can try my own words.", launch: "Gather on the rug." },
+  });
   assert.equal(les.target, "I can try my own words.");
   assert.ok(les.blocks[0].steps[0] === "Gather on the rug.");
   assert.ok(L.lessonText(les).includes("I can try my own words."));
@@ -123,7 +173,15 @@ test("PDF: a real multi-page file with links, a QR code, and every kit part", ()
   writeFileSync(file, bytes);
   try {
     const out = execFileSync("pdftotext", ["-layout", file, "-"], { encoding: "utf8" });
-    for (const s of ["My First Lesson with The Language Page", "STUDENT ACTIVITY CARD", "CLASSROOM PROJECTION VIEW", "LANGUAGE SUPPORT AND FEEDBACK CARD", "Your Quick Guide to The Language Page", les.target]) assert.ok(out.includes(s), s);
+    for (const s of [
+      "My First Lesson with The Language Page",
+      "STUDENT ACTIVITY CARD",
+      "CLASSROOM PROJECTION VIEW",
+      "LANGUAGE SUPPORT AND FEEDBACK CARD",
+      "Your Quick Guide to The Language Page",
+      les.target,
+    ])
+      assert.ok(out.includes(s), s);
   } catch (e) {
     if (e.code !== "ENOENT") throw e; // pdftotext not installed: the structural checks above still ran
   }
@@ -131,11 +189,24 @@ test("PDF: a real multi-page file with links, a QR code, and every kit part", ()
 
 test("DOCX: a stored zip with the Word parts, escaped text and one hyperlink per link", () => {
   const r = rows.find((x) => x.band === "6-8" && x.domain === "writing");
-  const les = L.buildLesson({ res: r, act: actOf(r), minutes: 20, approach: "mixed", edits: { target: 'I can use "quotes" & <tags>.' } });
+  const les = L.buildLesson({
+    res: r,
+    act: actOf(r),
+    minutes: 20,
+    approach: "mixed",
+    edits: { target: 'I can use "quotes" & <tags>.' },
+  });
   const bytes = D.kitDocx(les);
   const s = Buffer.from(bytes).toString("utf8");
   assert.equal(String.fromCharCode(bytes[0], bytes[1]), "PK");
-  for (const part of ["[Content_Types].xml", "_rels/.rels", "word/document.xml", "word/styles.xml", "word/_rels/document.xml.rels"]) assert.ok(s.includes(part), part);
+  for (const part of [
+    "[Content_Types].xml",
+    "_rels/.rels",
+    "word/document.xml",
+    "word/styles.xml",
+    "word/_rels/document.xml.rels",
+  ])
+    assert.ok(s.includes(part), part);
   assert.ok(s.includes("I can use &quot;quotes&quot; &amp; &lt;tags&gt;."), "text is escaped");
   assert.ok(s.includes(`Target="${les.student.url}"`));
   assert.equal(D.crc32(new TextEncoder().encode("123456789")), 0xcbf43926, "CRC-32 check value");
@@ -152,15 +223,32 @@ test("DOCX: a stored zip with the Word parts, escaped text and one hyperlink per
 test("quick reference: nine tasks, every link a page the lab answers", async () => {
   const { DEST_BY_ID } = await import("../access-practice-lab/src/sitemap.js");
   assert.equal(Q.QUICK_TASKS.length, 9);
-  const known = new Set([...Object.values(ROUTES), ...Object.values(DEST_BY_ID).map((d) => `/${d.href}`)]);
-  for (const t of [...Q.QUICK_TASKS.flatMap((q) => q.links), ...Q.MORE_RESOURCES]) assert.ok(known.has(t.route), `${t.label}: ${t.route}`);
-  assert.ok(Q.quickRows().every((q) => q.url.startsWith("https://thelanguagepage.com/access-practice-lab/")));
+  const known = new Set([
+    ...Object.values(ROUTES),
+    ...Object.values(DEST_BY_ID).map((d) => `/${d.href}`),
+  ]);
+  for (const t of [...Q.QUICK_TASKS.flatMap((q) => q.links), ...Q.MORE_RESOURCES])
+    assert.ok(known.has(t.route), `${t.label}: ${t.route}`);
+  assert.ok(
+    Q.quickRows().every((q) =>
+      q.url.startsWith("https://thelanguagepage.com/access-practice-lab/"),
+    ),
+  );
 });
 
 test("saved state: damaged or old records become a complete, valid state", () => {
   assert.equal(M.normalizeState(null).step, "welcome");
   assert.equal(M.normalizeState({ v: 2 }).step, "welcome");
-  const s = M.normalizeState({ v: 1, step: "kit", furthest: 99, band: "9-12", tab: "x", profile: "?", pick: { band: "6-8", domain: "speaking", level: "Z", id: "a" }, lesson: { minutes: 7, approach: "no", edits: 5 } });
+  const s = M.normalizeState({
+    v: 1,
+    step: "kit",
+    furthest: 99,
+    band: "9-12",
+    tab: "x",
+    profile: "?",
+    pick: { band: "6-8", domain: "speaking", level: "Z", id: "a" },
+    lesson: { minutes: 7, approach: "no", edits: 5 },
+  });
   assert.equal(s.step, "implement", "a kit with no activity goes back to choosing one");
   assert.equal(s.band, "6-8");
   assert.equal(s.pick, null);
@@ -172,10 +260,11 @@ test("saved state: damaged or old records become a complete, valid state", () =>
 });
 
 test("Mr. Neft speaks on every screen", () => {
-  for (const id of [...M.STEP_IDS, "gate"]) assert.ok(M.NEFT[id]?.say?.length > 20 && M.NEFT[id].chips.length >= 3, id);
+  for (const id of [...M.STEP_IDS, "gate"])
+    assert.ok(M.NEFT[id]?.say?.length > 20 && M.NEFT[id].chips.length >= 3, id);
 });
 
-test("saved focus: the old \"both\" choice becomes \"all\", and any of the four skills is kept", () => {
+test('saved focus: the old "both" choice becomes "all", and any of the four skills is kept', () => {
   assert.equal(M.normalizeState({ v: 1, focus: "both" }).focus, "all");
   for (const d of M.DOMAINS) assert.equal(M.normalizeState({ v: 1, focus: d.id }).focus, d.id);
   assert.equal(M.normalizeState({ v: 1, focus: "x" }).focus, "");

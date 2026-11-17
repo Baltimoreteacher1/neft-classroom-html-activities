@@ -180,6 +180,7 @@ test("no file the student Practice Lab loads is behind the teacher gate", () => 
   const allowed = new Set([
     "access-practice-lab/paper-passport/language-passport-teacher-key.pdf",
     "access-practice-lab/src/class/social-teacher.js",
+    "access-practice-lab/src/download/answer-key.js",
   ]);
   const panel = readFileSync("access-practice-lab/src/class/roster-panel.js", "utf8");
   assert.match(panel, /import\("\.\/social-teacher\.js"\)/);
