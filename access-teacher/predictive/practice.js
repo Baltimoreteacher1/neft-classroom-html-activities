@@ -1,6 +1,7 @@
 // Practice links: which Language Page activities fit a domain, a reported level and a grade band. Activities come
 // from the site map (src/sitemap.js) and the Access Prep skill list (src/prep/registry.js), so a renamed or new
 // page is picked up here without a second list. Links carry ?grades= so the student lands in their own band.
+import { assignableActivities } from "../../access-practice-lab/src/class/assign.js";
 import { PREP_SKILL_LIST } from "../../access-practice-lab/src/prep/registry.js";
 import { DEST_BY_ID } from "../../access-practice-lab/src/sitemap.js";
 import { DOMAINS } from "./rules.js";
@@ -113,6 +114,52 @@ export function activitiesFor(domain, level, band, max = 3) {
   return out;
 }
 
+/** The lab's support choice (A most help, C least) that fits a reported WIDA level. */
+export const supportLevelFor = (level) => (level == null ? "B" : level < 2.5 ? "A" : level < 4 ? "B" : "C");
+
+let activityIndex = null;
+let indexPromise = null;
+/** Load the lab's activity index once (content/index.json); `onReady` re-renders when it arrives. */
+export function preloadActivities(onReady) {
+  indexPromise ||= fetch("/access-practice-lab/content/index.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j) => {
+      activityIndex = j;
+      if (j) onReady?.();
+    })
+    .catch(() => null);
+  return indexPromise;
+}
+/** For tests: provide the index directly. */
+export const setActivityIndex = (j) => {
+  activityIndex = j;
+};
+
+const hash = (t) => [...String(t)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+/**
+ * `n` exact lab activities (their own pages) for a domain at the matching support level and band, rotated by
+ * `seed` so classmates get different ones. Empty until the activity index has loaded.
+ */
+export function specificActivities(domain, level, band, n = 2, seed = "") {
+  if (!activityIndex || !["Listening", "Speaking", "Reading", "Writing"].includes(domain)) return [];
+  const support = supportLevelFor(level);
+  const rows = assignableActivities(activityIndex, band, domain).filter((r) => r.level === support);
+  if (!rows.length) return [];
+  const skill = new Map((activityIndex.bands?.[band]?.domains?.[domain]?.levels?.[support]?.activities || []).map((a) => [a[0], a[3]]));
+  const start = hash(seed) % rows.length;
+  const out = [];
+  const seen = new Set();
+  for (let i = 0; i < rows.length && out.length < n; i++) {
+    const r = rows[(start + i) % rows.length];
+    const why = skill.get(r.id) || "";
+    if (seen.has(why) && rows.length > n * 2) continue; // spread across different skills when there is room
+    seen.add(why);
+    out.push({ id: `act:${r.id}`, title: r.title, why: firstSentence(why), href: r.path.includes("?") ? r.path : `${r.path}?grades=${band}`, specific: true });
+  }
+  return out;
+}
+
 /** A short practice plan for one record: the two lowest domains first, then vocabulary. */
 export function practicePlan(record, { max = 3 } = {}) {
   if (!record) return [];
@@ -122,11 +169,11 @@ export function practicePlan(record, { max = 3 } = {}) {
   );
   const focus = ranked.slice(0, 2);
   return [
-    ...focus.map((d) => ({
-      domain: d,
-      level: record.domains[d].level,
-      activities: activitiesFor(d, record.domains[d].level, band, max),
-    })),
+    ...focus.map((d) => {
+      const lv = record.domains[d].level;
+      const exact = specificActivities(d, lv, band, 2, `${record.studentId}:${d}`);
+      return { domain: d, level: lv, activities: [...exact, ...activitiesFor(d, lv, band, max)].slice(0, exact.length ? max + 1 : max) };
+    }),
     {
       domain: "Vocabulary",
       level: null,

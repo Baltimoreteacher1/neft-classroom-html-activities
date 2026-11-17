@@ -15,6 +15,7 @@ import { renderPlanner } from "./view-planner.js";
 import { renderReports } from "./view-reports.js";
 import { renderStudents } from "./view-students.js";
 import { renderToolkit } from "./view-toolkit.js";
+import { preloadActivities } from "./practice.js";
 import { showStep, tourCard } from "./tour.js";
 
 const TABS = [
@@ -81,6 +82,7 @@ function sessionSet(k, v) {
 
 function load() {
   ws.live = null;
+  preloadActivities(() => render());
   if (ws.mode === "demo") {
     demoCache ||= (() => {
       const byKey = transitionsByKey(demoTrainingCohort());

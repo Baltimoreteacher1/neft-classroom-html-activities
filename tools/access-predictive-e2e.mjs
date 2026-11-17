@@ -320,6 +320,19 @@ ok(
   acts.length >= 3 && acts.every((u) => /^\/access-practice-lab\/.+grades=/.test(u)),
   "Practice next links go to Language Page activities at the student's grade band",
 );
+await page.waitForSelector('.pi-practice [data-activity^="act:"]', { timeout: 15000 });
+const exactActs = await page.$$eval('.pi-practice [data-activity^="act:"]', (x) =>
+  x.map((a) => a.getAttribute("href")),
+);
+ok(
+  exactActs.length >= 2 &&
+    exactActs.every((u) =>
+      /^\/access-practice-lab\/(Listening|Speaking|Reading|Writing)\/[ABC]\/[\w:-]+\?grades=/.test(
+        u,
+      ),
+    ),
+  "Practice next links straight to specific activities at the student's support level",
+);
 await page.click('[data-student="DEMO-0002"]');
 ok(
   (await page.locator('[data-outlook="concordance"]').count()) === 1,

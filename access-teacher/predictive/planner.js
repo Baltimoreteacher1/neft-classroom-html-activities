@@ -5,7 +5,7 @@
 import { assignmentLink, selectItems } from "../../access-practice-lab/src/acc/adapt/assign.js";
 import { DEST_BY_ID } from "../../access-practice-lab/src/sitemap.js";
 import { domainProfile, guidanceFor } from "./interpret.js";
-import { activitiesFor, bandForGrade } from "./practice.js";
+import { activitiesFor, bandForGrade, specificActivities } from "./practice.js";
 import { DOMAINS } from "./rules.js";
 
 /** Existing Language Page destinations per need, from the site map (ids in src/sitemap.js). */
@@ -86,6 +86,7 @@ export function findingsFor(record) {
       ],
       resources: [...RESOURCES[d], ...RESOURCES.Vocabulary.slice(0, 1)],
       activities: [
+        ...specificActivities(d, record.domains[d].level, bandForGrade(record.grade), 2, `${record.studentId}:${d}`),
         ...activitiesFor(d, record.domains[d].level, bandForGrade(record.grade), 4),
         ...activitiesFor("Vocabulary", record.domains[d].level, bandForGrade(record.grade), 1),
       ],

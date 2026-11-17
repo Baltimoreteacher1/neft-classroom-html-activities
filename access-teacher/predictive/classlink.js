@@ -3,6 +3,7 @@
 // same format, so there is one class system. Students' practice arrives as the summaries their devices already
 // send (counts per domain, this week's evidence, assignments done): counts only, never a level or a score.
 import { assignableActivities, toAssignment } from "../../access-practice-lab/src/class/assign.js";
+import { supportLevelFor } from "./practice.js";
 import { createTeacherClient } from "../../shared/class-platform/client.js";
 import { LIMITS } from "../../shared/class-platform/contract.js";
 
@@ -59,9 +60,8 @@ export function memberFor(classStudents, name) {
   return byFirst.length === 1 ? byFirst[0] : null;
 }
 
-/** The lab's support choice (A most help, C least) that fits a reported WIDA level. */
-export const supportLevelFor = (level) =>
-  level == null ? "B" : level < 2.5 ? "A" : level < 4 ? "B" : "C";
+/** The lab's support choice for a WIDA level; one rule, kept in practice.js. */
+export { supportLevelFor };
 
 let indexCache = null;
 const loadIndex = async () =>
