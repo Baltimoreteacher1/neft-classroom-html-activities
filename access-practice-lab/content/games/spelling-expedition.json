@@ -1,25 +1,33 @@
 {
   "id": "spelling-expedition",
-  "mechanic": "morphology-mountain",
+  "mechanic": "word-parts",
   "rules": {
     "3-5": [
       {
-        "en": "Read or listen to each clue. Choose a response, check your thinking, and revise after a hint.",
-        "es": "Lee o escucha cada pista. Elige una respuesta, revisa tu idea y corrígela después de una pista."
+        "en": "Each camp gives you a meaning clue and a sentence with a blank. Build the word that fits from the part tiles.",
+        "es": "Cada campamento te da una pista de significado y una oración con un espacio en blanco. Forma la palabra que encaja con las fichas de partes."
       },
       {
-        "en": "Finish each station, then use one idea in your own words.",
-        "es": "Termina cada estación y luego usa una idea con tus propias palabras."
+        "en": "Tap a tile to add it, or drag it onto a slot. Tap a placed tile to send it back. Some tiles do not belong.",
+        "es": "Toca una ficha para agregarla o arrástrala a un espacio. Toca una ficha colocada para devolverla. Algunas fichas no corresponden."
+      },
+      {
+        "en": "Check your word. A correct word moves your climber up one camp, and a word-part card shows what each part means.",
+        "es": "Revisa tu palabra. Una palabra correcta sube a tu escaladora un campamento, y una tarjeta muestra qué significa cada parte."
       }
     ],
     "6-8": [
       {
-        "en": "Study each prompt and its evidence. Choose the strongest response, then revise your thinking when feedback gives you a clue.",
-        "es": "Estudia cada pregunta y su evidencia. Elige la respuesta más sólida y revisa tu idea cuando recibas una pista."
+        "en": "Each camp gives a definition and a sentence. Assemble the academic word from prefix, root and suffix tiles.",
+        "es": "Cada campamento da una definición y una oración. Arma la palabra académica con fichas de prefijos, raíces y sufijos."
       },
       {
-        "en": "Complete the stations and apply the language in your own words.",
-        "es": "Completa las estaciones y aplica el lenguaje con tus propias palabras."
+        "en": "Distractor tiles build real words that do not fit the clue. Use the meaning of each part to decide.",
+        "es": "Las fichas distractoras forman palabras reales que no encajan con la pista. Usa el significado de cada parte para decidir."
+      },
+      {
+        "en": "After each check, study the word-part card: the roots you learn here unlock hundreds of other words.",
+        "es": "Después de cada revisión, estudia la tarjeta de partes: las raíces que aprendes aquí abren cientos de otras palabras."
       }
     ]
   },
@@ -27,123 +35,465 @@
     "3-5": {
       "rounds": [
         {
-          "id": "spelling-expedition-1",
-          "prompt": {
-            "en": "Add a prefix to “possible” to mean “not possible.”",
-            "es": "Add a prefix to “possible” to mean “not possible.”"
-          },
-          "choices": [
+          "id": "se35-unlock",
+          "word": "unlock",
+          "es": "abrir (con llave)",
+          "parts": [
             {
-              "en": "impossible",
-              "es": "imposible"
+              "t": "un",
+              "kind": "prefix",
+              "mean": { "en": "not; the opposite of", "es": "no; lo contrario de" }
             },
             {
-              "en": "repossible",
-              "es": "reposible"
-            },
-            {
-              "en": "possibleful",
-              "es": "posibleoso"
+              "t": "lock",
+              "kind": "base",
+              "mean": { "en": "to close with a key", "es": "cerrar con llave" }
             }
           ],
-          "answer": 0,
+          "decoys": [
+            { "t": "re", "kind": "prefix", "mean": { "en": "again", "es": "otra vez" } },
+            { "t": "less", "kind": "suffix", "mean": { "en": "without", "es": "sin" } }
+          ],
+          "meaning": {
+            "en": "to open something that was closed with a key",
+            "es": "abrir algo que estaba cerrado con llave"
+          },
+          "context": {
+            "en": "Maya turned her key to ___ the front door.",
+            "es": "Maya giró su llave para abrir la puerta principal."
+          },
           "hint": {
-            "en": "The prefix changes the meaning to its opposite.",
-            "es": "The prefix changes the meaning to its opposite."
+            "en": "Look for the prefix that turns an action into its opposite.",
+            "es": "Busca el prefijo que convierte una acción en su contrario."
           },
           "explain": {
-            "en": "The prefix changes the meaning to its opposite.",
-            "es": "The prefix changes the meaning to its opposite."
+            "en": "un- means “not” or “the opposite of.” un + lock = the opposite of locking: you open it!",
+            "es": "un- significa “no” o “lo contrario de”. un + lock = lo contrario de cerrar con llave: ¡abrir!"
           }
         },
         {
-          "id": "spelling-expedition-2",
-          "prompt": {
-            "en": "Which word has the suffix “-less,” meaning without?",
-            "es": "Which word has the suffix “-less,” meaning without?"
-          },
-          "choices": [
+          "id": "se35-rewrite",
+          "word": "rewrite",
+          "es": "reescribir",
+          "parts": [
+            { "t": "re", "kind": "prefix", "mean": { "en": "again", "es": "otra vez" } },
             {
-              "en": "careful",
-              "es": "cuidadoso"
-            },
-            {
-              "en": "careless",
-              "es": "descuidado"
-            },
-            {
-              "en": "caring",
-              "es": "cariñoso"
+              "t": "write",
+              "kind": "base",
+              "mean": { "en": "to put words on paper", "es": "poner palabras en papel" }
             }
           ],
-          "answer": 1,
+          "decoys": [
+            { "t": "pre", "kind": "prefix", "mean": { "en": "before", "es": "antes" } },
+            { "t": "ful", "kind": "suffix", "mean": { "en": "full of", "es": "lleno de" } }
+          ],
+          "meaning": {
+            "en": "to put words on paper a second time to make them better",
+            "es": "poner palabras en papel por segunda vez para mejorarlas"
+          },
+          "context": {
+            "en": "After reading the teacher's notes, Leo will ___ his story to make it clearer.",
+            "es": "Después de leer las notas de la maestra, Leo va a reescribir su cuento para que quede más claro."
+          },
           "hint": {
-            "en": "Find the ending that means “without.”",
-            "es": "Find the ending that means “without.”"
+            "en": "Which prefix means doing something one more time?",
+            "es": "¿Qué prefijo significa hacer algo una vez más?"
           },
           "explain": {
-            "en": "Find the ending that means “without.”",
-            "es": "Find the ending that means “without.”"
+            "en": "re- means “again.” re + write = write again. You can also reread, replay and rebuild.",
+            "es": "re- significa “otra vez”. re + write = escribir otra vez. También existen reread, replay y rebuild."
           }
         },
         {
-          "id": "spelling-expedition-3",
-          "prompt": {
-            "en": "Choose the root that means “write.”",
-            "es": "Choose the root that means “write.”"
-          },
-          "choices": [
+          "id": "se35-preheat",
+          "word": "preheat",
+          "es": "precalentar",
+          "parts": [
+            { "t": "pre", "kind": "prefix", "mean": { "en": "before", "es": "antes" } },
+            { "t": "heat", "kind": "base", "mean": { "en": "to make hot", "es": "calentar" } }
+          ],
+          "decoys": [
+            { "t": "re", "kind": "prefix", "mean": { "en": "again", "es": "otra vez" } },
             {
-              "en": "spect",
-              "es": "spect"
-            },
-            {
-              "en": "port",
-              "es": "port"
-            },
-            {
-              "en": "scrib",
-              "es": "scrib"
+              "t": "dis",
+              "kind": "prefix",
+              "mean": { "en": "not; the opposite of", "es": "no; lo contrario de" }
             }
           ],
-          "answer": 2,
+          "meaning": {
+            "en": "to make an oven hot before you start cooking",
+            "es": "calentar el horno antes de empezar a cocinar"
+          },
+          "context": {
+            "en": "Abuela asked us to ___ the oven before we baked the pan de bono.",
+            "es": "La abuela nos pidió precalentar el horno antes de hornear el pan de bono."
+          },
           "hint": {
-            "en": "The root can join an ending to make a word about putting ideas on a page.",
-            "es": "La raíz puede unirse a una terminación para formar una palabra sobre poner ideas en una página."
+            "en": "The oven gets hot first, and the cooking comes later. Which prefix is about time?",
+            "es": "El horno se calienta primero y la cocina viene después. ¿Qué prefijo tiene que ver con el tiempo?"
           },
           "explain": {
-            "en": "A word part can carry meaning into many related words.",
-            "es": "Una parte de palabra puede aportar significado a muchas palabras relacionadas."
+            "en": "pre- means “before.” preheat = heat before. A preview is a look before, too.",
+            "es": "pre- significa “antes”. preheat = calentar antes. Un preview también es una mirada antes."
           }
         },
         {
-          "id": "spelling-expedition-4",
-          "prompt": {
-            "en": "Which word is spelled correctly?",
-            "es": "Which word is spelled correctly?"
-          },
-          "choices": [
+          "id": "se35-disagree",
+          "word": "disagree",
+          "es": "no estar de acuerdo",
+          "parts": [
             {
-              "en": "environment",
-              "es": "environment"
+              "t": "dis",
+              "kind": "prefix",
+              "mean": { "en": "not; the opposite of", "es": "no; lo contrario de" }
             },
             {
-              "en": "enviroment",
-              "es": "enviroment"
-            },
-            {
-              "en": "envirenment",
-              "es": "envirenment"
+              "t": "agree",
+              "kind": "base",
+              "mean": { "en": "to think the same way", "es": "pensar lo mismo" }
             }
           ],
-          "answer": 0,
+          "decoys": [
+            {
+              "t": "un",
+              "kind": "prefix",
+              "mean": { "en": "not; the opposite of", "es": "no; lo contrario de" }
+            },
+            { "t": "pre", "kind": "prefix", "mean": { "en": "before", "es": "antes" } }
+          ],
+          "meaning": {
+            "en": "to have a different opinion from someone",
+            "es": "tener una opinión diferente a la de otra persona"
+          },
+          "context": {
+            "en": "My friends and I ___ about the best soccer team, but we still listen to each other.",
+            "es": "Mis amigos y yo no estamos de acuerdo sobre el mejor equipo de fútbol, pero igual nos escuchamos."
+          },
           "hint": {
-            "en": "Say each syllable and check the middle.",
-            "es": "Say each syllable and check the middle."
+            "en": "Two prefixes mean “not.” Only one sounds right in front of this base word. Say both out loud.",
+            "es": "Dos prefijos significan “no”. Solo uno suena bien delante de esta palabra base. Di los dos en voz alta."
           },
           "explain": {
-            "en": "Say each syllable and check the middle.",
-            "es": "Say each syllable and check the middle."
+            "en": "dis- means “not” or “the opposite of.” disagree = not agree. English uses dis- with agree, like and obey.",
+            "es": "dis- significa “no” o “lo contrario de”. disagree = no estar de acuerdo. En inglés se usa dis- con agree, like y obey."
+          }
+        },
+        {
+          "id": "se35-helpful",
+          "word": "helpful",
+          "es": "servicial",
+          "parts": [
+            {
+              "t": "help",
+              "kind": "base",
+              "mean": {
+                "en": "to make things easier for someone",
+                "es": "hacerle las cosas más fáciles a alguien"
+              }
+            },
+            { "t": "ful", "kind": "suffix", "mean": { "en": "full of", "es": "lleno de" } }
+          ],
+          "decoys": [
+            { "t": "less", "kind": "suffix", "mean": { "en": "without", "es": "sin" } },
+            { "t": "ly", "kind": "suffix", "mean": { "en": "in a … way", "es": "de manera …" } }
+          ],
+          "meaning": {
+            "en": "giving others a hand when they need it",
+            "es": "que le da una mano a los demás cuando lo necesitan"
+          },
+          "context": {
+            "en": "Amira was ___ when she showed the new student where the lunchroom is.",
+            "es": "Amira fue servicial cuando le mostró al estudiante nuevo dónde está el comedor."
+          },
+          "hint": {
+            "en": "Did Amira give a lot of support, or none? Pick the suffix that matches.",
+            "es": "¿Amira dio mucho apoyo o nada? Elige el sufijo que corresponde."
+          },
+          "explain": {
+            "en": "-ful means “full of.” helpful = full of help. Notice that -ful has only one l.",
+            "es": "-ful significa “lleno de”. helpful = lleno de ayuda. Fíjate que -ful lleva una sola l."
+          }
+        },
+        {
+          "id": "se35-fearless",
+          "word": "fearless",
+          "es": "sin miedo, valiente",
+          "parts": [
+            {
+              "t": "fear",
+              "kind": "base",
+              "mean": { "en": "the feeling of being scared", "es": "la sensación de tener miedo" }
+            },
+            { "t": "less", "kind": "suffix", "mean": { "en": "without", "es": "sin" } }
+          ],
+          "decoys": [
+            { "t": "ful", "kind": "suffix", "mean": { "en": "full of", "es": "lleno de" } },
+            {
+              "t": "er",
+              "kind": "suffix",
+              "mean": { "en": "more (compares two)", "es": "más (compara dos)" }
+            }
+          ],
+          "meaning": {
+            "en": "not scared at all; very brave",
+            "es": "sin nada de miedo; muy valiente"
+          },
+          "context": {
+            "en": "The ___ firefighter climbed the tall ladder to rescue the cat.",
+            "es": "El bombero valiente subió la escalera alta para rescatar al gato."
+          },
+          "hint": {
+            "en": "Does a brave firefighter have a lot of fear, or none at all?",
+            "es": "¿Un bombero valiente tiene mucho miedo o nada de miedo?"
+          },
+          "explain": {
+            "en": "-less means “without.” fearless = without fear. It is the opposite of -ful: fearful means full of fear.",
+            "es": "-less significa “sin”. fearless = sin miedo. Es lo contrario de -ful: fearful significa lleno de miedo."
+          }
+        },
+        {
+          "id": "se35-tallest",
+          "word": "tallest",
+          "es": "el más alto, la más alta",
+          "parts": [
+            {
+              "t": "tall",
+              "kind": "base",
+              "mean": { "en": "high from bottom to top", "es": "alto de abajo hacia arriba" }
+            },
+            {
+              "t": "est",
+              "kind": "suffix",
+              "mean": {
+                "en": "the most (compares three or more)",
+                "es": "el más (compara tres o más)"
+              }
+            }
+          ],
+          "decoys": [
+            {
+              "t": "er",
+              "kind": "suffix",
+              "mean": { "en": "more (compares two)", "es": "más (compara dos)" }
+            },
+            { "t": "ly", "kind": "suffix", "mean": { "en": "in a … way", "es": "de manera …" } }
+          ],
+          "meaning": {
+            "en": "higher than all the others in a group",
+            "es": "más alto que todos los demás de un grupo"
+          },
+          "context": {
+            "en": "Of all the animals at the zoo, the giraffe is the ___.",
+            "es": "De todos los animales del zoológico, la jirafa es la más alta."
+          },
+          "hint": {
+            "en": "Count how many animals are being compared. Is it two, or the whole zoo?",
+            "es": "Cuenta cuántos animales se comparan. ¿Son dos o todo el zoológico?"
+          },
+          "explain": {
+            "en": "-est compares three or more things. -er compares just two: taller. The giraffe beats every animal, so we use -est.",
+            "es": "-est compara tres o más cosas. -er compara solo dos: taller. La jirafa le gana a todos los animales, por eso usamos -est."
+          }
+        },
+        {
+          "id": "se35-quickly",
+          "word": "quickly",
+          "es": "rápidamente",
+          "parts": [
+            { "t": "quick", "kind": "base", "mean": { "en": "fast", "es": "rápido" } },
+            { "t": "ly", "kind": "suffix", "mean": { "en": "in a … way", "es": "de manera …" } }
+          ],
+          "decoys": [
+            {
+              "t": "est",
+              "kind": "suffix",
+              "mean": {
+                "en": "the most (compares three or more)",
+                "es": "el más (compara tres o más)"
+              }
+            },
+            { "t": "ful", "kind": "suffix", "mean": { "en": "full of", "es": "lleno de" } }
+          ],
+          "meaning": { "en": "in a fast way", "es": "de manera rápida" },
+          "context": {
+            "en": "When the rain started, Kofi ___ grabbed his umbrella.",
+            "es": "Cuando empezó a llover, Kofi agarró rápidamente su paraguas."
+          },
+          "hint": {
+            "en": "This word tells how Kofi grabbed the umbrella. Which ending tells how something is done?",
+            "es": "Esta palabra dice cómo Kofi agarró el paraguas. ¿Qué terminación dice cómo se hace algo?"
+          },
+          "explain": {
+            "en": "-ly means “in a … way.” quickly = in a quick way. Words with -ly tell how someone does an action, like Spanish words that end in -mente.",
+            "es": "-ly significa “de manera …”. quickly = de manera rápida. Las palabras con -ly dicen cómo se hace una acción, como las palabras en español que terminan en -mente."
+          }
+        },
+        {
+          "id": "se35-unbreakable",
+          "word": "unbreakable",
+          "es": "irrompible",
+          "parts": [
+            {
+              "t": "un",
+              "kind": "prefix",
+              "mean": { "en": "not; the opposite of", "es": "no; lo contrario de" }
+            },
+            {
+              "t": "break",
+              "kind": "base",
+              "mean": { "en": "to crack into pieces", "es": "romper en pedazos" }
+            },
+            { "t": "able", "kind": "suffix", "mean": { "en": "can be", "es": "que se puede" } }
+          ],
+          "decoys": [
+            { "t": "re", "kind": "prefix", "mean": { "en": "again", "es": "otra vez" } },
+            { "t": "ful", "kind": "suffix", "mean": { "en": "full of", "es": "lleno de" } }
+          ],
+          "meaning": {
+            "en": "so strong that it cannot crack into pieces",
+            "es": "tan fuerte que no se puede romper en pedazos"
+          },
+          "context": {
+            "en": "The new phone case is almost ___, even when the phone falls on the floor.",
+            "es": "La funda nueva del teléfono es casi irrompible, aunque el teléfono se caiga al piso."
+          },
+          "hint": {
+            "en": "Build it in steps: first the base, then a suffix that means “can be,” then a prefix that flips the meaning.",
+            "es": "Arma la palabra por pasos: primero la base, luego un sufijo que significa “que se puede” y después un prefijo que invierte el significado."
+          },
+          "explain": {
+            "en": "un- means “not” and -able means “can be.” unbreakable = can NOT be broken. Spanish does the same thing: irrompible.",
+            "es": "un- significa “no” y -able significa “que se puede”. unbreakable = que NO se puede romper. El español hace lo mismo: irrompible."
+          }
+        },
+        {
+          "id": "se35-rainbow",
+          "word": "rainbow",
+          "es": "arcoíris",
+          "parts": [
+            {
+              "t": "rain",
+              "kind": "word",
+              "mean": { "en": "water that falls from clouds", "es": "agua que cae de las nubes" }
+            },
+            {
+              "t": "bow",
+              "kind": "word",
+              "mean": {
+                "en": "a curved shape, like an arch",
+                "es": "una forma curva, como un arco"
+              }
+            }
+          ],
+          "decoys": [
+            { "t": "fall", "kind": "word", "mean": { "en": "to drop down", "es": "caer" } },
+            {
+              "t": "drop",
+              "kind": "word",
+              "mean": { "en": "a tiny bit of liquid", "es": "una gotita de líquido" }
+            }
+          ],
+          "meaning": {
+            "en": "an arch of colors in the sky when the sun shines after a storm",
+            "es": "un arco de colores en el cielo cuando sale el sol después de una tormenta"
+          },
+          "context": {
+            "en": "After the storm, a bright ___ stretched across the sky over the city.",
+            "es": "Después de la tormenta, un arcoíris brillante cruzó el cielo sobre la ciudad."
+          },
+          "hint": {
+            "en": "This is a compound word: two small words joined together. One names the weather, and one names a curved shape.",
+            "es": "Es una palabra compuesta: dos palabras cortas unidas. Una nombra el clima y la otra, una forma curva."
+          },
+          "explain": {
+            "en": "A compound word joins two whole words: rain + bow = an arch (bow) you see after rain. Rainfall and raindrop are real words too, but they do not match this clue.",
+            "es": "Una palabra compuesta une dos palabras completas: rain + bow = un arco que ves después de la lluvia. Rainfall y raindrop también existen, pero no corresponden a esta pista."
+          }
+        },
+        {
+          "id": "se35-boxes",
+          "word": "boxes",
+          "es": "cajas",
+          "parts": [
+            {
+              "t": "box",
+              "kind": "base",
+              "mean": {
+                "en": "a container with flat sides",
+                "es": "un recipiente con lados planos"
+              }
+            },
+            {
+              "t": "es",
+              "kind": "ending",
+              "mean": {
+                "en": "more than one (adds a beat)",
+                "es": "más de uno (agrega una sílaba)"
+              }
+            }
+          ],
+          "decoys": [
+            { "t": "s", "kind": "ending", "mean": { "en": "more than one", "es": "más de uno" } },
+            {
+              "t": "ies",
+              "kind": "ending",
+              "mean": {
+                "en": "more than one (after y changes to i)",
+                "es": "más de uno (cuando la y cambia a i)"
+              }
+            }
+          ],
+          "meaning": {
+            "en": "more than one container with flat sides for packing things",
+            "es": "más de un recipiente con lados planos para empacar cosas"
+          },
+          "context": {
+            "en": "We packed our books into three cardboard ___ for the move.",
+            "es": "Empacamos nuestros libros en tres cajas de cartón para la mudanza."
+          },
+          "hint": {
+            "en": "Say the word for more than one. Do you hear an extra beat at the end?",
+            "es": "Di la palabra para más de uno. ¿Oyes una sílaba extra al final?"
+          },
+          "explain": {
+            "en": "Words that end in x, s, sh, ch or z add -es to mean more than one: box → boxes, lunch → lunches. The -es adds a beat you can hear.",
+            "es": "Las palabras que terminan en x, s, sh, ch o z agregan -es para indicar más de uno: box → boxes, lunch → lunches. La terminación -es agrega una sílaba que se oye."
+          }
+        },
+        {
+          "id": "se35-stories",
+          "word": "stories",
+          "es": "cuentos, historias",
+          "parts": [
+            {
+              "t": "stori",
+              "kind": "base",
+              "mean": {
+                "en": "story, with the y changed to i",
+                "es": "story, con la y cambiada por i"
+              }
+            },
+            { "t": "es", "kind": "ending", "mean": { "en": "more than one", "es": "más de uno" } }
+          ],
+          "decoys": [
+            { "t": "story", "kind": "base", "mean": { "en": "one tale", "es": "un relato" } },
+            { "t": "s", "kind": "ending", "mean": { "en": "more than one", "es": "más de uno" } }
+          ],
+          "meaning": {
+            "en": "more than one tale that someone tells or writes",
+            "es": "más de un relato que alguien cuenta o escribe"
+          },
+          "context": {
+            "en": "Abuela tells the best ___ about growing up in Puerto Rico.",
+            "es": "La abuela cuenta los mejores cuentos sobre su niñez en Puerto Rico."
+          },
+          "hint": {
+            "en": "Look at the end of the base word: a consonant comes right before the y. What happens to that y?",
+            "es": "Mira el final de la palabra base: justo antes de la y hay una consonante. ¿Qué le pasa a esa y?"
+          },
+          "explain": {
+            "en": "When a word ends in a consonant + y, change the y to i and add -es: story → stories, city → cities. “Storys” is a common mistake.",
+            "es": "Cuando una palabra termina en consonante + y, cambia la y por i y agrega -es: story → stories, city → cities. “Storys” es un error común."
           }
         }
       ]
@@ -151,123 +501,456 @@
     "6-8": {
       "rounds": [
         {
-          "id": "spelling-expedition-1",
-          "prompt": {
-            "en": "Add a prefix to “possible” to mean “not possible.”",
-            "es": "Add a prefix to “possible” to mean “not possible.”"
-          },
-          "choices": [
+          "id": "se68-transport",
+          "word": "transport",
+          "es": "transportar",
+          "parts": [
             {
-              "en": "impossible",
-              "es": "imposible"
+              "t": "trans",
+              "kind": "prefix",
+              "mean": { "en": "across", "es": "a través de, de un lado a otro" }
             },
-            {
-              "en": "repossible",
-              "es": "reposible"
-            },
-            {
-              "en": "possibleful",
-              "es": "posibleoso"
-            }
+            { "t": "port", "kind": "root", "mean": { "en": "carry", "es": "llevar" } }
           ],
-          "answer": 0,
+          "decoys": [
+            { "t": "ex", "kind": "prefix", "mean": { "en": "out", "es": "fuera" } },
+            { "t": "dict", "kind": "root", "mean": { "en": "say, tell", "es": "decir" } }
+          ],
+          "meaning": {
+            "en": "to carry people or goods from one place across to another",
+            "es": "llevar personas o mercancías de un lugar a otro"
+          },
+          "context": {
+            "en": "Trains ___ coffee beans from the mountains of Colombia to the coast.",
+            "es": "Los trenes transportan granos de café desde las montañas de Colombia hasta la costa."
+          },
           "hint": {
-            "en": "The prefix changes the meaning to its opposite.",
-            "es": "The prefix changes the meaning to its opposite."
+            "en": "Think about the route: the beans travel across the country. Match that movement to a prefix.",
+            "es": "Piensa en la ruta: los granos cruzan el país. Relaciona ese movimiento con un prefijo."
           },
           "explain": {
-            "en": "The prefix changes the meaning to its opposite.",
-            "es": "The prefix changes the meaning to its opposite."
+            "en": "trans- means “across” and port means “carry.” transport = carry across. Export (ex- = out) means carry out of a country, which is a different idea.",
+            "es": "trans- significa “a través de” y port significa “llevar”. transport = llevar de un lugar a otro. Export (ex- = fuera) significa llevar fuera de un país, que es otra idea."
           }
         },
         {
-          "id": "spelling-expedition-2",
-          "prompt": {
-            "en": "Which word has the suffix “-less,” meaning without?",
-            "es": "Which word has the suffix “-less,” meaning without?"
-          },
-          "choices": [
+          "id": "se68-construction",
+          "word": "construction",
+          "es": "construcción",
+          "parts": [
             {
-              "en": "careful",
-              "es": "cuidadoso"
+              "t": "con",
+              "kind": "prefix",
+              "mean": { "en": "together, with", "es": "junto, con" }
             },
+            { "t": "struct", "kind": "root", "mean": { "en": "build", "es": "construir" } },
             {
-              "en": "careless",
-              "es": "descuidado"
-            },
-            {
-              "en": "caring",
-              "es": "cariñoso"
+              "t": "ion",
+              "kind": "suffix",
+              "mean": {
+                "en": "the act or result of (t + ion sounds like /shən/)",
+                "es": "la acción o el resultado de (t + ion suena /shən/)"
+              }
             }
           ],
-          "answer": 1,
+          "decoys": [
+            {
+              "t": "de",
+              "kind": "prefix",
+              "mean": { "en": "down; undo", "es": "hacia abajo; deshacer" }
+            },
+            {
+              "t": "ment",
+              "kind": "suffix",
+              "mean": { "en": "action or result", "es": "acción o resultado" }
+            }
+          ],
+          "meaning": {
+            "en": "the act of building something large, like a bridge or a school",
+            "es": "la acción de construir algo grande, como un puente o una escuela"
+          },
+          "context": {
+            "en": "The ___ of the new bridge took two years and hundreds of workers.",
+            "es": "La construcción del nuevo puente tomó dos años y cientos de trabajadores."
+          },
           "hint": {
-            "en": "Find the ending that means “without.”",
-            "es": "Find the ending that means “without.”"
+            "en": "The workers are putting the bridge together, not tearing it down. Choose that prefix, then an ending that names an action as a noun.",
+            "es": "Los trabajadores están armando el puente, no derribándolo. Elige ese prefijo y luego una terminación que nombra una acción como sustantivo."
           },
           "explain": {
-            "en": "Find the ending that means “without.”",
-            "es": "Find the ending that means “without.”"
+            "en": "con- means “together,” struct means “build,” and -ion turns the action into a noun. construction = the act of building together. After t, -ion makes the /shən/ sound you hear in -tion words. Spanish shares the root: construcción.",
+            "es": "con- significa “junto”, struct significa “construir” y -ion convierte la acción en sustantivo. construction = la acción de construir. Después de la t, -ion suena /shən/, como en las palabras con -tion. El español comparte la raíz: construcción."
           }
         },
         {
-          "id": "spelling-expedition-3",
-          "prompt": {
-            "en": "Choose the root that means “write.”",
-            "es": "Choose the root that means “write.”"
-          },
-          "choices": [
-            {
-              "en": "spect",
-              "es": "spect"
-            },
-            {
-              "en": "port",
-              "es": "port"
-            },
-            {
-              "en": "scrib",
-              "es": "scrib"
-            }
+          "id": "se68-predict",
+          "word": "predict",
+          "es": "predecir",
+          "parts": [
+            { "t": "pre", "kind": "prefix", "mean": { "en": "before", "es": "antes" } },
+            { "t": "dict", "kind": "root", "mean": { "en": "say, tell", "es": "decir" } }
           ],
-          "answer": 2,
+          "decoys": [
+            { "t": "contra", "kind": "prefix", "mean": { "en": "against", "es": "contra" } },
+            { "t": "port", "kind": "root", "mean": { "en": "carry", "es": "llevar" } }
+          ],
+          "meaning": {
+            "en": "to say what will happen before it happens",
+            "es": "decir lo que va a pasar antes de que pase"
+          },
+          "context": {
+            "en": "Meteorologists study the data to ___ where the hurricane will travel next.",
+            "es": "Los meteorólogos estudian los datos para predecir hacia dónde irá el huracán."
+          },
           "hint": {
-            "en": "The root can join an ending to make a word about putting ideas on a page.",
-            "es": "La raíz puede unirse a una terminación para formar una palabra sobre poner ideas en una página."
+            "en": "The scientists speak about the storm's path ahead of time. Which prefix is about time?",
+            "es": "Los científicos hablan de la ruta de la tormenta con anticipación. ¿Qué prefijo tiene que ver con el tiempo?"
           },
           "explain": {
-            "en": "A word part can carry meaning into many related words.",
-            "es": "Una parte de palabra puede aportar significado a muchas palabras relacionadas."
+            "en": "pre- means “before” and dict means “say.” predict = say before. Contradict (contra- = against) means say the opposite. A dictionary tells what words mean.",
+            "es": "pre- significa “antes” y dict significa “decir”. predict = decir antes. Contradict (contra- = contra) significa decir lo contrario. Un diccionario dice qué significan las palabras."
           }
         },
         {
-          "id": "spelling-expedition-4",
-          "prompt": {
-            "en": "Which word is spelled correctly?",
-            "es": "Which word is spelled correctly?"
-          },
-          "choices": [
-            {
-              "en": "environment",
-              "es": "environment"
-            },
-            {
-              "en": "enviroment",
-              "es": "enviroment"
-            },
-            {
-              "en": "envirenment",
-              "es": "envirenment"
-            }
+          "id": "se68-interrupt",
+          "word": "interrupt",
+          "es": "interrumpir",
+          "parts": [
+            { "t": "inter", "kind": "prefix", "mean": { "en": "between", "es": "entre" } },
+            { "t": "rupt", "kind": "root", "mean": { "en": "break", "es": "romper" } }
           ],
-          "answer": 0,
+          "decoys": [
+            { "t": "e", "kind": "prefix", "mean": { "en": "out", "es": "fuera" } },
+            { "t": "dis", "kind": "prefix", "mean": { "en": "apart; not", "es": "separado; no" } }
+          ],
+          "meaning": {
+            "en": "to break into a conversation while someone else is speaking",
+            "es": "meterse en una conversación mientras otra persona está hablando"
+          },
+          "context": {
+            "en": "Please don't ___ the speaker; save your question for the end.",
+            "es": "Por favor, no interrumpas a la oradora; guarda tu pregunta para el final."
+          },
           "hint": {
-            "en": "Say each syllable and check the middle.",
-            "es": "Say each syllable and check the middle."
+            "en": "Where does the break happen: out of a volcano, or in between people who are talking?",
+            "es": "¿Dónde ocurre la ruptura: hacia afuera de un volcán o entre personas que están hablando?"
           },
           "explain": {
-            "en": "Say each syllable and check the middle.",
-            "es": "Say each syllable and check the middle."
+            "en": "inter- means “between” and rupt means “break.” interrupt = break in between. Erupt (e- = out) means break out, like a volcano. Disrupt means break apart.",
+            "es": "inter- significa “entre” y rupt significa “romper”. interrupt = romper en medio. Erupt (e- = fuera) significa romper hacia afuera, como un volcán. Disrupt significa romper en pedazos."
+          }
+        },
+        {
+          "id": "se68-biography",
+          "word": "biography",
+          "es": "biografía",
+          "parts": [
+            { "t": "bio", "kind": "root", "mean": { "en": "life", "es": "vida" } },
+            {
+              "t": "graph",
+              "kind": "root",
+              "mean": { "en": "write, draw", "es": "escribir, dibujar" }
+            },
+            {
+              "t": "y",
+              "kind": "suffix",
+              "mean": {
+                "en": "noun ending: a thing or a field of study",
+                "es": "terminación de sustantivo: una cosa o un campo de estudio"
+              }
+            }
+          ],
+          "decoys": [
+            { "t": "geo", "kind": "root", "mean": { "en": "earth", "es": "tierra" } },
+            { "t": "tele", "kind": "prefix", "mean": { "en": "far", "es": "lejos" } }
+          ],
+          "meaning": {
+            "en": "the true story of a person's life, written by someone else",
+            "es": "la historia real de la vida de una persona, escrita por otra persona"
+          },
+          "context": {
+            "en": "For her book report, Ana read a ___ of Supreme Court Justice Sonia Sotomayor.",
+            "es": "Para su informe de lectura, Ana leyó una biografía de la jueza de la Corte Suprema Sonia Sotomayor."
+          },
+          "hint": {
+            "en": "The book is about a person's life. Find the root for life and the root for writing.",
+            "es": "El libro trata sobre la vida de una persona. Busca la raíz de vida y la raíz de escribir."
+          },
+          "explain": {
+            "en": "bio means “life,” graph means “write,” and -y makes a noun. biography = writing about a life. Geography (geo = earth) is writing about the earth.",
+            "es": "bio significa “vida”, graph significa “escribir” y -y forma un sustantivo. biography = escribir sobre una vida. Geography (geo = tierra) es escribir sobre la tierra."
+          }
+        },
+        {
+          "id": "se68-geothermal",
+          "word": "geothermal",
+          "es": "geotérmico",
+          "parts": [
+            { "t": "geo", "kind": "root", "mean": { "en": "earth", "es": "tierra" } },
+            { "t": "therm", "kind": "root", "mean": { "en": "heat", "es": "calor" } },
+            {
+              "t": "al",
+              "kind": "suffix",
+              "mean": { "en": "relating to", "es": "relacionado con" }
+            }
+          ],
+          "decoys": [
+            { "t": "bio", "kind": "root", "mean": { "en": "life", "es": "vida" } },
+            {
+              "t": "ous",
+              "kind": "suffix",
+              "mean": { "en": "full of, having", "es": "lleno de, que tiene" }
+            }
+          ],
+          "meaning": {
+            "en": "using heat that comes from deep inside the earth",
+            "es": "que usa el calor que viene de las profundidades de la tierra"
+          },
+          "context": {
+            "en": "Iceland uses ___ energy from hot underground water to heat many homes.",
+            "es": "Islandia usa energía geotérmica del agua caliente subterránea para calentar muchas casas."
+          },
+          "hint": {
+            "en": "The heat comes from under the ground. Start with the root for the planet we stand on.",
+            "es": "El calor viene de debajo del suelo. Empieza con la raíz del planeta en el que estamos parados."
+          },
+          "explain": {
+            "en": "geo means “earth,” therm means “heat,” and -al means “relating to.” geothermal = relating to the earth's heat. A thermometer measures heat.",
+            "es": "geo significa “tierra”, therm significa “calor” y -al significa “relacionado con”. geothermal = relacionado con el calor de la tierra. Un termómetro mide el calor."
+          }
+        },
+        {
+          "id": "se68-spectator",
+          "word": "spectator",
+          "es": "espectador",
+          "parts": [
+            { "t": "spect", "kind": "root", "mean": { "en": "look, see", "es": "mirar, ver" } },
+            {
+              "t": "ator",
+              "kind": "suffix",
+              "mean": { "en": "a person who", "es": "una persona que" }
+            }
+          ],
+          "decoys": [
+            { "t": "aud", "kind": "root", "mean": { "en": "hear", "es": "oír" } },
+            {
+              "t": "ment",
+              "kind": "suffix",
+              "mean": { "en": "action or result", "es": "acción o resultado" }
+            }
+          ],
+          "meaning": {
+            "en": "a person who watches an event, like a game or a show",
+            "es": "una persona que mira un evento, como un partido o un espectáculo"
+          },
+          "context": {
+            "en": "Every ___ in the stadium jumped up when the goalie blocked the penalty kick.",
+            "es": "Todos los espectadores del estadio se levantaron cuando la portera atajó el penal."
+          },
+          "hint": {
+            "en": "This person uses their eyes, not their ears. Then add the ending that names a person.",
+            "es": "Esta persona usa los ojos, no los oídos. Luego agrega la terminación que nombra a una persona."
+          },
+          "explain": {
+            "en": "spect means “look” and -ator means “a person who.” spectator = a person who looks on. Inspect and spectacles share the same root.",
+            "es": "spect significa “mirar” y -ator significa “una persona que”. spectator = una persona que mira. Inspect y spectacles comparten la misma raíz."
+          }
+        },
+        {
+          "id": "se68-extract",
+          "word": "extract",
+          "es": "extraer",
+          "parts": [
+            { "t": "ex", "kind": "prefix", "mean": { "en": "out", "es": "fuera" } },
+            {
+              "t": "tract",
+              "kind": "root",
+              "mean": { "en": "pull, drag", "es": "jalar, arrastrar" }
+            }
+          ],
+          "decoys": [
+            {
+              "t": "con",
+              "kind": "prefix",
+              "mean": { "en": "together, with", "es": "junto, con" }
+            },
+            { "t": "rupt", "kind": "root", "mean": { "en": "break", "es": "romper" } }
+          ],
+          "meaning": { "en": "to pull something out", "es": "sacar algo jalándolo hacia afuera" },
+          "context": {
+            "en": "The dentist had to ___ the broken tooth so a new one could grow in.",
+            "es": "La dentista tuvo que extraer el diente roto para que pudiera salir uno nuevo."
+          },
+          "hint": {
+            "en": "The tooth comes out of the mouth. Which prefix shows movement out?",
+            "es": "El diente sale de la boca. ¿Qué prefijo muestra movimiento hacia afuera?"
+          },
+          "explain": {
+            "en": "ex- means “out” and tract means “pull.” extract = pull out. Contract (con- = together) means pull together, or get smaller. A tractor pulls heavy loads.",
+            "es": "ex- significa “fuera” y tract significa “jalar”. extract = jalar hacia afuera. Contract (con- = junto) significa juntar o hacerse más pequeño. Un tractor jala cargas pesadas."
+          }
+        },
+        {
+          "id": "se68-audible",
+          "word": "audible",
+          "es": "audible",
+          "parts": [
+            { "t": "aud", "kind": "root", "mean": { "en": "hear", "es": "oír" } },
+            { "t": "ible", "kind": "suffix", "mean": { "en": "can be", "es": "que se puede" } }
+          ],
+          "decoys": [
+            { "t": "vis", "kind": "root", "mean": { "en": "see", "es": "ver" } },
+            {
+              "t": "ous",
+              "kind": "suffix",
+              "mean": { "en": "full of, having", "es": "lleno de, que tiene" }
+            }
+          ],
+          "meaning": {
+            "en": "loud enough to be heard",
+            "es": "lo bastante fuerte como para oírse"
+          },
+          "context": {
+            "en": "The whisper was barely ___ from the back row of the theater.",
+            "es": "El susurro apenas era audible desde la última fila del teatro."
+          },
+          "hint": {
+            "en": "The clue is about sound, not sight. Pick the root that goes with ears.",
+            "es": "La pista es sobre el sonido, no la vista. Elige la raíz que va con los oídos."
+          },
+          "explain": {
+            "en": "aud means “hear” and -ible means “can be.” audible = can be heard. Visible (vis = see) means can be seen. Audio and audience share the root.",
+            "es": "aud significa “oír” e -ible significa “que se puede”. audible = que se puede oír. Visible (vis = ver) significa que se puede ver. Audio y audiencia comparten la raíz."
+          }
+        },
+        {
+          "id": "se68-visualize",
+          "word": "visualize",
+          "es": "visualizar",
+          "parts": [
+            { "t": "vis", "kind": "root", "mean": { "en": "see", "es": "ver" } },
+            {
+              "t": "ual",
+              "kind": "suffix",
+              "mean": { "en": "relating to", "es": "relacionado con" }
+            },
+            {
+              "t": "ize",
+              "kind": "suffix",
+              "mean": { "en": "to make, to cause", "es": "hacer, convertir en" }
+            }
+          ],
+          "decoys": [
+            { "t": "aud", "kind": "root", "mean": { "en": "hear", "es": "oír" } },
+            {
+              "t": "ment",
+              "kind": "suffix",
+              "mean": { "en": "action or result", "es": "acción o resultado" }
+            }
+          ],
+          "meaning": {
+            "en": "to form a picture of something in your mind",
+            "es": "formar una imagen de algo en tu mente"
+          },
+          "context": {
+            "en": "Before you solve the word problem, ___ each step like a short movie.",
+            "es": "Antes de resolver el problema, visualiza cada paso como una película corta."
+          },
+          "hint": {
+            "en": "You make a picture with your mind's eye. Start with the root for seeing, and end with the suffix that means “to make.”",
+            "es": "Formas una imagen con los ojos de la mente. Empieza con la raíz de ver y termina con el sufijo que significa “hacer”."
+          },
+          "explain": {
+            "en": "vis means “see,” -ual means “relating to,” and -ize means “to make.” visualize = make something visual in your mind. Vision and visible share the root.",
+            "es": "vis significa “ver”, -ual significa “relacionado con” e -ize significa “hacer”. visualize = hacer algo visible en tu mente. Vision y visible comparten la raíz."
+          }
+        },
+        {
+          "id": "se68-dangerous",
+          "word": "dangerous",
+          "es": "peligroso",
+          "parts": [
+            {
+              "t": "danger",
+              "kind": "base",
+              "mean": { "en": "the risk of harm", "es": "el riesgo de daño" }
+            },
+            {
+              "t": "ous",
+              "kind": "suffix",
+              "mean": { "en": "full of, having", "es": "lleno de, que tiene" }
+            }
+          ],
+          "decoys": [
+            {
+              "t": "ive",
+              "kind": "suffix",
+              "mean": { "en": "tending to, doing", "es": "que tiende a, que hace" }
+            },
+            {
+              "t": "ment",
+              "kind": "suffix",
+              "mean": { "en": "action or result", "es": "acción o resultado" }
+            }
+          ],
+          "meaning": {
+            "en": "full of risk; likely to cause harm",
+            "es": "lleno de riesgo; que puede causar daño"
+          },
+          "context": {
+            "en": "Crossing a river during a flood is ___, so the rangers closed the trail.",
+            "es": "Cruzar un río durante una inundación es peligroso, por eso los guardaparques cerraron el sendero."
+          },
+          "hint": {
+            "en": "You need a describing word for a river crossing full of risk. Which suffix turns a noun into that kind of adjective?",
+            "es": "Necesitas una palabra que describa un cruce de río lleno de riesgo. ¿Qué sufijo convierte un sustantivo en ese tipo de adjetivo?"
+          },
+          "explain": {
+            "en": "-ous means “full of” or “having.” dangerous = full of danger. -ous turns a noun into an adjective, like famous and curious. In Spanish, -ous often matches -oso: peligroso, famoso.",
+            "es": "-ous significa “lleno de” o “que tiene”. dangerous = lleno de peligro. -ous convierte un sustantivo en adjetivo, como famous y curious. En español, -ous suele corresponder a -oso: peligroso, famoso."
+          }
+        },
+        {
+          "id": "se68-destructive",
+          "word": "destructive",
+          "es": "destructivo",
+          "parts": [
+            {
+              "t": "de",
+              "kind": "prefix",
+              "mean": { "en": "down; undo", "es": "hacia abajo; deshacer" }
+            },
+            { "t": "struct", "kind": "root", "mean": { "en": "build", "es": "construir" } },
+            {
+              "t": "ive",
+              "kind": "suffix",
+              "mean": { "en": "tending to, doing", "es": "que tiende a, que hace" }
+            }
+          ],
+          "decoys": [
+            {
+              "t": "con",
+              "kind": "prefix",
+              "mean": { "en": "together, with", "es": "junto, con" }
+            },
+            {
+              "t": "ion",
+              "kind": "suffix",
+              "mean": { "en": "the act or result of", "es": "la acción o el resultado de" }
+            }
+          ],
+          "meaning": { "en": "causing a lot of damage", "es": "que causa mucho daño" },
+          "context": {
+            "en": "The tornado was so ___ that it flattened an entire block of houses.",
+            "es": "El tornado fue tan destructivo que derribó una cuadra entera de casas."
+          },
+          "hint": {
+            "en": "The tornado tore things down instead of building them. Pick the prefix for undoing, then a suffix for a describing word.",
+            "es": "El tornado derribó cosas en vez de construirlas. Elige el prefijo de deshacer y luego un sufijo para una palabra que describe."
+          },
+          "explain": {
+            "en": "de- means “down” or “undo,” struct means “build,” and -ive means “tending to.” destructive = tending to tear down what was built. Its opposite is constructive.",
+            "es": "de- significa “hacia abajo” o “deshacer”, struct significa “construir” e -ive significa “que tiende a”. destructive = que tiende a derribar lo construido. Su contrario es constructive."
           }
         }
       ]
@@ -277,27 +960,21 @@
     "3-5": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write two sentences that explain it in your own words.",
-        "es": "Elige una idea del juego. Escribe dos oraciones que la expliquen con tus propias palabras."
+        "en": "Pick one word you built on the mountain. Write a sentence that uses it. Then tell what one of its parts means.",
+        "es": "Elige una palabra que formaste en la montaña. Escribe una oración que la use. Luego di qué significa una de sus partes."
       },
-      "frame": "I noticed ___. This matters because ___.",
-      "checks": [
-        "I used a detail from the game.",
-        "I explained my idea."
-      ],
-      "minWords": 5
+      "frame": "I built the word ___. The part ___ means ___.",
+      "checks": ["I used a word I built in a sentence.", "I explained what one word part means."],
+      "minWords": 6
     },
     "6-8": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write a short explanation with evidence and a connection.",
-        "es": "Elige una idea del juego. Escribe una explicación breve con evidencia y una conexión."
+        "en": "Choose a root from your climb (like port, struct, dict or vis). Write two other words that share it and explain how the root connects their meanings.",
+        "es": "Elige una raíz de tu escalada (como port, struct, dict o vis). Escribe otras dos palabras que la compartan y explica cómo la raíz conecta sus significados."
       },
-      "frame": "The evidence suggests ___. This matters because ___.",
-      "checks": [
-        "I included a specific detail.",
-        "I connected the detail to my idea."
-      ],
+      "frame": "The root ___ means ___, so ___ and ___ both ___.",
+      "checks": ["I named a root and its meaning.", "I connected two words to that root."],
       "minWords": 10
     }
   }

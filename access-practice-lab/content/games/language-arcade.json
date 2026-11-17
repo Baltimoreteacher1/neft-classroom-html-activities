@@ -1,273 +1,466 @@
 {
   "id": "language-arcade",
-  "mechanic": "pathway-gates",
+  "mechanic": "maze-gates",
   "rules": {
     "3-5": [
       {
-        "en": "Read or listen to each clue. Choose a response, check your thinking, and revise after a hint.",
-        "es": "Lee o escucha cada pista. Elige una respuesta, revisa tu idea y corrígela después de una pista."
+        "en": "Move through the maze with the arrow keys, the arrow buttons, or by tapping a square next to you.",
+        "es": "Muévete por el laberinto con las flechas del teclado, los botones de flecha o tocando una casilla junto a ti."
       },
       {
-        "en": "Finish each station, then use one idea in your own words.",
-        "es": "Termina cada estación y luego usa una idea con tus propias palabras."
+        "en": "A locked gate blocks the path. Solve its word challenge to open it. Reach the exit to finish the maze.",
+        "es": "Una puerta cerrada bloquea el camino. Resuelve su reto de palabras para abrirla. Llega a la salida para terminar el laberinto."
+      },
+      {
+        "en": "Collect the bonus items on the way if you like. They are extra fun, not required.",
+        "es": "Si quieres, recoge los objetos de bonificación en el camino. Son diversión extra, no son obligatorios."
       }
     ],
     "6-8": [
       {
-        "en": "Study each prompt and its evidence. Choose the strongest response, then revise your thinking when feedback gives you a clue.",
-        "es": "Estudia cada pregunta y su evidencia. Elige la respuesta más sólida y revisa tu idea cuando recibas una pista."
+        "en": "Navigate each maze with the arrow keys, the on-screen pad, or by tapping an adjacent square.",
+        "es": "Recorre cada laberinto con las flechas del teclado, el control en pantalla o tocando una casilla contigua."
       },
       {
-        "en": "Complete the stations and apply the language in your own words.",
-        "es": "Completa las estaciones y aplica el lenguaje con tus propias palabras."
+        "en": "Every gate is a language lock: choose the precise word, form, connector or sentence that makes the text work.",
+        "es": "Cada puerta es un candado de lenguaje: elige la palabra, la forma, el conector o la oración precisa que hace funcionar el texto."
+      },
+      {
+        "en": "Open every gate on the path and reach the exit. Bonus items are optional.",
+        "es": "Abre todas las puertas del camino y llega a la salida. Los objetos de bonificación son opcionales."
       }
     ]
   },
   "bands": {
     "3-5": {
-      "rounds": [
+      "mazes": [
         {
-          "id": "language-arcade-1",
-          "prompt": {
-            "en": "Gate clue: Choose the connector that shows a result. “The ice melted, ___ the water spread.”",
-            "es": "Gate clue: Choose the connector that shows a result. “The ice melted, ___ the water spread.”"
+          "id": "la35-factory",
+          "theme": "factory",
+          "name": { "en": "Robot Factory", "es": "Fábrica de robots" },
+          "story": {
+            "en": "Help Bolt the robot get through the factory to the charging station.",
+            "es": "Ayuda a Bolt, el robot, a cruzar la fábrica hasta la estación de carga."
           },
-          "choices": [
-            {
-              "en": "so",
-              "es": "así que"
-            },
-            {
-              "en": "although",
-              "es": "aunque"
-            },
-            {
-              "en": "before",
-              "es": "antes"
-            }
+          "player": "🤖",
+          "playerName": { "en": "Bolt", "es": "Bolt" },
+          "goal": "🔋",
+          "goalName": { "en": "charging station", "es": "estación de carga" },
+          "gem": "⚙️",
+          "gemName": { "en": "gear", "es": "engranaje" },
+          "map": [
+            "S.A...*",
+            "#####.#",
+            "*..B...",
+            ".######",
+            "..C....",
+            "######.",
+            "...D..*",
+            ".######",
+            ".E*...X"
           ],
-          "answer": 0,
-          "hint": {
-            "en": "The second event happens because of the first.",
-            "es": "The second event happens because of the first."
-          },
-          "explain": {
-            "en": "The second event happens because of the first.",
-            "es": "The second event happens because of the first."
+          "gates": {
+            "A": {
+              "type": "word",
+              "prompt": "The robot ___ a box onto the belt.",
+              "es": "El robot ___ una caja a la cinta.",
+              "choices": ["lifts", "lift", "lifting"],
+              "answer": 0,
+              "hint": {
+                "en": "The robot is one thing. Which action word goes with one thing doing it now?",
+                "es": "El robot es una sola cosa. ¿Qué palabra de acción va con una cosa que lo hace ahora?"
+              },
+              "explain": {
+                "en": "With one subject, like the robot, an action happening now usually ends in -s: the robot lifts.",
+                "es": "Con un solo sujeto, como the robot, una acción en presente suele terminar en -s: the robot lifts."
+              }
+            },
+            "B": {
+              "type": "connector",
+              "prompt": "The belt stopped, ___ the boxes piled up.",
+              "es": "La cinta se detuvo, ___ las cajas se amontonaron.",
+              "choices": ["but", "so", "or"],
+              "answer": 1,
+              "hint": {
+                "en": "Did the belt stopping cause something to happen?",
+                "es": "¿El hecho de que la cinta se detuviera causó algo?"
+              },
+              "explain": {
+                "en": "So shows a result. The boxes piled up because the belt stopped.",
+                "es": "So muestra un resultado. Las cajas se amontonaron porque la cinta se detuvo."
+              }
+            },
+            "C": {
+              "type": "fix",
+              "prompt": "Which sentence is written correctly?",
+              "es": "¿Qué oración está bien escrita?",
+              "choices": [
+                "The gears is spinning fast.",
+                "The gears was spinning fast.",
+                "The gears were spinning fast."
+              ],
+              "answer": 2,
+              "hint": {
+                "en": "Count the gears. Is it one gear or more than one?",
+                "es": "Cuenta los engranajes. ¿Es uno o más de uno?"
+              },
+              "explain": {
+                "en": "Gears means more than one, so the verb is were: the gears were spinning.",
+                "es": "Gears significa más de uno, así que el verbo es were: the gears were spinning."
+              }
+            },
+            "D": {
+              "type": "word",
+              "prompt": "Bolt ___ the tiny screw with a magnet so it would not fall.",
+              "es": "Bolt ___ el tornillo pequeñito con un imán para que no se cayera.",
+              "choices": ["dropped", "grabbed", "threw"],
+              "answer": 1,
+              "hint": {
+                "en": "Read the end of the sentence. What would keep a screw from falling?",
+                "es": "Lee el final de la oración. ¿Qué evitaría que un tornillo se cayera?"
+              },
+              "explain": {
+                "en": "Grabbed means took hold of it. That is how the magnet kept the screw from falling.",
+                "es": "Grabbed significa que lo agarró. Así el imán evitó que el tornillo se cayera."
+              }
+            },
+            "E": {
+              "type": "factop",
+              "prompt": "Robots are the coolest invention ever.",
+              "es": "Los robots son el invento más genial de todos.",
+              "choices": ["Fact", "Opinion"],
+              "answer": 1,
+              "hint": {
+                "en": "Can everyone check it, or is it what someone thinks or feels?",
+                "es": "¿Todos pueden comprobarlo o es lo que alguien piensa o siente?"
+              },
+              "explain": {
+                "en": "Coolest tells what someone thinks. People can disagree, so it is an opinion.",
+                "es": "Coolest dice lo que alguien piensa. La gente puede no estar de acuerdo, así que es una opinión."
+              }
+            }
           }
         },
         {
-          "id": "language-arcade-2",
-          "prompt": {
-            "en": "Choose the precise word: The data ___ that plants grew faster in sunlight.",
-            "es": "Choose the precise word: The data ___ that plants grew faster in sunlight."
+          "id": "la35-reef",
+          "theme": "reef",
+          "name": { "en": "Coral Reef Cave", "es": "Cueva del arrecife de coral" },
+          "story": {
+            "en": "Swim through the underwater cave to find the treasure chest.",
+            "es": "Nada por la cueva submarina para encontrar el cofre del tesoro."
           },
-          "choices": [
-            {
-              "en": "whisper",
-              "es": "susurran"
-            },
-            {
-              "en": "suggest",
-              "es": "sugieren"
-            },
-            {
-              "en": "decorate",
-              "es": "decoran"
-            }
+          "player": "🐠",
+          "playerName": { "en": "Fin the fish", "es": "Fin, el pez" },
+          "goal": "💎",
+          "goalName": { "en": "treasure", "es": "tesoro" },
+          "gem": "🐚",
+          "gemName": { "en": "shell", "es": "concha" },
+          "map": [
+            "S#...#X",
+            ".#.#.#.",
+            ".#*#.#.",
+            ".#.#.#.",
+            "A#B#.#D",
+            ".#.#C#.",
+            ".#.#.#*",
+            "*#.#.#.",
+            "...#..."
           ],
-          "answer": 1,
-          "hint": {
-            "en": "Pick a verb used to describe what evidence indicates.",
-            "es": "Pick a verb used to describe what evidence indicates."
-          },
-          "explain": {
-            "en": "Pick a verb used to describe what evidence indicates.",
-            "es": "Pick a verb used to describe what evidence indicates."
-          }
-        },
-        {
-          "id": "language-arcade-3",
-          "prompt": {
-            "en": "Choose the correct form: Yesterday, our team ___ the results.",
-            "es": "Choose the correct form: Yesterday, our team ___ the results."
-          },
-          "choices": [
-            {
-              "en": "records",
-              "es": "registra"
+          "gates": {
+            "A": {
+              "type": "word",
+              "prompt": "The crab hid ___ a rock.",
+              "es": "El cangrejo se escondió ___ una roca.",
+              "choices": ["between", "under", "through"],
+              "answer": 1,
+              "hint": {
+                "en": "Picture one rock. Where could a crab go to stay out of sight?",
+                "es": "Imagina una sola roca. ¿Dónde podría meterse un cangrejo para que no lo vean?"
+              },
+              "explain": {
+                "en": "Under tells where: below the rock. Between needs two things, and you cannot hide through a rock.",
+                "es": "Under dice dónde: debajo de la roca. Between necesita dos cosas y no puedes esconderte through una roca."
+              }
             },
-            {
-              "en": "recording",
-              "es": "registrando"
+            "B": {
+              "type": "fix",
+              "prompt": "Which sentence sounds right in English?",
+              "es": "¿Qué oración suena bien en inglés?",
+              "choices": [
+                "We saw an orange big fish.",
+                "We saw a big orange fish.",
+                "We saw orange a big fish."
+              ],
+              "answer": 1,
+              "hint": {
+                "en": "Think about the order of describing words in English. Which kind of word comes first?",
+                "es": "Piensa en el orden de las palabras que describen en inglés. ¿Qué tipo de palabra va primero?"
+              },
+              "explain": {
+                "en": "In English, a size word like big comes before a color word like orange.",
+                "es": "En inglés, una palabra de tamaño como big va antes de una palabra de color como orange."
+              }
             },
-            {
-              "en": "recorded",
-              "es": "registró"
+            "C": {
+              "type": "connector",
+              "prompt": "An octopus can change color ___ it wants to hide.",
+              "es": "Un pulpo puede cambiar de color ___ quiere esconderse.",
+              "choices": ["but", "or", "when"],
+              "answer": 2,
+              "hint": {
+                "en": "Which word tells about the time something happens?",
+                "es": "¿Qué palabra habla del momento en que pasa algo?"
+              },
+              "explain": {
+                "en": "When connects the two ideas by time: the color changes at the moment it wants to hide.",
+                "es": "When une las dos ideas por el tiempo: el color cambia en el momento en que quiere esconderse."
+              }
+            },
+            "D": {
+              "type": "word",
+              "prompt": "Yesterday, a sea turtle ___ past our boat.",
+              "es": "Ayer, una tortuga marina ___ junto a nuestro bote.",
+              "choices": ["swam", "swims", "swimming"],
+              "answer": 0,
+              "hint": {
+                "en": "Look at the first word of the sentence. When did this happen?",
+                "es": "Mira la primera palabra de la oración. ¿Cuándo pasó esto?"
+              },
+              "explain": {
+                "en": "Yesterday tells us it already happened, so the verb is in the past: swam.",
+                "es": "Yesterday nos dice que ya pasó, así que el verbo va en pasado: swam."
+              }
             }
-          ],
-          "answer": 2,
-          "hint": {
-            "en": "The time word tells you to use past tense.",
-            "es": "The time word tells you to use past tense."
-          },
-          "explain": {
-            "en": "The time word tells you to use past tense.",
-            "es": "The time word tells you to use past tense."
-          }
-        },
-        {
-          "id": "language-arcade-4",
-          "prompt": {
-            "en": "Choose the transition that signals an example.",
-            "es": "Choose the transition that signals an example."
-          },
-          "choices": [
-            {
-              "en": "For instance",
-              "es": "Por ejemplo"
-            },
-            {
-              "en": "However",
-              "es": "Sin embargo"
-            },
-            {
-              "en": "Finally",
-              "es": "Finalmente"
-            }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Look for the phrase that introduces a detail.",
-            "es": "Look for the phrase that introduces a detail."
-          },
-          "explain": {
-            "en": "Look for the phrase that introduces a detail.",
-            "es": "Look for the phrase that introduces a detail."
           }
         }
       ]
     },
     "6-8": {
-      "rounds": [
+      "mazes": [
         {
-          "id": "language-arcade-1",
-          "prompt": {
-            "en": "Gate clue: Choose the connector that shows a result. “The ice melted, ___ the water spread.”",
-            "es": "Gate clue: Choose the connector that shows a result. “The ice melted, ___ the water spread.”"
+          "id": "la68-museum",
+          "theme": "museum",
+          "name": { "en": "Museum Vault", "es": "Bóveda del museo" },
+          "story": {
+            "en": "The museum's lost artifact is hidden in the vault. Unlock every security gate to recover it.",
+            "es": "El artefacto perdido del museo está escondido en la bóveda. Abre todas las puertas de seguridad para recuperarlo."
           },
-          "choices": [
-            {
-              "en": "so",
-              "es": "así que"
-            },
-            {
-              "en": "although",
-              "es": "aunque"
-            },
-            {
-              "en": "before",
-              "es": "antes"
-            }
+          "player": "🔦",
+          "playerName": { "en": "your flashlight", "es": "tu linterna" },
+          "goal": "🏺",
+          "goalName": { "en": "ancient vase", "es": "vasija antigua" },
+          "gem": "📜",
+          "gemName": { "en": "scroll", "es": "pergamino" },
+          "map": [
+            "S.A..#*",
+            "####.#.",
+            "*.B....",
+            ".######",
+            "..C.#.*",
+            "###.#.#",
+            ".*..D..",
+            "######.",
+            "X..E..."
           ],
-          "answer": 0,
-          "hint": {
-            "en": "The second event happens because of the first.",
-            "es": "The second event happens because of the first."
-          },
-          "explain": {
-            "en": "The second event happens because of the first.",
-            "es": "The second event happens because of the first."
+          "gates": {
+            "A": {
+              "type": "word",
+              "prompt": "The curator ___ the ancient map to find out whether it was authentic.",
+              "es": "La curadora ___ el mapa antiguo para saber si era auténtico.",
+              "choices": ["glanced", "examined", "ignored"],
+              "answer": 1,
+              "hint": {
+                "en": "Deciding if something is real takes a certain kind of looking. Which verb fits that purpose?",
+                "es": "Decidir si algo es real requiere cierto tipo de mirada. ¿Qué verbo encaja con ese propósito?"
+              },
+              "explain": {
+                "en": "Examined means looked at closely and carefully, which is what checking authenticity requires. Glanced would also need at.",
+                "es": "Examined significa que lo miró de cerca y con cuidado, que es lo que se necesita para comprobar si es auténtico. Glanced además necesitaría at."
+              }
+            },
+            "B": {
+              "type": "connector",
+              "prompt": "The vase looked perfect; ___, a scan revealed tiny cracks inside.",
+              "es": "La vasija parecía perfecta; ___, un escaneo reveló pequeñas grietas por dentro.",
+              "choices": ["therefore", "similarly", "however"],
+              "answer": 2,
+              "hint": {
+                "en": "Does the second idea agree with the first idea or go against it?",
+                "es": "¿La segunda idea está de acuerdo con la primera o va en su contra?"
+              },
+              "explain": {
+                "en": "However signals a contrast: it looked perfect, but it was cracked.",
+                "es": "However señala un contraste: parecía perfecta, pero estaba agrietada."
+              }
+            },
+            "C": {
+              "type": "fix",
+              "prompt": "Which sentence is correct?",
+              "es": "¿Qué oración es correcta?",
+              "choices": [
+                "The collection of coins are kept in a locked case.",
+                "The collection of coins were kept in a locked case.",
+                "The collection of coins is kept in a locked case."
+              ],
+              "answer": 2,
+              "hint": {
+                "en": "Find the true subject of the sentence, not the noun closest to the verb.",
+                "es": "Busca el verdadero sujeto de la oración, no el sustantivo más cercano al verbo."
+              },
+              "explain": {
+                "en": "The subject is collection, which is singular. Of coins only describes it, so the verb is is.",
+                "es": "El sujeto es collection, que es singular. Of coins solo lo describe, así que el verbo es is."
+              }
+            },
+            "D": {
+              "type": "factop",
+              "prompt": "Which statement is an opinion?",
+              "es": "¿Qué afirmación es una opinión?",
+              "choices": [
+                "The museum opened its doors in 1925.",
+                "The vault door weighs more than two tons.",
+                "The mummy exhibit is the most fascinating room in the building."
+              ],
+              "answer": 2,
+              "hint": {
+                "en": "Look for a word that shows a judgment someone could disagree with.",
+                "es": "Busca una palabra que muestre un juicio con el que alguien podría no estar de acuerdo."
+              },
+              "explain": {
+                "en": "Most fascinating is a judgment. A date and a weight can be checked, so those are facts.",
+                "es": "Most fascinating es un juicio. Una fecha y un peso se pueden comprobar, así que son hechos."
+              }
+            },
+            "E": {
+              "type": "word",
+              "prompt": "The guard's ___ of the alarm system saved the painting.",
+              "es": "El ___ que tenía el guardia del sistema de alarma salvó la pintura.",
+              "choices": ["knowledgeable", "knowledge", "know"],
+              "answer": 1,
+              "hint": {
+                "en": "After a possessive like the guard's, what part of speech does the sentence need?",
+                "es": "Después de un posesivo como the guard's, ¿qué clase de palabra necesita la oración?"
+              },
+              "explain": {
+                "en": "The guard's needs a noun after it. Knowledge is the noun; knowledgeable is an adjective and know is a verb.",
+                "es": "The guard's necesita un sustantivo después. Knowledge es el sustantivo; knowledgeable es un adjetivo y know es un verbo."
+              }
+            }
           }
         },
         {
-          "id": "language-arcade-2",
-          "prompt": {
-            "en": "Choose the precise word: The data ___ that plants grew faster in sunlight.",
-            "es": "Choose the precise word: The data ___ that plants grew faster in sunlight."
+          "id": "la68-station",
+          "theme": "station",
+          "name": { "en": "Space Station", "es": "Estación espacial" },
+          "story": {
+            "en": "Spiral through the space station modules to reach the docking port before the supply ship arrives.",
+            "es": "Recorre en espiral los módulos de la estación espacial para llegar al puerto de acoplamiento antes de que llegue la nave de suministros."
           },
-          "choices": [
-            {
-              "en": "whisper",
-              "es": "susurran"
-            },
-            {
-              "en": "suggest",
-              "es": "sugieren"
-            },
-            {
-              "en": "decorate",
-              "es": "decoran"
-            }
+          "player": "🧑‍🚀",
+          "playerName": { "en": "the astronaut", "es": "la astronauta" },
+          "goal": "🛰️",
+          "goalName": { "en": "docking port", "es": "puerto de acoplamiento" },
+          "gem": "⭐",
+          "gemName": { "en": "star badge", "es": "insignia de estrella" },
+          "map": [
+            "S..A...",
+            "######.",
+            "..*..#.",
+            ".###.#.",
+            ".#X#E#B",
+            ".#.#.#.",
+            "D#..*#.",
+            ".#####.",
+            "...C..*"
           ],
-          "answer": 1,
-          "hint": {
-            "en": "Pick a verb used to describe what evidence indicates.",
-            "es": "Pick a verb used to describe what evidence indicates."
-          },
-          "explain": {
-            "en": "Pick a verb used to describe what evidence indicates.",
-            "es": "Pick a verb used to describe what evidence indicates."
-          }
-        },
-        {
-          "id": "language-arcade-3",
-          "prompt": {
-            "en": "Choose the correct form: Yesterday, our team ___ the results.",
-            "es": "Choose the correct form: Yesterday, our team ___ the results."
-          },
-          "choices": [
-            {
-              "en": "records",
-              "es": "registra"
+          "gates": {
+            "A": {
+              "type": "connector",
+              "prompt": "Astronauts exercise about two hours a day ___ their muscles and bones stay strong in microgravity.",
+              "es": "Los astronautas hacen ejercicio unas dos horas al día ___ sus músculos y huesos se mantengan fuertes en microgravedad.",
+              "choices": ["even though", "instead of", "so that"],
+              "answer": 2,
+              "hint": {
+                "en": "The second part tells the purpose of exercising. Which connector introduces a purpose?",
+                "es": "La segunda parte dice el propósito del ejercicio. ¿Qué conector introduce un propósito?"
+              },
+              "explain": {
+                "en": "So that introduces a purpose: they exercise in order to keep muscles and bones strong.",
+                "es": "So that introduce un propósito: hacen ejercicio para mantener fuertes los músculos y los huesos."
+              }
             },
-            {
-              "en": "recording",
-              "es": "registrando"
+            "B": {
+              "type": "word",
+              "prompt": "The station's solar panels ___ sunlight into electricity.",
+              "es": "Los paneles solares de la estación ___ la luz del sol en electricidad.",
+              "choices": ["consume", "convert", "conceal"],
+              "answer": 1,
+              "hint": {
+                "en": "The sentence says sunlight becomes something different. Which verb describes a change of form?",
+                "es": "La oración dice que la luz del sol se vuelve algo diferente. ¿Qué verbo describe un cambio de forma?"
+              },
+              "explain": {
+                "en": "Convert means change from one form into another, here from light energy into electricity.",
+                "es": "Convert significa cambiar de una forma a otra; aquí, de energía de la luz a electricidad."
+              }
             },
-            {
-              "en": "recorded",
-              "es": "registró"
+            "C": {
+              "type": "fix",
+              "prompt": "Which sentence keeps both verbs in the same time?",
+              "es": "¿Qué oración mantiene los dos verbos en el mismo tiempo?",
+              "choices": [
+                "The crew checked the oxygen levels and then records the results.",
+                "The crew checks the oxygen levels and then recorded the results.",
+                "The crew checked the oxygen levels and then recorded the results."
+              ],
+              "answer": 2,
+              "hint": {
+                "en": "Find the first verb. The second verb should match its time.",
+                "es": "Busca el primer verbo. El segundo verbo debe coincidir con su tiempo."
+              },
+              "explain": {
+                "en": "Checked and recorded are both past tense, so the sentence stays in one time.",
+                "es": "Checked y recorded están en pasado, así que la oración se mantiene en un solo tiempo."
+              }
+            },
+            "D": {
+              "type": "evidence",
+              "prompt": "Claim: The International Space Station helps scientists on Earth. Which detail best supports the claim?",
+              "es": "Afirmación: La Estación Espacial Internacional ayuda a los científicos en la Tierra. ¿Qué detalle apoya mejor la afirmación?",
+              "choices": [
+                "The station circles Earth about 16 times a day.",
+                "Experiments on the station help researchers study how muscles and bones change.",
+                "The station is about as long as a football field."
+              ],
+              "answer": 1,
+              "hint": {
+                "en": "All three are true. Which one shows the station helping people learn something?",
+                "es": "Las tres son verdaderas. ¿Cuál muestra que la estación ayuda a la gente a aprender algo?"
+              },
+              "explain": {
+                "en": "Only the experiments detail connects the station to scientific research. Speed and size are true but do not support the claim.",
+                "es": "Solo el detalle de los experimentos conecta la estación con la investigación científica. La velocidad y el tamaño son verdaderos, pero no apoyan la afirmación."
+              }
+            },
+            "E": {
+              "type": "register",
+              "prompt": "Which sentence fits a formal mission report?",
+              "es": "¿Qué oración encaja en un informe formal de la misión?",
+              "choices": [
+                "The crew completed the docking procedure without errors.",
+                "The crew totally nailed the docking!",
+                "Docking went super great, honestly."
+              ],
+              "answer": 0,
+              "hint": {
+                "en": "A formal report sounds precise and serious. Which choice has no slang?",
+                "es": "Un informe formal suena preciso y serio. ¿Qué opción no tiene jerga?"
+              },
+              "explain": {
+                "en": "Completed the docking procedure without errors is precise and formal. Nailed and super great are casual.",
+                "es": "Completed the docking procedure without errors es preciso y formal. Nailed y super great son informales."
+              }
             }
-          ],
-          "answer": 2,
-          "hint": {
-            "en": "The time word tells you to use past tense.",
-            "es": "The time word tells you to use past tense."
-          },
-          "explain": {
-            "en": "The time word tells you to use past tense.",
-            "es": "The time word tells you to use past tense."
-          }
-        },
-        {
-          "id": "language-arcade-4",
-          "prompt": {
-            "en": "Choose the transition that signals an example.",
-            "es": "Choose the transition that signals an example."
-          },
-          "choices": [
-            {
-              "en": "For instance",
-              "es": "Por ejemplo"
-            },
-            {
-              "en": "However",
-              "es": "Sin embargo"
-            },
-            {
-              "en": "Finally",
-              "es": "Finalmente"
-            }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Look for the phrase that introduces a detail.",
-            "es": "Look for the phrase that introduces a detail."
-          },
-          "explain": {
-            "en": "Look for the phrase that introduces a detail.",
-            "es": "Look for the phrase that introduces a detail."
           }
         }
       ]
@@ -277,28 +470,25 @@
     "3-5": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write two sentences that explain it in your own words.",
-        "es": "Elige una idea del juego. Escribe dos oraciones que la expliquen con tus propias palabras."
+        "en": "Pick one gate you opened. Write two sentences that use the same kind of word in a new sentence of your own.",
+        "es": "Elige una puerta que abriste. Escribe dos oraciones que usen el mismo tipo de palabra en una oración nueva tuya."
       },
-      "frame": "I noticed ___. This matters because ___.",
-      "checks": [
-        "I used a detail from the game.",
-        "I explained my idea."
-      ],
-      "minWords": 5
+      "frame": "At the ___ gate, I learned ___. My new sentence is: ___.",
+      "checks": ["I named the gate and what it taught me.", "I wrote a new sentence of my own."],
+      "minWords": 8
     },
     "6-8": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write a short explanation with evidence and a connection.",
-        "es": "Elige una idea del juego. Escribe una explicación breve con evidencia y una conexión."
+        "en": "Choose one gate. Explain why the right choice worked and write a new sentence that uses the same language move.",
+        "es": "Elige una puerta. Explica por qué funcionó la opción correcta y escribe una oración nueva que use el mismo recurso de lenguaje."
       },
-      "frame": "The evidence suggests ___. This matters because ___.",
+      "frame": "The ___ gate needed ___ because ___. My own example: ___.",
       "checks": [
-        "I included a specific detail.",
-        "I connected the detail to my idea."
+        "I explained why the choice fit the context.",
+        "I wrote my own example with the same language move."
       ],
-      "minWords": 10
+      "minWords": 12
     }
   }
 }

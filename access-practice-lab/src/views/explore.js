@@ -19,6 +19,7 @@ import {
 } from "../sitemap.js";
 import { BASE, announce, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
+import { arcadeHTML } from "./play-arcade.js";
 
 const state = { section: "", for: "", skill: "", kind: "", q: "" };
 // Each group opens with six places; "Show all" expands that group. Any filter or search shows every match.
@@ -314,8 +315,17 @@ export async function render(ctx) {
           <p class="xp-lead">${I.T(...lead)}</p>
         </header>
         ${jumpIn}
-        ${sectionTabsHTML()} ${filtersHTML()}
-        <div class="xp-results" data-xp-results>${resultsHTML()}</div>
+        ${
+          state.section === "play" && !filtering()
+            ? html`${arcadeHTML(I, band, (d) => inBand(d, band))}
+                <section class="xp-directory" id="xp-directory" data-fold>
+                  <h2>${I.T("Search every game and world", "Busca en todos los juegos y mundos")}</h2>
+                  ${sectionTabsHTML()} ${filtersHTML()}
+                  <div class="xp-results" data-xp-results>${resultsHTML()}</div>
+                </section>`
+            : html`${sectionTabsHTML()} ${filtersHTML()}
+                <div class="xp-results" data-xp-results>${resultsHTML()}</div>`
+        }
       </div>`,
   };
 }

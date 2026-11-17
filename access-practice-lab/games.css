@@ -3,7 +3,7 @@
    (flat, finer, cooler). Colour is never the only cue; targets are at least 44px; motion stops under
    prefers-reduced-motion. No violet, purple or magenta. */
 
-.gs, .gs-hub { --gs-navy: #17324d; --gs-teal: #1fa6a2; --gs-coral: #f2765a; --gs-gold: #f2c15b; --goldDk: #d99a22; --gs-sand: #f6e9cc; --gs-paper: #fbf4e2; --gs-r: 18px; --gs-line: 2px solid var(--line-strong); --gs-pad: clamp(1rem, 2.6vw, 1.6rem); display: grid; gap: var(--s-4, 1rem); }
+.gs, .gs-hub { --gs-navy: #17324d; --gs-teal: #1fa6a2; --gs-coral: #f2765a; --gs-gold: #f2c15b; --goldDk: #d99a22; --gs-sand: #f6e9cc; --gs-paper: #fbf4e2; --gs-r: 18px; --gs-line: 2px solid var(--line-strong); --gs-pad: clamp(1rem, 2.6vw, 1.6rem); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4, 1rem); }
 .gs-band-3-5 { --gs-r: 22px; --gs-line: 3px solid var(--gs-navy); --gs-shadow: 0 4px 0 var(--gs-navy); }
 .gs-band-6-8 { --gs-r: 12px; --gs-line: 1px solid var(--line-strong); --gs-shadow: 0 1px 3px rgb(20 38 61 / 12%); }
 .gs-art { display: block; width: 100%; height: auto; }
@@ -150,9 +150,9 @@
   .gs-hero, .gs-start, .gs-done, .gs-promo { grid-template-columns: minmax(0, 1fr); }
   .gs-start-art, .gs-done-art { position: static; }
   .gs-support { grid-template-columns: minmax(0, 1fr); }
-  .gs-support.is-inline { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .gs-support.is-inline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
   .gs-filter-l { min-width: 100%; }
-  .gs-top-right { width: 100%; justify-content: space-between; }
+  .gs-top-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
 }
 @media print { .gs-top, .gs-support, .gs-actions, .gs-hint button { display: none !important; } .gs-stage { border: 1px solid #999; box-shadow: none; } }
 

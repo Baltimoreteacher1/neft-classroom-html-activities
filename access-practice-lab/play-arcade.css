@@ -1,0 +1,293 @@
+/* Games & Worlds arcade (/explore/play): src/views/play-arcade.js. Tokens from ds.css; no purple. */
+.pa {
+  display: grid;
+  gap: 2.25rem;
+  margin-block: 0.5rem 2rem;
+}
+.pa-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border: 2px solid var(--brand);
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--teal-soft), var(--surface) 55%, #fdf0d6);
+  box-shadow: 0 6px 0 var(--brand);
+}
+.pa-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--brand-deep);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.pa-kicker .icon {
+  width: 1em;
+  height: 1em;
+}
+.pa-hero-title {
+  margin: 0.2rem 0 0.4rem;
+  font-size: clamp(1.9rem, 4.4vw, 3rem);
+  line-height: 1.05;
+  color: var(--brand-deep);
+}
+.pa-hero-text {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: 34rem;
+}
+.pa-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.pa-hero-fine {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  opacity: 0.85;
+}
+.pa-hero-art {
+  position: relative;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 2px solid var(--brand);
+  background: var(--surface);
+}
+.pa-hero-art > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pa-hero-guide {
+  position: absolute;
+  right: 0.5rem;
+  bottom: -0.25rem;
+  width: clamp(64px, 22%, 96px);
+}
+.pa-hero-guide svg {
+  width: 100% !important;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pa-hero-guide {
+    animation: pa-bob 3.2s ease-in-out infinite;
+  }
+  @keyframes pa-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+}
+
+/* shelves */
+.pa-shelf-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.85rem;
+}
+.pa-shelf-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  color: var(--brand-deep);
+}
+.pa-shelf-lead {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  color: var(--ink);
+}
+.pa-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  font-weight: 800;
+  color: var(--brand);
+}
+.pa-all .icon {
+  width: 1em;
+  height: 1em;
+}
+
+/* quick game tiles */
+.pa-games,
+.pa-places,
+.pa-resume-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.pa-games {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.5rem), 1fr));
+}
+.pa-places {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+}
+.pa-resume-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.pa-game-link,
+.pa-place-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.pa-game-link:hover,
+.pa-place-link:hover {
+  border-color: var(--brand);
+}
+.pa-game-link:focus-visible,
+.pa-place-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pa-game-link,
+  .pa-place-link {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .pa-game-link:hover,
+  .pa-place-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 0 var(--brand);
+  }
+}
+.pa-game-art,
+.pa-place-art {
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--brand-soft);
+  border-bottom: 2px solid var(--line);
+}
+.pa-game-art svg,
+.pa-place-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pa-game-body,
+.pa-place-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  padding: 0.8rem 0.95rem 0.95rem;
+}
+.pa-game-title,
+.pa-place-title {
+  font-weight: 800;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: var(--brand-deep);
+}
+.pa-game-text,
+.pa-place-text {
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+.pa-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+.pa-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--brand-deep);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.pa-chip .icon {
+  width: 0.95em;
+  height: 0.95em;
+}
+.pa-place-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0.45rem 0.95rem;
+  min-height: 44px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 800;
+}
+.pa-place-go .icon {
+  width: 1em;
+  height: 1em;
+}
+.pa-resume-list .btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* 6-8: calmer, more grown-up framing */
+.pa-band-6-8 .pa-hero {
+  background: linear-gradient(135deg, #e6eef6, var(--surface) 60%);
+}
+.pa-band-6-8 .pa-kicker {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+/* the full directory sits below the arcade */
+.xp-directory {
+  border-top: 2px solid var(--line);
+  padding-top: 1.25rem;
+}
+
+@media (max-width: 760px) {
+  .pa-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pa-hero-art {
+    order: -1;
+  }
+  .pa-hero-actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+/* EN+ES: the Spanish line inside a dark pill keeps the pill's text colour */
+.pa-kicker .bi-es,
+.pa-place-go .bi-es {
+  color: inherit;
+}

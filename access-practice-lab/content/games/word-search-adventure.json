@@ -1,274 +1,516 @@
 {
   "id": "word-search-adventure",
-  "mechanic": "clue-trail",
+  "mechanic": "grid-search",
   "rules": {
     "3-5": [
       {
-        "en": "Read or listen to each clue. Choose a response, check your thinking, and revise after a hint.",
-        "es": "Lee o escucha cada pista. Elige una respuesta, revisa tu idea y corrígela después de una pista."
+        "en": "Read the clue. Then find that word in the letter grid. Words go across or down.",
+        "es": "Lee la pista. Luego busca esa palabra en la sopa de letras. Las palabras van de izquierda a derecha o de arriba abajo."
       },
       {
-        "en": "Finish each station, then use one idea in your own words.",
-        "es": "Termina cada estación y luego usa una idea con tus propias palabras."
+        "en": "Tap the first letter, then the last letter. With a keyboard, use the arrow keys and press Enter on each letter.",
+        "es": "Toca la primera letra y luego la última. Con teclado, usa las flechas y presiona Enter en cada letra."
+      },
+      {
+        "en": "Every word you find shows its meaning and an example sentence, and it uncovers part of the picture scene.",
+        "es": "Cada palabra que encuentras muestra su significado y una oración de ejemplo, y descubre una parte de la escena."
       }
     ],
     "6-8": [
       {
-        "en": "Study each prompt and its evidence. Choose the strongest response, then revise your thinking when feedback gives you a clue.",
-        "es": "Estudia cada pregunta y su evidencia. Elige la respuesta más sólida y revisa tu idea cuando recibas una pista."
+        "en": "Use the definition clue to name the academic word, then find it in the grid. Words run across, down or diagonally.",
+        "es": "Usa la pista de definición para identificar la palabra académica y luego búscala en la sopa de letras. Las palabras van en horizontal, en vertical o en diagonal."
       },
       {
-        "en": "Complete the stations and apply the language in your own words.",
-        "es": "Completa las estaciones y aplica el lenguaje con tus propias palabras."
+        "en": "Select the first and last letters: tap them, or move with the arrow keys and press Enter on each.",
+        "es": "Selecciona la primera y la última letra: tócalas, o muévete con las flechas y presiona Enter en cada una."
+      },
+      {
+        "en": "Each puzzle uncovers a science or social studies scene. A miss gives you a hint; a second miss shows where the word is.",
+        "es": "Cada sopa de letras descubre una escena de ciencias o de estudios sociales. Un error te da una pista; un segundo error muestra dónde está la palabra."
       }
     ]
   },
   "bands": {
     "3-5": {
-      "rounds": [
+      "size": 7,
+      "dirs": [
+        "across",
+        "down"
+      ],
+      "themes": [
         {
-          "id": "word-search-adventure-1",
-          "prompt": {
-            "en": "Clue: A large area of land with very little rain.",
-            "es": "Clue: A large area of land with very little rain."
+          "id": "ocean",
+          "pic": "🌊",
+          "title": {
+            "en": "Ocean explorers",
+            "es": "Exploradores del océano"
           },
-          "choices": [
+          "words": [
             {
-              "en": "desert",
-              "es": "desierto"
+              "id": "ws35-coral",
+              "word": "CORAL",
+              "pic": "🪸",
+              "es": "coral",
+              "clue": {
+                "en": "A hard, colorful reef built by tiny sea animals.",
+                "es": "Un arrecife duro y colorido que construyen animales marinos diminutos."
+              },
+              "context": {
+                "en": "Bright fish hide in the ___ reef.",
+                "es": "Los peces brillantes se esconden en el arrecife de ___."
+              }
             },
             {
-              "en": "forest",
-              "es": "bosque"
+              "id": "ws35-tide",
+              "word": "TIDE",
+              "pic": "🌊",
+              "es": "marea",
+              "clue": {
+                "en": "The rise and fall of the ocean's water about two times a day.",
+                "es": "La subida y bajada del agua del océano unas dos veces al día."
+              },
+              "context": {
+                "en": "At low ___, we found crabs in the rock pools.",
+                "es": "Cuando bajó la ___, encontramos cangrejos en los charcos entre las rocas."
+              }
             },
             {
-              "en": "island",
-              "es": "isla"
+              "id": "ws35-current",
+              "word": "CURRENT",
+              "pic": "🚤",
+              "es": "corriente",
+              "clue": {
+                "en": "Water that keeps moving in one direction, like a river inside the ocean.",
+                "es": "Agua que sigue moviéndose en una dirección, como un río dentro del océano."
+              },
+              "context": {
+                "en": "The strong ___ pushed the little boat away from the shore.",
+                "es": "La fuerte ___ alejó el botecito de la orilla."
+              }
+            },
+            {
+              "id": "ws35-octopus",
+              "word": "OCTOPUS",
+              "pic": "🐙",
+              "es": "pulpo",
+              "clue": {
+                "en": "A soft sea animal with eight arms and no bones.",
+                "es": "Un animal marino blando con ocho brazos y sin huesos."
+              },
+              "context": {
+                "en": "The ___ changed color to hide on the rocks.",
+                "es": "El ___ cambió de color para esconderse en las rocas."
+              }
             }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Look for the landform that is very dry.",
-            "es": "Look for the landform that is very dry."
-          },
-          "explain": {
-            "en": "Look for the landform that is very dry.",
-            "es": "Look for the landform that is very dry."
-          }
+          ]
         },
         {
-          "id": "word-search-adventure-2",
-          "prompt": {
-            "en": "Context: The two shapes are alike in size and color. What does “alike” mean?",
-            "es": "Context: The two shapes are alike in size and color. What does “alike” mean?"
+          "id": "weather",
+          "pic": "⛅",
+          "title": {
+            "en": "Weather watchers",
+            "es": "Observadores del tiempo"
           },
-          "choices": [
+          "words": [
             {
-              "en": "distant",
-              "es": "lejanos"
+              "id": "ws35-predict",
+              "word": "PREDICT",
+              "pic": "🔭",
+              "es": "predecir",
+              "clue": {
+                "en": "To use clues to say what you think will happen next.",
+                "es": "Usar pistas para decir lo que crees que va a pasar."
+              },
+              "context": {
+                "en": "Scientists ___ rain by studying clouds and wind.",
+                "es": "Los científicos ___ la lluvia estudiando las nubes y el viento."
+              }
             },
             {
-              "en": "similar",
-              "es": "parecidos"
+              "id": "ws35-drought",
+              "word": "DROUGHT",
+              "pic": "🌵",
+              "es": "sequía",
+              "clue": {
+                "en": "A long time with little or no rain.",
+                "es": "Un largo tiempo con poca lluvia o sin lluvia."
+              },
+              "context": {
+                "en": "During the ___, the corn plants on the farm dried up.",
+                "es": "Durante la ___, las plantas de maíz de la granja se secaron."
+              }
             },
             {
-              "en": "broken",
-              "es": "rotos"
+              "id": "ws35-humid",
+              "word": "HUMID",
+              "pic": "💧",
+              "es": "húmedo",
+              "clue": {
+                "en": "Feeling damp and sticky because there is a lot of water in the air.",
+                "es": "Que se siente mojado y pegajoso porque hay mucha agua en el aire."
+              },
+              "context": {
+                "en": "The air felt so ___ that my shirt stuck to my back.",
+                "es": "El aire estaba tan ___ que la camisa se me pegaba a la espalda."
+              }
+            },
+            {
+              "id": "ws35-climate",
+              "word": "CLIMATE",
+              "pic": "🌎",
+              "es": "clima",
+              "clue": {
+                "en": "The usual weather in a place over many years.",
+                "es": "El tiempo que suele hacer en un lugar durante muchos años."
+              },
+              "context": {
+                "en": "Puerto Rico has a warm ___ all year long.",
+                "es": "Puerto Rico tiene un ___ cálido todo el año."
+              }
             }
-          ],
-          "answer": 1,
-          "hint": {
-            "en": "Replace the word with a meaning that fits.",
-            "es": "Replace the word with a meaning that fits."
-          },
-          "explain": {
-            "en": "Replace the word with a meaning that fits.",
-            "es": "Replace the word with a meaning that fits."
-          }
+          ]
         },
         {
-          "id": "word-search-adventure-3",
-          "prompt": {
-            "en": "Clue: To examine something closely to learn about it.",
-            "es": "Clue: To examine something closely to learn about it."
+          "id": "seed",
+          "pic": "🌱",
+          "title": {
+            "en": "Inside a seed",
+            "es": "Dentro de una semilla"
           },
-          "choices": [
+          "words": [
             {
-              "en": "celebrate",
-              "es": "celebrar"
+              "id": "ws35-embryo",
+              "word": "EMBRYO",
+              "pic": "🫘",
+              "es": "embrión",
+              "clue": {
+                "en": "The tiny baby plant curled up inside a seed.",
+                "es": "La plantita diminuta que está enrollada dentro de una semilla."
+              },
+              "context": {
+                "en": "When we split the bean, we saw the ___ inside.",
+                "es": "Cuando partimos el frijol, vimos el ___ adentro."
+              }
             },
             {
-              "en": "decorate",
-              "es": "decorar"
+              "id": "ws35-sprout",
+              "word": "SPROUT",
+              "pic": "🌱",
+              "es": "germinar (brotar)",
+              "clue": {
+                "en": "To start to grow and push out new green parts.",
+                "es": "Empezar a crecer y sacar partes verdes nuevas."
+              },
+              "context": {
+                "en": "Seeds ___ when they get water and warmth.",
+                "es": "Las semillas empiezan a ___ cuando reciben agua y calor."
+              }
             },
             {
-              "en": "investigate",
-              "es": "investigar"
+              "id": "ws35-root",
+              "word": "ROOT",
+              "pic": "🥕",
+              "es": "raíz",
+              "clue": {
+                "en": "The plant part that grows down into the soil and takes in water.",
+                "es": "La parte de la planta que crece hacia abajo en la tierra y absorbe agua."
+              },
+              "context": {
+                "en": "The ___ grew down first, and then the stem grew up.",
+                "es": "Primero creció la ___ hacia abajo y luego el tallo creció hacia arriba."
+              }
+            },
+            {
+              "id": "ws35-shoot",
+              "word": "SHOOT",
+              "pic": "🌿",
+              "es": "brote (tallo nuevo)",
+              "clue": {
+                "en": "The first new stem and leaves that grow up toward the light.",
+                "es": "El primer tallo nuevo con hojas que crece hacia la luz."
+              },
+              "context": {
+                "en": "A green ___ poked up through the dirt in our cup.",
+                "es": "Un ___ verde salió de la tierra en nuestro vaso."
+              }
             }
-          ],
-          "answer": 2,
-          "hint": {
-            "en": "A scientist might do this to find evidence.",
-            "es": "A scientist might do this to find evidence."
-          },
-          "explain": {
-            "en": "A scientist might do this to find evidence.",
-            "es": "A scientist might do this to find evidence."
-          }
-        },
-        {
-          "id": "word-search-adventure-4",
-          "prompt": {
-            "en": "Context: The path was narrow, so only one person could walk on it at a time. Narrow means ___.",
-            "es": "Context: The path was narrow, so only one person could walk on it at a time. Narrow means ___."
-          },
-          "choices": [
-            {
-              "en": "not wide",
-              "es": "no ancho"
-            },
-            {
-              "en": "very long",
-              "es": "muy largo"
-            },
-            {
-              "en": "hard to see",
-              "es": "difícil de ver"
-            }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Use the detail about one person at a time.",
-            "es": "Use the detail about one person at a time."
-          },
-          "explain": {
-            "en": "Use the detail about one person at a time.",
-            "es": "Use the detail about one person at a time."
-          }
+          ]
         }
       ]
     },
     "6-8": {
-      "rounds": [
+      "size": 7,
+      "dirs": [
+        "across",
+        "down",
+        "diag",
+        "up"
+      ],
+      "themes": [
         {
-          "id": "word-search-adventure-1",
-          "prompt": {
-            "en": "Clue: A large area of land with very little rain.",
-            "es": "Clue: A large area of land with very little rain."
+          "id": "ecosystems",
+          "pic": "🌿",
+          "title": {
+            "en": "Ecosystems",
+            "es": "Ecosistemas"
           },
-          "choices": [
+          "words": [
             {
-              "en": "desert",
-              "es": "desierto"
+              "id": "ws68-species",
+              "word": "SPECIES",
+              "pic": "🐸",
+              "es": "especie",
+              "clue": {
+                "en": "A group of living things that are alike and can have young together.",
+                "es": "Un grupo de seres vivos parecidos que pueden tener crías entre sí."
+              },
+              "context": {
+                "en": "Scientists found a new ___ of frog in the cloud forest.",
+                "es": "Los científicos encontraron una nueva ___ de rana en el bosque nuboso."
+              }
             },
             {
-              "en": "forest",
-              "es": "bosque"
+              "id": "ws68-ecology",
+              "word": "ECOLOGY",
+              "pic": "🔬",
+              "es": "ecología",
+              "clue": {
+                "en": "The science of how living things interact with each other and with their environment.",
+                "es": "La ciencia que estudia cómo se relacionan los seres vivos entre sí y con su ambiente."
+              },
+              "context": {
+                "en": "In ___ class, we studied how wolves changed the plants along a river valley.",
+                "es": "En la clase de ___, estudiamos cómo los lobos cambiaron las plantas a lo largo del valle de un río."
+              }
             },
             {
-              "en": "island",
-              "es": "isla"
+              "id": "ws68-niche",
+              "word": "NICHE",
+              "pic": "🦇",
+              "es": "nicho ecológico",
+              "clue": {
+                "en": "The role a species plays in its ecosystem: what it eats, where it lives and what it does.",
+                "es": "El papel que cumple una especie en su ecosistema: qué come, dónde vive y qué hace."
+              },
+              "context": {
+                "en": "Bats fill a night-time ___ by eating insects that come out after dark.",
+                "es": "Los murciélagos ocupan un ___ nocturno al comer insectos que salen de noche."
+              }
+            },
+            {
+              "id": "ws68-biome",
+              "word": "BIOME",
+              "pic": "🏜️",
+              "es": "bioma",
+              "clue": {
+                "en": "A large region with a similar climate, plants and animals, such as a desert or a tundra.",
+                "es": "Una región grande con clima, plantas y animales parecidos, como un desierto o una tundra."
+              },
+              "context": {
+                "en": "The tundra is a cold ___ where the ground stays frozen most of the year.",
+                "es": "La tundra es un ___ frío donde el suelo se mantiene congelado casi todo el año."
+              }
             }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Look for the landform that is very dry.",
-            "es": "Look for the landform that is very dry."
-          },
-          "explain": {
-            "en": "Look for the landform that is very dry.",
-            "es": "Look for the landform that is very dry."
-          }
+          ]
         },
         {
-          "id": "word-search-adventure-2",
-          "prompt": {
-            "en": "Context: The two shapes are alike in size and color. What does “alike” mean?",
-            "es": "Context: The two shapes are alike in size and color. What does “alike” mean?"
+          "id": "ancient",
+          "pic": "🏛️",
+          "title": {
+            "en": "Ancient civilizations",
+            "es": "Civilizaciones antiguas"
           },
-          "choices": [
+          "words": [
             {
-              "en": "distant",
-              "es": "lejanos"
+              "id": "ws68-dynasty",
+              "word": "DYNASTY",
+              "pic": "👑",
+              "es": "dinastía",
+              "clue": {
+                "en": "A series of rulers who all come from the same family.",
+                "es": "Una serie de gobernantes que pertenecen a la misma familia."
+              },
+              "context": {
+                "en": "The Han ___ ruled China for about 400 years.",
+                "es": "La ___ Han gobernó China durante unos 400 años."
+              }
             },
             {
-              "en": "similar",
-              "es": "parecidos"
+              "id": "ws68-tribute",
+              "word": "TRIBUTE",
+              "pic": "🪶",
+              "es": "tributo",
+              "clue": {
+                "en": "Goods or payment that a conquered group had to give to a more powerful ruler.",
+                "es": "Bienes o pagos que un pueblo conquistado tenía que entregar a un gobernante más poderoso."
+              },
+              "context": {
+                "en": "Conquered towns paid ___ to the Aztec rulers in cloth, cacao and feathers.",
+                "es": "Los pueblos conquistados pagaban ___ a los gobernantes aztecas con telas, cacao y plumas."
+              }
             },
             {
-              "en": "broken",
-              "es": "rotos"
+              "id": "ws68-surplus",
+              "word": "SURPLUS",
+              "pic": "🌾",
+              "es": "excedente",
+              "clue": {
+                "en": "An extra amount, more than what people need.",
+                "es": "Una cantidad extra, más de la que la gente necesita."
+              },
+              "context": {
+                "en": "Farmers along the Nile grew a ___ of grain, so not everyone had to farm.",
+                "es": "Los agricultores a orillas del Nilo cosechaban un ___ de grano, así que no todos tenían que cultivar."
+              }
+            },
+            {
+              "id": "ws68-empire",
+              "word": "EMPIRE",
+              "pic": "🏔️",
+              "es": "imperio",
+              "clue": {
+                "en": "Many lands and peoples ruled by one powerful government or ruler.",
+                "es": "Muchos territorios y pueblos gobernados por un solo gobierno o gobernante poderoso."
+              },
+              "context": {
+                "en": "The Inca ___ stretched for thousands of kilometers along the Andes.",
+                "es": "El ___ inca se extendía miles de kilómetros a lo largo de los Andes."
+              }
             }
-          ],
-          "answer": 1,
-          "hint": {
-            "en": "Replace the word with a meaning that fits.",
-            "es": "Replace the word with a meaning that fits."
-          },
-          "explain": {
-            "en": "Replace the word with a meaning that fits.",
-            "es": "Replace the word with a meaning that fits."
-          }
+          ]
         },
         {
-          "id": "word-search-adventure-3",
-          "prompt": {
-            "en": "Clue: To examine something closely to learn about it.",
-            "es": "Clue: To examine something closely to learn about it."
+          "id": "forces",
+          "pic": "🚀",
+          "title": {
+            "en": "Forces and motion",
+            "es": "Fuerzas y movimiento"
           },
-          "choices": [
+          "words": [
             {
-              "en": "celebrate",
-              "es": "celebrar"
+              "id": "ws68-mass",
+              "word": "MASS",
+              "pic": "🎳",
+              "es": "masa",
+              "clue": {
+                "en": "The amount of matter in an object.",
+                "es": "La cantidad de materia que tiene un objeto."
+              },
+              "context": {
+                "en": "A bowling ball has more ___ than a soccer ball, so it is harder to stop.",
+                "es": "Una bola de boliche tiene más ___ que un balón de fútbol, así que cuesta más detenerla."
+              }
             },
             {
-              "en": "decorate",
-              "es": "decorar"
+              "id": "ws68-gravity",
+              "word": "GRAVITY",
+              "pic": "🍎",
+              "es": "gravedad",
+              "clue": {
+                "en": "The force that pulls objects toward each other, like a ball back down to Earth.",
+                "es": "La fuerza que atrae a los objetos entre sí, como la que hace caer una pelota a la Tierra."
+              },
+              "context": {
+                "en": "On the Moon, ___ is weaker, so astronauts can jump higher.",
+                "es": "En la Luna, la ___ es más débil, así que los astronautas pueden saltar más alto."
+              }
             },
             {
-              "en": "investigate",
-              "es": "investigar"
+              "id": "ws68-inertia",
+              "word": "INERTIA",
+              "pic": "🚌",
+              "es": "inercia",
+              "clue": {
+                "en": "The way an object keeps resting or keeps moving unless a force acts on it.",
+                "es": "La forma en que un objeto sigue quieto o sigue moviéndose a menos que una fuerza actúe sobre él."
+              },
+              "context": {
+                "en": "Because of ___, your body keeps moving forward when the bus stops suddenly.",
+                "es": "Por la ___, tu cuerpo sigue hacia adelante cuando el autobús frena de golpe."
+              }
+            },
+            {
+              "id": "ws68-motion",
+              "word": "MOTION",
+              "pic": "🛝",
+              "es": "movimiento",
+              "clue": {
+                "en": "A change in an object's position over time.",
+                "es": "Un cambio en la posición de un objeto a lo largo del tiempo."
+              },
+              "context": {
+                "en": "The video showed the ___ of the ball as it rolled down the ramp.",
+                "es": "El video mostró el ___ de la pelota mientras bajaba por la rampa."
+              }
             }
-          ],
-          "answer": 2,
-          "hint": {
-            "en": "A scientist might do this to find evidence.",
-            "es": "A scientist might do this to find evidence."
-          },
-          "explain": {
-            "en": "A scientist might do this to find evidence.",
-            "es": "A scientist might do this to find evidence."
-          }
+          ]
         },
         {
-          "id": "word-search-adventure-4",
-          "prompt": {
-            "en": "Context: The path was narrow, so only one person could walk on it at a time. Narrow means ___.",
-            "es": "Context: The path was narrow, so only one person could walk on it at a time. Narrow means ___."
+          "id": "argument",
+          "pic": "⚖️",
+          "title": {
+            "en": "Argument words",
+            "es": "Palabras para argumentar"
           },
-          "choices": [
+          "words": [
             {
-              "en": "not wide",
-              "es": "no ancho"
+              "id": "ws68-claim",
+              "word": "CLAIM",
+              "pic": "📣",
+              "es": "afirmación (tesis)",
+              "clue": {
+                "en": "A statement that you argue is true and support with reasons.",
+                "es": "Una idea que defiendes como verdadera y apoyas con razones."
+              },
+              "context": {
+                "en": "My ___ is that our school should start a compost program.",
+                "es": "Mi ___ es que nuestra escuela debería empezar un programa de compostaje."
+              }
             },
             {
-              "en": "very long",
-              "es": "muy largo"
+              "id": "ws68-source",
+              "word": "SOURCE",
+              "pic": "📚",
+              "es": "fuente",
+              "clue": {
+                "en": "Where information comes from, such as a book, a website or an expert.",
+                "es": "El lugar de donde viene la información, como un libro, un sitio web o un experto."
+              },
+              "context": {
+                "en": "A science journal is a trustworthy ___ for a research paper.",
+                "es": "Una revista científica es una ___ confiable para un trabajo de investigación."
+              }
             },
             {
-              "en": "hard to see",
-              "es": "difícil de ver"
+              "id": "ws68-rebut",
+              "word": "REBUT",
+              "pic": "🗣️",
+              "es": "refutar",
+              "clue": {
+                "en": "To argue that the other side's point is wrong, using reasons and facts.",
+                "es": "Argumentar que el punto del otro lado está equivocado, usando razones y datos."
+              },
+              "context": {
+                "en": "Maya stood up to ___ the other team's point about the cost.",
+                "es": "Maya se levantó para ___ el punto del otro equipo sobre el costo."
+              }
+            },
+            {
+              "id": "ws68-bias",
+              "word": "BIAS",
+              "pic": "⚖️",
+              "es": "sesgo (parcialidad)",
+              "clue": {
+                "en": "A one-sided view that leans for or against something in an unfair way.",
+                "es": "Una visión de un solo lado que favorece o rechaza algo de manera injusta."
+              },
+              "context": {
+                "en": "The ad only quoted happy customers, which shows ___.",
+                "es": "El anuncio solo citó a clientes contentos, lo cual muestra ___."
+              }
             }
-          ],
-          "answer": 0,
-          "hint": {
-            "en": "Use the detail about one person at a time.",
-            "es": "Use the detail about one person at a time."
-          },
-          "explain": {
-            "en": "Use the detail about one person at a time.",
-            "es": "Use the detail about one person at a time."
-          }
+          ]
         }
       ]
     }
@@ -277,26 +519,26 @@
     "3-5": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write two sentences that explain it in your own words.",
-        "es": "Elige una idea del juego. Escribe dos oraciones que la expliquen con tus propias palabras."
+        "en": "Choose two words you found. Write one sentence for each word that shows what it means.",
+        "es": "Elige dos palabras que encontraste. Escribe una oración con cada palabra que muestre lo que significa."
       },
-      "frame": "I noticed ___. This matters because ___.",
+      "frame": "A ___ is ___. I know because ___.",
       "checks": [
-        "I used a detail from the game.",
-        "I explained my idea."
+        "I used two words from the puzzle.",
+        "My sentences show what the words mean."
       ],
       "minWords": 5
     },
     "6-8": {
       "mode": "write",
       "prompt": {
-        "en": "Choose one idea from the game. Write a short explanation with evidence and a connection.",
-        "es": "Elige una idea del juego. Escribe una explicación breve con evidencia y una conexión."
+        "en": "Choose two academic words you found and write two or three sentences that connect them.",
+        "es": "Elige dos palabras académicas que encontraste y escribe dos o tres oraciones que las relacionen."
       },
-      "frame": "The evidence suggests ___. This matters because ___.",
+      "frame": "___ is connected to ___ because ___.",
       "checks": [
-        "I included a specific detail.",
-        "I connected the detail to my idea."
+        "I used two academic words correctly.",
+        "I explained how the two words connect."
       ],
       "minWords": 10
     }

@@ -12,8 +12,8 @@ export const KLUS = ["Narrate", "Inform", "Explain", "Argue"];
 export const GAMES = [
   {
     id: "grammar-jungle", n: 1, inspired: "funbrain", skill: "Writing", skills: ["Writing", "Reading"], klu: ["Inform", "Explain"],
-    title: ["Grammar Jungle", "Selva de la gramática"], tag: ["Swing through the jungle by fixing and sorting real sentences.", "Cruza la selva corrigiendo y clasificando oraciones reales."],
-    obj: { "3-5": ["I can name how words work in a sentence and fix a sentence so it makes sense.", "Puedo nombrar cómo funcionan las palabras en una oración y corregirla para que tenga sentido."], "6-8": ["I can use precise parts of speech and edit sentences for agreement, tense and clarity.", "Puedo usar categorías gramaticales precisas y editar oraciones para la concordancia, el tiempo y la claridad."] },
+    title: ["Grammar Jungle", "Selva de la gramática"], tag: ["Swing through the rainforest by finding and fixing the mistake in real sentences.", "Cruza la selva tropical encontrando y corrigiendo el error en oraciones reales."],
+    obj: { "3-5": ["I can find the word that breaks a grammar rule in a sentence and fix it.", "Puedo encontrar la palabra que rompe una regla gramatical en una oración y corregirla."], "6-8": ["I can use precise parts of speech and edit sentences for agreement, tense and clarity.", "Puedo usar categorías gramaticales precisas y editar oraciones para la concordancia, el tiempo y la claridad."] },
     minutes: 8, difficulty: 2, home: true, art: "jungle", module: "grammar-jungle", mechanic: "tag-and-fix",
   },
   {
@@ -36,8 +36,8 @@ export const GAMES = [
   },
   {
     id: "sound-word-studio", n: 5, inspired: "starfall", skill: "Reading", skills: ["Reading", "Listening"], klu: ["Inform"],
-    title: ["Sound & Word Studio", "Estudio de sonidos y palabras"], tag: ["Mix sounds on the studio board: letters, syllables and vowel patterns.", "Mezcla sonidos en el tablero del estudio: letras, sílabas y patrones de vocales."],
-    obj: { "3-5": ["I can hear sounds in a word, build it with letters and read it aloud.", "Puedo oír los sonidos de una palabra, formarla con letras y leerla en voz alta."], "6-8": ["I can decode multisyllable academic words using syllable and vowel patterns.", "Puedo decodificar palabras académicas de varias sílabas usando patrones de sílabas y vocales."] },
+    title: ["Sound & Word Studio", "Estudio de sonidos y palabras"], tag: ["Hear a word, build it syllable by syllable on mixer tracks, find the strong beat and read it aloud.", "Escucha una palabra, fórmala sílaba por sílaba en las pistas del mezclador, encuentra el golpe fuerte y léela en voz alta."],
+    obj: { "3-5": ["I can split long words into syllables, find the stressed syllable and read the word aloud.", "Puedo dividir palabras largas en sílabas, encontrar la sílaba acentuada y leer la palabra en voz alta."], "6-8": ["I can decode multisyllable academic words using syllable patterns and stress.", "Puedo decodificar palabras académicas de varias sílabas usando patrones de sílabas y el acento."] },
     minutes: 8, difficulty: 1, home: true, art: "studio", module: "sound-word-studio", mechanic: "build-word",
   },
   {
@@ -47,8 +47,8 @@ export const GAMES = [
     minutes: 10, difficulty: 1, home: true, art: "theater", module: "read-along-theater", mechanic: "karaoke-pages",
   },
   {
-    id: "fluency-echo", n: 7, inspired: "starfall", skill: "Speaking", skills: ["Speaking", "Reading"], klu: ["Narrate", "Inform"],
-    title: ["Fluency Echo", "Eco de fluidez"], tag: ["Listen to a model, rehearse by phrase, record yourself and compare.", "Escucha un modelo, ensaya por frases, grábate y compara."],
+    id: "fluency-echo", n: 7, inspired: "starfall", skill: "Speaking", skills: ["Speaking", "Reading", "Listening"], klu: ["Narrate", "Inform"],
+    title: ["Fluency Echo", "Eco de fluidez"], tag: ["Listen to a model, scoop the phrases, echo and record yourself, then check how it sounded.", "Escucha un modelo, marca las frases, haz eco, grábate y revisa cómo sonó."],
     obj: { "3-5": ["I can read a short text aloud in phrases and notice how my reading changes.", "Puedo leer en voz alta un texto corto por frases y notar cómo cambia mi lectura."], "6-8": ["I can read aloud with phrasing and expression, then compare my reading to a model.", "Puedo leer en voz alta con fraseo y expresión y luego comparar mi lectura con un modelo."] },
     minutes: 8, difficulty: 2, home: true, art: "echo", module: "fluency-echo", mechanic: "echo-record",
   },
@@ -73,13 +73,13 @@ export const GAMES = [
   {
     id: "spelling-expedition", n: 11, inspired: "abcya", skill: "Writing", skills: ["Writing", "Reading"], klu: ["Inform"],
     title: ["Spelling Expedition", "Expedición de ortografía"], tag: ["Climb the mountain by building words from prefixes, roots and suffixes.", "Escala la montaña formando palabras con prefijos, raíces y sufijos."],
-    obj: { "3-5": ["I can spell words by listening for sounds and using word families.", "Puedo escribir palabras escuchando los sonidos y usando familias de palabras."], "6-8": ["I can form academic words from roots, prefixes and suffixes and explain their meaning.", "Puedo formar palabras académicas con raíces, prefijos y sufijos y explicar su significado."] },
+    obj: { "3-5": ["I can build words with prefixes, base words and suffixes and tell what each part means.", "Puedo formar palabras con prefijos, palabras base y sufijos y decir qué significa cada parte."], "6-8": ["I can form academic words from roots, prefixes and suffixes and explain their meaning.", "Puedo formar palabras académicas con raíces, prefijos y sufijos y explicar su significado."] },
     minutes: 8, difficulty: 2, home: true, art: "expedition", module: "spelling-expedition", mechanic: "word-parts",
   },
   {
     id: "word-search-adventure", n: 12, inspired: "abcya", skill: "Reading", skills: ["Reading"], klu: ["Inform"],
-    title: ["Word Search Adventure", "Aventura de sopa de letras"], tag: ["Find hidden words from picture and sentence clues to uncover a scene.", "Encuentra palabras ocultas con pistas de imágenes y oraciones para descubrir una escena."],
-    obj: { "3-5": ["I can read a clue, find the word in the letters and use it in a sentence.", "Puedo leer una pista, encontrar la palabra entre las letras y usarla en una oración."], "6-8": ["I can use context clues to find academic words and uncover a science or social studies scene.", "Puedo usar pistas de contexto para encontrar palabras académicas y descubrir una escena de ciencias o estudios sociales."] },
+    title: ["Word Search Adventure", "Aventura de sopa de letras"], tag: ["Read a clue, find the hidden academic word in a letter grid and uncover a themed scene.", "Lee una pista, encuentra la palabra académica escondida en la sopa de letras y descubre una escena temática."],
+    obj: { "3-5": ["I can read a clue, find the word in the letters and use it in a sentence.", "Puedo leer una pista, encontrar la palabra entre las letras y usarla en una oración."], "6-8": ["I can use definition and context clues to find academic words in science, social studies and argument.", "Puedo usar pistas de definición y de contexto para encontrar palabras académicas de ciencias, estudios sociales y argumentación."] },
     minutes: 8, difficulty: 2, home: true, art: "search", module: "word-search-adventure", mechanic: "grid-search",
   },
   {
@@ -90,7 +90,7 @@ export const GAMES = [
   },
   {
     id: "language-arcade", n: 14, inspired: "abcya", skill: "Integrated", skills: ["Reading", "Listening", "Writing"], klu: ["Inform", "Explain"],
-    title: ["Language Arcade", "Arcade del lenguaje"], tag: ["Steer through mazes and platforms where the right word opens the way.", "Avanza por laberintos y plataformas donde la palabra correcta abre el camino."],
+    title: ["Language Arcade", "Arcade del lenguaje"], tag: ["Steer through mazes where solving a language gate opens the way.", "Avanza por laberintos donde resolver un reto de lenguaje abre el camino."],
     obj: { "3-5": ["I can choose the right word or word form to move through each gate.", "Puedo elegir la palabra o la forma correcta para pasar cada puerta."], "6-8": ["I can choose precise words, forms and connectors so each sentence works in its context.", "Puedo elegir palabras, formas y conectores precisos para que cada oración funcione en su contexto."] },
     minutes: 8, difficulty: 2, home: false, art: "arcade", module: "language-arcade", mechanic: "maze-gates",
   },
