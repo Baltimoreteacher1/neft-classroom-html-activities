@@ -268,7 +268,7 @@
     if (info.base) card.appendChild(lessonActions(info.base));
     if (info.base) {
       const guide = el("a", "hub-now__guide hub-for-family", "Family guide ");
-      guide.href = `/lessons/${info.base}/family/`;
+      guide.href = `/lessons/${info.base}/homework.html?view=understand`;
       guide.appendChild(es("· Guía para familias"));
       card.appendChild(guide);
     }
@@ -543,6 +543,13 @@
           item.classList.add("is-event");
         }
         item.append(when, link);
+        // Family view: the lesson's family page (what it teaches, how to help, practice together).
+        if (info.base) {
+          const family = el("a", "hub-week__family hub-for-family", "Family page ");
+          family.href = `/lessons/${info.base}/homework.html?view=understand`;
+          family.appendChild(es("· Para familias"));
+          item.appendChild(family);
+        }
       }
       list.appendChild(item);
     });
