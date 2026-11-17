@@ -106,6 +106,7 @@ const VIEW_LOADERS = {
   "language-studios": () => import("./views/language-studios.js"),
   "access-prep": () => import("./views/access-prep.js"),
   twr: () => import("./views/twr.js"),
+  goals: () => import("./views/goals.js"),
   class: () => import("./views/class.js"),
   "class-quiz": () => import("./views/class-quiz.js"),
   "class-teacher": () => import("./views/class-roster.js"),
@@ -184,6 +185,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "access-prep") return { ...r, view: a, id: b || "", setId: c || "", tab: q.get("tab") || "" };
   // TWR: /twr, /twr/<strategy>, /twr/<strategy>/<set> (src/views/twr.js, src/twr/view.js).
   if (a === "twr") return { ...r, view: a, id: b || "", setId: c || "" };
+  if (a === "goals") return { ...r, view: a, id: b || "" };
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }

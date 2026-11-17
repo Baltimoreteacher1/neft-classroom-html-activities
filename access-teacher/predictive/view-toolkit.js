@@ -8,6 +8,7 @@ import { TEMPLATE } from "./import.js";
 import { levelName } from "./interpret.js";
 import { recordsOf } from "./records.js";
 import { DOMAINS, SOURCES } from "./rules.js";
+import { renderGoalForm } from "./view-goals.js";
 import { studentPicker, subnav } from "./view-common.js";
 
 const LEVELS = [
@@ -187,6 +188,11 @@ const OFFICIAL = [
 ];
 
 const TOOLS = [
+  [
+    "goals",
+    "Goal-setting form",
+    "Pick a grade, skill and goal from drop-downs. Print, save as PDF or Word, for one student or the whole class.",
+  ],
   ["levels", "What the levels mean", "Six levels in plain words, English and Spanish."],
   ["words", "Words to know", "Scale score, composite, cut scores and more, in one line each."],
   [
@@ -461,6 +467,7 @@ const blankSheet = () =>
   );
 
 const TOOL_VIEWS = {
+  goals: renderGoalForm,
   levels: levelsTool,
   words: () => table("Words to know", ["Word", "What it means"], GLOSSARY),
   families: familiesTool,

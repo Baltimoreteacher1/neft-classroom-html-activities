@@ -484,6 +484,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "goals",
+    section: "progress",
+    skill: "Mixed",
+    kind: "tool",
+    for: STF,
+    top: true,
+    href: "goals",
+    icon: "flag",
+    title: P("My language goals", "Mis metas de lenguaje"),
+    text: P(
+      "Pick a goal and the steps to reach it, then print it or download it as a Word file.",
+      "Elige una meta y los pasos para lograrla, y luego imprímela o descárgala como archivo de Word.",
+    ),
+  },
+  {
     id: "language-labs",
     section: "practice",
     skill: "Writing",
@@ -1021,7 +1036,7 @@ export const DESTINATIONS = Object.freeze([
     href: "access-prep/extempore-speak",
     icon: "speaking",
     match: [["access-prep", "extempore-speak"]],
-    title: P("Extempore Speaking Lab", "Laboratorio oral Extempore"),
+    title: P("Speaking Lab", "Laboratorio oral"),
     text: P(
       "Hear a teacher prompt and a model student, then respond across Tier A, Tier B, and Tier C speaking turns.",
       "Escucha la consigna docente y a un estudiante modelo, y responde en turnos orales de Nivel A, Nivel B y Nivel C.",

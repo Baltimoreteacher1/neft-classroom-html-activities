@@ -1,4 +1,4 @@
-// Extempore Speaking Lab (extempore-speak): Near-carbon-copy Extempore split-pane oral assessment & rehearsal studio
+// Speaking Lab (extempore-speak): Near-carbon-copy Extempore split-pane oral assessment & rehearsal studio
 // adapted for WIDA ACCESS Speaking. Features:
 //   - Extempore Room Header with Task Type, Key Language Use, and Phase Indicator
 //   - Split-Screen Studio:
@@ -57,9 +57,9 @@ function extTopbarHTML(I, set, step) {
     ["4. Tier C · Record", "4. Nivel C · Grabar"],
     ["5. Portfolio Review", "5. Portafolio oral"],
   ];
-  return html`<div class="ext-topbar" role="region" aria-label="${I.S("Extempore speaking studio status", "Estado del estudio oral Extempore")}">
+  return html`<div class="ext-topbar" role="region" aria-label="${I.S("Speaking studio status", "Estado del estudio oral")}">
     <span class="ext-room-badge">
-      ${icon("record")} ${I.T("Extempore Oral Studio", "Estudio Oral Extempore")}
+      ${icon("record")} ${I.T("Speaking Studio", "Estudio oral")}
     </span>
     <span class="ext-meta-pill">${set.area} · ${set.kind}</span>
     <span class="ext-phase-pill">
@@ -244,7 +244,7 @@ function turnBuildHTML(I, set, st, turnKey, stepIdx, tierBadge) {
             ? html`${resultHTML(I, {
                   ok: Boolean(res?.ok),
                   lead: I.T(
-                    "Response ready! Now rehearse and record it aloud in the Extempore console below.",
+                    "Response ready! Now rehearse and record it aloud in the recorder below.",
                     "¡Respuesta lista! Ahora ensáyala y grábala en voz alta en la consola abajo.",
                   ),
                   action: hearPairHTML(I, turn.model, I.T("Hear model", "Escuchar modelo")),
@@ -253,7 +253,7 @@ function turnBuildHTML(I, set, st, turnKey, stepIdx, tierBadge) {
                 <div class="prep-extempore-rec">
                   <p class="fine">
                     ${icon("record")}
-                    <strong>${I.T("2. Extempore Oral Rehearsal:", "2. Ensayo oral Extempore:")}</strong>
+                    <strong>${I.T("2. Oral Rehearsal:", "2. Ensayo oral:")}</strong>
                     ${I.T(
                       "Record yourself speaking this turn aloud, then listen back and compare.",
                       "Grábate diciendo este turno en voz alta y luego escúchate y compara.",
@@ -489,8 +489,8 @@ function summaryHTML(I, set, st) {
           <p class="fb-title">
             ${icon("check")}
             ${I.T(
-              "Extempore Speaking Portfolio Complete!",
-              "¡Portafolio oral Extempore completado!",
+              "Speaking Portfolio Complete!",
+              "¡Portafolio oral completado!",
             )}
           </p>
           <p class="fb-lead">

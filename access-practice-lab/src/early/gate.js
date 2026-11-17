@@ -30,6 +30,7 @@ export const EARLY_VIEWS = new Set([
   "choice-boards",
   "talk-table",
   "twr",
+  "goals",
   "search",
   "portfolio",
   "collection",

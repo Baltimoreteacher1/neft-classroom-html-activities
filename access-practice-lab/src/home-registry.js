@@ -67,6 +67,17 @@ export const HOME_CARDS = [
     text: ["All 12 missions and where I am.", "Las 12 misiones y dónde estoy."],
   },
   {
+    id: "goals",
+    group: "start",
+    href: "goals",
+    icon: "flag",
+    title: ["My language goals", "Mis metas de lenguaje"],
+    text: [
+      "Pick a goal and the steps to reach it. Print it or save it as a Word file.",
+      "Elige una meta y los pasos para lograrla. Imprímela o guárdala como archivo de Word.",
+    ],
+  },
+  {
     id: "checkin",
     group: "start",
     href: "diagnostic",
@@ -216,7 +227,7 @@ export const HOME_CARDS = [
     featured: true,
     href: "access-prep/extempore-speak",
     icon: "speaking",
-    title: ["Extempore Speaking Lab", "Laboratorio oral Extempore"],
+    title: ["Speaking Lab", "Laboratorio oral"],
     text: [
       "Hear a teacher prompt and a model student, then speak across Tier A, Tier B, and Tier C turns with a live self-check.",
       "Escucha la consigna docente y a un estudiante modelo, y habla en turnos de Nivel A, Nivel B y Nivel C con autoevaluación en vivo.",

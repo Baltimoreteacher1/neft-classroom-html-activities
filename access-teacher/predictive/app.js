@@ -64,6 +64,8 @@ const params = new URLSearchParams(location.search);
 if (params.get("demo") === "1") ws.mode = "demo";
 let startTour = params.get("tour") === "1";
 if (TABS.some((t) => t.id === params.get("tab"))) ws.tab = params.get("tab");
+// ?tab=toolkit&tool=goals opens one Toolkit tool (the Language Page links straight to the goal-setting form).
+if (/^[a-z]{3,12}$/.test(params.get("tool") || "")) ws.sub.toolkit = params.get("tool");
 
 function sessionGet(k) {
   try {

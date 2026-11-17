@@ -74,6 +74,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/access-prep/daily-drill`,
   `${LAB_BASE}/access-prep/extempore-speak`,
   `${LAB_BASE}/twr`,
+  `${LAB_BASE}/goals`,
   `${LAB_BASE}/path`,
   `${LAB_BASE}/scaffold`,
   `${LAB_BASE}/learn`,

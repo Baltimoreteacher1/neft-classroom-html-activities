@@ -49,6 +49,8 @@ function choiceHTML(c, resume, pick) {
 /** Teacher tools at the top of the first teacher page: one row, the WIDA Data Studio first. */
 const QUICK_TOOLS = [
   { href: "/access-teacher/predictive/?demo=1", icon: "growth", name: "WIDA Data Studio", detail: "Scores, growth, graphs and what to teach next. Try it with a sample class.", featured: true },
+  { href: "/access-teacher/predictive/?demo=1&tab=toolkit&tool=goals", icon: "flag", name: "Goal-setting form", detail: "Pick a grade, skill and goal. Print, save as PDF or Word." },
+  { route: "/twr", icon: "writing", name: "TWR writing", detail: "Sentence-first writing practice for every grade band." },
   { href: "/access-teacher/", icon: "teacher", name: "Teacher Hub", detail: "Your class, assignments and evidence." },
   { route: "/lesson-builder", icon: "writing", name: "Lesson Builder", detail: "Build a lesson from real activities." },
   { route: "/start/tour", icon: "road", name: "Teacher Tour", detail: "Learn the site in a few minutes." },

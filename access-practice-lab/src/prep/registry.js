@@ -209,8 +209,8 @@ export const PREP_SKILLS = {
   },
   "extempore-speak": {
     slug: "extempore-speak",
-    title: "Extempore Speaking Lab",
-    titleEs: "Laboratorio oral Extempore",
+    title: "Speaking Lab",
+    titleEs: "Laboratorio oral",
     domain: "Speaking",
     domainLabel: ["Speaking · Oral Discourse", "Hablar · Discurso oral"],
     icon: "speaking",

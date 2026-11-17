@@ -209,7 +209,7 @@ function audienceStripHTML(I, band) {
     <a class="prep-audience-card" href="${BASE}/access-prep/extempore-speak?grades=${band}">
       <span class="prep-audience-ico">${icon("speaking")}</span>
       <span>
-        <strong>${I.T("Students · Extempore Speaking Lab", "Estudiantes · Laboratorio oral Extempore")}</strong>
+        <strong>${I.T("Students · Speaking Lab", "Estudiantes · Laboratorio oral")}</strong>
         <span class="fine">${I.T("Hear a model student, then respond across Tier A, Tier B, and Tier C turns.", "Escucha a un estudiante modelo y responde en turnos de Nivel A, Nivel B y Nivel C.")}</span>
       </span>
     </a>
@@ -230,7 +230,7 @@ function audienceStripHTML(I, band) {
   </section>`;
 }
 
-/** Embedded interactive Duolingo Skill Path + Extempore Speaking Workbench directly on /access-prep. */
+/** Embedded interactive Duolingo Skill Path + Speaking Workbench directly on /access-prep. */
 function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
   const duoSet = duoSets[0];
   const extSet = extSets[0];
@@ -244,7 +244,7 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
     <div class="prep-wb-header">
       <div>
         <p class="prep-eyebrow">${icon("sparkle")} ${I.T("Interactive Live Practice Stage", "Escenario interactivo de práctica en vivo")}</p>
-        <h2 id="prepWbH">${I.T("Try a Skill Path or Extempore Speaking right here", "Prueba una Ruta de destrezas o el Estudio Oral Extempore aquí mismo")}</h2>
+        <h2 id="prepWbH">${I.T("Try a Skill Path or the Speaking Lab right here", "Prueba una Ruta de destrezas o el Estudio oral aquí mismo")}</h2>
       </div>
       <div class="prep-wb-tabs" role="tablist" aria-label="${I.S("Choose live practice mode", "Elige modo de práctica en vivo")}">
         <button
@@ -263,7 +263,7 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
           data-prep-wb="ext"
           aria-selected="${String(workbenchTab === "ext")}"
         >
-          ${icon("speaking")} ${I.T("2. Extempore Speaking Studio", "2. Estudio Oral Extempore")}
+          ${icon("speaking")} ${I.T("2. Speaking Studio", "2. Estudio oral")}
         </button>
       </div>
     </div>
@@ -427,10 +427,10 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
               >${inlineExtText}</textarea>
               <div class="row-actions" style="margin-top:0.75rem;">
                 <a class="btn btn-primary" href="${BASE}/access-prep/extempore-speak/${extSet.id}?grades=${band}">
-                  ${I.T("Open full 3-Turn Extempore Studio", "Abrir Estudio Extempore completo de 3 turnos")} ${icon("arrow-right")}
+                  ${I.T("Open the full 3-turn Speaking Lab", "Abrir el Laboratorio oral completo de 3 turnos")} ${icon("arrow-right")}
                 </a>
                 <a class="btn" href="${BASE}/access-prep/extempore-speak?grades=${band}">
-                  ${I.T("All Extempore sets", "Todos los conjuntos")}
+                  ${I.T("All Speaking Lab sets", "Todos los conjuntos")}
                 </a>
               </div>
             </div>
@@ -445,7 +445,7 @@ function skillBuildersHTML(I, band, duoSets = [], extSets = []) {
   ${liveWorkbenchHTML(I, band, duoSets, extSets)}
   <section class="prep-builders" aria-labelledby="prepBuildersH">
     <h2 id="prepBuildersH">${I.T("Skill builders & interactive labs", "Constructores de destrezas y laboratorios interactivos")}</h2>
-    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Micro-Drills and Extempore Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral Extempore. Sin tiempo y con ayuda en cada paso.")}</p>
+    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Micro-Drills and Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral. Sin tiempo y con ayuda en cada paso.")}</p>
     <ul class="prep-builder-cards">
       ${PREP_SKILL_LIST.map(
         (s) => html`<li class="prep-builder-card ${s.slug === "daily-drill" || s.slug === "extempore-speak" ? "is-featured" : ""}">
