@@ -1,6 +1,8 @@
-// Predictive Intelligence workspace logic (access-teacher/predictive/*): CSV import validation, apply and
-// undo; the Research Analyst's intents; the Language Bottleneck rules; the simulator arithmetic; the
-// data-quality checks; and the gate that keeps numbers off the screen unless a model is validated.
+// WIDA Data Intelligence Studio logic (access-teacher/predictive/*): the import pipeline (wide and long
+// tables, mapping, validation, apply, undo), canonical records and composites, the comparability rules
+// (scale reset, 2026 cut scores, assessment families), scenarios, the MODEL-to-ACCESS refusal, the Research
+// Analyst's intents, the Language Bottleneck rules, data quality, and the gate that keeps numbers off the
+// screen unless a model is validated.
 import assert from "node:assert/strict";
 import test from "node:test";
 import { answer, INTENTS, matchIntent } from "../access-teacher/predictive/analyst.js";
@@ -9,7 +11,9 @@ import {
   domainEvidence,
   planFromFinding,
 } from "../access-teacher/predictive/bottleneck.js";
+import { concordanceFor, NO_PREDICTION } from "../access-teacher/predictive/concordance.js";
 import { demoClass, demoTrainingCohort } from "../access-teacher/predictive/demo.js";
+import { scoresFromReportText } from "../access-teacher/predictive/file-readers.js";
 import {
   forecastFor,
   transitionsByKey,
@@ -18,121 +22,293 @@ import {
 } from "../access-teacher/predictive/forecast.js";
 import {
   applyImport,
+  autoMap,
+  draftsFromTable,
   parseCSV,
+  parseTable,
   undoImport,
-  validateImport,
+  validateDrafts,
 } from "../access-teacher/predictive/import.js";
+import { comparableSteps, domainProfile } from "../access-teacher/predictive/interpret.js";
+import { findingsFor } from "../access-teacher/predictive/planner.js";
 import { qualityReport } from "../access-teacher/predictive/quality.js";
-import { readAssumptions, sensitivity, simulate } from "../access-teacher/predictive/simulator.js";
+import { fromStored, recordsOf, validateDraft } from "../access-teacher/predictive/records.js";
+import { levelVersionOf, scaleVersionOf } from "../access-teacher/predictive/rules.js";
+import { applyScenario } from "../access-teacher/predictive/scenario.js";
 import { studentsFromStores } from "../access-teacher/predictive/store.js";
 
 const TODAY = new Date("2026-11-05T12:00:00Z");
 const roster = [{ id: "P1|Ana|6-8", name: "Ana" }];
+const EMPTY = () => ({ official: {}, interim: {} });
+const preview = (text, stores = EMPTY()) => {
+  const t = parseTable(text);
+  return validateDrafts(draftsFromTable(t, autoMap(t[0]), { assessment: "ACCESS" }), {
+    roster,
+    stores,
+    today: TODAY,
+  });
+};
 
-test("CSV parser handles quotes, doubled quotes, CRLF and blank lines", () => {
+test("CSV parser handles quotes, doubled quotes, CRLF and blank lines; pasted cells are tab-separated", () => {
   assert.deepEqual(parseCSV('a,b\r\n"x, y","he said ""hi"""\n\n'), [
     ["a", "b"],
     ["x, y", 'he said "hi"'],
   ]);
+  assert.deepEqual(parseTable("a\tb\n1\t2"), [
+    ["a", "b"],
+    ["1", "2"],
+  ]);
 });
 
-test("import validation: year, domain, level, scale, duplicates, missing values, reset flags", () => {
-  const csv = [
-    "student,year,domain,level,scale_score",
-    "Ana,2023-24,Listening,3.4,331",
-    "Ana,2023-24,Listening,3.4,331",
-    "Ana,2023,Reading,3.0,",
-    "Ana,2023-24,Oral,3.0,",
-    "Ana,2023-24,Writing,6.5,",
-    "Ana,2023-24,Speaking,3.25,",
-    "Ana,2023-24,Overall,3.1,700",
-    "Ana,2023-24,Reading,,",
-    "Ben,2025-2026,Overall,2.8,",
-    "Ben,2024-25,Overall,2.6,",
-    "Cy,2030-31,Overall,2.6,",
-  ].join("\n");
-  const p = validateImport(csv, { roster, official: {}, today: TODAY });
+test("column mapping recognises WIDA-style headers", () => {
+  assert.deepEqual(
+    autoMap([
+      "Student Name",
+      "Listening Scale Score",
+      "Listening Proficiency Level",
+      "Overall Composite PL",
+      "Literacy SS",
+      "Notes",
+    ]),
+    ["student", "Listening:scale", "Listening:level", "Overall:level", "Literacy:scale", ""],
+  );
+});
+
+test("wide import: ranges, years, duplicates, future years, roster matching, MODEL routing", () => {
+  const p = preview(
+    [
+      "student,assessment,year,listening_level,listening_scale,overall_level",
+      "Ana,ACCESS,2023-24,3.4,331,3.1",
+      "Ana,ACCESS,2023-24,3.4,331,3.1",
+      "Ana,ACCESS,2023,3.0,,",
+      "Ana,ACCESS,2022-23,6.5,,",
+      "Ana,ACCESS,2022-23,3.25,,",
+      "Ana,ACCESS,2021-22,3.0,700,",
+      "Ben,MODEL Online,2025-2026,3.0,,",
+      "Cy,ACCESS,2030-31,2.6,,",
+      "Dee,ACCESS,2024-25,,,",
+    ].join("\n"),
+  );
   const at = (line) => p.rows.find((r) => r.line === line);
   assert.equal(at(2).status, "new");
-  assert.equal(at(2).studentId, "P1|Ana|6-8", "matched to the roster by alias");
+  assert.equal(at(2).studentId, "P1|Ana|6-8");
   assert.equal(at(3).status, "duplicate");
-  assert.match(at(4).errors.join(), /school year/);
-  assert.match(at(5).errors.join(), /not Listening/);
-  assert.match(at(6).errors.join(), /1\.0 to 6\.0/);
-  assert.match(at(7).errors.join(), /one decimal/);
-  assert.match(at(8).errors.join(), /100 to 600/);
-  assert.match(at(9).errors.join(), /Level is missing/);
-  assert.equal(at(10).year, "2025-26", "four-digit second year is normalised");
-  assert.equal(at(10).studentId, "import|Ben", "an unmatched student is kept as imported history");
-  assert.ok(at(10).flags.some((f) => /Post-reset/.test(f)));
-  assert.ok(at(11).flags.some((f) => /both sides of the scale reset/.test(f)));
-  assert.match(at(12).errors.join(), /future/);
-  assert.equal(validateImport("name,yr\nx,y", { today: TODAY }).headerErrors.length > 0, true);
+  assert.match(at(4).errors.join(), /2025-26/);
+  assert.match(at(5).errors.join(), /1\.0 to 6\.0/);
+  assert.match(at(6).errors.join(), /one decimal/);
+  assert.match(at(7).errors.join(), /100-600/);
+  assert.equal(at(8).row.assessment, "MODEL_ONLINE");
+  assert.equal(at(8).row.year, "2025-26");
+  assert.equal(at(8).studentId, "import|Ben");
+  assert.match(at(9).errors.join(), /future/);
+  assert.match(at(10).errors.join(), /at least one/);
+});
+
+test("long import is pivoted to one result per student assessment", () => {
+  const p = preview(
+    "student,year,domain,level,scale_score\nAna,2023-24,Listening,3.4,331\nAna,2023-24,Overall,3.1,\nAna,2023-24,Oops,3.1,",
+  );
+  assert.equal(p.rows.length, 1);
+  assert.match(p.rows[0].errors.join(), /Unknown domain/);
+  const ok = preview(
+    "student,year,domain,level\nAna,2023-24,Listening,3.4\nAna,2023-24,Overall,3.1",
+  );
+  assert.equal(ok.rows[0].row.levels.Listening, 3.4);
+  assert.equal(ok.rows[0].row.overall, 3.1);
 });
 
 test("import never overwrites silently; apply records provenance; undo restores the prior state", () => {
-  const official = {
-    "P1|Ana|6-8": [{ year: "2023-24", levels: { Listening: 3.0, Reading: 2.9 }, overall: null }],
+  const stores = {
+    official: { "P1|Ana|6-8": [{ year: "2023-24", levels: { Listening: 3.0 }, overall: null }] },
+    interim: {},
   };
-  const csv =
-    "student,year,domain,level\nAna,2023-24,Listening,3.4\nAna,2023-24,Reading,2.9\nAna,2023-24,Writing,2.5\nAna,2022-23,Overall,2.4";
-  const p = validateImport(csv, { roster, official, today: TODAY });
+  const p = preview(
+    "student,year,listening_level\nAna,2023-24,3.4\nAna,2022-23,2.4\nAna,2024-25,2.9",
+    stores,
+  );
   assert.deepEqual(
     p.rows.map((r) => r.status),
-    ["conflict", "unchanged", "new", "new"],
+    ["conflict", "new", "new"],
   );
-  const kept = applyImport(official, p, { importId: "i1", at: "t", fileName: "f.csv" });
-  const y24 = kept.official["P1|Ana|6-8"].find((r) => r.year === "2023-24");
-  assert.equal(y24.levels.Listening, 3.0, "conflict skipped by default");
-  assert.equal(y24.levels.Writing, 2.5);
-  assert.deepEqual(y24.provenance.Writing, {
-    kind: "csv-import",
-    importId: "i1",
-    file: "f.csv",
-    line: 4,
-    at: "t",
-    replaced: false,
-  });
-  assert.equal(official["P1|Ana|6-8"][0].levels.Writing, undefined, "input is not mutated");
-  const replaced = applyImport(official, p, { replaceConflicts: true, importId: "i2", at: "t" });
+  const kept = applyImport(stores, p, { importId: "i1", at: "t", fileName: "f.csv" });
+  const list = kept.stores.official["P1|Ana|6-8"];
   assert.equal(
-    replaced.official["P1|Ana|6-8"].find((r) => r.year === "2023-24").levels.Listening,
+    list.find((r) => r.year === "2023-24").levels.Listening,
+    3.0,
+    "conflict skipped by default",
+  );
+  assert.equal(list.length, 3);
+  assert.equal(list.find((r) => r.year === "2022-23").provenance.record.line, 3);
+  assert.equal(stores.official["P1|Ana|6-8"].length, 1, "input is not mutated");
+  const replaced = applyImport(stores, p, { replaceConflicts: true, importId: "i2", at: "t" });
+  assert.equal(
+    replaced.stores.official["P1|Ana|6-8"].find((r) => r.year === "2023-24").levels.Listening,
     3.4,
   );
-  assert.deepEqual(undoImport(replaced.official, replaced.log), official);
+  assert.deepEqual(undoImport(replaced.stores, replaced.log), stores);
 });
 
-test("simulator arithmetic is shown step by step and clamps to the scale", () => {
-  const a = readAssumptions({
-    sessionsPerWeek: 3,
-    minutesPerSession: 20,
-    weeks: 12,
-    participation: 0.85,
-    effectPer10h: 0.05,
-  });
-  assert.equal(a.ok, true);
-  const r = simulate(3.2, a.value);
-  assert.equal(r.deliveredHours, 10.2); // 3*20*12*0.85/60
-  assert.equal(r.shift, 0.05); // 10.2/10*0.05 = 0.051
-  assert.equal(r.level, 3.3);
-  assert.equal(r.steps.length, 3);
-  assert.equal(simulate(5.9, { ...a.value, effectPer10h: 1 }).level, 6);
-  assert.equal(simulate(5.9, { ...a.value, effectPer10h: 1 }).clamped, true);
-  assert.equal(simulate(3, { ...a.value, participation: 0 }).level, 3);
-  assert.deepEqual(
-    sensitivity(3, { ...a.value, effectPer10h: 0.2 }).map((x) => x.shift),
-    [0.1, 0.2, 0.31],
+test("records: reported vs calculated composites, never a calculated level; pre-schema rows read as ACCESS", () => {
+  const rec = fromStored(
+    {
+      year: "2023-24",
+      levels: { Listening: 3, Speaking: 3, Reading: 4, Writing: 4 },
+      overall: null,
+      scale: { Listening: 300, Speaking: 320, Reading: 340, Writing: 360 },
+    },
+    "s",
+  );
+  assert.equal(rec.assessmentType, "ACCESS");
+  assert.equal(
+    rec.composites.Overall.calculatedScale,
+    Math.round(0.15 * 300 + 0.15 * 320 + 0.35 * 340 + 0.35 * 360),
+  );
+  assert.equal(rec.composites.Overall.status, "calculated");
+  assert.equal(rec.composites.Overall.level, null, "no composite level is ever calculated");
+  assert.equal(rec.composites.Comprehension.calculatedScale, Math.round(0.3 * 300 + 0.7 * 340));
+  const post = fromStored(
+    {
+      year: "2025-26",
+      levels: {},
+      overall: null,
+      scale: { Listening: 300, Speaking: 320, Reading: 340, Writing: 360 },
+    },
+    "s",
   );
   assert.equal(
-    readAssumptions({
-      sessionsPerWeek: 99,
-      minutesPerSession: 20,
-      weeks: 1,
-      participation: 1,
-      effectPer10h: 0,
-    }).ok,
-    false,
+    post.composites.Overall.calculatedScale,
+    undefined,
+    "no verified weights on the reset scale",
   );
+  assert.equal(
+    validateDraft(
+      { assessment: "ACCESS", year: "2025-26", scores: { Listening: { scale: "700" } } },
+      { today: TODAY },
+    ).ok,
+    true,
+    "reset scale has no documented range",
+  );
+});
+
+test("comparability: scale reset, 2026 cut scores, assessment families", () => {
+  assert.equal(scaleVersionOf("ACCESS", "2024-25"), "access-2016-scale");
+  assert.equal(scaleVersionOf("ACCESS", "2025-26"), "access-2025-scale");
+  assert.equal(levelVersionOf("ACCESS", "2025-26"), "2016-cuts");
+  assert.equal(levelVersionOf("ACCESS", "2025-26", "2026-cuts"), "2026-cuts");
+  assert.equal(levelVersionOf("ACCESS", "2026-27"), "2026-cuts");
+  const st = {
+    id: "s",
+    official: [
+      { year: "2023-24", levels: { Reading: 3 }, overall: 3 },
+      { year: "2024-25", levels: { Reading: 3.4 }, overall: 3.3 },
+      { year: "2025-26", levels: { Reading: 3.9 }, overall: 3.6 },
+    ],
+    interim: [
+      {
+        assessment: "MODEL_ONLINE",
+        year: "2024-25",
+        date: "2024-10-01",
+        levels: { Reading: 3.2 },
+        overall: 3.1,
+      },
+    ],
+  };
+  const steps = comparableSteps(st);
+  const annual = steps.filter((s) => s.to.assessmentType === "ACCESS");
+  assert.equal(annual[0].levelsComparable, true);
+  assert.equal(annual[0].rows.find((r) => r.key === "Reading").levelChange, 0.4);
+  assert.equal(annual[1].levelsComparable, false, "no level change across the reset");
+  assert.match(annual[1].why, /reset/);
+  assert.ok(
+    steps.every(
+      (s) => !(s.from.assessmentType === "ACCESS" && s.to.assessmentType.startsWith("MODEL")),
+    ),
+    "MODEL is never compared with ACCESS",
+  );
+  assert.equal(recordsOf(st).length, 4);
+});
+
+test("forecasts: a result on the 2016 cuts cannot feed a 2026-27 forecast", () => {
+  const st = {
+    id: "s",
+    official: [
+      { year: "2024-25", levels: { Reading: 3 }, overall: 3 },
+      { year: "2025-26", levels: { Reading: 3.4 }, overall: 3.3 },
+    ],
+  };
+  const f = forecastFor({ student: st, key: "Reading", validations: {}, byKey: {}, today: TODAY });
+  assert.equal(f.status, "insufficient");
+  assert.equal(f.numbers, null);
+  assert.match(f.plain, /cut scores/);
+});
+
+test("scenario: hypothetical changes clamp, composites illustrated only with verified weights", () => {
+  const rec = fromStored(
+    {
+      year: "2023-24",
+      levels: { Listening: 5.8, Speaking: 3, Reading: 3, Writing: 3 },
+      overall: 3.2,
+      scale: { Listening: 400, Speaking: 320, Reading: 340, Writing: 360 },
+    },
+    "s",
+  );
+  const r = applyScenario(rec, { Listening: { level: 1, scale: 10 }, Reading: { scale: 20 } });
+  assert.equal(r.domains.Listening.level, 6);
+  assert.equal(r.composites.Overall.change, Math.round(0.15 * 10 + 0.35 * 20));
+  assert.equal(
+    applyScenario(rec, { Reading: { scale: 999 } }).domains.Reading.scaleChange,
+    60,
+    "limit holds",
+  );
+  const post = fromStored(
+    { year: "2025-26", levels: { Reading: 3 }, overall: 3, scale: { Reading: 400 } },
+    "s",
+  );
+  assert.equal(applyScenario(post, {}).composites.Overall.status, "no-rule");
+});
+
+test("MODEL to ACCESS: no number without a loaded, version-matched table", () => {
+  const model = fromStored(
+    { assessment: "MODEL_ONLINE", year: "2025-26", levels: { Reading: 3 }, overall: 3 },
+    "s",
+    "interim",
+  );
+  for (const y of ["2025-26", "2026-27"]) {
+    const c = concordanceFor(model, { targetYear: y });
+    assert.equal(c.status, "unavailable");
+    assert.ok(c.reason.startsWith(NO_PREDICTION));
+    assert.match(c.source, /wida\.wisc\.edu/);
+  }
+});
+
+test("profile and planner: relative wording, measurement error, findings link real resources", () => {
+  const rec = fromStored(
+    {
+      year: "2023-24",
+      levels: { Listening: 4, Speaking: 2.5, Reading: 3.5, Writing: 3 },
+      overall: 3.2,
+      scale: { Listening: 400, Speaking: 390 },
+      sem: { Listening: 15, Speaking: 18 },
+    },
+    "s",
+  );
+  const prof = domainProfile(rec);
+  assert.equal(prof.strength, "Listening");
+  assert.equal(prof.need, "Speaking");
+  assert.equal(prof.clear, false, "10 points is inside 1.96 x combined error");
+  const f = findingsFor(rec);
+  assert.equal(f[0].domain, "Speaking");
+  assert.ok(f[0].resources.includes("speak"));
+});
+
+test("report text: labelled scores are read, nothing is guessed", () => {
+  const got = scoresFromReportText(
+    "ACCESS for ELLs 2024-2025\nGrade: 6\nListening 331 3.4\nSpeaking 312 2.8\nOverall Score 322 3.0",
+  );
+  assert.equal(got.year, "2024-25");
+  assert.equal(got.grade, "6");
+  assert.deepEqual(got.scores.Listening, { scale: "331", level: "3.4" });
+  assert.equal(got.scores.Reading, undefined);
 });
 
 const entry = (domain, i, stage, extra) => ({

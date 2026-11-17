@@ -1,28 +1,30 @@
-// Predictive Intelligence workspace controller: mode (real / synthetic demo), Quick / Advanced view,
-// keyboard-accessible tabs, and the shared context every view reads.
+// WIDA Data Intelligence Studio controller: mode (real / synthetic demo), Quick / Advanced view, the seven
+// keyboard-accessible sections plus Import data (opened from the header), and the shared context every view
+// reads. `?demo=1` opens the synthetic demo and `?tab=<id>` a section, so the Teacher Hub can link straight in.
 import { domainEvidence } from "./bottleneck.js";
 import { demoClass, demoTrainingCohort } from "./demo.js";
 import { clear, h } from "./dom.js";
 import { forecastFor, transitionsByKey, validateAll } from "./forecast.js";
 import { KEYS, loadRealStudents, loadState, read, saveState, write } from "./store.js";
-import { renderAnalyst } from "./view-analyst.js";
 import { renderClassroom } from "./view-classroom.js";
 import { renderData } from "./view-data.js";
+import { renderForecasts } from "./view-forecasts.js";
 import { renderGrowth } from "./view-growth.js";
 import { renderOverview } from "./view-overview.js";
-import { renderProbability } from "./view-probability.js";
-import { renderSimulator } from "./view-simulator.js";
-import { renderValidation } from "./view-validation.js";
+import { renderPlanner } from "./view-planner.js";
+import { renderReports } from "./view-reports.js";
+import { renderStudents } from "./view-students.js";
+import { showStep, tourCard } from "./tour.js";
 
 const TABS = [
-  { id: "overview", label: "Forecast Overview", render: renderOverview },
-  { id: "growth", label: "Domain Growth Lab", render: renderGrowth },
-  { id: "probability", label: "ACCESS Probability Center", render: renderProbability },
-  { id: "simulator", label: "Intervention Simulator", render: renderSimulator },
-  { id: "classroom", label: "Classroom Intelligence", render: renderClassroom },
-  { id: "analyst", label: "Research Analyst", render: renderAnalyst },
-  { id: "validation", label: "Validation Center", render: renderValidation },
-  { id: "data", label: "Data and import", render: renderData },
+  { id: "overview", label: "Overview", render: renderOverview },
+  { id: "students", label: "Students", render: renderStudents },
+  { id: "growth", label: "Growth", render: renderGrowth },
+  { id: "forecasts", label: "Forecasts & Scenarios", render: renderForecasts },
+  { id: "classroom", label: "Classroom Insights", render: renderClassroom },
+  { id: "planner", label: "Instructional Planner", render: renderPlanner },
+  { id: "reports", label: "Reports", render: renderReports },
+  { id: "data", label: "Import data", render: renderData, hidden: true },
 ];
 const DEMO_TODAY = new Date("2024-05-15T12:00:00Z");
 let demoCache = null;
@@ -35,6 +37,13 @@ const ws = {
   view: sessionGet("pi:view") === "advanced" ? "advanced" : "quick",
   tab: TABS.some((t) => t.id === sessionGet("pi:tab")) ? sessionGet("pi:tab") : "overview",
   selected: null,
+  sub: {},
+  go(id) {
+    ws.tab = id;
+    sessionSet("pi:tab", id);
+    render();
+    document.getElementById("pi-panel")?.focus();
+  },
   analystQuestion: "",
   announce(msg) {
     live.textContent = "";
@@ -47,6 +56,11 @@ const ws = {
   rerender: () => render(),
   reload: () => load(),
 };
+
+const params = new URLSearchParams(location.search);
+if (params.get("demo") === "1") ws.mode = "demo";
+let startTour = params.get("tour") === "1";
+if (TABS.some((t) => t.id === params.get("tab"))) ws.tab = params.get("tab");
 
 function sessionGet(k) {
   try {
@@ -105,6 +119,11 @@ function load() {
     return ev.get(student.id);
   };
   ws.student = () => ws.students.find((s) => s.id === ws.selected) || null;
+  if (startTour && ws.mode === "demo") {
+    startTour = false;
+    showStep(ws, 0);
+    return;
+  }
   render();
 }
 
@@ -149,9 +168,21 @@ function header() {
       },
       label,
     );
+  const importBtn = h(
+    "button",
+    {
+      type: "button",
+      class: `btn${ws.tab === "data" ? " is-on" : ""}`,
+      id: "piImportBtn",
+      "aria-pressed": String(ws.tab === "data"),
+      on: { click: () => ws.go("data") },
+    },
+    "Import data",
+  );
   return h(
     "div",
     { class: "pi-controls" },
+    importBtn,
     h(
       "div",
       { class: "pi-seg", role: "group", "aria-label": "Data source" },
@@ -191,7 +222,8 @@ function tabs() {
     render();
     if (focus) document.getElementById(`pi-tab-${id}`)?.focus();
   };
-  TABS.forEach((t, i) =>
+  const shown = TABS.filter((t) => !t.hidden);
+  shown.forEach((t, i) =>
     list.append(
       h(
         "button",
@@ -205,7 +237,7 @@ function tabs() {
           on: {
             click: () => select(t.id, false),
             keydown: (e) => {
-              const n = TABS.length;
+              const n = shown.length;
               const to = {
                 ArrowRight: (i + 1) % n,
                 ArrowLeft: (i - 1 + n) % n,
@@ -214,7 +246,7 @@ function tabs() {
               }[e.key];
               if (to === undefined) return;
               e.preventDefault();
-              select(TABS[to].id, true);
+              select(shown[to].id, true);
             },
           },
         },
@@ -248,12 +280,14 @@ function render() {
       {
         id: "pi-panel",
         role: "tabpanel",
-        "aria-labelledby": `pi-tab-${tab.id}`,
+        "aria-labelledby": tab.hidden ? null : `pi-tab-${tab.id}`,
+        "aria-label": tab.hidden ? tab.label : null,
         tabindex: "0",
         class: "pi-panel",
       },
       panel,
     ),
+    tourCard(ws),
   );
 }
 

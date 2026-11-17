@@ -4,6 +4,7 @@
 // is "validated"; a provisional (experimental) model never shows a number here. The overall series is the
 // REPORTED overall level; domain levels are never averaged into a composite.
 import { SCALE_RESET_YEAR } from "../../access-practice-lab/src/lang/dna.js";
+import { levelVersionOf } from "./rules.js";
 import { OFFICIAL_DOMAINS } from "../../access-practice-lab/src/lang/official-scores.js";
 import { transitionsFromSeries } from "../../access-practice-lab/src/predict/models.js";
 import {
@@ -40,19 +41,40 @@ export function schoolYearOf(date = new Date()) {
   return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
 }
 
-/** One student's reported series for a domain or "Overall", oldest first: [{ year, level }]. */
+/**
+ * One student's reported ACCESS series for a domain or "Overall", oldest first: [{ year, level, lv }].
+ * Only regular ACCESS rows count: MODEL (interim) and Kindergarten ACCESS are different assessments. `lv` is
+ * the proficiency-level version (2016 or 2026 cut scores); levels from two versions are never one series.
+ */
 export function seriesFor(student, key) {
   return (student.official || [])
-    .map((r) => ({ year: r.year, level: key === "Overall" ? r.overall : r.levels?.[key] }))
+    .filter((r) => !r.assessment || r.assessment === "ACCESS")
+    .map((r) => ({
+      year: r.year,
+      level: key === "Overall" ? r.overall : r.levels?.[key],
+      lv: levelVersionOf("ACCESS", r.year, r.levelVersion),
+    }))
     .filter((p) => typeof p.level === "number" && Number.isFinite(p.level))
     .sort((a, b) => a.year.localeCompare(b.year));
+}
+
+/** Split a series where the level version changes, so no transition crosses the 2026 cut-score change. */
+export function segmentsOf(series) {
+  const out = [];
+  for (const p of series) {
+    if (!out.length || out.at(-1).at(-1).lv !== p.lv) out.push([]);
+    out.at(-1).push(p);
+  }
+  return out;
 }
 
 /** Transitions per series key from every student given (real class, or the synthetic training cohort). */
 export function transitionsByKey(students) {
   const out = Object.fromEntries(SERIES_KEYS.map((k) => [k, []]));
   for (const st of students)
-    for (const k of SERIES_KEYS) out[k].push(...transitionsFromSeries(st.id, k, seriesFor(st, k)));
+    for (const k of SERIES_KEYS)
+      for (const seg of segmentsOf(seriesFor(st, k)))
+        out[k].push(...transitionsFromSeries(st.id, k, seg));
   return out;
 }
 
@@ -100,6 +122,8 @@ export function trendOf(series) {
 export function plainReason(reasons = []) {
   const text = reasons.join(" ");
   if (/No official result/.test(text)) return "No official result is on file for this domain yet.";
+  if (/cut-score/.test(text))
+    return "WIDA set new proficiency-level cut scores in 2026, so earlier levels do not mean the same thing as the year being forecast. No number is shown.";
   if (/reset/.test(text))
     return `The last result is from before the ${SCALE_RESET_YEAR} ACCESS scale change, so it cannot be compared with the year being forecast.`;
   if (/training transitions|held-out|outcome year/.test(text))
@@ -121,8 +145,12 @@ export function forecastFor({
   threshold = null,
   today = new Date(),
 }) {
-  const series = seriesFor(student, key);
-  const targetYear = targetYearFor(series, today);
+  const full = seriesFor(student, key);
+  const targetYear = targetYearFor(full, today);
+  // Only the same cut-score version as the year being forecast can feed the model.
+  const targetLv = levelVersionOf("ACCESS", targetYear);
+  const series = full.filter((p) => p.lv === targetLv);
+  const lvChanged = full.length > 0 && series.length === 0;
   const era = eraOf(targetYear);
   const validation = validations?.[key]?.[era] || null;
   const trend = trendOf(series);
@@ -139,6 +167,14 @@ export function forecastFor({
   } catch (e) {
     f = { status: "insufficient-data", reasons: [e.message], numbers: null };
   }
+  if (lvChanged)
+    f = {
+      status: "insufficient-data",
+      numbers: null,
+      reasons: [
+        "Every reported level on file uses a different cut-score version than the year being forecast (2026 standard setting).",
+      ],
+    };
   const validated = f.status === "validated" && f.production === true && f.numbers;
   const status = validated
     ? "validated"
@@ -159,6 +195,6 @@ export function forecastFor({
     era,
     trend,
     model: validated ? f.model : null,
-    series,
+    series: full,
   };
 }

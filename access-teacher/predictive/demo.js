@@ -130,6 +130,98 @@ function demoEntries(i, r) {
   return entries;
 }
 
+const DOMAIN_KEYS = ["Listening", "Speaking", "Reading", "Writing"];
+const SEM = { Listening: 16, Speaking: 18, Reading: 14, Writing: 15 };
+
+/**
+ * Enrich one synthetic student's annual rows with the fields real score reports carry: grade, date, form,
+ * synthetic scale scores (a documented linear map of the synthetic level plus noise, on the 100-600 range),
+ * and measurement error. Composites other than Overall are left unreported so the illustrated composite path
+ * is exercised. Every value is synthetic.
+ */
+function enrich(st, i, r) {
+  st.official = st.official.map((row, y) => {
+    const scale = {};
+    const sem = {};
+    for (const d of DOMAIN_KEYS) {
+      const lv = row.levels[d];
+      if (lv == null) continue;
+      scale[d] = Math.round(Math.min(600, Math.max(100, 140 + lv * 62 + (r.uniform() - 0.5) * 16)));
+      sem[d] = SEM[d];
+    }
+    return {
+      ...row,
+      id: `demo-${st.id}-${row.year}`,
+      assessment: "ACCESS",
+      grade: 3 + y,
+      date: `${Number(row.year.slice(0, 4)) + 1}-02-${String(5 + (i % 20)).padStart(2, "0")}`,
+      form: "Online",
+      scale,
+      sem,
+      source: "manual",
+      verified: true,
+    };
+  });
+  return st;
+}
+
+/** Contrasts every workflow needs to show: interim MODEL, missing domain, post-reset era, Kindergarten. */
+function addContrasts(students) {
+  const [a, b, c, d, , , , , , , , l] = students;
+  const last = (st) => st.official.at(-1);
+  if (b)
+    b.interim = [
+      {
+        id: `demo-${b.id}-model-1`,
+        assessment: "MODEL_ONLINE",
+        year: "2023-24",
+        date: "2023-10-12",
+        grade: 6,
+        levels: Object.fromEntries(DOMAIN_KEYS.map((k) => [k, Math.min(6, Math.round(((last(b).levels[k] ?? 3) + 0.2) * 10) / 10)])),
+        overall: last(b).overall,
+        source: "manual",
+        verified: true,
+        synthetic: true,
+      },
+    ];
+  if (c)
+    c.official.push({
+      id: `demo-${c.id}-2025-26`,
+      assessment: "ACCESS",
+      year: "2025-26",
+      date: "2026-02-09",
+      grade: 8,
+      levelVersion: "2016-cuts",
+      levels: { Listening: 4.1, Speaking: 3.6, Reading: 3.8, Writing: 3.3 },
+      overall: 3.7,
+      scale: { Listening: 512, Speaking: 488, Reading: 497, Writing: 470 },
+      source: "manual",
+      verified: true,
+      synthetic: true,
+    });
+  if (d) {
+    const row = last(d);
+    delete row.levels.Speaking;
+    delete row.scale.Speaking;
+    row.notAssessed = ["Speaking"];
+  }
+  if (l)
+    l.official.unshift({
+      id: `demo-${l.id}-k`,
+      assessment: "KINDERGARTEN_ACCESS",
+      year: "2017-18",
+      date: "2018-02-14",
+      grade: "K",
+      levels: { Listening: 2.1, Speaking: 1.8, Reading: 1.5, Writing: 1.6 },
+      overall: 1.7,
+      source: "manual",
+      verified: true,
+      synthetic: true,
+    });
+  if (a) a.official.at(-1).verified = false;
+  return students;
+}
+
 /** The synthetic class the teacher explores. */
 export function demoClass({ count = 12 } = {}) {
   const cohorts = Object.fromEntries(
@@ -145,12 +237,14 @@ export function demoClass({ count = 12 } = {}) {
     ]),
   );
   const r = rng(4242);
-  return studentsFrom(cohorts, "DEMO-", count, (i) => `${DEMO_LABEL} Student ${LETTERS[i]}`).map(
+  const students = studentsFrom(cohorts, "DEMO-", count, (i) => `${DEMO_LABEL} Student ${LETTERS[i]}`).map(
     (st, i) => ({
-      ...st,
+      ...enrich(st, i, r),
       section: DEMO_LABEL,
+      interim: [],
       entries: demoEntries(i, r),
       records: {},
     }),
   );
+  return addContrasts(students);
 }

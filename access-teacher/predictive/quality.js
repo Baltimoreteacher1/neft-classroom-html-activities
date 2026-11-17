@@ -40,7 +40,7 @@ export function qualityReport(students, { today = new Date() } = {}) {
             `${r.year} ${k}: ${v} is not a level from 1.0 to 6.0 with one decimal.`,
           );
         const sc = r.scale?.[k];
-        if (sc != null && !(Number.isInteger(sc) && sc >= 100 && sc <= 600))
+        if (sc != null && r.year < SCALE_RESET_YEAR && !(Number.isInteger(sc) && sc >= 100 && sc <= 600))
           add("implausible", st, `${r.year} ${k}: scale score ${sc} is outside 100-600.`);
       }
     }

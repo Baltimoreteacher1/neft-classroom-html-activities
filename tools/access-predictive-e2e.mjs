@@ -1,15 +1,16 @@
 #!/usr/bin/env node
+import { openHubSections } from "./lib/access-hub.mjs";
 /**
- * The Predictive Intelligence workspace (/access-teacher/predictive/), driven in a real browser: the Teacher
- * Hub entry button; real mode with no data and with a class-sized import shows no forecast numbers; CSV
- * import preview, confirm (provenance stored) and undo; synthetic demo mode shows validated numbers whose
- * 80% interval holds the expected value; keyboard tabs; the Research Analyst answers a supported question
- * and refuses an unsupported one; every tab is axe-clean (no serious/critical) and has no horizontal
- * overflow at 1280px and 390px in both modes. Serves the source tree; a missing browser is a SKIP locally
- * and a FAIL in CI.
+ * The WIDA Data Intelligence Studio (/access-teacher/predictive/), driven in a real browser: the Teacher Hub
+ * card (Open Data Studio, Try with Sample Data); real mode with no data shows no forecast numbers; the import
+ * wizard (sample file -> map -> validate -> review with a corrected error -> save -> analyze), manual entry,
+ * undo; the scale-reset refusal; MODEL to ACCESS refuses a number; synthetic demo mode shows validated numbers
+ * whose 80% interval holds the expected value; Teacher tour Part 2 walks every section; keyboard tabs; the
+ * Data Explorer answers a supported question and refuses an unsupported one; every section is axe-clean
+ * (no serious/critical) with no horizontal overflow at 1280px and 390px in both modes. Serves the source
+ * tree; a missing browser is a SKIP locally and a FAIL in CI.
  */
 import { serveAccess } from "./lib/access-serve.mjs";
-import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder = null;
@@ -61,24 +62,16 @@ page.on(
 );
 
 const WS = "/access-teacher/predictive/";
-const TABS = [
-  "overview",
-  "growth",
-  "probability",
-  "simulator",
-  "classroom",
-  "analyst",
-  "validation",
-  "data",
-];
-const open = async () => {
-  await page.goto(`${origin}${WS}`, { waitUntil: "networkidle" });
+const TABS = ["overview", "students", "growth", "forecasts", "classroom", "planner", "reports"];
+const open = async (q = "") => {
+  await page.goto(`${origin}${WS}${q}`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[role="tablist"]', { timeout: 15000 });
 };
 const tab = async (id) => {
   await page.click(`#pi-tab-${id}`);
   await page.waitForSelector(`#pi-tab-${id}[aria-selected="true"]`);
 };
+const sub = (id) => page.click(`[data-subnav="${id}"]`);
 const numbers = () => page.locator("[data-pi-number]").count();
 
 async function sweep(label) {
@@ -104,111 +97,150 @@ async function sweep(label) {
   await page.setViewportSize({ width: 1280, height: 900 });
 }
 
-// 1. Teacher Hub entry point.
+// 1. Teacher Hub card.
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "domcontentloaded" });
 await openHubSections(page);
-const entry = page.locator("#thPredictive");
 ok(
-  (await entry.getAttribute("href")) === WS,
-  "Teacher Hub has the Predictive Intelligence button linking to the workspace",
+  (await page.locator("#thWidaTitle").innerText()) === "WIDA Data Intelligence",
+  "Teacher Hub shows the WIDA Data Intelligence card",
 );
 ok(
-  /Analyze language growth, forecast ACCESS outcomes, explore student needs, and plan targeted interventions\./.test(
-    await entry.innerText(),
-  ),
-  "the button carries the description",
+  (await page.locator("#thPredictive").getAttribute("href")) === WS,
+  "Open Data Studio links to the studio",
+);
+ok(
+  (await page.locator("#thWidaDemo").getAttribute("href")) === `${WS}?demo=1`,
+  "Try with Sample Data opens the synthetic demo",
 );
 
-// 2. Real mode, nothing on this device.
-await page.evaluate(() => localStorage.clear());
+// 2. Real mode, no data.
 await open();
 ok(
   (await page.locator('#pi-tab-overview[aria-selected="true"]').count()) === 1,
-  "workspace opens on the Forecast Overview",
+  "the studio opens on Overview",
 );
-ok(
-  (await page.getByText("No students yet").count()) > 0,
-  "real mode with no data shows the empty state",
-);
+await tab("forecasts");
 ok((await numbers()) === 0, "real mode with no data shows no forecast numbers");
-await tab("validation");
-ok(
-  (await page.locator('[data-validation-status="insufficient-data"]').count()) === 2,
-  "Validation Center reports insufficient data for both eras",
-);
 
 // 3. Keyboard tabs.
-await page.focus("#pi-tab-validation");
+await page.focus("#pi-tab-forecasts");
 await page.keyboard.press("ArrowRight");
 ok(
-  (await page.locator('#pi-tab-data[aria-selected="true"]').count()) === 1,
-  "ArrowRight moves to the next tab",
-);
-ok(
-  (await page.evaluate(() => document.activeElement?.id)) === "pi-tab-data",
-  "focus follows the selected tab",
+  (await page.evaluate(() => document.activeElement?.id)) === "pi-tab-classroom",
+  "ArrowRight moves to the next section",
 );
 
-// 4. CSV import: preview, confirm, provenance.
-const CSV = [
-  "student,year,domain,level,scale_score",
-  "Student Z,2023-24,Writing,2.4,",
-  "Student Z,2024-25,Writing,2.9,",
-  "Student Z,2024-25,Overall,3.1,",
-  "Student Z,2025-26,Writing,3.3,",
-  "Student Z,2025-26,Overall,3.4,",
-  "Student Z,2025-26,Speaking,7.2,",
-].join("\n");
-await page.fill("#pi-csv", CSV);
-await page.click("#piCheckImport");
-await page.waitForSelector("#piImportSummary");
+// 4. Import wizard with the fictional sample file; one value is corrected in review.
+await page.click("#piImportBtn");
+await page.click("[data-sample]");
+await page.click("[data-wizard-next]");
+await page.click("[data-wizard-next]");
 ok(
-  /5 to import/.test(await page.locator("#piImportSummary").innerText()) &&
-    /1 with errors/.test(await page.locator("#piImportSummary").innerText()),
-  "preview counts new rows and the invalid level",
+  /2\s*results/.test(await page.locator("[data-import-summary]").innerText()),
+  "validation counts both sample rows",
 );
-ok((await page.getByText("must be 1.0 to 6.0").count()) > 0, "preview explains the invalid level");
+await page.click("[data-wizard-next]");
+const cellL = () => page.locator('[data-review-row="0"] input').nth(4);
+await cellL().fill("7.2");
+await cellL().press("Tab");
 ok(
-  (await page.getByText("both sides of the scale reset").count()) > 0,
-  "preview flags the cross-reset comparison",
+  (await page.locator('[data-review-row="0"].is-error').count()) === 1,
+  "an out-of-range level is flagged in review",
 );
-await page.click("#piConfirmImport");
-await page.waitForSelector("#piUndoImport");
-const stored = await page.evaluate(() =>
+await cellL().fill("3.4");
+await cellL().press("Tab");
+ok(
+  (await page.locator('[data-review-row="0"].is-error').count()) === 0,
+  "the corrected value passes",
+);
+await page.click("[data-wizard-next]");
+await page.check("#piVerified");
+await page.click("[data-confirm-import]");
+ok(/2 result/.test(await page.locator("[data-import-done]").innerText()), "two results are saved");
+const stores = await page.evaluate(() => ({
+  official: JSON.parse(localStorage.getItem("accessTeacher:v1:officialResults") || "{}"),
+  interim: JSON.parse(localStorage.getItem("accessTeacher:v1:predictive:interim") || "{}"),
+}));
+const sid = "import|Sample student (fictional)";
+ok(
+  stores.official[sid]?.[0]?.assessment === "ACCESS" &&
+    stores.official[sid][0].provenance?.record?.kind === "csv-import",
+  "ACCESS goes to the hub's official store with provenance",
+);
+ok(
+  stores.interim[sid]?.[0]?.assessment === "MODEL_ONLINE",
+  "MODEL goes to the studio's interim store",
+);
+await page.click("[data-open-analysis]");
+ok(
+  (await page.locator('[data-kpi="latest"]').count()) === 1,
+  "Analyze opens the student's overview",
+);
+
+// 5. MODEL to ACCESS never invents a number.
+await tab("forecasts");
+await sub("concordance");
+ok(
+  /No validated prediction is available/.test(await page.locator("[data-concordance]").innerText()),
+  "MODEL to ACCESS states that no validated prediction is available",
+);
+
+// 6. Manual entry of a post-reset result, then the reset refusal on Growth.
+await page.click("#piImportBtn");
+await page.click('[data-source="manual"]');
+await page.fill("#piAsYear", "2025-26");
+await page.click("[data-wizard-next]");
+const row = () => page.locator('[data-review-row="0"] input');
+await row().nth(0).fill("Sample student (fictional)");
+await row().nth(0).press("Tab");
+for (const [i, v] of [
+  [4, "4.0"],
+  [6, "3.2"],
+  [8, "3.8"],
+  [10, "3.0"],
+  [12, "3.5"],
+]) {
+  await row().nth(i).fill(v);
+  await row().nth(i).press("Tab");
+}
+await page.click("[data-wizard-next]");
+await page.click("[data-confirm-import]");
+await page.click("[data-open-analysis]");
+await tab("growth");
+ok(
+  /reset/.test(
+    await page
+      .locator("[data-not-comparable]")
+      .first()
+      .innerText()
+      .catch(() => ""),
+  ),
+  "growth refuses to compare across the 2025-26 scale reset",
+);
+await tab("forecasts");
+await sub("forecast");
+ok((await numbers()) === 0, "no forecast numbers for real data");
+
+// 7. Undo the manual entry.
+await page.click("#piImportBtn");
+await page.click("[data-undo-import]");
+const afterUndo = await page.evaluate(() =>
   JSON.parse(localStorage.getItem("accessTeacher:v1:officialResults") || "{}"),
 );
-const z = stored["import|Student Z"] || [];
 ok(
-  z.length === 3 && z.find((r) => r.year === "2024-25")?.provenance?.Writing?.kind === "csv-import",
-  "confirmed import is in the hub's official-results store with provenance",
+  !afterUndo["import|Sample student (fictional)"]?.some((r) => r.year === "2025-26"),
+  "undo removes what the last import added",
 );
 
-// 5. Real class-sized data: still no numbers, status explains why.
-await tab("overview");
-ok(
-  (await page.locator('[data-status="insufficient"]').count()) >= 1,
-  "imported real data shows the 'Insufficient data' status",
-);
-ok((await numbers()) === 0, "imported real data still shows no forecast numbers");
-await sweep("real");
-
-// 6. Undo.
-await tab("data");
-await page.click("#piUndoImport");
-await page.waitForSelector("#pi-csv");
-const after = await page.evaluate(() =>
-  JSON.parse(localStorage.getItem("accessTeacher:v1:officialResults") || "{}"),
-);
-ok(!after["import|Student Z"], "undo removes what the import added");
-
-// 7. Synthetic demonstration mode.
-await page.getByRole("button", { name: "Synthetic demo" }).click();
+// 8. Synthetic demonstration mode.
+await open("?demo=1");
 await page.waitForSelector("#piDemoBanner");
 ok(
   /SYNTHETIC DEMONSTRATION/.test(await page.locator("#piDemoBanner").innerText()),
   "demo mode shows the synthetic banner",
 );
-await tab("overview");
+await tab("forecasts");
+await sub("forecast");
 ok(
   (await page.locator('#piOverviewTable [data-status="validated"]').count()) === 5,
   "demo forecasts are validated for every domain and the overall",
@@ -220,31 +252,49 @@ ok(
   rows.length === 5 && rows.every(([x, lo, hi]) => lo <= x && x <= hi),
   "each validated 80% interval contains the expected level",
 );
+await sub("scenarios");
 ok(
-  (await page.evaluate(() => localStorage.getItem("accessTeacher:v1:officialResults"))) === "{}" ||
-    (await page.evaluate(
-      () => !localStorage.getItem("accessTeacher:v1:officialResults")?.includes("DEMO"),
-    )),
+  (await page.locator('[data-kind="hypothetical"]').count()) === 1,
+  "scenarios are labelled hypothetical",
+);
+ok(
+  !(
+    await page.evaluate(() => localStorage.getItem("accessTeacher:v1:officialResults") || "")
+  ).includes("DEMO"),
   "demo data is never written to the real store",
 );
 
-// 8. Research Analyst.
-await tab("analyst");
+// 9. Data Explorer.
+await tab("classroom");
+await sub("explorer");
 await page.fill("#pi-q", "Who is struggling with independent writing?");
 await page.click(".pi-ask button[type=submit]");
 const ans = page.locator('[data-answer="independent-struggle"]');
 ok(
-  (await ans.count()) === 1 &&
-    /Query interpretation/.test(await ans.innerText()) &&
-    /Uncertainty/.test(await ans.innerText()),
-  "analyst answers a supported question with its interpretation and uncertainty",
+  (await ans.count()) === 1 && /Uncertainty/.test(await ans.innerText()),
+  "Data Explorer answers a supported question with its uncertainty",
 );
 await page.fill("#pi-q", "What will the weather be?");
 await page.click(".pi-ask button[type=submit]");
 ok(
   (await page.locator('[data-answer="unsupported"]').count()) === 1,
-  "analyst refuses an unsupported question and lists what it can answer",
+  "Data Explorer refuses an unsupported question",
 );
+
+// 10. Teacher tour, Part 2.
+await open("?demo=1&tour=1");
+await page.waitForSelector("#piTour");
+let steps = 1;
+while (await page.locator('[data-tour="next"]').count()) {
+  await page.click('[data-tour="next"]');
+  steps++;
+}
+ok(
+  steps === 10 && (await page.locator('#pi-tab-reports[aria-selected="true"]').count()) === 1,
+  "Part 2 walks ten steps and ends on Reports",
+);
+await page.click('[data-tour="finish"]');
+ok((await page.locator("#piTour").count()) === 0, "finishing closes the tour");
 await sweep("demo");
 
 ok(

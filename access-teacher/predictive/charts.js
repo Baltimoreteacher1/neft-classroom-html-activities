@@ -121,7 +121,14 @@ export function growthChart({
       );
     svg.append(s("circle", { cx: x, cy: yOf(forecast.expected), r: 6, class: "pi-forecast-dot" }));
   }
-  const path = points.map((p, i) => `${i ? "L" : "M"}${xOf(p.year)},${yOf(p.level)}`).join(" ");
+  // A new subpath starts at the scale reset and wherever the cut-score version changes: never one line across eras.
+  const path = points
+    .map((p, i) => {
+      const prev = points[i - 1];
+      const brk = !prev || (prev.year < SCALE_RESET_YEAR) !== (p.year < SCALE_RESET_YEAR) || (prev.lv && p.lv && prev.lv !== p.lv);
+      return `${brk ? "M" : "L"}${xOf(p.year)},${yOf(p.level)}`;
+    })
+    .join(" ");
   if (points.length > 1)
     svg.append(s("path", { d: path, fill: "none", stroke: color, "stroke-width": 3 }));
   points.forEach((p) =>
@@ -231,5 +238,60 @@ export function calibrationChart({ title, rows }) {
         class: "pi-cal-dot",
       }),
     );
+  return svg;
+}
+
+/**
+ * Horizontal profile chart for one record. `rows` [{ label, value, status }]; `measure` "level" (1-6 axis)
+ * or "scale" (axis from the values). Values are printed on each bar, so nothing relies on colour.
+ */
+export function profileChart({ title, rows, measure = "level", colors = {} }) {
+  const shown = rows.filter((r) => r.value != null);
+  const lo = measure === "level" ? 1 : Math.floor((Math.min(...shown.map((r) => r.value), 600) - 40) / 50) * 50;
+  const hi = measure === "level" ? 6 : Math.ceil((Math.max(...shown.map((r) => r.value), 100) + 20) / 50) * 50;
+  const PW = 640;
+  const rowH = 40;
+  const PH = 30 + rows.length * rowH;
+  const L = 120;
+  const R = 70;
+  const xOf = (v) => L + ((v - lo) / (hi - lo || 1)) * (PW - L - R);
+  const summary = rows
+    .map((r) => `${r.label} ${r.value == null ? (r.status === "not-assessed" ? "not assessed" : "missing") : measure === "level" ? r.value.toFixed(1) : r.value}`)
+    .join(", ");
+  const svg = s(
+    "svg",
+    { viewBox: `0 0 ${PW} ${PH}`, role: "img", class: "pi-chart pi-profile", "aria-label": `${title}. ${summary}.`, preserveAspectRatio: "xMidYMid meet" },
+    s("title", {}, title),
+    s("desc", {}, summary),
+  );
+  const ticks = measure === "level" ? [1, 2, 3, 4, 5, 6] : Array.from({ length: (hi - lo) / 50 + 1 }, (_, i) => lo + i * 50);
+  for (const t of ticks) {
+    svg.append(s("line", { x1: xOf(t), x2: xOf(t), y1: 8, y2: PH - 18, class: "pi-grid" }));
+    svg.append(s("text", { x: xOf(t), y: PH - 4, class: "pi-axis", "text-anchor": "middle" }, measure === "level" ? `${t}.0` : String(t)));
+  }
+  rows.forEach((r, i) => {
+    const y = 12 + i * rowH;
+    svg.append(s("text", { x: L - 8, y: y + 18, class: "pi-axis pi-axis-strong", "text-anchor": "end" }, r.label));
+    if (r.value == null) {
+      svg.append(s("text", { x: L + 4, y: y + 18, class: "pi-axis" }, r.status === "not-assessed" ? "Not assessed" : "Missing"));
+      return;
+    }
+    const pattern = r.status === "calculated" ? "4 3" : null;
+    svg.append(
+      s("rect", {
+        x: L,
+        y: y + 4,
+        width: Math.max(2, xOf(r.value) - L),
+        height: 22,
+        rx: 4,
+        style: `fill:${r.status === "calculated" ? "none" : colors[r.key] || "#0b6e69"};stroke:${colors[r.key] || "#0b6e69"}`,
+        "stroke-width": 2,
+        "stroke-dasharray": pattern,
+      }),
+    );
+    if (r.sem != null && measure === "scale")
+      svg.append(s("line", { x1: xOf(r.value - 1.96 * r.sem), x2: xOf(r.value + 1.96 * r.sem), y1: y + 15, y2: y + 15, class: "pi-err" }));
+    svg.append(s("text", { x: xOf(r.value) + 6, y: y + 20, class: "pi-axis pi-axis-strong" }, measure === "level" ? r.value.toFixed(1) : `${r.value}${r.status === "calculated" ? " (calc.)" : ""}`));
+  });
   return svg;
 }

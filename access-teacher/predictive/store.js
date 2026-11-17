@@ -7,6 +7,8 @@ export const KEYS = Object.freeze({
   roster: "accessTeacher:v1:roster", // owned by /access-teacher/evidence.js
   official: "accessTeacher:v1:officialResults", // owned by /access-teacher/evidence.js
   imports: "accessTeacher:v1:predictive:imports",
+  interim: "accessTeacher:v1:predictive:interim", // MODEL results, several per year, owned by this studio
+  audit: "accessTeacher:v1:predictive:audit",
   mode: "accessTeacher:v1:predictive:mode",
   real: "accessTeacher:v1:predictive:real",
   demo: "accessTeacher:v1:predictive:demo",
@@ -38,7 +40,7 @@ export const IMPORT_PREFIX = "import|";
  * Workspace students from the hub's roster and official-results map. Students with official results but no
  * roster row (imported history) are included and named from their import id.
  */
-export function studentsFromStores(roster = [], official = {}) {
+export function studentsFromStores(roster = [], official = {}, interim = {}) {
   const out = [];
   const seen = new Set();
   for (const s of Array.isArray(roster) ? roster : []) {
@@ -50,18 +52,25 @@ export function studentsFromStores(roster = [], official = {}) {
       name: String(s.alias),
       section: s.section || "Unsorted",
       official: Array.isArray(official[id]) ? official[id] : [],
+      interim: Array.isArray(interim[id]) ? interim[id] : [],
       entries: Array.isArray(s.ledger?.entries) ? s.ledger.entries : [],
       records: s.records || {},
       onRoster: true,
     });
   }
-  for (const [id, list] of Object.entries(official || {})) {
-    if (seen.has(id) || !Array.isArray(list) || !list.length) continue;
+  const extra = new Set(
+    [...Object.keys(official || {}), ...Object.keys(interim || {})].filter((id) => !seen.has(id)),
+  );
+  for (const id of extra) {
+    const list = Array.isArray(official?.[id]) ? official[id] : [];
+    const more = Array.isArray(interim?.[id]) ? interim[id] : [];
+    if (!list.length && !more.length) continue;
     out.push({
       id,
       name: id.startsWith(IMPORT_PREFIX) ? id.slice(IMPORT_PREFIX.length) : id,
       section: "Imported history",
       official: list,
+      interim: more,
       entries: [],
       records: {},
       onRoster: false,
@@ -71,7 +80,22 @@ export function studentsFromStores(roster = [], official = {}) {
 }
 
 export const loadRealStudents = () =>
-  studentsFromStores(read(KEYS.roster, []), read(KEYS.official, {}));
+  studentsFromStores(read(KEYS.roster, []), read(KEYS.official, {}), read(KEYS.interim, {}));
+
+/** Both score stores, for the record writers in records.js. */
+export const loadStores = () => ({ official: read(KEYS.official, {}), interim: read(KEYS.interim, {}) });
+export const saveStores = (stores) =>
+  write(KEYS.official, stores.official) && write(KEYS.interim, stores.interim);
+
+/**
+ * Local audit log of imports, edits, deletions and exports: what happened, when and how many records, never
+ * score values or names. Capped at 500 events.
+ */
+export function audit(action, detail = {}) {
+  const log = read(KEYS.audit, []);
+  log.push({ at: new Date().toISOString(), action, ...detail });
+  write(KEYS.audit, log.slice(-500));
+}
 
 const EMPTY_STATE = () => ({
   targets: {},
@@ -79,6 +103,9 @@ const EMPTY_STATE = () => ({
   plans: {},
   snapshots: {},
   scenarios: null,
+  goals: {},
+  groups: {},
+  notes: {},
 });
 
 /** Workspace state for a mode ("real" | "demo"); never shared between the two. */

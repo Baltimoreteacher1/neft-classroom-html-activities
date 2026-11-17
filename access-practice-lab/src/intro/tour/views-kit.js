@@ -204,6 +204,16 @@ export function kitScreen(L, ui) {
       <p class="t2-note" data-t2-kit-note role="status">
         Saved in this browser on this device only. Downloads work anywhere.
       </p>
+      <section class="t2-part2" aria-labelledby="t2Part2Title">
+        <h2 id="t2Part2Title">Teacher tour, Part 2: your WIDA data</h2>
+        <p>
+          Next, Mr. Neft walks you through the WIDA Data Studio with fictional sample students: reading
+          ACCESS and MODEL scores, growth, forecasts, and turning the data into lessons.
+        </p>
+        <a class="btn btn-primary" href="/access-teacher/predictive/?demo=1&amp;tour=1" data-tour-part2
+          >Start Part 2</a
+        >
+      </section>
       <div class="t2-after">
         <button type="button" class="btn" data-t2="explore">
           ${icon("search")}Explore More Resources

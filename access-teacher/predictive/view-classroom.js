@@ -1,11 +1,14 @@
 // Classroom Intelligence: level distributions, evidence coverage, flexible groups, recurring needs and the
 // Language Bottleneck Detector.
+import { classSummary, quartiles } from "./interpret.js";
+import { DOMAINS } from "./rules.js";
+import { renderAnalyst } from "./view-analyst.js";
+import { explain, subnav } from "./view-common.js";
 import { recommendInstructionalGroups } from "../../access-practice-lab/src/lang/skill-graph.js";
 import { barChart } from "./charts.js";
 import { h, table, tip } from "./dom.js";
 import { SERIES_KEYS, seriesFor } from "./forecast.js";
 import { emptyState, heading } from "./view-common.js";
-import { renderBottlenecks } from "./view-bottleneck.js";
 
 const BANDS = [
   ["1.0-1.9", 1, 2],
@@ -14,7 +17,6 @@ const BANDS = [
   ["4.0-4.9", 4, 5],
   ["5.0-6.0", 5, 6.01],
 ];
-const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
 
 function distributions(ws) {
   const rows = SERIES_KEYS.map((k) => {
@@ -104,19 +106,103 @@ function groups(ws) {
   );
 }
 
+const GROUP_NAMES = {
+  Listening: "Listening for detail and main idea",
+  Speaking: "Strengthening oral elaboration",
+  Reading: "Interpreting complex informational text",
+  Writing: "Using evidence in writing",
+};
+
+/** Domain spread (robust: median and quartiles) inside the largest group of comparable latest results. */
+function domainSpread(ws) {
+  const g = classSummary(ws.students).groups[0];
+  if (!g) return h("p", { class: "pi-note" }, "No results on file.");
+  const rows = DOMAINS.map((d) => {
+    const q = quartiles(g.records.map(({ record }) => record.domains[d].level));
+    return [d, q ? String(q.n) : "0", q ? q.median.toFixed(1) : "—", q ? `${q.q1.toFixed(1)} to ${q.q3.toFixed(1)}` : "—", q ? `${q.min.toFixed(1)} to ${q.max.toFixed(1)}` : "—"];
+  });
+  return h(
+    "section",
+    { "aria-labelledby": "piSpreadT" },
+    h("h3", { id: "piSpreadT" }, `Domain spread: ${g.records.length} students, ${g.year}`),
+    table("Domain levels: median and middle half", ["Domain", "Students", "Median", "Middle half", "Range"], rows),
+    explain({
+      summary: "Medians and the middle half resist one unusual score. Only students whose latest result shares one assessment version are included.",
+      uncertain: g.records.length < 10 ? "With fewer than 10 students, a pattern here may not hold for the next group." : null,
+    }),
+  );
+}
+
+/** Temporary groups suggested from each student's lowest reported domain; the teacher approves or edits. */
+function scoreGroups(ws) {
+  const saved = ws.state.groups || {};
+  const suggested = new Map();
+  for (const { student, record } of classSummary(ws.students).groups.flatMap((g) => g.records)) {
+    const ds = DOMAINS.filter((d) => record.domains[d].level != null);
+    if (ds.length < 2) continue;
+    const low = ds.sort((a, b) => record.domains[a].level - record.domains[b].level)[0];
+    if (!suggested.has(low)) suggested.set(low, []);
+    suggested.get(low).push(student);
+  }
+  return h(
+    "section",
+    { "aria-labelledby": "piTmpT" },
+    h("h3", { id: "piTmpT" }, "Temporary instructional groups"),
+    h("p", { class: "fine" }, "Suggested from each student's lowest reported domain. Scores are one input: move students using what you see in class. Groups are temporary; review them after each cycle."),
+    h(
+      "div",
+      { class: "pi-cards" },
+      [...suggested.entries()].map(([d, members]) => {
+        const id = `g-${d}`;
+        const state = saved[id];
+        const name = h("input", { type: "text", value: state?.name || GROUP_NAMES[d], "aria-label": `Name of the ${d} group`, maxlength: "80" });
+        const boxes = members.map((m) => h("label", { class: "pi-check" }, h("input", { type: "checkbox", value: m.id, checked: state ? state.members.includes(m.id) : true }), ` ${m.name}`));
+        return h(
+          "div",
+          { class: "pi-card", "data-group": d },
+          name,
+          h("div", {}, boxes),
+          h(
+            "button",
+            {
+              type: "button",
+              class: "btn small",
+              on: {
+                click: () => {
+                  ws.state.groups = { ...saved, [id]: { name: name.value.trim() || GROUP_NAMES[d], members: boxes.map((b) => b.querySelector("input")).filter((i) => i.checked).map((i) => i.value), approvedAt: new Date().toISOString() } };
+                  ws.save();
+                  ws.announce("Group approved and saved on this device.");
+                  ws.rerender();
+                },
+              },
+            },
+            state ? "Update group" : "Approve group",
+          ),
+          state ? h("span", { class: "pi-chip" }, "Approved") : null,
+        );
+      }),
+    ),
+  );
+}
+
 export function renderClassroom(ws) {
   if (!ws.students.length) return emptyState(ws);
+  const view = ws.sub.classroom || "patterns";
   return h(
     "div",
     {},
-    heading(2, "Classroom Intelligence"),
-    h(
-      "p",
-      { class: "lead" },
-      "Class patterns from official levels and practice evidence. Practice evidence is never turned into a level.",
-    ),
-    h("div", { class: "pi-grid-2" }, distributions(ws), coverage(ws)),
-    groups(ws),
-    renderBottlenecks(ws),
+    heading(2, "Classroom Insights"),
+    subnav(ws, "classroom", [["patterns", "Patterns and groups"], ["explorer", "Data Explorer"]], view),
+    view === "explorer"
+      ? renderAnalyst(ws)
+      : h(
+          "div",
+          { class: "pi-stack" },
+          h("p", { class: "lead" }, "Class patterns from reported scores and practice evidence. Practice evidence is never turned into a level."),
+          domainSpread(ws),
+          scoreGroups(ws),
+          h("div", { class: "pi-grid-2" }, distributions(ws), coverage(ws)),
+          groups(ws),
+        ),
   );
 }

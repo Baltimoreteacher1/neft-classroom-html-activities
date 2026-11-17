@@ -5559,7 +5559,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/access-teacher/predictive/",
-    title: "Predictive Intelligence — ACCESS Teacher Hub",
+    title: "WIDA Data Intelligence Studio — Teacher Hub",
     category: "Tool",
     unit: null,
   },
