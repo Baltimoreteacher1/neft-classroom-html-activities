@@ -142,6 +142,99 @@ test("Rater's Eye content: ranking, reasons and the upgrade are consistent", () 
   assert.ok(new Set(firsts).size >= 2, "the strongest answer is not always in the same position");
 });
 
+test("Two Meanings content: every sort sentence names its word, questions and the model line up", () => {
+  const seen = new Set();
+  for (const b of BANDS)
+    for (const s of content("word-meanings")[b]) {
+      for (const w of s.words) {
+        assert.ok(!seen.has(w.w), `${w.w} is used in only one set`);
+        seen.add(w.w);
+        assert.notEqual(w.everyday.def, w.school.def, `${s.id}/${w.w}: two different meanings`);
+      }
+      for (const x of s.sort)
+        assert.ok(M.wordSentenceCheck(x.word, x.s).word, `${s.id}: "${x.s}" contains ${x.word}`);
+      assert.ok(
+        ["everyday", "school"].every((m) => s.sort.filter((x) => x.meaning === m).length >= 2),
+        `${s.id}: both meanings sorted`,
+      );
+      assert.deepEqual(
+        M.wordSentenceCheck(s.write.word, s.write.model),
+        { word: true, sentence: true },
+        `${s.id}: model passes its own checklist`,
+      );
+    }
+});
+
+test("Text Structures content: three different structures per set, signals in the text, organizers answerable", () => {
+  for (const b of BANDS)
+    for (const s of content("text-structures")[b]) {
+      assert.equal(
+        new Set(s.passages.map((p) => p.structure)).size,
+        3,
+        `${s.id}: three different structures`,
+      );
+      for (const p of s.passages) {
+        assert.ok(M.STRUCTURES[p.structure], `${s.id}: known structure ${p.structure}`);
+        for (const w of p.signals)
+          assert.ok(p.text.includes(w), `${s.id}: signal "${w}" in "${p.title}"`);
+        for (const part of p.organizer.parts)
+          assert.equal(
+            part.options.filter((o) => o === part.answer).length,
+            1,
+            `${s.id}/${part.label}: one right option`,
+          );
+      }
+    }
+});
+
+test("Task Words content: the task word is in the prompt, needs and answers line up", () => {
+  for (const b of BANDS) {
+    const used = new Set();
+    for (const s of content("task-words")[b])
+      for (const p of s.prompts) {
+        used.add(p.taskWord);
+        assert.ok(
+          M.TASK_WORDS[p.taskWord] && p.prompt.includes(p.taskText),
+          `${s.id}: "${p.taskText}" in prompt`,
+        );
+        assert.ok(
+          p.choices.includes(p.taskText) && p.choices.every((c) => p.prompt.includes(c)),
+          `${s.id}: word choices come from the prompt`,
+        );
+        assert.ok(
+          M.checkBoxes(
+            p.needs,
+            p.needs.filter((n) => n.right).map((n) => n.id),
+          ).ok,
+          `${s.id}: needs check`,
+        );
+        assert.ok(p.answers.some((a) => a.id === p.answer) && p.why, `${s.id}: answer and reason`);
+      }
+    assert.equal(used.size, 6, `${b}: every task word is practiced`);
+  }
+});
+
+test("pure checks: checkbox sets and the word-sentence checklist", () => {
+  const items = [
+    { id: "a", right: true },
+    { id: "b", right: false },
+    { id: "c", right: true },
+  ];
+  assert.equal(M.checkBoxes(items, ["a", "c"]).ok, true);
+  assert.equal(M.checkBoxes(items, ["a", "b", "c"]).wrong.length, 1);
+  assert.equal(M.checkBoxes(items, ["a"]).missed.length, 1);
+  assert.deepEqual(M.wordSentenceCheck("volume", "The volume of the box is big."), {
+    word: true,
+    sentence: true,
+  });
+  assert.equal(
+    M.wordSentenceCheck("product", "The products sold out fast today.").word,
+    true,
+    "a plural still counts",
+  );
+  assert.equal(M.wordSentenceCheck("mass", "I am at home.").word, false);
+});
+
 test("pure checks: notes details are order-free and not double-counted", () => {
   const set = { notes: { main: "m", details: ["a", "b", "c"] } };
   assert.equal(M.checkNotes(set, { main: "m", d0: "c", d1: "a", d2: "b" }).ok, true);
@@ -296,8 +389,8 @@ test("Listen & Take Notes: Next waits for listening, wrong notes get a reason, r
   assert.equal(M.loadState("notes", s.id).done, true, "finishing the set is saved on this device");
 });
 
-test("Data Talk and Rater's Eye render every step without throwing, in English and Spanish", async () => {
-  for (const slug of ["data-talk", "raters-eye"])
+test("every other skill renders every step without throwing, in English and Spanish", async () => {
+  for (const slug of ["data-talk", "raters-eye", "word-meanings", "text-structures", "task-words"])
     for (const lang of ["en", "es", "bi"]) {
       ctx.prefs.lang = lang;
       const s = content(slug)["3-5"][0];
@@ -309,7 +402,14 @@ test("Data Talk and Rater's Eye render every step without throwing, in English a
         const st = M.loadState(slug, s.id);
         st.step = i;
         st.reveal = { build: true, rank: true, upgrade: true };
-        st.checked = { features: { ok: true, missed: [], wrong: [] } };
+        st.checked = {
+          features: { ok: true, missed: [], wrong: [] },
+          p0: { ok: true },
+          org0: { ok: false, right: 1, total: 2, slots: {} },
+          w0: { ok: true },
+          n0: { ok: true, missed: [], wrong: [] },
+          w1: { ok: false },
+        };
         M.saveState(slug, s.id, st);
         view.unmount();
         await draw();

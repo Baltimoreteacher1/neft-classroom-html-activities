@@ -98,6 +98,78 @@ export const PREP_SKILLS = {
     ["Upgrade", "Mejora"],
   ],
 },
+  "word-meanings": {
+    slug: "word-meanings",
+    title: "Two Meanings",
+    titleEs: "Dos significados",
+    domain: "Reading",
+    domainLabel: ["Vocabulary", "Vocabulario"],
+    icon: "words",
+    blurb: [
+      "Many school words have an everyday meaning and a math, science or social studies meaning. Learn to tell which one a sentence uses.",
+      "Muchas palabras escolares tienen un significado de todos los días y otro de matemáticas, ciencias o estudios sociales. Aprende a saber cuál usa una oración.",
+    ],
+    how: [
+      ["Meet four words and both of their meanings.", "Conoce cuatro palabras y sus dos significados."],
+      ["Decide which meaning each sentence uses.", "Decide qué significado usa cada oración."],
+      ["Answer test-style questions about the words.", "Responde preguntas tipo examen sobre las palabras."],
+      ["Write your own sentence the school way.", "Escribe tu propia oración con el significado escolar."],
+    ],
+    steps: [
+      ["Meet the words", "Conoce las palabras"],
+      ["Which meaning?", "¿Qué significado?"],
+      ["Test questions", "Preguntas tipo examen"],
+      ["Your turn", "Tu turno"],
+    ],
+  },
+  "text-structures": {
+    slug: "text-structures",
+    title: "Text Structures",
+    titleEs: "Estructuras de texto",
+    domain: "Reading",
+    domainLabel: ["Reading", "Leer"],
+    icon: "reading",
+    blurb: [
+      "Find how a text is organized from its signal words, then fill in the organizer that fits.",
+      "Descubre cómo está organizado un texto por sus palabras señal y completa el organizador que le corresponde.",
+    ],
+    how: [
+      ["Learn the five ways texts are organized.", "Aprende las cinco formas de organizar un texto."],
+      ["Read three short texts and name each structure.", "Lee tres textos cortos y nombra cada estructura."],
+      ["See the signal words, then fill the organizer.", "Mira las palabras señal y completa el organizador."],
+    ],
+    steps: [
+      ["Five structures", "Cinco estructuras"],
+      ["Text 1", "Texto 1"],
+      ["Text 2", "Texto 2"],
+      ["Text 3", "Texto 3"],
+      ["Look back", "Repasa"],
+    ],
+  },
+  "task-words": {
+    slug: "task-words",
+    title: "Task Words",
+    titleEs: "Palabras de tarea",
+    domain: "Writing",
+    domainLabel: ["Speaking · Writing", "Hablar · Escribir"],
+    icon: "flag",
+    blurb: [
+      "Describe, explain, compare, sequence, argue, summarize: find the word that tells you what to do, and choose the answer that does it.",
+      "Describir, explicar, comparar, ordenar, argumentar, resumir: encuentra la palabra que te dice qué hacer y elige la respuesta que lo hace.",
+    ],
+    how: [
+      ["Learn what each task word asks for.", "Aprende lo que pide cada palabra de tarea."],
+      ["Find the task word in three prompts.", "Encuentra la palabra de tarea en tres consignas."],
+      ["Check what a complete answer needs, then pick the answer that does the task.", "Revisa lo que necesita una respuesta completa y elige la que cumple la tarea."],
+    ],
+    steps: [
+      ["Six task words", "Seis palabras de tarea"],
+      ["Prompt 1", "Consigna 1"],
+      ["Prompt 2", "Consigna 2"],
+      ["Prompt 3", "Consigna 3"],
+      ["Look back", "Repasa"],
+    ],
+  },
 };
 
 export const PREP_SKILL_LIST = Object.values(PREP_SKILLS);

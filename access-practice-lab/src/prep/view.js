@@ -11,9 +11,19 @@ import * as dataTalk from "./data-talk.js";
 import { isDone, loadState, prepBand, resetState, saveState, validSet } from "./model.js";
 import * as notes from "./notes.js";
 import * as ratersEye from "./raters-eye.js";
+import * as taskWords from "./task-words.js";
+import * as textStructures from "./text-structures.js";
+import * as wordMeanings from "./word-meanings.js";
 import { frameHTML, prepHref } from "./ui.js";
 
-export const SKILLS = { notes, "data-talk": dataTalk, "raters-eye": ratersEye };
+export const SKILLS = {
+  notes,
+  "data-talk": dataTalk,
+  "raters-eye": ratersEye,
+  "word-meanings": wordMeanings,
+  "text-structures": textStructures,
+  "task-words": taskWords,
+};
 
 let cur = null; // { mod, set, st, band }
 
@@ -95,7 +105,9 @@ const save = () => saveState(cur.mod.skill.slug, cur.set.id, cur.st);
 /** After a re-render, put focus where the learner's eyes should go next (a result, or the new step's heading). */
 function settle(ctx, focus) {
   return Promise.resolve(ctx.rerender()).then(() => {
-    const el = focus && document.querySelector(focus);
+    // "<selector>:last" focuses the last match (a step can stack several results).
+    const all = focus ? document.querySelectorAll(focus.replace(/:last$/, "")) : [];
+    const el = focus?.endsWith(":last") ? all[all.length - 1] : all[0];
     const target = el || document.getElementById("prepStepH");
     if (!target) return;
     if (!target.matches("button, input, select, textarea, a[href]")) target.tabIndex = -1;

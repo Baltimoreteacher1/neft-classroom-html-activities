@@ -101,12 +101,7 @@ export function checkRanking(set, order = []) {
 }
 
 /** Features: the learner checks the reasons that make the strongest response stronger. */
-export function checkFeatures(set, picked = []) {
-  const chosen = new Set(picked);
-  const missed = set.features.filter((f) => f.right && !chosen.has(f.id));
-  const wrong = set.features.filter((f) => !f.right && chosen.has(f.id));
-  return { ok: !missed.length && !wrong.length, missed, wrong };
-}
+export const checkFeatures = (set, picked = []) => checkBoxes(set.features, picked);
 
 export const DIMENSIONS = {
   discourse: [
@@ -155,7 +150,59 @@ export function validSet(slug, s) {
       s.features?.some((f) => f.right) &&
       s.upgrade?.parts?.some((p) => typeof p === "object")
     );
+  const mcOk = (q) => q?.options?.some((o) => o.id === q.answer);
+  if (slug === "word-meanings")
+    return (
+      s.words?.length >= 2 &&
+      s.sort?.every((x) => s.words.some((w) => w.w === x.word) && ["everyday", "school"].includes(x.meaning)) &&
+      s.questions?.every(mcOk) &&
+      s.words.some((w) => w.w === s.write?.word)
+    );
+  if (slug === "text-structures")
+    return (
+      s.passages?.length === 3 &&
+      s.passages.every((p) => STRUCTURES[p.structure] && p.organizer?.parts?.every((x) => x.options.includes(x.answer)))
+    );
+  if (slug === "task-words")
+    return (
+      s.prompts?.length === 3 &&
+      s.prompts.every((p) => TASK_WORDS[p.taskWord] && p.choices?.includes(p.taskText) && p.needs?.some((n) => n.right) && p.answers?.some((a) => a.id === p.answer))
+    );
   return false;
+}
+
+/** The five text structures: the name, the signal words that give each away, and the organizer it fits. */
+export const STRUCTURES = {
+  description: { en: "Description", es: "Descripción", signals: "for example, such as, also, in addition", org: ["Topic and details", "Tema y detalles"] },
+  sequence: { en: "Sequence", es: "Secuencia", signals: "first, next, then, after, finally", org: ["Steps in order", "Pasos en orden"] },
+  compare: { en: "Compare and contrast", es: "Comparar y contrastar", signals: "both, alike, however, unlike, but", org: ["Alike and different", "Parecido y diferente"] },
+  "cause-effect": { en: "Cause and effect", es: "Causa y efecto", signals: "because, so, as a result, therefore", org: ["Cause and effect", "Causa y efecto"] },
+  "problem-solution": { en: "Problem and solution", es: "Problema y solución", signals: "problem, to solve, one solution, fixed", org: ["Problem and solution", "Problema y solución"] },
+};
+
+/** What each task word asks an answer to do. */
+export const TASK_WORDS = {
+  Describe: ["Tell what something is like: details you could see, hear or notice.", "Di cómo es algo: detalles que puedes ver, oír o notar."],
+  Explain: ["Tell how or why, with reasons. Words like because and so help.", "Di cómo o por qué, con razones. Palabras como because y so ayudan."],
+  Compare: ["Tell how two things are alike AND how they are different.", "Di en qué se parecen dos cosas Y en qué son diferentes."],
+  Sequence: ["Tell the steps or events in order: first, next, then, finally.", "Di los pasos o sucesos en orden: first, next, then, finally."],
+  Argue: ["Give your opinion or claim, then reasons and evidence for it.", "Da tu opinión o afirmación y luego razones y pruebas."],
+  Summarize: ["Tell the main idea and only the most important points, in a few sentences.", "Di la idea principal y solo los puntos más importantes, en pocas oraciones."],
+};
+
+/** Checkbox set: every right item and no wrong one. */
+export function checkBoxes(items, picked = []) {
+  const chosen = new Set(picked);
+  const missed = items.filter((x) => x.right && !chosen.has(x.id));
+  const wrong = items.filter((x) => !x.right && chosen.has(x.id));
+  return { ok: !missed.length && !wrong.length, missed, wrong };
+}
+
+/** A sentence uses the word (any simple form) and is long enough to show its meaning. */
+export function wordSentenceCheck(word, text) {
+  const t = String(text || "").toLowerCase();
+  const stem = word.toLowerCase().slice(0, Math.max(3, word.length - 1));
+  return { word: new RegExp(`\\b${stem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(t), sentence: (t.match(/[a-z0-9']+/g) || []).length >= 6 };
 }
 
 /** A stable shuffle keyed by the set id: the same learner always sees the same order, and it is never the authored one. */
