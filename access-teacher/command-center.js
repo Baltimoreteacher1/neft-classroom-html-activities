@@ -48,37 +48,37 @@ export const COMMAND_ACTIONS = Object.freeze([
     id: "plan",
     icon: "road",
     title: "Plan a Lesson",
-    lead: "Compose a 5-stage sequence (Introduce → Explore → Practice → Apply → Review) from real resources.",
+    lead: "Build a short lesson from ready activities.",
   },
   {
     id: "support",
     icon: "writing",
     title: "Support a Student",
-    lead: "Configure adjustable, fadeable WIDA scaffolds while keeping the grade-level learning goal intact.",
+    lead: "Add help for one student. The goal stays the same.",
   },
   {
     id: "assign",
     icon: "launch",
     title: "Assign Practice",
-    lead: "Preview student work, set support defaults, and copy a student or Family Companion link.",
+    lead: "Get a link for students or families.",
   },
   {
     id: "analyze",
     icon: "growth",
     title: "Analyze Progress",
-    lead: "Review observed evidence, skill patterns, and open the WIDA Data Intelligence Studio.",
+    lead: "See what students did and what to teach next.",
   },
   {
     id: "resources",
     icon: "bookmark",
     title: "My Resources",
-    lead: "Reopen saved pathways, Book Studio projects, custom experiences, and recent activities.",
+    lead: "Open what you saved.",
   },
   {
     id: "create",
     icon: "sparkle",
     title: "Create Something",
-    lead: "Create a book, build a playable investigation from your text, or prepare whole-class routines.",
+    lead: "Make a book or an activity from your own text.",
   },
 ]);
 
@@ -125,7 +125,8 @@ export async function mountCommandCenter(host) {
   const registry = buildResourceRegistry({ index, destinations: DESTINATIONS });
 
   const state = {
-    activeTab: "plan",
+    // No task is open on arrival (2026-11-17): the teacher sees six choices, not a lesson builder.
+    activeTab: "",
     // Plan a Lesson state
     planBand: "6-8",
     planDomain: "Speaking",
@@ -180,7 +181,7 @@ export async function mountCommandCenter(host) {
       domain: state.planDomain,
       trigger: "pathway-created",
     });
-    return html`<div class="tc-workspace" id="tcPlan" role="tabpanel" aria-labelledby="tc-tab-plan">
+    return html`<div class="tc-workspace" id="tcPlan" role="region" aria-labelledby="tc-tab-plan">
       <div class="tc-ws-head">
         <div>
           <h3>Plan a Lesson · Guided Pathway Composer</h3>
@@ -334,7 +335,7 @@ export async function mountCommandCenter(host) {
       observedNeeds: state.supNeeds,
       registry,
     });
-    return html`<div class="tc-workspace" id="tcSupport" role="tabpanel" aria-labelledby="tc-tab-support">
+    return html`<div class="tc-workspace" id="tcSupport" role="region" aria-labelledby="tc-tab-support">
       <div class="tc-ws-head">
         <div>
           <h3>Support a Student · WIDA Differentiation Workspace</h3>
@@ -436,7 +437,7 @@ export async function mountCommandCenter(host) {
       ? `${BASE}/family?grades=${state.assignBand}&companion=${encodeURIComponent(chosen.activityId)}`
       : `${BASE}/family?grades=${state.assignBand}`;
 
-    return html`<div class="tc-workspace" id="tcAssign" role="tabpanel" aria-labelledby="tc-tab-assign">
+    return html`<div class="tc-workspace" id="tcAssign" role="region" aria-labelledby="tc-tab-assign">
       <div class="tc-ws-head">
         <div>
           <h3>Assign Practice · Student &amp; Family Companion Links</h3>
@@ -528,7 +529,7 @@ export async function mountCommandCenter(host) {
     const independentCount = entries.filter((e) => e.stage === "independent").length;
     const supportedCount = entries.filter((e) => e.stage === "supported").length;
 
-    return html`<div class="tc-workspace" id="tcAnalyze" role="tabpanel" aria-labelledby="tc-tab-analyze">
+    return html`<div class="tc-workspace" id="tcAnalyze" role="region" aria-labelledby="tc-tab-analyze">
       <div class="tc-ws-head">
         <div>
           <h3>Analyze Progress · Observed Evidence &amp; WIDA Data Studio</h3>
@@ -597,7 +598,7 @@ export async function mountCommandCenter(host) {
     const customExps = Object.values(safeJson(storage.get("accessPracticeLab:v1:experiences"), {})?.items || {});
     const classes = safeJson(storage.get("accessPracticeLabClass:v1:teacher-classes"), []);
 
-    return html`<div class="tc-workspace" id="tcResources" role="tabpanel" aria-labelledby="tc-tab-resources">
+    return html`<div class="tc-workspace" id="tcResources" role="region" aria-labelledby="tc-tab-resources">
       <div class="tc-ws-head">
         <div>
           <h3>My Resources · Saved Pathways, Books &amp; Class Materials</h3>
@@ -726,7 +727,7 @@ export async function mountCommandCenter(host) {
       },
     ];
 
-    return html`<div class="tc-workspace" id="tcCreate" role="tabpanel" aria-labelledby="tc-tab-create">
+    return html`<div class="tc-workspace" id="tcCreate" role="region" aria-labelledby="tc-tab-create">
       <div class="tc-ws-head">
         <div>
           <h3>Create Something · Intention-Based Creation Hub</h3>
@@ -762,17 +763,13 @@ export async function mountCommandCenter(host) {
       resources: renderResourcesTab,
       create: renderCreateTab,
     };
-    const activeFn = tabMap[state.activeTab] || renderPlanTab;
+    const activeFn = tabMap[state.activeTab];
 
     host.innerHTML = toHtml(html`<div class="tc-shell">
       <div class="tc-head">
         <div>
-          <p class="eyebrow">Teaching Command Center</p>
-          <h2 id="tcTitle">What would you like to accomplish?</h2>
-          <p class="fine">
-            Plan a 5-stage lesson, differentiate scaffolds for multilingual learners, assign practice,
-            analyze evidence, or create new materials—all connected to one resource library.
-          </p>
+          <h2 id="tcTitle">What do you need today?</h2>
+          <p class="fine">Pick one task. It opens right here.</p>
         </div>
         <div class="tc-head-actions">
           <button
@@ -796,14 +793,13 @@ export async function mountCommandCenter(host) {
 
       ${tourState.open ? renderHubTourHTML(registry, tourState, state.statusNote) : ""}
 
-      <div class="tc-action-grid" role="tablist" aria-label="Teaching Command Center workflows">
+      <div class="tc-action-grid" role="group" aria-label="Teaching tasks">
         ${COMMAND_ACTIONS.map(
           (a) => html`<button
             type="button"
-            role="tab"
             id="tc-tab-${a.id}"
             class="tc-action-card${state.activeTab === a.id ? " is-active" : ""}"
-            aria-selected="${state.activeTab === a.id}"
+            aria-expanded="${String(state.activeTab === a.id)}"
             aria-controls="tc${a.id[0].toUpperCase() + a.id.slice(1)}"
             data-tc-action="${a.id}"
           >
@@ -816,12 +812,12 @@ export async function mountCommandCenter(host) {
         )}
       </div>
 
-      ${activeFn()}
+      ${activeFn ? activeFn() : ""}
       ${COMMAND_ACTIONS.filter((a) => a.id !== state.activeTab).map(
         (a) =>
           html`<div
             id="tc${a.id[0].toUpperCase() + a.id.slice(1)}"
-            role="tabpanel"
+            role="region"
             aria-labelledby="tc-tab-${a.id}"
             hidden
           ></div>`,
@@ -832,10 +828,12 @@ export async function mountCommandCenter(host) {
   host.addEventListener("click", async (e) => {
     const tabBtn = e.target.closest("[data-tc-action]");
     if (tabBtn) {
-      state.activeTab = tabBtn.dataset.tcAction;
+      // Picking the open task again closes it.
+      const picked = tabBtn.dataset.tcAction;
+      state.activeTab = state.activeTab === picked ? "" : picked;
       state.statusNote = "";
       render();
-      host.querySelector(`[data-tc-action="${state.activeTab}"]`)?.focus({ preventScroll: true });
+      host.querySelector(`[data-tc-action="${picked}"]`)?.focus({ preventScroll: true });
       return;
     }
 

@@ -777,12 +777,13 @@ function registerOffline() {
 }
 
 /**
- * The Family Tour is its own page, but a service worker installed before the tour existed answers its URL with this
- * app shell, so the lab home renders where the tour should be. Fetch the current worker (it sends the tour to the
+ * The Family Tour and the video hub are their own pages, but an older service worker answers their URLs with this
+ * app shell, so the lab home renders where they should be. Fetch the current worker (it sends the tour to the
  * network; skipWaiting + clients.claim make it take this page over), then load the URL again. At most once per tab.
  */
 async function leaveStaleShell() {
-  if (!location.pathname.startsWith(`${BASE}/family-tour`) || !navigator.serviceWorker?.controller) return false;
+  const own = [`${BASE}/family-tour`, `${BASE}/videos`].some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`));
+  if (!own || !navigator.serviceWorker?.controller) return false;
   const key = "lab:stale-shell-reload";
   try {
     if (sessionStorage.getItem(key)) return false;

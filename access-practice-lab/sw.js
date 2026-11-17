@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "053fd80d1999";
+const BUILD_HASH = "e251f246de25";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=7d7f1b25115e",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=2d61f2ab7565",
+  "/access-practice-lab/src/main.js?v=9b2c0ffd6e03",
   "/access-practice-lab/src/brand.js?v=aa10e7cfb67f",
   "/access-practice-lab/src/components.js?v=b1176359ca81",
   "/access-practice-lab/src/grade.js?v=84bc1f2d104d",
@@ -1307,7 +1307,7 @@ function route(request, url, origin) {
   if (path === `${SCOPE}config.json` || path === `${SCOPE}sw.js`) return "network";
   const inScope = path.startsWith(SCOPE);
   if (request.mode === "navigate")
-    return inScope && !path.startsWith(`${SCOPE}printables/`) && !path.startsWith(`${SCOPE}family-tour/`) && path !== `${SCOPE}family-tour` && !/\.[a-z0-9]+$/i.test(path)
+    return inScope && !path.startsWith(`${SCOPE}printables/`) && !path.startsWith(`${SCOPE}family-tour/`) && path !== `${SCOPE}family-tour` && !path.startsWith(`${SCOPE}videos/`) && path !== `${SCOPE}videos` && !/\.[a-z0-9]+$/i.test(path)
       ? "shell"
       : "network";
   if (inScope) return url.searchParams.has("v") && /\.(js|css)$/.test(path) ? "immutable" : "fresh";

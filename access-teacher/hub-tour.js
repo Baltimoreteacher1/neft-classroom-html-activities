@@ -156,7 +156,7 @@ export function renderHubTourHTML(registry, state, statusMsg = "") {
                 type="button"
                 class="btn small ${primary?.id === item.id ? "btn-primary" : ""}"
                 data-ht-pick="${item.id}"
-                aria-pressed="${primary?.id === item.id}"
+                aria-pressed="${String(primary?.id === item.id)}"
               >
                 ${primary?.id === item.id ? "✓ Picked" : "Pick this"}
               </button>
@@ -178,7 +178,7 @@ export function renderHubTourHTML(registry, state, statusMsg = "") {
             type="button"
             class="btn small ${has(id) ? "btn-primary" : ""}"
             data-ht-scaffold="${id}"
-            aria-pressed="${has(id)}"
+            aria-pressed="${String(has(id))}"
           >
             ${has(id) ? "✓ " : "+ "}${label}
           </button>`,
