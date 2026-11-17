@@ -11,7 +11,12 @@ import {
   domainEvidence,
   planFromFinding,
 } from "../access-teacher/predictive/bottleneck.js";
-import { concordanceFor, NO_PREDICTION } from "../access-teacher/predictive/concordance.js";
+import {
+  concordanceFor,
+  lookupConcordance,
+  MODEL_ACCESS_TABLE,
+  NO_PREDICTION,
+} from "../access-teacher/predictive/concordance.js";
 import { demoClass, demoTrainingCohort } from "../access-teacher/predictive/demo.js";
 import { scoresFromReportText } from "../access-teacher/predictive/file-readers.js";
 import {
@@ -61,6 +66,11 @@ test("CSV parser handles quotes, doubled quotes, CRLF and blank lines; pasted ce
 });
 
 test("column mapping recognises WIDA-style headers", () => {
+  assert.deepEqual(autoMap(["Student First Name", "Student Last Name", "State Student ID"]), [
+    "firstName",
+    "lastName",
+    "studentId",
+  ]);
   assert.deepEqual(
     autoMap([
       "Student Name",
@@ -267,17 +277,44 @@ test("scenario: hypothetical changes clamp, composites illustrated only with ver
   assert.equal(applyScenario(post, {}).composites.Overall.status, "no-rule");
 });
 
-test("MODEL to ACCESS: no number without a loaded, version-matched table", () => {
-  const model = fromStored(
-    { assessment: "MODEL_ONLINE", year: "2025-26", levels: { Reading: 3 }, overall: 3 },
-    "s",
-    "interim",
+test("MODEL to ACCESS: WIDA's 2019 table, MODEL Online only, before the 2025-26 revision, never outside the table", () => {
+  assert.equal(Object.keys(MODEL_ACCESS_TABLE).length, 12);
+  assert.deepEqual(MODEL_ACCESS_TABLE[6][3], [385, 4.3, 4.6]);
+  assert.deepEqual(lookupConcordance(6, 319).range, { lo: 2.8, hi: 3.0 });
+  assert.deepEqual(
+    lookupConcordance(6, 340).range,
+    { lo: 2.8, hi: 4.1 },
+    "between two rows spans both ranges",
   );
-  for (const y of ["2025-26", "2026-27"]) {
-    const c = concordanceFor(model, { targetYear: y });
-    assert.equal(c.status, "unavailable");
+  assert.equal(lookupConcordance(6, 200).kind, "below");
+  assert.equal(lookupConcordance(6, 500).kind, "above");
+  const rec = (over) =>
+    fromStored(
+      {
+        assessment: "MODEL_ONLINE",
+        year: "2023-24",
+        grade: 6,
+        levels: { Reading: 3 },
+        overall: 3,
+        scale: { Overall: 385 },
+        ...over,
+      },
+      "s",
+      "interim",
+    );
+  const ok = concordanceFor(rec({}));
+  assert.equal(ok.status, "available");
+  assert.deepEqual([ok.estimate.range.lo, ok.estimate.range.hi], [4.3, 4.6]);
+  for (const bad of [
+    { year: "2025-26" },
+    { assessment: "MODEL_PAPER" },
+    { grade: null },
+    { scale: {} },
+    { scale: { Overall: 150 } },
+  ]) {
+    const c = concordanceFor(rec(bad));
+    assert.equal(c.status, "unavailable", JSON.stringify(bad));
     assert.ok(c.reason.startsWith(NO_PREDICTION));
-    assert.match(c.source, /wida\.wisc\.edu/);
   }
 });
 
@@ -306,6 +343,10 @@ test("report text: labelled scores are read, nothing is guessed", () => {
     "ACCESS for ELLs 2024-2025\nGrade: 6\nListening 331 3.4\nSpeaking 312 2.8\nOverall Score 322 3.0",
   );
   assert.equal(got.year, "2024-25");
+  assert.equal(
+    scoresFromReportText("Student: Rivera, Ana  Grade: 6\nListening 355 3.8").student,
+    "Ana Rivera",
+  );
   assert.equal(got.grade, "6");
   assert.deepEqual(got.scores.Listening, { scale: "331", level: "3.4" });
   assert.equal(got.scores.Reading, undefined);

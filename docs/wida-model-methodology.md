@@ -16,7 +16,9 @@ Real mode trains on the teacher's own roster only, which is far below the minimu
 
 ## MODEL to ACCESS
 
-WIDA publishes a concordance relating a MODEL Overall composite to a likely ACCESS score, described as valid for the 2025-26 window ([WIDA](https://wida.wisc.edu/resources/wida-model-and-access-ells-concordance-table)). Its values are **not** entered in `concordance.js`, so every lookup returns "No validated prediction is available for this combination of assessments." with the source link. Older mappings are never applied to the reset scale.
+`concordance.js` holds WIDA's published table ("Using WIDA MODEL scores to predict performance on ACCESS for ELLs", WIDA TR-2019-4, released April 2019; values copied from [WIDA's PDF](https://wida.wisc.edu/sites/default/files/resource/MODEL-ACCESS-Concordance-Table.pdf) on 2026-11-17 and checked row by row). It maps a **MODEL Online Overall Composite scale score** to a predicted **ACCESS Overall proficiency-level range**, grades 1-12, at anchors PL 2.0 / 3.0 / 4.0 / 4.5. Between two listed scores the estimate spans both ranges (WIDA's own instruction).
+
+Applied only when: MODEL Online (not Paper or Kindergarten), grade 1-12, an Overall scale score is on file, and the MODEL result is from **before 2025-26** (WIDA marks the table as published before the ACCESS revision). Never outside the table (WIDA reports no reliable predictions below PL 2.0 or above 4.5). Otherwise: "No validated prediction is available for this combination of assessments." with the reason and the table for reference. Caveats shown with every estimate: same-day assumption, wider error with time between tests, a range not a score.
 
 ## Scenarios
 

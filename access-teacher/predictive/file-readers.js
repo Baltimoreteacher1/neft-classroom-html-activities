@@ -102,8 +102,57 @@ function pdfString(s) {
   );
 }
 
-/** Text of the content streams of a digitally generated PDF. Returns "" when nothing readable is found. */
+let pdfjsReady = null;
+/** The site's self-hosted PDF.js (assets/vendor), loaded only when a teacher opens a PDF. */
+function loadPdfJs() {
+  pdfjsReady ||= new Promise((resolve, reject) => {
+    if (globalThis.pdfjsLib) return resolve(globalThis.pdfjsLib);
+    const el = document.createElement("script");
+    el.src = "/assets/vendor/pdfjs-3.11.174.min.js";
+    el.onload = () => {
+      const lib = globalThis.pdfjsLib;
+      lib.GlobalWorkerOptions.workerSrc = "/assets/vendor/pdfjs-3.11.174.worker.min.js";
+      resolve(lib);
+    };
+    el.onerror = () => reject(new Error("The PDF reader could not load."));
+    document.head.append(el);
+  });
+  return pdfjsReady;
+}
+
+/** Text lines of a digital PDF via PDF.js (first 10 pages), items grouped into lines by position. */
+async function readPdfWithPdfJs(buf) {
+  const lib = await loadPdfJs();
+  const doc = await lib.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise;
+  const out = [];
+  for (let n = 1; n <= Math.min(doc.numPages, 10); n++) {
+    const tc = await (await doc.getPage(n)).getTextContent();
+    const rows = new Map();
+    for (const it of tc.items) {
+      if (!it.str?.trim()) continue;
+      const y = Math.round(it.transform[5] / 3);
+      if (!rows.has(y)) rows.set(y, []);
+      rows.get(y).push([it.transform[4], it.str.trim()]);
+    }
+    for (const y of [...rows.keys()].sort((a, b) => b - a))
+      out.push(rows.get(y).sort((a, b) => a[0] - b[0]).map((x) => x[1]).join(" "));
+  }
+  return out.join("\n").trim();
+}
+
+/** Text of a digital PDF: PDF.js first, then a simple stream reader. Returns "" for scans (no text layer). */
 export async function readPdfText(buf) {
+  try {
+    const text = await readPdfWithPdfJs(buf.slice(0));
+    if (text) return text;
+  } catch {
+    /* fall through to the simple reader */
+  }
+  return readPdfStreams(buf);
+}
+
+/** Text of the content streams of a simply encoded PDF. Returns "" when nothing readable is found. */
+async function readPdfStreams(buf) {
   const u8 = new Uint8Array(buf);
   const latin = new TextDecoder("latin1").decode(u8);
   const parts = [];
@@ -177,10 +226,15 @@ export function scoresFromReportText(text) {
   }
   const year = String(text || "").match(/\b(20\d{2})\s*[-–/]\s*(20)?(\d{2})\b/);
   const grade = String(text || "").match(/\bgrade\s*:?\s*(K|\d{1,2})\b/i);
+  // "Student: Rivera, Ana" or "Student Name: Ana Rivera"; stops before the next label on the line.
+  const who = String(text || "").match(/student(?:\s+name)?\s*:\s*([A-Za-z' .,-]+?)(?=\s{2,}|\s+grade\b|\s+school\b|\s+date\b|\n|$)/i);
+  const raw = who?.[1]?.trim() || "";
+  const student = raw.includes(",") ? raw.split(",").map((x) => x.trim()).reverse().join(" ") : raw;
   return {
     scores,
     year: year ? `${year[1]}-${year[3]}` : "",
     grade: grade?.[1] || "",
+    student,
     found: Object.keys(scores).length,
   };
 }

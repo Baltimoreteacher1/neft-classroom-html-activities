@@ -65,8 +65,10 @@ const norm = (x) =>
 export function fieldFor(header) {
   const h = norm(header);
   if (!h) return null;
-  if (/^(student|student name|name|alias|student id|state student id|first name)$/.test(h))
-    return "student";
+  if (/^(student|student name|name|alias|full name)$/.test(h)) return "student";
+  if (/^(first name|student first name|given name)$/.test(h)) return "firstName";
+  if (/^(last name|student last name|surname|family name)$/.test(h)) return "lastName";
+  if (/^(student id|state student id|district student id|local student id|wida id|ssid)$/.test(h)) return "studentId";
   if (/^(grade|grade level|tested grade)$/.test(h)) return "grade";
   if (/^(assessment|test|assessment type|test name)$/.test(h)) return "assessment";
   if (/^(year|school year|academic year|test year)$/.test(h)) return "year";
@@ -103,6 +105,10 @@ export const assessmentOf = (raw, fallback) => {
   return (n && ASSESSMENT_WORDS.find(([, re]) => re.test(n))?.[0]) || fallback;
 };
 
+/** Excel stores dates as day counts since 1899-12-30; turn one into YYYY-MM-DD. */
+const excelDate = (v) =>
+  /^\d{5}(\.\d+)?$/.test(v) ? new Date(Date.UTC(1899, 11, 30) + Math.floor(Number(v)) * 864e5).toISOString().slice(0, 10) : v;
+
 /** Drafts (raw strings) from a table and a mapping. `defaults` { assessment, year } fill blank columns. */
 export function draftsFromTable(table, mapping, defaults = {}) {
   const body = table.slice(1);
@@ -110,12 +116,15 @@ export function draftsFromTable(table, mapping, defaults = {}) {
     const i = mapping.indexOf(f);
     return i < 0 ? "" : String(r[i] ?? "").trim();
   };
+  // A name column wins; otherwise first + last name; otherwise the student ID.
+  const studentName = (r) =>
+    cell(r, "student") || [cell(r, "firstName"), cell(r, "lastName")].filter(Boolean).join(" ") || cell(r, "studentId");
   const base = (r, line) => ({
     line,
-    student: cell(r, "student"),
+    student: studentName(r),
     assessment: assessmentOf(cell(r, "assessment"), defaults.assessment || "ACCESS"),
     year: cell(r, "year") || defaults.year || "",
-    date: cell(r, "date"),
+    date: excelDate(cell(r, "date")),
     grade: cell(r, "grade"),
     form: cell(r, "form"),
     levelVersion: /2026/.test(cell(r, "levelVersion")) ? "2026-cuts" : defaults.levelVersion || "",

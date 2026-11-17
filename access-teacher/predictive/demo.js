@@ -187,6 +187,8 @@ function addContrasts(students) {
         grade: 6,
         levels: Object.fromEntries(DOMAIN_KEYS.map((k) => [k, Math.min(6, Math.round(((last(b).levels[k] ?? 3) + 0.2) * 10) / 10)])),
         overall: last(b).overall,
+        // Sample MODEL Online Overall scale score: a grade 6 anchor in WIDA's concordance table (PL 4.5 row).
+        scale: { Overall: 385 },
         source: "manual",
         verified: true,
         synthetic: true,

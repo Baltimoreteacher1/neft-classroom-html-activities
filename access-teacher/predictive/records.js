@@ -205,11 +205,8 @@ export function validateDraft(draft, { today = new Date() } = {}) {
         errors.push(`${key} scale score ${n} is outside ${range[0]}-${range[1]} for this scale.`);
       else {
         any++;
+        // Only the 2016 ACCESS range is documented (rules.js SCALE_RANGES); other versions are stored as typed.
         row.scale[key] = n;
-        if (!range)
-          warnings.push(
-            `${key} scale score: no documented range for this scale version, so the value was not range-checked.`,
-          );
       }
     }
     const se = String(s.sem ?? "").trim();

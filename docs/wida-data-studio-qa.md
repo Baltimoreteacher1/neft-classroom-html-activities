@@ -23,7 +23,7 @@
 
 ## Not verified
 
-- Real WIDA AMS exports and real PDF score reports were not available; XLSX and PDF readers were exercised only by code review and the report-text unit test.
+- Real-format files were exercised in a browser (2026-11-17): an AMS-style .xlsx (openpyxl; first/last name and state ID columns, ACCESS + MODEL rows) imported 3/3 with provenance; a LibreOffice-generated PDF score report was read by the self-hosted PDF.js (student, year, grade, 8 scores) and imported. Actual WIDA-issued files were still not available.
 - axe was not run locally (package not installed); no screen-reader pass.
 - Spanish family summary is machine-drafted, not native-reviewed.
 - No validation on real student data (only synthetic).

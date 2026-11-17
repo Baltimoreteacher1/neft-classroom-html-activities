@@ -38,7 +38,10 @@ const STATUS_WORDS = {
 };
 const FIELD_LABELS = [
   ["", "Ignore this column"],
-  ["student", "Student"],
+  ["student", "Student name"],
+  ["firstName", "First name"],
+  ["lastName", "Last name"],
+  ["studentId", "Student ID (used only if there is no name)"],
   ["grade", "Grade"],
   ["assessment", "Assessment"],
   ["year", "School year"],
@@ -397,7 +400,7 @@ function stepIdentify(ws) {
         else if (wiz.source === "pdf") {
           const got = scoresFromReportText(wiz.pdfText);
           const d = blankDraft(wiz);
-          Object.assign(d, { year: got.year || wiz.year, grade: got.grade });
+          Object.assign(d, { year: got.year || wiz.year, grade: got.grade, student: got.student });
           for (const [k, v] of Object.entries(got.scores)) d.scores[k] = { ...d.scores[k], ...v };
           wiz.error = got.found
             ? `Found ${got.found} score lines. Check every value against the report.`
@@ -440,7 +443,7 @@ function stepMap(ws) {
     ),
     nav(ws, {
       next: () => {
-        if (!wiz.mapping.includes("student"))
+        if (!["student", "firstName", "lastName", "studentId"].some((f) => wiz.mapping.includes(f)))
           return ((wiz.error = "Map one column to Student."), ws.announce(wiz.error));
         wiz.drafts = draftsFromTable(wiz.table, wiz.mapping, {
           assessment: wiz.assessment,

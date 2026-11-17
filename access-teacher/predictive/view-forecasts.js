@@ -1,8 +1,8 @@
 // Forecasts & Scenarios. Three kinds of number are kept visibly apart: ACTUAL reported results, VALIDATED
 // statistical predictions (shown only when the engine's held-out validation passes), and HYPOTHETICAL
 // scenarios the teacher builds. Also the MODEL-to-ACCESS workspace and the Validation Center.
-import { h, table } from "./dom.js";
-import { CONCORDANCES, concordanceFor } from "./concordance.js";
+import { h, s, table } from "./dom.js";
+import { ANCHOR_LEVELS, CONCORDANCES, concordanceFor, MODEL_ACCESS_TABLE } from "./concordance.js";
 import { fmt1 } from "./dom.js";
 import { recordsOf } from "./records.js";
 import { ASSESSMENTS, COMPOSITE_INFO, COMPOSITES, DOMAINS, SCALE_RESET_YEAR } from "./rules.js";
@@ -230,67 +230,63 @@ function scenarios(ws) {
   );
 }
 
+/** A 1-6 bar with the predicted range shaded and the numbers printed. */
+function rangeBar(lo, hi) {
+  const x = (v) => 20 + ((v - 1) / 5) * 600;
+  return s(
+    "svg",
+    { viewBox: "0 0 640 70", role: "img", class: "pi-chart pi-rangebar", "aria-label": `Predicted ACCESS Overall level about ${lo.toFixed(1)} to ${hi.toFixed(1)} on a 1 to 6 scale.` },
+    s("rect", { x: 20, y: 18, width: 600, height: 18, rx: 9, class: "pi-indep-track" }),
+    s("rect", { x: x(lo), y: 18, width: Math.max(6, x(hi) - x(lo)), height: 18, rx: 9, class: "pi-range-fill" }),
+    ...[1, 2, 3, 4, 5, 6].map((v) => s("text", { x: x(v), y: 58, "text-anchor": "middle", class: "pi-axis" }, `${v}`)),
+    s("text", { x: (x(lo) + x(hi)) / 2, y: 12, "text-anchor": "middle", class: "pi-axis pi-axis-strong" }, `${lo.toFixed(1)} to ${hi.toFixed(1)}`),
+  );
+}
+
 function concordance(ws) {
   const st = ws.student();
   const recs = recordsOf(st);
   const models = recs.filter((r) => r.assessmentType.startsWith("MODEL"));
   const access = recs.filter((r) => r.assessmentType === "ACCESS").at(-1);
   const model = models.at(-1);
-  const c = concordanceFor(model, { targetYear: model?.academicYear });
+  const c = concordanceFor(model);
+  const grade = Number(model?.grade);
+  const gradeRows = MODEL_ACCESS_TABLE[grade];
   return h(
     "div",
     { class: "pi-stack" },
     studentPicker(ws),
     heading(2, "MODEL to ACCESS"),
-    h(
-      "p",
-      { class: "pi-note", role: "note", "data-concordance": c.status },
-      c.reason,
-      " ",
-      h(
-        "a",
-        { href: c.source, rel: "noopener", target: "_blank" },
-        "WIDA's MODEL and ACCESS concordance table",
-      ),
-    ),
-    model && access
+    model ? h("p", { class: "fine" }, `Using ${assessmentLabel(model, ASSESSMENTS)}${model.composites.Overall.scale != null ? ` · Overall scale score ${model.composites.Overall.scale}` : ""}.`) : null,
+    c.status === "available"
       ? h(
-          "div",
-          {},
-          table(
-            "Same student, two different assessments (descriptive only)",
-            ["Domain", assessmentLabel(model, ASSESSMENTS), assessmentLabel(access, ASSESSMENTS)],
-            [...DOMAINS, "Overall"].map((d) => [
-              d,
-              fmt1(d === "Overall" ? model.composites.Overall.level : model.domains[d].level),
-              fmt1(d === "Overall" ? access.composites.Overall.level : access.domains[d].level),
-            ]),
-          ),
-          explain({
-            summary:
-              "MODEL is an interim assessment with its own scale and administration. Side-by-side levels help you see whether the domain profile looks similar; they are not a conversion.",
-            uncertain: `WIDA's concordance applies to specific versions and its 2025-26 window. Mappings made before the ${SCALE_RESET_YEAR} ACCESS revision are not applied to the reset scale.`,
-          }),
+          "section",
+          { class: "pi-card", "data-concordance": "available" },
+          kindBadge("validated"),
+          h("p", { class: "pi-insight-big" }, `Likely ACCESS Overall: ${c.estimate.range.lo.toFixed(1)} to ${c.estimate.range.hi.toFixed(1)}`),
+          rangeBar(c.estimate.range.lo, c.estimate.range.hi),
+          h("p", {}, c.reason),
+          h("ul", {}, c.entry.caveats.map((x) => h("li", {}, x))),
         )
-      : h(
-          "p",
-          { class: "fine" },
-          models.length
-            ? "No ACCESS result is on file to set beside the MODEL result."
-            : "No MODEL result is on file for this student. Add one with Import data (MODEL Online or MODEL Paper).",
-        ),
-    heading(3, "Mappings the studio knows about"),
-    table(
-      "Concordance registry",
-      ["Mapping", "MODEL forms", "ACCESS version", "Score", "Valid for", "Table entered"],
-      CONCORDANCES.map((x) => [
-        x.id,
-        x.model.map((m) => ASSESSMENTS[m].short).join(", "),
-        x.access,
-        x.scoreType,
-        x.validFor.join(", "),
-        x.tableLoaded ? "Yes" : "No",
-      ]),
+      : h("p", { class: "pi-note", role: "note", "data-concordance": "unavailable" }, model ? c.reason : "No MODEL result is on file for this student. Add one with Import scores (MODEL Online)."),
+    model && access
+      ? explain({
+          summary: "Side by side, as reported. MODEL and ACCESS are different tests on different scales, so this shows whether the profiles look alike; it is not a conversion.",
+          evidence: table(
+            "Same student, two different assessments",
+            ["Domain", assessmentLabel(model, ASSESSMENTS), assessmentLabel(access, ASSESSMENTS)],
+            [...DOMAINS, "Overall"].map((d) => [d, fmt1(d === "Overall" ? model.composites.Overall.level : model.domains[d].level), fmt1(d === "Overall" ? access.composites.Overall.level : access.domains[d].level)]),
+          ),
+        })
+      : null,
+    h(
+      "details",
+      { class: "pi-more pi-card" },
+      h("summary", {}, gradeRows ? `WIDA's table for grade ${grade}` : "WIDA's concordance table"),
+      gradeRows
+        ? table(`MODEL Online Overall scale score to predicted ACCESS Overall level, grade ${grade}`, ["MODEL Online scale score", "Predicted ACCESS level range", "Anchor level"], gradeRows.map((r, i) => [String(r[0]), `${r[1].toFixed(1)} to ${r[2].toFixed(1)}`, ANCHOR_LEVELS[i].toFixed(1)]))
+        : null,
+      h("p", { class: "fine" }, `${CONCORDANCES[0].research}. Valid for: ${CONCORDANCES[0].validFor}. `, h("a", { href: CONCORDANCES[0].pdf, rel: "noopener", target: "_blank" }, "Open WIDA's table (PDF)")),
     ),
   );
 }
