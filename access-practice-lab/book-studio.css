@@ -3325,76 +3325,131 @@ details[open] > .bk-add-btn {
 .bk-stage > .bk-zoom {
   top: 0.6rem;
   bottom: auto;
+}
 /* ── Writing coach (src/book/editor-coach.js) ─────────────────────────────── */
+/* 2026-11-17: closing braces and the layout lines a rule implies (display for flex/grid rules) were restored after
+   an edit pass stripped every repeated line from this section; values are otherwise as authored. */
 .bk-coach-grid {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
 .bk-coach-btn {
+  display: flex;
   min-height: 48px;
   padding: 0.4rem 0.55rem;
   color: var(--bk-teal);
   flex-direction: column;
   justify-content: center;
+}
 .bk-coach-btn:hover:not(:disabled) {
   background: var(--bk-panel-2);
+}
 .bk-coach-btn:disabled {
   opacity: 0.6;
   cursor: progress;
+}
 .bk-coach-btn:focus-visible,
 .bk-coach-sentence:focus-visible,
 .bk-coach-card:focus-visible,
 .bk-coach-switch input:focus-visible {
   outline: 3px solid var(--focus, #f2b134);
+  outline-offset: 2px;
+}
 .bk-coach-note:empty {
+  display: none;
+}
 .bk-coach-note {
   padding: 0.45rem 0.6rem;
   color: var(--ink);
+}
 .bk-coach-pick ul,
 .bk-coach-items {
+  display: flex;
   flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 .bk-coach-sentence {
   min-height: 48px;
   border: 1.5px dashed var(--bk-teal);
   color: var(--ink);
+}
 .bk-coach-cards {
+  display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
 .bk-coach-card {
   border-left: 4px solid var(--bk-teal);
   padding: 0.5rem 0.6rem;
   background: var(--bk-panel-2);
   overflow-wrap: anywhere;
+}
 .bk-coach-card[data-source="local"] {
   border-left-color: var(--bk-amber);
+}
 .bk-coach-card-head {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.25rem 0.35rem;
+  align-items: start;
+}
 .bk-coach-card-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
 .bk-coach-card-head .bk-coach-src {
   grid-column: 1 / -1;
   grid-row: 2;
   justify-self: start;
+}
 .bk-coach-src {
+  display: inline-block;
   padding: 0.1rem 0.45rem;
+  border-radius: 999px;
   color: var(--ink);
+}
 .bk-coach-item {
+  position: relative;
   padding: 0.45rem 3rem 0.45rem 0.55rem;
+}
 .bk-coach-item p,
 .bk-coach-card p {
   margin: 0.15rem 0;
+}
 .bk-coach-x {
+  position: absolute;
   inset-block-start: 0.15rem;
   inset-inline-end: 0.15rem;
+}
 .bk-coach-card-head .bk-coach-x {
   position: static;
+}
 .bk-coach-kind {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
   background: #dff2ee;
   color: var(--bk-teal);
+}
 .bk-coach-kind.is-try {
   color: #5c4300;
+}
 .bk-coach-setting {
+  display: flex;
   flex-direction: column;
+  gap: 0.4rem;
   padding-top: 0.4rem;
+}
 .bk-coach-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   min-height: 48px;
+}
 .bk-coach-switch input {
   width: 1.4rem;
   height: 1.4rem;
