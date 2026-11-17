@@ -59,6 +59,8 @@ const LAB_EXACT = new Set([
   "/api/language-guide/insights",
   // The Book Studio writing coach; text is sent only on a learner's button press (functions/api/book-coach.js).
   "/api/book-coach",
+  // The Experience Builder's teacher-only "Suggest improvements" (functions/api/experience-compile.js).
+  "/api/experience-compile",
   STUDIOS_APP_BASE,
 ]);
 /** The Teacher Hub and its WIDA Data Studio (/predictive), minus the math Flight Deck. */

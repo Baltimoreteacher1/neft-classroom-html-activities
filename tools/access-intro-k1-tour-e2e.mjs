@@ -24,14 +24,15 @@ try {
   AxeBuilder = (await import("@axe-core/playwright")).default;
 } catch {}
 const { K1_STEPS } = await import("../access-practice-lab/src/intro/tour-k1-data.js");
-const { server, base } = await serveAccess();
+// BASE=https://thelanguagepage.com runs the same walk against a deployed site instead of the source tree.
+const { server, base } = process.env.BASE ? { server: null, base: process.env.BASE.replace(/\/$/, "") } : await serveAccess();
 const LAB = `${base}/access-practice-lab`;
 let browser;
 try {
   browser = await chromium.launch();
 } catch (error) {
   console.warn(`access-intro-k1-tour-e2e: SKIP: no browser (${error.message.split("\n")[0]})`);
-  server.close();
+  server?.close();
   process.exit(process.env.CI ? 1 : 0);
 }
 
@@ -186,7 +187,7 @@ try {
   check("e2e ran to the end", false, error.stack || String(error));
 } finally {
   await browser.close();
-  server.close();
+  server?.close();
 }
 const failed = results.filter((r) => !r.ok);
 console.log(`\naccess-intro-k1-tour-e2e: ${results.length - failed.length}/${results.length} passed`);
