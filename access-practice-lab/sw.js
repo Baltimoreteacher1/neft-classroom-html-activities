@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "4a310f9ba5f3";
+const BUILD_HASH = "16ffbb65791f";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -145,7 +145,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/early.css?v=80e55c78cb13",
   "/access-practice-lab/intro.css?v=300c1764ce0a",
   "/access-practice-lab/intro-guide.css?v=939e250f5b62",
-  "/access-practice-lab/site-guide.css?v=c06bddd1147b",
+  "/access-practice-lab/site-guide.css?v=85b360a3a54f",
   "/access-practice-lab/intro-tour.css?v=96a33ff31c20",
   "/access-practice-lab/guided.css?v=4c3a8039689b",
   "/access-practice-lab/tour.css?v=5b178b615766",
@@ -541,7 +541,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/family.js?v=870ced464c28",
   "/access-practice-lab/src/intro/guide-art.js?v=aebefa1c374b",
   "/access-practice-lab/src/intro/guide-knowledge.js?v=063ee7d6a017",
-  "/access-practice-lab/src/intro/guide.js?v=6a310802709d",
+  "/access-practice-lab/src/intro/guide.js?v=224cabe29cc4",
   "/access-practice-lab/src/intro/lesson-backup-model.js?v=c34c1f023924",
   "/access-practice-lab/src/intro/lesson-bands.js?v=a54a3c9be3a9",
   "/access-practice-lab/src/intro/lesson.js?v=29caa9afb143",
@@ -556,12 +556,12 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/shell.js?v=79cc90aaf09b",
   "/access-practice-lab/src/intro/site-directory-model.js?v=a51216811bb4",
   "/access-practice-lab/src/intro/site-guide-cards.js?v=3bdeeca310a4",
-  "/access-practice-lab/src/intro/site-guide-data.js?v=0b7c05cbb7a2",
-  "/access-practice-lab/src/intro/site-guide-more.js?v=17a43a327cf9",
-  "/access-practice-lab/src/intro/site-guide-overview.js?v=f5ece7ca7942",
-  "/access-practice-lab/src/intro/site-guide-search.js?v=5e6266de104a",
-  "/access-practice-lab/src/intro/site-guide-sections.js?v=b19c020689a7",
-  "/access-practice-lab/src/intro/site-guide.js?v=be4f3a60d99a",
+  "/access-practice-lab/src/intro/site-guide-data.js?v=93358b057df4",
+  "/access-practice-lab/src/intro/site-guide-directory.js?v=12c284895bea",
+  "/access-practice-lab/src/intro/site-guide-more.js?v=3cca1ee2537e",
+  "/access-practice-lab/src/intro/site-guide-search.js?v=059136a7f67e",
+  "/access-practice-lab/src/intro/site-guide-sections.js?v=5fa6593ce2eb",
+  "/access-practice-lab/src/intro/site-guide.js?v=d74383e516fd",
   "/access-practice-lab/src/intro/start-overview.js?v=ee2b70cc4953",
   "/access-practice-lab/src/intro/start-resources.js?v=9ec5a4cb7748",
   "/access-practice-lab/src/intro/start.js?v=756d112fb460",
