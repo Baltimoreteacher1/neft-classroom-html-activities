@@ -9,8 +9,8 @@ rules (no invented proficiency, supports never contaminate independent results, 
 | File                                         | Owns                                                                                                                                                      |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ds.css`                                     | fonts, tokens, type, top bar, footer, buttons, panels, forms, disclosures, chips, bars, crumbs, toast, empty/skeleton                                     |
-| `home.css`                                   | home: exhibition hero (`.ll-hero`), next action, studio portals (`.ll-portal`), Language World band, Passport, quiet test entrance, library, doors |
-| `exhibition.css`                             | Language World (`/exhibition`): hub, four-step path, support choice, step studios, help rail, teacher notes                                         |
+| `home.css`                                   | home: exhibition hero (`.ll-hero`), next action, studio portals (`.ll-portal`), Language World band, Passport, quiet test entrance, library, doors        |
+| `exhibition.css`                             | Language World (`/exhibition`): hub, four-step path, support choice, step studios, help rail, teacher notes                                               |
 | `room.css`                                   | a skill room (domain hero, support levels, activity list)                                                                                                 |
 | `activity.css`                               | the activity shell and every quick-practice item type, listening player, recorder, feedback                                                               |
 | `tests.css`                                  | practice tests: chooser, intro, question screens, review, results                                                                                         |
@@ -29,26 +29,26 @@ Atkinson Hyperlegible (chosen for legibility for multilingual learners). Both ar
 
 Six material families (tokens on `:root` in `ds.css`) are art-direction anchors, not gradients to spray around:
 
-| Material | Tokens | Used for |
-| --- | --- | --- |
-| Midnight Indigo | `--mi-950 … --mi-300` | brand atmosphere, the home hero, Language World bands, primary buttons |
-| Ivory & Pearl | `--ivory --pearl --pearl-blue` | reading surfaces, paper, preview cards |
-| Ocean Glass | `--ocean-900/600/200` | Listening · The Sound Studio |
-| Rose & Garnet | `--rose-900/600/200` | Speaking · The Expression Studio |
-| Burnished Copper | `--copper-900/500/200` | Writing · The Composition Studio |
-| Sage & Jade | `--sage-900/500/200` | growth, revision, feedback, the support choice |
+| Material         | Tokens                         | Used for                                                               |
+| ---------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| Midnight Indigo  | `--mi-950 … --mi-300`          | brand atmosphere, the home hero, Language World bands, primary buttons |
+| Ivory & Pearl    | `--ivory --pearl --pearl-blue` | reading surfaces, paper, preview cards                                 |
+| Ocean Glass      | `--ocean-900/600/200`          | Listening · The Sound Studio                                           |
+| Rose & Garnet    | `--rose-900/600/200`           | Speaking · The Expression Studio                                       |
+| Burnished Copper | `--copper-900/500/200`         | Writing · The Composition Studio                                       |
+| Sage & Jade      | `--sage-900/500/200`           | growth, revision, feedback, the support choice                         |
 
 Depth comes from layered light, not decoration: `--shadow / --shadow-lift / --shadow-float` (indigo-tinted, multi-layer),
 `--edge-light` (a lit top edge on raised material) and `--grain` (fine paper texture). Glass never sits under body text.
 
 The four language domains each own a colour and are always paired with an icon and a word:
 
-| Domain    | Studio | Class         | Fill (white text on it) | Ink (text on white) | Glow (on midnight) |
-| --------- | ------ | ------------- | ----------------------- | ------------------- | ------------------ |
-| Listening | The Sound Studio | `d-listening` | `--listening` #075568 | `--listening-ink` | `--room-glow` #91e2d6 |
-| Reading   | The Reading Atelier | `d-reading`   | `--reading` #2e4a94 | `--reading-ink` | #d5dceb |
-| Speaking  | The Expression Studio | `d-speaking`  | `--speaking` #8a3a5c | `--speaking-ink` | #dba3b9 |
-| Writing   | The Composition Studio | `d-writing`   | `--writing` #9a4a26 | `--writing-ink` | #f5d6a8 |
+| Domain    | Studio                 | Class         | Fill (white text on it) | Ink (text on white) | Glow (on midnight)    |
+| --------- | ---------------------- | ------------- | ----------------------- | ------------------- | --------------------- |
+| Listening | The Sound Studio       | `d-listening` | `--listening` #075568   | `--listening-ink`   | `--room-glow` #91e2d6 |
+| Reading   | The Reading Atelier    | `d-reading`   | `--reading` #2e4a94     | `--reading-ink`     | #d5dceb               |
+| Speaking  | The Expression Studio  | `d-speaking`  | `--speaking` #8a3a5c    | `--speaking-ink`    | #dba3b9               |
+| Writing   | The Composition Studio | `d-writing`   | `--writing` #9a4a26     | `--writing-ink`     | #f5d6a8               |
 
 Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`, `--room-glow`. Colour is never the
 only signal. Primary actions use midnight `--brand`; `--ink` is text. The content JSON `color` of each domain must
@@ -86,9 +86,16 @@ text and for control borders). `--ink-3` is the lightest allowed body-adjacent t
   chrome. Leave the content; the shell frames them in a consistent tile.
 - Illustrations are original SVG in `pictures/ds/`. `hall-68.svg` / `hall-35.svg` (the exhibition hall) and the four
   `domain-*.svg` studio pictures are generated by `node tools/access-hall-art.mjs` (`--check` in the tests) — edit the
-  script, never the files. Other art (`empty`, `complete`, …) predates the studio palette. New art must match: 3 px navy stroke, round joins,
-  fills from the domain palette, small decorative dots/plus signs in `--accent` and navy. Reference with
-  `${ART}/name.svg` (`ART` from `src/util.js`), `alt=""` when decorative.
+  script, never the files. Every other picture under `pictures/` (activity pictures, the `ds/` spot art such as
+  `empty`, `complete`, `hero`, `reality-*`, `studio-*`, the `worlds/` cards and the `publisher/` figures) is generated
+  by `node tools/lp-art/build.mjs` from one scene module per file in `tools/lp-art/scenes/<stem>.mjs`, using the shared
+  kit `tools/lp-art/kit.mjs` (people, places, palette) and the spot-art helpers in `tools/lp-art/lib/g.mjs` (cards,
+  check badges, speech bubbles, sound waves, pencils, magnifiers, soft shadows). Edit the scene, never the SVG;
+  `build.mjs --check` fails when an output is stale. The look is editorial and dimensional: no outlines, form from a
+  lit top-left side and a shaded side, soft blurred shadows, Deep Harbor colours (navy, teal, gold, coral, ivory) and
+  the domain colours on domain cards, with small sparkles and dots as accents. Keep each file's viewBox and its
+  transparent or opaque background so layouts do not shift. Reference with `${ART}/name.svg` (`ART` from
+  `src/util.js`), `alt=""` when decorative.
 
 ## Layout
 

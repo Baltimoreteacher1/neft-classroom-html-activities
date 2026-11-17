@@ -605,7 +605,7 @@ export function person(x, y, h = 100, o = {}) {
   if (coat) torso += line(0, shoulderY + 2, 0, hipY - 1, shade(coat, 0.3), 1.4);
   if (apron) torso += path(`M${f(-tw * 0.5)} ${f(shoulderY + 10)} L${f(tw * 0.5)} ${f(shoulderY + 10)} L${f(tw * 0.62)} ${f(hipY + 12)} L${f(-tw * 0.62)} ${f(hipY + 12)}Z`, apron);
   if (scarf) torso += rrect(-tw * 0.55, shoulderY - 3, tw * 1.1, 6, 3, scarf);
-  if (backpack) back += rrect(-tw * 0.62 - 9 * facing, shoulderY + 2, 12, 26, 4, backpack);
+  if (backpack) back += rrect(-tw * 0.62 - 9, shoulderY + 2, 12, 26, 4, backpack);
 
   // head
   let head = "";
@@ -617,14 +617,16 @@ export function person(x, y, h = 100, o = {}) {
     long: path(`M${f(-hr * 1.05)} ${f(hy - 2)} Q${f(-hr * 1.25)} ${f(hy + hr * 1.6)} ${f(-hr * 0.6)} ${f(hy + hr * 1.9)} L${f(hr * 0.6)} ${f(hy + hr * 1.9)} Q${f(hr * 1.25)} ${f(hy + hr * 1.6)} ${f(hr * 1.05)} ${f(hy - 2)}Z`, hair),
     braid: path(`M${f(-hr * 0.3)} ${f(hy + hr * 0.6)} q${f(-hr * 0.9)} ${f(hr * 0.6)} ${f(-hr * 0.6)} ${f(hr * 1.9)}`, "none", `stroke="${hair}" stroke-width="${f(hr * 0.55)}"`),
     puffs: circle(-hr * 1.05, hy - hr * 0.55, hr * 0.55, hair) + circle(hr * 1.05, hy - hr * 0.55, hr * 0.55, hair),
-    bun: circle(-facing * hr * 0.55, hy - hr * 1.05, hr * 0.5, hair),
+    bun: circle(-hr * 0.55, hy - hr * 1.05, hr * 0.5, hair),
     hijab: path(`M${f(-hr * 1.3)} ${f(hy)} Q${f(-hr * 1.4)} ${f(hy + hr * 2.1)} 0 ${f(hy + hr * 2.2)} Q${f(hr * 1.4)} ${f(hy + hr * 2.1)} ${f(hr * 1.3)} ${f(hy)} A${f(hr * 1.3)} ${f(hr * 1.3)} 0 0 0 ${f(-hr * 1.3)} ${f(hy)}Z`, hair),
   }[hairStyle] || "";
-  head += hairBack;
+  // Long hair and braids fall behind the shoulders; a hijab wraps in front, under the chin.
+  if (hairStyle === "hijab") head += hairBack;
+  else back = hairBack + back;
   head += circle(hx, hy, hr, skin);
   head += path(`M${f(hx + hr * 0.1)} ${f(hy - hr)} A${f(hr)} ${f(hr)} 0 0 1 ${f(hx + hr * 0.1)} ${f(hy + hr)} A${f(hr * 0.75)} ${f(hr)} 0 0 0 ${f(hx + hr * 0.1)} ${f(hy - hr)}Z`, skinS, 'opacity=".45"');
   // ear
-  head += circle(hx - facing * hr * 0.15, hy + 1, hr * 0.2, skinS);
+  head += circle(hx - hr * 0.15, hy + 1, hr * 0.2, skinS);
   // hair cap
   const cap = {
     short: path(`M${f(-hr * 1.04)} ${f(hy + 1)} A${f(hr * 1.04)} ${f(hr * 1.1)} 0 0 1 ${f(hr * 1.04)} ${f(hy + 1)} Q${f(hr * 0.5)} ${f(hy - hr * 0.55)} ${f(-hr * 0.1)} ${f(hy - hr * 0.42)} Q${f(-hr * 0.7)} ${f(hy - hr * 0.3)} ${f(-hr * 1.04)} ${f(hy + 1)}Z`, hair),
@@ -634,13 +636,14 @@ export function person(x, y, h = 100, o = {}) {
     bun: path(`M${f(-hr * 1.03)} ${f(hy)} A${f(hr * 1.03)} ${f(hr * 1.08)} 0 0 1 ${f(hr * 1.03)} ${f(hy)} Q0 ${f(hy - hr * 0.45)} ${f(-hr * 1.03)} ${f(hy)}Z`, hair),
     braid: path(`M${f(-hr * 1.04)} ${f(hy + 1)} A${f(hr * 1.04)} ${f(hr * 1.1)} 0 0 1 ${f(hr * 1.04)} ${f(hy + 1)} Q0 ${f(hy - hr * 0.5)} ${f(-hr * 1.04)} ${f(hy + 1)}Z`, hair),
     bald: path(`M${f(-hr * 1.02)} ${f(hy + hr * 0.1)} Q${f(-hr * 1.05)} ${f(hy - hr * 0.3)} ${f(-hr * 0.8)} ${f(hy - hr * 0.35)}`, "none", `stroke="${hair}" stroke-width="${f(hr * 0.3)}"`),
-    cap: path(`M${f(-hr * 1.06)} ${f(hy - hr * 0.05)} A${f(hr * 1.06)} ${f(hr * 1.06)} 0 0 1 ${f(hr * 1.06)} ${f(hy - hr * 0.05)}Z`, hair) + rrect(facing > 0 ? hr * 0.2 : -hr * 1.75, hy - hr * 0.18, hr * 1.55, hr * 0.3, hr * 0.15, shade(hair, 0.2)),
+    cap: path(`M${f(-hr * 1.06)} ${f(hy - hr * 0.05)} A${f(hr * 1.06)} ${f(hr * 1.06)} 0 0 1 ${f(hr * 1.06)} ${f(hy - hr * 0.05)}Z`, hair) + rrect(hr * 0.2, hy - hr * 0.18, hr * 1.55, hr * 0.3, hr * 0.15, shade(hair, 0.2)),
     hijab: path(`M${f(-hr * 1.15)} ${f(hy + hr * 0.2)} A${f(hr * 1.15)} ${f(hr * 1.2)} 0 0 1 ${f(hr * 1.15)} ${f(hy + hr * 0.2)} Q${f(hr * 0.9)} ${f(hy - hr * 0.55)} 0 ${f(hy - hr * 0.62)} Q${f(-hr * 0.9)} ${f(hy - hr * 0.55)} ${f(-hr * 1.15)} ${f(hy + hr * 0.2)}Z`, hair),
   }[hairStyle] ?? "";
   head += cap;
   if (cap && hairStyle !== "bald" && hairStyle !== "hijab") head += path(`M${f(-hr * 0.55)} ${f(hy - hr * 0.62)} Q${f(-hr * 0.1)} ${f(hy - hr * 0.95)} ${f(hr * 0.35)} ${f(hy - hr * 0.78)}`, "none", `stroke="${light(hair, 0.45)}" stroke-width="${f(hr * 0.12)}" opacity=".55"`);
   // face (3/4 view toward facing)
-  const fx = facing * hr * 0.28;
+  // Drawn facing +x; the whole figure is mirrored for facing left, so features never use `facing`.
+  const fx = hr * 0.28;
   const eyeY = hy + hr * 0.08;
   head += circle(fx - hr * 0.3, eyeY, hr * 0.1, P.ink) + circle(fx + hr * 0.32, eyeY, hr * 0.1, P.ink);
   head += ellipse(fx - hr * 0.42, eyeY + hr * 0.36, hr * 0.15, hr * 0.09, P.coralLight, 'opacity=".45"') + ellipse(fx + hr * 0.46, eyeY + hr * 0.36, hr * 0.15, hr * 0.09, P.coralLight, 'opacity=".45"');
@@ -659,12 +662,10 @@ export function person(x, y, h = 100, o = {}) {
   body += front;
   const s = h / 100;
   const flip = facing < 0 ? ` scale(-1 1)` : "";
-  // The face is already drawn toward +x; mirror the whole figure for facing left.
-  const content = facing < 0 ? body.replace(/x="/g, 'x="') : body;
   // Sitting figures are placed by the seat: (x, y) is where the hips rest.
   const lift = sitting ? -hipY : 0;
   const shadow = sitting ? "" : contact(x, y, h * 0.2, h * 0.04, 0.2);
-  return `${shadow}<g transform="translate(${f(x)} ${f(y)}) scale(${f(s)})${flip} translate(0 ${f(lift)})">${content}</g>`;
+  return `${shadow}<g transform="translate(${f(x)} ${f(y)}) scale(${f(s)})${flip} translate(0 ${f(lift)})">${body}</g>`;
 }
 
 /** Cheerful preset outfits so crowds look varied but coherent. */
