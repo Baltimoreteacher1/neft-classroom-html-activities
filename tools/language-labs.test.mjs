@@ -1,5 +1,5 @@
-// Language Labs (/language-labs): checkers, content integrity and the feedback ladder (a first miss never states the
-// answer). Browser journey: tools/language-labs-e2e.mjs.
+// Language Labs (/language-labs): checkers, content integrity, publisher-edition grade-band programs (3-5 and 6-8),
+// and the feedback ladder (a first miss never states the answer). Browser journey: tools/language-labs-e2e.mjs.
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -103,9 +103,43 @@ test("timeline transfer needs before, later and time words", () => {
   assert.equal(K.checkTimeline("I play soccer. I read books. I like my aunt.").ok, false);
 });
 
-test("the hub lists six labs: three built here, three linked by their existing routes", () => {
+test("the hub lists six labs: three built here, three linked by their existing routes, each with WIDA use and dimension", () => {
   assert.equal(C.LABS.length, 6);
   assert.equal(C.LABS.filter((l) => l.here).length, 3);
+  for (const l of C.LABS) {
+    assert.ok(C.KEY_USES[l.use], `${l.id} has key language use`);
+    assert.ok(C.DIMENSIONS[l.dimension], `${l.id} has language dimension`);
+    assert.ok(
+      l.bandNote?.["3-5"]?.length === 2 && l.bandNote?.["6-8"]?.length === 2,
+      `${l.id} band notes`,
+    );
+    assert.ok(l.mentor?.["3-5"] && l.mentor?.["6-8"], `${l.id} mentor sentences`);
+  }
   for (const l of C.LABS.filter((x) => !x.here))
     assert.match(l.href, /^scaffold\/(sentence-architecture|evidence-builder|language-upgrade)$/);
+});
+
+test("publisher programs: grades 3-5 and 6-8 have distinct titles, 5 inquiry stages, 4 craft mini-lessons, and Teacher/Family guides", () => {
+  const p35 = C.programForLab("3-5");
+  const p68 = C.programForLab("6-8");
+  assert.NotEqual?.(p35.name[0], p68.name[0]);
+  assert.notEqual(p35.name[0], p68.name[0]);
+  for (const [band, p] of [
+    ["3-5", p35],
+    ["6-8", p68],
+  ]) {
+    assert.equal(p.stages.length, 5, `${band} stages`);
+    assert.equal(p.craft.length, 4, `${band} craft lessons`);
+    assert.ok(p.teacher.routines.length >= 3, `${band} teacher routines`);
+    assert.ok(p.teacher.standards.length >= 2, `${band} standards`);
+    assert.ok(p.family.prompts.length >= 3, `${band} family prompts`);
+    assert.ok(
+      C.VERB_MENTOR[band]?.passage && C.BRIDGE_MENTOR[band]?.passage,
+      `${band} mentor passages`,
+    );
+    assert.ok(
+      C.VERB_COMPARE[band]?.after && C.BRIDGE_COMPARE[band]?.after && C.XRAY_COMPARE[band]?.after,
+      `${band} comparisons`,
+    );
+  }
 });
