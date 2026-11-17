@@ -2,13 +2,20 @@
 // chips read as the practice rubric's own descriptors, strengths first and one next step (acc/review/review.js
 // studentFeedback), plus the teacher's comment. Never a number, a score or a level.
 import { studentFeedback } from "../acc/review/review.js";
+import { loadIntel, saveIntel } from "../intel/loop.js";
+import { applyTeacherReviews, decodeDecision } from "../intel/review.js";
+import { BASE } from "../util.js";
 import { el } from "./dom.js";
 import { loadRubric } from "./review-queue.js";
 
 /** Load this learner's reviews; [] when the call fails or the class has none. */
 export async function loadMyReviews(api, link) {
   const res = await api.reviewMine(link);
-  return res.ok ? res.reviews || [] : [];
+  if (!res.ok) return [];
+  // A review of a shared Language coach loop is also written into that loop, where it wins over the suggestion.
+  const intel = loadIntel();
+  if (applyTeacherReviews(intel, res.reviews || [])) saveIntel(intel);
+  return res.reviews || [];
 }
 
 export async function feedbackCard(S, reviews) {
@@ -53,6 +60,13 @@ export async function feedbackCard(S, reviews) {
         )
       : null;
     const kind = r.kind === "recording" ? S("Recording", "Grabación") : S("Writing", "Escritura");
+    // A Language coach loop carries the teacher's decision at the start of the comment (intel/review.js).
+    const d = decodeDecision(r.comment);
+    const decided = {
+      accept: S("Your teacher agrees with the next step you were given.", "Tu maestro o maestra está de acuerdo con el siguiente paso que recibiste."),
+      replace: S("Your teacher gave you this next step:", "Tu maestro o maestra te dio este siguiente paso:"),
+      again: S("Your teacher asks you to try this task again.", "Tu maestro o maestra te pide que intentes esta tarea otra vez."),
+    }[d.decision];
     card.append(
       el(
         "article",
@@ -74,7 +88,15 @@ export async function feedbackCard(S, reviews) {
               el("p", { lang: "en" }, el("strong", {}, `${fb.nextStep.label}: `), fb.nextStep.text),
             ]
           : null,
-        r.comment ? el("blockquote", { class: "cls-writing" }, r.comment) : null,
+        decided ? el("p", { "data-intel-decision": d.decision }, decided) : null,
+        d.comment ? el("blockquote", { class: "cls-writing" }, d.comment) : null,
+        d.next
+          ? el(
+              "p",
+              {},
+              el("a", { class: "btn small", href: `${BASE}${d.next}` }, S("Open the activity your teacher chose", "Abrir la actividad que eligió tu maestro o maestra")),
+            )
+          : null,
       ),
     );
   }

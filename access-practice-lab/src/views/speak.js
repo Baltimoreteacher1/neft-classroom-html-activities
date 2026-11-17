@@ -3,6 +3,7 @@
 // answer. Speech recognition (src/stt.js: on-device first, then the browser's standard service, then typing)
 // fills an editable transcript; the Language Coach works from that transcript, and from the loudness envelope for
 // time speaking and pauses (on this device).
+import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
 import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { loadMission, loadSpeakingTasks, loadStudioIndex } from "../content.js";
@@ -33,6 +34,7 @@ import { waveformSVG } from "../waveform.js";
 import { lengthMeterHTML, playModelStudent } from "../model-student-ui.js";
 import { autoDictationReady, cancelDictation, dictating, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
 import { canDictate } from "../stt.js";
+import { loopPanelHTML, onLoopClick, onLoopInput, startTextLoop } from "../intel/ui.js";
 import {
   chartHTML,
   chooserHeroHTML,
@@ -703,7 +705,7 @@ export async function render(ctx) {
   const board = mission ? missionState(S.studio, mission.id).board : [];
   return {
     title: task.title,
-    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, missionHref(mission, ctx.band)] : [I.S("Speaking Studio", "Estudio de expresión oral"), backHref(ctx.band)], [task.title, null]], { i18n: I })}
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, missionHref(mission, ctx.band)] : [I.S("Speaking Studio", "Estudio de expresión oral"), backHref(ctx.band)], [task.title, null]], { i18n: I })}${pathwayBannerHTML(ctx)}
       <article class="activity studio-view speak-studio d-speaking">
         <header class="act-head">
           <div class="act-bar">
@@ -767,7 +769,7 @@ export async function render(ctx) {
                     }
                   </div>
                 </div>
-                ${analysisHTML(task, S.state, take)}${take?.analyzedAt ? whatISaidHTML({ transcript: take.transcript, task, audio: take.audio, stage: S.stage, typed: !take.transcriptSource?.startsWith("speech"), sttAvailable: canDictate() }, I) : ""}${resultsHTML(task, S.state, take, prev)}`
+                ${analysisHTML(task, S.state, take)}${take?.analyzedAt ? whatISaidHTML({ transcript: take.transcript, task, audio: take.audio, stage: S.stage, typed: !take.transcriptSource?.startsWith("speech"), sttAvailable: canDictate() }, I) : ""}${resultsHTML(task, S.state, take, prev)}${coachLoopHTML(ctx, take)}`
         }
       </article>
       ${mission ? html`<p><a class="btn" href="${missionHref(mission, ctx.band)}">${icon("arrow-left")} ${I.T("Back to the mission", "Volver a la misión")}</a></p>` : ""}
@@ -776,6 +778,23 @@ export async function render(ctx) {
         <a href="${BASE}/passport?grades=${ctx.band}">${I.T("Saved work and teacher options", "Trabajo guardado y opciones para docentes")}</a>
       </p>`,
   };
+}
+
+/**
+ * "Coach my explanation": the Language Intelligence loop (src/intel) for the take that was just checked. It is an
+ * extra step after the Language Coach, never a replacement, and the loop id is kept on the take so a reload
+ * returns to the same stage.
+ */
+function coachLoopHTML(ctx, take) {
+  if (!take?.analyzedAt || wordCount(take.transcript) < 1) return "";
+  if (take.intelLoop) {
+    const panel = loopPanelHTML(ctx, take.intelLoop, {});
+    if (panel) return html`<div id="spk-intel">${panel}</div>`;
+  }
+  return html`<p class="intel-entry" id="spk-intel">
+    <button type="button" class="btn btn-primary" data-intel-coach>${icon("growth")} ${I.T("Coach my explanation", "Entrenar mi explicación")}</button>
+    <span class="fine">${I.T("One strength, one next step, a revision and a new task.", "Una fortaleza, un siguiente paso, una revisión y una tarea nueva.")}</span>
+  </p>`;
 }
 
 function lockStage() {
@@ -807,6 +826,7 @@ export async function onRecorded(key, ctx) {
 }
 
 export function onInput(e) {
+  if (onLoopInput(e)) return;
   if (!S?.task) return;
   const t = e.target;
   if (t.matches("[data-plan]")) {
@@ -934,9 +954,27 @@ function analyze(ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (onLoopClick(e, ctx)) return true;
   if (!S?.task) return false;
   I = i18nFor(ctx);
   const t = e.target;
+  if (t.closest("[data-intel-coach]")) {
+    const take = S.state.takes.at(-1);
+    if (!take?.transcript) return true;
+    const task = S.task;
+    take.intelLoop = startTextLoop(ctx, {
+      src: "speak",
+      objective: pathwayContext()?.run?.objective || "",
+      task: { id: task.id, title: task.title, prompt: task.prompt, keyUse: task.keyUse, domain: "Speaking", sourceText: Array.isArray(S.sourceText) ? S.sourceText.join(" ") : S.sourceText, sourceTerms: task.sourceTerms },
+      text: take.transcript,
+      source: take.transcriptSource?.startsWith("speech") ? "transcript" : "typed",
+      supports: stageSupports(),
+    });
+    save();
+    ctx.rerender();
+    requestAnimationFrame(() => document.querySelector("#spk-intel h3")?.focus?.());
+    return true;
+  }
   const toBook = t.closest("[data-speak-book]");
   if (toBook) {
     // My words and my own recording become a narrated page in Book Studio (src/book/handoff.js).

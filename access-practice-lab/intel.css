@@ -1,0 +1,304 @@
+/* intel (Part 2, docs/part2-integration-map.md). Colors come from ds.css tokens only. */
+
+/* The feedback loop panel (src/intel/ui.js). One column, calm, readable at 375px. */
+.intel-panel {
+  margin-block: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+.intel-panel.is-compact {
+  padding: 0.75rem;
+}
+.intel-head {
+  margin-block-end: 0.75rem;
+}
+.intel-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--brand-ink);
+}
+.intel-task {
+  margin: 0.15rem 0 0;
+  color: var(--ink-2);
+}
+.intel-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.intel-step {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.intel-step.is-done {
+  background: var(--teal-soft);
+  color: var(--ink);
+}
+.intel-step.is-now {
+  border: 2px solid var(--teal);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+}
+.intel-card {
+  margin-block-start: 0.9rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.intel-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+.intel-card h3:focus-visible,
+.intel-panel :is(button, a, textarea, summary):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.intel-card h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1rem;
+}
+.intel-card h5,
+.intel-dim {
+  margin: 0.6rem 0 0.2rem;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.intel-label {
+  display: block;
+  margin: 0.6rem 0 0.25rem;
+  font-weight: 700;
+}
+.intel-own {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border-inline-start: 4px solid var(--line-control);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  white-space: pre-wrap;
+}
+.intel-mark {
+  padding: 0.05em 0.15em;
+  border-radius: 4px;
+  color: var(--ink);
+}
+.intel-mark.is-strength {
+  background: var(--teal-soft);
+  box-shadow: inset 0 -2px 0 var(--teal);
+}
+.intel-mark.is-next {
+  background: var(--hint-soft);
+  box-shadow: inset 0 -2px 0 var(--hint);
+}
+.intel-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.intel-strength,
+.intel-next,
+.intel-teacher,
+.intel-help {
+  margin-block-start: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--r-xs);
+  background: var(--surface);
+}
+.intel-strength {
+  border-inline-start: 4px solid var(--teal);
+}
+.intel-next {
+  border-inline-start: 4px solid var(--hint);
+}
+.intel-next.is-teacher,
+.intel-teacher {
+  border-inline-start: 4px solid var(--brand);
+  background: var(--brand-soft);
+}
+.intel-strength p,
+.intel-next p,
+.intel-teacher p {
+  margin: 0.2rem 0;
+}
+.intel-why {
+  color: var(--ink-2);
+}
+.intel-note {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--hint);
+  border-radius: var(--r-xs);
+  background: var(--hint-soft);
+  color: var(--ink);
+}
+.intel-more {
+  margin-block-start: 0.6rem;
+}
+.intel-more > summary {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--brand-ink);
+  font-weight: 700;
+}
+.intel-obs,
+.intel-given {
+  margin: 0.3rem 0;
+  padding-inline-start: 1.2rem;
+}
+.intel-obs li,
+.intel-given li {
+  margin-block: 0.3rem;
+}
+.intel-q {
+  padding: 0.05em 0.25em;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-weight: 700;
+}
+.intel-was,
+.intel-now {
+  display: block;
+  color: var(--ink-2);
+}
+.intel-kept {
+  color: var(--ink-2);
+}
+.intel-frame,
+.intel-prompt {
+  margin: 0.4rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--line-control);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+}
+.intel-prompt {
+  border-style: solid;
+  font-weight: 700;
+}
+.intel-box {
+  display: block;
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+}
+.intel-dictate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+}
+.intel-panel .btn {
+  min-block-size: 44px;
+}
+.intel-ai {
+  margin-block-start: 0.75rem;
+}
+.intel-records {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 0.6rem;
+}
+.intel-record {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+}
+.intel-how {
+  display: inline-block;
+  margin-inline-start: 0.4rem;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.intel-how[data-intel-how="own"] {
+  background: var(--teal-soft);
+}
+.intel-quote {
+  margin: 0.3rem 0;
+  padding: 0.4rem 0.75rem;
+  border-inline-start: 3px solid var(--brand);
+  background: var(--surface);
+}
+.intel-foot {
+  margin: 0.75rem 0 0;
+}
+/* Entry actions that views add ("Coach my explanation", "Language coach for this page"). */
+.intel-entry {
+  margin-block: 0.75rem;
+}
+.intel-entry .btn {
+  min-block-size: 44px;
+}
+/* Teacher's decision controls in the class review queue. */
+.intel-decide {
+  margin-block: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+}
+.intel-decide legend {
+  font-weight: 700;
+}
+.intel-decide label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 44px;
+}
+.intel-decide select {
+  min-block-size: 44px;
+  max-inline-size: 100%;
+  font: inherit;
+}
+.intel-digest {
+  display: grid;
+  gap: 0.5rem;
+}
+.intel-digest h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.intel-digest p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .intel-panel * {
+    transition: none;
+    animation: none;
+  }
+}

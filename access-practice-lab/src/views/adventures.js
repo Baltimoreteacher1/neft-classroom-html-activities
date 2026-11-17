@@ -109,6 +109,19 @@ function hubHTML(I, band, progress) {
           </div>
         </li>`;
       })}
+      <li class="adv-sim-door">
+        <a class="adv-card" href="${BASE}/simulations?grades=${band}">
+          <span class="adv-soon-art" aria-hidden="true">🏙️</span>
+          <span class="adv-card-body"
+            ><strong class="adv-card-title">${I.T("Simulations", "Simulaciones")}</strong
+            ><span
+              >${I.T("The City That Stopped Talking: walk the city, question people, weigh the evidence and decide.", "La ciudad que dejó de hablar: recorre la ciudad, pregunta a la gente, pesa la evidencia y decide.")}</span
+            ><span class="adv-card-cta"
+              >${I.T("Open the simulation", "Abrir la simulación")} ${icon("arrow-right")}</span
+            ></span
+          >
+        </a>
+      </li>
     </ul>
   </section>`;
 }
@@ -376,7 +389,10 @@ export async function render(ctx) {
   else if (/^\d+$/.test(param)) A.goTo(entry, Number(param));
   entry.scene = Math.min(Math.max(0, entry.scene), scenes.length - 1);
   save(progress);
-  return { title: mTitle, html: html`${head}${runnerHTML(I, w, m, band, entry, scenes, view, progress)}` };
+  return {
+    title: mTitle,
+    html: html`${head}${runnerHTML(I, w, m, band, entry, scenes, view, progress)}`,
+  };
 }
 
 export function mount(root, ctx) {

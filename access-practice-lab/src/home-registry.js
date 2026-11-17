@@ -37,6 +37,28 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "pathways",
+    group: "start",
+    href: "pathways",
+    icon: "road",
+    title: ["My Pathways", "Mis rutas"],
+    text: [
+      "One language goal across reading, speaking, a simulation and a book.",
+      "Una meta de lenguaje en la lectura, el habla, una simulación y un libro.",
+    ],
+  },
+  {
+    id: "time-machine",
+    group: "start",
+    href: "time-machine",
+    icon: "growth",
+    title: ["Language Time Machine", "Máquina del tiempo del lenguaje"],
+    text: [
+      "Compare earlier and later work and see what changed.",
+      "Compara un trabajo anterior con uno posterior y mira qué cambió.",
+    ],
+  },
+  {
     id: "journey-map",
     group: "start",
     href: "journey/map",
@@ -67,7 +89,10 @@ export const HOME_CARDS = [
     href: "language-labs",
     icon: "construction",
     title: ["Language Labs", "Laboratorios de lenguaje"],
-    text: ["See how English works: verbs in time, connectors, paragraphs.", "Mira cómo funciona el inglés: verbos en el tiempo, conectores, párrafos."],
+    text: [
+      "See how English works: verbs in time, connectors, paragraphs.",
+      "Mira cómo funciona el inglés: verbos en el tiempo, conectores, párrafos.",
+    ],
   },
   {
     id: "adventure-worlds",
@@ -76,7 +101,10 @@ export const HOME_CARDS = [
     href: "adventures",
     icon: "worlds",
     title: ["Adventure Worlds", "Mundos de aventura"],
-    text: ["Solve a museum mystery or explore a science island, one mission at a time.", "Resuelve un misterio en un museo o explora una isla científica, misión por misión."],
+    text: [
+      "Solve a museum mystery or explore a science island, one mission at a time.",
+      "Resuelve un misterio en un museo o explora una isla científica, misión por misión.",
+    ],
   },
   {
     id: "join-class",
@@ -84,10 +112,7 @@ export const HOME_CARDS = [
     href: "class",
     icon: "classroom",
     title: ["Join my class", "Unirme a mi clase"],
-    text: [
-      "Enter the class code from my teacher.",
-      "Escribe el código de clase de mi maestro.",
-    ],
+    text: ["Enter the class code from my teacher.", "Escribe el código de clase de mi maestro."],
   },
 
   {
@@ -96,7 +121,10 @@ export const HOME_CARDS = [
     href: "warmup",
     icon: "sparkle",
     title: ["Daily Language Warm-Up", "Calentamiento diario de lenguaje"],
-    text: ["A new word, a short listen, one sentence and one rehearsal.", "Una palabra nueva, una escucha corta, una oración y un ensayo."],
+    text: [
+      "A new word, a short listen, one sentence and one rehearsal.",
+      "Una palabra nueva, una escucha corta, una oración y un ensayo.",
+    ],
   },
   {
     id: "search-lab",
@@ -104,7 +132,10 @@ export const HOME_CARDS = [
     href: "search",
     icon: "search",
     title: ["Search the lab", "Buscar en el laboratorio"],
-    text: ["Find activities, lessons and learning tools.", "Encuentra actividades, lecciones y herramientas de aprendizaje."],
+    text: [
+      "Find activities, lessons and learning tools.",
+      "Encuentra actividades, lecciones y herramientas de aprendizaje.",
+    ],
   },
   {
     id: "portfolio",
@@ -112,7 +143,10 @@ export const HOME_CARDS = [
     href: "portfolio",
     icon: "passport",
     title: ["My portfolio and showcase", "Mi portafolio y muestra"],
-    text: ["Save and revisit the work I want to keep.", "Guarda y vuelve a ver el trabajo que quiero conservar."],
+    text: [
+      "Save and revisit the work I want to keep.",
+      "Guarda y vuelve a ver el trabajo que quiero conservar.",
+    ],
   },
 
   // ── explore: more ways to practice ─────────────────────────────────────────
@@ -162,6 +196,18 @@ export const HOME_CARDS = [
     text: [
       "Nine worlds. Investigate a mystery, debate, forge words or tell a story. Your words change what happens.",
       "Nueve mundos. Investiga un misterio, debate, forja palabras o cuenta una historia. Tus palabras cambian lo que pasa.",
+    ],
+  },
+  {
+    id: "simulations",
+    group: "explore",
+    featured: true,
+    href: "simulations",
+    icon: "worlds",
+    title: ["Living Simulations", "Simulaciones vivas"],
+    text: [
+      "The City That Stopped Talking: interview people, weigh evidence and decide. Your words change the ending.",
+      "La ciudad que dejó de hablar: entrevista a personas, compara la evidencia y decide. Tus palabras cambian el final.",
     ],
   },
   {
@@ -242,7 +288,10 @@ export const HOME_CARDS = [
     featured: true,
     href: "/learning-studios/",
     icon: "worlds",
-    title: ["Learning Studios · Language and Math", "Estudios de aprendizaje · lenguaje y matemáticas"],
+    title: [
+      "Learning Studios · Language and Math",
+      "Estudios de aprendizaje · lenguaje y matemáticas",
+    ],
     text: [
       "Speaking, writing, WordLab, reading, word study, and games for grades 3–8, plus Grade 6 math studios.",
       "Hablar, escribir, WordLab, lectura, palabras y juegos para los grados 3 a 8, más estudios de matemáticas de 6.º grado.",
@@ -501,7 +550,10 @@ export const HOME_CARDS = [
     href: "units",
     icon: "road",
     title: ["Thematic Units", "Unidades temáticas"],
-    text: ["Big themes with five lessons and a project.", "Grandes temas con cinco lecciones y un proyecto."],
+    text: [
+      "Big themes with five lessons and a project.",
+      "Grandes temas con cinco lecciones y un proyecto.",
+    ],
   },
   {
     id: "argument-arena",
@@ -510,14 +562,77 @@ export const HOME_CARDS = [
     href: "arena",
     icon: "conversation",
     title: ["Argument Arena", "Arena de argumentos"],
-    text: ["Read evidence, build an argument and answer another point of view.", "Lee evidencia, construye un argumento y responde a otro punto de vista."],
+    text: [
+      "Read evidence, build an argument and answer another point of view.",
+      "Lee evidencia, construye un argumento y responde a otro punto de vista.",
+    ],
   },
-  { id: "mentor-texts", group: "explore", href: "mentor", icon: "reading", title: ["Mentor Text Explorer", "Explorador de textos modelo"], text: ["Find the moves authors make, keep them in a toolbox, then try them.", "Encuentra los recursos de los autores, guárdalos y luego pruébalos."] },
-  { id: "sentence-lab", group: "explore", href: "sentences", icon: "writing", title: ["Sentence Lab", "Laboratorio de oraciones"], text: ["Build, join and fix sentences with a live sentence machine.", "Construye, une y corrige oraciones con una máquina de oraciones."] },
-  { id: "word-lab", group: "explore", href: "wordlab", icon: "words", title: ["Word Lab", "Laboratorio de palabras"], text: ["Build words from parts, find Spanish twins and grow your word garden.", "Construye palabras con sus partes, encuentra gemelas en español y haz crecer tu jardín de palabras."] },
-  { id: "real-life-scenarios", group: "explore", href: "scenarios", icon: "conversation", title: ["Real-Life Scenarios", "Escenas de la vida real"], text: ["Choose what to say in everyday conversations.", "Elige qué decir en conversaciones cotidianas."] },
-  { id: "newsroom", group: "explore", href: "newsroom", icon: "launch", title: ["Newsroom", "Sala de redacción"], text: ["Plan, write, record and print your own front page.", "Planea, escribe, graba e imprime tu propia portada."] },
-  { id: "collection", group: "explore", href: "collection", icon: "medal", title: ["My collection book", "Mi libro de colección"], text: ["Revisit the milestones and keepsakes from my practice.", "Vuelve a ver los logros y recuerdos de mi práctica."] },
+  {
+    id: "mentor-texts",
+    group: "explore",
+    href: "mentor",
+    icon: "reading",
+    title: ["Mentor Text Explorer", "Explorador de textos modelo"],
+    text: [
+      "Find the moves authors make, keep them in a toolbox, then try them.",
+      "Encuentra los recursos de los autores, guárdalos y luego pruébalos.",
+    ],
+  },
+  {
+    id: "sentence-lab",
+    group: "explore",
+    href: "sentences",
+    icon: "writing",
+    title: ["Sentence Lab", "Laboratorio de oraciones"],
+    text: [
+      "Build, join and fix sentences with a live sentence machine.",
+      "Construye, une y corrige oraciones con una máquina de oraciones.",
+    ],
+  },
+  {
+    id: "word-lab",
+    group: "explore",
+    href: "wordlab",
+    icon: "words",
+    title: ["Word Lab", "Laboratorio de palabras"],
+    text: [
+      "Build words from parts, find Spanish twins and grow your word garden.",
+      "Construye palabras con sus partes, encuentra gemelas en español y haz crecer tu jardín de palabras.",
+    ],
+  },
+  {
+    id: "real-life-scenarios",
+    group: "explore",
+    href: "scenarios",
+    icon: "conversation",
+    title: ["Real-Life Scenarios", "Escenas de la vida real"],
+    text: [
+      "Choose what to say in everyday conversations.",
+      "Elige qué decir en conversaciones cotidianas.",
+    ],
+  },
+  {
+    id: "newsroom",
+    group: "explore",
+    href: "newsroom",
+    icon: "launch",
+    title: ["Newsroom", "Sala de redacción"],
+    text: [
+      "Plan, write, record and print your own front page.",
+      "Planea, escribe, graba e imprime tu propia portada.",
+    ],
+  },
+  {
+    id: "collection",
+    group: "explore",
+    href: "collection",
+    icon: "medal",
+    title: ["My collection book", "Mi libro de colección"],
+    text: [
+      "Revisit the milestones and keepsakes from my practice.",
+      "Vuelve a ver los logros y recuerdos de mi práctica.",
+    ],
+  },
 
   // ── teach ──────────────────────────────────────────────────────────────────
   {
@@ -530,12 +645,38 @@ export const HOME_CARDS = [
     text: ["Class evidence, rubrics and review.", "Evidencia de la clase, rúbricas y revisión."],
   },
   {
+    id: "experience-builder",
+    group: "teach",
+    featured: true,
+    href: "experience-builder",
+    icon: "teacher",
+    title: ["Experience Builder", "Creador de experiencias"],
+    text: [
+      "Turn your own text into a playable investigation, edit it, preview it and assign it.",
+      "Conviertan su propio texto en una investigación jugable, edítenla, véanla y asígnenla.",
+    ],
+  },
+  {
+    id: "pathways-build",
+    group: "teach",
+    href: "pathways/build",
+    icon: "road",
+    title: ["Connected pathways", "Rutas conectadas"],
+    text: [
+      "Assign one language goal across ACCESS, speaking, a simulation and Book Studio.",
+      "Asignen una meta de lenguaje en ACCESS, el habla, una simulación y Book Studio.",
+    ],
+  },
+  {
     id: "book-studio-teach",
     group: "teach",
     href: "book-studio/templates",
     icon: "library",
     title: ["Book Studio for classes", "Book Studio para la clase"],
-    text: ["26 book templates with language goals; students send books to your review queue.", "26 plantillas con metas de lenguaje; los estudiantes envían libros a su cola de revisión."],
+    text: [
+      "26 book templates with language goals; students send books to your review queue.",
+      "26 plantillas con metas de lenguaje; los estudiantes envían libros a su cola de revisión.",
+    ],
   },
   {
     id: "units-plan",
@@ -543,7 +684,10 @@ export const HOME_CARDS = [
     href: "units",
     icon: "calendar",
     title: ["Unit pacing and packets", "Ritmo y paquetes de unidades"],
-    text: ["Pacing guides, printable packets and class assignments.", "Guías de ritmo, paquetes imprimibles y tareas de clase."],
+    text: [
+      "Pacing guides, printable packets and class assignments.",
+      "Guías de ritmo, paquetes imprimibles y tareas de clase.",
+    ],
   },
   {
     id: "assign",
@@ -734,7 +878,10 @@ export const HOME_CARDS = [
     bands: ["K"],
     href: "early/story?grades=K",
     icon: "reading",
-    title: ["Story Time: Our Neighborhood Garden", "Hora del cuento: Nuestro jardín del vecindario"],
+    title: [
+      "Story Time: Our Neighborhood Garden",
+      "Hora del cuento: Nuestro jardín del vecindario",
+    ],
     text: [
       "A story an adult reads aloud together with a child.",
       "Un cuento que un adulto lee en voz alta con el niño.",
@@ -772,7 +919,10 @@ export const HOME_CARDS = [
     href: "book-studio/templates",
     icon: "families",
     title: ["Create a family book", "Hagan un libro en familia"],
-    text: ["Family stories, traditions and recipes, in your languages. Private on your device.", "Historias, tradiciones y recetas de la familia, en sus idiomas. Privado en su dispositivo."],
+    text: [
+      "Family stories, traditions and recipes, in your languages. Private on your device.",
+      "Historias, tradiciones y recetas de la familia, en sus idiomas. Privado en su dispositivo.",
+    ],
   },
   {
     id: "family-units",
@@ -780,7 +930,10 @@ export const HOME_CARDS = [
     href: "units",
     icon: "families",
     title: ["Unit letters for families", "Cartas de unidad para las familias"],
-    text: ["See what your child is learning, in English and Spanish.", "Mira lo que aprende tu hijo, en inglés y español."],
+    text: [
+      "See what your child is learning, in English and Spanish.",
+      "Mira lo que aprende tu hijo, en inglés y español.",
+    ],
   },
   {
     id: "family-portfolio",
@@ -788,7 +941,10 @@ export const HOME_CARDS = [
     href: "portfolio?view=family",
     icon: "families",
     title: ["Share my portfolio with family", "Compartir mi portafolio con la familia"],
-    text: ["Show selected work in a family-friendly view.", "Muestra el trabajo elegido en una vista para la familia."],
+    text: [
+      "Show selected work in a family-friendly view.",
+      "Muestra el trabajo elegido en una vista para la familia.",
+    ],
   },
   {
     id: "family-understand",
@@ -839,4 +995,7 @@ export const cardsFor = (group, band) =>
 
 /** Existing learning destinations with reviewed area metadata, shared by home and activity discovery. */
 export const learningAreaCards = (band) =>
-  HOME_CARDS.filter((card) => card.group === "explore" && card.learningArea && (!card.bands || card.bands.includes(band)));
+  HOME_CARDS.filter(
+    (card) =>
+      card.group === "explore" && card.learningArea && (!card.bands || card.bands.includes(band)),
+  );

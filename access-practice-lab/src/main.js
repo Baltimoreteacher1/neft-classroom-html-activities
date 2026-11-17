@@ -125,6 +125,11 @@ const VIEW_LOADERS = {
   communication: () => import("./views/communication.js"),
   adventures: () => import("./views/adventures.js"),
   "language-games": () => import("./views/language-games.js"),
+  // Part 2 (docs/part2-integration-map.md): simulations, the experience compiler, the time machine, pathways.
+  simulations: () => import("./views/simulations.js"),
+  "experience-builder": () => import("./views/experience-builder.js"),
+  "time-machine": () => import("./views/time-machine.js"),
+  pathways: () => import("./views/pathways.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -177,6 +182,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
   if (a === "language-games") return { ...r, view: a, id: b || "", chapter: c || "" };
+  // /simulations/<mission>[/<part>], /experience-builder[/<id>], /time-machine[/<tab>], /pathways/<id>[/<stage>]
+  if (["simulations", "experience-builder", "time-machine", "pathways"].includes(a))
+    return { ...r, view: a, id: b || "", sub: c || "", tab: q.get("tab") || "", q: Object.fromEntries(q) };
   if (a === "language-studios")
     return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
   if (a === "science-of-reading" && b === "lesson")

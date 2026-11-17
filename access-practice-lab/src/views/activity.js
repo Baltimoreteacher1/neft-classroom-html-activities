@@ -55,6 +55,7 @@ import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
 import { analyzeResponse, bankKey, bankWordsUsed, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
+import { pathwayBannerHTML } from "../pathways/banner.js";
 import { SURE, normalizeSure, sureFlag } from "../lang/calibration.js";
 import { retellHTML, toggleRetellCheck } from "./retell.js";
 import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
@@ -79,6 +80,8 @@ import {
 import { activityHref, roomHref } from "./room.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
 import { esPreviewHTML } from "./es-preview.js";
+import { listLoops, loadIntel, nextStage as loopStage } from "../intel/loop.js";
+import { loopPanelHTML, onLoopClick, onLoopInput, startTextLoop } from "../intel/ui.js";
 import { taskCardHTML } from "../task-steps.js";
 import { familyFor, learnPanelHTML } from "../lesson-learn.js";
 import {
@@ -461,6 +464,30 @@ ${notes}</textarea>
     </section>` : ""}`;
 }
 
+/**
+ * Learning mode ("Learn with help") only: after the writing check, the Language Intelligence loop (src/intel) can
+ * continue with one strength, one next step, a revision and a new task. The existing check and score stay as they
+ * are. "Try independently" never shows it, so an independent attempt is not coached.
+ */
+let intelCtx = null;
+const intelClosed = new Set();
+function accessLoopHTML(a) {
+  if (mode !== "supported" || !intelCtx) return "";
+  const loop = listLoops(loadIntel(), { src: "access", taskId: a.id }).sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)))[0];
+  if (loop && !(loopStage(loop) === "done" && intelClosed.has(loop.id))) {
+    const panel = loopPanelHTML(intelCtx, loop.id, {
+      onDone: (l) => {
+        intelClosed.add(l.id);
+        intelCtx.rerender();
+      },
+    });
+    if (panel) return html`<div id="act-intel">${panel}</div>`;
+  }
+  return html`<p class="intel-entry" id="act-intel">
+    <button type="button" class="btn" data-intel-coach>${icon("growth")} ${I.T("Revise with the language coach and try a new task", "Revisar con el entrenador de lenguaje y probar una tarea nueva")}</button>
+  </p>`;
+}
+
 function writingHTML(a) {
   const text = cur.record.notes[a.id] || "";
   const goal = wordGoal(cur.level);
@@ -536,6 +563,7 @@ ${text}</textarea>
             </div>
             <label class="field"><span>${I.T("What did you improve, or what did you check?", "¿Qué mejoraste o qué revisaste?")}</span><textarea data-reflection rows="2" data-nsr-ignore>${cur.record.reflections[a.id] || ""}</textarea></label>
             <button type="button" class="btn btn-primary" data-finish-writing>${I.T("Save my reviewed writing", "Guardar mi escritura revisada")}</button>
+            ${accessLoopHTML(a)}
             <details class="draft-history"><summary>${I.T("Compare my first and current draft", "Comparar mi primer borrador con el actual")}</summary>
               <h3>${I.T("First draft", "Primer borrador")}</h3><p>${cur.record.drafts[a.id]?.first || text}</p>
               <h3>${I.T("Current draft", "Borrador actual")}</h3><p>${text}</p>
@@ -694,6 +722,7 @@ let I = makeI18n("en");
 export async function render(ctx) {
   const generation = ++renderGeneration;
   I = i18nFor(ctx);
+  intelCtx = ctx;
   setItemsI18n(I);
   loading = true;
   const snapshot = { band: ctx.band, route: { ...ctx.route }, prefs: { ...ctx.prefs } };
@@ -757,6 +786,7 @@ export async function render(ctx) {
         [meta.room, roomHref(cur.domain, cur.level)],
         [a.title, null],
       ])}
+      ${pathwayBannerHTML(ctx)}
       <article class="activity d-${cur.domain.toLowerCase()}">
         ${lf.printHead}
         <header class="act-head">
@@ -1019,6 +1049,23 @@ function onFrameClick(t, a, ctx) {
 
 export function onClick(e, ctx) {
   if (!cur || loading) return;
+  if (onLoopClick(e, ctx)) return true;
+  if (e.target.closest("[data-intel-coach]") && mode === "supported") {
+    const act = cur.activity;
+    const text = cur.record.notes[act.id] || "";
+    if (!wordCount(text)) return true;
+    const id = startTextLoop(ctx, {
+      src: "access",
+      task: { id: act.id, title: act.title, prompt: act.prompt || "", keyUse: keyUseOf(act), domain: cur.domain === "Speaking" ? "Speaking" : "Writing" },
+      text,
+      source: "typed",
+      supports: { help: true, opened: helpUsed.has(act.id) || Boolean(cur.record.supportUsed?.[act.id]) },
+    });
+    intelClosed.delete(id);
+    ctx.rerender();
+    requestAnimationFrame(() => document.querySelector("#act-intel h3")?.focus?.());
+    return true;
+  }
   if (earlyActive) return early.onClick(e, ctx, i18nFor(ctx), cur, save);
   if (e.target.closest("[data-early-on]")) {
     ctx.setPrefs({ audioFirst: { ...(ctx.prefs.audioFirst || {}), [cur.band]: true } });
@@ -1346,6 +1393,7 @@ export function onChange(e, ctx) {
 }
 
 export function onInput(e) {
+  if (onLoopInput(e)) return;
   if (!cur || loading) return;
   if (e.target.matches("[data-gist]")) {
     const list = [...(gists.get(cur.activity.id) || [])];

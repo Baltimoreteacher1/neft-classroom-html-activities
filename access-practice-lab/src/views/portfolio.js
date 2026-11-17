@@ -15,6 +15,8 @@ import { bandLabel, formatDate, html, icon, todayISO } from "../util.js";
 import { getStudentName } from "../store.js";
 import { evidenceFrom, recordNewBadges } from "./collection.js";
 import { shieldsHTML } from "./shields.js";
+import { doorData as timeMachineDoor } from "../timemachine/load.js";
+import { doorHTML as timeMachineDoorHTML } from "../timemachine/ui-more.js";
 
 const BASE = "/access-practice-lab";
 const SOURCE = {
@@ -294,6 +296,7 @@ export async function render(ctx) {
   if (family) return { title, html: html`${crumbs}${familyView(I, band, x, p, name, today)}` };
   const badges = evaluate(evidenceFrom(x), ctx.prefs.collection).filter((b) => b.earned);
   const pins = new Set(p.pins);
+  const tmDoor = await timeMachineDoor();
   return {
     title,
     html: html`${crumbs}
@@ -321,6 +324,7 @@ export async function render(ctx) {
               : ""
           }
         </section>
+        <div class="no-print">${timeMachineDoorHTML(I, band, tmDoor)}</div>
         <section class="panel" aria-labelledby="pfGarden">
           <h2 id="pfGarden">
             ${icon("growth")} ${I.T("My vocabulary garden", "Mi jardín de vocabulario")}

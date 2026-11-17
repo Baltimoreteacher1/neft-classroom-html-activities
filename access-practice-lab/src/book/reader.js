@@ -11,6 +11,7 @@ import { esc, pageAltText, pageHTML, preloadMedia } from "./render.js";
 import { createSupportHost } from "./lang/ui-support.js";
 import { emptyWork } from "./lang/work.js";
 import { isAdventure } from "./story.js";
+import { createBookCoach } from "../intel/book-coach.js";
 
 const PREFS_KEY = "accessPracticeLab:v1:book-reader";
 const loadPrefs = () => {
@@ -104,6 +105,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       <div class="bk-reader-tools">
         ${isAdventure(book) && !opts.review ? `<a class="btn small" href="/access-practice-lab/book-studio/play/${book.id}${opts.shared ? "?shared=1" : ""}">${bkIcon("play")}<span>${esc(tr("Play the adventure", "Jugar la aventura"))}</span></a>` : ""}
         <button type="button" class="btn small btn-primary" data-r="read">${bkIcon("play")}<span>${esc(tr("Read to me", "Léeme"))}</span></button>
+        ${opts.shared || opts.review ? "" : `<button type="button" class="btn small" data-r="coach">${bkIcon("feedback")}<span>${esc(tr("Language coach for this page", "Entrenador de lenguaje para esta página"))}</span></button>`}
         <button type="button" class="bk-tbtn" data-r="overview" aria-label="${esc(tr("All pages", "Todas las páginas"))}" title="${esc(tr("All pages", "Todas las páginas"))}">${bkIcon("panel")}</button>
         <button type="button" class="bk-tbtn" data-r="layout" aria-label="${esc(tr("One page or two", "Una página o dos"))}" title="${esc(tr("One page or two", "Una página o dos"))}">${bkIcon(useSpread() ? "single" : "spread")}</button>
         <button type="button" class="bk-tbtn" data-r="fullscreen" aria-label="${esc(tr("Full screen", "Pantalla completa"))}" title="${esc(tr("Full screen", "Pantalla completa"))}">${bkIcon("fullscreen")}</button>
@@ -118,6 +120,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       <button type="button" class="bk-turn bk-turn-next" data-r="next" aria-label="${esc(tr("Next page", "Página siguiente"))}">${rtl ? "‹" : "›"}</button>
     </div>
     <div class="bk-reader-tray" data-r-tray></div>
+    <section class="intel-book" data-r-coach hidden aria-label="${esc(tr("Language coach", "Entrenador de lenguaje"))}"></section>
     <footer class="bk-reader-foot"><span data-r-pos></span><span class="bk-reader-status" role="status" data-r-status></span></footer>
     ${opts.review ? `<section class="bk-review-panel" data-r-review aria-label="${esc(tr("Teacher notes", "Notas del docente"))}"></section>` : ""}
     <dialog class="bk-dialog" data-r-dialog aria-labelledby="bkROverview"></dialog>
@@ -127,6 +130,8 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
   const status = (msg) => {
     $("[data-r-status]").textContent = msg;
   };
+  // The Language Intelligence loop for the words on the current page (src/intel/book-coach.js). It never edits the book.
+  const coach = createBookCoach({ box: $("[data-r-coach]"), ctx, book, I, say: status });
 
   function sizeBook() {
     const pages = spreads()[R.spread].length;
@@ -378,6 +383,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
 
   // ── events ──
   root.addEventListener("click", async (e) => {
+    if (coach.onClick(e)) return;
     if (await sup.onClick(e, book.pages[spreads()[R.spread][0]].id)) return;
     const sc = e.target.closest('[data-r="scene"]');
     if (sc) {
@@ -433,7 +439,8 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
     }
     const act = t.closest("[data-r]")?.dataset.r;
     if (!act) return;
-    if (act === "prev") go(-1);
+    if (act === "coach") coach.open(spreads()[R.spread][0]);
+    else if (act === "prev") go(-1);
     else if (act === "next") go(1);
     else if (act === "read") readSpread();
     else if (act === "overview") overview();
@@ -471,6 +478,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
   });
   root.addEventListener("change", (e) => sup.onChange(e));
   root.addEventListener("input", (e) => {
+    if (coach.onInput(e)) return;
     if (sup.onInput(e)) return;
     const k = e.target.dataset?.rp;
     if (!k) return;

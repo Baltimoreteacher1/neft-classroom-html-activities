@@ -1,0 +1,396 @@
+/* time-machine (Part 2, docs/part2-integration-map.md). Colors come from ds.css tokens only. */
+.tm-page {
+  max-width: 68rem;
+  margin: 0 auto;
+}
+.tm-head h1 {
+  margin: 0 0 var(--s-2, 0.5rem);
+}
+.tm-lead {
+  max-width: 44rem;
+  color: var(--ink-2);
+  font-size: 1.1rem;
+}
+.tm-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.tm-tab {
+  text-decoration: none;
+  min-height: 2.75rem;
+}
+.tm-tab .ico {
+  width: 1.1em;
+  height: 1.1em;
+}
+.tm-n {
+  font-weight: 600;
+}
+.tm-h {
+  font-size: 1.05rem;
+  margin: 1rem 0 0.5rem;
+}
+.tm-pairs ul,
+.tm-list,
+.tm-changelist,
+.tm-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tm-pairs ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 0.5rem;
+}
+.tm-pairlink {
+  display: grid;
+  gap: 0.15rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.tm-pairlink.is-on {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+.tm-pairhead h2 {
+  margin: 0 0 0.4rem;
+  overflow-wrap: anywhere;
+}
+.tm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+}
+.tm-tag {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--line-strong, var(--line-control));
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-ink, var(--ink));
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.tm-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tm-step {
+  display: grid;
+  gap: 0.15rem;
+  flex: 1 1 11rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line-strong, var(--line-control));
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface-2, var(--bg));
+}
+.tm-step.is-shown {
+  border-left-color: var(--teal);
+}
+.tm-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.tm-side {
+  margin: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--line-strong, var(--line-control));
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface);
+  min-width: 0;
+}
+.tm-side-b {
+  border-top-color: var(--teal);
+}
+.tm-cap {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0 0 0.6rem;
+  color: var(--ink-2);
+}
+.tm-support {
+  display: inline-block;
+  justify-self: start;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--r-xs, 6px);
+  background: var(--hint-soft, var(--brand-soft));
+  color: var(--ink);
+  font-weight: 700;
+}
+.tm-support.is-own {
+  background: var(--teal-soft);
+}
+.tm-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.tm-mark {
+  padding: 0.05em 0.15em;
+  border-bottom: 3px solid var(--accent);
+  border-radius: 3px;
+  background: var(--hint-soft, var(--brand-soft));
+  color: var(--ink);
+}
+.tm-mark.is-shown,
+.tm-mark:focus {
+  outline: 3px solid var(--focus, var(--teal));
+  outline-offset: 2px;
+  background: var(--teal-soft);
+}
+.tm-note {
+  margin: 0.7rem 0 0;
+  padding: 0.5rem 0.7rem;
+  border-left: 4px solid var(--brand);
+  background: var(--brand-soft);
+  color: var(--ink);
+}
+.tm-caution {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.5rem 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface-2, var(--bg));
+  color: var(--ink);
+}
+.tm-caution .ico {
+  flex: none;
+  margin-top: 0.2em;
+}
+.tm-change {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+}
+.tm-change p {
+  margin: 0;
+}
+.tm-quote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  align-items: center;
+  max-width: 100%;
+}
+.tm-quote q {
+  padding: 0.1rem 0.4rem;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2, var(--bg));
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.tm-show,
+.tm-page .btn.small {
+  min-height: 2.75rem;
+}
+.tm-reflect,
+.tm-actions,
+.tm-changes,
+.tm-history {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--line);
+}
+.tm-prompt-row {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: start;
+  margin: 0.9rem 0;
+}
+.tm-label {
+  font-weight: 800;
+  color: var(--ink);
+}
+.tm-page textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+}
+.tm-page :is(a, button, textarea, audio, summary):focus-visible {
+  outline: 3px solid var(--focus, var(--teal));
+  outline-offset: 2px;
+}
+.tm-audio-row,
+.tm-playboth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.tm-playboth .fine {
+  flex-basis: 100%;
+  margin: 0;
+}
+.tm-page audio {
+  width: 100%;
+  max-width: 26rem;
+  min-height: 2.75rem;
+}
+.tm-gone {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px dashed var(--line-control);
+  border-radius: var(--radius-sm, 10px);
+  color: var(--ink);
+}
+.tm-words {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  margin-top: 0.7rem;
+}
+.tm-wordsh {
+  margin: 0;
+  font-size: 1rem;
+}
+.tm-status {
+  min-height: 1.5rem;
+  margin: 0.4rem 0 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+.tm-chdl,
+.tm-refldl {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.8rem 0;
+}
+.tm-chdl dt,
+.tm-refldl dt {
+  font-weight: 800;
+  color: var(--ink-2);
+}
+.tm-chdl dd,
+.tm-refldl dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.tm-chprompt {
+  padding: 0.6rem 0.8rem;
+  border-left: 5px solid var(--teal);
+  background: var(--teal-soft);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.tm-help {
+  margin: 0.8rem 0;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--hint-soft, var(--brand-soft));
+  color: var(--ink);
+}
+.tm-helpline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.tm-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.tm-list.is-plain li {
+  display: block;
+}
+.tm-refl,
+.tm-evpair {
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+}
+.tm-evitem {
+  margin: 0.6rem 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--line-strong, var(--line-control));
+  background: var(--surface-2, var(--bg));
+}
+.tm-because {
+  color: var(--ink-2);
+}
+.tm-door {
+  border-left: 5px solid var(--teal);
+}
+@media (max-width: 720px) {
+  .tm-sides {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tm-tabs .tm-tab {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tm-mark {
+    transition: background-color 0.2s ease;
+  }
+}
+@media print {
+  .tm-tabs,
+  .tm-pairs,
+  .tm-actions,
+  .tm-playboth,
+  .tm-show,
+  .tm-page audio {
+    display: none !important;
+  }
+  .tm-page {
+    max-width: none;
+  }
+  .tm-page .panel {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    margin: 0 0 0.6rem;
+  }
+  .tm-evpair,
+  .tm-evitem,
+  .tm-change {
+    break-inside: avoid;
+  }
+  .tm-sides {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tm-mark {
+    background: none;
+    border-bottom: 2px solid var(--ink);
+  }
+}

@@ -126,13 +126,31 @@ export const REVIEW_SCHEMA = [
   `CREATE INDEX IF NOT EXISTS class_platform_review_student ON class_platform_review (code, student_id)`,
 ];
 
+/** Compiled experiences an instructor published to a class (experiences.js): the validated mission definition. */
+export const EXPERIENCE_SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS class_platform_experience (
+    experience_id TEXT PRIMARY KEY,
+    code TEXT NOT NULL,
+    title TEXT NOT NULL,
+    def_json TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS class_platform_experience_code ON class_platform_experience (code)`,
+];
+
 const ready = new WeakSet();
 export async function ensureSchema(db) {
   if (ready.has(db)) return;
   await db.batch(
-    [...SCHEMA, ...REVIEW_SCHEMA, ...SOCIAL_SCHEMA, ...BOOK_SCHEMA, ...COLLAB_SCHEMA].map((sql) =>
-      db.prepare(sql),
-    ),
+    [
+      ...SCHEMA,
+      ...REVIEW_SCHEMA,
+      ...SOCIAL_SCHEMA,
+      ...BOOK_SCHEMA,
+      ...COLLAB_SCHEMA,
+      ...EXPERIENCE_SCHEMA,
+    ].map((sql) => db.prepare(sql)),
   );
   ready.add(db);
 }
@@ -193,6 +211,7 @@ export function purgeStatements(db, code) {
     ...socialPurgeStatements(db, code),
     ...bookPurgeStatements(db, code),
     ...collabPurgeStatements(db, code),
+    db.prepare(`DELETE FROM class_platform_experience WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_audio WHERE code = ?`).bind(code),
@@ -212,6 +231,7 @@ export async function pruneExpired(db, now) {
     ...socialPruneStatements(db, now, gone),
     ...bookPruneStatements(db, now, gone),
     ...collabPruneStatements(db, now, gone),
+    db.prepare(`DELETE FROM class_platform_experience WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db
       .prepare(`DELETE FROM class_platform_room WHERE expires_at < ? OR code IN (${gone})`)

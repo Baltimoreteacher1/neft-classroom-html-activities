@@ -199,7 +199,8 @@ try {
 
   // Hub
   await go("adventures?grades=6-8");
-  ok((await page.locator(".adv-cards > li").count()) === 7, "hub shows seven world cards");
+  ok((await page.locator(".adv-cards > li:not(.adv-sim-door)").count()) === 7, "hub shows seven world cards");
+  ok((await page.locator(".adv-sim-door a[href*='/simulations']").count()) === 1, "hub links the Living Simulations");
   ok((await page.locator("a.adv-card").count()) >= 2, "the built worlds are links");
   await axe(page, ".adv-hub", "hub");
   await shot(page, "hub-1280");

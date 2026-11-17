@@ -179,6 +179,7 @@ function setupHTML(s) {
       <legend>${I.T("Support profile", "Perfil de apoyo")}</legend>
       <div class="lb-choices">${radios("support", supports, s.support)}</div>
       <p class="fine">${tp(SUPPORT_NOTE)}</p>
+      <p class="fine"><a href="${BASE}/experience-builder">${I.T("Have your own text? Turn a text into a playable experience", "¿Tiene su propio texto? Convierta un texto en una experiencia jugable")}</a></p>
     </fieldset>
     <fieldset class="lb-fieldset">
       <legend>${I.T("Lesson length", "Duración de la lección")}</legend>

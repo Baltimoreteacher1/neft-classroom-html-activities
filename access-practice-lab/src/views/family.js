@@ -8,6 +8,7 @@
 //   /family/help       help center     /family/save      Save & Continue Later
 // Old /family?skill=…&minutes=…&level=… links (teacher shares) open the planner's finder.
 import { i18nFor } from "../i18n.js";
+import { familyHubCardHTML } from "../pathways/family-card.js";
 import { html } from "../util.js";
 import * as help from "../family/help.js";
 import * as hub from "../family/hub.js";
@@ -49,7 +50,9 @@ export async function render(ctx) {
   if (current !== hub) return page;
   // Learning Journey: a "Continue Family Practice" card above the family home. Never blocks the page if it cannot render.
   const cont = await continueSectionHTML(ctx, I).catch(() => "");
-  return cont ? { ...page, html: html`${cont}${page.html}` } : page;
+  // Connected Pathways: the family conversation card for the pathway this child is on (nothing when there is none).
+  const talk = familyHubCardHTML(I);
+  return cont || talk ? { ...page, html: html`${cont}${talk}${page.html}` } : page;
 }
 
 export const mount = (root, ctx) => current.mount?.(root, ctx);

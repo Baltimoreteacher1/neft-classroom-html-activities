@@ -1,0 +1,515 @@
+/* pathways (Part 2, docs/part2-integration-map.md). Colors come from ds.css tokens only. */
+
+/* Connected Pathways: the hub, the runner (a ladder of steps), the builder and the "part of a pathway" banner.
+   One column at 375px, 44px targets, a 3px focus ring, no motion beyond the shared button press. */
+.pw-run,
+.pw-hub,
+.pw-build {
+  max-inline-size: 60rem;
+  margin-inline: auto;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.pw-head {
+  margin-block-end: 1.25rem;
+}
+.pw-head h1 {
+  margin-block: 0.25rem 0.5rem;
+}
+.pw-goal {
+  font-size: 1.1rem;
+  color: var(--ink);
+  max-inline-size: 46rem;
+}
+.pw-count {
+  margin-block: 0.4rem;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+.pw-features {
+  margin: 0.75rem 0 0;
+  padding-inline-start: 1.2rem;
+  color: var(--ink-2);
+}
+.pw-features li {
+  margin-block: 0.2rem;
+}
+
+/* ── the ladder ─────────────────────────────────────────────────────────── */
+.pw-ladder,
+.pw-cards,
+.pw-build-list,
+.pw-results,
+.pw-needs,
+.pw-talk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pw-stage {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-block: 0.75rem;
+  padding: 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.pw-stage.is-next {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.pw-stage.is-done {
+  border-color: var(--right);
+}
+.pw-stage-n {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--line-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 800;
+}
+.pw-stage.is-done .pw-stage-n {
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--right);
+}
+.pw-stage.is-next .pw-stage-n {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.pw-stage-body {
+  min-inline-size: 0;
+}
+.pw-stage-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.pw-stage-title {
+  margin: 0.2rem 0 0.3rem;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+.pw-why {
+  margin: 0 0 0.5rem;
+  color: var(--ink-2);
+}
+.pw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.pw-chip.is-done {
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--right);
+}
+.pw-chip.is-next {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.pw-chip .ico {
+  inline-size: 1em;
+  block-size: 1em;
+}
+
+/* What the feature recorded: a quiet block with the learner's own words. */
+.pw-evidence {
+  margin-block: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-inline-start: 4px solid var(--right);
+  background: var(--right-soft);
+  border-radius: var(--r-xs);
+}
+.pw-evidence-line {
+  margin: 0;
+  color: var(--ink);
+}
+.pw-quote {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  font-style: italic;
+}
+.pw-quote::before {
+  content: "“";
+}
+.pw-quote::after {
+  content: "”";
+}
+
+/* ── notes and statuses ─────────────────────────────────────────────────── */
+.pw-note {
+  margin-block: 0.4rem;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.pw-note:empty {
+  display: none;
+}
+.pw-note.is-warn {
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--hint);
+  border-radius: var(--r-xs);
+  background: var(--hint-soft);
+  color: var(--hint);
+}
+ul.pw-note.is-warn {
+  padding-inline-start: 1.75rem;
+  list-style: disc;
+}
+.pw-note.is-ok {
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--right);
+  border-radius: var(--r-xs);
+  background: var(--right-soft);
+  color: var(--right);
+}
+.pw-preview {
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-weight: 700;
+}
+
+/* ── the independent task ───────────────────────────────────────────────── */
+.pw-task {
+  margin-block: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+.pw-help-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-block: 0.5rem;
+}
+.pw-help-open {
+  margin-block: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--teal);
+  border-radius: var(--radius-sm);
+  background: var(--teal-soft);
+  color: var(--ink);
+}
+.pw-help-title {
+  margin: 0 0 0.3rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.pw-help-list {
+  margin: 0;
+  padding-inline-start: 1.3rem;
+}
+.pw-help-words {
+  margin: 0;
+}
+.pw-label {
+  display: block;
+  margin-block: 0.75rem 0.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.pw-box,
+.pw-input {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-block-size: var(--target);
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.pw-box {
+  resize: vertical;
+}
+.pw-path {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9rem;
+}
+.pw-run :focus-visible,
+.pw-hub :focus-visible,
+.pw-build :focus-visible,
+.pw-banner :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.pw-run button[aria-expanded="true"],
+.pw-build button[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  color: var(--ink);
+}
+
+/* ── suggestion, share, details ─────────────────────────────────────────── */
+.pw-reco,
+.pw-share,
+.pw-resume,
+.pw-teach,
+.pw-build-sec,
+.pw-talk {
+  margin-block: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.pw-reco {
+  border-color: var(--teal);
+}
+.pw-resume {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.pw-reco h2,
+.pw-share h2,
+.pw-resume h2,
+.pw-teach h2,
+.pw-build-sec h2 {
+  margin-block: 0 0.5rem;
+  font-size: 1.25rem;
+}
+.pw-reco-why {
+  color: var(--ink);
+  font-weight: 600;
+}
+.pw-details {
+  margin-block: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.pw-details summary {
+  min-block-size: var(--target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+.pw-digest {
+  max-inline-size: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.75rem;
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ── family conversation ────────────────────────────────────────────────── */
+.pw-talk {
+  margin-block: 0.5rem 0;
+  border-color: var(--accent);
+}
+.pw-talk h3 {
+  margin-block: 0.2rem 0.4rem;
+}
+.pw-talk-goal,
+.pw-talk-pair {
+  display: grid;
+  gap: 0.2rem;
+}
+.pw-talk-es {
+  color: var(--ink-2);
+}
+.pw-talk-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  margin-block: 0.6rem;
+}
+.pw-talk-item:not(:has(.pw-talk-tick)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.pw-talk-tick,
+.pw-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-block-size: var(--target);
+  min-inline-size: var(--target);
+  font-weight: 600;
+  color: var(--ink);
+}
+.pw-talk-tick input,
+.pw-check input {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  accent-color: var(--brand);
+}
+
+/* ── hub cards ──────────────────────────────────────────────────────────── */
+.pw-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+.pw-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.pw-card.is-started {
+  border-color: var(--brand);
+}
+.pw-card .row-actions {
+  margin-block: auto 0;
+  padding-block-start: 0.5rem;
+}
+
+/* ── builder ────────────────────────────────────────────────────────────── */
+.pw-build-item,
+.pw-result,
+.pw-need {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.pw-build-text,
+.pw-result-text {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+}
+.pw-build-title {
+  margin: 0.15rem 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+.pw-build-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.pw-need p {
+  flex: 1 1 14rem;
+  margin: 0;
+}
+.pw-fieldset {
+  margin-block: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.pw-fieldset legend {
+  padding-inline: 0.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.pw-fieldset .pw-check {
+  margin-inline-end: 1rem;
+}
+.pw-qr {
+  inline-size: 168px;
+  max-inline-size: 100%;
+  padding: 8px;
+  background: var(--on-brand);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xs);
+}
+.pw-steps {
+  padding-inline-start: 1.3rem;
+}
+.pw-steps li {
+  margin-block: 0.4rem;
+}
+
+/* ── the banner other views show ────────────────────────────────────────── */
+.pw-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 0 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.pw-banner-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  align-items: center;
+  margin: 0;
+  min-inline-size: 0;
+}
+.pw-banner-text .ico {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.pw-family-hub {
+  margin-block-end: 1.25rem;
+}
+
+@media (max-width: 30rem) {
+  .pw-stage {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.75rem;
+  }
+  .pw-stage-n {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+  }
+}
+@media print {
+  .pw-noprint,
+  .pw-reco,
+  .pw-share,
+  .pw-banner {
+    display: none;
+  }
+  .pw-stage,
+  .pw-talk {
+    break-inside: avoid;
+  }
+}

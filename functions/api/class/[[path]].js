@@ -52,6 +52,7 @@ import { collabStudentStatements } from "../../_lib/class-platform/book-collab-s
 import { bookStudentStatements } from "../../_lib/class-platform/book-schema.js";
 import { handleBookSupports } from "../../_lib/class-platform/book-supports.js";
 import { handleBooks } from "../../_lib/class-platform/books.js";
+import { handleExperiences } from "../../_lib/class-platform/experiences.js";
 import { handlePairs } from "../../_lib/class-platform/pairs.js";
 import { handleReview } from "../../_lib/class-platform/review.js";
 import { handleRoom } from "../../_lib/class-platform/rooms.js";
@@ -558,6 +559,7 @@ export const onRequest = handler({
     if (seg === "scenes") return handleScenes(ctx, parts[1] || "");
     if (seg === "bsupport") return handleBookSupports(ctx, parts[1] || "");
     if (seg === "books") return handleBooks(ctx, parts[1] || "");
+    if (seg === "experience") return handleExperiences(ctx, parts[1] || "");
     const route = routes[`${method} ${seg}`];
     return route ? route(ctx) : fail("not-found", 404);
   },

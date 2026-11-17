@@ -2,12 +2,14 @@
 // targeted feedback, revision, evidence collection and a portfolio. Feedback describes what is on the
 // page (see lang/analyze.js); it never scores, and it is withheld from "on my own" attempts until the
 // learner submits a draft. The learner's first draft is always kept so growth is visible.
+import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { loadExemplars, loadMission, loadStudioIndex, loadWritingTasks } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
 import { askSecondLook } from "../class/ai-feedback.js";
+import { loopPanelHTML, onLoopClick, onLoopInput, startTextLoop } from "../intel/ui.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { addVersion, choiceEffects, loadStudio, missionState, saveStudio, writingState } from "../lang/studio.js";
 import { evidenceSentencesHTML, onEvidenceClick } from "./evidence-sentences.js";
@@ -101,6 +103,22 @@ async function findTask(id, from) {
   const t = (await loadWritingTasks()).tasks.find((x) => x.id === id);
   return t ? { task: t, mission: null } : null;
 }
+/**
+ * "Revise and try a new task": the Language Intelligence loop (src/intel) for the draft that just got feedback.
+ * It continues after the Language Coach, never replaces it; the loop id is kept in the task's saved state so a
+ * reload returns to the same stage.
+ */
+function coachLoopHTML(ctx) {
+  if (S.state.intelLoop) {
+    const panel = loopPanelHTML(ctx, S.state.intelLoop, {});
+    if (panel) return html`<div id="wrt-intel">${panel}</div>`;
+  }
+  return html`<p class="intel-entry" id="wrt-intel">
+    <button type="button" class="btn btn-primary" data-intel-coach>${icon("growth")} ${I.T("Revise and try a new task", "Revisar y probar una tarea nueva")}</button>
+    <span class="fine">${I.T("One strength, one next step, a revision and a new task.", "Una fortaleza, un siguiente paso, una revisión y una tarea nueva.")}</span>
+  </p>`;
+}
+
 const optsFor = (task) => ({
   keyUse: task.keyUse,
   modality: "writing",
@@ -392,7 +410,7 @@ export async function render(ctx) {
     : null;
   return {
     title: task.title,
-    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}${pathwayBannerHTML(ctx)}
       <article class="activity studio-view write-studio d-writing">
         <header class="act-head">
           <div class="act-bar">
@@ -440,6 +458,7 @@ ${text}</textarea></label>
                   <h3><span class="step-badge">4</span> ${I.T("What your writing shows", "Lo que muestra tu escritura")}</h3>
                   ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}<div class="second-look" data-second-look-box><button type="button" class="btn small" data-second-look>${icon("sparkle")} ${I.T("Ask for a second look", "Pedir una segunda revisión")}</button><p class="fine">${I.T("Optional. An AI helper sorts your writing into the same coach categories. It only picks from the coach's own notes and does not write for you. Your draft is sent to it only when you press the button.", "Opcional. Un asistente de IA clasifica tu escritura en las mismas categorías del coach. Solo elige entre las notas del propio coach y no escribe por ti. Tu borrador solo se le envía cuando presionas el botón.")}</p><div data-second-look-out aria-live="polite"></div></div>${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>${icon("mission")} ${I.T("From your mission choice", "De tu elección en la misión")}</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
                   <p class="fine revise-line">${icon("retry")}<span>${I.mode === "en" ? html`Now revise: change your draft, then press <strong>Get feedback</strong> again to see what changed.` : I.T("Now revise: change your draft, then press Get feedback again to see what changed.", "Ahora revisa: cambia tu borrador y luego presiona Obtener comentarios otra vez para ver qué cambió.")}</span><button type="button" class="btn small" data-revise>${I.T("Back to my draft", "Volver a mi borrador")}</button></p>
+                  ${coachLoopHTML(ctx)}
                 </section>
                 <section class="panel" id="wrt-finish">
                   <h3><span class="step-badge">5</span> ${I.T("Finish", "Terminar")}</h3>
@@ -510,6 +529,7 @@ function feedback(ctx) {
 }
 
 export function onInput(e) {
+  if (onLoopInput(e)) return;
   if (!S?.task) return;
   const t = e.target;
   if (t.matches("[data-draft]")) {
@@ -559,7 +579,25 @@ export function onClick(e, ctx) {
     window.print();
     return true;
   }
+  if (onLoopClick(e, ctx)) return true;
   if (!S.task) return false;
+  if (t.closest("[data-intel-coach]")) {
+    const text = S.state.analyzedText || S.state.versions.at(-1)?.text || "";
+    if (!text.trim()) return true;
+    const o = optsFor(S.task);
+    S.state.intelLoop = startTextLoop(ctx, {
+      src: "write",
+      objective: pathwayContext()?.run?.objective || "",
+      task: { id: S.task.id, title: S.task.title, prompt: S.task.prompt, keyUse: S.task.keyUse, domain: "Writing", sourceText: o.sourceText.join(" "), sourceTerms: o.sourceTerms },
+      text,
+      source: "typed",
+      supports: { frames: S.state.used.frames, bank: S.state.used.bank, model: Boolean(S.state.used.model), coach: S.state.versions.length > 1 },
+    });
+    save();
+    ctx.rerender();
+    requestAnimationFrame(() => document.querySelector("#wrt-intel h3")?.focus?.());
+    return true;
+  }
   if (onEvidenceClick(e, S.task)) {
     ctx.rerender();
     return true;
