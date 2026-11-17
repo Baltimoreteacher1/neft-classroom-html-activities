@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "015bf502640b";
+const BUILD_HASH = "3130d8e248bf";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -252,7 +252,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/editor-add.js?v=db83706afcb3",
   "/access-practice-lab/src/book/editor-coach.js?v=7c812e1df134",
   "/access-practice-lab/src/book/editor-core.js?v=43f06e94af28",
-  "/access-practice-lab/src/book/editor-dialogs.js?v=b626e23e22d4",
+  "/access-practice-lab/src/book/editor-dialogs.js?v=be7845f08661",
   "/access-practice-lab/src/book/editor-media.js?v=1becb52a5241",
   "/access-practice-lab/src/book/editor-panels.js?v=28d6af4921e4",
   "/access-practice-lab/src/book/editor.js?v=0ed618ee0342",
@@ -269,12 +269,13 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/lang/ui-support.js?v=837996a26846",
   "/access-practice-lab/src/book/lang/vocab-mark.js?v=9db9b906ef08",
   "/access-practice-lab/src/book/lang/work.js?v=b33e409af043",
-  "/access-practice-lab/src/book/model.js?v=bb5e8d6a1ef2",
+  "/access-practice-lab/src/book/model.js?v=758ecd21164c",
   "/access-practice-lab/src/book/play.js?v=834f926edcaf",
-  "/access-practice-lab/src/book/program-ui.js?v=79c5fc5f9e33",
-  "/access-practice-lab/src/book/programs.js?v=39cde074cf87",
+  "/access-practice-lab/src/book/program-ui.js?v=c6edd0148228",
+  "/access-practice-lab/src/book/programs.js?v=40cdacc71078",
   "/access-practice-lab/src/book/reader.js?v=5a798a3a43de",
   "/access-practice-lab/src/book/render.js?v=ff03362b286c",
+  "/access-practice-lab/src/book/rubrics.js?v=ff7a42783c9f",
   "/access-practice-lab/src/book/sanitize.js?v=7d5ba64b365f",
   "/access-practice-lab/src/book/scene-player.js?v=dad17898f7c0",
   "/access-practice-lab/src/book/story.js?v=0f1d4693505a",
@@ -282,7 +283,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/templates-b.js?v=48dfb8535bbe",
   "/access-practice-lab/src/book/templates.js?v=43916020c20a",
   "/access-practice-lab/src/book/ui-story-map.js?v=4b655a691a7a",
-  "/access-practice-lab/src/book/ui-story.js?v=15268614d632",
+  "/access-practice-lab/src/book/ui-story.js?v=790f50028805",
   "/access-practice-lab/src/checkin-roster.js?v=6e0d476e2074",
   "/access-practice-lab/src/checkin-ui.js?v=c49e3f308bb9",
   "/access-practice-lab/src/checkin.js?v=4bdf0895e93f",

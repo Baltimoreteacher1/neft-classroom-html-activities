@@ -22,6 +22,7 @@ import {
   validateOps,
 } from "./story.js";
 import { createSupportHost } from "./lang/ui-support.js";
+import { bandGuideHTML } from "./program-ui.js";
 import { addRevision, emptyWork, logAttempt } from "./lang/work.js";
 
 export const STAGES = ["imagine", "create", "life", "improve", "publish"];
@@ -119,7 +120,7 @@ export function dockHTML(E) {
   else if (E.stage === "life") body = lifeHTML(E, page);
   else if (E.stage === "improve") body = improveHTML(E, page);
   else if (E.stage === "publish") body = publishHTML(E);
-  return `${teacherBar}${teacher && pageSupports ? `<p class="fine bk-dock-note">${pageSupports} ${esc(tr("language supports on this page. Preview as student to see them as a student does.", "apoyos de lenguaje en esta página. Usa Ver como estudiante para verlos como los ve un estudiante."))}</p>` : ""}${body}${tray}`;
+  return `${teacherBar}${bandGuideHTML(E)}${teacher && pageSupports ? `<p class="fine bk-dock-note">${pageSupports} ${esc(tr("language supports on this page. Preview as student to see them as a student does.", "apoyos de lenguaje en esta página. Usa Ver como estudiante para verlos como los ve un estudiante."))}</p>` : ""}${body}${tray}`;
 }
 
 const btn = (act, ico, label, extra = "") =>
@@ -296,6 +297,10 @@ export async function onDockClick(E, e) {
   const b = e.target.closest("[data-dock]");
   if (!b) return false;
   const act = b.dataset.dock;
+  if (act === "frame") {
+    insertIntoTarget(E, { target: {} }, b.dataset.frame || "");
+    return true;
+  }
   const page = core.page();
   const book = core.S.book;
   const redock = () => E.renderDock();

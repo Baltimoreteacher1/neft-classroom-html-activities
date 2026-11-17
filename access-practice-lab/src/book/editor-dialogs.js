@@ -13,6 +13,7 @@ import {
 } from "./export.js";
 import { bkIcon } from "./icons.js";
 import { STATUSES, finishChecklist } from "./model.js";
+import { selfCheckHTML } from "./program-ui.js";
 import { esc } from "./render.js";
 
 
@@ -95,6 +96,7 @@ async function finishDialog(E, { refresh = false } = {}) {
     tr("Finish my book", "Terminar mi libro"),
     `<p>${esc(tr("Check your book before you share it. These are reminders, not a score.", "Revisa tu libro antes de compartirlo. Son recordatorios, no una calificación."))}</p>
     <ul class="bk-checklist">${checks.map((c) => `<li class="${c.ok ? "is-ok" : "is-todo"}">${c.ok ? bkIcon("check") : "•"} ${esc(c[lang])}</li>`).join("")}</ul>
+    ${selfCheckHTML(S.book, E.ctx.band, E.I)}
     <p class="fine">${esc(tr("Status:", "Estado:"))} <strong>${esc(st[lang])}</strong></p>
     ${S.book.review ? `<section class="bk-review"><h3>${bkIcon("feedback")} ${esc(tr("Feedback from your teacher", "Comentarios de tu docente"))}</h3>${S.book.review.chips.length ? `<ul class="bk-words">${S.book.review.chips.map((c) => `<li class="chip">${esc(c)}</li>`).join("")}</ul>` : ""}${S.book.review.comment ? `<p>${esc(S.book.review.comment)}</p>` : ""}<p class="fine">${esc(tr("Revise your book, then send it again.", "Revisa tu libro y vuelve a enviarlo."))}</p></section>` : ""}
     <div class="bk-finish-actions">
@@ -228,6 +230,14 @@ document.addEventListener("click", async (e) => {
           );
         },
       );
+    } else if (act === "selfcheck") {
+      const id = btn.dataset.id;
+      const on = S.book.selfCheck.includes(id);
+      core.setBook({ selfCheck: on ? S.book.selfCheck.filter((x) => x !== id) : [...S.book.selfCheck, id] });
+      btn.setAttribute("aria-pressed", String(!on));
+      const done = dialog.querySelectorAll('[data-bk-dlg="selfcheck"][aria-pressed="true"]').length;
+      const count = dialog.querySelector("[data-bk-selfcount]");
+      if (count) count.textContent = `${done}/${dialog.querySelectorAll('[data-bk-dlg="selfcheck"]').length}`;
     } else if (act === "mark-finished") {
       if (S.book.status === "draft" || S.book.status === "returned")
         core.setBook({ status: "completed" });

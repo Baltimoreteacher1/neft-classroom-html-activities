@@ -2,7 +2,7 @@
 // Each program carries the bookshelf hero copy, the featured templates, the five-stage author's process (with a
 // sentence frame for each stage), four author's-craft mini-lessons with a mentor sentence, and the standards the
 // studio practises (CCSS Writing + WIDA ELD Standard 2 key language uses). Pure data: Node-testable, no DOM.
-// Bands without their own program (K, 1, 2-3) use the 3–5 program, the gentlest one written.
+// K, 1 and 2-3 share the Little Authors program (draw, tell, then write). Rubrics: src/book/rubrics.js.
 
 /** WIDA ELD Standards Framework (2020) key language uses, with the colour each one wears on template cards. */
 export const KEY_USES = Object.freeze({
@@ -281,8 +281,116 @@ const P68 = {
   },
 };
 
-export const PROGRAMS = Object.freeze({ "3-5": P35, "6-8": P68 });
+
+const PK2 = {
+  band: "K-2",
+  name: { en: "Little Authors", es: "Pequeños autores" },
+  grades: { en: "Grades K–3", es: "Grados K–3" },
+  eyebrow: { en: "Think · draw · tell · write · share", es: "Piensa · dibuja · cuenta · escribe · comparte" },
+  lead: {
+    en: "Draw your idea, tell it out loud, then add words. Your book can have pictures, labels, your voice and a grown-up to read it with.",
+    es: "Dibuja tu idea, cuéntala en voz alta y luego agrega palabras. Tu libro puede tener dibujos, rótulos, tu voz y un adulto que lo lea contigo.",
+  },
+  featured: [
+    "favorite-memory",
+    "vocabulary-picture-book",
+    "family-stories",
+    "how-we-make",
+    "story-together",
+    "community-places",
+  ],
+  stages: [
+    {
+      en: "Think",
+      es: "Piensa",
+      do: { en: "What will your book be about? Close your eyes and picture it.", es: "¿De qué tratará tu libro? Cierra los ojos e imagínalo." },
+      frame: { en: "My book is about ___.", es: "Mi libro es sobre ___." },
+    },
+    {
+      en: "Draw",
+      es: "Dibuja",
+      do: { en: "Draw one picture on each page. Add who and where.", es: "Haz un dibujo en cada página. Agrega quién y dónde." },
+      frame: { en: "This is ___.", es: "Este es ___." },
+    },
+    {
+      en: "Tell",
+      es: "Cuenta",
+      do: { en: "Point to your picture and say what happens. Record your voice.", es: "Señala tu dibujo y di qué pasa. Graba tu voz." },
+      frame: { en: "First ___. Then ___.", es: "Primero ___. Luego ___." },
+    },
+    {
+      en: "Write",
+      es: "Escribe",
+      do: { en: "Write a label or a sentence. Stretch out the sounds.", es: "Escribe un rótulo o una oración. Estira los sonidos." },
+      frame: { en: "I see a ___.", es: "Veo un ___." },
+    },
+    {
+      en: "Share",
+      es: "Comparte",
+      do: { en: "Read your book to a friend or a grown-up.", es: "Lee tu libro a un amigo o a un adulto." },
+      frame: { en: "My favorite page is ___ because ___.", es: "Mi página favorita es ___ porque ___." },
+    },
+  ],
+  craft: [
+    {
+      en: "Draw it first",
+      es: "Primero dibújalo",
+      tip: { en: "Your picture holds the idea while you find the words.", es: "Tu dibujo guarda la idea mientras buscas las palabras." },
+      mentor: { en: "A girl. A red kite. A big wind.", es: "Una niña. Una cometa roja. Mucho viento." },
+    },
+    {
+      en: "Label it",
+      es: "Ponle rótulos",
+      tip: { en: "Write a word next to the things in your picture.", es: "Escribe una palabra junto a las cosas de tu dibujo." },
+      mentor: { en: "sun · tree · my dog", es: "sol · árbol · mi perro" },
+    },
+    {
+      en: "Say it, then write it",
+      es: "Dilo y luego escríbelo",
+      tip: { en: "Say your sentence out loud. Count the words on your fingers.", es: "Di tu oración en voz alta. Cuenta las palabras con los dedos." },
+      mentor: { en: "I like to swing.", es: "Me gusta columpiarme." },
+    },
+    {
+      en: "Add a feeling",
+      es: "Agrega un sentimiento",
+      tip: { en: "Tell how you felt. Draw your face, too.", es: "Cuenta cómo te sentiste. Dibuja también tu cara." },
+      mentor: { en: "I was so happy!", es: "¡Estaba muy feliz!" },
+    },
+  ],
+  standards: {
+    ccss: {
+      en: "CCSS Writing W.K–2.1–3 (opinion, informative, narrative through drawing, dictating and writing) · W.K–2.5–6 (adding details, digital tools with support)",
+      es: "CCSS Escritura W.K–2.1–3 (opinión, informativo, narrativo con dibujos, dictado y escritura) · W.K–2.5–6 (agregar detalles, herramientas digitales con apoyo)",
+    },
+    wida: {
+      en: "WIDA ELD Standard 2, Language for Language Arts, K, 1 and 2–3 clusters: Narrate, Inform, Explain, Argue",
+      es: "WIDA ELD Estándar 2, lenguaje para Artes del lenguaje, grupos K, 1 y 2–3: narrar, informar, explicar, argumentar",
+    },
+  },
+};
+
+export const PROGRAMS = Object.freeze({ "3-5": P35, "6-8": P68, "K-2": PK2 });
 export const STAGE_ICON = STAGE_ICONS;
 
-/** The program for a band (K, 1 and 2-3 use the 3–5 program). */
-export const programFor = (band) => PROGRAMS[band] || P35;
+const EARLY = new Set(["K", "1", "2-3"]);
+
+/** The program for a band: K, 1 and 2-3 share the Little Authors program; any other band uses 3–5. */
+export const programFor = (band) => PROGRAMS[band] || (EARLY.has(band) ? PK2 : P35);
+
+/** The band a book is written for: its grade cluster if it has one, else the band the site is showing. */
+export function bookBand(book, band) {
+  const gc = book?.gradeCluster || "";
+  if (gc === "6-8" || gc === "9-12") return "6-8";
+  if (gc === "4-5") return "3-5";
+  if (EARLY.has(gc)) return gc;
+  return band || "3-5";
+}
+
+/** Which program stage each editor stage (src/book/ui-story.js STAGES) practises. Improve covers Revise and Edit. */
+export const EDITOR_STAGE_MAP = Object.freeze({
+  imagine: [0],
+  create: [1],
+  life: [1],
+  improve: [2, 3],
+  publish: [4],
+});

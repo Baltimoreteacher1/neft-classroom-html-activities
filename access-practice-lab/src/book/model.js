@@ -418,6 +418,8 @@ export function normalizeBook(raw = {}) {
           }
         : null,
     remix: raw.remix === true,
+    // The learner's ticks on the Finish self-check (src/book/rubrics.js ids): reminders on this device, never a score.
+    selfCheck: [...new Set((Array.isArray(raw.selfCheck) ? raw.selfCheck : []).map((x) => str(x, 24)).filter(Boolean))].slice(0, 12),
     // Writing together (collab.js): which class book this copy is joined to and the last server revision applied.
     collab:
       raw.collab && typeof raw.collab === "object" && /^k[a-f0-9]{12}$/.test(raw.collab.bookId || "")

@@ -1,8 +1,10 @@
 // Book Studio band-program markup (src/book/programs.js holds the data): the template card, the author's process strip,
-// the author's-craft mini-lessons and the standards note. Returns HTML strings; the bookshelf view wires them in.
+// the author's-craft mini-lessons, the standards note, the editor's stage guide and the Finish self-check. Returns HTML
+// strings; the bookshelf view, the editor dock (ui-story.js) and the Finish dialog (editor-dialogs.js) wire them in.
 import { bkIcon } from "./icons.js";
 import { bookFromTemplate, pick } from "./model.js";
-import { KEY_USES, STAGE_ICON } from "./programs.js";
+import { EDITOR_STAGE_MAP, KEY_USES, STAGE_ICON, bookBand, programFor } from "./programs.js";
+import { rubricFor } from "./rubrics.js";
 import { esc, pageHTML } from "./render.js";
 import { BASE } from "../util.js";
 
@@ -35,11 +37,11 @@ export function journeyHTML(p, I) {
         (
           s,
           i,
-        ) => `<li class="bk-stage"><span class="bk-stage-num" aria-hidden="true">${i + 1}</span>
-        <span class="bk-stage-ico" aria-hidden="true">${bkIcon(STAGE_ICON[i])}</span>
+        ) => `<li class="bk-pathstep"><span class="bk-pathstep-num" aria-hidden="true">${i + 1}</span>
+        <span class="bk-pathstep-ico" aria-hidden="true">${bkIcon(STAGE_ICON[i])}</span>
         <strong>${esc(s[lang])}</strong>
-        <span class="bk-stage-do">${esc(pick(s.do, lang))}</span>
-        <span class="bk-frame"><span class="sr-only">${esc(I.S("Sentence frame:", "Inicio de oración:"))} </span>${esc(pick(s.frame, lang))}</span></li>`,
+        <span class="bk-pathstep-do">${esc(pick(s.do, lang))}</span>
+        <span class="bk-pathstep-frame"><span class="sr-only">${esc(I.S("Sentence frame:", "Inicio de oración:"))} </span>${esc(pick(s.frame, lang))}</span></li>`,
       )
       .join("")}</ol>
   </section>`;
@@ -71,4 +73,41 @@ export function standardsHTML(p, I) {
     <ul><li>${esc(pick(p.standards.ccss, lang))}</li><li>${esc(pick(p.standards.wida, lang))}</li>
     <li>${esc(I.S("Every template names its key language use and lists language goals, a word bank, sentence starters and a model.", "Cada plantilla nombra su uso clave del lenguaje y trae metas de lenguaje, un banco de palabras, inicios de oración y un modelo."))}</li></ul>
   </details>`;
+}
+
+/** The editor dock's guide for the current stage: what authors do now, a sentence frame to add, and (Improve) craft moves. */
+export function bandGuideHTML(E) {
+  const I = E.I;
+  const lang = langOf(I);
+  const p = programFor(bookBand(E.core.S.book, E.ctx.band));
+  const stages = (EDITOR_STAGE_MAP[E.stage] || []).map((i) => p.stages[i]).filter(Boolean);
+  if (!stages.length) return "";
+  const frameText = (s) => pick(s.frame, lang).replace(/_{2,}/g, "…");
+  return `<aside class="bk-pathguide" aria-label="${esc(I.S("Author's path", "Camino del autor"))}">
+    <span class="bk-pathguide-band">${esc(pick(p.grades, lang))}</span>
+    ${stages
+      .map(
+        (s) => `<div class="bk-pathguide-step"><strong>${esc(s[lang])}</strong> <span>${esc(pick(s.do, lang))}</span>
+      <button type="button" class="bk-pathguide-frame" data-dock="frame" data-frame="${esc(frameText(s))}" aria-label="${esc(I.S(`Add the sentence starter: ${pick(s.frame, lang)}`, `Agregar el inicio de oración: ${pick(s.frame, lang)}`))}">${bkIcon("plus")} ${esc(pick(s.frame, lang))}</button></div>`,
+      )
+      .join("")}
+    ${
+      E.stage === "improve"
+        ? `<details class="bk-pathguide-craft"><summary>${esc(I.S("Try an author's craft move", "Prueba una técnica de autor"))}</summary><ul>${p.craft.map((c) => `<li><strong>${esc(c[lang])}.</strong> ${esc(pick(c.tip, lang))} <em>${esc(pick(c.mentor, lang))}</em></li>`).join("")}</ul></details>`
+        : ""
+    }
+  </aside>`;
+}
+
+/** The Finish dialog's self-check: the band rubric for the book's purpose, each item a toggle saved on the book. */
+export function selfCheckHTML(book, band, I) {
+  const lang = langOf(I);
+  const items = rubricFor(bookBand(book, band), book.purpose);
+  const done = items.filter((r) => book.selfCheck.includes(r.id)).length;
+  const use = KEY_USES[book.purpose];
+  return `<section class="bk-selfcheck" aria-labelledby="bkSelfH">
+    <h3 id="bkSelfH">${bkIcon("check")} ${esc(I.S("Check my book", "Revisa mi libro"))}${use ? ` <span class="bk-use is-${use.tone}">${esc(use[lang])}</span>` : ""} <span class="bk-count" data-bk-selfcount>${done}/${items.length}</span></h3>
+    <p class="fine">${esc(I.S("Tap each one your book does. Fix the others, then tap them.", "Toca cada punto que tu libro cumple. Mejora los demás y luego tócalos."))}</p>
+    <ul>${items.map((r) => `<li><button type="button" class="bk-selfcheck-item" data-bk-dlg="selfcheck" data-id="${esc(r.id)}" aria-pressed="${book.selfCheck.includes(r.id)}"><span class="bk-selfcheck-box" aria-hidden="true">${bkIcon("check")}</span><span>${esc(r[lang])}</span></button></li>`).join("")}</ul>
+  </section>`;
 }
