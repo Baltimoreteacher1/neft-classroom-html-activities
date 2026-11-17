@@ -125,7 +125,6 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
     "/lessons/5-6/",
     "/curriculum/units/",
     "/teacher-tools/",
-    "/access-teacher/predictive/",
     "/access-teacher/flight-deck/",
     "/access-teacher-evil/",
     "/api/pacing/days",
@@ -139,10 +138,10 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
   }
 });
 
-await t("the Teacher Hub is served on the lab host with no password; the predictor and Flight Deck are not", async () => {
-  for (const path of ["/access-teacher/", "/access-teacher", "/access-teacher/teacher.js", "/access-teacher/class-panel.js"])
+await t("the Teacher Hub and WIDA Data Studio are served on the lab host with no password; the Flight Deck is not", async () => {
+  for (const path of ["/access-teacher/", "/access-teacher", "/access-teacher/teacher.js", "/access-teacher/class-panel.js", "/access-teacher/predictive/", "/access-teacher/predictive/app.js"])
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
-  for (const path of ["/access-teacher/", "/access-practice-lab/teacher"]) {
+  for (const path of ["/access-teacher/", "/access-teacher/predictive/", "/access-practice-lab/teacher"]) {
     const open = await answer(`https://thelanguagepage.com${path}`, { SITE_PASSWORD: "x" });
     assert.ok(open.fell, `${path} is served without a password on the lab host`);
     assert.notEqual(open.res.status, 401, path);
