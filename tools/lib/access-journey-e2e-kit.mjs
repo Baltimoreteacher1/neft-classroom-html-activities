@@ -10,6 +10,9 @@ export const JOURNEY_KEY = "accessPracticeLab:v1:journey";
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
+  ".woff2": "font/woff2",
+  ".webmanifest": "application/manifest+json",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
