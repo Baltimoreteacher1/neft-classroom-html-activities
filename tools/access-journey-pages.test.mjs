@@ -329,7 +329,7 @@ test("lab home: one h1 in the start screen, the journey offered as Continue, eve
       band,
       bands: BANDS,
       prefs: { lang: "en" },
-      route: { view: "home" },
+      route: { view: "home", grades: "6-8" },
       setPrefs() {},
       navigate() {},
       rerender() {},
@@ -413,7 +413,8 @@ test("navigation: four learner destinations keep the journey and adult tools in 
   );
   assert.equal(links[0].id, "continue");
   assert.equal(links[0].icon, "road");
-  assert.match(links[0].href, /\/access-practice-lab\/\?grades=6-8$/);
+  // Home is bare: it opens the grade chooser instead of re-picking the last grade.
+  assert.equal(links[0].href, "/access-practice-lab/");
   const I = makeI18n("en", "en");
   const nav = dom(navHTML({ band: "6-8", route: { view: "journey" } }, I));
   const current = nav.querySelector('a[aria-current="page"]');

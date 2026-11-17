@@ -106,7 +106,7 @@ const stepMinutes = (I, id, i) => {
 
 function pacingSection(I) {
   const total = STEPS.reduce((n, s) => n + s.minutes, 0);
-  return html`<section class="jg-sec" id="pacing" aria-labelledby="jg-pace-h">
+  return html`<section class="jg-sec" id="pacing" data-fold aria-labelledby="jg-pace-h">
     <h2 id="jg-pace-h">${I.T("Suggested pacing", "Ritmo sugerido")}</h2>
     <p>
       ${I.T(`One mission is about ${total} minutes of student work. This five-day rhythm is a suggestion: split, repeat or skip any step.`, `Una misión son unos ${total} minutos de trabajo del estudiante. Este ritmo de cinco días es una sugerencia: divide, repite u omite cualquier paso.`)}
@@ -127,7 +127,7 @@ function pacingSection(I) {
 
 function supportsSection(I) {
   const modes = Object.keys(SUPPORT_NAME);
-  return html`<section class="jg-sec" id="supports" aria-labelledby="jg-sup-h">
+  return html`<section class="jg-sec" id="supports" data-fold aria-labelledby="jg-sup-h">
     <h2 id="jg-sup-h">${I.T("Supports and independence", "Apoyos e independencia")}</h2>
     <p>
       ${I.T("Learners pick a support mode: ", "Los estudiantes eligen un modo de apoyo: ")}${modes.map((k, i) => html`${i ? ", " : ""}<strong>${tx(I, SUPPORT_NAME[k])}</strong> (${k})`)}.
@@ -140,7 +140,7 @@ function supportsSection(I) {
 }
 
 function evidenceSection(I) {
-  return html`<section class="jg-sec" id="evidence" aria-labelledby="jg-ev-h">
+  return html`<section class="jg-sec" id="evidence" data-fold aria-labelledby="jg-ev-h">
     <h2 id="jg-ev-h">
       ${I.T("Observable learning evidence", "Evidencia de aprendizaje observable")}
     </h2>
@@ -160,7 +160,7 @@ function evidenceSection(I) {
 
 function responsesSection(I, f) {
   const klus = f.klu ? [f.klu] : KLUS;
-  return html`<section class="jg-sec" id="responses" aria-labelledby="jg-resp-h">
+  return html`<section class="jg-sec" id="responses" data-fold aria-labelledby="jg-resp-h">
     <h2 id="jg-resp-h">
       ${I.T("Suggested instructional responses", "Respuestas didácticas sugeridas")}
     </h2>
@@ -185,7 +185,7 @@ function printablesSection(I, f, opts) {
   const domains = f.domain ? [f.domain] : DOMAINS;
   const link = (href, text) =>
     html`<a class="btn btn-secondary" href="${href}" target="_blank" rel="noopener">${text}</a>`;
-  return html`<section class="jg-sec no-print-links" id="printables" aria-labelledby="jg-print-h">
+  return html`<section class="jg-sec no-print-links" id="printables" data-fold aria-labelledby="jg-print-h">
     <h2 id="jg-print-h">${I.T("Printable materials", "Materiales para imprimir")}</h2>
     <p>
       ${I.T(`Student practice packets for ${BAND_NAME[f.band][0]}, by domain and level. Student packets have no answer keys. The family companion for each mission is linked on its card.`, `Paquetes de práctica para estudiantes, ${BAND_NAME[f.band][1]}, por dominio y nivel. Los paquetes del estudiante no tienen claves de respuesta. El compañero familiar de cada misión está enlazado en su tarjeta.`)}
@@ -224,12 +224,13 @@ function missionList(I, f, opts) {
       ${I.T(`Showing ${shown} of ${MISSION_IDS.length} missions.`, `Se muestran ${shown} de ${MISSION_IDS.length} misiones.`)}
     </p>
     ${domainNote}
-    ${groups.length ? groups.map((g) => unitBlock(I, g, ctxBase)) : html`<p class="jg-empty">${I.T("No mission matches these filters. Clear a filter to see more.", "Ninguna misión coincide con estos filtros. Borra un filtro para ver más.")}</p>`}
+    ${groups.length ? groups.map((g, i) => unitBlock(I, g, ctxBase, i === 0)) : html`<p class="jg-empty">${I.T("No mission matches these filters. Clear a filter to see more.", "Ninguna misión coincide con estos filtros. Borra un filtro para ver más.")}</p>`}
   </div>`;
 }
 
-const unitBlock = (I, { u, ids }, ctxBase) =>
-  html`<section class="jg-unit" aria-labelledby="jg-u${u.n}">
+// Units fold to their heading (src/fold.js); the first stays open so the page starts with a mission, not a list.
+const unitBlock = (I, { u, ids }, ctxBase, first) =>
+  html`<section class="jg-unit" id="jg-unit-${u.n}" data-fold="${first ? "open" : ""}" aria-labelledby="jg-u${u.n}">
     <h2 id="jg-u${u.n}">
       ${I.T("Unit", "Unidad")} ${u.n}: ${tx(I, u.title)}
       <span class="jg-klu">${tx(I, KLU_NAME[u.klu])}</span>
