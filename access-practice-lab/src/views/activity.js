@@ -28,6 +28,7 @@ import {
   correctAnswerText,
   isAnswered,
   isCorrect,
+  missNotes,
   practiceBand,
   practiceCopy,
   writingPracticeScore,
@@ -339,12 +340,18 @@ function feedbackHTML(a) {
 
 /** Explain the wrong option a learner chose when the authored item provides a diagnosis. */
 function pickedNote(a) {
-  const picked = answerOf(cur.record, a.id);
-  const ids = Array.isArray(picked) ? picked : picked ? [picked] : [];
-  const notes = ids.map((id) => a.distractorFeedback?.[id]).filter(Boolean);
-  return notes.length
-    ? html`<p class="fb-why"><strong>${I.T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</strong> ${notes.map((n, i) => html`${i ? " " : ""}${tx(n)}`)}</p>`
-    : "";
+  const notes = missNotes(a, answerOf(cur.record, a.id));
+  if (!notes.length) return "";
+  if (notes.every((n) => !n.label))
+    return html`<p class="fb-why"><strong>${I.T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</strong> ${notes.map((n, i) => html`${i ? " " : ""}${tx(n.note)}`)}</p>`;
+  return html`<div class="fb-why"><strong>${I.T("Look again:", "Vuelve a mirar:")}</strong><ul class="fb-why-list">${notes.map((n) => html`<li><span class="fb-why-label" lang="en">${n.label}</span> ${tx(n.note)}</li>`)}</ul></div>`;
+}
+
+/** The next step right inside the result, so a finished item never needs a scroll to move on. */
+function feedbackNextHTML() {
+  const l = navLinks();
+  if (l.next) return html`<a class="btn btn-primary small fb-next" href="${l.next}">${I.T("Next activity", "Siguiente actividad")} ${icon("arrow-right")}</a>`;
+  return html`<a class="btn btn-primary small fb-next" href="${l.end}">${l.playlist ? I.T("Finish", "Terminar") : I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`;
 }
 
 /** Folded extra help under the one-line result, so each answer shows a clear verdict and one next action. */
@@ -357,7 +364,10 @@ function feedbackBody(a) {
     const next = cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${tx(a.extension)}` : cur.domain === "Reading" ? lookBack() : "";
     const canModel = Boolean(curFamily) && mode === "supported";
     return html`<div class="feedback is-right" role="status">
-      <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
+      <div class="fb-head">
+        <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
+        ${feedbackNextHTML()}
+      </div>
       <p class="fb-lead">${a.correct ? tx(a.correct) : I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea.")}</p>
       ${next || canModel ? moreHelp(I.T("Go further", "Ve más allá"), feedbackBodyHTML(I, { next, canModel })) : ""}
     </div>`;
@@ -369,6 +379,7 @@ function feedbackBody(a) {
       <div class="fb-head">
         <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
         <button type="button" class="btn small" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
+        ${feedbackNextHTML()}
       </div>
       <p class="fb-lead"><strong>${correctAnswerText(a)}</strong></p>
       ${moreHelp(

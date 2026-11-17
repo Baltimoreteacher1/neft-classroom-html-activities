@@ -195,3 +195,36 @@ function practiceEs(en) {
   return undefined;
 }
 export const practiceCopy = (en, i18n) => (i18n ? i18n.T(en, practiceEs(en)) : en);
+
+/**
+ * The authored notes for the parts of an answer that miss: a wrong choice (`distractorFeedback`, keyed by option or
+ * sentence id) or a misplaced sort card, wrong blank word or out-of-place step (`itemFeedback`, keyed by item or
+ * blank id). Each note names what to look at again and never states the answer. Returns [{ label, note }] in the
+ * item's own order; `label` is the card or blank text for part-level notes, "" for a whole-choice note.
+ */
+export function missNotes(item, answer) {
+  const df = item.distractorFeedback || {};
+  const fb = item.itemFeedback || {};
+  const out = [];
+  if (["multipleChoice", "multiSelect", "hotText"].includes(item.type)) {
+    const right = new Set(item.type === "multipleChoice" ? [item.answer] : item.answers || []);
+    for (const id of Array.isArray(answer) ? answer : answer ? [answer] : [])
+      if (!right.has(id) && df[id]) out.push({ label: "", note: df[id] });
+    return out;
+  }
+  if (item.type === "sort") {
+    const a = answer || {};
+    for (const it of item.items || []) if (a[it.id] && a[it.id] !== it.answer && fb[it.id]) out.push({ label: it.text, note: fb[it.id] });
+  } else if (item.type === "cloze") {
+    const a = answer || {};
+    for (const s of item.segments || [])
+      if (s.blank && a[s.blank.id] && a[s.blank.id] !== s.blank.answer && fb[s.blank.id]) out.push({ label: a[s.blank.id], note: fb[s.blank.id] });
+  } else if (item.type === "order") {
+    const a = answer || [];
+    const byId = new Map((item.items || []).map((it) => [it.id, it.text]));
+    (item.answer || []).forEach((id, i) => {
+      if (a[i] && a[i] !== id && fb[a[i]]) out.push({ label: byId.get(a[i]) || "", note: fb[a[i]] });
+    });
+  }
+  return out.slice(0, 3);
+}

@@ -101,6 +101,8 @@ function expandBank(spec, domain, counters) {
   if (spec.table) a.table = spec.table;
   if (spec.chart) a.chart = spec.chart;
   if (spec.picture) a.picture = spec.picture;
+  // Per-card / per-blank / per-step notes for a miss (src/grade.js missNotes), keyed by the generated ids.
+  if (spec.itemFeedback) a.itemFeedback = spec.itemFeedback;
   if (type === "multipleChoice" || type === "multiSelect") {
     const multi = type === "multiSelect";
     const count = spec.opts.length;

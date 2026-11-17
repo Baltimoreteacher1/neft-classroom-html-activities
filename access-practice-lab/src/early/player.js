@@ -14,7 +14,7 @@
 // It reads and writes the same practice record as the classic activity page, so Passport and the room lists count
 // audio-first work too. Results are practice evidence, never a level or score.
 import { audioFirstOn, BAND_INFO } from "../bands.js";
-import { isCorrect } from "../grade.js";
+import { isCorrect, missNotes } from "../grade.js";
 import { isRecording } from "../recorder.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { recorderHTML } from "../components.js";
@@ -397,7 +397,7 @@ export function onClick(e, ctx, I, cur, save) {
     const ok = isCorrect(a, answerFor(a));
     st.tries += 1;
     // A wrong pick with an authored note says what that choice missed (never which choice is right).
-    const note = ok ? "" : st.picks.map((id) => a.distractorFeedback?.[id]).find(Boolean) || "";
+    const note = ok ? "" : missNotes(a, answerFor(a))[0]?.note || "";
     st.checked = { ok, note };
     record(cur, save, {
       ok,

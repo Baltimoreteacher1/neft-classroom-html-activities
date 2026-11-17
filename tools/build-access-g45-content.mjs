@@ -158,6 +158,8 @@ function expandItem(spec, domain) {
   if (spec.table) a.table = spec.table;
   if (spec.chart) a.chart = spec.chart;
   if (spec.picture) a.picture = spec.picture;
+  // Per-card / per-blank / per-step notes for a miss (src/grade.js missNotes), keyed by the generated ids.
+  if (spec.itemFeedback) a.itemFeedback = spec.itemFeedback;
   if (a.type === "multipleChoice" || a.type === "multiSelect") {
     const { options, ids, distractorFeedback } = buildOptions(id, spec, a.type === "multiSelect");
     a.options = options;

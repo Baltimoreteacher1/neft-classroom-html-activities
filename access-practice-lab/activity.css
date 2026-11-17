@@ -1904,4 +1904,39 @@ details.retell > :last-child {
 .activity-workspace .stimulus {
   top: calc(var(--lab-top-h, 6.75rem) + 1rem);
   max-height: calc(100vh - var(--lab-top-h, 6.75rem) - 2rem);
+
+/* Part-level miss notes (sort cards, blanks, steps): one line per card, the card named first. */
+.fb-why-list {
+  margin: 6px 0 0;
+  padding-inline-start: 1.1rem;
+}
+.fb-why-list li {
+  margin-block: 4px;
+}
+.fb-why-label {
+  font-weight: 700;
+}
+.fb-why-label::after {
+  content: " —";
+}
+
+/* Help tools sit as one row of chips above the answer; the one a learner opens takes the full width below. */
+.response-workspace > :is(details.strategy, details.helpers):not([open]),
+.answer-zone > details.writing-starters:not([open]) {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin: 0 8px 10px 0;
+  vertical-align: top;
+}
+.response-workspace > :is(details.strategy, details.helpers):not([open]) > summary,
+.answer-zone > details.writing-starters:not([open]) > summary {
+  min-height: 44px;
+  padding-inline-end: 2.2rem;
+  border-radius: 999px;
+}
+.response-workspace > :is(details.strategy, details.helpers)[open],
+.answer-zone > details.writing-starters[open] {
+  display: block;
+  width: 100%;
 }

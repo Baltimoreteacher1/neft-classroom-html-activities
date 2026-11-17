@@ -34,6 +34,7 @@ const guidance = (a) => [
     .map((k) => a[k])
     .filter((v) => typeof v === "string" && v.trim()),
   ...Object.values(a.distractorFeedback || {}).filter((v) => typeof v === "string"),
+  ...Object.values(a.itemFeedback || {}).filter((v) => typeof v === "string"),
   ...[].concat(a.wida || []).filter((v) => typeof v === "string"),
 ];
 

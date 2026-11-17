@@ -130,6 +130,28 @@ export function pickVoice(lang = "en-US", { voiceURI = "", persona = "narrator" 
   return voices.find((v) => v.lang?.toLowerCase().startsWith(base)) || null;
 }
 
+// Phones: Chrome on Android can garbage-collect a playing utterance (speech stops, onend never fires), so each one
+// is held until it ends; iOS only lets speech start inside a tap, so the first tap anywhere speaks a silent utterance
+// that unlocks later read-aloud (auto-played directions included).
+const live = new Set();
+const hold = (u) => {
+  live.add(u);
+  const drop = () => live.delete(u);
+  u.addEventListener?.("end", drop);
+  u.addEventListener?.("error", drop);
+};
+if (typeof window !== "undefined" && "speechSynthesis" in window && typeof document !== "undefined") {
+  const unlock = () => {
+    try {
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0;
+      hold(u);
+      window.speechSynthesis.speak(u);
+    } catch {}
+  };
+  document.addEventListener("pointerdown", unlock, { once: true, capture: true });
+}
+
 export const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
 let current = null;
 
@@ -150,7 +172,7 @@ export function speak(
     onBoundary,
   } = {},
 ) {
-  stop();
+  const busy = stop();
   const list = (Array.isArray(segments) ? segments : [segments])
     .map((s) => String(s || "").trim())
     .filter(Boolean);
@@ -201,12 +223,16 @@ export function speak(
       };
       u.onerror = () => finish(false);
       try {
+        window.speechSynthesis.resume?.();
+        hold(u);
         window.speechSynthesis.speak(u);
       } catch {
         finish(false);
       }
     };
-    next();
+    // iOS drops a speak() issued in the same tick as cancel(); wait a beat only when something was cancelled.
+    if (busy) setTimeout(next, 60);
+    else next();
   });
 }
 
@@ -339,9 +365,13 @@ export function stop() {
   current = null;
   // Some browsers cancel silently, without dispatching end/error events.
   previous?.finish?.(false);
+  let busy = false;
   try {
-    window.speechSynthesis?.cancel();
+    const synth = window.speechSynthesis;
+    busy = Boolean(synth?.speaking || synth?.pending);
+    if (busy) synth.cancel();
   } catch {}
+  return busy;
 }
 
 export const isSpeaking = () => current !== null;

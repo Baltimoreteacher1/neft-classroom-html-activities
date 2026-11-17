@@ -191,6 +191,8 @@ export function expand(band, domain, spec) {
       );
     a.distractorFeedback = spec.distractorFeedback;
   }
+  // Per-card / per-blank / per-step notes for a miss (src/grade.js missNotes), keyed by the generated ids.
+  if (spec.itemFeedback) a.itemFeedback = spec.itemFeedback;
   a.hint = spec.hint || SUPPORT[domain];
   a.support = SUPPORT[domain];
   a.extension = spec.extension || EXTENSION[domain];
