@@ -153,6 +153,17 @@ async function lesson(ctx, id) {
     );
   }
   // Practice -> model -> back, on a verified hand-off.
+  // Vocabulary: lesson words are underlined, and a word opens its card (English and Spanish), Escape closes it.
+  if (L.vocabLinks) {
+    await page.click('.ms-stagebar [data-stage-link="understand"]');
+    // On 6-5 the words are step 2 (the parts come first), so open the card without walking the steps.
+    await page.$eval("#understand .ms-flip", (el) => el.click());
+    const card = await page.$eval(".ms-vpop", (el) => (el.hidden ? "" : el.innerText));
+    ok(card.includes(L.understand.vocabulary[0].term), id, "word card did not open");
+    await page.keyboard.press("Escape");
+    ok(await page.$eval(".ms-vpop", (el) => el.hidden), id, "word card did not close");
+    ok((await page.$$(".ms-term-link")).length > 0, id, "no underlined lesson words");
+  }
   // Understand builds one step at a time: only step 1 shows, and Continue opens the next.
   await page.click('.ms-stagebar [data-stage-link="understand"]');
   const visible = () =>

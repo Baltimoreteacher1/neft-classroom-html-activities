@@ -1082,9 +1082,8 @@ body.ms .ms-tok.is-dim { background: #f1f1ef; border-color: #d4d4d0; color: var(
 .ms-words--flip li { border-inline-start-color: var(--ms-mustard); }
 body.ms .ms-flip { display: grid; gap: 2px; width: 100%; text-align: start; background: none; border: 0; padding: 0; font: inherit; color: var(--ms-ink); cursor: pointer; min-height: 44px; }
 .ms-flip__hint { font-size: 0.85rem; color: var(--ms-teal); font-weight: 600; }
-.ms-flip[aria-expanded="true"] .ms-flip__hint { display: none; }
 .ms-flip__score { margin: 8px 0 0; color: var(--ms-sage-ink); font-weight: 700; }
-.ms-worked li[hidden], .ms-walk[hidden], .ms-legend li[hidden], .ms-flip__back[hidden] { display: none !important; }
+.ms-worked li[hidden], .ms-walk[hidden], .ms-legend li[hidden] { display: none !important; }
 .ms-walk { margin-top: 10px; }
 .ms-partsfig .ms-tok { display: inline-grid; place-items: center; }
 body.ms .ms-partsfig .ms-tok.is-on { box-shadow: 0 0 0 4px var(--ms-navy); }
@@ -1102,9 +1101,55 @@ body.ms .ms-partsfig .ms-tok.is-on { box-shadow: 0 0 0 4px var(--ms-navy); }
 .ms-ustep__next { margin: 14px 0 0; }
 .ms-ustep[hidden], .ms-ustep__next[hidden] { display: none !important; }
 .ms-ustep .ms-picture, .ms-ustep .ms-partsfig { margin: 8px 0 0; }
-.ms-flip__img { display: block; width: 100%; max-width: 220px; height: auto; max-height: 160px; object-fit: contain; margin: 8px 0 4px; background: var(--ms-cream); border-radius: 8px; }
 /* One card at a time in Apply and Reflect. */
 /* Right-aligned: the fixed Learning supports button sits at the bottom left and would cover a Back button there. */
 .ms-pager { justify-content: flex-end; align-items: center; margin-top: 12px; }
 .ms-pager__count { color: var(--ms-muted); font-weight: 700; }
 #apply .ms-task[hidden], #ms-reflect > [hidden] { display: none !important; }
+
+/* Underlined vocabulary and its card (the site's pattern: homework pages, graphic novels). */
+body.ms .ms-term-link { display: inline; margin: 0; padding: 0 1px; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted 2px var(--ms-teal); text-underline-offset: 3px; border-radius: 4px; }
+body.ms .ms-term-link:hover, body.ms .ms-term-link:focus-visible { text-decoration-style: solid; background: var(--ms-teal-soft); }
+.ms-vpop { position: fixed; inset: 0; z-index: 2147483001; display: flex; align-items: flex-start; padding: 18px; overflow-y: auto; overscroll-behavior: contain; background: rgb(15 23 42 / 55%); }
+.ms-vpop[hidden] { display: none; }
+.ms-vpop__card { position: relative; width: min(440px, 100%); margin: auto; background: var(--ms-paper); color: var(--ms-ink); border-radius: 18px; box-shadow: 0 18px 50px rgb(15 23 42 / 30%); padding: 26px 22px 22px; text-align: center; }
+body.ms .ms-vpop__close { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--ms-cream); color: var(--ms-ink); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+body.ms .ms-vpop__term { margin: 0 40px 12px; color: var(--ms-teal-ink); font-size: 1.45rem; }
+.ms-vpop__es { display: flex; gap: 10px; justify-content: center; align-items: baseline; margin: 0 0 14px; padding: 9px 14px; background: var(--ms-teal-soft); border-radius: 12px; }
+.ms-vpop__es span { font-weight: 700; color: var(--ms-teal-ink); font-size: 0.95rem; }
+.ms-vpop__es strong { font-size: 1.15rem; font-weight: 600; }
+.ms-vpop__img { display: block; width: 100%; max-width: 260px; height: auto; margin: 0 auto 12px; border-radius: 10px; background: var(--ms-cream); }
+.ms-vpop__def { margin: 0; font-size: 1.05rem; }
+.ms-vpop__def-es { margin: 10px 0 0; font-style: italic; color: var(--ms-muted); }
+.ms-vpop__ex { margin: 14px 0 0; padding: 10px 14px; border-radius: 12px; background: var(--ms-cream); text-align: left; }
+.ms-vpop__ex > span { display: block; font-weight: 700; font-size: 0.85rem; color: var(--ms-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+body.ms-vpop-open { overflow: hidden; }
+
+/* Cleaner cards: one surface style for Start, Understand steps, word cards, Apply and Reflect. */
+.ms-start, .ms-ustep { background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: 18px; box-shadow: var(--ms-shadow); padding: 20px 22px; }
+.ms-ustep { border-top: 4px solid var(--ms-teal); }
+.ms-ustep[data-ukey^="check"], .ms-ustep[data-ukey="wordcheck"] { border-top-color: var(--ms-mustard); }
+.ms-ustep[data-ukey="summary"] { border-top-color: var(--ms-navy); }
+.ms-ustep h3 { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; margin: 0 0 14px; }
+.ms-ustep__n { flex: 0 0 auto; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ms-teal-soft); color: var(--ms-teal-ink); font-size: 1rem; font-weight: 800; }
+.ms-ustep[data-ukey^="check"] .ms-ustep__n, .ms-ustep[data-ukey="wordcheck"] .ms-ustep__n { background: var(--ms-mustard-soft); color: var(--ms-navy); }
+.ms-understand { gap: 18px; }
+.ms-uprogress { display: grid; gap: 6px; position: sticky; top: 68px; z-index: 2; padding: 8px 0; background: var(--ms-cream); }
+.ms-uprogress__text { color: var(--ms-muted); font-weight: 700; font-size: 0.95rem; }
+.ms-uprogress__bar { display: block; height: 8px; border-radius: 999px; background: var(--ms-line); overflow: hidden; }
+.ms-uprogress__bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ms-teal), var(--ms-sage)); border-radius: inherit; transition: width 0.3s ease; }
+.ms-words--flip { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.ms-words li { border-inline-start: 0; border: 1px solid var(--ms-line); border-radius: 14px; padding: 12px 14px; background: var(--ms-paper); transition: border-color 0.15s, box-shadow 0.15s; }
+.ms-words--flip { align-items: start; }
+.ms-words--flip li { padding: 0; }
+body.ms .ms-flip { padding: 14px 16px; border-radius: 14px; min-height: 84px; align-content: start; }
+body.ms .ms-flip:hover, body.ms .ms-flip:focus-visible { background: var(--ms-teal-soft); }
+.ms-words--flip li:has(.ms-flip[data-seen]) { border-color: var(--ms-teal); }
+.ms-flip[data-seen] .ms-flip__hint::before { content: "✓ "; }
+.ms-flip strong { font-size: 1.1rem; }
+.ms-worked { border-radius: 14px; box-shadow: none; }
+.ms-task, #ms-reflect .ms-item, #ms-reflect .ms-reflect-item > .ms-item { border-radius: 18px; }
+@media (max-width: 640px) {
+  .ms-start, .ms-ustep { padding: 16px; border-radius: 14px; }
+  .ms-uprogress { top: 56px; }
+}

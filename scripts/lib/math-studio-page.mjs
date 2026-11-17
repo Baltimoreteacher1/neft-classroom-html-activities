@@ -1,5 +1,6 @@
 // Markup for Math Studio: the lesson page (/math/studio/<id>/), the finder (/math/studio/), and the five-stage bar that
 // the Practice and Challenge studios and the Learning Labs carry so they read as stages of one product.
+import { buildVocabMatcher, isConceptEntry } from "../../engine/core/vocab-match.js";
 import { withCurriculumShell } from "../../tools/lib/curriculum-shell.mjs";
 
 export const esc = (s) =>
@@ -91,17 +92,28 @@ function wordQuiz(L) {
   });
 }
 
+/**
+ * The underlined-word pop-ups (the site's vocabulary pattern, as on the homework pages and graphic novels): the
+ * lesson's own words, without concept statements, matched with the shared index from engine/core/vocab-match.js.
+ * The page carries the words and the prebuilt pattern; assets/math-studio/vocab.mjs underlines and opens them.
+ */
+function vocabLinks(L) {
+  const words = (L.understand.vocabulary || []).filter((v) => !isConceptEntry(v));
+  const m = buildVocabMatcher(words);
+  return m ? { words, regexSource: m.regexSource, lookup: m.lookup } : null;
+}
+
 /** Words to know, shown first: Explore gets the first four, Understand all of them. */
 function wordCards(list, { flip = false } = {}) {
   const meaning = (v) =>
     `<p>${bi(v.definition, v.definitionEs)}</p>${v.example ? `<p class="ms-muted">${esc(v.example)}</p>` : ""}`;
-  // Understand: each card is a button; the student says what the word means, then taps to check. The picture comes
-  // with the meaning, full size, so it does not give the answer away first.
+  // Understand: each card is a button; the student says what the word means, then taps to open the word's card
+  // (picture, English and Spanish), the same card the underlined words open.
   if (flip)
     return `<ul class="ms-words ms-words--flip">${list
       .map(
-        (v) =>
-          `<li><div><button type="button" class="ms-flip" aria-expanded="false"><strong>${bi(v.term, v.termEs)}</strong><span class="ms-flip__hint">${bi("Tap to check what it means", "Toca para ver qué significa")}</span></button><div class="ms-flip__back" hidden>${v.image ? `<img class="ms-flip__img" src="${esc(v.image)}" alt="${esc(`Picture for ${v.term}`)}" loading="lazy">` : ""}${meaning(v)}</div></div></li>`,
+        (v, i) =>
+          `<li><button type="button" class="ms-flip" data-word="${i}" aria-haspopup="dialog"><strong>${bi(v.term, v.termEs)}</strong><span class="ms-flip__hint">${bi("Tap to see the picture and meaning", "Toca para ver la imagen y el significado")}</span></button></li>`,
       )
       .join("")}</ul>`;
   return `<ul class="ms-words">${list
@@ -230,11 +242,11 @@ function understand(L) {
     ),
   ].filter(Boolean);
   return `<div class="ms-understand">
-    <p class="ms-uprogress" aria-live="polite"></p>
+    <div class="ms-uprogress"><span class="ms-uprogress__text" aria-live="polite"></span><span class="ms-uprogress__bar" aria-hidden="true"><span></span></span></div>
     ${steps_
       .map(
         (st, i) =>
-          `<section class="ms-ustep" data-ustep="${i}" data-ukey="${st.key}"${i ? " hidden" : ""} aria-labelledby="ms-u-${st.key}"><h3 id="ms-u-${st.key}" tabindex="-1">${bi(`Step ${i + 1} of ${steps_.length}: ${st.en}`, `Paso ${i + 1} de ${steps_.length}: ${st.es}`)}</h3>${st.body}${st.next}</section>`,
+          `<section class="ms-ustep" data-ustep="${i}" data-ukey="${st.key}"${i ? " hidden" : ""} aria-labelledby="ms-u-${st.key}"><h3 id="ms-u-${st.key}" tabindex="-1"><span class="ms-ustep__n" aria-hidden="true">${i + 1}</span><span class="sr-only">${bi(`Step ${i + 1} of ${steps_.length}:`, `Paso ${i + 1} de ${steps_.length}:`)} </span>${bi(st.en, st.es)}</h3>${st.body}${st.next}</section>`,
       )
       .join("")}
   </div>`;
@@ -372,7 +384,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
     <div id="ms-evidence" class="ms-evidence"></div>
   </section>
 </main>
-<script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) } })}</script>
+<script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) }, vocabLinks: vocabLinks(L) })}</script>
 <script type="module" src="/assets/math-studio/studio.mjs?v=${stamp}"></script>
 </body>
 </html>

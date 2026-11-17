@@ -302,6 +302,11 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
         clean({
           term: v.term,
           termEs: v.termEs,
+          // Kept for the underlined-word pop-ups (engine/core/vocab-match.js): concept statements are not
+          // underlined, acronyms match case-sensitively, aliases add short natural forms.
+          role: v.role,
+          caseSensitive: v.caseSensitive,
+          aliases: v.aliases,
           definition: v.definition,
           definitionEs: v.definitionEs,
           image: v.image && has(v.image) ? v.image : undefined,
