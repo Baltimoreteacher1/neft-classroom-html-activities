@@ -151,6 +151,11 @@ ok(
 );
 ok((await page.locator(".retell").count()) === 1, "retell appears after a right Reading answer");
 ok(
+  (await page.locator("details.retell[open]").count()) === 0,
+  "retell is an optional extension, folded until the learner opens it",
+);
+await page.locator("details.retell > summary").click();
+ok(
   (await page.locator(".retell-frames li").count()) === 3,
   "retell shows its frames in Learn with help",
 );
@@ -208,6 +213,9 @@ ok(
   (await page.locator(".fc-def").count()) === 1 && (await page.locator(".fc-es").count()) === 1,
   "flipping shows the meaning and the Spanish gloss",
 );
+// axe calls anything the sticky header overlaps "obscured"; scan from the top so the result describes the cards,
+// not wherever the flip click happened to leave the scroll position.
+await page.evaluate(() => window.scrollTo(0, 0));
 await axeCheck("word cards, flipped");
 await page.locator('[data-fc-know="1"]').click();
 await page.waitForFunction(
@@ -255,6 +263,10 @@ ok(
   "the log keeps my own note",
 );
 // The two serialized-story entry buttons above the log already fail contrast on the shelf (not part of this change).
+// The page now stays where the learner clicked, so the pointer still rests on Add: move it off so axe judges the
+// button at rest, not halfway through its hover colour transition.
+await page.mouse.move(0, 0);
+await page.waitForTimeout(300);
 await axeCheck("reading room reading log", ".rr-adventure-entry");
 await overflowAt375("reading room with reading log");
 

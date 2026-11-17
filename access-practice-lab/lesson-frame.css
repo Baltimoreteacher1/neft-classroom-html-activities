@@ -649,3 +649,65 @@
     transition: none;
   }
 }
+
+/* ── slim step rail (2026-11-16) ───────────────────────────────────────────
+   Four big tiles (a 2 × 2 block on phones) sat between the learner and the title. The rail is now one slim row
+   of four connected steps at every width; the step count stays for screen readers, the duplicate bar goes. */
+.lf-rail {
+  margin: var(--s-3) 0 var(--s-2);
+}
+.lf-rail-count {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.lf-arc {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+.lf-arc-btn {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "n t";
+  min-height: 2.75rem;
+  padding: 0.3rem 0.55rem;
+  border-width: 1px;
+  border-radius: 999px;
+  box-shadow: none;
+}
+.lf-arc-s {
+  display: none;
+}
+.lf-arc-n {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.8rem;
+}
+.lf-arc-t {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lf-arc-step.is-current .lf-arc-btn {
+  box-shadow: none;
+}
+.lf-arc-bar {
+  display: none;
+}
+@media (max-width: 479px) {
+  .lf-arc-btn {
+    grid-template-columns: 1fr;
+    grid-template-areas: "n" "t";
+    justify-items: center;
+    padding: 0.3rem 0.15rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+  .lf-arc-t {
+    font-size: 0.75rem;
+    max-width: 100%;
+  }
+}

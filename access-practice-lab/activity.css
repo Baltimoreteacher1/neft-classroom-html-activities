@@ -1803,5 +1803,105 @@ details.helpers[open] > summary {
   }
   .jump-in.is-early .jump-mixed {
     grid-column: 1 / -1;
+
+/* ── calm activity page (2026-11-16) ───────────────────────────────────────
+   The page leads with the task: secondary links are a quiet text row, the optional retell folds away,
+   and a jump to a part of the page lands below the sticky header instead of under it. */
+.act-return {
+  gap: 0.25rem 1.1rem;
+  margin: 0 0 0.6rem;
+}
+.act-return .btn.small {
+  min-height: 2.75rem;
+  padding: 0.2rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--brand-deep);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 0.2em;
+  transform: none;
+}
+.act-return .btn.small:hover {
+  text-decoration-color: currentColor;
+}
+details.retell {
+  padding: 0;
+}
+details.retell > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: 3rem;
+  padding: 0.5rem var(--s-4);
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink);
+  list-style: none;
+}
+details.retell > summary::-webkit-details-marker {
+  display: none;
+}
+details.retell > summary::after {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+details.retell[open] > summary::after {
+  transform: rotate(225deg);
+}
+.retell-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.retell-optional {
+  margin-inline-start: auto;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+details.retell > :not(summary) {
+  margin-inline: var(--s-4);
+}
+details.retell > :last-child {
+  margin-bottom: var(--s-4);
+}
+@media (prefers-reduced-motion: reduce) {
+  details.retell > summary::after {
+    transition: none;
   }
+}
+/* Phones: the context pill and the activity count share one line; the journey stop is a detail for wider screens. */
+@media (max-width: 559px) {
+  .act-bar {
+    gap: 0.35rem 0.75rem;
+  }
+  .act-journey-label {
+    display: none;
+  }
+  .act-context {
+    padding: 0.2rem 0.65rem 0.2rem 0.5rem;
+    font-size: 0.8125rem;
+  }
+  .act-step {
+    font-size: 0.8125rem;
+  }
+  .act-step .bar {
+    width: 4rem;
+  }
+}
+/* The passage stays beside the questions, clear of the sticky header (--lab-top-h is its live height, src/shell.js). */
+.activity-workspace .stimulus {
+  top: calc(var(--lab-top-h, 6.75rem) + 1rem);
+  max-height: calc(100vh - var(--lab-top-h, 6.75rem) - 2rem);
 }

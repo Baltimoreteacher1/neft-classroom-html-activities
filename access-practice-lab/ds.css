@@ -594,14 +594,23 @@ a:hover {
 .lab-main:focus {
   outline: none;
 }
+/* Reserve the first screen while the app boots, so the footer is not on screen and then pushed away (CLS). */
+.lab-main:has(> .boot) {
+  min-height: 100vh;
+  visibility: hidden;
+}
+/* The boot note is pinned to the screen, not the page: when the header tools and section bar arrive above it,
+   nothing visible moves (a note in the flow was the one shift left on every page load). */
 .boot {
+  position: fixed;
+  inset: 40vh 0 auto;
   display: flex;
   gap: 0.6rem;
-  align-items: flex-start;
-  /* Reserve the first screen while the app boots, so the footer is not on screen and then pushed away (CLS). */
-  min-height: 100vh;
-  padding: 3rem 0;
+  align-items: center;
+  justify-content: center;
   color: var(--ink-2);
+  pointer-events: none;
+  visibility: visible;
 }
 .boot-dot {
   width: 0.8rem;

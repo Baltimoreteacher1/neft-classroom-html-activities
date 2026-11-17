@@ -42,7 +42,8 @@ export function readingLogClick(e, ctx, I) {
     return true;
   }
   saveReadingState(state);
-  announce(I.S("Added to your reading log.", "Agregado a tu registro de lectura."));
+  // The new entry appears in the list right under the form; a pop-up would only cover the button.
+  announce(I.S("Added to your reading log.", "Agregado a tu registro de lectura."), { toast: false });
   ctx.rerender();
   return true;
 }
