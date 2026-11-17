@@ -108,7 +108,7 @@ function squareButton(I, sq, i, rec, line, near, open) {
       type="button"
       class="cb-square"
       data-cb-open="${i}"
-      aria-expanded="${open === i}"
+      aria-expanded="${String(open === i)}"
       aria-controls="cbSquare"
     >
       <span class="cb-sq-domain">${icon(d.icon)} ${pairT(I, d.name)}</span>
@@ -198,7 +198,7 @@ ${note}</textarea>
         type="button"
         class="btn ${done ? "" : "btn-primary"}"
         data-cb-done="${i}"
-        aria-pressed="${done}"
+        aria-pressed="${String(done)}"
       >
         ${icon("check")}
         ${done ? I.T("Done. Tap to undo", "Hecho. Toca para deshacer") : I.T("I did it", "Lo hice")}

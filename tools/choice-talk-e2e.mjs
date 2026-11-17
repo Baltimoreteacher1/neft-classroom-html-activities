@@ -68,6 +68,9 @@ for (const width of [1280, 390]) {
     if (i === 0) {
       check(await page.locator("#cbSquare [data-say]").count() >= 2, `${W} listening square has listen buttons`);
       await page.locator("[data-cb-note]").fill("Nia's reasons are stronger.");
+      check((await page.locator('[data-cb-done="0"]').getAttribute("aria-pressed")) === "false", `${W} done button states aria-pressed="false"`);
+      check((await page.locator('[data-cb-open="0"]').getAttribute("aria-expanded")) === "true", `${W} open square states aria-expanded="true"`);
+      await page.waitForTimeout(800); // let the smooth scroll to the panel finish before measuring targets
       await axe(page, `${W} open square`);
     }
     await page.locator(`[data-cb-done="${i}"]`).click();
