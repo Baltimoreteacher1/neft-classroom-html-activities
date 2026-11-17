@@ -26,6 +26,7 @@ function stamp() {
   const h = createHash("sha256");
   for (const f of readdirSync(join(REPO_ROOT, ASSET_DIR)).sort())
     h.update(read(`${ASSET_DIR}/${f}`));
+  h.update(read("assets/lib/stacked-fractions.js"));
   for (const f of ["model.mjs", "math.mjs", "lab.css"])
     h.update(read(`curriculum/learning-labs/shared/${f}`));
   return h.digest("hex").slice(0, 10);

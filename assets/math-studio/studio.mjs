@@ -40,6 +40,8 @@ $('#ms-lang').addEventListener('click', () => {
   lang = lang === 'es' ? 'en' : 'es';
   try { localStorage.setItem(LANG_KEY, lang); } catch { /* preference only */ }
   applyLang();
+});
+applyLang();
 
 // ---- Background knowledge (the skills today's lesson stands on) ----
 mountBackground({
@@ -49,8 +51,9 @@ mountBackground({
   state,
   save: () => save(),
 });
-});
-applyLang();
+// Linked from the Practice and Challenge studios ("Background knowledge"): open the panel straight away.
+if (new URLSearchParams(location.search).get('background') === '1') $('#ms-bg-open')?.click();
+
 
 // ---- Stages ----
 function setStage(stage, { focus = true } = {}) {

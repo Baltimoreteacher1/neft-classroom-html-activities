@@ -67,7 +67,13 @@ const HOMEWORK_BACKGROUND_TEMPLATE = String.raw`
       card.setAttribute('aria-labelledby', hid);
       var h = el('h3', 'hw-bg-name', '<span class="hw-bg-num" aria-hidden="true">' + (i + 1) + '</span>' + bi(s.name));
       h.id = hid;
-      card.append(h, el('p', 'hw-bg-why', bi(s.why)));
+      // Read the whole skill aloud in the page's language (the page's own speaker, so voice and speed settings apply).
+      var say = function (k) { return [s.name, s.why].concat(s.steps, [{ en: 'Example. ' + s.example.en, es: 'Ejemplo. ' + s.example.es }]).map(function (t) { return t[k]; }).join('. '); };
+      var listen = el('button', 'fm-btn hw-bg-listen', '🔊 ' + bi({ en: 'Listen', es: 'Escuchar' }));
+      listen.type = 'button';
+      listen.addEventListener('click', function () { if (typeof window.speakHomeworkText === 'function') window.speakHomeworkText(say('en'), say('es')); });
+      if (typeof window.speakHomeworkText !== 'function') listen.hidden = true;
+      card.append(h, el('p', 'hw-bg-why', bi(s.why)), listen);
       var ol = el('ol', 'hw-bg-steps');
       s.steps.forEach(function (st) { ol.append(el('li', '', bi(st))); });
       card.append(ol);
@@ -139,7 +145,7 @@ const HOMEWORK_BACKGROUND_TEMPLATE = String.raw`
     '.hw-bg-name{display:flex;align-items:center;gap:var(--fm-space-2);margin:0;font-size:var(--fm-fs-lg);color:var(--fm-text)}' +
     '.hw-bg-num{display:inline-grid;place-items:center;flex:none;inline-size:2rem;block-size:2rem;border-radius:50%;background:var(--fm-primary);color:var(--fm-on-primary);font-size:var(--fm-fs-md)}' +
     '.hw-bg-why,.hw-bg-example,.hw-bg-q,.hw-bg-feedback{margin:0}' +
-    '.hw-bg-why{color:var(--fm-text-muted)}' +
+    '.hw-bg-why{color:var(--fm-text-muted)}.hw-bg-listen{justify-self:start}' +
     '.hw-bg-figure{margin:0;display:grid;justify-items:center}.hw-bg-figure svg{max-inline-size:100%;block-size:auto}' +
     '.hw-bg-steps{margin:0;padding-inline-start:1.4em;list-style:decimal;display:grid;gap:var(--fm-space-1)}' +
     '.hw-bg-example{padding:var(--fm-space-3);border-radius:var(--fm-radius-sm);background:var(--fm-info-tint);color:var(--fm-text)}' +

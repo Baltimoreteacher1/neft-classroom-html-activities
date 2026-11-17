@@ -100,6 +100,30 @@ async function lesson(ctx, id) {
       timeout: 15000,
     })
     .catch(() => fail(id, "model did not mount"));
+  // Background knowledge: the key card opens the panel on a plain page load (it once opened only after the language
+  // button was pressed), each skill has its picture, and the quick check answers right and wrong.
+  ok(L.background?.length >= 1, id, "no background knowledge for this lesson");
+  await page.click("#ms-bg-open");
+  await page.waitForSelector("#ms-bg-dialog[open] .ms-bg-skill", { timeout: 5000 }).catch(() => fail(id, "Background knowledge did not open"));
+  const skillCards = (await page.$$("#ms-bg-dialog .ms-bg-skill")).length;
+  ok(skillCards === L.background.length, id, `background shows ${skillCards} of ${L.background.length} skills`);
+  await page.waitForSelector("#ms-bg-dialog .ms-bg-figure svg", { timeout: 5000 }).catch(() => fail(id, "background picture did not draw"));
+  for (let k = 0; k < L.background.length; k++) {
+    await page.$eval(`#ms-bg-dialog [data-skill="${k}"]`, (el) => { el.hidden = false; });
+    while (await page.$(`#ms-bg-dialog [data-skill="${k}"] [data-bg-next]:not([hidden])`))
+      await page.click(`#ms-bg-dialog [data-skill="${k}"] [data-bg-next]`);
+    const c = L.background[k].check;
+    const wrong = [0, 1, 2].find((i) => i !== c.correctIdx);
+    await page.check(`#ms-bg-dialog [data-skill="${k}"] input[value="${wrong}"]`);
+    await page.click(`#ms-bg-dialog [data-skill="${k}"] [data-act="check"]`);
+    ok(
+      (await page.$eval(`#ms-bg-dialog [data-skill="${k}"] .ms-feedback`, (el) => el.innerText)).trim().length > 0,
+      id,
+      `background skill ${k + 1}: no feedback on a wrong answer`,
+    );
+  }
+  await page.click("#ms-bg-dialog [data-bg-close]");
+  ok(await page.$eval("#ms-bg-dialog", (el) => !el.open), id, "Background knowledge did not close");
   // Every stage: visible, lesson content, only one shown.
   for (const stage of ["explore", "understand", "practice", "apply", "reflect"]) {
     await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);

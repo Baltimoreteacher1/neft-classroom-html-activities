@@ -23,7 +23,21 @@ export const STAGE_INFO = [
 ];
 
 /** The compact five-stage bar. `current` is a stage key; on the studio page the runtime keeps aria-current in step. */
-export function stageBar(id, current, { inPage = false, label = "" } = {}) {
+export function stageBar(id, current, { inPage = false, label = "", from = "practice" } = {}) {
+  const base = `/math/studio/${id}/`;
+  return `${stageNav(id, current, { inPage, label })}${!inPage && current === "practice" ? backgroundStrip(id, from) : ""}`;
+}
+
+/** A slim card under the bar on the Practice and Challenge studios: the lesson's background skills, one tap away. It
+ * opens the Learning Lab's Background knowledge panel (picture, steps, Listen, quick check) and offers the way back. */
+function backgroundStrip(id, from) {
+  const skills = backgroundData()[id]?.skills;
+  if (!skills) return "";
+  return `<aside class="ms-bgcard" aria-label="Background knowledge"><span class="ms-bgcard__icon" aria-hidden="true">🔑</span><p class="ms-bgcard__text"><strong>${bi("Need a refresher first?", "¿Necesitas un repaso primero?")}</strong> <span>${bi(skills.map((x) => x.name.en).join(" · "), skills.map((x) => x.name.es).join(" · "))}</span></p><a class="ms-bgcard__go" href="${base(id)}?background=1&amp;from=${from}#explore">${bi("Background knowledge", "Conocimientos previos")}</a></aside>`;
+}
+const base = (id) => `/math/studio/${id}/`;
+
+function stageNav(id, current, { inPage, label }) {
   const base = `/math/studio/${id}/`;
   return `<nav class="ms-stagebar" aria-label="Learning Lab stages for lesson ${esc(id)}" data-ms-lesson="${esc(id)}"><a class="ms-stagebar__home" href="${base}">Learning Lab <span>${esc(label || `Lesson ${id}`)}</span></a><ol>${STAGE_INFO.map(
     ([key, en, es], i) =>
@@ -410,6 +424,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
   </section>
 </main>
 <script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) }, vocabLinks: vocabLinks(L), background: backgroundOf(L) })}</script>
+<script src="/assets/lib/stacked-fractions.js?v=${stamp}" defer></script>
 <script type="module" src="/assets/math-studio/studio.mjs?v=${stamp}"></script>
 </body>
 </html>

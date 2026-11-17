@@ -223,7 +223,7 @@ ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
-  ${stageBar(id, "practice")}
+  ${stageBar(id, "practice", { from: challenge ? "challenge" : "practice" })}
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">

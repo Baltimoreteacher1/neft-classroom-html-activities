@@ -126,7 +126,7 @@
 })();
 
 /*
- * Stacked fractions on the family homework page: "7/2" is drawn as 7 over 2, and "2 1/4" as 2 and a stacked 1/4,
+ * Stacked fractions on the family homework pages and the Learning Lab (/math/studio/<lesson>/): "7/2" is drawn as 7 over 2, and "2 1/4" as 2 and a stacked 1/4,
  * in every problem, choice, hint and explanation (Joel, 2026-11-17: "Fractions should be vertical").
  *
  * Text nodes are rewritten in place, including content the page renders later (a MutationObserver), so no
@@ -149,7 +149,11 @@
     "NOSCRIPT",
   ]);
 
+  // Live models rewrite their own readouts in place; replacing those nodes would leave them updating detached copies.
+  const LIVE = "[data-mission-stage], .ms-model, [data-no-frac]";
+
   function skipped(el) {
+    if (el?.closest?.(LIVE)) return true;
     for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
       if (SKIP.has(node.nodeName) || node.namespaceURI === "http://www.w3.org/2000/svg")
         return true;
@@ -242,7 +246,7 @@
     return t;
   }
   function stackSvgLabel(el) {
-    if (el.childElementCount || el.closest("[data-no-frac]")) return;
+    if (el.childElementCount || el.closest(LIVE)) return;
     const str = el.textContent;
     SVG_FRACTION.lastIndex = 0;
     if (!str || !SVG_FRACTION.test(str)) return;
@@ -398,7 +402,13 @@
       card.setAttribute('aria-labelledby', hid);
       var h = el('h3', 'hw-bg-name', '<span class="hw-bg-num" aria-hidden="true">' + (i + 1) + '</span>' + bi(s.name));
       h.id = hid;
-      card.append(h, el('p', 'hw-bg-why', bi(s.why)));
+      // Read the whole skill aloud in the page's language (the page's own speaker, so voice and speed settings apply).
+      var say = function (k) { return [s.name, s.why].concat(s.steps, [{ en: 'Example. ' + s.example.en, es: 'Ejemplo. ' + s.example.es }]).map(function (t) { return t[k]; }).join('. '); };
+      var listen = el('button', 'fm-btn hw-bg-listen', '🔊 ' + bi({ en: 'Listen', es: 'Escuchar' }));
+      listen.type = 'button';
+      listen.addEventListener('click', function () { if (typeof window.speakHomeworkText === 'function') window.speakHomeworkText(say('en'), say('es')); });
+      if (typeof window.speakHomeworkText !== 'function') listen.hidden = true;
+      card.append(h, el('p', 'hw-bg-why', bi(s.why)), listen);
       var ol = el('ol', 'hw-bg-steps');
       s.steps.forEach(function (st) { ol.append(el('li', '', bi(st))); });
       card.append(ol);
@@ -470,7 +480,7 @@
     '.hw-bg-name{display:flex;align-items:center;gap:var(--fm-space-2);margin:0;font-size:var(--fm-fs-lg);color:var(--fm-text)}' +
     '.hw-bg-num{display:inline-grid;place-items:center;flex:none;inline-size:2rem;block-size:2rem;border-radius:50%;background:var(--fm-primary);color:var(--fm-on-primary);font-size:var(--fm-fs-md)}' +
     '.hw-bg-why,.hw-bg-example,.hw-bg-q,.hw-bg-feedback{margin:0}' +
-    '.hw-bg-why{color:var(--fm-text-muted)}' +
+    '.hw-bg-why{color:var(--fm-text-muted)}.hw-bg-listen{justify-self:start}' +
     '.hw-bg-figure{margin:0;display:grid;justify-items:center}.hw-bg-figure svg{max-inline-size:100%;block-size:auto}' +
     '.hw-bg-steps{margin:0;padding-inline-start:1.4em;list-style:decimal;display:grid;gap:var(--fm-space-1)}' +
     '.hw-bg-example{padding:var(--fm-space-3);border-radius:var(--fm-radius-sm);background:var(--fm-info-tint);color:var(--fm-text)}' +

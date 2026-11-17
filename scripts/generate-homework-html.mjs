@@ -4554,6 +4554,17 @@ function localizeBilingualLabels(html) {
   return out;
 }
 
+/**
+ * The template's explanatory HTML comments are for whoever edits the generator; shipped, they are bytes in a first
+ * view that sits at its budget (data/family-performance-budget.json). Sentinel comments (injected layers, glyph and
+ * design-head markers) are what other tools look for, so they stay.
+ */
+function stripAuthorComments(html) {
+  return html.replace(/<!--[\s\S]*?-->/g, (c) =>
+    /injected|glyph|fm-design|:begin|:end|\[if /i.test(c) ? c : "",
+  );
+}
+
 function main() {
   const lessons = lessonConfigs().filter(({ id }) => !ONLY || ONLY.includes(id));
   if (ONLY && lessons.length !== ONLY.length) {
@@ -4566,7 +4577,7 @@ function main() {
   const staleHomework = [];
   const sharedFiles = {};
   for (const { id, config } of lessons) {
-    const homeworkHtml = a11yMarkup(localizeBilingualLabels(generateHtml(id, config)));
+    const homeworkHtml = stripAuthorComments(a11yMarkup(localizeBilingualLabels(generateHtml(id, config))));
     const lessonPath = join(lessonsDir, id, "homework.html");
     const split = externalizeSharedCode(
       `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`,

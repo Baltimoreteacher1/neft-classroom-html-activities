@@ -1,5 +1,5 @@
 /*
- * Stacked fractions on the family homework page: "7/2" is drawn as 7 over 2, and "2 1/4" as 2 and a stacked 1/4,
+ * Stacked fractions on the family homework pages and the Learning Lab (/math/studio/<lesson>/): "7/2" is drawn as 7 over 2, and "2 1/4" as 2 and a stacked 1/4,
  * in every problem, choice, hint and explanation (Joel, 2026-11-17: "Fractions should be vertical").
  *
  * Text nodes are rewritten in place, including content the page renders later (a MutationObserver), so no
@@ -22,7 +22,11 @@
     "NOSCRIPT",
   ]);
 
+  // Live models rewrite their own readouts in place; replacing those nodes would leave them updating detached copies.
+  const LIVE = "[data-mission-stage], .ms-model, [data-no-frac]";
+
   function skipped(el) {
+    if (el?.closest?.(LIVE)) return true;
     for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
       if (SKIP.has(node.nodeName) || node.namespaceURI === "http://www.w3.org/2000/svg")
         return true;
@@ -115,7 +119,7 @@
     return t;
   }
   function stackSvgLabel(el) {
-    if (el.childElementCount || el.closest("[data-no-frac]")) return;
+    if (el.childElementCount || el.closest(LIVE)) return;
     const str = el.textContent;
     SVG_FRACTION.lastIndex = 0;
     if (!str || !SVG_FRACTION.test(str)) return;

@@ -123,6 +123,19 @@ export function mountBackground({ skills: shared, lessonId, lang, state, save })
     const current = document.getElementById('ms-bg-dialog');
     if (built && current === dialog) return;
     dialog = current;
+    // Moved out of the stage: a hidden stage (another tab, or a resumed session) would hide the dialog with it, and
+    // the studio's word-underlining pass rewrites "Start here" around it.
+    document.body.append(dialog);
+    const from = new URLSearchParams(location.search).get('from');
+    if ((from === 'practice' || from === 'challenge') && !dialog.querySelector('[data-bg-back]')) {
+      const back = document.createElement('a');
+      back.className = 'ms-btn';
+      back.setAttribute('data-bg-back', '');
+      back.href = `/math/practice-studio/${lessonId}/${from === 'challenge' ? 'challenge/' : ''}`;
+      back.innerHTML = bi(`← Back to ${from === 'challenge' ? 'Challenge' : 'Practice'}`, `← Volver a ${from === 'challenge' ? 'Reto' : 'Práctica'}`);
+      dialog.querySelector('.ms-bg-dialog__head').after(Object.assign(document.createElement('p'), { className: 'ms-row' }));
+      dialog.querySelector('.ms-bg-dialog__head + p').append(back);
+    }
     body = dialog.querySelector('[data-bg-body]');
     tabs = dialog.querySelector('[data-bg-tabs]');
     body.innerHTML = '';
