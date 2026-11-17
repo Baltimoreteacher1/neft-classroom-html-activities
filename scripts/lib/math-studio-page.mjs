@@ -36,9 +36,10 @@ export function labBar(lab) {
     .join(" and ")}. Open a lesson to explore, practice, apply and reflect in one place.</p></nav>`;
 }
 
-const steps = (s) =>
+/** A worked example the runtime reveals one step at a time; "Your turn" ends with the student's own answer. */
+const steps = (s, turn = false) =>
   s
-    ? `<article class="ms-worked"><h4>${esc(s.title)}</h4><ol>${s.lines.map((l, i) => `<li>${bi(l, s.linesEs?.[i])}</li>`).join("")}</ol></article>`
+    ? `<article class="ms-worked" data-walk><h4>${esc(s.title)}</h4><ol>${s.lines.map((l, i) => `<li>${bi(l, s.linesEs?.[i])}</li>`).join("")}</ol><div class="ms-row ms-walk"><button type="button" class="ms-btn" data-walk-next>${bi("Show the next step", "Mostrar el siguiente paso")}</button><button type="button" class="ms-btn ms-btn--link" data-walk-all>${bi("Show all steps", "Mostrar todos los pasos")}</button></div>${turn ? `<label class="ms-label" for="ms-yourturn">${bi("My answer and what it means", "Mi respuesta y lo que significa")}</label><textarea id="ms-yourturn" rows="3"></textarea>` : ""}</article>`
     : "";
 
 /** Key ideas are written as "Title. Formula: ... 1. ... 2. ..." — show the numbered points as a list when they are there. */
@@ -52,40 +53,98 @@ function keyIdea(text, textEs) {
 /** The Explore prompts: the lesson's own when it has its own model, else the lab's. */
 const investigate = (L) => L.explore?.investigate || L.lab.investigate || [];
 
+/** The first vocabulary entry is usually the lesson topic ("Display Data with Histograms"): Explore states it as the
+ * idea, then lists the words. A one-word or lower-case first entry ("Integer", "vertex") is a word like the rest. */
+function lessonWords(L) {
+  const [first, ...rest] = L.understand.vocabulary || [];
+  if (!first) return { topic: null, list: [] };
+  const isTopic = /^[A-Z]/.test(first.term) && first.term.trim().split(/\s+/).length >= 2;
+  return isTopic ? { topic: first, list: rest } : { topic: null, list: [first, ...rest] };
+}
+
+/** Words to know, shown first: Explore gets the first four, Understand all of them. */
+function wordCards(list, { flip = false } = {}) {
+  const meaning = (v) =>
+    `<p>${bi(v.definition, v.definitionEs)}</p>${v.example ? `<p class="ms-muted">${esc(v.example)}</p>` : ""}`;
+  // Understand: each card is a button; the student says what the word means, then taps to check.
+  return `<ul class="ms-words${flip ? " ms-words--flip" : ""}">${list
+    .map(
+      (v) =>
+        `<li>${v.image ? `<img src="${esc(v.image)}" alt="" width="56" height="56" loading="lazy">` : ""}<div>${
+          flip
+            ? `<button type="button" class="ms-flip" aria-expanded="false"><strong>${bi(v.term, v.termEs)}</strong><span class="ms-flip__hint">${bi("Tap to check what it means", "Toca para ver qué significa")}</span></button><div class="ms-flip__back" hidden>${meaning(v)}</div>`
+            : `<strong>${bi(v.term, v.termEs)}</strong>${meaning(v)}`
+        }</div></li>`,
+    )
+    .join("")}</ul>`;
+}
+/** The start of Explore: what the student will do, in three steps, and the words they need. The model loads only after
+ * "Start exploring", so the first screen is short. */
+function exploreStart(L) {
+  const parts = L.explore?.kind === "expression-parts";
+  const plan = parts
+    ? [
+        [
+          "Meet the four parts of an expression, one at a time.",
+          "Conoce las cuatro partes de una expresión, una a la vez.",
+        ],
+        ["Tap to name each part.", "Toca para nombrar cada parte."],
+        ["Build your own expression and evaluate it.", "Construye tu propia expresión y evalúala."],
+      ]
+    : [
+        ["Read the words below.", "Lee las palabras de abajo."],
+        [
+          "Open the model and change one number at a time.",
+          "Abre el modelo y cambia un número a la vez.",
+        ],
+        [
+          "Answer the questions beside the model, one at a time.",
+          "Responde las preguntas junto al modelo, una a la vez.",
+        ],
+      ];
+  const { topic, list } = parts ? { topic: null, list: [] } : lessonWords(L);
+  return `<section class="ms-start" id="ms-gate" aria-labelledby="ms-start-h">
+      <h3 id="ms-start-h">${bi("Start here", "Empieza aquí")}</h3>
+      ${topic ? `<p class="ms-start__topic"><strong>${bi(topic.term, topic.termEs)}:</strong> ${bi(topic.definition, topic.definitionEs)}</p>` : ""}
+      <ol class="ms-start__plan" data-gate-only>${plan.map(([en, es]) => `<li>${bi(en, es)}</li>`).join("")}</ol>
+      ${list.length ? `<h4>${bi("Words to know", "Palabras clave")}</h4>${wordCards(list.slice(0, 4))}` : ""}
+      <p data-gate-only><button type="button" class="ms-btn" id="ms-begin">${bi("Start exploring", "Empezar a explorar")}</button></p>
+    </section>`;
+}
+
 /** A static, labelled picture of the lesson's own expression (a·v ± b) for Understand. */
 function partsFigure(x) {
-  const coef = x.a === 1 ? "" : `<span class="ms-tok ms-tok--coefficient">${esc(x.a)}</span>`;
+  const tok = (part, text) =>
+    `<button type="button" class="ms-tok ms-tok--${part}" data-fig-part="${part}">${esc(text)}</button>`;
   const op = x.op === "-" ? "−" : "+";
   const term = (inner) =>
     `<span class="ms-term">${inner}<span class="ms-term__brace" aria-hidden="true"></span><span class="ms-term__label">${bi("term", "término")}</span></span>`;
-  const label = `${x.a === 1 ? "" : x.a}${x.variable} ${op} ${x.b}`;
-  return `<figure class="ms-partsfig"><figcaption><strong>${bi("Parts of an expression", "Partes de una expresión")}</strong></figcaption><div class="ms-expr ms-expr--static" role="img" aria-label="${esc(`${label}: coefficient ${x.a}, variable ${x.variable}, constant ${x.b}, two terms`)}">${term(`${coef}<span class="ms-tok ms-tok--variable">${esc(x.variable)}</span>`)}<span class="ms-op" aria-hidden="true">${op}</span>${term(`<span class="ms-tok ms-tok--constant">${esc(x.b)}</span>`)}</div><ul class="ms-legend"><li class="ms-legend--coefficient"><strong>${bi(`Coefficient: ${x.a}`, `Coeficiente: ${x.a}`)}</strong> — ${bi(`the number multiplied by the variable`, "el número que multiplica a la variable")}</li><li class="ms-legend--variable"><strong>${bi(`Variable: ${x.variable}`, `Variable: ${x.variable}`)}</strong> — ${bi("a letter for a number that can change", "una letra para un número que puede cambiar")}</li><li class="ms-legend--constant"><strong>${bi(`Constant: ${x.b}`, `Constante: ${x.b}`)}</strong> — ${bi("a number with no variable; it stays the same", "un número sin variable; no cambia")}</li><li class="ms-legend--term"><strong>${bi("Terms: 2", "Términos: 2")}</strong> — ${bi(`the parts joined by + or −: ${x.a === 1 ? "" : x.a}${x.variable} and ${x.b}`, `las partes unidas por + o −: ${x.a === 1 ? "" : x.a}${x.variable} y ${x.b}`)}</li></ul></figure>`;
+  const vt = `${x.a === 1 ? "" : x.a}${x.variable}`;
+  const item = (part, en, es) =>
+    `<li class="ms-legend--${part}" data-fig-legend="${part}" hidden>${bi(en, es)}</li>`;
+  return `<figure class="ms-partsfig" data-partsfig><figcaption><strong>${bi("Parts of an expression: tap each coloured part", "Partes de una expresión: toca cada parte de color")}</strong></figcaption><div class="ms-expr" role="group" aria-label="${esc(`${vt} ${op} ${x.b}`)}">${term(`${x.a === 1 ? "" : tok("coefficient", x.a)}${tok("variable", x.variable)}`)}<span class="ms-op" aria-hidden="true">${op}</span>${term(tok("constant", x.b))}</div><ul class="ms-legend" aria-live="polite">${item("coefficient", `Coefficient: ${x.a} — the number multiplied by the variable`, `Coeficiente: ${x.a} — el número que multiplica a la variable`)}${item("variable", `Variable: ${x.variable} — a letter for a number that can change`, `Variable: ${x.variable} — una letra para un número que puede cambiar`)}${item("constant", `Constant: ${x.b} — a number with no variable; it stays the same`, `Constante: ${x.b} — un número sin variable; no cambia`)}<li class="ms-legend--term" data-fig-legend="term" hidden>${bi(`Terms: 2 — the parts joined by + or −: ${vt} and ${x.b}`, `Términos: 2 — las partes unidas por + o −: ${vt} y ${x.b}`)}</li></ul></figure>`;
 }
 
 function understand(L) {
   const u = L.understand;
-  const vocab = u.vocabulary?.length
-    ? `<details class="ms-support" open><summary>${bi("Words to use", "Palabras para usar")}</summary><ul class="ms-vocab">${u.vocabulary
-        .map(
-          (v) =>
-            `<li>${v.image ? `<img src="${esc(v.image)}" alt="" width="72" height="72" loading="lazy">` : ""}<div><strong>${bi(v.term, v.termEs)}</strong><p>${bi(v.definition, v.definitionEs)}</p>${v.example ? `<p class="ms-muted">${esc(v.example)}</p>` : ""}</div></li>`,
-        )
-        .join("")}</ul></details>`
-    : "";
+  const list = u.vocabulary || [];
+  // One column, read top to bottom: the parts (6-5), the words, the idea, the worked examples, then the summary.
   return `<div class="ms-understand">
-    <div class="ms-col">
-      <h3>${bi(u.heading || "The big idea", u.headingEs)}</h3>
+    ${L.explore?.kind === "expression-parts" ? partsFigure(L.explore) : ""}
+    ${list.length ? `<section class="ms-start"><h3>${bi("1. Words to know", "1. Palabras clave")}</h3><p class="ms-muted">${bi("Say what each word means, then tap the card to check.", "Di qué significa cada palabra y luego toca la tarjeta para comprobar.")}</p>${wordCards(list, { flip: true })}<p class="ms-flip__score" aria-live="polite"></p></section>` : ""}
+    <section>
+      <h3>${bi(`${list.length ? "2. " : ""}${u.heading || "The big idea"}`, u.headingEs ? `${list.length ? "2. " : ""}${u.headingEs}` : "")}</h3>
       ${u.intro ? `<p class="ms-lead">${bi(u.intro, u.introEs)}</p>` : ""}
       ${u.picture ? `<figure class="ms-picture"><img src="${esc(u.picture.src)}" alt="${esc(u.picture.alt || "")}" loading="lazy"><figcaption>${bi(u.picture.context || "", u.picture.contextEs)}</figcaption></figure>` : ""}
-      ${L.explore?.kind === "expression-parts" ? partsFigure(L.explore) : ""}<div class="ms-cra" role="group" aria-label="Worked examples">${steps(u.iDo)}${steps(u.weDo)}${steps(u.youDo)}</div>
-      <p><button type="button" class="ms-btn ms-btn--quiet" data-goto="explore">${bi("See it in the model", "Míralo en el modelo")}</button></p>
-    </div>
-    <div class="ms-col ms-col--side">
-      ${keyIdea(u.keyIdea, u.keyIdeaEs)}
-      ${u.mistake ? `<aside class="ms-mistake"><h3>${bi("Watch out", "Cuidado")}</h3><p>${esc(u.mistake)}</p></aside>` : ""}
-      ${vocab}
-      ${u.frame ? `<details class="ms-support"><summary>${bi("Sentence frame", "Marco de oración")}</summary><p class="ms-frame">${bi(u.frame, u.frameEs)}</p></details>` : ""}
-    </div>
+    </section>
+    <section>
+      <h3>${bi(`${list.length ? "3. " : ""}Follow the examples`, `${list.length ? "3. " : ""}Sigue los ejemplos`)}</h3>
+      <div class="ms-cra" role="group" aria-label="Worked examples">${steps(u.iDo)}${steps(u.weDo)}${steps(u.youDo, true)}</div>
+    </section>
+    ${keyIdea(u.keyIdea, u.keyIdeaEs)}
+    ${u.mistake ? `<details class="ms-support"><summary>${bi("Watch out for a common mistake", "Cuidado con un error común")}</summary><p>${esc(u.mistake)}</p></details>` : ""}
+    ${u.frame ? `<details class="ms-support"><summary>${bi("Sentence frame", "Marco de oración")}</summary><p class="ms-frame">${bi(u.frame, u.frameEs)}</p></details>` : ""}
+    <p><button type="button" class="ms-btn ms-btn--quiet" data-goto="explore">${bi("See it in the model", "Míralo en el modelo")}</button></p>
   </div>`;
 }
 
@@ -174,25 +233,25 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
 <main id="ms-main" class="ms-wrap">
   <div class="ms-resume" id="ms-resume" hidden></div>
   <section class="ms-stage" id="explore" data-stage="explore" aria-labelledby="h-explore">
-    ${L.explore ? stageHead(1, "explore", "Explore", "Explora", `${L.explore.title}: ${L.explore.lead}`, "Explora el modelo de esta lección: predice, cambia una cantidad a la vez y observa qué cambia.") : stageHead(1, "explore", "Explore", "Explora", `Use the ${L.lab.title} model. Predict first, then change the quantities and watch what stays the same.`, "Usa el modelo. Primero predice; luego cambia las cantidades y observa qué se mantiene igual.")}
+    ${L.explore ? stageHead(1, "explore", "Explore", "Explora", L.explore.title, L.explore.titleEs || "") : stageHead(1, "explore", "Explore", "Explora", L.lab.title, "")}
     <div class="ms-handoff" id="ms-handoff" hidden></div>
-    <div class="ms-explore">
+    ${exploreStart(L)}
+    <div class="ms-explore" id="ms-explore-body" hidden>
       <div class="ms-explore__model"><div id="ms-model" class="ms-model"><p class="ms-muted">Loading the model…</p></div><p class="ms-guide" id="ms-guide"></p></div>
       <div class="ms-explore__side">
-        <label class="ms-label" for="ms-prediction">${bi("1. My prediction", "1. Mi predicción")}</label>
-        <p class="ms-question">${esc(investigate(L)[0] || "")}</p>
-        <textarea id="ms-prediction" rows="3"></textarea>
-        <h3 class="ms-label">${bi("2. Investigate", "2. Investiga")}</h3>
-        <ol class="ms-investigate">${investigate(L)
-          .slice(1)
-          .map((q) => `<li>${esc(q)}</li>`)
-          .join("")}</ol>
-        <label class="ms-label" for="ms-notes">${bi("3. What I noticed", "3. Lo que noté")}</label>
+        <h3 class="ms-label">${bi("1. Try this", "1. Prueba esto")}</h3>
+        <div class="ms-try" id="ms-try">
+          <ol class="ms-investigate">${investigate(L)
+            .map((q, i) => `<li${i ? " hidden" : ""}>${esc(q)}</li>`)
+            .join("")}</ol>
+          ${investigate(L).length > 1 ? `<div class="ms-try__nav"><button type="button" class="ms-btn ms-btn--quiet" data-try="-1">${bi("Back", "Atrás")}</button><span class="ms-try__count" aria-live="polite"></span><button type="button" class="ms-btn" data-try="1">${bi("Next question", "Siguiente pregunta")}</button></div>` : ""}
+        </div>
+        <label class="ms-label" for="ms-notes">${bi("2. What I noticed", "2. Lo que noté")}</label>
         <textarea id="ms-notes" rows="3"></textarea>
-        <div class="ms-test" id="ms-test"><h3>${bi("4. Test it without the model", "4. Pruébalo sin el modelo")}</h3><p class="ms-muted">${bi("Turn the model's current settings into a question, then try a new one on your own.", "Convierte la configuración del modelo en una pregunta y luego intenta una nueva por tu cuenta.")}</p><button type="button" class="ms-btn" id="ms-make-question">${bi("Make a question from my model", "Crear una pregunta con mi modelo")}</button><div id="ms-test-out"></div></div>
+        <div class="ms-test" id="ms-test"><h3>${bi("3. Check yourself", "3. Compruébalo")}</h3><p class="ms-muted">${bi("Answer a question about your model, then one new problem without it.", "Responde una pregunta sobre tu modelo y luego un problema nuevo sin él.")}</p><button type="button" class="ms-btn" id="ms-make-question">${bi("Make a question from my model", "Crear una pregunta con mi modelo")}</button><div id="ms-test-out"></div></div>
       </div>
     </div>
-    ${L.explore ? "" : `<p class="ms-more"><a href="${esc(L.lab.href)}">${bi(`Open the full ${L.lab.title} lab`, `Abrir el laboratorio completo: ${L.lab.title}`)}</a>${L.lab.lessons.length > 1 ? ` <span class="ms-muted">(shared by lessons ${L.lab.lessons.map(esc).join(" and ")})</span>` : ""}</p>`}
+    ${L.explore ? "" : `<p class="ms-more" data-after-gate hidden><a href="${esc(L.lab.href)}">${bi(`Open the full ${L.lab.title} lab`, `Abrir el laboratorio completo: ${L.lab.title}`)}</a>${L.lab.lessons.length > 1 ? ` <span class="ms-muted">(shared by lessons ${L.lab.lessons.map(esc).join(" and ")})</span>` : ""}</p>`}
   </section>
   <section class="ms-stage" id="understand" data-stage="understand" aria-labelledby="h-understand">
     ${stageHead(2, "understand", "Understand", "Comprende", "Read the idea, follow the worked examples, and connect the picture to the numbers.", "Lee la idea, sigue los ejemplos resueltos y conecta el dibujo con los números.")}

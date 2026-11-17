@@ -91,17 +91,24 @@ async function loadModel() {
   try {
     if (EXPLORERS[L.explore?.kind]) {
       customMod = await import(EXPLORERS[L.explore.kind]);
-      custom = customMod.mount(host, L.explore, { onChange: (st) => { state.explore.custom = st; save(); } });
+      custom = customMod.mount(host, L.explore, {
+        onChange: (st) => { state.explore.custom = st; save(); },
+        // While an explorer is still teaching its words, it gets the full width and the questions wait.
+        onPhase: (phase) => $('.ms-explore').classList.toggle('is-learning', phase !== 'build'),
+      });
       const saved = state.explore.custom || state.explore.parts;
       if (saved) custom.set(saved);
       $('#ms-guide').innerHTML = `<strong>${esc(L.explore.guide[0])}</strong> ${esc(L.explore.guide[1])}`;
       return;
     }
     ({ mountModel, guidance } = await import('../../curriculum/learning-labs/shared/model.mjs'));
-    const initial = state.explore.values?.length === labModel.values.length ? state.explore.values : labModel.values;
+    // A practice hand-off (or the student's last settings) wins over the lab's defaults; the model may load after the hand-off.
+    const initial = state.handoff?.params?.length === labModel.values.length ? state.handoff.params : state.explore.values?.length === labModel.values.length ? state.explore.values : labModel.values;
     model = mountModel(host, labModel, {
       initial: labModel.values,
       prefix: 'ms-model',
+      // The studio asks its own questions beside the model, so the lab's Think it through flow stays on the lab page.
+      think: false,
       lang: () => lang,
       onChange: (values) => { state.explore.values = values; save(); },
     });
@@ -113,6 +120,19 @@ async function loadModel() {
     console.warn('Learning Lab model', err);
   }
 }
+/** Explore opens on the Start card; the model loads the first time the student starts exploring. */
+let begun = false;
+function beginExplore() {
+  if (begun) return;
+  begun = true;
+  state.explore.started = true;
+  $$('#explore [data-gate-only]').forEach((el) => { el.hidden = true; });
+  $('#ms-explore-body').hidden = false;
+  $$('#explore [data-after-gate]').forEach((el) => { el.hidden = false; });
+  loadModel();
+  save();
+}
+$('#ms-begin').addEventListener('click', () => { beginExplore(); $('#ms-model').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
 function showHandoff() {
   const h = state.handoff, box = $('#ms-handoff');
   if (!h) { box.hidden = true; return; }
@@ -131,6 +151,7 @@ function openModel(item, rec) {
     lessonId: L.id, conceptId: L.concept, modelId: labModel.kind, problemId: item.id, params: item.model.values,
     response: rec.response ?? null, misconception: rec.tags?.[0] || null, hintLevel: rec.hints, supports: ['model'], returnTo: 'practice', level,
   });
+  beginExplore();
   model?.set(item.model.values);
   showHandoff();
   goto('explore');
@@ -188,10 +209,64 @@ async function makeCustomQuestions() {
   });
 }
 $('#ms-make-question').addEventListener('click', makeQuestion);
-for (const [id, key] of [['#ms-prediction', 'prediction'], ['#ms-notes', 'notes']]) {
-  const el = $(id);
-  el.value = state.explore[key] || '';
-  el.addEventListener('input', () => { state.explore[key] = el.value; save(); });
+const notes = $('#ms-notes');
+notes.value = state.explore.notes || '';
+notes.addEventListener('input', () => { state.explore.notes = notes.value; save(); });
+// Try this: one investigation question at a time.
+{
+  const qs = $$('#ms-try .ms-investigate li');
+  let at = 0;
+  const show = () => {
+    qs.forEach((li, i) => { li.hidden = i !== at; });
+    const count = $('#ms-try .ms-try__count');
+    if (!count) return;
+    count.innerHTML = bi(`Question ${at + 1} of ${qs.length}`, `Pregunta ${at + 1} de ${qs.length}`);
+    $('#ms-try [data-try="-1"]').disabled = at === 0;
+    $('#ms-try [data-try="1"]').disabled = at === qs.length - 1;
+  };
+  $$('#ms-try [data-try]').forEach((b) => b.addEventListener('click', () => { at = Math.min(qs.length - 1, Math.max(0, at + Number(b.dataset.try))); show(); }));
+  if (qs.length) show();
+}
+
+// ---- Understand: tap the words, walk the examples one step at a time, answer Your turn ----
+function setupUnderstand() {
+  const cards = $$('#understand .ms-flip');
+  const score = $('#understand .ms-flip__score');
+  cards.forEach((b) => b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    b.nextElementSibling.hidden = !open;
+    const seen = cards.filter((c) => c.getAttribute('aria-expanded') === 'true').length;
+    if (score) score.innerHTML = bi(`${seen} of ${cards.length} words checked`, `${seen} de ${cards.length} palabras revisadas`);
+  }));
+  $$('#understand [data-walk]').forEach((card) => {
+    const lines = $$('li', card);
+    let shown = 1;
+    const show = () => {
+      lines.forEach((li, i) => { li.hidden = i >= shown; });
+      $('.ms-walk', card).hidden = shown >= lines.length;
+    };
+    $('[data-walk-next]', card).addEventListener('click', () => { shown++; show(); });
+    $('[data-walk-all]', card).addEventListener('click', () => { shown = lines.length; show(); });
+    show();
+  });
+  const fig = $('#understand [data-partsfig]');
+  if (fig) {
+    const parts = $$('[data-fig-part]', fig);
+    const tapped = new Set();
+    parts.forEach((b) => b.addEventListener('click', () => {
+      parts.forEach((t) => t.classList.toggle('is-on', t === b));
+      $(`[data-fig-legend="${b.dataset.figPart}"]`, fig).hidden = false;
+      tapped.add(b);
+      // Once every coloured part is named, the terms line closes the picture.
+      if (tapped.size === parts.length) $('[data-fig-legend="term"]', fig).hidden = false;
+    }));
+  }
+  const ans = $('#ms-yourturn');
+  if (ans) {
+    ans.value = state.understand.answer || '';
+    ans.addEventListener('input', () => { state.understand.answer = ans.value; save(); });
+  }
 }
 
 // ---- Practice: Regular and Challenge in one runner ----
@@ -331,8 +406,9 @@ if (resumed) {
   box.innerHTML = `<p>${bi('Welcome back. Your work in this lesson is saved.', 'Qué bueno verte de nuevo. Tu trabajo en esta lección está guardado.')}</p><button type="button" class="ms-btn" data-goto="${esc(state.stage)}">${bi(`Continue in ${STAGE_NAMES[state.stage][0]}`, `Continuar en ${STAGE_NAMES[state.stage][1]}`)}</button>`;
 }
 setupApply();
+setupUnderstand();
 setLevel(state.practice.level);
 renderReflect();
 showHandoff();
 setStage(STAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'explore', { focus: false });
-loadModel();
+if (state.explore.started || state.handoff) beginExplore();

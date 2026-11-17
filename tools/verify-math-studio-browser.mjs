@@ -91,6 +91,10 @@ async function lesson(ctx, id) {
       errors.push(`${r.status()} ${r.url()}`),
   );
   await page.goto(`${base}/math/studio/${id}/`);
+  // Explore opens on the Start card; the model mounts only after "Start exploring".
+  await page.waitForSelector("#ms-begin", { timeout: 15000 });
+  ok(await page.$eval("#ms-explore-body", (el) => el.hidden), id, "model showed before Start");
+  await page.click("#ms-begin");
   await page
     .waitForSelector("#ms-model .model-workspace, #ms-model .ms-parts, #ms-model .ms-x", {
       timeout: 15000,
@@ -104,7 +108,9 @@ async function lesson(ctx, id) {
     );
     ok(shown.length === 1 && shown[0] === stage, id, `stage ${stage}: shown ${shown}`);
     const words = await page.$eval(`#${stage}`, (el) => el.innerText.trim().split(/\s+/).length);
-    ok(words > 60, id, `stage ${stage} nearly empty (${words} words)`);
+    // Explore opens on one short step (the parts walkthrough shows a sentence at a time), so it needs fewer words.
+    const min = stage === "explore" ? 30 : 60;
+    ok(words > min, id, `stage ${stage} nearly empty (${words} words)`);
     ok(page.url().endsWith(`#${stage}`), id, `hash not ${stage}`);
   }
   ok(
@@ -177,7 +183,7 @@ async function lesson(ctx, id) {
   else if (L.explore && L.explore.kind !== "lab-model") await explorerPath(page, L, id);
   else await labModelPath(page, L, id);
   // Write something, reload, expect it back on the same stage.
-  await page.fill("#ms-prediction", "It will double.");
+  await page.fill("#ms-notes", "It will double.");
   await page.waitForTimeout(250);
   await page.reload();
   await page
@@ -185,11 +191,7 @@ async function lesson(ctx, id) {
       timeout: 15000,
     })
     .catch(() => {});
-  ok(
-    (await page.inputValue("#ms-prediction")) === "It will double.",
-    id,
-    "prediction not restored",
-  );
+  ok((await page.inputValue("#ms-notes")) === "It will double.", id, "notes not restored");
   ok(await page.$eval("#ms-resume", (el) => !el.hidden), id, "no resume prompt after reload");
   // Spanish.
   await page.click("#ms-lang");
@@ -266,17 +268,18 @@ async function explorerPath(page, L, id) {
 
 async function partsPath(page, L, id) {
   const x = L.explore;
-  const legend = await page.$eval("#ms-model .ms-legend", (el) => el.innerText);
-  for (const word of ["Coefficient", "Variable", "Constant", "Terms"])
-    ok(legend.includes(word), id, `parts legend missing ${word}`);
-  ok((await page.$$("#ms-model .ms-term")).length === 2, id, "expected two terms");
+  // Learn: one part at a time, then name them, then build.
   ok(
-    (await page.$eval("#ms-model .ms-parts__eval", (el) => el.innerText)).includes(
-      String(x.a * x.v + x.b),
-    ),
+    (await page.$eval("#ms-model .ms-parts__say", (el) => el.innerText)).includes("coefficient"),
     id,
-    "evaluation wrong",
+    "walkthrough does not start with the coefficient",
   );
+  ok(
+    await page.$eval(".ms-explore", (el) => el.classList.contains("is-learning")),
+    id,
+    "questions shown while learning the parts",
+  );
+  for (let i = 0; i < 4; i++) await page.click('#ms-model [data-step="1"]');
   await page.click("#ms-model .ms-tok--constant");
   ok(
     await page.$eval("#ms-model .ms-parts__fb", (el) => el.classList.contains("is-no")),
@@ -288,6 +291,22 @@ async function partsPath(page, L, id) {
     await page.$eval("#ms-model .ms-parts__fb", (el) => el.classList.contains("is-ok")),
     id,
     "tapping the coefficient was not accepted",
+  );
+  for (const part of ["variable", "constant", "constant"]) {
+    await page.waitForTimeout(1000);
+    await page.click(`#ms-model .ms-tok--${part}`);
+  }
+  await page.click('#ms-model [data-to="build"]:not([hidden])', { timeout: 5000 });
+  const legend = await page.$eval("#ms-model .ms-legend", (el) => el.innerText);
+  for (const word of ["Coefficient", "Variable", "Constant", "Terms"])
+    ok(legend.includes(word), id, `parts legend missing ${word}`);
+  ok((await page.$$("#ms-model .ms-term")).length === 2, id, "expected two terms");
+  ok(
+    (await page.$eval("#ms-model .ms-parts__eval", (el) => el.innerText)).includes(
+      String(x.a * x.v + x.b),
+    ),
+    id,
+    "evaluation wrong",
   );
   await page.fill('#ms-model [data-k="a"]', "1");
   ok(
@@ -316,16 +335,16 @@ async function partsPath(page, L, id) {
     id,
     "next parts question did not unlock",
   );
-  ok(
-    (
-      await page.$eval("#ms-understand-parts, #understand .ms-partsfig", (el) => el.innerText)
-    ).includes("Coefficient"),
-    id,
-    "Understand has no parts figure",
-  );
-  const vocab = await page.$eval("#understand .ms-vocab", (el) => el.innerText);
+  await page.click('.ms-stagebar [data-stage-link="understand"]');
+  for (const part of ["coefficient", "variable", "constant"])
+    await page.click(`#understand [data-fig-part="${part}"]`);
+  const fig = await page.$eval("#understand .ms-partsfig", (el) => el.innerText);
+  for (const word of ["Coefficient", "Variable", "Constant", "Terms"])
+    ok(fig.includes(word), id, `Understand parts figure missing ${word} after tapping`);
+  const vocab = await page.$eval("#understand .ms-words", (el) => el.innerText);
   for (const word of ["Coefficient", "Variable", "Constant", "Term"])
     ok(vocab.includes(word), id, `vocabulary missing ${word}`);
+  await page.click('.ms-stagebar [data-stage-link="explore"]');
 }
 
 const desktop = await browser.newContext({ viewport: { width: 1366, height: 800 } });

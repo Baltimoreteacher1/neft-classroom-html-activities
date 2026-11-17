@@ -169,7 +169,7 @@ export function visual(model, values, result, lang = 'en', width = 400) {
   return svg(body, `${result.equation}. ${result.note}`, k === 'coordinates' ? '135 -8 330 305' : '0 0 600 300');
 }
 
-export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en', labels = null } = {}) {
+export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en', labels = null, think = true } = {}) {
   let values = [...initial], symbol = model.mode === 'entry' ? '>=' : '<=', valid = true, shape = 'prism';
   const fields = controls(model);
   // English always; with Spanish on, the Spanish name sits beneath it (the studios' own convention).
@@ -222,7 +222,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
       box.className = 'model-motion';
       box.style.gridColumn = '1 / -1';
       host.querySelector('.model-workspace').append(box);
-      figureView = mountFigure(box, fig, key, { values: [...values], lang: spanish() ? 'es' : 'en', think: level === 'stretch' ? 'challenge' : 'standard' });
+      figureView = mountFigure(box, fig, key, { values: [...values], lang: spanish() ? 'es' : 'en', think: think && (level === 'stretch' ? 'challenge' : 'standard') });
     }).catch(() => { /* the picture and controls work without the figure */ });
   }
   if (model.kind === 'power' && typeof ResizeObserver === 'function') {

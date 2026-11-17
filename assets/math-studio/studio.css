@@ -300,9 +300,6 @@ body.ms .ms-hero .ms-btn:not(.ms-btn--quiet):hover {
   margin: 10px 0 4px;
   font-size: 1rem;
 }
-.ms-question {
-  margin: 0;
-}
 .ms-investigate {
   margin: 0;
   padding-inline-start: 22px;
@@ -349,9 +346,11 @@ body.ms .ms-input {
 /* Understand */
 .ms-understand {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
-  gap: 26px;
-  align-items: start;
+  gap: 22px;
+  max-width: 860px;
+}
+.ms-understand h3 {
+  margin: 0 0 8px;
 }
 .ms-lead {
   font-size: 1.12rem;
@@ -425,21 +424,6 @@ body.ms .ms-keyidea h3 {
 .ms.ms-es .ms-keyidea .t-es {
   color: #d6e2ee;
 }
-.ms-mistake {
-  margin-top: 14px;
-  background: var(--ms-terra-soft);
-  border-inline-start: 6px solid var(--ms-terra);
-  border-radius: var(--ms-radius);
-  padding: 14px 18px;
-}
-body.ms .ms-mistake h3 {
-  margin: 0 0 4px;
-  font-size: 1.05rem;
-  color: var(--ms-terra-ink);
-}
-.ms-mistake p {
-  margin: 0;
-}
 .ms-support {
   margin-top: 14px;
   background: var(--ms-paper);
@@ -454,30 +438,6 @@ body.ms .ms-mistake h3 {
   min-height: 32px;
   display: flex;
   align-items: center;
-}
-.ms-vocab {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-.ms-vocab li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  align-items: start;
-}
-.ms-vocab img {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  background: var(--ms-cream);
-  border-radius: 10px;
-}
-.ms-vocab p {
-  margin: 2px 0 0;
-  font-size: 0.95rem;
 }
 .ms-frame {
   background: var(--ms-mustard-soft);
@@ -908,8 +868,7 @@ body.ms .skip-link:focus {
 }
 
 @media (max-width: 900px) {
-  .ms-explore,
-  .ms-understand {
+  .ms-explore {
     grid-template-columns: 1fr;
   }
   .ms-hero__row {
@@ -1133,3 +1092,44 @@ body.ms .ms-like__term [data-del] { min-width: 44px; min-height: 44px; }
 .ms-like__term { flex-wrap: wrap; }
 body.ms .ms-like__term [data-del] { flex: 0 0 44px; width: 44px; padding: 0; text-decoration: none; font-size: 1.4rem; }
 body.ms .ms-like__term input, body.ms .ms-like__term select { width: 64px; }
+
+/* Start here: the words first, then one question at a time. */
+.ms-start { background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: var(--ms-radius); padding: 14px 18px; margin-bottom: 18px; }
+.ms-start h3 { margin: 0 0 10px; color: var(--ms-navy); }
+.ms-words { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.ms-words li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; background: #fff; border-inline-start: 6px solid var(--ms-teal); border-radius: 8px; padding: 8px 10px; }
+.ms-words img { width: 56px; height: 56px; object-fit: contain; background: var(--ms-cream); border-radius: 8px; }
+.ms-words p { margin: 2px 0 0; font-size: 0.95rem; }
+.ms-try .ms-investigate { list-style: none; padding: 0; font-size: 1.05rem; }
+.ms-try__nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.ms-try__count { color: var(--ms-muted); font-size: 0.95rem; }
+.ms-explore.is-learning { grid-template-columns: minmax(0, 760px); justify-content: center; }
+.ms-explore.is-learning .ms-explore__side { display: none; }
+.ms-parts__learn, .ms-parts__name { background: var(--ms-sage-soft); border-radius: 10px; padding: 10px 14px; }
+.ms-parts__learn p { margin: 2px 0 8px; }
+.ms-parts__count { color: var(--ms-muted); font-weight: 700; font-size: 0.9rem; }
+.ms-parts__say { font-size: 1.2rem; font-weight: 600; color: var(--ms-ink); border-inline-start: 6px solid var(--ms-navy); padding-inline-start: 10px; }
+.ms-parts__say.ms-legend--coefficient { border-inline-start-color: var(--ms-terra); }
+.ms-parts__say.ms-legend--variable { border-inline-start-color: var(--ms-teal); }
+.ms-parts__say.ms-legend--constant { border-inline-start-color: var(--ms-mustard); }
+body.ms .ms-tok.is-dim, .ms-op.is-dim { opacity: 0.3; }
+.ms-term.is-quiet .ms-term__brace, .ms-term.is-quiet .ms-term__label { opacity: 0.25; }
+.ms-parts [hidden], .ms-try [hidden] { display: none !important; }
+.ms-start__topic { margin: 0 0 12px; font-size: 1.05rem; }
+.ms-explore.is-learning .ms-guide { display: none; }
+/* Understand: tap-to-check word cards, step-by-step examples, tappable parts picture. */
+.ms-words--flip li { border-inline-start-color: var(--ms-mustard); }
+body.ms .ms-flip { display: grid; gap: 2px; width: 100%; text-align: start; background: none; border: 0; padding: 0; font: inherit; color: var(--ms-ink); cursor: pointer; min-height: 44px; }
+.ms-flip__hint { font-size: 0.85rem; color: var(--ms-teal); font-weight: 600; }
+.ms-flip[aria-expanded="true"] .ms-flip__hint { display: none; }
+.ms-flip__score { margin: 8px 0 0; color: var(--ms-sage-ink); font-weight: 700; }
+.ms-worked li[hidden], .ms-walk[hidden], .ms-legend li[hidden], .ms-flip__back[hidden] { display: none !important; }
+.ms-walk { margin-top: 10px; }
+.ms-partsfig .ms-tok { display: inline-grid; place-items: center; }
+body.ms .ms-partsfig .ms-tok.is-on { box-shadow: 0 0 0 4px var(--ms-navy); }
+/* Explore start card: three steps, then the model. The lab's tap-to-place bar duplicates the number boxes here. */
+.ms-start__plan { margin: 0 0 12px; padding-inline-start: 22px; font-size: 1.05rem; }
+.ms-start__plan li { margin: 4px 0; }
+.ms-start h4 { margin: 4px 0 8px; color: var(--ms-navy); }
+#ms-gate [hidden], #explore [data-after-gate][hidden], #ms-explore-body[hidden] { display: none !important; }
+.ms-model .direct-click-place { display: none; }

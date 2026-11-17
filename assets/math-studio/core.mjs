@@ -203,7 +203,8 @@ export function verifyHandoff(model, values, answer, tolerance = 1e-4) {
 export function freshState(lessonId) {
   return {
     version: 1, lessonId, stage: 'explore', visited: [], updatedAt: 0,
-    explore: { prediction: '', notes: '', values: null, checks: {} },
+    explore: { started: false, prediction: '', notes: '', values: null, checks: {} },
+    understand: { answer: '' },
     practice: { level: 'regular', current: { regular: null, challenge: null }, items: {} },
     apply: { responses: {}, compared: {} },
     reflect: { items: {}, writing: '', revised: {} },
@@ -217,7 +218,7 @@ export function loadState(storage, lessonId) {
   try { saved = JSON.parse(storage.getItem(STORE_PREFIX + lessonId) || 'null'); } catch { saved = null; }
   if (!saved || saved.version !== 1 || saved.lessonId !== lessonId) return base;
   const merged = { ...base, ...saved };
-  for (const key of ['explore', 'practice', 'apply', 'reflect']) merged[key] = { ...base[key], ...(saved[key] || {}) };
+  for (const key of ['explore', 'understand', 'practice', 'apply', 'reflect']) merged[key] = { ...base[key], ...(saved[key] || {}) };
   merged.practice.current = { ...base.practice.current, ...(saved.practice?.current || {}) };
   if (!STAGES.includes(merged.stage)) merged.stage = 'explore';
   return merged;
