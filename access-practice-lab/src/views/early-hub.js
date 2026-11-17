@@ -105,6 +105,15 @@ export function extrasFor(band) {
     });
   list.push(
     {
+      id: "twr",
+      href: "twr",
+      icon: "writing",
+      title: "TWR: Say and write sentences",
+      es: "TWR: di y escribe oraciones",
+      blurb: "Short activities that build a strong sentence, one skill at a time. Pepita reads every word.",
+      blurbEs: "Actividades cortas que construyen una oración fuerte, una destreza a la vez. Pepita lee cada palabra.",
+    },
+    {
       id: "phonics",
       icon: "sparkle",
       title: "Sound Builder game",

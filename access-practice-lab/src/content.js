@@ -23,6 +23,8 @@ async function getJson(path) {
 export const loadIndex = () => getJson("index.json");
 /** Access Prep skill builders (content/prep/<slug>.json: sets keyed by "3-5" and "6-8"). */
 export const loadPrep = (slug) => getJson(`prep/${slug}.json`);
+/** TWR sets (content/twr/<band>/<strategy>.json: { sets: [3 sets] }). */
+export const loadTwr = (band, slug) => getJson(`twr/${band}/${slug}.json`);
 /** Daily warm-up sets: "early" holds tiers K-1 and 2-3, "upper" holds 3-5 and 6-8 (60 days each). */
 export const loadWarmup = (file) => getJson(`warmup-${file === "early" ? "early" : "upper"}.json`);
 /** Language Choice Boards and Talk Table cards (src/lang/boards.js): keyed by content band, then Key Language Use. */

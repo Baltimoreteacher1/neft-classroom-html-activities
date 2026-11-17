@@ -75,6 +75,14 @@ await t("/access-prep redirects to the lab's Access Prep hub, keeping queries", 
   assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/access-prep?grades=6-8");
 });
 
+await t("/twr and its sets redirect into the lab, keeping queries", () => {
+  const hub = at("https://thelanguagepage.com/twr?grades=2-3");
+  assert.equal(hub.status, 302);
+  assert.equal(hub.location, "https://thelanguagepage.com/access-practice-lab/twr?grades=2-3");
+  const set = at("https://thelanguagepage.com/twr/because-but-so/g35-because-but-so-1/");
+  assert.equal(set.location, "https://thelanguagepage.com/access-practice-lab/twr/because-but-so/g35-because-but-so-1");
+});
+
 await t("everything the lab loads is served on the lab host", () => {
   for (const path of [
     "/access-practice-lab/",

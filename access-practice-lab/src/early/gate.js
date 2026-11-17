@@ -29,6 +29,7 @@ export const EARLY_VIEWS = new Set([
   // content/talk-table.json), written to be read aloud by an adult.
   "choice-boards",
   "talk-table",
+  "twr",
   "search",
   "portfolio",
   "collection",

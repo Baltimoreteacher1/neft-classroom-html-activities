@@ -1,0 +1,378 @@
+{
+  "sets": [
+    {
+      "id": "g23-summarize-1",
+      "title": "Clever Octopus",
+      "titleEs": "El pulpo inteligente",
+      "area": "Science",
+      "minutes": 8,
+      "learn": {
+        "rule": "A summary is one sentence. It tells who or what the text is about and the most important thing. Leave out tiny details and opinions.",
+        "ruleEs": "Un resumen es una sola oración. Dice de quién o de qué trata el texto y lo más importante. Deja fuera detalles pequeños y opiniones.",
+        "model": "Penguins are birds that cannot fly, but they are strong swimmers.",
+        "notice": "One sentence tells who the text is about and the big point. It does not list every fact."
+      },
+      "items": [
+        {
+          "kind": "choice",
+          "prompt": "Which sentence is the best summary of the octopus passage?",
+          "text": "An octopus is a clever sea animal. It can squeeze through tiny spaces because it has no bones. An octopus can also change color to hide from enemies. One octopus at an aquarium opened a jar lid to get a snack.",
+          "options": [
+            {
+              "id": "a",
+              "text": "An octopus is a clever sea animal that can squeeze through tiny spaces and change color."
+            },
+            { "id": "b", "text": "One octopus opened a jar lid." },
+            { "id": "c", "text": "I think octopuses are the best animals in the sea." }
+          ],
+          "answer": "a",
+          "why": "A good summary names the animal and its most important facts. The jar lid is a tiny detail, and the last choice is an opinion.",
+          "whyEs": "Un buen resumen nombra al animal y sus datos más importantes. La tapa del frasco es un detalle pequeño y la última opción es una opinión."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the octopus passage is too long?",
+          "text": "An octopus is a clever sea animal. It can squeeze through tiny spaces because it has no bones. An octopus can also change color to hide from enemies. One octopus at an aquarium opened a jar lid to get a snack.",
+          "options": [
+            {
+              "id": "a",
+              "text": "An octopus is a clever sea animal that squeezes through tiny spaces and changes color."
+            },
+            { "id": "b", "text": "Octopuses are animals." },
+            {
+              "id": "c",
+              "text": "An octopus is a clever sea animal that has no bones and squeezes through tiny spaces, and it changes color to hide, and one octopus at an aquarium opened a jar lid to get a snack."
+            }
+          ],
+          "answer": "c",
+          "why": "A summary should be short. The long choice copies almost every sentence, including the tiny jar lid detail.",
+          "whyEs": "Un resumen debe ser corto. La opción larga copia casi todas las oraciones, incluso el detalle pequeño de la tapa del frasco."
+        },
+        {
+          "kind": "pick",
+          "prompt": "Check the details to cut from a one-sentence summary of the giraffe passage.",
+          "text": "Giraffes are the tallest animals on land. Their long necks help them reach leaves high in trees. A giraffe's tongue is dark purple. My friend drew a giraffe in art class.",
+          "options": [
+            { "id": "a", "text": "Giraffes are the tallest animals on land.", "right": false },
+            { "id": "b", "text": "A giraffe's tongue is dark purple.", "right": true },
+            {
+              "id": "c",
+              "text": "Their long necks help them reach leaves high in trees.",
+              "right": false
+            },
+            { "id": "d", "text": "My friend drew a giraffe in art class.", "right": true }
+          ],
+          "why": "Keep the main idea and the key fact about long necks. Cut the tiny detail about the tongue and the sentence about your friend.",
+          "whyEs": "Conserva la idea principal y el dato clave sobre el cuello largo. Quita el detalle pequeño de la lengua y la oración sobre tu amigo."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the Moon passage stays on the main idea?",
+          "text": "The Moon travels around Earth. It does not make its own light. It shines because it reflects sunlight. People on Earth see it glow at night.",
+          "options": [
+            { "id": "a", "text": "People like looking at the sky at night." },
+            { "id": "b", "text": "The Moon is round." },
+            { "id": "c", "text": "The Moon shines at night because it reflects sunlight." }
+          ],
+          "answer": "c",
+          "why": "The main idea is how the Moon shines. The first choice changes the focus to people, and the second is too small.",
+          "whyEs": "La idea principal es cómo brilla la Luna. La primera opción cambia el enfoque a las personas y la segunda es muy pequeña."
+        },
+        {
+          "kind": "blanks",
+          "prompt": "Finish the summary frame for the octopus passage.",
+          "parts": [
+            "An octopus is a clever sea animal that can ",
+            { "options": ["paint", "squeeze", "fly"], "answer": "squeeze" },
+            " through tiny spaces and ",
+            { "options": ["change", "count", "steal"], "answer": "change" },
+            " color."
+          ],
+          "model": "An octopus is a clever sea animal that can squeeze through tiny spaces and change color.",
+          "why": "The words in a summary come from the most important facts in the text. The passage says the octopus squeezes and changes color.",
+          "whyEs": "Las palabras de un resumen salen de los datos más importantes del texto. El texto dice que el pulpo se escurre y cambia de color."
+        }
+      ],
+      "write": {
+        "prompt": "Read the passage. Write one sentence that tells the main idea.",
+        "promptEs": "Lee el texto. Escribe una oración que diga la idea principal.",
+        "text": "Bats are the only mammals that can truly fly. Most bats sleep during the day and hunt at night. They use sound echoes to find insects in the dark. A bat can eat thousands of tiny insects in one night.",
+        "frame": "Bats are ___ that ___.",
+        "checks": [
+          {
+            "label": ["I named what the passage is about", "Nombré de qué trata el texto"],
+            "any": ["bat", "bats"]
+          },
+          {
+            "label": ["I included the most important idea", "Incluí la idea más importante"],
+            "any": ["fly", "flying", "night", "insects", "echoes", "echo", "hunt", "hunts"]
+          },
+          { "label": ["I wrote at least 6 words", "Escribí al menos 6 palabras"], "min": 6 },
+          {
+            "label": ["I wrote only one sentence", "Escribí solo una oración"],
+            "re": "^[^.!?]+[.!?]$"
+          }
+        ],
+        "model": "Bats are flying mammals that hunt insects at night using sound echoes."
+      },
+      "familyTalk": {
+        "en": "After a short video or story, each person tells it in one sentence.",
+        "es": "Después de un video o un cuento corto, cada persona lo cuenta en una sola oración."
+      },
+      "teacherTip": {
+        "en": "Have students cross out the tiny details in the passage first, then write the summary from what is left.",
+        "es": "Pide que primero tachen los detalles pequeños del texto y luego escriban el resumen con lo que queda."
+      }
+    },
+    {
+      "id": "g23-summarize-2",
+      "title": "Schools Long Ago",
+      "titleEs": "Escuelas de hace mucho",
+      "area": "Social Studies",
+      "minutes": 8,
+      "learn": {
+        "rule": "To summarize, find the most important idea and say it in one short sentence. Skip the small details.",
+        "ruleEs": "Para resumir, encuentra la idea más importante y dila en una oración corta. Omite los detalles pequeños.",
+        "model": "A library is a place where people borrow books for free.",
+        "notice": "The summary has a who or what and the key point. It is short and has no opinion."
+      },
+      "items": [
+        {
+          "kind": "choice",
+          "prompt": "Which sentence is the best summary of the one-room school passage?",
+          "text": "Long ago, many children learned in a one-room schoolhouse. Students of all ages sat in the same room. One teacher taught every lesson. Children wrote on small slates instead of paper.",
+          "options": [
+            { "id": "a", "text": "Children wrote on slates." },
+            {
+              "id": "b",
+              "text": "Long ago, children of all ages learned together in one room with one teacher."
+            },
+            { "id": "c", "text": "I would not like to go to school in a small room." }
+          ],
+          "answer": "b",
+          "why": "The summary tells the big idea: who learned and how the school worked. Slates are a smaller detail, and the last choice is an opinion.",
+          "whyEs": "El resumen dice la idea principal: quiénes aprendían y cómo funcionaba la escuela. Las pizarras son un detalle menor y la última opción es una opinión."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the one-room school passage is too short?",
+          "text": "Long ago, many children learned in a one-room schoolhouse. Students of all ages sat in the same room. One teacher taught every lesson. Children wrote on small slates instead of paper.",
+          "options": [
+            { "id": "a", "text": "Children learned in one room with one teacher." },
+            { "id": "b", "text": "School." },
+            { "id": "c", "text": "Long ago, students of all ages shared one room and one teacher." }
+          ],
+          "answer": "b",
+          "why": "One word does not tell the reader what the passage says. A summary needs who or what and the key idea.",
+          "whyEs": "Una sola palabra no dice lo que cuenta el texto. Un resumen necesita quién o qué y la idea clave."
+        },
+        {
+          "kind": "pick",
+          "prompt": "Check the details to cut from a one-sentence summary of the farmers market passage.",
+          "text": "A farmers market is a place where farmers sell food. Shoppers can buy fresh fruit, vegetables, and eggs. Some markets also have musicians. The market near my house opens on Saturdays.",
+          "options": [
+            {
+              "id": "a",
+              "text": "A farmers market is a place where farmers sell food.",
+              "right": false
+            },
+            {
+              "id": "b",
+              "text": "Shoppers can buy fresh fruit, vegetables, and eggs.",
+              "right": false
+            },
+            { "id": "c", "text": "Some markets also have musicians.", "right": true },
+            { "id": "d", "text": "The market near my house opens on Saturdays.", "right": true }
+          ],
+          "why": "The summary keeps what a farmers market is and what shoppers buy. The musicians and your own market are extra details.",
+          "whyEs": "El resumen conserva qué es un mercado de agricultores y qué compran las personas. Los músicos y tu propio mercado son detalles extra."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the community passage has the right focus?",
+          "text": "A community is a group of people who live and work in the same place. People in a community share parks, schools, and libraries. They also follow rules that keep everyone safe.",
+          "options": [
+            { "id": "a", "text": "Parks are fun." },
+            { "id": "b", "text": "I live in a community with a library." },
+            {
+              "id": "c",
+              "text": "A community is a group of people who share a place and follow safe rules."
+            }
+          ],
+          "answer": "c",
+          "why": "A good summary keeps the focus of the whole passage. The first choice is one small part, and the second choice is about the writer.",
+          "whyEs": "Un buen resumen mantiene el enfoque de todo el texto. La primera opción es una parte pequeña y la segunda trata de quien escribe."
+        },
+        {
+          "kind": "blanks",
+          "prompt": "Finish the summary frame for the one-room school passage.",
+          "parts": [
+            "Long ago, children of all ",
+            { "options": ["pets", "ages", "coats"], "answer": "ages" },
+            " learned together in one room with one ",
+            { "options": ["teacher", "chair", "window"], "answer": "teacher" },
+            "."
+          ],
+          "model": "Long ago, children of all ages learned together in one room with one teacher.",
+          "why": "The missing words are the key facts from the passage: students of all ages and one teacher.",
+          "whyEs": "Las palabras que faltan son los datos clave del texto: estudiantes de todas las edades y un solo maestro."
+        }
+      ],
+      "write": {
+        "prompt": "Read the passage. Write one sentence that tells the main idea.",
+        "promptEs": "Lee el texto. Escribe una oración que diga la idea principal.",
+        "text": "Every state has a capital city. The capital is where leaders meet to make laws. Annapolis is the capital of Maryland. Many tourists like to visit its old buildings.",
+        "frame": "A capital is the city where ___.",
+        "checks": [
+          {
+            "label": ["I named what the passage is about", "Nombré de qué trata el texto"],
+            "any": ["capital", "capitals", "Annapolis"]
+          },
+          {
+            "label": ["I included the most important idea", "Incluí la idea más importante"],
+            "any": ["laws", "law", "leaders", "meet", "government"]
+          },
+          { "label": ["I wrote at least 8 words", "Escribí al menos 8 palabras"], "min": 8 },
+          {
+            "label": ["I wrote only one sentence", "Escribí solo una oración"],
+            "re": "^[^.!?]+[.!?]$"
+          }
+        ],
+        "model": "A capital is the city where a state's leaders meet to make laws."
+      },
+      "familyTalk": {
+        "en": "Read one short paragraph from a book or sign together. Say what it was about in one sentence.",
+        "es": "Lean juntos un párrafo corto de un libro o de un letrero. Digan de qué trataba en una oración."
+      },
+      "teacherTip": {
+        "en": "Ask students to hold up one finger when they hear the sentence that tells the most important idea.",
+        "es": "Pide que levanten un dedo cuando oigan la oración que dice la idea más importante."
+      }
+    },
+    {
+      "id": "g23-summarize-3",
+      "title": "Math in a Sentence",
+      "titleEs": "Matemáticas en una oración",
+      "area": "Math",
+      "minutes": 8,
+      "learn": {
+        "rule": "A math summary tells the big idea in one sentence. Keep the key words and leave out the small examples.",
+        "ruleEs": "Un resumen de matemáticas dice la idea principal en una oración. Conserva las palabras clave y deja fuera los ejemplos pequeños.",
+        "model": "A clock has two hands that show the hours and the minutes.",
+        "notice": "The summary names the thing and tells its main job. It does not repeat each fact."
+      },
+      "items": [
+        {
+          "kind": "choice",
+          "prompt": "Which sentence is the best summary of the fraction passage?",
+          "text": "A fraction names equal parts of a whole. The bottom number tells how many equal parts there are. The top number tells how many of those parts we are talking about.",
+          "options": [
+            { "id": "a", "text": "Fractions are the hardest math." },
+            { "id": "b", "text": "The top number is a number." },
+            {
+              "id": "c",
+              "text": "A fraction uses a top number and a bottom number to name equal parts of a whole."
+            }
+          ],
+          "answer": "c",
+          "why": "The best summary names the main idea of the whole passage. One choice is an opinion and the other is too small.",
+          "whyEs": "El mejor resumen nombra la idea principal de todo el texto. Una opción es una opinión y la otra es muy pequeña."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the ruler passage is too long?",
+          "text": "We measure length with a ruler. A ruler shows inches on one side. It shows centimeters on the other side. Line up the zero mark with one end of the object.",
+          "options": [
+            { "id": "a", "text": "A ruler measures length in inches or centimeters." },
+            {
+              "id": "b",
+              "text": "We measure length with a ruler, which shows inches on one side and centimeters on the other side, and we line up the zero mark with one end of the object."
+            },
+            { "id": "c", "text": "Rulers." }
+          ],
+          "answer": "b",
+          "why": "This summary copies almost every sentence of the passage. A summary should be much shorter than the text.",
+          "whyEs": "Este resumen copia casi todas las oraciones del texto. Un resumen debe ser mucho más corto que el texto."
+        },
+        {
+          "kind": "pick",
+          "prompt": "Check the details to cut from a one-sentence summary of the place value passage.",
+          "text": "Our number system uses place value. The digit 4 in 42 means 4 tens. The digit 2 means 2 ones. I like the number 42 because it is my bus number. My teacher wore a blue shirt today.",
+          "options": [
+            { "id": "a", "text": "Our number system uses place value.", "right": false },
+            { "id": "b", "text": "The digit 4 in 42 means 4 tens.", "right": false },
+            {
+              "id": "c",
+              "text": "I like the number 42 because it is my bus number.",
+              "right": true
+            },
+            { "id": "d", "text": "The digit 2 means 2 ones.", "right": false },
+            { "id": "e", "text": "My teacher wore a blue shirt today.", "right": true }
+          ],
+          "why": "The summary keeps place value and what the digits mean. The bus number and the blue shirt are small details that do not help explain place value.",
+          "whyEs": "El resumen conserva el valor posicional y lo que significan los dígitos. El número del autobús y la camisa azul son detalles pequeños que no ayudan a explicarlo."
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which summary of the ruler passage has the right focus?",
+          "text": "We measure length with a ruler. A ruler shows inches on one side. It shows centimeters on the other side. Line up the zero mark with one end of the object.",
+          "options": [
+            { "id": "a", "text": "Rulers are good." },
+            {
+              "id": "b",
+              "text": "A ruler shows inches on one side and centimeters on the other side."
+            },
+            { "id": "c", "text": "My ruler is long and has numbers on it." }
+          ],
+          "answer": "b",
+          "why": "This summary keeps the key facts about what a ruler shows. The first choice is vague and the last choice is about the writer's ruler.",
+          "whyEs": "Este resumen conserva los datos clave de lo que muestra una regla. La primera opción es vaga y la última trata de la regla de quien escribe."
+        },
+        {
+          "kind": "blanks",
+          "prompt": "Finish the summary frame for the fraction passage.",
+          "parts": [
+            "A fraction names ",
+            { "options": ["tiny", "equal", "loud"], "answer": "equal" },
+            " parts of a ",
+            { "options": ["wall", "song", "whole"], "answer": "whole" },
+            "."
+          ],
+          "model": "A fraction names equal parts of a whole.",
+          "why": "The key words of the passage are equal parts and whole. The summary uses them in one short sentence.",
+          "whyEs": "Las palabras clave del texto son equal parts y whole. El resumen las usa en una oración corta."
+        }
+      ],
+      "write": {
+        "prompt": "Read the passage. Write one sentence that tells the main idea.",
+        "promptEs": "Lee el texto. Escribe una oración que diga la idea principal.",
+        "text": "A shape with four straight sides is a quadrilateral. A square, a rectangle, and a rhombus are quadrilaterals. Their sides are straight and they close up with no gaps. Some quadrilaterals have four square corners.",
+        "frame": "Quadrilaterals are shapes with ___.",
+        "checks": [
+          {
+            "label": ["I named what the passage is about", "Nombré de qué trata el texto"],
+            "any": ["quadrilateral", "quadrilaterals", "shape", "shapes"]
+          },
+          {
+            "label": ["I included the most important idea", "Incluí la idea más importante"],
+            "any": ["four", "4", "straight", "sides"]
+          },
+          { "label": ["I wrote at least 6 words", "Escribí al menos 6 palabras"], "min": 6 },
+          {
+            "label": ["I wrote only one sentence", "Escribí solo una oración"],
+            "re": "^[^.!?]+[.!?]$"
+          }
+        ],
+        "model": "Quadrilaterals are closed shapes with four straight sides, like squares and rectangles."
+      },
+      "familyTalk": {
+        "en": "Ask your child to explain one thing they learned in math today in just one sentence.",
+        "es": "Pidan a su hijo o hija que explique en una sola oración algo que aprendió hoy en matemáticas."
+      },
+      "teacherTip": {
+        "en": "Have students underline the key math words in the passage, then use two of them in the summary.",
+        "es": "Pide que subrayen las palabras clave de matemáticas del texto y usen dos de ellas en el resumen."
+      }
+    }
+  ]
+}

@@ -10,16 +10,22 @@ export const prepHref = (slug, id, band) =>
   `${BASE}/access-prep/${slug}${id ? `/${id}` : ""}?grades=${band}`;
 
 /** Page frame: crumbs, title block, step rail, the current step, and the step buttons. */
-export function frameHTML(I, { skill, set, band, steps, step, body, canNext, nextLabel }) {
+export function frameHTML(
+  I,
+  { skill, set, band, steps, step, body, canNext, nextLabel, crumbs, allHref, cls = "", hideNext = false },
+) {
   const last = step === steps.length - 1;
-  return html`${crumbsHTML([
-      [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${band}`],
-      [I.S("Access Prep", "Preparación ACCESS"), `${BASE}/access-prep?grades=${band}`],
-      [I.S(skill.title, skill.titleEs), prepHref(skill.slug, "", band)],
-      [set.title, null],
-    ])}
+  const all = allHref || prepHref(skill.slug, "", band);
+  return html`${crumbsHTML(
+      crumbs || [
+        [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${band}`],
+        [I.S("Access Prep", "Preparación ACCESS"), `${BASE}/access-prep?grades=${band}`],
+        [I.S(skill.title, skill.titleEs), all],
+        [set.title, null],
+      ],
+    )}
     <article
-      class="prep-skill d-${skill.domain.toLowerCase()}"
+      class="prep-skill d-${skill.domain.toLowerCase()} ${cls}"
       data-prep-slug="${skill.slug}"
       data-prep-set="${set.id}"
     >
@@ -60,13 +66,15 @@ export function frameHTML(I, { skill, set, band, steps, step, body, canNext, nex
         ${body}
       </section>
       <nav class="prep-steps-nav" aria-label="${I.S("Move between steps", "Moverse entre pasos")}">
-        ${step > 0 ? html`<button type="button" class="btn" data-prep-act="back">${icon("arrow-left")} ${I.T("Back", "Atrás")}</button>` : html`<a class="btn" href="${prepHref(skill.slug, "", band)}">${I.T("All sets", "Todos los conjuntos")}</a>`}
+        ${step > 0 ? html`<button type="button" class="btn" data-prep-act="back">${icon("arrow-left")} ${I.T("Back", "Atrás")}</button>` : html`<a class="btn" href="${all}">${I.T("All sets", "Todos los conjuntos")}</a>`}
         ${
           last
-            ? html`<a class="btn btn-primary" href="${prepHref(skill.slug, "", band)}"
+            ? html`<a class="btn btn-primary" href="${all}"
                 >${I.T("Choose another set", "Elegir otro conjunto")} ${icon("arrow-right")}</a
               >`
-            : html`<button
+            : hideNext
+              ? ""
+              : html`<button
                 type="button"
                 class="btn btn-primary"
                 data-prep-act="next"

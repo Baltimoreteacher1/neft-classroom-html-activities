@@ -73,6 +73,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/access-prep`,
   `${LAB_BASE}/access-prep/daily-drill`,
   `${LAB_BASE}/access-prep/extempore-speak`,
+  `${LAB_BASE}/twr`,
   `${LAB_BASE}/path`,
   `${LAB_BASE}/scaffold`,
   `${LAB_BASE}/learn`,
@@ -179,6 +180,13 @@ export function languagePageRoute(url) {
       kind: "redirect",
       status: 302,
       location: `${url.origin}${LAB_BASE}/family-tour/${url.search}`,
+    };
+  // thelanguagepage.com/twr is the TWR card's short address.
+  if (url.pathname === "/twr" || url.pathname.startsWith("/twr/"))
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}${url.pathname.replace(/\/$/, "")}${url.search}`,
     };
   if (url.pathname.startsWith("/access-prep/"))
     return {

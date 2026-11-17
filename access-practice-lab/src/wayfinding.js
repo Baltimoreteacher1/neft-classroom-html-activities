@@ -20,7 +20,7 @@ const HIDDEN_VIEWS = new Set([
 /** Pages that make sense for any grade band: switching grade keeps the learner on the same page. */
 const GRADE_NEUTRAL_VIEWS = new Set([
   "home", "explore", "library", "passport", "family", "practice-together", "start", "site-guide", "book-studio",
-  "access-prep", "growth", "class", "privacy", "accessibility", "search", "games", "stories", "vocabulary",
+  "access-prep", "twr", "growth", "class", "privacy", "accessibility", "search", "games", "stories", "vocabulary",
   "flashcards", "puzzles", "grammar", "reader", "learn", "tests", "mentor", "ladder", "path", "scaffold",
 ]);
 

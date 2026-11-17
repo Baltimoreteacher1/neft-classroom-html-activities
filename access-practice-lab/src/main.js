@@ -105,6 +105,7 @@ const VIEW_LOADERS = {
   "vocab-curriculum": () => import("./vocab-curriculum/view.js"),
   "language-studios": () => import("./views/language-studios.js"),
   "access-prep": () => import("./views/access-prep.js"),
+  twr: () => import("./views/twr.js"),
   class: () => import("./views/class.js"),
   "class-quiz": () => import("./views/class-quiz.js"),
   "class-teacher": () => import("./views/class-roster.js"),
@@ -180,6 +181,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "test") return { ...r, view: "test", testId: b || "" };
   // Access Prep skill builders: /access-prep/<skill>/<set> (src/prep/view.js); /access-prep alone is the hub.
   if (a === "access-prep") return { ...r, view: a, id: b || "", setId: c || "", tab: q.get("tab") || "" };
+  // TWR: /twr, /twr/<strategy>, /twr/<strategy>/<set> (src/views/twr.js, src/twr/view.js).
+  if (a === "twr") return { ...r, view: a, id: b || "", setId: c || "" };
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }

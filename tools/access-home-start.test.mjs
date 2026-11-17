@@ -110,6 +110,9 @@ test("availableBands reads its order from grade-bands.js", () => {
   assert.match(src, /CONTENT_BAND_ORDER\.filter\(\(b\) => index\.bands\[b\]\)/);
 });
 
+// A card named for a program (TWR) keeps its name in Spanish; everything around it is still translated.
+const SAME_IN_SPANISH = new Set(["TWR"]);
+
 test("registry: unique ids, known groups, both languages, real icons, routes that exist", () => {
   const icons = new Set(
     [
@@ -125,7 +128,8 @@ test("registry: unique ids, known groups, both languages, real icons, routes tha
     for (const pair of [c.title, c.text]) {
       assert.equal(pair.length, 2, `${c.id}: [en, es]`);
       assert.ok(pair[0].trim() && pair[1].trim(), `${c.id}: both languages`);
-      assert.notEqual(pair[0], pair[1], `${c.id}: Spanish is not the English`);
+      if (!(pair === c.title && SAME_IN_SPANISH.has(pair[0])))
+        assert.notEqual(pair[0], pair[1], `${c.id}: Spanish is not the English`);
     }
     assert.ok(icons.has(c.icon), `${c.id}: icon ${c.icon}`);
     const [pathWithQuery, hash] = c.href.split("#");
@@ -386,7 +390,8 @@ test("Spanish: every new start-screen and registry string is in Spanish, bilingu
   )) {
     const el = es.querySelector(`[data-home-card="${c.id}"]`);
     assert.ok(el.textContent.includes(c.title[1]), `${c.id}: Spanish title`);
-    assert.ok(!el.textContent.includes(c.title[0]), `${c.id}: no English title`);
+    if (!SAME_IN_SPANISH.has(c.title[0]))
+      assert.ok(!el.textContent.includes(c.title[0]), `${c.id}: no English title`);
   }
   const bi = await renderHome("6-8", "bi");
   const lphBi = bi.querySelector(".lph").textContent;

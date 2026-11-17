@@ -499,6 +499,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "twr",
+    section: "practice",
+    skill: "Writing",
+    kind: "studio",
+    for: ST,
+    top: true,
+    href: "twr",
+    icon: "writing",
+    title: P("TWR", "TWR"),
+    text: P(
+      "Sentence-first writing practice: strong sentences, joined ideas, then paragraphs. Short sets for every grade band.",
+      "Práctica de escritura que empieza por la oración: oraciones fuertes, ideas unidas y luego párrafos. Conjuntos cortos para cada banda de grados.",
+    ),
+  },
+  {
     id: "communication",
     section: "practice",
     skill: "Speaking",

@@ -107,6 +107,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "twr",
+    group: "explore",
+    featured: true,
+    href: "twr",
+    icon: "writing",
+    title: ["TWR", "TWR"],
+    text: [
+      "Write strong sentences, then paragraphs: short activities that build one skill at a time.",
+      "Escribe oraciones fuertes y luego párrafos: actividades cortas que desarrollan una destreza a la vez.",
+    ],
+  },
+  {
     id: "join-class",
     group: "start",
     href: "class",
