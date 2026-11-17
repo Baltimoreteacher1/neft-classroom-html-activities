@@ -135,6 +135,21 @@ export const GAMES = [
     standards: ["6.GR.2", "6.GR.4"],
     features: ["time-machine"],
   },
+  {
+    id: "final-reality",
+    href: "/math/games/universe/games/final-reality/",
+    title: { en: "The Final Reality", es: "La Realidad Final" },
+    genre: { en: "Boss adventure · year review", es: "Aventura final · repaso del año" },
+    tagline: {
+      en: "The Unraveling Engine is tearing the world apart. Every shield ring is mathematics you already know. Bring it down.",
+      es: "El Motor del Desenredo está rompiendo el mundo. Cada anillo es matemática que ya conoces. Desármalo.",
+    },
+    // A review of Units 2-9, not one unit: listed under "Year review".
+    unit: null,
+    lessons: [],
+    standards: ["6.GR.2", "6.AT.7", "6.AT.2", "6.AT.9", "6.AT.8"],
+    features: ["time-machine"],
+  },
 ];
 
 /** The game for a lesson id, or null. */

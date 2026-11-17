@@ -9,6 +9,7 @@ const T = {
     filter: "Show games for",
     allUnits: "All units",
     unit: "Unit {n}",
+    review: "Year review",
     lessons: "Lessons {list}",
     play: "Play",
     howTitle: "How the games show learning",
@@ -28,6 +29,7 @@ const T = {
     filter: "Mostrar juegos de",
     allUnits: "Todas las unidades",
     unit: "Unidad {n}",
+    review: "Repaso del año",
     lessons: "Lecciones {list}",
     play: "Jugar",
     howTitle: "Cómo los juegos muestran el aprendizaje",
@@ -53,7 +55,7 @@ const grid = document.getElementById("grid");
 const unitSel = /** @type {HTMLSelectElement} */ (document.getElementById("unit"));
 const langBtn = document.getElementById("lang");
 
-for (const u of [...new Set(GAMES.map((g) => g.unit))].sort((a, b) => a - b)) {
+for (const u of [...new Set(GAMES.map((g) => g.unit).filter((x) => x !== null))].sort((a, b) => a - b)) {
   const o = document.createElement("option");
   o.value = String(u);
   o.dataset.unit = String(u);
@@ -69,13 +71,16 @@ function render() {
   langBtn.setAttribute("aria-label", t("langName"));
   grid.textContent = "";
   const unit = Number(unitSel.value) || 0;
-  for (const g of GAMES.filter((x) => !unit || x.unit === unit)) {
+  // Curriculum order: by unit, the year review last.
+  const byUnit = [...GAMES].sort((a, b) => (a.unit ?? 99) - (b.unit ?? 99));
+  for (const g of byUnit.filter((x) => !unit || x.unit === unit)) {
     const li = document.createElement("li");
     const a = document.createElement("a");
     a.className = "card";
     a.href = `${g.href}${lang === "es" ? "?lang=es" : ""}`;
     a.innerHTML = `<span class="meta"></span><strong></strong><span class="genre"></span><span class="tag"></span><span class="chips"></span><span class="go"></span>`;
-    a.querySelector(".meta").textContent = `${t("unit", { n: g.unit })} · ${t("lessons", { list: g.lessons.join(", ") })}`;
+    a.querySelector(".meta").textContent =
+      g.unit === null ? t("review") : `${t("unit", { n: g.unit })} · ${t("lessons", { list: g.lessons.join(", ") })}`;
     a.querySelector("strong").textContent = g.title[lang];
     a.querySelector(".genre").textContent = g.genre[lang];
     a.querySelector(".tag").textContent = g.tagline[lang];

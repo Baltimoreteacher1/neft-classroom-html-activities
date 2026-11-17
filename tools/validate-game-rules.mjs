@@ -65,6 +65,7 @@ const GAME_DIRS = [
   "math/games/universe/games/fraction-food-truck",
   "math/games/universe/games/data-chase",
   "math/games/universe/games/netfold-engineer",
+  "math/games/universe/games/final-reality",
   "math/games/engines/u2-pulse-matrix",
   "math/games/engines/u2-circuit-breaker",
   "math/games/engines/u3-ratio-mixer",
