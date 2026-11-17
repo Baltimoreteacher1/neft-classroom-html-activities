@@ -637,3 +637,95 @@ html body {
       16px 0 0 0 #fffcf5;
   }
 }
+
+/* ── bare home: a quiet strip under the audience doors (2026-11-17) ────────
+   With no grade chosen, the doors are the page. The grade shortcut and the four direct links sit on a light card,
+   not the navy stage (which stays the identity of a grade's own practice home). */
+body[data-lab-view="home"] .lph.lph-choose {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-areas:
+    "intro student"
+    "intro shortcuts";
+  grid-template-rows: auto 1fr;
+  gap: var(--s-4) clamp(1rem, 3vw, 2.5rem);
+  margin-top: var(--s-5);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: none;
+}
+body[data-lab-view="home"] .lph.lph-choose::before {
+  content: none;
+}
+/* The wide home spreads .lph-intro's children over its own grid (display: contents); here the intro is one block. */
+body[data-lab-view="home"] .lph.lph-choose > .lph-intro {
+  display: block;
+  grid-area: intro;
+}
+body[data-lab-view="home"] .lph.lph-choose :is(.lph-title, .lph-label) {
+  color: var(--ink);
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-title {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  margin: 0 0 var(--s-1);
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-lead {
+  color: var(--ink-2);
+  margin: 0;
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-front {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-front > .lph-label {
+  margin: 0 0 var(--s-2);
+  font-weight: 700;
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-grade-cards {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+body[data-lab-view="home"] .lph.lph-choose studio-video.sv {
+  margin: var(--s-4) 0 0;
+  max-width: 24rem;
+}
+body[data-lab-view="home"] .lph.lph-choose .lph-shortcuts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  padding-top: var(--s-4);
+}
+@media (max-width: 760px) {
+  /* Phones: one column in task order — the grade first, then the links, then the welcome video. */
+  body[data-lab-view="home"] .lph.lph-choose {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+    grid-template-rows: none;
+  }
+  body[data-lab-view="home"] .lph.lph-choose > .lph-intro {
+    display: contents;
+  }
+  body[data-lab-view="home"] .lph.lph-choose > *,
+  body[data-lab-view="home"] .lph.lph-choose > .lph-intro > * {
+    grid-area: auto;
+  }
+  body[data-lab-view="home"] .lph.lph-choose .lph-front {
+    order: 1;
+  }
+  body[data-lab-view="home"] .lph.lph-choose .lph-shortcuts {
+    order: 2;
+  }
+  body[data-lab-view="home"] .lph.lph-choose studio-video.sv {
+    order: 3;
+    margin: 0;
+  }
+  body[data-lab-view="home"] .lph.lph-choose .lph-grade-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  body[data-lab-view="home"] .lph.lph-choose .lph-grade-card-name {
+    font-size: 0.8rem;
+    overflow-wrap: normal;
+    hyphens: none;
+  }
+}

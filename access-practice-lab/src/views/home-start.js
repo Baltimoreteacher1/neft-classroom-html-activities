@@ -321,18 +321,17 @@ function gradeCardsHTML(I, band, available) {
  * opens the full home for that grade (?grades=). Same header as startHTML.
  */
 export function chooseGradeHTML(I, ctx, { band, available }) {
+  // Under the three audience doors this is a quiet shortcut strip, not a second hero: the Student door is the main
+  // way in; a learner who already knows their grade can jump straight to it here.
   return html`<section class="lph lph-choose" aria-labelledby="lphTitle">
     <div class="lph-intro">
-      <p class="lph-label">${I.T("Students", "Estudiantes")}</p>
-      <h2 class="lph-title" id="lphTitle">${I.T("Start practicing", "Empieza a practicar")}</h2>
+      <h2 class="lph-title" id="lphTitle">${I.T("Jump straight in", "Entra directamente")}</h2>
       <p class="lph-lead">
-        ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
+        ${I.T("Pick a grade to open practice, missions and saved work. No timers. Work saves on this device.", "Elige un grado para abrir la práctica, las misiones y el trabajo guardado. Sin cronómetros. El trabajo se guarda en este dispositivo.")}
       </p>
     </div>
-    <div class="lph-student lph-continue lph-front" id="lphFront" data-focus-first tabindex="-1">
-      <p class="lph-label">${I.T("Start here", "Empieza aquí")}</p>
-      <h2 id="lphChooseTitle">${I.T("Choose your grade", "Elige tu grado")}</h2>
-      <p class="lph-why">${I.T("Tap your grade to open your practice, missions and saved work.", "Toca tu grado para abrir tu práctica, tus misiones y tu trabajo guardado.")}</p>
+    <div class="lph-student lph-front" id="lphFront" data-focus-first tabindex="-1">
+      <p class="lph-label" id="lphChooseTitle">${I.T("Choose your grade", "Elige tu grado")}</p>
       ${gradeCardsHTML(I, band, available)}
     </div>
     ${shortcutsHTML(I, band)}
