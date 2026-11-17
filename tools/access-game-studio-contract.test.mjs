@@ -20,6 +20,19 @@ const fakeButton = (selector) => {
   };
   return node;
 };
+// Game handlers announce results through util.announce (a live region and a toast). Node has no page, so give it an
+// empty one: announcements are dropped, every game rule still runs.
+globalThis.document ??= {
+  getElementById: () => null,
+  querySelector: () => null,
+  createElement: () => ({
+    style: {},
+    classList: { add() {}, remove() {} },
+    append() {},
+    setAttribute() {},
+  }),
+  body: { append() {} },
+};
 const I = { T: (en) => en, S: (en) => en };
 for (const def of GAMES) {
   const content = JSON.parse(
@@ -32,9 +45,10 @@ for (const def of GAMES) {
   for (const band of ["3-5", "6-8"])
     for (const support of ["A", "B", "C"]) {
       const events = [];
-      const gameContent = def.id === "vocab-quest" ? content.bands[band] : content;
       const env = {
-        content: def.id === "vocab-quest" ? gameContent : content,
+        // Same shape as the app's envFor (src/views/games.js): this band's slice, plus the whole file.
+        content: content.bands?.[band] || {},
+        contentAll: content,
         band,
         support,
         sup: { hints: 3, audio: "tap", gloss: "show", frames: "full", visuals: true },
@@ -49,8 +63,15 @@ for (const def of GAMES) {
       assert.equal(mod.done(state), false, `${def.id}/${band}/${support} starts unfinished`);
       // A complete correct-plan loop proves every module advances and persists state serializably.
       let guard = 0;
+      let wrongTries = 0;
+      // Answer wrong until the game has given revision feedback once (a game's first step may be a "ready" tap
+      // that cannot be wrong), at most three times, then play correctly to the end.
+      const needsWrong = () =>
+        !events.some((row) => row.revised || row.ok === false) && wrongTries < 3;
       while (!mod.done(state) && guard++ < 40) {
-        const actions = mod.plan(state, { wrong: guard === 1 }, env);
+        const wrong = needsWrong();
+        const actions = mod.plan(state, { wrong }, env);
+        if (wrong) wrongTries++;
         assert.ok(actions.length, `${def.id}/${band}/${support} has no next action`);
         for (const action of actions) {
           if (action.click)
