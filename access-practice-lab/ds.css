@@ -1931,6 +1931,34 @@ body[data-lab-band="6-8"] .studio-card {
   padding: 0.4rem 0.85rem;
   border-radius: 8px;
 }
+/* Phones: the whole card is the link (its title already says where it goes), so the second "Start" button and
+   the tall two-column layout go; tags sit on one line. Each card is about half as tall. */
+@media (max-width: 599px) {
+  .prep-act-item {
+    position: relative;
+    padding: 0.7rem 0.9rem;
+  }
+  .prep-act-action {
+    display: none;
+  }
+  .prep-act-title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .prep-act-item:focus-within {
+    outline: 3px solid var(--focus, #0f2c47);
+    outline-offset: 2px;
+  }
+  .prep-act-title a:focus-visible {
+    outline: none;
+  }
+  .prep-act-meta-row {
+    gap: 0.35rem;
+    margin-bottom: 0.2rem;
+  }
+}
 
 
 /* ── folds: secondary page sections closed behind their own heading (src/fold.js) ── */

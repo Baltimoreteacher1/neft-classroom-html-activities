@@ -348,7 +348,6 @@ export function recorderHTML(
     class="recorder ${recording ? "is-recording" : ""}"
     aria-label="${L.S("Record your answer", "Graba tu respuesta")}"
   >
-    <p class="fine">${L.T("Use a quiet place and check your headphones. Microphone permission is optional: you can practice aloud with a partner instead.", "Usa un lugar tranquilo y revisa tus audífonos. El permiso del micrófono es opcional: puedes practicar en voz alta con un compañero.")}</p>
     <div class="rec-main">
       ${
         recording
@@ -376,8 +375,13 @@ export function recorderHTML(
     ${takes.length > 1 ? compareTakesHTML(takes, L) : ""}
     <p class="rec-countdown" data-rec-countdown="${key}" role="status"></p>
     <p class="rec-error" data-rec-error="${key}" role="status"></p>
-    <p class="fine">${L.T("Listen to your answer. Choose one detail to add, then record again if you want.", "Escucha tu respuesta. Elige un detalle para agregar y, si quieres, graba otra vez.")}</p>
-    <p class="fine">${L.T("Recordings stay in this tab and disappear when you close or reload it. They are never uploaded. Download a recording before leaving if you want to keep it; a progress code does not include audio.", "Las grabaciones se quedan en esta pestaña y desaparecen cuando la cierras o la recargas. Nunca se suben. Descarga una grabación antes de salir si quieres conservarla; un código de progreso no incluye audio.")}</p>
+    ${takes.length ? html`<p class="fine">${L.T("Listen to your answer. Choose one detail to add, then record again if you want.", "Escucha tu respuesta. Elige un detalle para agregar y, si quieres, graba otra vez.")}</p>` : ""}
+    <p class="fine rec-privacy">${L.T("Recordings stay in this tab and are never uploaded. Download one to keep it.", "Las grabaciones se quedan en esta pestaña y nunca se suben. Descarga una para conservarla.")}</p>
+    <details class="rec-about">
+      <summary>${L.T("Recording tips", "Consejos para grabar")}</summary>
+      <p class="fine">${L.T("Use a quiet place and check your headphones. Microphone permission is optional: you can practice aloud with a partner instead.", "Usa un lugar tranquilo y revisa tus audífonos. El permiso del micrófono es opcional: puedes practicar en voz alta con un compañero.")}</p>
+      <p class="fine">${L.T("A recording disappears when you close or reload this tab. A progress code does not include audio.", "Una grabación desaparece cuando cierras o recargas esta pestaña. Un código de progreso no incluye audio.")}</p>
+    </details>
     ${models ? modelLadderHTML(models, level, activity, L) : ""}
   </section>`;
 }

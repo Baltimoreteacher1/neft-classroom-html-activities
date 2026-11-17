@@ -409,7 +409,7 @@ function interactiveHTML(a) {
   const c = checked.get(a.id);
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
-  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>${I.T("Warm-up, not speaking evidence.", "Calentamiento, no evidencia de habla.")}</strong> ${I.T("Choosing a model response is language study with support. It does not show that you can speak. Speaking is shown only by recording your own words — when you are ready,", "Elegir una respuesta modelo es estudio del lenguaje con apoyo. No demuestra que puedes hablar. Hablar se demuestra solo grabando tus propias palabras — cuando estés listo o lista,")} <a href="${BASE}/speak?grades=${cur.band}">${I.T("open the Speaking Studio", "abre el Estudio de habla")}</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
+  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")}<span><strong>${I.T("Warm-up, not speaking evidence.", "Calentamiento, no evidencia de habla.")}</strong> ${I.T("Picking a model answer is practice with help. To show your speaking, record your own words in the", "Elegir una respuesta modelo es práctica con ayuda. Para mostrar cómo hablas, graba tus propias palabras en el")} <a href="${BASE}/speak?grades=${cur.band}">${I.T("Speaking Studio", "Estudio de habla")}</a>.</span></p>` : ""}${inputHTML(a, answer, { reveal })}
   ${!c ? sureHTML(a) : ""}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>${I.T("Check my answer", "Revisar mi respuesta")}</button>` : ""}
   ${feedbackHTML(a)}
