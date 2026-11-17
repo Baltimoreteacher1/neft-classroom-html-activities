@@ -10,9 +10,6 @@ import { ctaLabel, headline } from "../journey/ui/pages-hero.js";
 import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
-import { loadIntro } from "../intro/state.js";
-import { tourStatus } from "../intro/tour/model.js";
-import { familyTourHost } from "../family-tour-host.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 
 const SKILL_ES = {
@@ -265,16 +262,16 @@ export function frontDoorHTML(I, { target, missions = [], resume = null, dueCoun
   </section>`;
 }
 
-/** "I am a… Student / Teacher / Family": Teacher follows the tour on this device; Family opens Practice Together. */
-function rolesHTML(I, band) {
-  const tourState = tourStatus(loadIntro()).state;
-  const going = tourState === "continue";
-  const teacherHint = { continue: I.S("Continue the Teacher Tour", "Continuar el recorrido para docentes"), again: I.S("Take the Teacher Tour again", "Repetir el recorrido para docentes"), start: I.S("Start the Teacher Tour", "Empezar el recorrido para docentes") }[tourState];
+/**
+ * "I am a… Student / Teacher / Family". Teacher and Family open a start page where the visitor picks the grades
+ * first and then chooses the tour or an activity; neither button drops anyone straight into a tour.
+ */
+function rolesHTML(I) {
   return html`<nav class="lph-roles" aria-labelledby="lphRolesLabel">
     <span class="lph-roles-label" id="lphRolesLabel">${I.T("I am a…", "Soy…")}</span>
     <a class="lph-role is-student" href="#lphFront" aria-current="true">${icon("reading")}<span>${I.T("Student", "Estudiante")}</span></a>
-    <a class="lph-role is-teacher" data-tour="${tourState}" title="${teacherHint}" href="${going ? `${BASE}/start/tour` : `${BASE}/start/tour?part=1&grades=${band}`}">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
-    <a class="lph-role is-family" title="${I.S("Practice English Together", "Practicar inglés juntos")}" href="${BASE}/${familyTourHost() ? "family-tour/" : "practice-together"}?grades=${band}">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
+    <a class="lph-role is-teacher" title="${I.S("Teachers: start here", "Docentes: empiecen aquí")}" href="${BASE}/start">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
+    <a class="lph-role is-family" title="${I.S("Families: start here", "Familias: empiecen aquí")}" href="${BASE}/family-start">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
   </nav>`;
 }
 
@@ -304,7 +301,7 @@ export function shortcutsHTML(I, band = "6-8") {
 export function startHTML(I, ctx, data) {
   const { band, available, focusCounts, target, missions, resume, dueCount } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
-    ${rolesHTML(I, band)}
+    ${rolesHTML(I)}
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">
         ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
@@ -340,7 +337,7 @@ function gradeCardsHTML(I, band, available) {
  */
 export function chooseGradeHTML(I, ctx, { band, available }) {
   return html`<section class="lph lph-choose" aria-labelledby="homeTitle">
-    ${rolesHTML(I, band)}
+    ${rolesHTML(I)}
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">
         ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}

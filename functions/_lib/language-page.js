@@ -122,6 +122,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/start/lesson`,
   `${LAB_BASE}/family-tour/`,
   `${LAB_BASE}/practice-together`,
+  `${LAB_BASE}/family-start`,
   `${LAB_BASE}/site-guide`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
   `${LAB_BASE}/early`,

@@ -259,32 +259,29 @@ test("home keeps every destination the previous home linked, for both bands", as
   }
 });
 
-test("the Teacher switch follows the tour on this device: start, continue, take it again", async () => {
+test("the Teacher and Family switches open a start page, never a tour directly (Joel, 2026-11-17)", async () => {
   const KEY = "accessPracticeLab:v1:intro";
-  const card = async () => {
-    const doc = await renderHome("6-8", "en");
-    const link = doc.querySelector(".lph-roles .lph-role.is-teacher");
-    return [link.dataset.tour, link.getAttribute("title"), link.getAttribute("href")];
-  };
   try {
-    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "support", furthest: 2 } }));
-    assert.deepEqual(await card(), [
-      "continue",
-      "Continue the Teacher Tour",
-      "/access-practice-lab/start/tour",
-    ]);
-    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "kit", furthest: 6 } }));
-    assert.deepEqual(await card(), [
-      "again",
-      "Take the Teacher Tour again",
-      "/access-practice-lab/start/tour?part=1&grades=6-8",
-    ]);
-    localStorage.setItem(KEY, JSON.stringify({ tour2: { v: 1, step: "welcome", furthest: 0 } }));
-    assert.deepEqual(await card(), [
-      "start",
-      "Start the Teacher Tour",
-      "/access-practice-lab/start/tour?part=1&grades=6-8",
-    ]);
+    // Whatever the tour state on this device, the Teacher button lands on /start, where the grade comes first.
+    for (const tour2 of [
+      { v: 1, step: "support", furthest: 2 },
+      { v: 1, step: "kit", furthest: 6 },
+      null,
+    ]) {
+      if (tour2) localStorage.setItem(KEY, JSON.stringify({ tour2 }));
+      else localStorage.removeItem(KEY);
+      const doc = await renderHome("6-8", "en");
+      assert.equal(
+        doc.querySelector(".lph-role.is-teacher").getAttribute("href"),
+        "/access-practice-lab/start",
+      );
+      assert.equal(
+        doc.querySelector(".lph-role.is-family").getAttribute("href"),
+        "/access-practice-lab/family-start",
+      );
+      for (const a of doc.querySelectorAll(".lph-roles a"))
+        assert.doesNotMatch(a.getAttribute("href"), /tour/, "no role button opens a tour");
+    }
   } finally {
     localStorage.removeItem(KEY);
   }
@@ -331,11 +328,11 @@ test("start screen: one h1, a labelled ruler, an I-am switch, ONE primary action
   assert.equal(lph.querySelector(".lph-role.is-student").getAttribute("aria-current"), "true");
   assert.equal(
     lph.querySelector(".lph-role.is-family").getAttribute("href"),
-    "/access-practice-lab/practice-together?grades=6-8",
+    "/access-practice-lab/family-start",
   );
   assert.equal(
     lph.querySelector(".lph-role.is-teacher").getAttribute("href"),
-    "/access-practice-lab/start/tour?part=1&grades=6-8",
+    "/access-practice-lab/start",
   );
   // Everything else is below, collapsed, and still reachable.
   const more = doc.querySelector("details.lph-more-ways");

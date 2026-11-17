@@ -118,6 +118,7 @@ const VIEW_LOADERS = {
   collection: () => import("./views/collection.js"),
   start: () => import("./intro/start.js"),
   "practice-together": () => import("./intro/family.js"),
+  "family-start": () => import("./intro/family-start.js"),
   "site-guide": () => import("./intro/site-guide.js"),
   privacy: () => import("./views/privacy.js"),
   accessibility: () => import("./views/accessibility.js"),
@@ -219,6 +220,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
       skill: q.get("skill") || "",
       support: q.get("support") || "",
     };
+  if (a === "family-start") return { ...r, view: "family-start", pick: q.get("pick") || "" };
   if (a === "practice-together") return { ...r, view: "practice-together", id: b || "", step: q.get("step") || "" };
   if (a === "privacy" || a === "accessibility") return { ...r, view: a };
   if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };

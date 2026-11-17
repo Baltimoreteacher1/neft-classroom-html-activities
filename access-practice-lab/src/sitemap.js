@@ -1563,6 +1563,20 @@ export const DESTINATIONS = Object.freeze([
   },
   // ── For Families ──────────────────────────────────────────────────────────────────────────
   {
+    id: "family-start",
+    section: "family",
+    skill: "Mixed",
+    kind: "guide",
+    for: F,
+    href: "family-start",
+    icon: "families",
+    title: P("Families: Start here", "Familias: Empiecen aquí"),
+    text: P(
+      "Choose your child's grade, then take the Family Tour or start a short activity together.",
+      "Elijan el grado de su hijo o hija y luego hagan el recorrido familiar o empiecen una actividad corta juntos.",
+    ),
+  },
+  {
     id: "practice-together",
     section: "family",
     skill: "Mixed",
