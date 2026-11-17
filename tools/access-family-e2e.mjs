@@ -18,6 +18,7 @@ import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;
@@ -836,6 +837,7 @@ try {
   {
     const page = await newPage({ width: 1280 });
     await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+    await openHubSections(page);
     await page.waitForSelector("#familyTrip");
     await page.locator("[data-trip-grade]").selectOption("3-5");
     await page.locator("[data-trip-skill]").selectOption("Writing");

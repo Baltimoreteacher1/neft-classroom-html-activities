@@ -11,6 +11,7 @@
 import { readFileSync } from "node:fs";
 import { FIXTURE_LEARNERS, seedEvidence } from "./lib/access-acc-fixtures.mjs";
 import { serveAccess } from "./lib/access-serve.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;
@@ -68,6 +69,7 @@ const CONTEXTS = ["Mathematics", "Science", "Social Studies", "Language Arts"];
 {
   const { ctx, page, errors } = await fresh();
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.locator("#accEvidence .acc-state.is-empty").waitFor();
   const t = await panel(page).innerText();
   ok(
@@ -89,6 +91,7 @@ const CONTEXTS = ["Mathematics", "Science", "Social Studies", "Language Arts"];
   await page.goto(`${base}/access-practice-lab/assess`, { waitUntil: "networkidle" });
   await seedEvidence(page);
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.waitForSelector("#accEvidence table.acc-matrix");
   const sc = CONTEXTS.indexOf("Science");
   const ss = CONTEXTS.indexOf("Social Studies");
@@ -248,6 +251,7 @@ const CONTEXTS = ["Mathematics", "Science", "Social Studies", "Language Arts"];
     await (await openStorage()).purge({ progress: true });
   });
   await page.reload({ waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.locator("#accEvidence .acc-state.is-empty").waitFor();
   await page.locator("#evImport").setInputFiles(path);
   await page.waitForFunction(
@@ -284,6 +288,7 @@ const CONTEXTS = ["Mathematics", "Science", "Social Studies", "Language Arts"];
   await page.goto(`${base}/access-practice-lab/assess`, { waitUntil: "networkidle" });
   await seedEvidence(page);
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.waitForSelector("#accEvidence table.acc-matrix");
   const t = await panel(page).innerText();
   ok(
@@ -314,6 +319,7 @@ const CONTEXTS = ["Mathematics", "Science", "Social Studies", "Language Arts"];
   await page.goto(`${base}/access-practice-lab/assess`, { waitUntil: "networkidle" });
   await seedEvidence(page);
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.waitForSelector("#accEvidence table.acc-matrix");
   ok(
     !(await page.evaluate(

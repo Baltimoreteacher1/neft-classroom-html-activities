@@ -11,6 +11,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;
@@ -315,6 +316,7 @@ const [code] = await page.evaluate(async () => {
   return [m.encodeShare(bundle)];
 });
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await openHubSections(page);
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");
 await page.locator("#evCode").fill(code);

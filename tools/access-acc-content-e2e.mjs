@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Teacher Hub content library: live coverage matrix, filters, previews, Spanish, axe, phone width. */
 import { serveAccess } from "./lib/access-serve.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;
@@ -38,6 +39,7 @@ async function open(prefs, viewport = { width: 1440, height: 900 }) {
       errors.push(m.text()),
   );
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.waitForSelector("#accContent table.acc-matrix");
   return { ctx, page, errors };
 }

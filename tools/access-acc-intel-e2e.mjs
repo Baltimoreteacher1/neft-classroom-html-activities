@@ -7,6 +7,7 @@
  */
 import { fixtureRows, seedEvidence } from "./lib/access-acc-fixtures.mjs";
 import { serveAccess } from "./lib/access-serve.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 try {
@@ -113,6 +114,8 @@ async function fresh() {
   );
 
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+
+  await openHubSections(page);
   await page.locator("#accReviewBody [data-act=open-review]").first().waitFor();
   await page.locator("#accReviewBody [data-act=open-review]").first().click();
   await page.locator(".acc-review-text").waitFor();
@@ -177,6 +180,7 @@ async function fresh() {
   await page.goto(`${ROOT}/assess`, { waitUntil: "networkidle" });
   await seedEvidence(page, fixtureRows());
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.locator("#inSkills").waitFor({ timeout: 8000 });
   await page.locator("#inLearner").selectOption("L-fixture1");
   const txt = await page.locator("#accInsightsBody").innerText();
@@ -218,6 +222,7 @@ async function fresh() {
 {
   const { ctx, page, errors } = await fresh();
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.locator("#asKind").waitFor({ timeout: 8000 });
   await page.locator("#asKind").selectOption("domain");
   await page.locator("#asDomain").selectOption("Reading");
@@ -288,6 +293,7 @@ async function fresh() {
   await page.locator("[data-act=submit]").click();
   await page.locator(".acc-results").waitFor();
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   const open = page.locator("#accReviewBody [data-act=open-review]").first();
   await open.waitFor();
   await open.click();

@@ -141,22 +141,7 @@ async function render() {
   const weeks = road?.[S.band]?.weeks || [];
   const levelsOf = (d) => Object.keys(index.bands[S.band].domains[d].levels);
   const forms = S.band === "6-8" ? Object.entries(shared.officialForms || {}) : [];
-  // Printable packets are built for grades 3-5 and 6-8 only; K-3 activities print from their own paper page.
-  const packetCount = early ? 0 : domains.reduce((n, d) => n + levelsOf(d).length, 0);
-  const cats = [
-    ["#activities", "list", "Activities", rows.length, "Search, answer keys, playlist builder", "both"],
-    ["#weekly", "road", "Road to ACCESS", weeks.length, "One link per week", "student"],
-    ...(early ? [] : [["#tests", "tests", "Practice tests", tests.length, "Full tests and short minis", "student"]]),
-    ...(early ? [] : [["#printables", "print", "Printable packets", packetCount, "Student and teacher PDFs and Word files", "both"]]),
-    ...(forms.length ? [["#forms", "evidence", "Google Forms", forms.length, "Grades 6–8 response forms", "both"]] : []),
-    ["#guide", "bulb", "How to use it", GUIDE.length + 1, "Station ideas and routines", "teacher"],
-  ];
-  const tag = (kind) => (kind === "teacher" ? TAG_TEACHER : kind === "student" ? TAG_STUDENT : html`${TAG_STUDENT}${TAG_TEACHER}`);
-
   root.innerHTML = toHtml(html`
-    <section class="th-cats" aria-label="Resource categories">
-      ${cats.map(([href, ico, title, n, text, kind]) => html`<a class="th-cat" href="${href}"><span class="th-tile">${icon(ico)}</span><span class="th-cat-body"><strong>${title}</strong><span>${text}</span><span class="th-cat-tags">${tag(kind)}</span></span><span class="th-cat-n">${n}</span></a>`)}
-    </section>
 
     <section class="th-sec" id="familyTrip" aria-labelledby="familyTripTitle">
       <header class="th-sec-head"><div><h2 id="familyTripTitle">Assign a Family Trip</h2>

@@ -14,6 +14,7 @@ import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from 
 import http from "node:http";
 import { extname, join } from "node:path";
 import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 const alignmentCounts = JSON.parse(
   readFileSync(join(CONTENT_DIR, "alignment-index.json"), "utf8"),
@@ -801,6 +802,7 @@ ok(
   "passport can produce share codes with synthetic literacy evidence",
 );
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await openHubSections(page);
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");
 await page.locator("#evCode").fill(`${code1}\n\n${code2}`);
@@ -1307,6 +1309,7 @@ const teacherCtx = await browser.newContext({ viewport: { width: 1200, height: 9
 const tPage = await teacherCtx.newPage();
 tPage.on("pageerror", (e) => !noise.test(e.message) && problems.push(`pageerror: ${e.message}`));
 await tPage.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await openHubSections(tPage);
 await tPage.waitForSelector('[data-tab="plans"]');
 await tPage.locator('[data-tab="plans"]').click();
 await tPage.waitForSelector("#plansTitle");
@@ -1437,6 +1440,7 @@ await go(`${BASE}/vocabulary`);
 await axeCheck("vocabulary word builder");
 await capture("vocabulary-desktop.png");
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await openHubSections(page);
 await page.waitForSelector("#classEvidence td.t-title");
 await axeCheck("teacher dashboard");
 

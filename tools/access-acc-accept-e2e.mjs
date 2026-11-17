@@ -7,6 +7,7 @@
  */
 import { fixtureRows, seedEvidence } from "./lib/access-acc-fixtures.mjs";
 import { serveAccess } from "./lib/access-serve.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder;
@@ -120,6 +121,7 @@ for (const [name, w, h] of VIEWPORTS) {
   await page.goto(`${ROOT}/assess`, { waitUntil: "networkidle" });
   await seedEvidence(page, fixtureRows());
   await page.goto(`${base}/access-teacher/`, { waitUntil: "networkidle" });
+  await openHubSections(page);
   await page.locator("#inSkills").waitFor({ timeout: 8000 });
   await page.locator("#asKind").waitFor();
   await page.locator("#accReviewBody [data-act=open-review]").first().click();

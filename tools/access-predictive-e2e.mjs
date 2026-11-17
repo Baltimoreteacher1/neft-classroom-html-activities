@@ -9,6 +9,7 @@
  * and a FAIL in CI.
  */
 import { serveAccess } from "./lib/access-serve.mjs";
+import { openHubSections } from "./lib/access-hub.mjs";
 
 let chromium;
 let AxeBuilder = null;
@@ -105,6 +106,7 @@ async function sweep(label) {
 
 // 1. Teacher Hub entry point.
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "domcontentloaded" });
+await openHubSections(page);
 const entry = page.locator("#thPredictive");
 ok(
   (await entry.getAttribute("href")) === WS,
