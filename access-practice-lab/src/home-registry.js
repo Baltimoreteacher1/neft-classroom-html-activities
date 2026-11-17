@@ -151,6 +151,30 @@ export const HOME_CARDS = [
 
   // ── explore: more ways to practice ─────────────────────────────────────────
   {
+    id: "choice-boards",
+    group: "explore",
+    featured: true,
+    href: "choice-boards",
+    icon: "grid",
+    title: ["Language Choice Boards", "Tableros de opciones de lenguaje"],
+    text: [
+      "Pick three in a row. Short Listen, Read, Speak, Write and Create tasks for each WIDA Key Language Use.",
+      "Elige tres en línea. Tareas cortas para escuchar, leer, hablar, escribir y crear en cada uso clave del lenguaje WIDA.",
+    ],
+  },
+  {
+    id: "talk-table",
+    group: "family",
+    featured: true,
+    href: "talk-table",
+    icon: "conversation",
+    title: ["Talk Table", "Mesa de conversación"],
+    text: [
+      "One question a night in English and Spanish, with a sentence start and a follow-up.",
+      "Una pregunta cada noche en inglés y español, con un inicio de oración y una pregunta más.",
+    ],
+  },
+  {
     id: "wida-access-prep",
     group: "explore",
     featured: true,

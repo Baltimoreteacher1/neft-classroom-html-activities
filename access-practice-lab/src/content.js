@@ -25,6 +25,9 @@ export const loadIndex = () => getJson("index.json");
 export const loadPrep = (slug) => getJson(`prep/${slug}.json`);
 /** Daily warm-up sets: "early" holds tiers K-1 and 2-3, "upper" holds 3-5 and 6-8 (60 days each). */
 export const loadWarmup = (file) => getJson(`warmup-${file === "early" ? "early" : "upper"}.json`);
+/** Language Choice Boards and Talk Table cards (src/lang/boards.js): keyed by content band, then Key Language Use. */
+export const loadChoiceBoards = () => getJson("choice-boards.json");
+export const loadTalkTable = () => getJson("talk-table.json");
 export const loadShared = () => getJson("shared.json");
 export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);

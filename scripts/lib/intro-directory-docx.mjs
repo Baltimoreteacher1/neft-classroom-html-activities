@@ -60,8 +60,35 @@ export async function buildDirectoryDocx(m) {
       ),
     ]),
     counts(m),
+    para([bold("Quick Finder: what do you want to do?")]),
+    ...m.finder.map((f) =>
+      list([
+        run(`${f.goal}: `),
+        link(f.label, f.url),
+        ...(f.gated ? [bold(" (teacher password)")] : []),
+        run(`  ${f.short}`, { color: MUTED }),
+      ]),
+    ),
+    para(
+      "Part 1 lists the places on the site, grouped like the site's More menu. Part 2 lists every activity by grade band, then domain, then support level.",
+    ),
+    heading("Part 1. Other places on the site", HeadingLevel.HEADING_1, { pageBreakBefore: true }),
+    para(
+      'The More menu of the lab, group by group. Pages marked "password required" are behind the teacher password.',
+    ),
+    ...m.places.flatMap((g) => [
+      heading(g.title, HeadingLevel.HEADING_2),
+      ...g.items.map((i) =>
+        list([
+          link(i.label, i.url),
+          ...(i.gated ? [bold(" (password required)")] : []),
+          run(`  ${i.short}`, { color: MUTED }),
+          ...(i.note ? [run(`. ${i.note}`)] : []),
+        ]),
+      ),
+    ]),
     ...m.bands.flatMap((b) => [
-      heading(`${b.label} (${b.count} activities)`, HeadingLevel.HEADING_1, {
+      heading(`Part 2 · ${b.label} (${b.count} activities)`, HeadingLevel.HEADING_1, {
         pageBreakBefore: true,
       }),
       ...(b.note ? [para(b.note)] : []),
@@ -86,21 +113,6 @@ export async function buildDirectoryDocx(m) {
         { spacing: { after: 30 } },
       ),
     ),
-    heading("Other places on the site", HeadingLevel.HEADING_1, { pageBreakBefore: true }),
-    para(
-      'The More menu of the lab, group by group. Pages marked "password required" are behind the teacher password.',
-    ),
-    ...m.places.flatMap((g) => [
-      heading(g.title, HeadingLevel.HEADING_2),
-      ...g.items.map((i) =>
-        list([
-          link(i.label, i.url),
-          ...(i.gated ? [bold(" (password required)")] : []),
-          run(`  ${i.short}`, { color: MUTED }),
-          ...(i.note ? [run(`. ${i.note}`)] : []),
-        ]),
-      ),
-    ]),
   ];
   return toBuffer(
     buildDocument({

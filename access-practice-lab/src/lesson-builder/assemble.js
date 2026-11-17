@@ -12,7 +12,8 @@
 //      minutes). Ties keep content/index.json teaching order. A "short" phase (formative check) keeps only
 //      activities that fit its minutes when any do.
 //   5. "Feedback and second attempt" reopens the activity of the task phase (or guided practice in a lesson without
-//      one). The family extension links to Practice Together, never a classroom activity.
+//      one). The family extension links to the Talk Table cards for the function's Key Language Use, never a
+//      classroom activity.
 //   6. Every phase carries teacher directions, student-facing text, sentence frames for the function and support
 //      profile, and the function's word bank (4 words for profile A, 5 for B, 6 for C).
 // A share link carries only these settings and the ordered phase keys with their activity ids (encodeShare). It
@@ -186,8 +187,8 @@ export function phaseText(key, settings, row) {
       `${voice.write} to answer: ${HOOKS[settings.fn]} Use: "${frames[frames.length - 1]}"`,
     ],
     family: [
-      "Share the Practice Together link so families can try a short activity together at home, in English or Spanish.",
-      "At home, show a family member what you learned today. Open Practice Together and try one activity together.",
+      `Send home tonight's Talk Table question (English and Spanish) for the ${fn.klu} Key Language Use. Families may answer in Spanish first.`,
+      "At home, ask a family member tonight's Talk Table question. Answer it together, then try your answer in English.",
     ],
   }[key] || ["", ""];
   return { teacher: t[0], student: t[1], frames: [...frames], words };

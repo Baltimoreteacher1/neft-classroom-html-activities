@@ -193,7 +193,7 @@ export const TOPIC_SUGGESTIONS = [
  *   pick "best"   → highest-ranked unused activity
  *   pick "short"  → highest-ranked unused activity that fits the phase minutes
  *   pick "repeat" → the activity from the phase named in `repeatOf` (a second attempt after feedback)
- *   pick "family" → the Practice Together page, never a classroom activity
+ *   pick "family" → the Talk Table cards for the Key Language Use, never a classroom activity
  */
 export const PHASES = {
   opening: { name: ["Opening", "Apertura"], pick: "none" },

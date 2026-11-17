@@ -1207,6 +1207,22 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "choice-boards",
+    section: "progress",
+    skill: "Mixed",
+    kind: "practice",
+    for: STF,
+    top: true,
+    href: "choice-boards",
+    icon: "grid",
+    match: [["choice-boards"]],
+    title: P("Language Choice Boards", "Tableros de opciones de lenguaje"),
+    text: P(
+      "Pick three in a row: short Listen, Read, Speak, Write and Create tasks for each WIDA Key Language Use.",
+      "Elige tres en línea: tareas cortas para escuchar, leer, hablar, escribir y crear en cada uso clave del lenguaje WIDA.",
+    ),
+  },
+  {
     id: "warmup",
     section: "progress",
     skill: "Mixed",
@@ -1544,6 +1560,22 @@ export const DESTINATIONS = Object.freeze([
     text: P(
       "A short guide shows you how to help your child practice English, even if you are still learning English.",
       "Una guía corta les muestra cómo ayudar a su hijo o hija a practicar inglés, aunque todavía estén aprendiendo inglés.",
+    ),
+  },
+  {
+    id: "talk-table",
+    section: "family",
+    skill: "Speaking",
+    kind: "tool",
+    for: STF,
+    top: true,
+    href: "talk-table",
+    icon: "conversation",
+    match: [["talk-table"]],
+    title: P("Talk Table", "Mesa de conversación"),
+    text: P(
+      "One bilingual question a night, with a sentence start and a follow-up. Home language first is welcome.",
+      "Una pregunta bilingüe cada noche, con un inicio de oración y una pregunta más. Primero en el idioma de casa está bien.",
     ),
   },
   {

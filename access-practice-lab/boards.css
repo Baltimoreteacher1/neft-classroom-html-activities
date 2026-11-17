@@ -1,0 +1,458 @@
+/* Language Choice Boards, Talk Table and the Passport "More practice" card (src/views/choice-boards.js,
+   talk-table.js, passport-more.js), plus the shared one-sheet print host (src/print-sheet.js). Tokens only (ds.css). */
+
+.cb {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 64rem;
+  margin-inline: auto;
+}
+.cb-hero h1 {
+  margin: 0.2rem 0 0.4rem;
+}
+.cb-hero .lead {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* domain and Key Language Use tones: one accent per card, from the domain colors */
+.tone-listening {
+  --cb-ink: var(--listening-ink);
+  --cb-soft: var(--listening-soft);
+}
+.tone-reading {
+  --cb-ink: var(--reading-ink);
+  --cb-soft: var(--reading-soft);
+}
+.tone-speaking {
+  --cb-ink: var(--speaking-ink);
+  --cb-soft: var(--speaking-soft);
+}
+.tone-writing {
+  --cb-ink: var(--writing-ink);
+  --cb-soft: var(--writing-soft);
+}
+.tone-brand {
+  --cb-ink: var(--brand-ink);
+  --cb-soft: var(--brand-soft);
+}
+
+/* ── hub tiles ───────────────────────────────────────────────── */
+.cb-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cb-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-block-start: 6px solid var(--cb-ink);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.cb-tile:hover,
+.cb-tile:focus-within {
+  border-color: var(--cb-ink);
+}
+.cb-tile-ico .ico {
+  width: 2rem;
+  height: 2rem;
+  color: var(--cb-ink);
+}
+.cb-tile-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.cb-tile-title a {
+  color: var(--ink);
+  text-decoration: none;
+}
+/* the whole tile is the link */
+.cb-tile-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.cb-tile-klu,
+.cb-tile-theme,
+.cb-tile-progress {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.cb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-weight: 800;
+}
+
+/* ── the 3×3 board ───────────────────────────────────────────── */
+.cb-status {
+  margin: 0;
+  font-weight: 600;
+}
+.cb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cb-cell {
+  min-width: 0;
+}
+.cb-square {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  width: 100%;
+  height: 100%;
+  min-height: 8.5rem;
+  padding: var(--s-3);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: var(--cb-soft);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.cb-square:hover {
+  border-color: var(--cb-ink);
+}
+.cb-square[aria-expanded="true"] {
+  border-color: var(--cb-ink);
+  box-shadow: 0 0 0 3px var(--cb-ink) inset;
+}
+.cb-sq-domain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--cb-ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cb-sq-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.cb-sq-meta {
+  margin-block-start: auto;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+.cb-cell.is-done .cb-square {
+  border-style: solid;
+  border-color: var(--cb-ink);
+  background: var(--surface);
+}
+.cb-cell.is-line .cb-square {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-soft);
+}
+.cb-pick {
+  margin: 0;
+}
+
+/* ── square panel ────────────────────────────────────────────── */
+.cb-panel {
+  border-inline-start: 6px solid var(--cb-ink);
+  scroll-margin-block-start: calc(var(--lab-top-h, 0px) + 1rem);
+}
+.cb-panel h2 {
+  margin: 0.2rem 0 0.5rem;
+}
+.cb-panel-domain {
+  margin: 0;
+  color: var(--cb-ink);
+  font-weight: 800;
+}
+.cb-task {
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+.cb-passage {
+  margin-block: var(--s-3);
+  padding: var(--s-3);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.cb-read,
+.cb-words p {
+  max-width: 42rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.cb-words summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.cb-frame {
+  margin-block: var(--s-3);
+  padding: var(--s-3);
+  border: 1px dashed var(--cb-ink);
+  border-radius: 12px;
+}
+.cb-label {
+  margin: 0 0 0.2rem;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cb-frame-en {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.cb-frame-es {
+  margin: 0.2rem 0 0.4rem;
+}
+.cb-look {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+.cb-note textarea {
+  width: 100%;
+}
+.cb-actions {
+  flex-wrap: wrap;
+}
+.cb-guide ul,
+.cb-guide ol {
+  padding-inline-start: 1.25rem;
+  line-height: 1.55;
+}
+
+/* ── Talk Table ──────────────────────────────────────────────── */
+.tt-card {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-block-start: 6px solid var(--cb-ink);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.tt-kind {
+  margin: 0;
+  color: var(--cb-ink);
+  font-weight: 800;
+}
+.tt-sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--s-3);
+}
+.tt-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: var(--s-3);
+  border-radius: 14px;
+  background: var(--cb-soft);
+}
+.tt-lang {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tt-q {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.tt-help {
+  padding: var(--s-3);
+  border: 1px dashed var(--cb-ink);
+  border-radius: 12px;
+}
+.tt-starter {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.tt-starter-es {
+  margin: 0.2rem 0 0.5rem;
+}
+.tt-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tt-words li {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-weight: 700;
+}
+.tt-follow {
+  padding: var(--s-3);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.tt-follow p {
+  margin: 0;
+}
+.tt-follow p[lang="en"] {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.tt-count {
+  margin: 0;
+}
+
+/* ── Passport card ───────────────────────────────────────────── */
+.pass-more-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.pass-more-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "ico link value" "ico note note";
+  column-gap: 0.5rem;
+  align-items: baseline;
+}
+.pass-more-ico {
+  grid-area: ico;
+  color: var(--teal);
+}
+.pass-more-list a {
+  grid-area: link;
+  font-weight: 700;
+}
+.pass-more-list strong {
+  grid-area: value;
+  font-size: 1.2rem;
+}
+.pass-more-list .fine {
+  grid-area: note;
+}
+
+@media (max-width: 600px) {
+  .cb-grid {
+    gap: 0.4rem;
+  }
+  .cb-square {
+    min-height: 7rem;
+    padding: 0.55rem;
+  }
+  .cb-sq-domain {
+    font-size: 0.75rem;
+  }
+  .cb-sq-title {
+    font-size: 0.92rem;
+  }
+  .tt-q {
+    font-size: 1.25rem;
+  }
+}
+
+/* ── one-sheet print host (src/print-sheet.js) ───────────────── */
+#sheetPrint {
+  display: none;
+}
+@media print {
+  body[data-printing="sheet"] > :not(#sheetPrint) {
+    display: none !important;
+  }
+  body[data-printing="sheet"] #sheetPrint {
+    display: block;
+    color: #000;
+    font:
+      11pt/1.4 Arial,
+      sans-serif;
+  }
+  #sheetPrint h1 {
+    margin: 0 0 0.3rem;
+    font-size: 18pt;
+  }
+  #sheetPrint h2 {
+    margin: 0.7rem 0 0.2rem;
+    font-size: 13pt;
+  }
+  #sheetPrint blockquote {
+    margin: 0.3rem 0 0.3rem 1rem;
+    padding-inline-start: 0.6rem;
+    border-inline-start: 2px solid #555;
+  }
+  .cb-print-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+    margin: 0.5rem 0 0.8rem;
+    padding: 0;
+    list-style: none;
+  }
+  .cb-print-grid li {
+    display: flex;
+    flex-direction: column;
+    min-height: 1.1in;
+    padding: 0.4rem;
+    border: 1.5px solid #000;
+  }
+  .cb-print-sq,
+  .lb-print-day,
+  .tt-print-cards li {
+    break-inside: avoid;
+  }
+  .tt-print-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+    padding: 0;
+    list-style: none;
+  }
+  .tt-print-cards li {
+    padding: 0.5rem;
+    border: 1.5px dashed #000;
+  }
+  .tt-print-cards p {
+    margin: 0.15rem 0;
+  }
+  .tt-print-kind {
+    font-size: 9pt;
+    text-transform: uppercase;
+  }
+}
+
+/* every read-aloud button stays a full touch target */
+.cb .btn.small {
+  min-height: 44px;
+}

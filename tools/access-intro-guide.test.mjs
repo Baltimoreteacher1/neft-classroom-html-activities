@@ -58,6 +58,7 @@ const directoryUrls = (m = DIRECTORY) => [
   ...directoryRows(m).map((r) => r.url),
   ...m.tests.map((t) => t.url),
   ...m.places.flatMap((g) => g.items.map((i) => i.url)),
+  ...m.finder.map((f) => f.url),
 ];
 const activityGuideUrls = () => [
   ENTRANCE.url,

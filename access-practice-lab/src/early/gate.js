@@ -25,6 +25,10 @@ export const EARLY_VIEWS = new Set([
   "teacher-launch",
   "session-done",
   "warmup",
+  // Language Choice Boards and Talk Table carry their own K, 1 and 2-3 content (content/choice-boards.json,
+  // content/talk-table.json), written to be read aloud by an adult.
+  "choice-boards",
+  "talk-table",
   "search",
   "portfolio",
   "collection",

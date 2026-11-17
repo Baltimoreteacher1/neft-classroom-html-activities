@@ -1,5 +1,6 @@
-// Print markup for the Site Directory: a cover with counts and a contents page (page numbers filled in on the second
-// render pass), then every band, domain, level and activity, the practice tests, and the other places on the site.
+// Print markup for the Site Directory: a cover with the Quick Finder and counts, a contents page (page numbers filled
+// in on the second render pass), then Part 1, the places on the site, and Part 2, every band, domain, level and
+// activity, then the practice tests. Places come first: most readers want a place, not one of 900 activity rows.
 import { html, raw, toHtml } from "../../access-practice-lab/src/util.js";
 
 /** The unique text a page carries for each contents entry; the page-number pass searches the PDF text for it. */
@@ -19,9 +20,15 @@ function cover(m) {
   return html`<article class="ig-sheet sd-cover" aria-labelledby="sd-h1">
     <h1 id="sd-h1" class="sd-title">${m.title}</h1>
     <p class="sd-subtitle">${m.subtitle}</p>
-    <p>Generated ${m.generated} from the lab's activity index. Every title is a link; the address of each one begins
-      <strong>${m.base}</strong>. Activities are grouped by grade band, then domain, then support level. Support levels
-      are classroom support choices, not WIDA proficiency levels.</p>
+    <table class="sd-finder">
+      <caption>Quick Finder: what do you want to do?</caption>
+      <thead><tr><th scope="col">I want to…</th><th scope="col">Go to</th></tr></thead>
+      <tbody>
+        ${m.finder.map((f) => html`<tr><td>${f.goal}</td><td><a href="${f.url}">${f.label}</a>${f.gated ? " (teacher password)" : ""}<span class="ig-url">${f.short}</span></td></tr>`)}
+      </tbody>
+    </table>
+    <p>Generated ${m.generated}. Every title is a link; addresses begin <strong>${m.base}</strong>. Support levels are
+      classroom support choices, not WIDA proficiency levels.</p>
     <table class="sd-counts">
       <caption>Activities by grade band and domain</caption>
       <thead><tr><th scope="col">Grade band</th>${present.map((d) => html`<th scope="col">${nameOf(d)}</th>`)}<th scope="col">Total</th></tr></thead>
@@ -40,7 +47,10 @@ function contents(m, pages) {
     html`<li class="${cls}"><span>${text}</span><span class="sd-dots" aria-hidden="true"></span><span class="sd-pg">${pg(key)}</span></li>`;
   return html`<nav class="ig-sheet sd-contents" aria-labelledby="sd-toc-h">
     <h2 id="sd-toc-h">Contents</h2>
+    <p>Part 1 lists the places on the site, grouped like the site's More menu. Part 2 lists every activity by grade
+      band, then domain, then support level. Your PDF viewer's bookmarks jump to the same places.</p>
     <ol>
+      ${row(raw("<strong>Part 1. Other places on the site</strong>"), marker.places(), "sd-tband")}
       ${m.bands.map(
         (
           b,
@@ -48,7 +58,6 @@ function contents(m, pages) {
           ${b.domains.map((d) => row(`${d.name} (${d.count})`, marker.domain(b, d), "sd-tdom"))}`,
       )}
       ${row(raw(`<strong>Practice tests</strong> (${m.tests.length})`), marker.tests(), "sd-tband")}
-      ${row(raw("<strong>Other places on the site</strong>"), marker.places(), "sd-tband")}
     </ol>
   </nav>`;
 }
@@ -58,7 +67,7 @@ const activityRow = (r) =>
 
 function bandSection(b) {
   return html`<section class="sd-band" aria-labelledby="sd-b-${b.id}">
-    <h2 id="sd-b-${b.id}" class="sd-bandh">${b.label}</h2>
+    <h2 id="sd-b-${b.id}" class="sd-bandh"><span class="sd-pre">Part 2 · </span>${b.label}</h2>
     <p class="sd-mark">${marker.band(b)}.${b.note ? ` ${b.note}` : ""}</p>
     ${b.domains.map(
       (d) => html`<section class="sd-domain" aria-labelledby="sd-d-${b.id}-${d.id}">
@@ -84,7 +93,7 @@ function testsSection(m) {
 
 function placesSection(m) {
   return html`<section class="sd-band" aria-labelledby="sd-places">
-    <h2 id="sd-places" class="sd-bandh">${marker.places()}</h2>
+    <h2 id="sd-places" class="sd-bandh">Part 1. ${marker.places()}</h2>
     <p>The More menu of the lab, group by group. Pages marked "password required" are behind the teacher password.</p>
     ${m.places.map(
       (g) => html`<h3>${g.title}</h3>
@@ -102,6 +111,6 @@ function placesSection(m) {
 
 /** `pages` maps marker text to a page number (empty on the first pass). */
 export function directoryBody(m, pages = {}) {
-  const body = html`${cover(m)}${contents(m, pages)}${m.bands.map(bandSection)}${testsSection(m)}${placesSection(m)}`;
+  const body = html`${cover(m)}${contents(m, pages)}${placesSection(m)}${m.bands.map(bandSection)}${testsSection(m)}`;
   return `<div class="ig sd">${toHtml(body)}</div>`;
 }

@@ -84,3 +84,27 @@ export function otherPlaces() {
   if (!groups.length) throw new Error("intro-directory-places: the More menu rendered no groups");
   return groups;
 }
+
+/**
+ * The Quick Finder on the directory's first page: what a teacher, student or family member most often wants, and the
+ * one place that answers it. Lab paths only; each one is resolved like every other directory link.
+ */
+const FINDER = [
+  ["Start practicing today, five minutes", "Daily Language Warm-Up", "/warmup"],
+  ["Practice for the ACCESS test", "WIDA ACCESS Prep", "/access-prep"],
+  ["Choose my own tasks (three in a row)", "Language Choice Boards", "/choice-boards"],
+  ["Talk together at home, in English and Spanish", "Talk Table", "/talk-table"],
+  ["Find any activity by word or skill", "Search the lab", "/search"],
+  ["Plan a lesson or a whole week", "Lesson Builder", "/lesson-builder"],
+  ["See my progress and saved work", "My Passport", "/passport"],
+  ["Get printables, class tools and data (teachers)", "Teacher Hub", "/access-teacher/"],
+  ["Learn how the whole site works", "Site Guide", "/site-guide"],
+];
+
+export function quickFinder() {
+  return FINDER.map(([goal, label, route]) => {
+    const path = route.startsWith("/access-teacher") ? route : `${SITE.base}${route}`;
+    const url = publicUrl(path);
+    return { goal, label, path, url, short: url.replace(/^https:\/\//, ""), gated: /teacher/i.test(path) };
+  });
+}

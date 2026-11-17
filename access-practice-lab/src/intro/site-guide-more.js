@@ -328,6 +328,18 @@ export const AREAS = [
     text: "Longer missions and studios for speaking, writing and evidence.",
   },
   {
+    route: "/choice-boards",
+    icon: "grid",
+    name: "Language Choice Boards",
+    text: "A 3×3 board for each WIDA Key Language Use and grade band; students pick three squares in a row. Print one for a station or homework.",
+  },
+  {
+    route: "/talk-table",
+    icon: "conversation",
+    name: "Talk Table",
+    text: "Bilingual conversation cards for home or a class opener, grouped by Key Language Use. Printable to cut out.",
+  },
+  {
     route: "/passport",
     icon: "passport",
     name: "Passport and Growth Map",

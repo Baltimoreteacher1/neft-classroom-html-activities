@@ -4,12 +4,16 @@
 // text and saved configurations stay in this browser (localStorage); no roster, name, response or progress is
 // encoded, sent or collected here.
 import { bandLabel, bandLabelEs } from "../bands.js";
-import { bandRows } from "../content.js";
+import { bandRows, loadTalkTable } from "../content.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { BASE, DOMAIN_META, TIERS, html, icon, storage } from "../util.js";
 import { activityHref } from "./room.js";
 import { printLessonPlan } from "../lesson-builder/print.js";
+import { QUICK_STARTS, assembleWeek, homeTalkCards, quickStart } from "../lesson-builder/week.js";
+import { familyNoteHTML, studentPageHTML, weekHTML, weekPrintHTML } from "../lesson-builder/week-ui.js";
+import { KLU_KIDS } from "../lang/boards.js";
+import { printSheet } from "../print-sheet.js";
 import {
   assembleLesson,
   candidatesFor,
@@ -49,6 +53,8 @@ const state = {
   savePick: "",
   dirty: false,
   status: "",
+  week: null,
+  talk: null,
 };
 let I = makeI18n("en");
 const tp = (pair) => I.T(pair[0], pair[1]);
@@ -91,13 +97,30 @@ const rowById = (id) => state.rows.find((r) => r.id === id) || null;
 
 function phaseHref(phase) {
   const band = state.lesson.settings.band;
-  if (phase.key === "family") return `${BASE}/practice-together?grades=${band}`;
+  if (phase.key === "family")
+    return `${BASE}/talk-table/${KLU_KIDS[FUNCTIONS[state.lesson.settings.fn].klu].slug}?grades=${band}`;
   const row = rowById(phase.activityId);
   if (!row) return "";
   const url = new URL(activityHref(row.domain, row.level, row.id), location.origin);
   url.searchParams.set("grades", band);
   if (phase.mode === "independent") url.searchParams.set("mode", "independent");
   return url.pathname + url.search;
+}
+
+/** Lab link for a week's core activity (learning mode, the week's band). */
+function weekActivityHref(id) {
+  const row = rowById(id);
+  if (!row) return "";
+  const url = new URL(activityHref(row.domain, row.level, row.id), location.origin);
+  url.searchParams.set("grades", state.week.settings.band);
+  return url.pathname + url.search;
+}
+
+/** Tonight's Talk Table question for the lesson's Key Language Use, in English and Spanish. */
+function homeQuestionHTML() {
+  const card = state.talk ? homeTalkCards(state.talk, state.lesson.settings)[0] : null;
+  if (!card) return "";
+  return html`<p class="lb-home-q"><strong>${I.T("Home question:", "Pregunta para casa:")}</strong> <span lang="en">${card.q[0]}</span> <span class="fine" lang="es">${card.q[1]}</span></p>`;
 }
 
 const shareUrl = () => `${location.origin}${BASE}/lesson-builder?${encodeShare(state.lesson)}`;
@@ -129,7 +152,14 @@ function setupHTML(s) {
     hint: `${sp(SUPPORT_PROFILES[k].plain)} ${sp(SUPPORT_PROFILES[k].wida)}.`,
   }));
   const durations = DURATIONS.map((m) => ({ value: m, label: `${m} min` }));
-  return html`<section class="panel lb-setup" aria-labelledby="lb-setup-title">
+  return html`<section class="panel lb-quick" aria-labelledby="lb-quick-title">
+      <h2 id="lb-quick-title">${icon("sparkle")} ${I.T("One-tap start", "Inicio con un toque")}</h2>
+      <p class="fine">${I.T("Pick a ready-made lesson for your grade band. You can change anything after it is built.", "Elija una lección lista para su nivel. Puede cambiar todo después de crearla.")}</p>
+      <div class="lb-quick-row">
+        ${QUICK_STARTS.map((q) => html`<button type="button" class="lb-quick-btn" data-lb-quick="${q.id}"><strong>${tp(q.name)}</strong><small>${tp(q.note)}</small></button>`)}
+      </div>
+    </section>
+    <section class="panel lb-setup" aria-labelledby="lb-setup-title">
     <h2 id="lb-setup-title" class="workbook-heading">
       <span aria-hidden="true">1</span>
       ${I.T("Choose your class and goal", "Elija su clase y su meta")}
@@ -189,6 +219,9 @@ function setupHTML(s) {
       <button type="button" class="btn btn-primary btn-big" data-lb-build>
         ${icon("sparkle")} ${I.T("Build my lesson", "Crear mi lección")}
       </button>
+      <button type="button" class="btn btn-big" data-lb-week>
+        ${icon("calendar")} ${I.T("Plan my week", "Planificar mi semana")}
+      </button>
       ${state.dirty && state.lesson ? html`<span class="fine" role="status">${I.T("Your choices changed. Build again to update the lesson (this replaces your edits).", "Sus opciones cambiaron. Vuelva a crear la lección para actualizarla (esto reemplaza sus cambios).")}</span>` : ""}
     </div>
     ${savedHTML()}
@@ -225,8 +258,9 @@ function activityHTML(phase, i) {
   const href = phaseHref(phase);
   if (def.pick === "family")
     return html`<div class="lb-activity">
+      ${homeQuestionHTML()}
       <a class="btn small" href="${href}" target="_blank" rel="noopener"
-        >${icon("families")} ${I.T("Open Practice Together", "Abrir Practicar juntos")}
+        >${icon("families")} ${I.T("Open Talk Table", "Abrir Mesa de conversación")}
         ${icon("external")}</a
       >
     </div>`;
@@ -401,6 +435,8 @@ ${lesson.objectives.language}</textarea>
       <div class="row-actions">
         <button type="button" class="btn btn-primary" data-lb-print>
           ${icon("print")} ${I.T("Print lesson plan", "Imprimir plan de lección")}</button
+        ><button type="button" class="btn" data-lb-student>
+          ${icon("print")} ${I.T("Print student page", "Imprimir hoja del estudiante")}</button
         ><button type="button" class="btn" data-lb-copy>
           ${icon("copy")} ${I.T("Copy share link", "Copiar enlace para compartir")}
         </button>
@@ -448,6 +484,7 @@ export async function render(ctx) {
       lastSettings() || { band: BUILDER_BANDS.includes(ctx.band) ? ctx.band : "6-8" },
     );
   await ensureRows(state.settings.band);
+  if (!state.talk) state.talk = await loadTalkTable().catch(() => null);
   const title = I.S("Lesson Builder", "Creador de lecciones");
   return {
     title,
@@ -462,7 +499,7 @@ export async function render(ctx) {
             <p class="eyebrow">${icon("teacher")} ${I.T("Teacher workspace", "Espacio docente")}</p>
             <h1 tabindex="-1">${I.T("Lesson Builder", "Creador de lecciones")}</h1>
             <p class="lead">
-              ${I.T("Pick a goal and a support profile, then build a whole lesson from real Language Page activities in one click. Every part stays editable.", "Elija una meta y un perfil de apoyo, y cree una lección completa con actividades reales de The Language Page con un clic. Todo se puede editar.")}
+              ${I.T("Pick a goal and a support profile, then build a whole lesson, or a five-day week with choice boards and home talk, from real Language Page activities in one click. Every part stays editable.", "Elija una meta y un perfil de apoyo, y cree con un clic una lección completa, o una semana de cinco días con tableros de opciones y conversación en casa, con actividades reales de The Language Page. Todo se puede editar.")}
             </p>
           </div>
           <p class="lb-privacy">
@@ -471,7 +508,7 @@ export async function render(ctx) {
           </p>
         </section>
         ${setupHTML(state.settings)}
-        ${state.lesson ? planHTML() : html`<p class="fine lb-empty">${I.T("Your lesson will appear here.", "Su lección aparecerá aquí.")}</p>`}
+        ${state.week ? weekHTML(I, state.week, { rowById, activityHref: weekActivityHref }) : state.lesson ? planHTML() : html`<p class="fine lb-empty">${I.T("Your lesson or week will appear here.", "Su lección o semana aparecerá aquí.")}</p>`}
         <p class="fine" data-lb-status role="status" aria-live="polite">${state.status}</p>
       </div>`,
   };
@@ -545,8 +582,45 @@ export function onClick(e, ctx) {
   const t = e.target.closest("button, a");
   if (!t) return false;
   const lesson = state.lesson;
+  if (t.matches("[data-lb-quick]")) {
+    const settings = quickStart(t.dataset.lbQuick, state.settings.band);
+    if (!settings) return true;
+    state.settings = settings;
+    state.lesson = assembleLesson(settings, state.rows);
+    state.week = null;
+    state.dirty = false;
+    writeJson(LAST_KEY, state.lesson.settings);
+    setStatus(I.S(`Lesson built: ${state.lesson.phases.length} phases. Review it below.`, `Lección creada: ${state.lesson.phases.length} fases. Revísela abajo.`));
+    ctx.rerender();
+    requestAnimationFrame(() => document.getElementById("lb-plan-title")?.scrollIntoView({ block: "start" }));
+    return true;
+  }
+  if (t.matches("[data-lb-week]")) {
+    state.week = assembleWeek(state.settings, state.rows, state.talk);
+    state.lesson = null;
+    state.dirty = false;
+    writeJson(LAST_KEY, state.week.settings);
+    setStatus(I.S("Week planned: five days. Review it below.", "Semana planificada: cinco días. Revísela abajo."));
+    ctx.rerender();
+    requestAnimationFrame(() => document.getElementById("lb-week-title")?.scrollIntoView({ block: "start" }));
+    return true;
+  }
+  if (t.matches("[data-lb-week-print]") && state.week) {
+    printSheet(weekPrintHTML(state.week, { rowById, activityHref: weekActivityHref, origin: location.origin }));
+    return true;
+  }
+  if (t.matches("[data-lb-week-family]") && state.week) {
+    printSheet(familyNoteHTML(state.week, { origin: location.origin }));
+    return true;
+  }
+  if (t.matches("[data-lb-student]") && lesson) {
+    const card = state.talk ? homeTalkCards(state.talk, lesson.settings)[0] : null;
+    printSheet(studentPageHTML(lesson, card));
+    return true;
+  }
   if (t.matches("[data-lb-build]")) {
     state.lesson = assembleLesson(state.settings, state.rows);
+    state.week = null;
     state.dirty = false;
     writeJson(LAST_KEY, state.lesson.settings);
     setStatus(
@@ -602,6 +676,7 @@ export function onClick(e, ctx) {
     if (entry) {
       state.lesson = entry.lesson;
       state.settings = entry.lesson.settings;
+      state.week = null;
       state.saveName = state.savePick;
       state.dirty = false;
       ctx.setBand?.(state.settings.band);

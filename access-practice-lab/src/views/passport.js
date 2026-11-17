@@ -34,6 +34,7 @@ import { practiceSummary } from "../practice-report.js";
 import { journeyHTML, routeProgress } from "../journey.js";
 import { checkinHTML, onCheckinClick } from "../checkin-ui.js";
 import * as tripJournal from "./passport-journal.js";
+import { morePracticeHTML } from "./passport-more.js";
 import { familyLetterHTML, howIWorkHTML, onLetterClick } from "./passport-work.js";
 import { doorData as timeMachineDoor } from "../timemachine/load.js";
 import { doorHTML as timeMachineDoorHTML } from "../timemachine/ui-more.js";
@@ -635,6 +636,7 @@ export async function render(ctx) {
             <section class="pass-card" aria-labelledby="passGamesTitle"><h2 id="passGamesTitle">${icon("sparkle")} ${I.T("Language games", "Juegos de lenguaje")}</h2><p>${gameHistory.length ? I.T(`${gameHistory.length} game sessions saved on this device.`, `${gameHistory.length} sesiones de juego guardadas en este dispositivo.`) : I.T("Your game sessions will appear here after you play.", "Tus sesiones de juego aparecerán aquí después de jugar.")}</p>${gameHistory.length ? html`<ul class="pass-evlist">${gameHistory.slice(-3).reverse().map((row) => html`<li><strong>${GAME[row.game] ? I.T(GAME[row.game].title[0], GAME[row.game].title[1]) : row.game}</strong><span>${I.T(({A:"Starting",B:"Growing",C:"Expanding"})[row.support] || "Support mode", ({A:"Comenzando",B:"Creciendo",C:"Ampliando"})[row.support] || "Modo de apoyo")}</span></li>`)}</ul>` : ""}<a class="btn small" href="${BASE}/games?grades=${band}">${I.T("Open Language Game Studio", "Abrir el Estudio de juegos de lenguaje")}${icon("arrow-right")}</a></section>
             ${howIWorkHTML(I, { entries: mine, records: saved })}
             ${timeMachineDoorHTML(I, band, await timeMachineDoor())}
+            ${morePracticeHTML(I, band, ctx.prefs)}
             <section class="pass-card" aria-labelledby="passRevise">
               <h2 id="passRevise">
                 ${icon("retry")} ${I.T("Revisions and earlier tries", "Revisiones e intentos anteriores")}

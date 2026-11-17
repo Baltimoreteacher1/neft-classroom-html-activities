@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildDirectory } from "../../access-practice-lab/src/intro/site-directory-model.js";
 import { directoryBody, marker } from "./intro-directory-html.mjs";
-import { otherPlaces } from "./intro-directory-places.mjs";
+import { otherPlaces, quickFinder } from "./intro-directory-places.mjs";
 import { printDocument, renderPdfs } from "./intro-guide-pdf.mjs";
 
 const INDEX = new URL("../../access-practice-lab/content/index.json", import.meta.url);
@@ -15,7 +15,7 @@ const FIRST_BODY_PAGE = 3;
 
 export function directoryModel(generated = new Date().toISOString().slice(0, 10)) {
   const model = buildDirectory(JSON.parse(readFileSync(INDEX, "utf8")), { generated });
-  return { ...model, places: otherPlaces() };
+  return { ...model, places: otherPlaces(), finder: quickFinder() };
 }
 
 /** marker text -> first page (1-based) at or after FIRST_BODY_PAGE that contains it. */
