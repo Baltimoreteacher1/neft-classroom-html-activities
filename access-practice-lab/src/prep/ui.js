@@ -174,3 +174,36 @@ export const hearBtn = (I, text, label) =>
   html`<button type="button" class="btn small" data-say="${text}">
     ${icon("volume")} ${label || I.T("Hear it", "Escuchar")}
   </button>`;
+
+export const hearSlowBtn = (I, text, label) =>
+  html`<button type="button" class="btn small ghost" data-say="${text}" data-say-rate="0.72">
+    ${icon("play")} ${label || I.T("Hear it slow", "Escuchar lento")}
+  </button>`;
+
+export const hearPairHTML = (I, text, label) =>
+  html`<span class="prep-audio-pair">
+    ${hearBtn(I, text, label)} ${hearSlowBtn(I, text)}
+  </span>`;
+
+export function familyTeacherHTML(I, set) {
+  if (!set.familyTalk && !set.teacherTip) return "";
+  return html`<aside class="prep-adults" aria-label="${I.S("For families and teachers", "Para familias y docentes")}">
+    ${
+      set.familyTalk
+        ? html`<div class="prep-adult-card is-family">
+            <p class="prep-adult-h">${icon("families")} <strong>${I.T("For families · Talk at home", "Para familias · Hablar en casa")}</strong></p>
+            <p>${set.familyTalk.en}</p>
+            <p class="prep-es" lang="es">${set.familyTalk.es}</p>
+          </div>`
+        : ""
+    }
+    ${
+      set.teacherTip
+        ? html`<div class="prep-adult-card is-teacher">
+            <p class="prep-adult-h">${icon("teacher")} <strong>${I.T("For teachers · Classroom routine", "Para docentes · Rutina de aula")}</strong></p>
+            <p>${I.T(set.teacherTip.en, set.teacherTip.es)}</p>
+          </div>`
+        : ""
+    }
+  </aside>`;
+}

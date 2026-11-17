@@ -390,7 +390,15 @@ test("Listen & Take Notes: Next waits for listening, wrong notes get a reason, r
 });
 
 test("every other skill renders every step without throwing, in English and Spanish", async () => {
-  for (const slug of ["data-talk", "raters-eye", "word-meanings", "text-structures", "task-words"])
+  for (const slug of [
+    "data-talk",
+    "raters-eye",
+    "word-meanings",
+    "text-structures",
+    "task-words",
+    "daily-drill",
+    "extempore-speak",
+  ])
     for (const lang of ["en", "es", "bi"]) {
       ctx.prefs.lang = lang;
       const s = content(slug)["3-5"][0];
@@ -401,7 +409,15 @@ test("every other skill renders every step without throwing, in English and Span
       for (let i = 0; i < steps; i++) {
         const st = M.loadState(slug, s.id);
         st.step = i;
-        st.reveal = { build: true, rank: true, upgrade: true };
+        st.reveal = {
+          build: true,
+          rank: true,
+          upgrade: true,
+          listen: true,
+          forge: true,
+          turn1: true,
+          turn2: true,
+        };
         st.checked = {
           features: { ok: true, missed: [], wrong: [] },
           p0: { ok: true },
@@ -409,6 +425,10 @@ test("every other skill renders every step without throwing, in English and Span
           w0: { ok: true },
           n0: { ok: true, missed: [], wrong: [] },
           w1: { ok: false },
+          pairs: { ok: true, right: 4, total: 4, slots: {} },
+          cloze: { ok: true, right: 3, total: 3, slots: {} },
+          sceneQ: { ok: true, why: "Good" },
+          turn3: { ok: true },
         };
         M.saveState(slug, s.id, st);
         view.unmount();
@@ -418,4 +438,69 @@ test("every other skill renders every step without throwing, in English and Span
     }
   ctx.prefs.lang = "en";
   ctx.band = "6-8";
+});
+
+test("Language Path & Micro-Drills and Extempore Speaking Lab: content, audio-safe text, and pure checks", () => {
+  for (const b of BANDS) {
+    for (const s of content("daily-drill")[b]) {
+      assert.equal(s.pairs.length, 4, `${s.id}: four vocabulary pairs`);
+      assert.ok(!symbols.test(s.listenBuild.sentence), `${s.id}: spoken sentence is symbol-free`);
+      const matchMap = Object.fromEntries(s.pairs.map((p) => [p.id, p.id]));
+      assert.equal(M.checkPairs(s.pairs, matchMap).ok, true, `${s.id}: checkPairs passes`);
+      assert.equal(
+        M.buildText(s.forge.parts).trim(),
+        s.forge.model.trim(),
+        `${s.id}: forge parts match model`,
+      );
+      assert.ok(s.familyTalk?.en && s.familyTalk?.es, `${s.id}: bilingual family talk`);
+    }
+    for (const s of content("extempore-speak")[b]) {
+      assert.ok(!symbols.test(s.scene.teacherPrompt), `${s.id}: teacherPrompt is symbol-free`);
+      assert.ok(!symbols.test(s.scene.modelStudent.text), `${s.id}: modelStudent is symbol-free`);
+      assert.deepEqual(
+        M.extemporeChecklist(s, s.turn3.model),
+        { word: true, connector: true, sentence: true },
+        `${s.id}: turn3 model satisfies extemporeChecklist`,
+      );
+      assert.ok(s.familyTalk?.en && s.familyTalk?.es, `${s.id}: bilingual family talk`);
+    }
+  }
+});
+
+test("Duolingo Tap-the-Pairs & 3D Word Bank and Extempore Radar interactions work in JSDOM", async () => {
+  localStorage.clear();
+  ctx.band = "6-8";
+  const dd = content("daily-drill")["6-8"][0];
+  route = { slug: "daily-drill", set: dd.id };
+  view.unmount();
+  await draw();
+  for (const p of dd.pairs) {
+    click(`[data-word-id="${p.id}"]`);
+    await settle();
+    click(`[data-def-id="${p.id}"]`);
+    await settle();
+  }
+  assert.ok(app.querySelector(".feedback.is-right"), "all 4 pairs auto-checked right");
+  click("[data-prep-act=next]");
+  await settle();
+  assert.ok(app.querySelector(".duo-wordbank-wrap"), "Step 2 shows 3D word bank tray");
+
+  const ex = content("extempore-speak")["6-8"][0];
+  route = { slug: "extempore-speak", set: ex.id };
+  const st = M.loadState("extempore-speak", ex.id);
+  st.step = 3;
+  M.saveState("extempore-speak", ex.id, st);
+  view.unmount();
+  await draw();
+  assert.ok(app.querySelector(".ext-studio-split"), "Extempore split studio renders");
+  click("[data-prep-act=ext-use-frame]");
+  await settle();
+  click(`[data-radar-word="${ex.turn3.words[0]}"]`);
+  await settle();
+  click(`[data-radar-conn="${ex.turn3.connectors[0]}"]`);
+  await settle();
+  assert.ok(
+    app.querySelector("#prepOral").value.includes(ex.turn3.words[0]),
+    "radar chip inserted target word into response box",
+  );
 });

@@ -140,6 +140,9 @@ function hubHTML(ctx, I) {
       ${groupSection(I, "voice-read", reads)}
       ${groupSection(I, "voice-keys", keys)}
       <p class="no-print">
+        <a class="btn btn-primary" href="${BASE}/access-prep/extempore-speak?grades=${band}"
+          >${icon("record")} ${I.T("Extempore Speaking Lab", "Laboratorio oral Extempore")}</a
+        >
         <a class="btn" href="${BASE}/speak?grades=${band}"
           >${icon("speaking")} ${I.T("Speaking Studio", "Estudio de expresión oral")}</a
         >

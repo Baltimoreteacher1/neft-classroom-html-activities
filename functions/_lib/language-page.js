@@ -72,6 +72,8 @@ const isHubPath = (p) =>
 export const SITEMAP_PATHS = [
   `${LAB_BASE}/`,
   `${LAB_BASE}/access-prep`,
+  `${LAB_BASE}/access-prep/daily-drill`,
+  `${LAB_BASE}/access-prep/extempore-speak`,
   `${LAB_BASE}/path`,
   `${LAB_BASE}/scaffold`,
   `${LAB_BASE}/learn`,

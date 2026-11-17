@@ -173,6 +173,8 @@ async function chooserHTML(ctx, index, entries) {
           </section>`
     }
     <p class="no-print">
+      <a class="btn btn-primary" href="${BASE}/access-prep/extempore-speak?grades=${band}">${icon("speaking")} ${I.T("Extempore Speaking Lab: 3-Turn Oral Studio", "Laboratorio oral Extempore: estudio de 3 turnos")}</a>
+      <a class="btn" href="${BASE}/access-prep/daily-drill?grades=${band}">${icon("sparkle")} ${I.T("Language Path & Micro-Drills", "Ruta y microejercicios")}</a>
       <a class="btn" href="${BASE}/voice?grades=${band}">${icon("listening")} ${I.T("Voice Lab: ladders, retells and sound games", "Laboratorio de voz: escaleras, relatos y juegos de sonidos")}</a>
       <a class="btn" href="${BASE}/printables/studio-speaking" target="_blank" rel="noopener"
         >${icon("print")} ${I.T("Print speaking task cards", "Imprimir tarjetas de tareas de expresión oral")}</a

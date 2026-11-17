@@ -7,7 +7,9 @@ import { i18nFor } from "../i18n.js";
 import { crumbsHTML } from "../components.js";
 import { stop as stopSpeech } from "../speech.js";
 import { announce, BASE, html, icon } from "../util.js";
+import * as dailyDrill from "./daily-drill.js";
 import * as dataTalk from "./data-talk.js";
+import * as extemporeSpeak from "./extempore-speak.js";
 import { isDone, loadState, prepBand, resetState, saveState, validSet } from "./model.js";
 import * as notes from "./notes.js";
 import * as ratersEye from "./raters-eye.js";
@@ -23,6 +25,8 @@ export const SKILLS = {
   "word-meanings": wordMeanings,
   "text-structures": textStructures,
   "task-words": taskWords,
+  "daily-drill": dailyDrill,
+  "extempore-speak": extemporeSpeak,
 };
 
 let cur = null; // { mod, set, st, band }
@@ -64,7 +68,52 @@ export async function render(ctx, slug, setId) {
   };
 }
 
+function duoPathVisualHTML(I, skill, sets, band, nextSet) {
+  if (skill.slug !== "daily-drill") return "";
+  const offsets = ["is-center", "is-left", "is-center", "is-right"];
+  return html`<div class="duo-unit-stage" role="region" aria-label="${I.S("Visual Stepping-Stone Skill Path", "Ruta visual de aprendizaje")}">
+    <div class="duo-unit-banner">
+      <div>
+        <p class="duo-unit-kicker">${I.T(`UNIT 1 · GRADES ${band.replace("-", "–")}`, `UNIDAD 1 · GRADOS ${band.replace("-", "–")}`)}</p>
+        <h2 class="duo-unit-title">${I.T("Academic Language across Science, Social Studies, Math & ELA", "Lenguaje académico en Ciencias, Estudios Sociales, Matemáticas y Lengua")}</h2>
+      </div>
+      <details class="duo-guidebook-drawer">
+        <summary class="btn small">${icon("reading")} ${I.T("Guidebook", "Guía de la unidad")}</summary>
+        <div class="duo-guidebook-body">
+          <p><strong>${I.T("Key Phrases & Words in this Unit:", "Frases y palabras clave de esta unidad:")}</strong></p>
+          <ul>
+            ${sets.map((s) => html`<li><strong>${I.T(s.title, s.titleEs || s.title)} (${s.area}):</strong> <span lang="en">${s.forge?.model || ""}</span></li>`)}
+          </ul>
+        </div>
+      </details>
+    </div>
+    <ol class="duo-winding-path" aria-hidden="true">
+      ${sets.map((s, idx) => {
+        const done = isDone(skill.slug, s.id);
+        const isCurrent = nextSet?.id === s.id;
+        return html`<li class="duo-winding-row ${offsets[idx % offsets.length]}">
+          ${isCurrent ? html`<span class="duo-start-pill">${I.T("START", "EMPEZAR")}</span>` : ""}
+          <a
+            class="duo-stone ${done ? "is-done" : ""} ${isCurrent ? "is-current" : ""}"
+            href="${prepHref(skill.slug, s.id, band)}"
+            tabindex="-1"
+          >
+            <span class="duo-stone-ico">${icon(done ? "check" : "star")}</span>
+          </a>
+          <span class="duo-stone-caption">${I.T(s.title, s.titleEs || s.title)}</span>
+        </li>`;
+      })}
+      <li class="duo-winding-row is-center">
+        <span class="duo-stone is-chest">${icon("medal")}</span>
+        <span class="duo-stone-caption">${I.T("Unit Mastery Chest", "Cofre de dominio")}</span>
+      </li>
+    </ol>
+  </div>`;
+}
+
 function pickerHTML(I, skill, sets, band) {
+  const doneCount = sets.filter((s) => isDone(skill.slug, s.id)).length;
+  const nextSet = sets.find((s) => !isDone(skill.slug, s.id)) || sets[0];
   return html`${crumbsHTML([
       [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${band}`],
       [I.S("Access Prep", "Preparación ACCESS"), `${BASE}/access-prep?grades=${band}`],
@@ -81,13 +130,36 @@ function pickerHTML(I, skill, sets, band) {
         <ul class="prep-how">
           ${skill.how.map((h) => html`<li>${icon("check")} ${I.T(h[0], h[1])}</li>`)}
         </ul>
+        <div class="prep-path-bar" role="region" aria-label="${I.S("Skill path progress", "Progreso de la ruta")}">
+          <span class="prep-path-stat">
+            ${icon("medal")}
+            ${I.T(
+              `${doneCount} of ${sets.length} sets finished on this device`,
+              `${doneCount} de ${sets.length} conjuntos terminados en este dispositivo`,
+            )}
+          </span>
+          ${
+            nextSet
+              ? html`<a class="btn btn-primary small" href="${prepHref(skill.slug, nextSet.id, band)}">
+                  ${doneCount > 0 && doneCount < sets.length
+                    ? I.T("Continue next set", "Continuar siguiente conjunto")
+                    : I.T("Start first set", "Empezar primer conjunto")}
+                  ${icon("arrow-right")}
+                </a>`
+              : ""
+          }
+        </div>
       </header>
+      ${duoPathVisualHTML(I, skill, sets, band, nextSet)}
       <ul class="prep-sets">
-        ${sets.map((s) => {
+        ${sets.map((s, idx) => {
           const done = isDone(skill.slug, s.id);
           return html`<li class="prep-set ${done ? "is-done" : ""}">
             <a href="${prepHref(skill.slug, s.id, band)}">
-              <span class="prep-set-title">${I.T(s.title, s.titleEs || s.title)}</span>
+              <span class="prep-set-step">
+                <span class="prep-set-node" aria-hidden="true">${done ? icon("check") : idx + 1}</span>
+                <span class="prep-set-title">${I.T(s.title, s.titleEs || s.title)}</span>
+              </span>
               <span class="prep-set-meta"
                 >${[s.area, s.mode, s.kind].filter(Boolean).join(" · ")} ·
                 ${I.T(`about ${s.minutes || 6} min`, `unos ${s.minutes || 6} min`)}</span

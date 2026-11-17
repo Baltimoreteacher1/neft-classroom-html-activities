@@ -168,7 +168,56 @@ export function validSet(slug, s) {
       s.prompts?.length === 3 &&
       s.prompts.every((p) => TASK_WORDS[p.taskWord] && p.choices?.includes(p.taskText) && p.needs?.some((n) => n.right) && p.answers?.some((a) => a.id === p.answer))
     );
+  if (slug === "daily-drill")
+    return (
+      s.pairs?.length === 4 &&
+      s.pairs.every((p) => p.id && p.word && p.es && p.def) &&
+      Boolean(s.listenBuild?.sentence) &&
+      s.listenBuild?.parts?.some((p) => typeof p === "object") &&
+      s.cloze?.parts?.some((p) => typeof p === "object") &&
+      s.forge?.parts?.some((p) => typeof p === "object") &&
+      buildText(s.forge.parts).trim() === String(s.forge.model || "").trim()
+    );
+  if (slug === "extempore-speak") {
+    const chk = s.turn3 ? extemporeChecklist(s, s.turn3.model) : {};
+    return (
+      Boolean(s.scene?.teacherPrompt && s.scene?.modelStudent?.text) &&
+      mcOk(s.scene?.check) &&
+      s.turn1?.parts?.some((p) => typeof p === "object") &&
+      buildText(s.turn1.parts).trim() === String(s.turn1.model || "").trim() &&
+      s.turn2?.parts?.some((p) => typeof p === "object") &&
+      buildText(s.turn2.parts).trim() === String(s.turn2.model || "").trim() &&
+      Boolean(chk.word && chk.connector && chk.sentence)
+    );
+  }
   return false;
+}
+
+/** Vocabulary pair matcher: each word id must be matched to its own definition id. */
+export function checkPairs(pairs, picks = {}) {
+  const slots = Object.fromEntries(pairs.map((p) => [p.id, picks[p.id] === p.id]));
+  const right = Object.values(slots).filter(Boolean).length;
+  return { ok: right === pairs.length, right, total: pairs.length, slots };
+}
+
+/**
+ * Extempore Turn 3 oral/written response checklist:
+ *  - word: uses at least one target word from set.turn3.words (stem match)
+ *  - connector: uses at least one connector from set.turn3.connectors
+ *  - sentence: at least 7 words long
+ */
+export function extemporeChecklist(set, text) {
+  const rawText = String(text || "").toLowerCase();
+  const tokens = words(rawText);
+  const wordOk = (set.turn3?.words || []).some((w) => wordSentenceCheck(w, rawText).word);
+  const connOk = (set.turn3?.connectors || []).some((c) =>
+    c.includes(" ") ? rawText.includes(c.toLowerCase()) : tokens.includes(c.toLowerCase()),
+  );
+  return {
+    word: wordOk,
+    connector: connOk,
+    sentence: tokens.length >= 7,
+  };
 }
 
 /** The five text structures: the name, the signal words that give each away, and the organizer it fits. */

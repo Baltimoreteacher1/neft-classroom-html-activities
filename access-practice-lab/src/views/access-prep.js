@@ -1,12 +1,16 @@
 // WIDA Access Prep Hub: Publisher-grade overview and launchpad for Grades 3–5 and Grades 6–8.
 // Organizes ALL WIDA ACCESS prep activities across Listening, Reading, Speaking, and Writing,
 // plus Model Tests, with authentic tier designations (Tier A & Tier B/C), skill strands, and direct launch routes.
-import { crumbsHTML } from "../components.js";
-import { loadIndex } from "../content.js";
+import { crumbsHTML, recorderHTML } from "../components.js";
+import { loadIndex, loadPrep } from "../content.js";
 import { i18nFor } from "../i18n.js";
+import { isRecording } from "../recorder.js";
+import { loadRecord } from "../store.js";
 import { STUDIOS, studioPath } from "../studios.js";
-import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon } from "../util.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
+import { isDone, wordSentenceCheck } from "../prep/model.js";
 import { PREP_SKILL_LIST, isPrepSkill } from "../prep/registry.js";
+import { hearPairHTML } from "../prep/ui.js";
 
 // /access-prep/<skill>[/<set>] is a skill builder (src/prep/view.js), loaded only when opened.
 let prepView = null;
@@ -80,6 +84,10 @@ let currentBandSelection = "6-8";
 let currentDomainFilter = "all";
 let currentTierFilter = "all";
 let searchQuery = "";
+let workbenchTab = "duo"; // "duo" | "ext"
+let inlineDuoPlaced = [];
+let inlineDuoChecked = null;
+let inlineExtText = "";
 // Each tier group opens with a short preview; "Show all" expands that one group. A search shows every match.
 // Phones stack one card per row, so they preview three.
 const previewSize = () => (typeof matchMedia === "function" && matchMedia("(max-width: 599px)").matches ? 3 : 6);
@@ -124,6 +132,7 @@ function collectBandActivities(indexData, bandKey) {
         const isTierA = lvl === "A" || lvl === "6-8-A";
         const tierGroup = isTierA ? "A" : "BC";
         const displayLevel = lvl.includes("-") ? lvl.split("-").pop() : lvl;
+        const doneSet = new Set(loadRecord(cb, domain, lvl).complete || []);
 
         for (const act of lvlObj.activities || []) {
           // act format: [id, title, type, skill, minutes, grades?]
@@ -144,6 +153,7 @@ function collectBandActivities(indexData, bandKey) {
             tierGroup,
             band: cb,
             grades: Array.isArray(grades) ? grades : [],
+            done: doneSet.has(id),
             href,
           });
         }
@@ -161,7 +171,7 @@ function activityRowHTML(act, I) {
   const isTierA = act.tierGroup === "A";
 
   return html`
-    <div class="prep-act-item" data-prep-id="${act.id}" data-type="${act.type}">
+    <div class="prep-act-item ${act.done ? "is-done" : ""}" data-prep-id="${act.id}" data-type="${act.type}">
       <div class="prep-act-main">
         <div class="prep-act-meta-row">
           <span class="prep-tier-tag ${isTierA ? "tag-tier-a" : "tag-tier-bc"}">
@@ -169,6 +179,7 @@ function activityRowHTML(act, I) {
           </span>
           <span class="prep-type-tag">${typeText}</span>
           <span class="prep-time-tag">${icon("clock")} ${act.minutes} min</span>
+          ${act.done ? html`<span class="prep-done-pill">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
         </div>
         <h4 class="prep-act-title">
           <a href="${act.href}">${act.title}</a>
@@ -177,7 +188,7 @@ function activityRowHTML(act, I) {
       </div>
       <div class="prep-act-action">
         <a class="btn btn-sm btn-primary prep-play-btn" href="${act.href}">
-          <span>${I.T("Start", "Iniciar")}</span>
+          <span>${act.done ? I.T("Review", "Repasar") : I.T("Start", "Iniciar")}</span>
           ${icon("arrow-right")}
         </a>
       </div>
@@ -185,14 +196,259 @@ function activityRowHTML(act, I) {
   `;
 }
 
+/** Audience & Age strip: clear starting doors for Students, Teachers, Families, and Early Learners K–2. */
+function audienceStripHTML(I, band) {
+  return html`<section class="prep-audience-strip" aria-label="${I.S("Paths for students, teachers, families, and early grades", "Rutas para estudiantes, docentes, familias y primeros grados")}">
+    <a class="prep-audience-card" href="${BASE}/access-prep/daily-drill?grades=${band}">
+      <span class="prep-audience-ico">${icon("sparkle")}</span>
+      <span>
+        <strong>${I.T("Students · Language Path & Micro-Drills", "Estudiantes · Ruta y microejercicios")}</strong>
+        <span class="fine">${I.T("5-step interactive sets: match words, listen slow or normal, and forge sentences.", "Conjuntos interactivos de 5 pasos: une palabras, escucha lento o normal y forja oraciones.")}</span>
+      </span>
+    </a>
+    <a class="prep-audience-card" href="${BASE}/access-prep/extempore-speak?grades=${band}">
+      <span class="prep-audience-ico">${icon("speaking")}</span>
+      <span>
+        <strong>${I.T("Students · Extempore Speaking Lab", "Estudiantes · Laboratorio oral Extempore")}</strong>
+        <span class="fine">${I.T("Hear a model student, then respond across Tier A, Tier B, and Tier C turns.", "Escucha a un estudiante modelo y responde en turnos de Nivel A, Nivel B y Nivel C.")}</span>
+      </span>
+    </a>
+    <a class="prep-audience-card" href="${BASE}/start?grades=${band}">
+      <span class="prep-audience-ico">${icon("teacher")}</span>
+      <span>
+        <strong>${I.T("Teachers · Tour, Lesson Builder & Class", "Docentes · Recorrido, lecciones y clase")}</strong>
+        <span class="fine">${I.T("Project whole-class routines, build a lesson in one click, or review evidence.", "Proyecta rutinas de clase, crea una lección en un clic o revisa la evidencia.")}</span>
+      </span>
+    </a>
+    <a class="prep-audience-card" href="${BASE}/family?grades=${band}">
+      <span class="prep-audience-ico">${icon("families")}</span>
+      <span>
+        <strong>${I.T("Families & K–2 · Home Talk & Early Hub", "Familias y K–2 · Casa y primeros grados")}</strong>
+        <span class="fine">${I.T("Bilingual home activities and audio-first practice for younger learners.", "Actividades bilingües para casa y práctica con audio para los más pequeños.")}</span>
+      </span>
+    </a>
+  </section>`;
+}
+
+/** Embedded interactive Duolingo Skill Path + Extempore Speaking Workbench directly on /access-prep. */
+function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
+  const duoSet = duoSets[0];
+  const extSet = extSets[0];
+  if (!duoSet || !extSet) return "";
+  const offsets = ["is-center", "is-left", "is-center", "is-right"];
+  const targetParts = duoSet.forge.parts.filter((p) => typeof p === "object").map((p) => p.answer);
+  const bankTiles = duoSet.forge.parts.filter((p) => typeof p === "object").flatMap((p) => p.options);
+  const lowerExt = inlineExtText.toLowerCase();
+
+  return html`<section class="prep-live-workbench" aria-labelledby="prepWbH">
+    <div class="prep-wb-header">
+      <div>
+        <p class="prep-eyebrow">${icon("sparkle")} ${I.T("Interactive Live Practice Stage", "Escenario interactivo de práctica en vivo")}</p>
+        <h2 id="prepWbH">${I.T("Try the Duolingo Skill Path & Extempore Speaking Studio right here", "Prueba la Ruta estilo Duolingo y el Estudio Oral Extempore aquí mismo")}</h2>
+      </div>
+      <div class="prep-wb-tabs" role="tablist" aria-label="${I.S("Choose live practice mode", "Elige modo de práctica en vivo")}">
+        <button
+          type="button"
+          role="tab"
+          class="btn small ${workbenchTab === "duo" ? "btn-primary" : ""}"
+          data-prep-wb="duo"
+          aria-selected="${String(workbenchTab === "duo")}"
+        >
+          ${icon("sparkle")} ${I.T("1. Duolingo Skill Path & Word Bank", "1. Ruta y Banco de Palabras")}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="btn small ${workbenchTab === "ext" ? "btn-primary" : ""}"
+          data-prep-wb="ext"
+          aria-selected="${String(workbenchTab === "ext")}"
+        >
+          ${icon("speaking")} ${I.T("2. Extempore Speaking Studio", "2. Estudio Oral Extempore")}
+        </button>
+      </div>
+    </div>
+
+    ${
+      workbenchTab === "duo"
+        ? html`<div class="prep-wb-grid">
+            <div class="duo-unit-stage">
+              <div class="duo-unit-banner">
+                <div>
+                  <p class="duo-unit-kicker">${I.T(`SKILL PATH · GRADES ${band.replace("-", "–")}`, `RUTA · GRADOS ${band.replace("-", "–")}`)}</p>
+                  <h3 class="duo-unit-title">${I.T("Tap any stepping stone to open its 5-step lesson", "Toca cualquier piedra para abrir su lección de 5 pasos")}</h3>
+                </div>
+                <a class="btn small" href="${BASE}/access-prep/daily-drill?grades=${band}">
+                  ${I.T("All sets", "Todos")} ${icon("arrow-right")}
+                </a>
+              </div>
+              <ol class="duo-winding-path">
+                ${duoSets.map((s, idx) => {
+                  const done = isDone("daily-drill", s.id);
+                  return html`<li class="duo-winding-row ${offsets[idx % offsets.length]}">
+                    ${idx === 0 && !done ? html`<span class="duo-start-pill">${I.T("START", "EMPEZAR")}</span>` : ""}
+                    <a
+                      class="duo-stone ${done ? "is-done" : ""} ${idx === 0 ? "is-current" : ""}"
+                      href="${BASE}/access-prep/daily-drill/${s.id}?grades=${band}"
+                      aria-label="${I.S(s.title, s.titleEs || s.title)}"
+                    >
+                      <span class="duo-stone-ico">${icon(done ? "check" : "star")}</span>
+                    </a>
+                    <span class="duo-stone-caption">${I.T(s.title, s.titleEs || s.title)} · ${s.area}</span>
+                  </li>`;
+                })}
+              </ol>
+            </div>
+
+            <div class="prep-wb-player">
+              <div class="duo-topbar">
+                <div class="duo-progress-track" aria-hidden="true">
+                  <div class="duo-progress-fill" style="width:${Math.min(100, Math.max(20, Math.round((inlineDuoPlaced.length / targetParts.length) * 100)))}%">
+                    <span class="duo-progress-shine"></span>
+                  </div>
+                </div>
+                <span class="duo-step-pill">${duoSet.area} · ${duoSet.kind}</span>
+              </div>
+              <p class="fine"><strong>${I.T("Quick Challenge — Upgrade this everyday sentence:", "Reto rápido — Mejora esta oración cotidiana:")}</strong></p>
+              <blockquote class="prep-prompt">
+                <p lang="en">${duoSet.forge.starter}</p>
+                ${hearPairHTML(I, duoSet.forge.starter)}
+              </blockquote>
+              <div class="duo-lined-tray">
+                <span class="duo-tray-label">${I.T("Tap 3 clauses in order to forge the academic sentence:", "Toca 3 cláusulas en orden para forjar la oración académica:")}</span>
+                <div class="duo-placed-row">
+                  ${inlineDuoPlaced.length
+                    ? inlineDuoPlaced.map(
+                        (t, idx) =>
+                          html`<button type="button" class="duo-tile3d is-placed" data-wb-duo-remove="${idx}">
+                            <span class="duo-slot-badge">${idx + 1}</span>
+                            <span lang="en">${t}</span>
+                            <span aria-hidden="true">×</span>
+                          </button>`,
+                      )
+                    : html`<span class="duo-empty-slot is-target">${I.T("Tap tiles below…", "Toca las fichas abajo…")}</span>`}
+                </div>
+              </div>
+              <div class="duo-bank-grid">
+                ${bankTiles.map((opt) => {
+                  const used = inlineDuoPlaced.includes(opt);
+                  return html`<button
+                    type="button"
+                    class="duo-tile3d ${used ? "is-used-tile" : ""}"
+                    data-wb-duo-add="${opt}"
+                    ${used ? raw("disabled") : ""}
+                  >
+                    <span lang="en">${opt}</span>
+                  </button>`;
+                })}
+              </div>
+              <div class="row-actions" style="margin-top:0.85rem;">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-wb-duo-check
+                  ${inlineDuoPlaced.length === targetParts.length ? "" : raw("disabled")}
+                >
+                  ${icon("check")} ${I.T("Check my sentence", "Revisar mi oración")}
+                </button>
+                <a class="btn" href="${BASE}/access-prep/daily-drill/${duoSet.id}?grades=${band}">
+                  ${I.T("Open full 5-step lesson", "Abrir lección completa de 5 pasos")} ${icon("arrow-right")}
+                </a>
+              </div>
+              ${
+                inlineDuoChecked !== null
+                  ? html`<div class="feedback ${inlineDuoChecked ? "is-right" : "is-hint"}" role="status" style="margin-top:0.75rem;">
+                      <p class="fb-title">
+                        ${icon(inlineDuoChecked ? "check" : "retry")}
+                        ${inlineDuoChecked ? I.T("Nicely done! Academic sentence forged.", "¡Muy bien! Oración académica forjada.") : I.T("Almost! Pick the three strongest academic clauses in order.", "¡Casi! Elige las tres cláusulas académicas más sólidas en orden.")}
+                      </p>
+                      <p class="prep-model" lang="en">${duoSet.forge.model} ${hearPairHTML(I, duoSet.forge.model)}</p>
+                    </div>`
+                  : ""
+              }
+            </div>
+          </div>`
+        : html`<div class="ext-studio-split">
+            <aside class="ext-left-pane">
+              <div class="ext-monitor">
+                <div class="ext-monitor-head">
+                  <span class="ext-avatar-chip">${icon("teacher")}</span>
+                  <div>
+                    <strong class="ext-monitor-title">${I.T("Instructor Prompt", "Consigna docente")} · ${extSet.title}</strong>
+                    <span class="fine">${extSet.area} · ${extSet.kind}</span>
+                  </div>
+                </div>
+                <p class="ext-prompt-script" lang="en">${extSet.scene.teacherPrompt}</p>
+                <div class="ext-monitor-controls">
+                  ${hearPairHTML(I, extSet.scene.teacherPrompt, I.T("Play Prompt", "Escuchar consigna"))}
+                </div>
+              </div>
+              <div class="ext-exemplar-box">
+                <div class="prep-answer-h">
+                  <strong>${icon("speaking")} ${I.T(`Model Student (${extSet.scene.modelStudent.name})`, `Estudiante modelo (${extSet.scene.modelStudent.name})`)}</strong>
+                  ${hearPairHTML(I, extSet.scene.modelStudent.text)}
+                </div>
+                <p lang="en">${extSet.scene.modelStudent.text}</p>
+              </div>
+            </aside>
+            <div class="ext-right-pane">
+              <blockquote class="prep-prompt">
+                <p lang="en"><strong>${extSet.turn3.prompt}</strong></p>
+                ${hearPairHTML(I, extSet.turn3.prompt)}
+              </blockquote>
+              <div class="ext-radar-panel">
+                <p class="ext-radar-title">
+                  ${icon("sparkle")}
+                  <strong>${I.T("Live WIDA Language Radar (tap any word or connector to add it):", "Radar de lenguaje WIDA en vivo (toca para agregar):")}</strong>
+                </p>
+                <div class="ext-radar-group">
+                  ${extSet.turn3.words.map((w) => {
+                    const hit = wordSentenceCheck(w, lowerExt).word;
+                    return html`<button type="button" class="ext-radar-chip ${hit ? "is-hit" : ""}" data-wb-ext-token="${w}">
+                      ${icon(hit ? "check" : "words")} <span lang="en">${w}</span>
+                    </button>`;
+                  })}
+                  ${extSet.turn3.connectors.map((c) => {
+                    const hit = lowerExt.includes(c.toLowerCase());
+                    return html`<button type="button" class="ext-radar-chip ${hit ? "is-hit" : ""}" data-wb-ext-token="${c}">
+                      ${icon(hit ? "check" : "bulb")} <span lang="en">${c}</span>
+                    </button>`;
+                  })}
+                </div>
+              </div>
+              ${recorderHTML(`wb-ext-${extSet.id}`, { recording: isRecording(`wb-ext-${extSet.id}`) })}
+              <label class="prep-write" for="wbExtInput">
+                <strong>${I.T("Type or dictate your spoken response:", "Escribe o dicta tu respuesta oral:")}</strong>
+              </label>
+              <textarea
+                id="wbExtInput"
+                class="prep-textarea"
+                rows="3"
+                placeholder="${I.S("Speak or type here to test the live WIDA radar…", "Habla o escribe aquí para probar el radar WIDA en vivo…")}"
+              >${inlineExtText}</textarea>
+              <div class="row-actions" style="margin-top:0.75rem;">
+                <a class="btn btn-primary" href="${BASE}/access-prep/extempore-speak/${extSet.id}?grades=${band}">
+                  ${I.T("Open full 3-Turn Extempore Studio", "Abrir Estudio Extempore completo de 3 turnos")} ${icon("arrow-right")}
+                </a>
+                <a class="btn" href="${BASE}/access-prep/extempore-speak?grades=${band}">
+                  ${I.T("All Extempore sets", "Todos los conjuntos")}
+                </a>
+              </div>
+            </div>
+          </div>`
+    }
+  </section>`;
+}
+
 /** The skill builders: short guided sets that teach one test move each (src/prep/). */
-function skillBuildersHTML(I, band) {
-  return html`<section class="prep-builders" aria-labelledby="prepBuildersH">
-    <h2 id="prepBuildersH">${I.T("Skill builders", "Constructores de destrezas")}</h2>
-    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS. Sin tiempo y con ayuda en cada paso.")}</p>
+function skillBuildersHTML(I, band, duoSets = [], extSets = []) {
+  return html`${audienceStripHTML(I, band)}
+  ${liveWorkbenchHTML(I, band, duoSets, extSets)}
+  <section class="prep-builders" aria-labelledby="prepBuildersH">
+    <h2 id="prepBuildersH">${I.T("Skill builders & interactive labs", "Constructores de destrezas y laboratorios interactivos")}</h2>
+    <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Duolingo-style Micro-Drills and Extempore Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral Extempore. Sin tiempo y con ayuda en cada paso.")}</p>
     <ul class="prep-builder-cards">
       ${PREP_SKILL_LIST.map(
-        (s) => html`<li class="prep-builder-card">
+        (s) => html`<li class="prep-builder-card ${s.slug === "daily-drill" || s.slug === "extempore-speak" ? "is-featured" : ""}">
           <a href="${BASE}/access-prep/${s.slug}?grades=${band}">
             <span class="prep-builder-ico">${icon(s.icon)}</span>
             <span class="prep-builder-domain">${I.T(s.domainLabel[0], s.domainLabel[1])}</span>
@@ -205,6 +461,8 @@ function skillBuildersHTML(I, band) {
     </ul>
   </section>`;
 }
+
+let cachedDuoSets = [];
 
 export async function render(ctx) {
   if (isPrepSkill(ctx.route?.id)) {
@@ -220,7 +478,14 @@ export async function render(ctx) {
     currentBandSelection = bandFromRoute(ctx.band);
   }
 
-  const indexData = await loadIndex();
+  const [indexData, duoAll, extAll] = await Promise.all([
+    loadIndex(),
+    loadPrep("daily-drill").catch(() => ({})),
+    loadPrep("extempore-speak").catch(() => ({})),
+  ]);
+  const duoSets = duoAll[currentBandSelection] || [];
+  const extSets = extAll[currentBandSelection] || [];
+  cachedDuoSets = duoSets;
   const activitiesByDomain = collectBandActivities(indexData, currentBandSelection);
   const activeMeta = BAND_META[currentBandSelection] || BAND_META["6-8"];
   const availableDomains = currentBandSelection === "6-8" ? [...CORE_DOMAINS, "Model-Test"] : [...CORE_DOMAINS];
@@ -323,7 +588,7 @@ export async function render(ctx) {
           </div>
         </header>
 
-        ${skillBuildersHTML(I, currentBandSelection)}
+        ${skillBuildersHTML(I, currentBandSelection, duoSets, extSets)}
 
         <!-- Grade Band Selector Tabs -->
         <section class="prep-band-selector-section" style="margin-bottom:2rem;">
@@ -585,9 +850,49 @@ export async function render(ctx) {
 
 export function onClick(e, ctx) {
   if (prepView) return prepView.onClick(e, ctx);
+  const wbBtn = e.target.closest("[data-prep-wb]");
+  if (wbBtn) {
+    workbenchTab = wbBtn.dataset.prepWb;
+    ctx.rerender();
+    return true;
+  }
+  const addTile = e.target.closest("[data-wb-duo-add]");
+  if (addTile) {
+    inlineDuoPlaced = [...inlineDuoPlaced, addTile.dataset.wbDuoAdd];
+    inlineDuoChecked = null;
+    ctx.rerender();
+    return true;
+  }
+  const remTile = e.target.closest("[data-wb-duo-remove]");
+  if (remTile) {
+    const idx = Number(remTile.dataset.wbDuoRemove);
+    inlineDuoPlaced = inlineDuoPlaced.filter((_, i) => i !== idx);
+    inlineDuoChecked = null;
+    ctx.rerender();
+    return true;
+  }
+  if (e.target.closest("[data-wb-duo-check]")) {
+    const targetParts = (cachedDuoSets[0]?.forge?.parts || [])
+      .filter((p) => typeof p === "object")
+      .map((p) => p.answer);
+    inlineDuoChecked =
+      inlineDuoPlaced.length === targetParts.length &&
+      inlineDuoPlaced.every((v, i) => v === targetParts[i]);
+    ctx.rerender();
+    return true;
+  }
+  const extToken = e.target.closest("[data-wb-ext-token]");
+  if (extToken) {
+    const tok = extToken.dataset.wbExtToken;
+    inlineExtText = inlineExtText.trim() ? `${inlineExtText.trim()} ${tok} ` : `${tok} `;
+    ctx.rerender();
+    return true;
+  }
   const bandBtn = e.target.closest("[data-prep-band]");
   if (bandBtn) {
     currentBandSelection = bandBtn.dataset.prepBand;
+    inlineDuoPlaced = [];
+    inlineDuoChecked = null;
     if (typeof history !== "undefined" && typeof location !== "undefined") {
       const url = new URL(location.href);
       url.searchParams.set("grades", currentBandSelection);
@@ -634,6 +939,11 @@ export function onInput(e, ctx) {
   if (e.target.id === "prepSearchInput") {
     searchQuery = e.target.value;
     ctx.rerender();
+    return true;
+  }
+  if (e.target.id === "wbExtInput") {
+    inlineExtText = e.target.value;
+    ctx.rerender({ keepFocus: true });
     return true;
   }
   return false;

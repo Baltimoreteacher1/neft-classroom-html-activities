@@ -129,6 +129,30 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "daily-drill",
+    group: "explore",
+    featured: true,
+    href: "access-prep/daily-drill",
+    icon: "sparkle",
+    title: ["Language Path & Micro-Drills", "Ruta y microejercicios"],
+    text: [
+      "Five bite-sized steps per set: match academic words, listen at normal or slow speed, fill context clues, and forge sentences.",
+      "Cinco pasos cortos por conjunto: une palabras académicas, escucha a velocidad normal o lenta, usa pistas de contexto y forja oraciones.",
+    ],
+  },
+  {
+    id: "extempore-speak",
+    group: "explore",
+    featured: true,
+    href: "access-prep/extempore-speak",
+    icon: "speaking",
+    title: ["Extempore Speaking Lab", "Laboratorio oral Extempore"],
+    text: [
+      "Hear a teacher prompt and a model student, then speak across Tier A, Tier B, and Tier C turns with a live self-check.",
+      "Escucha la consigna docente y a un estudiante modelo, y habla en turnos de Nivel A, Nivel B y Nivel C con autoevaluación en vivo.",
+    ],
+  },
+  {
     id: "language-quest",
     group: "explore",
     featured: true,

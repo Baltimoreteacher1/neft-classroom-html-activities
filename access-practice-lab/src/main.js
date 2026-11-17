@@ -488,7 +488,10 @@ async function common(e) {
     return true;
   }
   const say = t.closest("[data-say]");
-  if (say) return (speak(say.dataset.say, { rate: app.prefs.rate, voiceURI: app.prefs.readingVoice }), true);
+  if (say) {
+    const rate = Number(say.dataset.sayRate) || app.prefs.rate;
+    return (speak(say.dataset.say, { rate, voiceURI: app.prefs.readingVoice }), true);
+  }
   const sayEs = t.closest("[data-say-es]");
   if (sayEs) {
     speakSpanish(sayEs.dataset.sayEs, { rate: 0.9 }).then((r) => {

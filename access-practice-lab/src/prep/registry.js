@@ -170,6 +170,80 @@ export const PREP_SKILLS = {
       ["Look back", "Repasa"],
     ],
   },
+  "daily-drill": {
+    slug: "daily-drill",
+    title: "Language Path & Micro-Drills",
+    titleEs: "Ruta y microejercicios",
+    domain: "Reading",
+    domainLabel: ["All 4 Skills · Micro-Drills", "Las 4 destrezas · Microejercicios"],
+    icon: "sparkle",
+    blurb: [
+      "Five bite-sized steps per set: match academic words, listen at normal or slow speed, fill context clues, forge a stronger sentence, and review.",
+      "Cinco pasos cortos por conjunto: une palabras académicas, escucha a velocidad normal o lenta, completa pistas de contexto, forja una oración más sólida y repasa.",
+    ],
+    how: [
+      [
+        "Match four school words to their meanings with normal or slow audio.",
+        "Une cuatro palabras escolares con su significado usando audio normal o lento.",
+      ],
+      [
+        "Listen to a spoken academic sentence and build its parts in order.",
+        "Escucha una oración académica y arma sus partes en orden.",
+      ],
+      [
+        "Use tap-a-word hints to fill the missing words in a short passage.",
+        "Usa pistas por palabra para completar las palabras que faltan en un texto corto.",
+      ],
+      [
+        "Upgrade an everyday sentence into a precise school sentence and review.",
+        "Mejora una oración cotidiana hasta convertirla en una oración escolar precisa y repasa.",
+      ],
+    ],
+    steps: [
+      ["Match words", "Une palabras"],
+      ["Listen & build", "Escucha y arma"],
+      ["Context clues", "Pistas de contexto"],
+      ["Sentence forge", "Forja la oración"],
+      ["Mastery review", "Repaso final"],
+    ],
+  },
+  "extempore-speak": {
+    slug: "extempore-speak",
+    title: "Extempore Speaking Lab",
+    titleEs: "Laboratorio oral Extempore",
+    domain: "Speaking",
+    domainLabel: ["Speaking · Oral Discourse", "Hablar · Discurso oral"],
+    icon: "speaking",
+    blurb: [
+      "Hear a teacher prompt and a model student, then respond across Tier A, Tier B, and Tier C turns with voice recording, live self-check, and model comparison.",
+      "Escucha la consigna docente y a un estudiante modelo, y luego responde en turnos de Nivel A, Nivel B y Nivel C con grabación de voz, autoevaluación en vivo y comparación con el modelo.",
+    ],
+    how: [
+      [
+        "Study the visual data card and hear the teacher prompt and model student.",
+        "Observa la tarjeta de datos y escucha la consigna docente y al estudiante modelo.",
+      ],
+      [
+        "Build and rehearse Turn 1 (Describe) and Turn 2 (Explain how or why).",
+        "Arma y ensaya el Turno 1 (Describir) y el Turno 2 (Explicar cómo o por qué).",
+      ],
+      [
+        "Speak or type your Turn 3 extended response with a live 3-part checklist.",
+        "Di o escribe tu respuesta extendida en el Turno 3 con una lista de verificación en vivo.",
+      ],
+      [
+        "Compare your three turns side by side with the model student and family card.",
+        "Compara tus tres turnos lado a lado con el estudiante modelo y la tarjeta familiar.",
+      ],
+    ],
+    steps: [
+      ["Prompt & model", "Consigna y modelo"],
+      ["Turn 1 · Describe", "Turno 1 · Describe"],
+      ["Turn 2 · Explain", "Turno 2 · Explica"],
+      ["Turn 3 · Speak", "Turno 3 · Habla"],
+      ["Compare & share", "Compara y comparte"],
+    ],
+  },
 };
 
 export const PREP_SKILL_LIST = Object.values(PREP_SKILLS);
