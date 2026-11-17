@@ -226,7 +226,7 @@ function missionButtonsHTML(I, missions, { primary, resume }) {
       data-session-ids="${m.ids.join(",")}"
       data-session-review-ids="${m.reviewIds.join(",")}"
     >
-      ${main ? html`${label} · ${minutes}` : html`<span class="visually-hidden">${label} · </span>${minutes}`}
+      ${main ? html`${label} <span class="lph-go-min">· ${minutes}</span>` : html`<span class="visually-hidden">${label} · </span>${minutes}`}
     </button>`;
   };
   const main = primary ? missions.find((m) => m.minutes === 10) : null;

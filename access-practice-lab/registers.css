@@ -447,7 +447,7 @@ body[data-lab-view="home"] .lph-roles-label {
   color: #d2e2e4;
 }
 /* The grade picker's labels and notes sit straight on the navy stage (ink-2 there measured 1.3:1). */
-body[data-lab-view="home"] .lph :is(.lph-label, .grade-focus-label, .grade-focus-counts, .grade-focus-note) {
+body[data-lab-view="home"] .lph .lph-setting :is(.lph-label, .grade-focus-label, .grade-focus-counts, .grade-focus-note) {
   color: #d2e2e4;
 }
 body[data-lab-view="home"] .lph-role {
@@ -619,5 +619,38 @@ html body {
     inset: max(calc(var(--lab-top-h, 0px) + 0.25rem), 7.25rem) 0.75rem auto;
     max-height: calc(100dvh - 8rem);
     z-index: 40;
+  }
+}
+
+/* Phones: the mission button keeps "· 10 min" together, the length chips sit side by side under their label. */
+.lph-go-min {
+  white-space: nowrap;
+}
+.lph-go {
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.3em;
+  text-align: center;
+}
+@media (max-width: 559px) {
+  .lph-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .lph-chips-label {
+    flex-basis: 100%;
+  }
+}
+
+/* The sticky "More" button sits over the scrolling header strip: a solid backing (the header's own ivory) to its
+   right and a soft fade to its left keep the links behind it from peeking out ("…te" of Site Guide). */
+@media (max-width: 860px) {
+  .lab-tools > .lab-utilities {
+    background: #fffcf5;
+    box-shadow:
+      -14px 0 12px -6px #fffcf5,
+      16px 0 0 0 #fffcf5;
   }
 }

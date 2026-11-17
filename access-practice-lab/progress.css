@@ -730,11 +730,7 @@
     gap: var(--s-2);
   }
   .pass-stats > li {
-    display: block;
     padding: var(--s-2) var(--s-3);
-  }
-  .pass-stat-ico {
-    display: none;
   }
 }
 @media (max-width: 360px) {
@@ -2044,3 +2040,11 @@
 .rd-offline .row-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .rd-offline .btn { min-height: 44px; }
 .rd-offline-bar { width: 100%; height: 0.75rem; accent-color: #1fa6a2; }
+
+/* Phones: three stat tiles side by side squeezed "Stamps" into its number; one per row keeps label, number and
+   note readable. */
+@media (max-width: 559px) {
+  .pass-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1902,10 +1902,13 @@ details.retell > :last-child {
     width: 4rem;
   }
 }
-/* The passage stays beside the questions, clear of the sticky header (--lab-top-h is its live height, src/shell.js). */
-.activity-workspace .stimulus {
-  top: calc(var(--lab-top-h, 6.75rem) + 1rem);
-  max-height: calc(100vh - var(--lab-top-h, 6.75rem) - 2rem);
+/* The passage stays beside the questions, clear of the sticky header (--lab-top-h is its live height, src/shell.js).
+   Two-column layout only: on one column the passage pins at 40vh (the max-width: 860px block above). */
+@media (min-width: 861px) {
+  .activity-workspace .stimulus {
+    top: calc(var(--lab-top-h, 6.75rem) + 1rem);
+    max-height: calc(100vh - var(--lab-top-h, 6.75rem) - 2rem);
+  }
 }
 
 /* Part-level miss notes (sort cards, blanks, steps): one line per card, the card named first. */
@@ -1961,4 +1964,57 @@ details.retell > :last-child {
 }
 .warmup-note > span {
   min-width: 0;
+}
+
+/* Phones: "How much help?" sits on its own line with the three choices in one even row, and the four skill tiles
+   share a two-column grid so a student sees every choice without a long scroll. */
+@media (max-width: 559px) {
+  .jump-levels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .jump-levels-label {
+    grid-column: 1 / -1;
+  }
+  .jump-level {
+    align-items: center;
+    padding-inline: 6px;
+    border-radius: 14px;
+    text-align: center;
+  }
+  .jump-tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+  .jump-mixed {
+    grid-column: 1 / -1;
+  }
+  .jump-tile a {
+    min-height: 0;
+    padding: 12px;
+  }
+  .jump-line {
+    font-size: 0.875rem;
+  }
+}
+
+/* Inside the task card the directions are the card's lead text, not a second box: no tint, border or lone icon. */
+.task-card .directions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.task-card .directions::before {
+  display: none;
+}
+.task-card .directions .directions-icon {
+  display: none;
+}
+.task-card .directions p {
+  flex: 1 1 16rem;
+  margin: 0;
 }

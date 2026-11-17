@@ -284,8 +284,44 @@
   }
 }
 @media (max-width: 560px) {
+  /* Phones lead with the task: title, then the Start button, then the choices; the illustration steps aside and
+     the goals / build-a-set / print panels follow the activity list instead of preceding it. */
+  .room-hero-art > img {
+    display: none;
+  }
+  .room-hero-art {
+    order: 0;
+  }
+  .room-hero-copy {
+    display: flex;
+    flex-direction: column;
+  }
+  .room-hero-copy > * {
+    order: 2;
+  }
+  .room-hero-copy > :is(.eyebrow, .room-studio, h1, .lead) {
+    order: 0;
+  }
+  .room-hero-copy > a.btn {
+    order: 1;
+    align-self: stretch;
+  }
+  .room-aside {
+    order: 2;
+  }
   .tier-picker {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tier-picker .tier {
+    min-width: 0;
+    padding: 0.6rem 0.3rem;
+    text-align: center;
+  }
+  .tier-picker .tier strong {
+    font-size: 0.95rem;
+  }
+  .tier-picker .tier span {
+    font-size: 0.75rem;
   }
   .act-row a {
     grid-template-columns: 1.75rem minmax(0, 1fr);

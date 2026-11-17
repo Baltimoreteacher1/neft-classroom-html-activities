@@ -104,7 +104,7 @@ export function notebookListHTML(items, { empty, i18n = I } = {}) {
 /** Claim · Evidence · Example graphic organizer filled with this source's pins. */
 export function organizerHTML(items, { i18n = I } = {}) {
   const { T } = i18n;
-  return html`<div class="lab-table-wrap">
+  return html`<div class="lab-table-wrap" tabindex="0" role="region" aria-label="${i18n.S("Claim, evidence and example organizer", "Organizador de afirmación, evidencia y ejemplo")}">
     <table class="lab-table nb-organizer">
       <caption>
         ${T("My Claim · Evidence · Example organizer", "Mi organizador: Afirmación · Evidencia · Ejemplo")}
@@ -139,7 +139,7 @@ export function organizerHTML(items, { i18n = I } = {}) {
 /** Synthesis matrix: each cell lists the pins placed in it. */
 export function matrixHTML(items, { textTitle, dataTitle, i18n = I }) {
   const { T } = i18n;
-  return html`<div class="lab-table-wrap">
+  return html`<div class="lab-table-wrap" tabindex="0" role="region" aria-label="${i18n.S("Synthesis matrix", "Matriz de síntesis")}">
     <table class="lab-table nb-matrix">
       <caption>
         ${T("Synthesis matrix:", "Matriz de síntesis:")} ${textTitle} + ${dataTitle}

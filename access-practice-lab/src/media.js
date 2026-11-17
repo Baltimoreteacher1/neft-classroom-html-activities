@@ -96,7 +96,8 @@ export function chartsHTML(item) {
 
 export function tableHTML(table) {
   if (!table) return "";
-  return html`<div class="lab-table-wrap">
+  // A table wider than a phone scrolls inside this box; tabindex lets a keyboard user scroll it too.
+  return html`<div class="lab-table-wrap" tabindex="0" role="region" aria-label="${table.caption || "Table"}">
     <table class="lab-table">
       ${
         table.caption
