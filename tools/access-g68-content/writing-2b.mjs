@@ -168,6 +168,9 @@ export default [
       B: "The purpose of this experiment was to find out how the amount of light affects the height of bean plants. The data show that plants with more light grew taller: the plants with twelve hours of light were fourteen centimeters tall, while the plants with no light were only three. This happens because plants use light to make food. One limitation is that we tested only a few plants.",
       C: "The purpose of this experiment was to find out how the amount of light affects the growth of bean plants. The data support the claim that more light produces taller plants: plants given twelve hours of light averaged fourteen centimeters, plants given six hours averaged nine, and plants given no light averaged only three. This pattern is consistent with photosynthesis, the process plants use to turn light energy into food they need to grow. However, one limitation is that we measured only a small number of plants for two weeks, so the results might change with more trials or a longer time.",
     },
+    modelNotes: {
+      C: "Restates the purpose (The purpose of this experiment was to), makes a claim tied to data (The data support the claim that), lists all three averages after a colon, links to science (consistent with photosynthesis), and names a limitation with However.",
+    },
     criteria: [
       "I restated the question and made a clear claim.",
       "I used at least two numbers from the table.",
@@ -235,6 +238,9 @@ export default [
       A: "I think schools should limit homework to sixty minutes. Students need time to sleep and rest. For example, tired students cannot focus. Some people say homework helps. But sixty minutes is enough. In conclusion, schools should limit homework.",
       B: "I believe that middle schools should limit homework to sixty minutes a night. Students need time to sleep, eat dinner, and spend time with family. For example, a student who does two hours of homework may go to bed very late. Some people argue that more homework helps students learn; however, sixty focused minutes is enough to practice. In conclusion, schools should limit homework.",
       C: "Homework helps students practice, but too much can harm learning, so I believe middle schools should limit homework to sixty minutes a night.\n\nFirst, sleep is essential for memory and attention. A student who spends two hours on homework may not go to bed until very late and may be tired in class the next day. Second, students also need time for family, exercise, and activities they care about. A balanced schedule helps them return to school ready to learn.\n\nSome people argue that more homework leads to better grades. However, practice is only useful when a student is alert enough to focus, so quality matters more than quantity. For these reasons, a sixty-minute limit would protect students' health without removing the practice they need.",
+    },
+    modelNotes: {
+      C: "Opens with a concede-then-claim thesis (… but … so I believe), develops two reasons with First and Second plus a consequence, and answers the opposing view (Some people argue … However) before concluding with For these reasons.",
     },
     criteria: [
       "I stated a clear claim in my introduction.",
@@ -305,6 +311,9 @@ export default [
       B: "Dear Jo, I like that you showed all your work. However, we cannot subtract the denominators because they tell the size of the pieces. Instead, first change both fractions to twelfths: three fourths is nine twelfths and one third is four twelfths. Then subtract the numerators: nine minus four is five. The answer is five twelfths.",
       C: "Dear Jo, I like that you showed every step, because it made your thinking easy to follow. However, subtracting the tops and the bottoms does not work, because the denominators tell the size of each piece, and we can only subtract pieces of the same size. Instead, first find a common denominator. Twelve works for both fractions, so three fourths becomes nine twelfths and one third becomes four twelfths. Then subtract the numerators: nine twelfths minus four twelfths is five twelfths. You can check that the answer is reasonable, because three fourths minus one fourth is one half, and one third is a little more than one fourth, so the difference should be a little less than one half. Sincerely, Maya",
     },
+    modelNotes: {
+      C: "Praises a specific strength first, corrects with However plus a because reason, sequences the fix with first and Then, and ends with a reasonableness check using benchmark fractions.",
+    },
     criteria: [
       "I began with something kind.",
       "I explained why the mistake does not work.",
@@ -374,6 +383,9 @@ export default [
       B: "The problem tells me that 3 pens cost $2.40 and asks for the cost of 10 pens. My plan is to find the unit rate. First, I divide $2.40 by 3, so one pen costs $0.80. Then I multiply $0.80 by 10, so ten pens cost $8.00. I checked by seeing that 10 pens is a little more than three groups of 3 pens, and three groups cost $7.20.",
       C: "The problem tells me that 3 pens cost $2.40 and asks how much 10 pens cost at the same rate. My plan is to find the unit rate, the price of one pen, and then scale up. First, I divide $2.40 by 3 to get $0.80 per pen. Next, I multiply $0.80 by 10, so ten pens cost $8.00. To check that this is reasonable, I notice that nine pens is three groups of 3 pens, which would cost 3 times $2.40, or $7.20, and one more pen at $0.80 brings the total to $8.00. Therefore, ten pens cost $8.00.",
     },
+    modelNotes: {
+      C: "Restates what is known and asked, names the plan (find the unit rate … then scale up), sequences the steps with First and Next, and checks with a second method before a Therefore conclusion.",
+    },
     criteria: [
       "I wrote what I know and what the problem asks.",
       "I showed my steps with numbers and units.",
@@ -427,6 +439,9 @@ export default [
       A: "Coral reefs are small but important. They give homes to many animals. Warm water hurts them. Scientists want to help.",
       B: "The paragraph explains that coral reefs are small but very important. They give shelter to many ocean animals and protect coasts. However, warm water can harm corals, so scientists are looking for ways to help them recover.",
       C: "Although coral reefs cover only a tiny part of the ocean floor, they are home to a large share of marine species and help protect coastlines. Warming water threatens reefs by causing bleaching, which removes the algae corals depend on. In response, researchers are studying corals that tolerate heat and trying to reduce pollution so reefs can recover.",
+    },
+    modelNotes: {
+      C: "Compresses the passage into one complex sentence with Although, paraphrases the cause (Warming water threatens reefs by causing bleaching), and uses In response for the solution, with no copied sentences.",
     },
     criteria: [
       "I stated the main idea in my own words.",

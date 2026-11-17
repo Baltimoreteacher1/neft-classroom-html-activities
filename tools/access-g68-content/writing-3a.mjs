@@ -509,6 +509,9 @@ export default [
       B: "I claim that the mystery block is aluminum. The table shows that the mystery block has a mass of 54 g and a volume of 20 cm³, so its density is 54 divided by 20, or 2.7 g/cm³. The aluminum sample has a density of 27 divided by 10, which is also 2.7, whereas iron is 79 divided by 10, or 7.9. This shows that density can help us identify a material.",
       C: "The evidence supports the claim that the mystery block is made of aluminum. According to the table, the mystery block has a mass of 54 grams and a volume of 20 cubic centimeters, so its density is 54 divided by 20, which equals 2.7 grams per cubic centimeter. The aluminum sample has the same density, since 27 divided by 10 is 2.7, whereas the iron sample has a much greater density of 7.9 grams per cubic centimeter. Density is a characteristic property, which means it stays the same no matter how large the sample is; therefore, although the mystery block is twice as big as the aluminum sample, it has the same density and is most likely aluminum. One limitation is that other materials might also have a density near 2.7, so further tests would make the conclusion stronger.",
     },
+    modelNotes: {
+      C: "States the claim (The evidence supports the claim that), cites data with According to and shows the calculation, contrasts with whereas, explains the science rule (a characteristic property, which means), and names a limitation.",
+    },
     criteria: [
       "My claim names the material of the mystery block.",
       "I calculated density with mass divided by volume and used the numbers.",
@@ -586,6 +589,9 @@ export default [
       B: "Students at our school throw away a lot of food at lunch. This is a problem because the food is wasted and the school pays for it. One solution is a share table where students can put unopened fruit, milk and snacks. Other students who are still hungry can take them. As a result, less food will go in the trash.",
       C: "Every day, many students at our school throw away food they did not finish, and this waste is a serious problem. If each of 400 students throws away only two ounces, the total is 800 ounces, or 50 pounds, of good food every day. That food costs the school money, and some students are still hungry in the afternoon.\n\nTo solve this problem, the cafeteria should set up a share table. First, students who do not want an unopened item, such as a fruit cup or a carton of milk, place it on the table. Then any student who is still hungry can take an item for free, and cafeteria staff can check that everything is sealed and cold.\n\nA share table would work because it is simple, it costs almost nothing, and it gives food a second chance. Even if only half of the extra food were taken, the school would throw away about 25 pounds less every day. Therefore, a share table would help the budget, the environment, and hungry students at the same time.",
     },
+    modelNotes: {
+      C: "Quantifies the problem with an if-then estimate, proposes a solution with sequenced steps (First, Then), and justifies it with three reasons and a numerical prediction before a Therefore conclusion.",
+    },
     criteria: [
       "I described the problem and who it affects.",
       "My solution has clear steps.",
@@ -654,6 +660,9 @@ export default [
       A: "Our school should build a garden. Students can learn about plants. Some people say it costs too much. But seeds are cheap.",
       B: "I believe our school should build a class garden. First, students can learn how plants grow by watching them every day. Second, they can eat the vegetables they grow. Some people say a garden costs too much money. However, seeds and soil are cheap, and a garden can pay for itself.",
       C: "Our school should build a class garden because it would improve both learning and healthy eating.\n\nFirst, a garden turns science lessons into real experience. Instead of only reading about photosynthesis, students could measure how tall bean plants grow each week and record the data. Second, students are more willing to try vegetables they have grown themselves, so a garden could encourage healthier choices at lunch.\n\nSome people argue that a garden would cost too much and take time away from other classes. However, seeds, soil, and a few wooden boxes are inexpensive, and families or local businesses often donate supplies. Moreover, a garden project can replace some lab time instead of adding to it. For these reasons, the benefits of a class garden are greater than its costs, and our school should begin planting this spring.",
+    },
+    modelNotes: {
+      C: "Opens with a claim that previews two reasons, supports each with a concrete example (measure how tall bean plants grow), answers the counterclaim (Some people argue … However … Moreover), and concludes with For these reasons.",
     },
     criteria: [
       "I stated a clear claim.",

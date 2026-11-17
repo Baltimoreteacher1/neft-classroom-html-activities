@@ -151,6 +151,12 @@ export default [
       "Add a little water.",
       "A green sprout grows.",
     ],
+    itemFeedback: {
+      s1: "Find First. The cup needs soil before the seed.",
+      s2: "Find Next. The seed goes in after the cup has soil.",
+      s3: "Find Then. Water comes after the seed is in the soil.",
+      s4: "Find In a few days. The sprout grows after all the steps.",
+    },
     vocab: [
       ["sprout", "a tiny new plant", "brote: una planta nueva y pequeña"],
       ["soil", "the dirt that plants grow in", "tierra: lo que usan las plantas para crecer"],
@@ -172,25 +178,45 @@ export default [
     q: "Help finish the garden club's note for the hallway. Which word fits each blank?",
     passageTitle: "The Class Garden",
     passage: [
-      "Our class has a garden behind the school. We plant seeds in the spring. The plants need sun and water to grow. In the summer, we pick tomatoes and share them with families.",
+      "Our class has a garden behind the school. We plant seeds in the spring because the soil gets warm then. Seeds do not grow well in cold soil.",
+      "The plants need sun and water to grow. We water them every Monday and Thursday. In the summer, we pick the red tomatoes and share them with families.",
     ],
     cloze: [
       "We plant seeds in the ",
-      ["spring", "winter", "night"],
-      ". Plants need sun and ",
-      ["water", "snow", "paper"],
+      ["spring", "winter", "summer"],
+      " ",
+      ["because", "but", "so"],
+      " the soil gets warm then. Plants need sun and ",
+      ["water", "soil", "seeds"],
       " to grow. In summer, we ",
-      ["pick", "break", "lose"],
-      " the tomatoes.",
+      ["pick", "plant", "water"],
+      " the red tomatoes.",
     ],
+    itemFeedback: {
+      b1: "Find the sentence about planting seeds. It names a season with warm soil.",
+      b2: "The second part tells why they plant then. Choose the word that gives a reason.",
+      b3: "Reread: The plants need sun and what else? Soil and seeds are not in that sentence.",
+      b4: "The tomatoes are already red and ready. What do you do with ripe tomatoes?",
+    },
     vocab: [
       ["garden", "a place where people grow plants", "huerto: lugar donde se cultivan plantas"],
       ["share", "to give some to others", "compartir: dar una parte a otros"],
+      [
+        "soil",
+        "the top layer of dirt where plants grow",
+        "tierra: capa de arriba del suelo donde crecen las plantas",
+      ],
     ],
-    frames: ["We plant seeds in the ___.", "Plants need ___ and sun."],
-    focus: ["the season words", "what plants need", "what happens in summer"],
-    correct: "Great! Each word you chose matches the meaning of the sentence.",
-    hint: "Read the sentence with each word. Which one makes sense with the paragraph?",
+    frames: ["We plant seeds in the spring because ___.", "Plants need ___ and sun."],
+    focus: [
+      "the season words",
+      "the word that gives a reason",
+      "what plants need",
+      "what happens in summer",
+    ],
+    correct:
+      "Great! Spring has warm soil, because gives the reason, and each word matches the paragraph.",
+    hint: "One blank needs a joining word. Ask: does the second part give a reason, a result, or a surprise?",
     wida: ["Inform: use context to choose words", "Language for Science"],
   },
   // ── Level B ──────────────────────────────────────────────────────────────
@@ -265,6 +291,11 @@ export default [
       "Soon, the whole group is on its way to find food.",
     ],
     answerIdx: [3],
+    distractorFeedback: {
+      s2: "This tells what the bee does first, not why it dances.",
+      s3: "This describes the dance. Find what the dance does.",
+      s5: "This is what happens after the dance, not its reason.",
+    },
     vocab: [
       ["hive", "a home where bees live together", "colmena: hogar donde viven juntas las abejas"],
       [
@@ -303,6 +334,14 @@ export default [
       ["Ana finds a secret gate.", 0],
       ["The book has 14 chapters.", 0],
     ],
+    itemFeedback: {
+      s1: "You can count the pages. Can this be checked?",
+      s2: "Best is a feeling word, and the text says I think.",
+      s3: "You can look up where an author lives. Can it be checked?",
+      s4: "Will love it is a guess about everyone's feelings.",
+      s5: "This tells what happens in the story. You can check it by reading.",
+      s6: "You can count the chapters. Can this be checked?",
+    },
     vocab: [
       [
         "fact",
@@ -532,6 +571,12 @@ export default [
       "For these reasons, every family should join one Wednesday a month.",
     ],
     answerIdx: [0],
+    distractorFeedback: {
+      s2: "This explains what the days are. It is not what the writer wants.",
+      s3: "First signals a reason. The claim comes before the reasons.",
+      s4: "Second signals another reason that supports the claim.",
+      s5: "For these reasons sums up at the end. Find where the claim is first stated.",
+    },
     vocab: [
       [
         "claim",
@@ -582,6 +627,11 @@ export default [
       ["After that", "However", "For example"],
       ", a root grows down and a shoot grows up.",
     ],
+    itemFeedback: {
+      b1: "The acorn rests under leaves in one season. Reread sentence 2.",
+      b2: "The acorn swells when a season arrives. Choose the time phrase, not a reason.",
+      b3: "The root and shoot grow next in time. Choose a word that shows order.",
+    },
     vocab: [
       ["acorn", "the nut of an oak tree", "bellota: el fruto del roble"],
       ["swell", "to get bigger by taking in water", "hincharse: agrandarse al absorber agua"],

@@ -29,6 +29,9 @@ export default [
       B: "I divided the total price by the number of bottles. Corner Market is $1.50 per bottle, Fresh Mart is $1.40, and Value Club is $1.30. Value Club has the lowest unit price, so it is the best buy.",
       C: "To compare the stores fairly, I found the unit price at each one by dividing the total price by the number of bottles. Corner Market costs six dollars for four bottles, which is $1.50 per bottle. Fresh Mart costs $8.40 for six bottles, which is $1.40. Value Club costs $13.00 for ten bottles, which is $1.30. Since $1.30 is less than $1.40 and $1.50, Value Club is the best buy per bottle.",
     },
+    modelNotes: {
+      C: "Names the strategy before any numbers (I found the unit price … by dividing), reports every store in the same pattern (costs … for …, which is … per bottle), and justifies the choice with a comparison (Since $1.30 is less than …).",
+    },
     criteria: [
       "I said the unit price for all three stores.",
       "I explained how I found a unit price by dividing.",

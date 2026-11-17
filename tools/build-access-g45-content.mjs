@@ -195,6 +195,8 @@ function expandItem(spec, domain) {
   } else if (a.type === "hotText") {
     a.sentences = spec.sentences.map((text, i) => ({ id: `s${i + 1}`, text }));
     a.answers = spec.answerIdx.map((i) => `s${i + 1}`);
+    // Notes for tempting wrong sentences, keyed by the generated sentence ids (src/grade.js missNotes).
+    if (spec.distractorFeedback) a.distractorFeedback = spec.distractorFeedback;
   } else if (a.type !== "constructed") bad(where, `unsupported type ${a.type}`);
   if (domain === "Listening") a.listenFor = spec.focus || bad(where, "missing focus");
   if (domain === "Reading") a.readFor = spec.focus || bad(where, "missing focus");

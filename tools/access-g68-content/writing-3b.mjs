@@ -441,6 +441,9 @@ export default [
       B: "Both methods show that x equals 5. Method 1 divides both sides by 3 first, which gives x + 2 = 7 and then x = 5, whereas Method 2 multiplies out the parentheses to get 3x + 6 = 21, then subtracts 6 and divides by 3. Method 1 has fewer steps, so I prefer it for this equation.",
       C: "Both methods lead to the same solution, x = 5, which I can check because 3 times 7 equals 21. Method 1 divides both sides by 3 first, so the equation becomes x + 2 = 7, and subtracting 2 gives x = 5. Method 2, on the other hand, distributes the 3 to get 3x + 6 = 21, subtracts 6 to get 3x = 15, and then divides by 3. Although Method 1 is shorter here because 21 divides evenly by 3, Method 2 is more reliable when the right side does not divide evenly, such as in 3(x + 2) = 20, because it keeps whole numbers until the last step.",
     },
+    modelNotes: {
+      C: "Starts with the shared result and a check, describes each method in parallel structure, contrasts with on the other hand, and evaluates when to choose each with Although and a new example.",
+    },
     criteria: [
       "I said that both methods give the same solution.",
       "I described the steps of each method and used a contrast word.",
@@ -517,6 +520,9 @@ export default [
       A: "Dear Director Alvarez, I am a student at Lakeview Middle School. My class wants to visit your museum. Can we come in April? Thank you. Sincerely, Zainab Ali",
       B: "Dear Director Alvarez,\n\nI am a sixth-grade student at Lakeview Middle School, and I am writing to ask about a class visit to your science museum.\n\nOur group has 48 students and two teachers, and we are studying space. We would like to visit on a weekday morning in April.\n\nCould you please send us information about prices and available dates? Thank you for your time.\n\nSincerely,\nZainab Ali",
       C: "Dear Director Alvarez,\n\nMy name is Zainab Ali, and I am a sixth-grade student at Lakeview Middle School. I am writing on behalf of my science class to request information about a field trip to your museum, because we have been studying the solar system and would like to see your planetarium.\n\nOur group would include 48 students and four adult chaperones, and we would like to visit on a weekday morning in April. Because we are studying space, we would be especially interested in any guided tours or workshops about planets and stars. We would also appreciate information about accessible entrances so that every student can take part.\n\nCould you please let us know which dates are available and whether a group discount is offered? I would be grateful for any information that would help our teachers plan the trip. Thank you very much for your time and consideration.\n\nSincerely,\nZainab Ali",
+    },
+    modelNotes: {
+      C: "Uses a formal opening (I am writing on behalf of … to request), gives specific details with would like and would be interested in, makes a polite request (Could you please … I would be grateful), and closes with Sincerely.",
     },
     criteria: [
       "My letter has a greeting, three paragraphs, and a closing with my full name.",
@@ -599,6 +605,9 @@ export default [
       B: "The table shows how long a sugar cube took to dissolve in water at three temperatures. At 10°C it took 12 minutes, at 30°C it took 6 minutes, and at 50°C it took only 3 minutes. As the water temperature increased, the dissolving time decreased.",
       C: "Table 1 shows the time a sugar cube needed to dissolve in water at three different temperatures. In the coldest water, 10°C, the cube took 12 minutes to dissolve, while in 30°C water it took 6 minutes, which is half as long. When the temperature rose again to 50°C, the dissolving time dropped to 3 minutes, which is half of the time at 30°C and only one fourth of the time at 10°C. The data show a consistent pattern: as the water temperature increased, the time needed to dissolve the sugar decreased.",
     },
+    modelNotes: {
+      C: "Names the table (Table 1 shows), compares trials with while and fraction language (half as long, one fourth of the time), states the pattern (as … increased, … decreased), and reports results without explaining why.",
+    },
     criteria: [
       "I described the pattern in the table.",
       "I compared at least two trials with numbers and units.",
@@ -667,6 +676,9 @@ export default [
       A: "Mia looked at her volcano. It had a crack. “What do we do?” she asked. “We can fix it,” said Omar. They fixed it together.",
       B: "The gym buzzed with noise as Mia stared at her broken volcano. “The judges are coming soon!” she said. Omar took a deep breath. “Wait, I have tape in my backpack,” he said. Together they fixed the crack, and Mia smiled with relief.",
       C: "The gym buzzed with voices and the squeak of sneakers as Mia stared at the crack running down the side of her volcano. “The judges are coming soon, and our model is ruined,” she whispered, twisting the strap of her backpack. Omar frowned, then suddenly snapped his fingers. “Wait,” he said, “my dad gave me waterproof tape this morning. If we cover the crack, the baking soda will still work.” Mia’s shoulders relaxed as they pressed the tape smoothly along the crack. When the first judge arrived, the volcano bubbled perfectly, and both students grinned, proud that they had solved the problem together.",
+    },
+    modelNotes: {
+      C: "Opens with a sensory setting, shows feelings through actions (twisting the strap, her shoulders relaxed), punctuates dialogue with speaker tags, turns the plot with suddenly, and resolves with a feeling.",
     },
     criteria: [
       "My scene has a setting, a problem, and a turning point.",

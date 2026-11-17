@@ -115,6 +115,12 @@ export default [
   },
   {
     id: "l-b-solve-one-step",
+    itemFeedback: {
+      s1: "Before you can undo anything, you must know which operation is being done to x.",
+      s2: "You choose subtraction only after you know seven is being added.",
+      s3: "You can only simplify after subtracting seven from both sides.",
+      s4: "You can only check an answer after you have found x.",
+    },
     level: "B",
     gw: "g6-topic",
     strand: "Math talk: expressions and equations",

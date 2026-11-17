@@ -115,7 +115,7 @@ const listening = {
       scene: "more-less",
       dir: ["Listen. Tap who has more cookies.", "Escucha. Toca quién tiene más galletas."],
       script:
-        "Nina has six cookies. Jo has two cookies. Six is more than two. Jo has less than Nina.",
+        "Nina and Jo help Grandpa bake. Nina gets six cookies. Jo gets two cookies. Grandpa says, count your cookies!",
       q: ["Who has more cookies?", "¿Quién tiene más galletas?"],
       options: [
         ["a", "Jo", "👦"],
@@ -130,7 +130,7 @@ const listening = {
       frame: "___ has more cookies.",
       correct: "Nina has six. Six is more than two.",
       distractorFeedback: {
-        a: "Jo has two. Listen: who has more than two?",
+        a: "Jo has two. Who has more than two?",
         b: "Six and two are not the same.",
       },
       hint: "Listen for each number. Which number is bigger?",
@@ -280,6 +280,11 @@ const listening = {
       ],
       frame: "First, ___. Next, ___. Last, ___.",
       correct: "Brush teeth, put on pajamas, then read a book.",
+      itemFeedback: {
+        t: "Listen for the word that starts Tim's bedtime.",
+        p: "Listen for next. Pajamas come after his teeth.",
+        b: "Tim falls asleep with the book. Listen for last.",
+      },
       wida: ["Sequence events from an oral story"],
     },
     {
@@ -395,7 +400,7 @@ const reading = {
         "Read the sentences. Tap what is in the sky.",
         "Lee las oraciones. Toca lo que hay en el cielo.",
       ],
-      passage: ["It is night.", "The moon is up."],
+      passage: ["Kai cannot sleep, so he looks out at night.", "The moon is up, big and round."],
       q: ["What is in the sky?", "¿Qué hay en el cielo?"],
       options: [
         ["a", "the sun", "☀️"],
@@ -426,7 +431,7 @@ const reading = {
         "Read the sentences. Tap how many apples Jen has now.",
         "Lee las oraciones. Toca cuántas manzanas tiene Jen ahora.",
       ],
-      passage: ["Jen has three apples.", "She gives one to Sam."],
+      passage: ["Jen has three apples.", "Sam has no snack, so she gives one to Sam."],
       q: ["How many apples does Jen have now?", "¿Cuántas manzanas tiene Jen ahora?"],
       options: [
         ["a", "two apples", "🍎"],
@@ -520,6 +525,11 @@ const reading = {
       ],
       frame: "First, ___. Then, ___. Last, ___.",
       correct: "Ice in a cup, the cup in the sun, then water.",
+      itemFeedback: {
+        i: "Dan needs ice in the cup before anything happens.",
+        s: "The cup goes in the sun before the ice melts.",
+        w: "Ice melts only after the warm sun shines on it.",
+      },
       wida: ["Sequence events in a short science text"],
     },
     {

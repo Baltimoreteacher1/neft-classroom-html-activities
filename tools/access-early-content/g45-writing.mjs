@@ -165,15 +165,21 @@ export default [
     q: "Complete the thank-you note.",
     cloze: [
       "Dear Aunt Rosa, ",
-      ["Thank", "Give", "Take"],
-      " you for the book. I ",
-      ["read", "ate", "ran"],
-      " it on Sunday, and my favorite part was the ",
-      ["ending", "pencil", "chair"],
-      ". ",
-      ["Love", "Because", "First"],
+      ["Thank", "Please", "Sorry"],
+      " you for the book about dogs. I ",
+      ["read", "reads", "reading"],
+      " it on Sunday. My favorite part was the ending ",
+      ["because", "but", "so"],
+      " the puppy found its way home. ",
+      ["Love", "Dear", "Hello"],
       ", Mia",
     ],
+    itemFeedback: {
+      b1: "Mia is glad about a gift. Which word goes with you to show she is grateful?",
+      b2: "On Sunday already happened. Choose the action word that tells about the past.",
+      b3: "The second part tells why the ending was her favorite. Choose the word for a reason.",
+      b4: "This word comes before Mia's name. Greeting words start a note; they do not end it.",
+    },
     bank: ["thank you", "dear", "gift", "favorite", "love", "sincerely", "enjoyed"],
     vocab: [
       [
@@ -183,10 +189,16 @@ export default [
       ],
       ["favorite", "the one you like best", "favorito: el que más te gusta"],
     ],
-    frames: ["Thank you for ___.", "My favorite part was ___.", "Love, ___."],
-    focus: ["a greeting", "thanks for something", "a closing"],
-    hint: "A thank-you note starts with Dear, says thank you, and ends with a closing like Love.",
-    correct: "Great! The right words make the note polite and clear.",
+    frames: ["Thank you for ___.", "My favorite part was ___ because ___.", "Love, ___."],
+    focus: [
+      "thanks for something",
+      "an action word that tells about the past",
+      "a reason with because",
+      "a closing before the name",
+    ],
+    hint: "Look at where each blank sits: the start, a past day, a reason, or the end before the name.",
+    correct:
+      "Great! Thank you shows thanks, read tells about Sunday, because gives the reason, and Love closes the note.",
     wida: ["Narrate: write a short note", "Notice letter parts"],
   },
   // ── Level B ──────────────────────────────────────────────────────────────
@@ -408,6 +420,13 @@ export default [
       "If you give a plant all three, it will grow strong.",
     ],
     bank: ["first", "second", "finally", "needs", "healthy", "because", "so"],
+    itemFeedback: {
+      s1: "This sentence tells the big idea: three things. It opens the paragraph.",
+      s2: "First starts the list, so it follows the big idea.",
+      s3: "Second comes after First.",
+      s4: "Finally is the last of the three things.",
+      s5: "If you give a plant all three closes the idea after all three are named.",
+    },
     vocab: [
       ["healthy", "strong and well", "sano: fuerte y bien"],
       [

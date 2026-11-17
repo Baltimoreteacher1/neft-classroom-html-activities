@@ -168,14 +168,15 @@ const listening = {
         "Escucha a la guardia de cruce. Toca los dibujos en orden: primero, después, al final.",
       ],
       script:
-        "Hello, walkers! First, stop at the curb. Next, look left and look right. Last, walk across when I say go. Always use the crosswalk.",
+        "Hello, walkers! I am Ms. Lee, your crossing guard. Before you cross, stop at the curb. Do not step into the street yet. Then look left and look right for cars. Wait until I hold up my stop sign. Walk across only after my sign is up. Do not run!",
       q: ["What do you do first, next and last?", "¿Qué haces primero, después y al final?"],
       items: [
         ["w", "walk across", "🚶"],
-        ["s", "stop at the curb", "🛑"],
+        ["g", "wait for the stop sign", "🛑"],
+        ["s", "stop at the curb", "🧍"],
         ["l", "look both ways", "👀"],
       ],
-      answer: ["s", "l", "w"],
+      answer: ["s", "l", "g", "w"],
       vocab: [
         v(
           "curb",
@@ -189,14 +190,21 @@ const listening = {
         ),
       ],
       frame: "First, ___. Next, ___. Last, ___.",
-      correct: "Stop, look both ways, then walk when the guard says go.",
+      correct:
+        "Stop at the curb, look both ways, wait for the sign, then walk. Ms. Lee keeps you safe.",
+      itemFeedback: {
+        s: "Before you cross tells you when to stop.",
+        l: "You look for cars while you wait at the curb.",
+        g: "Ms. Lee holds up her sign after you look.",
+        w: "Ms. Lee says walk only after her sign is up.",
+      },
       wida: ["Sequence steps in oral directions"],
     },
     {
       id: "g23-l-b-seeds-fewest",
       hint: 'Listen for each number. "Fewest" means the smallest number.',
       distractorFeedback: {
-        a: "Cara plants ten seeds. Ten is the most, not the fewest.",
+        a: "Cara plants ten seeds. Ten is the most.",
         b: "Ana plants eight seeds. Someone planted fewer than eight.",
       },
       level: "B",
@@ -228,8 +236,8 @@ const listening = {
       id: "g23-l-c-owl-eyes",
       hint: "Listen for what big eyes let in.",
       distractorFeedback: {
-        b: "Big eyes do not help owls sleep. Listen for what they do.",
-        c: "The story never says owls swim. Listen for what big eyes do.",
+        b: "Big eyes are not for sleep. What do they do?",
+        c: "Owls do not swim. Listen for what big eyes do.",
       },
       level: "C",
       title: "Why Owls Have Big Eyes",
@@ -259,7 +267,7 @@ const listening = {
       id: "g23-l-c-new-student",
       hint: "Listen for what happens right before Mia smiles.",
       distractorFeedback: {
-        a: "The story never talks about a prize. Listen for what Ben asks.",
+        a: "There is no prize. Listen for what Ben asks.",
         c: "Recess was not over. Listen for what Ben asks Mia.",
       },
       level: "C",
@@ -335,7 +343,7 @@ const listening = {
       id: "g23-l-c-kite-wind",
       hint: "Listen for what was different on Monday and Tuesday.",
       distractorFeedback: {
-        a: "The story never says it rained. Listen for Monday and Tuesday.",
+        a: "It never rained. Listen for Monday and Tuesday.",
         b: "Sam did not go home. He ran across the grass.",
       },
       level: "C",
@@ -384,7 +392,11 @@ const reading = {
         "Read the sentences. Tap where the duck swims.",
         "Lee las oraciones. Toca dónde nada el pato.",
       ],
-      passage: ["The duck swims in the pond.", "The frog sits on a log."],
+      passage: [
+        "Our class walks to the pond to look for animals.",
+        "The duck swims in the pond.",
+        "The frog sits on a log.",
+      ],
       q: ["Where does the duck swim?", "¿Dónde nada el pato?"],
       options: [
         ["a", "in a box", "📦"],
@@ -398,7 +410,7 @@ const reading = {
       ],
       frame: "The duck swims in the ___.",
       correct: "The duck swims in the pond.",
-      wida: ["Identify location in a two-sentence text"],
+      wida: ["Identify location in a short text"],
     },
     {
       id: "g23-r-a-measure-ruler",
@@ -415,7 +427,11 @@ const reading = {
         "Read the sentences. Tap what Mia measures.",
         "Lee las oraciones. Toca lo que mide Mia.",
       ],
-      passage: ["Mia has a ruler.", "She measures her pencil.", "It is six inches long."],
+      passage: [
+        "Mia has a new pencil box.",
+        "Will her pencil fit? She measures her pencil with a ruler.",
+        "It is six inches long. It fits!",
+      ],
       q: ["What does Mia measure?", "¿Qué mide Mia?"],
       options: [
         ["a", "her pencil", "✏️"],
@@ -429,13 +445,13 @@ const reading = {
       ],
       frame: "Mia measures her ___.",
       correct: "Mia measures her pencil with a ruler.",
-      wida: ["Identify an object in a two-sentence text"],
+      wida: ["Identify an object in a short text"],
     },
     {
       id: "g23-r-a-cow-barn",
       hint: 'Find the sentence with the words "red barn".',
       distractorFeedback: {
-        a: "The hen is on the grass. Read about the barn again.",
+        a: "The hen is on the grass. Read about the barn.",
         b: "The sentences never say pig. Read about the barn.",
       },
       level: "A",
@@ -474,8 +490,8 @@ const reading = {
       id: "g23-r-b-wash-steps",
       hint: 'Find the order words: "first", "next", "then", "last".',
       distractorFeedback: {
-        a: "Drying is the last step. Read the step right after soap.",
-        c: "Eating lunch is not a step here. Read the step after soap.",
+        a: "Drying is the last step. What comes right after soap?",
+        c: "Lunch is not a step. Read the step after soap.",
       },
       level: "B",
       title: "How to Wash Your Hands",
@@ -515,7 +531,7 @@ const reading = {
       id: "g23-r-b-moon-light",
       hint: 'Read the sentence with the word "because".',
       distractorFeedback: {
-        b: "The text says the moon does not make its own light.",
+        b: "The moon does not make its own light.",
         c: "Stars do not paint the moon. Read the second sentence.",
       },
       level: "B",
@@ -554,8 +570,8 @@ const reading = {
       id: "g23-r-b-doctor-helpers",
       hint: 'Find the sentence with the word "tall".',
       distractorFeedback: {
-        a: "Bus drivers are not in this text. Read the last sentence.",
-        b: "Mail carriers are not in this text. Read the last sentence.",
+        a: "There are no bus drivers. Read the last sentence.",
+        b: "There are no mail carriers. Read the last sentence.",
       },
       level: "B",
       title: "Helpers Who Keep Us Healthy",
@@ -639,24 +655,38 @@ const reading = {
         "Lee el texto. Toca los dibujos en el orden en que crece la planta.",
       ],
       passage: [
-        "A plant begins as a seed in the soil.",
-        "With water and warmth, the seed sprouts. A tiny root grows down and a small stem grows up.",
-        "The stem grows leaves, and later a flower opens.",
+        "Look at a sunflower in summer! Its big yellow flower opens only when the plant is tall and strong.",
+        "But every sunflower begins as a tiny seed in the soil.",
+        "Before anything grows up, a root pushes down into the dirt.",
+        "After the root, a green stem grows up and makes leaves.",
       ],
       q: ["Put the pictures in order.", "Pon los dibujos en orden."],
       items: [
-        ["f", "a flower opens", "🌼"],
+        ["f", "a flower opens", "🌻"],
+        ["l", "a stem grows leaves", "🌿"],
         ["s", "a seed in the soil", "🌰"],
-        ["p", "the seed sprouts", "🌱"],
+        ["r", "a root grows down", "🌱"],
       ],
-      answer: ["s", "p", "f"],
+      answer: ["s", "r", "l", "f"],
       vocab: [
-        v("sprout", "to start to grow", "brotar: empezar a crecer"),
+        v(
+          "root",
+          "the part of a plant that grows down into the soil",
+          "raíz: la parte de la planta que crece hacia abajo en la tierra",
+        ),
         v("stem", "the part that holds up a plant", "tallo: la parte que sostiene la planta"),
       ],
       frame: "First, ___. Then, ___. Last, ___.",
-      correct: "A seed sprouts, then grows leaves and a flower.",
-      wida: ["Sequence events in an informational text"],
+      correct:
+        "Seed, root, stem with leaves, then the flower. The text tells the flower first, but it opens last.",
+      hint: "The text does not go in order. Use begins, before and after.",
+      itemFeedback: {
+        s: "Find the word begins. It tells how a sunflower starts.",
+        r: "Before anything grows up tells you when the root grows.",
+        l: "The stem grows up after the root pushes down.",
+        f: "The text names the flower first. Read only when again.",
+      },
+      wida: ["Sequence events told out of order in an informational text"],
     },
     {
       id: "g23-r-c-letter-journey",
@@ -691,6 +721,11 @@ const reading = {
       ],
       frame: "First, ___. Next, ___. Then, ___.",
       correct: "Write the letter, drop it in the mailbox, then a truck carries it.",
+      itemFeedback: {
+        w: "Ana needs a letter before she can mail it.",
+        m: "The stamp and mailbox come before the mail carrier.",
+        t: "The truck takes it after a mail carrier picks it up.",
+      },
       wida: ["Sequence a process in an informational text"],
     },
     {

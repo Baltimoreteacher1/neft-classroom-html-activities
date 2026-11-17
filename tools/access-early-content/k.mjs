@@ -53,7 +53,7 @@ const listening = {
       skill: "Listening for a weather word",
       teacher: GROWN,
       dir: ["Listen. Tap the weather you hear.", "Escucha. Toca el tiempo que oyes."],
-      script: "Drip, drop. It is raining.",
+      script: "Mia wants to play outside. Drip, drop! Uh oh. It is raining.",
       q: ["What is the weather?", "¿Cómo está el tiempo?"],
       options: [
         ["a", "sun", "☀️"],
@@ -81,7 +81,7 @@ const listening = {
       skill: "Listening for an animal sound",
       teacher: GROWN,
       dir: ["Listen. Tap the animal that says tweet.", "Escucha. Toca el animal que dice tuit."],
-      script: "Tweet, tweet! A bird sings in the garden.",
+      script: "Leo and Grandma plant flowers. Tweet, tweet! A bird sings hello from the tree.",
       q: ["Which animal says tweet?", "¿Qué animal dice tuit?"],
       options: [
         ["a", "cow", "🐄"],

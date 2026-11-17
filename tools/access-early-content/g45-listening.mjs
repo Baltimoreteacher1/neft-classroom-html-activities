@@ -88,12 +88,19 @@ export default [
     dir: "Listen to the teacher. Put the steps in the order you hear them.",
     q: "What do students do first, next, and last?",
     script:
-      "It is cold today, so listen carefully. First, put on your jacket. Next, line up at the door. Last, walk outside with your partner.",
+      "It is cold today, so listen carefully. Before you line up, put on your jacket and zip it. Then line up at the door. Wait while I count everyone in the line. After I count, walk outside with your partner.",
     items: [
-      "They put on jackets.",
+      "They put on and zip their jackets.",
       "They line up at the door.",
+      "The teacher counts the line.",
       "They walk outside with a partner.",
     ],
+    itemFeedback: {
+      s1: "Listen for before you line up. This job comes before the line.",
+      s2: "The teacher can only count the line after students are in it.",
+      s3: "Listen for after I count. Counting happens before anyone walks outside.",
+      s4: "Walking outside comes after the counting. Listen for the word after.",
+    },
     vocab: [
       ["jacket", "a short coat", "chaqueta: abrigo corto"],
       [
@@ -102,10 +109,14 @@ export default [
         "compañero: persona con quien trabajas o caminas",
       ],
     ],
-    frames: ["First, ___.", "Next, ___.", "Last, ___."],
-    focus: ["first, next, last", "action words", "who walks with a partner"],
-    correct: "Right! The words first, next, and last told you the order.",
-    hint: "Listen for first, next, and last. Each word starts a new step.",
+    frames: ["Before they line up, they ___.", "After the teacher counts, they ___."],
+    focus: [
+      "the words before, then, and after",
+      "action words",
+      "what happens while the class waits",
+    ],
+    correct: "Right! Before, then, and after told you the order, even when a step was named early.",
+    hint: "Before you line up means the jacket comes first, even though you hear line up in that sentence.",
     wida: ["Narrate: sequence events", "Notice transition words"],
   },
   {
@@ -128,6 +139,11 @@ export default [
       ["2", "9", "14"],
       ".",
     ],
+    itemFeedback: {
+      b1: "Fourteen and four sound alike. Listen to the whole number word.",
+      b2: "Listen for leaves at. The time comes right after it.",
+      b3: "Listen for from door. The door number is small.",
+    },
     vocab: [
       [
         "field trip",
@@ -241,6 +257,12 @@ export default [
       "Heavy drops fall as rain.",
       "The rain flows back into the lake.",
     ],
+    itemFeedback: {
+      s1: "The sun warms the water first. Nothing rises until it is warm.",
+      s2: "Vapor has to rise into the sky before it can cool.",
+      s3: "Drops fall only when the cloud's drops get heavy.",
+      s4: "Listen for finally. Rain flows to the lake after it falls.",
+    },
     vocab: [
       ["vapor", "water that has turned into a gas", "vapor: agua convertida en gas"],
       [
@@ -369,6 +391,12 @@ export default [
       ["park", "bus", "museum"],
       ".",
     ],
+    itemFeedback: {
+      b1: "Listen to the first words of the plan. Two school days start with T and sound alike.",
+      b2: "Nine thirty is when the bus leaves. Listen for arrive.",
+      b3: "Listen for a guide named. Check both the title and the last name.",
+      b4: "Listen for eat lunch in. The place comes right after.",
+    },
     vocab: [
       [
         "museum",
@@ -525,20 +553,28 @@ export default [
     strand: "Science talks",
     type: "sort",
     title: "Where Do They Live?",
-    skill: "Sorting details from a nature talk",
+    skill: "Matching animal needs to habitats from a nature talk",
     dir: "Listen to the park ranger. Sort each animal by the place where it lives.",
-    q: "Where does each animal make its home?",
+    q: "Where does each animal make its home? Use what each animal needs.",
     script:
-      "In our wetland, frogs and herons live near the water, and the frogs lay their eggs there. Beavers build lodges in the water too. Up on the dry hill, deer rest in the tall grass, and foxes dig dens in the soil. Rabbits hide in the grass on the hill as well.",
+      "Welcome to our wetland park. Down by the pond, the ground is soft and wet, and there is water all year. Animals that swim, catch fish, or lay their eggs in water stay close to the pond. Up on the dry hill, the soil is firm and the grass grows tall. Animals that dig dens, eat grass, or hide from hawks in the tall grass make their homes up there.",
     cats: ["Near the water", "On the dry hill"],
     sortItems: [
-      ["🐸 frog", 0],
-      ["🦌 deer", 1],
-      ["🦫 beaver", 0],
-      ["🦊 fox", 1],
-      ["🐦 heron", 0],
-      ["🐇 rabbit", 1],
+      ["🐸 frog: its eggs must stay in water", 0],
+      ["🦌 deer: it eats grass all day", 1],
+      ["🐢 turtle: it swims to find food", 0],
+      ["🦊 fox: it digs a den for its babies", 1],
+      ["🐦 heron: it catches fish with its beak", 0],
+      ["🐇 rabbit: it hides from hawks", 1],
     ],
+    itemFeedback: {
+      s1: "The ranger named a place for animals that lay eggs in water.",
+      s2: "Where did the ranger say the tall grass grows?",
+      s3: "Swimming needs water all year. Which place has that?",
+      s4: "A den needs firm soil, not soft, wet ground.",
+      s5: "Fish live in water. Where can a heron find them?",
+      s6: "Listen again: where can an animal hide in tall grass?",
+    },
     vocab: [
       [
         "wetland",
@@ -546,9 +582,9 @@ export default [
         "humedal: tierra cubierta de agua gran parte del año",
       ],
       [
-        "lodge",
-        "a beaver's home made of sticks",
-        "madriguera de castor: casa de ramas hecha por un castor",
+        "habitat",
+        "the place that gives an animal what it needs to live",
+        "hábitat: el lugar que le da a un animal lo que necesita para vivir",
       ],
       [
         "den",
@@ -556,14 +592,18 @@ export default [
         "guarida: hogar de un animal salvaje en la tierra",
       ],
     ],
-    frames: ["___ live near the water.", "___ live on the dry hill."],
-    focus: [
-      "the place after each animal",
-      "words like near the water and on the hill",
-      "where the rabbits hide",
+    frames: [
+      "The ___ lives near the water because it needs ___.",
+      "The ___ lives on the dry hill because it ___.",
     ],
-    correct: "Excellent! You matched every animal to its home place from the details you heard.",
-    hint: "Listen for each place word: near the water, up on the dry hill. Then match the animals that come after it.",
+    focus: [
+      "what each place has: water all year or firm soil and tall grass",
+      "the needs the ranger names for each place",
+      "the word or, which lists more than one need",
+    ],
+    correct:
+      "Excellent! You matched each animal's need to the place that meets it, the way scientists talk about habitats.",
+    hint: "The ranger does not name the animals. Match each animal's need to what each place has.",
     wida: ["Inform: classify details by category", "Language for Science"],
   },
 ];

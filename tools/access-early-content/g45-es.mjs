@@ -58,7 +58,7 @@ export default {
     "Escucha a un estudiante leer parte de una carta. Luego elige la mejor respuesta.",
   ],
   "l-c-sort-habitat": [
-    "Clasificar detalles de una charla sobre la naturaleza",
+    "Relacionar lo que necesitan los animales con su hábitat a partir de una charla sobre la naturaleza",
     "Escucha al guardabosques. Clasifica cada animal según el lugar donde vive.",
   ],
   // Reading

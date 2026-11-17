@@ -103,7 +103,8 @@ const listening = {
       skill: "Listening for what someone does",
       scene: "seed-water",
       dir: ["Listen to the story. Tap what Ana does.", "Escucha el cuento. Toca lo que hace Ana."],
-      script: "Ana has a watering can. She waters the seeds. Grow, seeds, grow!",
+      script:
+        "Ana wants big sunflowers. She has a watering can. She waters the seeds every day. Grow, seeds, grow!",
       q: ["What does Ana do?", "¿Qué hace Ana?"],
       options: [
         ["a", "She waters the seeds.", "💧"],
@@ -138,7 +139,8 @@ const listening = {
         "Listen. Tap the two snacks Omar has.",
         "Escucha. Toca las dos meriendas que tiene Omar.",
       ],
-      script: "Omar opens his bag. He has crackers and grapes. Yum!",
+      script:
+        "It is snack time at the park. Omar opens his bag. He has crackers and grapes. He shares a grape with his sister. Yum!",
       q: ["What snacks does Omar have? Tap two.", "¿Qué meriendas tiene Omar? Toca dos."],
       options: [
         ["a", "crackers", "🍘"],
@@ -319,7 +321,7 @@ const reading = {
       skill: "Reading two sentences for a detail",
       scene: "park-rain",
       dir: ["Read the sentences. Tap what Sam has.", "Lee las oraciones. Toca lo que tiene Sam."],
-      passage: ["It is wet.", "Sam has an umbrella."],
+      passage: ["Sam walks to school in the rain.", "Sam has an umbrella, so he stays dry."],
       q: ["What does Sam have?", "¿Qué tiene Sam?"],
       options: [
         ["a", "an umbrella", "☂️"],
@@ -349,20 +351,34 @@ const reading = {
         "Read the sentences. Tap the pictures in order.",
         "Lee las oraciones. Toca los dibujos en orden.",
       ],
-      passage: ["Plant the seed.", "Water the seed.", "Look! It grows."],
+      passage: [
+        "Mia wants a flower for Mom.",
+        "First, she plants a seed.",
+        "She waters it every day.",
+        "Look! It grows.",
+        "At last, a flower opens.",
+      ],
       q: ["Put the pictures in order.", "Pon los dibujos en orden."],
       items: [
         ["s", "It grows.", "scene:seed-sprout"],
-        ["p", "Plant the seed.", "scene:seed-plant"],
-        ["w", "Water the seed.", "scene:seed-water"],
+        ["f", "A flower opens.", "scene:seed-flower"],
+        ["p", "Mia plants a seed.", "scene:seed-plant"],
+        ["w", "Mia waters it.", "scene:seed-water"],
       ],
-      answer: ["p", "w", "s"],
+      answer: ["p", "w", "s", "f"],
       vocab: [
         v("plant", "to put a seed in the dirt", "sembrar: poner una semilla en la tierra"),
         v("grow", "to get bigger", "crecer: hacerse más grande"),
       ],
       frame: "First, ___. Then, ___.",
-      correct: "Plant, water, grow.",
+      correct: "Plant, water, grow, then a flower for Mom. Each step needs the one before it.",
+      hint: "Read the story again. Find first and at last.",
+      itemFeedback: {
+        p: "A seed must be in the dirt before it gets water.",
+        w: "Mia can water only after the seed is planted.",
+        s: "The seed needs water before it can grow.",
+        f: "Find at last. A flower takes a long time.",
+      },
       wida: ["Sequence events from a short text"],
     },
   ],

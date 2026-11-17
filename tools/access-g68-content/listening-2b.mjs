@@ -2,6 +2,13 @@
 export default [
   {
     id: "l-a-lab-goggles",
+    itemFeedback: {
+      s1: "Your eyes need protection before you touch your hair, the materials, or the water.",
+      s2: "Tying back hair is part of getting ready. It happens after eye protection and before you pick up materials.",
+      s3: "You need the materials in hand before you can pour anything.",
+      s4: "Pouring is the experiment itself. It happens after you collect materials and before you clean up.",
+      s5: "You wash your hands when you are done. Listen for the word finally.",
+    },
     level: "A",
     strand: "Directions and procedures",
     type: "order",
@@ -221,6 +228,14 @@ export default [
   },
   {
     id: "l-b-food-chain-roles",
+    itemFeedback: {
+      s1: "Algae use sunlight to make their own food. Which role makes food instead of eating?",
+      s2: "Water lilies grow with sunlight, like algae. Do they make food, eat, or break things down?",
+      s3: "Tadpoles eat algae. Which role gets energy by eating other living things?",
+      s4: "Herons eat fish. The speaker puts every animal that eats in the same role.",
+      s5: "Bacteria break down dead plants and animals. Which role returns nutrients to the water?",
+      s6: "Fungi on the pond bottom break down dead things. They do not make food or hunt.",
+    },
     level: "B",
     gw: "g67-load",
     strand: "Science explanations",

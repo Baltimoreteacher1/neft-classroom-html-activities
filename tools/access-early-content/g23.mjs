@@ -83,8 +83,8 @@ const listening = {
       id: "g23-l-a-garden-helper",
       hint: "Listen for what each person does in the garden.",
       distractorFeedback: {
-        a: "Grandpa Luis digs with a shovel. Who has the watering can?",
-        c: "The story never talks about a dog. Listen for the people.",
+        a: "Grandpa Luis digs. Who has the watering can?",
+        c: "There is no dog. Listen for the people.",
       },
       level: "A",
       title: "Who Waters the Garden?",
@@ -112,8 +112,8 @@ const listening = {
       id: "g23-l-a-rainy-park",
       hint: "Listen for what Sam does when the rain starts.",
       distractorFeedback: {
-        a: "Sam does not put on a hat. Listen for what he opens.",
-        b: "A ball cannot keep Sam dry. Listen for what he opens.",
+        a: "Sam does not wear a hat. What does he open?",
+        b: "A ball cannot keep Sam dry. What does he open?",
         d: "The story never says coat. Listen for what Sam opens.",
       },
       level: "A",
@@ -140,8 +140,8 @@ const listening = {
       id: "g23-l-a-lunch-pick",
       hint: "Listen to what Maya finds in her green box.",
       distractorFeedback: {
-        a: "Maya never says banana. Listen for the color of her fruit.",
-        c: "Maya never says grapes. Listen for the color of her fruit.",
+        a: "Maya never says banana. Listen for her fruit's color.",
+        c: "Maya never says grapes. Listen for her fruit's color.",
       },
       level: "A",
       title: "What Is in Maya's Lunch?",
@@ -169,8 +169,8 @@ const listening = {
       id: "g23-l-a-bus-wait",
       hint: "Listen for where Leo stands every morning.",
       distractorFeedback: {
-        b: "Leo holds a library book, but he is not at the library.",
-        c: "The story never talks about a pool. Listen for the blue sign.",
+        b: "Leo has a library book, but he is not there.",
+        c: "There is no pool. Listen for the blue sign.",
       },
       level: "A",
       title: "Where Does Leo Wait?",
@@ -256,6 +256,12 @@ const listening = {
       vocab: [V.seed, V.sprout, V.first],
       frame: "First, ___. Next, ___.",
       correct: "Plant, water, sprout, then flowers. That is how a bean plant grows.",
+      itemFeedback: {
+        p: "Seeds must be in the dirt before Ana can water them.",
+        w: "Ana waters every day, but only after planting.",
+        s: "Sprouts came up after one week of watering.",
+        f: "Listen for the end of summer. That is much later.",
+      },
       wida: ["Sequence events in an oral explanation of a life cycle"],
     },
     {
@@ -296,8 +302,8 @@ const listening = {
       id: "g23-l-b-playground-turns",
       hint: 'Listen for the words "then" and "after".',
       distractorFeedback: {
-        a: "Ben goes later. Listen for whose turn comes right after Kofi.",
-        c: "Ms. Ana is not in this story. Listen for the three friends.",
+        a: "Ben goes later. Who goes right after Kofi?",
+        c: "Ms. Ana is not here. Listen for the three friends.",
       },
       level: "B",
       title: "Taking Turns",
@@ -326,7 +332,7 @@ const listening = {
       hint: "Listen for what Omar forgot and what fixed the plant.",
       distractorFeedback: {
         a: "Sun did not hurt it. Listen for what Omar forgot.",
-        c: "The story never talks about a bug. Listen for what Omar forgot.",
+        c: "There is no bug. Listen for what Omar forgot.",
       },
       level: "C",
       title: "Why Did the Plant Droop?",
@@ -359,7 +365,7 @@ const listening = {
       hint: "Listen for why Nadia took her mitten off.",
       distractorFeedback: {
         b: "Nadia took the mitten off before she went inside.",
-        c: "The story never talks about a bus. Listen for where she played.",
+        c: "There is no bus. Listen for where she played.",
       },
       level: "C",
       title: "The Lost Mitten",
@@ -391,7 +397,7 @@ const listening = {
       hint: "Listen for Ana's idea and the sign she made.",
       distractorFeedback: {
         b: "More seeds means more tomatoes. That makes the problem bigger.",
-        c: "Watering grows more tomatoes. Listen for what Ana put by the gate.",
+        c: "Watering grows more tomatoes. What went by the gate?",
       },
       level: "C",
       title: "Too Many Tomatoes",
@@ -419,8 +425,8 @@ const listening = {
       id: "g23-l-c-weather-choice",
       hint: "Listen for one weather word for morning and one for afternoon.",
       distractorFeedback: {
-        a: "Shorts and sandals are for hot days. Listen for the temperature.",
-        c: "A swimsuit is for hot, sunny days. Listen for the rain.",
+        a: "Shorts are for hot days. Listen for the temperature.",
+        c: "A swimsuit is for hot days. Listen for the rain.",
       },
       level: "C",
       title: "What Should Mia Wear?",
@@ -479,8 +485,8 @@ const reading = {
       id: "g23-r-a-red-apple",
       hint: "Read the color word and the shape word.",
       distractorFeedback: {
-        a: "A banana is yellow and long. Read the color word again.",
-        c: "A carrot is orange and long. Read the color word again.",
+        a: "A banana is yellow. Read the color word again.",
+        c: "A carrot is orange. Read the color word again.",
       },
       level: "A",
       title: "Mia's Trip Snack",
@@ -509,8 +515,8 @@ const reading = {
       id: "g23-r-a-cat-under",
       hint: "Find the words that tell where the cat sleeps.",
       distractorFeedback: {
-        b: "The story does not say roof. Read the place words again.",
-        c: "The story does not say tree. Read the place words again.",
+        b: "The story does not say roof. Read the place words.",
+        c: "The story does not say tree. Read the place words.",
       },
       level: "A",
       title: "Where Is Whiskers Hiding?",
@@ -573,7 +579,7 @@ const reading = {
       hint: "Read what the weather is. Then read what Sam does.",
       distractorFeedback: {
         a: "Sunglasses are for sunny days. Read what the weather is.",
-        c: "A crown does not help in rain. Read what Sam puts on.",
+        c: "A crown is not for rain. What does Sam wear?",
       },
       level: "A",
       title: "Ready for the Rain",
@@ -609,7 +615,7 @@ const reading = {
       hint: 'Find the sentence with the word "seeds".',
       distractorFeedback: {
         a: "Grandpa digs the hole. Read who drops the seeds.",
-        c: "There is no bird in the story. Read about the seeds.",
+        c: "There is no bird. Read about the seeds.",
       },
       level: "B",
       title: "Garden Jobs",
@@ -641,8 +647,8 @@ const reading = {
       id: "g23-r-b-library-card",
       hint: 'Read the sentence that starts with "Now".',
       distractorFeedback: {
-        b: "A library card is not for buying. Read the second sentence.",
-        c: "The story never talks about a bus. Read what Leo can do.",
+        b: "A library card is not for buying. Read sentence two.",
+        c: "There is no bus. Read what Leo can do.",
       },
       level: "B",
       title: "Leo's Library Card",
@@ -712,7 +718,7 @@ const reading = {
       hint: "Read what Sam does after he jumps.",
       distractorFeedback: {
         a: "Sad children cry. Read what Sam does after the splash.",
-        c: "Nothing makes Sam mad. Read what Sam does after the splash.",
+        c: "Nothing makes Sam mad. Read what he does next.",
       },
       level: "B",
       title: "Puddle Fun",
@@ -773,13 +779,18 @@ const reading = {
       vocab: [V.first, V.last, V.sprout],
       frame: "First, ___. Then, ___. Last, ___.",
       correct: "The steps go: plant the seed, water it, then watch it sprout.",
+      itemFeedback: {
+        p: "The seed goes into the soil before it gets water.",
+        w: "Read the step with then. Water comes after planting.",
+        s: "Read the step with last. Sprouts take time.",
+      },
       wida: ["Sequence steps in a procedural text using signal words"],
     },
     {
       id: "g23-r-c-garden-main",
       hint: "Think about what every sentence talks about.",
       distractorFeedback: {
-        b: "No one goes on a trip. What are most sentences about?",
+        b: "There is no trip. What are most sentences about?",
         c: "There is no dog. What are most sentences about?",
       },
       level: "C",
@@ -859,7 +870,7 @@ const reading = {
       id: "g23-r-c-recycle-sort",
       hint: 'Read each sentence. Watch for the word "not".',
       distractorFeedback: {
-        c: "The text says Room 12 did not go to the pool.",
+        c: "Room 12 did not go to the pool.",
       },
       level: "C",
       title: "Clean-Up Day",

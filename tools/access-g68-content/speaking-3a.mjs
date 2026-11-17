@@ -407,6 +407,9 @@ export default [
       B: "I wrote the equation two m plus three equals seventeen. I subtracted three from both sides to get two m equals fourteen. Then I divided both sides by two, so m equals seven miles.",
       C: "Let m be the number of miles. The fare is the fixed fee plus two dollars for each mile, so the equation is two m plus three equals seventeen. First I subtracted three from both sides, because subtraction undoes the fixed fee, which gave two m equals fourteen. Then I divided both sides by two, so m equals seven. To check, two times seven is fourteen, and fourteen plus three is seventeen, which matches the total fare. The ride was seven miles.",
     },
+    modelNotes: {
+      C: "Defines the variable first (Let m be …), turns the words into an equation, explains each step with because or so, and checks the solution against the total fare.",
+    },
     criteria: [
       "I said what the variable stands for and gave an equation.",
       "I explained each step and why I did it.",
@@ -471,7 +474,10 @@ export default [
     models: {
       A: "Box C holds the most. Its volume is eighty cubic centimeters.",
       B: "To find volume, I multiply length, width and height. Box A is sixty cubic centimeters, Box B is seventy-two, and Box C is eighty. Box C holds the most, so I recommend it.",
-      C: "Good morning. Volume is length times width times height. Box A is five by four by three, which is sixty cubic centimeters. Box B is six by three by four, which is seventy-two cubic centimeters. Box C is four by four by five, which is eighty cubic centimeters. Box C holds the most, eight more than Box B and twenty more than Box A, so I recommend it for the largest gifts.",
+      C: "Good morning. To find which box holds the most, I calculated the volume of each box by multiplying length times width times height. Box A measures five by four by three centimeters, so its volume is sixty cubic centimeters. Box B measures six by three by four, which gives seventy-two cubic centimeters. Box C measures four by four by five, which gives eighty cubic centimeters. Therefore, Box C holds the most: eight cubic centimeters more than Box B and twenty more than Box A. I recommend Box C for your largest gifts, even though it is not the longest box.",
+    },
+    modelNotes: {
+      C: "Opens like a presentation, states the method as a general rule (by multiplying length times width times height), reports every box in a parallel pattern with the unit, compares with more than, and ties the recommendation to the data with even though.",
     },
     criteria: [
       "I explained how to find volume.",
@@ -532,7 +538,10 @@ export default [
     models: {
       A: "The backpack is ten dollars off. The headphones are five dollars off. You pay fifty dollars.",
       B: "Twenty-five percent of forty dollars is ten dollars, so the backpack costs thirty dollars. Twenty percent of twenty-five dollars is five dollars, so the headphones cost twenty dollars. You save fifteen dollars, and your total is fifty dollars.",
-      C: "Welcome. For the backpack, twenty-five percent of forty dollars is ten dollars, so you save ten dollars and the sale price is thirty dollars. For the headphones, twenty percent of twenty-five dollars is five dollars, so you save five dollars and the sale price is twenty dollars. Together you save fifteen dollars, so instead of sixty-five dollars, your total is fifty dollars. Would you like a bag?",
+      C: "Welcome, and thank you for shopping with us. Let me explain your savings. The backpack is twenty-five percent off, and twenty-five percent is one fourth, so the discount is one fourth of forty dollars, or ten dollars, and the sale price is thirty dollars. The headphones are twenty percent off; twenty percent is one fifth, and one fifth of twenty-five dollars is five dollars, so they cost twenty dollars. Altogether, you save fifteen dollars, so instead of the regular sixty-five dollars, your total is fifty dollars. Would you like a receipt?",
+    },
+    modelNotes: {
+      C: "Opens politely, explains the percent strategy by naming the fraction (twenty-five percent is one fourth), uses so to move from discount to sale price, totals with Altogether, and contrasts with instead of the regular price.",
     },
     criteria: [
       "I said the dollar discount for the backpack and the headphones.",
@@ -602,6 +611,9 @@ export default [
       A: "The library should open on Sundays. Saturday had the most visits, two hundred ten.",
       B: "I think the library should open on Sundays. The chart shows Saturday had the most visits, two hundred ten, which is much more than Friday's one hundred thirty. So many people use the library on weekends, and Sunday would help them too.",
       C: "I support opening the library on Sundays. The chart shows that weekend demand is high: Saturday had two hundred ten visits, which is almost double Wednesday's one hundred ten and eighty more than Friday's. Since so many people visit when they are free, Sunday hours would probably be busy too. Some people worry about the cost of staff. That is a fair concern, but one chart cannot predict Sundays, so the library could try Sunday hours for a few months and check the visit numbers again.",
+    },
+    modelNotes: {
+      C: "States a position (I support), compares data (almost double, eighty more than), draws a hedged inference (would probably be busy), concedes (That is a fair concern, but), and answers the cost worry with a trial plan.",
     },
     criteria: [
       "I stated my position clearly.",
@@ -673,6 +685,9 @@ export default [
       A: "Both civilizations grew barley and wheat. Egypt had a pharaoh. Mesopotamia had city-states.",
       B: "Both civilizations grew barley and wheat near rivers. However, Egypt had one pharaoh, while Mesopotamia had separate city-states. Egypt wrote with hieroglyphs, but Mesopotamia wrote with cuneiform.",
       C: "Ancient Egypt and Ancient Mesopotamia were alike because both grew barley and wheat, and both depended on rivers. They were different in how they were ruled: a pharaoh ruled one kingdom in Egypt, while Mesopotamia had separate city-states with their own rulers. They also used different writing, since Egyptians wrote hieroglyphs and Mesopotamians wrote cuneiform. In both places, the rivers gave farmers water, which helped each civilization grow.",
+    },
+    modelNotes: {
+      C: "Signals the similarity with alike because and both, the differences with while and since, keeps each comparison on one topic (rule, then writing), and closes by returning to the shared role of the rivers.",
     },
     criteria: [
       "I gave at least one similarity with both or like.",

@@ -14,12 +14,19 @@ export default [
     dir: "Listen to the fire drill message. Put the steps in the order you hear them.",
     q: "What should students do first, next, and last?",
     script:
-      "This is a fire drill. First, stop what you are doing. Next, walk to the door in a quiet line. Last, go outside and stand with your class on the field.",
+      "This is a fire drill. When the alarm rings, stop what you are doing right away. Leave your backpack at your desk. Walk to the door in a quiet line. Before the class goes outside, the last person in line closes the door. Then go outside and stand with your class on the field.",
     items: [
       "Stop what you are doing.",
       "Walk to the door in a line.",
+      "The last person closes the door.",
       "Go outside and stand with your class.",
     ],
+    itemFeedback: {
+      s1: "Listen for when the alarm rings. This happens right away, before anyone moves.",
+      s2: "Students have to stop working before they can walk anywhere.",
+      s3: "The last person can only close the door after the line walks to it.",
+      s4: "Listen for before the class goes outside. Something happens at the door first.",
+    },
     vocab: [
       [
         "fire drill",
@@ -28,10 +35,15 @@ export default [
       ],
       ["quiet", "making very little sound", "silencioso: que hace muy poco ruido"],
     ],
-    frames: ["First, we ___.", "Next, we ___.", "Last, we ___."],
-    focus: ["first, next, last", "the action in each step", "where the class stands at the end"],
-    correct: "Right! First, next, and last told you the order of the safety steps.",
-    hint: "Listen for first, next, and last. Each word starts a new step.",
+    frames: ["When the alarm rings, we ___.", "Before we go outside, ___.", "Then we ___."],
+    focus: [
+      "the words when, before, and then",
+      "the action in each step",
+      "where the class stands at the end",
+    ],
+    correct:
+      "Right! When, before, and then told you the order. Leaving the backpack is a rule, not a step to sort.",
+    hint: "Listen for before the class goes outside. That tells you what happens at the door.",
     wida: ["Narrate: sequence steps in directions", "Notice transition words"],
   },
   {
@@ -194,20 +206,28 @@ export default [
     strand: "Science talks",
     type: "sort",
     title: "Solid, Liquid, or Gas?",
-    skill: "Sorting examples from a science talk",
-    dir: "Listen to the science talk about states of matter. Sort each example into the state it belongs to.",
-    q: "Which state of matter does each example show?",
+    skill: "Sorting properties of matter from a science talk",
+    dir: "Listen to the science talk about states of matter. Sort each description into the state it describes.",
+    q: "Which state of matter does each description tell about?",
     script:
-      "Everything around us is matter, and matter comes in different states. A solid, like a rock or a pencil, keeps its own shape. A liquid, like juice or milk, has no shape of its own, so it takes the shape of its cup. A gas, like the air inside a balloon, spreads out to fill all the space it is in. Steam from a hot pot is a gas too.",
+      "Everything around us is matter, and matter comes in different states. A solid, like a rock or a pencil, keeps its own shape. If you move a rock to a new box, its shape stays the same. A liquid, like juice or milk, flows. It has no shape of its own, so it takes the shape of its cup, and it stays at the bottom of the cup. A gas, like the air inside a balloon, spreads out to fill all the space it is in. You usually cannot see a gas. Steam from a hot pot is a gas too.",
     cats: ["Solid", "Liquid", "Gas"],
     sortItems: [
-      ["rock", 0],
-      ["juice", 1],
-      ["air in a balloon", 2],
-      ["pencil", 0],
-      ["milk", 1],
-      ["steam", 2],
+      ["It keeps its own shape.", 0],
+      ["It flows and takes the shape of its cup.", 1],
+      ["It spreads out to fill all the space.", 2],
+      ["Its shape stays the same in a new box.", 0],
+      ["It stays at the bottom of the cup.", 1],
+      ["You usually cannot see it.", 2],
     ],
+    itemFeedback: {
+      s1: "Think of the rock or the pencil. Which state did the speaker say keeps its shape?",
+      s2: "Juice and milk flow into a cup. Match this to the state they belong to.",
+      s3: "Think of the air in a balloon. It fills every bit of space.",
+      s4: "The speaker moved a rock to a new box. What kind of matter is a rock?",
+      s5: "Juice sits at the bottom of a cup, but air fills the whole cup.",
+      s6: "You can see a rock and you can see milk. Which state is hard to see?",
+    },
     vocab: [
       ["matter", "anything that takes up space", "materia: todo lo que ocupa espacio"],
       [
@@ -222,9 +242,9 @@ export default [
       ],
     ],
     frames: ["A ___ keeps its own shape.", "A ___ takes the shape of its container.", "A gas ___."],
-    focus: ["the three state words", "what each state does", "the example after each state"],
-    correct: "Excellent! You matched each example to the state the speaker named.",
-    hint: "Listen for solid, liquid, and gas. The examples come right after each word.",
+    focus: ["the three state words", "what each state does", "the extra detail about each state"],
+    correct: "Excellent! You matched each description to the state the speaker said it belongs to.",
+    hint: "Each state gets two clues in the talk: what it does, and one more detail. Listen for both.",
     wida: ["Explain: classify examples by category", "Language for Science"],
   },
   {
@@ -244,6 +264,12 @@ export default [
       "Turn right at the park.",
       "Find the library on the corner.",
     ],
+    itemFeedback: {
+      s1: "This turn happens as soon as you walk out the front door.",
+      s2: "You pass the bakery after you are on Maple Street.",
+      s3: "The park comes after the bakery. Listen for turn right.",
+      s4: "The library is where you end up, after the last turn.",
+    },
     vocab: [
       ["turn", "to change the way you are going", "doblar: cambiar la dirección en que vas"],
       ["straight", "going one way without turning", "derecho: yendo en una dirección sin doblar"],

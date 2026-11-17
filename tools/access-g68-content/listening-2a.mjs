@@ -113,6 +113,12 @@ export default [
   },
   {
     id: "l-b-find-the-median",
+    itemFeedback: {
+      s1: "You cannot find a middle until the numbers are lined up from least to greatest.",
+      s2: "Counting tells you if there is one middle number or two, so it happens before you find the middle.",
+      s3: "The middle only makes sense after the numbers are in order and counted.",
+      s4: "You can only check both halves after you have found the median.",
+    },
     level: "B",
     gw: "g6-topic",
     strand: "Math talk: statistics",
@@ -314,6 +320,11 @@ export default [
   },
   {
     id: "l-c-integer-notes",
+    itemFeedback: {
+      b1: "The teacher says absolute value tells how far a number is from zero. Which word means how far?",
+      b2: "Count the steps from negative 7 to zero on a number line.",
+      b3: "Distance is a count of steps, so it is zero or more. Which word names numbers below zero?",
+    },
     level: "C",
     gw: "g6-topic",
     strand: "Note-taking from a talk",

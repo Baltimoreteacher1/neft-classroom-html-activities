@@ -24,6 +24,9 @@ export default [
       B: "At Store A, twenty-five percent of eighty is twenty, so the sale price is sixty dollars. At Store B, ten percent of seventy is seven, so the price is sixty-three dollars. Store C is sixty-five dollars. Store A is the cheapest.",
       C: "To compare fairly, I found the sale price at each store. At Store A, twenty-five percent of eighty dollars is twenty dollars, so the jacket costs sixty. At Store B, ten percent of seventy is seven, so it costs sixty-three. Store C has no discount, so it costs sixty-five. Even though Store A has the highest original price, its larger discount makes it the lowest final price, so I recommend Store A.",
     },
+    modelNotes: {
+      C: "Opens with the method (To compare fairly), states each percent-of calculation with so for the result, and uses Even though to explain why the highest original price ends up the lowest.",
+    },
     criteria: [
       "I said the sale price for all three stores.",
       "I showed how I found at least one discount.",
@@ -77,6 +80,9 @@ export default [
       A: "I see why you did that. But you cannot add the bottom numbers. I change both to twelfths. The answer is eleven twelfths.",
       B: "I understand your idea, but we cannot add the denominators. First, I find a common denominator, which is twelve. Two thirds is eight twelfths and one fourth is three twelfths. Eight twelfths plus three twelfths is eleven twelfths.",
       C: "I can see how you got that answer, and adding across feels natural. However, the denominators tell the size of each piece, so we cannot add them. We need pieces of the same size first. A common denominator for three and four is twelve. Two thirds equals eight twelfths, and one fourth equals three twelfths. Adding the numerators gives eleven twelfths. We can also check: three sevenths is less than one half, but two thirds alone is already more than one half, so three sevenths cannot be right.",
+    },
+    modelNotes: {
+      C: "Acknowledges the partner's thinking before correcting (I can see how you got that), gives the reason with However (the denominators tell the size of each piece), rebuilds with equivalent fractions, and checks against a benchmark (less than one half).",
     },
     criteria: [
       "I said something kind before I pointed out the mistake.",
@@ -140,6 +146,9 @@ export default [
       B: "The graph partly supports the claim. Recycling went from one hundred twenty pounds in January to one hundred eighty in April. However, it did not increase every month, because March was lower than February.",
       C: "The graph partly supports the claim, but not fully. Overall, recycling grew from one hundred twenty pounds in January to one hundred eighty in April, which is an increase of sixty pounds. However, the word steadily is not accurate, because March dropped to one hundred thirty-five pounds from one hundred fifty in February. A more accurate claim would be that recycling increased overall from January to April, with one decrease in March.",
     },
+    modelNotes: {
+      C: "Gives a qualified verdict (partly supports … but not fully), cites the data that supports it, uses However to name the exact word the data contradicts (steadily), and offers a more accurate claim.",
+    },
     criteria: [
       "I used at least two numbers from the graph.",
       "I noticed that March does not fit the word steadily.",
@@ -182,6 +191,9 @@ export default [
       A: "I think the city should build a skate park. Young people need a safe place to skate. A park can be near homes. Noise can be controlled.",
       B: "I believe the city should build a skate park. First, it gives young people a safe place to exercise. Second, it keeps them off busy streets. I understand that noise is a concern, but the park can have hours and trees around it to reduce the sound.",
       C: "I am in favor of building a skate park on the empty lot. First, it would give young people a safe, supervised place to exercise instead of skating on busy streets. Second, it would give the neighborhood a place to meet, which strengthens the community. I understand the concern about cost, but the park could be built in phases, and it would replace an empty lot that currently provides no benefit. Thank you for considering my position.",
+    },
+    modelNotes: {
+      C: "States a formal position (I am in favor of), orders two reasons with First and Second, concedes and answers a concern (I understand the concern about cost, but …), and closes with formal civic language (Thank you for considering my position).",
     },
     criteria: [
       "I stated my position clearly.",
@@ -235,6 +247,9 @@ export default [
       A: "The shape is a rectangle. It is four units long and three units wide. The area is twelve square units.",
       B: "The points make a rectangle. Side A to B is four units because the x values go from one to five. Side B to C is three units. The perimeter is fourteen units and the area is twelve square units.",
       C: "These four points form a rectangle. Points A and B have the same y value, so the side between them is horizontal, and its length is the difference between the x values: five minus one is four units. Points B and C have the same x value, so that side is vertical, with length four minus one, which is three units. The perimeter is four plus three plus four plus three, or fourteen units. The area is four times three, which is twelve square units.",
+    },
+    modelNotes: {
+      C: "Names the shape, justifies each side length with a so clause (the same y value, so the side is horizontal), uses precise units (units, square units), and keeps perimeter and area separate.",
     },
     criteria: [
       "I named the shape.",
@@ -291,6 +306,9 @@ export default [
       A: "Both cities grew by three thousand. But Riverton started smaller, so its percent is bigger.",
       B: "Riverton grew from twelve thousand to fifteen thousand, which is three thousand. Lakeview also grew by three thousand. But Riverton's percent growth is twenty-five percent, and Lakeview's is fifteen percent, because Riverton started with fewer people.",
       C: "Riverton and Lakeview both grew by three thousand people. However, the percent growth is different because percent compares the growth to the starting population. Riverton grew three thousand out of twelve thousand, which is twenty-five percent. Lakeview grew three thousand out of twenty thousand, which is fifteen percent. The same increase is a bigger fraction of a smaller starting number, so Riverton grew faster in percent terms, even though both added the same number of people.",
+    },
+    modelNotes: {
+      C: "Starts with the similarity, turns with However, defines percent in general terms (compares the growth to the starting population), supports it with two calculations, and ends with a general rule (a bigger fraction of a smaller starting number).",
     },
     criteria: [
       "I said the growth amount for both cities.",
@@ -359,6 +377,9 @@ export default [
       B: "We surveyed fifty students about their favorite subject. Science was the most popular, with sixteen votes, which is thirty-two percent. Physical education was the least popular, with eight votes.",
       C: "For our survey, we asked fifty students to choose a favorite subject. Science was the most popular, with sixteen votes, or thirty-two percent of the group. Math was close behind with fourteen votes, which is twenty-eight percent. Physical education received the fewest votes, only eight, or sixteen percent. This suggests that more students prefer science, but the results are close enough that we should survey more students before drawing a strong conclusion.",
     },
+    modelNotes: {
+      C: "Frames the method (we asked fifty students), pairs each count with a percent, compares with close behind and the fewest, and hedges the conclusion (This suggests … but … before drawing a strong conclusion).",
+    },
     criteria: [
       "I explained what the survey was about.",
       "I named the most popular subject and its number.",
@@ -406,6 +427,9 @@ export default [
       A: "What did you do first? I subtracted two from both sides. Then I divided by three. To check, I put four in the equation.",
       B: "What did you do first, and why? I subtracted two from both sides to undo the plus two. Then I divided both sides by three to get x equals four. To check, I replace x with four. Three times four plus two is fourteen, so it works.",
       C: "Could you walk me through your first step? I subtracted two from both sides, because subtraction undoes addition, and that left three x equals twelve. Why did you divide by three? Division undoes multiplication, so dividing both sides by three gives x equals four. To check, I substitute four for x: three times four is twelve, and twelve plus two is fourteen, which matches the equation. So the solution is correct.",
+    },
+    modelNotes: {
+      C: "Asks open interview questions (Could you walk me through … ? Why did you … ?), answers with inverse-operation reasoning (subtraction undoes addition), and checks by substitution (To check, I substitute …).",
     },
     criteria: [
       "I asked at least two questions about the steps.",

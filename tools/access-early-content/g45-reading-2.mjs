@@ -143,6 +143,12 @@ export default [
       "The rain stopped by lunch.",
       "A rainbow appeared over the playground.",
     ],
+    itemFeedback: {
+      s1: "Find all morning. The rain started before anything else.",
+      s2: "Students stayed in because of the rain, so the rain came first.",
+      s3: "Find By lunch. This happens after the games in the gym.",
+      s4: "A rainbow appears after the rain stops.",
+    },
     vocab: [
       [
         "rainbow",
@@ -201,13 +207,21 @@ export default [
     passage: TURTLE,
     cloze: [
       "Shelly has a hard ",
-      ["shell", "sock", "wheel"],
+      ["shell", "rock", "lamp"],
       ". She climbs onto the rock to ",
-      ["rest", "sing", "paint"],
-      ". We are ",
-      ["quiet", "loud", "late"],
+      ["rest", "eat", "swim"],
+      " under a warm lamp. When she feels scared, she pulls her head ",
+      ["inside", "outside", "under"],
+      " her shell. We are ",
+      ["quiet", "scared", "hungry"],
       " around her so she feels safe.",
     ],
+    itemFeedback: {
+      b1: "The rock and the lamp are in her tank. What hard thing is on Shelly's body?",
+      b2: "Reread the sentence about the rock and the warm lamp. What does she do there?",
+      b3: "She is hiding when she is scared. Where does her head go?",
+      b4: "Read the last sentence. How do the students act so Shelly feels safe?",
+    },
     vocab: [
       [
         "shell",
@@ -217,9 +231,14 @@ export default [
       ["safe", "not in danger", "seguro: sin peligro"],
     ],
     frames: ["A turtle has a hard ___.", "We are quiet so Shelly feels ___."],
-    focus: ["the turtle's body", "what Shelly does on the rock", "how students act"],
+    focus: [
+      "the turtle's body",
+      "what Shelly does on the rock",
+      "what Shelly does when she is scared",
+      "how students act",
+    ],
     correct: "Yes! Each word you chose fits what the passage says about Shelly.",
-    hint: "Read the sentence with each word. Which word matches the passage?",
+    hint: "Some wrong words, like rock and scared, are in the passage too. Check the whole sentence they belong to.",
     wida: ["Inform: use context to choose words", "Language for Science"],
   },
   {
@@ -240,6 +259,13 @@ export default [
       "Rinse the soap off.",
       "Dry with a clean towel.",
     ],
+    itemFeedback: {
+      s1: "Find First. Hands get wet before soap.",
+      s2: "Find Next. Soap goes on after your hands are wet.",
+      s3: "You scrub after the soap is on, to make bubbles everywhere.",
+      s4: "Find Then. You rinse after scrubbing, not before.",
+      s5: "Find Last. Drying is the end of the steps.",
+    },
     vocab: [
       [
         "germs",
@@ -376,13 +402,21 @@ export default [
     passage: MATTER,
     cats: ["Solid", "Liquid", "Gas"],
     sortItems: [
-      ["a book", 0],
-      ["juice", 1],
-      ["air in a balloon", 2],
-      ["a rock", 0],
-      ["water", 1],
-      ["water vapor", 2],
+      ["a pencil you can pick up", 0],
+      ["milk that fills the shape of a glass", 1],
+      ["the air that fills a bike tire", 2],
+      ["an ice cube in the freezer", 0],
+      ["ice after heat melts it", 1],
+      ["very hot water that rises from a pot", 2],
     ],
+    itemFeedback: {
+      s1: "The text says you can pick this kind of matter up without changing its form.",
+      s2: "Which state takes the shape of whatever container holds it?",
+      s3: "The air spreads out until it fills the whole tire. Find that rule.",
+      s4: "Ice in a freezer has not been heated yet. Does it keep its own shape?",
+      s5: "Reread the last paragraph. What does heat turn ice into?",
+      s6: "The last paragraph says what very hot water can turn into.",
+    },
     vocab: [
       ["solid", "matter that keeps its own shape", "sólido: materia que mantiene su propia forma"],
       [
@@ -396,14 +430,19 @@ export default [
         "gas: materia que se expande para llenar un espacio",
       ],
     ],
-    frames: ["A ___ is a solid.", "___ is a liquid because it flows.", "___ is a gas."],
+    frames: [
+      "A ___ is a solid because it keeps its shape.",
+      "___ is a liquid because it takes the shape of its container.",
+      "When ice is heated, it becomes ___.",
+    ],
     focus: [
-      "the example after each state word",
       "what each state does",
+      "how heating or cooling changes the state",
       "water vapor in the last paragraph",
     ],
-    correct: "Excellent! You matched every example to the state the passage names.",
-    hint: "Find the sentence for each state. The examples follow the words such as.",
+    correct:
+      "Excellent! You used the rule for each state and the heating paragraph to sort examples the text does not list.",
+    hint: "Most examples are not in the text. Use what each state does, and reread the last paragraph for the ice and hot water.",
     wida: ["Explain: classify examples", "Language for Science"],
   },
   {
@@ -555,6 +594,12 @@ export default [
       "Maybe this school would be a good place after all.",
     ],
     answerIdx: [7],
+    distractorFeedback: {
+      s6: "Tomás asks a question. It is friendly, but find the sentence where he invites her.",
+      s7: "This is what Mei says. Find what Tomás does.",
+      s10: "The teammates cheer. The question is about Tomás.",
+      s11: "This shows how Mei feels, not what Tomás did.",
+    },
     vocab: [
       [
         "welcome",
@@ -582,15 +627,21 @@ export default [
     passage: LEVER,
     cloze: [
       "A lever rests on a point called the ",
-      ["fulcrum", "shadow", "seed"],
+      ["fulcrum", "bar", "end"],
       ". When one end of a seesaw goes down, the other end ",
-      ["rises", "melts", "freezes"],
+      ["rises", "falls", "stops"],
       ". A seesaw and a crowbar are both examples of a ",
-      ["lever", "ramp", "magnet"],
+      ["lever", "fulcrum", "rock"],
       ", and a long bar helps a worker lift a rock using less ",
-      ["force", "color", "water"],
+      ["force", "weight", "time"],
       ".",
     ],
+    itemFeedback: {
+      b1: "The bar is the part that moves. Find the name of the point the bar rests on.",
+      b2: "Picture a seesaw: one child goes down. What happens to the child on the other end?",
+      b3: "A fulcrum is only one part. What simple machine is the whole seesaw?",
+      b4: "The rock is just as heavy. Reread the last sentence: what does the worker use less of?",
+    },
     vocab: [
       [
         "fulcrum",
@@ -624,6 +675,12 @@ export default [
     passageTitle: "How Maps Help Us",
     sentences: MAPS_SENTENCES,
     answerIdx: [4],
+    distractorFeedback: {
+      s4: "This names the map key, but it does not say what the key does.",
+      s6: "This is an example of symbols. Find the sentence that explains the key.",
+      s7: "This explains a compass rose, not a key.",
+      s9: "This explains a scale, not a key.",
+    },
     vocab: [
       [
         "map key",
@@ -715,6 +772,14 @@ export default [
       ["Families carried paper maps.", 0],
       ["Families can see each other on a video call.", 1],
     ],
+    itemFeedback: {
+      s1: "Find horse and wagon. Which paragraph tells about them?",
+      s2: "Find airplanes. Paragraph 2 starts with a time word. Which one?",
+      s3: "Find dirt roads and mud. Which paragraph describes them?",
+      s4: "Find spoken directions. Read the word right before it: Now.",
+      s5: "Find paper maps. Read the words before it: In the past.",
+      s6: "Find video call. Does the sentence say long ago or now?",
+    },
     vocab: [
       ["past", "the time before now", "pasado: el tiempo antes de ahora"],
       [
@@ -755,15 +820,21 @@ export default [
     passage: TRAVEL,
     cloze: [
       "Long ago, a trip of a few hundred miles could take ",
-      ["days", "minutes", "seconds"],
+      ["days", "hours", "weeks"],
       ", and rain turned dirt roads to ",
-      ["mud", "ice", "sand"],
+      ["mud", "dust", "ice"],
       ". ",
-      ["Today", "Never", "Before"],
-      ", cars, buses, and airplanes carry people much faster. Even so, people still travel to visit ",
-      ["relatives", "volcanoes", "machines"],
-      ".",
+      ["Today", "Long ago", "Back then"],
+      ", cars, buses, and airplanes carry people much faster. ",
+      ["Even so", "Because of this", "For example"],
+      ", people still travel to visit relatives and see new places.",
     ],
+    itemFeedback: {
+      b1: "Hours is how long a flight takes now. Reread paragraph 1 for trips long ago.",
+      b2: "Paragraph 1 says what happened to dirt roads when it rained.",
+      b3: "Cars and airplanes are the present. Choose the time word that signals now.",
+      b4: "Travel changed, but some things stayed the same. Choose a phrase that shows a contrast.",
+    },
     vocab: [
       ["relatives", "members of your family", "parientes: miembros de tu familia"],
       ["continue", "to keep doing something", "continuar: seguir haciendo algo"],
@@ -773,9 +844,14 @@ export default [
       "Today, trips take ___.",
       "Even so, people still ___.",
     ],
-    focus: ["how long trips took", "the word today as a signal", "why people still travel"],
-    correct: "Yes! Your words match the details and the time order of the text.",
-    hint: "Reread paragraph 1 for how long trips took. Then use the word that signals the present.",
+    focus: [
+      "how long trips took",
+      "time words that signal past and present",
+      "the contrast in paragraph 3: still, some things are the same",
+    ],
+    correct:
+      "Yes! Your words match the details, the time order, and the contrast at the end of the text.",
+    hint: "Two blanks are signal words. One tells the time; the other shows that something stayed the same after a big change.",
     wida: ["Explain: summarize with time words", "Notice transition words"],
   },
   {
@@ -796,6 +872,13 @@ export default [
       "The adult plant grows flowers.",
       "A pod with new seeds grows.",
     ],
+    itemFeedback: {
+      s1: "The seed needs water to germinate before anything grows up.",
+      s2: "Find Next. The shoot pushes up after the root grows down.",
+      s3: "Find Once the shoot reaches the air. Leaves come after the shoot.",
+      s4: "Flowers grow after several weeks, when the plant is an adult.",
+      s5: "A pod grows after a flower dies. It holds the new seeds.",
+    },
     vocab: [
       [
         "germinate",

@@ -156,7 +156,8 @@ function expandBank(spec, domain, counters) {
         k,
         `Notice this specific move: “${firstSentence(v)}” Borrow the useful language, not the whole answer; a clear short response can meet the goal.`,
       ]),
-    );
+    ); // An authored note naming the language moves replaces the generic one for that model.
+    if (spec.modelNotes) Object.assign(a.modelNotes, spec.modelNotes);
   }
   if (domain === "Writing") a.wordBank = spec.bank;
   a.vocabulary = spec.vocab;

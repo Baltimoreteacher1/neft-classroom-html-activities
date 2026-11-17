@@ -30,8 +30,8 @@ export default {
     "Escucha la adivinanza sobre un ayudante de la comunidad. Elige quién es el que habla.",
   ],
   "l2-b-states-matter": [
-    "Clasificar ejemplos de una charla de ciencias",
-    "Escucha la charla de ciencias sobre los estados de la materia. Clasifica cada ejemplo en el estado al que pertenece.",
+    "Clasificar propiedades de la materia de una charla de ciencias",
+    "Escucha la charla de ciencias sobre los estados de la materia. Clasifica cada descripción en el estado que describe.",
   ],
   "l2-b-map-directions": [
     "Seguir indicaciones habladas en orden",
