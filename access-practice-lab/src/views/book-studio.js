@@ -33,16 +33,28 @@ const STYLE_ID = "book-studio-css";
 let current = null; // destroy function of the mounted editor/reader
 let fieldObserver = null;
 
+// Resolves once the studio's stylesheet has loaded (or failed), so the first paint is already styled. Painting the
+// markup first and styling it a moment later moved the whole page on a real network (CLS 0.19 live).
+let stylesReady = null;
 function ensureStyles() {
-  if (document.getElementById(STYLE_ID)) return;
+  if (stylesReady) return stylesReady;
+  const existing = document.getElementById(STYLE_ID);
+  if (existing) return (stylesReady = Promise.resolve());
   const link = document.createElement("link");
   link.id = STYLE_ID;
   link.rel = "stylesheet";
   link.href = `${BASE}/book-studio.css`;
+  stylesReady = new Promise((resolve) => {
+    link.addEventListener("load", resolve, { once: true });
+    link.addEventListener("error", resolve, { once: true });
+    setTimeout(resolve, 3000);
+  });
   document.head.append(link);
+  return stylesReady;
 }
 
 export async function render(ctx) {
+  await ensureStyles();
   const I = i18nFor(ctx);
   const r = ctx.route;
   const sub = r.id || "";
@@ -75,7 +87,7 @@ export async function render(ctx) {
 }
 
 export async function mount(root, ctx) {
-  ensureStyles();
+  await ensureStyles();
   await teardown();
   const box = root.querySelector("[data-bk-root]");
   if (!box) return;
