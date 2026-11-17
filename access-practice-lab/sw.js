@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "f40fbae15666";
+const BUILD_HASH = "5c110c21e10c";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -569,7 +569,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/tour/lesson.js?v=5d315b97c738",
   "/access-practice-lab/src/intro/tour/neft-coach.js?v=810f82aac991",
   "/access-practice-lab/src/intro/tour/quickref.js?v=e872eab62107",
-  "/access-practice-lab/src/intro/tour/ui.js?v=0af8de6c6dc6",
+  "/access-practice-lab/src/intro/tour/ui.js?v=7d8452dbb28b",
   "/access-practice-lab/src/intro/tour/views-kit.js?v=7d6b2f953971",
   "/access-practice-lab/src/intro/tour/views-steps.js?v=6e0e7accf94d",
   "/access-practice-lab/src/intro/tour/views-studio.js?v=398506b03999",
@@ -578,7 +578,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/tour-help.js?v=5974813cb94e",
   "/access-practice-lab/src/intro/tour-k1-data.js?v=9345bd1d5274",
   "/access-practice-lab/src/intro/tour-k1-quickref.js?v=67b6abaca755",
-  "/access-practice-lab/src/intro/tour-k1.js?v=5f5989cd8cc0",
+  "/access-practice-lab/src/intro/tour-k1.js?v=a3917475da50",
   "/access-practice-lab/src/intro/tour.js?v=ba61bfbba059",
   "/access-practice-lab/src/intro/ui.js?v=9a5c1c9351e5",
   "/access-practice-lab/src/journey/engines/cause-compare.js?v=9e74dc93ab60",

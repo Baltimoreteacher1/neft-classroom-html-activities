@@ -48,7 +48,7 @@ export function frameHTML(res, { title = "" } = {}) {
       src="${src}"
       loading="lazy"
       allow="microphone; autoplay"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox"
     ></iframe>
   </div>`;
 }

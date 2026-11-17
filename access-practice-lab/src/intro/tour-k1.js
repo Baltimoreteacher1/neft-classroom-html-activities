@@ -96,7 +96,7 @@ function frameHTML(I, a) {
       title="${I.S(`Live activity: ${typeof a.title === "string" ? a.title : a.title.en}`, `Actividad en vivo: ${typeof a.title === "string" ? a.title : a.title.es}`)}"
       src="${src}"
       allow="microphone; autoplay"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox"
     ></iframe>
     <p class="fine">${I.T(K1_COPY.frameNote.en, K1_COPY.frameNote.es)}</p>
   </div>`;
