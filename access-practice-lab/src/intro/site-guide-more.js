@@ -165,16 +165,16 @@ export const WAYS = [
     id: "home",
     q: P("Return home", "Volver al inicio"),
     a: P(
-      "Choose “ACCESS Practice Lab” at the top left of any page, or the “Lab” link above the page title.",
-      "Elijan “ACCESS Practice Lab” arriba a la izquierda en cualquier página, o el enlace “Lab” sobre el título.",
+      "Choose the site name at the top left of any page, or “Home” in the top bar.",
+      "Elijan el nombre del sitio arriba a la izquierda en cualquier página, o “Inicio” en la barra de arriba.",
     ),
   },
   {
     id: "find",
     q: P("Find speaking and writing", "Encontrar hablar y escribir"),
     a: P(
-      "Open the “More” menu at the top. Under “Practice by skill,” choose Speaking or Writing. The home page and the footer also list the four skills.",
-      "Abran el menú “More” arriba. En “Practice by skill”, elijan Speaking o Writing. La página de inicio y el pie de página también muestran las cuatro destrezas.",
+      "Choose “Practice” in the top bar, then pick a skill. The “More” menu also lists Speaking and Writing.",
+      "Elijan “Practicar” en la barra de arriba y luego una destreza. El menú “Más” también muestra Hablar y Escribir.",
     ),
     links: [
       { route: "/Speaking", label: P("Speaking", "Hablar") },
@@ -213,16 +213,16 @@ export const WAYS = [
     id: "comfort",
     q: P("Make text bigger or change colors", "Agrandar el texto o cambiar los colores"),
     a: P(
-      "Choose the A+ button at the top to open Reading comfort. It has color choices, text size, space between lines and letters, a reading ruler and calm motion.",
-      "Elijan el botón A+ de arriba para abrir Reading comfort. Tiene opciones de color, tamaño del texto, espacio entre líneas y letras, regla de lectura y movimiento tranquilo.",
+      "Choose the A+ “Comfort” button at the top to open Reading comfort. It has color choices, text size, space between lines and letters, a reading ruler and calm motion.",
+      "Elijan el botón A+ “Comodidad” de arriba para abrir Comodidad de lectura. Tiene opciones de color, tamaño del texto, espacio entre líneas y letras, regla de lectura y movimiento tranquilo.",
     ),
   },
   {
     id: "search",
     q: P("Search", "Buscar"),
     a: P(
-      "Use the search box in the “More” menu or the “Search the lab” page to find a word, activity or page. The Activity library searches by topic and skill and can filter by grade, skill and support.",
-      "Usen el cuadro de búsqueda del menú “More” o la página “Search the lab” para buscar una palabra, actividad o página. La biblioteca de actividades busca por tema y destreza y filtra por grado, destreza y apoyo.",
+      "Use the “Search” button at the top, the search box in the “More” menu, or the “Search the lab” page to find a word, activity or page. The Activity library searches by topic and skill and can filter by grade, skill and support.",
+      "Usen el botón “Buscar” de arriba, el cuadro de búsqueda del menú “Más” o la página “Search the lab” para buscar una palabra, actividad o página. La biblioteca de actividades busca por tema y destreza y filtra por grado, destreza y apoyo.",
     ),
     links: [
       { route: "/search", label: P("Search the lab", "Buscar en el sitio") },
@@ -242,17 +242,6 @@ export const SCREENSHOTS = [
     caption: P(
       "The top of every page. 1: home. 2: search. 3: reading comfort (text size, color, spacing). 4: the More menu. 5: language.",
       "La parte de arriba de cada página. 1: inicio. 2: búsqueda. 3: comodidad de lectura (tamaño del texto, color, espaciado). 4: menú More. 5: idioma.",
-    ),
-  },
-  {
-    id: "menu",
-    file: "more-menu.png",
-    w: 760,
-    h: 650,
-    alt: "The More menu open. Numbered marks point to the search box, the Practice by skill list with Listening, Reading, Speaking and Writing, and the Plan and review group.",
-    caption: P(
-      "The More menu. 1: search. 2: Practice by skill. 3: Plan and review.",
-      "El menú More. 1: búsqueda. 2: Practice by skill. 3: Plan and review.",
     ),
   },
 ];
@@ -290,6 +279,12 @@ export const AREAS = [
     icon: "library",
     name: "Activity library",
     text: "Search every activity and build a shared set of up to 12.",
+  },
+  {
+    route: "/book-studio",
+    icon: "writing",
+    name: "Book Studio",
+    text: "Make books and comics with your words, pictures, drawings and voice, then read, print or share them.",
   },
   {
     route: "/voice",

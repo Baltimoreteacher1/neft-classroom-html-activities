@@ -1,5 +1,5 @@
-// Site Guide data, part 1: audiences, sections, the Start Here steps and the activity cards.
-// One model, audience tags: every fact an activity card shows comes from data.js (the single source). Only wording that
+// Site Guide data, part 1: audiences, the step-by-step guides, the Start Here steps and the activity cards.
+// The directory itself is site-guide-directory.js. Every fact an activity card shows comes from data.js (the single source). Only wording that
 // is new to the guide lives here, as { en, es } pairs. Spanish is machine-written (the page says so).
 // Pure data: no DOM, so tools/access-intro-site-guide.test.mjs can import it in Node.
 import { ACTIVITY_BY_ID, FACTS, ROUTES, SUPPLEMENTAL } from "./data.js";
@@ -17,93 +17,35 @@ export const AUDIENCE_IDS = AUDIENCES.map((a) => a.id);
 export const GUIDE = {
   title: P("Your Guide to The Language Page", "Su guía de The Language Page"),
   lead: P(
-    "Find an activity, see how it works, and choose your next step.",
-    "Encuentren una actividad, vean cómo funciona y elijan su próximo paso.",
+    "Every part of the site in one short list. Find your group, then open what you need.",
+    "Todas las partes del sitio en una lista corta. Busquen su grupo y abran lo que necesiten.",
   ),
   general: P(
-    "New here? Start with the three steps below. Choose who you are to see what is most useful for you.",
-    "¿Es su primera vez? Empiecen con los tres pasos de abajo. Elijan quiénes son para ver lo que más les sirve.",
-  ),
-  forTeacher: P(
-    "New to the site? The teacher start page lets you choose your grades and try one activity in each domain:",
-    "¿Son nuevos en el sitio? En la página de inicio para docentes pueden elegir sus grados y probar una actividad de cada destreza:",
-  ),
-  overview: P(
-    "English practice in four language domains, Listening, Speaking, Reading and Writing, for Kindergarten through Grade 8. No account is needed, and work stays on the device.",
-    "Práctica de inglés en cuatro destrezas, escuchar, hablar, leer y escribir, desde kínder hasta 8.º grado. No se necesita una cuenta, y el trabajo se queda en el dispositivo.",
+    "Choose who you are to see only your list.",
+    "Elijan quiénes son para ver solo su lista.",
   ),
 };
 
 /**
- * Sections in reading order. `show` lists the audiences that see the section by default; `general` is the short intro
- * shown until someone chooses. Every section stays reachable by its own link (/site-guide/<id>) and from search.
+ * Step-by-step guides, one page each (/site-guide/<id>): the curated activity cards, classroom routines, family
+ * practice, the tour of the screen and the Help questions. The directory page links to every one; Help also shows
+ * on the directory page itself.
  */
 export const SECTIONS = [
-  {
-    id: "start",
-    icon: "flag",
-    title: P("Start Here", "Empiecen aquí"),
-    show: ["teacher", "student", "family"],
-    general: true,
-  },
-  {
-    id: "speaking",
-    summary: P("Curated speaking activities, each with what students do, how to try it and the help built into the site.", "Actividades de hablar seleccionadas, cada una con lo que hacen los estudiantes, cómo probarla y la ayuda incluida en el sitio."),
-    icon: "speaking",
-    title: P("Speaking", "Hablar"),
-    show: ["teacher", "student", "family"],
-    general: true,
-  },
-  {
-    id: "writing",
-    summary: P("Curated writing activities, a worked example from first try to clearer, and a link to every writing activity.", "Actividades de escribir seleccionadas, un ejemplo del primer intento a algo más claro y un enlace a todas las actividades de escribir."),
-    icon: "writing",
-    title: P("Writing", "Escribir"),
-    show: ["teacher", "student", "family"],
-    general: true,
-  },
+  { id: "start", icon: "flag", title: P("Start Here", "Empiecen aquí") },
+  { id: "speaking", icon: "speaking", title: P("Speaking", "Hablar") },
+  { id: "writing", icon: "writing", title: P("Writing", "Escribir") },
   {
     id: "more",
     icon: "reading",
     title: P("Reading, Listening, and Vocabulary", "Leer, escuchar y vocabulario"),
-    show: ["teacher", "student"],
   },
-  {
-    id: "classroom",
-    summary: P("Three routines you can run tomorrow, grouping ideas, and how to share, assign, print and see progress.", "Tres rutinas para usar mañana, ideas para agrupar, y cómo compartir, asignar, imprimir y ver el progreso."),
-    icon: "classroom",
-    title: P("Use It in Your Classroom", "Úsenlo en el salón de clase"),
-    show: ["teacher"],
-  },
-  {
-    id: "home",
-    icon: "families",
-    title: P("Practice at Home", "Practicar en casa"),
-    show: ["family"],
-  },
-  {
-    id: "around",
-    summary: P("How to get home, find each skill, and move around the site, with screenshots and every area at a glance.", "Cómo volver al inicio, encontrar cada destreza y moverse por el sitio, con capturas de pantalla y todas las áreas de un vistazo."),
-    icon: "pin",
-    title: P("Find Your Way Around", "Cómo orientarse en el sitio"),
-    show: ["teacher", "student", "family"],
-    general: true,
-  },
-  {
-    id: "help",
-    icon: "info",
-    title: P("Help and Common Questions", "Ayuda y preguntas frecuentes"),
-    show: ["teacher", "student", "family"],
-    general: true,
-  },
+  { id: "classroom", icon: "classroom", title: P("Use It in Your Classroom", "Úsenlo en el salón de clase") },
+  { id: "home", icon: "families", title: P("Practice at Home", "Practicar en casa") },
+  { id: "around", icon: "pin", title: P("Find Your Way Around", "Cómo orientarse en el sitio") },
+  { id: "help", icon: "info", title: P("Help and Common Questions", "Ayuda y preguntas frecuentes") },
 ];
 export const SECTION_IDS = SECTIONS.map((s) => s.id);
-
-/** Section ids shown for an audience ("" = nobody chosen yet), plus any extra id named by the link. */
-export function visibleSections(audience, extraId = "") {
-  const keep = (s) => (AUDIENCE_IDS.includes(audience) ? s.show.includes(audience) : s.general);
-  return SECTIONS.filter((s) => keep(s) || s.id === extraId).map((s) => s.id);
-}
 
 /** The five labels every activity card uses. */
 export const LABELS = {

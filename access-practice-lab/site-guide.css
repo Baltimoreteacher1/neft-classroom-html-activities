@@ -34,88 +34,56 @@
 .sg-aud-row .chip {
   min-height: var(--target);
 }
-.sg-pd {
-  margin-top: var(--s-3);
+
+/* directory: three groups, each entry a name, one sentence and a link */
+.sg-dir {
+  margin: 0 0 var(--s-5);
+}
+.sg-dir > h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+}
+.sg-entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+@media (min-width: 48rem) {
+  .sg-entries {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.sg-entry {
   padding: var(--s-3) var(--s-4);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--brand);
   border-radius: var(--radius-sm);
-  background: var(--brand-soft);
+  background: var(--surface);
 }
-.sg-pd p {
-  margin: 0 0 var(--s-1);
+.sg-entry p {
+  margin: var(--s-1) 0 0;
+  color: var(--ink-2);
 }
-
-/* layout: contents beside the guide on wide screens, a labeled selector on phones */
-.sg-layout {
-  display: grid;
-  gap: var(--s-4);
+.sg-entry-name {
+  font-weight: 800;
+  font-size: 1.0625rem;
 }
-.sg-side {
-  display: grid;
-  gap: var(--s-3);
-  align-content: start;
+.sg-elsewhere {
+  margin: 0 0 var(--s-6);
 }
-.sg-toc {
-  display: none;
+.sg-guides {
+  margin: var(--s-6) 0 var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 2px solid var(--line);
 }
-.sg-jump {
-  display: grid;
-  gap: var(--s-1);
-}
-.sg-jump label {
-  font-weight: 700;
-}
-.sg-jump select {
-  min-height: var(--target);
-  width: 100%;
+.sg-guides h2 {
+  margin: 0 0 var(--s-2);
 }
 .sg-print {
   justify-self: start;
-}
-@media (min-width: 62rem) {
-  .sg-layout {
-    grid-template-columns: 15rem minmax(0, 1fr);
-    gap: var(--s-6);
-    align-items: start;
-  }
-  .sg-side {
-    position: sticky;
-    top: 8.5rem;
-  }
-  .sg-toc {
-    display: block;
-  }
-  .sg-jump {
-    display: none;
-  }
-  .sg-toc ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-left: 2px solid var(--line);
-  }
-  .sg-toc a {
-    display: flex;
-    align-items: center;
-    min-height: var(--target);
-    margin-left: -2px;
-    padding: 0.35rem var(--s-3);
-    border-left: 4px solid transparent;
-    color: var(--ink-2);
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .sg-toc a:hover {
-    background: var(--surface-2);
-    color: var(--ink);
-  }
-  .sg-toc a[aria-current] {
-    border-left-color: var(--brand);
-    background: var(--brand-soft);
-    color: var(--brand-ink);
-    font-weight: 800;
-  }
 }
 
 /* search */
@@ -191,10 +159,6 @@
 .sg-ic .ico {
   width: 1.2rem;
   height: 1.2rem;
-}
-.sg-permalink {
-  margin: var(--s-3) 0 0;
-  font-size: 0.9375rem;
 }
 .sg-note {
   max-width: 62ch;
@@ -521,9 +485,6 @@
   margin: 0 var(--s-3) var(--s-3);
   max-width: 66ch;
 }
-.sg-more-note {
-  margin-top: var(--s-4);
-}
 
 /* focus is the ds default (3px ring); keep it visible on the tinted blocks */
 .sg-page :focus-visible {
@@ -533,17 +494,11 @@
 
 /* print: chrome off, details open (site-guide.js), URL after every link, cards do not split */
 @media print {
-  .sg-side,
   .sg-search,
   .sg-audience,
   .sg-back,
-  .sg-permalink,
-  .sg-more-note,
   .no-print {
     display: none !important;
-  }
-  .sg-layout {
-    display: block;
   }
   .sg-page {
     max-width: none;
@@ -560,6 +515,7 @@
   }
   .sg-worked,
   .sg-starter,
+  .sg-entry,
   .sg-faq details,
   .sg-fields dt,
   .sg-fields dd,
@@ -574,9 +530,6 @@
   .sg-routine > h3,
   .sg-fields dt {
     break-after: avoid;
-  }
-  .sg-pd a[data-url]::after {
-    content: none;
   }
   .sg-more,
   .sg-fields {
@@ -606,78 +559,6 @@
   }
   body.has-intro-return #introReturn {
     display: none;
-  }
-}
-
-/* ── Top summary: what the site is, the grade picker and the four domain cards (site-guide-overview.js) ── */
-.sg-overview {
-  display: grid;
-  gap: var(--s-4);
-  margin-block: var(--s-4) var(--s-6);
-  padding: clamp(1rem, 2.6vw, 1.75rem);
-  border-radius: var(--r-xl);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-lift);
-}
-.sg-ov-text {
-  display: grid;
-  gap: var(--s-2);
-  max-width: 50rem;
-}
-.sg-ov-text > * {
-  margin: 0;
-}
-.sg-ov-text h2 {
-  font: 600 clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem) / 1.15 var(--font-display);
-}
-.sg-ov-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-.sg-ov-band {
-  display: grid;
-  gap: var(--s-4);
-}
-.sg-overview .ov-card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0.3rem 0 0;
-}
-.sg-overview .tb-domain .ov-card-actions .btn {
-  margin-top: 0;
-}
-
-/* ── Long sections fold behind a one-line summary and a Show button ── */
-.sg-fold {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2) var(--s-4);
-  padding: var(--s-3) var(--s-4);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-}
-.sg-summary {
-  flex: 1 1 22rem;
-  margin: 0;
-  color: var(--ink-2);
-}
-.sg-toggle svg {
-  transition: transform var(--dur-2) var(--ease-out);
-}
-.sg-toggle[aria-expanded="true"] svg {
-  transform: rotate(180deg);
-}
-.sg-body[hidden] {
-  display: none;
-}
-@media print {
-  .sg-body[hidden] {
-    display: block;
   }
 }
 

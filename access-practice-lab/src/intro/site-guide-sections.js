@@ -1,23 +1,47 @@
-// Site Guide markup, part 2: Start Here, Practice at Home, Find Your Way Around, Help, and the page furniture
-// (audience choice, contents, section selector, search). Start Here, Home, Around and Help are fully bilingual.
+// Site Guide markup, part 2: the directory (three groups of name + sentence + link), the list of step-by-step guides,
+// Start Here, Practice at Home, Find Your Way Around, Help, and the page furniture (audience choice, search).
+// The directory, Start Here, Home, Around and Help are fully bilingual.
 import { BASE, html, icon } from "../util.js";
-import { ACTIVITY_BY_ID, DOWNLOADS, ENTRANCE, ROUTES } from "./data.js";
+import { ACTIVITY_BY_ID, ROUTES } from "./data.js";
 import { FAMILY } from "./family-data.js";
-import {
-  AUDIENCES,
-  GUIDE,
-  HOME,
-  SECTIONS,
-  START_FACTS,
-  START_STEPS,
-  STARTERS,
-} from "./site-guide-data.js";
 import { activityLink, en, linkHTML } from "./site-guide-cards.js";
+import { directoryGroups, ELSEWHERE } from "./site-guide-directory.js";
+import { AUDIENCES, GUIDE, HOME, SECTIONS, START_FACTS, START_STEPS, STARTERS } from "./site-guide-data.js";
 import { AREAS, FAQ, SCREENSHOTS, WAYS } from "./site-guide-more.js";
 
-const pdfLinks = (d) =>
-  html`${linkHTML(d.pdf.replace("/access-practice-lab", ""), "PDF")} ·
-  ${linkHTML(d.docx.replace("/access-practice-lab", ""), "Word")}`;
+export function directoryHTML(I, audience) {
+  return html`${directoryGroups(audience).map(
+      (g) =>
+        html`<section class="sg-dir" id="sg-dir-${g.id}" data-sg-group="${g.id}" aria-labelledby="sg-dir-${g.id}-h">
+          <h2 id="sg-dir-${g.id}-h"><span class="sg-ic" aria-hidden="true">${icon(g.icon)}</span>${I.TO(g.title)}</h2>
+          <ul class="sg-entries">
+            ${g.entries.map(
+              (e) =>
+                html`<li class="sg-entry" data-sg-entry="${e.id}">
+                  ${linkHTML(e.route, I.TO(e.title), "sg-entry-name")}
+                  <p>${I.TO(e.text)}</p>
+                </li>`,
+            )}
+          </ul>
+        </section>`,
+    )}
+    <p class="sg-elsewhere">
+      ${I.T("Looking for something else?", "¿Buscan otra cosa?")}
+      ${ELSEWHERE.map((e, i) => html`${i ? " · " : " "}${linkHTML(e.route, I.TO(e.title), "sg-textlink")}`)}
+    </p>`;
+}
+
+/** The step-by-step guides, one link each (Help is shown in full on the directory page). */
+export function guidesHTML(I) {
+  return html`<section class="sg-guides no-print" aria-labelledby="sgGuidesH">
+    <h2 id="sgGuidesH">${I.T("Step-by-step guides", "Guías paso a paso")}</h2>
+    <ul class="sg-plain">
+      ${SECTIONS.filter((s) => s.id !== "help").map(
+        (s) => html`<li>${linkHTML(`${ROUTES.siteGuide}/${s.id}`, I.TO(s.title), "sg-textlink")}</li>`,
+      )}
+    </ul>
+  </section>`;
+}
 
 export function startSection(I, audience) {
   return html`<ol class="sg-steps">
@@ -37,18 +61,6 @@ export function startSection(I, audience) {
       ${START_FACTS.map((f) => html`<p>${icon("check")} ${I.T(f.en, f.es)}</p>`)}
     </div>
     ${audience === "family" ? html`<p>${linkHTML(ROUTES.together, html`${I.TO(HOME.open)} ${icon("arrow-right")}`, "btn")}</p>` : ""}`;
-}
-
-export function teacherIntro(I) {
-  return html`<aside class="sg-pd" aria-label="${I.S("Start here for teachers", "Para docentes: empiecen aquí")}">
-    <p>
-      ${I.TO(GUIDE.forTeacher)} ${linkHTML(ROUTES.start, html`${ENTRANCE.short}`, "sg-textlink")}
-    </p>
-    <p class="fine">
-      ${I.T("Handouts:", "Material para imprimir:")} Quick Guide ${pdfLinks(DOWNLOADS.quickGuide)} ·
-      ${linkHTML(`${ROUTES.start}#ov-resources`, I.T("All printable resources", "Todos los recursos para imprimir"), "sg-textlink")}
-    </p>
-  </aside>`;
 }
 
 export function homeSection(I) {
@@ -139,42 +151,9 @@ export function audienceHTML(I, audience) {
       )}
     </div>
     <p class="fine">
-      ${audience ? I.T("Press your choice again to see the short general guide.", "Toquen su elección otra vez para ver la guía general corta.") : I.TO(GUIDE.general)}
+      ${audience ? I.T("Press your choice again to see every group.", "Toquen su elección otra vez para ver todos los grupos.") : I.TO(GUIDE.general)}
     </p>
   </div>`;
-}
-
-/** Contents (desktop list) and the labeled section selector (phones). Sections not shown for this reader link to their own page. */
-export function tocHTML(I, visible, current) {
-  const href = (s) => (visible.includes(s.id) ? `#sg-${s.id}` : `${BASE}/site-guide/${s.id}`);
-  return html`<nav class="sg-toc" aria-label="${I.S("Guide contents", "Contenido de la guía")}">
-      <p class="sg-sub" aria-hidden="true">${I.T("Contents", "Contenido")}</p>
-      <ol>
-        ${SECTIONS.map(
-          (s) =>
-            html`<li>
-              <a
-                href="${href(s)}"
-                data-sg-jump="${s.id}"
-                ${s.id === current ? html` aria-current="location"` : ""}
-                >${I.TO(s.title)}</a
-              >
-            </li>`,
-        )}
-      </ol>
-    </nav>
-    <div class="sg-jump">
-      <label for="sgJump">${I.T("Jump to a section", "Ir a una sección")}</label>
-      <select id="sgJump" data-sg-select>
-        ${current ? "" : html`<option value="" selected disabled>${I.S("Choose a section", "Elijan una sección")}</option>`}
-        ${SECTIONS.map(
-          (s) =>
-            html`<option value="${s.id}" ${s.id === current ? " selected" : ""}>
-              ${I.S(s.title.en, s.title.es)}
-            </option>`,
-        )}
-      </select>
-    </div>`;
 }
 
 export function searchHTML(I, q) {

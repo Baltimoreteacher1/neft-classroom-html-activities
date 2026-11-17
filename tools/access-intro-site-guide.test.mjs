@@ -1,4 +1,5 @@
-// The Site Guide (/site-guide): audience visibility, search, every link it can print, and the markup rules
+// The Site Guide (/site-guide): the short directory (three groups, name + sentence + link), audience choice, the
+// step-by-step guide pages (/site-guide/<section>), search, every link it can print, and the markup rules
 // (one h1, headings in order, single-level <details>, labeled landmarks, Spanish where promised).
 // Renders the real view in JSDOM for every audience in English and Spanish. The browser half is
 // tools/access-intro-site-guide-e2e.mjs.
@@ -20,6 +21,7 @@ const D = await import("../access-practice-lab/src/intro/data.js");
 const G = await import("../access-practice-lab/src/intro/site-guide-data.js");
 const M = await import("../access-practice-lab/src/intro/site-guide-more.js");
 const S = await import("../access-practice-lab/src/intro/site-guide-search.js");
+const DIR = await import("../access-practice-lab/src/intro/site-guide-directory.js");
 const view = await import("../access-practice-lab/src/intro/site-guide.js");
 const { toHtml } = await import("../access-practice-lab/src/util.js");
 const intro = await import("../access-practice-lab/src/intro/state.js");
@@ -52,6 +54,13 @@ const VIEWS = new Set([
   "Writing",
 ]);
 const stem = (route) => route.split(/[?#]/)[0].split("/").filter(Boolean)[0];
+/** A site path that is a folder served from disk (the Family Tour, the Teacher Hub, the WIDA Data Studio). */
+const onDisk = (path) =>
+  path.split(/[?#]/)[0].endsWith("/") &&
+  existsSync(new URL(`${path.split(/[?#]/)[0].replace(/^\//, "")}index.html`, ROOT));
+/** True when a lab route opens a view main.js routes, or a folder the lab serves from disk. */
+const opens = (route) => VIEWS.has(stem(route)) || onDisk(`/access-practice-lab${route}`);
+const FLIGHT_DECK = /flight[\s-]*deck/i;
 
 /** Content ids a route names, searched in the real content files (the e2e opens each in a browser). */
 const CONTENT = [
@@ -91,8 +100,12 @@ test("every route the guide can link to is a lab view, and the named content exi
     assert.ok(VIEWS.has(v), `route table sanity: ${v}`);
   for (const r of routes) {
     assert.ok(r.startsWith("/"), `${r} is a lab route`);
-    if (r.startsWith("/access-teacher/")) continue; // the Teacher Hub is a separate site area behind its own password
-    assert.ok(VIEWS.has(stem(r)), `${r}: "${stem(r)}" is not a view in main.js`);
+    if (r.startsWith("/access-teacher/")) {
+      // the Teacher Hub is a separate site area behind its own password; its folder must exist
+      assert.ok(onDisk(r), `${r} is a folder with an index.html`);
+      continue;
+    }
+    assert.ok(opens(r), `${r}: "${stem(r)}" is not a view in main.js or a folder on disk`);
   }
   for (const [route, file, id] of CONTENT) {
     assert.ok(routes.includes(route), `${route} is linked`);
@@ -140,15 +153,55 @@ test("no new file or route contains the substring teacher", () => {
 
 // ── audiences ─────────────────────────────────────────────────────────────────────────────────
 
-test("audience decides which sections show; any section opens by its own link", () => {
-  assert.deepEqual(G.visibleSections(""), ["start", "speaking", "writing", "around", "help"]);
-  assert.ok(G.visibleSections("teacher").includes("classroom"));
-  assert.ok(!G.visibleSections("teacher").includes("home"));
-  assert.ok(G.visibleSections("family").includes("home"));
-  assert.ok(!G.visibleSections("student").includes("classroom"));
-  assert.ok(G.visibleSections("student", "classroom").includes("classroom"));
-  assert.ok(G.visibleSections("", "home").includes("home"));
-  assert.equal(new Set(G.SECTION_IDS).size, 8);
+test("the directory: three plain groups, each entry a name, one sentence and a link that opens", () => {
+  assert.deepEqual(
+    DIR.DIRECTORY.map((g) => g.id),
+    ["teacher", "student", "family"],
+  );
+  const entries = DIR.DIRECTORY.flatMap((g) => g.entries);
+  assert.ok(entries.length >= 12 && entries.length <= 20, `${entries.length} entries stays short`);
+  assert.equal(new Set(entries.map((e) => e.id)).size, entries.length, "no entry listed twice");
+  for (const e of [...entries, ...DIR.ELSEWHERE]) {
+    for (const p of [e.title, e.text]) {
+      assert.ok(p.en && p.es && p.en !== p.es, `${e.id}: English and Spanish`);
+      assert.doesNotMatch(`${p.en} ${p.es}`, FLIGHT_DECK, e.id);
+    }
+    assert.ok(e.text.en.length < 140, `${e.id}: one plain sentence`);
+    assert.ok(e.route.startsWith("/"), e.id);
+    assert.doesNotMatch(e.route, FLIGHT_DECK, e.id);
+    if (e.route.startsWith("/access-teacher/")) assert.ok(onDisk(e.route), `${e.route} exists`);
+    else assert.ok(opens(e.route), `${e.id}: ${e.route} opens a lab view or a file on disk`);
+  }
+  // The surfaces a teacher looks for are all listed.
+  const routes = DIR.directoryRoutes();
+  for (const r of [
+    "/start",
+    "/start/tour",
+    "/library",
+    "/launch-studio",
+    "/access-teacher/",
+    "/access-teacher/predictive/",
+    "/access-prep",
+    "/book-studio",
+    "/explore/practice",
+    "/explore/play",
+    "/family-tour/",
+    "/practice-together",
+    "/explore",
+  ])
+    assert.ok(routes.includes(r), `${r} is in the directory`);
+  // Choosing an audience keeps only that group; the Family Tour shows only on its own host.
+  assert.deepEqual(
+    DIR.directoryGroups("family").map((g) => g.id),
+    ["family"],
+  );
+  assert.equal(DIR.directoryGroups("").length, 3);
+  // Off thelanguagepage.com (this test's host) families get Practice Together, never a link to the blocked tour.
+  assert.deepEqual(
+    DIR.directoryGroups("family")[0].entries.map((e) => e.id),
+    ["practice-together", "family-corner"],
+  );
+  assert.equal(new Set(G.SECTION_IDS).size, 8, "every step-by-step guide keeps its own link");
 });
 
 test("the audience choice lives in the shared intro object without overwriting other keys", () => {
@@ -209,8 +262,11 @@ test("every audience, in English and Spanish, renders valid structure", async ()
         assert.ok(nav.getAttribute("aria-label"), `${label}: nav has a label`);
       assert.ok(doc.querySelector("[role=search]"), label);
       assert.ok(doc.querySelector("[role=status]"), `${label}: live region`);
-      assert.ok(doc.querySelector("select[data-sg-select]"), `${label}: section selector`);
-      assert.equal(doc.querySelector("label[for=sgJump]") !== null, true);
+      assert.equal(doc.querySelectorAll(".sg-dir").length, audience ? 1 : 3, `${label}: groups`);
+      for (const li of doc.querySelectorAll(".sg-entry")) {
+        assert.equal(li.querySelectorAll("a[href]").length, 1, `${label}: one link per entry`);
+        assert.equal(li.querySelectorAll("p").length, 1, `${label}: one sentence per entry`);
+      }
       const ids = [...doc.querySelectorAll("[id]")].map((e) => e.id);
       assert.equal(new Set(ids).size, ids.length, `${label}: duplicate ids`);
       assert.equal(doc.querySelectorAll("button[data-sg-audience]").length, 3);
@@ -225,6 +281,7 @@ test("every audience, in English and Spanish, renders valid structure", async ()
           img.alt.length > 30 || (img.closest(".tb-domain") && img.alt === ""),
           `${label}: alt`,
         );
+      assert.doesNotMatch(doc.body.textContent, FLIGHT_DECK, label);
       // every link is a lab link, the teacher entry, or a handout
       for (const a of doc.querySelectorAll("a[href]")) {
         const href = a.getAttribute("href");
@@ -236,7 +293,7 @@ test("every audience, in English and Spanish, renders valid structure", async ()
         );
         if (!href.startsWith("#") && href !== "/access-practice-lab/")
           assert.ok(
-            VIEWS.has(stem(href.replace("/access-practice-lab", ""))) ||
+            opens(href.replace("/access-practice-lab", "")) ||
               href.startsWith("/access-teacher/") ||
               /\.(pdf|docx)$/.test(href),
             `${label}: ${href}`,
@@ -248,7 +305,10 @@ test("every audience, in English and Spanish, renders valid structure", async ()
 
 test("links that open an activity carry the return hint; section and start links do not", async () => {
   const { doc } = await render("teacher");
-  const all = [...doc.querySelectorAll("a[href]")].map((a) => a.getAttribute("href"));
+  const guides = [];
+  for (const id of ["speaking", "writing"])
+    guides.push(...(await render("teacher", "en", id)).doc.querySelectorAll("a[href]"));
+  const all = [...doc.querySelectorAll("a[href]"), ...guides].map((a) => a.getAttribute("href"));
   for (const route of [
     D.ACTIVITIES[0].route,
     D.ACTIVITIES[2].route,
@@ -274,15 +334,16 @@ test("links that open an activity carry the return hint; section and start links
   }
   const entrance = `/access-practice-lab${D.ROUTES.start}`;
   assert.equal(
-    all.filter((h) => h === entrance).length,
+    [...doc.querySelectorAll("a[href]")].filter((a) => a.getAttribute("href") === entrance).length,
     1,
     "the teacher start page is linked once for teachers",
   );
 });
 
 test("each curated card has one single-level See an Example and the five labels", async () => {
-  const { doc } = await render("teacher");
-  const cards = [...doc.querySelectorAll(".sg-card")];
+  const cards = [];
+  for (const id of ["speaking", "writing"])
+    cards.push(...(await render("teacher", "en", id)).doc.querySelectorAll(".sg-card"));
   assert.equal(cards.length, 6);
   for (const c of cards) {
     assert.equal(c.querySelectorAll("details.in-preview").length, 1);
@@ -292,22 +353,23 @@ test("each curated card has one single-level See an Example and the five labels"
       assert.ok(text.includes(label), label);
     assert.match(text, /Teaching moves you add \(not site features\)/);
   }
-  const labels = [...doc.querySelectorAll(".sg-routine details summary")].length;
+  const classroom = (await render("teacher", "en", "classroom")).doc;
+  const labels = [...classroom.querySelectorAll(".sg-routine details summary")].length;
   assert.equal(labels, 3, "the three routines carry examples too");
-  const student = (await render("student")).doc;
+  const student = (await render("student", "en", "speaking")).doc;
   assert.ok(!/Teaching moves/.test(student.querySelector("#sg-speaking").textContent));
 });
 
 test("Practice at Home is bilingual and uses the family page's own text", async () => {
   const fam = await import("../access-practice-lab/src/intro/family-data.js");
-  const en = (await render("family", "en")).doc.querySelector("#sg-home").textContent;
-  const es = (await render("family", "es")).doc.querySelector("#sg-home").textContent;
+  const en = (await render("family", "en", "home")).doc.querySelector("#sg-home").textContent;
+  const es = (await render("family", "es", "home")).doc.querySelector("#sg-home").textContent;
   for (const b of fam.practiceAtHome) {
     assert.ok(en.includes(b.en), b.id);
     assert.ok(es.includes(b.es), b.id);
   }
   assert.ok(es.includes("Practicar juntos"));
-  const link = (await render("family", "en")).doc.querySelector("#sg-home a.btn-primary");
+  const link = (await render("family", "en", "home")).doc.querySelector("#sg-home a.btn-primary");
   assert.ok(link.getAttribute("href").includes("/practice-together"));
 });
 
@@ -324,6 +386,7 @@ test("Spanish exists for the sections that promise it and never repeats the Engl
     ...G.SECTIONS.map((s) => s.title),
     ...G.AUDIENCES.map((a) => a.label),
     ...Object.values(G.CARD_TEXT).flatMap((c) => Object.values(c)),
+    ...DIR.DIRECTORY.map((g) => g.title),
   ];
   for (const p of pairs) {
     assert.ok(p.en && p.es, JSON.stringify(p));
@@ -333,11 +396,10 @@ test("Spanish exists for the sections that promise it and never repeats the Engl
 });
 
 test("the guide invents no feature: claims are limited to what was verified", async () => {
-  const text = [
-    ...(await render("teacher")).doc.querySelectorAll("#sg-help, #sg-classroom, #sg-start"),
-  ]
-    .map((e) => e.textContent)
-    .join(" ");
+  const pages = await Promise.all(
+    ["help", "classroom", "start"].map((id) => render("teacher", "en", id)),
+  );
+  const text = pages.map(({ doc }) => doc.querySelector(".sg-section").textContent).join(" ");
   assert.doesNotMatch(
     text,
     /automatic(ally)? (feedback|grad)|AI |translat(es|ion of) (the )?activit|leaderboard|timer|confetti|streak/i,
@@ -347,41 +409,48 @@ test("the guide invents no feature: claims are limited to what was verified", as
   assert.match(text, /Teacher Hub/);
 });
 
-test("teachers and new readers get a grade-aware summary; long sections fold and print open", async () => {
-  for (const audience of ["", "teacher"]) {
-    const { doc } = await render(audience);
-    const ov = doc.querySelector(".sg-overview");
-    assert.ok(ov, `${audience || "general"}: summary`);
-    assert.equal(ov.querySelectorAll("[data-tb-pick]").length, 5, "five grade buttons");
-    assert.equal(ov.querySelectorAll(".tb-domain").length, 4, "four domain cards");
-    for (const a of ov.querySelectorAll(".tb-domain a[href]"))
-      assert.match(a.getAttribute("href"), /[?&]grades=6-8/, a.getAttribute("href"));
-    assert.ok(
-      ov.querySelector('a[href="/access-practice-lab/start#ov-resources"]'),
-      "resources entry point",
-    );
-  }
-  for (const audience of ["family", "student"])
-    assert.equal((await render(audience)).doc.querySelector(".sg-overview"), null, audience);
-  const { doc } = await render("teacher");
-  for (const id of ["speaking", "writing", "classroom", "around"]) {
-    const btn = doc.querySelector(`[data-sg-toggle="${id}"]`);
-    assert.equal(btn.getAttribute("aria-expanded"), "false", id);
-    assert.equal(btn.getAttribute("aria-controls"), `sg-${id}-body`);
-    assert.ok(doc.querySelector(`#sg-${id}-body`).hasAttribute("hidden"), id);
-  }
-  // A link to one section opens it.
-  const one = (await render("teacher", "en", "classroom")).doc;
-  assert.ok(!one.querySelector("#sg-classroom-body").hasAttribute("hidden"));
-  assert.match(
-    read("access-practice-lab/site-guide.css"),
-    /@media print \{\s*\.sg-body\[hidden\] \{\s*display: block;/,
+test("the main page is a calm directory; each step-by-step guide opens alone on its own page", async () => {
+  intro.clearIntro("siteGuideAudience"); // a new reader: nobody chosen on this device yet
+  const { doc } = await render("");
+  assert.equal(doc.querySelector(".sg-overview"), null, "no grade picker on the guide");
+  assert.equal(
+    doc.querySelectorAll("[data-sg-toggle], select").length,
+    0,
+    "no fold buttons, no selector",
   );
+  assert.deepEqual(
+    [...doc.querySelectorAll(".sg-section")].map((s) => s.id),
+    ["sg-help"],
+    "Help is the only full section on the main page",
+  );
+  const guides = [...doc.querySelectorAll(".sg-guides a")].map((a) => a.getAttribute("href"));
+  assert.deepEqual(
+    guides,
+    G.SECTION_IDS.filter((id) => id !== "help").map(
+      (id) => `/access-practice-lab/site-guide/${id}`,
+    ),
+  );
+  const entries = doc.querySelectorAll(".sg-entry").length;
+  assert.ok(entries >= 12 && entries <= 20, `${entries} entries`);
+  for (const id of G.SECTION_IDS) {
+    const page = (await render("teacher", "en", id)).doc;
+    assert.deepEqual(
+      [...page.querySelectorAll(".sg-section")].map((s) => s.id),
+      [`sg-${id}`],
+      id,
+    );
+    assert.equal(page.querySelectorAll(".sg-dir").length, 0, `${id}: no directory`);
+    assert.match(page.querySelector(".sg-back a").textContent, /Back to Guide/);
+    assert.doesNotMatch(page.body.textContent, FLIGHT_DECK, id);
+  }
+  // Print prints each link's address after it.
+  assert.match(read("access-practice-lab/site-guide.css"), /\.sg-page a\[data-url\]::after/);
 });
 
 test("the guide never links to the presenter view or presenter notes", async () => {
-  for (const audience of AUDIENCES) {
-    const { doc } = await render(audience);
+  const pages = [...AUDIENCES.map((a) => [a, ""]), ...G.SECTION_IDS.map((id) => ["teacher", id])];
+  for (const [audience, id] of pages) {
+    const { doc } = await render(audience, "en", id);
     for (const a of doc.querySelectorAll("a[href]"))
       assert.doesNotMatch(
         a.getAttribute("href"),

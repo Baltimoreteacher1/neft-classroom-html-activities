@@ -1,11 +1,12 @@
 // The Site Guide (/site-guide, /site-guide/<section>, ?for=teacher|student|family, ?q=<search>).
-// A permanent guide that works without the PD: short explanations, verified links, optional examples. The reader chooses
-// who they are (saved on this device in `accessPracticeLab:v1:intro` under `siteGuideAudience`); every section stays
-// reachable by its own link. Facts come from data.js through site-guide-data.js / site-guide-more.js.
+// The main page is a short directory: three plain groups (teachers, students, families), each entry a name, one
+// sentence and a link, then the Help questions and a list of step-by-step guides. Each guide opens on its own page
+// (/site-guide/<section>). The reader can choose who they are (saved on this device in `accessPracticeLab:v1:intro`
+// under `siteGuideAudience`) to see only their group. Facts come from sitemap.js and data.js through the
+// site-guide-*.js data files.
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
 import { announce, BASE, html, icon, toHtml } from "../util.js";
-import { onBandClick, teacherPick } from "./band.js";
 import { ROUTES } from "./data.js";
 import {
   classroomSection,
@@ -21,21 +22,19 @@ import {
   SECTIONS,
   SECTION_IDS,
   SPANISH_NOTE,
-  visibleSections,
 } from "./site-guide-data.js";
-import { buildIndex, searchGuide } from "./site-guide-search.js";
+import { buildIndex, resultLabel, searchGuide } from "./site-guide-search.js";
 import {
   aroundSection,
   audienceHTML,
+  directoryHTML,
+  guidesHTML,
   helpSection,
   homeSection,
   resultsHTML,
   searchHTML,
   startSection,
-  teacherIntro,
-  tocHTML,
 } from "./site-guide-sections.js";
-import { overviewSection } from "./site-guide-overview.js";
 import { clearIntro, loadIntro, updateIntro } from "./state.js";
 
 const AUDIENCE_KEY = "siteGuideAudience";
@@ -74,51 +73,28 @@ const SECTION_BODY = {
   help: (I) => helpSection(I),
 };
 
-/** Long sections open behind a one-line summary and a Show button, unless the link named them. */
-function sectionHTML(I, s, audience, openId) {
+/** One guide section: heading, the English-only note where it applies, and its body. */
+function sectionHTML(I, s, audience) {
   const note =
     ENGLISH_ONLY.has(s.id) && (I.spanish || I.bilingual)
       ? html`<p class="fine sg-note" lang="${I.spanish ? "es" : "en"}">
           ${I.TO(ENGLISH_ONLY_NOTE)}
         </p>`
       : "";
-  const collapsed = Boolean(s.summary) && s.id !== openId;
-  const toggle = s.summary
-    ? html`<div class="sg-fold no-print">
-        <p class="sg-summary">${I.TO(s.summary)}</p>
-        <button
-          type="button"
-          class="btn small sg-toggle"
-          data-sg-toggle="${s.id}"
-          aria-controls="sg-${s.id}-body"
-          aria-expanded="${String(!collapsed)}"
-        >
-          ${icon("chevron-down")}<span data-sg-toggle-label
-            >${collapsed ? I.T("Show this section", "Mostrar esta sección") : I.T("Hide this section", "Ocultar esta sección")}</span
-          >
-        </button>
-      </div>`
-    : "";
-  return html`<section
-    class="sg-section${s.summary ? " is-foldable" : ""}"
-    id="sg-${s.id}"
-    data-sg-section="${s.id}"
-    aria-labelledby="sg-${s.id}-h"
-  >
+  return html`<section class="sg-section" id="sg-${s.id}" data-sg-section="${s.id}" aria-labelledby="sg-${s.id}-h">
     <h2 id="sg-${s.id}-h" tabindex="-1">
       <span class="sg-ic" aria-hidden="true">${icon(s.icon)}</span>${I.TO(s.title)}
     </h2>
-    ${toggle}
-    <div class="sg-body" id="sg-${s.id}-body" ${collapsed ? "hidden" : ""}>
-      ${note}${SECTION_BODY[s.id](I, audience)}
-      <p class="sg-permalink no-print">
-        <a href="${BASE}${ROUTES.siteGuide}/${s.id}"
-          >${I.T("Link to this section", "Enlace a esta sección")}</a
-        >
-      </p>
-    </div>
+    ${note}${SECTION_BODY[s.id](I, audience)}
   </section>`;
 }
+
+const printButton = (I) =>
+  html`<p class="no-print">
+    <button type="button" class="btn sg-print" data-sg-print>
+      ${icon("print")} ${I.T("Print this page", "Imprimir esta página")}
+    </button>
+  </p>`;
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
@@ -126,113 +102,50 @@ export async function render(ctx) {
   const asked = AUDIENCE_IDS.includes(route.audience) ? route.audience : "";
   if (asked && asked !== storedAudience()) saveAudience(asked);
   const audience = asked || storedAudience();
-  const id = SECTION_IDS.includes(route.id) ? route.id : "";
-  const visible = visibleSections(audience, id);
+  const section = SECTIONS.find((s) => s.id === route.id);
   const q = (route.q || "").slice(0, 120);
   const title = I.S(GUIDE.title.en, GUIDE.title.es);
+  const spanishNote = I.spanish || I.bilingual ? html`<p class="fine sg-note">${I.TO(SPANISH_NOTE)}</p>` : "";
+  const head = html`<header class="sg-head">
+    <p class="eyebrow">${I.T("Site Guide", "Guía del sitio")}</p>
+    <h1 id="sgTitle" tabindex="-1">${I.TO(GUIDE.title)}</h1>
+    ${
+      section
+        ? html`<p class="sg-back no-print"><a class="btn" href="${BASE}${ROUTES.siteGuide}">${icon("arrow-left")} ${I.T("Back to Guide", "Volver a la guía")}</a></p>`
+        : html`<p class="lead">${I.TO(GUIDE.lead)}</p>
+            ${audienceHTML(I, audience)}`
+    }
+  </header>`;
+  // A step-by-step guide: that one section on its own page.
+  const body = section
+    ? html`${spanishNote}${sectionHTML(I, section, audience)}${printButton(I)}`
+    : html`${searchHTML(I, q)}${spanishNote}${directoryHTML(I, audience)}
+        ${sectionHTML(I, SECTIONS.find((s) => s.id === "help"), audience)} ${guidesHTML(I)}
+        ${printButton(I)}`;
   return {
-    title,
+    title: section ? `${I.S(section.title.en, section.title.es)} · ${title}` : title,
     html: html`${crumbsHTML([
         [I.S("Lab", "Laboratorio"), `${BASE}/`],
-        [title, null],
+        ...(section ? [[title, `${BASE}${ROUTES.siteGuide}`]] : []),
+        [section ? I.S(section.title.en, section.title.es) : title, null],
       ])}
       <article class="sg-page" data-audience="${audience}" aria-labelledby="sgTitle">
-        <header class="sg-head">
-          <p class="eyebrow">${I.T("Site Guide", "Guía del sitio")}</p>
-          <h1 id="sgTitle" tabindex="-1">${I.TO(GUIDE.title)}</h1>
-          <p class="lead">${I.TO(GUIDE.lead)}</p>
-          ${id ? html`<p class="sg-back no-print"><a class="btn" href="${BASE}${ROUTES.siteGuide}">${icon("arrow-left")} ${I.T("Back to Guide", "Volver a la guía")}</a></p>` : ""}
-          ${audienceHTML(I, audience)} ${audience === "teacher" ? teacherIntro(I) : ""}
-        </header>
-        ${audience === "" || audience === "teacher" ? overviewSection(I, teacherPick(ctx)) : ""}
-        <div class="sg-layout">
-          <div class="sg-side no-print">
-            ${tocHTML(I, visible, id)}
-            <button type="button" class="btn sg-print" data-sg-print>
-              ${icon("print")} ${I.T("Print Guide", "Imprimir la guía")}
-            </button>
-          </div>
-          <div class="sg-main">
-            ${searchHTML(I, q)}
-            ${I.spanish || I.bilingual ? html`<p class="fine sg-note">${I.TO(SPANISH_NOTE)}</p>` : ""}
-            ${SECTIONS.filter((s) => visible.includes(s.id)).map((s) => sectionHTML(I, s, audience, id))}
-            ${audience ? "" : html`<p class="fine sg-more-note">${I.T("Teaching? Practicing at home? Choose above to see classroom routines or Practice at Home.", "¿Enseñan o practican en casa? Elijan arriba para ver rutinas de clase o Practicar en casa.")}</p>`}
-          </div>
-        </div>
+        ${head}
+        <div class="sg-main">${body}</div>
       </article>`,
   };
 }
 
 // ── behavior ──────────────────────────────────────────────────────────────────────────────────
 
-const sectionTop = (el) => el.getBoundingClientRect().top;
-
 export function mount(root, ctx) {
   const I = i18nFor(ctx);
   const page = root.querySelector(".sg-page");
   if (!page) return;
-  const sections = [...page.querySelectorAll("[data-sg-section]")];
-  const links = [...page.querySelectorAll("[data-sg-jump]")];
-  const select = page.querySelector("[data-sg-select]");
   const input = page.querySelector("[data-sg-q]");
   const results = page.querySelector("[data-sg-results]");
   const status = page.querySelector("[data-sg-status]");
-  const secTitle = (sid) => I.TO(SECTIONS.find((s) => s.id === sid).title);
-  let current = "";
-  let urlTimer = 0;
-  /** Opens or closes a long section (the button says which, and aria-expanded carries the state). */
-  const setFold = (section, open) => {
-    const body = section.querySelector(":scope > .sg-body");
-    const btn = section.querySelector(":scope [data-sg-toggle]");
-    if (!body || !btn) return;
-    body.hidden = !open;
-    btn.setAttribute("aria-expanded", String(open));
-    btn.querySelector("[data-sg-toggle-label]").textContent = open
-      ? I.S("Hide this section", "Ocultar esta sección")
-      : I.S("Show this section", "Mostrar esta sección");
-  };
-  const onFold = (e) => {
-    const btn = e.target.closest("[data-sg-toggle]");
-    if (btn) {
-      setFold(btn.closest("[data-sg-section]"), btn.getAttribute("aria-expanded") !== "true");
-      return;
-    }
-    // An in-page link into a folded section (search result, FAQ link) opens that section first.
-    const a = e.target.closest('a[href^="#sg-"]');
-    const target = a && page.querySelector(a.getAttribute("href"));
-    const section = target?.closest("[data-sg-section]");
-    if (section) setFold(section, true);
-  };
-
-  const setCurrent = (sid) => {
-    if (sid === current) return;
-    current = sid;
-    for (const a of links) {
-      if (a.dataset.sgJump === sid) a.setAttribute("aria-current", "location");
-      else a.removeAttribute("aria-current");
-    }
-    if (select) select.value = sid;
-    clearTimeout(urlTimer);
-    urlTimer = setTimeout(() => syncUrl({ id: sid }), 300);
-  };
-  const jump = (sid) => {
-    const target = page.querySelector(`#sg-${sid}`);
-    if (target) setFold(target, true);
-    if (!target) return ctx.navigate(`${BASE}${ROUTES.siteGuide}/${sid}${location.search}`);
-    target.scrollIntoView({ block: "start" });
-    target.querySelector("h2")?.focus({ preventScroll: true });
-    setCurrent(sid);
-  };
-  const spy = () => {
-    let sid = "";
-    for (const s of sections) if (sectionTop(s) <= 200) sid = s.dataset.sgSection;
-    setCurrent(sid);
-  };
-  let raf = 0;
-  const onScroll = () => {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(spy);
-  };
+  const secTitle = (sid) => I.TO(resultLabel(sid));
 
   const runSearch = (q, { say = true } = {}) => {
     index ||= buildIndex();
@@ -252,63 +165,42 @@ export function mount(root, ctx) {
     status.textContent = say ? msg : "";
     return found;
   };
-
-  const onNavClick = (e) => {
-    const a = e.target.closest("a[data-sg-jump]");
-    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
-    e.preventDefault();
-    jump(a.dataset.sgJump);
-  };
-  const onSelect = (e) => e.target.value && jump(e.target.value);
   const onInput = () => {
     runSearch(input.value);
-    syncUrl({ id: current, q: input.value.trim() });
+    syncUrl({ q: input.value.trim() });
   };
   const onSubmit = (e) => {
     e.preventDefault();
     runSearch(input.value);
   };
   let reopened = [];
-  let unfolded = [];
   const beforePrint = () => {
     reopened = [...page.querySelectorAll("details:not([open])")];
     for (const d of reopened) d.open = true;
-    unfolded = [...page.querySelectorAll(".sg-body[hidden]")];
-    for (const b of unfolded) b.hidden = false;
   };
   const afterPrint = () => {
     for (const d of reopened) d.open = false;
-    for (const b of unfolded) b.hidden = true;
     reopened = [];
-    unfolded = [];
   };
 
-  page.addEventListener("click", onFold);
-  page.querySelector(".sg-toc")?.addEventListener("click", onNavClick);
-  select?.addEventListener("change", onSelect);
   input?.addEventListener("input", onInput);
   page.querySelector("[data-sg-search-form]")?.addEventListener("submit", onSubmit);
-  window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("beforeprint", beforePrint);
   window.addEventListener("afterprint", afterPrint);
   cleanup = () => {
-    clearTimeout(urlTimer);
-    cancelAnimationFrame(raf);
-    window.removeEventListener("scroll", onScroll);
     window.removeEventListener("beforeprint", beforePrint);
     window.removeEventListener("afterprint", afterPrint);
   };
 
   if (input?.value.trim()) runSearch(input.value, { say: false });
-  const first = ctx.route.id;
-  if (SECTION_IDS.includes(first)) setTimeout(() => jump(first), 80);
-  else current = "";
+  // A step-by-step guide opens with its heading focused, so a screen reader starts at the section.
+  if (SECTION_IDS.includes(ctx.route.id))
+    setTimeout(() => page.querySelector(`#sg-${ctx.route.id} h2`)?.focus({ preventScroll: true }), 80);
 }
 
 export const unmount = () => cleanup();
 
 export function onClick(e, ctx) {
-  if (onBandClick(e, ctx)) return true;
   const aud = e.target.closest("[data-sg-audience]");
   if (aud) {
     const pick = aud.dataset.sgAudience;
@@ -320,7 +212,7 @@ export function onClick(e, ctx) {
     announce(
       next
         ? i18nFor(ctx).S(`Showing the guide for: ${label.en}.`, `Mostrando la guía para: ${label.es}.`)
-        : i18nFor(ctx).S("Showing the short general guide.", "Mostrando la guía general corta."),
+        : i18nFor(ctx).S("Showing every group.", "Mostrando todos los grupos."),
     );
     ctx.rerender();
     return true;

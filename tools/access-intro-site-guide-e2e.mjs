@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * The Site Guide (/site-guide) in a real browser at 1280, 768 and 375: audience choice and its saved key, the contents
- * list and the phone section selector (aria-current follows the scroll), direct section links and Back to Guide,
- * search (count, excerpt, no-match links), the first-visitor path (choose, open an activity, come back through the
- * return bar), every link it shows resolving to the content it names, Spanish on Practice at Home, no horizontal
- * scroll, keyboard-only use, the print stylesheet (details open, URL after each link), and axe WCAG 2.2 AA.
+ * The Site Guide (/site-guide) in a real browser at 1280, 768 and 375: the directory (three groups, name + sentence +
+ * link), the audience choice and its saved key, each step-by-step guide on its own page with Back to Guide, search
+ * (count, excerpt, no-match links), the first-visitor path (open a guide, open an activity, come back through the
+ * return bar), every link it shows resolving to the content it names, Spanish, no horizontal scroll, keyboard-only
+ * use, the print stylesheet (details open, URL after each link), and axe WCAG 2.2 AA.
  *
  *   node tools/access-intro-site-guide-e2e.mjs        (serves this working tree)
  *
@@ -83,10 +83,6 @@ async function fresh(width, height = 900, { lang } = {}) {
     );
   return page;
 }
-/** Opens every folded section the way a reader does: by pressing its Show button. */
-const unfold = async (page) => {
-  for (const b of await page.$$('[data-sg-toggle][aria-expanded="false"]')) await b.click();
-};
 const go = async (page, path) => {
   await page.goto(`${base}${LAB}${path}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".sg-page");
@@ -101,102 +97,102 @@ const inView = (page, sel) =>
   }, sel);
 const noOverflow = (page) =>
   page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
+const GUIDES = ["start", "speaking", "writing", "more", "classroom", "home", "around", "help"];
 
 // ── desktop ───────────────────────────────────────────────────────────────────────────────────
 const d = await fresh(1280);
 await check(
-  "general guide: title, lead, short intro, three audience choices, no choice pressed",
+  "directory: title, lead, three audience choices, three groups of name + sentence + link",
   async () => {
     await go(d, "/site-guide");
     assert.equal(await d.locator("h1").count(), 1);
     assert.match(await d.locator("h1").innerText(), /Your Guide to The Language Page/);
     assert.match(
       await d.locator(".lead").first().innerText(),
-      /Find an activity, see how it works, and choose your next step\./,
+      /Every part of the site in one short list/,
     );
     assert.equal(await d.locator("[data-sg-audience]").count(), 3);
     assert.equal(await d.locator("[data-sg-audience][aria-pressed=true]").count(), 0);
+    assert.deepEqual(await d.locator(".sg-dir h2").allInnerTexts(), [
+      "For teachers",
+      "For students",
+      "For families",
+    ]);
+    const entries = await d.$$eval(".sg-entry", (all) =>
+      all.map((li) => ({
+        links: li.querySelectorAll("a").length,
+        text: li.querySelector("p")?.innerText || "",
+      })),
+    );
+    assert.ok(entries.length >= 12 && entries.length <= 20, `${entries.length} entries`);
+    for (const e of entries) assert.ok(e.links === 1 && e.text.length > 10);
+    // localhost counts as the Family Tour's host, so families get the tour (Practice Together opens it there too).
+    assert.ok(await d.locator('[data-sg-entry="family-tour"] a[href*="/family-tour/"]').count());
+    assert.equal(await d.locator('[data-sg-entry="practice-together"]').count(), 0);
     assert.deepEqual(await d.locator(".sg-section h2").allInnerTexts(), [
-      "Start Here",
-      "Speaking",
-      "Writing",
-      "Find Your Way Around",
       "Help and Common Questions",
     ]);
+    assert.equal(await d.locator(".sg-guides a").count(), GUIDES.length - 1);
+    assert.doesNotMatch(await d.locator(".sg-page").innerText(), /flight\s*deck/i);
     assert.deepEqual(d.errors(), []);
   },
 );
 
 await check(
-  "choosing an audience saves siteGuideAudience and keeps other keys; it survives a reload",
+  "choosing an audience saves siteGuideAudience, keeps other keys, shows only that group; it survives a reload",
   async () => {
     await d.evaluate((k) => localStorage.setItem(k, JSON.stringify({ tour: { stop: 2 } })), KEY);
     await d.click("[data-sg-audience=teacher]");
-    await d.waitForSelector("#sg-classroom");
+    await d.waitForFunction(() => document.querySelectorAll(".sg-dir").length === 1);
     let saved = await d.evaluate((k) => JSON.parse(localStorage.getItem(k)), KEY);
     assert.equal(saved.siteGuideAudience, "teacher");
     assert.deepEqual(saved.tour, { stop: 2 });
     await d.reload({ waitUntil: "networkidle" });
     await d.waitForSelector(".sg-page");
     assert.equal(await d.locator("[data-sg-audience=teacher][aria-pressed=true]").count(), 1);
-    assert.ok(await d.locator("#sg-classroom").count());
-    assert.match(await d.locator(".sg-pd").innerText(), /New to the site\? The teacher start page/);
+    assert.ok(await d.locator("#sg-dir-teacher").count());
+    assert.equal(await d.locator("#sg-dir-family").count(), 0);
     await d.click("[data-sg-audience=family]");
-    await d.waitForSelector("#sg-home");
-    assert.equal(await d.locator("#sg-classroom").count(), 0);
+    await d.waitForSelector("#sg-dir-family");
+    assert.equal(await d.locator("#sg-dir-teacher").count(), 0);
     saved = await d.evaluate((k) => JSON.parse(localStorage.getItem(k)), KEY);
     assert.equal(saved.siteGuideAudience, "family");
     await d.click("[data-sg-audience=family]");
-    await d.waitForFunction(() => !document.querySelector("#sg-home"));
+    await d.waitForFunction(() => document.querySelectorAll(".sg-dir").length === 3);
     saved = await d.evaluate((k) => JSON.parse(localStorage.getItem(k)), KEY);
     assert.equal(saved.siteGuideAudience, undefined);
     assert.deepEqual(saved.tour, { stop: 2 });
     await go(d, "/site-guide?for=student");
     assert.equal(await d.locator("[data-sg-audience=student][aria-pressed=true]").count(), 1);
+    assert.deepEqual(await d.locator(".sg-dir h2").allInnerTexts(), ["For students"]);
+    await d.click("[data-sg-audience=student]");
+    await d.waitForFunction(() => document.querySelectorAll(".sg-dir").length === 3);
   },
 );
 
 await check(
-  "contents list: link scrolls to the section, aria-current follows, selector hidden on desktop",
+  "each step-by-step guide opens alone on its own page, with a visible Back to Guide",
   async () => {
-    await go(d, "/site-guide?for=teacher");
-    assert.equal(await d.locator("#sgJump").isVisible(), false);
-    await d.click(".sg-toc a[data-sg-jump=writing]");
-    await d.waitForTimeout(500);
-    assert.ok(await inView(d, "#sg-writing"), "Writing is in view");
-    assert.equal(await d.locator(".sg-toc a[aria-current]").count(), 1);
-    assert.equal(await d.locator(".sg-toc a[aria-current]").innerText(), "Writing");
-    assert.match(d.url(), /\/site-guide\/writing/);
-    await d.evaluate(() => document.getElementById("sg-help")?.scrollIntoView());
-    await d.waitForTimeout(400);
-    assert.equal(
-      await d.locator(".sg-toc a[aria-current]").innerText(),
-      "Help and Common Questions",
-    );
-  },
-);
-
-await check(
-  "a direct section link opens at that section with a visible Back to Guide",
-  async () => {
-    await go(d, "/site-guide/help");
-    await d.waitForTimeout(500);
-    assert.ok(await inView(d, "#sg-help"));
+    for (const id of GUIDES) {
+      await go(d, `/site-guide/${id}`);
+      assert.deepEqual(await d.$$eval(".sg-section", (s) => s.map((x) => x.id)), [`sg-${id}`], id);
+      assert.ok(await inView(d, `#sg-${id}`), `${id} is in view`);
+      assert.equal(await d.locator(".sg-dir").count(), 0, `${id}: no directory`);
+    }
     const back = d.locator(".sg-back a");
     assert.match(await back.innerText(), /Back to Guide/);
     await back.click();
     await d.waitForFunction(() => !location.pathname.endsWith("/help"));
     assert.equal(await d.locator(".sg-back").count(), 0);
-    // a section not shown to this reader still opens from its own link
-    await go(d, "/site-guide/home");
-    assert.ok(await d.locator("#sg-home").count());
+    assert.equal(await d.locator(".sg-dir").count(), 3);
+    assert.deepEqual(d.errors(), []);
   },
 );
 
 await check(
   "search: count announced, excerpt and link per result, no-match links to Speaking, Writing, Help",
   async () => {
-    await go(d, "/site-guide?for=teacher");
+    await go(d, "/site-guide");
     await d.fill("#sgQ", "microphone");
     await d.waitForTimeout(200);
     const status = await d.locator("[data-sg-status]").innerText();
@@ -206,6 +202,12 @@ await check(
     assert.ok((await first.locator("a").getAttribute("href")).startsWith(LAB));
     assert.ok((await first.locator(".fine").innerText()).length > 10);
     assert.equal(await d.locator("[data-sg-status]").getAttribute("aria-live"), "polite");
+    await d.fill("#sgQ", "launch studio");
+    await d.waitForTimeout(200);
+    assert.match(
+      await d.locator(".sg-results li").first().innerText(),
+      /For teachers|Launch Studio/,
+    );
     await d.fill("#sgQ", "zzzqqq");
     await d.waitForTimeout(200);
     assert.match(await d.locator("[data-sg-status]").innerText(), /No results/);
@@ -224,16 +226,11 @@ await check(
 );
 
 await check(
-  "first-visitor path: choose, read the card, open the activity, return through Back to Guide",
+  "first-visitor path: open the Speaking guide, read the card, open the activity, return through Back to Guide",
   async () => {
     await go(d, "/site-guide");
-    await d.click("[data-sg-audience=student]");
-    await d.waitForSelector("#sg-more");
-    // Long sections start folded behind a summary; Show opens them and the button says so.
-    assert.equal(await d.locator("#sg-speaking-body").isHidden(), true);
-    await d.click('[data-sg-toggle="speaking"]');
-    assert.equal(await d.getAttribute('[data-sg-toggle="speaking"]', "aria-expanded"), "true");
-    assert.match(await d.locator('[data-sg-toggle="speaking"]').innerText(), /Hide this section/);
+    await d.click('.sg-guides a[href*="/site-guide/speaking"]');
+    await d.waitForSelector("#sg-card-hallway");
     const card = d.locator("#sg-card-hallway");
     assert.match(
       await card.innerText(),
@@ -256,62 +253,79 @@ await check(
   },
 );
 
-await check("every link the guide shows (all audiences) opens the content it names", async () => {
-  const hrefs = new Set();
-  for (const who of ["teacher", "student", "family"]) {
-    await go(d, `/site-guide?for=${who}`);
-    for (const h of await d.$$eval(".sg-page a[href]", (a) => a.map((x) => x.getAttribute("href"))))
-      if (!h.startsWith("#")) hrefs.add(h);
-  }
-  assert.ok(hrefs.size > 40, `${hrefs.size} links`);
-  const p = await (await browser.newContext()).newPage();
-  p.on("pageerror", () => {});
-  let opened = 0;
-  for (const raw of hrefs) {
-    if (/\.(pdf|docx|png)$/.test(raw)) continue;
-    const path = raw;
-    const lab = path.replace(LAB, "");
-    if (raw.startsWith("/access-teacher/")) continue;
-    await p.goto(`${base}${path}`, { waitUntil: "networkidle" });
-    await p.waitForTimeout(150);
-    const info = await p.evaluate(() => ({
-      view: document.body.dataset.labView,
-      h1: document.querySelector("#app h1")?.innerText || "",
-      title: document.title,
-    }));
-    assert.ok(!/not found/i.test(info.title + info.h1), `${raw}: "${info.title}"`);
-    assert.ok(info.h1 || info.view, raw);
-    const key = Object.keys(TITLES).find(
-      (k) => lab === k || lab.startsWith(`${k}&`) || lab.startsWith(`${k}?`),
-    );
-    if (key)
-      assert.ok(
-        (info.h1 + info.title).includes(TITLES[key]),
-        `${raw}: expected "${TITLES[key]}", got "${info.h1}"`,
+await check(
+  "every link the guide shows (directory and every guide page) opens the content it names",
+  async () => {
+    const hrefs = new Set();
+    for (const path of ["/site-guide", ...GUIDES.map((id) => `/site-guide/${id}`)]) {
+      await go(d, path);
+      for (const h of await d.$$eval(".sg-page a[href]", (a) =>
+        a.map((x) => x.getAttribute("href")),
+      ))
+        if (!h.startsWith("#")) hrefs.add(h);
+    }
+    assert.ok(hrefs.size > 40, `${hrefs.size} links`);
+    const p = await (await browser.newContext()).newPage();
+    p.on("pageerror", () => {});
+    let opened = 0;
+    for (const raw of hrefs) {
+      if (/\.(pdf|docx|png)$/.test(raw)) continue;
+      const lab = raw.replace(LAB, "");
+      if (raw.startsWith("/access-teacher/")) continue;
+      const res = await p.goto(`${base}${raw}`, { waitUntil: "networkidle" });
+      await p.waitForTimeout(150);
+      if (new URL(p.url()).pathname === `${LAB}/family-tour/`) {
+        // a static page of its own, not a lab view (on this host /practice-together opens it too)
+        assert.equal(res?.status(), 200, raw);
+        opened += 1;
+        continue;
+      }
+      const info = await p.evaluate(() => ({
+        view: document.body.dataset.labView,
+        h1: document.querySelector("#app h1")?.innerText || "",
+        title: document.title,
+      }));
+      assert.ok(!/not found/i.test(info.title + info.h1), `${raw}: "${info.title}"`);
+      assert.ok(info.h1 || info.view, raw);
+      const key = Object.keys(TITLES).find(
+        (k) => lab === k || lab.startsWith(`${k}&`) || lab.startsWith(`${k}?`),
       );
-    else if (!/^\/(?:\?|$)/.test(lab))
-      assert.notEqual(info.view, "home", `${raw} fell back to the home page`);
-    opened += 1;
-  }
-  for (const key of Object.keys(TITLES))
-    assert.ok(
-      [...hrefs].some((h) => h.includes(key.split("?")[0])),
-      `${key} is linked`,
-    );
-  console.log(`     opened ${opened} links`);
-});
+      if (key)
+        assert.ok(
+          (info.h1 + info.title).includes(TITLES[key]),
+          `${raw}: expected "${TITLES[key]}", got "${info.h1}"`,
+        );
+      else if (!/^\/(?:\?|$)/.test(lab))
+        assert.notEqual(info.view, "home", `${raw} fell back to the home page`);
+      opened += 1;
+    }
+    for (const key of Object.keys(TITLES))
+      assert.ok(
+        [...hrefs].some((h) => h.includes(key.split("?")[0])),
+        `${key} is linked`,
+      );
+    console.log(`     opened ${opened} links`);
+  },
+);
 
 await check(
-  "Spanish: Practice at Home, the contents and the notes are in Spanish; the page stays usable",
+  "Spanish: the directory, Help and Practice at Home are in Spanish; the page stays usable",
   async () => {
     const es = await fresh(1280, 900, { lang: "es" });
     await go(es, "/site-guide?for=family");
+    assert.match(await es.locator(".sg-dir h2").innerText(), /Para familias/);
+    assert.match(
+      await es.locator(".sg-dir").innerText(),
+      /Recorrido familiar[\s\S]*Rincón de la familia/,
+    );
+    assert.match(await es.locator("#sg-help").innerText(), /¿Necesito una cuenta\?/);
+    assert.match(await es.locator(".sg-guides").innerText(), /Practicar en casa/);
+    assert.match(await es.locator(".sg-note").first().innerText(), /asistido por máquina/);
+    assert.ok(await noOverflow(es));
+    await go(es, "/site-guide/home");
     const home = await es.locator("#sg-home").innerText();
     assert.match(home, /Practicar juntos/);
     assert.match(home, /Elijan una actividad\./);
-    assert.match(await es.locator(".sg-toc").innerText(), /Practicar en casa/);
-    assert.match(await es.locator("#sg-help").innerText(), /¿Necesito una cuenta\?/);
-    assert.match(await es.locator(".sg-note").first().innerText(), /asistido por máquina/);
     assert.ok(
       await es.locator("#sg-home .lead [lang=es]").count(),
       "Spanish text is marked lang=es on the English page",
@@ -323,7 +337,7 @@ await check(
 );
 
 await check(
-  "keyboard only: tab reaches the audience buttons, contents links, search and cards with a visible focus ring",
+  "keyboard only: tab reaches the audience buttons, search and the directory links with a visible focus ring",
   async () => {
     await go(d, "/site-guide");
     const seen = new Set();
@@ -334,7 +348,11 @@ await check(
         const cs = getComputedStyle(e);
         return {
           tag: e.tagName,
-          attr: e.getAttribute("data-sg-audience") || e.getAttribute("data-sg-jump") || e.id || "",
+          attr:
+            e.getAttribute("data-sg-audience") ||
+            e.closest("[data-sg-entry]")?.getAttribute("data-sg-entry") ||
+            e.id ||
+            "",
           ring: cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) >= 2,
         };
       });
@@ -342,7 +360,7 @@ await check(
       if (/^(A|BUTTON|INPUT|SELECT|SUMMARY)$/.test(info.tag) && info.attr)
         assert.ok(info.ring, `${info.attr} shows a focus ring`);
     }
-    for (const want of ["teacher", "student", "family", "start", "speaking", "sgQ"])
+    for (const want of ["teacher", "student", "family", "sgQ", "start", "launch"])
       assert.ok(seen.has(want), `Tab reaches ${want}`);
     await d.focus("#sgQ");
     await d.keyboard.type("write");
@@ -360,24 +378,18 @@ await check(
       const hidden = (sel) =>
         [...document.querySelectorAll(sel)].every((e) => getComputedStyle(e).display === "none");
       const closed = [...document.querySelectorAll(".sg-page details:not([open])")].length;
-      const link = document.querySelector(".sg-page a[data-url]");
+      const link = document.querySelector(".sg-entry a[data-url]");
       return {
-        side: hidden(".sg-side"),
         search: hidden(".sg-search"),
         audience: hidden(".sg-audience"),
+        guides: hidden(".sg-guides"),
         closed,
-        folded: [...document.querySelectorAll(".sg-body")].filter(
-          (b) => b.hidden || getComputedStyle(b).display === "none",
-        ).length,
-        overview: hidden(".sg-overview"),
         after: getComputedStyle(link, "::after").content,
         top: getComputedStyle(document.querySelector(".lab-top")).display,
       };
     });
-    assert.equal(r.side && r.search && r.audience, true);
+    assert.equal(r.search && r.audience && r.guides, true);
     assert.equal(r.closed, 0, "details open for print");
-    assert.equal(r.folded, 0, "folded sections open for print");
-    assert.equal(r.overview, true, "the grade picker summary is not printed");
     assert.match(r.after, /thelanguagepage\.com\/access-practice-lab\//);
     assert.equal(r.top, "none");
     await d.evaluate(() => window.dispatchEvent(new Event("afterprint")));
@@ -391,17 +403,17 @@ await check(
 
 if (AxeBuilder) {
   await check(
-    "axe WCAG 2.2 AA: no serious or critical violations (general, teacher, family, Spanish)",
+    "axe WCAG 2.2 AA: no serious or critical violations (general, teacher, family, Spanish, a guide page)",
     async () => {
       for (const [path, lang] of [
         ["/site-guide", "en"],
         ["/site-guide?for=teacher", "en"],
         ["/site-guide?for=family", "es"],
+        ["/site-guide/speaking", "en"],
       ]) {
         const page = await fresh(1280, 900, { lang });
         await go(page, path);
-        // Open every disclosure on the page itself, hidden ones included. Clicking each summary stalled: the header
-        // "More" menu covered them and cards in hidden sections never become clickable (30 s wait each).
+        // Open every disclosure on the page itself. Clicking each summary stalled: the header "More" menu covered them.
         await page.$$eval("#app details", (all) => all.forEach((d) => (d.open = true)));
         const result = await new AxeBuilder({ page })
           .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
@@ -422,19 +434,16 @@ if (AxeBuilder) {
 for (const width of [768, 375]) {
   const m = await fresh(width, width === 375 ? 800 : 1000);
   await check(
-    `${width}px: no horizontal scroll, labeled section selector works without a mouse, search usable`,
+    `${width}px: no horizontal scroll, the directory fits, search usable, 44px targets`,
     async () => {
-      await go(m, "/site-guide?for=teacher");
+      await go(m, "/site-guide");
       assert.ok(await noOverflow(m), "no horizontal scroll");
-      assert.equal(await m.locator(".sg-toc").isVisible(), false);
-      assert.equal(await m.locator("#sgJump").isVisible(), true);
-      assert.match(await m.locator("label[for=sgJump]").innerText(), /Jump to a section/);
-      await m.focus("#sgJump"); // a native <select>: reachable and operable with the keyboard
-      assert.equal(await m.evaluate(() => document.activeElement.id), "sgJump");
-      await m.selectOption("#sgJump", "help");
-      await m.waitForTimeout(500);
-      assert.ok(await inView(m, "#sg-help"), "Help is in view");
-      assert.equal(await m.locator("#sgJump").inputValue(), "help");
+      const fits = await m.evaluate(() =>
+        [...document.querySelectorAll(".sg-entry, .sg-dir, .sg-search")].every(
+          (e) => e.getBoundingClientRect().right <= innerWidth + 1,
+        ),
+      );
+      assert.ok(fits, "directory fits the screen");
       await m.fill("#sgQ", "account");
       assert.ok((await m.locator(".sg-results li").count()) >= 1);
       const small = await m.evaluate(() =>
@@ -451,17 +460,19 @@ for (const width of [768, 375]) {
       assert.deepEqual(m.errors(), []);
     },
   );
-  await check(`${width}px: cards, previews and the screenshots fit the screen`, async () => {
-    await go(m, "/site-guide?for=teacher");
-    await unfold(m);
-    const fits = await m.evaluate(() =>
-      [
-        ...document.querySelectorAll(
-          ".sg-card, .sg-routine, .sg-shot img, .sg-worked, .in-preview",
-        ),
-      ].every((e) => e.getBoundingClientRect().right <= innerWidth + 1),
-    );
-    assert.ok(fits);
+  await check(`${width}px: guide cards, previews and the screenshot fit the screen`, async () => {
+    for (const id of ["speaking", "writing", "classroom", "around"]) {
+      await go(m, `/site-guide/${id}`);
+      assert.ok(await noOverflow(m), `${id}: no horizontal scroll`);
+      const fits = await m.evaluate(() =>
+        [
+          ...document.querySelectorAll(
+            ".sg-card, .sg-routine, .sg-shot img, .sg-worked, .in-preview",
+          ),
+        ].every((e) => e.getBoundingClientRect().right <= innerWidth + 1),
+      );
+      assert.ok(fits, id);
+    }
     for (const img of await m.$$(".sg-shot img")) {
       await img.scrollIntoViewIfNeeded();
       await m.waitForTimeout(200);

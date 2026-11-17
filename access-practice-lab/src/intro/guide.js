@@ -221,7 +221,7 @@ function fallbackHTML(question, lang, { limited = false } = {}) {
   return `${calm || `<p>${esc(pair(COPY.offline, lang))}</p>`}<ul class="pg-hits">${hits
     .map(
       (h) =>
-        `<li><a href="${BASE}${esc(h.route)}">${esc(h.title)}</a><span>${esc(h.excerpt)}</span></li>`,
+        `<li><a href="${h.route.startsWith("/access-teacher") ? "" : BASE}${esc(h.route)}">${esc(h.title)}</a><span>${esc(h.excerpt)}</span></li>`,
     )
     .join("")}</ul>`;
 }

@@ -1,6 +1,7 @@
 // Site Guide search: a small, pure search over the guide's own headings, explanations and activity names.
 // No DOM and no lab imports besides the data files, so the unit test runs it in Node. Results carry the section, a short
 // excerpt and one direct link (an activity route or a guide section). Spanish and English text are both indexed.
+import { familyTourHost } from "../family-tour-host.js";
 import { ROUTES } from "./data.js";
 import {
   cardFor,
@@ -10,7 +11,12 @@ import {
   START_STEPS,
   WRITING_IDS,
 } from "./site-guide-data.js";
+import { DIRECTORY, directoryRoutes } from "./site-guide-directory.js";
 import { AREAS, FAQ, OTHER_AREAS, ROUTINES, SHARING, WAYS } from "./site-guide-more.js";
+
+/** The label a result shows above its link: a guide section's title or a directory group's title ({ en, es }). */
+export const resultLabel = (sid) =>
+  SECTIONS.find((s) => s.id === sid)?.title || DIRECTORY.find((g) => `dir-${g.id}` === sid)?.title;
 
 const both = (p) => (p && typeof p === "object" ? `${p.en} ${p.es}` : String(p ?? ""));
 const sectionRoute = (id) => `${ROUTES.siteGuide}/${id}`;
@@ -20,6 +26,9 @@ export function buildIndex() {
   const out = [];
   const add = (section, title, text, route, guide = false) =>
     out.push({ section, title: both(title), text: both(text), route, guide });
+  for (const g of DIRECTORY)
+    for (const e of g.entries)
+      if (e.tourHost === undefined || e.tourHost === familyTourHost()) add(`dir-${g.id}`, e.title, e.text, e.route, true);
   for (const s of SECTIONS) add(s.id, s.title, "", sectionRoute(s.id), true);
   for (const st of START_STEPS) add("start", st.head, st.body, sectionRoute("start"), true);
   for (const id of [...SPEAKING_IDS, ...WRITING_IDS]) {
@@ -91,7 +100,7 @@ export function searchGuide(index, query, limit = 8) {
 
 /** Every lab route this guide can link to (the link test and the e2e test open each one). */
 export function allGuideRoutes() {
-  const set = new Set(buildIndex().map((e) => e.route));
+  const set = new Set([...buildIndex().map((e) => e.route), ...directoryRoutes()]);
   for (const a of Object.values(EXTRA_ACTIVITIES)) set.add(a.route);
   for (const g of [...WAYS, ...FAQ]) for (const l of g.links || []) set.add(l.route);
   for (const a of AREAS) if (a.second) set.add(a.second.route);
