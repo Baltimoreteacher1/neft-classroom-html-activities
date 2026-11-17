@@ -1512,46 +1512,6 @@ body.th-body .fold-toggle {
   font-size: 1.65rem;
   color: var(--brand-deep);
 }
-.tc-res-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: var(--s-4);
-}
-.tc-res-box {
-  display: grid;
-  align-content: start;
-  gap: var(--s-3);
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-.tc-res-box h4 {
-  margin: 0;
-}
-.tc-res-list {
-  display: grid;
-  gap: var(--s-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.tc-res-list li {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--s-2);
-  padding: 0.65rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-}
-.tc-res-list li > div:first-child {
-  display: grid;
-  gap: 0.15rem;
-}
-
 /* ── Embedded 8-Step Hub Tour (hub-tour.js) ──────────────────────────── */
 .ht-drawer {
   display: grid;
@@ -1618,4 +1578,214 @@ body.th-body .fold-toggle {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-2);
+}
+
+/* ── Teacher Hub home: compact intro, five tasks, quick tools, My workspace (hub-home.js, hub-tasks.js) ── */
+.th-intro .th-hero {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
+  padding: clamp(1rem, 2.5vw, 1.6rem) clamp(1.1rem, 2.5vw, 2rem);
+}
+.th-intro .th-hero h1 {
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+}
+.th-intro .th-hero .lead {
+  margin-top: var(--s-2);
+}
+.tc-center {
+  margin-block: var(--s-4);
+}
+.tc-band {
+  justify-items: start;
+}
+@media (min-width: 1100px) {
+  .tc-action-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .tc-action-card {
+    flex-direction: column;
+  }
+}
+.tc-action-card:focus-visible,
+.th-quick-tool:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.tc-task {
+  display: grid;
+  gap: var(--s-3);
+}
+.tc-tour-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  margin: 0;
+}
+.tc-tour-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.tc-plan-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.tc-plan-tools a.chip {
+  text-decoration: none;
+}
+.tc-link-list,
+.th-ws-list,
+.th-ws-links,
+.th-quick-row {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tc-link-list,
+.th-ws-list {
+  display: grid;
+  gap: var(--s-2);
+}
+.tc-link-row,
+.th-ws-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.tc-link-row > div,
+.th-ws-row > div:first-child {
+  display: grid;
+  gap: 0.15rem;
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+.th-ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.th-home {
+  display: grid;
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.th-quick h2,
+.th-workspace h2 {
+  margin: 0 0 var(--s-2);
+  font: 700 clamp(1.2rem, 1rem + 0.8vw, 1.5rem)/1.2 var(--font-display, var(--font));
+}
+.th-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.th-quick-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1rem;
+  border: 1.5px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.th-quick-tool:hover {
+  background: var(--surface-2);
+}
+.th-workspace {
+  display: grid;
+  gap: var(--s-2);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+}
+.th-workspace > h2,
+.th-workspace > p {
+  margin: 0;
+}
+.th-ws-sub {
+  margin: var(--s-2) 0 0;
+  font-size: 1rem;
+}
+.th-ws-empty {
+  color: var(--ink-2);
+}
+.th-ws-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+}
+.th-ws-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+}
+.th-doors .th-legend {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin-bottom: var(--s-4);
+}
+@media (max-width: 559px) {
+  .th-intro .th-hero .eyebrow,
+  .th-intro .th-hero .lead {
+    display: none;
+  }
+  /* Phones: titles only, so all five tasks fit on the first screen. */
+  .tc-action-card {
+    align-items: center;
+    min-height: 3.25rem;
+    padding: 0.55rem 0.9rem;
+  }
+  .tc-action-body span,
+  .tc-head .fine {
+    display: none;
+  }
+  .tc-action-ico {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* Site navigation: the same six places as every lab page (Home · Teachers · Students · Families · Find Resources · Help). */
+.th-sitenav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  flex-basis: 100%;
+  order: 3;
+}
+.th-sitenav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.th-sitenav a:hover,
+.th-sitenav a:focus-visible {
+  background: var(--surface-2);
+}
+.th-sitenav a[aria-current="page"] {
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+}
+.th-body .lab-top {
+  flex-wrap: wrap;
 }

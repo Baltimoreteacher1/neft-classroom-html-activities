@@ -1,11 +1,12 @@
 // Teacher Command Center (access-teacher/command-center.js)
-// Organizes the Teacher Hub around the six core teaching workflows:
-//   1. Plan a Lesson       (5-stage guided pathway composer: Introduce -> Explore -> Practice -> Apply -> Review)
-//   2. Support a Student   (WIDA-sensitive scaffold differentiation workspace)
-//   3. Assign Practice     (Unified student & Family Companion sharing workflow)
-//   4. Analyze Progress    (Observed evidence summary + WIDA Data Studio & Review Queue launcher)
-//   5. My Resources        (Real saved pathways, Book Studio projects, custom experiences, recent resources)
-//   6. Create Something    (Intention-driven launcher for Book Studio, Experience Builder, Whole-Class, Lesson Builder)
+// The first thing on the Teacher Hub: "What would you like to do today?", the grade band, and five tasks.
+//   1. Find an Activity          (Resource Finder + the finders on this page; hub-tasks.js)
+//   2. Plan a Lesson             (5-stage pathway composer, with Support a Student and Assign Practice beside it)
+//   3. Create Something          (Book Studio, Experience Builder, Launch Studio, Whole-Class, Lesson Builder)
+//   4. Review Student Progress   (observed evidence summary + Data Studio, review queue, class evidence, insights)
+//   5. Prepare for ACCESS        (Access Prep, practice tests, simulator, Road to ACCESS; hub-tasks.js)
+// Saved pathways and other saved work ("My Resources" until 2026-11-17) live in "My workspace" (hub-home.js).
+// The grade band chosen here is the page's band: it goes in ?grades= and a `th:band` event tells the rest of the hub.
 // Reuses existing content, registries, and assignment infrastructure without duplicating engines.
 
 import { loadIndex } from "/access-practice-lab/src/content.js";
@@ -20,11 +21,13 @@ import {
   whatNextRecommendations,
 } from "/access-practice-lab/src/resource-intelligence.js";
 import { DESTINATIONS } from "/access-practice-lab/src/sitemap.js";
+import { BAND_INFO, CONTENT_BANDS } from "/access-practice-lab/src/bands.js";
 import { allRecords } from "/access-practice-lab/src/store.js";
 import { loadLedger } from "/access-practice-lab/src/lang/ledger.js";
 import {
   BASE,
   announce,
+  bandLabel,
   copyText,
   html,
   icon,
@@ -40,47 +43,32 @@ import {
   renderHubTourHTML,
   saveHubTourState,
 } from "/access-teacher/hub-tour.js";
+import { findTaskHTML, planToolsHTML, prepareTaskHTML } from "/access-teacher/hub-tasks.js";
 
 export const SAVED_PATHWAYS_KEY = "accessTeacher:v1:savedPathways";
 
+// The five tasks shown on arrival. Each opens its panel in place; picking it again closes it.
 export const COMMAND_ACTIONS = Object.freeze([
-  {
-    id: "plan",
-    icon: "road",
-    title: "Plan a Lesson",
-    lead: "Build a short lesson from ready activities.",
-  },
-  {
-    id: "support",
-    icon: "writing",
-    title: "Support a Student",
-    lead: "Add help for one student. The goal stays the same.",
-  },
-  {
-    id: "assign",
-    icon: "launch",
-    title: "Assign Practice",
-    lead: "Get a link for students or families.",
-  },
-  {
-    id: "analyze",
-    icon: "growth",
-    title: "Analyze Progress",
-    lead: "See what students did and what to teach next.",
-  },
-  {
-    id: "resources",
-    icon: "bookmark",
-    title: "My Resources",
-    lead: "Open what you saved.",
-  },
-  {
-    id: "create",
-    icon: "sparkle",
-    title: "Create Something",
-    lead: "Make a book or an activity from your own text.",
-  },
+  { id: "find", icon: "search", title: "Find an Activity", lead: "Search activities, printables and answer keys." },
+  { id: "plan", icon: "road", title: "Plan a Lesson", lead: "Build a short lesson from ready activities." },
+  { id: "create", icon: "sparkle", title: "Create Something", lead: "Make a book, an activity or a class link." },
+  { id: "analyze", icon: "growth", title: "Review Student Progress", lead: "See what students did and what to teach next." },
+  { id: "prepare", icon: "tests", title: "Prepare for ACCESS", lead: "Test practice, the simulator and a weekly plan." },
 ]);
+
+// Planning tools that open inside "Plan a Lesson" (planToolsHTML), not as tasks of their own.
+export const PLAN_TOOLS = Object.freeze([
+  { id: "support", title: "Support a Student", lead: "Add help for one student. The goal stays the same." },
+  { id: "assign", title: "Assign Practice", lead: "Get a link for students or families." },
+]);
+const taskOf = (tab) => (PLAN_TOOLS.some((t) => t.id === tab) ? "plan" : tab);
+
+/** The grade band in the URL (?grades=), or 6-8. */
+export function hubBand() {
+  const b = typeof location === "undefined" ? "" : new URLSearchParams(location.search).get("grades");
+  return CONTENT_BANDS.includes(b) ? b : "6-8";
+}
+
 
 export function readSavedPathways() {
   const list = safeJson(storage.get(SAVED_PATHWAYS_KEY), []);
@@ -124,11 +112,13 @@ export async function mountCommandCenter(host) {
   const index = await loadIndex().catch(() => null);
   const registry = buildResourceRegistry({ index, destinations: DESTINATIONS });
 
+  const band = hubBand();
   const state = {
-    // No task is open on arrival (2026-11-17): the teacher sees six choices, not a lesson builder.
+    // No task is open on arrival (2026-11-17): the teacher sees five choices, not a lesson builder.
     activeTab: "",
+    band,
     // Plan a Lesson state
-    planBand: "6-8",
+    planBand: band,
     planDomain: "Speaking",
     planSkill: "",
     planSupport: "B",
@@ -138,13 +128,13 @@ export async function mountCommandCenter(host) {
     pathway: null,
     statusNote: "",
     // Support a Student state
-    supBand: "6-8",
+    supBand: band,
     supDomain: "Writing",
     supSupport: "A",
     supSkill: "",
     supNeeds: ["visual-vocabulary", "sentence-frames", "bilingual-glossary"],
     // Assign Practice state
-    assignBand: "6-8",
+    assignBand: band,
     assignDomain: "Reading",
     assignSupport: "B",
     assignResourceId: "",
@@ -311,7 +301,7 @@ export async function mountCommandCenter(host) {
             ${icon("copy")} Copy Shareable Link
           </button>
           <button type="button" class="btn" data-tc-act="save-pathway">
-            ${icon("save")} Save to My Resources
+            ${icon("save")} Save to My workspace
           </button>
         </div>
       </div>
@@ -532,7 +522,7 @@ export async function mountCommandCenter(host) {
     return html`<div class="tc-workspace" id="tcAnalyze" role="region" aria-labelledby="tc-tab-analyze">
       <div class="tc-ws-head">
         <div>
-          <h3>Analyze Progress · Observed Evidence &amp; WIDA Data Studio</h3>
+          <h3>Review Student Progress</h3>
           <p class="fine">
             All analysis distinguishes observed performance from estimates. Practice activities record
             first attempts, supported vs. independent work, and revisions—never an invented WIDA score.
@@ -584,104 +574,12 @@ export async function mountCommandCenter(host) {
           <span class="fine">Spot repeated error patterns and launch targeted Error Detective or scaffolded practice.</span>
           <a class="btn small" href="#accInsights">Jump to Learning Insights →</a>
         </article>
+        <article class="tc-rec-card">
+          <strong>Live Class, Class Codes &amp; Passport Check-ins</strong>
+          <span class="fine">See who joined with your class code, what you assigned, and the check-ins students sent.</span>
+          <a class="btn small" href="#liveClass">Jump to Live Class →</a>
+        </article>
       </div>
-    </div>`;
-  }
-
-  function renderResourcesTab() {
-    const savedPathways = readSavedPathways();
-    const recentIds = safeJson(storage.get("accessPracticeLab:v1:exploreRecent"), []);
-    const recentItems = (Array.isArray(recentIds) ? recentIds : [])
-      .map((r) => DESTINATIONS.find((d) => d.id === r?.id))
-      .filter(Boolean)
-      .slice(0, 6);
-    const customExps = Object.values(safeJson(storage.get("accessPracticeLab:v1:experiences"), {})?.items || {});
-    const classes = safeJson(storage.get("accessPracticeLabClass:v1:teacher-classes"), []);
-
-    return html`<div class="tc-workspace" id="tcResources" role="region" aria-labelledby="tc-tab-resources">
-      <div class="tc-ws-head">
-        <div>
-          <h3>My Resources · Saved Pathways, Books &amp; Class Materials</h3>
-          <p class="fine">
-            Everything saved in this browser on this device. Reopen a pathway, launch Book Studio, or
-            continue editing a custom experience.
-          </p>
-        </div>
-        <a class="btn small" href="#activities">Browse All 896+ Activities</a>
-      </div>
-
-      <div class="tc-res-columns">
-        <section class="tc-res-box">
-          <h4>Saved Lesson Pathways (${savedPathways.length})</h4>
-          ${
-            savedPathways.length
-              ? html`<ul class="tc-res-list">
-                  ${savedPathways.map(
-                    (p) => html`<li>
-                      <div>
-                        <strong>${p.title}</strong>
-                        <span class="fine">Grades ${p.band} · ${p.domain} · ${p.stages?.length || 5} stages (~${p.minutes}m)</span>
-                      </div>
-                      <div class="tc-stage-actions">
-                        <a class="btn small" href="${p.playlistUrl}" target="_blank" rel="noopener">Open</a>
-                        <button type="button" class="btn small" data-tc-copy="${p.playlistUrl}">Copy link</button>
-                        <button type="button" class="ghost small" data-tc-del-pw="${p.id}">Remove</button>
-                      </div>
-                    </li>`,
-                  )}
-                </ul>`
-              : html`<p class="fine">No saved pathways yet. Use <strong>Plan a Lesson</strong> to compose and save your first sequence.</p>`
-          }
-        </section>
-
-        <section class="tc-res-box">
-          <h4>Created Materials &amp; Active Classes</h4>
-          <ul class="tc-res-list">
-            <li>
-              <div>
-                <strong>Book Studio Library &amp; Class Templates</strong>
-                <span class="fine">26 templates across K–2, 3–5, and 6–8; saved books persist on this device.</span>
-              </div>
-              <div class="tc-stage-actions">
-                <a class="btn small" href="${BASE}/book-studio">Open Book Studio</a>
-                <a class="btn small" href="${BASE}/book-studio/templates">Templates</a>
-              </div>
-            </li>
-            <li>
-              <div>
-                <strong>Experience Builder Projects (${customExps.length})</strong>
-                <span class="fine">Turn your own classroom text or .docx into a playable simulation.</span>
-              </div>
-              <div class="tc-stage-actions">
-                <a class="btn small" href="${BASE}/experience-builder">Open Builder</a>
-              </div>
-            </li>
-            <li>
-              <div>
-                <strong>Saved Live Classes (${Array.isArray(classes) ? classes.length : 0})</strong>
-                <span class="fine">Manage class join codes, assignments, and student review queues.</span>
-              </div>
-              <div class="tc-stage-actions">
-                <a class="btn small" href="#liveClass">Open Live Class</a>
-              </div>
-            </li>
-          </ul>
-          ${
-            recentItems.length
-              ? html`<h4>Recently Opened on This Device</h4>
-                  <ul class="tc-res-list">
-                    ${recentItems.map(
-                      (d) => html`<li>
-                        <a href="${d.href.startsWith("/") ? d.href : `${BASE}/${d.href}`}">${d.title[0]}</a>
-                        <span class="fine">${d.text[0]}</span>
-                      </li>`,
-                    )}
-                  </ul>`
-              : ""
-          }
-        </section>
-      </div>
-      ${state.statusNote ? html`<p class="tc-status" role="status">${state.statusNote}</p>` : ""}
     </div>`;
   }
 
@@ -700,6 +598,12 @@ export async function mountCommandCenter(host) {
         tool: "Experience Builder",
         desc: "Paste a reading passage or upload a .docx file to compile an editable, playable investigation with characters, evidence checks, and writing.",
         href: `${BASE}/experience-builder`,
+      },
+      {
+        title: "Share One Activity by Link or QR Code",
+        tool: "Launch Studio",
+        desc: "Pick an activity and its settings, then share one link or a QR code your class can scan.",
+        href: `${BASE}/launch-studio?grades=${state.band}`,
       },
       {
         title: "Prepare Projector-Ready Language Supports",
@@ -756,51 +660,39 @@ export async function mountCommandCenter(host) {
   function render() {
     const tourState = loadHubTourState();
     const tabMap = {
+      find: () => findTaskHTML(state.band),
       plan: renderPlanTab,
       support: renderSupportTab,
       assign: renderAssignTab,
       analyze: renderAnalyzeTab,
-      resources: renderResourcesTab,
       create: renderCreateTab,
+      prepare: () => prepareTaskHTML(state.band),
     };
     const activeFn = tabMap[state.activeTab];
+    const task = taskOf(state.activeTab);
 
     host.innerHTML = toHtml(html`<div class="tc-shell">
       <div class="tc-head">
         <div>
-          <h2 id="tcTitle">What do you need today?</h2>
-          <p class="fine">Pick one task. It opens right here.</p>
+          <h2 id="tcTitle">What would you like to do today?</h2>
+          <p class="fine">Pick one. It opens right here.</p>
         </div>
-        <div class="tc-head-actions">
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-tc-act="toggle-tour"
-            aria-expanded="${tourState.open}"
-          >
-            ${icon("flag")}
-            ${tourState.open
-              ? "Close Guided Tour"
-              : tourState.furthest > 1
-                ? `Resume the tour (step ${tourState.step} of ${HUB_TOUR_STEPS.length})`
-                : "Take the 3-step tour"}
-          </button>
-          <a class="btn small" href="${BASE}/start/tour" id="tcStartTour">
-            Full-Screen Tour &amp; PDF Kit
-          </a>
+        <div class="th-band tc-band">
+          <span class="th-band-label" id="tcBandLabel">Grade band</span>
+          <div class="band-switch" role="group" aria-labelledby="tcBandLabel">
+            ${CONTENT_BANDS.map((b) => html`<button type="button" class="band-btn" data-th-band="${b}" aria-pressed="${String(b === state.band)}" aria-label="${bandLabel(b)}">${BAND_INFO[b]?.short || b}</button>`)}
+          </div>
         </div>
       </div>
-
-      ${tourState.open ? renderHubTourHTML(registry, tourState, state.statusNote) : ""}
 
       <div class="tc-action-grid" role="group" aria-label="Teaching tasks">
         ${COMMAND_ACTIONS.map(
           (a) => html`<button
             type="button"
             id="tc-tab-${a.id}"
-            class="tc-action-card${state.activeTab === a.id ? " is-active" : ""}"
-            aria-expanded="${String(state.activeTab === a.id)}"
-            aria-controls="tc${a.id[0].toUpperCase() + a.id.slice(1)}"
+            class="tc-action-card${task === a.id ? " is-active" : ""}"
+            aria-expanded="${String(task === a.id)}"
+            aria-controls="tcTask-${a.id}"
             data-tc-action="${a.id}"
           >
             <span class="tc-action-ico" aria-hidden="true">${icon(a.icon)}</span>
@@ -812,28 +704,65 @@ export async function mountCommandCenter(host) {
         )}
       </div>
 
-      ${activeFn ? activeFn() : ""}
-      ${COMMAND_ACTIONS.filter((a) => a.id !== state.activeTab).map(
-        (a) =>
-          html`<div
-            id="tc${a.id[0].toUpperCase() + a.id.slice(1)}"
-            role="region"
-            aria-labelledby="tc-tab-${a.id}"
-            hidden
-          ></div>`,
+      ${COMMAND_ACTIONS.map((a) =>
+        a.id === task && activeFn
+          ? html`<div id="tcTask-${a.id}" class="tc-task">
+              ${task === "plan" ? planToolsHTML(state.activeTab, state.band) : ""}${activeFn()}
+            </div>`
+          : html`<div id="tcTask-${a.id}" hidden></div>`,
       )}
+
+      <p class="tc-tour-row">
+        <a class="tc-tour-link" href="${BASE}/start" id="tcTeacherTour">
+          ${icon("flag")} New here? Take the Teacher Tour (about 5 min)
+        </a>
+        <button type="button" class="ghost small" data-tc-act="toggle-tour" aria-expanded="${String(tourState.open)}">
+          ${tourState.open
+            ? "Close the 3-step tour"
+            : tourState.furthest > 1
+              ? `Resume the 3-step tour (step ${tourState.step} of ${HUB_TOUR_STEPS.length})`
+              : "Or a 3-step tour on this page"}
+        </button>
+      </p>
+      ${tourState.open ? renderHubTourHTML(registry, tourState, state.statusNote) : ""}
     </div>`);
   }
 
+  /** One grade band for the whole page: this panel, the URL and (via `th:band`) the activity list below. */
+  function setBand(band, { announceIt = true } = {}) {
+    if (!CONTENT_BANDS.includes(band) || band === state.band) return;
+    Object.assign(state, { band, planBand: band, supBand: band, assignBand: band, assignResourceId: "" });
+    rebuildPathway();
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set("grades", band);
+      history.replaceState(history.state, "", url);
+    } catch {}
+    const { CustomEvent: Ev } = document.defaultView || globalThis;
+    if (announceIt) document.dispatchEvent(new Ev("th:band", { detail: { band, from: "tasks" } }));
+    render();
+  }
+  document.addEventListener("th:band", (e) => {
+    if (e.detail?.from !== "tasks") setBand(e.detail?.band, { announceIt: false });
+  });
+
   host.addEventListener("click", async (e) => {
+    const bandBtn = e.target.closest("[data-th-band]");
+    if (bandBtn) {
+      setBand(bandBtn.dataset.thBand);
+      host.querySelector(`[data-th-band="${bandBtn.dataset.thBand}"]`)?.focus({ preventScroll: true });
+      return;
+    }
     const tabBtn = e.target.closest("[data-tc-action]");
     if (tabBtn) {
       // Picking the open task again closes it.
       const picked = tabBtn.dataset.tcAction;
-      state.activeTab = state.activeTab === picked ? "" : picked;
+      // A planning-tool chip switches the open tool; it never closes the task.
+      const inPlanTools = Boolean(tabBtn.closest(".tc-plan-tools"));
+      state.activeTab = !inPlanTools && state.activeTab === picked ? "" : picked;
       state.statusNote = "";
       render();
-      host.querySelector(`[data-tc-action="${picked}"]`)?.focus({ preventScroll: true });
+      host.querySelector(`${inPlanTools ? ".tc-plan-tools " : ""}[data-tc-action="${picked}"]`)?.focus({ preventScroll: true });
       return;
     }
 
@@ -868,14 +797,6 @@ export async function mountCommandCenter(host) {
       const ok = await copyText(url);
       state.statusNote = ok ? `Copied link: ${url}` : `Copy link: ${url}`;
       announce(state.statusNote);
-      render();
-      return;
-    }
-
-    const delBtn = e.target.closest("[data-tc-del-pw]");
-    if (delBtn) {
-      deleteSavedPathway(delBtn.dataset.tcDelPw);
-      state.statusNote = "Removed saved pathway from this device.";
       render();
       return;
     }
@@ -942,7 +863,7 @@ export async function mountCommandCenter(host) {
         const kit = assembleStarterKit(registry, cur);
         const { ok, entry } = savePathwayRecord(kit.pathway, `Starter Kit · Grades ${kit.band} ${kit.domain}`);
         state.statusNote = ok
-          ? `Saved "${entry.title}" to My Resources!`
+          ? `Saved "${entry.title}" to My workspace.`
           : "Could not save on this device. Copy the student link instead.";
       }
       render();
@@ -974,7 +895,7 @@ export async function mountCommandCenter(host) {
     } else if (act === "save-pathway" && state.pathway) {
       const { ok, entry } = savePathwayRecord(state.pathway, state.planTitle);
       state.statusNote = ok
-        ? `Saved "${entry.title}" to My Resources on this device.`
+        ? `Saved "${entry.title}" to My workspace on this device.`
         : "Browser storage is full or unavailable; copy the share link instead.";
       announce(state.statusNote);
       render();

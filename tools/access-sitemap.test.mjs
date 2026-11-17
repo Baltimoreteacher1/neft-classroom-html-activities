@@ -128,31 +128,73 @@ test("the section bar shows siblings in one skill and the explore view filters",
   );
 });
 
-test("navigation reads the site map: four learner links, audience doors, site guide, one current link", async () => {
+test("navigation: six audience places on top, every former top-row door in More, one current link", async () => {
+  // 2026-11-17 navigation redesign: the top row names audiences (Home · Teachers · Students · Families · Find
+  // Resources · Help). The nine former top-row doors stay one click away at the top of More.
   const { navHTML, currentTop } = await import(new URL("src/nav.js", LAB));
   const { makeI18n } = await import(new URL("src/i18n.js", LAB));
+  const { toHtml } = await import(new URL("src/util.js", LAB));
   const I = makeI18n("en", "en");
-  const doc = new JSDOM(
-    `<nav>${(await import(new URL("src/util.js", LAB))).toHtml(navHTML({ band: "6-8", route: { view: "wordlab" } }, I))}</nav>`,
-  ).window.document;
+  const render = (band, route) =>
+    new JSDOM(`<nav>${toHtml(navHTML({ band, route }, I))}</nav>`).window.document;
+  const doc = render("6-8", { view: "wordlab" });
   const top = [...doc.querySelectorAll("nav > a")].map((a) => a.textContent.trim());
-  assert.deepEqual(top, [
-    // Home sits to the left of Access Prep (Joel, 2026-11-17).
-    "Home",
+  assert.deepEqual(top, ["Home", "Teachers", "Students", "Families", "Find Resources", "Help"]);
+  assert.equal(doc.querySelectorAll('nav > a[aria-current="page"]').length, 1);
+  assert.match(doc.querySelector('nav > a[aria-current="page"]').textContent, /Students/);
+  const hrefOf = (label) =>
+    [...doc.querySelectorAll("nav > a")]
+      .find((a) => a.textContent.trim() === label)
+      .getAttribute("href");
+  assert.equal(hrefOf("Teachers"), "/access-teacher/");
+  assert.equal(hrefOf("Students"), "/access-practice-lab/students?grades=6-8");
+  assert.equal(hrefOf("Families"), "/access-practice-lab/family-start");
+  assert.equal(hrefOf("Find Resources"), "/access-practice-lab/search?grades=6-8");
+  assert.equal(hrefOf("Help"), "/access-practice-lab/site-guide?grades=6-8");
+  // Every former top-row door, one click away in More (Access Prep first).
+  const go = [...doc.querySelectorAll(".lab-utilities-body .menu-go a")].map((a) =>
+    a.textContent.trim(),
+  );
+  assert.equal(go[0], "Access Prep");
+  for (const door of [
     "Access Prep",
     "Practice",
     "Games & Worlds",
     "My Progress",
-    // Book Studio's "Create a Book" is a required top-row door (Joel, 2026-11-16 platform brief).
     "Create a Book",
-    "Teachers",
-    "Families",
     "Site Guide",
-  ]);
-  assert.equal(doc.querySelectorAll('nav > a[aria-current="page"]').length, 1);
-  assert.match(doc.querySelector('nav > a[aria-current="page"]').textContent, /Practice/);
-  assert.equal(currentTop({ view: "city" }), "explore");
-  assert.equal(currentTop({ view: "explore", id: "prep" }), "access-prep");
+  ])
+    assert.ok(go.includes(door), `More keeps ${door}`);
+  // K–3: the same six places; the early home, activity finder and Passport are in More.
+  const early = render("K", { view: "early" });
+  assert.deepEqual(
+    [...early.querySelectorAll("nav > a")].map((a) => a.textContent.trim()),
+    top,
+  );
+  assert.match(early.querySelector('nav > a[aria-current="page"]').textContent, /Students/);
+  const earlyGo = [...early.querySelectorAll(".menu-go a")].map((a) => a.getAttribute("href"));
+  for (const path of ["/access-prep?", "/early?", "/library?", "/passport?", "/book-studio?"])
+    assert.ok(
+      earlyGo.some((h) => h.includes(path)),
+      `K More keeps ${path}`,
+    );
+  const cases = {
+    home: "home",
+    students: "students",
+    city: "students",
+    "family-start": "families",
+    family: "families",
+    "practice-together": "families",
+    search: "find",
+    "site-guide": "help",
+    privacy: "help",
+    start: "teachers",
+    launch: "teachers",
+  };
+  for (const [view, want] of Object.entries(cases)) assert.equal(currentTop({ view }), want, view);
+  assert.equal(currentTop({ view: "explore", id: "prep" }), "students");
+  assert.equal(currentTop({ view: "explore", id: "teach" }), "teachers");
+  assert.equal(currentTop({ view: "explore" }), "find");
   const menu = [...doc.querySelectorAll(".lab-utilities-body .menu-group")];
   assert.ok(
     menu.every((g) => g.querySelectorAll("a:not(.menu-all)").length <= 10),

@@ -259,10 +259,12 @@ test("home keeps every destination the previous home linked, for both bands", as
   }
 });
 
-test("the Teacher and Family switches open a start page, never a tour directly (Joel, 2026-11-17)", async () => {
+test("audience doors: Teacher, Student, Family and search; a role door never opens a tour (Joel, 2026-11-17)", async () => {
+  // The navigation redesign (2026-11-17) replaced the "I am a…" switch with three large audience doors. The Teacher
+  // door opens the Teacher Hub and the Family door the family start page; both offer the tour among other choices,
+  // so no door drops anyone straight into a tour, whatever the tour state on this device.
   const KEY = "accessPracticeLab:v1:intro";
   try {
-    // Whatever the tour state on this device, the Teacher button lands on /start, where the grade comes first.
     for (const tour2 of [
       { v: 1, step: "support", furthest: 2 },
       { v: 1, step: "kit", furthest: 6 },
@@ -270,28 +272,77 @@ test("the Teacher and Family switches open a start page, never a tour directly (
     ]) {
       if (tour2) localStorage.setItem(KEY, JSON.stringify({ tour2 }));
       else localStorage.removeItem(KEY);
-      const doc = await renderHome("6-8", "en");
-      assert.equal(
-        doc.querySelector(".lph-role.is-teacher").getAttribute("href"),
-        "/access-practice-lab/start",
-      );
-      assert.equal(
-        doc.querySelector(".lph-role.is-family").getAttribute("href"),
-        "/access-practice-lab/family-start",
-      );
-      for (const a of doc.querySelectorAll(".lph-roles a"))
-        assert.doesNotMatch(a.getAttribute("href"), /tour/, "no role button opens a tour");
+      for (const doc of [
+        await renderHome("6-8", "en"),
+        dom((await home.render(ctxFor("6-8", "en", {}, ""))).html),
+      ]) {
+        const doors = [...doc.querySelectorAll(".lpa-doors .lpa-door")];
+        assert.deepEqual(
+          doors.map((a) => a.querySelector("strong").textContent.trim()),
+          ["I’m a Teacher", "I’m a Student", "I’m a Family Member"],
+        );
+        const href = (id) => doc.querySelector(`[data-audience-door="${id}"]`).getAttribute("href");
+        assert.equal(href("teacher"), "/access-teacher/");
+        assert.match(href("student"), /^\/access-practice-lab\/students(\?grades=6-8)?$/);
+        assert.equal(href("family"), "/access-practice-lab/family-start");
+        assert.match(href("search"), /^\/access-practice-lab\/search/);
+        for (const a of doc.querySelectorAll(".lpa a"))
+          assert.doesNotMatch(a.getAttribute("href"), /tour/, "no audience door opens a tour");
+        for (const img of doc.querySelectorAll(".lpa-door img"))
+          assert.equal(img.getAttribute("alt"), "", "door art is decorative");
+      }
     }
   } finally {
     localStorage.removeItem(KEY);
   }
 });
 
-test("start screen: one h1, a labelled ruler, an I-am switch, ONE primary action, the rest collapsed", async () => {
+test("continue shortcuts appear only for state that exists on this device", async () => {
+  const { continueShortcuts } = await import("../access-practice-lab/src/views/home-audience.js");
+  const none = () => null;
+  assert.deepEqual(
+    continueShortcuts({ band: "6-8", audience: "", read: none }),
+    [],
+    "a new visitor sees no shortcuts",
+  );
+  const store = {
+    "accessPracticeLab:v1:book-last": "b1",
+    "accessPracticeLab:v1:saved": JSON.stringify({
+      items: { a: { id: "a", href: "/x", title: "X" } },
+    }),
+  };
+  const ids = continueShortcuts({
+    band: "6-8",
+    practiceHref: "/access-practice-lab/play?x=1",
+    audience: "teacher",
+    read: (k) => store[k] ?? null,
+  }).map((i) => i.id);
+  assert.deepEqual(ids, ["practice", "teacher-hub", "book", "saved"]);
+  assert.deepEqual(
+    continueShortcuts({ audience: "student", read: (k) => (k.endsWith("saved") ? "[]" : null) }),
+    [],
+    "an empty saved list and a student audience add nothing",
+  );
   localStorage.clear();
   const doc = await renderHome("6-8", "en");
+  assert.equal(doc.querySelector(".lpa-continue"), null, "no shortcut row without saved state");
+  localStorage.setItem("accessPracticeLab:v1:book-last", "b1");
+  const back = await renderHome("6-8", "en");
+  assert.deepEqual(
+    [...back.querySelectorAll(".lpa-continue a")].map((a) => a.dataset.homeContinue),
+    ["book"],
+  );
+  localStorage.clear();
+});
+
+test("start screen: one h1 above the doors, a labelled ruler, ONE primary action, the rest collapsed", async () => {
+  localStorage.clear();
+  const doc = await renderHome("6-8", "en");
+  // The page h1 heads the audience doors (2026-11-17 navigation redesign); the student stage has its own h2.
+  assert.equal(doc.querySelector("section.lpa").getAttribute("aria-labelledby"), "homeTitle");
+  assert.equal(doc.getElementById("homeTitle").tagName, "H1");
   const lph = doc.querySelector("section.lph");
-  assert.equal(lph.getAttribute("aria-labelledby"), "homeTitle");
+  assert.equal(doc.getElementById(lph.getAttribute("aria-labelledby")).tagName, "H2");
   assert.equal(doc.querySelectorAll("h1").length, 1);
   const ruler = lph.querySelector(".lph-ruler");
   assert.equal(ruler.getAttribute("role"), "group");
@@ -319,21 +370,8 @@ test("start screen: one h1, a labelled ruler, an I-am switch, ONE primary action
     0,
     "the big Teacher / Family cards are gone",
   );
-  // I am a… Student / Teacher / Family.
-  const roles = [...lph.querySelectorAll(".lph-roles .lph-role")];
-  assert.deepEqual(
-    roles.map((a) => a.textContent.trim()),
-    ["Student", "Teacher", "Family"],
-  );
-  assert.equal(lph.querySelector(".lph-role.is-student").getAttribute("aria-current"), "true");
-  assert.equal(
-    lph.querySelector(".lph-role.is-family").getAttribute("href"),
-    "/access-practice-lab/family-start",
-  );
-  assert.equal(
-    lph.querySelector(".lph-role.is-teacher").getAttribute("href"),
-    "/access-practice-lab/start",
-  );
+  // The "I am a…" switch is gone: the audience doors above the stage replaced it.
+  assert.equal(doc.querySelectorAll(".lph-roles, .lph-role").length, 0);
   // Everything else is below, collapsed, and still reachable.
   const more = doc.querySelector("details.lph-more-ways");
   assert.equal(more.open, false, "More ways to practice starts collapsed");
@@ -367,7 +405,11 @@ test("start screen: one h1, a labelled ruler, an I-am switch, ONE primary action
 
 test("Spanish: every new start-screen and registry string is in Spanish, bilingual shows both", async () => {
   const es = await renderHome("6-8", "es");
-  const lphEs = es.querySelector(".lph").textContent.replace(/\s+/g, " ");
+  // The audience doors and the h1 sit above the student stage; both must be Spanish.
+  const lphEs = [".lpa", ".lph"]
+    .map((sel) => es.querySelector(sel).textContent)
+    .join(" ")
+    .replace(/\s+/g, " ");
   for (const en of [
     "Practice English for school",
     "My grade",
@@ -379,9 +421,20 @@ test("Spanish: every new start-screen and registry string is in Spanish, bilingu
     "Family Corner",
     "Start My Learning Journey",
     "No timers",
+    "I’m a Teacher",
+    "I’m a Student",
+    "I’m a Family Member",
+    "Search all resources",
   ])
     assert.ok(!lphEs.includes(en), `Spanish start screen has no "${en}"`);
   assert.match(lphEs, /Practica inglés para la escuela/);
+  for (const es1 of [
+    "Soy docente",
+    "Soy estudiante",
+    "Soy de la familia",
+    "Buscar en todos los recursos",
+  ])
+    assert.ok(lphEs.includes(es1), es1);
   for (const c of HOME_CARDS.filter(
     (c) => c.group !== "start" && (!c.bands || c.bands.includes("6-8")),
   )) {
@@ -601,7 +654,7 @@ test("home links are bare: breadcrumbs and the header Home never carry ?grades="
   );
   assert.equal(trail.querySelector("a").getAttribute("href"), "/access-practice-lab/");
   assert.equal(
-    primaryLinks("6-8", (en) => en).find((l) => l.id === "continue").href,
+    primaryLinks("6-8", (en) => en).find((l) => l.id === "home").href,
     "/access-practice-lab/",
   );
 });
@@ -626,4 +679,41 @@ test("styles: the start sheet is critical, uses tokens and keeps 48px targets", 
     const h = Number(block.match(/min-height: ([\d.]+)rem/)?.[1] || 0);
     assert.ok(h >= 3, `${sel}: min-height ${h}rem >= 3rem (48px)`);
   }
+});
+
+test("audience memory: hubs remember their audience; crumbs offer Back to <Hub>, never on the hub itself", async () => {
+  const A = await import("../access-practice-lab/src/audience.js");
+  const { crumbsHTML } = await import("../access-practice-lab/src/components.js");
+  localStorage.clear();
+  const trail = () =>
+    dom(
+      crumbsHTML([
+        ["Lab", "/access-practice-lab/"],
+        ["Here", null],
+      ]),
+    );
+  assert.equal(trail().querySelector(".crumbs-hub"), null, "no audience yet: no hub link");
+  A.syncAudience({ view: "students" });
+  assert.equal(localStorage.getItem(A.AUDIENCE_KEY), "student");
+  assert.equal(
+    trail().querySelector(".crumbs-hub").getAttribute("href"),
+    "/access-practice-lab/students",
+  );
+  assert.match(trail().querySelector(".crumbs-hub").textContent, /Back to Student Hub/);
+  A.syncAudience({ view: "family-start" });
+  assert.equal(A.readAudience(), "family");
+  assert.equal(
+    A.hubLink({ pathname: "/access-practice-lab/family-start" }),
+    null,
+    "never on the hub itself",
+  );
+  assert.equal(A.hubLink({ audience: "teacher", pathname: "/access-teacher/" }), null);
+  assert.equal(
+    A.hubLink({ audience: "teacher", pathname: "/access-practice-lab/speak" }).href,
+    "/access-teacher/",
+  );
+  assert.equal(A.rememberAudience("admin"), false, "only teacher, student or family");
+  localStorage.setItem(A.AUDIENCE_KEY, "nonsense");
+  assert.equal(A.readAudience(), "");
+  localStorage.clear();
 });

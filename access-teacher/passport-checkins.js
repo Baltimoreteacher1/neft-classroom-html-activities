@@ -5,6 +5,7 @@ import { bandLabel } from "/access-practice-lab/src/bands.js";
 import { CHECKIN_PARAM, decodeCheckin } from "/access-practice-lab/src/checkin.js";
 import { ROSTER_KEY, addCheckin, markStamped, needsStamp, removeStudent, sanitizeRoster, waiting } from "/access-practice-lab/src/checkin-roster.js";
 import { COUNTRIES } from "/access-practice-lab/src/journey.js";
+import { revealFoldsFor } from "/access-practice-lab/src/fold.js";
 import { announce, copyText, html, icon, toHtml } from "/access-practice-lab/src/util.js";
 
 const host = document.getElementById("passportCheckins");
@@ -113,6 +114,9 @@ function takeFragment() {
   const fragment = location.hash.slice(1);
   history.replaceState(null, "", location.pathname + location.search);
   importText(fragment);
+  // The teacher came for this check-in: the section opens instead of staying folded (hub-folds.js).
+  host.setAttribute("data-fold", "open");
+  revealFoldsFor(host);
   host.scrollIntoView({ block: "start" });
 }
 

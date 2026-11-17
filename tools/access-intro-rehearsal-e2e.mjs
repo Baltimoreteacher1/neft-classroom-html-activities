@@ -192,18 +192,22 @@ ctx = await newContext();
 const t0 = Date.now();
 let clicks = 0;
 page = await open(ctx, `${LAB}/`);
-const cardVisible = await page.locator(".lph-role.is-teacher").isVisible();
-ok(cardVisible, "first screen shows the Teacher switch without scrolling");
-await page.locator(".lph-role.is-teacher").click();
+// 2026-11-17 audience navigation: the Teacher door opens the Teacher Hub (never a tour), and the Teacher start
+// page is one click away in More; its domain cards open the tour. Home -> More -> start page -> "Try it in the
+// tour" (Reading) is three clicks.
+const cardVisible = await page.locator(".lpa-door.is-teacher").isVisible();
+ok(cardVisible, "first screen shows the Teacher door without scrolling");
+await page.locator(".lab-utilities > summary").click();
 clicks++;
-await page.waitForSelector(".gt-part-skill");
-await page.locator('a.gt-domain[data-gt-skill="reading"]').click();
+await page.locator('.lab-utilities [data-menu-link="teacher-start"]').click();
+clicks++;
+await page.locator('a[href*="part=2&skill=reading"]').first().click();
 clicks++;
 await page.waitForSelector("iframe.gc-frame");
 const frameSrc = await page.locator("iframe.gc-frame").getAttribute("src");
 const secs = (Date.now() - t0) / 1000;
 ok(
-  /\/Reading\/A\//.test(frameSrc || "") && clicks <= 2,
+  /\/Reading\/A\//.test(frameSrc || "") && clicks <= 3,
   `home to a real activity, running in the tour, in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
 );
 await page.close();

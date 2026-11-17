@@ -24,6 +24,8 @@ export const EARLY_VIEWS = new Set([
   "launch-studio",
   "teacher-launch",
   "session-done",
+  // The Student Hub sends K–3 to their own early hub (src/views/students.js).
+  "students",
   "warmup",
   // Language Choice Boards and Talk Table carry their own K, 1 and 2-3 content (content/choice-boards.json,
   // content/talk-table.json), written to be read aloud by an adult.
@@ -37,6 +39,7 @@ export const EARLY_VIEWS = new Set([
   // Pages for adults (teacher start and tour, family page, Site Guide): they show each grade's own activities.
   "start",
   "practice-together",
+  "family-start",
   "site-guide",
 ]);
 

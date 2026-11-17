@@ -42,6 +42,14 @@
             <use href="/access-practice-lab/pictures/ui-icons.svg#external"></use></svg
         ></a>
       </nav>
+      <nav class="th-sitenav" aria-label="Site">
+        <a href="/access-practice-lab/">Home</a>
+        <a href="/access-teacher/" aria-current="page">Teachers</a>
+        <a href="/access-practice-lab/students">Students</a>
+        <a href="/access-practice-lab/family-start">Families</a>
+        <a href="/access-practice-lab/search?for=teacher">Find Resources</a>
+        <a href="/access-practice-lab/site-guide">Help</a>
+      </nav>
     </header>
     <div class="lab-main th-intro">
       <section class="th-hero" aria-labelledby="thTitle">
@@ -49,11 +57,25 @@
           <p class="eyebrow">Teacher Hub · EduWonderLab</p>
           <h1 id="thTitle" tabindex="-1">ACCESS Practice Lab — Teacher Hub</h1>
           <p class="lead">
-            Class language evidence, answer keys, playlist links and printable packets in one place.
-            Find an activity, check what your students did, and share the right link.
+            Find an activity, plan a lesson and see what your students did.
           </p>
         </div>
-        <ul class="th-legend" aria-label="How this page marks content">
+      </section>
+    </div>
+    <section id="tcCommandCenter" class="tc-center lab-main no-print" aria-labelledby="tcTitle"></section>
+    <div id="thHome" class="th-home lab-main no-print"></div>
+    <nav class="th-doors lab-main no-print" aria-labelledby="thDoorsTitle">
+      <h2 id="thDoorsTitle" class="th-doors-title">Explore all teacher resources</h2>
+      <p class="th-doors-lead">
+        <a class="btn" href="/access-practice-lab/search?for=teacher" data-finder-link
+          >Search every resource in the Resource Finder</a
+        >
+      </p>
+      <p class="th-doors-lead fine">
+        Or open a tool on this page. Sections stay folded until you need them.
+        <a href="/access-practice-lab/start/tour">Full-screen Teacher Tour and PDF kit</a>
+      </p>
+      <ul class="th-legend" aria-label="How this page marks content">
           <li>
             <span class="th-tag is-teacher"
               ><svg class="ico" aria-hidden="true" focusable="false">
@@ -82,12 +104,7 @@
             <span>Your class roster is stored in this browser only. Nothing is uploaded.</span>
           </li>
         </ul>
-      </section>
-    </div>
-    <section id="tcCommandCenter" class="tc-center lab-main no-print" aria-labelledby="tcTitle"></section>
-    <nav class="th-doors lab-main no-print" aria-labelledby="thDoorsTitle">
-      <h2 id="thDoorsTitle" class="th-doors-title">Class tools on this page</h2>
-      <p class="th-doors-lead fine">Each tool below opens with one click. Sections stay folded until you need them.</p>
+
       <ul class="th-door-grid">
         <li class="th-door is-teach">
           <h3>Teach today</h3>
@@ -185,9 +202,9 @@
     </main>
     <div id="labToast" class="toast" hidden></div>
     <div id="labLive" class="visually-hidden" aria-live="polite"></div>
-    <script type="module" src="/access-teacher/teacher.js?v=2026.10.01"></script>
+    <script type="module" src="/access-teacher/teacher.js?v=2026.11.17"></script>
     <script type="module" src="/access-teacher/evidence.js?v=2026.11.16"></script>
-    <script type="module" src="/access-teacher/passport-checkins.js?v=2026.10.29"></script>
+    <script type="module" src="/access-teacher/passport-checkins.js?v=2026.11.17"></script>
     <script type="module" src="/access-teacher/speaking-groups.js?v=2026.11.06"></script>
     <script type="module" src="/access-teacher/hub-folds.js?v=2026.11.17"></script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
@@ -205,6 +222,7 @@
       import("/access-teacher/acc-content-panel.js").then((m) => m.mountContentPanel(document.getElementById("accContentBody")));
       import("/access-teacher/activity-downloads.js").then((m) => m.mountActivityDownloads());
       import("/access-teacher/command-center.js").then((m) => m.mountCommandCenter(document.getElementById("tcCommandCenter")));
+      import("/access-teacher/hub-home.js");
     </script>
   </body>
 </html>

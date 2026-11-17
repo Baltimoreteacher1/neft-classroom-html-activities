@@ -120,6 +120,8 @@ const VIEW_LOADERS = {
   start: () => import("./intro/start.js"),
   "practice-together": () => import("./intro/family.js"),
   "family-start": () => import("./intro/family-start.js"),
+  students: () => import("./views/students.js"),
+  "session-done": () => import("./views/session-done.js"),
   "site-guide": () => import("./intro/site-guide.js"),
   privacy: () => import("./views/privacy.js"),
   accessibility: () => import("./views/accessibility.js"),
@@ -138,7 +140,6 @@ const VIEW_LOADERS = {
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
-  "session-done": "home",
   play: "activity",
   mission: "missions",
   "launch-studio": "launch",
@@ -223,6 +224,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
       support: q.get("support") || "",
     };
   if (a === "family-start") return { ...r, view: "family-start", pick: q.get("pick") || "" };
+  if (a === "students") return { ...r, view: "students", pick: q.get("pick") || "", skill: q.get("skill") || "", support: q.get("support") || "" };
   if (a === "practice-together") return { ...r, view: "practice-together", id: b || "", step: q.get("step") || "" };
   if (a === "privacy" || a === "accessibility") return { ...r, view: a };
   if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };
@@ -674,7 +676,10 @@ function interceptLink(e) {
   if (a.dataset.jumpSet) {
     e.preventDefault();
     const rows = a.dataset.jumpSet.split(",").filter(Boolean).map((id) => ({ id }));
-    navigate(sessionHref(startSession(ctx, rows, Number(a.dataset.jumpMinutes) || 0, a.dataset.jumpTitle || "Quick practice")));
+    // The set was built for the grade in its own link (a hub can offer another grade than the current one).
+    const linkBand = new URL(a.href, location.href).searchParams.get("grades");
+    const sessionCtx = linkBand && linkBand !== ctx.band ? { ...ctx, band: linkBand } : ctx;
+    navigate(sessionHref(startSession(sessionCtx, rows, Number(a.dataset.jumpMinutes) || 0, a.dataset.jumpTitle || "Quick practice")));
     return true;
   }
   const url = new URL(a.href, location.href);

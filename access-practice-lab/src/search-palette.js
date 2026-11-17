@@ -48,7 +48,7 @@ export async function openPalette(ctx) {
     <p id="sxEmpty" class="sx-empty" hidden></p>
     <p id="sxStatus" class="visually-hidden" role="status" aria-live="polite"></p>
     <p class="sx-hint fine">${I.T("Up and Down arrows move. Enter opens. Escape closes. Try a Spanish word.", "Las flechas arriba y abajo se mueven. Enter abre. Escape cierra. Prueba una palabra en español.")}</p>
-    <p class="sx-hint fine"><a href="/access-practice-lab/search?grades=${band}" data-sx-all>${I.T("Open the full results page", "Abrir la página de resultados completa")}</a></p>
+    <p class="sx-hint fine"><a href="/access-practice-lab/search?grades=${band}" data-sx-all>${I.T("See all results, with filters", "Ver todos los resultados, con filtros")}</a></p>
   </div>`);
   const hidden = [...document.body.children].filter((el) => el !== overlay && !el.hasAttribute("inert") && el.tagName !== "SCRIPT");
   document.body.append(overlay);
@@ -146,10 +146,12 @@ export async function openPalette(ctx) {
       e.preventDefault();
       activate(li);
     } else if (e.target.closest("[data-sx-all]")) {
+      // Hand the query to the Resource Finder; "Only my grades" off carries over as ?all=1.
       const q = input.value.trim();
       const url = new URL("/access-practice-lab/search", location.origin);
       if (q) url.searchParams.set("q", q);
       url.searchParams.set("grades", band);
+      if (!$("#sxScope").checked) url.searchParams.set("all", "1");
       e.preventDefault();
       close();
       ctx.navigate(url.pathname + url.search);

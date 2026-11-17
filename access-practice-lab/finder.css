@@ -1,0 +1,328 @@
+/* Find Resources (/search): the Unified Resource Finder (src/views/search.js, src/finder/*).
+   ds.css tokens and components only (.chip, .btn, .panel); the search field and palette styles stay in
+   experience.css (.sx-*). */
+
+.fx-page {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 76rem;
+  margin-inline: auto;
+}
+.fx-head {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 48rem;
+}
+.fx-head h1,
+.fx-head .lead {
+  margin: 0;
+}
+.fx-field .sx-input {
+  min-height: 3.25rem;
+  font-size: 1.1rem;
+}
+.fx-layout {
+  display: grid;
+  gap: var(--s-4);
+  align-items: start;
+}
+@media (min-width: 60rem) {
+  .fx-layout {
+    grid-template-columns: minmax(15rem, 19rem) minmax(0, 1fr);
+  }
+}
+
+/* ── filters ─────────────────────────────────────────────────────────── */
+.fx-panel {
+  min-width: 0;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fx-panel > summary,
+.fx-more > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.fx-panel > summary {
+  font-size: 1.1rem;
+}
+.fx-panel > summary:focus-visible,
+.fx-more > summary:focus-visible,
+.fx-task:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.fx-filters {
+  display: grid;
+  gap: var(--s-3);
+  padding-top: var(--s-2);
+}
+.fx-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.fx-group legend {
+  padding: 0;
+  margin-bottom: var(--s-2);
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) 0.35rem;
+}
+.fx-chips .fx-chip {
+  gap: 0.3rem;
+  padding-inline: 0.65rem;
+  font-size: 0.9rem;
+}
+.fx-n {
+  min-width: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.chip.is-on .fx-n {
+  background: rgb(255 255 255 / 22%);
+  color: inherit;
+}
+.fx-more {
+  border-top: 1px solid var(--line);
+  padding-top: var(--s-2);
+}
+.fx-more[open] > .fx-group {
+  margin-top: var(--s-3);
+}
+.fx-note {
+  display: flex;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--ink);
+}
+
+/* ── results ─────────────────────────────────────────────────────────── */
+.fx-main {
+  display: grid;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.fx-count {
+  margin: 0;
+}
+.fx-active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-3);
+}
+.fx-cards,
+.fx-task-list,
+.fx-saved-list {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fx-card {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fx-card-ico {
+  flex: none;
+  color: var(--room-ink);
+}
+.fx-card-body {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+  flex: 1;
+}
+.fx-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+.fx-card h3 a {
+  color: var(--brand-ink);
+}
+.fx-desc,
+.fx-card .sx-r-es {
+  margin: 0;
+}
+.fx-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fx-tag {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.fx-tag-kind {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.fx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.fx-save[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  color: var(--ink);
+}
+.fx-preview {
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.fx-preview > p {
+  margin: 0 0 var(--s-2);
+}
+.fx-dl {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-2);
+}
+.fx-dl div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-2);
+}
+.fx-dl dt {
+  font-weight: 800;
+}
+.fx-dl dt::after {
+  content: ":";
+}
+.fx-dl dd {
+  margin: 0;
+}
+.fx-more-results {
+  margin: var(--s-2) 0 0;
+  text-align: center;
+}
+
+/* ── no query: saved list and common tasks ──────────────────────────── */
+.fx-saved,
+.fx-tasks {
+  display: grid;
+  gap: var(--s-2);
+}
+.fx-saved h2,
+.fx-tasks h2 {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  margin: 0;
+  font-size: 1.2rem;
+}
+.fx-saved .fine {
+  margin: 0;
+}
+.fx-saved-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.fx-saved-list a {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.fx-saved + .fx-tasks {
+  margin-top: var(--s-4);
+}
+.fx-task-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.fx-task {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+  min-height: 3.25rem;
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.fx-task span {
+  flex: 1;
+}
+.fx-task:hover {
+  background: var(--brand-soft);
+}
+
+@media (max-width: 30rem) {
+  .fx-card {
+    padding: var(--s-3);
+  }
+  .fx-card-ico {
+    display: none;
+  }
+}
+.fx-saved-mini {
+  margin-bottom: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.fx-saved-mini > summary {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.fx-saved-mini > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.fx-saved-mini .fx-saved h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}

@@ -307,7 +307,7 @@ test("Spanish mode: every pair has natural Spanish and no English interface text
     assert.ok(bi.includes(en) && bi.includes(es), `bilingual: both "${en}" and "${es}"`);
 });
 
-test("lab home: one h1 in the start screen, the journey offered as Continue, every test-used element kept, start first", async () => {
+test("lab home: one h1 above the audience doors, the journey offered as Continue, every test-used element kept, start first", async () => {
   const dummy = new JSDOM("<main id='app'></main><div id='labLive'></div>", {
     url: "https://lab.test/access-practice-lab/",
   });
@@ -339,7 +339,12 @@ test("lab home: one h1 in the start screen, the journey offered as Continue, eve
     assert.equal(all(doc, "h1").length, 1, "exactly one h1 on home");
     const h1 = doc.querySelector("h1");
     assert.equal(h1.id, "homeTitle");
-    assert.ok(h1.closest(".lph"), "the start screen owns the page h1");
+    // 2026-11-17 navigation redesign: the page h1 heads the audience doors, and the student start screen follows.
+    assert.ok(h1.closest(".lpa"), "the audience section owns the page h1");
+    assert.ok(
+      doc.querySelector(".lpa").compareDocumentPosition(doc.querySelector(".lph")) & 4,
+      "the student start screen follows the doors",
+    );
     // One front door: with nothing unfinished, today's mission is the main action and the journey's first step
     // stays one tap away right under it.
     assert.match(
@@ -403,28 +408,34 @@ test("lab home: one h1 in the start screen, the journey offered as Continue, eve
   }
 });
 
-test("navigation: four learner destinations keep the journey and adult tools in the menu", async () => {
+test("navigation: the journey and adult tools stay in the menu; the journey counts as Students", async () => {
+  // 2026-11-17 navigation redesign: the top row is six audience places (tools/access-sitemap.test.mjs pins it);
+  // the learner doors that used to be on it (Practice, Games & Worlds, My Progress) moved into More.
   const { primaryLinks, navHTML } = await import("../access-practice-lab/src/nav.js");
   const T = (en) => en;
   const links = primaryLinks("6-8", T);
   assert.deepEqual(
     links.map((link) => link.id),
-    ["continue", "practice", "explore", "growth"],
+    ["home", "teachers", "students", "families", "find", "help"],
   );
-  assert.equal(links[0].id, "continue");
-  assert.equal(links[0].icon, "road");
+  assert.equal(links[0].icon, "home");
   // Home is bare: it opens the grade chooser instead of re-picking the last grade.
   assert.equal(links[0].href, "/access-practice-lab/");
   const I = makeI18n("en", "en");
   const nav = dom(navHTML({ band: "6-8", route: { view: "journey" } }, I));
   const current = nav.querySelector('a[aria-current="page"]');
-  assert.match(current.textContent, /Home/);
+  assert.match(current.textContent, /Students/);
   const menu = all(nav, ".lab-utilities-body a").map((a) => [
     a.textContent.trim(),
     a.getAttribute("href"),
   ]);
   assert.ok(menu.some(([t, h]) => /My Journey Map/.test(t) && h.includes("/journey/map")));
   assert.ok(menu.some(([t, h]) => /Journey teacher guide/.test(t) && h.includes("/journey/guide")));
+  for (const door of ["Practice", "Games & Worlds", "My Progress"])
+    assert.ok(
+      menu.some(([t]) => t === door),
+      `More keeps ${door}`,
+    );
   const home = dom(navHTML({ band: "6-8", route: { view: "home" } }, I));
   assert.match(home.querySelector('a[aria-current="page"]').textContent, /Home/);
   const main = await read("src/main.js");

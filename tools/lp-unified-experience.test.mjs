@@ -165,7 +165,7 @@ test("Resource Intelligence: contextual What Next? recommendations for student, 
   assert.equal(teacherNext.length, 2, "returns teacher next steps after pathway creation");
 });
 
-test("Teacher Command Center & 3-Step Embedded Hub Tour exist and wire all 6 workflows", () => {
+test("Teacher Command Center & 3-Step Embedded Hub Tour exist and wire every workflow", () => {
   const indexHtml = fs.readFileSync(path.join(ROOT, "access-teacher/index.html"), "utf8");
   const ccJs = fs.readFileSync(path.join(ROOT, "access-teacher/command-center.js"), "utf8");
   const tourJs = fs.readFileSync(path.join(ROOT, "access-teacher/hub-tour.js"), "utf8");
@@ -179,9 +179,18 @@ test("Teacher Command Center & 3-Step Embedded Hub Tour exist and wire all 6 wor
     "Teacher Hub loads command-center.js",
   );
 
-  for (const wf of ["plan", "support", "assign", "analyze", "resources", "create"]) {
+  // Five tasks on arrival since 2026-11-17 (navigation redesign): find, plan, create, review progress (analyze),
+  // prepare for ACCESS. Support and Assign open inside Plan a Lesson; "My Resources" became "My workspace"
+  // (hub-home.js), shown under the tasks. No workflow was removed.
+  for (const wf of ["find", "plan", "create", "analyze", "prepare", "support", "assign"]) {
     assert.ok(ccJs.includes(`id: "${wf}"`), `Command center defines workflow: ${wf}`);
   }
+  const homeJs = fs.readFileSync(path.join(ROOT, "access-teacher/hub-home.js"), "utf8");
+  assert.ok(
+    homeJs.includes("My workspace") && homeJs.includes("readSavedPathways"),
+    "My workspace lists saved pathways",
+  );
+  assert.ok(indexHtml.includes("/access-teacher/hub-home.js"), "Teacher Hub loads hub-home.js");
   assert.ok(tourJs.includes("HUB_TOUR_STEPS"), "Hub tour defines steps array");
   const stepMatches = tourJs.match(/\{\s*n:\s*\d+/g) || [];
   // Cut from 8 steps to 3 on 2026-11-17 (Joel: "not overwhelming, clear, easy to do"): pick, supports, share.

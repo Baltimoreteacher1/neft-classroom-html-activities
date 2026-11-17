@@ -1,4 +1,4 @@
-/* Lab home start screen (src/views/home-start.js): an "I am a…" switch, ONE primary action (Continue or today's
+/* Lab home start screen (src/views/home-start.js): the student part under the audience doors; ONE primary action (Continue or today's
    mission, with 5 / 15-minute chips) and the grade ruler; "More ways to practice" holds the rest (home.js). Tokens only (ds.css). The ruler is the one distinctive element: each grade group
    is as wide as the grades it covers, on a K-8 scale. */
 
@@ -6,11 +6,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   grid-template-areas:
-    "roles roles"
     "intro student"
     "grade student"
     "shortcuts shortcuts";
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
   gap: var(--s-5) clamp(1.25rem, 3.5vw, 3rem);
   align-items: start;
   margin-top: var(--s-2);
@@ -31,9 +30,6 @@
 }
 .lph-grade > .lph-setting {
   margin-top: 0;
-}
-.lph-roles {
-  grid-area: roles;
 }
 .lph-shortcuts {
   grid-area: shortcuts;
@@ -71,10 +67,10 @@
   height: 1.2rem;
   color: var(--brand-ink);
 }
-.lph h1 {
+.lph .lph-title {
   margin: 0 0 var(--s-3);
   max-width: 20ch;
-  font: 600 clamp(2rem, 1.3rem + 2.6vw, 3.25rem) / 1.05 var(--font-display);
+  font: 600 clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem) / 1.08 var(--font-display);
   letter-spacing: -0.025em;
   color: var(--ink);
 }
@@ -191,7 +187,6 @@
   margin: var(--s-2) 0 0;
 }
 .lph-chip:focus-visible,
-.lph-role:focus-visible,
 .lph-dashboard > summary:focus-visible,
 .lph-more-ways > summary:focus-visible {
   outline: 3px solid var(--focus);
@@ -288,43 +283,6 @@
   outline-offset: 3px;
 }
 
-/* ── "I am a… Student / Teacher / Family" ─────────────────────────────────── */
-.lph-roles {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2);
-}
-.lph-roles-label {
-  color: var(--ink-2);
-  font-weight: 700;
-}
-.lph-role {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.9rem;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-.lph-role:hover {
-  background: var(--brand-soft);
-}
-.lph-role[aria-current="true"] {
-  border-color: var(--brand);
-  background: var(--brand);
-  color: var(--on-brand);
-}
-.lph-role .ico {
-  width: 1.15rem;
-  height: 1.15rem;
-}
-
 /* ── the 5 / 10 / 15-minute mission chips ─────────────────────────────────── */
 .lph-actions {
   display: grid;
@@ -380,7 +338,6 @@
   .lph {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "roles"
       "intro"
       "student"
       "grade"
@@ -400,9 +357,9 @@
   .lph-lead {
     display: none;
   }
-  .lph h1 {
+  .lph .lph-title {
     margin-bottom: 0;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 @media (max-width: 599px) {
@@ -441,17 +398,19 @@
 @media (min-width: 900px) {
   .lph {
     grid-template-areas:
-      "roles roles"
       "title student"
       "lead student"
       "grade video"
       "shortcuts shortcuts";
-    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto auto;
   }
   .lph-intro {
     display: contents;
   }
-  .lph-intro > h1 {
+  .lph-intro > .lph-label {
+    display: none;
+  }
+  .lph-intro > .lph-title {
     grid-area: title;
   }
   .lph-intro > .lph-lead {
@@ -510,4 +469,237 @@
 .lph-grade-card-name {
   font-weight: 700;
   font-size: 0.9375rem;
+}
+
+/* ── audience doors (src/views/home-audience.js) ─────────────────────────────
+   The first thing on the home: the page title, at most one row of "pick up where you left off" shortcuts, three
+   large doors (Teacher, Student, Family) and a compact search door. Each door has its own material colour so the
+   three read as distinct places; the student practice stage (.lph) follows below. */
+.lpa {
+  display: grid;
+  gap: var(--s-4);
+  margin: var(--s-2) 0 var(--s-6);
+}
+.lpa-head h1 {
+  margin: 0;
+  max-width: 24ch;
+  font: 600 clamp(1.9rem, 1.3rem + 2.2vw, 3rem) / 1.06 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.lpa-lead {
+  margin: var(--s-2) 0 0;
+  color: var(--ink-2);
+  font-size: 1.125rem;
+}
+.lpa-continue {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--s-2);
+  overflow-x: auto;
+  padding-block: 0.2rem;
+  scrollbar-width: thin;
+}
+.lpa-continue-label {
+  flex: none;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.lpa-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.95rem;
+  border: 1.5px solid var(--brand);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.lpa-chip:hover {
+  background: var(--surface);
+}
+.lpa-chip .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.lpa-doors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lpa-doors > li {
+  display: flex;
+}
+.lpa-door {
+  --door: var(--teal);
+  --door-soft: var(--teal-soft);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  flex: 1;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  border-top: 6px solid var(--door);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out);
+}
+.lpa-door.is-student {
+  --door: var(--reading);
+  --door-soft: var(--reading-soft);
+}
+.lpa-door.is-family {
+  --door: var(--writing);
+  --door-soft: var(--writing-soft);
+}
+.lpa-door:hover {
+  border-color: var(--door);
+  box-shadow: var(--shadow-lift);
+}
+.lpa-door:focus-visible,
+.lpa-search:focus-visible,
+.lpa-chip:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.lpa-door-art {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--door-soft);
+}
+.lpa-door-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lpa-door-text {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: var(--s-4) 3.75rem var(--s-5) var(--s-5);
+}
+.lpa-door-text strong {
+  font: 700 clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem) / 1.15 var(--font-display);
+  color: var(--ink);
+}
+.lpa-door-text > span {
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.lpa-door-go {
+  position: absolute;
+  right: var(--s-4);
+  bottom: var(--s-4);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--brand-deep);
+  color: #fff;
+}
+.lpa-door-go .ico {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.lpa-search {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.55rem 1.1rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.lpa-search:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.lpa-search > span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+}
+.lpa-search > span > span {
+  color: var(--brand-deep);
+  font-weight: 700;
+}
+.lpa-search .ico {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--brand-ink);
+}
+@media (max-width: 859px) {
+  .lpa-doors {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+  .lpa-door {
+    grid-template-rows: none;
+    grid-template-columns: minmax(6.5rem, 34%) minmax(0, 1fr);
+    border-top-width: 1.5px;
+    border-left: 6px solid var(--door);
+  }
+  .lpa-door-art {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+  .lpa-door-text {
+    align-content: center;
+    padding: var(--s-3) 3.25rem var(--s-3) var(--s-4);
+  }
+  .lpa-door-go {
+    top: 50%;
+    bottom: auto;
+    right: var(--s-3);
+    width: 2.25rem;
+    height: 2.25rem;
+    transform: translateY(-50%);
+  }
+}
+@media (max-width: 479px) {
+  .lpa-continue-label {
+    display: none;
+  }
+  .lpa-lead {
+    font-size: 1rem;
+  }
+  .lpa-door-text strong {
+    font-size: 1.2rem;
+  }
+  .lpa-door-text > span {
+    font-size: 0.9375rem;
+  }
+  .lpa-search {
+    justify-self: stretch;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lpa-door {
+    transition: none;
+  }
+}
+.lpa-search strong {
+  color: var(--ink-2);
+  font-weight: 600;
 }

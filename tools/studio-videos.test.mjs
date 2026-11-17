@@ -140,9 +140,12 @@ test("manifest contract: a good manifest passes, every class of bad entry fails"
 });
 
 test("anchors are checked against the real page: a renamed section fails", () => {
-  const real = readManifest(ROOT).videos.find((v) => v.pages.some((p) => typeof p !== "string"));
+  // Static pages only: a Language Page app route (/access-practice-lab/…) is rendered at run time, so its anchor is
+  // checked by placeCard in the browser, not against a file (the home's card is anchored since 2026-11-17).
+  const staticAnchor = (p) => typeof p !== "string" && !p.path.startsWith("/access-practice-lab/");
+  const real = readManifest(ROOT).videos.find((v) => v.pages.some(staticAnchor));
   assert.ok(real, "the manifest uses at least one anchored placement");
-  const anchored = real.pages.find((p) => typeof p !== "string");
+  const anchored = real.pages.find(staticAnchor);
   assert.deepEqual(problemsFor(manifest(real), { root: ROOT }), "");
   const bad = (page) => problemsFor(manifest({ ...real, pages: [page] }), { root: ROOT });
   assert.match(bad({ ...anchored, after: "#no-such-section" }), /no element inside <body> matches/);

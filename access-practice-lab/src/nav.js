@@ -4,6 +4,8 @@ import { isEarlyBand } from "./bands.js";
 import { brandName } from "./brand.js";
 import { langSwitchHTML } from "./i18n.js";
 import { CHROME } from "./acc/copy.js";
+import { syncAudience } from "./audience.js";
+import { registerFor } from "./register.js";
 import { DESTINATIONS, SECTIONS, SKILLS, inBand, locate } from "./sitemap.js";
 import { familyTourHost } from "./family-tour-host.js";
 import { BASE, html, icon, raw } from "./util.js";
@@ -13,34 +15,72 @@ export const LOGO = raw(
   `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="2" width="17" height="17" rx="5.5" fill="#075568"/><rect x="21" y="2" width="17" height="17" rx="5.5" fill="#2e4a94"/><rect x="2" y="21" width="17" height="17" rx="5.5" fill="#8a3a5c"/><rect x="21" y="21" width="17" height="17" rx="5.5" fill="#9a4a26"/><path d="M6.5 14.5v-2a4 4 0 0 1 8 0v2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M26 7.5h8M26 11h8M26 14.5h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><rect x="8.3" y="25" width="4.4" height="7" rx="2.2" fill="#fff"/><path d="M26.5 33.5l7-7" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`,
 );
 
-// Which top-row link is current comes from the site map: the section of the destination this route belongs to.
-const SECTION_TO_TOP = { practice: "practice", play: "explore", progress: "growth", prep: "access-prep", teach: "teachers", family: "family", help: "help" };
-const HOME_VIEWS = new Set(["home", "early", "journey", "session-done"]);
+// The top row names the audiences, not the sections: Home · Teachers · Students · Families · Find Resources · Help.
+// Which one is current comes from the route: a few views name their place directly, every other page is placed by
+// its site-map section (src/sitemap.js), and anything left over by its visual register (src/register.js).
+const VIEW_TOP = Object.freeze({
+  home: "home",
+  students: "students",
+  early: "students",
+  journey: "students",
+  "session-done": "students",
+  "family-start": "families",
+  search: "find",
+  "site-guide": "help",
+  start: "teachers",
+});
+const SECTION_TO_TOP = { practice: "students", play: "students", progress: "students", prep: "students", teach: "teachers", family: "families", help: "help" };
+const REGISTER_TO_TOP = { teacher: "teachers", family: "families", student: "students" };
 
 export function currentTop(route = {}) {
   const view = route.view || "home";
-  if (HOME_VIEWS.has(view) && !(view === "journey" && /^(map|guide)/.test(route.id || ""))) return "continue";
-  if (view === "explore") return SECTION_TO_TOP[route.id] || "";
+  if (VIEW_TOP[view]) return VIEW_TOP[view];
+  // /explore with no section is the whole-site directory: a way of finding resources.
+  if (view === "explore") return route.id ? SECTION_TO_TOP[route.id] || "students" : "find";
   const here = locate(route);
-  return here ? SECTION_TO_TOP[here.section] || "" : "";
+  if (here && SECTION_TO_TOP[here.section]) return SECTION_TO_TOP[here.section];
+  return REGISTER_TO_TOP[registerFor(view)];
 }
 
-/** Four primary learner destinations (Home and three site-map sections); teachers and families get labelled doors. */
+/**
+ * The six top-row destinations, the same for every grade band. Students carries the band so the Student Hub can
+ * send K–3 learners to their picture-first early home; Home stays bare (it opens the grade chooser).
+ */
 export function primaryLinks(band, T) {
-  const q = `?grades=${band}`;
-  // K–3 bands: the early home is "Continue", and growth is the Passport (the growth map reads grades 3–8 work).
-  if (isEarlyBand(band))
-    return [
-      { id: "access-prep", icon: "tests", label: T("Access Prep", "Preparación ACCESS"), href: `${BASE}/access-prep${q}`, featured: true },
-      { id: "continue", icon: "road", label: T("My practice", "Mi práctica"), href: `${BASE}/early${q}` },
-      { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/library${q}` },
-      { id: "growth", icon: "passport", label: T("My Passport", "Mi Pasaporte"), href: `${BASE}/passport${q}` },
-    ];
+  const q = band ? `?grades=${band}` : "";
   return [
-    { id: "continue", icon: "road", label: T("Home", "Inicio"), href: `${BASE}/` },
-    { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/explore/practice${q}` },
-    { id: "explore", icon: "sparkle", label: T("Games & Worlds", "Juegos y mundos"), href: `${BASE}/explore/play${q}` },
-    { id: "growth", icon: "growth", label: T("My Progress", "Mi progreso"), href: `${BASE}/explore/progress${q}` },
+    { id: "home", icon: "home", label: T("Home", "Inicio"), href: `${BASE}/` },
+    { id: "teachers", icon: "teacher", label: T("Teachers", "Docentes"), href: "/access-teacher/" },
+    { id: "students", icon: "reading", label: T("Students", "Estudiantes"), href: `${BASE}/students${q}` },
+    { id: "families", icon: "families", label: T("Families", "Familias"), href: `${BASE}/family-start` },
+    { id: "find", icon: "search", label: T("Find Resources", "Buscar recursos"), href: `${BASE}/search${q}` },
+    { id: "help", icon: "help", label: T("Help", "Ayuda"), href: `${BASE}/site-guide${q}` },
+  ];
+}
+
+/**
+ * Everything the top row held before the audience redesign, one click away at the top of More. Access Prep leads
+ * (students and teachers look for it by name). K–3 bands get their early home, activity finder and Passport.
+ */
+export function formerTopLinks(band, T) {
+  const q = `?grades=${band}`;
+  const learner = isEarlyBand(band)
+    ? [
+        { id: "early", icon: "road", label: T("Early learners home", "Página de primeros grados"), href: `${BASE}/early${q}` },
+        { id: "practice", icon: "library", label: T("Find an activity", "Buscar una actividad"), href: `${BASE}/library${q}` },
+        { id: "growth", icon: "passport", label: T("My Passport", "Mi Pasaporte"), href: `${BASE}/passport${q}` },
+      ]
+    : [
+        { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/explore/practice${q}` },
+        { id: "explore", icon: "sparkle", label: T("Games & Worlds", "Juegos y mundos"), href: `${BASE}/explore/play${q}` },
+        { id: "growth", icon: "growth", label: T("My Progress", "Mi progreso"), href: `${BASE}/explore/progress${q}` },
+      ];
+  return [
+    { id: "access-prep", icon: "tests", label: T("Access Prep", "Preparación ACCESS"), href: `${BASE}/access-prep${q}`, featured: true },
+    ...learner,
+    { id: "book-studio", icon: "writing", label: T("Create a Book", "Crear un libro"), href: `${BASE}/book-studio${q}` },
+    { id: "site-guide", icon: "help", label: T("Site Guide", "Guía del sitio"), href: `${BASE}/site-guide${q}` },
+    { id: "teacher-start", icon: "teacher", label: T("Teacher start page and tour", "Inicio y recorrido para docentes"), href: `${BASE}/start${q}` },
   ];
 }
 
@@ -100,38 +140,24 @@ export function navHTML(ctx, I) {
   const band = ctx.band;
   const view = ctx.route?.view || "home";
   const current = currentTop(ctx.route);
-  const primary = primaryLinks(band, T);
-  // The two family buttons keep their labels on the top row at every width (families are mostly on phones);
-  // Teacher Expedition shrinks to an icon, then moves to the More menu on narrow screens.
+  // Entering a hub remembers its audience for the "Back to <Hub>" link (src/audience.js); the shell renders the
+  // navigation on every route, so this is the one place every lab page passes through.
+  syncAudience(ctx.route);
   const topLink = (l) =>
-    html`<a
-      class="top-link${l.featured ? " top-access-prep is-featured" : ""}${l.pill ? " top-expedition" : ""}${l.family ? " top-family" : ""}"
-      ${l.low ? raw('data-tier="low"') : l.dataTier ? raw(`data-tier="${l.dataTier}"`) : ""}
-      href="${l.href}"
-      ${l.id === current ? raw('aria-current="page"') : ""}
+    html`<a class="top-link top-aud top-aud-${l.id}" data-audience-link="${l.id}" href="${l.href}" ${l.id === current ? raw('aria-current="page"') : ""}
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
   const focused = view === "test" || view === "assess";
-  const accessPrepLink = html`<a class="top-link top-access-prep is-featured" data-tier="prep" href="${BASE}/access-prep?grades=${band}" ${current === "access-prep" ? raw('aria-current="page"') : ""}><span>${icon("tests")} ${T("Access Prep", "Preparación ACCESS")}</span></a>`;
-  // Teachers, Families and the Site Guide are labelled doors on the top row at every width (families are mostly on phones).
-  const teachersLink = isEarlyBand(band) ? "" : html`<a class="top-link top-expedition top-teachers" href="${BASE}/start?grades=${band}" ${current === "teachers" ? raw('aria-current="page"') : ""}>${icon("teacher")}<span>${T("Teachers", "Docentes")}</span></a>`;
-  // The learner row stays four destinations (tools/access-journey-pages.test.mjs); Families is its own labelled link.
-  const familiesLink = html`<a class="top-link top-expedition top-family" href="${BASE}/family-start" ${current === "family" ? raw('aria-current="page"') : ""}>${icon("families")}<span>${T("Families", "Familias")}</span></a>`;
-  // Book Studio is a labelled door on the top row at every width (the platform's maker space, for every audience).
-  const bookLink = html`<a class="top-link top-expedition top-book" href="${BASE}/book-studio?grades=${band}" ${view === "book-studio" ? raw('aria-current="page"') : ""}>${icon("writing")}<span>${T("Create a Book", "Crear un libro")}</span></a>`;
-  const siteGuideLink = html`<a class="top-link top-expedition top-guide" href="${BASE}/site-guide?grades=${band}" ${view === "site-guide" ? raw('aria-current="page"') : ""}>${icon("help")}<span>${T("Site Guide", "Guía del sitio")}</span></a>`;
-  const rowLinks = primary.filter((l) => !l.pill && !l.featured);
-  // Home comes first, to the left of Access Prep.
-  return html`${rowLinks.filter((l) => l.id === "continue").map(topLink)}${accessPrepLink}${rowLinks.filter((l) => l.id !== "continue").map(topLink)}${bookLink}${teachersLink}${familiesLink}${siteGuideLink}
+  return html`${primaryLinks(band, T).map(topLink)}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${focused ? "" : gradeSelectHTML(ctx, I)}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
       <summary>${icon("menu")}<span>${T("More", "Más")}</span></summary>
       <div class="lab-utilities-body">
-        <div class="menu-group menu-compact">
+        <div class="menu-group menu-compact menu-go">
           <h2>${T("Go to", "Ir a")}</h2>
-          ${primary.map((l) => html`<a href="${l.href}">${icon(l.icon)}${l.label}</a>`)}
+          ${formerTopLinks(band, T).map((l) => html`<a ${l.featured ? raw('class="menu-featured"') : ""} data-menu-link="${l.id}" href="${l.href}">${icon(l.icon)}${l.label}</a>`)}
         </div>
         ${menuGroups(band, T).map(
           (g) =>

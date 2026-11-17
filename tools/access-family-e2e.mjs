@@ -157,13 +157,11 @@ try {
       (await page.locator("h1").first().innerText()).includes("Practiquemos inglés juntos"),
       "L: Español headline after switching",
     );
-    // The simplified learner navigation keeps the same four destinations in every language.
-    const topLinks = await page
-      .locator("nav.lab-tools a.top-link:not([data-tier])")
-      .allInnerTexts();
+    // The audience navigation (2026-11-17) keeps the same six places in every language.
+    const topLinks = await page.locator("nav.lab-tools a.top-aud").allInnerTexts();
     ok(
-      ["Inicio", "Practicar", "Juegos y mundos", "Mi progreso"].every((label, index) =>
-        topLinks[index]?.includes(label),
+      ["Inicio", "Docentes", "Estudiantes", "Familias", "Buscar recursos", "Ayuda"].every(
+        (label, index) => topLinks[index]?.includes(label),
       ),
       `L: header nav is Spanish (${topLinks.map((t) => t.trim()).join(" | ")})`,
     );

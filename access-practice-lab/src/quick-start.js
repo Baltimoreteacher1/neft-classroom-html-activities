@@ -65,21 +65,24 @@ export function pickSet(rows, isDone, { domain = "", n = SET_SIZE } = {}) {
 
 /** A set link: a plain playlist URL (works without script, in a new tab) plus what src/main.js needs to start it
  * as a practice session. */
-const setAttrs = (band, rows, title) =>
+export const jumpSetAttrs = (band, rows, title) =>
   raw(`href="${esc(setHref(band, rows, title))}" data-jump-set="${esc(rows.map((r) => r.id).join(","))}" data-jump-minutes="${minutes(rows)}" data-jump-title="${esc(title)}"`);
 
 export const setHref = (band, rows, title) =>
   `${BASE}/play?${new URLSearchParams({ ids: rows.map((r) => r.id).join(","), grades: band, t: title })}`;
 
-/** The Jump in panel. `ctx` supplies band and prefs; returns "" when the band has no activities. */
-export async function jumpInHTML(ctx, I, { heading = true } = {}) {
+/**
+ * The practice pool behind every Jump in set: the band's four-skill rows in the grade focus, the support levels it
+ * ships, the chosen level (`level` when the band ships it, else the saved plan level), the rows at that level and
+ * whether the learner finished one. `ctx` supplies band and prefs.
+ */
+export async function practicePool(ctx, { level: want = "" } = {}) {
   const band = ctx.band;
   const all = await bandRows(band).catch(() => []);
   const focus = activeGradeFocus(ctx.prefs, band);
   const rows = all.filter((r) => CORE_DOMAINS.includes(r.domain) && inGradeFocus(r.grades, focus));
-  if (!rows.length) return "";
   const levels = ["A", "B", "C"].filter((l) => rows.some((r) => r.level === l));
-  const level = jumpLevel(ctx.prefs, band, levels);
+  const level = levels.includes(want) ? want : jumpLevel(ctx.prefs, band, levels);
   const atLevel = rows.filter((r) => r.level === level);
   const done = new Map();
   const isDone = (r) => {
@@ -87,6 +90,13 @@ export async function jumpInHTML(ctx, I, { heading = true } = {}) {
       done.set(r.domain, new Set(loadRecord(band, r.domain, level).complete));
     return done.get(r.domain).has(r.id);
   };
+  return { band, rows, levels, level, atLevel, isDone };
+}
+
+/** The Jump in panel. `ctx` supplies band and prefs; returns "" when the band has no activities. */
+export async function jumpInHTML(ctx, I, { heading = true } = {}) {
+  const { band, rows, levels, level, atLevel, isDone } = await practicePool(ctx);
+  if (!rows.length) return "";
   const early = isEarlyBand(band);
   const tierName = (l) => I.T(TIERS[l].name, TIERS[l].es);
   const mixed = pickSet(atLevel, isDone);
@@ -133,7 +143,7 @@ export async function jumpInHTML(ctx, I, { heading = true } = {}) {
         mixed.length
           ? html`<li class="jump-tile jump-mixed">
               <a
-                ${setAttrs(band, mixed, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))}
+                ${jumpSetAttrs(band, mixed, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))}
               >
                 <span class="jump-icon" aria-hidden="true">${icon("sparkle")}</span>
                 <strong
@@ -151,7 +161,7 @@ export async function jumpInHTML(ctx, I, { heading = true } = {}) {
         const label = early ? I.T(...c.early) : I.T(m.name, m.es);
         return html`<li class="jump-tile d-${d.toLowerCase()}">
           <a
-            ${setAttrs(band, set, I.S(`Quick practice · ${m.name}`, `Práctica rápida · ${m.es}`))}
+            ${jumpSetAttrs(band, set, I.S(`Quick practice · ${m.name}`, `Práctica rápida · ${m.es}`))}
           >
             <span class="jump-icon" aria-hidden="true">${icon(m.icon)}</span>
             <strong>${label}</strong>

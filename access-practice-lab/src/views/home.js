@@ -1,5 +1,5 @@
-// Home: the start screen (grade, language, Continue, the four skills, a door for teachers and families; see
-// home-start.js), then today's session, the four studios, everything else to explore (home-registry.js),
+// Home: the audience doors and the page h1 (home-audience.js), then the student start (grade, Continue, the four
+// skills; home-start.js), today's session, the four studios, everything else to explore (home-registry.js),
 // growth, practice tests, search, and the teacher and family sections.
 import { bandDomains, bandRows, findActivity, loadIndex, loadRoad, loadShared } from "../content.js";
 import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
@@ -47,6 +47,7 @@ export { nextActivity, tierFor };
 import { cardHref, chooseGradeHTML, continueTarget, pickBand, recentRoom, skillPickHTML, startHTML } from "./home-start.js";
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
 import { latestModuleResume } from "../home-resume.js";
+import { audienceHTML, continueShortcuts } from "./home-audience.js";
 import { sectionTilesHTML } from "../sitemap-ui.js";
 import { onLanguagePage } from "../brand.js";
 
@@ -96,11 +97,19 @@ function reviewHTML(I, due, plan, band, ctx) {
 }
 
 export async function render(ctx) {
-  if (ctx.route.view === "session-done") return renderSessionDone(ctx);
   const I = i18nFor(ctx);
   const band = ctx.band;
   // Home without ?grades= never picks a grade on its own (Joel 2026-11-17): the learner chooses each time.
-  if (!ctx.route.grades) return { title: "", html: chooseGradeHTML(I, ctx, { band, available: ctx.bands }) };
+  if (!ctx.route.grades) {
+    // Returning visitors without a grade in the URL: continue an open session, or the newest saved module work.
+    const open = getEngagement(ctx.prefs).activeSession;
+    const practiceHref = open ? sessionHref(open) : latestModuleResume({ band, studio: loadStudio() })?.href || "";
+    const shortcuts = continueShortcuts({ band, practiceHref });
+    return {
+      title: "",
+      html: html`${audienceHTML(I, { shortcuts })}${chooseGradeHTML(I, ctx, { band, available: ctx.bands })}`,
+    };
+  }
   const [domains, road, shared] = await Promise.all([
     bandDomains(band),
     loadRoad(),
@@ -267,7 +276,10 @@ export async function render(ctx) {
   const jumpIn = await jumpInHTML(ctx, I);
   return {
     title: "",
-    html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, target, missions, resume, dueCount: due.length })}
+    html: html`${audienceHTML(I, {
+      grades: band,
+      shortcuts: continueShortcuts({ band, practiceHref: target.kind !== "start" && !target.href.startsWith("#") ? target.href : "" }),
+    })}${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, target, missions, resume, dueCount: due.length })}
       ${jumpIn}
       ${onLanguagePage() ? html`<details class="language-intro">
         <summary><span class="language-intro-play" aria-hidden="true">▶</span><span><strong>${I.T("Prepare for WIDA ACCESS", "Prepárate para WIDA ACCESS")}</strong><span>${I.T("See practice for grades 3–5 and 6–8 in 30 seconds", "Mira la práctica para los grados 3–5 y 6–8 en 30 segundos")}</span></span></summary>
@@ -703,73 +715,4 @@ export function onChange(e, ctx) {
     if (disclosure) disclosure.open = open;
     document.getElementById(id)?.focus({ preventScroll: true });
   });
-}
-
-async function renderSessionDone(ctx) {
-  const engagement = getEngagement(ctx.prefs);
-  const session =
-    engagement.activeSession?.id === ctx.route.sessionId
-      ? engagement.activeSession
-      : engagement.lastSession?.id === ctx.route.sessionId
-        ? engagement.lastSession
-        : null;
-  if (!session || session.id !== ctx.route.sessionId)
-    return {
-      title: "",
-      html: html`<p>
-        <a class="btn btn-primary" href="${BASE}/?grades=${ctx.band}">Back to today’s mission</a>
-      </p>`,
-    };
-  const items = (
-    await Promise.all(session.ids.map((id) => findActivity(id).catch(() => null)))
-  ).filter(Boolean);
-  const practiced = items.filter((item) => {
-    const result = loadRecord(item.band, item.domain, item.level).results?.[item.activity.id];
-    return (
-      result?.date && Date.parse(result.date) >= Date.parse(session.started) && !needsReview(result)
-    );
-  });
-  if (!practiced.length)
-    return {
-      title: "Mission",
-      html: html`<section class="session-finish panel">
-        <h1 tabindex="-1">Ready when you are</h1>
-        <p>Try at least one activity in this session before finishing. Your place is saved.</p>
-        <a class="btn btn-primary" href="${sessionHref(session)}"
-          >Resume this mission${icon("arrow-right")}</a
-        >
-      </section>`,
-    };
-  const earned =
-    engagement.activeSession?.id === session.id ? finishSession(ctx, session.id, true).earned : 0;
-  const domains = [...new Set(practiced.map((item) => item.domain))];
-  return {
-    title: "Mission complete",
-    html: html`<section class="session-finish panel" aria-labelledby="finishTitle">
-      <p class="eyebrow">EduWonderLab · Mission complete</p>
-      <h1 id="finishTitle" tabindex="-1">You made time for language today.</h1>
-      <p class="lead">
-        You practiced ${practiced.length} ${practiced.length === 1 ? "activity" : "activities"}
-        across ${domains.join(", ")} in an estimated ${session.minutes} minute session. There was no
-        timer.
-      </p>
-      <h2>What you practiced</h2>
-      <ul>
-        ${practiced.map((item) => html`<li>${item.activity.title} · ${item.domain}</li>`)}
-      </ul>
-      <p>
-        Try this strategy next: name the evidence, explain your choice, then use that move on a new
-        task.
-      </p>
-      ${earned ? html`<p class="reward-chip" role="status">+${earned} Passport XP for completing this session</p>` : html`<p class="fine" role="status">Today’s session reward was already earned. Your practice is saved.</p>`}
-      <p class="fine">
-        XP celebrates participation and learning habits. It is not a proficiency score or placement.
-      </p>
-      <div class="session-heading">
-        <a class="btn btn-primary" href="${BASE}/passport?grades=${session.band}"
-          >See your Passport${icon("arrow-right")}</a
-        ><a class="btn" href="${BASE}/?grades=${session.band}">Choose a next step</a>
-      </div>
-    </section>`,
-  };
 }

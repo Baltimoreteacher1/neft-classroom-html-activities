@@ -192,7 +192,7 @@ export function renderHubTourHTML(registry, state, statusMsg = "") {
         <a class="btn btn-primary" href="${kit.studentUrl}" target="_blank" rel="noopener">Open the activity ${icon("external")}</a>
         <button type="button" class="btn" data-ht-copy="${kit.studentUrl}">${icon("copy")} Copy link for students</button>
         <button type="button" class="btn" data-ht-copy="${kit.familyUrl}">${icon("copy")} Copy link for families</button>
-        <button type="button" class="btn" data-ht-act="save-kit">${icon("save")} Save to My Resources</button>
+        <button type="button" class="btn" data-ht-act="save-kit">${icon("save")} Save to My workspace</button>
       </div>
       <p class="fine">Students start right away from the link. No accounts. Families get the same activity with a short note in English or Spanish.</p>
     </div>`;

@@ -139,11 +139,12 @@ try {
   );
   page.on("dialog", (d) => d.dismiss());
 
-  // ── 1. Create a Book from the top navigation ──
+  // ── 1. Create a Book from the navigation (More › Go to, since the 2026-11-17 audience navigation) ──
   await page.goto(`${origin}${LAB}/?grades=6-8`);
-  const navLink = page.locator(".lab-tools a.top-book");
+  await page.locator(".lab-utilities > summary").click();
+  const navLink = page.locator('.lab-utilities [data-menu-link="book-studio"]');
   await navLink.waitFor({ timeout: 15000 });
-  ok(await navLink.isVisible(), "Create a Book is visible in the top navigation");
+  ok(await navLink.isVisible(), "Create a Book is one click away in More");
   await navLink.click();
   await page.waitForSelector(".bk-home h1", { timeout: 15000 });
   ok(
@@ -525,8 +526,9 @@ try {
     await p2.goto(`${origin}${LAB}/book-studio`);
     await p2.waitForSelector(".bk-home");
     if (SHOTS) await p2.screenshot({ path: join(SHOTS, `home-${name}.png`), fullPage: true });
-    const navVisible = await p2.locator(".lab-tools a.top-book").isVisible();
-    ok(navVisible, `${name}: Create a Book stays a labelled link in the header`);
+    const navVisible =
+      (await p2.locator('.lab-utilities [data-menu-link="book-studio"]').count()) === 1;
+    ok(navVisible, `${name}: Create a Book stays one click away in More`);
     await ctx2.close();
   }
 

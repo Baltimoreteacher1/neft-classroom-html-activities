@@ -154,7 +154,13 @@ try {
     }
     localStorage.setItem(p, JSON.stringify({ complete: [], results }));
   });
-  await page.locator(".session-finish a").last().click();
+  // The session end's next steps lead to new practice, the Passport and the Student Hub (no home link any more),
+  // so open the home dashboard directly for the weekly-goal check.
+  check(
+    (await page.locator(".session-finish [data-done-hub]").count()) === 1,
+    "session ending offers the way back to the Student Hub",
+  );
+  await page.goto(`${base}/access-practice-lab/?grades=${found.band}`, { waitUntil: "networkidle" });
   await page.locator("details.lph-dashboard > summary").click();
   await page.waitForSelector("[data-weekly-goal]");
   await page.locator("[data-weekly-goal]").selectOption("3");

@@ -9,6 +9,8 @@
 // title that begins with or contains the whole query gets a bonus. Nothing here uses learner data.
 import { BASE } from "../util.js";
 import { EDUCATIONAL_SYNONYMS } from "../resource-intelligence.js";
+import { FACET_WORDS, FILLER, editDistance, facetHints, parseGrades, typoBudget } from "../finder/intent.js";
+import { destinationLookups, enrich, resourceDocs } from "../finder/resources.js";
 
 export const KINDS = ["page", "practice", "studio", "word", "command"];
 const STOP = new Set([
@@ -51,7 +53,8 @@ export const words = (s) => norm(s).split(" ").filter(Boolean);
 export const queryWords = (q) => {
   const all = words(q);
   const kept = all.filter((w) => !STOP.has(w));
-  return kept.length ? kept : all;
+  const meaningful = kept.filter((w) => !FILLER.has(w));
+  return meaningful.length ? meaningful : kept.length ? kept : all;
 };
 
 const pair = (en, es) => ({ en, es: es || en });
@@ -264,6 +267,7 @@ export function buildDocs({
   units = [],
   tests = [],
   studioApp = [],
+  destinations = [],
 } = {}) {
   const docs = [...PAGE_DOCS, ...COMMAND_DOCS];
   for (const c of cards)
@@ -291,6 +295,7 @@ export function buildDocs({
       href: `/wida-access/${s.slug}/`,
       keys: ["studio", "estudio"],
       bands: null,
+      meta: { skill: s.skill },
     });
   for (const p of studioApp)
     docs.push({
@@ -322,7 +327,7 @@ export function buildDocs({
     for (const [domain, d] of Object.entries(b.domains || {}))
       for (const [level, l] of Object.entries(d.levels || {}))
         for (const row of l.activities || []) {
-          const [id, title, type, objective] = row;
+          const [id, title, type, objective, minutes] = row;
           docs.push({
             id: `act:${band}:${id}`,
             kind: "practice",
@@ -331,10 +336,14 @@ export function buildDocs({
             titleEs: "",
             text: objective || "",
             textEs: "",
-            path: `${domain}/${level}/${id}`,
+            // Model-Test levels are stored "6-8-A" and routed /Model-Test/6-8/A/<id> (src/main.js parseRoute).
+            path:
+              domain === "Model-Test"
+                ? `${domain}/${level.replace(/-([^-]+)$/, "/$1")}/${id}`
+                : `${domain}/${level}/${id}`,
             keys: [domain, DOMAIN_ES[domain] || "", type || ""],
             bands: [band],
-            meta: { domain, level, type },
+            meta: { domain, level, type, minutes: Number.isFinite(minutes) ? minutes : null },
           });
         }
   const st = index?.studio || {};
@@ -402,6 +411,7 @@ export function buildDocs({
       path: `test/${t.id}`,
       keys: ["practice test", "prueba de practica"],
       bands: t.band ? [t.band] : null,
+      meta: { skill: t.domain || "Mixed", minutes: t.minutes ?? null },
     });
   for (const w of glossary?.terms || [])
     docs.push({
@@ -416,7 +426,50 @@ export function buildDocs({
       keys: [],
       bands: null,
     });
-  return docs.map(prepare);
+  return withFinderFields(docs, { destinations, index }).map(prepare);
+}
+
+/**
+ * Add the Resource Finder's sources (sitemap destinations, packets, handouts, hub sections) and give every document
+ * its audience, skill, kind, format and minutes. A home card or page that IS a sitemap destination absorbs it, so a
+ * page is listed once.
+ */
+function withFinderFields(docs, { destinations, index }) {
+  if (!destinations.length) return docs;
+  const look = destinationLookups(destinations);
+  const enriched = docs.map((d) => enrich(d, look));
+  const merged = new Map();
+  const dupes = new Set();
+  for (const d of enriched) {
+    if (!d.mergedFrom) continue;
+    if (!merged.has(d.mergedFrom)) merged.set(d.mergedFrom, d);
+    // A second home card for the same page would list it twice; the fixed page entries always stay.
+    else if (!d.id.startsWith("page:")) dupes.add(d);
+  }
+  const extra = resourceDocs({ destinations, index }).filter((x) => !(x.dest && merged.has(x.dest)));
+  for (const [id, d] of merged) {
+    // The sitemap names the page; the card's own title stays searchable as a keyword.
+    const dest = look.byId.get(id);
+    d.keys = [...(d.keys || []), d.title, d.titleEs || "", dest.section];
+    d.title = dest.title[0];
+    d.titleEs = dest.title[1];
+    if (dest.text) [d.text, d.textEs] = dest.text;
+    d.dest = dest.id;
+    d.section = dest.section;
+    d.top = !!dest.top;
+    d.bands ||= dest.bands || null;
+  }
+  return [...enriched.filter((d) => !dupes.has(d)), ...extra];
+}
+
+/** Metadata words a query can match: "speaking games" finds a game in the Speaking skill. */
+function facetWords(d) {
+  const out = [];
+  if (d.skill && FACET_WORDS.skill[d.skill]) out.push(...FACET_WORDS.skill[d.skill]);
+  if (d.rk && FACET_WORDS.rk[d.rk]) out.push(...FACET_WORDS.rk[d.rk]);
+  if (d.format === "printable") out.push(...FACET_WORDS.rk.printable);
+  for (const a of d.for || []) out.push(...(FACET_WORDS.for[a] || []));
+  return [...new Set(out)];
 }
 
 function prepare(d) {
@@ -425,6 +478,9 @@ function prepare(d) {
     _t: words(`${d.title} ${d.titleEs || ""}`),
     _k: words((d.keys || []).join(" ")),
     _b: words(`${d.text} ${d.textEs || ""}`),
+    _f: facetWords(d),
+    // "All four skills" resources practice every skill: a skill word finds them, ranked under the skill's own.
+    _m: d.skill === "Mixed" ? Object.values(FACET_WORDS.skill).flat() : [],
   };
 }
 
@@ -457,24 +513,41 @@ const editOne = (a, b) => {
 /** How well one query word matches one list of document words: 0 when it does not. */
 function fieldScore(w, list, [exact, prefix, typo]) {
   let best = 0;
+  const budget = typoBudget(w);
   for (const x of list) {
     if (x === w) return exact;
     if (w.length >= 2 && x.startsWith(w)) best = Math.max(best, prefix);
-    else if (typo && w.length >= 4 && x.length >= 4 && w[0] === x[0] && editOne(w, x)) best = Math.max(best, typo);
+    else if (typo && budget && x.length >= 4 && w[0] === x[0] && best < typo) {
+      // One slip on a short word; two on a long one ("vocabulery", "speeking").
+      const ok = budget === 1 ? editOne(w, x) : editDistance(w, x, budget) <= budget;
+      if (ok) best = typo;
+    }
   }
   return best;
 }
 const TITLE = [10, 6, 3];
 const KEYS = [7, 4, 0];
+const FACET = [7, 4, 3];
+const MIXED = [2, 1, 1];
 const BODY = [3, 2, 0];
 const KIND_BOOST = { page: 1.15, studio: 1.1, practice: 1, word: 0.85, command: 1.05 };
 
 function wordScore(w, d, bridge) {
   const own = (x, weight, typo) => {
     const t = typo ? TITLE : [TITLE[0], TITLE[1], 0];
-    return (fieldScore(x, d._t, t) || fieldScore(x, d._k, KEYS) || fieldScore(x, d._b, BODY)) * weight;
+    const f = typo ? FACET : [FACET[0], FACET[1], 0];
+    return (
+      Math.max(
+        fieldScore(x, d._t, t) || fieldScore(x, d._k, KEYS),
+        d._f ? fieldScore(x, d._f, f) : 0,
+      ) ||
+      fieldScore(x, d._b, BODY) ||
+      (d._m?.length ? fieldScore(x, d._m, MIXED) : 0)
+    ) * weight;
   };
   let s = own(w, 1, true);
+  // "worksheets" also finds "worksheet".
+  if (!s && w.length > 4 && w.endsWith("s")) s = own(w.slice(0, -1), 0.9, false);
   // The paired word from the other language counts, but a typo of it would only add noise.
   for (const alt of bridge?.get(w) || []) s = Math.max(s, own(alt, 0.7, false));
   if (!s && EDUCATIONAL_SYNONYMS[w]) {
@@ -490,15 +563,19 @@ function wordScore(w, d, bridge) {
 export function search(
   docs,
   query,
-  { band = "", all = false, kind = "", bridge = null, limit = 40 } = {},
+  { band = "", all = false, kind = "", bridge = null, limit = 40, grades = true } = {},
 ) {
-  const qw = queryWords(query);
+  const intent = grades ? parseGrades(norm(query)) : { rest: query, bands: null };
+  const qw = queryWords(intent.rest);
   if (!qw.length) return [];
   const phrase = qw.join(" ");
+  const hints = facetHints(qw);
+  // A grade named in the query ("third grade listening") decides the bands, whatever band the page is showing.
+  const bands = intent.bands || (!all && band ? [band] : null);
   const out = [];
   for (const d of docs) {
     if (kind && d.kind !== kind) continue;
-    if (!all && band && d.bands && !d.bands.includes(band)) continue;
+    if (bands && d.bands && !d.bands.some((b) => bands.includes(b))) continue;
     let total = 0;
     let ok = true;
     for (const w of qw) {
@@ -513,10 +590,22 @@ export function search(
     const title = norm(`${d.title} ${d.titleEs || ""}`);
     if (title.startsWith(phrase)) total += 6;
     else if (title.includes(phrase)) total += 3;
-    out.push({ doc: d, score: total * (KIND_BOOST[d.kind] || 1) });
+    out.push({ doc: d, score: total * (KIND_BOOST[d.kind] || 1) * intentBoost(d, hints) });
   }
   out.sort((a, b) => b.score - a.score || a.doc.title.localeCompare(b.doc.title));
   return out.slice(0, limit);
+}
+
+/** A query that names a skill, kind or audience lifts the resources that ARE that, over ones that only mention it. */
+function intentBoost(d, hints) {
+  let b = 1;
+  if (d.skill && hints.skill.has(d.skill)) b *= 1.25;
+  if ((d.rk && hints.rk.has(d.rk)) || (d.format === "printable" && hints.rk.has("printable"))) b *= 1.25;
+  if (d.for && [...hints.for].some((a) => d.for.includes(a))) b *= d.for.length === 1 ? 1.5 : 1.1;
+  // Paper versions sit just under the screen version unless the query asks for paper.
+  if (d.format === "printable" && !hints.rk.has("printable")) b *= 0.85;
+  if (d.top) b *= 1.05;
+  return b;
 }
 
 /** What to show before anything is typed: the lab's own starting points. */

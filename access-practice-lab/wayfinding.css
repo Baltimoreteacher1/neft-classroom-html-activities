@@ -757,41 +757,29 @@
     padding-inline-start: 0.4rem;
   }
 }
-/* Phones and small tablets: the main doors (Access Prep, Home, Practice, Games, Progress) stay one tap away on every
-   page instead of hiding inside "More". They wrap onto their own row under the language switch. */
-@media (max-width: 959px) {
-  .lab-top .lab-tools > .top-link:not(.top-expedition):not(.lab-search-btn):not(.lab-read-btn):not(.lab-comfort-btn):not(.top-access-prep) {
-    display: inline-flex;
-    order: 4;
-    flex: 1 1 28%;
-    justify-content: center;
-    min-height: 2.75rem;
-    padding: 0.3rem 0.5rem;
-    border: 1px solid var(--line);
-    white-space: normal;
-    text-align: center;
-    line-height: 1.15;
-    font-size: 0.85rem;
-  }
-  .lab-top .lab-tools > .top-link:not(.top-expedition):not(.lab-search-btn):not(.lab-read-btn):not(.lab-comfort-btn):not(.top-access-prep) > .ico {
-    display: none;
-  }
-  .lab-top .lab-tools > .top-link[aria-current="page"]:not(.top-expedition):not(.top-access-prep) {
-    background: var(--surface-2);
-    border-color: var(--brand-deep);
-  }
-  /* Access Prep keeps its navy pill (ds.css) and only gets the phone sizing. */
-  .lab-top .lab-tools > .top-access-prep.is-featured {
-    display: inline-flex;
-    order: 4;
-    flex: 1 1 28%;
-    justify-content: center;
-    min-height: 2.75rem;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.15;
-    font-size: 0.85rem;
-    background: #142d47;
-    color: #f8d58c !important;
-  }
+
+/* ── "Back to <Hub>" in the breadcrumb row (src/components.js crumbsHTML, src/audience.js) ──────────── */
+.crumbs:has(.crumbs-hub) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+.crumbs .crumbs-hub {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.2rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand-deep);
+  font-size: 0.9rem;
+}
+.crumbs .crumbs-hub:hover,
+.crumbs .crumbs-hub:focus-visible {
+  border-color: var(--brand);
+  color: var(--brand-deep);
 }

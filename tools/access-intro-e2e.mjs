@@ -84,24 +84,32 @@ const overflow = async (page, label) =>
 
 // ── home cards ─────────────────────────────────────────────────────────────
 let page = await open("/");
-// One front door: "I am a… Student / Teacher / Family" replaces the two big Start Here cards.
-ok((await page.locator(".lph-roles .lph-role").count()) === 3, "home shows the I am a… switch");
+// Audience doors (2026-11-17 navigation redesign): Teacher, Student and Family doors replace the "I am a…" switch.
+// No door opens a tour: the Teacher door opens the Teacher Hub, the Family door the family start page, and the
+// Teacher start page (/start, in More) offers the tour among other choices.
 ok(
-  (await page.locator(".lph-role.is-teacher").innerText()).includes("Teacher"),
-  "teacher switch label",
+  (await page.locator(".lpa-doors .lpa-door").count()) === 3,
+  "home shows the three audience doors",
 );
 ok(
-  (await page.locator(".lph-role.is-family").getAttribute("title")).includes(
-    "Practice English Together",
-  ),
-  "family switch opens Practice English Together",
+  (await page.locator(".lpa-door.is-teacher").innerText()).includes("Teacher"),
+  "teacher door label",
+);
+ok(
+  (await page.locator(".lpa-door.is-family").getAttribute("href")) ===
+    "/access-practice-lab/family-start",
+  "family door opens the family start page",
+);
+ok(
+  (await page.locator(".lpa-door.is-teacher").getAttribute("href")) === "/access-teacher/",
+  "teacher door opens the Teacher Hub",
 );
 const topY = await page
-  .locator(".lph-role.is-teacher")
+  .locator(".lpa-door.is-teacher")
   .evaluate((e) => e.getBoundingClientRect().top);
-ok(topY < 450, `the switch sits near the top of the home (top ${Math.round(topY)}px)`);
+ok(topY < 600, `the doors sit near the top of the home (top ${Math.round(topY)}px)`);
 ok(
-  (await page.locator(".lab-tools a.top-family").innerText()).includes("Families"),
+  (await page.locator(".lab-tools a.top-aud-families").innerText()).includes("Families"),
   "Families in the main navigation",
 );
 ok(
@@ -109,11 +117,12 @@ ok(
   "Site Guide in the footer",
 );
 await axe(page, "home");
-await page.locator(".lph-role.is-teacher").click();
+await page.goto(`${LAB}/start?grades=6-8`, { waitUntil: "load" });
+await page.locator(".in-choice.is-tour").click();
 await page.waitForSelector(".gt-part-skill");
 ok(
   path(page).startsWith("/start/tour?part=1") && /grades=/.test(path(page)),
-  "Start the Teacher Tour opens Part 1 in the home's grades",
+  "the start page's tour choice opens Part 1 in the chosen grades",
 );
 
 // ── Teacher Tour: Part 1 pick a skill, Part 2 try it as a student with Mr. Neft, Part 3 use it with your class ──
@@ -392,15 +401,12 @@ await page.setViewportSize({ width: 1280, height: 900 });
 await page.goto(`${LAB}/start/tour?part=2&grades=6-8&skill=writing`, { waitUntil: "load" });
 await page.waitForSelector(".gt-part-try");
 await page.locator(".gt-exit").click();
-await page.waitForSelector(".lph-roles");
+await page.waitForSelector(".lpa-doors");
 ok(
   path(page).startsWith("/?grades=6-8") || path(page) === "/",
   "Exit tour returns to the home page",
 );
-ok(
-  (await page.locator(".lph-role.is-teacher").getAttribute("data-tour")) === "continue",
-  "the home Teacher switch offers to continue the tour",
-);
+// The home doors carry no tour state; the start page below offers to resume the tour.
 await page.goto(`${LAB}/start`, { waitUntil: "load" });
 await page.waitForSelector(".in-hub");
 ok((await page.locator(".in-choices a").count()) === 3, "three choices on the start page");
@@ -765,22 +771,24 @@ await page.close();
 // ── Spanish home, keyboard, mobile ─────────────────────────────────────────
 page = await open("/");
 await page.locator(".lang-btn[data-lang-mode='es']").first().click();
-await page.waitForSelector(".lph-roles");
-ok(
-  (await page.locator(".lph-role.is-family").innerText()).includes("Familia"),
-  "Spanish family switch",
+await page.waitForFunction(() =>
+  /Soy docente/.test(document.querySelector(".lpa-door.is-teacher")?.textContent || ""),
 );
 ok(
-  (await page.locator(".lph-role.is-teacher").innerText()).includes("Docente"),
-  "Spanish teacher switch",
+  (await page.locator(".lpa-door.is-family").innerText()).includes("familia"),
+  "Spanish family door",
+);
+ok(
+  (await page.locator(".lpa-door.is-teacher").innerText()).includes("docente"),
+  "Spanish teacher door",
 );
 await page.locator(".lang-btn[data-lang-mode='en']").first().click();
 let reached = false;
 for (let i = 0; i < 60 && !reached; i++) {
   await page.keyboard.press("Tab");
-  reached = await page.evaluate(() => document.activeElement?.matches(".lph-role.is-teacher"));
+  reached = await page.evaluate(() => document.activeElement?.matches(".lpa-door.is-teacher"));
 }
-ok(reached, "keyboard Tab reaches the Teacher switch");
+ok(reached, "keyboard Tab reaches the Teacher door");
 const ring = await page.evaluate(() => {
   const s = getComputedStyle(document.activeElement);
   return s.outlineStyle !== "none" && Number.parseFloat(s.outlineWidth) >= 2;

@@ -10,6 +10,7 @@ import { INLINE_BTN } from "./evidence-ui.js";
 import { i18nFor, makeI18n } from "./i18n.js";
 import { splitSentences, tagLabel } from "./lang/evidence-notebook.js";
 import { LISTEN_NOTE_FIELDS, listeningSegments, signalParts } from "./learning.js";
+import { hubLink } from "./audience.js";
 import { bandLabelEs } from "./bands.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, icon, raw } from "./util.js";
 
@@ -560,10 +561,20 @@ export const domainGlyph = (d) => icon(DOMAIN_META[d]?.icon || "star");
 // view passed ("Lab", "My Home"…), so the breadcrumb never names the home page two ways. It links to the bare home
 // (no ?grades=), which opens the grade chooser instead of re-picking the last grade.
 const LAB_HOME = new RegExp(`^${BASE}/?(\\?|$)`);
+// After the trail, one "Back to <Hub>" link to the hub this device last entered (src/audience.js); never on the hub.
+const hubBackHTML = (L) => {
+  const hub = hubLink();
+  return hub
+    ? html`<a class="crumbs-hub" data-hub-back="${hub.audience}" href="${hub.href}"
+        ><span aria-hidden="true">←</span> ${L.T(hub.label[0], hub.label[1])}</a
+      >`
+    : "";
+};
 export const crumbsHTML = (items, { i18n = null } = {}) =>
   html`<nav class="crumbs" aria-label="${(i18n || I).S("Breadcrumb", "Ruta de navegación")}">
     <ol>
       ${items.map(([label, href], i) => (i === 0 && href && LAB_HOME.test(href) ? [(i18n || I).S("Home", "Inicio"), `${BASE}/`] : [label, href])).map(([label, href]) => html`<li>${href ? html`<a href="${href}">${label}</a>` : html`<span aria-current="page">${label}</span>`}</li>`)}
     </ol>
+    ${hubBackHTML(i18n || I)}
   </nav>`;
 export { BASE };

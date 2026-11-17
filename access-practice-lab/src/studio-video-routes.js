@@ -26,7 +26,8 @@ export const STUDIO_VIDEOS = {
 };
 export const STUDIO_VIDEO_ROUTES = {
   "/access-practice-lab": {
-    "id": "the-language-page-overview"
+    "id": "the-language-page-overview",
+    "after": ".lph-intro > .lph-lead"
   },
   "/access-practice-lab/speak": {
     "id": "clip-speaking-frames"

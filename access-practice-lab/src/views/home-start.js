@@ -1,6 +1,6 @@
 // The top of the lab home: one screen that answers "where do I start?".
-//   One primary action (Continue unfinished work, or Start today's mission), an "I am a… Student / Teacher / Family"
-//   switch, and the grade ruler. The language choice lives once, in the header. The four skills and everything else
+//   The audience doors and the page's h1 sit above it (home-audience.js); this is the student part: one primary
+//   action (Continue unfinished work, or Start today's mission) and the grade ruler. The language choice lives once, in the header. The four skills and everything else
 //   sit below in "More ways to practice" (home.js); cards outside these panels come from home-registry.js.
 import { GRADE_PICKS, bandName, pickerState, resolvePick } from "../grade-bands.js";
 import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
@@ -262,19 +262,6 @@ export function frontDoorHTML(I, { target, missions = [], resume = null, dueCoun
   </section>`;
 }
 
-/**
- * "I am a… Student / Teacher / Family". Teacher and Family open a start page where the visitor picks the grades
- * first and then chooses the tour or an activity; neither button drops anyone straight into a tour.
- */
-function rolesHTML(I) {
-  return html`<nav class="lph-roles" aria-labelledby="lphRolesLabel">
-    <span class="lph-roles-label" id="lphRolesLabel">${I.T("I am a…", "Soy…")}</span>
-    <a class="lph-role is-student" href="#lphFront" aria-current="true">${icon("reading")}<span>${I.T("Student", "Estudiante")}</span></a>
-    <a class="lph-role is-teacher" title="${I.S("Teachers: start here", "Docentes: empiecen aquí")}" href="${BASE}/start">${icon("teacher")}<span>${I.T("Teacher", "Docente")}</span></a>
-    <a class="lph-role is-family" title="${I.S("Families: start here", "Familias: empiecen aquí")}" href="${BASE}/family-start">${icon("families")}<span>${I.T("Family", "Familia")}</span></a>
-  </nav>`;
-}
-
 /** Four direct access shortcuts: Explore Activities, Practice ACCESS, Create a Book, Find My Next Step. */
 export function shortcutsHTML(I, band = "6-8") {
   const q = `?grades=${band}`;
@@ -295,17 +282,15 @@ export function shortcutsHTML(I, band = "6-8") {
 }
 
 /**
- * The start screen: who you are, the title, ONE primary action, and the grade. Everything else on the home sits
+ * The student start: ONE primary action and the grade (the audience doors and the h1 sit above, home-audience.js). Everything else on the home sits
  * below it behind "More ways to practice" (home.js). `data` carries what home.js already loaded.
  */
 export function startHTML(I, ctx, data) {
   const { band, available, focusCounts, target, missions, resume, dueCount } = data;
-  return html`<section class="lph" aria-labelledby="homeTitle">
-    ${rolesHTML(I)}
+  return html`<section class="lph" aria-labelledby="lphTitle">
     <div class="lph-intro">
-      <h1 id="homeTitle" tabindex="-1">
-        ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
-      </h1>
+      <p class="lph-label">${I.T("Students", "Estudiantes")}</p>
+      <h2 class="lph-title" id="lphTitle">${I.T("Start practicing", "Empieza a practicar")}</h2>
       <p class="lph-lead">
         ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
       </p>
@@ -333,15 +318,13 @@ function gradeCardsHTML(I, band, available) {
 
 /**
  * The home with no grade in the URL: nothing is pre-chosen from an earlier visit. The learner picks a grade, which
- * opens the full home for that grade (?grades=). Same header, roles and ruler as startHTML.
+ * opens the full home for that grade (?grades=). Same header as startHTML.
  */
 export function chooseGradeHTML(I, ctx, { band, available }) {
-  return html`<section class="lph lph-choose" aria-labelledby="homeTitle">
-    ${rolesHTML(I)}
+  return html`<section class="lph lph-choose" aria-labelledby="lphTitle">
     <div class="lph-intro">
-      <h1 id="homeTitle" tabindex="-1">
-        ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
-      </h1>
+      <p class="lph-label">${I.T("Students", "Estudiantes")}</p>
+      <h2 class="lph-title" id="lphTitle">${I.T("Start practicing", "Empieza a practicar")}</h2>
       <p class="lph-lead">
         ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
       </p>

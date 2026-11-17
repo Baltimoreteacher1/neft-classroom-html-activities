@@ -21,8 +21,10 @@ import {
   copyText,
   html,
   icon,
+  storage,
   toHtml,
 } from "/access-practice-lab/src/util.js";
+import { SAVED_KEY, readSaved, toggleSaved } from "/access-practice-lab/src/finder/saved.js";
 
 const FORM_EDITORS = {
   Listening: "1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs",
@@ -43,8 +45,11 @@ const TYPE_LABEL = {
 };
 
 const PAGE = 25;
+let lastRows = [];
+// The page's grade band comes from ?grades= (set by the band switch in "What would you like to do today?").
+const urlBand = new URLSearchParams(location.search).get("grades");
 const S = {
-  band: "6-8",
+  band: CONTENT_BANDS.includes(urlBand) ? urlBand : "6-8",
   tripGrade: "6-8",
   tripSkill: "Listening",
   q: "",
@@ -131,6 +136,9 @@ async function render() {
       (!q || `${r.title} ${r.skill} ${r.id}`.toLowerCase().includes(q)),
   );
   const visible = shown.slice(0, S.limit);
+  lastRows = visible;
+  const savedIds = new Set(readSaved().map((x) => x.id));
+  const saveId = (r) => `activity:${r.id}`;
   const domains = Object.keys(index.bands[S.band].domains);
   const keyRows = new Map(
     await Promise.all(
@@ -224,7 +232,13 @@ async function render() {
                     <td class="col-skill t-meta">${r.skill}</td>
                     <td class="t-meta"><span class="th-level">${TIERS[r.level]?.name || r.level}</span></td>
                     <td class="th-links">
-                      <button type="button" class="ghost small" data-copy-url="${actUrl(r)}">${icon("copy")} Copy</button>
+                      <button type="button" class="ghost small" data-copy-url="${actUrl(r)}">${icon("copy")} Copy link</button>
+                      <button
+                        type="button"
+                        class="ghost small"
+                        data-save="${r.id}"
+                        aria-pressed="${String(savedIds.has(saveId(r)))}"
+                      >${icon("bookmark")} ${savedIds.has(saveId(r)) ? "Saved" : "Save"}</button>
                       <button
                         type="button"
                         class="ghost small"
@@ -382,6 +396,23 @@ async function render() {
   `);
 }
 
+function setBand(band) {
+  if (!CONTENT_BANDS.includes(band)) return;
+  Object.assign(S, { band, domain: "", level: "", limit: PAGE, picked: [], keys: new Set() });
+}
+// The band switch above the tasks changes the whole page.
+document.addEventListener("th:band", (e) => {
+  if (e.detail?.from === "hub" || e.detail?.band === S.band) return;
+  setBand(e.detail?.band);
+  render();
+});
+
+// A save or removal in "My workspace" updates the Save buttons here.
+let savedRender = Promise.resolve();
+storage.subscribe((key) => {
+  if (key === SAVED_KEY) savedRender = render();
+});
+
 let timer = 0;
 root.addEventListener("input", (e) => {
   const f = e.target.dataset.f;
@@ -429,15 +460,20 @@ root.addEventListener("click", (e) => {
   }
   const band = t.closest("[data-hub-band]");
   if (band) {
-    Object.assign(S, {
-      band: band.dataset.hubBand,
-      domain: "",
-      level: "",
-      limit: PAGE,
-      picked: [],
-      keys: new Set(),
-    });
+    setBand(band.dataset.hubBand);
+    // The document's own window builds the event (a test DOM has its own Event classes).
+    const { CustomEvent: Ev } = document.defaultView || globalThis;
+    document.dispatchEvent(new Ev("th:band", { detail: { band: S.band, from: "hub" } }));
     return render();
+  }
+  const save = t.closest("[data-save]");
+  if (save) {
+    const r = lastRows.find((x) => x.id === save.dataset.save);
+    if (!r) return;
+    const on = toggleSaved({ id: `activity:${r.id}`, title: r.title, href: actUrl(r) });
+    announce(on ? `Saved “${r.title}” to My workspace.` : `Removed “${r.title}” from My workspace.`);
+    // The storage write re-renders the list (subscription above); put focus back on this row's button.
+    return savedRender.then(() => root.querySelector(`[data-save="${r.id}"]`)?.focus());
   }
   if (t.closest("[data-more]")) {
     const from = S.limit;
