@@ -6,7 +6,9 @@ import { demoClass, demoTrainingCohort } from "./demo.js";
 import { clear, h, s } from "./dom.js";
 import { forecastFor, transitionsByKey, validateAll } from "./forecast.js";
 import { KEYS, loadRealStudents, loadState, read, saveState, write } from "./store.js";
+import { renderAsk } from "./view-ask.js";
 import { renderClassroom } from "./view-classroom.js";
+import { renderGlance } from "./view-glance.js";
 import { renderData } from "./view-data.js";
 import { renderForecasts } from "./view-forecasts.js";
 import { renderGrowth } from "./view-growth.js";
@@ -19,6 +21,8 @@ import { preloadActivities } from "./practice.js";
 import { showStep, tourCard } from "./tour.js";
 
 const TABS = [
+  { id: "glance", label: "Class at a glance", render: renderGlance },
+  { id: "ask", label: "Ask the data", render: renderAsk },
   { id: "overview", label: "Overview", render: renderOverview },
   { id: "students", label: "Students", render: renderStudents },
   { id: "growth", label: "Growth", render: renderGrowth },
@@ -38,7 +42,7 @@ const live = document.getElementById("piLive");
 const ws = {
   mode: read(KEYS.mode, null) === "real" ? "real" : read(KEYS.mode, null) === "demo" ? "demo" : null,
   view: sessionGet("pi:view") === "advanced" ? "advanced" : "quick",
-  tab: TABS.some((t) => t.id === sessionGet("pi:tab")) ? sessionGet("pi:tab") : "overview",
+  tab: TABS.some((t) => t.id === sessionGet("pi:tab")) ? sessionGet("pi:tab") : "glance",
   selected: null,
   sub: {},
   go(id) {
@@ -141,6 +145,8 @@ function load() {
 }
 
 const ICONS = {
+  glance: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
+  ask: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5M9 9a2 2 0 1 1 3 1.7c-.6.4-1 .8-1 1.3",
   overview: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z",
   students: "M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0M12 3a4 4 0 1 1 0 8",
   growth: "M3 17l6-6 4 4 8-8M14 7h7v7",
