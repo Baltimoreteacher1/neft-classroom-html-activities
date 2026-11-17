@@ -1,6 +1,8 @@
 // The inspector beside the page: what the selected element looks like and where it sits (exact numbers, so every
 // layout task can be done from the keyboard), or, with nothing selected, the page itself: this page's writing prompt
 // and sentence starters from the template, the background, the page narration and any teacher notes.
+import { bookBand } from "./programs.js";
+import { templateForBand } from "./template-bands.js";
 import * as db from "./db.js";
 import * as rec from "../recorder.js";
 import { addImageFile } from "./editor-add.js";
@@ -228,7 +230,7 @@ function pagePanelHTML(E) {
   const { S } = E.core;
   const page = E.core.page();
   const lang = E.ctx.prefs?.lang === "es" ? "es" : "en";
-  const tpl = templateById(S.book.templateId);
+  const tpl = templateForBand(templateById(S.book.templateId), bookBand(S.book, E.ctx.band));
   const notes = S.book.feedback.filter((f) => f.pageId === page.id);
   const prompt = page.prompt ? pick(page.prompt, lang) : "";
   const parts = [];

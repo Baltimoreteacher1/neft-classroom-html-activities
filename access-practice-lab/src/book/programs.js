@@ -377,6 +377,9 @@ const EARLY = new Set(["K", "1", "2-3"]);
 /** The program for a band: K, 1 and 2-3 share the Little Authors program; any other band uses 3–5. */
 export const programFor = (band) => PROGRAMS[band] || (EARLY.has(band) ? PK2 : P35);
 
+/** The WIDA grade cluster a book is stamped with when it is created in a band (model.js GRADE_CLUSTER_IDS). */
+export const clusterForBand = (band) => ({ "6-8": "6-8", "3-5": "4-5", "2-3": "2-3", K: "K", 1: "1" })[band] || "";
+
 /** The band a book is written for: its grade cluster if it has one, else the band the site is showing. */
 export function bookBand(book, band) {
   const gc = book?.gradeCluster || "";

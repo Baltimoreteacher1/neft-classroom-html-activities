@@ -25,7 +25,8 @@ import {
 } from "../book/model.js";
 import { esc, pageHTML, preloadMedia } from "../book/render.js";
 import { craftHTML, journeyHTML, standardsHTML, templateCard } from "../book/program-ui.js";
-import { KEY_USES, programFor } from "../book/programs.js";
+import { KEY_USES, clusterForBand, programFor } from "../book/programs.js";
+import { templateForBand } from "../book/template-bands.js";
 import { CREATION_MODES, adventureSkeleton } from "../book/story.js";
 import { makePage } from "../book/model.js";
 import { TEMPLATE_GROUPS, templateById, templatesFor } from "../book/templates.js";
@@ -572,7 +573,7 @@ function renderTemplates(box, ctx, I) {
 async function renderCreate(box, ctx, I) {
   const lang = I.mode === "es" ? "es" : "en";
   const q = new URLSearchParams(location.search);
-  const tpl = templateById(q.get("template"));
+  const tpl = templateForBand(templateById(q.get("template")), ctx.band);
   const mode = CREATION_MODES.find((m) => m.id === q.get("mode")) || null;
   const kind = KINDS.find((k) => k.id === q.get("kind"))?.id || mode?.kind || "blank";
   box.removeAttribute("aria-busy");
@@ -624,6 +625,8 @@ async function renderCreate(box, ctx, I) {
         });
     const chosen = CREATION_MODES.find((m) => m.id === f.get("bk-mode"))?.id || mode?.id || "story";
     book.mode = chosen;
+    // The book remembers the band it was written for: its supports, stage guide and self-check follow it.
+    book.gradeCluster = clusterForBand(ctx.band);
     if (!t && chosen === "adventure") adventureSkeleton(book, makePage);
     const saved = await db.saveBook(book);
     await db.saveVersion(saved, I.S("New book", "Libro nuevo")).catch(() => {});

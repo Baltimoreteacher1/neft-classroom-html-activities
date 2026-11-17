@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "002c28db0ff9";
+const BUILD_HASH = "20d72878c2b8";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -254,7 +254,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/editor-core.js?v=43f06e94af28",
   "/access-practice-lab/src/book/editor-dialogs.js?v=be7845f08661",
   "/access-practice-lab/src/book/editor-media.js?v=1becb52a5241",
-  "/access-practice-lab/src/book/editor-panels.js?v=28d6af4921e4",
+  "/access-practice-lab/src/book/editor-panels.js?v=659d0f5f812b",
   "/access-practice-lab/src/book/editor.js?v=0ed618ee0342",
   "/access-practice-lab/src/book/export.js?v=c3064c1c247a",
   "/access-practice-lab/src/book/handoff.js?v=e8ae845dcac5",
@@ -272,13 +272,14 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/model.js?v=758ecd21164c",
   "/access-practice-lab/src/book/play.js?v=834f926edcaf",
   "/access-practice-lab/src/book/program-ui.js?v=c6edd0148228",
-  "/access-practice-lab/src/book/programs.js?v=40cdacc71078",
+  "/access-practice-lab/src/book/programs.js?v=e7b08c150607",
   "/access-practice-lab/src/book/reader.js?v=5a798a3a43de",
   "/access-practice-lab/src/book/render.js?v=ff03362b286c",
   "/access-practice-lab/src/book/rubrics.js?v=ff7a42783c9f",
   "/access-practice-lab/src/book/sanitize.js?v=7d5ba64b365f",
   "/access-practice-lab/src/book/scene-player.js?v=dad17898f7c0",
   "/access-practice-lab/src/book/story.js?v=0f1d4693505a",
+  "/access-practice-lab/src/book/template-bands.js?v=903a811a09c3",
   "/access-practice-lab/src/book/templates-a.js?v=560e4f57d9dd",
   "/access-practice-lab/src/book/templates-b.js?v=48dfb8535bbe",
   "/access-practice-lab/src/book/templates.js?v=43916020c20a",
@@ -695,7 +696,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/assess.js?v=48bf2625256a",
   "/access-practice-lab/src/views/avatar-panel.js?v=87a27ec13523",
   "/access-practice-lab/src/views/benchmark-panel.js?v=8bfd0af2c77e",
-  "/access-practice-lab/src/views/book-studio.js?v=de8d01543e75",
+  "/access-practice-lab/src/views/book-studio.js?v=c448cdedb9fb",
   "/access-practice-lab/src/views/city-art.js?v=361f10d2f240",
   "/access-practice-lab/src/views/city-guide.js?v=182cf254e20e",
   "/access-practice-lab/src/views/city-mission.js?v=f58b7932df12",

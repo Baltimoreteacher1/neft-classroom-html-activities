@@ -4031,3 +4031,35 @@ details[open] > .bk-add-btn {
     radial-gradient(circle at 12% 100%, rgba(232, 106, 80, 0.35) 0, transparent 45%),
     linear-gradient(135deg, #0f5a63, #2f6b45);
 }
+
+/* Phone editor: Finish keeps its word (the one action every book ends with) and the action row stays on one line
+   beside it; every control a finger uses is at least 44px. */
+@media (max-width: 860px) {
+  .bk-top-actions {
+    flex: 1 1 100%;
+  }
+  .bk-top-actions [data-bk-act="finish"] {
+    flex: 1 1 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .bk-top-actions [data-bk-act="finish"] span {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+}
+@media (max-width: 860px), (pointer: coarse) {
+  .bk-pathguide-frame,
+  .bk-words .chip,
+  .bk-pages .bk-tbtn,
+  .bk-swatch {
+    min-height: 44px;
+  }
+  .bk-pages .bk-tbtn,
+  .bk-swatch {
+    min-width: 44px;
+  }
+}
