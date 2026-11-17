@@ -14,8 +14,9 @@
  * Detectors self-test against known-bad fixtures BEFORE sweeping, so a detector
  * that stops firing fails loudly instead of reporting clean content.
  */
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import { BAND_INFO, EARLY_BANDS } from "../access-practice-lab/src/bands.js";
 import {
   byGradeFocus,
@@ -188,6 +189,8 @@ const errors = [];
 const warnings = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
 
+const PICTURE_GZIP_BUDGET = 12 * 1024;
+
 function checkPicture(where, pic) {
   if (!pic) return;
   if (!pic.src || !pic.alt) return err(where, "picture needs src and alt");
@@ -198,7 +201,11 @@ function checkPicture(where, pic) {
   if (/(?:xlink:)?href\s*=\s*["'](?:https?:)?\/\//i.test(svg))
     err(where, `${pic.src} references an external URL`);
   if (!/<title[\s>]/i.test(svg)) err(where, `${pic.src} has no <title>`);
-  if (statSync(file).size > 24 * 1024) err(where, `${pic.src} is over 24 KB`);
+  // Budget what a learner downloads: pictures are served compressed, and a layered, shaded illustration is
+  // larger on disk than a flat outline drawing while costing a few KB on the wire.
+  const sent = gzipSync(readFileSync(file), { level: 9 }).length;
+  if (sent > PICTURE_GZIP_BUDGET)
+    err(where, `${pic.src} is ${Math.round(sent / 1024)} KB compressed (budget ${PICTURE_GZIP_BUDGET / 1024} KB)`);
 }
 
 function checkChart(where, chart) {
