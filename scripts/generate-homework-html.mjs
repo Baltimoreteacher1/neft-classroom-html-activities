@@ -54,6 +54,11 @@ import { WEB_PRINT_CSS } from "./lib/family-takehome-css.mjs";
 import { stampForUnit, WORKSPACE_JS, workspaceHtml } from "./lib/family-workspace.mjs";
 import { A11Y_CSS, a11yMarkup } from "./lib/homework-a11y.mjs";
 import { act, actOn, EL, EV, HOMEWORK_ACTIONS_JS } from "./lib/homework-actions.mjs";
+import { HOMEWORK_FRACTIONS_JS } from "./lib/homework-fractions.mjs";
+import {
+  backgroundRuntime,
+  backgroundBundle,
+} from "./lib/homework-background.mjs";
 import { CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
 import { CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { LEGACY_SHELL_CSS } from "./lib/homework-design-links.mjs";
@@ -1596,6 +1601,8 @@ window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match)
 window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
 ${HOMEWORK_ACTIONS_JS}
+${HOMEWORK_FRACTIONS_JS}
+${backgroundRuntime()}
 ${HOMEWORK_TABS_JS}
 ${PRINT_JS}
 ${PRINT_PLAN_JS}
@@ -4586,6 +4593,9 @@ function main() {
     count++;
   }
 
+  // Background knowledge: one bundle for every lesson, fetched when a family opens the sheet.
+  const bg = backgroundBundle();
+  sharedFiles[bg.name] = bg.content;
   if (CHECK) staleHomework.push(...staleSharedFiles(root, sharedFiles));
   else writeSharedFiles(root, sharedFiles, { prune: !ONLY });
   if (CHECK) {

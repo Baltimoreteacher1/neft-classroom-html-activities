@@ -125,6 +125,421 @@
   }
 })();
 
+/*
+ * Stacked fractions on the family homework page: "7/2" is drawn as 7 over 2, and "2 1/4" as 2 and a stacked 1/4,
+ * in every problem, choice, hint and explanation (Joel, 2026-11-17: "Fractions should be vertical").
+ *
+ * Text nodes are rewritten in place, including content the page renders later (a MutationObserver), so no
+ * generator has to know about it. The slash stays in the DOM, visually hidden, so textContent (which the
+ * answer checks and the read-aloud use) still reads "7/2". Inputs, drawings (SVG), code and anything marked
+ * data-no-frac are left alone. A slash between dates or words, or a run like 1/2/3, is not a fraction.
+ */
+(() => {
+  const FRACTION = /(^|[^\w/.])(\d{1,4})\/(\d{1,4})(?![\w/])/g;
+  const SKIP = new Set([
+    "SCRIPT",
+    "STYLE",
+    "TEXTAREA",
+    "INPUT",
+    "SELECT",
+    "OPTION",
+    "CODE",
+    "PRE",
+    "TITLE",
+    "NOSCRIPT",
+  ]);
+
+  function skipped(el) {
+    for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
+      if (SKIP.has(node.nodeName) || node.namespaceURI === "http://www.w3.org/2000/svg")
+        return true;
+      if (
+        node.classList.contains("hw-frac") ||
+        node.isContentEditable ||
+        node.hasAttribute("data-no-frac")
+      )
+        return true;
+    }
+    return false;
+  }
+
+  function fractionNode(num, den) {
+    const frac = document.createElement("span");
+    frac.className = "hw-frac";
+    const top = document.createElement("span");
+    top.className = "hw-frac-num";
+    top.textContent = num;
+    const slash = document.createElement("span");
+    slash.className = "hw-frac-slash";
+    slash.textContent = "/";
+    const bottom = document.createElement("span");
+    bottom.className = "hw-frac-den";
+    bottom.textContent = den;
+    frac.append(top, slash, bottom);
+    return frac;
+  }
+
+  function typesetText(node) {
+    const text = node.nodeValue;
+    if (!text || text.indexOf("/") < 0) return;
+    FRACTION.lastIndex = 0;
+    if (!FRACTION.test(text)) return;
+    if (skipped(node.parentElement)) return;
+    FRACTION.lastIndex = 0;
+    const out = document.createDocumentFragment();
+    let last = 0;
+    let match = FRACTION.exec(text);
+    while (match) {
+      const start = match.index + match[1].length;
+      out.append(text.slice(last, start), fractionNode(match[2], match[3]));
+      last = start + match[2].length + 1 + match[3].length;
+      match = FRACTION.exec(text);
+    }
+    out.append(text.slice(last));
+    node.replaceWith(out);
+  }
+
+  // Drawings: a label made of numbers, symbols and short words gets its fractions stacked too, laid out with the
+  // drawing kit's own width rule (assets/family-studio/picture-kit.mjs textW) around the label's anchor and baseline.
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const SVG_FRACTION = /(\d{1,4})\/(\d{1,4})(?![\d/])/g;
+  // Real text widths from an off-screen SVG using the label's own computed font (works for labels in hidden stops,
+  // whose own getComputedTextLength is 0). Falls back to the drawing kit's 0.58em-per-character rule.
+  let ruler = null;
+  function measure(str, font) {
+    try {
+      if (!ruler) {
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("style", "position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden;visibility:hidden");
+        ruler = document.createElementNS(SVG_NS, "text");
+        svg.append(ruler);
+        document.body.append(svg);
+      }
+      ruler.setAttribute("style", `font:${font}`);
+      ruler.textContent = str;
+      return ruler.getComputedTextLength();
+    } catch {
+      return 0;
+    }
+  }
+  let fontOf = "";
+  let labelFill = "currentColor";
+  const charW = (str, size) => {
+    const css = fontOf.replace(/\b\d+(\.\d+)?px\b/, `${size}px`);
+    return measure(str, css) || str.length * size * 0.58;
+  };
+  function svgText(proto, x, y, str, size, anchor) {
+    const t = document.createElementNS(SVG_NS, "text");
+    for (const a of proto.attributes) if (!/^(x|y|dx|dy|text-anchor|style)$/.test(a.name)) t.setAttribute(a.name, a.value);
+    t.setAttribute("x", x.toFixed(1));
+    t.setAttribute("y", y.toFixed(1));
+    t.setAttribute("text-anchor", anchor);
+    // The label's resolved colour, set directly: a drawing's CSS may colour labels through a child selector
+    // (svg > text) that no longer matches once the pieces sit inside a group.
+    t.setAttribute("style", `${proto.getAttribute("style") || ""};font-size:${size.toFixed(1)}px;fill:${labelFill}`);
+    t.textContent = str;
+    return t;
+  }
+  function stackSvgLabel(el) {
+    if (el.childElementCount || el.closest("[data-no-frac]")) return;
+    const str = el.textContent;
+    SVG_FRACTION.lastIndex = 0;
+    if (!str || !SVG_FRACTION.test(str)) return;
+    const cs = getComputedStyle(el);
+    labelFill = cs.fill && cs.fill !== "none" ? cs.fill : "currentColor";
+    const size = parseFloat(cs.fontSize) || 14;
+    fontOf = `${cs.fontStyle} ${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+    const f = Math.max(12, Math.round(size * 0.8));
+    const parts = str.split(/(\d{1,4}\/\d{1,4})(?![\d/])/).filter((p) => p !== "");
+    const isFrac = (p) => /^\d{1,4}\/\d{1,4}$/.test(p);
+    const widthOf = (p) => {
+      if (isFrac(p)) {
+        const [n, d] = p.split("/");
+        return Math.max(charW(n, f), charW(d, f)) + 4;
+      }
+      const spaces = p.length - p.trim().length;
+      return charW(p.trim(), size) + spaces * size * 0.28;
+    };
+    const total = parts.reduce((sum, p) => sum + widthOf(p), 0);
+    const x = parseFloat(el.getAttribute("x")) || 0;
+    const y = parseFloat(el.getAttribute("y")) || 0;
+    const anchor = el.getAttribute("text-anchor") || getComputedStyle(el).textAnchor || "start";
+    let cx = anchor === "middle" ? x - total / 2 : anchor === "end" ? x - total : x;
+    const bar = y - 0.33 * size;
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", "hw-svg-frac");
+    g.setAttribute("aria-label", str);
+    for (const p of parts) {
+      const w = widthOf(p);
+      if (isFrac(p)) {
+        const [n, d] = p.split("/");
+        const mid = cx + w / 2;
+        g.append(svgText(el, mid, bar - 0.22 * f, n, f, "middle"));
+        // The bar is a thin rect with the label's own class, so it paints in the label's (token) colour.
+        const line = document.createElementNS(SVG_NS, "rect");
+        // Same paint as the label: its class, or its own fill attribute (the older mini models colour labels that
+        // way), so the bar is never the default black.
+        for (const a of ["class", "fill-opacity", "opacity"])
+          if (el.getAttribute(a)) line.setAttribute(a, el.getAttribute(a));
+        line.style.fill = labelFill;
+        line.setAttribute("x", (cx + 1).toFixed(1));
+        line.setAttribute("y", (bar - 0.75).toFixed(1));
+        line.setAttribute("width", Math.max(1, w - 2).toFixed(1));
+        line.setAttribute("height", Math.max(1.4, size / 11).toFixed(1));
+        g.append(line);
+        g.append(svgText(el, mid, bar + 0.94 * f, d, f, "middle"));
+      } else if (p.trim()) {
+        const lead = (p.length - p.trimStart().length) * size * 0.28;
+        g.append(svgText(el, cx + lead, y, p.trim(), size, "start"));
+      }
+      cx += w;
+    }
+    el.replaceWith(g);
+  }
+  function typesetSvg(root) {
+    const scope = root.nodeType === 1 ? root : root.parentElement;
+    if (!scope) return;
+    const svgs = scope.matches?.("svg") ? [scope] : [...scope.querySelectorAll("svg")];
+    const host = scope.closest?.("svg");
+    if (host) svgs.push(host);
+    for (const svg of svgs) svg.querySelectorAll("text").forEach(stackSvgLabel);
+  }
+
+  function typeset(root) {
+    if (!root) return;
+    if (root.nodeType === 3) {
+      if (root.parentElement?.closest("svg")) return typesetSvg(root.parentElement);
+      return typesetText(root);
+    }
+    if (root.nodeType !== 1) return;
+    if (root.namespaceURI === SVG_NS || root.closest?.("svg")) return typesetSvg(root);
+    if (skipped(root)) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode())
+      if (n.nodeValue.indexOf("/") >= 0) nodes.push(n);
+    nodes.forEach(typesetText);
+    typesetSvg(root);
+  }
+
+  let pending = new Set();
+  let scheduled = false;
+  function flush() {
+    scheduled = false;
+    const roots = pending;
+    pending = new Set();
+    observer.disconnect();
+    roots.forEach((r) => {
+      if (r.isConnected) typeset(r);
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  const observer = new MutationObserver((records) => {
+    for (const r of records) {
+      if (r.type === "characterData") pending.add(r.target);
+      else r.addedNodes.forEach((n) => pending.add(n));
+    }
+    if (!scheduled && pending.size) {
+      scheduled = true;
+      requestAnimationFrame(flush);
+    }
+  });
+
+  // The stacked-fraction rules ride with this script instead of the render-blocking stylesheets, so the page's first
+  // view does not grow (data/family-performance-budget.json). Same layer and tokens as assets/design/family/.
+  const CSS =
+    "@layer patterns{.hw-frac{position:relative;display:inline-flex;flex-direction:column;align-items:center;" +
+    "vertical-align:middle;margin-inline:.12em;line-height:1.05;font-variant-numeric:lining-nums tabular-nums}" +
+    ".hw-frac-num{padding-inline:.15em;padding-block-end:.06em;border-block-end:.09em solid currentColor}" +
+    ".hw-frac-den{padding-block-start:.06em}.hw-frac-slash{position:absolute;inline-size:1px;block-size:1px;" +
+    "overflow:hidden;clip-path:inset(50%);white-space:nowrap}" +
+    // "Coming up next:" and the full worked example open on tap; a chevron says so (they read as plain text).
+    ".hw-session-more>summary,.fp-example>summary.fp-label{gap:var(--fm-space-2)}" +
+    ".fp-example>summary.fp-label{justify-content:space-between;margin:0;font-size:var(--fm-fs-md);letter-spacing:0;" +
+    "text-transform:none;color:var(--fm-info-ink)}" +
+    ".hw-session-more>summary::after,.fp-example>summary::after{content:'';flex:none;inline-size:.55rem;" +
+    "block-size:.55rem;border:solid currentColor;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-2px,-2px);" +
+    "transition:transform var(--fm-dur-2) var(--fm-ease)}" +
+    ".hw-session-more[open]>summary::after,.fp-example[open]>summary::after{transform:rotate(-135deg) translate(-2px,-2px)}}";
+  function addStyle() {
+    if (document.getElementById("hw-frac-style")) return;
+    const style = document.createElement("style");
+    style.id = "hw-frac-style";
+    style.textContent = CSS;
+    document.head.append(style);
+  }
+
+  function start() {
+    addStyle();
+    typeset(document.body);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  window.__hwTypesetFractions = typeset;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+
+
+/* Background knowledge sheet (scripts/lib/homework-background.mjs). */
+(function () {
+  var BUNDLE = '/assets/homework/homework-background-98eb99dcf3.bundle.js';
+  var LESSONS = ["2-1","2-10","2-11","2-12","2-2","2-3","2-4","2-5","2-6","2-7","2-8","2-9","3-1","3-10","3-2","3-3","3-4","3-5","3-6","3-7","3-8","3-9","4-1","4-2","4-3","4-4","4-5","5-1","5-10","5-2","5-3","5-4","5-5","5-6","5-7","5-8","5-9","6-1","6-10","6-11","6-12","6-13","6-14","6-15","6-2","6-3","6-4","6-5","6-6","6-7","6-8","6-9","7-1","7-2","7-3","7-4","7-5","7-6","7-7","7-8","7-9","8-1","8-2","8-3","8-4","8-5","8-6","8-7","9-1","9-2","9-3","9-4"];
+  var LESSON = String(window.LESSON_ID || '').replace(/-part\d+$/, '');
+  function el(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function bi(t) { return '<span class="lang-en">' + esc(t.en) + '</span><span class="lang-es" lang="es">' + esc(t.es) + '</span>'; }
+  function render(body, skills) {
+    body.innerHTML = '';
+    body.append(el('p', 'hw-explore-lead', bi({ en: "Tonight's lesson builds on these skills. Read one together, then try its quick check.", es: 'La lección de hoy se basa en estas destrezas. Lean una juntos y luego prueben la pregunta rápida.' })));
+    skills.forEach(function (s, i) {
+      var card = el('section', 'fm-card hw-bg-skill');
+      var hid = 'hw_bg_skill_' + i;
+      card.setAttribute('aria-labelledby', hid);
+      var h = el('h3', 'hw-bg-name', '<span class="hw-bg-num" aria-hidden="true">' + (i + 1) + '</span>' + bi(s.name));
+      h.id = hid;
+      card.append(h, el('p', 'hw-bg-why', bi(s.why)));
+      var ol = el('ol', 'hw-bg-steps');
+      s.steps.forEach(function (st) { ol.append(el('li', '', bi(st))); });
+      card.append(ol);
+      card.append(el('p', 'hw-bg-example', '<strong>' + bi({ en: 'Example', es: 'Ejemplo' }) + '</strong> ' + bi(s.example)));
+      if (s.model) {
+        var fig = el('figure', 'hw-bg-figure');
+        card.append(fig);
+        drawModel(fig, s.model);
+      }
+      var c = s.check;
+      var check = el('div', 'hw-bg-check');
+      check.append(el('p', 'hw-bg-q', '<strong>' + bi({ en: 'Quick check', es: 'Pregunta rápida' }) + '</strong> ' + bi(c.q)));
+      var row = el('div', 'hw-bg-options');
+      row.setAttribute('role', 'group');
+      row.setAttribute('aria-labelledby', hid);
+      var fb = el('p', 'hw-bg-feedback');
+      fb.setAttribute('role', 'status');
+      fb.setAttribute('aria-live', 'polite');
+      c.options.forEach(function (opt, j) {
+        var b = el('button', 'fm-btn hw-bg-option');
+        b.type = 'button';
+        b.textContent = opt;
+        b.addEventListener('click', function () {
+          row.querySelectorAll('.hw-bg-option').forEach(function (o) { o.removeAttribute('data-picked'); o.setAttribute('aria-pressed', 'false'); });
+          b.setAttribute('data-picked', j === c.correctIdx ? 'right' : 'wrong');
+          b.setAttribute('aria-pressed', 'true');
+          fb.setAttribute('data-result', j === c.correctIdx ? 'right' : 'wrong');
+          fb.innerHTML = bi(c.feedback[j]);
+        });
+        row.append(b);
+      });
+      check.append(row, fb);
+      card.append(check);
+      body.append(card);
+    });
+    if (typeof window.__hwTypesetFractions === 'function') window.__hwTypesetFractions(body);
+  }
+  // Pictures are drawn on the device by the family model library (the same one the Learn stop uses), loaded
+  // the first time a skill with a model is shown.
+  var modelsLib = null;
+  function drawModel(fig, model) {
+    modelsLib = modelsLib || import('/assets/design/family/art/math-models.mjs');
+    modelsLib.then(function (m) {
+      fig.innerHTML = '<span class="lang-en">' + m.renderModel(model, { lang: 'en' }) + '</span><span class="lang-es" lang="es">' + m.renderModel(model, { lang: 'es' }) + '</span>';
+      if (typeof window.__hwTypesetFractions === 'function') window.__hwTypesetFractions(fig);
+    }).catch(function () { fig.remove(); });
+  }
+  function load(body) {
+    if (body.getAttribute('data-bg-ready')) return;
+    body.setAttribute('data-bg-ready', '1');
+    var id = body.getAttribute('data-bg-lesson');
+    var done = function () {
+      var data = window.__HW_BACKGROUND__ && window.__HW_BACKGROUND__[id];
+      if (data) render(body, data.skills);
+      else body.innerHTML = '<p>' + bi({ en: 'This could not load. Check the connection and try again.', es: 'No se pudo cargar. Revisa la conexión e inténtalo otra vez.' }) + '</p>';
+      if (!data) body.removeAttribute('data-bg-ready');
+    };
+    if (window.__HW_BACKGROUND__) return done();
+    var s = document.createElement('script');
+    s.src = body.getAttribute('data-bg-src');
+    s.onload = done;
+    s.onerror = done;
+    document.head.append(s);
+  }
+  // Styles ride with this script (not the render-blocking sheets): tokens only, in the design system's layer.
+  var CSS = '@layer patterns{' +
+    '.hw-bg-body{display:grid;gap:var(--fm-space-4)}' +
+    '.hw-bg-skill{display:grid;gap:var(--fm-space-3);padding:var(--fm-space-4);border:1px solid var(--fm-border);border-radius:var(--fm-radius-md);background:var(--fm-raised)}' +
+    '.hw-bg-name{display:flex;align-items:center;gap:var(--fm-space-2);margin:0;font-size:var(--fm-fs-lg);color:var(--fm-text)}' +
+    '.hw-bg-num{display:inline-grid;place-items:center;flex:none;inline-size:2rem;block-size:2rem;border-radius:50%;background:var(--fm-primary);color:var(--fm-on-primary);font-size:var(--fm-fs-md)}' +
+    '.hw-bg-why,.hw-bg-example,.hw-bg-q,.hw-bg-feedback{margin:0}' +
+    '.hw-bg-why{color:var(--fm-text-muted)}' +
+    '.hw-bg-figure{margin:0;display:grid;justify-items:center}.hw-bg-figure svg{max-inline-size:100%;block-size:auto}' +
+    '.hw-bg-steps{margin:0;padding-inline-start:1.4em;list-style:decimal;display:grid;gap:var(--fm-space-1)}' +
+    '.hw-bg-example{padding:var(--fm-space-3);border-radius:var(--fm-radius-sm);background:var(--fm-info-tint);color:var(--fm-text)}' +
+    '.hw-bg-check{display:grid;gap:var(--fm-space-2);padding-block-start:var(--fm-space-2);border-block-start:1px solid var(--fm-border)}' +
+    '.hw-bg-options{display:flex;flex-wrap:wrap;gap:var(--fm-space-2)}' +
+    '.hw-bg-options>.hw-bg-option{flex:1 1 0;min-inline-size:4.5rem}' +
+    '.hw-bg-option[data-picked=right]{background:var(--fm-success-tint);border-color:var(--fm-success-ink);color:var(--fm-success-ink)}' +
+    '.hw-bg-option[data-picked=wrong]{background:var(--fm-error-tint);border-color:var(--fm-error-ink);color:var(--fm-error-ink)}' +
+    '.hw-bg-feedback[data-result=right]{color:var(--fm-success-ink)}.hw-bg-feedback[data-result=wrong]{color:var(--fm-error-ink)}' +
+    '}';
+  function addStyle() {
+    if (document.getElementById('hw-bg-style')) return;
+    var st = document.createElement('style');
+    st.id = 'hw-bg-style';
+    st.textContent = CSS;
+    document.head.append(st);
+  }
+  // The button sits under "Explore more" in the hero. It is added here, not in the page, because the heaviest
+  // page's first view is exactly at its budget (data/family-performance-budget.json); it lands below Start.
+  function addButton() {
+    if (LESSONS.indexOf(LESSON) < 0 || document.getElementById('hw_background_button')) return;
+    var anchor = document.getElementById('hw_explore_more_button');
+    if (!anchor) return;
+    var b = el('button', 'fm-btn fm-btn--block', bi({ en: 'Background knowledge', es: 'Conocimientos previos' }));
+    b.type = 'button';
+    b.id = 'hw_background_button';
+    b.setAttribute('data-open-sheet', 'hw_background_sheet');
+    b.setAttribute('aria-haspopup', 'dialog');
+    anchor.after(b);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addButton);
+  else addButton();
+  // Built on the first tap, in the capture phase, so it exists before the page's sheet opener looks for it.
+  function sheet(btn) {
+    var d = document.getElementById('hw_background_sheet');
+    if (d) return d;
+    d = el('dialog', 'fm-sheet hw-background-sheet');
+    d.id = 'hw_background_sheet';
+    d.setAttribute('aria-labelledby', 'hw_background_title');
+    d.append(el('span', 'fm-sheet__grab'));
+    d.firstChild.setAttribute('aria-hidden', 'true');
+    var head = el('div', 'fm-sheet__head');
+    var h = el('h2', 'fm-card__title', bi({ en: 'Background knowledge', es: 'Conocimientos previos' }));
+    h.id = 'hw_background_title';
+    var close = document.querySelector('#hw_explore_sheet [data-close]');
+    close = close ? close.cloneNode(true) : el('button', 'fm-btn fm-btn--icon', '×');
+    close.type = 'button';
+    close.setAttribute('data-close', '');
+    if (!close.getAttribute('aria-label')) close.setAttribute('aria-label', 'Close');
+    head.append(h, close);
+    var bodyWrap = el('div', 'fm-sheet__body');
+    var body = el('div', 'hw-bg-body');
+    body.setAttribute('data-bg-body', '');
+    body.setAttribute('data-bg-lesson', LESSON);
+    body.setAttribute('data-bg-src', BUNDLE);
+    bodyWrap.append(body);
+    d.append(head, bodyWrap);
+    document.body.append(d);
+    return d;
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-open-sheet="hw_background_sheet"]');
+    if (!btn) return;
+    addStyle();
+    var d = sheet(btn);
+    load(d.querySelector('[data-bg-body]'));
+  }, true);
+})();
+
 
 function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);

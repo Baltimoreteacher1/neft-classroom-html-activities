@@ -111,6 +111,45 @@ export function text(x, y, s, { anchor = "middle", cls = "m-t", extra = "" } = {
   return `<text class="${cls}" x="${n1(x)}" y="${n1(y)}" text-anchor="${anchor}"${extra}>${esc(s)}</text>`;
 }
 
+/**
+ * An expression whose fractions are stacked (numerator over a bar over denominator), e.g. "7/2 ÷ 1/4", centred on x
+ * with its text baseline at y. Numerator and denominator are drawn at 72% of `size`, never under MIN_FONT, so a
+ * stack is about 1.9 times the line height: callers leave that room. Plain text when s has no fraction.
+ */
+export function mathText(x, y, s, { size = 16, cls = "m-t m-n" } = {}) {
+  const str = String(s ?? "");
+  const parts = str.split(/(\d+\/\d+)/).filter((p) => p !== "");
+  if (parts.length === 1 && !/^\d+\/\d+$/.test(parts[0])) return text(x, y, str, { cls, extra: ` style="font-size:${size}px"` });
+  const f = Math.max(MIN_FONT, Math.round(size * 0.72));
+  const bar = y - 0.33 * size;
+  const widthOf = (p) => {
+    const m = p.match(/^(\d+)\/(\d+)$/);
+    if (m) return Math.max(textW(m[1], f), textW(m[2], f)) + 2;
+    // SVG drops leading and trailing spaces, so they become measured gaps around the trimmed text.
+    const spaces = p.length - p.trim().length;
+    return (p.trim() ? textW(p.trim(), size) - 4 : 0) + spaces * size * 0.32;
+  };
+  const total = parts.reduce((sum, p) => sum + widthOf(p), 0);
+  let cx = x - total / 2;
+  let out = "";
+  for (const p of parts) {
+    const w = widthOf(p);
+    const m = p.match(/^(\d+)\/(\d+)$/);
+    if (m) {
+      const mid = cx + w / 2;
+      out +=
+        text(mid, bar - 0.22 * f, m[1], { cls, extra: ` style="font-size:${f}px"` }) +
+        `<path class="m-ln" d="M${n1(cx + 1)} ${n1(bar)}H${n1(cx + w - 1)}"/>` +
+        text(mid, bar + 0.94 * f, m[2], { cls, extra: ` style="font-size:${f}px"` });
+    } else if (p.trim()) {
+      const lead = (p.length - p.trimStart().length) * size * 0.32;
+      out += text(cx + lead, y, p.trim(), { anchor: "start", cls, extra: ` style="font-size:${size}px"` });
+    }
+    cx += w;
+  }
+  return `<g aria-label="${esc(str)}">${out}</g>`;
+}
+
 /** Centre x for a label so it stays inside the frame. */
 export function clampX(cx, width) {
   return Math.max(PAD + width / 2, Math.min(W - PAD - width / 2, cx));

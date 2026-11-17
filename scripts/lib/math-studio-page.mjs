@@ -2,6 +2,7 @@
 // the Practice and Challenge studios and the Learning Labs carry so they read as stages of one product.
 import { buildVocabMatcher, isConceptEntry } from "../../engine/core/vocab-match.js";
 import { withCurriculumShell } from "../../tools/lib/curriculum-shell.mjs";
+import { backgroundData } from "./homework-background.mjs";
 
 export const esc = (s) =>
   String(s ?? "").replace(
@@ -123,6 +124,29 @@ function wordCards(list, { flip = false } = {}) {
     )
     .join("")}</ul>`;
 }
+/** The lesson's background skills (data/family-background/<id>.json), shared with the family homework page. */
+const backgroundOf = (L) => backgroundData()[L.id]?.skills || null;
+
+/**
+ * Background knowledge: a key card at the top of "Start here" and the dialog it opens (assets/math-studio/background.mjs
+ * fills it). Names the skills on the card itself, so a student sees what it covers before opening it.
+ */
+function backgroundCard(L) {
+  const skills = backgroundOf(L);
+  if (!skills) return "";
+  return `<div class="ms-bg-card">
+        <span class="ms-bg-card__icon" aria-hidden="true">🔑</span>
+        <div class="ms-bg-card__text"><strong>${bi("Background knowledge", "Conocimientos previos")}</strong><span>${bi(`${skills.length} skill${skills.length > 1 ? "s" : ""} you need for today: ${skills.map((s) => s.name.en).join(" · ")}`, `${skills.length === 1 ? "La destreza que" : `Las ${skills.length} destrezas que`} necesitas hoy: ${skills.map((s) => s.name.es).join(" · ")}`)}</span></div>
+        <button type="button" class="ms-btn" id="ms-bg-open" aria-haspopup="dialog">${bi("Open", "Abrir")}</button>
+      </div>
+      <dialog class="ms-bg-dialog" id="ms-bg-dialog" aria-labelledby="ms-bg-title">
+        <div class="ms-bg-dialog__head"><h2 id="ms-bg-title">🔑 ${bi("Background knowledge", "Conocimientos previos")}</h2><button type="button" class="ms-btn ms-btn--quiet" data-bg-close aria-label="Close">✕</button></div>
+        <p class="ms-muted">${bi("Learn it, see it, then try one quick question.", "Apréndelo, míralo y luego prueba una pregunta rápida.")}</p>
+        <div class="ms-bg-tabs" data-bg-tabs></div>
+        <div data-bg-body></div>
+      </dialog>`;
+}
+
 /** The start of Explore: what the student will do, in three steps, and the words they need. The model loads only after
  * "Start exploring", so the first screen is short. */
 function exploreStart(L) {
@@ -150,6 +174,7 @@ function exploreStart(L) {
   const { topic, list } = parts ? { topic: null, list: [] } : lessonWords(L);
   return `<section class="ms-start" id="ms-gate" aria-labelledby="ms-start-h">
       <h3 id="ms-start-h">${bi("Start here", "Empieza aquí")}</h3>
+      ${backgroundCard(L)}
       ${topic ? `<p class="ms-start__topic"><strong>${bi(topic.term, topic.termEs)}:</strong> ${bi(topic.definition, topic.definitionEs)}</p>` : ""}
       <ol class="ms-start__plan" data-gate-only>${plan.map(([en, es]) => `<li>${bi(en, es)}</li>`).join("")}</ol>
       ${list.length ? `<h4>${bi("Words to know", "Palabras clave")}</h4>${wordCards(list.slice(0, 4))}` : ""}
@@ -384,7 +409,7 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
     <div id="ms-evidence" class="ms-evidence"></div>
   </section>
 </main>
-<script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) }, vocabLinks: vocabLinks(L) })}</script>
+<script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) }, vocabLinks: vocabLinks(L), background: backgroundOf(L) })}</script>
 <script type="module" src="/assets/math-studio/studio.mjs?v=${stamp}"></script>
 </body>
 </html>

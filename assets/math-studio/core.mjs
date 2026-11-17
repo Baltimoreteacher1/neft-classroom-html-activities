@@ -208,6 +208,7 @@ export function freshState(lessonId) {
     practice: { level: 'regular', current: { regular: null, challenge: null }, items: {} },
     apply: { responses: {}, compared: {} },
     reflect: { items: {}, writing: '', revised: {} },
+    background: {},
     handoff: null,
   };
 }

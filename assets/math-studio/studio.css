@@ -1153,3 +1153,30 @@ body.ms .ms-flip:hover, body.ms .ms-flip:focus-visible { background: var(--ms-te
   .ms-start, .ms-ustep { padding: 16px; border-radius: 14px; }
   .ms-uprogress { top: 56px; }
 }
+
+/* Background knowledge (assets/math-studio/background.mjs): a key card at the top of "Start here", and a dialog that
+   teaches one skill at a time with a picture, steps revealed one by one, Listen, and a quick check. */
+.ms-bg-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin: 0 0 14px; padding: 12px 14px; border: 2px solid var(--ms-mustard); border-radius: var(--ms-radius); background: var(--ms-mustard-soft); }
+.ms-bg-card__icon { font-size: 30px; line-height: 1; }
+.ms-bg-card__text { display: grid; gap: 2px; }
+.ms-bg-card__text strong { color: var(--ms-navy); font-size: 18px; }
+.ms-bg-card__text > span { color: var(--ms-ink); }
+@media (max-width: 560px) { .ms-bg-card { grid-template-columns: auto 1fr; } .ms-bg-card .ms-btn { grid-column: 1 / -1; } }
+.ms-bg-dialog { inline-size: min(720px, calc(100vw - 24px)); max-block-size: calc(100vh - 32px); padding: 18px 20px; border: 0; border-radius: var(--ms-radius); background: var(--ms-cream); color: var(--ms-ink); box-shadow: var(--ms-shadow); overflow: auto; }
+.ms-bg-dialog::backdrop { background: rgb(29 53 87 / 45%); }
+.ms-bg-dialog__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ms-bg-dialog__head h2 { margin: 0; color: var(--ms-navy); font-size: 22px; }
+.ms-bg-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.ms-bg-tabs [aria-pressed="true"] { background: var(--ms-teal-soft); border-color: var(--ms-teal-ink); color: var(--ms-teal-ink); }
+.ms-bg-skill { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--ms-line); border-radius: var(--ms-radius); background: var(--ms-paper); }
+.ms-bg-skill h3 { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--ms-navy); font-size: 21px; }
+.ms-bg-skill h3:focus { outline: none; }
+.ms-bg-skill h3:focus-visible { outline: 3px solid var(--ms-teal); outline-offset: 3px; }
+.ms-bg-num { display: inline-grid; place-items: center; flex: none; inline-size: 34px; block-size: 34px; border-radius: 50%; background: var(--ms-teal-ink); color: #fff; font-size: 17px; }
+.ms-bg-why { margin: 0; font-size: 18px; }
+.ms-bg-figure { margin: 0; display: grid; justify-items: center; padding: 8px; border-radius: 10px; background: var(--ms-cream); }
+.ms-bg-figure svg { max-inline-size: 100%; block-size: auto; }
+.ms-bg-steps h4 { margin: 0 0 6px; color: var(--ms-navy); }
+.ms-bg-steps ol { margin: 0; padding-inline-start: 1.4em; display: grid; gap: 6px; font-size: 18px; }
+.ms-bg-example { margin: 0; padding: 12px 14px; border-inline-start: 5px solid var(--ms-teal); border-radius: 8px; background: var(--ms-teal-soft); font-size: 18px; }
+.ms-bg-check { border-top: 1px solid var(--ms-line); padding-top: 10px; }

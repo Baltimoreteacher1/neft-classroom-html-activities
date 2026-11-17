@@ -3,6 +3,7 @@
 import { checkTransfer, evidence, keywordEvidence, loadState, pickNext, predictItem, saveState, STAGE_NAMES, STAGES, transferTask, validate } from './core.mjs';
 import { bi, esc, renderItem } from './items.mjs';
 import { mountVocab, openWord } from './vocab.mjs';
+import { mountBackground } from './background.mjs';
 
 const L = JSON.parse(document.getElementById('ms-data').textContent);
 const $ = (s, root = document) => root.querySelector(s);
@@ -39,6 +40,15 @@ $('#ms-lang').addEventListener('click', () => {
   lang = lang === 'es' ? 'en' : 'es';
   try { localStorage.setItem(LANG_KEY, lang); } catch { /* preference only */ }
   applyLang();
+
+// ---- Background knowledge (the skills today's lesson stands on) ----
+mountBackground({
+  skills: L.background,
+  lessonId: L.id,
+  lang: () => lang,
+  state,
+  save: () => save(),
+});
 });
 applyLang();
 

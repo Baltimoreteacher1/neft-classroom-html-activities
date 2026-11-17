@@ -114,7 +114,7 @@ export function writeSharedFiles(root, files, { prune = true } = {}) {
   if (!prune) return;
   for (const name of readdirSync(dir)) {
     if (
-      /^homework-(base|layer|legacy|core|vocab|tokens|family|art)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(
+      /^homework-(base|layer|legacy|core|vocab|tokens|family|art|background)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(
         name,
       ) &&
       !(name in files)

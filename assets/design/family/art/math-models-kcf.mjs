@@ -7,7 +7,7 @@
 //   3 Keep, Change, Flip, each move on its own chip   4 multiply across and simplify
 // Pure function, deterministic, exact integer arithmetic. A bad value THROWS, like every model in the library.
 
-import { PAD, RADIUS, W, assertKeys, need, text } from "./math-kit.mjs";
+import { PAD, RADIUS, W, assertKeys, mathText, need, text } from "./math-kit.mjs";
 
 const tr = (lang, en, es) => (lang === "es" ? es : en);
 const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
@@ -54,50 +54,50 @@ export function renderKcf(d, { lang }) {
 
   // 1 the problem
   groups.push(
-    `<g>${text(W / 2, y + 12, tr(lang, "The problem", "El problema"), { cls: "m-t" })}${text(W / 2, y + 44, `${prob(a, d.dividend)} ÷ ${prob(b, d.divisor)}`, { cls: "m-t m-n", extra: style(26) })}</g>`,
+    `<g>${text(W / 2, y + 12, tr(lang, "The problem", "El problema"), { cls: "m-t" })}${mathText(W / 2, y + 52, `${prob(a, d.dividend)} ÷ ${prob(b, d.divisor)}`, { size: 26 })}</g>`,
   );
-  y += 66;
+  y += 78;
 
   // 2 both numbers as fractions
   if (convert) {
     groups.push(
-      `<g>${text(W / 2, y + 12, tr(lang, "Write each number as a fraction", "Escribe cada número como fracción"), { cls: "m-t" })}${text(W / 2, y + 44, `${fr(a)} ÷ ${fr(b)}`, { cls: "m-t m-n", extra: style(26) })}</g>`,
+      `<g>${text(W / 2, y + 12, tr(lang, "Write each number as a fraction", "Escribe cada número como fracción"), { cls: "m-t" })}${mathText(W / 2, y + 52, `${fr(a)} ÷ ${fr(b)}`, { size: 26 })}</g>`,
     );
-    y += 66;
+    y += 78;
   }
 
   // 3 Keep, Change, Flip
   const kcfTop = y;
-  const lineY = kcfTop + 42;
-  const chipY = kcfTop + 56;
-  const newY = kcfTop + 150;
+  const lineY = kcfTop + 50;
+  const chipY = kcfTop + 66;
+  const newY = kcfTop + 168;
   groups.push(
     `<g>${text(W / 2, kcfTop + 12, tr(lang, "Keep, Change, Flip", "Mantener, Cambiar, Invertir"), { cls: "m-t" })}` +
-      text(cx[0], lineY, fr(a), { cls: "m-t m-n", extra: style(24) }) +
+      mathText(cx[0], lineY, fr(a), { size: 24 }) +
       text(cx[1], lineY, "÷", { cls: "m-t m-n", extra: style(24) }) +
-      text(cx[2], lineY, fr(b), { cls: "m-t m-n", extra: style(24) }) +
+      mathText(cx[2], lineY, fr(b), { size: 24 }) +
       step("m-p", cx[0], chipY, 92, tr(lang, "Keep", "Mantener")) +
       step("m-u", cx[1], chipY, 92, tr(lang, "Change", "Cambiar")) +
       step("m-a", cx[2], chipY, 92, tr(lang, "Flip", "Invertir")) +
       [0, 1, 2].map((i) => `<path class="m-ln" d="M${cx[i]} ${chipY + 34}v26"/>`).join("") +
       [0, 1, 2].map((i) => `<polygon class="m-arr" points="${cx[i]},${chipY + 68} ${cx[i] - 5},${chipY + 60} ${cx[i] + 5},${chipY + 60}"/>`).join("") +
-      text(cx[0], newY, fr(a), { cls: "m-t m-n", extra: style(24) }) +
+      mathText(cx[0], newY, fr(a), { size: 24 }) +
       text(cx[1], newY, "×", { cls: "m-t m-n", extra: style(24) }) +
-      text(cx[2], newY, fr(flipped), { cls: "m-t m-n", extra: style(24) }) +
+      mathText(cx[2], newY, fr(flipped), { size: 24 }) +
       `</g>`,
   );
-  y = newY + 22;
+  y = newY + 30;
 
   // 4 multiply across, simplify
   const eq = `${fr(a)} × ${fr(flipped)} = ${prodN}/${prodD}${showSimple ? ` = ${frOrWhole(simple)}` : ""}`;
   groups.push(
-    `<g><rect class="m-a" x="${PAD}" y="${y}" width="${W - 2 * PAD}" height="${showSimple ? 70 : 50}" rx="${RADIUS}"/>` +
+    `<g><rect class="m-a" x="${PAD}" y="${y}" width="${W - 2 * PAD}" height="${showSimple ? 94 : 72}" rx="${RADIUS}"/>` +
       text(W / 2, y + 22, tr(lang, "Multiply across", "Multiplica en línea"), { cls: "m-t" }) +
-      text(W / 2, y + 48, eq, { cls: "m-t m-n" }) +
-      (showSimple ? text(W / 2, y + 64, tr(lang, "Then simplify", "Luego simplifica"), { cls: "m-t" }) : "") +
+      mathText(W / 2, y + 54, eq, { size: 18 }) +
+      (showSimple ? text(W / 2, y + 86, tr(lang, "Then simplify", "Luego simplifica"), { cls: "m-t" }) : "") +
       `</g>`,
   );
-  y += (showSimple ? 70 : 50) + 6;
+  y += (showSimple ? 94 : 72) + 6;
 
   const answer = frOrWhole(showSimple ? simple : { n: prodN, d: prodD });
   const desc = tr(
