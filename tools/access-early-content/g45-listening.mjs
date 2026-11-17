@@ -1,8 +1,9 @@
 // Grades 4-5 depth pass, Listening. Original EduWonderLab scripts about school, science, math and community life.
 // Built into access-practice-lab/content/g3-5/Listening.json by tools/build-access-g45-content.mjs.
 // Spec fields: id (the builder adds "g35-"), level (A|B|C), strand, title, skill, type, dir, q, script, opts (the right
-// answer FIRST; "text|emoji"), ans (multiSelect: how many leading options are right), items (order: correct order),
-// cloze (strings and [answer, ...wrong] blanks), vocab, frames, focus, correct, hint, wida.
+// answer FIRST; "text|emoji"), ans (multiSelect: how many leading options are right), why (one wrong-choice note per
+// wrong option, in opts order; becomes distractorFeedback), items (order: correct order), cloze (strings and
+// [answer, ...wrong] blanks), vocab, frames, focus, correct, hint, wida.
 
 export default [
   // ── Level A ──────────────────────────────────────────────────────────────
@@ -17,6 +18,11 @@ export default [
     script:
       "Good morning, fourth graders. Please line up by the door at eleven thirty. Today we are having pizza and carrots for lunch.",
     opts: ["11:30|🕦", "10:30|🕥", "12:30|🕧", "1:30|🕜"],
+    why: [
+      'That time is an hour too early. Listen to the number after the word "at".',
+      "That time is an hour too late. Listen again to the hour the speaker says.",
+      "That time is after noon. The speaker says a time before twelve.",
+    ],
     vocab: [
       [
         "announcement",
@@ -48,6 +54,10 @@ export default [
       "Put books back on the shelf|📚",
       "Eat snacks at the table|🍪",
       "Run to a seat|🏃",
+    ],
+    why: [
+      "The librarian says you may NOT eat snacks in the library.",
+      "The librarian says do not run. That is the opposite of this choice.",
     ],
     ans: 3,
     vocab: [
@@ -149,6 +159,11 @@ export default [
       "A cup and liters|🥤",
       "A clock and minutes|⏰",
     ],
+    why: [
+      "A scale measures weight. The class measures how tall the plant is.",
+      "A cup measures liquid. Listen for the tool the class puts at the stem.",
+      "A clock measures time, not height. Listen for the tool and the unit named.",
+    ],
     vocab: [
       [
         "measure",
@@ -184,6 +199,11 @@ export default [
       "The school needs more trash cans.|🗑️",
       "Trees grow better near schools.|🌳",
       "Classrooms should use less paper.|📄",
+    ],
+    why: [
+      "The speaker wants less paper in the trash, not more trash cans.",
+      "Trees are mentioned as one benefit. They are a detail, not the main idea.",
+      "Using less paper is a good idea, but the speaker's plan is about the new bins.",
     ],
     vocab: [
       [
@@ -252,6 +272,11 @@ export default [
       "Four square got the most votes.|🎾",
       "Tag and four square tied.|🤝",
     ],
+    why: [
+      "Compare the numbers: tag was close, but did it get more than kickball?",
+      "Four square got the fewest votes. Listen for which game won.",
+      "Tag and four square got different numbers of votes. Listen to each number again.",
+    ],
     vocab: [
       [
         "vote",
@@ -292,6 +317,10 @@ export default [
       "Time on the wheel|🎡",
       "A clean cage|🧽",
       "A bath|🛁",
+    ],
+    why: [
+      "The cage is cleaned only on Fridays, so it is not an everyday job.",
+      "A bath is never mentioned. Listen for the three daily needs.",
     ],
     ans: 3,
     vocab: [
@@ -376,6 +405,11 @@ export default [
       "The ground drank all of the water.|🌱",
       "Students stepped in the puddle.|👟",
     ],
+    why: [
+      "The speaker never says the wind pushed the water. Listen for what the sun did.",
+      "The speaker says this is only part of the story. Listen for the main cause.",
+      "Stepping in puddles is not in the talk. Listen for the science word.",
+    ],
     vocab: [
       [
         "evaporation",
@@ -411,6 +445,11 @@ export default [
       "She tested only two kinds of paper towels.|🧻",
       "She used a cup instead of a ruler.|🥛",
       "She tested outside the classroom.|🏫",
+    ],
+    why: [
+      "Testing two brands is fine. Luis points out a different problem.",
+      "Rulers are never mentioned. Listen to what Luis says Mai changed.",
+      "Where she tested is not in the talk. Listen for the two things that changed.",
     ],
     vocab: [
       [
@@ -451,6 +490,11 @@ export default [
       "Build a new school because Pine Street is busy.|🏫",
       "Close Pine Street because cars are loud.|🚗",
       "Give students bikes because walking takes time.|🚲",
+    ],
+    why: [
+      "The writer asks for one person at the crossing, not a new building.",
+      "The writer never says cars are loud or asks to close the street.",
+      "Bikes are not in the letter. Listen for the exact request and the safety reason.",
     ],
     vocab: [
       [

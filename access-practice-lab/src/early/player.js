@@ -151,7 +151,11 @@ function feedbackHTML(a, I) {
     ${icon("volume")}
     <p>
       <strong>${I.T("Not yet.", "Todavía no.")}</strong>
-      ${I.T("Listen again, then try once more. All the choices are still here.", "Escucha otra vez y vuelve a intentarlo. Todas las opciones siguen aquí.")}
+      ${
+        c.note && I.mode !== "es"
+          ? html`<span lang="en">${c.note}</span> ${I.T("Try once more. All the choices are still here.", "Vuelve a intentarlo. Todas las opciones siguen aquí.")}`
+          : I.T("Listen again, then try once more. All the choices are still here.", "Escucha otra vez y vuelve a intentarlo. Todas las opciones siguen aquí.")
+      }
     </p>
   </div>`;
 }
@@ -392,7 +396,9 @@ export function onClick(e, ctx, I, cur, save) {
     }
     const ok = isCorrect(a, answerFor(a));
     st.tries += 1;
-    st.checked = { ok };
+    // A wrong pick with an authored note says what that choice missed (never which choice is right).
+    const note = ok ? "" : st.picks.map((id) => a.distractorFeedback?.[id]).find(Boolean) || "";
+    st.checked = { ok, note };
     record(cur, save, {
       ok,
       meaningful: true,
@@ -404,7 +410,7 @@ export function onClick(e, ctx, I, cur, save) {
     });
     const en = ok
       ? `Yes! ${a.correct || "You did it."}`
-      : "Not yet. Listen again, then try once more.";
+      : `Not yet. ${note || "Listen again, then try once more."}`;
     const es = ok ? "¡Sí! Lo lograste." : "Todavía no. Escucha otra vez y vuelve a intentarlo.";
     announce(
       I.S(

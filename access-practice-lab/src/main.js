@@ -32,6 +32,7 @@ import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./u
 import * as homeView from "./views/home.js";
 import { registerFor } from "./register.js";
 import { familyTourHost } from "./family-tour-host.js";
+import { sessionHref, startSession } from "./engagement.js";
 
 // Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
 // language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
@@ -533,6 +534,13 @@ async function common(e) {
     document.getElementById("labLangBanner")?.remove();
     return true;
   }
+  const jumpLevel = t.closest("[data-jump-level]");
+  if (jumpLevel) {
+    // The Jump in panel's "How much help?" choice is the practice plan's level (one preference, two surfaces).
+    ctx.setPrefs({ practicePlan: { ...(ctx.prefs.practicePlan || {}), level: jumpLevel.dataset.jumpLevel } });
+    ctx.rerender();
+    return true;
+  }
   const gradeFocus = t.closest("[data-grade-focus]");
   if (gradeFocus) {
     const next = normalizeGradeFocus(gradeFocus.dataset.gradeFocus);
@@ -635,6 +643,13 @@ function interceptLink(e) {
     return false;
   const a = e.target.closest("a[href]");
   if (!a || a.target || a.hasAttribute("download")) return false;
+  // A Jump in set starts a practice session, so it ends on the session-done celebration and counts toward goals.
+  if (a.dataset.jumpSet) {
+    e.preventDefault();
+    const rows = a.dataset.jumpSet.split(",").filter(Boolean).map((id) => ({ id }));
+    navigate(sessionHref(startSession(ctx, rows, Number(a.dataset.jumpMinutes) || 0, a.dataset.jumpTitle || "Quick practice")));
+    return true;
+  }
   const url = new URL(a.href, location.href);
   if (url.hash && url.pathname === location.pathname && url.search === location.search) {
     const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));

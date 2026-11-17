@@ -237,7 +237,7 @@ export default [
     strand: "Describe and explain",
     title: "City and Country",
     skill: "Compare two places with alike and different words",
-    dir: "Think about living in a city and living in the country. Write a paragraph that tells one way they are alike and two ways they are different.",
+    dir: "Think about city life and country life. Write a paragraph with one way they are alike and two ways they are different.",
     q: "How are the city and the country alike and different? Write a paragraph.",
     focus: [
       "one way they are alike with both",
@@ -286,8 +286,17 @@ export default [
     strand: "Science writing",
     title: "What We Found: Ice Melts",
     skill: "Report results from data in a sentence or two",
-    dir: "A class measured how many minutes an ice cube took to melt in three places: sunny window 12 minutes, shady shelf 25 minutes, refrigerator door 60 minutes. Write 3-4 sentences about what the data show.",
+    dir: "Read the table. A class timed one ice cube melting in each place. Write 3-4 sentences about what the data show.",
     q: "What do the ice cube data show? Write 3-4 sentences.",
+    table: {
+      caption: "Minutes for an ice cube to melt",
+      headers: ["Place", "Minutes to melt"],
+      rows: [
+        ["Sunny window", "12"],
+        ["Shady shelf", "25"],
+        ["Refrigerator door", "60"],
+      ],
+    },
     focus: [
       "the place where ice melted fastest with its number",
       "the place where it melted slowest with its number",
@@ -421,7 +430,7 @@ export default [
     strand: "Opinion and reasons",
     title: "Should Students Wear Uniforms?",
     skill: "Write an argument with a claim, evidence, and a counterclaim",
-    dir: "Decide whether students should wear school uniforms. Write a paragraph or two with a claim, two reasons with examples, and an answer to a different view.",
+    dir: "Decide if students should wear uniforms. In one or two paragraphs, write a claim, two reasons with examples, and an answer to another view.",
     q: "Should students wear school uniforms? Write an argument.",
     focus: [
       "a clear claim",
@@ -479,8 +488,16 @@ export default [
     strand: "Science writing",
     title: "Explain Our Plant Experiment",
     skill: "Write a science explanation with a claim, evidence, and reasoning",
-    dir: "A class grew bean plants. Plant A got 2 spoons of water a day and grew 14 centimeters in two weeks. Plant B got 6 spoons a day and grew 9 centimeters. Write a paragraph that makes a claim and supports it with data.",
+    dir: "A class grew two bean plants for two weeks. Read the table. Write a paragraph with a claim, evidence from the data, and reasoning.",
     q: "What can you say about the amount of water and plant growth? Write a paragraph with a claim, evidence, and reasoning.",
+    table: {
+      caption: "Bean plant growth in two weeks",
+      headers: ["Plant", "Water each day", "Growth"],
+      rows: [
+        ["Plant A", "2 spoons", "14 centimeters"],
+        ["Plant B", "6 spoons", "9 centimeters"],
+      ],
+    },
     focus: [
       "a claim that answers the question",
       "numbers from the data as evidence",
@@ -537,7 +554,7 @@ export default [
     strand: "Tell what happened",
     title: "A Day I Learned Something",
     skill: "Write a personal narrative with details, feelings, and reflection",
-    dir: "Write about a day when you learned something new, such as riding a bike or speaking in front of the class. Include what happened, how you felt, and what you learned.",
+    dir: "Write about a day you learned something new, like riding a bike. Tell what happened, how you felt, and what you learned.",
     q: "Tell about a time you learned something. Write a personal narrative.",
     focus: [
       "a beginning that sets the scene",
@@ -586,7 +603,7 @@ export default [
     strand: "Opinion and reasons",
     title: "A Letter to the Principal",
     skill: "Write a formal letter with a request and reasons",
-    dir: "Write a short letter to your principal asking for something that would improve the school, such as a new water fountain or a quiet reading corner. Include a greeting, a request, two reasons, and a closing.",
+    dir: "Write a letter asking your principal for a school improvement, like a quiet reading corner. Include a greeting, a request, two reasons, and a closing.",
     q: "What would you ask your principal to do? Write a letter with reasons.",
     focus: ["a greeting and a clear request", "two reasons with details", "a polite closing"],
     label: "Write your letter",

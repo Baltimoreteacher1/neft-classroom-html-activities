@@ -17,6 +17,7 @@ import {
   matchesOf,
 } from "../sitemap.js";
 import { BASE, announce, html, icon, raw, toHtml } from "../util.js";
+import { jumpInHTML } from "../quick-start.js";
 
 const state = { section: "", for: "", skill: "", kind: "", q: "" };
 let I = null;
@@ -223,6 +224,8 @@ export async function render(ctx) {
   const trail = [[I.S("Home", "Inicio"), `${BASE}/?grades=${band}`]];
   if (sec) trail.push([I.S("Explore", "Explorar"), `${BASE}/explore?grades=${band}`], [title]);
   else trail.push([I.S("Explore", "Explorar")]);
+  // Practice and the all-places directory open with one-tap practice sets, so practice is never behind the filters.
+  const jumpIn = !state.section || state.section === "practice" ? await jumpInHTML(ctx, I) : "";
   return {
     title,
     html: html`${crumbsHTML(trail, { i18n: I })}
@@ -233,6 +236,7 @@ export async function render(ctx) {
           </h1>
           <p class="xp-lead">${I.T(...lead)}</p>
         </header>
+        ${jumpIn}
         ${sectionTabsHTML()} ${filtersHTML()}
         <div class="xp-results" data-xp-results>${resultsHTML()}</div>
       </div>`,

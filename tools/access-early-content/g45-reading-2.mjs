@@ -107,6 +107,11 @@ export default [
       "There was a card game.|🌧️",
       "A storm book was due.|🌧️",
     ],
+    why: [
+      'The text does not say the playground was closed. Find the reason before the word "so".',
+      "The card game happened inside, after students stayed in. It is not the reason.",
+      "Priya read a storm book in the gym. That is not why everyone stayed inside.",
+    ],
     vocab: [
       ["recess", "a break from class to play", "recreo: descanso de clases para jugar"],
       [
@@ -164,6 +169,10 @@ export default [
     passageTitle: "Shelly the Turtle",
     passage: TURTLE,
     opts: ["Water|💧", "A flat rock|🪨", "A warm lamp|💡", "A plastic boat|⛵", "A palm tree|🌴"],
+    why: [
+      "A boat is never named. Reread the sentence that tells what Shelly lives in.",
+      "The text does not mention a tree. Find what Shelly climbs onto and rests under.",
+    ],
     ans: 3,
     vocab: [
       [
@@ -187,7 +196,7 @@ export default [
     title: "Shelly the Turtle: Words That Fit",
     skill: "Choosing words that fit the meaning",
     dir: "Read the passage. Then choose the word that fits each blank.",
-    q: "Fill in the missing words.",
+    q: "Finish the care card that hangs on Shelly's tank. Which word fits each blank?",
     passageTitle: "Shelly the Turtle",
     passage: TURTLE,
     cloze: [
@@ -262,6 +271,11 @@ export default [
       "Two whole minutes|🧼",
       "About five seconds|🧼",
     ],
+    why: [
+      'That is much too short. Find the step that says "scrub".',
+      "Minutes are not in the text. Look for the number word in the scrub step.",
+      "Five is not in the text. Reread the scrub step for the number.",
+    ],
     vocab: [
       [
         "seconds",
@@ -296,6 +310,11 @@ export default [
       "Bored and sleepy|☀️",
       "Angry about the rain|☀️",
     ],
+    why: [
+      "The speaker dashes outside and jumps in puddles. That is not how a scared person acts.",
+      "The speaker splashes the whole day through. Find the action words.",
+      "The speaker hopes for more rain tomorrow. Would an angry person wish that?",
+    ],
     vocab: [
       [
         "puddle",
@@ -327,6 +346,11 @@ export default [
       "Ice is the only kind of matter that can melt into liquid water when heated.|🧊",
       "Air in a balloon keeps the same shape as the container that holds it.|🧊",
       "Solids are always heavier than liquids and gases of the same size.|🧊",
+    ],
+    why: [
+      "Melting ice is one example. The passage says other matter changes too.",
+      "The passage says a gas has no shape of its own and spreads out.",
+      "The passage never compares weights. Look for the idea the whole passage explains.",
     ],
     vocab: [
       ["matter", "anything that takes up space", "materia: todo lo que ocupa espacio"],
@@ -394,6 +418,11 @@ export default [
     passage: MARKET,
     table: MARKET_TABLE,
     opts: ["$2|💵", "$4|💵", "$6|💵", "$8|💵"],
+    why: [
+      "That subtracts only one pound of apples. Dalia buys two pounds of apples plus grapes.",
+      "That leaves out part of what she buys. Add apples and grapes, then subtract from ten.",
+      "That subtracts one pound of apples and forgets the grapes. Use every price she pays.",
+    ],
     vocab: [
       ["price", "how much money something costs", "precio: cuánto dinero cuesta algo"],
       [
@@ -437,6 +466,10 @@ export default [
       "Apples cost more than peaches.|🍎",
       "Bananas cost four dollars a pound.|🍌",
     ],
+    why: [
+      "Compare the two prices in the table. Which fruit costs more per pound?",
+      "Read the bananas row again. Four dollars is a different fruit's price.",
+    ],
     ans: 3,
     vocab: [
       ["per", "for each one", "por: por cada uno"],
@@ -472,6 +505,11 @@ export default [
       "Mei was hungry and wanted to eat lunch soon.|🦋",
       "Butterflies came into the classroom through a window.|🦋",
       "Mei was very sleepy after a long weekend.|🦋",
+    ],
+    why: [
+      "The story does not talk about lunch. Look at how Mei acts: tight grip, staring down.",
+      "This is figurative language, not real butterflies. Think about feelings on a first day.",
+      "Nothing shows Mei is sleepy. Her stomach feels calm later. What changed?",
     ],
     vocab: [
       [
@@ -539,7 +577,7 @@ export default [
     title: "Levers: Words in Context",
     skill: "Using context to choose science words",
     dir: "Read the passage about levers. Then choose the word that fits each blank.",
-    q: "Fill in the missing words.",
+    q: "Finish your science notes about levers. Which word fits each blank?",
     passageTitle: "Levers Help Us Work",
     passage: LEVER,
     cloze: [
@@ -623,6 +661,10 @@ export default [
       "A scale shows how map distance matches real distance.|🗺️",
       "A title tells what the weather is in the place.|🗺️",
       "A symbol shows the exact time of day.|🗺️",
+    ],
+    why: [
+      "The text says a title tells what the map shows, not the weather.",
+      "Symbols stand for places like schools and parks, not times.",
     ],
     ans: 3,
     vocab: [
@@ -800,6 +842,11 @@ export default [
       ],
     },
     opts: ["15 centimeters|📏", "25 centimeters|📏", "8 centimeters|📏", "35 centimeters|📏"],
+    why: [
+      "That is the height on Day 28. Subtract the Day 14 height.",
+      "That is the growth for a different week. Use the Day 14 and Day 28 bars.",
+      "That adds the two heights. Growth means the difference between them.",
+    ],
     vocab: [
       [
         "centimeter",

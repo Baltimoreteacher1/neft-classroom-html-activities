@@ -1529,3 +1529,279 @@ details.helpers[open] > summary {
 .key-warmup {
   margin-block: 1rem;
 }
+
+/* ── Your task: the numbered how-to card at the top of every activity (src/task-steps.js) ── */
+.task-card {
+  margin-block: 14px 6px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 2px solid var(--room, var(--brand));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.task-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: var(--room-ink, var(--brand-ink));
+}
+.task-card .directions {
+  margin: 0 0 12px;
+}
+.task-card .directions p {
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.task-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.task-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.task-step-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--room, var(--brand));
+  color: var(--on-brand);
+  font-weight: 700;
+}
+.task-step-text {
+  flex: 1;
+}
+.task-step-hear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--line-control);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.task-step-hear:focus-visible,
+.jump-tile a:focus-visible,
+.jump-hear:focus-visible,
+.jump-level:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+/* K–3: bigger words, bigger number dots, one step per row on phones. */
+.task-card.is-early .task-steps li {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.task-card.is-early .task-step-n {
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+}
+@media (max-width: 640px) {
+  .task-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Jump in: one-tap practice sets on Home and the Practice hub (src/quick-start.js) ── */
+.jump-in {
+  margin-block: 18px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.jump-head h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+.jump-head p {
+  margin: 0 0 12px;
+  color: var(--ink-2);
+}
+.jump-levels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 14px;
+}
+.jump-levels-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+.jump-level {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 48px;
+  padding: 6px 14px;
+  border: 2px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.jump-level span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.jump-level[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+.jump-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jump-tile {
+  position: relative;
+}
+.jump-tile a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.jump-tile a:hover {
+  border-color: var(--teal);
+}
+.jump-tile strong {
+  font-size: 1.2rem;
+}
+.jump-line {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.jump-meta {
+  margin-top: auto;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+.jump-icon .ico {
+  width: 32px;
+  height: 32px;
+}
+.jump-tile.d-listening .jump-icon { color: var(--ocean-900); }
+.jump-tile.d-speaking .jump-icon { color: var(--rose-900); }
+.jump-tile.d-writing .jump-icon { color: var(--copper-900); }
+.jump-tile.d-reading .jump-icon { color: var(--brand); }
+.jump-mixed a {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+.jump-mixed .jump-line,
+.jump-mixed .jump-go {
+  color: var(--on-brand);
+}
+.jump-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  font-weight: 700;
+}
+.jump-hear {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--line-control);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.jump-more {
+  margin: 12px 0 0;
+}
+.jump-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+/* K–3: picture tiles, one big word each. */
+.jump-in.is-early .jump-tile a {
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  text-align: center;
+}
+.jump-in.is-early .jump-icon .ico {
+  width: 56px;
+  height: 56px;
+}
+.jump-in.is-early .jump-tile strong {
+  font-size: 1.6rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .jump-tile a {
+    transition: border-color 0.15s ease;
+  }
+}
+/* Phones: the four return/print buttons sit two per row instead of a tall stack above the task. */
+@media (max-width: 640px) {
+  .act-return {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .act-return > .btn {
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 640px) {
+  .jump-in.is-early .jump-tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+  .jump-in.is-early .jump-mixed {
+    grid-column: 1 / -1;
+  }
+}

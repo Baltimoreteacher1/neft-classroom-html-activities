@@ -21,6 +21,7 @@ import { recommendTasks } from "../lang/adapt.js";
 import { KEY_LANGUAGE_USES } from "../lang/purpose.js";
 import { kluHTML } from "./home-klu.js";
 import { heroClick, heroStageHTML } from "./home-hero.js";
+import { jumpInHTML } from "../quick-start.js";
 import { EXHIBITIONS } from "../content/exhibition.js";
 import { bandState, progress as exhibitionProgress } from "../lang/exhibition.js";
 import { loadExhibition } from "./exhibition.js";
@@ -261,9 +262,11 @@ export async function render(ctx) {
         >
       </section>`;
 
+  const jumpIn = await jumpInHTML(ctx, I);
   return {
     title: "",
     html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, target, missions, resume, dueCount: due.length })}
+      ${jumpIn}
       ${onLanguagePage() ? html`<details class="language-intro">
         <summary><span class="language-intro-play" aria-hidden="true">▶</span><span><strong>${I.T("Prepare for WIDA ACCESS", "Prepárate para WIDA ACCESS")}</strong><span>${I.T("See practice for grades 3–5 and 6–8 in 30 seconds", "Mira la práctica para los grados 3–5 y 6–8 en 30 segundos")}</span></span></summary>
         <div class="language-intro-body">

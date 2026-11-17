@@ -11,7 +11,7 @@ export default [
     strand: "Plan before you write",
     title: "Plan: My Favorite Animal",
     skill: "Plan a paragraph with a word web",
-    dir: "Plan a paragraph about your favorite animal. Make a word web: write the animal in the middle, then write three notes: what it looks like, what it eats, and where it lives.",
+    dir: "Make a word web for your favorite animal. Put it in the middle. Add notes: how it looks, what it eats, where it lives.",
     q: "Write your word web notes: the animal, how it looks, what it eats, and where it lives.",
     focus: [
       "the name of one animal",
@@ -215,7 +215,7 @@ export default [
     strand: "Science writing",
     title: "Observe with Your Senses",
     skill: "Write observations using the five senses",
-    dir: "Pick a small object near you, like a leaf, a piece of fruit, or a pencil. Look at it, touch it, and listen. Write three sentences about what you observe.",
+    dir: "Pick a small object, like a leaf or a pencil. Look at it, touch it, and listen. Write three sentences about what you observe.",
     q: "What do you observe about the object? Use sense words.",
     focus: [
       "the name of the object",
@@ -503,7 +503,7 @@ export default [
     strand: "Tell a story",
     title: "Story: The Lights Go Out",
     skill: "Write a story with a beginning, middle, and end",
-    dir: "Write a short story about the day the lights went out at school. Include a beginning, a middle, and an ending. Tell how the characters feel.",
+    dir: "Write a short story about the day the lights went out at school. Include a beginning, middle, and end. Tell how the characters feel.",
     q: "Write a story about the day the lights went out at school.",
     focus: [
       "a beginning that names the characters and place",
@@ -549,7 +549,7 @@ export default [
     strand: "Science writing",
     title: "Science Report: Melting Ice",
     skill: "Write an observation report with data and a conclusion",
-    dir: "A class put one ice cube in three places and recorded how long it took to melt. Read the table. Write a short report with a question, what you observed, the data, and a conclusion.",
+    dir: "Read the table about melting ice cubes. Write a short report with a question, what you observed, the data, and a conclusion.",
     q: "Write a science report about where the ice cube melted fastest and what that shows.",
     table: {
       caption: "Time for one ice cube to melt",
@@ -616,7 +616,7 @@ export default [
     strand: "Compare and contrast",
     title: "Compare: School Then and Now",
     skill: "Write a compare paragraph about the past and present",
-    dir: "In the 1800s, many children in small towns went to a one-room schoolhouse. One teacher taught students of all ages in the same room, and students wrote on small slates. Write a paragraph that compares that school with your school today.",
+    dir: "In the 1800s, one teacher taught all ages in a one-room schoolhouse, and students wrote on slates. Write a paragraph comparing that school with yours.",
     q: "Compare a one-room schoolhouse long ago with your school today.",
     focus: [
       "at least two ways the schools are different",
@@ -665,7 +665,7 @@ export default [
     strand: "Write a letter",
     title: "Letter: A Safer Crosswalk",
     skill: "Write a formal letter that makes a request with reasons",
-    dir: "Cars drive fast near your school, and students cross a busy street. Write a letter to the mayor that asks for a safer crosswalk. Use a greeting, a clear request, two reasons, a thank-you, and a closing.",
+    dir: "Cars drive fast by your school. Write to the mayor asking for a safer crosswalk. Use a greeting, request, two reasons, thank-you, and closing.",
     q: "Write a letter to the mayor asking for a safer crosswalk near your school.",
     focus: [
       "a formal greeting and a clear request",
@@ -716,7 +716,7 @@ export default [
     strand: "Opinion and reasons",
     title: "Opinion: Walk to School with a Buddy",
     skill: "Write an opinion paragraph with reasons and a counterargument",
-    dir: "Should students walk to school with a buddy or a family member instead of alone? Write a paragraph with your opinion, two reasons, one example, and an answer to a different point of view.",
+    dir: "Decide if students should walk to school with a buddy. Write your opinion, two reasons, an example, and an answer to another view.",
     q: "Should students walk to school with a buddy instead of alone? Write a paragraph.",
     focus: [
       "a clear opinion sentence",

@@ -262,7 +262,7 @@ export default [
     strand: "Science talk",
     title: "Talk About Our Data",
     skill: "Describe data from a small table using numbers",
-    dir: "A class counted how many days each seed took to sprout: bean 5 days, corn 7 days, pea 9 days. Plan what the data show, then record.",
+    dir: "A class timed how long seeds took to sprout: bean 5 days, corn 7 days, pea 9 days. Plan what the data show, then record.",
     q: "What do the data show about how fast each seed sprouted?",
     focus: [
       "the fastest and the slowest seed with their numbers",
@@ -391,7 +391,7 @@ export default [
     strand: "Argue and give reasons",
     title: "A Problem at School",
     skill: "Describe a problem and propose a solution with reasons",
-    dir: "Think about a problem at school, like a crowded hallway or litter on the playground. Plan the problem, your solution, and why it would work, then record.",
+    dir: "Think of a problem at school, like a crowded hallway or litter. Plan the problem, your solution, and why it works. Then record.",
     q: "What is one problem at school, and how would you solve it?",
     focus: [
       "a clear problem and who it affects",
@@ -428,7 +428,7 @@ export default [
     strand: "Compare and explain",
     title: "Retell and Respond",
     skill: "Retell a story with beginning, middle, and end, then respond",
-    dir: "Think about a story or movie you know well. Plan a short retell with a beginning, middle, and end, and tell what you learned, then record.",
+    dir: "Think of a story or movie you know well. Plan a short retell with a beginning, middle, and end, plus what it teaches. Then record.",
     q: "Retell a story you know. What happens, and what does it teach?",
     focus: [
       "a beginning, middle, and end",

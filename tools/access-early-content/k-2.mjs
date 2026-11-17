@@ -42,6 +42,11 @@ const listening = {
       ],
       frame: "Mia is ___.",
       correct: "Mia smiles. She is happy.",
+      distractorFeedback: {
+        a: "A sad face frowns. Listen to what Mia's face does.",
+        c: "A sleepy face yawns. Listen to what Mia does.",
+      },
+      hint: "Listen to what Mia's face does.",
       wida: ["Identify a feeling word from oral input"],
     },
     {
@@ -74,6 +79,11 @@ const listening = {
       ],
       frame: "We wash with water and ___.",
       correct: "Soap and water make hands clean.",
+      distractorFeedback: {
+        a: "A ball is for playing. Listen for what cleans.",
+        c: "A shoe goes on your foot. Listen again.",
+      },
+      hint: "Listen for the two things we use.",
       wida: ["Identify an object from a short oral routine"],
     },
     {
@@ -102,6 +112,11 @@ const listening = {
       ],
       frame: "Cat and ___ rhyme.",
       correct: "Cat and hat rhyme. They end with the same sound.",
+      distractorFeedback: {
+        a: "Dog and cat end with different sounds.",
+        b: "Sun and cat end with different sounds.",
+      },
+      hint: "Say cat. Then say each word. Which ends the same?",
       wida: ["Identify rhyming words from oral input"],
     },
     {
@@ -111,7 +126,7 @@ const listening = {
       skill: "Counting the parts of a word",
       teacher: GROWN,
       dir: [
-        "Listen. Clap for each part of the word. Tap how many claps.",
+        "Listen. Clap each word part. Tap how many claps.",
         "Escucha. Aplaude cada parte de la palabra. Toca cuántos aplausos.",
       ],
       script:
@@ -129,6 +144,11 @@ const listening = {
       ],
       frame: "Banana has ___ claps.",
       correct: "Ba-na-na has three parts, so three claps.",
+      distractorFeedback: {
+        a: "Banana has more than one part. Clap again.",
+        b: "Clap again slowly. Count every clap.",
+      },
+      hint: "Say banana slowly. Clap each part.",
       wida: ["Segment a spoken word into syllables"],
     },
     {
@@ -157,6 +177,11 @@ const listening = {
       ],
       frame: "The chant is about a ___.",
       correct: "Quack, quack. The chant is about a duck.",
+      distractorFeedback: {
+        b: "A cow says moo. Listen to the chant sound.",
+        c: "A pig says oink. Listen to the chant sound.",
+      },
+      hint: "Listen for the animal sound in the chant.",
       wida: ["Identify the subject of a short chant"],
     },
     {
@@ -186,6 +211,10 @@ const listening = {
       ],
       frame: "Max sees the ___ and the ___.",
       correct: "At night Max sees the moon and the stars.",
+      distractorFeedback: {
+        b: "It is night. Is the sun out at night?",
+      },
+      hint: "It is night. Listen for two things Max sees.",
       wida: ["Identify two details from a short oral story"],
     },
   ],
@@ -206,8 +235,8 @@ const reading = {
       skill: "Matching a first sound to a picture",
       teacher: GROWN,
       dir: [
-        "Listen to the sound fff. Tap the picture that starts with fff.",
-        "Escucha el sonido fff. Toca el dibujo que empieza con fff.",
+        "Listen to fff. Tap the picture that starts with fff.",
+        "Escucha fff. Toca el dibujo que empieza con fff.",
       ],
       passage: ["F f"],
       q: ["What starts with fff?", "¿Qué empieza con fff?"],
@@ -231,6 +260,11 @@ const reading = {
       ],
       frame: "Fff, fish.",
       correct: "Fff, fish starts with F.",
+      distractorFeedback: {
+        a: "Sun starts with sss, not fff.",
+        c: "Cat starts with c, not fff.",
+      },
+      hint: "Bite your lip and say fff. Find that first sound.",
       wida: ["Match a letter sound to a picture"],
     },
     {
@@ -240,8 +274,8 @@ const reading = {
       skill: "Matching a first sound to a picture",
       teacher: GROWN,
       dir: [
-        "Listen to the sound buh. Tap the picture that starts with buh.",
-        "Escucha el sonido buh. Toca el dibujo que empieza con buh.",
+        "Listen to buh. Tap the picture that starts with buh.",
+        "Escucha buh. Toca el dibujo que empieza con buh.",
       ],
       passage: ["B b"],
       q: ["What starts with buh?", "¿Qué empieza con buh?"],
@@ -257,6 +291,11 @@ const reading = {
       ],
       frame: "Buh, ball.",
       correct: "Buh, ball starts with B.",
+      distractorFeedback: {
+        b: "Cat starts with c, not buh.",
+        c: "Sock starts with sss, not buh.",
+      },
+      hint: "Pop your lips: buh. Find that first sound.",
       wida: ["Match a letter sound to a picture"],
     },
     {
@@ -266,8 +305,8 @@ const reading = {
       skill: "Matching a last sound to a picture",
       teacher: GROWN,
       dir: [
-        "Listen to the end of each word. Tap the picture that ends with t.",
-        "Escucha el final de cada palabra. Toca el dibujo que termina con t.",
+        "Listen. Tap the picture that ends with t.",
+        "Escucha. Toca el dibujo que termina con t.",
       ],
       passage: ["t"],
       q: ["Which word ends with t?", "¿Qué palabra termina con t?"],
@@ -283,6 +322,11 @@ const reading = {
       ],
       frame: "Cat ends with ___.",
       correct: "Ca-t. Cat ends with the t sound.",
+      distractorFeedback: {
+        a: "Bed ends with d. Say the last sound slowly.",
+        c: "Sun ends with n. Listen to the last sound.",
+      },
+      hint: "Say each word slowly. Listen to the end.",
       wida: ["Match an ending sound to a picture"],
     },
     {
@@ -314,6 +358,11 @@ const reading = {
       ],
       frame: "I see a ___.",
       correct: "I see a fish.",
+      distractorFeedback: {
+        a: "Bird starts with b. Look at the last word.",
+        b: "Frog has an r sound. Look at the last word.",
+      },
+      hint: "Point to the last word. Say its first sound.",
       wida: ["Match a simple sentence to an image"],
     },
     {
@@ -341,6 +390,11 @@ const reading = {
       ],
       frame: "A circle is ___.",
       correct: "A circle is round with no corners.",
+      distractorFeedback: {
+        a: "A triangle has three corners. Read the word again.",
+        b: "A square has four corners. Read the word again.",
+      },
+      hint: "Tap the word to hear it. Find that shape.",
       wida: ["Match a shape word to an image"],
     },
   ],
@@ -389,20 +443,24 @@ const speaking = {
       id: "gk-s-a-pond-animal",
       level: "A",
       taskLevel: 1,
-      title: "Pond Animals",
+      title: "Pond Walk",
       skill: "Naming an animal in a picture",
       scene: "pond-life",
       teacher: GROWN,
-      dir: ["Look at the pond. Say one animal you see.", "Mira el estanque. Di un animal que ves."],
+      dir: [
+        "We are on a pond walk! Look at the pond. Say one animal you see.",
+        "¡Vamos de paseo al estanque! Mira el estanque. Di un animal que ves.",
+      ],
       q: ["What animal do you see?", "¿Qué animal ves?"],
       model: ["Lina, age 5", "A duck!"],
-      sayFor: SAY1,
+      sayFor: ["I named an animal in the pond.", "I pointed to it."],
       vocab: [
         v("pond", "a small lake", "estanque: un lago pequeño"),
         v("frog", "a green animal that hops", "rana: animal verde que salta"),
       ],
       frame: "I see a ___.",
       correct: "You named an animal in the pond.",
+      hint: "Look in the water, on the rocks and in the grass.",
       wida: ["Name an animal in an image"],
     },
     {
@@ -414,8 +472,8 @@ const speaking = {
       scene: "snow-day",
       teacher: GROWN,
       dir: [
-        "Look at the snow. Tell what the weather is. Tell what the child has.",
-        "Mira la nieve. Di cómo está el tiempo. Di qué tiene el niño.",
+        "Look. Say the weather. Say what the child has.",
+        "Mira. Di cómo está el tiempo. Di qué tiene el niño.",
       ],
       q: [
         "What is the weather? What does the child have?",
@@ -473,8 +531,8 @@ const speaking = {
       scene: "apples-count",
       teacher: GROWN,
       dir: [
-        "Look at the apples. Count the apples in the left basket. Say the number.",
-        "Mira las manzanas. Cuenta las manzanas de la canasta izquierda. Di el número.",
+        "Count the apples in the left basket. Say the number.",
+        "Cuenta las manzanas de la canasta de la izquierda. Di el número.",
       ],
       q: [
         "How many apples are in the left basket?",
@@ -536,7 +594,7 @@ const writing = {
       skill: "Drawing and labeling a person",
       teacher: GROWN,
       dir: [
-        "Print your page. Draw someone in your family. Copy the word.",
+        "Print your page. Draw a family member. Copy the word.",
         "Imprime tu página. Dibuja a alguien de tu familia. Copia la palabra.",
       ],
       q: ["Draw a person in your family.", "Dibuja a una persona de tu familia."],
@@ -559,8 +617,8 @@ const writing = {
       scene: "pond-life",
       teacher: GROWN,
       dir: [
-        "Print your page. Look at the pond. Copy: I see a. Then copy an animal word.",
-        "Imprime tu página. Mira el estanque. Copia: I see a. Luego copia el nombre de un animal.",
+        "Print your page. Copy the sentence and an animal word.",
+        "Imprime tu página. Copia la oración y una palabra de animal.",
       ],
       q: ["What animal do you see?", "¿Qué animal ves?"],
       bank: ["duck", "frog", "fish"],
@@ -582,8 +640,8 @@ const writing = {
       scene: "feel-sad",
       teacher: GROWN,
       dir: [
-        "Print your page. Draw your face. Copy: I feel. Then copy a feeling word.",
-        "Imprime tu página. Dibuja tu cara. Copia: I feel. Luego copia una palabra de sentimiento.",
+        "Print your page. Draw your face. Copy: I feel ___.",
+        "Imprime tu página. Dibuja tu cara. Copia: I feel ___.",
       ],
       q: ["How do you feel?", "¿Cómo te sientes?"],
       bank: ["happy", "sad", "sleepy"],

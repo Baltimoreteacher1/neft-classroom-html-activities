@@ -4,7 +4,6 @@
 // writing is a printed page with big handwriting lines. Field list: see g23.mjs.
 
 const v = (en, def, es) => [en, def, es];
-const SAY = ["I said a word or a sentence.", "I talked about the picture."];
 
 const listening = {
   description: "Listen to a short story or a direction, then tap the big picture.",
@@ -19,7 +18,7 @@ const listening = {
       title: "Find the Cat",
       skill: "Listening for an animal word",
       dir: ["Listen. Tap the cat.", "Escucha. Toca el gato."],
-      script: "Find the cat. The cat says meow.",
+      script: "Grandma has a pet. It has soft fur and a long tail. It says meow. Find the cat.",
       q: ["Which one is the cat?", "¿Cuál es el gato?"],
       options: [
         ["a", "dog", "🐕"],
@@ -32,16 +31,22 @@ const listening = {
         v("meow", "the sound a cat makes", "miau: el sonido del gato"),
       ],
       frame: "This is a ___.",
-      correct: "The cat says meow.",
+      correct: "Grandma's pet says meow. It is a cat.",
+      distractorFeedback: {
+        a: "A dog says woof. Listen for the pet's sound.",
+        c: "A fish has no fur. Listen again.",
+      },
+      hint: "Listen for the sound Grandma's pet makes.",
       wida: ["Identify a named object from oral input"],
     },
     {
       id: "g1-l-a-colors-ball",
       level: "A",
-      title: "The Blue Ball",
+      title: "Kofi's Favorite Ball",
       skill: "Listening for a color word",
       dir: ["Listen. Tap the ball you hear.", "Escucha. Toca la pelota que oyes."],
-      script: "Tap the blue ball.",
+      script:
+        "Kofi and Dad play ball at the park. Kofi likes the blue ball best. Tap the blue ball.",
       q: ["Which ball is it?", "¿Cuál pelota es?"],
       options: [
         ["a", "red ball", "🔴"],
@@ -55,16 +60,22 @@ const listening = {
         v("ball", "a round toy", "pelota: juguete redondo"),
       ],
       frame: "The ball is ___.",
-      correct: "Blue, like the sky.",
+      correct: "Kofi likes the blue ball, blue like the sky.",
+      distractorFeedback: {
+        a: "Red is like a fire truck. Listen for the color.",
+        c: "Green is like grass. Listen for the color.",
+        d: "Yellow is like a banana. Listen for the color.",
+      },
+      hint: "Listen for the color word Kofi likes.",
       wida: ["Identify a color word from an oral direction"],
     },
     {
       id: "g1-l-a-weather-sun",
       level: "A",
-      title: "Sunny Day",
+      title: "Lila's Hot Day",
       skill: "Listening for a weather word",
       dir: ["Listen. Tap the weather.", "Escucha. Toca el tiempo."],
-      script: "It is a hot, sunny day.",
+      script: "Lila puts on her sun hat. It is a hot, sunny day. She drinks cold water.",
       q: ["What is the weather?", "¿Cómo está el tiempo?"],
       options: [
         ["a", "sunny", "☀️"],
@@ -77,7 +88,12 @@ const listening = {
         v("hot", "very warm", "caliente: muy cálido"),
       ],
       frame: "It is ___.",
-      correct: "Hot and sunny.",
+      correct: "Hot and sunny. Lila wears a sun hat.",
+      distractorFeedback: {
+        b: "Rainy days are wet. The story says hot.",
+        c: "Snowy days are cold. The story says hot.",
+      },
+      hint: "Listen for words like hot, wet or cold.",
       wida: ["Identify a weather word from oral input"],
     },
     {
@@ -105,6 +121,11 @@ const listening = {
       ],
       frame: "Ana ___ the seeds.",
       correct: "Ana waters the seeds so they grow.",
+      distractorFeedback: {
+        b: "Ana has a watering can, not a book.",
+        c: "Ana has a watering can, not a bike.",
+      },
+      hint: "Listen for what Ana holds. What is it for?",
       wida: ["Identify an action in a short oral story"],
     },
     {
@@ -131,6 +152,10 @@ const listening = {
       ],
       frame: "Omar has ___ and ___.",
       correct: "Crackers and grapes.",
+      distractorFeedback: {
+        b: "Listen again. Is ice cream in Omar's bag?",
+      },
+      hint: "Listen for the two foods in the bag.",
       wida: ["Identify two details from an oral story"],
     },
     {
@@ -158,6 +183,11 @@ const listening = {
       ],
       frame: "Leo goes by ___.",
       correct: "Leo rides the yellow bus.",
+      distractorFeedback: {
+        a: "Leo waits at a stop. Listen for what comes.",
+        c: "Boats go on water. Leo waits on the street.",
+      },
+      hint: "Listen for what comes to Leo's stop.",
       wida: ["Identify a detail about transportation in oral input"],
     },
   ],
@@ -194,6 +224,11 @@ const reading = {
       ],
       frame: "The word is ___.",
       correct: "s-u-n, sun!",
+      distractorFeedback: {
+        b: "Moon starts with m. Look at the first letter.",
+        c: "Star has four letters. Count the letters again.",
+      },
+      hint: "Say each sound: s, u, n. Blend them.",
       wida: ["Match a decodable word to an image"],
     },
     {
@@ -216,6 +251,11 @@ const reading = {
       ],
       frame: "It is a red ___.",
       correct: "h-a-t, hat.",
+      distractorFeedback: {
+        b: "Car starts with c. Read the last word.",
+        c: "Apple starts with a. Read the last word.",
+      },
+      hint: "All three are red. Read the last word.",
       wida: ["Match a short phrase to an image"],
     },
     {
@@ -238,6 +278,11 @@ const reading = {
       ],
       frame: "It is a ___ dog.",
       correct: "d-o-g, dog.",
+      distractorFeedback: {
+        b: "The words say big, not little.",
+        c: "Pig starts with p. Read the last word.",
+      },
+      hint: "Read both words: the size and the animal.",
       wida: ["Decode a short phrase and match it to an image"],
     },
     {
@@ -260,6 +305,11 @@ const reading = {
       ],
       frame: "The cat is on the ___.",
       correct: "On the mat.",
+      distractorFeedback: {
+        b: "The sentence has no box. Read the last word.",
+        c: "The sentence has no tree. Read the last word.",
+      },
+      hint: "Find the word on. Read the words after it.",
       wida: ["Identify location in a decodable sentence"],
     },
     {
@@ -283,6 +333,11 @@ const reading = {
       ],
       frame: "Sam has ___.",
       correct: "Sam has an umbrella.",
+      distractorFeedback: {
+        b: "A kite is not in the sentences. Read again.",
+        c: "A drum is not in the sentences. Read again.",
+      },
+      hint: "Read the second sentence. Find what Sam has.",
       wida: ["Identify a detail in a two-sentence text"],
     },
     {
@@ -330,7 +385,7 @@ const speaking = {
       dir: ["Look at the garden. Say one thing you see.", "Mira el huerto. Di una cosa que ves."],
       q: ["What do you see?", "¿Qué ves?"],
       model: ["Mateo, age 6", "I see the sun."],
-      sayFor: SAY,
+      sayFor: ["I named one thing in the garden.", "I used I see."],
       vocab: [
         v("sun", "the bright light in the sky", "sol: luz brillante del cielo"),
         v("plant", "a green living thing that grows", "planta: ser vivo verde que crece"),
@@ -343,41 +398,46 @@ const speaking = {
       id: "g1-s-a-breakfast-name",
       level: "A",
       taskLevel: 1,
-      title: "Name It: Breakfast",
+      title: "Breakfast with Grandpa",
       skill: "Naming foods",
       scene: "breakfast",
-      dir: ["Look at the table. Say one food.", "Mira la mesa. Di una comida."],
-      q: ["What food do you see?", "¿Qué comida ves?"],
-      model: ["Amira, age 6", "An apple."],
-      sayFor: SAY,
+      dir: [
+        "Grandpa made breakfast. Look at the table. Ask for one food.",
+        "El abuelo hizo el desayuno. Mira la mesa. Pide una comida.",
+      ],
+      q: ["What food do you want?", "¿Qué comida quieres?"],
+      model: ["Amira, age 6", "I want an apple, please."],
+      sayFor: ["I named one food on the table.", "I said please."],
       vocab: [
         v("apple", "a round red or green fruit", "manzana: fruta redonda roja o verde"),
         v("juice", "a fruit drink", "jugo: bebida de fruta"),
       ],
-      frame: "I see ___.",
-      correct: "You named a food.",
+      frame: "I want ___, please.",
+      correct: "You asked for a food on the table, and you said please.",
+      hint: "Point to a food on the table. Then say its name.",
       wida: ["Name foods in an image"],
     },
     {
       id: "g1-s-a-playground-name",
       level: "A",
       taskLevel: 1,
-      title: "Name It: Playground",
+      title: "Let's Play!",
       skill: "Naming playground things",
       scene: "playground",
       dir: [
-        "Look at the playground. Say what you like to play on.",
-        "Mira el patio. Di en qué te gusta jugar.",
+        "A new friend wants to play. Look at the playground. Say what you like to play on.",
+        "Un amigo nuevo quiere jugar. Mira el patio. Di en qué te gusta jugar.",
       ],
       q: ["What do you like to play on?", "¿En qué te gusta jugar?"],
       model: ["Mateo, age 6", "I like the slide."],
-      sayFor: SAY,
+      sayFor: ["I named one thing on the playground.", "I used I like."],
       vocab: [
         v("slide", "you go down it at the playground", "tobogán: juego para deslizarse"),
         v("swing", "a seat that goes back and forth", "columpio: asiento que va y viene"),
       ],
       frame: "I like the ___.",
-      correct: "You told what you like.",
+      correct: "You told your new friend what you like to play on.",
+      hint: "Look at the slide, the swings and the other things. Pick one.",
       wida: ["Express a preference with I like"],
     },
     {
@@ -393,7 +453,7 @@ const speaking = {
       ],
       q: ["What is happening?", "¿Qué está pasando?"],
       model: ["Amira, age 6", "It is raining. The girl has an umbrella."],
-      sayFor: SAY,
+      sayFor: ["I told the weather.", "I told what the girl has."],
       vocab: [
         v("rain", "water falling from clouds", "lluvia: agua que cae de las nubes"),
         v("umbrella", "a cover for the rain", "paraguas: cubierta para la lluvia"),
@@ -432,8 +492,8 @@ const speaking = {
       skill: "Telling two steps in order",
       scene: "seed-sprout",
       dir: [
-        "Think about the seed. Tell what Ana did first and what happened next.",
-        "Piensa en la semilla. Di lo que hizo Ana primero y lo que pasó después.",
+        "Think about the seed. Tell what happened first and next.",
+        "Piensa en la semilla. Di qué pasó primero y qué pasó después.",
       ],
       q: ["How did the seed grow?", "¿Cómo creció la semilla?"],
       model: ["Amira, age 6", "First, Ana planted the seed. Then it grew."],
@@ -459,23 +519,24 @@ const writing = {
     {
       id: "g1-w-a-label-fruit",
       level: "A",
-      title: "Label the Fruit",
+      title: "Market Labels",
       skill: "Writing a label",
       scene: "market",
       dir: [
-        "Print your page. Write the name of one fruit you see.",
-        "Imprime tu página. Escribe el nombre de una fruta que ves.",
+        "Help the market! Print your page. Write a label for one fruit you see.",
+        "¡Ayuda al mercado! Imprime tu página. Escribe una etiqueta para una fruta que ves.",
       ],
       q: ["Write the name of a fruit.", "Escribe el nombre de una fruta."],
       bank: ["apple", "banana"],
-      writeFor: ["I wrote one word.", "I copied it from the word bank."],
+      writeFor: ["I wrote one fruit word.", "I copied it from the word bank."],
       lines: 2,
       vocab: [
         v("apple", "a round fruit", "manzana: fruta redonda"),
         v("banana", "a long yellow fruit", "plátano: fruta larga y amarilla"),
       ],
       frame: "apple",
-      correct: "You wrote a fruit word.",
+      correct: "You wrote a fruit label. Now shoppers know what it is.",
+      hint: "Point to a fruit. Find its name in the word bank.",
       wida: ["Label an image with a word"],
     },
     {
@@ -502,23 +563,24 @@ const writing = {
     {
       id: "g1-w-a-weather-word",
       level: "A",
-      title: "Weather Word",
+      title: "Weather Reporter",
       skill: "Writing a weather word",
       scene: "park-rain",
       dir: [
-        "Print your page. Look outside. Write one weather word.",
-        "Imprime tu página. Mira afuera. Escribe una palabra del tiempo.",
+        "You are the class weather reporter! Print your page. Look outside. Write one weather word for the class chart.",
+        "¡Hoy reportas el tiempo de la clase! Imprime tu página. Mira afuera. Escribe una palabra del tiempo para el cartel de la clase.",
       ],
       q: ["What is the weather?", "¿Cómo está el tiempo?"],
       bank: ["sun", "rain", "wind", "snow"],
-      writeFor: ["I wrote a weather word."],
+      writeFor: ["I wrote one weather word.", "I copied it from the word bank."],
       lines: 2,
       vocab: [
         v("rain", "water from clouds", "lluvia: agua de las nubes"),
         v("wind", "moving air", "viento: aire que se mueve"),
       ],
       frame: "rain",
-      correct: "You wrote a weather word.",
+      correct: "You wrote a weather word for the class chart.",
+      hint: "Look at the sky. Find the word bank word that matches.",
       wida: ["Write a word to describe the weather"],
     },
     {
@@ -549,8 +611,8 @@ const writing = {
       skill: "Writing a sentence about a picture",
       scene: "garden",
       dir: [
-        "Print your page. Look at the garden. Write: I see, and one thing.",
-        "Imprime tu página. Mira el huerto. Escribe: I see, y una cosa.",
+        "Print your page. Look at the garden. Write: I see ___.",
+        "Imprime tu página. Mira el huerto. Escribe: I see ___.",
       ],
       q: ["What do you see in the garden?", "¿Qué ves en el huerto?"],
       bank: ["the sun", "a girl", "a plant", "a fence"],

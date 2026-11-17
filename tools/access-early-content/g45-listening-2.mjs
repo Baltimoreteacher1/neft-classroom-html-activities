@@ -45,6 +45,11 @@ export default [
     script:
       "Luis has two quarters and one dime in his pocket. A quarter is worth twenty-five cents, and a dime is worth ten cents.",
     opts: ["60 cents|🪙", "35 cents|🪙", "45 cents|🪙", "85 cents|🪙"],
+    why: [
+      "That counts only one quarter. Luis has two quarters plus one dime.",
+      "Check the quarters again. Two quarters are fifty cents before you add the dime.",
+      "That counts too many quarters. Luis has only two quarters and one dime.",
+    ],
     vocab: [
       [
         "quarter",
@@ -71,6 +76,11 @@ export default [
     script:
       "I am thinking of a shape. It has four sides. All four sides are the same length. It has four square corners.",
     opts: ["Square|🟦", "Triangle|🔺", "Circle|🟠", "Octagon|🛑"],
+    why: [
+      "A triangle has three sides. The riddle says the shape has four sides.",
+      "A circle has no sides or corners. The riddle gives sides and square corners.",
+      "An octagon has eight sides. Count the sides the teacher says.",
+    ],
     vocab: [
       ["side", "a straight edge of a shape", "lado: borde recto de una figura"],
       ["corner", "the place where two sides meet", "esquina: lugar donde se juntan dos lados"],
@@ -92,6 +102,11 @@ export default [
     script:
       "Children your age need nine to twelve hours of sleep each night. Sleep helps your body grow, and it helps your brain remember what you learned. Try to go to bed at the same time every night.",
     opts: ["9 to 12 hours|🛏️", "5 to 7 hours|🛏️", "13 to 15 hours|🛏️", "2 to 4 hours|🛏️"],
+    why: [
+      "That is fewer hours than the speaker says. Listen for the two numbers.",
+      "That is more hours than the speaker says. Listen for the two numbers again.",
+      "That is far too little sleep. Listen for the hours children your age need.",
+    ],
     vocab: [
       [
         "nurse",
@@ -122,6 +137,11 @@ export default [
       "He forgot his homework at home.|😢",
       "Ana was unkind to him today.|😢",
     ],
+    why: [
+      "Leo never talks about a lunch box. Listen to what he says about his friend.",
+      "Homework is not in the talk. Listen for the reason Leo gives Ana.",
+      "Ana is kind to Leo. She asks him to play catch.",
+    ],
     vocab: [
       ["alone", "with no one else", "solo: sin nadie más"],
       ["moved", "went to live in a new place", "se mudó: se fue a vivir a otro lugar"],
@@ -143,6 +163,11 @@ export default [
     script:
       "I drive a big red truck. My truck has a long ladder and a hose. I help put out fires and keep people safe. Who am I?",
     opts: ["Firefighter|🚒", "Mail carrier|📮", "Dentist|🦷", "Bus driver|🚌"],
+    why: [
+      "Mail carriers bring letters. This helper puts out fires.",
+      "A dentist helps teeth. The clues are a red truck, a ladder, and a hose.",
+      "A bus driver does not use a ladder and a hose. Listen to the clues again.",
+    ],
     vocab: [
       [
         "community helper",
@@ -246,6 +271,11 @@ export default [
       "Omar and Maya both ate two eighths.|🍕",
       "Omar ate three fourths, and Maya ate two fourths.|🍕",
     ],
+    why: [
+      "That switches the two people. Listen again to how many slices each person ate.",
+      "Omar says he ate more than Maya, so they did not eat the same amount.",
+      "Each pizza had eight slices, so the fractions are in eighths, not fourths.",
+    ],
     vocab: [
       [
         "fraction",
@@ -274,6 +304,11 @@ export default [
     script:
       "A healthy plate has foods from five groups: fruits, vegetables, grains, protein, and dairy. Apples and bananas are fruits. Carrots and broccoli are vegetables. Rice and bread are grains. Beans, eggs, and chicken are protein. Milk and yogurt are dairy.",
     opts: ["Rice|🍚", "Bread|🍞", "Carrots|🥕", "Yogurt|🥛", "Eggs|🥚"],
+    why: [
+      "Carrots are in the vegetables group. Listen for the foods named with grains.",
+      "Yogurt is in a different group. Listen for which foods the speaker calls dairy.",
+      "Eggs belong to the protein group in the talk.",
+    ],
     ans: 2,
     vocab: [
       [
@@ -314,6 +349,11 @@ export default [
       "There were not enough balls for everyone at recess.|⚖️",
       "Students did not like going outside for recess.|⚖️",
     ],
+    why: [
+      "The height of the swings is never mentioned. Listen for what was not fair.",
+      "Balls are not part of the problem. The plan is only about the swings.",
+      "Students want MORE time on the swings, so they do like recess.",
+    ],
     vocab: [
       ["fair", "treating everyone in an equal way", "justo: que trata a todos de manera igual"],
       ["turn", "your chance to do something", "turno: tu oportunidad de hacer algo"],
@@ -340,6 +380,11 @@ export default [
       "It makes the box lighter to carry.|📦",
       "It makes the trip to the truck shorter.|📦",
       "It means no force is needed at all.|📦",
+    ],
+    why: [
+      "The box weighs the same. The ramp changes the force you need, not the weight.",
+      "The speaker says the ramp makes the path longer, not shorter.",
+      "You still push the box up the ramp, so some force is needed.",
     ],
     vocab: [
       ["force", "a push or a pull", "fuerza: un empujón o un jalón"],
@@ -378,6 +423,11 @@ export default [
       "White fur helps it find food in the long, dark winter nights.|🦊",
       "Foxes change their color whenever they feel scared or hungry.|🦊",
     ],
+    why: [
+      "The fox has white fur in winter, not summer. Listen for what white fur matches.",
+      "The talk is about hiding from predators, not finding food at night.",
+      "Feelings are not the reason. Listen for how the fur matches snow, then rocks.",
+    ],
     vocab: [
       [
         "camouflage",
@@ -414,6 +464,11 @@ export default [
       "Computers were first invented by the speaker's own family long ago.|✉️",
       "Cousins should always live in the same town as each other.|✉️",
     ],
+    why: [
+      "The speaker never says letters were better. Listen for what changed and what stayed.",
+      "The speaker's family did not even have a computer. That is not the point.",
+      "The cousins live far away. The speaker talks about sharing news across distance.",
+    ],
     vocab: [
       ["arrive", "to get to a place", "llegar: alcanzar un lugar"],
       [
@@ -449,6 +504,11 @@ export default [
       "Bean plants grow better with less water.|🌱",
       "Dark closets make soil lose its nutrients.|🌱",
       "Plant B needed more water than Plant A.|🌱",
+    ],
+    why: [
+      "The water stayed the same. Listen for the one thing Nia changed.",
+      "Nia did not test the soil's nutrients. Her test changed only where each plant sat.",
+      "Both plants got the same water, so water cannot explain the difference.",
     ],
     vocab: [
       [
@@ -488,6 +548,10 @@ export default [
       "Eyes help you taste food.|👁️",
       "The tongue helps you hear.|👅",
     ],
+    why: [
+      "The talk says your eyes help you see colors and shapes, not taste.",
+      "Check which sense the tongue goes with. Hearing goes with a different body part.",
+    ],
     ans: 3,
     vocab: [
       [
@@ -519,6 +583,11 @@ export default [
       "To say that a student is sick and must be picked up|📞",
       "To ask families to send money for a school trip next week|📞",
       "To invite families to a health fair on Saturday morning|📞",
+    ],
+    why: [
+      "No student is sick in this message. Listen for what happens on Tuesday.",
+      "The nurse never asks for money. Listen for the check and what to send.",
+      "The nurse talks about Tuesday at school, not a Saturday fair.",
     ],
     vocab: [
       ["vision", "the ability to see", "visión: la capacidad de ver"],

@@ -4,7 +4,6 @@
 // fields: see g23.mjs. Talk task labels are practice labels, never proficiency levels.
 
 const v = (en, def, es) => [en, def, es];
-const SAY1 = ["I named what I see.", "I used a complete sentence."];
 const SAY3 = [
   "I told what happened first, next and last, or I gave a reason.",
   "I used a linking word like then or because.",
@@ -16,6 +15,11 @@ const listening = {
   activities: [
     {
       id: "g23-l-a-pond-log",
+      hint: "Listen for what each animal does at the pond.",
+      distractorFeedback: {
+        a: "The duck swims in the water. Listen for who sits.",
+        c: "The fish jumps and splashes. Listen for who sits.",
+      },
       level: "A",
       title: "Who Sits on the Log?",
       skill: "Listening for who does an action",
@@ -43,6 +47,11 @@ const listening = {
     },
     {
       id: "g23-l-a-measure-pencil",
+      hint: "Listen for what Mia puts next to her pencil.",
+      distractorFeedback: {
+        a: "A clock tells time, not how long something is.",
+        c: "A scale tells how heavy something is, not how long.",
+      },
       level: "A",
       title: "Measuring a Pencil",
       skill: "Listening for a tool and a number",
@@ -78,6 +87,11 @@ const listening = {
     },
     {
       id: "g23-l-a-lunch-water",
+      hint: "Listen to what Leo says about his body.",
+      distractorFeedback: {
+        a: "The story never says juice. Listen for Leo's cold drink.",
+        b: "The story never says milk. Listen for Leo's cold drink.",
+      },
       level: "A",
       title: "Leo's Healthy Lunch",
       skill: "Listening for foods and a drink",
@@ -105,6 +119,11 @@ const listening = {
     },
     {
       id: "g23-l-b-states-liquid",
+      hint: "Listen for which one can pour.",
+      distractorFeedback: {
+        a: "Ice keeps its shape, so it is a solid.",
+        c: "Hot water rising from the pot is a gas.",
+      },
       level: "B",
       title: "Solid, Liquid or Gas?",
       skill: "Listening to classify what you hear",
@@ -175,6 +194,11 @@ const listening = {
     },
     {
       id: "g23-l-b-seeds-fewest",
+      hint: 'Listen for each number. "Fewest" means the smallest number.',
+      distractorFeedback: {
+        a: "Cara plants ten seeds. Ten is the most, not the fewest.",
+        b: "Ana plants eight seeds. Someone planted fewer than eight.",
+      },
       level: "B",
       title: "Who Planted the Fewest?",
       skill: "Listening to compare numbers",
@@ -202,6 +226,11 @@ const listening = {
     },
     {
       id: "g23-l-c-owl-eyes",
+      hint: "Listen for what big eyes let in.",
+      distractorFeedback: {
+        b: "Big eyes do not help owls sleep. Listen for what they do.",
+        c: "The story never says owls swim. Listen for what big eyes do.",
+      },
       level: "C",
       title: "Why Owls Have Big Eyes",
       skill: "Listening to find why",
@@ -214,8 +243,8 @@ const listening = {
       q: ["Why do owls have big eyes?", "¿Por qué los búhos tienen ojos grandes?"],
       options: [
         ["a", "to see in the dark", "🌙"],
-        ["b", "to sleep better", "😴"],
-        ["c", "to swim fast", "🏊"],
+        ["b", "to sleep better in the day", "😴"],
+        ["c", "to swim fast in the pond", "🏊"],
       ],
       answer: "a",
       vocab: [
@@ -228,6 +257,11 @@ const listening = {
     },
     {
       id: "g23-l-c-new-student",
+      hint: "Listen for what happens right before Mia smiles.",
+      distractorFeedback: {
+        a: "The story never talks about a prize. Listen for what Ben asks.",
+        c: "Recess was not over. Listen for what Ben asks Mia.",
+      },
       level: "C",
       title: "Mia Makes a Friend",
       skill: "Listening to explain a feeling",
@@ -255,6 +289,10 @@ const listening = {
     },
     {
       id: "g23-l-c-plant-needs",
+      hint: "Listen for three things a plant needs to grow.",
+      distractorFeedback: {
+        b: "The speaker says a plant does not need candy.",
+      },
       level: "C",
       type: "multiSelect",
       title: "What Plants Need",
@@ -295,6 +333,11 @@ const listening = {
     },
     {
       id: "g23-l-c-kite-wind",
+      hint: "Listen for what was different on Monday and Tuesday.",
+      distractorFeedback: {
+        a: "The story never says it rained. Listen for Monday and Tuesday.",
+        b: "Sam did not go home. He ran across the grass.",
+      },
       level: "C",
       title: "Sam's Kite",
       skill: "Listening to find a cause",
@@ -328,6 +371,11 @@ const reading = {
   activities: [
     {
       id: "g23-r-a-pond-duck",
+      hint: 'Find the words right after "swims".',
+      distractorFeedback: {
+        a: "The sentences do not say box. Find the place word.",
+        c: "Ducks can fly, but read where this duck swims.",
+      },
       level: "A",
       title: "At the Pond",
       skill: "Reading for where",
@@ -354,15 +402,20 @@ const reading = {
     },
     {
       id: "g23-r-a-measure-ruler",
+      hint: "Read the second sentence slowly.",
+      distractorFeedback: {
+        b: "Mia does not measure a book. Read the second sentence.",
+        c: "The sentences do not say shoe. Read what Mia measures.",
+      },
       level: "A",
-      title: "Mia Measures",
+      title: "Mia's Measuring Job",
       skill: "Reading for what someone does",
       scene: "measure-pencil",
       dir: [
         "Read the sentences. Tap what Mia measures.",
         "Lee las oraciones. Toca lo que mide Mia.",
       ],
-      passage: ["Mia has a ruler.", "She measures her pencil."],
+      passage: ["Mia has a ruler.", "She measures her pencil.", "It is six inches long."],
       q: ["What does Mia measure?", "¿Qué mide Mia?"],
       options: [
         ["a", "her pencil", "✏️"],
@@ -380,15 +433,24 @@ const reading = {
     },
     {
       id: "g23-r-a-cow-barn",
+      hint: 'Find the sentence with the words "red barn".',
+      distractorFeedback: {
+        a: "The hen is on the grass. Read about the barn again.",
+        b: "The sentences never say pig. Read about the barn.",
+      },
       level: "A",
-      title: "The Red Barn",
+      title: "Farm Trip Morning",
       skill: "Reading for who and where",
       scene: "farm-friends",
       dir: [
         "Read the sentences. Tap what is by the red barn.",
         "Lee las oraciones. Toca lo que está junto al establo rojo.",
       ],
-      passage: ["The cow is by the red barn.", "The hen is on the grass."],
+      passage: [
+        "Our class visits a farm.",
+        "The cow is by the red barn.",
+        "The hen is on the grass.",
+      ],
       q: ["What is by the red barn?", "¿Qué está junto al establo rojo?"],
       options: [
         ["a", "the hen", "🐔"],
@@ -410,6 +472,11 @@ const reading = {
     },
     {
       id: "g23-r-b-wash-steps",
+      hint: 'Find the order words: "first", "next", "then", "last".',
+      distractorFeedback: {
+        a: "Drying is the last step. Read the step right after soap.",
+        c: "Eating lunch is not a step here. Read the step after soap.",
+      },
       level: "B",
       title: "How to Wash Your Hands",
       skill: "Reading steps to find what comes next",
@@ -446,6 +513,11 @@ const reading = {
     },
     {
       id: "g23-r-b-moon-light",
+      hint: 'Read the sentence with the word "because".',
+      distractorFeedback: {
+        b: "The text says the moon does not make its own light.",
+        c: "Stars do not paint the moon. Read the second sentence.",
+      },
       level: "B",
       title: "Why the Moon Shines",
       skill: "Reading an information text for a reason",
@@ -480,6 +552,11 @@ const reading = {
     },
     {
       id: "g23-r-b-doctor-helpers",
+      hint: 'Find the sentence with the word "tall".',
+      distractorFeedback: {
+        a: "Bus drivers are not in this text. Read the last sentence.",
+        b: "Mail carriers are not in this text. Read the last sentence.",
+      },
       level: "B",
       title: "Helpers Who Keep Us Healthy",
       skill: "Reading to find who does a job",
@@ -514,6 +591,11 @@ const reading = {
     },
     {
       id: "g23-r-c-three-states",
+      hint: 'Read the sentence with the word "flows".',
+      distractorFeedback: {
+        a: "A solid keeps its own shape, like an ice cube.",
+        b: "A gas spreads out to fill the space.",
+      },
       level: "C",
       title: "Three States of Matter",
       skill: "Reading a science text to match a description",
@@ -613,6 +695,11 @@ const reading = {
     },
     {
       id: "g23-r-c-cookies-more",
+      hint: "Read the last sentence. Compare the two numbers.",
+      distractorFeedback: {
+        a: "Jo has three cookies now. Compare three with Nina's number.",
+        c: "Five and three are not the same number.",
+      },
       level: "C",
       title: "Sharing Cookies",
       skill: "Reading a number story to compare",
@@ -655,36 +742,44 @@ const speaking = {
       skill: "Naming animals and places",
       scene: "pond-life",
       dir: [
-        "Look at the pond. Tell one animal and where it is.",
-        "Mira el estanque. Di un animal y dónde está.",
+        "You are a nature guide at the pond. Tell a visitor one animal and where it is.",
+        "Eres guía de la naturaleza en el estanque. Dile a un visitante un animal y dónde está.",
       ],
       q: ["What animal do you see? Where is it?", "¿Qué animal ves? ¿Dónde está?"],
       model: ["Leo, age 8", "I see a duck in the pond."],
-      models: { A: "A duck.", B: "I see a duck in the pond." },
-      sayFor: SAY1,
+      models: {
+        A: "A duck.",
+        B: "I see a duck in the pond.",
+        C: "I see a duck in the pond. A green frog sits on the log.",
+      },
+      sayFor: ["I named an animal.", "I told where it is with in or on."],
       vocab: [
         v("duck", "a bird that swims", "pato: ave que nada"),
         v("log", "a thick piece of a tree trunk", "tronco: pedazo grueso del tronco de un árbol"),
       ],
       frame: "I see a ___ in the ___.",
-      correct: "You named an animal and where it is.",
+      correct: "You told a visitor an animal and where it is.",
       wida: ["Name animals and locations in an image"],
     },
     {
       id: "g23-s-a-shapes",
       level: "A",
       taskLevel: 1,
-      title: "Shapes on the Table",
+      title: "I Spy a Shape",
       skill: "Naming shapes and colors",
       scene: "shapes-table",
       dir: [
-        "Look at the shapes. Say a shape and its color.",
-        "Mira las figuras. Di una figura y su color.",
+        "Play I Spy with a partner. Say a shape and its color so they can find it.",
+        "Juega Veo, veo con un compañero. Di una figura y su color para que la encuentre.",
       ],
       q: ["What shape do you see?", "¿Qué figura ves?"],
-      model: ["Sofia, age 7", "I see a red circle."],
-      models: { A: "A circle.", B: "I see a red circle." },
-      sayFor: SAY1,
+      model: ["Sofia, age 7", "I spy a red circle."],
+      models: {
+        A: "A circle.",
+        B: "I spy a red circle.",
+        C: "I spy a red circle and a blue square.",
+      },
+      sayFor: ["I named a shape.", "I said its color.", "I said a whole sentence."],
       vocab: [
         v("circle", "a round shape with no corners", "círculo: figura redonda sin esquinas"),
         v(
@@ -693,8 +788,8 @@ const speaking = {
           "rectángulo: figura con cuatro lados y cuatro esquinas rectas",
         ),
       ],
-      frame: "I see a ___ ___.",
-      correct: "You named a shape and its color.",
+      frame: "I spy a ___ ___.",
+      correct: "You named a shape and its color so your partner can find it.",
       wida: ["Name shapes and colors in an image"],
     },
     {
@@ -705,13 +800,20 @@ const speaking = {
       skill: "Describing what people are doing",
       scene: "door-line",
       dir: [
-        "Look at the picture. Tell what the children are doing.",
-        "Mira el dibujo. Di qué hacen los niños.",
+        "A new student does not know the class routine. Tell them what the children are doing.",
+        "Un estudiante nuevo no conoce la rutina de la clase. Dile qué hacen los niños.",
       ],
       q: ["What are the children doing?", "¿Qué hacen los niños?"],
       model: ["Leo, age 8", "The children stand in a line."],
-      models: { A: "A line.", B: "The children stand in a line at the door." },
-      sayFor: SAY1,
+      models: {
+        A: "A line.",
+        B: "The children stand in a line at the door.",
+        C: "The children stand in a line at the door. They wait quietly for the teacher.",
+      },
+      sayFor: [
+        "I told what the children are doing.",
+        "I said a whole sentence that starts with The children.",
+      ],
       vocab: [
         v(
           "line",
@@ -721,7 +823,7 @@ const speaking = {
         v("door", "the part you open to go in or out", "puerta: lo que abres para entrar o salir"),
       ],
       frame: "The children ___ at the door.",
-      correct: "You told what the children are doing.",
+      correct: "You helped a new student know what to do at the door.",
       wida: ["Describe actions in an image"],
     },
     {
@@ -732,8 +834,8 @@ const speaking = {
       skill: "Describing weather and clothing",
       scene: "snow-day",
       dir: [
-        "Look at the snow. Tell about the weather. Tell what the child wears.",
-        "Mira la nieve. Habla del tiempo. Di qué lleva puesto el niño.",
+        "Your cousin lives where it never snows. Tell them about the weather and what the boy wears.",
+        "Tu primo vive donde nunca nieva. Cuéntale cómo está el tiempo y qué lleva puesto el niño.",
       ],
       q: [
         "What is the weather? What does the child wear?",
@@ -743,14 +845,22 @@ const speaking = {
         "Sofia, age 7",
         "It is snowing and it is cold. The boy wears a red coat and a blue hat.",
       ],
-      models: { A: "It is snowing.", B: "It is snowing. The boy wears a coat." },
-      sayFor: SAY1,
+      models: {
+        A: "It is snowing.",
+        B: "It is snowing. The boy wears a coat.",
+        C: "It is snowing, and it is very cold. The boy wears a warm coat and a hat, and he made a snowman.",
+      },
+      sayFor: [
+        "I told about the weather.",
+        "I told what the boy wears.",
+        "I said whole sentences.",
+      ],
       vocab: [
         v("snowman", "a figure made of snow", "muñeco de nieve: figura hecha de nieve"),
         v("coat", "a warm jacket", "abrigo: chaqueta abrigada"),
       ],
       frame: "It is ___. The boy wears ___.",
-      correct: "You described the weather and the clothes.",
+      correct: "You told your cousin about the snow and the boy's clothes.",
       wida: ["Describe weather and clothing in an image"],
     },
     {
@@ -761,13 +871,21 @@ const speaking = {
       skill: "Describing a community helper's job",
       scene: "mail-carrier",
       dir: [
-        "Look at the mail carrier. Tell what the mail carrier does.",
-        "Mira al cartero. Di qué hace el cartero.",
+        "Our class is making a book about helpers. Tell what the mail carrier does.",
+        "Nuestra clase está haciendo un libro sobre los ayudantes. Di qué hace la cartera.",
       ],
       q: ["What does a mail carrier do?", "¿Qué hace un cartero?"],
       model: ["Leo, age 8", "The mail carrier brings letters to our houses. She drives a truck."],
-      models: { A: "She brings letters.", B: "The mail carrier brings letters to houses." },
-      sayFor: SAY1,
+      models: {
+        A: "She brings letters.",
+        B: "The mail carrier brings letters to houses.",
+        C: "The mail carrier brings letters to our houses. She puts them in the mailbox, so we get our mail.",
+      },
+      sayFor: [
+        "I told what the mail carrier does.",
+        "I told where the letters go.",
+        "I said whole sentences.",
+      ],
       vocab: [
         v(
           "mail carrier",
@@ -777,7 +895,7 @@ const speaking = {
         v("mailbox", "a box where letters are left", "buzón: caja donde se dejan las cartas"),
       ],
       frame: "A mail carrier ___ to ___.",
-      correct: "You told about the mail carrier's job.",
+      correct: "You told what the mail carrier does for our helpers book.",
       wida: ["Describe a community helper's role"],
     },
     {
@@ -788,13 +906,21 @@ const speaking = {
       skill: "Explaining a reason with because",
       scene: "handwash",
       dir: [
-        "Look at the picture. Tell why we wash our hands.",
-        "Mira el dibujo. Di por qué nos lavamos las manos.",
+        "Your little cousin wants to skip washing. Tell them why we wash our hands.",
+        "Tu primo pequeño no se quiere lavar. Dile por qué nos lavamos las manos.",
       ],
       q: ["Why do we wash our hands?", "¿Por qué nos lavamos las manos?"],
       model: ["Sofia, age 7", "We wash our hands to get rid of germs. Then we stay healthy."],
-      models: { A: "To get clean.", B: "We wash our hands because of germs." },
-      sayFor: SAY3,
+      models: {
+        A: "To get clean.",
+        B: "We wash our hands because of germs.",
+        C: "We wash our hands because germs can make us sick. Soap and water wash the germs away, so we stay healthy.",
+      },
+      sayFor: [
+        "I gave a reason with because.",
+        "I told what soap and water do.",
+        "I added a detail, like when we wash.",
+      ],
       vocab: [
         v(
           "germs",
@@ -808,7 +934,7 @@ const speaking = {
         ),
       ],
       frame: "We wash our hands because ___.",
-      correct: "You gave a reason for washing hands.",
+      correct: "You gave your cousin a clear reason to wash hands.",
       wida: ["Explain a reason using because"],
     },
     {
@@ -948,12 +1074,15 @@ const writing = {
       skill: "Writing labels for a picture",
       scene: "pond-life",
       dir: [
-        "Print your page. Look at the pond. Write two animal words.",
-        "Imprime tu página. Mira el estanque. Escribe dos palabras de animales.",
+        "Print your page. The nature center needs pond signs. Write two animal words.",
+        "Imprime tu página. El centro de naturaleza necesita letreros para el estanque. Escribe dos nombres de animales.",
       ],
       q: ["What animals are in the pond?", "¿Qué animales hay en el estanque?"],
       bank: ["duck", "frog", "fish", "log"],
-      writeFor: ["I wrote two animal words.", "I copied them correctly."],
+      writeFor: [
+        "I wrote two animal names from the pond.",
+        "I copied each word letter by letter from the word bank.",
+      ],
       lines: 2,
       vocab: [
         v(
@@ -964,29 +1093,29 @@ const writing = {
         v("pond", "a small lake", "estanque: un lago pequeño"),
       ],
       frame: "duck, ___",
-      correct: "You labeled two animals.",
+      correct: "Your pond signs name two animals.",
       wida: ["Label an image with words"],
     },
     {
       id: "g23-w-a-shape-names",
       level: "A",
-      title: "My Shape Picture",
+      title: "Shape Guessing Card",
       skill: "Writing shape words",
       scene: "shapes-table",
       dir: [
-        "Print your page. Draw a shape. Write its name and its color.",
-        "Imprime tu página. Dibuja una figura. Escribe su nombre y su color.",
+        "Print your page. Make a card for a class guessing game. Draw a shape. Write its color and name.",
+        "Imprime tu página. Haz una tarjeta para un juego de adivinar en clase. Dibuja una figura. Escribe su color y su nombre.",
       ],
       q: ["What shape did you draw?", "¿Qué figura dibujaste?"],
       bank: ["circle", "square", "triangle", "red", "blue", "green"],
-      writeFor: ["I drew a shape.", "I wrote its name and color."],
+      writeFor: ["I drew one shape.", "I wrote its color and its name, like a blue square."],
       lines: 2,
       vocab: [
         v("square", "a shape with four equal sides", "cuadrado: figura con cuatro lados iguales"),
         v("color", "red, blue or green, for example", "color: rojo, azul o verde, por ejemplo"),
       ],
       frame: "a ___ ___",
-      correct: "You wrote a shape and a color.",
+      correct: "Your card names a shape and its color.",
       wida: ["Label a drawing with a descriptive phrase"],
     },
     {
@@ -1022,34 +1151,42 @@ const writing = {
       skill: "Writing two sentences about a picture",
       scene: "night-moon",
       dir: [
-        "Print your page. Look at the night sky. Write two sentences about it.",
-        "Imprime tu página. Mira el cielo de noche. Escribe dos oraciones.",
+        "Print your page. Our class is making a Night Sky book. Write two sentences for your page.",
+        "Imprime tu página. Nuestra clase está haciendo un libro sobre el cielo de noche. Escribe dos oraciones para tu página.",
       ],
       q: ["What do you see in the night sky?", "¿Qué ves en el cielo de noche?"],
       bank: ["moon", "stars", "dark", "bright", "shine"],
-      writeFor: ["I wrote two sentences.", "I used a word from the word bank."],
+      writeFor: [
+        "I wrote one sentence about the moon.",
+        "I wrote one sentence about the stars.",
+        "I used a word like bright or shine.",
+      ],
       lines: 4,
       vocab: [
         v("bright", "giving a lot of light", "brillante: que da mucha luz"),
         v("shine", "to give off light", "brillar: dar luz"),
       ],
       frame: "I see the ___. The stars ___.",
-      correct: "You wrote about the night sky.",
+      correct: "Your page tells about the moon and the stars.",
       wida: ["Write sentences describing an image"],
     },
     {
       id: "g23-w-b-farm-animals",
       level: "B",
-      title: "Animals on the Farm",
+      title: "Farm Trip Captions",
       skill: "Writing what animals do",
       scene: "farm-friends",
       dir: [
-        "Print your page. Look at the farm. Write what the cow and the hen do.",
-        "Imprime tu página. Mira la granja. Escribe lo que hacen la vaca y la gallina.",
+        "Print your page. Write captions for our farm trip photo. Tell what the cow and the hen do.",
+        "Imprime tu página. Escribe pies de foto para la foto de nuestra visita a la granja. Di qué hacen la vaca y la gallina.",
       ],
       q: ["What do the cow and the hen do?", "¿Qué hacen la vaca y la gallina?"],
       bank: ["cow", "hen", "eats", "walks", "says"],
-      writeFor: ["I wrote about two animals.", "Each sentence has a capital and a period."],
+      writeFor: [
+        "I wrote one sentence about the cow.",
+        "I wrote one sentence about the hen.",
+        "Each sentence has a capital and a period.",
+      ],
       lines: 4,
       vocab: [
         v("hen", "a mother chicken", "gallina: pollo hembra"),
@@ -1060,7 +1197,7 @@ const writing = {
         ),
       ],
       frame: "The cow ___. The hen ___.",
-      correct: "You wrote about the farm animals.",
+      correct: "Your captions tell what each farm animal does.",
       wida: ["Write sentences about actions in an image"],
     },
     {

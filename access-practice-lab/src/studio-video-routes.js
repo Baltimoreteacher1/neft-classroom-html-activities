@@ -41,6 +41,7 @@ export const STUDIO_VIDEO_ROUTES = {
     "id": "clip-key-vocabulary"
   },
   "/access-practice-lab/explore/practice": {
-    "id": "clip-four-skills"
+    "id": "clip-four-skills",
+    "after": ".jump-in"
   }
 };

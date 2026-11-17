@@ -180,6 +180,17 @@ export function expand(band, domain, spec) {
   a.vocabulary = spec.vocab;
   a.frames = [spec.frame];
   a.correct = spec.correct;
+  if (spec.distractorFeedback) {
+    // One note per WRONG option id (shown by the standard renderer after a wrong pick).
+    const right = new Set([].concat(a.answers || a.answer || []));
+    const wrong = (a.options || []).map((o) => o.id).filter((id) => !right.has(id));
+    const keys = Object.keys(spec.distractorFeedback);
+    if (keys.some((k) => !wrong.includes(k)) || wrong.some((id) => !spec.distractorFeedback[id]))
+      throw new Error(
+        `${where} distractorFeedback: needs exactly the wrong option ids ${wrong.join(",")}`,
+      );
+    a.distractorFeedback = spec.distractorFeedback;
+  }
   a.hint = spec.hint || SUPPORT[domain];
   a.support = SUPPORT[domain];
   a.extension = spec.extension || EXTENSION[domain];

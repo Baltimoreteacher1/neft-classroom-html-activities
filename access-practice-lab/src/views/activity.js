@@ -78,6 +78,7 @@ import {
 import { activityHref, roomHref } from "./room.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
 import { esPreviewHTML } from "./es-preview.js";
+import { taskCardHTML } from "../task-steps.js";
 import { familyFor, learnPanelHTML } from "../lesson-learn.js";
 import {
   MARKS,
@@ -380,10 +381,11 @@ function feedbackBody(a) {
       <p class="fb-title">${icon("retry")} ${I.T("Not quite", "Todavía no")}</p>
       <button type="button" class="btn small" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
     </div>
+    ${mode === "supported" && pickedNote(a) ? pickedNote(a) : ""}
     <p class="fb-lead">${a.hint && mode === "supported" ? tx(a.hint) : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista.")}</p>
     ${moreHelp(
       I.T("More help", "Más ayuda"),
-      html`${mode === "supported" ? pickedNote(a) : ""}${feedbackBodyHTML(I, {
+      html`${feedbackBodyHTML(I, {
         well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))),
         next: cur.domain === "Reading" ? lookBack() : "",
         canModel: Boolean(curFamily) && mode === "supported",
@@ -760,7 +762,7 @@ export async function render(ctx) {
           </h1>
           ${lf.goal}
           ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
-          ${directionsBlocks(a, es)}
+          ${taskCardHTML(I, a, cur.domain, cur.band, directionsBlocks(a, es))}
           ${mode === "supported" ? esPreviewHTML(I, a, cur.domain, es) : ""}
           ${lf.words}
         </header>

@@ -108,14 +108,18 @@ const option = (raw, id) => {
 function buildOptions(id, spec, multi) {
   const opts = spec.opts.map((o) => option(o, id));
   const nRight = multi ? spec.ans : 1;
-  const tagged = opts.map((o, i) => ({ ...o, right: i < nRight }));
+  const why = spec.why || [];
+  if (spec.why && why.length !== opts.length - nRight)
+    bad(id, `why needs one note per wrong option (${opts.length - nRight})`);
+  const tagged = opts.map((o, i) => ({ ...o, right: i < nRight, why: why[i - nRight] }));
   const shown = rotate(tagged, stableHash(id) % tagged.length);
   const options = shown.map((o, i) => {
-    const { right, ...rest } = o;
+    const { right, why: _why, ...rest } = o;
     return { id: letter(i), ...rest };
   });
   const ids = shown.flatMap((o, i) => (o.right ? [letter(i)] : []));
-  return { options, ids };
+  const notes = shown.flatMap((o, i) => (!o.right && o.why ? [[letter(i), o.why]] : []));
+  return { options, ids, distractorFeedback: notes.length ? Object.fromEntries(notes) : null };
 }
 
 const firstSentence = (text) =>
@@ -155,10 +159,11 @@ function expandItem(spec, domain) {
   if (spec.chart) a.chart = spec.chart;
   if (spec.picture) a.picture = spec.picture;
   if (a.type === "multipleChoice" || a.type === "multiSelect") {
-    const { options, ids } = buildOptions(id, spec, a.type === "multiSelect");
+    const { options, ids, distractorFeedback } = buildOptions(id, spec, a.type === "multiSelect");
     a.options = options;
     if (a.type === "multiSelect") a.answers = ids;
     else a.answer = ids[0];
+    if (distractorFeedback) a.distractorFeedback = distractorFeedback;
   } else if (a.type === "order") {
     const n = spec.items.length;
     const keyed = spec.items.map((t, i) => ({ id: `s${i + 1}`, text: t }));
@@ -198,10 +203,10 @@ function expandItem(spec, domain) {
     a.responseLabel = spec.label || (domain === "Speaking" ? "Planning notes" : "Your writing");
     a.responsePlaceholder = spec.frames[0];
     a.models = spec.models;
-    a.successCriteria = [
-      `Address the task: ${spec.q}`,
-      ...spec.focus.slice(0, 2).map((f) => `Include ${f}.`),
-    ];
+    // Each focus item is a check a student can make against their own answer.
+    a.successCriteria = spec.focus.slice(0, 4).map((f) => `Include ${f}.`);
+    if (a.successCriteria.length < 3)
+      a.successCriteria.unshift("Answer every part of the question in your own words.");
     if (a.successCriteria.length < 3)
       a.successCriteria.push("Reread your answer and fix anything unclear.");
     a.modelNotes = Object.fromEntries(

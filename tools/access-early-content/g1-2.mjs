@@ -4,8 +4,6 @@
 // fields: see g23.mjs. Talk task labels are practice labels, never proficiency levels.
 
 const v = (en, def, es) => [en, def, es];
-const SAY = ["I said a word or a sentence.", "I talked about the picture."];
-const SAY3 = ["I told more than one thing.", "I used a word like and, then or because."];
 
 const listening = {
   goals: {
@@ -41,6 +39,11 @@ const listening = {
       ],
       frame: "The ___ says moo.",
       correct: "The cow says moo.",
+      distractorFeedback: {
+        a: "The hen says cluck. Listen for moo.",
+        b: "A duck says quack. Listen for moo.",
+      },
+      hint: "Two animals talk. Listen for the moo.",
       wida: ["Identify an animal from an oral description"],
     },
     {
@@ -65,6 +68,11 @@ const listening = {
       ],
       frame: "The ___ is round.",
       correct: "A circle is round and has no corners.",
+      distractorFeedback: {
+        a: "A square has four corners. Round has none.",
+        c: "A triangle has three corners. Round has none.",
+      },
+      hint: "Listen: round like a ball, no corners.",
       wida: ["Identify a shape from an oral description"],
     },
     {
@@ -92,6 +100,11 @@ const listening = {
       ],
       frame: "The ice turns into ___.",
       correct: "Warm sun melts ice. The ice turns into water.",
+      distractorFeedback: {
+        b: "Ice does not turn into sand. Listen to the end.",
+        c: "Ice gets soft in the sun. Rocks stay hard.",
+      },
+      hint: "Listen to the last sentence of the story.",
       wida: ["Identify a result in an oral science story"],
     },
     {
@@ -116,6 +129,11 @@ const listening = {
       ],
       frame: "___ has more cookies.",
       correct: "Nina has six. Six is more than two.",
+      distractorFeedback: {
+        a: "Jo has two. Listen: who has more than two?",
+        b: "Six and two are not the same.",
+      },
+      hint: "Listen for each number. Which number is bigger?",
       wida: ["Identify a comparison of quantities in oral input"],
     },
     {
@@ -154,6 +172,11 @@ const listening = {
       ],
       frame: "The doctor uses a ___.",
       correct: "A stethoscope helps a doctor hear a heart.",
+      distractorFeedback: {
+        a: "A drum makes music. Listen for the doctor's tool.",
+        c: "A phone is for calls. Listen for the doctor's tool.",
+      },
+      hint: "Listen for what Dr. Reyes uses first.",
       wida: ["Identify a tool and its purpose in an oral story"],
     },
     {
@@ -163,8 +186,8 @@ const listening = {
       skill: "Listening to find why",
       scene: "snow-day",
       dir: [
-        "Listen to the story. Tap why Rosa puts on a coat, a hat and boots.",
-        "Escucha el cuento. Toca por qué Rosa se pone abrigo, gorro y botas.",
+        "Listen to the story. Tap why Rosa puts on warm clothes.",
+        "Escucha el cuento. Toca por qué Rosa se pone ropa abrigada.",
       ],
       script:
         "It snowed all night. Rosa looks out the window. Everything is white. She puts on her coat, her hat and her boots. Then she goes out to play.",
@@ -189,6 +212,11 @@ const listening = {
       ],
       frame: "Rosa wears a coat because ___.",
       correct: "It snowed, so it is cold. Warm clothes keep Rosa warm.",
+      distractorFeedback: {
+        a: "Coats are not for hot days. Listen to the weather.",
+        c: "There is no party in the story. Listen again.",
+      },
+      hint: "Listen to what happened all night.",
       wida: ["Identify a reason in a short oral story"],
     },
     {
@@ -221,6 +249,10 @@ const listening = {
       ],
       frame: "I look ___ and wait for the ___.",
       correct: "Look both ways and wait for the guard. Never run across.",
+      distractorFeedback: {
+        b: "Running across is not safe. Listen again.",
+      },
+      hint: "Listen for First and Then. Those are the steps.",
       wida: ["Identify two safety directions in an oral message"],
     },
     {
@@ -279,6 +311,11 @@ const listening = {
       ],
       frame: "The letter is from ___.",
       correct: "The letter is from Ana's grandma. The mail carrier only brought it.",
+      distractorFeedback: {
+        a: "The mail carrier only brings the letter.",
+        c: "Ana gets the letter. Who wrote it?",
+      },
+      hint: "Listen to the last sentence. Who is it from?",
       wida: ["Identify who performed an action in an oral story"],
     },
   ],
@@ -313,6 +350,11 @@ const reading = {
       ],
       frame: "The word is ___.",
       correct: "f-i-sh, fish.",
+      distractorFeedback: {
+        a: "Frog has an r. Read each letter again.",
+        c: "Duck starts with d. Look at the first letter.",
+      },
+      hint: "Sh says shh. Find it at the end.",
       wida: ["Match a decodable word to an image"],
     },
     {
@@ -336,6 +378,11 @@ const reading = {
       ],
       frame: "I ___ my hands.",
       correct: "Wash hands. Soap and water keep us healthy.",
+      distractorFeedback: {
+        b: "Bed is not in the words. Read again.",
+        c: "Bike is not in the words. Read again.",
+      },
+      hint: "Read the first word. What does it tell you to do?",
       wida: ["Match a short phrase to an image"],
     },
     {
@@ -362,6 +409,11 @@ const reading = {
       ],
       frame: "The ___ is up.",
       correct: "At night the moon is up.",
+      distractorFeedback: {
+        a: "The sun is up in the day. It is night.",
+        b: "A kite is not in the sentences. Read again.",
+      },
+      hint: "Read the second sentence. What is up?",
       wida: ["Identify a detail in a two-sentence text"],
     },
     {
@@ -388,6 +440,11 @@ const reading = {
       ],
       frame: "Jen has ___ apples now.",
       correct: "Three take away one is two.",
+      distractorFeedback: {
+        b: "Three is before Jen gives one away.",
+        c: "Giving one away makes fewer, not more.",
+      },
+      hint: "Start with three. Take one away.",
       wida: ["Identify a quantity change in a two-sentence text"],
     },
     {
@@ -427,6 +484,11 @@ const reading = {
       ],
       frame: "Leaves use ___ to make food.",
       correct: "Leaves use sunlight to make food for the plant.",
+      distractorFeedback: {
+        a: "The stem holds the plant up. Find leaves.",
+        c: "Roots go in the soil. Find the word leaves.",
+      },
+      hint: "Find the sentence that starts with Leaves.",
       wida: ["Identify a detail in an informational text"],
     },
     {
@@ -490,6 +552,10 @@ const reading = {
       ],
       frame: "At lunch we ___ and ___.",
       correct: "We wash our hands and clean up. We do not throw food.",
+      distractorFeedback: {
+        b: "Find the word not. Read that rule again.",
+      },
+      hint: "Read each rule. Watch for the word not.",
       wida: ["Identify two details, including a negated one, in a text"],
     },
     {
@@ -518,6 +584,11 @@ const reading = {
       ],
       frame: "Ben says ___ to Mia.",
       correct: "Ben waves and says hello. That helps Mia feel welcome.",
+      distractorFeedback: {
+        a: "There is no lunch in the story. Read again.",
+        b: "There is no pencil in the story. Read again.",
+      },
+      hint: "Find the sentence that starts with Ben.",
       wida: ["Identify a character's action in a short narrative"],
     },
   ],
@@ -541,7 +612,7 @@ const speaking = {
       dir: ["Look at the farm. Say one animal you see.", "Mira la granja. Di un animal que ves."],
       q: ["What animal do you see?", "¿Qué animal ves?"],
       model: ["Mateo, age 6", "I see a cow."],
-      sayFor: SAY,
+      sayFor: ["I named one farm animal.", "I used I see a."],
       vocab: [
         v("hen", "a mother chicken", "gallina: pollo hembra"),
         v("barn", "a big building on a farm", "establo: edificio grande de una granja"),
@@ -564,7 +635,7 @@ const speaking = {
       q: ["What are the children doing?", "¿Qué hacen los niños?"],
       model: ["Amira, age 6", "The children eat lunch. The teacher helps."],
       models: { A: "They eat.", B: "The children eat lunch. The teacher helps." },
-      sayFor: SAY,
+      sayFor: ["I told what the children do.", "I told what the teacher does."],
       vocab: [
         v("lunch", "the meal in the middle of the day", "almuerzo: la comida del mediodía"),
         v("tray", "a flat board that holds food", "bandeja: tabla plana que lleva comida"),
@@ -585,15 +656,16 @@ const speaking = {
         "Mira el dibujo. Di cómo se siente el niño. Di por qué.",
       ],
       q: ["How does he feel? Why?", "¿Cómo se siente? ¿Por qué?"],
-      model: ["Mateo, age 6", "He is sad. His ice cream fell."],
-      models: { A: "He is sad.", B: "He is sad. His ice cream fell." },
-      sayFor: SAY,
+      model: ["Mateo, age 6", "He is sad because his ice cream fell."],
+      models: { A: "He is sad.", B: "He is sad because his ice cream fell." },
+      sayFor: ["I said how he feels.", "I told why with because."],
       vocab: [
         v("sad", "feeling unhappy", "triste: sentirse infeliz"),
         v("fall", "to drop down to the ground", "caerse: bajar de golpe al suelo"),
       ],
       frame: "He is ___ because ___.",
       correct: "You told how he feels and why.",
+      hint: "Look at his face. Then look at the ground.",
       wida: ["Describe a feeling and its cause in an image"],
     },
     {
@@ -614,7 +686,11 @@ const speaking = {
         B: "The sun is warm. The ice melts.",
         C: "The ice is hard. The sun is warm. The ice melts and turns into water.",
       },
-      sayFor: SAY3,
+      sayFor: [
+        "I told what the sun does.",
+        "I told what the ice turns into.",
+        "I used then, and or because.",
+      ],
       vocab: [
         v("melt", "to change from ice to water", "derretirse: pasar de hielo a agua"),
         v("hard", "not soft", "duro: no blando"),
@@ -641,7 +717,7 @@ const speaking = {
         B: "I set the table. Then I put out cups.",
         C: "I set the table. Then I put out the cups. I like to help my family.",
       },
-      sayFor: SAY3,
+      sayFor: ["I told one way I help.", "I told a second way with then."],
       vocab: [
         v("help", "to do something useful for someone", "ayudar: hacer algo útil por alguien"),
         v("set the table", "to put plates and cups out", "poner la mesa: colocar platos y vasos"),
@@ -658,8 +734,8 @@ const speaking = {
       skill: "Saying what you would do and why",
       scene: "new-friend",
       dir: [
-        "A new child came to class. Tell what you would say and do.",
-        "Llegó una niña nueva a la clase. Di qué dirías y harías.",
+        "A new classmate came today. Tell what you would say and do.",
+        "Hoy llegó un compañero nuevo. Di qué dirías y qué harías.",
       ],
       q: ["What would you say and do?", "¿Qué dirías y harías?"],
       model: ["Lucas, age 6", "I would say hello. I would ask her name. Then we can play."],
@@ -668,7 +744,7 @@ const speaking = {
         B: "I say hello. I ask her name.",
         C: "I would say hello. I would ask her name. Then we can play together.",
       },
-      sayFor: SAY3,
+      sayFor: ["I told what I would say.", "I told what I would do.", "I used then."],
       vocab: [
         v("welcome", "to greet someone kindly", "dar la bienvenida: saludar con amabilidad"),
         v("new", "here for the first time", "nueva: que está por primera vez"),
@@ -685,8 +761,8 @@ const speaking = {
       skill: "Explaining with because",
       scene: "healthy-plate",
       dir: [
-        "Look at the plate. Tell about foods that help your body. Tell why.",
-        "Mira el plato. Habla de comidas que ayudan a tu cuerpo. Di por qué.",
+        "Look at the plate. Name healthy foods. Tell why they help.",
+        "Mira el plato. Nombra comidas saludables. Di por qué ayudan.",
       ],
       q: ["What food helps you grow? Why?", "¿Qué comida te ayuda a crecer? ¿Por qué?"],
       model: ["Sofia, age 6", "I eat fruit and vegetables. They help me grow strong."],
@@ -695,7 +771,7 @@ const speaking = {
         B: "I eat fruit and vegetables.",
         C: "I eat fruit and vegetables because they help me grow strong.",
       },
-      sayFor: SAY3,
+      sayFor: ["I named a healthy food.", "I told why with because."],
       vocab: [
         v("healthy", "good for your body", "saludable: bueno para tu cuerpo"),
         v(
@@ -774,8 +850,8 @@ const writing = {
       skill: "Writing a weather sentence",
       scene: "wind-kite",
       dir: [
-        "Print your page. Look outside or at the picture. Write: Today it is, and a weather word.",
-        "Imprime tu página. Mira afuera o el dibujo. Escribe: Today it is, y una palabra del tiempo.",
+        "Print your page. Look at the picture. Write: Today it is ___.",
+        "Imprime tu página. Mira el dibujo. Escribe: Today it is ___.",
       ],
       q: ["What is the weather today?", "¿Cómo está el tiempo hoy?"],
       bank: ["windy", "sunny", "rainy", "snowy"],
@@ -847,8 +923,8 @@ const writing = {
       skill: "Writing what happens in a science picture",
       scene: "ice-melt",
       dir: [
-        "Print your page. Look at the ice. Write what happens. Write two sentences.",
-        "Imprime tu página. Mira el hielo. Escribe qué pasa. Escribe dos oraciones.",
+        "Print your page. Write two sentences about what happens to the ice.",
+        "Imprime tu página. Escribe dos oraciones sobre lo que le pasa al hielo.",
       ],
       q: ["What happens to the ice?", "¿Qué le pasa al hielo?"],
       bank: ["ice", "melts", "water", "sun", "warm"],

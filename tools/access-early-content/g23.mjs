@@ -81,6 +81,11 @@ const listening = {
   activities: [
     {
       id: "g23-l-a-garden-helper",
+      hint: "Listen for what each person does in the garden.",
+      distractorFeedback: {
+        a: "Grandpa Luis digs with a shovel. Who has the watering can?",
+        c: "The story never talks about a dog. Listen for the people.",
+      },
       level: "A",
       title: "Who Waters the Garden?",
       skill: "Listening for who does an action",
@@ -105,6 +110,12 @@ const listening = {
     },
     {
       id: "g23-l-a-rainy-park",
+      hint: "Listen for what Sam does when the rain starts.",
+      distractorFeedback: {
+        a: "Sam does not put on a hat. Listen for what he opens.",
+        b: "A ball cannot keep Sam dry. Listen for what he opens.",
+        d: "The story never says coat. Listen for what Sam opens.",
+      },
       level: "A",
       title: "What Keeps Sam Dry?",
       skill: "Listening for an object named in a story",
@@ -127,6 +138,11 @@ const listening = {
     },
     {
       id: "g23-l-a-lunch-pick",
+      hint: "Listen to what Maya finds in her green box.",
+      distractorFeedback: {
+        a: "Maya never says banana. Listen for the color of her fruit.",
+        c: "Maya never says grapes. Listen for the color of her fruit.",
+      },
       level: "A",
       title: "What Is in Maya's Lunch?",
       skill: "Listening for a food word",
@@ -151,6 +167,11 @@ const listening = {
     },
     {
       id: "g23-l-a-bus-wait",
+      hint: "Listen for where Leo stands every morning.",
+      distractorFeedback: {
+        b: "Leo holds a library book, but he is not at the library.",
+        c: "The story never talks about a pool. Listen for the blue sign.",
+      },
       level: "A",
       title: "Where Does Leo Wait?",
       skill: "Listening for a place",
@@ -175,6 +196,10 @@ const listening = {
     },
     {
       id: "g23-l-b-market-list",
+      hint: "Listen for the three things Mom says they need.",
+      distractorFeedback: {
+        b: "Mom says they already have apples at home.",
+      },
       level: "B",
       title: "Shopping at the Market",
       skill: "Listening for more than one item",
@@ -235,6 +260,10 @@ const listening = {
     },
     {
       id: "g23-l-b-library-rules",
+      hint: "Listen for what to do and what not to do.",
+      distractorFeedback: {
+        b: "Ms. Rivera says do not run in the library.",
+      },
       level: "B",
       title: "Library Visit",
       skill: "Listening for things to do and not do",
@@ -265,6 +294,11 @@ const listening = {
     },
     {
       id: "g23-l-b-playground-turns",
+      hint: 'Listen for the words "then" and "after".',
+      distractorFeedback: {
+        a: "Ben goes later. Listen for whose turn comes right after Kofi.",
+        c: "Ms. Ana is not in this story. Listen for the three friends.",
+      },
       level: "B",
       title: "Taking Turns",
       skill: "Listening for who goes next",
@@ -289,6 +323,11 @@ const listening = {
     },
     {
       id: "g23-l-c-wilted-plant",
+      hint: "Listen for what Omar forgot and what fixed the plant.",
+      distractorFeedback: {
+        a: "Sun did not hurt it. Listen for what Omar forgot.",
+        c: "The story never talks about a bug. Listen for what Omar forgot.",
+      },
       level: "C",
       title: "Why Did the Plant Droop?",
       skill: "Listening to find a cause",
@@ -317,6 +356,11 @@ const listening = {
     },
     {
       id: "g23-l-c-lost-mitten",
+      hint: "Listen for why Nadia took her mitten off.",
+      distractorFeedback: {
+        b: "Nadia took the mitten off before she went inside.",
+        c: "The story never talks about a bus. Listen for where she played.",
+      },
       level: "C",
       title: "The Lost Mitten",
       skill: "Listening to infer where something is",
@@ -330,8 +374,8 @@ const listening = {
       q: ["Where is Nadia's mitten most likely?", "¿Dónde está probablemente el guante de Nadia?"],
       options: [
         ["a", "by the snowman and the tree", "⛄"],
-        ["b", "in the kitchen", "🍳"],
-        ["c", "on the school bus", "🚌"],
+        ["b", "by the hot cocoa in the kitchen", "🍳"],
+        ["c", "on the seat of the school bus", "🚌"],
       ],
       answer: "a",
       vocab: [
@@ -344,6 +388,11 @@ const listening = {
     },
     {
       id: "g23-l-c-share-tomatoes",
+      hint: "Listen for Ana's idea and the sign she made.",
+      distractorFeedback: {
+        b: "More seeds means more tomatoes. That makes the problem bigger.",
+        c: "Watering grows more tomatoes. Listen for what Ana put by the gate.",
+      },
       level: "C",
       title: "Too Many Tomatoes",
       skill: "Listening for a problem and a solution",
@@ -357,8 +406,8 @@ const listening = {
       q: ["How did Ana solve the problem?", "¿Cómo resolvió Ana el problema?"],
       options: [
         ["a", "She shared the tomatoes with neighbors.", "scene:garden-share"],
-        ["b", "She planted more seeds.", "scene:seed-plant"],
-        ["c", "She watered the plants.", "scene:seed-water"],
+        ["b", "She planted more tomato seeds.", "scene:seed-plant"],
+        ["c", "She watered the tomato plants.", "scene:seed-water"],
       ],
       answer: "a",
       vocab: [V.ripe, V.neighbor, V.share],
@@ -368,6 +417,11 @@ const listening = {
     },
     {
       id: "g23-l-c-weather-choice",
+      hint: "Listen for one weather word for morning and one for afternoon.",
+      distractorFeedback: {
+        a: "Shorts and sandals are for hot days. Listen for the temperature.",
+        c: "A swimsuit is for hot, sunny days. Listen for the rain.",
+      },
       level: "C",
       title: "What Should Mia Wear?",
       skill: "Listening to apply information to a choice",
@@ -379,9 +433,9 @@ const listening = {
         "Good morning! Here is today's weather. It will be cold this morning, only forty degrees. In the afternoon, rain will come. Bring something to keep you warm and dry.",
       q: ["What should Mia wear today?", "¿Qué debe ponerse Mia hoy?"],
       options: [
-        ["a", "shorts and sandals", "🩳"],
+        ["a", "shorts, a T-shirt and sandals", "🩳"],
         ["b", "a warm raincoat and boots", "🧥"],
-        ["c", "a swimsuit", "👙"],
+        ["c", "a swimsuit and a sun hat", "👙"],
       ],
       answer: "b",
       vocab: [
@@ -423,15 +477,20 @@ const reading = {
   activities: [
     {
       id: "g23-r-a-red-apple",
+      hint: "Read the color word and the shape word.",
+      distractorFeedback: {
+        a: "A banana is yellow and long. Read the color word again.",
+        c: "A carrot is orange and long. Read the color word again.",
+      },
       level: "A",
-      title: "Match the Sentence",
+      title: "Mia's Trip Snack",
       skill: "Reading a sentence and matching a picture",
       dir: [
-        "Read the sentence. Tap the picture it tells about.",
-        "Lee la oración. Toca el dibujo del que habla.",
+        "Read the sentences. Tap the snack Mia packs.",
+        "Lee las oraciones. Toca la merienda que empaca Mia.",
       ],
-      passage: ["The apple is red and round."],
-      q: ["Which picture matches the sentence?", "¿Qué dibujo corresponde a la oración?"],
+      passage: ["Mia packs a snack for the class trip.", "The apple is red and round."],
+      q: ["Which snack did Mia pack?", "¿Qué merienda empacó Mia?"],
       options: [
         ["a", "a banana", "🍌"],
         ["b", "a red apple", "🍎"],
@@ -443,16 +502,25 @@ const reading = {
         ["red", "the color of a fire truck", "rojo: el color de un camión de bomberos"],
       ],
       frame: "The ___ is red.",
-      correct: "Red and round: that is the apple.",
+      correct: "Red and round: that is the apple Mia packed.",
       wida: ["Match a written description to an image"],
     },
     {
       id: "g23-r-a-cat-under",
+      hint: "Find the words that tell where the cat sleeps.",
+      distractorFeedback: {
+        b: "The story does not say roof. Read the place words again.",
+        c: "The story does not say tree. Read the place words again.",
+      },
       level: "A",
-      title: "Where Is the Cat?",
+      title: "Where Is Whiskers Hiding?",
       skill: "Reading position words",
-      dir: ["Read the sentence. Tap where the cat is.", "Lee la oración. Toca dónde está el gato."],
-      passage: ["The cat sleeps under the bed."],
+      dir: ["Read the story. Tap where the cat is.", "Lee el cuento. Toca dónde está el gato."],
+      passage: [
+        "Ben cannot find his cat, Whiskers.",
+        "He looks all over the house.",
+        "The cat sleeps under the bed.",
+      ],
       q: ["Where is the cat?", "¿Dónde está el gato?"],
       options: [
         ["a", "under the bed", "🛏️"],
@@ -470,12 +538,21 @@ const reading = {
     },
     {
       id: "g23-r-a-bus-yellow",
+      hint: "Find the word that tells a color.",
+      distractorFeedback: {
+        b: "The sentences do not say blue. Find the color word.",
+        c: "The sentences do not say green. Find the color word.",
+      },
       level: "A",
-      title: "The Big Bus",
+      title: "Here Comes the Trip Bus",
       skill: "Reading for a describing word",
       scene: "bus-stop",
       dir: ["Read the sentences. Tap the answer.", "Lee las oraciones. Toca la respuesta."],
-      passage: ["Here comes the bus.", "The bus is big and yellow."],
+      passage: [
+        "Our class is going to the zoo.",
+        "Here comes the bus.",
+        "The bus is big and yellow.",
+      ],
       q: ["What color is the bus?", "¿De qué color es el autobús?"],
       options: [
         ["a", "yellow", "🟡"],
@@ -493,15 +570,25 @@ const reading = {
     },
     {
       id: "g23-r-a-rain-boots",
+      hint: "Read what the weather is. Then read what Sam does.",
+      distractorFeedback: {
+        a: "Sunglasses are for sunny days. Read what the weather is.",
+        c: "A crown does not help in rain. Read what Sam puts on.",
+      },
       level: "A",
-      title: "Rainy Day",
+      title: "Ready for the Rain",
       skill: "Reading to find what someone needs",
       scene: "park-rain",
       dir: [
         "Read the sentences. Tap what Sam needs.",
         "Lee las oraciones. Toca lo que necesita Sam.",
       ],
-      passage: ["It is raining.", "Sam puts on rain boots."],
+      passage: [
+        "Sam walks to the park.",
+        "It is raining.",
+        "Sam puts on rain boots.",
+        "Now his feet stay dry.",
+      ],
       q: ["What does Sam put on?", "¿Qué se pone Sam?"],
       options: [
         ["a", "sunglasses", "🕶️"],
@@ -519,6 +606,11 @@ const reading = {
     },
     {
       id: "g23-r-b-garden-job",
+      hint: 'Find the sentence with the word "seeds".',
+      distractorFeedback: {
+        a: "Grandpa digs the hole. Read who drops the seeds.",
+        c: "There is no bird in the story. Read about the seeds.",
+      },
       level: "B",
       title: "Garden Jobs",
       skill: "Reading to find who does a job",
@@ -547,6 +639,11 @@ const reading = {
     },
     {
       id: "g23-r-b-library-card",
+      hint: 'Read the sentence that starts with "Now".',
+      distractorFeedback: {
+        b: "A library card is not for buying. Read the second sentence.",
+        c: "The story never talks about a bus. Read what Leo can do.",
+      },
       level: "B",
       title: "Leo's Library Card",
       skill: "Reading to find why",
@@ -579,6 +676,11 @@ const reading = {
     },
     {
       id: "g23-r-b-market-money",
+      hint: 'Find the sentence that starts with "Kai".',
+      distractorFeedback: {
+        b: "Mom picks the apples. Read what Kai picks.",
+        c: "The story never says pears. Read the sentence about Kai.",
+      },
       level: "B",
       title: "At the Fruit Stand",
       skill: "Reading for a number detail",
@@ -607,15 +709,21 @@ const reading = {
     },
     {
       id: "g23-r-b-puddle-jump",
+      hint: "Read what Sam does after he jumps.",
+      distractorFeedback: {
+        a: "Sad children cry. Read what Sam does after the splash.",
+        c: "Nothing makes Sam mad. Read what Sam does after the splash.",
+      },
       level: "B",
       title: "Puddle Fun",
       skill: "Reading to find a feeling",
       scene: "park-rain",
       dir: ["Read the story. Tap how Sam feels.", "Lee el cuento. Toca cómo se siente Sam."],
       passage: [
-        "After the rain, there is a big puddle.",
-        "Sam jumps in. Splash!",
+        "After the rain, there is a big puddle by the slide.",
+        "Sam jumps in with both feet. Splash!",
         "Sam laughs and laughs.",
+        "He wants to jump again.",
       ],
       q: ["How does Sam feel?", "¿Cómo se siente Sam?"],
       options: [
@@ -669,6 +777,11 @@ const reading = {
     },
     {
       id: "g23-r-c-garden-main",
+      hint: "Think about what every sentence talks about.",
+      distractorFeedback: {
+        b: "No one goes on a trip. What are most sentences about?",
+        c: "There is no dog. What are most sentences about?",
+      },
       level: "C",
       title: "Our Neighborhood Garden",
       skill: "Reading for the main idea",
@@ -706,6 +819,11 @@ const reading = {
     },
     {
       id: "g23-r-c-bus-late",
+      hint: "Find what made Leo worried.",
+      distractorFeedback: {
+        b: "Leo never loses a book. Read what Leo waited for.",
+        c: "The story never says rain. Read what worried Leo.",
+      },
       level: "C",
       title: "The Late Bus",
       skill: "Reading to find a problem",
@@ -739,6 +857,10 @@ const reading = {
     },
     {
       id: "g23-r-c-recycle-sort",
+      hint: 'Read each sentence. Watch for the word "not".',
+      distractorFeedback: {
+        c: "The text says Room 12 did not go to the pool.",
+      },
       level: "C",
       title: "Clean-Up Day",
       skill: "Reading to find all the facts",

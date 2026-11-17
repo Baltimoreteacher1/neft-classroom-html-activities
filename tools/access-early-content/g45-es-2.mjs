@@ -163,7 +163,7 @@ export default {
   ],
   "s2-a-borrow-ruler": [
     "Pedirle a un compañero que comparta una herramienta y dar una razón",
-    "En la clase de matemáticas necesitas una regla para medir una línea, pero olvidaste la tuya. Planea lo que le dirás a un compañero y luego grábalo.",
+    "En la clase de matemáticas necesitas una regla para medir una línea, pero olvidaste la tuya. Planea lo que le dirás a un compañero. Luego grábalo.",
   ],
   "s2-a-my-family": [
     "Describir a un familiar con detalles",
@@ -195,11 +195,11 @@ export default {
   ],
   "s2-b-community-helper": [
     "Explicar cómo ayuda el trabajo de un ayudante de la comunidad",
-    "Elige a un ayudante de la comunidad, como una enfermera, un conductor de autobús, una bibliotecaria o un barrendero. Planea lo que hace y cómo ayuda. Luego graba tu respuesta.",
+    "Elige a un ayudante de la comunidad, como una enfermera, un conductor de autobús o una bibliotecaria. Planea lo que hace y cómo ayuda. Luego graba.",
   ],
   "s2-b-retell-story": [
     "Volver a contar un cuento con principio, desarrollo y final",
-    "Piensa en un cuento que conozcas bien, como un libro, una película o un cuento tradicional de tu familia. Planea el principio, el desarrollo y el final. Luego graba tu relato.",
+    "Piensa en un cuento que conozcas bien, como un libro, una película o un cuento tradicional de tu familia. Planea el principio, el desarrollo y el final. Luego graba.",
   ],
   "s2-c-persuade-reading": [
     "Persuadir a un líder con razones y responder a una preocupación",
@@ -207,15 +207,15 @@ export default {
   ],
   "s2-c-water-states": [
     "Explicar cómo cambia el agua entre sólido, líquido y gas",
-    "Piensa en un cubito de hielo que se deja en un cuarto tibio y en una olla de agua sobre una estufa caliente. Planea cómo cambia el agua. Luego graba tu explicación.",
+    "Piensa en el hielo que se derrite en un cuarto tibio y en el agua que hierve en una estufa caliente. Planea cómo cambia el agua. Luego graba tu explicación.",
   ],
   "s2-c-then-now-compare": [
     "Comparar la vida en el pasado y hoy con detalles",
-    "Piensa en cómo la gente se mantenía en contacto con su familia lejana en el pasado y cómo lo hace hoy. Planea una comparación. Luego graba tu respuesta.",
+    "Piensa en cómo la gente se comunicaba con su familia lejana hace mucho tiempo y cómo lo hace hoy. Planea una comparación. Luego graba.",
   ],
   "s2-c-health-habit": [
     "Dar una opinión con razones y un ejemplo",
-    "Los hábitos saludables incluyen dormir bien, comer frutas y verduras, hacer ejercicio y lavarse las manos. Elige el hábito que creas más importante. Planea tu opinión y tus razones, y luego graba.",
+    "Algunos hábitos saludables son dormir bien, comer frutas y verduras, hacer ejercicio y lavarse las manos. Elige el que más importa. Planea tu opinión y tus razones. Luego graba.",
   ],
   "s2-c-plant-table": [
     "Describir una tabla de datos y sacar una conclusión",
@@ -225,7 +225,7 @@ export default {
   // Writing
   "w2-a-plan-animal": [
     "Planear un párrafo con una red de palabras",
-    "Planea un párrafo sobre tu animal favorito. Haz una red de palabras: escribe el animal en el centro y luego tres notas: cómo se ve, qué come y dónde vive.",
+    "Haz una red de palabras sobre tu animal favorito. Ponlo en el centro. Agrega notas: cómo se ve, qué come y dónde vive.",
   ],
   "w2-a-add-details": [
     "Mejorar una oración sencilla con detalles",
@@ -245,7 +245,7 @@ export default {
   ],
   "w2-a-observe-object": [
     "Escribir observaciones usando los cinco sentidos",
-    "Elige un objeto pequeño que tengas cerca, como una hoja, una fruta o un lápiz. Míralo, tócalo y escucha. Escribe tres oraciones sobre lo que observas.",
+    "Elige un objeto pequeño, como una hoja o un lápiz. Míralo, tócalo y escucha. Escribe tres oraciones sobre lo que observas.",
   ],
   "w2-b-helper-paragraph": [
     "Redactar un párrafo con oración temática, detalles y cierre",
@@ -273,19 +273,19 @@ export default {
   ],
   "w2-c-ice-report": [
     "Escribir un informe de observación con datos y una conclusión",
-    "Una clase puso un cubito de hielo en tres lugares y anotó cuánto tardó en derretirse. Lee la tabla. Escribe un informe corto con una pregunta, lo que observaste, los datos y una conclusión.",
+    "Lee la tabla sobre cubitos de hielo que se derriten. Escribe un informe corto con una pregunta, lo que observaste, los datos y una conclusión.",
   ],
   "w2-c-compare-schools": [
     "Escribir un párrafo de comparación entre el pasado y el presente",
-    "En el siglo XIX, o sea, en los años 1800, muchos niños de pueblos pequeños iban a una escuela de un solo salón. Un maestro enseñaba a estudiantes de todas las edades en el mismo salón, y los estudiantes escribían en pizarras pequeñas. Escribe un párrafo que compare esa escuela con tu escuela de hoy.",
+    "En los años 1800, un maestro enseñaba a todas las edades en una escuela de un solo salón, y los estudiantes escribían en pizarras pequeñas. Escribe un párrafo que compare esa escuela con la tuya.",
   ],
   "w2-c-letter-crosswalk": [
     "Escribir una carta formal que hace una petición con razones",
-    "Los carros van rápido cerca de tu escuela y los estudiantes cruzan una calle muy transitada. Escribe una carta a la alcaldesa o al alcalde para pedir un paso de peatones más seguro. Usa un saludo, una petición clara, dos razones, un agradecimiento y una despedida.",
+    "Los carros van rápido cerca de tu escuela. Escríbele a la alcaldesa o al alcalde para pedir un paso de peatones más seguro. Usa un saludo, una petición, dos razones, un agradecimiento y una despedida.",
   ],
   "w2-c-opinion-buddy": [
     "Escribir un párrafo de opinión con razones y un contraargumento",
-    "¿Deberían los estudiantes caminar a la escuela con un compañero o un familiar en lugar de solos? Escribe un párrafo con tu opinión, dos razones, un ejemplo y una respuesta a otro punto de vista.",
+    "Decide si los estudiantes deberían caminar a la escuela con un compañero. Escribe tu opinión, dos razones, un ejemplo y una respuesta a otro punto de vista.",
   ],
   "w2-c-revise-plants": [
     "Revisar con transiciones y corregir mayúsculas y puntuación",

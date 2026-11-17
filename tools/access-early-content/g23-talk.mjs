@@ -30,16 +30,20 @@ const speaking = {
       skill: "Naming people and objects in a scene",
       scene: "garden",
       dir: [
-        "Look at the garden picture. Tell one thing you see.",
-        "Mira el dibujo del huerto. Di una cosa que ves.",
+        "Your friend cannot see the garden picture. Tell them one thing you see.",
+        "Tu amigo no puede ver el dibujo del huerto. Dile una cosa que ves.",
       ],
       q: ["What do you see in the garden?", "¿Qué ves en el huerto?"],
       model: ["Leo, age 8", "I see a girl with a watering can."],
       models: {
         A: "I see a girl with a watering can.",
         B: "I see a girl. She is watering the plants with a watering can.",
+        C: "I see a girl with a watering can. She is watering the plants, and the sun is shining.",
       },
-      sayFor: SAY1,
+      sayFor: [
+        "I named one person or thing in the garden.",
+        "I said a whole sentence that starts with I see.",
+      ],
       vocab: [
         v(
           "watering can",
@@ -49,7 +53,7 @@ const speaking = {
         v("shovel", "a tool for digging", "pala: herramienta para cavar"),
       ],
       frame: "I see ___.",
-      correct: "You named something in the picture.",
+      correct: "You told your friend one thing in the garden.",
       wida: ["Name objects and people in an image"],
     },
     {
@@ -60,22 +64,23 @@ const speaking = {
       skill: "Naming foods",
       scene: "breakfast",
       dir: [
-        "Look at the table. Name one food or drink.",
-        "Mira la mesa. Nombra una comida o bebida.",
+        "Grandma is making a shopping list. Tell her one food or drink on the table.",
+        "La abuela está haciendo una lista de compras. Dile una comida o bebida que hay en la mesa.",
       ],
       q: ["What is on the table?", "¿Qué hay en la mesa?"],
       model: ["Sofia, age 7", "There is a glass of juice."],
       models: {
         A: "There is a glass of juice.",
         B: "There is a glass of orange juice and an apple.",
+        C: "There is a glass of orange juice and a bowl of cereal. We need more juice!",
       },
-      sayFor: SAY1,
+      sayFor: ["I named one food or drink on the table.", "I said a whole sentence with There is."],
       vocab: [
         v("juice", "a drink made from fruit", "jugo: bebida hecha de fruta"),
         v("bowl", "a round dish for food like cereal", "tazón: plato hondo para comida"),
       ],
       frame: "There is ___.",
-      correct: "You named food on the table.",
+      correct: "You told Grandma a food or drink for her list.",
       wida: ["Name everyday objects using there is"],
     },
     {
@@ -174,19 +179,27 @@ const speaking = {
       skill: "Describing with color and number words",
       scene: "market",
       dir: [
-        "Look at the fruit stand. Tell about the fruit. Use a color word.",
-        "Mira el puesto de frutas. Habla de la fruta. Usa una palabra de color.",
+        "You help at the fruit stand. Tell a shopper about the fruit. Use a color or number word.",
+        "Ayudas en el puesto de frutas. Cuéntale a un cliente sobre la fruta. Usa una palabra de color o de número.",
       ],
       q: ["What fruit do you see? What color is it?", "¿Qué fruta ves? ¿De qué color es?"],
       model: ["Sofia, age 7", "I see three red apples and yellow bananas."],
-      models: { A: "I see apples.", B: "I see three red apples and yellow bananas." },
-      sayFor: ["I named the fruit.", "I used a color or a number word."],
+      models: {
+        A: "I see apples.",
+        B: "I see three red apples and yellow bananas.",
+        C: "Hello! We have three red apples and yellow bananas. The bananas are ripe and sweet.",
+      },
+      sayFor: [
+        "I named the fruit.",
+        "I used a color or a number word.",
+        "I talked to the shopper in whole sentences.",
+      ],
       vocab: [
         v("fruit", "sweet food that grows on plants", "fruta: comida dulce que crece en plantas"),
         v("stand", "a small table or shop outside", "puesto: mesa o tiendita al aire libre"),
       ],
       frame: "I see ___ ___.",
-      correct: "You described the fruit with a color or number.",
+      correct: "You told the shopper about the fruit with a color or number word.",
       wida: ["Describe objects with adjectives of color and number"],
     },
     {
@@ -260,8 +273,8 @@ const speaking = {
       skill: "Narrating a sequence from pictures",
       scene: "seed-flower",
       dir: [
-        "Think about how Ana grew beans: plant, water, sprout, flowers. Tell the story with first, next, then and last.",
-        "Piensa en cómo Ana cultivó frijoles: sembrar, regar, brotar, flores. Cuenta la historia con primero, después, luego y al final.",
+        "Tell how Ana grew beans: plant, water, sprout, flowers. Use first, next, then and last.",
+        "Cuenta cómo Ana cultivó frijoles: sembrar, regar, brotar, flores. Usa first, next, then y last.",
       ],
       q: ["How did the beans grow?", "¿Cómo crecieron los frijoles?"],
       model: [
@@ -473,19 +486,23 @@ const writing = {
       skill: "Writing a sentence about the weather",
       scene: "park-rain",
       dir: [
-        "Print your page. Look outside. Write one sentence about the weather today.",
-        "Imprime tu página. Mira afuera. Escribe una oración sobre el tiempo de hoy.",
+        "Print your page. You are the class weather reporter. Look outside. Write today's weather for the board.",
+        "Imprime tu página. Eres quien reporta el tiempo en la clase. Mira afuera. Escribe el tiempo de hoy para la pizarra.",
       ],
       q: ["What is the weather today?", "¿Cómo está el tiempo hoy?"],
       bank: ["sunny", "rainy", "cloudy", "windy", "cold", "hot"],
-      writeFor: ["I wrote one sentence about the weather.", "I used a weather word."],
+      writeFor: [
+        "I wrote one sentence about the weather.",
+        "I used a weather word from the word bank.",
+        "I started with a capital letter and ended with a period.",
+      ],
       lines: 2,
       vocab: [
         ["weather", "what it is like outside", "tiempo: cómo está afuera"],
         ["cloudy", "with many clouds in the sky", "nublado: con muchas nubes"],
       ],
       frame: "Today it is ___.",
-      correct: "You wrote about today's weather.",
+      correct: "Your weather report tells the class about today.",
       wida: ["Describe the weather in a written sentence"],
     }),
     W({
@@ -589,12 +606,15 @@ const writing = {
       skill: "Writing a list and a sentence",
       scene: "breakfast",
       dir: [
-        "Print your page. Make a list of three breakfast foods. Then write which one you want today.",
-        "Imprime tu página. Haz una lista de tres comidas de desayuno. Luego escribe cuál quieres hoy.",
+        "Print your page. Help plan a family breakfast. List three foods. Then write which one you want today.",
+        "Imprime tu página. Ayuda a planear un desayuno en familia. Haz una lista de tres comidas. Luego escribe cuál quieres hoy.",
       ],
       q: ["What will you eat for breakfast?", "¿Qué vas a desayunar?"],
       bank: ["eggs", "cereal", "toast", "fruit", "milk", "juice"],
-      writeFor: ["I listed three foods.", "I wrote one sentence about today."],
+      writeFor: [
+        "I listed three breakfast foods.",
+        "I wrote one sentence that starts with Today I want.",
+      ],
       lines: 4,
       vocab: [
         ["breakfast", "the first meal of the day", "desayuno: la primera comida del día"],
@@ -633,7 +653,7 @@ const writing = {
       skill: "Writing a short story with a beginning, middle and end",
       scene: "park-rain",
       dir: [
-        "Print your page. Write a story about a rainy day at the park. Tell the beginning, the middle and the end.",
+        "Print your page. Write a story about a rainy park day. Tell the beginning, middle and end.",
         "Imprime tu página. Escribe un cuento sobre un día de lluvia en el parque. Cuenta el principio, el medio y el final.",
       ],
       q: ["What happened on the rainy day?", "¿Qué pasó en el día de lluvia?"],

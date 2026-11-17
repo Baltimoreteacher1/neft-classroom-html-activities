@@ -43,7 +43,7 @@ export default [
     strand: "Everyday conversations",
     title: "Borrow a Ruler",
     skill: "Ask a classmate to share a tool and give a reason",
-    dir: "In math class, you need a ruler to measure a line, but you forgot yours. Plan what you will say to a classmate, then record it.",
+    dir: "In math class, you need a ruler to measure a line, but you forgot yours. Plan what to say to a classmate. Then record it.",
     q: "Ask your classmate if you can borrow a ruler. Tell why you need it.",
     focus: [
       "a polite question like Can I borrow",
@@ -319,7 +319,7 @@ export default [
     strand: "School and community",
     title: "How Community Helpers Help",
     skill: "Explain how a community helper's work helps people",
-    dir: "Choose one community helper, such as a nurse, a bus driver, a librarian, or a street cleaner. Plan what they do and how they help. Then record your answer.",
+    dir: "Choose a community helper, such as a nurse, bus driver, or librarian. Plan what they do and how they help. Then record.",
     q: "Choose a community helper. Explain what the helper does and how the work helps people.",
     focus: [
       "the name of the helper",
@@ -351,7 +351,7 @@ export default [
     strand: "Explain and compare",
     title: "Retell a Story",
     skill: "Retell a story with a beginning, middle, and end",
-    dir: "Think of a story you know well, such as a book, a movie, or a folktale from your family. Plan the beginning, middle, and end. Then record your retelling.",
+    dir: "Think of a story you know well, like a book, movie, or family folktale. Plan the beginning, middle, and end. Then record.",
     q: "Retell a story you know. Tell the beginning, the middle, and the end.",
     focus: ["the characters and the problem", "what happens in the middle", "how the story ends"],
     label: "Planning notes",
@@ -422,7 +422,7 @@ export default [
     strand: "Science and math talk",
     title: "Water Changes State",
     skill: "Explain how water changes among solid, liquid, and gas",
-    dir: "Think about an ice cube left in a warm room and a pot of water on a hot stove. Plan how water changes. Then record your explanation.",
+    dir: "Think about ice melting in a warm room and water boiling on a hot stove. Plan how water changes. Then record your explanation.",
     q: "Explain how water can change from a solid to a liquid to a gas.",
     focus: [
       "the three states: ice, liquid water, and water vapor",
@@ -463,7 +463,7 @@ export default [
     strand: "Explain and compare",
     title: "Then and Now",
     skill: "Compare life in the past and today with details",
-    dir: "Think about how people kept in touch with family far away in the past and how they do it today. Plan a comparison. Then record your answer.",
+    dir: "Think about how people kept in touch with faraway family long ago and today. Plan a comparison. Then record.",
     q: "Compare how people kept in touch with faraway family in the past and how they do it today.",
     focus: [
       "how people did it in the past",
@@ -504,7 +504,7 @@ export default [
     strand: "Persuade and give reasons",
     title: "The Best Healthy Habit",
     skill: "Give an opinion with reasons and an example",
-    dir: "Healthy habits include sleeping well, eating fruits and vegetables, exercising, and washing hands. Choose the habit you think matters most. Plan your opinion and reasons, then record.",
+    dir: "Healthy habits include sleep, fruits and vegetables, exercise, and handwashing. Choose the one that matters most. Plan your opinion and reasons. Then record.",
     q: "Which healthy habit matters most? Give your opinion, two reasons, and one example.",
     focus: [
       "an opinion sentence like I believe",

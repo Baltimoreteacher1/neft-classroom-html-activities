@@ -10,6 +10,7 @@ import { guideSVG } from "../early/scenes.js";
 import { i18nFor } from "../i18n.js";
 import { loadRecord } from "../store.js";
 import { BASE, announce, html, icon, raw } from "../util.js";
+import { jumpInHTML } from "../quick-start.js";
 
 const DOMAIN_ES = {
   Listening: "Escuchar",
@@ -138,6 +139,7 @@ async function homeHTML(ctx, I) {
   const domains = await bandDomains(band);
   const extras = extrasFor(band);
   const q = `?grades=${info.picker}`;
+  const jumpIn = await jumpInHTML(ctx, I);
   return {
     title: I.S(`${info.label} practice`, `Práctica de ${info.labelEs}`),
     html: html`<section class="early-home" aria-labelledby="earlyTitle">
@@ -170,6 +172,7 @@ async function homeHTML(ctx, I) {
           </p>
         </div>
       </header>
+      ${jumpIn}
       ${
         extras.length
           ? html`<section class="early-section" aria-labelledby="earlyExtrasTitle">

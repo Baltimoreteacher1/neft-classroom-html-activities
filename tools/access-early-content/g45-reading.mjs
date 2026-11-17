@@ -18,6 +18,11 @@ export default [
       "Sam rode to the park at the end of his street. His sister Lila ran beside him. They stopped to drink water by the big oak tree.",
     ],
     opts: ["To the park|🌳", "To school|🏫", "To the store|🏪", "To the library|📚"],
+    why: [
+      "It is Saturday, and school is not in the story. Find where Sam rode.",
+      'The story never names a store. Reread the sentence that starts "Sam rode".',
+      "A library is not in the story. Look for the place at the end of his street.",
+    ],
     vocab: [
       [
         "helmet",
@@ -63,6 +68,11 @@ export default [
       ],
     },
     opts: ["Tuesday|🌧️", "Monday|☀️", "Wednesday|☁️", "Thursday|🌞"],
+    why: [
+      'Monday\'s row says a different kind of weather. Find the row that says "Rainy".',
+      "Check Wednesday's row in the Weather column. Is that the rainy day?",
+      "Look at Thursday's row. What weather word is next to it?",
+    ],
     vocab: [
       [
         "temperature",
@@ -101,6 +111,10 @@ export default [
       "Put trash in a green can|🗑️",
       "Pick the flowers|🌸",
       "Visit after 6 p.m.|🌙",
+    ],
+    why: [
+      "The sign says do NOT pick the flowers.",
+      "The park closes at 6 p.m. Check the open hours on the sign.",
     ],
     ans: 3,
     vocab: [
@@ -155,7 +169,7 @@ export default [
     title: "The Class Garden",
     skill: "Choosing words that fit the meaning",
     dir: "Read the paragraph. Choose the word that fits each blank.",
-    q: "Fill in the missing words.",
+    q: "Help finish the garden club's note for the hallway. Which word fits each blank?",
     passageTitle: "The Class Garden",
     passage: [
       "Our class has a garden behind the school. We plant seeds in the spring. The plants need sun and water to grow. In the summer, we pick tomatoes and share them with families.",
@@ -208,6 +222,11 @@ export default [
       "Table 3 read more than Table 1.|📉",
       "Table 4 read the most books.|📈",
       "Tables 1 and 4 read the same number.|🟰",
+    ],
+    why: [
+      "Compare the bars for Table 3 and Table 1. Which is taller?",
+      "Table 4 read a lot, but its bar is not the tallest. Check every bar.",
+      "Read the numbers for Tables 1 and 4. Are they the same?",
     ],
     vocab: [
       ["challenge", "a goal that is hard but fun to try", "reto: meta difícil pero divertida"],
@@ -325,6 +344,11 @@ export default [
       "Cold and frozen solid|🧊",
       "Loud and fast-moving|🌊",
     ],
+    why: [
+      "That is the opposite. The rivers are dry for months and rain is rare.",
+      "The paragraph is about a hot desert, not ice. Look at the clues about rain.",
+      "Nothing in the paragraph is loud. Look for clues like very little water.",
+    ],
     vocab: [
       [
         "scarce",
@@ -360,6 +384,10 @@ export default [
       "Cold soil makes the seed grow faster.|❄️",
       "Seeds need to stay dry.|🏜️",
     ],
+    why: [
+      "The passage says cold soil slows the seed down. That is the opposite.",
+      "The passage says a seed needs water to soften its coat, so it does not stay dry.",
+    ],
     ans: 3,
     vocab: [
       ["coat", "the hard outside layer of a seed", "cubierta: capa dura por fuera de la semilla"],
@@ -389,9 +417,14 @@ export default [
     ],
     opts: [
       "Drawbridges move so both boats and cars can use the same place.|🌉",
-      "Counterweights are heavier than ships.|⚖️",
-      "Engineers prefer motors to weights.|⚙️",
-      "Tall ships are the most important travelers.|🚢",
+      "Counterweights are heavy weights that hang on the other side of the arm.|⚖️",
+      "Engineers prefer motors to weights because motors can lift heavy roads.|⚙️",
+      "Tall ships are the most important travelers, so bridges must always stay up.|🚢",
+    ],
+    why: [
+      "That is a true detail about counterweights, not the idea of the whole passage.",
+      "The passage says weights help the motor. Engineers use both.",
+      "The passage says cars cross too. It never ranks one traveler as most important.",
     ],
     vocab: [
       [
@@ -447,6 +480,11 @@ export default [
       "Turning off lights alone saved more energy than turning off both.|💡",
       "Room 8 used less energy in every week.|🔌",
       "Both rooms used exactly the same energy.|🟰",
+    ],
+    why: [
+      "Check which room used fewer units. That room turned off more things.",
+      "Compare the two columns each week. Room 8's numbers are higher.",
+      "The numbers in each row are different. Read across each week.",
     ],
     vocab: [
       [

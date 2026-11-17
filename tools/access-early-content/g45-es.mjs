@@ -153,7 +153,7 @@ export default {
   ],
   "s-b-data-talk": [
     "Describir datos de una tabla pequeña con números",
-    "Una clase contó cuántos días tardó en brotar cada semilla: frijol 5 días, maíz 7 días, chícharo 9 días. Planifica lo que muestran los datos y luego graba.",
+    "Una clase midió cuánto tardaron en brotar las semillas: frijol 5 días, maíz 7 días, chícharo 9 días. Planea lo que muestran los datos y luego graba.",
   ],
   "s-b-invite-friend": [
     "Invitar a alguien y dar los detalles importantes",
@@ -169,11 +169,11 @@ export default {
   ],
   "s-c-solve-problem": [
     "Describir un problema y proponer una solución con razones",
-    "Piensa en un problema de la escuela, como un pasillo lleno o basura en el patio. Planifica el problema, tu solución y por qué funcionaría, y luego graba.",
+    "Piensa en un problema de la escuela, como un pasillo lleno o basura. Planea el problema, tu solución y por qué funciona. Luego graba.",
   ],
   "s-c-retell-story": [
     "Volver a contar un cuento con inicio, desarrollo y final, y responder",
-    "Piensa en un cuento o película que conozcas bien. Planifica un resumen corto con inicio, desarrollo y final, di lo que aprendiste y luego graba.",
+    "Piensa en un cuento o película que conozcas bien. Planea un resumen corto con principio, desarrollo y final, y lo que enseña. Luego graba.",
   ],
   // Writing
   "w-a-my-weekend": [
@@ -202,11 +202,11 @@ export default {
   ],
   "w-b-compare-places": [
     "Comparar dos lugares con palabras de semejanza y diferencia",
-    "Piensa en vivir en la ciudad y vivir en el campo. Escribe un párrafo que diga una manera en que se parecen y dos en que se diferencian.",
+    "Piensa en la vida en la ciudad y en el campo. Escribe un párrafo con una manera en que se parecen y dos en que se diferencian.",
   ],
   "w-b-science-report": [
     "Informar resultados a partir de datos en una o dos oraciones",
-    "Una clase midió cuántos minutos tardó un cubo de hielo en derretirse en tres lugares: ventana con sol 12 minutos, estante con sombra 25 minutos, puerta del refrigerador 60 minutos. Escribe de 3 a 4 oraciones sobre lo que muestran los datos.",
+    "Lee la tabla. Una clase midió cuánto tardó en derretirse un cubo de hielo en cada lugar. Escribe de 3 a 4 oraciones sobre lo que muestran los datos.",
   ],
   "w-b-story-problem": [
     "Escribir un cuento corto con un problema y una solución",
@@ -218,18 +218,18 @@ export default {
   ],
   "w-c-argue-uniform": [
     "Escribir un argumento con afirmación, evidencia y contraargumento",
-    "Decide si los estudiantes deberían usar uniforme escolar. Escribe uno o dos párrafos con una afirmación, dos razones con ejemplos y una respuesta a otro punto de vista.",
+    "Decide si los estudiantes deberían usar uniforme. En uno o dos párrafos, escribe una afirmación, dos razones con ejemplos y una respuesta a otro punto de vista.",
   ],
   "w-c-explain-experiment": [
     "Escribir una explicación de ciencias con afirmación, evidencia y razonamiento",
-    "Una clase cultivó plantas de frijol. La planta A recibió 2 cucharadas de agua al día y creció 14 centímetros en dos semanas. La planta B recibió 6 cucharadas al día y creció 9 centímetros. Escribe un párrafo que haga una afirmación y la apoye con datos.",
+    "Una clase cultivó dos plantas de frijol durante dos semanas. Lee la tabla. Escribe un párrafo con una afirmación, evidencia de los datos y razonamiento.",
   ],
   "w-c-narrative-feeling": [
     "Escribir una narración personal con detalles, sentimientos y reflexión",
-    "Escribe sobre un día en que aprendiste algo nuevo, como andar en bicicleta o hablar frente a la clase. Incluye lo que pasó, cómo te sentiste y qué aprendiste.",
+    "Escribe sobre un día en que aprendiste algo nuevo, como andar en bicicleta. Cuenta lo que pasó, cómo te sentiste y qué aprendiste.",
   ],
   "w-c-letter-request": [
     "Escribir una carta formal con una petición y razones",
-    "Escribe una carta corta a tu director o directora pidiendo algo que mejoraría la escuela, como una fuente de agua nueva o un rincón de lectura tranquilo. Incluye un saludo, una petición, dos razones y una despedida.",
+    "Escribe una carta para pedirle a tu director o directora una mejora para la escuela, como un rincón de lectura tranquilo. Incluye un saludo, una petición, dos razones y una despedida.",
   ],
 };
