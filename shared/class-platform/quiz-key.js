@@ -121,6 +121,12 @@ export default {
    "level": "C",
    "answer": "c"
   },
+  "g1-r-c-pencil-ruler": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "b"
+  },
   "g23-r-a-bus-yellow": {
    "band": "2-3",
    "domain": "Reading",
@@ -319,6 +325,12 @@ export default {
    "level": "A",
    "answer": "a"
   },
+  "gk-r-b-ends-g": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
   "gk-r-b-ends-t": {
    "band": "K",
    "domain": "Reading",
@@ -330,6 +342,12 @@ export default {
    "domain": "Reading",
    "level": "B",
    "answer": "c"
+  },
+  "gk-r-b-line-up-door": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
   },
   "gk-r-b-shape-circle": {
    "band": "K",

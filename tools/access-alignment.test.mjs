@@ -11,7 +11,7 @@ const committed = JSON.parse(
 );
 assert.deepEqual(committed, index, "generated alignment inventory must be current");
 assert.equal(index.records.length, index.counts.total);
-assert.equal(index.counts.activityBank, 896);
+assert.equal(index.counts.activityBank, 908);
 assert.equal(index.counts.studios, 40);
 assert.equal(index.counts.missions, 9);
 assert.equal(

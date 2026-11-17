@@ -233,6 +233,45 @@ const listening = {
       wida: ["Compare quantities from oral input"],
     },
     {
+      id: "g23-l-b-measure-zero",
+      hint: 'Listen for the words "right on" and "not on".',
+      distractorFeedback: {
+        b: "Mr. Ruiz says not on the edge. Many rulers have a little space before zero.",
+        c: "The point is the other end of the pencil. You read the number there after you line up.",
+      },
+      level: "B",
+      title: "Measure Your Pencil",
+      skill: "Listening to follow math directions",
+      scene: "measure-pencil",
+      dir: [
+        "Listen to Mr. Ruiz. Tap where the flat end of the pencil goes.",
+        "Escucha al Sr. Ruiz. Toca dónde va el extremo plano del lápiz.",
+      ],
+      script:
+        "Today we will measure our pencils in centimeters. Take out your ruler and find the zero mark. Put the flat end of your pencil right on the zero mark, not on the edge of the ruler. Then look at the point of your pencil and read the number closest to it.",
+      q: [
+        "Where do you put the flat end of the pencil?",
+        "¿Dónde pones el extremo plano del lápiz?",
+      ],
+      options: [
+        ["a", "on the zero mark", "🎯"],
+        ["b", "on the edge of the ruler", "📏"],
+        ["c", "next to the pencil point", "✏️"],
+      ],
+      answer: "a",
+      vocab: [
+        v("centimeter", "a small unit for length", "centímetro: una unidad pequeña de longitud"),
+        v(
+          "zero mark",
+          "the line on a ruler where measuring starts",
+          "marca del cero: la línea de la regla donde empieza la medición",
+        ),
+      ],
+      frame: "I put the end of my pencil on the ___.",
+      correct: "Line up the flat end on zero. Then read the number at the point.",
+      wida: ["Follow multi-step oral directions for measuring"],
+    },
+    {
       id: "g23-l-c-owl-eyes",
       hint: "Listen for what big eyes let in.",
       distractorFeedback: {
@@ -604,6 +643,54 @@ const reading = {
       frame: "A ___ may measure how tall you are.",
       correct: "A nurse may measure your height and weight.",
       wida: ["Identify who performs a job in an informational text"],
+    },
+    {
+      id: "g23-r-b-letter-travels",
+      hint: "Find the order words: First, Next, Then, Last.",
+      level: "B",
+      title: "How a Letter Travels",
+      skill: "Reading to put steps in order",
+      scene: "mail-carrier",
+      dir: [
+        "Read about Sofia's letter. Put the steps in order.",
+        "Lee sobre la carta de Sofía. Pon los pasos en orden.",
+      ],
+      passage: [
+        "Sofia writes a letter to her cousin.",
+        "First, she puts a stamp on the envelope.",
+        "Next, she drops the letter in a mailbox.",
+        "Then a mail carrier takes it to the post office. Workers sort the mail by address.",
+        "Last, another mail carrier brings the letter to her cousin's house.",
+      ],
+      q: [
+        "What happens first, next, then and last?",
+        "¿Qué pasa primero, después, luego y al final?",
+      ],
+      items: [
+        ["h", "The letter comes to her cousin's house.", "🏠"],
+        ["m", "Sofia drops the letter in a mailbox.", "📮"],
+        ["p", "Workers sort it at the post office.", "🏤"],
+        ["s", "Sofia puts a stamp on the envelope.", "✉️"],
+      ],
+      answer: ["s", "m", "p", "h"],
+      vocab: [
+        v("envelope", "a paper cover for a letter", "sobre: cubierta de papel para una carta"),
+        v("sort", "to put things into groups", "clasificar: poner cosas en grupos"),
+        v(
+          "address",
+          "the words that tell where a home is",
+          "dirección: las palabras que dicen dónde está una casa",
+        ),
+      ],
+      frame: "First, ___. Next, ___. Then, ___. Last, ___.",
+      correct: "Stamp, mailbox, post office, cousin's house. The order words show each step.",
+      itemFeedback: {
+        s: "Find the word First. A letter needs a stamp before it can travel.",
+        m: "Find the word Next. Sofia mails it right after the stamp.",
+        p: "Find the word Then. The mail is sorted before anyone delivers it.",
+        h: "Find the word Last. The cousin gets the letter at the very end.",
+      },
+      wida: ["Sequence steps in an informational text using signal words"],
     },
     {
       id: "g23-r-c-three-states",

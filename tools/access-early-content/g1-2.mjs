@@ -323,6 +323,42 @@ const listening = {
       hint: "Listen to the last sentence. Who is it from?",
       wida: ["Identify who performed an action in an oral story"],
     },
+    {
+      id: "g1-l-c-library-whisper",
+      level: "C",
+      title: "Quiet in the Library",
+      skill: "Listening to find why",
+      scene: "library",
+      dir: [
+        "Listen to the story. Tap why Sam whispers.",
+        "Escucha el cuento. Toca por qué Sam susurra.",
+      ],
+      script:
+        "Sam's class visits the school library. Sam finds a book about frogs. He wants to show his friend Lee. Other children are reading at the tables. So Sam whispers, Look, Lee! Frogs!",
+      q: ["Why does Sam whisper?", "¿Por qué Sam susurra?"],
+      options: [
+        ["a", "Other children are reading.", "📚"],
+        ["b", "He has a sore throat today.", "🤒"],
+        ["c", "The frogs in the book are asleep.", "🐸"],
+      ],
+      answer: "a",
+      vocab: [
+        v(
+          "library",
+          "a place with many books you can borrow",
+          "biblioteca: un lugar con muchos libros que puedes pedir prestados",
+        ),
+        v("whisper", "to talk very softly", "susurrar: hablar muy bajito"),
+      ],
+      frame: "Sam whispers because ___.",
+      correct: "Other children are reading, so Sam uses a quiet voice.",
+      distractorFeedback: {
+        b: "The story never says Sam is sick. Listen for who else is in the library.",
+        c: "The frogs are pictures in a book. Listen for what the other children do.",
+      },
+      hint: "Listen to the sentence right before Sam whispers.",
+      wida: ["Identify a reason in a short oral story"],
+    },
   ],
 };
 
@@ -601,6 +637,50 @@ const reading = {
       hint: "Find the sentence that starts with Ben.",
       wida: ["Identify a character's action in a short narrative"],
     },
+    {
+      id: "g1-r-c-pencil-ruler",
+      level: "C",
+      title: "Longer or Shorter?",
+      skill: "Reading to compare two lengths",
+      scene: "measure-pencil",
+      dir: [
+        "Read the sentences. Tap which one is longer.",
+        "Lee las oraciones. Toca cuál es más largo.",
+      ],
+      passage: [
+        "Kim puts her pencil next to a ruler.",
+        "She lines up the ends.",
+        "The pencil is shorter than the ruler.",
+      ],
+      q: ["Which one is longer?", "¿Cuál es más largo?"],
+      options: [
+        ["a", "the pencil", "✏️"],
+        ["b", "the ruler", "📏"],
+        ["c", "They are the same.", "⚖️"],
+      ],
+      answer: "b",
+      vocab: [
+        v(
+          "longer",
+          "more long; it goes past the other one",
+          "más largo: que pasa más allá del otro",
+        ),
+        v("shorter", "less long", "más corto: menos largo"),
+        v(
+          "ruler",
+          "a flat stick with numbers for measuring length",
+          "regla: tira plana con números para medir longitud",
+        ),
+      ],
+      frame: "The ___ is longer than the ___.",
+      correct: "The pencil is shorter, so the ruler is longer.",
+      distractorFeedback: {
+        a: "The text says the pencil is shorter. Shorter is the opposite of longer.",
+        c: "If they were the same, one could not be shorter. Read the last sentence.",
+      },
+      hint: "Read the last sentence. Shorter and longer are opposites.",
+      wida: ["Compare two lengths using information in a text"],
+    },
   ],
 };
 
@@ -794,6 +874,41 @@ const speaking = {
       correct: "You told about healthy food and gave a reason.",
       wida: ["Explain a choice with because"],
     },
+    {
+      id: "g1-s-c-swing-turns",
+      level: "C",
+      taskLevel: 3,
+      title: "One Swing, Two Friends",
+      skill: "Telling how to solve a problem and why",
+      scene: "playground",
+      dir: [
+        "Two friends want the same swing. Tell what they can do and why.",
+        "Dos amigos quieren el mismo columpio. Di qué pueden hacer y por qué.",
+      ],
+      q: ["What can the friends do? Why?", "¿Qué pueden hacer los amigos? ¿Por qué?"],
+      model: [
+        "Mateo, age 6",
+        "They can take turns. First Ana swings. Then Leo swings, so they both have fun.",
+      ],
+      models: {
+        A: "Take turns.",
+        B: "They can take turns on the swing.",
+        C: "They can take turns. First Ana swings. Then Leo swings, so they both have fun.",
+      },
+      sayFor: [
+        "I told what the friends can do.",
+        "I told why with because or so.",
+        "I used first and then.",
+      ],
+      vocab: [
+        v("take turns", "to go one at a time", "turnarse: hacerlo uno a la vez"),
+        v("fair", "treating everyone in an equal way", "justo: que trata a todos de manera igual"),
+      ],
+      frame: "They can ___. First ___. Then ___.",
+      correct: "You told a fair way to share the swing and why.",
+      hint: "Think about how two friends can both get a turn.",
+      wida: ["Propose a solution to a problem and give a reason"],
+    },
   ],
 };
 
@@ -947,6 +1062,81 @@ const writing = {
       frame: "The ice ___. It turns into ___.",
       correct: "You wrote how ice changes.",
       wida: ["Write a short explanation of a change"],
+    },
+    {
+      id: "g1-w-c-plant-needs",
+      level: "C",
+      title: "What a Plant Needs",
+      skill: "Writing two sentences about what plants need",
+      scene: "seed-water",
+      dir: [
+        "Print your page. Write two sentences about what a plant needs to grow.",
+        "Imprime tu página. Escribe dos oraciones sobre lo que necesita una planta para crecer.",
+      ],
+      q: ["What does a plant need to grow?", "¿Qué necesita una planta para crecer?"],
+      bank: ["water", "sun", "soil", "air", "grow"],
+      writeFor: [
+        "I named two things a plant needs.",
+        "I wrote two sentences.",
+        "I started each sentence with a capital letter.",
+      ],
+      lines: 4,
+      vocab: [
+        v("soil", "the dirt plants grow in", "tierra: suelo donde crecen las plantas"),
+        v("grow", "to get bigger", "crecer: hacerse más grande"),
+      ],
+      frame: "A plant needs ___. It also needs ___.",
+      models: {
+        A: "A plant needs water.",
+        B: "A plant needs water. It needs sun.",
+        C: "A plant needs water and soil. It also needs sun to grow.",
+      },
+      modelNotes: {
+        A: "One need in one complete sentence, with a capital letter and a period.",
+        B: "Two needs in two sentences.",
+        C: "Joins two needs with and, then adds a third need and why: to grow.",
+      },
+      correct: "You wrote what a plant needs.",
+      wida: ["Write facts about the needs of living things"],
+    },
+    {
+      id: "g1-w-c-more-cookies",
+      level: "C",
+      title: "Which Plate Has More?",
+      skill: "Writing to compare two numbers",
+      scene: "more-less",
+      dir: [
+        "Print your page. Count the cookies on each plate. Write which plate has more and how you know.",
+        "Imprime tu página. Cuenta las galletas de cada plato. Escribe qué plato tiene más y cómo lo sabes.",
+      ],
+      q: [
+        "Which plate has more cookies? How do you know?",
+        "¿Qué plato tiene más galletas? ¿Cómo lo sabes?",
+      ],
+      bank: ["left", "right", "more", "fewer", "six", "two"],
+      writeFor: [
+        "I wrote which plate has more.",
+        "I told how I know with the numbers.",
+        "I used more or fewer.",
+      ],
+      lines: 4,
+      vocab: [
+        v("more", "a bigger number or amount", "más: un número o cantidad mayor"),
+        v("fewer", "a smaller number than another", "menos: un número más pequeño que otro"),
+      ],
+      frame: "The ___ plate has more. It has ___ cookies and the other plate has ___.",
+      models: {
+        A: "The left plate has more.",
+        B: "The left plate has more. It has six cookies.",
+        C: "The left plate has more. It has six cookies and the right plate has two.",
+      },
+      modelNotes: {
+        A: "Names the plate with more in one complete sentence.",
+        B: "Adds a number as proof: six cookies.",
+        C: "Compares both numbers in one sentence joined with and.",
+      },
+      correct: "You compared the plates and told how you know.",
+      wida: ["Compare quantities in writing using more and fewer"],
     },
   ],
 };
