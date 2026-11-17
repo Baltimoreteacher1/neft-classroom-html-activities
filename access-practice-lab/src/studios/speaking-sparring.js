@@ -5,6 +5,7 @@
  * Simulated Peer Web Audio Synthesis, Verifiable Voice Receipt.
  */
 
+import { beginRecording, endRecording, recordingType, takeType } from "../audio-session.js";
 import { diagnostics } from "../../../shared/diagnostics-overlay.js";
 import { canSpeak, speak } from "../speech.js";
 
@@ -357,19 +358,25 @@ export class SpeakingSparringPartner {
 
     // Capture microphone media stream
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      beginRecording();
       navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-        this.mediaRecorder = new MediaRecorder(stream);
+        const asked = recordingType();
+        this.mediaRecorder = asked ? new MediaRecorder(stream, { mimeType: asked }) : new MediaRecorder(stream);
         this.mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) this.state.audioBlobs.push(e.data);
         };
         this.mediaRecorder.onstop = () => {
-          const blob = new Blob(this.state.audioBlobs, { type: "audio/webm" });
+          stream.getTracks().forEach((t) => t.stop());
+          endRecording();
+          // The real recorded type: Safari will not play an MP4 take labelled audio/webm.
+          const blob = new Blob(this.state.audioBlobs, { type: takeType(this.mediaRecorder, this.state.audioBlobs, asked) });
           this.state.audioUrl = URL.createObjectURL(blob);
           const reviewBtn = this.container.querySelector("#review-recording-btn");
           if (reviewBtn) reviewBtn.disabled = false;
         };
         this.mediaRecorder.start(100);
       }).catch((err) => {
+        endRecording();
         console.warn("Microphone access denied:", err);
       });
     }

@@ -1,6 +1,8 @@
 // Speaking recorder. Recordings stay in this browser tab as object URLs — they
 // are never uploaded or written to storage. A live level meter shows the
-// student the microphone is hearing them (the commonest "it didn't work").
+// student the microphone is hearing them (the commonest "it didn't work"). Phone rules (format, iOS audio
+// session, unlock) live in audio-session.js.
+import { beginRecording, endRecording, extensionFor, recordingType, takeType } from "./audio-session.js";
 const takes = new Map(); // key → [{ url, seconds }]
 let active = null; // { key, recorder, stream, chunks, started, raf, ctx }
 let requestGeneration = 0;
@@ -33,17 +35,31 @@ export async function start(key, { onLevel, onStop, maxSeconds = 0 } = {}) {
   const generation = ++requestGeneration;
   await stopActive();
   if (generation !== requestGeneration) return null;
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  beginRecording();
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (error) {
+    endRecording();
+    throw error;
+  }
   if (generation !== requestGeneration) {
     stream.getTracks().forEach((track) => track.stop());
+    endRecording();
     return null;
   }
   let recorder;
+  const asked = recordingType();
   try {
-    recorder = new MediaRecorder(stream);
+    recorder = asked ? new MediaRecorder(stream, { mimeType: asked }) : new MediaRecorder(stream);
   } catch (error) {
-    stream.getTracks().forEach((track) => track.stop());
-    throw error;
+    try {
+      recorder = new MediaRecorder(stream);
+    } catch {
+      stream.getTracks().forEach((track) => track.stop());
+      endRecording();
+      throw error;
+    }
   }
   const chunks = [];
   const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null, env: [], lastEnv: 0, limit: 0, limited: false };
@@ -52,16 +68,18 @@ export async function start(key, { onLevel, onStop, maxSeconds = 0 } = {}) {
   recorder.addEventListener("dataavailable", (e) => e.data.size && chunks.push(e.data));
   recorder.addEventListener("stop", () => {
     stream.getTracks().forEach((t) => t.stop());
+    endRecording();
     cancelAnimationFrame(state.raf);
     clearTimeout(state.limit);
     state.ctx?.close().catch(() => {});
-    const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+    // Label the take with what the recorder really produced: Safari plays nothing whose type does not match.
+    const blob = new Blob(chunks, { type: takeType(recorder, chunks, asked) });
     const list = takes.get(key) || [];
     if (blob.size) list.push({
       id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`,
       url: URL.createObjectURL(blob),
       blob,
-      extension: blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm",
+      extension: extensionFor(blob.type),
       seconds: Math.round((Date.now() - state.started) / 1000),
       // Loudness envelope at ENVELOPE_FPS, used for on-device pause/length analysis. Never uploaded.
       env: state.env.slice(0, ENVELOPE_FPS * 240),
@@ -78,6 +96,8 @@ export async function start(key, { onLevel, onStop, maxSeconds = 0 } = {}) {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (Ctx) {
       state.ctx = new Ctx();
+      // iOS starts a context suspended outside the tap; without this the level meter stays flat.
+      if (state.ctx.state === "suspended") state.ctx.resume?.().catch?.(() => {});
       const analyser = state.ctx.createAnalyser();
       analyser.fftSize = 512;
       state.ctx.createMediaStreamSource(stream).connect(analyser);
@@ -99,9 +119,11 @@ export async function start(key, { onLevel, onStop, maxSeconds = 0 } = {}) {
     }
   } catch {}
   try {
-    recorder.start();
+    // A timeslice makes iOS hand over audio as it records; with none, some versions return an empty take.
+    recorder.start(250);
   } catch (error) {
     stream.getTracks().forEach((track) => track.stop());
+    endRecording();
     cancelAnimationFrame(state.raf);
     state.ctx?.close().catch(() => {});
     finishStop();

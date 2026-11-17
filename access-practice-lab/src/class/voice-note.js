@@ -1,5 +1,6 @@
 // The teacher's "record a voice note back" control, shared by the recordings list and the scoring queue
 // (roster-panel.js, review-queue.js). The note answers one shared recording through POST /api/class/audio/note.
+import { beginRecording, endRecording, recordingType, takeType } from "../audio-session.js";
 import { el, errorText, toBase64 } from "./dom.js";
 
 /** Player for one class recording; the bytes load on first play with the teacher's own headers. */
@@ -37,13 +38,19 @@ export function voiceNoteButton({ S, api, parentId, onSent }) {
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recorder = new MediaRecorder(stream);
+      beginRecording();
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch((error) => {
+        endRecording();
+        throw error;
+      });
+      const asked = recordingType();
+      recorder = asked ? new MediaRecorder(stream, { mimeType: asked }) : new MediaRecorder(stream);
       chunks = [];
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+        endRecording();
+        const blob = new Blob(chunks, { type: takeType(recorder, chunks, asked) });
         recorder = null;
         btn.textContent = label();
         const sent = await api.audioNote({

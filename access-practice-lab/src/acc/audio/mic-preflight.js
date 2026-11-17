@@ -1,3 +1,4 @@
+import { beginRecording, endRecording } from "../../audio-session.js";
 // Microphone preflight. A student must start every permission request and every recording: nothing here runs until
 // request() is called from a click. It reports real state only (no fake meters): RMS comes from an AnalyserNode on the
 // live stream.
@@ -97,11 +98,14 @@ export class MicPreflight {
       return this.state;
     }
     this.set("requesting");
+    beginRecording();
+    this.session = true;
     let stream;
     try {
       stream = await this.env.navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     } catch (error) {
       if (gen !== this.generation) return this.state;
+      this.release();
       const name = error?.name || "";
       this.set(name === "NotAllowedError" || name === "SecurityError" ? "denied" : name === "NotFoundError" || name === "OverconstrainedError" || name === "NotReadableError" ? "unavailable" : "unavailable");
       return this.state;
@@ -167,6 +171,10 @@ export class MicPreflight {
     this.stopLoop = null;
     for (const t of this.stream?.getTracks?.() || []) t.stop();
     this.stream = null;
+    if (this.session) {
+      this.session = false;
+      endRecording();
+    }
     this.ctx?.close?.().catch?.(() => {});
     this.ctx = null;
     this.analyser = null;

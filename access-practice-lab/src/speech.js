@@ -1,3 +1,5 @@
+import { forPlayback } from "./audio-session.js";
+
 // Read-aloud with the browser's own voices (works offline on Chromebooks).
 // Supports custom voices for reading, multi-speaker dialogue synthesis,
 // sentence/karaoke boundary tracking, and persona-based pitch/rate adjustments.
@@ -140,17 +142,7 @@ const hold = (u) => {
   u.addEventListener?.("end", drop);
   u.addEventListener?.("error", drop);
 };
-if (typeof window !== "undefined" && "speechSynthesis" in window && typeof document !== "undefined") {
-  const unlock = () => {
-    try {
-      const u = new SpeechSynthesisUtterance(" ");
-      u.volume = 0;
-      hold(u);
-      window.speechSynthesis.speak(u);
-    } catch {}
-  };
-  document.addEventListener("pointerdown", unlock, { once: true, capture: true });
-}
+// The first real tap (touchend/click, not only pointerdown) unlocks speech and Web Audio: audio-session.js.
 
 export const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
 let current = null;
@@ -223,6 +215,7 @@ export function speak(
       };
       u.onerror = () => finish(false);
       try {
+        forPlayback();
         window.speechSynthesis.resume?.();
         hold(u);
         window.speechSynthesis.speak(u);
@@ -305,6 +298,7 @@ export function speakDialogue(
       };
       u.onerror = () => finish(false);
       try {
+        forPlayback();
         window.speechSynthesis.speak(u);
       } catch {
         finish(false);
@@ -344,7 +338,9 @@ export function playRecording(urls, { rate = 1 } = {}) {
     const next = () => {
       if (current !== token) return finish(false);
       if (i >= list.length) return finish(true);
+      forPlayback();
       audio = new Audio(list[i]);
+      audio.preload = "auto";
       audio.playbackRate = Math.min(Math.max(rate, 0.5), 1.5);
       audio.onplaying = () => {
         heard = true;
