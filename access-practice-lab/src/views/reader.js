@@ -217,14 +217,32 @@ function renderParsedText(parsed, chunks, I) {
             const isChunkStart = chunks.has(w.i);
             const dictState = dictationResult?.states?.[w.i] || "";
             return html`${isChunkStart ? html`<span class="chunk-divider" aria-hidden="true">/</span>` : ""}
-              <button type="button" class="reader-word ${isCurrentWord ? "is-spoken-word" : ""} ${dictState ? `spoken-${dictState}` : ""}" data-word-index="${w.i}" title="${I.S("Click for pronunciation & meaning", "Toca para pronunciación y significado")}">
+              ${openBefore(w)}<button type="button" class="reader-word ${isCurrentWord ? "is-spoken-word" : ""} ${dictState ? `spoken-${dictState}` : ""}" data-word-index="${w.i}" title="${I.S("Click for pronunciation & meaning", "Toca para pronunciación y significado")}">
                 ${w.text}
-              </button> `;
+              </button>${gapAfter(w)}`;
           })}
         </span>`;
       })}
     </div>`;
   });
+}
+
+/** The text between two words, split at its whitespace: marks before it close the earlier word (". " "," "?\""),
+ * marks after it open the next one (an opening quote or parenthesis). */
+function gapParts(i) {
+  const text = String(parsed.text || "");
+  const from = i < 0 ? 0 : parsed.words[i].end;
+  const to = parsed.words[i + 1]?.start ?? text.length;
+  const gap = text.slice(from, to);
+  if (!/\s/.test(gap)) return { close: i < 0 ? "" : gap, open: i < 0 ? gap : "", space: false };
+  return { close: i < 0 ? "" : gap.match(/^\S*/)[0], open: gap.match(/\S*$/)[0], space: true };
+}
+const punct = (t) => (t ? html`<span class="reader-punct">${t}</span>` : "");
+/** What the text shows right before a word (an opening mark) and right after it (closing marks and the space). */
+const openBefore = (w) => punct(gapParts(w.i - 1).open);
+function gapAfter(w) {
+  const g = gapParts(w.i);
+  return html`${punct(g.close)}${g.space ? " " : ""}`;
 }
 
 function renderDictationSummary(I, result) {

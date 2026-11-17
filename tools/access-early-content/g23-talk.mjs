@@ -452,6 +452,16 @@ const writing = {
       ],
       frame: "This is a ___.",
       correct: "Your labels name things in the picture.",
+      models: {
+        A: "sun, plant, girl",
+        B: "This is a sun. This is a plant. This is a fence.",
+        C: "This is the sun in the sky. This is a green plant. This is a wood fence.",
+      },
+      modelNotes: {
+        A: "Three labels, each copied correctly from the word bank.",
+        B: "Puts each label in the frame 'This is a ___.' to make a sentence.",
+        C: "Adds a describing word or a place (green, wood, in the sky) to each label.",
+      },
       wida: ["Label objects in an image"],
     }),
     W({
@@ -477,6 +487,16 @@ const writing = {
       ],
       frame: "I like ___ because ___.",
       correct: "You wrote a sentence about a fruit you like.",
+      models: {
+        A: "I like apples.",
+        B: "I like bananas because they are yellow.",
+        C: "I like mangos because they are sweet and juicy.",
+      },
+      modelNotes: {
+        A: "One complete sentence with a capital letter and a period.",
+        B: "Uses 'because' to give a reason.",
+        C: "Still one sentence, with two exact taste words (sweet, juicy) in the reason.",
+      },
       wida: ["Express a preference in a written sentence"],
     }),
     W({
@@ -503,6 +523,16 @@ const writing = {
       ],
       frame: "Today it is ___.",
       correct: "Your weather report tells the class about today.",
+      models: {
+        A: "Today it is sunny.",
+        B: "Today it is cloudy and cold.",
+        C: "Today it is windy and cold, so wear a jacket.",
+      },
+      modelNotes: {
+        A: "Uses the frame with one weather word from the word bank.",
+        B: "Joins two weather words with 'and'.",
+        C: "Adds 'so' to tell the class what to do about the weather.",
+      },
       wida: ["Describe the weather in a written sentence"],
     }),
     W({
@@ -524,6 +554,16 @@ const writing = {
       ],
       frame: "My name is ___. I like to ___.",
       correct: "You wrote about yourself.",
+      models: {
+        A: "My name is Ana. I like to read.",
+        B: "My name is Omar. I like to play soccer with my friends.",
+        C: "My name is Lina. I like to draw cats and dogs in my notebook.",
+      },
+      modelNotes: {
+        A: "Fills both parts of the frame: a name and one thing you like to do.",
+        B: "Adds who you do it with (with my friends).",
+        C: "Names exactly what and where (cats and dogs, in my notebook).",
+      },
       wida: ["Write personal information in simple sentences"],
     }),
     W({
@@ -546,6 +586,16 @@ const writing = {
       ],
       frame: "I like ___. I like it because ___.",
       correct: "You named a book and told why.",
+      models: {
+        A: "I like the dog book. I like it because it is funny.",
+        B: "I like Frog and Toad. I like it because the story is funny.",
+        C: "I like Frog and Toad. I like it because the two friends help each other. The pictures are funny too.",
+      },
+      modelNotes: {
+        A: "Names a book and gives a reason with 'because'.",
+        B: "Gives the book's title and says which part is funny (the story).",
+        C: "Gives an exact reason, then adds a second reason with 'too'.",
+      },
       wida: ["Write an opinion with a reason"],
     }),
     W({
@@ -572,6 +622,16 @@ const writing = {
       ],
       frame: "On the playground there is ___. I like to ___.",
       correct: "You wrote two sentences that go together.",
+      models: {
+        A: "On the playground there is a slide. I like to run.",
+        B: "On the playground there is a slide and a swing. I like to climb with my friends.",
+        C: "On the playground there is a tall slide. I like to climb up and slide down fast.",
+      },
+      modelNotes: {
+        A: "Two frame sentences: one thing you see and one thing you play.",
+        B: "Uses 'and' to name two things and tells who you play with.",
+        C: "Uses exact action words (climb up, slide down fast) that connect the two sentences.",
+      },
       wida: ["Write two related sentences describing a place"],
     }),
     W({
@@ -597,6 +657,16 @@ const writing = {
       ],
       frame: "Dear ___, Thank you for ___. From, ___",
       correct: "Your note thanks the neighbor and tells why.",
+      models: {
+        A: "Dear Mr. Lee, Thank you for the tomatoes. From, Sam",
+        B: "Dear Mrs. Diaz, Thank you for sharing your tomatoes. They were red and sweet. From, Maya",
+        C: "Dear Mr. Lee, Thank you for the tomatoes. We made soup for dinner, and it was so good. You are a kind neighbor. From, Sam",
+      },
+      modelNotes: {
+        A: "Has all three parts: Dear, thank you, and a signed name.",
+        B: "Adds a detail sentence with describing words (red, sweet).",
+        C: "Tells how the gift was used and ends with a kind word (kind neighbor).",
+      },
       wida: ["Write a short note with a greeting, message and closing"],
     }),
     W({
@@ -622,6 +692,16 @@ const writing = {
       ],
       frame: "Today I want ___.",
       correct: "You made a list and wrote your choice.",
+      models: {
+        A: "eggs, toast, milk. Today I want toast.",
+        B: "cereal, fruit, juice. Today I want cereal with milk.",
+        C: "eggs, toast, fruit. Today I want eggs and toast because I am very hungry.",
+      },
+      modelNotes: {
+        A: "A list of three foods and one sentence with the frame.",
+        B: "Adds 'with' to say more about the choice.",
+        C: "Joins two foods with 'and' and gives a reason with 'because'.",
+      },
       wida: ["Write a list and a choice sentence"],
     }),
     W({
@@ -644,6 +724,16 @@ const writing = {
       ],
       frame: "First, ___. Next, ___. Then, ___. Last, ___.",
       correct: "Your how-to has steps in order.",
+      models: {
+        A: "First, dig a hole. Next, put in the seed. Then, water it. Last, put it in the sun.",
+        B: "First, dig a small hole in the dirt. Next, drop the seed in the hole. Then, cover it and water it. Last, put the pot in the sun.",
+        C: "First, dig a small hole in the soil. Next, drop the seed in and cover it. Then, give it a little water every day. Last, put it in the sun so it can grow.",
+      },
+      modelNotes: {
+        A: "Uses all four order words with one short step each.",
+        B: "Uses exact action words (drop, cover) and says where.",
+        C: "Tells how often (every day) and uses 'so' to tell why a step matters.",
+      },
       wida: ["Write a procedure using sequence words"],
     }),
     W({
@@ -670,6 +760,16 @@ const writing = {
       ],
       frame: "One day, ___. Then, ___. At the end, ___.",
       correct: "Your story has a beginning, middle and end.",
+      models: {
+        A: "One day, it rained at the park. Then, I got wet. At the end, I was sad.",
+        B: "One day, we went to the park, and it began to rain. Then, I opened my umbrella. At the end, I jumped in a puddle and felt happy.",
+        C: "One day, dark clouds came over the park, and rain began to fall. Then, my brother and I shared one umbrella and splashed in every puddle. At the end, we were wet but happy.",
+      },
+      modelNotes: {
+        A: "Three sentences tell the beginning, middle and end, with a feeling (sad).",
+        B: "Uses 'and' to join ideas and shows the feeling at the end.",
+        C: "Uses exact action words (splashed) and 'but' to show two feelings at once.",
+      },
       wida: ["Write a short narrative with a clear sequence"],
     }),
     W({
@@ -695,6 +795,16 @@ const writing = {
       ],
       frame: "I think ___ because ___. Also, ___.",
       correct: "You wrote an opinion with two reasons.",
+      models: {
+        A: "I think we should have a garden because we can grow vegetables. Also, we can learn.",
+        B: "I think our school should have a garden because we can grow vegetables for lunch. Also, we can share food with families.",
+        C: "I think our school should have a garden because we can learn how plants grow from seeds. Also, we can share fresh vegetables with our neighbors. A garden would make our school better.",
+      },
+      modelNotes: {
+        A: "States an opinion, then gives two reasons with 'because' and 'also'.",
+        B: "Each reason tells exactly who it helps (for lunch, with families).",
+        C: "Ends with a closing sentence that says the opinion again.",
+      },
       wida: ["Write an opinion supported by reasons"],
     }),
     W({
@@ -717,6 +827,16 @@ const writing = {
       ],
       frame: "Please come to ___ on ___ at ___.",
       correct: "Your invitation tells what, when and where.",
+      models: {
+        A: "Please come to garden day on Saturday at the school garden. From, Ana",
+        B: "Please come to garden day on Saturday at the school garden. Please bring a hat. From, Ana",
+        C: "Please come to our garden day on Saturday at 10 o'clock. We will meet at the school garden. Bring gloves so you can help us plant flowers. From, Ana",
+      },
+      modelNotes: {
+        A: "Tells what, when and where in one sentence and signs a name.",
+        B: "Adds a sentence with 'bring' to tell guests what they need.",
+        C: "Gives an exact time and uses 'so' to tell why to bring gloves.",
+      },
       wida: ["Write an invitation with key details"],
     }),
   ],

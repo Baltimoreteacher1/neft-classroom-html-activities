@@ -176,6 +176,9 @@ export function expand(band, domain, spec) {
     a.responsePlaceholder = spec.frame;
     a.paperLines = spec.lines;
     a.successCriteria = spec.writeFor;
+    // Sample answers that grow A → B → C (shown as the model ladder in Learn with help), when the spec has them.
+    if (spec.models) a.models = spec.models;
+    if (spec.modelNotes) a.modelNotes = spec.modelNotes;
   }
   a.vocabulary = spec.vocab;
   a.frames = [spec.frame];

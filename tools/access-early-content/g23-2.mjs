@@ -1129,6 +1129,12 @@ const writing = {
       ],
       frame: "duck, ___",
       correct: "Your pond signs name two animals.",
+      models: { A: "duck, frog", B: "a duck, a fish", C: "a duck and a green frog" },
+      modelNotes: {
+        A: "Two animal names copied letter by letter; log is not an animal.",
+        B: "Puts 'a' before each animal name, like a real sign.",
+        C: "Joins the signs with 'and' and adds a color word (green).",
+      },
       wida: ["Label an image with words"],
     },
     {
@@ -1151,6 +1157,16 @@ const writing = {
       ],
       frame: "a ___ ___",
       correct: "Your card names a shape and its color.",
+      models: {
+        A: "a red circle",
+        B: "It is a blue square.",
+        C: "It is a green triangle with three sides.",
+      },
+      modelNotes: {
+        A: "Color word first, then the shape name, just like the frame.",
+        B: "Turns the card into a sentence with 'It is'.",
+        C: "Adds a clue (with three sides) to help classmates guess.",
+      },
       wida: ["Label a drawing with a descriptive phrase"],
     },
     {
@@ -1177,6 +1193,16 @@ const writing = {
       ],
       frame: "She is ___.",
       correct: "You wrote how she feels.",
+      models: {
+        A: "She is happy.",
+        B: "She is happy and excited.",
+        C: "She is happy because she is smiling.",
+      },
+      modelNotes: {
+        A: "Uses the frame with a feeling word from the word bank.",
+        B: "Joins two feeling words with 'and'.",
+        C: "Uses 'because' to tell how we know (she is smiling).",
+      },
       wida: ["Write a sentence naming a feeling"],
     },
     {
@@ -1203,6 +1229,16 @@ const writing = {
       ],
       frame: "I see the ___. The stars ___.",
       correct: "Your page tells about the moon and the stars.",
+      models: {
+        A: "I see the moon. The stars shine.",
+        B: "I see the big moon. The stars are bright.",
+        C: "I see the round, white moon. The bright stars shine in the dark sky.",
+      },
+      modelNotes: {
+        A: "One sentence about the moon and one about the stars.",
+        B: "Adds describing words (big, bright).",
+        C: "Puts a describing word with an action (bright stars shine) and tells where.",
+      },
       wida: ["Write sentences describing an image"],
     },
     {
@@ -1233,6 +1269,16 @@ const writing = {
       ],
       frame: "The cow ___. The hen ___.",
       correct: "Your captions tell what each farm animal does.",
+      models: {
+        A: "The cow eats. The hen walks.",
+        B: "The cow eats grass. The hen says cluck.",
+        C: "The cow eats green grass in the field. The hen walks fast and pecks at seeds.",
+      },
+      modelNotes: {
+        A: "One action word for each animal.",
+        B: "Tells what each animal eats or says, so the action is complete.",
+        C: "Uses exact verbs and details (pecks at seeds) that show the action.",
+      },
       wida: ["Write sentences about actions in an image"],
     },
     {
@@ -1255,6 +1301,16 @@ const writing = {
       ],
       frame: "I eat with my ___. We eat ___. I like ___.",
       correct: "You wrote about a family meal.",
+      models: {
+        A: "I eat with my mom. We eat rice. I like rice.",
+        B: "I eat with my mom and dad. We eat rice and soup. I like the soup.",
+        C: "I eat with my grandma and my dad. We eat hot soup together at night. I like it because Grandma makes it.",
+      },
+      modelNotes: {
+        A: "Three frame sentences: who, what you eat, and what you like.",
+        B: "Uses 'and' to name more people and more foods.",
+        C: "Adds when (at night) and uses 'because' to give a reason.",
+      },
       wida: ["Write about personal routines with details"],
     },
     {
@@ -1288,6 +1344,16 @@ const writing = {
       ],
       frame: "Ice is a ___. When it melts, it is a ___. With more heat, it becomes ___.",
       correct: "You explained three states of water.",
+      models: {
+        A: "Ice is a solid. When it melts, it is a liquid. With more heat, it becomes a gas.",
+        B: "Ice is a solid. When it melts, it is a liquid called water. With more heat, it becomes a gas called steam.",
+        C: "Ice is a solid that keeps its shape. When ice melts, it becomes liquid water that can flow. With more heat, water becomes steam, a gas that floats into the air.",
+      },
+      modelNotes: {
+        A: "Names the state of matter for ice, water and steam in order.",
+        B: "Uses 'called' to connect each state to its name (water, steam).",
+        C: "Tells how each state acts (keeps its shape, can flow, floats) to show the difference.",
+      },
       wida: ["Write an explanation of a science concept using key terms"],
     },
     {
@@ -1318,6 +1384,16 @@ const writing = {
       ],
       frame: "First, ___. Next, ___. Last, ___.",
       correct: "You wrote the steps in order.",
+      models: {
+        A: "First, stop at the corner. Next, look both ways. Last, walk across.",
+        B: "First, stop at the curb. Next, look left and right for cars. Last, walk when it is safe.",
+        C: "First, stop at the curb. Next, look left and right and wait for the walk sign. Last, walk across. These steps keep you safe because drivers can see you.",
+      },
+      modelNotes: {
+        A: "Three steps in order with First, Next and Last.",
+        B: "Uses 'when' to tell the right time to walk.",
+        C: "Ends with 'because' to explain why the steps keep you safe.",
+      },
       wida: ["Write a procedure using sequence words"],
     },
     {
@@ -1348,6 +1424,16 @@ const writing = {
       ],
       frame: "Dear ___, Welcome to our class! We can ___. Your friend, ___",
       correct: "You wrote a kind note.",
+      models: {
+        A: "Dear Leo, Welcome to our class! We can play. Your friend, Mia",
+        B: "Dear Leo, Welcome to our class! We can play tag at recess. Your friend, Mia",
+        C: "Dear Leo, Welcome to our class! We can play tag at recess, and I can show you the library. I hope we can be friends. Your friend, Mia",
+      },
+      modelNotes: {
+        A: "Has Dear, a welcome, one kind sentence and a signed name.",
+        B: "Tells exactly what and when (tag at recess).",
+        C: "Adds an offer to help (I can show you) and a hopeful sentence.",
+      },
       wida: ["Write a short friendly note with a greeting and closing"],
     },
     {
@@ -1378,6 +1464,16 @@ const writing = {
       ],
       frame: "I would pack ___ and ___ because ___.",
       correct: "You chose foods and gave a reason.",
+      models: {
+        A: "I would pack an apple and a sandwich because they are healthy.",
+        B: "I would pack carrots and rice because vegetables and grains give me energy.",
+        C: "I would pack chicken and carrots because they give my body protein and vegetables. This lunch helps me grow strong and learn all day.",
+      },
+      modelNotes: {
+        A: "Names two foods and gives a reason with 'because'.",
+        B: "The reason uses food-group words (vegetables, grains).",
+        C: "Matches each food to its food group and adds a sentence about how the lunch helps.",
+      },
       wida: ["Write a choice supported by a reason"],
     },
   ],

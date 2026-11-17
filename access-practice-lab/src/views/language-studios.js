@@ -743,13 +743,13 @@ export async function render(ctx = {}) {
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="ls-nav-tabs" role="tablist">
-        ${bridge ? `<button type="button" class="ls-tab-btn ${currentTab === "math-bridge" ? "active" : ""}" data-ls-tab="math-bridge">${ico("construction")} ${I.T("Math explanation", "Explicación matemática")}</button>` : ""}
-        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">${ico("growth")} Language Sample Lens</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" data-ls-tab="syntax">${ico("tools")} Syntax Clause Slicer</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" data-ls-tab="wheel">${ico("grid")} Morphology &amp; Cognate Wheel</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "cohesion" ? "active" : ""}" data-ls-tab="cohesion">${ico("conversation")} Cohesion &amp; Logic Balancer</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "glitch" ? "active" : ""}" data-ls-tab="glitch">${ico("detective")} Spot the Syntax Glitch</button>
+      <div class="ls-nav-tabs" role="group" aria-label="${I.S("Studio tools", "Herramientas del estudio")}">
+        ${bridge ? `<button type="button" class="ls-tab-btn ${currentTab === "math-bridge" ? "active" : ""}" aria-pressed="${currentTab === "math-bridge"}" data-ls-tab="math-bridge">${ico("construction")} ${I.T("Math explanation", "Explicación matemática")}</button>` : ""}
+        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" aria-pressed="${currentTab === "wida"}" data-ls-tab="wida">${ico("growth")} Language Sample Lens</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" aria-pressed="${currentTab === "syntax"}" data-ls-tab="syntax">${ico("tools")} Syntax Clause Slicer</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" aria-pressed="${currentTab === "wheel"}" data-ls-tab="wheel">${ico("grid")} Morphology &amp; Cognate Wheel</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "cohesion" ? "active" : ""}" aria-pressed="${currentTab === "cohesion"}" data-ls-tab="cohesion">${ico("conversation")} Cohesion &amp; Logic Balancer</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "glitch" ? "active" : ""}" aria-pressed="${currentTab === "glitch"}" data-ls-tab="glitch">${ico("detective")} Spot the Syntax Glitch</button>
       </div>
 
       <!-- Studio Stage Body -->

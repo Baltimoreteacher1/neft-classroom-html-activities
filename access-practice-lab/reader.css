@@ -286,7 +286,11 @@
 
 /* Words */
 .reader-word {
-  display: inline;
+  /* At least 24px wide so a one- or two-letter word is still easy to tap (WCAG 2.2 target size). */
+  display: inline-block;
+  min-width: 24px;
+  min-height: 24px;
+  text-align: center;
   padding: 0.05em 0.15em;
   margin: 0 -0.05em;
   border: 0;
@@ -715,4 +719,8 @@
   .flashcard-controls {
     flex-direction: column;
   }
+}
+/* Punctuation sits close to its word (the word buttons carry a little padding for their highlight). */
+.reader-punct {
+  margin-inline: -0.1em;
 }

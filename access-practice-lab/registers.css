@@ -476,3 +476,11 @@ body[data-lab-view="home"] .lph :is(.lph-continue, .lph-front) {
   border: 0;
   box-shadow: var(--shadow-float);
 }
+
+/* The shared mobile sheet (/assets/mobile-access.css) sets the deprecated `word-break: break-word` on body, which
+   lets phones split a single word inside a squeezed flex label ("List / en", "Rea / der"). Long URLs still wrap
+   through `overflow-wrap: break-word`, which never splits an ordinary word. (mobile-access.css loads after this
+   sheet, hence `html body`.) */
+html body {
+  word-break: normal;
+}
