@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "29d6f60c9abc";
+const BUILD_HASH = "b3a94dd4355b";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -271,6 +271,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/book/lang/work.js?v=b33e409af043",
   "/access-practice-lab/src/book/model.js?v=bb5e8d6a1ef2",
   "/access-practice-lab/src/book/play.js?v=834f926edcaf",
+  "/access-practice-lab/src/book/program-ui.js?v=79c5fc5f9e33",
+  "/access-practice-lab/src/book/programs.js?v=39cde074cf87",
   "/access-practice-lab/src/book/reader.js?v=5a798a3a43de",
   "/access-practice-lab/src/book/render.js?v=ff03362b286c",
   "/access-practice-lab/src/book/sanitize.js?v=7d5ba64b365f",
@@ -690,7 +692,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/assess.js?v=48bf2625256a",
   "/access-practice-lab/src/views/avatar-panel.js?v=87a27ec13523",
   "/access-practice-lab/src/views/benchmark-panel.js?v=8bfd0af2c77e",
-  "/access-practice-lab/src/views/book-studio.js?v=b59cfe30f3fe",
+  "/access-practice-lab/src/views/book-studio.js?v=de8d01543e75",
   "/access-practice-lab/src/views/city-art.js?v=361f10d2f240",
   "/access-practice-lab/src/views/city-guide.js?v=182cf254e20e",
   "/access-practice-lab/src/views/city-mission.js?v=f58b7932df12",

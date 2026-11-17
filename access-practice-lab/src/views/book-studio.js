@@ -24,12 +24,25 @@ import {
   pick,
 } from "../book/model.js";
 import { esc, pageHTML, preloadMedia } from "../book/render.js";
+import { craftHTML, journeyHTML, standardsHTML, templateCard } from "../book/program-ui.js";
+import { KEY_USES, programFor } from "../book/programs.js";
 import { CREATION_MODES, adventureSkeleton } from "../book/story.js";
 import { makePage } from "../book/model.js";
-import { TEMPLATES, TEMPLATE_GROUPS, templateById, templatesFor } from "../book/templates.js";
+import { TEMPLATE_GROUPS, templateById, templatesFor } from "../book/templates.js";
 import { BASE, announce, html } from "../util.js";
 
 const STYLE_ID = "book-studio-css";
+// The Book Studio icon drawn on each blank-kind cover on the create page.
+const KIND_ICON = {
+  blank: "text",
+  picture: "image",
+  comic: "panel",
+  report: "search",
+  narrative: "book",
+  informational: "lightbulb",
+  bilingual: "globe",
+  audio: "speaker",
+};
 let current = null; // destroy function of the mounted editor/reader
 let fieldObserver = null;
 
@@ -319,16 +332,8 @@ async function renderHome(box, ctx, I) {
   const persisted = navigator.storage?.persisted
     ? await navigator.storage.persisted().catch(() => false)
     : false;
-  const featured = [
-    "personal-narrative",
-    "comic-conversation",
-    "science-investigation",
-    "vocabulary-picture-book",
-    "evidence-argument",
-    "family-stories",
-  ]
-    .map(templateById)
-    .filter(Boolean);
+  const program = programFor(ctx.band);
+  const featured = program.featured.map(templateById).filter(Boolean);
   const draw = () => {
     const q = state.q.toLowerCase();
     const list = books.filter(
@@ -345,11 +350,12 @@ async function renderHome(box, ctx, I) {
   };
   box.removeAttribute("aria-busy");
   box.innerHTML = `<section class="bk-home">
-    <header class="bk-hero">
+    <header class="bk-hero is-band-${esc(program.band)}">
       <div class="bk-hero-text">
-        <p class="eyebrow">${esc(I.S("Write · draw · record · publish", "Escribe · dibuja · graba · publica"))}</p>
+        <p class="bk-hero-band"><span>${esc(pick(program.grades, lang))}</span>${esc(pick(program.name, lang))}</p>
         <h1 tabindex="-1">${esc(I.S("Book Studio", "Book Studio"))}</h1>
-        <p class="lead">${esc(I.S("Make your own books with words, pictures, drawings, comics and your voice. Read them aloud, print them, and share them with your class.", "Haz tus propios libros con palabras, imágenes, dibujos, cómics y tu voz. Léelos en voz alta, imprímelos y compártelos con tu clase."))}</p>
+        <p class="eyebrow">${esc(pick(program.eyebrow, lang))}</p>
+        <p class="lead">${esc(pick(program.lead, lang))}</p>
         <div class="row-actions">
           <a class="btn btn-primary btn-big" href="${BASE}/book-studio/new">${bkIcon("plus")} ${esc(I.S("Create a new book", "Crear un libro nuevo"))}</a>
           ${last ? `<a class="btn btn-big" href="${BASE}/book-studio/edit/${last.id}">${bkIcon("draw")} ${esc(I.S("Continue", "Continuar"))}: ${esc(last.title)}</a>` : ""}
@@ -370,6 +376,8 @@ async function renderHome(box, ctx, I) {
       <ul class="bk-quick"><li><a class="linklike" href="${BASE}/book-studio/templates">${esc(I.S("Explore examples and templates", "Explorar ejemplos y plantillas"))}</a></li><li><a class="linklike" href="${BASE}/book-studio/teacher">${esc(I.S("Teacher workspace", "Espacio del docente"))}</a></li></ul>
       <div data-assign-slot></div>
     </section>
+
+    ${journeyHTML(program, I)}
 
     <section class="bk-shelf" aria-labelledby="bkShelfH">
       <div class="bk-shelf-head">
@@ -403,9 +411,11 @@ async function renderHome(box, ctx, I) {
     <section class="bk-shelf bk-collab-shelf" aria-labelledby="bkCollabH" data-bk-collab-shelf hidden></section>
 
     <section class="bk-templates-strip" aria-labelledby="bkTplH">
-      <div class="bk-shelf-head"><h2 id="bkTplH">${esc(I.S("Start from a template", "Empieza con una plantilla"))}</h2><a class="btn small" href="${BASE}/book-studio/templates">${esc(I.S(`See all ${TEMPLATES.length} templates`, `Ver las ${TEMPLATES.length} plantillas`))} →</a></div>
-      <ul class="bk-tpl-grid">${featured.map((t) => templateCard(t, I)).join("")}</ul>
+      <div class="bk-shelf-head"><div class="bk-section-head"><p class="eyebrow">${esc(I.S(`Chosen for ${program.grades.en}`, `Elegidas para ${program.grades.es}`))}</p><h2 id="bkTplH">${esc(I.S("Start from a template", "Empieza con una plantilla"))}</h2></div><a class="btn small" href="${BASE}/book-studio/templates?grades=${ctx.band}">${esc(I.S(`See all ${templatesFor(ctx.band).length} templates`, `Ver las ${templatesFor(ctx.band).length} plantillas`))} →</a></div>
+      <ul class="bk-tpl-grid is-featured">${featured.map((t) => templateCard(t, I, { band: ctx.band })).join("")}</ul>
     </section>
+
+    ${craftHTML(program, I)}
 
     <section class="bk-from" aria-labelledby="bkFromH">
       <h2 id="bkFromH">${esc(I.S("Turn your practice into a book", "Convierte tu práctica en un libro"))}</h2>
@@ -416,6 +426,7 @@ async function renderHome(box, ctx, I) {
         <li><a href="${BASE}/worlds?grades=${ctx.band}">${bkIcon("book")}<strong>${esc(I.S("Language Worlds", "Mundos del lenguaje"))}</strong><span>${esc(I.S("Complete a mission and write the mission report.", "Completa una misión y escribe el informe."))}</span></a></li>
       </ul>
     </section>
+    ${standardsHTML(program, I)}
   </section>`;
   draw();
   box.querySelector("h1").focus({ preventScroll: true });
@@ -519,32 +530,41 @@ async function renderHome(box, ctx, I) {
   });
 }
 
-function templateCard(t, I, { band } = {}) {
-  const lang = I.mode === "es" ? "es" : "en";
-  const b = bookFromTemplate(t, { title: pick(t.title, lang), lang });
-  return `<li class="bk-tpl"><a href="${BASE}/book-studio/new?template=${t.id}${band ? `&grades=${band}` : ""}">
-    <span class="bk-thumb-page" aria-hidden="true">${pageHTML(b, b.pages[0], { mode: "thumb" })}</span>
-    <strong>${esc(pick(t.title, lang))}</strong>
-    <span class="fine">${esc(pick(t.summary, lang))}</span>
-    <span class="bk-tpl-meta">${esc(pick(t.purpose, lang))} · ${t.pages.length} ${esc(I.S("pages", "páginas"))}${t.grades?.length === 1 ? ` · ${esc(I.S("Grades", "Grados"))} ${t.grades[0]}` : ""}</span>
-  </a></li>`;
-}
-
 function renderTemplates(box, ctx, I) {
+  const lang = I.mode === "es" ? "es" : "en";
+  const program = programFor(ctx.band);
   box.removeAttribute("aria-busy");
   const list = templatesFor(ctx.band);
-  box.innerHTML = `<section class="bk-gallery"><h1 tabindex="-1">${esc(I.S("Book templates", "Plantillas de libros"))}</h1>
-    <p class="lead">${esc(I.S("Every template has a purpose, page-by-page directions, optional sentence starters and a model. You write the ideas.", "Cada plantilla tiene un propósito, instrucciones página por página, inicios de oración opcionales y un modelo. Tú escribes las ideas."))}</p>
+  const uses = Object.keys(KEY_USES).filter((u) => list.some((t) => pick(t.purpose, "en") === u));
+  box.innerHTML = `<section class="bk-gallery">
+    <header class="bk-gallery-head"><p class="bk-hero-band is-light"><span>${esc(pick(program.grades, lang))}</span>${esc(pick(program.name, lang))}</p>
+    <h1 tabindex="-1">${esc(I.S("Book templates", "Plantillas de libros"))}</h1>
+    <p class="lead">${esc(I.S(`${list.length} templates for ${program.grades.en}. Every one has a purpose, page-by-page directions, language goals, a word bank, optional sentence starters and a model. You write the ideas.`, `${list.length} plantillas para ${program.grades.es}. Cada una tiene un propósito, instrucciones página por página, metas de lenguaje, un banco de palabras, inicios de oración opcionales y un modelo. Tú escribes las ideas.`))}</p>
+    <div class="bk-filter bk-use-filter" role="group" aria-label="${esc(I.S("Show templates that", "Mostrar plantillas para"))}">
+      <button type="button" class="chip" data-use="" aria-pressed="true">${esc(I.S("All", "Todas"))} <span class="bk-count">${list.length}</span></button>
+      ${uses.map((u) => `<button type="button" class="chip bk-use-chip is-${KEY_USES[u].tone}" data-use="${u}" aria-pressed="false">${esc(KEY_USES[u][lang])} <span class="bk-count">${list.filter((t) => pick(t.purpose, "en") === u).length}</span></button>`).join("")}
+    </div></header>
     ${TEMPLATE_GROUPS.map((g) => {
       const items = list.filter((t) =>
         g.id === "family" ? t.family : !t.family && t.tag === g.id,
       );
       return items.length
-        ? `<section aria-labelledby="bkG-${g.id}"><h2 id="bkG-${g.id}">${esc(I.S(g.en, g.es))}</h2><ul class="bk-tpl-grid">${items.map((t) => templateCard(t, I)).join("")}</ul></section>`
+        ? `<section class="bk-tpl-group" aria-labelledby="bkG-${g.id}"><h2 id="bkG-${g.id}">${esc(I.S(g.en, g.es))} <span class="bk-count">${items.length}</span></h2><ul class="bk-tpl-grid">${items.map((t) => templateCard(t, I, { band: ctx.band }).replace('<li class="bk-tpl">', `<li class="bk-tpl" data-use="${esc(pick(t.purpose, "en"))}">`)).join("")}</ul></section>`
         : "";
     }).join("")}
-    <p><a class="btn" href="${BASE}/book-studio/new">${esc(I.S("Or start with a blank book", "O empieza con un libro en blanco"))}</a></p></section>`;
+    <p class="bk-gallery-foot"><a class="btn" href="${BASE}/book-studio/new?grades=${ctx.band}">${esc(I.S("Or start with a blank book", "O empieza con un libro en blanco"))}</a></p>
+    ${standardsHTML(program, I)}</section>`;
   box.querySelector("h1").focus({ preventScroll: true });
+  box.querySelector(".bk-use-filter").addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-use]");
+    if (!chip) return;
+    const use = chip.dataset.use;
+    box.querySelectorAll(".bk-use-filter [data-use]").forEach((c) => c.setAttribute("aria-pressed", String(c === chip)));
+    for (const li of box.querySelectorAll("li.bk-tpl")) li.hidden = !!use && li.dataset.use !== use;
+    for (const sec of box.querySelectorAll(".bk-tpl-group")) sec.hidden = !sec.querySelector("li.bk-tpl:not([hidden])");
+    const n = box.querySelectorAll("li.bk-tpl:not([hidden])").length;
+    announce(I.S(`${n} templates shown.`, `Se muestran ${n} plantillas.`));
+  });
 }
 
 // ── create ───────────────────────────────────────────────────────────────────
@@ -558,7 +578,7 @@ async function renderCreate(box, ctx, I) {
   box.removeAttribute("aria-busy");
   const kindCards = KINDS.map(
     (k) =>
-      `<label class="bk-kind"><input type="radio" name="bk-kind" value="${k.id}" ${!tpl && k.id === kind ? "checked" : ""} /><span class="bk-kind-shape is-${k.format}" aria-hidden="true"></span><span>${esc(k[lang])}</span></label>`,
+      `<label class="bk-kind"><input type="radio" name="bk-kind" value="${k.id}" ${!tpl && k.id === kind ? "checked" : ""} /><span class="bk-kind-shape is-${k.format} is-${k.id}" aria-hidden="true">${bkIcon(KIND_ICON[k.id] || "book")}</span><span>${esc(k[lang])}</span></label>`,
   ).join("");
   box.innerHTML = `<section class="bk-create"><h1 tabindex="-1">${esc(I.S("Create a book", "Crear un libro"))}</h1>
     <form class="bk-create-form" data-create>
@@ -568,7 +588,7 @@ async function renderCreate(box, ctx, I) {
               const b = bookFromTemplate(tpl, { title: pick(tpl.title, lang), lang });
               return pageHTML(b, b.pages[0], { mode: "thumb" });
             })()}</span><div><p class="eyebrow">${esc(I.S("Template", "Plantilla"))}</p><h2>${esc(pick(tpl.title, lang))}</h2><p>${esc(pick(tpl.summary, lang))}</p><p class="fine"><strong>${esc(I.S("You will make:", "Vas a hacer:"))}</strong> ${esc(pick(tpl.finished, lang))}</p>${tpl.targets?.length ? `<details><summary>${esc(I.S("Language goals", "Metas de lenguaje"))}</summary><ul>${tpl.targets.map((t) => `<li>${esc(pick(t, lang))}</li>`).join("")}</ul></details>` : ""}${tpl.teacherNotes ? `<details><summary>${esc(I.S("Teacher notes", "Notas para docentes"))}</summary><p>${esc(pick(tpl.teacherNotes, lang))}</p></details>` : ""}<p><a href="${BASE}/book-studio/new">${esc(I.S("Use a blank book instead", "Usar un libro en blanco"))}</a></p></div></div><input type="hidden" name="template" value="${tpl.id}" />`
-          : `<fieldset class="bk-modes-pick"><legend>${esc(I.S("What do you want to make?", "¿Qué quieres hacer?"))}</legend><div class="bk-mode-radios">${CREATION_MODES.map((m) => `<label class="bk-kind"><input type="radio" name="bk-mode" value="${m.id}" ${(mode?.id || "story") === m.id ? "checked" : ""} /><span aria-hidden="true">${bkIcon(m.icon)}</span><span>${esc(m[lang])}</span></label>`).join("")}</div><p class="fine">${esc(I.S("The same story can be read as a book, played as an adventure, watched as a movie or printed as a comic.", "El mismo cuento se puede leer como libro, jugar como aventura, ver como película o imprimir como cómic."))}</p></fieldset><fieldset class="bk-kinds"><legend>${esc(I.S("1. What kind of book?", "1. ¿Qué tipo de libro?"))}</legend>${kindCards}</fieldset><p><a href="${BASE}/book-studio/templates">${esc(I.S(`Or choose one of ${TEMPLATES.length} templates with directions →`, `O elige una de ${TEMPLATES.length} plantillas con instrucciones →`))}</a></p>`
+          : `<fieldset class="bk-modes-pick"><legend>${esc(I.S("What do you want to make?", "¿Qué quieres hacer?"))}</legend><div class="bk-mode-radios">${CREATION_MODES.map((m) => `<label class="bk-kind"><input type="radio" name="bk-mode" value="${m.id}" ${(mode?.id || "story") === m.id ? "checked" : ""} /><span aria-hidden="true">${bkIcon(m.icon)}</span><span>${esc(m[lang])}</span></label>`).join("")}</div><p class="fine">${esc(I.S("The same story can be read as a book, played as an adventure, watched as a movie or printed as a comic.", "El mismo cuento se puede leer como libro, jugar como aventura, ver como película o imprimir como cómic."))}</p></fieldset><fieldset class="bk-kinds"><legend>${esc(I.S("1. What kind of book?", "1. ¿Qué tipo de libro?"))}</legend>${kindCards}</fieldset><p><a class="bk-create-tpl-link" href="${BASE}/book-studio/templates?grades=${ctx.band}">${esc(I.S(`Or choose one of ${templatesFor(ctx.band).length} templates with directions →`, `O elige una de ${templatesFor(ctx.band).length} plantillas con instrucciones →`))}</a></p>`
       }
       <label class="bk-field bk-create-title"><span>${esc(tpl ? I.S("Title of your book", "Título de tu libro") : I.S("2. Title of your book", "2. Título de tu libro"))}</span><input name="title" required maxlength="80" value="${esc(tpl ? pick(tpl.title, lang) : "")}" placeholder="${esc(I.S("My amazing book", "Mi libro increíble"))}" /></label>
       <label class="bk-field"><span>${esc(I.S("Your name for the cover (optional; first name is enough)", "Tu nombre para la portada (opcional; basta con el nombre)"))}</span><input name="author" maxlength="60" autocomplete="off" /></label>
