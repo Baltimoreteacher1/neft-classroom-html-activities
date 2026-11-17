@@ -1,5 +1,5 @@
 import { begin, card, bars, bubble, wave, sparkle, magnifier, floorShadow, rot, grad, path, poly, rect, rrect, circle, ellipse, line, vgrad, blur, P, light, shade, mix, DOM, INK } from "../lib/g.mjs";
-import { clipRect, ground, wallWindow } from "../kit.mjs";
+import { clipRect, ground, wallWindow } from "../../../access-practice-lab/src/art/kit.js";
 
 // Mystery Academy: a school hallway clue board (pinned notes joined by string), lockers, a green notebook
 // on a shelf, a witness interview (speech bubble with a sound wave) and a magnifying glass.

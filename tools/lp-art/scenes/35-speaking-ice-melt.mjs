@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, tuft, flower, ellipse, circle, path, rgrad, stroke, g } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, tuft, flower, ellipse, circle, path, rgrad, stroke, g } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, plate, iceCube } from "../lib/b.mjs";
 
 const pencil = `<g transform="translate(-4 -4) rotate(-40)">${"<rect x=\"-1.6\" y=\"-12\" width=\"3.2\" height=\"14\" fill=\"#f2c335\"/><polygon points=\"-1.6,2 1.6,2 0,6\" fill=\"#f0d6b0\"/>"}</g>`;

@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, pond, fence, person, tuft, flower, path, vgrad } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, pond, fence, person, tuft, flower, path, vgrad } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, barn, chicken, cropRows, sunHat } from "../lib/d.mjs";
 
 // Farm tour stops: big red barn with chickens in front; apple orchard behind the barn; vegetable garden next

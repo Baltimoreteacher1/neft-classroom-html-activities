@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, fence, slide, swings, bench, person, tuft, flower, ellipse, line } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, fence, slide, swings, bench, person, tuft, flower, ellipse, line } from "../../../access-practice-lab/src/art/kit.js";
 
 export default {
   file: "35-listening-playground.svg",

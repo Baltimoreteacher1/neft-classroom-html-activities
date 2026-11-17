@@ -1,6 +1,7 @@
-// The Language Page illustration kit: one art direction for every activity picture under
-// access-practice-lab/pictures/. Scene scripts in tools/lp-art/scenes/ compose these primitives; the
-// generator (tools/lp-art/build.mjs) writes the SVG files. Edit a scene or the kit, never the output SVG.
+// The Language Page illustration kit: one art direction for every picture on the site. Build time: scene scripts
+// in tools/lp-art/scenes/ compose these primitives and tools/lp-art/build.mjs writes access-practice-lab/pictures/.
+// Run time: the lab's art modules (Book Studio, early scenes, quests, simulations, ...) import it directly.
+// Pure strings, no DOM. Art that is inlined many times on one page draws inside noDefs(), which keeps ids out.
 //
 // Style: editorial picture-book. No black outlines; form comes from a lit side and a shade side of each
 // fill, soft ground shadows, layered depth (far shapes paler and bluer), and one warm light source.
@@ -180,19 +181,36 @@ export function svg({ w, h, title, body, grain = true }) {
 }
 
 let DEFS = [];
+let FLAT = false;
 const takeDefs = () => {
   const d = DEFS.join("");
   DEFS = [];
   return d;
 };
-/** Register a <defs> entry and get its id. */
+/** Register a <defs> entry and get its id. Inside noDefs() this throws: such art must stay id-free. */
 export function def(make, prefix = "d") {
+  if (FLAT) throw new Error("kit: def() inside noDefs(); use flat colour instead");
   const i = id(prefix);
   DEFS.push(make(i));
   return i;
 }
+/**
+ * Draw without <defs>: gradients become their middle colour and anything needing an id throws. For inline art that
+ * a page repeats (cards, thumbnails), where shared ids would collide. Returns whatever draw() returns.
+ */
+export function noDefs(draw) {
+  const was = FLAT;
+  FLAT = true;
+  try {
+    return draw();
+  } finally {
+    FLAT = was;
+  }
+}
+const midStop = (stops) => stops[Math.floor((stops.length - 1) / 2)][1];
 /** Vertical gradient fill; stops = [[offset, colour, opacity?], ...]. Returns `url(#id)`. */
 export function vgrad(stops, { x1 = 0, y1 = 0, x2 = 0, y2 = 1 } = {}) {
+  if (FLAT) return midStop(stops);
   const i = def(
     (i) =>
       `<linearGradient id="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops
@@ -203,6 +221,7 @@ export function vgrad(stops, { x1 = 0, y1 = 0, x2 = 0, y2 = 1 } = {}) {
   return `url(#${i})`;
 }
 export function rgrad(stops, { cx = 0.5, cy = 0.5, r = 0.5 } = {}) {
+  if (FLAT) return "none"; // glows and vignettes simply drop out of flat art
   const i = def(
     (i) =>
       `<radialGradient id="${i}" cx="${cx}" cy="${cy}" r="${r}">${stops

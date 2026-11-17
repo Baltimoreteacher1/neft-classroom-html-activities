@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, cloud, hills, ground, tree, person, panels, rect, rrect, road, building, contact, shade, light, vgrad, g, tr, circle } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, cloud, hills, ground, tree, person, panels, rect, rrect, road, building, contact, shade, light, vgrad, g, tr, circle } from "../../../access-practice-lab/src/art/kit.js";
 import { bus, backpackShape, handAt } from "../lib/c.mjs";
 
 const BOY = { skin: SKIN[2], hair: HAIR[0], hairStyle: "short", top: P.blue, bottom: P.navy };

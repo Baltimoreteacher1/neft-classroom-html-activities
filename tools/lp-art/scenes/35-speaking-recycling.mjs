@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, circle, ground, wallWindow, board, table, person, contact, shade, vgrad, tuft } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, circle, ground, wallWindow, board, table, person, contact, shade, vgrad, tuft } from "../../../access-practice-lab/src/art/kit.js";
 import { bin, bottle, sodaCan, cardboardBox, newspaper, handAt } from "../lib/c.mjs";
 
 const FLOOR = 300;

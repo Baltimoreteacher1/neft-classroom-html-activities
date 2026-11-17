@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, ground, rect, rrect, path, circle, ellipse, line, stroke, g, stall, person, contact, building, shade, light, haze, vgrad, tuft, tree } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, ground, rect, rrect, path, circle, ellipse, line, stroke, g, stall, person, contact, building, shade, light, haze, vgrad, tuft, tree } from "../../../access-practice-lab/src/art/kit.js";
 import { apple, corn, crate, basket } from "../lib/a.mjs";
 
 const SX = 324;

@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, ellipse, line, stroke, circle, g, vgrad, shade, light, ground, wallWindow, clock, person, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, ellipse, line, stroke, circle, g, vgrad, shade, light, ground, wallWindow, clock, person, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { bin, tray, servingCounter, milkCarton, apple } from "../lib/d.mjs";
 
 // School lunchroom. At the long table, left to right: a girl holding up milk, the boy next to her holding up

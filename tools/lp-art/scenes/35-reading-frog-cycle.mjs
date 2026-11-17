@@ -1,4 +1,4 @@
-import { P, rect, ellipse, circle, arrow, stroke, path, g, vgrad, rgrad, shade, light } from "../kit.mjs";
+import { P, rect, ellipse, circle, arrow, stroke, path, g, vgrad, rgrad, shade, light } from "../../../access-practice-lab/src/art/kit.js";
 import { frogEggs, tadpole, frog, lilyPad } from "../lib/a.mjs";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));

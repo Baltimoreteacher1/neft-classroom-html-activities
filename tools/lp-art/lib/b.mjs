@@ -1,6 +1,6 @@
 // Illustrator B helpers: props and set pieces the shared kit does not draw. Same art direction as kit.mjs
 // (no outlines, lit/shade sides, soft contact shadows). Every function returns an SVG string.
-import { P, shade, light, mix, rect, rrect, circle, ellipse, path, poly, line, stroke, g, tr, vgrad, rgrad, contact, text, tag, arrow, rng } from "../kit.mjs";
+import { P, shade, light, mix, rect, rrect, circle, ellipse, path, poly, line, stroke, g, tr, vgrad, rgrad, contact, text, tag, arrow, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 

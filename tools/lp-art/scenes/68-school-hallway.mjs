@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, person, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, mix, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, person, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, mix, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { room, wallClock, door } from "../lib/e.mjs";
 
 // A busy middle-school hallway: a long row of lockers on the left, a classroom door with a clock above it,

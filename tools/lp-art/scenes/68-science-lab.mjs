@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, person, wallWindow, rect, rrect, stroke, g } from "../kit.mjs";
+import { P, SKIN, HAIR, person, wallWindow, rect, rrect, stroke, g } from "../../../access-practice-lab/src/art/kit.js";
 import { room, labBench, microscope, beaker, ruler, goggles, shelfJars, handAt, lightPatch, cam } from "../lib/f.mjs";
 
 // A student in goggles pours green liquid from a flask into a beaker. A microscope and a ruler are on the table.

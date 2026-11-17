@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, sky, sun, cloud, hills, ground, rain, puddle, person, umbrella, tuft, flower, tree, line, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, sky, sun, cloud, hills, ground, rain, puddle, person, umbrella, tuft, flower, tree, line, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { frameCard, handAt, overlay, shorts, boots, kite } from "../lib/c.mjs";
 
 const boy = { pose: "reach", facing: 1, skin: SKIN[4], hair: HAIR[0], hairStyle: "curly", top: P.gold, bottom: SKIN[4], sleeve: "short", mouth: "open" };

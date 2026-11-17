@@ -1,5 +1,5 @@
 import { begin, wash, blob, card, bars, check, bubble, wave, sparkle, magnifier, floorShadow, rot, path, poly, rect, rrect, circle, line, vgrad, P, light, shade, DOM } from "../lib/g.mjs";
-import { person, SKIN, HAIR, tuft } from "../kit.mjs";
+import { person, SKIN, HAIR, tuft } from "../../../access-practice-lab/src/art/kit.js";
 
 // Grades 3-5: two children with story cards, a speaking bubble and a nature field map.
 function storyCard() {

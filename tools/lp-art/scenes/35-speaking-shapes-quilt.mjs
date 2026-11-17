@@ -1,4 +1,4 @@
-import { P, rect, rrect, circle, poly, ground, contact, shade, light, line, stroke, vgrad, g, wallWindow } from "../kit.mjs";
+import { P, rect, rrect, circle, poly, ground, contact, shade, light, line, stroke, vgrad, g, wallWindow } from "../../../access-practice-lab/src/art/kit.js";
 
 // Layout matches the original: T C T / R T C / C R T  (4 red triangles, 3 yellow circles, 2 blue rectangles).
 const LAYOUT = ["T", "C", "T", "R", "T", "C", "C", "R", "T"];

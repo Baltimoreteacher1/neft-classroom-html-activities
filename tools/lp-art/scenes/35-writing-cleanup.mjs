@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, panels, flower, tuft, g } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, panels, flower, tuft, g } from "../../../access-practice-lab/src/art/kit.js";
 import { bottle, sodaCan, wrapper, crumpledPaper, trashBag, gloved, handAt } from "../lib/c.mjs";
 
 // The same two neighbors in every panel.

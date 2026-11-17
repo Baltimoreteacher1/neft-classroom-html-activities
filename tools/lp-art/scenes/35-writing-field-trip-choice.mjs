@@ -1,4 +1,4 @@
-import { P, rgrad, rect, rrect, sky, sun, cloud, hills, ground, tree, fence, clipRect, contact, shade, light, vgrad, person, SKIN, HAIR } from "../kit.mjs";
+import { P, rgrad, rect, rrect, sky, sun, cloud, hills, ground, tree, fence, clipRect, contact, shade, light, vgrad, person, SKIN, HAIR } from "../../../access-practice-lab/src/art/kit.js";
 import { dinoSkeleton, barn, cow } from "../lib/c.mjs";
 
 const frame = (x, w, body) =>

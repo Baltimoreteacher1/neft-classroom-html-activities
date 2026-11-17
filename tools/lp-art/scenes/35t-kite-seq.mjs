@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, sky, cloud, hills, ground, tree, person, tuft, flower, stroke, circle } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, sky, cloud, hills, ground, tree, person, tuft, flower, stroke, circle } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, kite, rake } from "../lib/d.mjs";
 
 // Three panels in the same park, same tall tree on the right: 1 the girl flies her red kite while Grandpa

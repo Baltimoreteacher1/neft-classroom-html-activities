@@ -1,4 +1,4 @@
-import { P, sky, ground, rect, rrect, path, poly, circle, ellipse, line, stroke, g, wallWindow, bookshelf, board, clock, desk, chair, contact, vgrad, shade, light, PROPS, tr } from "../kit.mjs";
+import { P, sky, ground, rect, rrect, path, poly, circle, ellipse, line, stroke, g, wallWindow, bookshelf, board, clock, desk, chair, contact, vgrad, shade, light, PROPS, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { rug, door, cubbies, apple } from "../lib/a.mjs";
 
 const FLOOR = 272;

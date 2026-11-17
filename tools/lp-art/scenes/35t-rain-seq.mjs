@@ -1,5 +1,5 @@
 import { frown } from "../lib/e.mjs";
-import { P, SKIN, HAIR, panels, sky, sun, cloud, rain, puddle, ground, tree, person, umbrella, tuft, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, sky, sun, cloud, rain, puddle, ground, tree, person, umbrella, tuft, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, contact } from "../../../access-practice-lab/src/art/kit.js";
 
 // Four pictures in order. 1: a girl with a backpack walks to school in the sunshine. 2: dark clouds, rain pours,
 // she is wet and sad. 3: her friend comes over with a red umbrella. 4: the two friends share the umbrella and

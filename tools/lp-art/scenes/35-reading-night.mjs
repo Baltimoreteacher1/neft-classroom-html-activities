@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rgrad, sky, moon, stars, rect, rrect, path, ellipse, circle, g, vgrad, clipRect, person, tree, mix, shade, light, contact, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rgrad, sky, moon, stars, rect, rrect, path, ellipse, circle, g, vgrad, clipRect, person, tree, mix, shade, light, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
 
 const wall = "#9a6a5c";
 const win = { x: 160, y: 166, w: 160, h: 132 };

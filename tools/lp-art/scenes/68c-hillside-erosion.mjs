@@ -1,4 +1,4 @@
-import { P, sky, cloud, path, stroke, vgrad, tree, tuft, ellipse, g, rng, shade, light } from "../kit.mjs";
+import { P, sky, cloud, path, stroke, vgrad, tree, tuft, ellipse, g, rng, shade, light } from "../../../access-practice-lab/src/art/kit.js";
 import { stump } from "../lib/f.mjs";
 
 // Cause and effect after one storm. LEFT: hillside covered in trees and grass; the river beside it stays blue and

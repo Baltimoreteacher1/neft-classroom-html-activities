@@ -1,4 +1,4 @@
-import { P, panels, tree, sun, cloud, tr, rect, circle, ellipse, path, stroke, vgrad, rng, shade, light, haze, contact, flower, tuft } from "../kit.mjs";
+import { P, panels, tree, sun, cloud, tr, rect, circle, ellipse, path, stroke, vgrad, rng, shade, light, haze, contact, flower, tuft } from "../../../access-practice-lab/src/art/kit.js";
 
 // The same maple tree in four seasons, left to right: spring (light green leaves, pink flowers),
 // summer (full dark green leaves, hot sun), fall (orange and red leaves falling), winter (bare branches, snow).

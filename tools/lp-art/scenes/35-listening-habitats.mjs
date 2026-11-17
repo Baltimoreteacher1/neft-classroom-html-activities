@@ -1,4 +1,4 @@
-import { P, panels, rect, path, ellipse, circle, stroke, poly, tree, tuft, flower, g, vgrad, rgrad, shade, light, haze, rng, sun, contact } from "../kit.mjs";
+import { P, panels, rect, path, ellipse, circle, stroke, poly, tree, tuft, flower, g, vgrad, rgrad, shade, light, haze, rng, sun, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { cactus, rock, lilyPad, reeds } from "../lib/a.mjs";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));

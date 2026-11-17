@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, person, board, wallWindow, clock, stroke, circle, rect, rrect, contact, tr, PROPS, tuft } from "../kit.mjs";
+import { P, SKIN, HAIR, person, board, wallWindow, clock, stroke, circle, rect, rrect, contact, tr, PROPS, tuft } from "../../../access-practice-lab/src/art/kit.js";
 import { room, lightPatch, headAt, mirrorX } from "../lib/f.mjs";
 
 // A teacher stands at the board; across the room a student at a desk raises a hand high.

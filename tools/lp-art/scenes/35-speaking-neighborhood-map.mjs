@@ -1,4 +1,4 @@
-import { P, rect, rrect, circle, poly, path, line, stroke, text, tag, g, shade, light, vgrad } from "../kit.mjs";
+import { P, rect, rrect, circle, poly, path, line, stroke, text, tag, g, shade, light, vgrad } from "../../../access-practice-lab/src/art/kit.js";
 import { mapTree } from "../lib/c.mjs";
 
 // Geometry kept from the original map: Main St y 180-220; Oak St x 260-300; Pine Ave x 460-500.

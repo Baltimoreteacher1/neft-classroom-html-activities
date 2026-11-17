@@ -1,4 +1,4 @@
-import { P, rect, circle, ellipse, stroke, rgrad, vgrad, stars, arrow, tag, text, g } from "../kit.mjs";
+import { P, rect, circle, ellipse, stroke, rgrad, vgrad, stars, arrow, tag, text, g } from "../../../access-practice-lab/src/art/kit.js";
 import { earth } from "../lib/f.mjs";
 
 // Seasons diagram, accurate first. The Sun sits at the centre of Earth's orbit. Earth is drawn at two opposite

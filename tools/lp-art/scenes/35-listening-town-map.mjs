@@ -1,4 +1,4 @@
-import { P, rect, rrect, path, poly, circle, ellipse, line, stroke, g, tag, text, tree, road, contact, vgrad, shade, light, rng, bench, pond, tuft, flower } from "../kit.mjs";
+import { P, rect, rrect, path, poly, circle, ellipse, line, stroke, g, tag, text, tree, road, contact, vgrad, shade, light, rng, bench, pond, tuft, flower } from "../../../access-practice-lab/src/art/kit.js";
 import { mapBuilding, emblem } from "../lib/a.mjs";
 
 const TOP = 160; // ground line of the buildings above Oak Street

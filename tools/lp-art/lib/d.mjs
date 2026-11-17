@@ -1,7 +1,7 @@
 // Illustrator D helpers: props and figure geometry the shared kit does not cover (water cans, buses,
 // barns, bees, beds, bins ...). Same art direction as kit.mjs: no outlines, lit/shade sides, soft contact
 // shadows. Every function returns an SVG string in scene coordinates unless it says otherwise.
-import { P, shade, light, mix, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, text, vgrad, rng } from "../kit.mjs";
+import { P, shade, light, mix, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, text, vgrad, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const rad = (a) => (a * Math.PI) / 180;

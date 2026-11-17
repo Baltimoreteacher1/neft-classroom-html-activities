@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, kid, swings, slide, tuft, flower, fence } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, kid, swings, slide, tuft, flower, fence } from "../../../access-practice-lab/src/art/kit.js";
 import { hoop, basketball, handAt } from "../lib/c.mjs";
 
 // Slide mirrored so its ladder is on the right and the line of five waits beside it.

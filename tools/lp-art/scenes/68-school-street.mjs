@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, tree, person, tag, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, haze, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, tree, person, tag, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, haze, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { wallClock } from "../lib/e.mjs";
 
 // A brick school with a SCHOOL sign over the doors, trees along the sidewalk in front,

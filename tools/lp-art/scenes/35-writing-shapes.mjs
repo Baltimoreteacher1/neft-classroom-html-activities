@@ -1,4 +1,4 @@
-import { P, rect, rrect, circle, poly, g, vgrad, rgrad, stroke, shade, light, clipRect } from "../kit.mjs";
+import { P, rect, rrect, circle, poly, g, vgrad, rgrad, stroke, shade, light, clipRect } from "../../../access-practice-lab/src/art/kit.js";
 
 // Counting picture: exactly three red circles in a row, two blue triangles beside them, one yellow square
 // below the circles. Paper cut-outs with a little thickness and a soft shadow on a wooden table.

@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, ground, rect, rrect, path, circle, ellipse, line, stroke, poly, g, bookshelf, wallWindow, person, contact, shade, light, vgrad, chair } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, ground, rect, rrect, path, circle, ellipse, line, stroke, poly, g, bookshelf, wallWindow, person, contact, shade, light, vgrad, chair } from "../../../access-practice-lab/src/art/kit.js";
 import { bookCover, icon } from "../lib/a.mjs";
 
 const FLOOR = 292;

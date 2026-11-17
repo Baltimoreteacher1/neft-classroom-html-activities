@@ -1,4 +1,4 @@
-import { P, panels, tr, board, wallWindow, desk, chair, stroke, rect, rrect, circle, path, clock } from "../kit.mjs";
+import { P, panels, tr, board, wallWindow, desk, chair, stroke, rect, rrect, circle, path, clock } from "../../../access-practice-lab/src/art/kit.js";
 import { room, computer, easel, palette, brushCup, paintJar, lightPatch } from "../lib/f.mjs";
 
 // Two classrooms, numbered 1 and 2. Both have desks and a board at the front.

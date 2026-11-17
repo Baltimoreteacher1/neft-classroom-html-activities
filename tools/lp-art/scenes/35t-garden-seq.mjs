@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, sky, sun, cloud, ground, fence, person, flower, tuft, tree, haze, ellipse, stroke, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, sky, sun, cloud, ground, fence, person, flower, tuft, tree, haze, ellipse, stroke, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, shovel, wateringCan, tomatoPlant, bee } from "../lib/d.mjs";
 
 // Four panels, same two students: 1 Rosa and Malik dig with small shovels; 2 Rosa drops seeds in the holes;

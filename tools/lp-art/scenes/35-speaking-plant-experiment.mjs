@@ -1,4 +1,4 @@
-import { P, rect, rrect, path, poly, ground, wallWindow, sun, contact, shade, light, tag, vgrad, rgrad, circle, line } from "../kit.mjs";
+import { P, rect, rrect, path, poly, ground, wallWindow, sun, contact, shade, light, tag, vgrad, rgrad, circle, line } from "../../../access-practice-lab/src/art/kit.js";
 import { pot, plant, calendar } from "../lib/c.mjs";
 
 const SILL = 300;

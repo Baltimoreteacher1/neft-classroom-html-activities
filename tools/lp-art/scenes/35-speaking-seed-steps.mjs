@@ -1,4 +1,4 @@
-import { P, rect, rrect, ellipse, path, sky, sun, cloud, ground, badge, arrow, vgrad, shade, light, g } from "../kit.mjs";
+import { P, rect, rrect, ellipse, path, sky, sun, cloud, ground, badge, arrow, vgrad, shade, light, g } from "../../../access-practice-lab/src/art/kit.js";
 import { pot, plant, wateringCan } from "../lib/c.mjs";
 
 const XS = [85, 245, 405, 565];

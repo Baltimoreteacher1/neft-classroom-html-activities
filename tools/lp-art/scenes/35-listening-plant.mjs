@@ -1,4 +1,4 @@
-import { P, sky, sun, cloud, hills, rect, path, stroke, ellipse, circle, g, tr, vgrad, shade, light, rng, haze } from "../kit.mjs";
+import { P, sky, sun, cloud, hills, rect, path, stroke, ellipse, circle, g, tr, vgrad, shade, light, rng, haze } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const SURFACE = 252;

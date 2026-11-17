@@ -1,4 +1,4 @@
-import { arrow } from "../kit.mjs";
+import { arrow } from "../../../access-practice-lab/src/art/kit.js";
 import { rect, rrect, path, circle, ellipse, line, text, vgrad, P, light, shade, mix } from "../lib/g.mjs";
 import { soil, pavement, grassEdge, plant, rainCloud, WATER } from "../lib/g.mjs";
 

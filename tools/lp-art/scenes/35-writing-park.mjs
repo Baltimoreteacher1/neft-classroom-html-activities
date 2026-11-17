@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, swings, tuft, flower, pathway } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, swings, tuft, flower, pathway } from "../../../access-practice-lab/src/art/kit.js";
 
 const G = 262;
 export default {

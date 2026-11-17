@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, kid, tr, rect, circle, ellipse, path, stroke, vgrad, rgrad, shade, light, wallWindow, contact, g } from "../kit.mjs";
+import { P, SKIN, HAIR, kid, tr, rect, circle, ellipse, path, stroke, vgrad, rgrad, shade, light, wallWindow, contact, g } from "../../../access-practice-lab/src/art/kit.js";
 import { room, shelf, poseMix, floorSitter, openBook, plantPot, lightShaft } from "../lib/e.mjs";
 
 // A classroom reading corner with a bookshelf. Left: a girl reads a book by herself on an orange beanbag.

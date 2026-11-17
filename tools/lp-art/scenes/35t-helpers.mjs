@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, rect, rrect, path, stroke, text, board, clock, wallWindow, g, vgrad, shade, light, person, PROPS, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, rect, rrect, path, stroke, text, board, clock, wallWindow, g, vgrad, shade, light, person, PROPS, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, helmet, hydrant, stethoscope, clipboard, vestStripes } from "../lib/d.mjs";
 
 // Three helpers side by side (left to right): firefighter with a hose by a red hydrant; nurse with a

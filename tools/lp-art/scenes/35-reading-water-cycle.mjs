@@ -1,4 +1,4 @@
-import { P, sky, sun, cloud, rect, ellipse, path, g, vgrad, stroke, arrow, rain, hills, ground, tree, tuft, haze, shade, light, pond, circle } from "../kit.mjs";
+import { P, sky, sun, cloud, rect, ellipse, path, g, vgrad, stroke, arrow, rain, hills, ground, tree, tuft, haze, shade, light, pond, circle } from "../../../access-practice-lab/src/art/kit.js";
 import { mountain, vapor } from "../lib/b.mjs";
 
 const T = "#0f5f73";

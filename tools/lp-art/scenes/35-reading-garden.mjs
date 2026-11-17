@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, ground, rect, fence, building, person, flower, planter, stroke, circle, ellipse, path, tuft, haze } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, ground, rect, fence, building, person, flower, planter, stroke, circle, ellipse, path, tuft, haze } from "../../../access-practice-lab/src/art/kit.js";
 import { wateringCan, tomatoPlant } from "../lib/a.mjs";
 
 // water arcing from the spout down onto the first tomato plants

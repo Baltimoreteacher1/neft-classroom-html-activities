@@ -1,4 +1,4 @@
-import { P, sky, sun, cloud, rain, arrow, path, poly, stroke, ellipse, g, vgrad, haze, shade, light, tree } from "../kit.mjs";
+import { P, sky, sun, cloud, rain, arrow, path, poly, stroke, ellipse, g, vgrad, haze, shade, light, tree } from "../../../access-practice-lab/src/art/kit.js";
 
 // Label-free water-cycle diagram (students write the labels in words). Read the arrows in order:
 // sun warms ocean -> vapor rises -> cloud forms -> moves over the mountain and rains -> river back to the ocean.

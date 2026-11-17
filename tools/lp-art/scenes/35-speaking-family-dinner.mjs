@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, wallWindow, person, shade, light, stroke, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, wallWindow, person, shade, light, stroke, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, room, pendantLamp, hands } from "../lib/b.mjs";
 
 const TOP = 318; // front edge of the table top

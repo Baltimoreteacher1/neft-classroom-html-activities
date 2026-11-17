@@ -1,5 +1,5 @@
 import { begin, card, bars, check, sparkle, floorShadow, rot, grad, path, poly, rect, rrect, circle, ellipse, line, vgrad, blur, P, light, shade, mix, DOM, INK } from "../lib/g.mjs";
-import { clipRect, sky, sun, cloud, haze, tree, ground, tuft, flower } from "../kit.mjs";
+import { clipRect, sky, sun, cloud, haze, tree, ground, tuft, flower } from "../../../access-practice-lab/src/art/kit.js";
 
 // Science Expedition: a watershed (snowy peaks, a river into a lake, forest) and a field research station
 // with a sensor post; a field-notes card shows the readings.

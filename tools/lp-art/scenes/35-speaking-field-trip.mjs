@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, panels, sky, sun, cloud, hills, ground, tree, fence, person, tuft, shade, light, rgrad, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, panels, sky, sun, cloud, hills, ground, tree, fence, person, tuft, shade, light, rgrad, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { barn, cow, chicken, fishShape, turtle } from "../lib/b.mjs";
 
 function farm(x, y, w, h) {

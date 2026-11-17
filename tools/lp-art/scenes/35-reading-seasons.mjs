@@ -1,4 +1,4 @@
-import { P, rect, ellipse, circle, path, g, vgrad, panels, tree, ground, sun, cloud, tr, stroke, rng, tuft, flower, mix } from "../kit.mjs";
+import { P, rect, ellipse, circle, path, g, vgrad, panels, tree, ground, sun, cloud, tr, stroke, rng, tuft, flower, mix } from "../../../access-practice-lab/src/art/kit.js";
 
 const S = 0.86;
 const BARE = "M-2 -70 Q-18 -86 -30 -100M2 -78 Q18 -92 28 -108M-30 -100 Q-38 -120 -34 -138M-30 -100 Q-50 -108 -60 -122M28 -108 Q40 -126 36 -146M28 -108 Q48 -112 58 -128M0 -88 Q2 -120 -4 -150M-4 -150 Q-14 -162 -20 -170M-4 -150 Q6 -164 12 -172";

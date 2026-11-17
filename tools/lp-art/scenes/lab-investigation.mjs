@@ -1,4 +1,4 @@
-import { P, rect, rrect, circle, path, stroke, vgrad, rgrad, def, text, g, line, rng } from "../kit.mjs";
+import { P, rect, rrect, circle, path, stroke, vgrad, rgrad, def, text, g, line, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 // UI illustration for the river investigation lab: a field journal (FIELD NOTES / 04: a river map with two
 // sample points, and a WHAT CHANGED? graph), a VOICE NOTE card (waveform + microphone) and a water-sample card

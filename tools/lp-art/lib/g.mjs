@@ -1,7 +1,7 @@
 // Illustrator G helpers (lib/g.mjs): interface spot illustrations (empty states, completion, cards, heroes).
 // Same art direction as the kit: no outlines, lit top-left, soft blurred shadows falling down-right,
 // layered dimensional objects. Every scene that uses these calls begin() first in draw().
-import { P, mix, shade, light, def, vgrad, rgrad, rect, rrect, circle, ellipse, path, poly, line, stroke, g, tr, text, rng } from "../kit.mjs";
+import { P, mix, shade, light, def, vgrad, rgrad, rect, rrect, circle, ellipse, path, poly, line, stroke, g, tr, text, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 /** Domain colours of the four language studios. */
 export const DOM = { listening: "#075568", reading: "#2e4a94", speaking: "#8a3a5c", writing: "#9a4a26" };

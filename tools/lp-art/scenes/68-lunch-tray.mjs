@@ -1,4 +1,4 @@
-import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, mix, text } from "../kit.mjs";
+import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, mix, text } from "../../../access-practice-lab/src/art/kit.js";
 
 // Top-down cafeteria tray on a table: apple, sandwich, carton of milk, carrots (exactly these four foods).
 const tray = (x, y, w, h) =>

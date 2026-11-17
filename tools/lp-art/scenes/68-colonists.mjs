@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, tuft, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, haze, mix, contact, rng } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, person, tuft, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, haze, mix, contact, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 // Colonial settlement, early 1600s (Jamestown style): a small timber-framed house with a thatched roof
 // and a wooden chimney; a woman in a linen coif and apron cooks in an iron pot over an open fire; a fenced

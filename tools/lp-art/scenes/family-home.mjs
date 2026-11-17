@@ -1,5 +1,5 @@
 import { begin, blob, bubble, bars, sparkle, floorShadow, grad, path, rect, rrect, circle, ellipse, poly, vgrad, P, light, shade, mix } from "../lib/g.mjs";
-import { tree } from "../kit.mjs";
+import { tree } from "../../../access-practice-lab/src/art/kit.js";
 
 // A warm family home (three-quarter view) with two speech bubbles: the family hub picture.
 function house() {

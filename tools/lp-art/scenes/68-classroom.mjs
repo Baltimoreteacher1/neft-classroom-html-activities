@@ -1,4 +1,4 @@
-import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, vgrad, shade, light } from "../kit.mjs";
+import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, vgrad, shade, light } from "../../../access-practice-lab/src/art/kit.js";
 import { room, wallClock, whiteboard, door, shelf, schoolDesk, chairBack, plantPot, lightShaft } from "../lib/e.mjs";
 
 // An empty classroom seen from the back: rows of desks and chairs face the whiteboard at the front;

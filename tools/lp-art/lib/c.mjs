@@ -1,6 +1,6 @@
 // Illustrator C helpers: props and figure overlays the shared kit does not carry.
 // Same art direction as kit.mjs: no outlines, lit/shade sides, soft contact shadows.
-import { P, SKIN, g, tr, clipRect, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, shade, light, mix, tag, text, vgrad, rng } from "../kit.mjs";
+import { P, SKIN, g, tr, clipRect, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, shade, light, mix, tag, text, vgrad, rng } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 

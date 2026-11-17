@@ -1,4 +1,4 @@
-import { P, sky, sun, cloud, hills, ground, tree, tuft, rain, arrow, stroke, path, ellipse, rect, g, vgrad, shade, light, haze } from "../kit.mjs";
+import { P, sky, sun, cloud, hills, ground, tree, tuft, rain, arrow, stroke, path, ellipse, rect, g, vgrad, shade, light, haze } from "../../../access-practice-lab/src/art/kit.js";
 import { mountain, reeds } from "../lib/a.mjs";
 
 const wavy = (x, y0, y1) => {

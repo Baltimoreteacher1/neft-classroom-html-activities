@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, duck, tuft, flower, g, tr, rect, rrect, circle, ellipse, path, stroke, vgrad, shade, light, haze, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, duck, tuft, flower, g, tr, rect, rrect, circle, ellipse, path, stroke, vgrad, shade, light, haze, contact } from "../../../access-practice-lab/src/art/kit.js";
 
 // A city park: tall trees, a fountain in the middle with a path looping around it, a pond with three ducks.
 const stone = "#c9c3b8";

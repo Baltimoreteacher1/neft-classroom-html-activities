@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, sky, cloud, ground, person, tuft, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, contact } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, sky, cloud, ground, person, tuft, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { room, sitDog, frown } from "../lib/e.mjs";
 
 // Three pictures in order. 1: a sad boy outside his house holds an empty leash beside an empty dog house.

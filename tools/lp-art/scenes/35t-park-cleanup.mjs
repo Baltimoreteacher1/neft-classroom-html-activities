@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, slide, person, flower, tuft, path, ellipse, rrect, stroke, rect, shade, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, slide, person, flower, tuft, path, ellipse, rrect, stroke, rect, shade, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, bin, sapling, shovel, wateringCan, sodaCan } from "../lib/d.mjs";
 
 // Neighbors clean up the park, left to right: a girl drops a can into the trash bag she holds; a boy carries

@@ -1,4 +1,4 @@
-import { P, rect, rrect, path, ellipse, circle, g, board, wallWindow, clock, stroke, shade, light, rng, contact } from "../kit.mjs";
+import { P, rect, rrect, path, ellipse, circle, g, board, wallWindow, clock, stroke, shade, light, rng, contact } from "../../../access-practice-lab/src/art/kit.js";
 import { room, lightPool, recycleBin } from "../lib/b.mjs";
 
 const FLOOR = 300;

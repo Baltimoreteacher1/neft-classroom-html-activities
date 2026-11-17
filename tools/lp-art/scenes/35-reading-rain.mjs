@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, cloud, rain, puddle, building, road, ground, rect, ellipse, person, umbrella, haze, stroke, tree, g } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, cloud, rain, puddle, building, road, ground, rect, ellipse, person, umbrella, haze, stroke, tree, g } from "../../../access-practice-lab/src/art/kit.js";
 import { bus, busStop, hands } from "../lib/b.mjs";
 
 const girl = { x: 222, y: 388, h: 126, pose: "reach", facing: 1 };

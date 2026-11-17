@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, cloud, rain, puddle, ground, house, tree, tuft, person, umbrella, haze, rect, stroke, g, ellipse } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, cloud, rain, puddle, ground, house, tree, tuft, person, umbrella, haze, rect, stroke, g, ellipse } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, boots, umbrellaHeld, rainHat } from "../lib/d.mjs";
 
 const boy = { pose: "hold", skin: SKIN[2], hair: HAIR[0], hairStyle: "short", top: P.yellow, coat: P.yellow, bottom: P.navy, mouth: "smile" };

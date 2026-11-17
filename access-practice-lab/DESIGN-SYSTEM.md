@@ -89,7 +89,7 @@ text and for control borders). `--ink-3` is the lightest allowed body-adjacent t
   script, never the files. Every other picture under `pictures/` (activity pictures, the `ds/` spot art such as
   `empty`, `complete`, `hero`, `reality-*`, `studio-*`, the `worlds/` cards and the `publisher/` figures) is generated
   by `node tools/lp-art/build.mjs` from one scene module per file in `tools/lp-art/scenes/<stem>.mjs`, using the shared
-  kit `tools/lp-art/kit.mjs` (people, places, palette) and the spot-art helpers in `tools/lp-art/lib/g.mjs` (cards,
+  kit `access-practice-lab/src/art/kit.js` (people, places, palette) and the spot-art helpers in `tools/lp-art/lib/g.mjs` (cards,
   check badges, speech bubbles, sound waves, pencils, magnifiers, soft shadows). Edit the scene, never the SVG;
   `build.mjs --check` fails when an output is stale. The look is editorial and dimensional: no outlines, form from a
   lit top-left side and a shaded side, soft blurred shadows, Deep Harbor colours (navy, teal, gold, coral, ivory) and

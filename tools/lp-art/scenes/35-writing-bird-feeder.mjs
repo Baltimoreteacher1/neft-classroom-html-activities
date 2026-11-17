@@ -1,4 +1,4 @@
-import { P, wallWindow, rect, rrect, path, line, stroke, ellipse, circle, sky, cloud, tree, ground, panels, contact, shade, light, vgrad, bird, g } from "../kit.mjs";
+import { P, wallWindow, rect, rrect, path, line, stroke, ellipse, circle, sky, cloud, tree, ground, panels, contact, shade, light, vgrad, bird, g } from "../../../access-practice-lab/src/art/kit.js";
 import { pinecone, butterJar, seedPlate } from "../lib/c.mjs";
 
 const tableBg = (x, y, w, h) =>

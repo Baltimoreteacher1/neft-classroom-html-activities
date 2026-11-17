@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, panels, cloud, sun, hills, ground, tree, fence, house, person, dog, tuft, flower, tr, shade, contact, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, vgrad, panels, cloud, sun, hills, ground, tree, fence, house, person, dog, tuft, flower, tr, shade, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, openGate, heart, hands } from "../lib/b.mjs";
 
 // The same girl, dad and dog in every panel.

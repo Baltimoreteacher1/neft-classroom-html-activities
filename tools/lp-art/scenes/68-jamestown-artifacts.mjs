@@ -1,4 +1,4 @@
-import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, mix } from "../kit.mjs";
+import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, mix } from "../../../access-practice-lab/src/art/kit.js";
 
 // A museum display of four Jamestown finds, left to right: an iron fishhook, a small toy horse,
 // a pair of brass cymbals, and two bone dice. Each sits on a linen mat under soft case lighting.

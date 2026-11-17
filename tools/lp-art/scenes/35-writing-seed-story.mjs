@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, sky, sun, cloud, ground, fence, table, person, flower, tuft, circle, ellipse, stroke, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, sky, sun, cloud, ground, fence, table, person, flower, tuft, circle, ellipse, stroke, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, pot, potTop, sprout, wateringCan } from "../lib/d.mjs";
 
 // One girl, one pot on a garden table, three moments: plant the seed, water the sprout, the flower blooms.

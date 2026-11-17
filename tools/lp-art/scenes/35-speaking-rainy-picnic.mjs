@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, rain, puddle, person, panels, rect, wallWindow, tuft, flower, contact, bookshelf, PROPS, circle, ellipse, g } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, rain, puddle, person, panels, rect, wallWindow, tuft, flower, contact, bookshelf, PROPS, circle, ellipse, g } from "../../../access-practice-lab/src/art/kit.js";
 import { picnicBasket, blanket } from "../lib/c.mjs";
 
 // The same three people in every panel.

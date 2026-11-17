@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, building, ground, tree, person, tuft, flower, ellipse, haze, fence, tr, g, path, line } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, building, ground, tree, person, tuft, flower, ellipse, haze, fence, tr, g, path, line } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, tomatoBed, sunflowerBed, hands } from "../lib/b.mjs";
 
 const girl = { x: 286, y: 386, h: 128, pose: "hold", facing: -1 };

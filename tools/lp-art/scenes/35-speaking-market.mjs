@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, building, ground, tree, person, tuft, rect, rrect, circle, ellipse, path, g, haze, tag, shade } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, building, ground, tree, person, tuft, rect, rrect, circle, ellipse, path, g, haze, tag, shade } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, stallBack, stallFront, loaf, corn, carrot, banana } from "../lib/b.mjs";
 
 const GY = 262; // stall ground line

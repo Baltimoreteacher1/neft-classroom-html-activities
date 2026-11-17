@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { resetIds, svg } from "./kit.mjs";
+import { resetIds, svg } from "../../access-practice-lab/src/art/kit.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const OUT = join(here, "../../access-practice-lab/pictures");

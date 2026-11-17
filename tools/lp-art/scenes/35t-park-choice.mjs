@@ -1,4 +1,4 @@
-import { P, panels, sky, cloud, hills, ground, tree, fence, flower, tuft, swings, slide, ellipse } from "../kit.mjs";
+import { P, panels, sky, cloud, hills, ground, tree, fence, flower, tuft, swings, slide, ellipse } from "../../../access-practice-lab/src/art/kit.js";
 import { raisedBed, canOnGround } from "../lib/d.mjs";
 
 // Two ideas for the same empty space: left a community garden (raised vegetable beds, tall sunflowers,

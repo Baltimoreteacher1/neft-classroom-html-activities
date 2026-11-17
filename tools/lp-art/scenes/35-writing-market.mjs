@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, path, sky, sun, cloud, building, ground, person, stall, rect, tuft, light, shade, g, tr, rrect, stroke, PROPS } from "../kit.mjs";
+import { P, SKIN, HAIR, path, sky, sun, cloud, building, ground, person, stall, rect, tuft, light, shade, g, tr, rrect, stroke, PROPS } from "../../../access-practice-lab/src/art/kit.js";
 import { produce, tallStand } from "../lib/c.mjs";
 
 const G = 300;

@@ -1,5 +1,5 @@
 import { begin, card, bars, check, sparkle, floorShadow, rot, grad, path, poly, rect, rrect, circle, ellipse, line, vgrad, blur, P, light, shade, mix, DOM, INK } from "../lib/g.mjs";
-import { sky, sun, cloud, hills, tree, clipRect, haze, ground, road } from "../kit.mjs";
+import { sky, sun, cloud, hills, tree, clipRect, haze, ground, road } from "../../../access-practice-lab/src/art/kit.js";
 
 // Future City: a green skyline (wind turbines, solar roofs, park) and a planning card with data for the council.
 function turbine(x, y, h, o = 1) {

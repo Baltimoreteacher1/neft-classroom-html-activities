@@ -1,4 +1,4 @@
-import { P, rect, circle, ellipse, path, stroke, g, vgrad, rgrad, shade, light, mix } from "../kit.mjs";
+import { P, rect, circle, ellipse, path, stroke, g, vgrad, rgrad, shade, light, mix } from "../../../access-practice-lab/src/art/kit.js";
 import { bee } from "../lib/d.mjs";
 
 // Close-up: a fuzzy striped bee standing on a big pink flower, yellow pollen on its back legs and body.

@@ -1,4 +1,4 @@
-import { P, sky, ground, wallWindow, rect, ellipse, vgrad, g, shade } from "../kit.mjs";
+import { P, sky, ground, wallWindow, rect, ellipse, vgrad, g, shade } from "../../../access-practice-lab/src/art/kit.js";
 import { room, sitDog, sitCat, plantPot } from "../lib/e.mjs";
 
 // A calm living-room portrait: the dog (left, bigger) and the cat (right, smaller) sit side by side on a rug.

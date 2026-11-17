@@ -1,4 +1,4 @@
-import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, contact, sun, hills, tree, cloud } from "../kit.mjs";
+import { P, g, tr, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, rgrad, shade, light, contact, sun, hills, tree, cloud } from "../../../access-practice-lab/src/art/kit.js";
 import { plantPot, lightShaft } from "../lib/e.mjs";
 
 // A window-garden sill: a small potted plant (soil visible) in a beam of sunshine, a watering can beside it.

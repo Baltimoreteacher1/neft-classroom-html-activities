@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, bookshelf, wallWindow, person, shade, light, contact, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, bookshelf, wallWindow, person, shade, light, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, room, frontDesk, beanbag, pottedPlant, sideTable, lightPool } from "../lib/b.mjs";
 
 export default {

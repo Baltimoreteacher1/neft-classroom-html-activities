@@ -1,4 +1,4 @@
-import { P, rgrad, rect, path, ellipse, circle, g, vgrad, stroke, line, tag, rng, tuft, mix, shade, light } from "../kit.mjs";
+import { P, rgrad, rect, path, ellipse, circle, g, vgrad, stroke, line, tag, rng, tuft, mix, shade, light } from "../../../access-practice-lab/src/art/kit.js";
 
 const X = 330;
 const SOIL = 252;

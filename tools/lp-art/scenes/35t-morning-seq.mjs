@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, rect, rrect, stroke, vgrad, ground, sky, sun, cloud, wallWindow, person, tree, haze } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, rect, rrect, stroke, vgrad, ground, sky, sun, cloud, wallWindow, person, tree, haze } from "../../../access-practice-lab/src/art/kit.js";
 import { bed, blanket, nightstand, alarmClock, sink, mirror, toothbrush, cerealBowl, spoon, busStopSign, cityBus } from "../lib/d.mjs";
 
 // Four panels, same boy (blue shirt): 1 wakes and stretches as the alarm clock rings; 2 brushes his teeth at

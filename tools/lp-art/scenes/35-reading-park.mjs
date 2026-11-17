@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, pathway, tuft, flower } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, hills, ground, tree, bench, person, dog, ball, pathway, tuft, flower } from "../../../access-practice-lab/src/art/kit.js";
 
 export default {
   file: "35-reading-park.svg",

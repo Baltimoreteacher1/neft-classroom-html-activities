@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, person, wallWindow, rect, rrect, contact, PROPS, tr, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, person, wallWindow, rect, rrect, contact, PROPS, tr, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { room, labBench, microscope, tubeRack, shelfJars, lightPatch, cam } from "../lib/f.mjs";
 
 // A scientist (lab coat, hair tied back) bends to a microscope; a rack of test tubes stands on the same bench.

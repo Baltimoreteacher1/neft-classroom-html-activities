@@ -1,4 +1,4 @@
-import { P, rect, rrect, circle, ellipse, path, stroke, vgrad, def, arrow, rng, g, shade, light, contact } from "../kit.mjs";
+import { P, rect, rrect, circle, ellipse, path, stroke, vgrad, def, arrow, rng, g, shade, light, contact } from "../../../access-practice-lab/src/art/kit.js";
 
 // Homemade water filter, top to bottom: muddy water poured in -> gravel -> sand -> black charcoal -> cotton pad ->
 // clear water dripping into a glass. A cut plastic bottle stands upside down in a ring stand. No labels (students

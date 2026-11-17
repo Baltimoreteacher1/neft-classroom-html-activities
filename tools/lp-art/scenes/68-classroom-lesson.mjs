@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, tr, person } from "../kit.mjs";
+import { P, SKIN, HAIR, tr, person } from "../../../access-practice-lab/src/art/kit.js";
 import { room, wallClock, whiteboard, shelf, schoolDesk, chairBack, seatedBack, lightShaft } from "../lib/e.mjs";
 
 // A lesson in progress, seen from the back of the room: the teacher stands next to the board and points at it;

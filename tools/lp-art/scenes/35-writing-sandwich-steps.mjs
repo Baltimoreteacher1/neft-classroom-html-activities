@@ -1,4 +1,4 @@
-import { P, panels, wallWindow } from "../kit.mjs";
+import { P, panels, wallWindow } from "../../../access-practice-lab/src/art/kit.js";
 import { kitchenBack, plate, breadSlice, cheeseLettuce, sandwichHalf, butterKnife } from "../lib/d.mjs";
 
 // Three numbered steps, same counter, same plate: bread -> cheese and lettuce -> cut in half.

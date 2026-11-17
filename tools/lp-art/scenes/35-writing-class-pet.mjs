@@ -1,4 +1,4 @@
-import { P, rect, rrect, wallWindow, ground, tag, contact, shade, light, g, clipRect } from "../kit.mjs";
+import { P, rect, rrect, wallWindow, ground, tag, contact, shade, light, g, clipRect } from "../../../access-practice-lab/src/art/kit.js";
 import { fishTank, goldfish, cage, wheel, hamster } from "../lib/c.mjs";
 
 // Two side-by-side choice cards, each a little classroom shelf scene.

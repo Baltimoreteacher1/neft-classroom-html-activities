@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, panels, person, wallWindow, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, mix, text } from "../kit.mjs";
+import { P, SKIN, HAIR, panels, person, wallWindow, tr, g, rect, rrect, circle, ellipse, path, poly, stroke, line, vgrad, shade, light, mix, text } from "../../../access-practice-lab/src/art/kit.js";
 import { room } from "../lib/e.mjs";
 
 // Three pictures in order. 1: a girl and her grandmother mix dough with a spoon in a big blue bowl next to a bag

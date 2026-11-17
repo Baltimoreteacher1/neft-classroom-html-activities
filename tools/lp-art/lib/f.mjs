@@ -1,6 +1,6 @@
 // Illustrator F helpers: lab, classroom and science-diagram props for the Grades 6-8 pictures.
 // Built only on kit primitives; same art direction (no outlines, lit/shade sides, contact shadows).
-import { P, def, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, vgrad, rgrad, shade, light, mix, rng, text } from "../kit.mjs";
+import { P, def, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, vgrad, rgrad, shade, light, mix, rng, text } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 

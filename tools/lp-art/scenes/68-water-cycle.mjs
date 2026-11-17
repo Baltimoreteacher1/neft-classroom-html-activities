@@ -1,4 +1,4 @@
-import { P, sky, sun, cloud, hills, rain, arrow, path, stroke, vgrad, tree, tuft, ellipse, g } from "../kit.mjs";
+import { P, sky, sun, cloud, hills, rain, arrow, path, stroke, vgrad, tree, tuft, ellipse, g } from "../../../access-practice-lab/src/art/kit.js";
 
 // Water cycle (unlabelled; students supply the words): the sun heats a lake, water vapour rises (3 wavy arrows),
 // an arrow carries it up to a cloud, rain falls back to the lake, and an arrow runs down the hill into the lake.

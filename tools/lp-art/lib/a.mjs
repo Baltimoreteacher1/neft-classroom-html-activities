@@ -1,6 +1,6 @@
 // Illustrator A helpers: props and diagram pieces the shared kit does not have.
 // Same art direction as kit.mjs: no outlines, lit/shade sides, soft contact shadows.
-import { P, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, shade, light, haze, mix, vgrad, rgrad, rng, text, tag } from "../kit.mjs";
+import { P, g, tr, rect, rrect, circle, ellipse, path, poly, line, stroke, contact, shade, light, haze, mix, vgrad, rgrad, rng, text, tag } from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const rad = (a) => (a * Math.PI) / 180;

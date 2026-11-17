@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, cloud, ground, road, building, tree, person, kid, rect, rrect, ellipse, line, stroke, g, haze, shade, tr } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, cloud, ground, road, building, tree, person, kid, rect, rrect, ellipse, line, stroke, g, haze, shade, tr } from "../../../access-practice-lab/src/art/kit.js";
 import { joints, shopFront, stopSign, mailbox, cityBus, chefHat, vestStripes, loaf, letter } from "../lib/d.mjs";
 
 // Street scene, left to right: baker with a loaf in front of the bakery; mail carrier posting a letter in a

@@ -25,7 +25,7 @@ import {
   clipRect,
   person,
   text,
-} from "../kit.mjs";
+} from "../../../access-practice-lab/src/art/kit.js";
 
 const f = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const flipX = (x, y, s, facing, body) => `<g transform="translate(${f(x)} ${f(y)}) scale(${f(s * facing)} ${f(s)})">${body}</g>`;

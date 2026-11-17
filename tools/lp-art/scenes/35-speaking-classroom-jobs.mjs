@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, board, wallWindow, clock, person, shade, light, contact, stroke } from "../kit.mjs";
+import { P, SKIN, HAIR, rect, rrect, path, ellipse, circle, g, board, wallWindow, clock, person, shade, light, contact, stroke } from "../../../access-practice-lab/src/art/kit.js";
 import { BP, room, frontDesk, schoolDesk, pottedPlant, fishTank, lightPool } from "../lib/b.mjs";
 
 const flakes = stroke("M0 0 l-1 6M3 1 l0 7M-3 2 l-2 6", P.coral, 1.6, 'stroke-dasharray="1.5 3"');

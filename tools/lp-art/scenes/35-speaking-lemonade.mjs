@@ -1,4 +1,4 @@
-import { P, SKIN, HAIR, sky, sun, cloud, house, hills, ground, tree, person, tuft, flower, rect, rrect, path, ellipse, g, text, shade, light, contact, haze, line } from "../kit.mjs";
+import { P, SKIN, HAIR, sky, sun, cloud, house, hills, ground, tree, person, tuft, flower, rect, rrect, path, ellipse, g, text, shade, light, contact, haze, line } from "../../../access-practice-lab/src/art/kit.js";
 import { BP } from "../lib/b.mjs";
 
 const SX = 170;
