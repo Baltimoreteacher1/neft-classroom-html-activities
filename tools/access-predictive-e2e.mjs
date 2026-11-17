@@ -360,7 +360,10 @@ ok(
   "MODEL to ACCESS shows the WIDA estimate for an applicable result",
 );
 await tab("toolkit");
-ok((await page.locator("[data-tool]").count()) === 9, "the Toolkit offers nine tools (goal form added 2026-11-17)");
+ok(
+  (await page.locator("[data-tool]").count()) === 9,
+  "the Toolkit offers nine tools (goal form added 2026-11-17)",
+);
 for (const t of [
   "levels",
   "words",
