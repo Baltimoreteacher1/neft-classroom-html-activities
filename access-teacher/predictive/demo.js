@@ -55,6 +55,8 @@ export function demoTrainingCohort({ students = 1200 } = {}) {
 }
 
 const LETTERS = "ABCDEFGHIJKL";
+/** Fictional first names for the sample class (no real students). */
+export const SAMPLE_NAMES = ["Amara", "Bao", "Camila", "Dmitri", "Esra", "Farid", "Gabriela", "Hiro", "Imani", "Jonas", "Kalani", "Luis"];
 const LISTEN_SKILLS = [
   "main idea",
   "detail",
@@ -81,16 +83,16 @@ function demoEntries(i, r) {
     supportGap: i % 3 === 0 ? 0.35 : 0.05,
   };
   const entries = [];
-  const day = (n) => new Date(Date.UTC(2024, 0, 8 + n * 9, 14)).toISOString();
-  let n = 0;
+  const day = (n) => new Date(Date.UTC(2024, 0, 8 + n * 4 + (i % 3), 14)).toISOString();
+  const slot = (domain, a) => a * 4 + ["Listening", "Reading", "Speaking", "Writing"].indexOf(domain);
   for (const domain of ["Listening", "Reading"]) {
     const skills = domain === "Listening" ? LISTEN_SKILLS : READ_SKILLS;
-    for (let a = 0; a < 4; a++) {
-      const stage = a === 1 ? "supported" : "independent";
-      const p = profile.receptive + (stage === "supported" ? profile.supportGap : 0);
+    for (let a = 0; a < 7; a++) {
+      const stage = a % 3 === 1 ? "supported" : "independent";
+      const p = Math.min(0.97, profile.receptive + (stage === "supported" ? profile.supportGap : 0) + a * 0.02);
       entries.push({
         id: `demo-${i}-${domain}-${a}`,
-        t: day(n++),
+        t: day(slot(domain, a)),
         task: `demo-${domain.toLowerCase()}-${a}`,
         domain,
         kind: "first",
@@ -102,13 +104,13 @@ function demoEntries(i, r) {
     }
   }
   for (const domain of ["Speaking", "Writing"]) {
-    for (let a = 0; a < 5; a++) {
-      const stage = a === 1 ? "supported" : "independent";
-      const q = Math.min(1, profile.productive + (stage === "supported" ? profile.supportGap : 0));
+    for (let a = 0; a < 7; a++) {
+      const stage = a % 3 === 1 ? "supported" : "independent";
+      const q = Math.min(1, profile.productive + (stage === "supported" ? profile.supportGap : 0) + a * 0.02);
       const k = (x) => Math.round(x * q * (0.8 + 0.4 * r.uniform()));
       entries.push({
         id: `demo-${i}-${domain}-${a}`,
-        t: day(n++),
+        t: day(slot(domain, a)),
         task: `demo-${domain.toLowerCase()}-${a}`,
         domain,
         kind: "first",
@@ -149,8 +151,14 @@ function enrich(st, i, r) {
       scale[d] = Math.round(Math.min(600, Math.max(100, 140 + lv * 62 + (r.uniform() - 0.5) * 16)));
       sem[d] = SEM[d];
     }
+    // Sample Overall follows the published domain weighting so the sample profile reads believably.
+    const lv = row.levels;
+    const overall = DOMAIN_KEYS.every((d) => lv[d] != null)
+      ? Math.round((0.15 * lv.Listening + 0.15 * lv.Speaking + 0.35 * lv.Reading + 0.35 * lv.Writing) * 10) / 10
+      : row.overall;
     return {
       ...row,
+      overall,
       id: `demo-${st.id}-${row.year}`,
       assessment: "ACCESS",
       grade: 3 + y,
@@ -237,7 +245,7 @@ export function demoClass({ count = 12 } = {}) {
     ]),
   );
   const r = rng(4242);
-  const students = studentsFrom(cohorts, "DEMO-", count, (i) => `${DEMO_LABEL} Student ${LETTERS[i]}`).map(
+  const students = studentsFrom(cohorts, "DEMO-", count, (i) => SAMPLE_NAMES[i] || `Sample ${LETTERS[i] || i + 1}`).map(
     (st, i) => ({
       ...enrich(st, i, r),
       section: DEMO_LABEL,

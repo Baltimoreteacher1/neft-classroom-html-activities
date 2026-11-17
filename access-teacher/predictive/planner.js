@@ -25,7 +25,7 @@ export function hrefOf(id) {
 }
 export function titleOf(id) {
   const d = DEST_BY_ID?.[id] || DEST_BY_ID?.get?.(id);
-  return d ? d.title.en || d.title : id;
+  return d ? (Array.isArray(d.title) ? d.title[0] : d.title.en || String(d.title)) : id;
 }
 /** A link node to one destination (DOM). */
 export function resourceLink(id) {

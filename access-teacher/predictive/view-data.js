@@ -617,7 +617,7 @@ function stepSave(ws) {
       ? h(
           "p",
           { class: "pi-note", "data-demo-no-save": "" },
-          "Synthetic demo mode never saves. Switch to My class (real) to import these rows.",
+          "The Sample class never saves imports. Switch to My class at the top to import these rows.",
         )
       : h(
           "div",

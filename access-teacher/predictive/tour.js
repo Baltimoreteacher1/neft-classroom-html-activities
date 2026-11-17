@@ -33,7 +33,7 @@ export const TOUR2 = Object.freeze([
     tab: "growth",
     student: 2,
     title: "What changed, and is it real?",
-    body: "Growth compares only results that can be compared. Student C has a 2025-26 result: ACCESS reset its scale that year, so the studio keeps the two eras apart instead of drawing one misleading line.",
+    body: "Growth compares only results that can be compared. Camila has a 2025-26 result: ACCESS reset its scale that year, so the studio keeps the two eras apart instead of drawing one misleading line.",
   },
   {
     tab: "forecasts",

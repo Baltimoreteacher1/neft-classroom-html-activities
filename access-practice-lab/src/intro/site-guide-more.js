@@ -150,7 +150,8 @@ export const SHARING = [
 ];
 
 export const PD_LINKS = [
-  { route: ROUTES.tour, label: "Take the Teacher Tour" },
+  { route: ROUTES.tour, label: "Take the Teacher Tour (Part 1)" },
+  { route: "/access-teacher/predictive/?demo=1&tour=1", label: "Teacher Tour, Part 2: your WIDA data" },
   { route: ROUTES.explore, label: "Explore for 20 Minutes" },
   { route: ROUTES.guide, label: "Open the Quick Guide" },
   { route: ROUTES.lesson, label: "See the Featured Lesson" },
@@ -356,6 +357,14 @@ export const AREAS = [
     icon: "teacher",
     name: "Teacher Hub",
     text: "Teacher dashboard and tools (sign-in required).",
+    external: true,
+  },
+  {
+    route: "/access-teacher/predictive/",
+    icon: "growth",
+    name: "WIDA Data Studio",
+    text: "ACCESS and MODEL results, growth graphs and lesson planning, with a sample class to practice on (sign-in required).",
+    second: { route: "/access-teacher/predictive/?demo=1&tour=1", label: "Teacher Tour, Part 2" },
     external: true,
   },
 ];

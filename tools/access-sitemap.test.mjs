@@ -137,8 +137,9 @@ test("navigation reads the site map: four learner links, audience doors, site gu
   ).window.document;
   const top = [...doc.querySelectorAll("nav > a")].map((a) => a.textContent.trim());
   assert.deepEqual(top, [
-    "Access Prep",
+    // Home sits to the left of Access Prep (Joel, 2026-11-17).
     "Home",
+    "Access Prep",
     "Practice",
     "Games & Worlds",
     "My Progress",

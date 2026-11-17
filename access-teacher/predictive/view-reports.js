@@ -30,7 +30,7 @@ function frame(ws, title, body, recs) {
       "p",
       { class: "pi-report-conf" },
       ws.mode === "demo"
-        ? "SYNTHETIC DEMONSTRATION: fictional students and results."
+        ? "SAMPLE CLASS: fictional students and results for practice."
         : "Confidential student record. Share only with people authorized to see it.",
     ),
     h("h2", {}, title),

@@ -25,6 +25,7 @@ import {
   subnav,
 } from "./view-common.js";
 import { scoreTable } from "./view-overview.js";
+import { practicePanel, studentView } from "./view-student-extra.js";
 
 function compositeCards(rec) {
   return h(
@@ -187,6 +188,19 @@ function goalsPanel(ws, st) {
 
 export function renderStudents(ws) {
   if (!ws.students.length) return emptyState(ws);
+  const view = ws.sub.studentView || "profile";
+  const st = ws.student();
+  const body = view === "practice" ? practicePanel(ws, st) : view === "kid" ? studentView(ws, st) : renderProfile(ws);
+  return h(
+    "div",
+    { class: "pi-stack" },
+    subnav(ws, "studentView", [["profile", "Language profile"], ["practice", "Practice activity"], ["kid", "Student view"]], view),
+    view === "profile" ? null : studentPicker(ws),
+    body,
+  );
+}
+
+function renderProfile(ws) {
   const st = ws.student();
   const recs = recordsOf(st);
   const rec = recs.at(-1);

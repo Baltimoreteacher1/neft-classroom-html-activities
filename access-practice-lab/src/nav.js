@@ -120,7 +120,9 @@ export function navHTML(ctx, I) {
   // Book Studio is a labelled door on the top row at every width (the platform's maker space, for every audience).
   const bookLink = html`<a class="top-link top-expedition top-book" href="${BASE}/book-studio?grades=${band}" ${view === "book-studio" ? raw('aria-current="page"') : ""}>${icon("writing")}<span>${T("Create a Book", "Crear un libro")}</span></a>`;
   const siteGuideLink = html`<a class="top-link top-expedition top-guide" href="${BASE}/site-guide?grades=${band}" ${view === "site-guide" ? raw('aria-current="page"') : ""}>${icon("help")}<span>${T("Site Guide", "Guía del sitio")}</span></a>`;
-  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${bookLink}${teachersLink}${familiesLink}${siteGuideLink}
+  const rowLinks = primary.filter((l) => !l.pill && !l.featured);
+  // Home comes first, to the left of Access Prep.
+  return html`${rowLinks.filter((l) => l.id === "continue").map(topLink)}${accessPrepLink}${rowLinks.filter((l) => l.id !== "continue").map(topLink)}${bookLink}${teachersLink}${familiesLink}${siteGuideLink}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${focused ? "" : gradeSelectHTML(ctx, I)}
     ${langSwitchHTML(I.mode)}

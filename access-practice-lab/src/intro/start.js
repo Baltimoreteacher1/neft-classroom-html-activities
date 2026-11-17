@@ -39,6 +39,31 @@ function choiceHTML(c, resume, pick) {
   </li>`;
 }
 
+/** Teacher tools at the top of the first teacher page: one row, the WIDA Data Studio first. */
+const QUICK_TOOLS = [
+  { href: "/access-teacher/predictive/?demo=1", icon: "growth", name: "WIDA Data Studio", detail: "Scores, growth, graphs and what to teach next. Try it with a sample class.", featured: true },
+  { href: "/access-teacher/", icon: "teacher", name: "Teacher Hub", detail: "Your class, assignments and evidence." },
+  { route: "/lesson-builder", icon: "writing", name: "Lesson Builder", detail: "Build a lesson from real activities." },
+  { route: "/start/tour", icon: "road", name: "Teacher Tour", detail: "Learn the site in a few minutes." },
+  { route: "/site-guide", icon: "help", name: "Site Guide", detail: "Everything on the site, by section." },
+];
+
+function quickToolsHTML() {
+  return html`<nav class="ts-quick" aria-labelledby="tsQuickTitle">
+    <p id="tsQuickTitle" class="ts-quick-title">Teacher tools</p>
+    <ul class="ts-quick-list">
+      ${QUICK_TOOLS.map(
+        (t) => html`<li>
+          <a class="ts-quick-tool${t.featured ? " is-featured" : ""}" href="${t.href || labHref(t.route)}" data-quick-tool="${t.name}">
+            <span class="ts-quick-ic" aria-hidden="true">${icon(t.icon)}</span>
+            <span class="ts-quick-text"><strong>${t.name}</strong><span>${t.detail}</span></span>
+          </a>
+        </li>`,
+      )}
+    </ul>
+  </nav>`;
+}
+
 const CHIPS = ["Kindergarten to Grade 8", "No student accounts", "Students choose their help", "Feedback, never scores"];
 const TITLE = "Start here: The Language Page for teachers";
 
@@ -46,6 +71,7 @@ function hubHTML(ctx) {
   const pick = teacherPick(ctx);
   const resume = tourStatus(loadIntro()).state === "continue";
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
+    ${quickToolsHTML()}
     ${teacherBand({
       active: "overview",
       size: "hub",

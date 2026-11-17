@@ -1,5 +1,6 @@
 // Pieces shared by the workspace views.
 import { h } from "./dom.js";
+import { recordsOf } from "./records.js";
 import { STATUS_WORDS } from "./forecast.js";
 
 export const COLORS = Object.freeze({
@@ -26,26 +27,51 @@ export const chip = (status) =>
   );
 
 let pickerSeq = 0;
-/** Student selector shared by the per-student views. */
+const initials = (name) =>
+  name
+    .replace(/\(.*?\)/g, "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() || "")
+    .join("");
+const latestOverall = (st) => {
+  const r = recordsOf(st).at(-1);
+  return r?.composites.Overall.level ?? null;
+};
+
+/**
+ * Student switcher: a scrolling strip of student chips (initials, name, latest overall level) for classes up
+ * to 40, and a searchable select for larger ones. Both set ws.selected and re-render.
+ */
 export function studentPicker(ws, onChange) {
-  const id = `pi-student-${++pickerSeq}`;
+  const pick = (id) => {
+    ws.selected = id;
+    (onChange || ws.rerender)();
+  };
+  if (ws.students.length > 40) {
+    const id = `pi-student-${++pickerSeq}`;
+    return h(
+      "div",
+      { class: "pi-field" },
+      h("label", { for: id }, "Student"),
+      h("select", { id, on: { change: (e) => pick(e.target.value) } }, ws.students.map((st) => h("option", { value: st.id, selected: st.id === ws.selected }, st.name))),
+    );
+  }
   return h(
     "div",
-    { class: "pi-field" },
-    h("label", { for: id }, "Student"),
-    h(
-      "select",
-      {
-        id,
-        on: {
-          change: (e) => {
-            ws.selected = e.target.value;
-            (onChange || ws.rerender)();
-          },
-        },
-      },
-      ws.students.map((s) => h("option", { value: s.id, selected: s.id === ws.selected }, s.name)),
-    ),
+    { class: "pi-strip", role: "group", "aria-label": "Choose a student" },
+    ws.students.map((st) => {
+      const lv = latestOverall(st);
+      const on = st.id === ws.selected;
+      return h(
+        "button",
+        { type: "button", class: `pi-chipbtn${on ? " is-on" : ""}`, "aria-pressed": String(on), "data-student": st.id, on: { click: () => pick(st.id) } },
+        h("span", { class: "pi-avatar", "aria-hidden": "true" }, initials(st.name) || "?"),
+        h("span", { class: "pi-chipname" }, st.name),
+        lv != null ? h("span", { class: "pi-chiplv" }, lv.toFixed(1)) : null,
+      );
+    }),
   );
 }
 
@@ -59,7 +85,7 @@ export function emptyState(ws) {
       {},
       ws.mode === "demo"
         ? "The synthetic class could not be built."
-        : "Add students in the Teacher Hub (Class evidence) or import historical ACCESS results on the Data and import tab. You can also explore the Synthetic demo.",
+        : "Add students in the Teacher Hub, or use Import scores at the top. You can also practice with the Sample class.",
     ),
   );
 }

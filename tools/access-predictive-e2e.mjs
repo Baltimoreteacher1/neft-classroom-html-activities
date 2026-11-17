@@ -113,11 +113,29 @@ ok(
   "Try with Sample Data opens the synthetic demo",
 );
 
-// 2. Real mode, no data.
+// 2. First visit opens the sample class; My class with no data shows the welcome screen.
 await open();
+ok(
+  (await page.locator('[data-mode-btn="demo"][aria-pressed="true"]').count()) === 1,
+  "a first visit with no class data opens the sample class",
+);
 ok(
   (await page.locator('#pi-tab-overview[aria-selected="true"]').count()) === 1,
   "the studio opens on Overview",
+);
+ok(
+  (await page.locator(".pi-strip [data-student]").count()) === 12,
+  "the sample class has 12 students to pick from",
+);
+ok(
+  (await page.locator(".pi-dtile").count()) === 4 &&
+    (await page.locator(".pi-gauge").count()) === 1,
+  "the student overview shows a gauge and four domain tiles",
+);
+await page.click('[data-mode-btn="real"]');
+ok(
+  (await page.locator('[data-welcome="sample"]').count()) === 1,
+  "My class with no data shows the welcome choices",
 );
 await tab("forecasts");
 ok((await numbers()) === 0, "real mode with no data shows no forecast numbers");
@@ -236,8 +254,26 @@ ok(
 await open("?demo=1");
 await page.waitForSelector("#piDemoBanner");
 ok(
-  /SYNTHETIC DEMONSTRATION/.test(await page.locator("#piDemoBanner").innerText()),
-  "demo mode shows the synthetic banner",
+  /Sample class/.test(await page.locator("#piDemoBanner").innerText()),
+  "the sample class is labelled as fictional",
+);
+await tab("overview");
+await page.click('[data-subnav="class"]');
+ok(
+  (await page.locator(".pi-heat").count()) >= 1 && (await page.locator(".pi-cols").count()) === 1,
+  "the class overview shows the heatmap and weekly practice",
+);
+await tab("students");
+await sub("practice");
+ok(
+  (await page.locator(".pi-cols").count()) === 1 && (await page.locator(".pi-indep").count()) === 1,
+  "practice activity shows weekly practice and independence charts",
+);
+await sub("kid");
+ok(
+  (await page.locator(".pi-kidcard").count()) === 4 &&
+    (await page.locator(".pi-ladder .is-here").count()) >= 3,
+  "the student view shows a ladder per domain",
 );
 await tab("forecasts");
 await sub("forecast");

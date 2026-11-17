@@ -507,7 +507,7 @@ test("demo mode: synthetic pre-reset cohort validates; interval holds the expect
   const byKey = transitionsByKey(demoTrainingCohort());
   const v = validateAll(byKey, { asOf: "2024-05-15" });
   const cls = demoClass();
-  assert.ok(cls.every((s) => s.synthetic && s.name.startsWith("SYNTHETIC DEMO")));
+  assert.ok(cls.every((s) => s.synthetic && s.section === "SYNTHETIC DEMO"));
   for (const k of ["Listening", "Speaking", "Reading", "Writing", "Overall"]) {
     assert.equal(
       v[k]["pre-2025-reset"].status,
