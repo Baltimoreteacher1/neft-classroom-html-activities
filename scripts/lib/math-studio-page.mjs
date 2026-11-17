@@ -263,7 +263,6 @@ function apply(L) {
         `<p>${bi(a.scenario.text, a.scenario.textEs)}</p>${a.scenario.prompt ? `<p class="ms-frame">${bi(a.scenario.prompt, a.scenario.promptEs)}</p>` : ""}`,
       ),
     );
-  parts.push(task("create", `Create: ${L.lab.title}`, "Crea", `<p>${esc(L.lab.create)}</p>`));
   if (a.reasoning)
     parts.push(
       task(
@@ -273,6 +272,8 @@ function apply(L) {
         `<p>${bi(a.reasoning.prompt, a.reasoning.promptEs)}</p>`,
       ),
     );
+  // Simple to harder: a word problem, a real situation, a reasoning challenge, then an open Create task.
+  parts.push(task("create", `Create: ${L.lab.title}`, "Crea", `<p>${esc(L.lab.create)}</p>`));
   const optional = a.optional?.length
     ? `<aside class="ms-optional"><h3>${bi("Optional: projects and stories", "Opcional: proyectos e historias")}</h3><p class="ms-muted">${bi("For extra exploration. These do not count as evidence of mastery.", "Para explorar más. No cuentan como evidencia de dominio.")}</p><ul>${a.optional.map((o) => `<li><a href="${esc(o.href)}">${esc(o.label)}</a></li>`).join("")}</ul></aside>`
     : "";

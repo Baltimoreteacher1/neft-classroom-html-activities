@@ -108,8 +108,8 @@ async function lesson(ctx, id) {
     );
     ok(shown.length === 1 && shown[0] === stage, id, `stage ${stage}: shown ${shown}`);
     const words = await page.$eval(`#${stage}`, (el) => el.innerText.trim().split(/\s+/).length);
-    // Explore and Understand open on one short step and build from there, so they need fewer words up front.
-    const min = stage === "explore" || stage === "understand" ? 25 : 60;
+    // Every stage but Practice opens on one short step or card and builds from there, so it needs fewer words up front.
+    const min = stage === "practice" ? 60 : 25;
     ok(words > min, id, `stage ${stage} nearly empty (${words} words)`);
     ok(page.url().endsWith(`#${stage}`), id, `hash not ${stage}`);
   }
@@ -160,6 +160,25 @@ async function lesson(ctx, id) {
   ok((await visible()) === 1, id, "Understand did not start on one step");
   await page.click('#understand [data-ustep="0"] [data-ucontinue]');
   ok((await visible()) === 2, id, "Continue did not open the next Understand step");
+  // Apply and Reflect: one card at a time, Next moves on.
+  for (const [stage, sel] of [
+    ["apply", "#apply .ms-task"],
+    ["reflect", "#ms-reflect > .ms-reflect-item, #ms-reflect > .ms-item"],
+  ]) {
+    await page.click(`.ms-stagebar [data-stage-link="${stage}"]`);
+    const shownCards = () => page.$$eval(sel, (els) => els.filter((e) => !e.hidden).length);
+    ok((await shownCards()) === 1, id, `${stage}: more than one card shown`);
+    if (await page.$(`#${stage} .ms-pager`)) {
+      const first = await page.$eval(sel, (el) => !el.hidden);
+      await page.click(`#${stage} .ms-pager [data-page="1"]`);
+      ok(
+        first && !(await page.$eval(sel, (el) => !el.hidden)),
+        id,
+        `${stage}: Next did not move on`,
+      );
+      await page.click(`#${stage} .ms-pager [data-page="-1"]`);
+    }
+  }
   const level = L.practice.regular.find((i) => i.model)
     ? "regular"
     : L.practice.challenge.find((i) => i.model)
@@ -358,7 +377,7 @@ async function partsPath(page, L, id) {
 const desktop = await browser.newContext({ viewport: { width: 1366, height: 800 } });
 for (const id of ids)
   await lesson(desktop, id).catch((e) =>
-    fail(id, `crashed: ${e.message.split("\n").slice(0, 3).join(" ")}`),
+    fail(id, `crashed: ${e.message.split("\n").slice(0, 12).join(" ")}`),
   );
 
 // Phone width: no horizontal scroll on any stage (sample of one lesson per unit).

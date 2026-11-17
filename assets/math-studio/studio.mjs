@@ -14,7 +14,8 @@ const storage = (() => {
   }
 })();
 const state = loadState(storage, L.id);
-const resumed = state.updatedAt > 0;
+// Welcome back only when there is real work to return to, not after a page that was only opened.
+const resumed = state.updatedAt > 0 && (state.explore.started || state.visited.some((st) => st !== 'explore') || Object.keys(state.practice.items).length > 0);
 let saveTimer = 0;
 const save = () => {
   clearTimeout(saveTimer);
@@ -281,7 +282,16 @@ function setupUnderstand() {
       label: host.dataset.ucheck === 'words' ? [`Word ${k + 1} of ${items.length}`, `Palabra ${k + 1} de ${items.length}`] : ['Check yourself', 'Compruébalo'],
       misconceptions: L.misconceptions,
       rec: state.understand.checks[it.id],
-      onChange: (rec) => { state.understand.checks[it.id] = rec; gate(sec); save(); },
+      onChange: (rec) => {
+        state.understand.checks[it.id] = rec;
+        // A practice question already answered here counts in Practice too, so it is not asked twice.
+        if (rec.result && host.dataset.ucheck !== 'words' && !state.practice.items[it.id]?.result) {
+          state.practice.items[it.id] = rec;
+          for (const lv of ['regular', 'challenge']) if (state.practice.current[lv] === it.id) state.practice.current[lv] = null;
+          renderRunner();
+        }
+        gate(sec); save();
+      },
     }));
     gate(sec);
   });
@@ -370,6 +380,28 @@ function finishLevel(level) {
 }
 $$('.ms-levels [role=tab]').forEach((t) => t.addEventListener('click', () => setLevel(t.dataset.level)));
 
+/** Show one card of a stage at a time with Back / Next, remembering where the student is (state[key].at). */
+function oneAtATime(cards, after, key, [en, es]) {
+  if (cards.length < 2) return;
+  const nav = document.createElement('div');
+  nav.className = 'ms-row ms-pager';
+  nav.innerHTML = `<button type="button" class="ms-btn ms-btn--quiet" data-page="-1">${bi('Back', 'Atrás')}</button><span class="ms-pager__count" aria-live="polite"></span><button type="button" class="ms-btn" data-page="1">${bi('Next', 'Siguiente')}</button>`;
+  after.after(nav);
+  const show = () => {
+    const at = Math.min(Math.max(state[key].at || 0, 0), cards.length - 1);
+    cards.forEach((c, i) => { c.hidden = i !== at; });
+    $('.ms-pager__count', nav).innerHTML = bi(`${en} ${at + 1} of ${cards.length}`, `${es} ${at + 1} de ${cards.length}`);
+    $('[data-page="-1"]', nav).disabled = at === 0;
+    $('[data-page="1"]', nav).disabled = at === cards.length - 1;
+  };
+  $$('[data-page]', nav).forEach((b) => b.addEventListener('click', () => {
+    state[key].at = (state[key].at || 0) + Number(b.dataset.page);
+    show(); save();
+    cards[state[key].at]?.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }));
+  show();
+}
+
 // ---- Apply ----
 function setupApply() {
   const sources = { word: L.apply.wordProblem, scenario: L.apply.scenario, reasoning: L.apply.reasoning, create: { sample: null } };
@@ -389,6 +421,7 @@ function setupApply() {
     const sample = src.sample ? `<p><strong>${bi('A sample answer:', 'Un ejemplo de respuesta:')}</strong> ${esc(src.sample)}</p>` : `<p>${bi('Check your plan: did you label every quantity, show the calculation, and explain why your plan works?', '¿Etiquetaste cada cantidad, mostraste el cálculo y explicaste por qué funciona tu plan?')}</p>`;
     out.innerHTML = `${kwLine}${sample}<p class="ms-muted">${bi('Revise your answer if the sample shows something you missed.', 'Revisa tu respuesta si el ejemplo muestra algo que no incluiste.')}</p>`;
   }));
+  oneAtATime($$('#apply .ms-task'), $('#apply .ms-apply'), 'apply', ['Task', 'Tarea']);
 }
 
 // ---- Reflect ----
@@ -417,6 +450,7 @@ function renderReflect() {
   };
   ta.addEventListener('input', () => { state.reflect.writing = ta.value; fb(); save(); });
   fb();
+  oneAtATime($$('#ms-reflect > .ms-reflect-item, #ms-reflect > .ms-item'), host, 'reflect', ['Question', 'Pregunta']);
 }
 
 // ---- Evidence: participation, completion, supported and independent, kept apart ----
@@ -424,6 +458,8 @@ function renderEvidence() {
   const host = $('#ms-evidence');
   if (!host) return;
   const e = evidence(state, L);
+  // Evidence re-renders on every save; keep the Details fold the way the student left it.
+  const open = $('.ms-evidence__more', host)?.open || false;
   const row = (en, es, lv) => `<tr><th scope="row">${bi(en, es)}</th><td>${bi(`${lv.tried} of ${lv.total}`, `${lv.tried} de ${lv.total}`)}</td><td>${lv.independent}</td><td>${lv.supported}</td><td>${lv.revealed}</td><td>${lv.hints}</td><td>${lv.model}</td></tr>`;
   const next = e.reflect.independent === e.reflect.total && e.reflect.total
     ? ['You showed this on your own. Try the Challenge practice or the reasoning task in Apply.', 'Lo demostraste por tu cuenta. Prueba la práctica de Reto o la tarea de razonamiento en Aplica.']
@@ -432,7 +468,7 @@ function renderEvidence() {
   const th = (en, es) => `<th scope="col">${bi(en, es)}</th>`;
   host.innerHTML = `<h3>${bi('My evidence', 'Mi evidencia')}</h3>
     <ul class="ms-badges"><li data-on="${e.explored}">${bi('Explored', 'Exploré')}</li><li data-on="${e.understood}">${bi('Understand visited', 'Visité Comprende')}</li><li data-on="${e.applied > 0}">${bi(`Applied (${e.applied})`, `Apliqué (${e.applied})`)}</li><li data-on="${e.reflect.wrote}">${bi('Explained in writing', 'Expliqué por escrito')}</li></ul>
-    <div class="ms-table-wrap"><table class="ms-table"><caption class="sr-only">Practice evidence</caption><thead><tr>${th('Practice', 'Práctica')}${th('Tried', 'Intenté')}${th('On my own', 'Por mi cuenta')}${th('With help', 'Con ayuda')}${th('Worked example', 'Ejemplo resuelto')}${th('Hints', 'Pistas')}${th('Used model', 'Usé el modelo')}</tr></thead><tbody>${row('Regular', 'Regular', e.regular)}${row('Challenge', 'Reto', e.challenge)}</tbody></table></div>
+    <details class="ms-support ms-evidence__more"${open ? ' open' : ''}><summary>${bi('Details', 'Detalles')}</summary><div class="ms-table-wrap"><table class="ms-table"><caption class="sr-only">Practice evidence</caption><thead><tr>${th('Practice', 'Práctica')}${th('Tried', 'Intenté')}${th('On my own', 'Por mi cuenta')}${th('With help', 'Con ayuda')}${th('Worked example', 'Ejemplo resuelto')}${th('Hints', 'Pistas')}${th('Used model', 'Usé el modelo')}</tr></thead><tbody>${row('Regular', 'Regular', e.regular)}${row('Challenge', 'Reto', e.challenge)}</tbody></table></div></details>
     <p>${bi(`Reflect: ${e.reflect.independent} of ${e.reflect.total} right on the first try · ${e.reflect.revised} revised to correct.`, `Reflexiona: ${e.reflect.independent} de ${e.reflect.total} correctas al primer intento · ${e.reflect.revised} corregidas al revisar.`)}</p>
     <p class="ms-next">${bi(...next)}</p>
     <div class="ms-row"><button type="button" class="ms-btn ms-btn--quiet" id="ms-download">${bi('Download my evidence', 'Descargar mi evidencia')}</button><button type="button" class="ms-btn ms-btn--link" id="ms-reset">${bi('Start this lesson over', 'Empezar esta lección de nuevo')}</button></div>
