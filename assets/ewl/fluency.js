@@ -574,6 +574,10 @@
       var f = store.get().fluency;
       var acc = f.answered ? Math.round((100 * f.correct) / f.answered) : 0;
       EWL.clear(host);
+      // Nothing to report before the first answer: a row of zeros ("Accuracy
+      // 0%") reads as a grade the student has not earned yet. The practice mix
+      // is the planner's internal quota, not something a student acts on.
+      if (!f.answered) return;
       host.appendChild(
         h(
           "div",
@@ -581,17 +585,6 @@
           h("span", { class: "ewl-chip" }, EWL.t("Streak ", "Racha ") + f.streak),
           h("span", { class: "ewl-chip" }, EWL.t("Best ", "Mejor ") + f.best),
           h("span", { class: "ewl-chip" }, EWL.t("Accuracy ", "Precisión ") + acc + "%"),
-          h(
-            "span",
-            { class: "ewl-chip", title: EWL.t("Practice mix", "Mezcla de práctica") },
-            f.mix.new +
-              "/" +
-              f.mix.review +
-              "/" +
-              f.mix.stretch +
-              " " +
-              EWL.t("new/review/stretch", "nuevo/repaso/reto"),
-          ),
         ),
       );
     }

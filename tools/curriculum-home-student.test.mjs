@@ -45,4 +45,41 @@ for (const base of bases) {
     `lesson ${base} has vocabulary for the finder`,
   );
 }
+// Teacher home → Teach today links seven pages per lesson; every lesson in the
+// plan must have them, and the panel must stay out of the student and family views.
+const teachPages = [
+  "index.html",
+  "slides.html",
+  "teacher-notes/index.html",
+  "worksheet.html",
+  "homework.html",
+  "family/index.html",
+];
+for (const base of bases) {
+  for (const page of teachPages)
+    assert.ok(existsSync(`${REPO_ROOT}/lessons/${base}/${page}`), `lessons/${base}/${page} exists`);
+  assert.ok(
+    existsSync(`${REPO_ROOT}/lessons/${base}-group1/index.html`),
+    `lessons/${base}-group1 exists`,
+  );
+}
+for (const route of [
+  "/slides.html",
+  "/teacher-notes/",
+  "-group1/",
+  "/homework.html",
+  "student-launch/?lesson=",
+])
+  assert.ok(source.includes(route), `curriculum-home.js links ${route}`);
+assert.match(
+  hub,
+  /<section id="hub-home-organize" class="hub-home-organize hub-teacher-only"/,
+  "Teacher home is teacher-only",
+);
+const teachBlock = hub.slice(
+  hub.indexOf("<div data-hub-teach>"),
+  hub.indexOf("</details>", hub.indexOf("<div data-hub-teach>")),
+);
+assert.ok(teachBlock.length > 20, "Teach today fallback markup present");
+assert.doesNotMatch(teachBlock, /\/lessons\/\d/, "Teach today names no hard-coded lesson");
 console.log(`curriculum-home-student: ${bases.size} lessons x ${pages.length} pages ok`);

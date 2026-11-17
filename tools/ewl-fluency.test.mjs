@@ -123,9 +123,21 @@ const s = ctx.EWL.Fluency.mount(host, { unit: 4, code: "KITE-4821", n: 3 });
 assert.equal(s.items.length, 3);
 assert.ok(host.querySelector("input") && host.querySelector("button"));
 const hud = dom.window.document.createElement("div");
+// Before the first answer the HUD shows nothing (a row of zeros reads as a grade); after
+// answers it shows Streak / Best / Accuracy, and never the planner's internal mix quota.
+ctx.EWL.state.update((st) => {
+  st.fluency.answered = 0;
+  st.fluency.correct = 0;
+});
 const off = F.hud(hud);
+assert.equal(hud.textContent.trim(), "", "no stats before the first answer");
+ctx.EWL.state.update((st) => {
+  st.fluency.answered = 4;
+  st.fluency.correct = 3;
+});
 assert.match(hud.textContent, /Streak/);
-assert.match(hud.textContent, /60\/25\/15/);
+assert.match(hud.textContent, /Accuracy 75%/);
+assert.doesNotMatch(hud.textContent, /new\/review\/stretch|\d+\/\d+\/\d+/);
 off();
 for (const t of ctx.EWL.selfTests) assert.ok(t.run(), t.name);
 console.log(

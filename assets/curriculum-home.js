@@ -494,6 +494,131 @@
   renderNowNext();
   renderContinue(document.querySelector("[data-hub-now]"));
 
+  // The class week, Monday to Friday, under Now / Next: one chip per class day
+  // so students and families see the whole week, not just two days.
+  function weekDays(days, today) {
+    const [y, m, d] = today.split("-").map(Number);
+    const monday = new Date(Date.UTC(y, m - 1, d));
+    const offset = (monday.getUTCDay() + 6) % 7;
+    // Saturday and Sunday look ahead to the coming week.
+    monday.setUTCDate(monday.getUTCDate() - offset + (offset > 4 ? 7 : 0));
+    const week = [];
+    for (let i = 0; i < 5; i += 1) {
+      const date = new Date(monday);
+      date.setUTCDate(monday.getUTCDate() + i);
+      const iso = date.toISOString().slice(0, 10);
+      week.push([iso, days.find((day) => day[0] === iso) || null]);
+    }
+    return week;
+  }
+  function renderWeekStrip() {
+    const section = document.getElementById("hub-now");
+    const plan = /** @type {any} */ (window).__NT_PACING_DAYS;
+    if (!section || !Array.isArray(plan?.days)) return;
+    const lessons = plan.lessons || {};
+    const today = isoDate(new Date());
+    const week = weekDays(plan.days, today);
+    if (!week.some(([, day]) => day)) return;
+    const list = el("ol", "hub-week");
+    list.setAttribute("aria-label", "This week, Monday to Friday · Esta semana");
+    week.forEach(([iso, day]) => {
+      const item = el("li", "hub-week__day");
+      if (iso === today) {
+        item.classList.add("is-today");
+        item.setAttribute("aria-current", "date");
+      } else if (iso < today) item.classList.add("is-past");
+      const when = el("span", "hub-week__when", dayLabel(iso, "en-US"));
+      if (!day) {
+        item.classList.add("is-off");
+        item.append(when, el("span", "hub-week__what", "No class"), es("Sin clase"));
+      } else {
+        const info = describeDay(day, lessons);
+        const link = el("a", "hub-week__what");
+        link.href = info.href;
+        if (info.base) {
+          link.append(el("strong", "", info.base), ` ${(lessons[info.base] || [""])[0]}`);
+          if (day[3].endsWith("-catchup")) item.classList.add("is-catchup");
+        } else {
+          link.textContent = info.title || day[2];
+          item.classList.add("is-event");
+        }
+        item.append(when, link);
+      }
+      list.appendChild(item);
+    });
+    section.appendChild(list);
+  }
+  renderWeekStrip();
+
+  // Teacher home → Teach today: the lesson the class is on (or the next lesson
+  // day), with everything a teacher opens to run it. Same pacing plan as Now /
+  // Next, so the two never disagree. Every lesson in the plan has all of these
+  // pages (checked in tools/curriculum-home-student.test.mjs).
+  function teachLinks(base) {
+    return [
+      ["Open the lesson", `/lessons/${base}/`],
+      ["Slides", `/lessons/${base}/slides.html`],
+      ["Teacher notes", `/lessons/${base}/teacher-notes/`],
+      ["Small group", `/lessons/${base}-group1/`],
+      ["Practice sheet", `/lessons/${base}/worksheet.html`],
+      ["Homework", `/lessons/${base}/homework.html`],
+      ["Family guide", `/lessons/${base}/family/`],
+    ];
+  }
+  function renderTeachToday() {
+    const host = document.querySelector("[data-hub-teach]");
+    const plan = /** @type {any} */ (window).__NT_PACING_DAYS;
+    if (!host || !Array.isArray(plan?.days)) return;
+    const lessons = plan.lessons || {};
+    const today = isoDate(new Date());
+    const day = plan.days.find((d) => d[0] >= today && d[3]);
+    if (!day) return;
+    const info = describeDay(day, lessons);
+    const base = info.base;
+    const isToday = day[0] === today;
+    const when = el("p", "hub-teach__when");
+    when.append(
+      el("strong", "", isToday ? "Today" : "Next lesson day"),
+      ` · ${dayLabel(day[0], "en-US")}`,
+    );
+    const title = el("h3", "hub-teach__title");
+    const titleLink = el("a", "", info.title);
+    titleLink.href = info.href;
+    title.appendChild(titleLink);
+    const links = el("p", "hub-teach__links");
+    teachLinks(base).forEach(([label, href]) => {
+      const link = el("a", "", label);
+      link.href = href;
+      links.appendChild(link);
+    });
+    const share = el("div", "hub-teach__share");
+    const studentUrl = new URL(`/curriculum/student-launch/?lesson=${base}`, location.origin).href;
+    const field = el("input", "hub-teach__url");
+    field.type = "text";
+    field.readOnly = true;
+    field.value = studentUrl;
+    field.id = "hub-teach-url";
+    const label = el("label", "hub-teach__label", "Student link");
+    label.htmlFor = field.id;
+    const copy = el("button", "hub-teach__copy", "Copy");
+    copy.type = "button";
+    const status = el("span", "hub-teach__status");
+    status.setAttribute("role", "status");
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(studentUrl);
+        status.textContent = "Copied";
+      } catch {
+        field.select();
+        status.textContent = "Press Ctrl+C to copy";
+      }
+    });
+    field.addEventListener("focus", () => field.select());
+    share.append(label, field, copy, status);
+    host.replaceChildren(when, title, links, share);
+  }
+  renderTeachToday();
+
   // Lesson finder: type a topic (English or Spanish) or a number like "4-1" and
   // get links straight to the lesson. Reads the same pacing plan as Now / Next.
   function plain(text) {
