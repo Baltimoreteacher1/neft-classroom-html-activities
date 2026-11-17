@@ -1554,3 +1554,814 @@ body[data-view="quick"] .pi-adv {
     padding-top: 0;
   }
 }
+
+/* ── P1 glance ── Class at a glance (view-glance.js) and the student spotlight drawer (drawer.js) */
+.pi-gl-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+.pi-gl-top > .pi-card {
+  margin: 0;
+}
+.pi-gl-attn {
+  border-inline-start: 5px solid var(--pi-experimental);
+}
+.pi-gl-attn-list,
+.pi-gl-steps-list {
+  margin: 0.25rem 0 0.5rem;
+  padding-inline-start: 1.3rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.pi-gl-attn-list ul {
+  margin: 0;
+  padding-inline-start: 1rem;
+}
+.pi-gl-name {
+  font-weight: 700;
+  text-align: start;
+}
+.pi-gl-steps {
+  border-inline-start: 5px solid var(--brand);
+}
+.pi-gl-steps-list p {
+  margin: 0 0 0.35rem;
+}
+.pi-gl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 0.5rem;
+}
+.pi-gl-filters select {
+  min-height: 44px;
+  width: auto;
+}
+.pi-gl-att {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pi-gl-wrap {
+  max-width: 100%;
+  max-height: 70vh;
+  overflow: auto;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.pi-gl-table {
+  margin: 0;
+  min-width: 760px;
+}
+.pi-gl-table caption {
+  padding: 0.5rem 0.75rem;
+}
+.pi-gl-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 0;
+  white-space: nowrap;
+  box-shadow: inset 0 -2px 0 var(--line-strong);
+}
+.pi-gl-table thead th.pi-gl-sel {
+  padding: 0 0.5rem;
+}
+.pi-gl-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: start;
+}
+.pi-gl-sort:hover {
+  background: var(--brand-soft, #e0eef0);
+}
+th[aria-sort="ascending"] .pi-gl-sort,
+th[aria-sort="descending"] .pi-gl-sort {
+  color: var(--brand);
+}
+.pi-gl-sort-ico {
+  font-size: 0.85em;
+}
+.pi-gl-table tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface);
+  min-width: 9rem;
+  padding: 0 0.55rem;
+}
+.pi-gl-sel {
+  width: 2.75rem;
+  text-align: center;
+}
+.pi-gl-sel input {
+  width: 22px;
+  height: 22px;
+  margin: 11px 0;
+}
+.pi-gl-table td {
+  position: relative; /* keeps visually-hidden text inside the scroller, not on the page */
+}
+.pi-gl-table td.pi-gl-lv {
+  text-align: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  min-width: 4.6rem;
+}
+.pi-gl-lv.is-empty {
+  background: repeating-linear-gradient(135deg, var(--surface), var(--surface) 4px, var(--surface-2, #f1ece2) 4px, var(--surface-2, #f1ece2) 8px);
+}
+.pi-gl-num {
+  font-weight: 800;
+}
+.pi-gl-trend {
+  display: inline-block;
+  margin-inline-start: 0.3rem;
+  font-size: 0.85em;
+  font-weight: 800;
+}
+.pi-gl-res {
+  white-space: nowrap;
+}
+.pi-gl-flag {
+  font-size: 0.8rem;
+  margin: 0.1rem 0.2rem 0.1rem 0;
+}
+.pi-gl-flag.is-unverified,
+.pi-gl-flag.is-old {
+  color: var(--pi-experimental);
+  background: var(--pi-experimental-bg);
+}
+.pi-gl-flag.is-missing,
+.pi-gl-flag.is-none {
+  color: var(--pi-insufficient);
+  background: var(--pi-insufficient-bg);
+}
+.pi-gl-legend {
+  margin-top: 0.6rem;
+}
+.pi-gl-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+}
+.pi-gl-swatch {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 6px;
+  font-weight: 800;
+}
+.pi-gl-selbar {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1.5px dashed var(--line-strong);
+}
+.pi-gl-selbar .pi-row {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pi-gl-selbar input[type="text"] {
+  min-height: 44px;
+  width: min(100%, 16rem);
+}
+.pi-gl-count {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+}
+
+/* Spotlight drawer */
+.pi-print-sheet {
+  display: none;
+}
+body.pi-print-drawer .pi-print-sheet {
+  display: block;
+}
+.pi-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(30rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  border-inline-start: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: -12px 0 32px rgb(13 28 46 / 18%);
+  overflow-y: auto;
+}
+.pi-drawer::backdrop {
+  background: rgb(13 28 46 / 40%);
+}
+.pi-dr-panel {
+  padding: 1rem 1.1rem 2rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.pi-dr-panel h3 {
+  margin: 0.6rem 0 0;
+  font-size: 1.05rem;
+}
+.pi-dr-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 0.75rem;
+  position: sticky;
+  top: -1rem;
+  padding-top: 1rem;
+  margin-top: -1rem;
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--line);
+  z-index: 1;
+}
+.pi-dr-head h2 {
+  margin: 0;
+}
+.pi-dr-head p {
+  margin: 0.2rem 0 0.5rem;
+}
+.pi-dr-x {
+  min-height: 44px;
+  flex: none;
+}
+.pi-dr-domains,
+.pi-dr-practice {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.pi-dr-dom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 2.2rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-inline-start: 4px solid var(--dc);
+  border-radius: 8px;
+  background: var(--surface-2, #f6f1e7);
+}
+.pi-dr-dom-name {
+  font-weight: 700;
+}
+.pi-dr-lv {
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.pi-dr-comps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.5rem;
+}
+.pi-dr-spark .pi-spark {
+  max-width: 14rem;
+}
+.pi-dr-practice li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.pi-dr-actions {
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .pi-gl-table tbody th {
+    min-width: 7rem;
+  }
+}
+@media print {
+  .pi-gl-wrap {
+    max-height: none;
+    overflow: visible;
+  }
+  .pi-gl-table thead th {
+    position: static;
+  }
+  body.pi-print-drawer > :not(.pi-print-sheet) {
+    display: none !important;
+  }
+  body.pi-print-drawer .pi-dr-panel {
+    gap: 0.25rem;
+    padding: 0;
+    font-size: 10pt;
+    line-height: 1.35;
+  }
+  body.pi-print-drawer .pi-dr-panel p {
+    margin: 0.1rem 0;
+  }
+  body.pi-print-drawer .pi-dr-head h2 {
+    font-size: 16pt;
+  }
+  body.pi-print-drawer .pi-dr-dom {
+    padding: 0.1rem 0.4rem;
+  }
+  body.pi-print-drawer .pi-comp {
+    padding: 0.3rem 0.6rem;
+  }
+  body.pi-print-drawer .pi-dr-head {
+    position: static;
+    margin: 0;
+    padding: 0;
+  }
+  body.pi-print-drawer .pi-dr-panel h3 {
+    margin: 0.2rem 0 0;
+  }
+  body.pi-print-drawer .pi-dr-spark .pi-spark {
+    max-width: 8rem;
+  }
+  body.pi-print-drawer .pi-ol {
+    padding: 0.3rem 0.6rem;
+  }
+  body.pi-print-drawer .pi-ol strong,
+  body.pi-print-drawer .pi-comp strong {
+    font-size: 1.05rem;
+  }
+  body.pi-print-drawer .pi-dr-practice li {
+    padding: 0.1rem 0;
+    border: 0;
+  }
+  body.pi-print-drawer .pi-dr-panel .pi-more {
+    display: none;
+  }
+  body.pi-print-drawer .pi-dr-domains {
+    grid-template-columns: 1fr 1fr;
+  }
+  body.pi-print-drawer .pi-dr-comps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  body.pi-print-drawer .pi-dr-dom,
+  body.pi-print-drawer .pi-comp,
+  body.pi-print-drawer .pi-dr-lv {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ── P3 ── Planner cards + My plan, import drop zone, welcome, overview folds, section headers ── */
+.pi-sechead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.pi-sechead h2 {
+  margin: 0;
+}
+.pi-sechead-lead {
+  margin: 0.2rem 0 0;
+  color: var(--muted, #475569);
+}
+.pi-sechead-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pi-myplan {
+  padding: 0.85rem 1rem;
+  border-radius: var(--pi-radius, 16px);
+  background: var(--pi-card, #fff);
+  border: 1.5px solid var(--line-strong, #cbd5e1);
+  border-inline-start: 5px solid var(--brand);
+}
+.pi-myplan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.pi-myplan-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.pi-myplan > .fine {
+  margin: 0.4rem 0 0;
+}
+.pi-myplan-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.pi-myplan-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--line, #e2e8f0);
+}
+.pi-myplan-what {
+  display: grid;
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+.pi-myplan-what .fine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pi-plan-print {
+  display: none;
+}
+.pi-fcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 0.85rem;
+  align-items: start;
+}
+.pi-fcard {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.pi-fcard h3,
+.pi-fcard h4 {
+  margin: 0;
+}
+.pi-fcard-line {
+  margin: 0;
+  font-size: 1.02rem;
+}
+.pi-top3 {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  display: grid;
+  gap: 0.15rem;
+}
+.pi-top3 a {
+  display: inline-block;
+  min-height: 32px;
+  padding-block: 0.2rem;
+}
+.pi-fcard-actions .btn,
+.pi-myplan .btn,
+.pi-bcard .btn {
+  min-height: 44px;
+}
+.pi-fcard .btn.is-done {
+  background: var(--pi-soft, #f3f6f9);
+  color: var(--ink, #0f172a);
+  border: 1.5px solid var(--pi-validated, #15803d);
+}
+.pi-fdetail[open] {
+  border-top: 1px solid var(--line, #e2e8f0);
+}
+.pi-fdetail textarea {
+  width: 100%;
+}
+.pi-group-students {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pi-bcard {
+  display: grid;
+  gap: 0.4rem;
+}
+.pi-bcard .pi-decide {
+  padding: 0;
+  background: none;
+}
+.pi-bottlenecks {
+  display: grid;
+  gap: 0.6rem;
+}
+.pi-hero-id .pi-hero-name {
+  margin: 0;
+  font-size: 1.7rem;
+}
+/* Import: drop zone and "what we found" */
+.pi-drop {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 2rem 1.25rem;
+  border: 2px dashed var(--line-strong, #94a3b8);
+  border-radius: var(--pi-radius, 16px);
+  background: var(--pi-soft, #f3f6f9);
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.pi-drop.is-over {
+  border-color: var(--brand);
+  background: #e8f1f8;
+}
+.pi-drop-ico {
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--brand);
+}
+.pi-drop-title {
+  font-size: 1.25rem;
+}
+.pi-drop-sub {
+  max-width: 34rem;
+  color: var(--muted, #475569);
+}
+.pi-drop-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+.pi-drop-btn {
+  min-height: 44px;
+  margin-top: 0.35rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.pi-drop-input:focus-visible + .pi-drop-btn {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+.pi-or {
+  margin: 0;
+  font-weight: 700;
+  color: var(--muted, #475569);
+}
+.pi-found {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--pi-card, #fff);
+  border: 1.5px solid var(--line-strong, #cbd5e1);
+  border-inline-start: 5px solid var(--brand);
+}
+.pi-found h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+.pi-found ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  display: grid;
+  gap: 0.2rem;
+}
+/* Welcome (My class, no data yet) */
+.pi-onboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+.pi-onboard-main .pi-drop {
+  height: 100%;
+  align-content: center;
+  background: var(--pi-card, #fff);
+}
+.pi-onboard-side {
+  display: grid;
+  gap: 0.85rem;
+}
+.pi-onboard-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 1rem 0 0;
+  color: var(--muted, #475569);
+}
+.pi-onboard-foot a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.pi-onboard-lock {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+@media (max-width: 760px) {
+  .pi-onboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Overview folds */
+.pi-showall summary,
+.pi-usefold > summary {
+  min-height: 44px;
+}
+.pi-usefold {
+  display: block;
+  padding: 0.25rem 1rem;
+}
+.pi-usefold[open] {
+  padding-bottom: 1rem;
+}
+@media print {
+  body[data-print="plan"] .pi-side,
+  body[data-print="plan"] .pi-topbar,
+  body[data-print="plan"] .pi-banner,
+  body[data-print="plan"] .pi-planner > :not(.pi-myplan),
+  body[data-print="plan"] .pi-myplan > :not(.pi-plan-print) {
+    display: none !important;
+  }
+  body[data-print="plan"] .pi-myplan {
+    border: 0;
+    padding: 0;
+  }
+  body[data-print="plan"] .pi-plan-print {
+    display: block;
+  }
+  body[data-print="plan"] .pi-plan-print section {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ── P2 ask ── Ask the data (view-ask.js) ── */
+.pi-ask-form {
+  margin: 0.75rem 0 0.5rem;
+}
+.pi-ask-label {
+  display: block;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+}
+.pi-ask-bar {
+  display: flex;
+  gap: 0.5rem;
+}
+.pi-ask-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 52px;
+  font: inherit;
+  font-size: 1.15rem;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.pi-ask-input:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.pi-ask-bar .btn {
+  min-height: 52px;
+  min-width: 88px;
+}
+.pi-ask-examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+.pi-ask-chip {
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.pi-ask-chip:hover,
+.pi-ask-chip:focus-visible {
+  border-color: var(--brand);
+  background: var(--pi-soft);
+}
+.pi-ask-result {
+  margin-top: 1rem;
+}
+.pi-ask-interp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-inline-start: 5px solid var(--brand);
+  border-radius: 10px;
+  background: var(--pi-soft);
+}
+.pi-ask-count {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-inline-end: 0.35rem;
+}
+.pi-ask-open {
+  min-height: 44px;
+  text-align: start;
+}
+.pi-ask-why {
+  min-width: 16rem;
+}
+.pi-ask-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+.pi-ask-actions .btn {
+  min-height: 44px;
+}
+.pi-ask-group > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+}
+.pi-ask-group > summary::-webkit-details-marker {
+  display: none;
+}
+.pi-ask-group[open] {
+  flex-basis: 100%;
+}
+.pi-ask-group input {
+  min-height: 44px;
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.pi-ask-out {
+  flex-basis: 100%;
+}
+.pi-ask-out:empty {
+  display: none;
+}
+.pi-ask-build,
+.pi-ask-excl {
+  margin: 0.75rem 0;
+}
+.pi-ask-build > summary,
+.pi-ask-excl > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.pi-ask-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+.pi-ask-chips select,
+.pi-ask-chips input {
+  min-height: 44px;
+}
+.pi-ask-chips .btn {
+  min-height: 44px;
+}
+@media (max-width: 520px) {
+  .pi-ask-why {
+    min-width: 11rem;
+  }
+  .pi-ask-chips .pi-field {
+    flex: 1 1 40%;
+  }
+}
+@media print {
+  .pi-ask-form,
+  .pi-ask-examples,
+  .pi-ask-recent,
+  .pi-ask-actions,
+  .pi-ask-build {
+    display: none;
+  }
+}

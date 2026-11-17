@@ -156,3 +156,12 @@ export function subnav(ws, key, items, current) {
     ),
   );
 }
+
+/** Section header shared by the views: one h2, a one-line "what this shows", the primary action on the right. */
+export const sectionHead = (title, lead, ...actions) =>
+  h(
+    "div",
+    { class: "pi-sechead" },
+    h("div", { class: "pi-sechead-text" }, h("h2", {}, title), lead ? h("p", { class: "pi-sechead-lead" }, lead) : null),
+    actions.filter(Boolean).length ? h("div", { class: "pi-sechead-actions" }, actions) : null,
+  );

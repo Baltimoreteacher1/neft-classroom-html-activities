@@ -6,6 +6,7 @@ import { assignmentLink, selectItems } from "../../access-practice-lab/src/acc/a
 import { DEST_BY_ID } from "../../access-practice-lab/src/sitemap.js";
 import { domainProfile, guidanceFor } from "./interpret.js";
 import { activitiesFor, bandForGrade, specificActivities } from "./practice.js";
+import { recordsOf } from "./records.js";
 import { DOMAINS } from "./rules.js";
 
 /** Existing Language Page destinations per need, from the site map (ids in src/sitemap.js). */
@@ -97,6 +98,28 @@ export function findingsFor(record) {
   }
   return out;
 }
+
+/**
+ * Whole-class view of the same findings: for each domain, the students whose latest result makes it one of
+ * their two findings (lowest level first). Uses findingsFor, so the class view never re-scores anything.
+ */
+export function classFindings(students) {
+  const by = new Map();
+  for (const student of students) {
+    for (const finding of findingsFor(recordsOf(student).at(-1))) {
+      if (!by.has(finding.domain)) by.set(finding.domain, []);
+      by.get(finding.domain).push({ student, finding });
+    }
+  }
+  return DOMAINS.filter((d) => by.has(d)).map((domain) => ({
+    domain,
+    items: by.get(domain).sort((a, b) => a.finding.level - b.finding.level),
+  }));
+}
+
+/** The steps a teacher keeps for a finding: their edited list when saved, else the suggested ones. */
+export const planSteps = (decision, finding) =>
+  Array.isArray(decision?.steps) && decision.steps.length ? decision.steps : finding?.teach || [];
 
 /** Build a one-domain practice assignment link from the item bank index (the hub's own format). */
 export function buildAssignment(bankIndex, { domain, grade = "6-8", count = 8, title }) {

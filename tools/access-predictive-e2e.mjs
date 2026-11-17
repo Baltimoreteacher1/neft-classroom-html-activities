@@ -63,6 +63,7 @@ page.on(
 
 const WS = "/access-teacher/predictive/";
 const TABS = [
+  "glance",
   "overview",
   "students",
   "growth",
@@ -129,9 +130,21 @@ ok(
   "a first visit with no class data opens the sample class",
 );
 ok(
-  (await page.locator('#pi-tab-overview[aria-selected="true"]').count()) === 1,
-  "the studio opens on Overview",
+  (await page.locator('#pi-tab-glance[aria-selected="true"]').count()) === 1,
+  "the studio opens on Class at a glance",
 );
+ok(
+  (await page.locator("[data-student-row]").count()) === 12 &&
+    (await page.locator("th[aria-sort]").count()) >= 8,
+  "Class at a glance shows a sortable row for each of the 12 sample students",
+);
+await page.locator(".pi-gl-name").first().click();
+ok(
+  await page.evaluate(() => document.getElementById("piDrawer")?.open === true),
+  "a student name opens the spotlight drawer",
+);
+await page.keyboard.press("Escape");
+await tab("overview");
 ok(
   (await page.locator(".pi-strip [data-student]").count()) === 12,
   "the sample class has 12 students to pick from",
@@ -347,7 +360,7 @@ ok(
   "MODEL to ACCESS shows the WIDA estimate for an applicable result",
 );
 await tab("toolkit");
-ok((await page.locator("[data-tool]").count()) === 8, "the Toolkit offers eight tools");
+ok((await page.locator("[data-tool]").count()) === 9, "the Toolkit offers nine tools (goal form added 2026-11-17)");
 for (const t of [
   "levels",
   "words",

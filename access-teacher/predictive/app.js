@@ -9,7 +9,7 @@ import { KEYS, loadRealStudents, loadState, read, saveState, write } from "./sto
 import { renderAsk } from "./view-ask.js";
 import { renderClassroom } from "./view-classroom.js";
 import { renderGlance } from "./view-glance.js";
-import { renderData } from "./view-data.js";
+import { dropZone, renderData, startManual } from "./view-data.js";
 import { renderForecasts } from "./view-forecasts.js";
 import { renderGrowth } from "./view-growth.js";
 import { renderOverview } from "./view-overview.js";
@@ -216,33 +216,50 @@ function banner() {
 function welcome() {
   return h(
     "div",
-    { class: "pi-welcome" },
-    h("h2", {}, "Welcome! Let’s look at your WIDA scores."),
-    h("p", { class: "pi-welcome-lead" }, "See what scores mean, how students are growing, and what to teach next. Start with practice data, or bring in your own."),
+    { class: "pi-welcome pi-onboard" },
+    h("h2", {}, "Bring in your ACCESS scores"),
+    h(
+      "p",
+      { class: "pi-welcome-lead" },
+      "See what each score means, how students are growing, and what to teach next.",
+    ),
     h(
       "div",
-      { class: "pi-welcome-cards" },
+      { class: "pi-onboard-grid" },
       h(
-        "button",
-        { type: "button", class: "pi-welcome-card", "data-welcome": "sample", on: { click: () => setMode("demo") } },
-        h("span", { class: "pi-welcome-ico" }, icon("students")),
-        h("strong", {}, "Practice with a sample class"),
-        h("span", {}, "12 fictional students with sample scores and practice activity. Nothing to set up."),
+        "div",
+        { class: "pi-onboard-main", "data-welcome": "import" },
+        dropZone(ws, { id: "piWelcomeFile", title: "Drop a score file here" }),
       ),
       h(
-        "button",
-        { type: "button", class: "pi-welcome-card", "data-welcome": "import", on: { click: () => ws.go("data") } },
-        h("span", { class: "pi-welcome-ico" }, icon("data")),
-        h("strong", {}, "Bring in my students’ scores"),
-        h("span", {}, "Type them in, paste from a spreadsheet, or open a CSV, Excel or PDF score report."),
+        "div",
+        { class: "pi-onboard-side" },
+        h(
+          "button",
+          { type: "button", class: "pi-welcome-card", "data-welcome": "sample", on: { click: () => setMode("demo") } },
+          h("span", { class: "pi-welcome-ico" }, icon("students")),
+          h("strong", {}, "Try the sample class"),
+          h("span", {}, "12 fictional students with sample scores. Nothing to set up."),
+        ),
+        h(
+          "button",
+          { type: "button", class: "pi-welcome-card", "data-welcome": "manual", on: { click: () => startManual(ws) } },
+          h("span", { class: "pi-welcome-ico" }, icon("reports")),
+          h("strong", {}, "Type scores by hand"),
+          h("span", {}, "One student or a whole class, row by row, or paste from a spreadsheet."),
+        ),
       ),
-      h(
-        "a",
-        { class: "pi-welcome-card", href: "?demo=1&tour=1", "data-welcome": "tour" },
-        h("span", { class: "pi-welcome-ico" }, icon("planner")),
-        h("strong", {}, "Take the 3-minute tour"),
-        h("span", {}, "Mr. Neft shows each tool with the sample class."),
+    ),
+    h(
+      "p",
+      { class: "pi-onboard-foot" },
+      s(
+        "svg",
+        { viewBox: "0 0 24 24", class: "pi-ico pi-onboard-lock", "aria-hidden": "true", focusable: "false" },
+        s("path", { d: "M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4" }),
       ),
+      " Scores stay on this device. Nothing is uploaded. ",
+      h("a", { href: "?demo=1&tour=1", "data-welcome": "tour" }, "Take the 3-minute tour"),
     ),
   );
 }

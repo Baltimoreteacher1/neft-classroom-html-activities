@@ -90,7 +90,7 @@ function decisionRow(ws, f, idx, card) {
   };
   const note = h("textarea", { id: `pi-n${idx}`, rows: 2, value: d.note || "" });
   const msg = h("span", { class: "fine", role: "status" });
-  return h(
+  const buttons = h(
     "div",
     { class: "pi-decide" },
     h(
@@ -119,6 +119,10 @@ function decisionRow(ws, f, idx, card) {
         "Reject",
       ),
     ),
+  );
+  const noteRow = h(
+    "div",
+    { class: "pi-decide" },
     h("div", { class: "pi-field" }, h("label", { for: `pi-n${idx}` }, "Your note"), note),
     h(
       "button",
@@ -141,37 +145,52 @@ function decisionRow(ws, f, idx, card) {
     ),
     msg,
   );
+  return { buttons, noteRow };
 }
 
 function findingCard(ws, f, idx) {
   const card = h(
     "article",
     {
-      class: "pi-card pi-finding",
+      class: "pi-card pi-finding pi-bcard",
       "data-decision": ws.state.findings[f.id]?.status || "open",
       "data-rule": f.rule,
       "aria-labelledby": `pi-f${idx}`,
     },
     h("h4", { id: `pi-f${idx}` }, `${f.student}: ${f.title}`),
+    h("p", { class: "pi-fcard-line" }, f.hypothesis),
+  );
+  const { buttons, noteRow } = decisionRow(ws, f, idx, card);
+  card.append(
+    buttons,
     h(
-      "dl",
-      { class: "pi-dl pi-chain" },
-      h("dt", {}, "Observed evidence"),
-      h("dd", {}, f.observed),
-      h("dt", {}, "Hypothesis"),
-      h("dd", {}, f.hypothesis),
-      h("dt", {}, "Recommended instruction"),
-      h("dd", {}, f.recommendation),
-      h("dt", {}, "New assessment opportunity"),
-      h("dd", {}, f.assessment),
+      "details",
+      { class: "pi-more" },
+      h("summary", {}, "Evidence, instruction, note and learning plan"),
+      h(
+        "dl",
+        { class: "pi-dl pi-chain" },
+        h("dt", {}, "Observed evidence"),
+        h("dd", {}, f.observed),
+        h("dt", {}, "Hypothesis"),
+        h("dd", {}, f.hypothesis),
+        h("dt", {}, "Recommended instruction"),
+        h("dd", {}, f.recommendation),
+        h("dt", {}, "New assessment opportunity"),
+        h("dd", {}, f.assessment),
+      ),
+      noteRow,
+      planBuilder(ws, f, idx),
     ),
   );
-  card.append(decisionRow(ws, f, idx, card), planBuilder(ws, f, idx));
   return card;
 }
 
-export function renderBottlenecks(ws) {
-  const findings = ws.students.flatMap((s) => detectBottlenecks(s, { evidence: ws.evidence(s) }));
+/** All students' findings, or one student's with `studentId` (the planner's one-student view). */
+export function renderBottlenecks(ws, { studentId = null } = {}) {
+  const findings = ws.students
+    .filter((s) => !studentId || s.id === studentId)
+    .flatMap((s) => detectBottlenecks(s, { evidence: ws.evidence(s) }));
   const hidden = findings.filter((f) => ws.state.findings[f.id]?.status === "rejected").length;
   return h(
     "section",

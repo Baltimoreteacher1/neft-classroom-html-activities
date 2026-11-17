@@ -115,6 +115,15 @@ function liveLine(ws, st) {
   return h("p", { class: "pi-liveline", "data-live-student": "" }, h("strong", {}, "In class: "), `last practice ${l.lastSeen}, ${l.member.summary.weekEvidence ?? 0} activities this week`, l.total ? `, ${l.done} of ${l.total} assignments done.` : ".");
 }
 
+const practiceItem = (a) =>
+  h(
+    "li",
+    {},
+    h("a", { href: a.href, "data-activity": a.id }, a.title),
+    h("span", { class: "fine" }, ` ${a.why}`),
+  );
+
+/** Practice next: the top 3 activities per domain; the rest fold behind "Show all". */
 export function practiceCard(ws, st) {
   const rec = recordsOf(st).at(-1);
   const plan = practicePlan(rec);
@@ -141,18 +150,15 @@ export function practiceCard(ws, st) {
                 ? `${p.domain} (${f1(p.level)})`
                 : p.domain,
           ),
-          h(
-            "ul",
-            {},
-            p.activities.map((a) =>
-              h(
-                "li",
-                {},
-                h("a", { href: a.href, "data-activity": a.id }, a.title),
-                h("span", { class: "fine" }, ` ${a.why}`),
-              ),
-            ),
-          ),
+          h("ul", {}, p.activities.slice(0, 3).map(practiceItem)),
+          p.activities.length > 3
+            ? h(
+                "details",
+                { class: "pi-more pi-showall" },
+                h("summary", {}, `Show all ${p.activities.length}`),
+                h("ul", {}, p.activities.slice(3).map(practiceItem)),
+              )
+            : null,
           assignButton(ws, { domain: p.domain, level: p.level, grade: rec.grade, label: "Assign to my class" }),
         ),
       ),

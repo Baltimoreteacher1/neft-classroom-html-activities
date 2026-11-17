@@ -18,7 +18,7 @@ import { QUALITY_WORDS, qualityReport } from "./quality.js";
 import { recordsOf, removeRow } from "./records.js";
 import { ASSESSMENTS, ASSESSMENT_TYPES, DOMAINS, SCALE_RESET_YEAR, SCORE_KEYS } from "./rules.js";
 import { audit, KEYS, loadStores, read, saveStores, write } from "./store.js";
-import { heading } from "./view-common.js";
+import { sectionHead } from "./view-common.js";
 
 const STEPS = [
   "Choose source",
@@ -158,62 +158,125 @@ const nav = (ws, { back = true, next = null, nextLabel = "Next" } = {}) =>
     ),
   );
 
-function stepSource(ws) {
-  const status = h("p", { class: "pi-note", role: "status" }, wiz.error);
-  const take = (rows, name, type) => {
-    if (!rows.length) {
-      wiz.error = "No rows were found.";
+/** Rows from a table source -> the Identify step. */
+function takeRows(ws, rows, name, type) {
+  if (!rows.length) {
+    wiz.error = "No rows were found.";
+    return ws.rerender();
+  }
+  Object.assign(wiz, {
+    table: rows,
+    mapping: autoMap(rows[0]),
+    fileName: name,
+    sourceType: type,
+    error: "",
+    step: 1,
+  });
+  ws.rerender();
+  ws.announce(`Read ${rows.length - 1} data rows from ${name}. Next: identify the assessment.`);
+}
+
+/**
+ * Read one dropped or chosen file on this device and feed the wizard (CSV/TSV/TXT tables, Excel, PDF text).
+ * Starts the wizard over, so a file dropped mid-way never mixes with an earlier source.
+ */
+export async function importFile(ws, f) {
+  if (!f) return;
+  const fail = (msg) => {
+    wiz.error = msg;
+    ws.rerender();
+    ws.announce(msg);
+  };
+  resetWizard();
+  if (ws.tab !== "data") ws.go("data");
+  if (f.size > 5_000_000)
+    return fail("That file is larger than 5 MB. Export a smaller file.");
+  try {
+    const ext = f.name.toLowerCase().split(".").pop();
+    if (ext === "xlsx") return takeRows(ws, await readXlsx(await f.arrayBuffer()), f.name, "xlsx");
+    if (ext === "pdf") {
+      const text = await readPdfText(await f.arrayBuffer());
+      if (!text)
+        return fail(
+          "No text layer was found in this PDF (it may be a scan). Open the report, select all, copy, and paste the text below. Scanned reports are not sent to any OCR service.",
+        );
+      Object.assign(wiz, {
+        pdfText: text,
+        fileName: f.name,
+        sourceType: "pdf",
+        source: "pdf",
+        step: 1,
+        error: "",
+      });
       return ws.rerender();
     }
-    Object.assign(wiz, {
-      table: rows,
-      mapping: autoMap(rows[0]),
-      fileName: name,
-      sourceType: type,
-      error: "",
-      step: 1,
-    });
-    ws.rerender();
+    if (["csv", "tsv", "txt"].includes(ext))
+      return takeRows(ws, parseTable(await f.text()), f.name, "csv");
+    fail("Choose a .csv, .tsv, .xlsx or .pdf file.");
+  } catch (e) {
+    fail(`The file could not be read: ${e.message}`);
+  }
+}
+
+/** Open the wizard on manual entry (the welcome screen's "Type scores by hand"). */
+export function startManual(ws) {
+  resetWizard();
+  Object.assign(wiz, { source: "manual", sourceType: "manual", step: 1 });
+  ws.go("data");
+}
+
+const FILE_ACCEPT =
+  ".csv,.tsv,.txt,.xlsx,.pdf,text/csv,text/tab-separated-values,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+/** A large drop target with a Choose file button; `onFile` receives the first file. */
+export function dropZone(ws, { id = "piImportFile", title = "Drop your score file here", compact = false } = {}) {
+  const file = h("input", { type: "file", id, accept: FILE_ACCEPT, class: "pi-drop-input" });
+  file.addEventListener("change", () => importFile(ws, file.files?.[0]));
+  const zone = h(
+    "div",
+    { class: `pi-drop${compact ? " is-compact" : ""}`, "data-dropzone": "" },
+    h("span", { class: "pi-drop-ico", "aria-hidden": "true" }, "⤓"),
+    h("strong", { class: "pi-drop-title" }, title),
+    h("span", { class: "pi-drop-sub" }, "CSV, TSV, Excel (.xlsx) or a digital PDF score report. Read on this device; nothing is uploaded."),
+    file,
+    h("label", { for: id, class: "btn pi-drop-btn" }, "Choose file"),
+  );
+  const over = (on) => (e) => {
+    e.preventDefault();
+    zone.classList.toggle("is-over", on);
   };
-  const file = h("input", {
-    type: "file",
-    id: "piImportFile",
-    accept:
-      ".csv,.xlsx,.pdf,text/csv,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  zone.addEventListener("dragenter", over(true));
+  zone.addEventListener("dragover", over(true));
+  zone.addEventListener("dragleave", over(false));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    zone.classList.remove("is-over");
+    importFile(ws, e.dataTransfer?.files?.[0]);
   });
-  file.addEventListener("change", async () => {
-    const f = file.files?.[0];
-    if (!f) return;
-    if (f.size > 5_000_000)
-      return ((wiz.error = "That file is larger than 5 MB. Export a smaller file."), ws.rerender());
-    try {
-      const ext = f.name.toLowerCase().split(".").pop();
-      if (ext === "xlsx") return take(await readXlsx(await f.arrayBuffer()), f.name, "xlsx");
-      if (ext === "pdf") {
-        const text = await readPdfText(await f.arrayBuffer());
-        if (!text)
-          return (
-            (wiz.error =
-              "No text layer was found in this PDF (it may be a scan). Open the report, select all, copy, and paste the text below. Scanned reports are not sent to any OCR service."),
-            ws.rerender()
-          );
-        Object.assign(wiz, {
-          pdfText: text,
-          fileName: f.name,
-          sourceType: "pdf",
-          source: "pdf",
-          step: 1,
-          error: "",
-        });
-        return ws.rerender();
-      }
-      if (ext === "csv") return take(parseTable(await f.text()), f.name, "csv");
-      wiz.error = "Choose a .csv, .xlsx or .pdf file.";
-    } catch (e) {
-      wiz.error = `The file could not be read: ${e.message}`;
-    }
-    ws.rerender();
+  return zone;
+}
+
+// Anywhere on the Import page accepts a dropped file (outside the zone too), so a near-miss never makes the
+// browser open the file in place of the studio.
+let pageDropWs = null;
+function armPageDrop(ws) {
+  if (pageDropWs) return void (pageDropWs = ws);
+  pageDropWs = ws;
+  const onImport = () => pageDropWs?.tab === "data" && document.querySelector("[data-import-page]");
+  document.addEventListener("dragover", (e) => {
+    if (onImport() && e.dataTransfer?.types?.includes("Files")) e.preventDefault();
   });
+  document.addEventListener("drop", (e) => {
+    if (!onImport() || !e.dataTransfer?.files?.length) return;
+    e.preventDefault();
+    importFile(pageDropWs, e.dataTransfer.files[0]);
+  });
+}
+
+function stepSource(ws) {
+  const status = wiz.error ? h("p", { class: "pi-note", role: "status" }, wiz.error) : null;
+  const take = (rows, name, type) => takeRows(ws, rows, name, type);
   const paste = h("textarea", {
     id: "piPaste",
     rows: 6,
@@ -229,6 +292,9 @@ function stepSource(ws) {
   return h(
     "div",
     { class: "pi-stack" },
+    dropZone(ws),
+    status,
+    h("p", { class: "pi-or" }, "Or bring scores in another way"),
     h(
       "div",
       { class: "pi-cards" },
@@ -252,17 +318,6 @@ function stepSource(ws) {
           },
           "Manual or bulk entry",
         ),
-      ),
-      h(
-        "div",
-        { class: "pi-card" },
-        h("h4", {}, "Upload a file"),
-        h(
-          "p",
-          { class: "fine" },
-          "CSV or Excel (.xlsx) export, or a digital PDF score report. Read on this device; nothing is uploaded.",
-        ),
-        h("label", { for: "piImportFile", class: "pi-field" }, h("span", {}, "File"), file),
       ),
       h(
         "div",
@@ -307,7 +362,6 @@ function stepSource(ws) {
         ),
       ),
     ),
-    status,
     h(
       "p",
       { class: "fine" },
@@ -471,11 +525,53 @@ const preview = (ws) =>
     today: ws.today,
   });
 
+/** Plain-language "what we found" card: students, assessments and years, scores present, what happens next. */
+function foundSummary(p) {
+  const students = new Set(p.rows.filter((r) => r.studentId).map((r) => r.studentId));
+  const tests = new Map();
+  for (const r of p.rows) {
+    const k = `${ASSESSMENTS[r.row.assessment]?.short || r.row.assessment || "Unknown"} ${r.row.year || "(no year)"}`;
+    tests.set(k, (tests.get(k) || 0) + 1);
+  }
+  const keys = [...DOMAINS, "Overall"].filter((k) =>
+    p.rows.some((r) => {
+      const sc = r.draft?.scores?.[k];
+      return sc && (String(sc.level ?? "") !== "" || String(sc.scale ?? "") !== "");
+    }),
+  );
+  const s = p.summary;
+  const skip = s.error + s.duplicate;
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  return h(
+    "section",
+    { class: "pi-found", "aria-labelledby": "piFoundT", "data-found": "" },
+    h("h4", { id: "piFoundT" }, "What we found"),
+    h(
+      "ul",
+      {},
+      h("li", {}, h("strong", {}, plural(students.size, "student")), ` in ${plural(s.total, "row")}${wiz.fileName ? ` from ${wiz.fileName}` : ""}`),
+      h("li", {}, h("strong", {}, "Assessments: "), [...tests].map(([k, n]) => `${k} (${n})`).join(", ") || "none recognised"),
+      h("li", {}, h("strong", {}, "Scores present: "), keys.length ? keys.join(", ") : "none yet"),
+      h(
+        "li",
+        {},
+        h("strong", {}, "Next: "),
+        `${s.new} ready to import`,
+        s.conflict ? `, ${s.conflict} differ from results on file (kept unless you choose to replace)` : "",
+        s.unchanged ? `, ${s.unchanged} already on file` : "",
+        skip ? `, ${skip} will be skipped until fixed` : "",
+        ". Nothing is saved until you confirm.",
+      ),
+    ),
+  );
+}
+
 function stepValidate(ws) {
   const p = preview(ws);
   return h(
     "div",
     { class: "pi-stack" },
+    foundSummary(p),
     h(
       "ul",
       { class: "pi-stats", "data-import-summary": "" },
@@ -616,6 +712,7 @@ function stepSave(ws) {
   return h(
     "div",
     { class: "pi-stack" },
+    foundSummary(p),
     ws.mode === "demo"
       ? h(
           "p",
@@ -883,10 +980,14 @@ function manage(ws) {
 }
 
 export function renderData(ws) {
+  armPageDrop(ws);
   return h(
     "div",
-    { class: "pi-stack" },
-    heading(2, "Import and manage data"),
+    { class: "pi-stack", "data-import-page": "" },
+    sectionHead(
+      "Import and manage data",
+      "Bring scores in, check what was found, then save. Everything stays on this device.",
+    ),
     wizard(ws),
     qualityPanel(ws),
     manage(ws),

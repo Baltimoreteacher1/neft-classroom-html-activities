@@ -37,6 +37,7 @@ import {
   explain,
   scoreChip,
   studentPicker,
+  sectionHead,
   subnav,
 } from "./view-common.js";
 
@@ -147,7 +148,7 @@ function studentOverview(ws) {
       h(
         "div",
         { class: "pi-hero-id" },
-        h("h2", {}, st.name),
+        h("h3", { class: "pi-hero-name" }, st.name),
         h(
           "p",
           { class: "pi-hero-meta" },
@@ -259,10 +260,10 @@ function studentOverview(ws) {
     ),
     use.total
       ? h(
-          "section",
-          { class: "pi-card", "aria-labelledby": "piUseT" },
+          "details",
+          { class: "pi-card pi-more pi-usefold", "data-usage-fold": "student" },
           h(
-            "h3",
+            "summary",
             { id: "piUseT" },
             `Practice on The Language Page: ${use.total} activities over ${use.weeks} weeks`,
           ),
@@ -383,9 +384,9 @@ function classOverview(ws) {
     ),
     use.total
       ? h(
-          "section",
-          { class: "pi-card", "aria-labelledby": "piClassUseT" },
-          h("h3", { id: "piClassUseT" }, "Class practice per week"),
+          "details",
+          { class: "pi-card pi-more pi-usefold", "data-usage-fold": "class" },
+          h("summary", { id: "piClassUseT" }, `Class practice per week: ${use.total} activities`),
           activityColumns({
             title: "Class practice activities per week",
             weeks: weeklyActivity(allEntries),
@@ -441,7 +442,13 @@ export function renderOverview(ws) {
   const view = ws.sub.overview || "student";
   return h(
     "div",
-    {},
+    { class: "pi-stack" },
+    sectionHead(
+      "Overview",
+      view === "class"
+        ? "Every student's latest levels, one assessment version at a time."
+        : "One student's latest result: levels, strength, focus and what to do next.",
+    ),
     newSince(ws),
     subnav(
       ws,
