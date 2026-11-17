@@ -392,6 +392,51 @@ try {
     made?.source?.kind === "pathway" && made.source.id === `${PW}:bevidence-argument` && made.text,
     `stage 4: Book Studio opened a real book made from the pathway (rev ${made?.rev}, ${made?.pages} pages)`,
   );
+  // The editor shows the pathway banner (the hand-off carries ?pw=&st= into the editor's URL).
+  await page.waitForSelector(".bk-editor .bk-topbar");
+  const edUrl = new URL(page.url());
+  const bkBanner = page.locator(".bk-editor .pw-banner");
+  const bkBannerText = (await bkBanner.count()) ? await bkBanner.innerText() : "";
+  ok(
+    edUrl.searchParams.get("pw") === PW &&
+      edUrl.searchParams.get("st") === "bevidence-argument" &&
+      /Step 4 of 6/.test(bkBannerText) &&
+      /Goal: Explain an idea using evidence/.test(bkBannerText) &&
+      /Back to my pathway/.test(bkBannerText) &&
+      (await bkBanner.isVisible()),
+    `stage 4: the Book Studio editor shows the pathway banner (${bkBannerText.replace(/\s+/g, " ")})`,
+  );
+  const bkBannerFits = await page.evaluate(() => {
+    const ed = document.querySelector(".bk-editor");
+    const b = document.querySelector(".bk-editor .pw-banner");
+    const ws = document.querySelector(".bk-editor .bk-workspace");
+    return (
+      b.getBoundingClientRect().bottom <= ed.getBoundingClientRect().bottom &&
+      ws.getBoundingClientRect().height > 200 &&
+      document.documentElement.scrollWidth <= window.innerWidth
+    );
+  });
+  ok(bkBannerFits, "stage 4: the banner sits inside the editor and leaves the page canvas room");
+  await shot(page, "pathway-book-editor");
+  await page.click(".bk-editor .pw-banner-back");
+  await page.waitForSelector(".pw-ladder");
+  ok(
+    new URL(page.url()).pathname === `${LAB}/pathways/${PW}`,
+    "stage 4: Back to my pathway from the editor returns to the runner",
+  );
+  // The same book opened the ordinary way (no pathway context) opens exactly as before: no banner.
+  await open(page, `/book-studio/edit/${bookId}`, ".bk-editor .bk-topbar");
+  ok(
+    (await page.locator(".pw-banner").count()) === 0 &&
+      (await page.locator(".bk-editor [data-bk-canvas]").count()) === 1,
+    "stage 4: a book opened without ?pw= shows the plain editor (no banner)",
+  );
+  // A pathway query that names an unknown run shows nothing either.
+  await open(page, `/book-studio/edit/${bookId}?pw=not-a-run&st=x`, ".bk-editor .bk-topbar");
+  ok(
+    (await page.locator(".pw-banner").count()) === 0,
+    "stage 4: an unknown pathway run in the query shows no banner",
+  );
   await open(page, `/pathways/${PW}?grades=6-8`, ".pw-ladder");
   ok(
     (await stageState(page, 4)) === "next" &&
@@ -828,6 +873,38 @@ try {
       "/Reading/B/g35-r2-b-mei-proof",
     ),
     "grades 3-5: the reference pathway uses a grades 3-5 reading activity",
+  );
+  const speak35 = await p2.locator("#pwStage2 a.btn").getAttribute("href");
+  ok(
+    speak35.includes("/speak/spk35-icewrap-explain?"),
+    `grades 3-5: the speaking stage is a grades 3-5 Speaking Studio task (${speak35})`,
+  );
+  await p2.click("#pwStage2 a.btn");
+  await p2.waitForSelector(".pw-banner");
+  await settle(p2);
+  ok(
+    /Step 2 of 6/.test(await p2.locator(".pw-banner").innerText()) &&
+      /Which Wrap Kept the Ice Frozen/.test(await p2.locator("#app h1").innerText()),
+    "grades 3-5: the Speaking Studio task opens with the pathway banner",
+  );
+  await open(p2, "/speak?grades=3-5", "#app h1");
+  const cards35 = await p2.evaluate(() =>
+    [...document.querySelectorAll('#app a[href*="/speak/"]')].map((a) =>
+      new URL(a.href).pathname.split("/").pop(),
+    ),
+  );
+  await open(p2, "/speak?grades=6-8", "#app h1");
+  const cards68 = await p2.evaluate(() =>
+    [...document.querySelectorAll('#app a[href*="/speak/"]')].map((a) =>
+      new URL(a.href).pathname.split("/").pop(),
+    ),
+  );
+  ok(
+    cards35.length >= 8 &&
+      cards35.every((id) => id.startsWith("spk35-")) &&
+      cards68.length > 0 &&
+      cards68.every((id) => id.startsWith("spk-")),
+    `Speaking Studio: grades 3-5 list only 3-5 tasks (${new Set(cards35).size}), grades 6-8 only 6-8 tasks (${new Set(cards68).size})`,
   );
   await phone.close();
   console.log(

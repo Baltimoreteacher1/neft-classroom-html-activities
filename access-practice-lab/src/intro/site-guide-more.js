@@ -2,6 +2,7 @@
 // Help questions. Facts about activities come from data.js; these are the guide's own words ({ en, es } where the
 // section is translated). Every route was opened in a browser on 2026-11-10. Pure data, no DOM.
 import { ACTIVITY_BY_ID, FACTS, FEATURED_LESSON, ROUTES } from "./data.js";
+import { K1_ROUTE } from "./tour-k1-data.js";
 
 const P = (en, es) => ({ en, es });
 
@@ -152,6 +153,7 @@ export const SHARING = [
 export const PD_LINKS = [
   { route: ROUTES.tour, label: "Take the Teacher Tour (Part 1)" },
   { route: "/access-teacher/predictive/?demo=1&tour=1", label: "Teacher Tour, Part 2: your WIDA data" },
+  { route: K1_ROUTE, label: "Take the K–1 Teacher Tour (Kindergarten and Grade 1)" },
   { route: ROUTES.explore, label: "Explore for 20 Minutes" },
   { route: ROUTES.guide, label: "Open the Quick Guide" },
   { route: ROUTES.lesson, label: "See the Featured Lesson" },

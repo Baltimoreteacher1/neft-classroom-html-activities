@@ -3,6 +3,7 @@
 // answer. Speech recognition (src/stt.js: on-device first, then the browser's standard service, then typing)
 // fills an editable transcript; the Language Coach works from that transcript, and from the loudness envelope for
 // time speaking and pauses (on this device).
+import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
 import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
@@ -715,6 +716,7 @@ export async function render(ctx) {
             <p class="act-step">${icon("clock")} ${task.time} · ${task.contentArea}</p>
           </div>
           <h1 tabindex="-1">${task.title}</h1>
+          ${downloadMenuHTML(ctx, "speaking-task", task)}
           ${purposeBadgeHTML(S.stage, I)}
           <div class="task-brief">
             <div>
@@ -954,6 +956,7 @@ function analyze(ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (onDownloadClick(e, ctx)) return true;
   if (onLoopClick(e, ctx)) return true;
   if (!S?.task) return false;
   I = i18nFor(ctx);

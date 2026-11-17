@@ -456,6 +456,111 @@ test("the optional model may only select an open topic id; anything else falls b
   assert.deepEqual(start, state0, "choosing a topic never changes state");
 });
 
+test("the helper: a slow reply times out to the device answer, a too-short question is never sent", async () => {
+  const topics = [{ id: "tower", label: "Is the tower damaged?" }, { id: "changed", label: "Did anything change?" }];
+  const never = () => new Promise(() => {});
+  const t0 = Date.now();
+  assert.equal(await C.assistTopic("antenna?", topics, never, { timeoutMs: 60 }), null);
+  assert.ok(Date.now() - t0 < 1000, "the wait is bounded");
+  assert.equal(C.AI_TIMEOUT_MS <= 4000, true, "the player never waits more than 4 seconds");
+  let aborted = false;
+  await C.assistTopic("antenna?", topics, (_u, init) => new Promise(() => init.signal?.addEventListener("abort", () => (aborted = true))), { timeoutMs: 30 });
+  assert.equal(aborted, true, "a late request is aborted");
+  let sent = 0;
+  const count = async () => ((sent += 1), { ok: true, json: async () => ({ ok: true, topic: "tower" }) });
+  assert.equal(await C.assistTopic(" x ", topics, count), null);
+  assert.equal(sent, 0, "a question under 2 characters is never sent");
+  const start = run(def, DISCOVER).state;
+  const slow = await C.resolveQuestion(def, start, "coordinator", "something about the notes", { assist: true, fetchImpl: never, timeoutMs: 40 });
+  assert.equal(slow.source, "device", "a timeout keeps the on-device match");
+});
+
+test("the helper: a class whose teacher turned the AI coach off never allows it (fail closed)", async () => {
+  const link = { code: "ABC234" };
+  assert.equal(await C.classAllowsAi(null, async () => assert.fail("no class, no call")), true);
+  assert.equal(await C.classAllowsAi(link, async () => ({ ok: true, aiCoach: false })), false);
+  assert.equal(await C.classAllowsAi(link, async () => ({ ok: true, aiCoach: true })), true);
+  assert.equal(await C.classAllowsAi(link, async () => ({ ok: true })), true, "the default is on");
+  assert.equal(await C.classAllowsAi(link, async () => ({ ok: false, httpStatus: 0 })), false, "offline: closed");
+  assert.equal(await C.classAllowsAi(link, async () => { throw new Error("x"); }), false);
+  const start = run(def, DISCOVER).state;
+  const off = await C.resolveQuestion(def, start, "coordinator", "something about the notes", { assist: false, fetchImpl: async () => assert.fail("assist off never calls the model") });
+  assert.equal(off.source, "device");
+});
+
+test("player: suggested-question buttons never call the helper; a weak typed question calls it automatically; aiCoach:false never", async () => {
+  const UI = await import(new URL("src/sim/ui-actions.js", LAB));
+  const { freshUi } = await import(new URL("src/sim/ui-state.js", LAB));
+  const saved = { fetch: globalThis.fetch, document: globalThis.document, raf: globalThis.requestAnimationFrame, ls: globalThis.localStorage };
+  const calls = [];
+  let coach = true;
+  const store = new Map();
+  globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k), key: () => null, length: 0 };
+  globalThis.document = { querySelector: () => null, getElementById: () => null, querySelectorAll: () => [] };
+  globalThis.requestAnimationFrame = (f) => setTimeout(f, 0);
+  globalThis.fetch = async (url) => {
+    calls.push(String(url));
+    const body = String(url).includes("/me?") ? { ok: true, aiCoach: coach } : { ok: true, topic: "where-to-look" };
+    return new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  const ctx = { band: "6-8", prefs: { lang: "en" }, rerender() {} };
+  const click = (attr, dataset) => {
+    const el = { dataset, hasAttribute: (a) => a === attr, getAttribute: () => null };
+    return { target: { closest: (sel) => (sel === "[data-sim-player]" ? {} : sel === `[${attr}]` ? el : null), matches: () => false } };
+  };
+  const session = () => {
+    const s = { def, state: run(def, DISCOVER).state, ui: freshUi(), save() {} };
+    s.ui.panel = { kind: "character", id: "coordinator" };
+    return s;
+  };
+  const settle = async (s) => {
+    for (let i = 0; i < 200 && (s.ui.thinking || !s.ui.lastQ || s.ui.lastQ.thinking); i++) await new Promise((r) => setTimeout(r, 5));
+  };
+  try {
+    const a = session();
+    UI.onPlayerClick(click("data-sim-ask", { simAsk: "your-job" }), ctx, a);
+    await new Promise((r) => setTimeout(r, 30));
+    assert.equal(calls.length, 0, "a suggested question never calls the helper");
+
+    const b = session();
+    b.ui.question = "something about the notes";
+    UI.onPlayerClick(click("data-sim-send", { simSend: "coordinator" }), ctx, b);
+    assert.equal(b.ui.thinking, "coordinator", "the character is thinking while the helper matches");
+    await settle(b);
+    assert.ok(calls.some((u) => u.endsWith("/api/class/ai/character")), `a weak typed question asks the helper (${calls})`);
+    assert.equal(b.ui.lastQ.matched, true);
+    assert.ok(JSON.stringify(b.state).includes("where-to-look"), "the character answers with the helper's pick");
+
+    calls.length = 0;
+    const c = session();
+    c.ui.question = "What happened this morning?";
+    UI.onPlayerClick(click("data-sim-send", { simSend: "coordinator" }), ctx, c);
+    await settle(c);
+    assert.equal(calls.length, 0, "a sure on-device match never calls the helper");
+
+    calls.length = 0;
+    coach = false;
+    store.set("accessPracticeLabClass:v1:link", JSON.stringify({ code: "ABC234", studentId: "s0123456789", studentKey: "ABCDEFGH", alias: "Test" }));
+    const d = session();
+    d.ui.question = "something about the notes";
+    UI.onPlayerClick(click("data-sim-send", { simSend: "coordinator" }), ctx, d);
+    await settle(d);
+    assert.ok(calls.some((u) => u.includes("/api/class/me?")), "the class setting is read");
+    assert.equal(calls.some((u) => u.includes("ai/character")), false, "aiCoach:false: the helper is never called");
+
+    calls.length = 0;
+    const e = session();
+    e.ui.preview = true;
+    e.ui.question = "something about the notes";
+    UI.onPlayerClick(click("data-sim-send", { simSend: "coordinator" }), ctx, e);
+    await settle(e);
+    assert.equal(calls.length, 0, "a preview never calls the helper");
+  } finally {
+    await new Promise((r) => setTimeout(r, 30)); // let the player's focus callbacks run before the stubs go
+    Object.assign(globalThis, { fetch: saved.fetch, document: saved.document, requestAnimationFrame: saved.raf, localStorage: saved.ls });
+  }
+});
+
 // ── saves and the report ─────────────────────────────────────────────────────
 test("save and resume: a mid-mission state round-trips and the mission ends the same way", () => {
   const box = new Map();

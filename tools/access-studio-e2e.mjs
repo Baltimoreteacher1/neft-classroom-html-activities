@@ -957,6 +957,8 @@ await page.evaluate(() => {
   localStorage.setItem("accessTeacher:v1:alignmentReviews", JSON.stringify(saved));
 });
 await page.reload({ waitUntil: "networkidle" });
+// A reload starts the hub folded again (fold state lives only for the tab), so open it as a teacher does.
+await openHubSections(page);
 await page.locator('[data-tab="blueprint"]').click();
 await page.locator("[data-align-reset]").click();
 ok(

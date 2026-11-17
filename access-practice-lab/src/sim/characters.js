@@ -6,8 +6,10 @@
 //   - a relevant but unexpected question gets the nearest authorized topic; an off-topic one, or a topic that is
 //     still closed, gets the character's `fallback` (it stays in role and says what it can talk about);
 //   - a repeated question gets a short "as I said" variant;
-//   - an optional model may only SELECT one of the open topic ids (or "none"); its reply is checked against the list
-//     and any failure falls back to the on-device match. The model never writes a word a learner reads.
+//   - when the device match is weak, a model is asked automatically (typed or dictated questions only, never a
+//     suggested-question button, never in a preview, never when the class turned the AI coach off) and may only
+//     SELECT one of the open topic ids (or "none"); its reply is checked against the list, and any failure or a reply
+//     slower than AI_TIMEOUT_MS falls back to the on-device match. The model never writes a word a learner reads.
 import { characterOf, evalCond, topicOf } from "./schema.js";
 
 export const ASSIST_URL = "/api/class/ai/character";
@@ -73,29 +75,74 @@ export function matchTopic(character, question, { open } = {}) {
   return { topic: best.id, score: best.score, weak: best.score < 2 || tie, locked: false };
 }
 
-/** Ask the optional model to SELECT a topic. Resolves to an id from `topics`, "none", or null on any failure. */
-export async function assistTopic(question, topics, fetchImpl = (...a) => fetch(...a)) {
+/** The longest the player waits for the helper before it answers from the device (milliseconds). */
+export const AI_TIMEOUT_MS = 4000;
+
+/**
+ * Ask the optional model to SELECT a topic. Resolves to an id from `topics`, "none", or null on any failure, on a
+ * question under 2 characters (nothing is sent), or when no reply comes within `timeoutMs`.
+ */
+export async function assistTopic(
+  question,
+  topics,
+  fetchImpl = (...a) => fetch(...a),
+  { timeoutMs = AI_TIMEOUT_MS } = {},
+) {
   const list = (topics || []).map((t) => ({ id: t.id, label: t.label }));
-  if (list.length < 2) return null;
+  const q = String(question || "")
+    .trim()
+    .slice(0, MAX_QUESTION);
+  if (list.length < 2 || q.length < 2) return null;
+  const abort = typeof AbortController === "function" ? new AbortController() : null;
+  let timer = 0;
+  const late = new Promise((resolve) => {
+    timer = setTimeout(() => {
+      abort?.abort();
+      resolve(null);
+    }, timeoutMs);
+  });
+  const ask = (async () => {
+    try {
+      const res = await fetchImpl(ASSIST_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ question: q, topics: list }),
+        ...(abort ? { signal: abort.signal } : {}),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) return null;
+      return data.topic === "none" || list.some((t) => t.id === data.topic) ? data.topic : null;
+    } catch {
+      return null;
+    }
+  })();
   try {
-    const res = await fetchImpl(ASSIST_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        question: String(question || "").slice(0, MAX_QUESTION),
-        topics: list,
-      }),
-    });
-    const data = await res.json().catch(() => null);
-    if (!res.ok || !data?.ok) return null;
-    return data.topic === "none" || list.some((t) => t.id === data.topic) ? data.topic : null;
-  } catch {
-    return null;
+    return await Promise.race([ask, late]);
+  } finally {
+    clearTimeout(timer);
   }
 }
 
 /**
- * Decide which authored topic answers a typed question: on-device first, the model only when the device is unsure.
+ * May this device use the helper? Without a class, yes. In a class, only when the class still knows this learner and
+ * its teacher has not turned the AI coach off (class setting `aiCoach`, read from GET /me as Book Studio reads it).
+ * Fails closed: any error means no.
+ * @param {object|null} link the stored class link (src/class/link.js loadLink())
+ * @param {(link:object) => Promise<{ok:boolean, aiCoach?:boolean, httpStatus?:number}>} whoAmI
+ */
+export async function classAllowsAi(link, whoAmI) {
+  if (!link) return true;
+  try {
+    const me = await whoAmI(link);
+    return me?.ok ? me.aiCoach !== false : me?.httpStatus === 401 || me?.httpStatus === 404;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Decide which authored topic answers a typed question: on-device first, the model only when the device is unsure and
+ * `assist` is true (the caller passes false for a preview, or when the class has turned the AI coach off).
  * @returns {Promise<{ topic: string | null, source: "device" | "model", locked: boolean }>}
  */
 export async function resolveQuestion(
@@ -103,7 +150,7 @@ export async function resolveQuestion(
   state,
   characterId,
   question,
-  { assist = false, fetchImpl } = {},
+  { assist = false, fetchImpl, timeoutMs } = {},
 ) {
   const character = characterOf(def, characterId);
   const open = (character?.topics || []).filter((t) => evalCond(t.requires, state, def));
@@ -113,6 +160,7 @@ export async function resolveQuestion(
       question,
       open.map((t) => ({ id: t.id, label: t.ask[0] })),
       fetchImpl,
+      timeoutMs ? { timeoutMs } : undefined,
     );
     if (picked === "none") return { topic: null, source: "model", locked: false };
     if (picked) return { topic: picked, source: "model", locked: false };

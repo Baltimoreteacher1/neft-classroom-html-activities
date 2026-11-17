@@ -59,8 +59,11 @@ that file lists what is driven and what is seeded).
 
 ## Limits
 
-- Speaking Studio tasks exist for grades 6-8 only, so grades 3-5 pathways use an ACCESS Speaking activity there.
-- The banner is wired into ACCESS activities. Speaking Studio, Writing Studio, Book Studio and the simulation show
-  it once their owners add `pathwayBannerHTML(ctx)`.
+- Speaking Studio has 8 grades 3-5 tasks (`spk35-*`, two per Key Language Use). The 3-5 built-in pathways speak in
+  them (`spk35-icewrap-explain`, `spk35-shadow-explain`, `spk35-puppy-retell`, `spk35-recess-argue`); an objective's
+  activities are filtered strictly by band, so grades 6-8 never see a 3-5 task and grades 3-5 never see a 6-8 one.
+- The banner shows in ACCESS activities, Speaking Studio, Writing Studio, the simulation and the Book Studio editor
+  (under its top bar; the book hand-off opens `/book-studio/edit/<id>?pw=&st=`). A book opened without `?pw=` shows
+  no banner.
 - The site's QR helper holds 106 bytes: built-in pathway links get a QR code, long custom links do not.
 - Spanish is machine-assisted and not reviewed by a human translator.

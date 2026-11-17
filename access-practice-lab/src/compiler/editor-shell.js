@@ -2,6 +2,7 @@
 // validation, undo) and the editor's section tabs. Markup only; the view (src/views/experience-builder.js) owns the
 // state and the events.
 import { BASE, html } from "../util.js";
+import { suggestHTML } from "./editor-suggest.js";
 import { SECTIONS, sectionHTML } from "./editor-ui.js";
 import { loadDrafts } from "./store.js";
 
@@ -130,6 +131,7 @@ export function editHTML(I, ui, tab) {
     <section class="panel xb-section" data-xb-section="${section}">
       <h2>${I.T(...SECTIONS.find(([id]) => id === section).slice(1))}</h2>
       ${sectionHTML(I, section, ui)}
+      ${section === "people" ? suggestHTML(I, ui.entry.def, ui.suggest) : ""}
     </section>
   </div>`;
 }

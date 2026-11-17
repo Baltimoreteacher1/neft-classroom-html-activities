@@ -510,3 +510,45 @@ test("the server accepts a comment that carries a decision (no schema change)", 
   const { loop } = loopWith("x ".repeat(2900));
   assert.equal(SERVER.cleanWriting(LOOP.loopDigest(loop)).ok, true);
 });
+
+test("the instructor's queue: a decision on a loop is saved (the decision radios are never sent as chips)", async () => {
+  const { JSDOM } = await import("jsdom");
+  const { readFileSync } = await import("node:fs");
+  const { validateReview } = await import("../functions/_lib/class-platform/review.js");
+  const dom = new JSDOM("<!doctype html><div id=box></div>");
+  const saved = { document: globalThis.document, fetch: globalThis.fetch };
+  globalThis.document = dom.window.document;
+  globalThis.fetch = async (url) =>
+    new Response(readFileSync(new URL(`.${String(url).replace("/access-practice-lab", "")}`, LAB)), { status: 200 });
+  try {
+    const Q = await import(new URL("src/class/review-queue.js", LAB));
+    const digest = "Task: Explain\n\nFIRST RESPONSE [on my own]:\nThe sun was hot.\n\nFEEDBACK SHOWN: Add because.";
+    const item = { itemId: "w0123456789ab", kind: "writing", alias: "Robin", label: "Explain", text: digest, review: null };
+    const marks = [];
+    const api = {
+      reviewQueue: async () => ({ ok: true, items: [item] }),
+      reviewMark: async (r) => (marks.push(r), { ok: true }),
+    };
+    const box = dom.window.document.getElementById("box");
+    const live = dom.window.document.createElement("p");
+    await Q.drawReviewQueue(box, { S: (en) => en, api, live });
+    const card = box.querySelector(`[data-item="${item.itemId}"]`);
+    assert.ok(card.querySelector("[data-intel-digest]"), "a loop digest gets the decision controls");
+    assert.ok(card.querySelectorAll("input[data-dim]").length > 0, "the practice rubric loaded");
+    card.querySelector('input[data-decision][value="replace"]').checked = true;
+    card.querySelector("select[data-next]").value = "/write";
+    card.querySelector("textarea").value = "Give the number you measured.";
+    const rubricRadio = card.querySelector("input[data-dim]");
+    rubricRadio.checked = true;
+    card.querySelector(".row-actions .btn-primary").click();
+    await new Promise((r) => setTimeout(r, 20));
+    assert.equal(marks.length, 1);
+    assert.deepEqual(Object.keys(marks[0].chips), [rubricRadio.dataset.dim], "only rubric radios are chips");
+    assert.equal(marks[0].comment, "[LP replace next=/write] Give the number you measured.");
+    assert.equal(validateReview(marks[0]).ok, true, "the server accepts the review");
+    // With only the default decision checked and no rubric pick, nothing stray is sent either.
+    assert.deepEqual(Q.chipsOf(card.querySelector(".cls-review-form").cloneNode(true)), { [rubricRadio.dataset.dim]: Number(rubricRadio.value) });
+  } finally {
+    Object.assign(globalThis, saved);
+  }
+});

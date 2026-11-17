@@ -228,19 +228,31 @@ const OPS = {
     if (field === "answer") delete t.from;
     if (field === "clarify.answer") delete t.clarify.from;
   },
-  "topic.add"(def, { character }) {
+  // A new topic; "Suggest improvements" passes its accepted text (ask / answer in the source language, keywords,
+  // and the source sentence the answer comes from), so accepting one is a single undoable edit.
+  "topic.add"(def, { character, ask, keywords, answer, from }) {
     const c = byId(def.characters, character);
     if (!c) return "unknown-character";
     const id = freeId(new Set(c.topics.map((t) => t.id)), "t-new");
-    c.topics.push({
+    const words = Array.isArray(keywords)
+      ? keywords
+          .map((k) => String(k).trim())
+          .filter(Boolean)
+          .slice(0, 12)
+      : [];
+    const topic = {
       id,
-      ask: P("What else can you tell me?", "¿Qué más me puedes decir?"),
-      keywords: ["else"],
-      answer: P(
-        "Write this answer with a sentence from your text.",
-        "Escribe esta respuesta con una oración de tu texto.",
-      ),
-    });
+      ask: ask ? P(String(ask), String(ask)) : P("What else can you tell me?", "¿Qué más me puedes decir?"),
+      keywords: words.length ? words : ["else"],
+      answer: answer
+        ? P(String(answer), String(answer))
+        : P(
+            "Write this answer with a sentence from your text.",
+            "Escribe esta respuesta con una oración de tu texto.",
+          ),
+    };
+    if (Array.isArray(from) && from.every((i) => Number.isInteger(i) && i >= 0)) topic.from = [...from];
+    c.topics.push(topic);
   },
   "topic.remove"(def, { character, id }) {
     const c = byId(def.characters, character);

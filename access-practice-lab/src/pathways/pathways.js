@@ -43,7 +43,7 @@ const BUILT_IN = [
     title: ["Explain an idea using evidence", "Explicar una idea con evidencia"],
     stages: [
       { key: "rread-best-evidence", alt: { "3-5": "rg35-r2-b-mei-proof" } },
-      { key: "sspk-evaporation-explain", alt: { "3-5": "rg35-s-c-ice-melt" } },
+      { key: "sspk-evaporation-explain", alt: { "3-5": "sspk35-icewrap-explain" } },
       { key: `m${SIM_MISSION}` },
       { key: "bevidence-argument" },
       { key: "t" },
@@ -57,7 +57,7 @@ const BUILT_IN = [
     stages: [
       { key: "rexit-ticket-b", alt: { "3-5": "rg35-l-b-muddy-field" } },
       { key: "rread-cause-effect", alt: { "3-5": "rg35-r-b-bats" } },
-      { key: "sspk-icemelt-discuss", alt: { "3-5": "rg35-s-b-plant-experiment" } },
+      { key: "sspk-icemelt-discuss", alt: { "3-5": "sspk35-shadow-explain" } },
       { key: "bcause-effect" },
       { key: "t" },
       { key: "f", optional: true },
@@ -69,7 +69,7 @@ const BUILT_IN = [
     title: ["Tell what happened in order", "Contar lo que pasó en orden"],
     stages: [
       { key: "rv10-r-b-sequence-events", alt: { "3-5": "rg35-r2-a-rain-order" } },
-      { key: "sspk-slideshow-retell", alt: { "3-5": "rg35-s2-b-retell-story" } },
+      { key: "sspk-slideshow-retell", alt: { "3-5": "sspk35-puppy-retell" } },
       { key: "bpersonal-narrative" },
       { key: "t" },
       { key: "f", optional: true },
@@ -82,7 +82,7 @@ const BUILT_IN = [
     stages: [
       { key: "r68c-r-street-trees-evidence", alt: { "3-5": "rg35-r-c-author-purpose" } },
       { key: "r68c-l-bee-evidence", alt: { "3-5": "rg35-l-c-speaker-purpose" } },
-      { key: "sspk-startime-argue", alt: { "3-5": "rg35-s-c-new-playground" } },
+      { key: "sspk-startime-argue", alt: { "3-5": "sspk35-recess-argue" } },
       { key: "bpersuasive-book" },
       { key: "t" },
       { key: "f", optional: true },

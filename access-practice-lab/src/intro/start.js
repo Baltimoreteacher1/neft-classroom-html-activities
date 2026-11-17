@@ -7,17 +7,19 @@
 import { i18nFor } from "../i18n.js";
 import { audienceMapHTML } from "../sitemap-ui.js";
 import { html, icon } from "../util.js";
-import { bandPickerHTML, onBandClick, pickName, teacherPick } from "./band.js";
+import { bandPickerHTML, onBandClick, pickFromParam, pickName, teacherPick } from "./band.js";
 import { START_CHOICES } from "./data.js";
 import { bindGuide } from "./guide.js";
 import { loadIntro } from "./state.js";
 import { tourStatus } from "./tour/model.js";
+import { K1_PICKS, K1_ROUTE, k1Status } from "./tour-k1-data.js";
 import { onOverviewClick, overviewHTML, tourHref } from "./start-overview.js";
 import { teacherBand } from "./shell.js";
 import { labHref } from "./ui.js";
 
 const PAGES = {
   tour: () => import("./tour.js"),
+  "tour-k1": () => import("./tour-k1.js"),
   explore: () => import("./explore.js"),
   guide: () => import("./quick-guide.js"),
   lesson: () => import("./lesson.js"),
@@ -27,9 +29,14 @@ const PAGES = {
 
 let current = null;
 
+// Kindergarten and Grade 1 have their own tour (tour-k1.js); the tour choice names it for those grades.
+const isK1 = (pick) => K1_PICKS.includes(pick);
+
 function choiceHTML(c, resume, pick) {
-  const label = c.id === "tour" && resume ? "Continue the Teacher Tour" : c.name;
-  const href = c.id === "tour" ? tourHref(pick) : labHref(c.route);
+  const k1 = c.id === "tour" && isK1(pick);
+  const name = k1 ? "Take the K–1 Teacher Tour" : c.name;
+  const label = c.id === "tour" && resume ? (k1 ? "Continue the K–1 Teacher Tour" : "Continue the Teacher Tour") : name;
+  const href = k1 ? `${labHref(K1_ROUTE)}?grades=${pick}` : c.id === "tour" ? tourHref(pick) : labHref(c.route);
   return html`<li>
     <a class="in-choice is-${c.id}" href="${href}">
       <span class="in-ic" aria-hidden="true">${icon(c.icon)}</span>
@@ -69,7 +76,8 @@ const TITLE = "Start here: The Language Page for teachers";
 
 function hubHTML(ctx) {
   const pick = teacherPick(ctx);
-  const resume = tourStatus(loadIntro()).state === "continue";
+  const intro = loadIntro();
+  const resume = (isK1(pick) ? k1Status(intro) : tourStatus(intro)).state === "continue";
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
     ${quickToolsHTML()}
     ${teacherBand({
@@ -78,19 +86,34 @@ function hubHTML(ctx) {
       eyebrow: "For teachers · The Language Page",
       title: TITLE,
       lead: "Choose your grades, then see one real activity for each language domain: Listening, Speaking, Reading and Writing.",
-      meta: html`<ul class="ts-chips" aria-label="At a glance">${CHIPS.map((c) => html`<li>${c}</li>`)}</ul>`,
+      meta: html`<ul class="ts-chips" aria-label="At a glance">
+        ${CHIPS.map((c) => html`<li>${c}</li>`)}
+      </ul>`,
     })}
     <div class="ov-start ts-lift">
       ${bandPickerHTML(pick, { hint: `Showing ${pickName(pick)}. Your choice is saved on this device and carried into the tour.` })}
       <ul class="in-choices" aria-label="Three ways to start">
         ${START_CHOICES.map((c) => choiceHTML(c, resume, pick))}
       </ul>
+      <p class="fine k1t-start-link">
+        ${
+          isK1(pick)
+            ? html`Teach Grades 3–8 too? <a href="${tourHref("4-5")}">Take the Teacher Tour for Grades 3–8</a>.`
+            : html`Teach Kindergarten or Grade 1? <a href="${labHref(K1_ROUTE)}">Take the K–1 Teacher Tour</a>, its own tour for the youngest learners.`
+        }
+      </p>
     </div>
     ${overviewHTML(pick)}
     ${audienceMapHTML(i18nFor(ctx), ctx.band, "teacher", {
       id: "teacherToolkit",
-      title: ["Your teacher toolkit: every part of the site", "Su caja de herramientas: cada parte del sitio"],
-      lead: ["Grouped the same way as the menu at the top. Each section opens its own page with filters.", "Agrupado igual que el menú de arriba. Cada sección abre su propia página con filtros."],
+      title: [
+        "Your teacher toolkit: every part of the site",
+        "Su caja de herramientas: cada parte del sitio",
+      ],
+      lead: [
+        "Grouped the same way as the menu at the top. Each section opens its own page with filters.",
+        "Agrupado igual que el menú de arriba. Cada sección abre su propia página con filtros.",
+      ],
     })}
   </article>`;
 }
@@ -101,8 +124,12 @@ const hub = {
   onClick: (e, ctx) => onBandClick(e, ctx) || onOverviewClick(e),
 };
 
+/** /start/tour with ?grades=K or 1 (the Start page's domain cards) opens the K–1 tour; 3–8 links are unchanged. */
+const pageId = (route) =>
+  route.id === "tour" && isK1(pickFromParam(route.grades)) ? "tour-k1" : route.id || "";
+
 export async function render(ctx) {
-  const loader = PAGES[ctx.route.id || ""];
+  const loader = PAGES[pageId(ctx.route)];
   const page = loader ? await loader() : hub;
   if (page !== current) current?.unmount?.();
   current = page;

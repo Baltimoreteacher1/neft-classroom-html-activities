@@ -12,6 +12,7 @@ import { bandLabelEs, isEarlyBand } from "../bands.js";
 import { GAMES } from "../games/registry.js";
 import { activeGradeFocus, byGradeFocus, gradesLabel } from "../grade-focus.js";
 import { gradeFocusHTML } from "../grade-focus-ui.js";
+import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 
 /** Each skill room is one of the four language studios (the same names as the home portals). */
 const STUDIO_NAME = {
@@ -191,6 +192,7 @@ export async function render(ctx) {
           <p class="fine">${T("Search every activity and choose your own set.", "Busca entre todas las actividades y elige tu propio conjunto.")}</p>
           <a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">${T("Search activities", "Buscar actividades")}${icon("arrow-right")}</a>
         </section>
+        ${downloadMenuHTML(ctx, "room", { band, domain, level, ids: list.map((a) => a.id) })}
         ${isEarlyBand(band) ? "" : html`        <section class="aside-card packet-downloads" aria-labelledby="packetHeading">
           <h2 id="packetHeading">${icon("print")} ${T("Take this practice to paper", "Lleva esta práctica al papel")}</h2>
           <p class="fine">${T(`Illustrated activities, clear directions, and room to respond. Student edition · ${bandLabel(band)}.`, `Actividades ilustradas, instrucciones claras y espacio para responder. Edición para estudiantes · ${bandEs(band)}.`)}</p>
@@ -201,3 +203,6 @@ export async function render(ctx) {
       ${skillGames.length ? html`<section class="room-games" aria-labelledby="roomGamesTitle"><h2 id="roomGamesTitle">${T(`Games for ${domain}`, `Juegos para ${ROOM_ES[domain] || meta.room}`)}</h2><p>${T("Practice this skill with a short language game.", "Practica esta destreza con un juego breve de lenguaje.")}</p><div class="room-games-list">${skillGames.map((game) => html`<a class="btn" href="${BASE}/games/${game.id}?grades=${band}">${T(game.title[0], game.title[1])}${icon("arrow-right")}</a>`)}</div></section>` : ""}`,
   };
 }
+
+/** Room downloads (src/download/menu.js): the zip button, its progress line and Cancel. */
+export const onClick = (e, ctx) => onDownloadClick(e, ctx);

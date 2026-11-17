@@ -14,6 +14,11 @@ import { download, publish, unpublish } from "../compiler/editor-class.js";
 import { blankInput, loadPassages, readUpload, sourceStepHTML } from "../compiler/editor-inputs.js";
 import { OP_ERRORS, applyOp } from "../compiler/editor-ops.js";
 import {
+  builtInSuggestions,
+  requestSuggestions,
+  suggestionOp,
+} from "../compiler/editor-suggest.js";
+import {
   newPreview,
   previewAct,
   previewAsk,
@@ -35,6 +40,7 @@ import {
   loadDrafts,
   playPath,
   saveDraft,
+  siteKey,
 } from "../compiler/store.js";
 import { validateExperience } from "../compiler/validate.js";
 import { crumbsHTML } from "../components.js";
@@ -58,6 +64,7 @@ const fresh = () => ({
   input: blankInput(),
   pick: { band: "", passages: null, books: null },
   dialogue: null,
+  suggest: null,
   preview: null,
   session: null,
   assign: { busy: false, msg: null, ok: false, code: "" },
@@ -410,6 +417,42 @@ const ACTIONS = {
     if (!prev) return;
     setDef(prev, { undo: false });
     ui.note = { tone: "ok", text: ["The last change was undone.", "Se deshizo el último cambio."] };
+    ctx.rerender();
+  },
+  // "Suggest improvements": the model (teacher credential needed) or, without one, the built-in suggestions.
+  async suggest(ctx) {
+    const def = ui.entry.def;
+    ui.suggest = { busy: true, items: [], mode: null };
+    ctx.rerender();
+    const classes = knownClasses();
+    const klass = classes.find((c) => c.code === ui.entry.published?.code) || classes[0] || null;
+    const key = siteKey();
+    const res =
+      key || klass
+        ? await requestSuggestions(def, ui.input.settings, { key, klass })
+        : { ok: false, reason: "unauthorized" };
+    if (!ui.entry) return; // the draft was closed while waiting
+    ui.suggest =
+      res.ok && res.items.length
+        ? { busy: false, mode: "ai", items: res.items }
+        : {
+            busy: false,
+            mode: "built-in",
+            reason: res.ok ? "failed" : res.reason,
+            items: builtInSuggestions(ui.entry.def),
+          };
+    ctx.rerender();
+  },
+  "suggest-accept"(ctx, { id }) {
+    const item = ui.suggest?.items?.find((x) => x.id === id);
+    if (!item) return;
+    const op = suggestionOp(ui.entry.def, item);
+    if (!applyOp(ui.entry.def, op).error)
+      ui.suggest.items = ui.suggest.items.filter((x) => x.id !== id);
+    apply(ctx, op);
+  },
+  "suggest-dismiss"(ctx, { id }) {
+    if (ui.suggest?.items) ui.suggest.items = ui.suggest.items.filter((x) => x.id !== id);
     ctx.rerender();
   },
   "add-spot"(ctx, { scene }) {

@@ -4,6 +4,7 @@
 import { ART, BASE, html, icon } from "../../util.js";
 import { DEST_BY_ID } from "../../sitemap.js";
 import { ROUTES } from "../data.js";
+import { K1_ROUTE } from "../tour-k1-data.js";
 import { buildLesson, defaultTarget, diffProfiles, profilesFor } from "./lesson.js";
 import {
   BANDS,
@@ -181,6 +182,10 @@ export function welcome(D, S, ui) {
           : CLASS_USE[ui.peek] || CLASS_USE.speaking,
       extra: html`<div class="t2-field">
         ${seg({ label: "Which grades do you teach?", attr: "band", value: S.band, options: BANDS.map((b) => ({ id: b.id, name: b.name })) })}
+        <p class="t2-hint">
+          Teach Kindergarten or Grade 1?
+          <a href="${BASE}${K1_ROUTE}">Take the K–1 Teacher Tour</a>, its own tour.
+        </p>
       </div>`,
     }),
     stage: html` <ul class="t2-cards">

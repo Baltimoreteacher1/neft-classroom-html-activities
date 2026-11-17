@@ -181,7 +181,8 @@ const condText = (def, c) => {
 /** A condition in plain words, [en, es], for the branch inspector. */
 export const conditionText = (def, cond) => condText(def, cond);
 
-const SCORE_WORDS =
+/** Score, points, grade, timer or proficiency wording (also used by the suggestion rules, suggest-rules.js). */
+export const SCORE_WORDS =
   /\b(?:score[sd]?|\d+ points?|earn(?:ed)? points|your grade|graded|proficien\w+|timer|countdown|streak|ranking|puntaje|\d+ puntos|calificaci[oó]n|cron[oó]metro)\b/i;
 
 /**

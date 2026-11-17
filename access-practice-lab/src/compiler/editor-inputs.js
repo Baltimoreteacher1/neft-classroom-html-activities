@@ -1,13 +1,21 @@
 // Experience Builder, step 1 of the screen: the instructor's material and settings. Where a source can come from:
-// pasted text, an uploaded .txt / .md / .html file (read as TEXT in the browser, markup stripped, never run; Word
-// and PDF files are not supported because the lab ships no reader for them), a passage the lab already ships
-// (the reading activity bank) and a Book Studio project on this device. Everything stays on this device.
+// pasted text, an uploaded .txt / .md / .html file (read as TEXT in the browser, markup stripped, never run), a Word
+// .docx file (its paragraph text only, read on this device by ./docx.js; PDF is not supported because the lab ships
+// no reader for it), a passage the lab already ships (the reading activity bank) and a Book Studio project on this
+// device. Everything stays on this device.
 import { BAND_INFO, CONTENT_BANDS } from "../bands.js";
 import { KEY_LANGUAGE_USES } from "../lang/klu.js";
 import { tokenize } from "../lang/text.js";
 import { html } from "../util.js";
 import { EXPERIENCE_TYPES, TYPE_IDS } from "./design.js";
-import { MAX_UPLOAD_BYTES, MIN_SOURCE_WORDS, checkUpload, cleanSource } from "./extract.js";
+import { readDocx } from "./docx.js";
+import {
+  MAX_DOCX_BYTES,
+  MAX_UPLOAD_BYTES,
+  MIN_SOURCE_WORDS,
+  checkUpload,
+  cleanSource,
+} from "./extract.js";
 import { SUBJECTS } from "./validate.js";
 
 export const DEFAULT_SETTINGS = Object.freeze({
@@ -70,27 +78,56 @@ export const SUPPORTS = [
 const MINUTES = [20, 30, 45, 60, 90];
 const UPLOAD_ERRORS = {
   "unsupported-document": [
-    "Word and PDF files cannot be read here. Open the file, copy the text and paste it in the box.",
-    "Aquí no se pueden leer archivos de Word ni PDF. Abra el archivo, copie el texto y péguelo en el cuadro.",
+    "PDF and old Word (.doc) files cannot be read here. Open the file and copy and paste the text, or save it as a Word .docx file and upload that.",
+    "Aquí no se pueden leer archivos PDF ni de Word antiguos (.doc). Abra el archivo y copie y pegue el texto, o guárdelo como archivo de Word .docx y súbalo.",
   ],
   "unsupported-type": [
-    "That file type is not supported. Use a .txt, .md or .html file, or paste the text.",
-    "Ese tipo de archivo no es compatible. Use un archivo .txt, .md o .html, o pegue el texto.",
+    "That file type is not supported. Use a .docx, .txt, .md or .html file, or paste the text.",
+    "Ese tipo de archivo no es compatible. Use un archivo .docx, .txt, .md o .html, o pegue el texto.",
   ],
   "empty-file": ["That file is empty.", "Ese archivo está vacío."],
   "too-large": [
-    `That file is larger than ${MAX_UPLOAD_BYTES / 1024} KB. Paste the part you want to use.`,
-    `Ese archivo pesa más de ${MAX_UPLOAD_BYTES / 1024} KB. Pegue la parte que quiera usar.`,
+    `That file is too large (text files up to ${MAX_UPLOAD_BYTES / 1024} KB, Word files up to ${MAX_DOCX_BYTES / 1024 / 1024} MB). Paste the part you want to use.`,
+    `Ese archivo es demasiado grande (archivos de texto hasta ${MAX_UPLOAD_BYTES / 1024} KB, archivos de Word hasta ${MAX_DOCX_BYTES / 1024 / 1024} MB). Pegue la parte que quiera usar.`,
+  ],
+  "text-too-large": [
+    `The text in that file is longer than ${MAX_UPLOAD_BYTES / 1024} KB. Paste the part you want to use.`,
+    `El texto de ese archivo pasa de ${MAX_UPLOAD_BYTES / 1024} KB. Pegue la parte que quiera usar.`,
+  ],
+  "docx-encrypted": [
+    "That Word file is protected with a password, so it cannot be read. Remove the password in Word, or copy and paste the text.",
+    "Ese archivo de Word está protegido con contraseña y no se puede leer. Quite la contraseña en Word, o copie y pegue el texto.",
+  ],
+  "docx-malformed": [
+    "That Word file could not be read (it may be damaged or not really a .docx). Open it in Word and save it again, or copy and paste the text.",
+    "No se pudo leer ese archivo de Word (puede estar dañado o no ser un .docx de verdad). Ábralo en Word y guárdelo otra vez, o copie y pegue el texto.",
   ],
   unreadable: ["The file could not be read.", "No se pudo leer el archivo."],
 };
+// readDocx error codes → the message shown. Everything that is not "encrypted" or a size limit reads as damaged.
+const DOCX_ERRORS = {
+  encrypted: "docx-encrypted",
+  "too-large": "too-large",
+  "document-too-large": "text-too-large",
+};
+
+/** The text of an upload, by kind: Word files through the .docx reader, everything else as text. */
+async function uploadText(file, kind) {
+  if (kind !== "docx") return { ok: true, text: await file.text() };
+  const res = await readDocx(await file.arrayBuffer());
+  return res.ok ? res : { ok: false, error: DOCX_ERRORS[res.error] || "docx-malformed" };
+}
 
 /** Read an uploaded file as text. Type and size are checked first; the content is cleaned, never executed. */
 export async function readUpload(file) {
   const checked = checkUpload({ name: file?.name, size: file?.size });
   if (!checked.ok) return { ok: false, text: UPLOAD_ERRORS[checked.error] };
   try {
-    const text = cleanSource(await file.text(), checked.kind);
+    const raw = await uploadText(file, checked.kind);
+    if (!raw.ok) return { ok: false, text: UPLOAD_ERRORS[raw.error] };
+    if (new TextEncoder().encode(raw.text).byteLength > MAX_UPLOAD_BYTES)
+      return { ok: false, text: UPLOAD_ERRORS["text-too-large"] };
+    const text = cleanSource(raw.text, checked.kind === "docx" ? "text" : checked.kind);
     if (!text) return { ok: false, text: UPLOAD_ERRORS["empty-file"] };
     return {
       ok: true,
@@ -158,15 +195,15 @@ ${source.text}</textarea>
       <div class="xb-sources">
         <div class="xb-source-way">
           <label class="field" for="xbFile"
-            >${I.T("Upload a file (.txt, .md, .html, up to 200 KB)", "Subir un archivo (.txt, .md, .html, hasta 200 KB)")}
+            >${I.T("Upload a file (Word .docx up to 2 MB; .txt, .md, .html up to 200 KB)", "Subir un archivo (Word .docx hasta 2 MB; .txt, .md, .html hasta 200 KB)")}
             <input
               id="xbFile"
               type="file"
-              accept=".txt,.md,.markdown,.html,.htm,text/plain,text/markdown,text/html"
+              accept=".docx,.txt,.md,.markdown,.html,.htm,text/plain,text/markdown,text/html,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               data-xb-file
           /></label>
           <p class="fine">
-            ${I.T("Word (.docx) and PDF files are not supported: copy the text and paste it.", "No se admiten archivos de Word (.docx) ni PDF: copie el texto y péguelo.")}
+            ${I.T("Only the words of a Word file are read, on this device. PDF is not supported: copy and paste the text, or save it as .docx.", "De un archivo de Word solo se leen las palabras, en este dispositivo. No se admite PDF: copie y pegue el texto, o guárdelo como .docx.")}
           </p>
         </div>
         <div class="xb-source-way">

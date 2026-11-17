@@ -24,9 +24,12 @@ Tests: `node --test tools/sim-engine.test.mjs`, `node tools/sim-e2e.mjs [--shots
 1. Only the runtime changes flags, the evidence notebook, scene access, task results, the act and the outcome. A
    refused action returns `error` and the same state object.
 2. A character says only its authored lines. A typed question is matched on the device; an off-topic or still-closed
-   question gets the character's `fallback`. The optional model selects one open topic id or `"none"`; its reply is
-   validated on the server and again in the browser, and it is called only when the learner presses "Ask the helper
-   to match my question" (what is sent: the typed question and the open topics' ids and question labels).
+   question gets the character's `fallback`. When the device match is weak, a typed or dictated question is sent
+   automatically to the model, which selects one open topic id or `"none"`; its reply is validated on the server and
+   again in the browser. What is sent: the typed question (scrubbed of names, emails and phone numbers on the server)
+   and the open topics' ids and question labels. Never from a suggested-question button, never in a preview, never
+   when the class turned `aiCoach` off; no reply within 4 seconds keeps the on-device answer (PLATFORM.md, fifth
+   exception).
 3. Supports are the learner's choice. Opening the word bank, sentence frames, word meanings (while a draft is in
    progress) or a listening transcript (before adding the message) records that work as supported. A revision is
    always supported. The transfer task offers no help and is recorded as independent.

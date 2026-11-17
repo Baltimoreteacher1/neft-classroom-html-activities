@@ -133,3 +133,23 @@ test("character: input is validated, no backend is offline, and the model sees o
   const { system } = characterPrompt("q", topics);
   assert.match(system, /never answer/);
 });
+
+test("character: the question is scrubbed on the server before any model sees it (names, email, phone)", async () => {
+  let seen = "";
+  const env = { AI: { run: async (_m, { messages }) => ((seen = messages.map((m) => m.content).join("\n")), { response: '{"topic":"tower"}' }) } };
+  const out = await call(env, "ai/character", {
+    question: "my friend named Daniela said write ana.r@mail.com or 410-555-0199 about the antenna",
+    topics,
+  });
+  assert.equal(out.json.topic, "tower");
+  assert.ok(seen.includes("named [name]") && seen.includes("[email]") && seen.includes("[phone]"), seen);
+  for (const leak of ["Daniela", "ana.r@mail.com", "410-555-0199"]) assert.equal(seen.includes(leak), false, `${leak} reached the model`);
+  // Nothing but an email, a phone number or a single letter left after scrubbing: refused, and the model is never called.
+  let called = false;
+  const watch = { AI: { run: async () => ((called = true), { response: '{"topic":"tower"}' }) } };
+  for (const question of ["a@b.co", "x", "410 555 0199", "ana@mail.org 410-555-0199"]) {
+    const res = await call(watch, "ai/character", { question, topics });
+    assert.equal(res.json.error, "invalid-character-request", question);
+  }
+  assert.equal(called, false, "a question with under 2 characters left after scrubbing is never sent");
+});

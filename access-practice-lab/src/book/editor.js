@@ -19,6 +19,8 @@ import { bkIcon } from "./icons.js";
 import { FORMATS, makeElement, plainText } from "./model.js";
 import { esc, pageHTML, preloadMedia } from "./render.js";
 import { sanitizeHtml, textToParagraphs } from "./sanitize.js";
+import { pathwayBannerHTML } from "../pathways/banner.js";
+import { toHtml } from "../util.js";
 
 const BASE = "/access-practice-lab";
 const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
@@ -69,6 +71,7 @@ export async function mountEditor(root, ctx, book, I) {
         <button type="button" class="btn btn-primary small" data-bk-act="finish">${bkIcon("check")}<span>${esc(tr("Finish", "Terminar"))}</span></button>
       </div>
     </header>
+    ${toHtml(pathwayBannerHTML(ctx))}
     <div class="bk-collab-bar" data-bk-collab role="group" aria-label="${esc(tr("Writing together", "Escribir juntos"))}" hidden></div>
     <div class="bk-banner" data-bk-banner hidden></div>
     <div data-bk-stagebar>${stageBarHTML(E)}</div>

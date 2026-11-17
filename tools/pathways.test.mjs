@@ -213,6 +213,35 @@ test("the reference pathway is the six required stages in order, in existing fea
     assert.ok(known.has(s.route.split("/")[1]) || known.has(s.domain), s.route);
 });
 
+test("grades 3-5 speak in the Speaking Studio's own 3-5 tasks; grades 6-8 never see them", () => {
+  const studio = new Map(index.studio.speaking.map((t) => [t.id, t]));
+  for (const id of P.BUILT_IN_IDS) {
+    const young = P.builtIn(id, "3-5", data);
+    const old = P.builtIn(id, "6-8", data);
+    const speak35 = young.stages.filter((s) => s.domain === "Speaking" && s.kind !== "sim");
+    assert.equal(speak35.length, 1, `${id}: one speaking stage for 3-5`);
+    assert.equal(speak35[0].kind, "speak", `${id}: 3-5 speaking stage is a Speaking Studio task`);
+    assert.match(speak35[0].route, /^\/speak\/spk35-/);
+    assert.equal(studio.get(speak35[0].route.split("/")[2])?.band, "3-5");
+    assert.ok(speak35[0].linked, `${id}: the 3-5 task is linked to the objective`);
+    assert.deepEqual(speak35[0].evidence, {
+      type: "ledger",
+      match: { src: "speaking", task: speak35[0].route.split("/")[2], loopSrc: "speak" },
+    });
+    for (const s of old.stages.filter((x) => x.kind === "speak"))
+      assert.equal(studio.get(s.route.split("/")[2])?.band, "6-8", `${id}: 6-8 keeps its 6-8 task`);
+  }
+  assert.equal(
+    P.builtIn(P.REFERENCE_ID, "3-5", data).stages[1].route,
+    "/speak/spk35-icewrap-explain",
+  );
+  // an objective's 3-5 activities never reach a 6-8 learner, and the other way round
+  for (const o of G.OBJECTIVES) {
+    for (const a of G.activitiesFor(o, "6-8", data)) assert.notEqual(a.band, "3-5", `${o.id} ${a.key}`);
+    for (const a of G.activitiesFor(o, "3-5", data)) assert.notEqual(a.band, "6-8", `${o.id} ${a.key}`);
+  }
+});
+
 test("the shared objective and the learner's place travel with every stage", () => {
   const sc = scenario();
   for (const s of sc.pathway.stages.filter((x) => x.route)) {

@@ -124,7 +124,7 @@ function resourcesHTML(I, v) {
 function rulesHTML(I, v) {
   const o = v.objective;
   const follow = o.activities
-    .filter((a) => !a.band || a.band === v.band || (a.kind !== "access" && v.band === "6-8"))
+    .filter((a) => !a.band || a.band === v.band)
     .map((a) => resolveKey(a.key, v.data))
     .filter(Boolean);
   return html`<section class="pw-build-sec" aria-labelledby="pwRulesH">

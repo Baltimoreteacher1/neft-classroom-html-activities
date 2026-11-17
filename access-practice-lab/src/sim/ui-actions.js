@@ -8,7 +8,7 @@ import * as recorder from "../recorder.js";
 import { speak, stop as stopSpeech } from "../speech.js";
 import { startDictation } from "../stt.js";
 import { announce, wordCount } from "../util.js";
-import { assistTopic, matchTopic } from "./characters.js";
+import { AI_TIMEOUT_MS, classAllowsAi, matchTopic, resolveQuestion } from "./characters.js";
 import { feedbackOn, recordLanguage, shareReport } from "./evidence.js";
 import { DEFAULT_MIN_WORDS, act, hotspotsOf, openTopics } from "./runtime.js";
 import { LANGUAGE_TASKS, OPEN_ACTION, characterOf, evidenceOf, sceneOf, taskOf } from "./schema.js";
@@ -175,8 +175,24 @@ function play(session, ctx, id) {
   return show(ctx, `[data-sim-play="${id}"]`);
 }
 
-function askTyped(session, ctx, characterId) {
+/** Whether this device may ask the helper: asked once per player, fail closed (characters.js classAllowsAi). */
+function aiAllowed(session) {
+  if (!session.ui.aiAllowed)
+    session.ui.aiAllowed = import("../class/link.js")
+      .then((m) => classAllowsAi(m.loadLink(), (link) => m.api.whoAmI(link)))
+      .catch(() => false);
+  return session.ui.aiAllowed;
+}
+
+/**
+ * A typed (or dictated) question. A sure on-device match answers at once. When the device is unsure, the helper is
+ * asked automatically while the character "thinks" (never in a preview, never when the class turned the AI coach off);
+ * no reply, a refusal or a reply slower than AI_TIMEOUT_MS leaves the on-device answer (nearest topic or fallback).
+ * Suggested-question buttons never come here.
+ */
+async function askTyped(session, ctx, characterId) {
   const { def, ui } = session;
+  if (ui.thinking) return true;
   const text = String(ui.question || "")
     .trim()
     .slice(0, 240);
@@ -186,37 +202,24 @@ function askTyped(session, ctx, characterId) {
   }
   const open = openTopics(def, session.state, characterId).map((t) => t.id);
   const local = matchTopic(characterOf(def, characterId), text, { open });
-  apply(session, ctx, { type: "ask", character: characterId, topic: local.topic });
-  ui.lastQ = {
-    character: characterId,
-    text,
-    matched: Boolean(local.topic),
-    weak: local.weak && !local.locked && open.length >= 2,
-  };
   ui.question = "";
+  let topic = local.topic;
+  if (local.weak && !local.locked && open.length >= 2 && !ui.preview && text.length >= 2) {
+    ui.thinking = characterId;
+    ui.lastQ = { character: characterId, text, matched: false, thinking: true };
+    ctx.rerender();
+    const assist = await aiAllowed(session);
+    topic = (
+      await resolveQuestion(def, session.state, characterId, text, {
+        assist,
+        timeoutMs: AI_TIMEOUT_MS,
+      })
+    ).topic;
+    ui.thinking = "";
+  }
+  apply(session, ctx, { type: "ask", character: characterId, topic });
+  ui.lastQ = { character: characterId, text, matched: Boolean(topic) };
   return show(ctx, "#simAsked");
-}
-
-async function assist(session, ctx, characterId) {
-  const { def, ui } = session;
-  if (!ui.lastQ || ui.busy) return;
-  ui.busy = true;
-  const topics = openTopics(def, session.state, characterId).map((t) => ({
-    id: t.id,
-    label: t.ask[0],
-  }));
-  const picked = await assistTopic(ui.lastQ.text, topics);
-  ui.busy = false;
-  ui.lastQ.weak = false;
-  if (picked && picked !== "none") {
-    apply(session, ctx, { type: "ask", character: characterId, topic: picked });
-    ui.lastQ.matched = true;
-  } else
-    say(ctx, [
-      "The helper could not match your question. Try one of the questions on the list.",
-      "El ayudante no pudo relacionar tu pregunta. Prueba una de las preguntas de la lista.",
-    ]);
-  show(ctx, "#simAsked");
 }
 
 async function dictate(session, ctx, key) {
@@ -456,8 +459,7 @@ export function onPlayerClick(e, ctx, session) {
     });
     return show(ctx);
   }
-  if ((el = hit("data-sim-send"))) return askTyped(session, ctx, el.dataset.simSend);
-  if ((el = hit("data-sim-assist"))) return void assist(session, ctx, el.dataset.simAssist) || true;
+  if ((el = hit("data-sim-send"))) return void askTyped(session, ctx, el.dataset.simSend) || true;
   if (hit("data-sim-qdict")) return void dictate(session, ctx, "q") || true;
   if ((el = hit("data-sim-dict"))) return void dictate(session, ctx, el.dataset.simDict) || true;
   if ((el = hit("data-sim-rec"))) return void record(session, ctx, el.dataset.simRec) || true;

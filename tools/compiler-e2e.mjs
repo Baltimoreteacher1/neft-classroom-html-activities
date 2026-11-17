@@ -7,14 +7,18 @@
  * 375px, no console errors, Spanish, axe.
  * The publish path is NOT stubbed: this script's static server also answers /api/class/* by calling the real Pages
  * Function (functions/api/class/[[path]].js) against an in-memory SQL engine (node:sqlite), the same way the unit
- * tests do. `--shots <dir>` saves screenshots. Synthetic data only.
+ * tests do. "Suggest improvements" runs the real /api/experience-compile function too, with a stub model (env.AI)
+ * whose reply holds one untraceable line the server must drop. A real .docx (built here with jszip) is uploaded.
+ * `--shots <dir>` saves screenshots. Synthetic data only.
  */
 import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import JSZip from "jszip";
 import { SAMPLE_TEXT, SAMPLE_TITLE } from "../access-practice-lab/src/compiler/sample-ecosystem.js";
 import { onRequest } from "../functions/api/class/[[path]].js";
+import { onRequest as suggestRequest } from "../functions/api/experience-compile.js";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 
 let chromium;
@@ -54,7 +58,31 @@ function d1(sqlite) {
     },
   };
 }
-const env = { DB: d1(new DatabaseSync(":memory:")), TEACHER_KEY };
+// The model behind "Suggest improvements": a canned reply (two good items, one line that is not in the text).
+const MODEL_REPLY = {
+  questions: [
+    {
+      character: "c-expert",
+      ask: "Why did the oxygen in the water drop?",
+      keywords: ["oxygen", "drop"],
+    },
+  ],
+  lines: [
+    { character: "c-witness", text: "Minnows eat the zooplankton, and herons eat the minnows." },
+    { character: "c-witness", text: "A dragon drank all of the water in one night." },
+  ],
+};
+const modelCalls = [];
+const env = {
+  DB: d1(new DatabaseSync(":memory:")),
+  TEACHER_KEY,
+  AI: {
+    run: async (_m, input) => {
+      modelCalls.push(input);
+      return { response: JSON.stringify(MODEL_REPLY) };
+    },
+  },
+};
 async function api(req, res, url) {
   const chunks = [];
   for await (const c of req) chunks.push(c);
@@ -66,11 +94,13 @@ async function api(req, res, url) {
     headers,
     ...(chunks.length ? { body: Buffer.concat(chunks) } : {}),
   });
-  const out = await onRequest({
-    request,
-    env,
-    params: { path: url.pathname.replace("/api/class/", "").split("/") },
-  });
+  const out = url.pathname.startsWith("/api/experience-compile")
+    ? await suggestRequest({ request, env })
+    : await onRequest({
+        request,
+        env,
+        params: { path: url.pathname.replace("/api/class/", "").split("/") },
+      });
   res.writeHead(out.status, {
     "content-type": out.headers.get("Content-Type") || "application/json",
   });
@@ -91,7 +121,7 @@ function serve() {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, "http://x");
     const p = decodeURIComponent(url.pathname);
-    if (p.startsWith("/api/class/"))
+    if (p.startsWith("/api/class/") || p === "/api/experience-compile")
       return api(req, res, url).catch((err) => (res.writeHead(500), res.end(String(err))));
     let file = join(REPO_ROOT, p.endsWith("/") ? `${p}index.html` : p);
     if (!existsSync(file) && existsSync(join(REPO_ROOT, "public", p)))
@@ -277,6 +307,109 @@ try {
     '[data-xb-topic="t-saw"] .xb-badge.is-warn',
   );
   ok((await page.inputValue(answer)) === before, "undo: the last change is undone");
+
+  // ── suggest improvements: built in (no credential), then the AI helper (site key) ──
+  const topics = (c) =>
+    page.evaluate(
+      ([k, id]) =>
+        JSON.parse(localStorage.getItem("accessPracticeLab:v1:experiences"))[k].def.characters.find(
+          (x) => x.id === id,
+        ).topics.length,
+      [key, c],
+    );
+  await page.click('[data-xb-act="suggest"]');
+  await page.waitForSelector('[data-xb-suggest-mode="built-in"]');
+  ok(
+    /Built-in suggestions only/.test(await page.textContent("[data-xb-suggest-mode]")),
+    "suggest without a credential: 'Built-in suggestions only', no request is sent",
+  );
+  ok(modelCalls.length === 0, "suggest without a credential: the model is not called");
+  const builtIn = await page.locator("[data-xb-suggestion]").count();
+  ok(builtIn >= 1, `suggest: built-in suggestions from unused source sentences (${builtIn})`);
+  const first = page.locator("[data-xb-suggestion]").first();
+  const target = JSON.parse(
+    await first.locator('[data-xb-act="suggest-accept"]').getAttribute("data-xb-arg"),
+  ).id;
+  const firstText = (await first.locator(".xb-suggest-text").textContent()).trim();
+  const witnessBefore = await topics("c-witness");
+  const expertBefore = await topics("c-expert");
+  await first.locator('[data-xb-act="suggest-accept"]').click();
+  await page.waitForFunction(
+    (id) => !document.querySelector(`[data-xb-suggestion="${id}"]`),
+    target,
+  );
+  const added =
+    (await topics("c-witness")) + (await topics("c-expert")) - witnessBefore - expertBefore;
+  ok(added === 1, "accept: the suggestion becomes one new topic");
+  ok(
+    (await page.content()).includes(firstText) &&
+      (await page.getAttribute("[data-xb-valid]", "data-xb-valid")) === "yes",
+    "accept: the new answer is in the editor and the experience is still valid (live validation)",
+  );
+  await page.click('[data-xb-act="undo"]');
+  await page.waitForFunction(
+    ([k, n]) =>
+      JSON.parse(localStorage.getItem("accessPracticeLab:v1:experiences"))[k].def.characters.reduce(
+        (a, c) => a + c.topics.length,
+        0,
+      ) === n,
+    [key, witnessBefore + expertBefore],
+  );
+  ok(true, "undo: an accepted suggestion is undone like any edit");
+  if ((await page.locator("[data-xb-suggestion]").count()) > 0) {
+    const before = await page.locator("[data-xb-suggestion]").count();
+    await page.locator('[data-xb-act="suggest-dismiss"]').first().click();
+    await page.waitForFunction(
+      (n) => document.querySelectorAll("[data-xb-suggestion]").length === n - 1,
+      before,
+    );
+    ok(true, "dismiss: a suggestion can be dismissed without changing anything");
+  }
+  await page.evaluate(
+    (k) => sessionStorage.setItem("accessPracticeLabClass:v1:site-key", k),
+    TEACHER_KEY,
+  );
+  await page.click('[data-xb-act="suggest"]');
+  await page.waitForSelector('[data-xb-suggest-mode="ai"]');
+  const sent = JSON.stringify(modelCalls[0] || {});
+  ok(
+    modelCalls.length === 1 && sent.includes("Willow Pond is a small ecosystem"),
+    "suggest with the site key: the function sends the source text to the (stub) model",
+  );
+  ok(
+    !/Hi there\. I am Sam|dragon/.test(sent) && !sent.includes(LINE),
+    "suggest: no edited lines or other text leave, only source, settings and character names",
+  );
+  ok(
+    (await page.locator("[data-xb-suggestion]").count()) === 2 &&
+      !(await page.textContent("[data-xb-suggest]")).includes("dragon"),
+    "suggest (AI): the untraceable line is dropped; two suggestions are offered",
+  );
+  const expertNow = await topics("c-expert");
+  await page.click('[data-xb-suggestion][data-xb-kind="question"] [data-xb-act="suggest-accept"]');
+  await page.waitForFunction(
+    ([k, n]) =>
+      JSON.parse(localStorage.getItem("accessPracticeLab:v1:experiences"))[k].def.characters.find(
+        (x) => x.id === "c-expert",
+      ).topics.length === n,
+    [key, expertNow + 1],
+  );
+  ok(
+    (await page.getAttribute("[data-xb-valid]", "data-xb-valid")) === "yes" &&
+      (await page.content()).includes("Why did the oxygen in the water drop?"),
+    "accept (AI question): added with an answer from the text; still valid",
+  );
+  await shot(page, "suggest");
+  await axe(page, "editor, people (with suggestions)");
+  await page.click('[data-xb-act="undo"]');
+  await page.waitForFunction(
+    ([k, n]) =>
+      JSON.parse(localStorage.getItem("accessPracticeLab:v1:experiences"))[k].def.characters.find(
+        (x) => x.id === "c-expert",
+      ).topics.length === n,
+    [key, expertNow],
+  );
+  await page.evaluate(() => sessionStorage.removeItem("accessPracticeLabClass:v1:site-key"));
   await axe(page, "editor, people");
 
   // ── reorder a scene ────────────────────────────────────────────────────────
@@ -502,15 +635,45 @@ try {
     "the ecosystem example loads into the builder",
   );
   await page.setInputFiles("#xbFile", {
-    name: "unit.docx",
-    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    buffer: Buffer.from("PK"),
+    name: "unit.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.7"),
   });
   await page.waitForSelector("[data-xb-note]");
   ok(
-    /Word and PDF files cannot be read/.test(await page.textContent("[data-xb-note]")),
-    "upload: a .docx is refused with what to do instead",
+    /PDF .*cannot be read.*save it as a Word \.docx/.test(await page.textContent("[data-xb-note]")),
+    "upload: a PDF is refused with what to do instead (paste, or save as .docx)",
   );
+  await page.setInputFiles("#xbFile", {
+    name: "broken.docx",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    buffer: Buffer.from("PK not a real zip"),
+  });
+  await page.waitForFunction(() =>
+    /could not be read/.test(document.querySelector("[data-xb-note]")?.textContent || ""),
+  );
+  ok(true, "upload: a damaged .docx is refused with a clear reason");
+  const zip = new JSZip();
+  zip.file("[Content_Types].xml", "<Types/>");
+  zip.file(
+    "word/document.xml",
+    `<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${SAMPLE_TEXT.split(
+      /\n\n/,
+    )
+      .map((p) => `<w:p><w:r><w:t xml:space="preserve">${p}</w:t></w:r></w:p>`)
+      .join("")}</w:body></w:document>`,
+  );
+  await page.setInputFiles("#xbFile", {
+    name: "pond_unit.docx",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    buffer: await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }),
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector("#xbText").value.startsWith("Willow Pond is a small ecosystem") &&
+      document.querySelector("#xbTitle").value === "pond unit",
+  );
+  ok(true, "upload: a real Word .docx file is read on the device into the text box");
   await page.setInputFiles("#xbFile", {
     name: "pond.html",
     mimeType: "text/html",

@@ -12,7 +12,9 @@ export const freshUi = (preview = false) => ({
   cite: {}, // decision picks by task id: { option, cited[] }
   confirm: "", // task id of a decision waiting for "yes"
   question: "", // the learner's own question, as typed
-  lastQ: null, // { character, text, matched, weak }
+  lastQ: null, // { character, text, matched, thinking? }
+  thinking: "", // character id while the helper is matching a typed question
+  aiAllowed: null, // Promise<boolean>: may this device ask the helper (class setting aiCoach)
   dict: null, // { key, session } while speech-to-text runs
   recording: "", // recorder key while recording
   feedback: {}, // feedback by task id for this visit (previews keep it only here)

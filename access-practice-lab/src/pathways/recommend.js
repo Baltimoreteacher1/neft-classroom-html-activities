@@ -107,7 +107,7 @@ export function recommend(
     : null;
   const firstFor = () => {
     const a = objective.activities.find(
-      (x) => !x.band || x.band === band || (x.kind !== "access" && band === "6-8"),
+      (x) => !x.band || x.band === band,
     );
     return pick(objective, a?.key, data);
   };

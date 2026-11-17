@@ -5,6 +5,7 @@
 // accessPracticeLab:v1:sim) and resumes where the learner stopped. Spoken and written work goes through the shared
 // feedback loop, so it is also ledger evidence; the evidence report is shared with the class review queue only when
 // the learner presses Share. No timers, points or rankings: an outcome is a story consequence, never a grade.
+import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
 import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
@@ -327,11 +328,12 @@ export async function render(ctx) {
     };
   return {
     title,
-    html: html`${crumbsHTML([home, hub, [title, null]])}${pathwayBannerHTML(ctx)}${playerHTML(ctx, r.def, r.session.state, { session: r.session })}${restartHTML(I, r.session)}`,
+    html: html`${crumbsHTML([home, hub, [title, null]])}${pathwayBannerHTML(ctx)}${downloadMenuHTML(ctx, "simulation", r.def)}${playerHTML(ctx, r.def, r.session.state, { session: r.session })}${restartHTML(I, r.session)}`,
   };
 }
 
 export function onClick(e, ctx) {
+  if (onDownloadClick(e, ctx)) return true;
   const t = e.target;
   const I = i18nFor(ctx);
   const copy = t.closest("[data-simv-copy]");

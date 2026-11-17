@@ -18,6 +18,11 @@ export const RETURNS = {
     en: "Back to the Teacher Tour",
     es: "Volver al recorrido para docentes",
   },
+  tourk1: {
+    to: "/start/tour-k1",
+    en: "Back to the K–1 Teacher Tour",
+    es: "Volver al recorrido para docentes de K a 1.º",
+  },
   explore: {
     to: "/start/explore",
     en: "Back to Try It. Adapt It. Use It.",

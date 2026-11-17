@@ -424,7 +424,7 @@ export function unmount() {
   q("#t2PrintHost")?.remove();
   q("#t2Dialog")?.remove();
   // A same-route re-render also unmounts; only leaving the tour ends "this tab is in the tour" (see render's gate).
-  if (!location.pathname.includes("/start/tour")) {
+  if (!/\/start\/tour\/?$/.test(location.pathname)) {
     try {
       sessionStorage.removeItem(ACTIVE);
     } catch {}

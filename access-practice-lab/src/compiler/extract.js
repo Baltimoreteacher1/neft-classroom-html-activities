@@ -34,15 +34,20 @@ const ENTITIES = {
 };
 const CONTROL = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g;
 
-/** Is this upload acceptable? Type by extension (never by sniffing or running it) and size <= 200 KB. */
+/** A Word file may be larger than a text file (it is compressed and carries styles); its TEXT is capped after
+ * reading at MAX_UPLOAD_BYTES like any other upload. */
+export const MAX_DOCX_BYTES = 2 * 1024 * 1024;
+
+/** Is this upload acceptable? Type by extension (never by sniffing or running it) and size <= 200 KB (Word: 2 MB).
+ * PDF and the old binary .doc stay refused: the lab ships no reader for them. */
 export function checkUpload({ name = "", size = 0 } = {}) {
   const ext = String(name).toLowerCase().split(".").pop();
-  if (ext === "docx" || ext === "doc" || ext === "pdf")
-    return { ok: false, error: "unsupported-document" };
-  const kind = UPLOAD_KINDS[ext];
+  if (ext === "doc" || ext === "pdf") return { ok: false, error: "unsupported-document" };
+  const kind = ext === "docx" ? "docx" : UPLOAD_KINDS[ext];
   if (!kind) return { ok: false, error: "unsupported-type" };
   if (!(size > 0)) return { ok: false, error: "empty-file" };
-  if (size > MAX_UPLOAD_BYTES) return { ok: false, error: "too-large" };
+  if (size > (kind === "docx" ? MAX_DOCX_BYTES : MAX_UPLOAD_BYTES))
+    return { ok: false, error: "too-large" };
   return { ok: true, kind };
 }
 

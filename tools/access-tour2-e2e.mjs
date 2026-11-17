@@ -96,8 +96,8 @@ try {
   await page.locator(".t2-more summary").click();
   check("teacher-resource explanation expands", await page.locator(".t2-more li").first().isVisible());
   check("continue is available (focus not required to move on)", (await t2("next").getAttribute("aria-disabled")) === null);
-  await page.locator('[data-t2-field="focus"][data-t2-value="both"]').click();
-  check("focus choice is saved", (await page.locator('[data-t2-field="focus"][data-t2-value="both"]').getAttribute("aria-pressed")) === "true");
+  await page.locator('[data-t2-field="focus"][data-t2-value="all"]').click();
+  check("focus choice is saved", (await page.locator('[data-t2-field="focus"][data-t2-value="all"]').getAttribute("aria-pressed")) === "true");
   await page.locator('[data-t2-field="band"][data-t2-value="3-5"]').click();
   await page.locator('[data-t2-field="band"][data-t2-value="6-8"]').click();
   await next();

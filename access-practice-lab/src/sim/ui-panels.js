@@ -143,12 +143,16 @@ export function dialoguePanel(I, def, state, ui) {
           : html`<p class="sim-line is-them">${T(I, who.greeting)}</p>`
       }
       ${
-        mine
-          ? html`<p class="sim-note" id="simAsked">
-              ${I.T("You asked:", "Preguntaste:")} <q>${mine.text}</q>
-              ${mine.matched ? "" : I.T(" This person could not answer that.", " Esta persona no pudo responder eso.")}
+        mine?.thinking
+          ? html`<p class="sim-line is-them sim-thinking" id="simAsked" role="status" data-sim-thinking>
+              ${I.T(`${who.name} is thinking…`, `${who.name} está pensando…`)}
             </p>`
-          : ""
+          : mine
+            ? html`<p class="sim-note" id="simAsked">
+                ${I.T("You asked:", "Preguntaste:")} <q>${mine.text}</q>
+                ${mine.matched ? "" : I.T(" This person could not answer that.", " Esta persona no pudo responder eso.")}
+              </p>`
+            : ""
       }
     </div>
     ${
@@ -212,19 +216,21 @@ export function dialoguePanel(I, def, state, ui) {
               </button>`
             : ""
         }
-        <button type="button" class="btn btn-primary small" data-sim-send="${who.id}">
+        <button
+          type="button"
+          class="btn btn-primary small"
+          data-sim-send="${who.id}"
+          ${ui.thinking ? raw('aria-disabled="true"') : ""}
+        >
           ${I.T("Ask", "Preguntar")}
         </button>
       </div>
       ${
-        mine?.weak && !ui.preview
-          ? html`<p class="sim-note">
-              <button type="button" class="btn small" data-sim-assist="${who.id}">
-                ${I.T("Ask the helper to match my question", "Pedir al ayudante que relacione mi pregunta")}
-              </button>
-              ${I.T("This sends only your typed question to a helper on this site. It picks one of this person's answers; it never writes one.", "Esto envía solo tu pregunta escrita a un ayudante de este sitio. Elige una de las respuestas de esta persona; nunca escribe una.")}
+        ui.preview
+          ? ""
+          : html`<p class="sim-note fine" data-sim-ai-note>
+              ${I.T("Questions the city can't match go to an AI helper that only picks which answer fits. Don't type names.", "Las preguntas que la ciudad no puede relacionar van a un ayudante de IA que solo elige qué respuesta encaja. No escribas nombres.")}
             </p>`
-          : ""
       }
     </div>`;
 }

@@ -14,6 +14,9 @@
  *        -> { ok, source, topic }           which authored topic of a simulation
  *           character answers a learner's typed question: one of the ids sent, or
  *           "none". The browser shows the character's own authored answer for it.
+ *           The question is scrubbed here (names, emails, phone numbers -> [name],
+ *           [email], [phone]; language-guide/guard.js stripPersonal) before the
+ *           model sees it; under 2 letters or digits left, nothing is sent.
  *   GET  /api/class/ai/health -> { ok, claude, workersAi }
  * No model reply is ever passed through: output is parsed, validated against the
  * authored id lists and dropped when it does not fit, so an instruction hidden in
@@ -29,6 +32,7 @@ import { DETECTORS } from "../../../access-practice-lab/src/lang/errors.js";
 import { KEY_LANGUAGE_USES, MOVES } from "../../../access-practice-lab/src/lang/purpose.js";
 import { stepLeaks } from "../../../math/fluency-lab/step-leak.js";
 import { cleanText } from "../../../shared/class-platform/contract.js";
+import { stripPersonal } from "../../api/language-guide/guard.js";
 import { clientIp, createRateLimiter, json, tooManyRequests } from "../http.js";
 import { callModel, firstJsonObject, modelAvailable } from "../model-call.js";
 
@@ -149,13 +153,16 @@ export function acceptTopic(reply, topics) {
 
 async function character(ctx) {
   const { env, body, fail } = ctx;
-  const question = cleanText(body?.question, 240);
+  // Names, email addresses and phone numbers are replaced before anything reaches a model, whatever the client did
+  // (the same replacement Mr. Neft's guide applies). What is left must still be a question of 2 characters or more.
+  const question = stripPersonal(cleanText(body?.question, 240));
+  const words = question.replace(/\[(?:name|email|phone)\]/g, "").replace(/[^\p{L}\p{N}]/gu, "");
   const seen = new Set();
   const topics = (Array.isArray(body?.topics) ? body.topics : [])
     .slice(0, MAX_TOPICS)
     .map((t) => ({ id: typeof t?.id === "string" ? t.id : "", label: cleanText(t?.label, 160) }))
     .filter((t) => TOPIC_ID.test(t.id) && t.id !== "none" && t.label && !seen.has(t.id) && seen.add(t.id));
-  if (question.length < 2 || topics.length < 2) return fail("invalid-character-request");
+  if (words.length < 2 || topics.length < 2) return fail("invalid-character-request");
   const reply = await callModel(env, { ...characterPrompt(question, topics), maxTokens: 30 });
   if (!reply) return offline();
   const topic = acceptTopic(reply.text, topics);

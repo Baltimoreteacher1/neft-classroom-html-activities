@@ -157,13 +157,36 @@ stored. Opening any help marks the work supported. Help items are written so the
    presses "Use this word" (one undoable word swap). With no model or no internet, Brainstorm, Organize, Expand, Genre
    and Picture show built-in tips labelled "Built-in tips (no AI)"; ledger entries record `feedbackSource: "ai"` or
    `"local-rule"`.
-   **Fifth exception, under Joel's 2026-11-17 Part 2 brief ("full permission"): the simulation character matcher.**
-   When a learner TYPES a question to a simulation character and the on-device keyword match is weak, the player
-   offers "Ask the helper to match my question"; only on that press it sends the typed question (≤ 240 characters)
-   and the character's authored topic ids and labels to `POST /api/class/ai/character`. The model only SELECTS one
-   authored topic id or "none"; the reply is validated against the list and the character always answers with the
-   lab's own authored words. No name, no identifiers, no other work; nothing stored; the class AI rate limit applies.
-   Offline or unavailable, the on-device match stands. The model never changes mission state.
+   **Fifth exception, under Joel's 2026-11-17 Part 2 brief ("full permission"; Joel left automatic vs on-press to the
+   coordinator, who chose automatic): the simulation character matcher.** When a learner TYPES or dictates a question
+   to a simulation character and the on-device keyword match is weak, the player calls `POST /api/class/ai/character`
+   automatically while the character shows a brief "thinking" line, sending only the typed question (≤ 240
+   characters) and the character's open authored topic ids and labels. Guards: the server scrubs the question with the
+   same name/email/phone replacement as Mr. Neft's guide (`functions/api/language-guide/guard.js` `stripPersonal`,
+   inside `character()`, so it holds for any client) and refuses, without calling a model, when under 2 letters or
+   digits remain; suggested-question buttons never call it; a preview never calls it; a learner in a class whose
+   teacher setting `aiCoach` is false (read from `GET /me`, as Book Studio does; any error fails closed) never calls
+   it; the dialogue panel says "Questions the city can't match go to an AI helper that only picks which answer fits.
+   Don't type names." (EN + ES). The model only SELECTS one authored topic id or "none"; the reply is validated
+   against the list and the character always answers with the lab's own authored words. Nothing stored; the class AI
+   rate limit applies. Offline, unavailable, refused or slower than 4 seconds, the on-device nearest topic or the
+   character's fallback stands. The model never changes mission state.
+   **Sixth exception, under Joel's 2026-11-17 Part 2 brief ("full permission"): Experience Builder "Suggest
+   improvements".** Teacher only: the call needs the site teacher key or a class's teacher passcode, and only the
+   instructor's editor (`src/compiler/editor-suggest.js`, rules shared with the server in
+   `src/compiler/suggest-rules.js`) makes it, when the instructor presses "Suggest improvements". It sends to this
+   site's own `/api/experience-compile` (`functions/api/experience-compile.js`) the instructor's OWN source text
+   (≤ 6,000 characters), the builder settings (grade band, subject, Key Language Use, topic) and each simulation
+   character's id, name and role. Never sent: anything a learner wrote, said or chose, learner names, rosters,
+   progress or recordings. The model (Claude Haiku, else Workers AI; never Gemini) must answer in a fixed JSON shape of
+   questions a learner could ask a character and answer lines; the server keeps only items of at most 30 words, for
+   characters the definition has, with no score / level / grade / points wording the source does not use, and answer
+   lines traceable to the source by the compiler's own rule (`traceText`: 60% content-word overlap with a source
+   sentence and every number in it); a reply that is not that shape is dropped whole, and the editor re-checks every
+   item. Nothing is stored (no text, reply or IP); the only state is the anonymous per-IP-hour (60) and per-day (600)
+   counters of the shared cap guard (`experience-compile` scope). Nothing enters the experience unless the instructor
+   presses Accept (one undoable editor operation, validated at once). With no credential, no model or an unusable
+   reply, the editor says "Built-in suggestions only" and offers the source sentences no evidence or answer uses yet.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,

@@ -156,7 +156,13 @@ test("extract: markup is stripped, nothing is executed, uploads are type- and si
   assert.doesNotMatch(cleanSource("a\u0000b\u0007c"), /[\u0000\u0007]/);
   assert.deepEqual(checkUpload({ name: "notes.txt", size: 10 }), { ok: true, kind: "text" });
   assert.equal(checkUpload({ name: "page.HTML", size: 10 }).kind, "html");
-  assert.equal(checkUpload({ name: "unit.docx", size: 10 }).error, "unsupported-document");
+  assert.equal(
+    checkUpload({ name: "unit.docx", size: 10 }).kind,
+    "docx",
+    "Word .docx is read (docx.js)",
+  );
+  assert.equal(checkUpload({ name: "unit.pdf", size: 10 }).error, "unsupported-document");
+  assert.equal(checkUpload({ name: "old.doc", size: 10 }).error, "unsupported-document");
   assert.equal(checkUpload({ name: "run.exe", size: 10 }).error, "unsupported-type");
   assert.equal(checkUpload({ name: "big.txt", size: MAX_UPLOAD_BYTES + 1 }).error, "too-large");
   assert.equal(checkUpload({ name: "empty.md", size: 0 }).error, "empty-file");

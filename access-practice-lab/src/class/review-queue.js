@@ -51,6 +51,18 @@ function chipsFieldset(S, rubric, item, chosen) {
   );
 }
 
+/**
+ * The descriptor chips picked in one review form: only the rubric radios (they carry `data-dim`). A shared loop's
+ * form also holds the decision radios; those travel in the comment and are never chips (counting them sent
+ * `{undefined: NaN}` and the server refused every loop review as "invalid-chips").
+ */
+export function chipsOf(form) {
+  const chips = {};
+  for (const input of form.querySelectorAll("input[type=radio][data-dim]:checked"))
+    chips[input.dataset.dim] = Number(input.value);
+  return chips;
+}
+
 /** Room kept inside the 280-character comment for the decision prefix ("[LP replace next=/route] "). */
 const DECISION_ROOM = 60; // 280 - 60 = 220 characters for the words
 const DECISION_LABELS = {
@@ -156,9 +168,7 @@ function itemCard(S, api, item, rubric, refresh, live) {
       : S("Mark reviewed", "Marcar como revisado"),
   );
   mark.addEventListener("click", async () => {
-    const chips = {};
-    for (const input of form.querySelectorAll("input[type=radio]:checked"))
-      chips[input.dataset.dim] = Number(input.value);
+    const chips = chipsOf(form);
     const decision = form.querySelector("[data-decision]:checked")?.value || "";
     if (decision === "replace" && !comment.value.trim()) {
       status.textContent = S(

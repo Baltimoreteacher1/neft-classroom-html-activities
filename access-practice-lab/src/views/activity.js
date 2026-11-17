@@ -78,6 +78,7 @@ import {
   storage,
 } from "../util.js";
 import { activityHref, roomHref } from "./room.js";
+import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
 import { esPreviewHTML } from "./es-preview.js";
 import { listLoops, loadIntel, nextStage as loopStage } from "../intel/loop.js";
@@ -768,7 +769,11 @@ export async function render(ctx) {
   const es = esGuide[a.id] || {};
   mode = requestedMode === "independent" ? "independent" : "supported";
   earlyActive = early.usesAudioFirst(ctx.prefs, cur.band, a, location.search);
-  if (earlyActive) return early.render(ctx, I, cur, { nav: navHTML() });
+  const downloadMenu = downloadMenuHTML(ctx, "activity", { id: a.id, band: cur.band, domain: cur.domain, level: cur.level });
+  if (earlyActive) {
+    const view = early.render(ctx, I, cur, { nav: navHTML() });
+    return { ...view, html: html`${downloadMenu}${view.html}` };
+  }
   const meta = DOMAIN_META[cur.domain] || DOMAIN_META.Listening;
   const tier = TIERS[cur.level];
   const done = cur.record.complete.includes(a.id);
@@ -802,6 +807,7 @@ export async function render(ctx) {
             ${a.title}${done ? html` <span class="done-badge">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
           </h1>
           ${lf.goal}
+          ${downloadMenu}
           ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
           ${taskCardHTML(I, a, cur.domain, cur.band, directionsBlocks(a, es))}
           ${mode === "supported" ? esPreviewHTML(I, a, cur.domain, es) : ""}
@@ -1049,6 +1055,7 @@ function onFrameClick(t, a, ctx) {
 
 export function onClick(e, ctx) {
   if (!cur || loading) return;
+  if (onDownloadClick(e, ctx)) return true;
   if (onLoopClick(e, ctx)) return true;
   if (e.target.closest("[data-intel-coach]") && mode === "supported") {
     const act = cur.activity;

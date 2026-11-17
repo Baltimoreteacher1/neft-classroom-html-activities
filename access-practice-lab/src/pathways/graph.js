@@ -182,7 +182,7 @@ export function resolveKey(key, { index } = {}) {
 /** Activities of an objective for a band (band-free ones always included), each resolved; unknown ones dropped. */
 export function activitiesFor(objective, band, data) {
   return objective.activities
-    .filter((a) => !a.band || a.band === band || (a.kind !== "access" && band === "6-8"))
+    .filter((a) => !a.band || a.band === band)
     .map((a) => ({ ...resolveKey(a.key, data), domain: a.domain }))
     .filter((a) => a.key);
 }

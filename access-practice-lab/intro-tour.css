@@ -394,3 +394,143 @@ html.is-framed .lab-main {
 }
 
 /* Re-addressed 2026-11-12: the edge pinned the previous build of this file under its new hash (see functions/access-practice-lab/[[path]].js). */
+
+/* ── K–1 Teacher Tour (src/intro/tour-k1.js): its own tour for Kindergarten and Grade 1 (k1t-*) ── */
+.k1t-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.k1t-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.k1t-picker-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+.k1t-pick,
+.k1t-act-btns .btn,
+.k1t-links a {
+  min-height: 44px;
+}
+.k1t-links a {
+  display: inline-flex;
+  align-items: center;
+}
+.k1t-pick[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+.k1t-resumed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.k1t-coach {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+}
+.k1t-coach .nb-say {
+  margin: 0.25rem 0 0;
+  color: var(--ink);
+}
+.k1t-step h3 {
+  margin-top: 1.25rem;
+}
+.k1t-do {
+  padding-inline-start: 1.4rem;
+}
+.k1t-do li + li {
+  margin-top: 0.35rem;
+}
+.k1t-acts {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.k1t-act {
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.k1t-act.is-primary {
+  border: 2px solid var(--teal);
+}
+.k1t-act-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.k1t-act-name .fine {
+  color: var(--ink-2);
+}
+.k1t-act-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+}
+.k1t-frame {
+  margin-top: 0.75rem;
+}
+.k1t-iframe {
+  display: block;
+  width: 100%;
+  height: clamp(26rem, 70vh, 48rem);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.k1t-links {
+  margin: 1rem 0 0;
+  padding-inline-start: 1.2rem;
+}
+.k1t-pick:focus-visible,
+.k1t-act-btns .btn:focus-visible,
+.k1t-links a:focus-visible,
+.k1t-start-link a:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+@media (max-width: 40rem) {
+  .k1t-act-btns .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .k1t-iframe {
+    height: 70vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .k1t * {
+    transition: none !important; /* reduced motion wins over any inherited transition */
+    animation: none !important; /* reduced motion wins over any inherited animation */
+  }
+}
+@media print {
+  .k1t-tools,
+  .k1t-act-btns,
+  .k1t-frame,
+  .k1t .ts-rail,
+  .k1t .ts-actions,
+  .k1t .in-foot {
+    display: none !important; /* the printed page is the step itself, not the controls */
+  }
+}
