@@ -302,6 +302,8 @@ export function navigate(path, { replace = false } = {}) {
   const url = new URL(path, location.origin);
   if (url.pathname + url.search === location.pathname + location.search && !replace)
     return render({ keepFocus: false });
+  // Remember where the learner was on this page so Back returns them there, not to the top.
+  if (!replace) history.replaceState({ ...history.state, scrollY: window.scrollY }, "");
   history[replace ? "replaceState" : "pushState"]({}, "", url.pathname + url.search + url.hash);
   return render({ keepFocus: false, scroll: true });
 }
@@ -349,7 +351,7 @@ function focusKey(el) {
   return null;
 }
 
-async function render({ keepFocus = false, scroll = false } = {}) {
+async function render({ keepFocus = false, scroll = false, restoreY = null } = {}) {
   const token = ++app.rendering;
   const route = parseRoute();
   // The old Practice Together walkthrough is retired: every family entry point opens the one Family Tour.
@@ -386,6 +388,9 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   // immediately so assistive technology and automation never mistake stale content for the
   // destination, and expose a small, deterministic loading state until the view is ready.
   if (routeChanged && app.rendered) {
+    // Go to the top before the old screen is swapped out, so the page never collapses under a scrolled
+    // window and then jumps a second time when the new screen arrives.
+    if (scroll && restoreY == null) window.scrollTo({ top: 0, behavior: "instant" });
     root.setAttribute("aria-busy", "true");
     root.innerHTML = `<div class="panel route-loading" role="status"><p>${i18nFor(ctx).S("Loading…", "Cargando…")}</p></div>`;
   }
@@ -449,8 +454,16 @@ async function render({ keepFocus = false, scroll = false } = {}) {
       || root.querySelector("h1");
     if (target && !target.matches("button, input, select, textarea, a[href]")) target.tabIndex = -1;
     target?.focus({ preventScroll: true });
+    // New feedback that renders below the screen is moved up just enough to read; nothing else scrolls.
+    const note = target?.matches(".feedback, .saved-note") ? target : fk.startsWith("[data-check") ? root.querySelector(".feedback, .saved-note") : null;
+    const box = note?.getBoundingClientRect();
+    if (box && box.top > 0 && box.bottom > innerHeight)
+      note.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
   } else if (!keepFocus) {
-    if (scroll) window.scrollTo({ top: 0 });
+    const hashTarget = scroll && location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    if (restoreY != null) window.scrollTo({ top: restoreY, behavior: "instant" });
+    else if (hashTarget) hashTarget.scrollIntoView({ block: "start" });
+    else if (scroll) window.scrollTo({ top: 0, behavior: "instant" });
     // Inside a guide's activity frame, focusing the heading on load would pull the page's focus into the frame.
     const framed = document.documentElement.classList.contains("is-framed");
     // A view can name what a keyboard user should meet first ([data-focus-first]: the home page's Start Here cards
@@ -675,7 +688,9 @@ document.addEventListener("change", (e) => {
 });
 document.addEventListener("input", (e) => app.view?.onInput?.(e, ctx));
 document.addEventListener("keydown", (e) => app.view?.onKey?.(e, ctx));
-window.addEventListener("popstate", () => render({ scroll: true }));
+// The app renders asynchronously, so it restores scroll itself (navigate() saves scrollY into history.state).
+if (typeof history !== "undefined" && "scrollRestoration" in history) history.scrollRestoration = "manual";
+window.addEventListener("popstate", (e) => render({ scroll: true, restoreY: e.state?.scrollY ?? null }));
 window.addEventListener("pagehide", () => { app.view?.unmount?.(); stopSpeech(); rec.stop(); });
 
 function watchNetwork() {

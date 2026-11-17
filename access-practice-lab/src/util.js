@@ -186,10 +186,11 @@ export function testingWindowPhase(win, today = todayISO()) {
  * The one way to tell the learner something short: a screen-reader announcement (#labLive) and a toast (#labToast).
  * `tone` is "info" (default), "success" or "warn". The toast stays while the pointer or keyboard focus is on it, so
  * nobody has to race to read it, and it has a close button. Messages never carry scores or deadlines.
+ * `toast: false` speaks only: for results the page already shows on screen (answer feedback).
  */
 let toastTimer = 0;
 let toastWired = false;
-export function announce(message, { tone = "info" } = {}) {
+export function announce(message, { tone = "info", toast: showToast = true } = {}) {
   const live = document.getElementById("labLive");
   if (live) {
     // Clear first: assistive tech ignores a repeated identical string ("Not yet." twice in a row).
@@ -198,7 +199,7 @@ export function announce(message, { tone = "info" } = {}) {
       live.textContent = message;
     }, 40);
   }
-  const toast = document.getElementById("labToast");
+  const toast = showToast ? document.getElementById("labToast") : null;
   if (!toast) return;
   // Long messages (a microphone error) need time to be read.
   const hide = () => {

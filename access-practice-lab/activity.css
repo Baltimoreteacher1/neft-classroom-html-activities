@@ -321,7 +321,12 @@ details.helpers[open] > summary {
   background: var(--surface-2);
 }
 .fresh-attempt {
-  margin-block: var(--s-4);
+  margin-block: var(--s-4) 0;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.fresh-attempt .fine {
+  margin: var(--s-1) 0 0;
 }
 .warmup-note {
   display: flex;
@@ -959,7 +964,7 @@ details.helpers[open] > summary {
 /* ── feedback ──────────────────────────────────────────────────────────── */
 .feedback {
   margin-top: var(--s-4);
-  padding: var(--s-4) var(--s-4) var(--s-4) var(--s-5);
+  padding: var(--s-3) var(--s-4) var(--s-3) var(--s-5);
   border: 1px solid transparent;
   border-left: 6px solid;
   border-radius: 14px;
@@ -1004,6 +1009,44 @@ details.helpers[open] > summary {
 }
 .feedback .btn {
   margin-top: var(--s-2);
+}
+/* Compact result: verdict + one action on one row, one lead line, everything else folded. */
+.fb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-3);
+}
+.fb-head .fb-title {
+  margin: 0;
+}
+.feedback .fb-head .btn {
+  margin-top: 0;
+}
+.fb-lead {
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+.fb-more {
+  margin-top: var(--s-2);
+}
+.fb-more > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.fb-more > summary:hover {
+  color: var(--ink);
+}
+.fb-more[open] > summary {
+  margin-bottom: var(--s-1);
+}
+.fb-more .lf-fb {
+  margin-bottom: 0;
 }
 .checks {
   margin: 0.4rem 0;

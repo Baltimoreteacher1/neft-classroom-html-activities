@@ -65,7 +65,14 @@ export function mountAccShell(doc = document) {
   foot.setAttribute("aria-label", chrome(lang).footerNav);
   foot.innerHTML = footerHTML(lang);
   body.append(foot);
-  eco.querySelector("[aria-current]")?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  // Center the current link inside the nav row only; scrollIntoView would also move the window.
+  const row = eco.querySelector("nav");
+  const link = row?.querySelector("[aria-current]");
+  if (link && row.scrollWidth > row.clientWidth) {
+    const r = row.getBoundingClientRect();
+    const l = link.getBoundingClientRect();
+    row.scrollLeft += l.left - r.left - (r.width - l.width) / 2;
+  }
   return true;
 }
 

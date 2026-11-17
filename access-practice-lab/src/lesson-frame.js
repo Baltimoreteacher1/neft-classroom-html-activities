@@ -255,10 +255,14 @@ export function annotateBarHTML(I, { tool = "", count = 0 }) {
  */
 export function feedbackBodyHTML(I, { well, next, canModel }) {
   return html`<div class="lf-fb">
-    <section class="lf-fb-part">
-      <h3>${I.T("What went well", "Qué salió bien")}</h3>
-      <p>${well}</p>
-    </section>
+    ${
+      well
+        ? html`<section class="lf-fb-part">
+            <h3>${I.T("What went well", "Qué salió bien")}</h3>
+            <p>${well}</p>
+          </section>`
+        : ""
+    }
     ${
       next
         ? html`<section class="lf-fb-part">

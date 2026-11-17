@@ -81,13 +81,12 @@ export const PHONE_QUERY = "(max-width: 559px)";
 const onPhone = () => typeof matchMedia === "function" && matchMedia(PHONE_QUERY).matches;
 
 /**
- * First visit: offer the three language modes once, on every page except the family hub (which has its own), and
- * not on phones, where the header switch is already visible beside it. Using either switch sets `langChosen`
- * (main.js), which retires the banner everywhere.
+ * First visit: offer the three language modes once, on the home page only (every other page keeps the header's
+ * EN / ES switch and stays uncluttered), and not on phones, where the header switch is already visible beside it.
+ * Using either switch sets `langChosen` (main.js), which retires the banner everywhere.
  */
 export function wantsLangBanner(ctx, phone = onPhone()) {
-  const inTour = ctx.route?.view === "start" && ctx.route?.id === "tour";
-  return !phone && !ctx.prefs.langChosen && !inTour && !["family", "practice-together"].includes(ctx.route?.view);
+  return !phone && !ctx.prefs.langChosen && ctx.route?.view === "home";
 }
 
 function mountLangBanner(ctx) {
@@ -125,8 +124,18 @@ function mountSectionBar(ctx) {
   }
   bar.setAttribute("aria-label", I.S("This section", "Esta sección"));
   if (bar.innerHTML !== markup) bar.innerHTML = markup;
-  bar.querySelector('[aria-current="page"]')?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  centerCurrentLink(bar.querySelector(".sb-links"));
   watchSectionOverflow();
+}
+
+/** Center the current link inside its own horizontal row. scrollIntoView would also scroll the window back up
+ *  to the bar on every re-render (each answer click), so only the row's scrollLeft moves. */
+function centerCurrentLink(row) {
+  const link = row?.querySelector('[aria-current="page"]');
+  if (!link || row.scrollWidth <= row.clientWidth) return;
+  const r = row.getBoundingClientRect();
+  const l = link.getBoundingClientRect();
+  row.scrollLeft += l.left - r.left - (r.width - l.width) / 2;
 }
 
 /** Fade the edge of the section links where more links scroll out of view, instead of cutting a word in half. */
@@ -149,7 +158,22 @@ function watchSectionOverflow() {
   if (typeof requestAnimationFrame === "function") requestAnimationFrame(fadeSectionOverflow);
 }
 
+/** Keep in-page jumps (step buttons, #links, feedback) clear of the sticky header, whatever height it wraps to. */
+let headerWatched = false;
+function watchHeaderHeight() {
+  const header = document.querySelector(".lab-top");
+  if (headerWatched || !header || typeof ResizeObserver === "undefined") return;
+  headerWatched = true;
+  const sync = () => {
+    const sticky = getComputedStyle(header).position === "sticky";
+    document.documentElement.style.setProperty("--lab-top-h", `${sticky ? Math.round(header.getBoundingClientRect().height) : 0}px`);
+  };
+  new ResizeObserver(sync).observe(header);
+  sync();
+}
+
 export function mountShell(ctx) {
+  watchHeaderHeight();
   I = i18nFor(ctx);
   const T = I.S;
   document.documentElement.lang = I.pageLang;

@@ -137,6 +137,8 @@ const marks = new Map(); // activity id → Map(sentence index → tool)
 // Listening Strategy Lab (Learn with help only): signal-word tags are UI state for this attempt.
 const listenTags = new Map(); // id → Set("part:index")
 const strategyPicks = new Map(); // id → chosen step id
+// "Helpful words and starters" stays as the learner left it; it never opens by itself above the answer after Check.
+const helpersOpen = new Set(); // ids
 const modelBorrows = new Map(); // id → chosen technique id
 /** A diagnosed listening miss holds the answer back until the learner replays the targeted part. */
 const revealHeld = (c) => Boolean(c && !c.ok && c.reveal === "full" && c.diag && !c.replayed && canSpeak());
@@ -344,38 +346,49 @@ function pickedNote(a) {
     : "";
 }
 
+/** Folded extra help under the one-line result, so each answer shows a clear verdict and one next action. */
+const moreHelp = (label, body) => html`<details class="fb-more"><summary>${label}</summary>${body}</details>`;
+
 function feedbackBody(a) {
   const c = checked.get(a.id);
   if (!c) return "";
-  if (c.ok)
+  if (c.ok) {
+    const next = cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${tx(a.extension)}` : cur.domain === "Reading" ? lookBack() : "";
+    const canModel = Boolean(curFamily) && mode === "supported";
     return html`<div class="feedback is-right" role="status">
       <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
-      ${feedbackBodyHTML(I, {
-        well: a.correct ? tx(a.correct) : I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea."),
-        next: cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${tx(a.extension)}` : cur.domain === "Reading" ? lookBack() : "",
-        canModel: Boolean(curFamily) && mode === "supported",
-      })}
+      <p class="fb-lead">${a.correct ? tx(a.correct) : I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea.")}</p>
+      ${next || canModel ? moreHelp(I.T("Go further", "Ve más allá"), feedbackBodyHTML(I, { next, canModel })) : ""}
     </div>`;
+  }
   if (c.diag && mode === "supported" && (c.reveal !== "full" || revealHeld(c)))
     return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: tx(a.hint) });
   if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
-      <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
-      <p><strong>${correctAnswerText(a)}</strong></p>
-      ${pickedNote(a)}
-      ${feedbackBodyHTML(I, { well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))), next: tx(a.support) || (cur.domain === "Reading" ? lookBack() : ""), canModel: Boolean(curFamily) })}
-      <button type="button" class="btn" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
+      <div class="fb-head">
+        <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
+        <button type="button" class="btn small" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
+      </div>
+      <p class="fb-lead"><strong>${correctAnswerText(a)}</strong></p>
+      ${moreHelp(
+        I.T("Why?", "¿Por qué?"),
+        html`${pickedNote(a)}${feedbackBodyHTML(I, { well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))), next: tx(a.support) || (cur.domain === "Reading" ? lookBack() : ""), canModel: Boolean(curFamily) })}`,
+      )}
     </div>`;
   return html`<div class="feedback is-hint" role="status">
-    <p class="fb-title">${icon("retry")} ${I.T("Not yet — try again", "Todavía no — inténtalo otra vez")}</p>
-    ${mode === "supported" ? pickedNote(a) : ""}
-    ${feedbackBodyHTML(I, {
-      well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))),
-      next: a.hint && mode === "supported" ? tx(a.hint) : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista."),
-      canModel: Boolean(curFamily) && mode === "supported",
-    })}
-    ${cur.domain === "Reading" ? html`<p class="fine">${lookBack()}</p>` : ""}
-    <button type="button" class="btn" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
+    <div class="fb-head">
+      <p class="fb-title">${icon("retry")} ${I.T("Not quite", "Todavía no")}</p>
+      <button type="button" class="btn small" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
+    </div>
+    <p class="fb-lead">${a.hint && mode === "supported" ? tx(a.hint) : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista.")}</p>
+    ${moreHelp(
+      I.T("More help", "Más ayuda"),
+      html`${mode === "supported" ? pickedNote(a) : ""}${feedbackBodyHTML(I, {
+        well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))),
+        next: cur.domain === "Reading" ? lookBack() : "",
+        canModel: Boolean(curFamily) && mode === "supported",
+      })}`,
+    )}
   </div>`;
 }
 
@@ -649,7 +662,7 @@ function lessonFrameView(a, es, meta, tier, done) {
   return {
     rail: railHTML(I, arc, { learnAvailable: mode === "supported" && Boolean(curFamily) }),
     goal: goalHTML(I, model),
-    words: keyWordsHTML(I, words, { open: Boolean(c || writingChecks.get(a.id)) }),
+    words: keyWordsHTML(I, words, { open: helpersOpen.has(`${a.id}:words`) }),
     hasWords: words.length > 0,
     learn: mode === "supported" ? learnPanelHTML(I, curFamily, { open, first: !learnSeen }) : "",
     after: finished
@@ -746,18 +759,12 @@ export async function render(ctx) {
             ${a.title}${done ? html` <span class="done-badge">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
           </h1>
           ${lf.goal}
-          <nav class="act-return" aria-label="${I.S("Return to practice", "Volver a la práctica")}">
-            <a class="btn small" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to activity list", "Volver a la lista de actividades")}</a>
-            <a class="btn small" href="${BASE}/passport?grades=${cur.band}">${I.T("My Passport", "Mi Pasaporte")}</a>
-            ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
-            <button type="button" class="btn small" data-print>${icon("print")} ${I.T("Print lesson sheet", "Imprimir la hoja de la lección")}</button>
-          </nav>
+          ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
           ${directionsBlocks(a, es)}
           ${mode === "supported" ? esPreviewHTML(I, a, cur.domain, es) : ""}
           ${lf.words}
         </header>
         ${lf.learn}
-        ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}
         <div class="activity-workspace">
         <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? I.T("Listen and notice", "Escucha y observa") : cur.domain === "Reading" ? I.T("Read and notice", "Lee y observa") : I.T("Look and plan", "Mira y planifica")}</h2>${stimulusHTML(a, ctx)}</section>
         <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? I.T("Speak and review", "Habla y revisa") : a.type === "worksheet" ? I.T("Work on paper", "Trabaja en papel") : I.T("Respond and review", "Responde y revisa")}</h2>
@@ -772,17 +779,23 @@ export async function render(ctx) {
         <fieldset class="practice-mode"><legend>${I.T("Practice mode", "Modo de práctica")}</legend>
           <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Learn with help", "Aprender con ayuda")}</label>
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Try independently", "Intentar solo o sola")}</label>
-          <p class="fine">${mode === "independent" ? I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.") : I.T("Strategies and examples are available below. Help and retries are saved as supported practice.", "Abajo hay estrategias y ejemplos. La ayuda y los reintentos se guardan como práctica con apoyo.")}</p></fieldset>
-        ${mode === "supported" ? html`<details class="strategy" data-help ${strategyPicks.has(a.id) ? raw("open") : ""}><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p><div class="strategy-steps" role="group" aria-label="${I.S("Pick your first strategy move", "Elige tu primer paso de estrategia")}"><span class="fine"><strong>${I.T("Pick your first move:", "Elige tu primer paso:")}</strong></span><div class="learn-chip-row">${(STRATEGY_STEPS[cur.domain] || STRATEGY_STEPS.Reading).map(([sid, en, es]) => html`<button type="button" class="cat-chip ${strategyPicks.get(a.id) === sid ? "is-active" : ""}" data-strategy-step="${sid}" aria-pressed="${String(strategyPicks.get(a.id) === sid)}">${strategyPicks.get(a.id) === sid ? icon("check") : icon("bulb")} ${I.T(en, es)}</button>`)}</div>${strategyPicks.get(a.id) ? html`<p class="fine strategy-step-ok" role="status">${icon("check")} ${I.T("Strategy move active! Now apply it to your response below.", "¡Paso de estrategia activo! Ahora aplícalo en tu respuesta abajo.")}</p>` : ""}</div></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)), terms: !lf.hasWords })}` : ""}
-        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.", "Guarda un resumen de este intento y borra las respuestas elegidas. La ayuda anterior queda en tu historial; es otro intento de la misma tarea.")}</p></div>` : ""}
+          ${mode === "independent" ? html`<p class="fine">${I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.")}</p>` : ""}</fieldset>
+        ${mode === "supported" ? html`<details class="strategy" data-help ${strategyPicks.has(a.id) ? raw("open") : ""}><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p><div class="strategy-steps" role="group" aria-label="${I.S("Pick your first strategy move", "Elige tu primer paso de estrategia")}"><span class="fine"><strong>${I.T("Pick your first move:", "Elige tu primer paso:")}</strong></span><div class="learn-chip-row">${(STRATEGY_STEPS[cur.domain] || STRATEGY_STEPS.Reading).map(([sid, en, es]) => html`<button type="button" class="cat-chip ${strategyPicks.get(a.id) === sid ? "is-active" : ""}" data-strategy-step="${sid}" aria-pressed="${String(strategyPicks.get(a.id) === sid)}">${strategyPicks.get(a.id) === sid ? icon("check") : icon("bulb")} ${I.T(en, es)}</button>`)}</div>${strategyPicks.get(a.id) ? html`<p class="fine strategy-step-ok" role="status">${icon("check")} ${I.T("Strategy move active! Now apply it to your response below.", "¡Paso de estrategia activo! Ahora aplícalo en tu respuesta abajo.")}</p>` : ""}</div></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)), open: helpersOpen.has(a.id), terms: !lf.hasWords })}` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="${I.S("Your answer", "Tu respuesta")}">${answerZone(a)}</section>
+        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.", "Guarda un resumen de este intento y borra las respuestas elegidas. La ayuda anterior queda en tu historial; es otro intento de la misma tarea.")}</p></div>` : ""}
         </div></div>
         ${lf.after}
         <p class="save-explainer">${I.T("Writing and checklists save on this browser. Audio does not.", "La escritura y las listas se guardan en este navegador. El audio no.")} <a href="${BASE}/family/save">${I.T("Save & continue later", "Guardar y continuar después")}</a></p>
       </article>
       ${lf.printFoot}
       ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>${I.T("Practice evidence:", "Evidencia de práctica:")}</strong> ${learnCopy(evidenceLabel(cur.record.results[a.id]))}. ${I.T("This is not a proficiency score.", "Esto no es una calificación del dominio del inglés.")}</p>` : ""}
+      ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}
+        <nav class="act-return" aria-label="${I.S("Return to practice", "Volver a la práctica")}">
+          <a class="btn small" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to activity list", "Volver a la lista de actividades")}</a>
+          <a class="btn small" href="${BASE}/passport?grades=${cur.band}">${I.T("My Passport", "Mi Pasaporte")}</a>
+          <button type="button" class="btn small" data-print>${icon("print")} ${I.T("Print lesson sheet", "Imprimir la hoja de la lección")}</button>
+        </nav>
       ${navHTML()}`,
   };
 }
@@ -844,6 +857,7 @@ function check(a, ctx) {
           : diag
             ? I.S("Not yet. Check the listening trap.", "Todavía no. Revisa la trampa de escucha.")
             : I.S("Not yet. Try again.", "Todavía no. Inténtalo otra vez."),
+    { toast: false },
   );
   ctx.rerender();
 }
@@ -1001,6 +1015,14 @@ export function onClick(e, ctx) {
   const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
+  const helpersSummary = t.closest?.(".helpers > summary");
+  if (helpersSummary) {
+    // The click runs before the browser toggles <details>, so the next state is the opposite of the current one.
+    const key = helpersSummary.parentElement.classList.contains("lf-words") ? `${a.id}:words` : a.id;
+    if (helpersSummary.parentElement.open) helpersOpen.delete(key);
+    else helpersOpen.add(key);
+    return false;
+  }
   if (onFrameClick(t, a, ctx)) return true;
 
   // Tap-a-word help (passage and question words, or the Word help list)

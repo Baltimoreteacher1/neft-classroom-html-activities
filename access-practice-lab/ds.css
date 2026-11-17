@@ -241,7 +241,8 @@
 /* ── base ──────────────────────────────────────────────────────────────── */
 html {
   font-size: calc(100% * var(--lab-scale));
-  scroll-padding-top: 5rem;
+  /* --lab-top-h: the sticky header's live height (src/shell.js), so jumps never land under it. */
+  scroll-padding-top: calc(var(--lab-top-h, 4rem) + 1rem);
 }
 body {
   margin: 0;
@@ -1204,7 +1205,8 @@ details > summary + * {
   background: var(--writing-soft, #fbeadf);
 }
 .top-access-prep.is-featured {
-  background: #142d47;
+  /* The gold text only reads on navy: register and phone header rules must not swap the background out. */
+  background: #142d47 !important;
   color: #f8d58c !important;
   font-weight: 800;
   border: 1.5px solid #f8d58c;
@@ -1214,7 +1216,7 @@ details > summary + * {
   transition: all 0.15s ease;
 }
 .top-access-prep.is-featured:hover {
-  background: #1e3f63;
+  background: #1e3f63 !important;
   color: #ffffff !important;
   transform: translateY(-1px);
 }
