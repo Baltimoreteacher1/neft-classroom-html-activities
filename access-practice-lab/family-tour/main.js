@@ -1,4 +1,4 @@
-// The Family Tour controller. One page, one workspace: every stage, preview, kit and returning-family screen is drawn
+// The Family Tour controller. One page, one workspace: every stage, the finish and the returning-family screen are drawn
 // here from a small saved state. Nothing in the tour navigates away until the family chooses to start an activity.
 import { actionsHTML } from "./actions.js";
 import { canSpeak, stopSpeech, toggleSpeech } from "./audio.js";
@@ -11,16 +11,23 @@ import { cardHTML, kitHTML } from "./kit.js";
 import { byId, loadPicks } from "./picks.js";
 import { createRecorder } from "./recorder.js";
 import { BANDS, STAGES, hasProgress, load, save, startOver, storageWorks } from "./state.js";
-import * as explore from "./steps/explore.js";
-import * as help from "./steps/help.js";
 import * as plan from "./steps/plan.js";
 import * as practice from "./steps/practice.js";
 import * as welcome from "./steps/welcome.js";
 import { esc, icon } from "./util.js";
 
 const root = document.getElementById("tour");
-const STEPS = { welcome, explore, practice, help, plan };
-const flow = { kitView: false, picks: null, loadError: false, resume: false, exited: false, saved: false, status: "", lastStage: "" };
+const STEPS = { welcome, practice, plan };
+const flow = {
+  kitView: false,
+  picks: null,
+  loadError: false,
+  resume: false,
+  exited: false,
+  saved: false,
+  status: "",
+  lastStage: "",
+};
 
 const params = new URLSearchParams(location.search);
 
@@ -30,7 +37,8 @@ const header = (state) => `<header class="top">
   <div class="brand"><span class="logo" aria-hidden="true">${icon("speak")}</span><span><strong>The Language Page</strong><small>${esc(t("meta.tour"))}</small></span></div>
   <div class="top-actions">
     <div class="langs" role="group" aria-label="${esc(t("shell.language"))}">${LANGS.map(
-      (l) => `<button type="button" lang="${l.code}" data-act="lang" data-v="${l.code}" aria-pressed="${getLang() === l.code}">${esc(l.label)}</button>`,
+      (l) =>
+        `<button type="button" lang="${l.code}" data-act="lang" data-v="${l.code}" aria-pressed="${getLang() === l.code}">${esc(l.label)}</button>`,
     ).join("")}</div>
     ${state.mode === "tour" ? `<button type="button" class="btn-quiet" data-act="save-exit">${esc(t("shell.saveExit"))}</button>` : ""}
   </div></header>`;
@@ -38,21 +46,26 @@ const header = (state) => `<header class="top">
 const progress = (state) => {
   const i = STAGES.indexOf(state.stage);
   return `<nav class="progress" aria-label="${esc(t("shell.progress"))}"><ol>${STAGES.map(
-    (s, n) => `<li class="${n < i || state.done.includes(s) ? "is-done" : ""} ${n === i ? "is-now" : ""}" ${n === i ? 'aria-current="step"' : ""}><span class="dot">${n < i ? icon("check") : n + 1}</span><span class="pname">${esc(t(`stage.${s}.short`))}</span></li>`,
-  ).join("")}</ol><div class="bar"><span style="width:${Math.round(((i + 1) / STAGES.length) * 100)}%"></span></div>
-  <p class="ptext">${esc(t("shell.stepOf", { n: i + 1, total: STAGES.length }))} · ${esc(t(`stage.${state.stage}.title`))}</p></nav>`;
+    (s, n) =>
+      `<li class="${n < i || state.done.includes(s) ? "is-done" : ""} ${n === i ? "is-now" : ""}" ${n === i ? 'aria-current="step"' : ""}><span class="dot">${n < i ? icon("check") : n + 1}</span><span class="pname">${esc(t(`stage.${s}.short`))}</span></li>`,
+  ).join(
+    "",
+  )}</ol><div class="bar"><span style="width:${Math.round(((i + 1) / STAGES.length) * 100)}%"></span></div>
+  <p class="ptext">${esc(t("shell.stepOf", { n: i + 1, total: STAGES.length }))}</p></nav>`;
 };
 
 const listen = (text) =>
-  canSpeak() ? `<button type="button" class="btn-listen" data-act="listen" data-text="${esc(text)}" data-speech="${t("meta.speech")}" aria-pressed="false" aria-label="${esc(t("shell.listenDirections"))}">${icon("listen")}<span>${esc(t("shell.listen"))}</span></button>` : "";
+  canSpeak()
+    ? `<button type="button" class="btn-listen" data-act="listen" data-text="${esc(text)}" data-speech="${t("meta.speech")}" aria-pressed="false" aria-label="${esc(t("shell.listenDirections"))}">${icon("listen")}<span>${esc(t("shell.listen"))}</span></button>`
+    : "";
 
 function languageGate() {
   return `<div class="gate"><span class="logo big" aria-hidden="true">${icon("speak")}</span>
     <h1><span lang="en">Welcome to The Language Page</span><br><span lang="es">Bienvenidos a The Language Page</span></h1>
-    <p class="lead"><span lang="en">Choose your language for the family tour.</span><br><span lang="es">Elija su idioma para el recorrido familiar.</span></p>
+    <p class="lead"><span lang="en">Choose your language for the family tour.</span><br><span lang="es">Elijan su idioma para el recorrido familiar.</span></p>
     <div class="gate-btns"><button type="button" class="btn-primary btn-big" lang="en" data-act="lang" data-v="en" data-first="1">English</button>
     <button type="button" class="btn-primary btn-big" lang="es" data-act="lang" data-v="es" data-first="1">Español</button></div>
-    <p class="fine"><span lang="en">You can change the language at any time.</span> <span lang="es">Puede cambiar el idioma en cualquier momento.</span></p></div>`;
+    <p class="fine"><span lang="en">You can change the language at any time.</span> <span lang="es">Pueden cambiar el idioma en cualquier momento.</span></p></div>`;
 }
 
 const shell = (state, inner) => `<div class="app">
@@ -80,7 +93,8 @@ function exitScreen() {
 
 function stageScreen(state) {
   const step = STEPS[state.stage];
-  const out = state.stage === "kit" ? kitScreen(state) : step.render({ state, picks: flow.picks });
+  const finish = state.stage === "kit";
+  const out = finish ? finishScreen(state) : step.render({ state, picks: flow.picks });
   const i = STAGES.indexOf(state.stage);
   const last = state.stage === "plan";
   const dir = t(`stage.${state.stage}.dir`);
@@ -88,18 +102,47 @@ function stageScreen(state) {
     <div class="stage-head"><h1>${esc(t(`stage.${state.stage}.title`))}</h1>${listen(`${t(`stage.${state.stage}.title`)}. ${dir}`)}</div>
     <p class="dir-line">${esc(dir)}</p>
     <div class="stage-body">${out.html}</div>
-    ${state.stage === "kit" ? "" : `<details class="ctx-help"><summary>${esc(t("shell.needHelp"))}</summary><p>${esc(t(`stage.${state.stage}.help`))}</p></details>`}
+    ${finish ? "" : `<details class="ctx-help"><summary>${esc(t("shell.needHelp"))}</summary><p>${esc(t(`stage.${state.stage}.help`))}</p></details>`}
   </main>
-  <footer class="nav"><p class="hint" role="status">${esc(out.hint || "")}</p><div class="nav-btns">
+  ${
+    finish
+      ? ""
+      : `<footer class="nav"><p class="hint" role="status">${esc(out.hint || "")}</p><div class="nav-btns">
     ${i > 0 ? `<button type="button" class="btn-quiet" data-act="back">← ${esc(t("shell.back"))}</button>` : "<span></span>"}
-    ${state.stage === "kit" ? "" : `<button type="button" class="btn-primary" data-act="next" ${out.ready ? "" : 'aria-disabled="true"'}>${esc(t(last ? "shell.buildKit" : "shell.continue"))} →</button>`}
-  </div></footer>`;
+    <button type="button" class="btn-primary" data-act="next" ${out.ready ? "" : 'aria-disabled="true"'}>${esc(t(last ? "shell.finish" : "shell.continue"))} →</button>
+  </div></footer>`
+  }`;
 }
 
-function kitScreen(state) {
+/** The finish: one activity for tonight, three steps, one Start button. The full kit waits, folded, for whoever wants it. */
+function finishScreen(state) {
   const pick = byId(flow.picks, state.pick);
+  if (!pick)
+    return {
+      ready: false,
+      hint: "",
+      html: `<p>${esc(t("home.noPlan"))}</p><button type="button" class="btn-primary" data-act="choose-another">${esc(t("finish.another"))}</button>`,
+    };
   const k = kitData(state, pick);
-  return { ready: true, hint: "", html: `<p class="lead">${esc(t("kit.lead"))}</p>${actionsHTML(k, { saved: flow.saved, storage: storageWorks() })}${kitHTML(k)}<div class="print-host" id="print-card-host">${cardHTML(k)}</div>` };
+  const steps = ["finish.step1", "finish.step2", "finish.step3"]
+    .map((key) => `<li>${esc(t(key))}</li>`)
+    .join("");
+  return {
+    ready: true,
+    hint: "",
+    html: `<section class="next-card" aria-labelledby="tonight-h">
+        <p class="tag">${esc(t("finish.tonight"))}</p>
+        <h2 id="tonight-h" lang="en">${esc(pick.title)}</h2>
+        <p>${esc(t("plan.practices"))} ${esc(k.first.practice)} · ${esc(t("kit.about", { n: pick.minutes }))}</p>
+        <ol class="steps">${steps}</ol>
+        <a class="btn-primary btn-big" href="${esc(k.first.url)}" data-launch>${esc(t("kit.start"))}</a>
+      </section>
+      <p class="finish-links"><button type="button" class="btn-quiet" data-act="choose-another">${esc(t("finish.another"))}</button>
+        <a class="btn-quiet" href="/access-practice-lab/family">${esc(t("finish.home"))}</a></p>
+      <details class="ctx-help kit-more"><summary>${esc(t("finish.more"))}</summary>
+        ${actionsHTML(k, { saved: flow.saved, storage: storageWorks(), start: false })}${kitHTML(k)}</details>
+      <div class="print-host" id="print-card-host">${cardHTML(k)}</div>`,
+  };
 }
 
 function homeScreen(state) {
@@ -112,8 +155,10 @@ function homeScreen(state) {
 
 function focusKey(el) {
   if (!el || el === document.body) return "";
-  if (el.matches?.('input[type="radio"]')) return `input[name="${el.name}"][value="${CSS.escape(el.value)}"]`;
-  if (el.dataset?.act) return `[data-act="${el.dataset.act}"]${el.dataset.v ? `[data-v="${CSS.escape(el.dataset.v)}"]` : ""}${el.dataset.id ? `[data-id="${CSS.escape(el.dataset.id)}"]` : ""}`;
+  if (el.matches?.('input[type="radio"]'))
+    return `input[name="${el.name}"][value="${CSS.escape(el.value)}"]`;
+  if (el.dataset?.act)
+    return `[data-act="${el.dataset.act}"]${el.dataset.v ? `[data-v="${CSS.escape(el.dataset.v)}"]` : ""}${el.dataset.id ? `[data-id="${CSS.escape(el.dataset.id)}"]` : ""}`;
   return el.id ? `#${CSS.escape(el.id)}` : "";
 }
 
@@ -129,10 +174,12 @@ function render({ stageChanged = false } = {}) {
     return;
   }
   if (flow.loadError) inner = errorScreen();
-  else if (!flow.picks) inner = `<main id="stage" class="center" tabindex="-1"><p role="status">${esc(t("shell.loading"))}</p></main>`;
+  else if (!flow.picks)
+    inner = `<main id="stage" class="center" tabindex="-1"><p role="status">${esc(t("shell.loading"))}</p></main>`;
   else if (flow.exited) inner = exitScreen();
   else if (flow.resume) inner = resumeScreen();
-  else if (state.mode === "home" && !flow.kitView && byId(flow.picks, state.pick)) inner = homeScreen(state);
+  else if (state.mode === "home" && !flow.kitView && byId(flow.picks, state.pick))
+    inner = homeScreen(state);
   else inner = stageScreen(state);
   root.innerHTML = shell(state, inner);
   const heading = state.mode === "home" ? t("home.title") : t(`stage.${state.stage}.title`);
@@ -143,7 +190,8 @@ function render({ stageChanged = false } = {}) {
     main?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
     const live = document.getElementById("announce");
-    if (live && state.mode === "tour" && !flow.exited && !flow.resume) live.textContent = `${t("shell.stepOf", { n: STAGES.indexOf(state.stage) + 1, total: STAGES.length })}: ${t(`stage.${state.stage}.title`)}`;
+    if (live && state.mode === "tour" && !flow.exited && !flow.resume)
+      live.textContent = `${t("shell.stepOf", { n: STAGES.indexOf(state.stage) + 1, total: STAGES.length })}: ${t(`stage.${state.stage}.title`)}`;
   } else {
     window.scrollTo(0, y);
     if (keep) document.querySelector(keep)?.focus({ preventScroll: true });
@@ -159,11 +207,18 @@ function closeMedia() {
 function go(stage) {
   closeMedia();
   const state = load();
-  const done = state.done.includes(state.stage) || STAGES.indexOf(stage) < STAGES.indexOf(state.stage) ? state.done : [...state.done, state.stage];
+  const done =
+    state.done.includes(state.stage) || STAGES.indexOf(stage) < STAGES.indexOf(state.stage)
+      ? state.done
+      : [...state.done, state.stage];
   flow.kitView = stage === "kit";
-  save({ stage, done, mode: stage === "kit" ? "home" : "tour" });
-  explore.view.open = "";
-  plan.view.preview = "";
+  const patch = { stage, done, mode: stage === "kit" ? "home" : "tour" };
+  // Tonight's activity starts chosen: the first fit for the family's grade and focus, unless they already chose one that fits.
+  if (stage === "plan") {
+    const recs = plan.recsFor(flow.picks, state);
+    if (recs.length && !recs.some((p) => p.id === state.pick)) patch.pick = recs[0].id;
+  }
+  save(patch);
   render({ stageChanged: true });
 }
 
@@ -233,24 +288,6 @@ const ACTIONS = {
     go(STAGES[i + 1]);
   },
   back: () => go(STAGES[Math.max(0, STAGES.indexOf(load().stage) - 1)]),
-  concept: ({ v }) => {
-    welcome.view.concept = welcome.view.concept === v ? "" : v;
-    render();
-    if (welcome.view.concept) document.getElementById("concept-panel")?.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  },
-  "explore-open": ({ v }) => {
-    explore.view.open = v;
-    const s = load();
-    save({ seen: [...new Set([...s.seen, v])] });
-    render();
-    document.getElementById("explore-panel")?.focus({ preventScroll: true });
-  },
-  "explore-close": () => {
-    closeMedia();
-    explore.view.open = "";
-    render();
-    document.querySelector(".concepts")?.scrollIntoView({ block: "nearest" });
-  },
   support: ({ id, k }) => {
     const st = demoState(id);
     st.open[k] = !st.open[k];
@@ -258,7 +295,10 @@ const ACTIONS = {
   },
   listen: (d, el) => {
     el.setAttribute("aria-pressed", "true");
-    const reset = () => document.querySelectorAll('[data-act="listen"]').forEach((b) => b.setAttribute("aria-pressed", "false"));
+    const reset = () =>
+      document
+        .querySelectorAll('[data-act="listen"]')
+        .forEach((b) => b.setAttribute("aria-pressed", "false"));
     toggleSpeech(d.text, d.text, d.speech, reset);
     if (!window.speechSynthesis?.speaking) reset();
   },
@@ -267,7 +307,9 @@ const ACTIONS = {
     render();
   },
   "rec-start": ({ id }) => {
-    const rec = (ui.recorders[id] ||= createRecorder((state) => (state === "recorded" ? render() : refreshRecorder(id))));
+    const rec = (ui.recorders[id] ||= createRecorder((state) =>
+      state === "recorded" ? render() : refreshRecorder(id),
+    ));
     rec.start();
   },
   "rec-stop": ({ id }) => ui.recorders[id]?.stop(),
@@ -291,37 +333,15 @@ const ACTIONS = {
     render();
     document.getElementById(`ans-${id}`)?.focus();
   },
-  "practice-help": () => {
-    practice.view.help = !practice.view.help;
-    render();
-  },
-  situation: ({ v }) => {
-    help.view.open = help.view.open === v ? "" : v;
-    render();
-    if (help.view.open) document.getElementById(`sit-${v}`)?.scrollIntoView({ block: "nearest" });
-  },
-  strategy: ({ v }) => {
-    const s = load().strategies;
-    save({ strategies: s.includes(v) ? s.filter((x) => x !== v) : [...s, v] });
-    render();
-  },
   choose: ({ v }) => {
     save({ pick: v });
-    plan.view.preview = "";
-    render({ stageChanged: true });
-  },
-  preview: ({ v }) => {
-    plan.view.preview = v;
-    render();
-    document.getElementById("plan-preview")?.focus({ preventScroll: true });
-  },
-  "preview-close": () => {
-    closeMedia();
-    plan.view.preview = "";
     render();
   },
+  "choose-another": () => go("plan"),
   "tr-status": ({ tr, v }) => {
-    const rows = load().tracker.map((r, i) => (i === Number(tr) ? { ...r, status: r.status === v ? "" : v } : r));
+    const rows = load().tracker.map((r, i) =>
+      i === Number(tr) ? { ...r, status: r.status === v ? "" : v } : r,
+    );
     save({ tracker: rows });
     render();
   },
@@ -352,7 +372,7 @@ const ACTIONS = {
   retake: () => {
     closeMedia();
     flow.kitView = false;
-    save({ mode: "tour", stage: "welcome", done: [], strategies: [] });
+    save({ mode: "tour", stage: "welcome", done: [] });
     home.view.open = "";
     render({ stageChanged: true });
   },
@@ -369,7 +389,9 @@ const ACTIONS = {
   },
   "session-check": ({ v }) => {
     const n = Number(v);
-    home.view.checked = home.view.checked.includes(n) ? home.view.checked.filter((x) => x !== n) : [...home.view.checked, n];
+    home.view.checked = home.view.checked.includes(n)
+      ? home.view.checked.filter((x) => x !== n)
+      : [...home.view.checked, n];
     render();
   },
   "retry-load": () => init(true),
@@ -380,8 +402,9 @@ function onChoice(el) {
   const value = k === "minutes" ? Number(el.value) : el.value;
   const state = load();
   const patch = { [k]: value };
-  // In the tour a changed grade, focus or time means the earlier pick may no longer fit; at home the plan stays until a new one is chosen.
-  if (state.mode === "tour" && state.stage === "plan" && state[k] !== value) patch.pick = "";
+  // In the tour a changed grade or focus means the earlier pick may no longer fit (the plan step re-chooses on entry);
+  // at home the plan stays until a new one is chosen.
+  if (state.mode === "tour" && state[k] !== value) patch.pick = "";
   save(patch);
   render();
 }
@@ -406,9 +429,12 @@ root.addEventListener("click", (e) => {
 root.addEventListener("change", (e) => {
   const el = e.target;
   if (el.matches('input[data-act="set"]')) onChoice(el);
-  else if (el.matches('input[data-act="session-check"]')) ACTIONS["session-check"]({ ...el.dataset });
+  else if (el.matches('input[data-act="session-check"]'))
+    ACTIONS["session-check"]({ ...el.dataset });
   else if (el.dataset.tr !== undefined) {
-    const rows = load().tracker.map((r, i) => (i === Number(el.dataset.tr) ? { ...r, [el.dataset.f]: el.value } : r));
+    const rows = load().tracker.map((r, i) =>
+      i === Number(el.dataset.tr) ? { ...r, [el.dataset.f]: el.value } : r,
+    );
     save({ tracker: rows });
   }
 });
@@ -424,7 +450,8 @@ async function init(retry = false) {
   const lang = params.get("lang");
   if (!retry && (lang === "en" || lang === "es") && !load().lang) save({ lang });
   const g = params.get("grades");
-  if (!retry && BANDS.includes(g === "4-5" ? "3-5" : g) && !load().band) save({ band: g === "4-5" ? "3-5" : g });
+  if (!retry && BANDS.includes(g === "4-5" ? "3-5" : g) && !load().band)
+    save({ band: g === "4-5" ? "3-5" : g });
   flow.loadError = false;
   render({ stageChanged: !retry });
   if (!load().lang) return;

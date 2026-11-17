@@ -2,7 +2,10 @@
 // band, minutes, the chosen activity id, the three-row tracker). It never holds a name, a recording or a typed answer.
 // Another device never sees it: nothing here is sent anywhere.
 export const KEY = "languagePage:familyTour:v1";
-export const STAGES = ["welcome", "explore", "practice", "help", "plan", "kit"];
+export const STAGES = ["welcome", "practice", "plan", "kit"];
+// Stages from the longer six-step tour (before 2026-11-17). A family saved on one of them lands on the screen that
+// replaced it, never back at the start.
+const RETIRED = { explore: "practice", help: "plan" };
 export const BANDS = ["K", "1", "2-3", "3-5", "6-8"];
 export const FOCUS = ["speaking", "writing", "both"];
 export const MINUTES = [5, 10, 15];
@@ -19,7 +22,7 @@ export const defaults = () => ({
   band: "",
   minutes: 10,
   pick: "",
-  strategies: [],
+  strategies: [], // written by the older six-step tour; kept so an older save round-trips unchanged
   seen: [],
   tracker: [blankRow(), blankRow(), blankRow()],
   savedAt: "",
@@ -42,8 +45,9 @@ export function clean(raw) {
   const s = { ...d };
   if (typeof raw.lang === "string" && /^[a-z]{2}$/.test(raw.lang)) s.lang = raw.lang;
   if (raw.mode === "home" || raw.mode === "tour") s.mode = raw.mode;
-  if (STAGES.includes(raw.stage)) s.stage = raw.stage;
-  if (Array.isArray(raw.done)) s.done = raw.done.filter((x) => STAGES.includes(x));
+  const stage = RETIRED[raw.stage] || raw.stage;
+  if (STAGES.includes(stage)) s.stage = stage;
+  if (Array.isArray(raw.done)) s.done = [...new Set(raw.done.map((x) => RETIRED[x] || x))].filter((x) => STAGES.includes(x));
   if (FOCUS.includes(raw.focus)) s.focus = raw.focus;
   if (BANDS.includes(raw.band)) s.band = raw.band;
   if (MINUTES.includes(raw.minutes)) s.minutes = raw.minutes;

@@ -9,6 +9,7 @@ import en from "../access-practice-lab/family-tour/lang/en.js";
 import es from "../access-practice-lab/family-tour/lang/es.js";
 import { Pdf, wrap } from "../access-practice-lab/family-tour/pdf.js";
 import { activityPath, recommend } from "../access-practice-lab/family-tour/picks.js";
+import { clean, STAGES } from "../access-practice-lab/family-tour/state.js";
 import { SCENES } from "../access-practice-lab/src/early/scenes.js";
 import { qrModules } from "../shared/qr/qr-code.mjs";
 import { picksJson } from "./build-family-tour-picks.mjs";
@@ -108,6 +109,54 @@ test("every grade has a demonstration activity for speaking and writing", () => 
       picks.some((p) => p.id === id),
       `demo ${id} is in picks.json`,
     );
+});
+
+// 2026-11-17: Joel asked for the tour to be "not overwhelming, clear, easy to do". The six-step tour
+// (welcome, explore, practice, help, plan, kit) became four: the Explore previews merged into "Try one together",
+// the Help situations were cut (their advice stays in the printable kit, section D), and the kit became a finish
+// screen that names one activity for tonight. These pins keep it short.
+test("the tour is four short steps", () => {
+  assert.deepEqual(STAGES, ["welcome", "practice", "plan", "kit"]);
+  const words = (s) => s.trim().split(/\s+/).length;
+  for (const [code, strings] of [
+    ["en", en],
+    ["es", es],
+  ])
+    for (const s of STAGES) {
+      const st = strings.stage[s];
+      assert.ok(words(st.title) <= 8, `${code} stage.${s}.title is short`);
+      assert.ok(words(st.dir) <= 15, `${code} stage.${s}.dir is one short sentence or two`);
+      assert.ok(!st.help || words(st.help) <= 30, `${code} stage.${s}.help stays under 30 words`);
+    }
+});
+
+test("a family saved on a retired step resumes on the step that replaced it", () => {
+  assert.equal(clean({ stage: "explore", done: ["welcome", "explore"] }).stage, "practice");
+  assert.deepEqual(
+    clean({ stage: "help", done: ["welcome", "explore", "practice", "help"] }).done,
+    ["welcome", "practice", "plan"],
+  );
+  assert.equal(clean({ stage: "help" }).stage, "plan");
+  assert.equal(clean({ stage: "nowhere" }).stage, "welcome");
+});
+
+test("the finish names tonight's activity and offers Family Home and another activity", () => {
+  const main = readFileSync(`${TOUR}/main.js`, "utf8");
+  assert.match(main, /href="\/access-practice-lab\/family"/, "Return to Family Home link");
+  assert.match(main, /data-act="choose-another"/, "Choose another activity");
+  for (const k of ["tonight", "step1", "step2", "step3", "another", "home", "more"]) {
+    assert.ok(
+      en.finish[k] && es.finish[k] && en.finish[k] !== es.finish[k],
+      `finish.${k} in both languages`,
+    );
+  }
+});
+
+test("Spanish speaks to families as ustedes, never usted", () => {
+  const text = readFileSync(`${TOUR}/lang/es.js`, "utf8") + readFileSync(`${TOUR}/main.js`, "utf8");
+  const usted =
+    /\b(usted|Usted|Elija|Abra|Pida|Escriba|Descargue|Puede|Quiere|Haga|Revise|Vuelva|Pregunte|Use|ayudarle)\b/g;
+  assert.deepEqual(text.match(usted) || [], []);
 });
 
 test("PDF writer makes a valid document with Spanish text and links", () => {

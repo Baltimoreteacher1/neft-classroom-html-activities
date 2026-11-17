@@ -1,10 +1,11 @@
 // The kit's buttons, shared by the last tour screen and the returning-family home: start, download, print, copy, save.
+// The tour's finish screen draws its own Start button above them, so it asks for the others only (`start: false`).
 import { t } from "./i18n.js";
 import { esc, icon } from "./util.js";
 
-export function actionsHTML(k, { saved = false, storage = true } = {}) {
+export function actionsHTML(k, { saved = false, storage = true, start = true } = {}) {
   return `<div class="kit-actions">
-    <a class="btn-primary btn-big" href="${esc(k.first.url)}" data-launch>${esc(t("kit.start"))}</a>
+    ${start ? `<a class="btn-primary btn-big" href="${esc(k.first.url)}" data-launch>${esc(t("kit.start"))}</a>` : ""}
     <div class="secondary">
       <button type="button" class="btn-quiet" data-act="choose-another">${esc(t("kit.chooseAnother"))}</button>
       <button type="button" class="btn-quiet" data-act="copy-link">${esc(t("kit.copy"))}</button>

@@ -5,7 +5,7 @@ import { canSpeak } from "./audio.js";
 import { tips } from "./feedback.js";
 import { getLang, t } from "./i18n.js";
 import { canRecord } from "./recorder.js";
-import { art, en, esc, hasArt, icon, markAdded } from "./util.js";
+import { art, en, esc, hasArt, icon } from "./util.js";
 
 /** Per-activity screen state: kept across language changes and re-renders, dropped when the tour closes. */
 export const ui = { demo: {}, recorders: {}, picks: {} };
@@ -130,20 +130,5 @@ export function refreshRecorder(id) {
   const rec = ui.recorders[id];
   const pick = ui.picks[id];
   if (slot && rec && pick) slot.innerHTML = recorderHTML(pick, rec.state, rec.url);
-}
-
-/** Two sentences for the "make it better" demonstration: a short answer, then a fuller one, with the additions marked. */
-export function improveHTML(p) {
-  const a = p.models.A;
-  const b = p.models.B || p.models.C;
-  if (!a || !b) return "";
-  return `<section class="improve" aria-labelledby="imp-${esc(p.id)}">
-    <h4 id="imp-${esc(p.id)}">${esc(t("demo.improveTitle"))}</h4>
-    <div class="improve-grid">
-      <div><p class="tag">${esc(t("demo.improveFirst"))}</p><p class="bubble" lang="en">${esc(a)}</p></div>
-      <div><p class="tag">${esc(t("demo.improveBetter"))}</p><p class="bubble good" lang="en">${markAdded(a, b)}</p></div>
-    </div>
-    <p class="fine">${esc(t("demo.improveNote"))}</p>
-  </section>`;
 }
 
