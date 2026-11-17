@@ -484,3 +484,44 @@ body[data-lab-view="home"] .lph :is(.lph-continue, .lph-front) {
 html body {
   word-break: normal;
 }
+
+/* ── compact video cards (2026-11-17) ──────────────────────────────────────
+   A studio video card ran 650-820px: title, paragraph, player, a sound note, captions and a link, each on its own
+   row, and it set the height of every hero it sat in. It is now a tight card: title, player, and one quiet line.
+   The description stays for screen readers (the video's aria-describedby). */
+.lab-main studio-video.sv {
+  max-width: 30rem;
+}
+.lab-main studio-video.sv .sv-desc {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.lab-main studio-video.sv .sv-title {
+  margin-bottom: 0.4rem;
+  font-size: 1.15rem;
+}
+.lab-main studio-video.sv .sv-note {
+  margin-block: 0.4rem 0;
+  font-size: 0.8125rem;
+}
+.lab-main studio-video.sv :is(.sv-transcript, .sv-more) {
+  margin-block: 0.3rem 0;
+  font-size: 0.875rem;
+}
+
+/* Folded sections read as one list: a hairline between rows, no tall gaps. */
+.task-group[data-fold].is-folded {
+  margin-block: 0;
+  padding-block: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+.task-group[data-fold].is-folded + .task-group[data-fold].is-folded {
+  margin-top: 0;
+}
+[data-fold].is-folded .fold-toggle {
+  min-height: 2.75rem;
+}

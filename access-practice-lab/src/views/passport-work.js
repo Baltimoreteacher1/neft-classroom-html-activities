@@ -104,7 +104,7 @@ export function familyLetterHTML(I, source) {
     >
       ${I.T(en, es)}
     </button>`;
-  return html`<section class="panel fam-letter-wrap" aria-labelledby="famLetterTitle">
+  return html`<section class="panel fam-letter-wrap" data-fold aria-labelledby="famLetterTitle">
     <h2 id="famLetterTitle">
       ${icon("mail")} ${I.T("Letter for my family", "Carta para mi familia")}
     </h2>

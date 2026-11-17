@@ -118,7 +118,7 @@ function guidePanelHTML(pick) {
 }
 
 function howHTML() {
-  return html`<section class="ov-section ov-how" id="ov-how" aria-labelledby="ovHowTitle">
+  return html`<section class="ov-section ov-how" id="ov-how" data-fold aria-labelledby="ovHowTitle">
     <div class="ov-head">
       <h2 id="ovHowTitle">How the site teaches</h2>
       <p class="fine">
@@ -157,7 +157,7 @@ function howHTML() {
 }
 
 function shareHTML() {
-  return html`<section class="ov-section" id="ov-share" aria-labelledby="ovShareTitle">
+  return html`<section class="ov-section" id="ov-share" data-fold aria-labelledby="ovShareTitle">
     <div class="ov-head">
       <h2 id="ovShareTitle">Share, assign and print</h2>
       <p class="fine">
@@ -181,7 +181,7 @@ function shareHTML() {
 function moreHTML() {
   const L = FEATURED_LESSON;
   const anchor = ACTIVITY_BY_ID[L.anchor];
-  return html`<section class="ov-section ov-more" id="ov-more" aria-labelledby="ovMoreTitle">
+  return html`<section class="ov-section ov-more" id="ov-more" data-fold aria-labelledby="ovMoreTitle">
     <div class="ov-head">
       <p class="eyebrow">Grades 6–8 examples</p>
       <h2 id="ovMoreTitle">More for Grades 6–8</h2>

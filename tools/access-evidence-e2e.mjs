@@ -187,6 +187,8 @@ await page.evaluate(() => localStorage.clear());
 await page.goto(`${origin}${BASE}/passport`, { waitUntil: "networkidle" });
 await page.waitForSelector("#passHow");
 ok((await page.locator(".fam-letter").count()) >= 1, "Passport shows the family letter");
+// The family letter is a folded section on the Passport: open it the way a learner does.
+await page.locator(".fam-letter-wrap .fold-toggle").click();
 await page.locator('[data-letter-lang="es"]').click();
 await page.waitForSelector('.fam-letter[lang="es"]');
 ok(

@@ -595,6 +595,11 @@ a:hover {
   outline: none;
 }
 /* Reserve the first screen while the app boots, so the footer is not on screen and then pushed away (CLS). */
+/* Every screen fills at least the window under the header, so a view that finishes loading after its first paint
+   (Book Studio's shelf, a studio's saved work) never shows the footer for a moment and then shoves it away. */
+.lab-main {
+  min-height: calc(100vh - var(--lab-top-h, 7rem));
+}
 .lab-main:has(> .boot) {
   min-height: 100vh;
   visibility: hidden;
@@ -1927,3 +1932,61 @@ body[data-lab-band="6-8"] .studio-card {
   border-radius: 8px;
 }
 
+
+/* ── folds: secondary page sections closed behind their own heading (src/fold.js) ── */
+.fold-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.fold-toggle::after {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-inline-end: 0.35rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform var(--dur-2, 0.15s) ease;
+}
+.fold-toggle[aria-expanded="true"]::after {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+.fold-toggle:focus-visible {
+  outline: 3px solid var(--focus, #0f2c47);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+[data-fold].is-folded {
+  padding-block: var(--s-3);
+}
+[data-fold].is-folded :is(h2, h3) {
+  margin-block: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fold-toggle::after {
+    transition: none;
+  }
+}
+/* A folded section still prints: the page's printed report or letter is the whole thing. */
+@media print {
+  .fold-body[hidden] {
+    display: block !important;
+  }
+  .fold-toggle::after {
+    display: none;
+  }
+}

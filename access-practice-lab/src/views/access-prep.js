@@ -80,6 +80,19 @@ let currentBandSelection = "6-8";
 let currentDomainFilter = "all";
 let currentTierFilter = "all";
 let searchQuery = "";
+// Each tier group opens with a short preview; "Show all" expands that one group. A search shows every match.
+// Phones stack one card per row, so they preview three.
+const previewSize = () => (typeof matchMedia === "function" && matchMedia("(max-width: 599px)").matches ? 3 : 6);
+const expanded = new Set();
+
+function cappedGridHTML(list, key, I) {
+  const all = Boolean(searchQuery.trim()) || expanded.has(key) || list.length <= previewSize();
+  const shown = all ? list : list.slice(0, previewSize());
+  return html`<div class="prep-act-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:0.75rem;">
+      ${shown.map((act) => activityRowHTML(act, I))}
+    </div>
+    ${all ? "" : html`<p class="prep-more"><button type="button" class="btn small" data-prep-more="${key}" aria-label="${I.S(`Show all ${list.length} activities in this group`, `Mostrar las ${list.length} actividades de este grupo`)}">${I.T(`Show all ${list.length}`, `Mostrar las ${list.length}`)} ${icon("chevron-down")}</button></p>`}`;
+}
 
 function bandFromRoute(grades) {
   const g = String(grades || "").trim();
@@ -498,9 +511,7 @@ export async function render(ctx) {
                           </span>
                         </div>
 
-                        <div class="prep-act-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:0.75rem;">
-                          ${listA.map((act) => activityRowHTML(act, I))}
-                        </div>
+                        ${cappedGridHTML(listA, `${d}:A`, I)}
                       </div>
                     ` : ""}
 
@@ -521,9 +532,7 @@ export async function render(ctx) {
                           </span>
                         </div>
 
-                        <div class="prep-act-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:0.75rem;">
-                          ${listBC.map((act) => activityRowHTML(act, I))}
-                        </div>
+                        ${cappedGridHTML(listBC, `${d}:BC`, I)}
                       </div>
                     ` : ""}
                   `}
@@ -584,6 +593,13 @@ export function onClick(e, ctx) {
       url.searchParams.set("grades", currentBandSelection);
       history.replaceState({}, "", url.pathname + url.search + url.hash);
     }
+    ctx.rerender();
+    return true;
+  }
+
+  const more = e.target.closest("[data-prep-more]");
+  if (more) {
+    expanded.add(more.dataset.prepMore);
     ctx.rerender();
     return true;
   }

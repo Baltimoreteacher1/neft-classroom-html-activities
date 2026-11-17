@@ -68,7 +68,8 @@ try {
   await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 1);
   await page.getByLabel("Search texts").fill("");
   await page.waitForFunction(
-    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    (expected) =>
+      Number(document.querySelector(".rr-count")?.textContent.match(/\d+/)?.[0]) === expected,
     lessonCount,
   );
   const sustainedCount = contentLessons.filter(
@@ -76,7 +77,8 @@ try {
   ).length;
   await page.getByLabel("Reading length").selectOption("sustained");
   await page.waitForFunction(
-    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    (expected) =>
+      Number(document.querySelector(".rr-count")?.textContent.match(/\d+/)?.[0]) === expected,
     sustainedCount,
   );
   assert.equal(sustainedCount, 7, "the library should offer the seven authored sustained reads");
@@ -86,12 +88,20 @@ try {
   );
   await page.getByLabel("Reading length").selectOption("");
   await page.waitForFunction(
-    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    (expected) =>
+      Number(document.querySelector(".rr-count")?.textContent.match(/\d+/)?.[0]) === expected,
     lessonCount,
   );
   await page.locator("[data-rr-genre]").selectOption("Informational science with data");
   await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 1);
   await page.locator("[data-rr-genre]").selectOption("");
+  // The shelf opens with twelve texts; "Show more" adds twelve at a time until every match is on the page.
+  await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 12);
+  while (await page.locator("[data-rr-more]").count()) await page.locator("[data-rr-more]").click();
+  await page.waitForFunction(
+    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    lessonCount,
+  );
   console.log("PASS shelf and filter");
   await page
     .getByRole("link", { name: /Open lesson/ })
@@ -216,12 +226,14 @@ try {
   await page.goto(`http://localhost:${server.address().port}/access-practice-lab/reading-room`);
   await page.locator("[data-rr-grade]").selectOption("9-12");
   await page.waitForFunction(
-    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    (expected) =>
+      Number(document.querySelector(".rr-count")?.textContent.match(/\d+/)?.[0]) === expected,
     gradeCounts["9-12"],
   );
   await page.locator("[data-rr-grade]").selectOption("6-8");
   await page.waitForFunction(
-    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    (expected) =>
+      Number(document.querySelector(".rr-count")?.textContent.match(/\d+/)?.[0]) === expected,
     gradeCounts["6-8"],
   );
   await page.locator("[data-rr-grade]").selectOption("");

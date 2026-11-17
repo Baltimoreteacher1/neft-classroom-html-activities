@@ -134,7 +134,7 @@ export async function render(ctx, I) {
           : html`<p>${I.L("hub.reco.empty")}</p>`}
       </section>
 
-      <section class="fam-tips" aria-labelledby="famTipsTitle">
+      <section class="fam-tips" data-fold aria-labelledby="famTipsTitle">
         <h2 id="famTipsTitle">${I.L("hub.tips.heading")}</h2>
         <ul class="fam-tip-grid">
           ${(help?.tips || []).map((tip) => html`<li><span class="fam-tile">${tipIcon(tip.icon)}</span><div><h3>${I.TO(tip.title)}</h3><p>${I.TO(tip.body)}</p></div></li>`)}
@@ -146,7 +146,7 @@ export async function render(ctx, I) {
         ${progressPreview(I, summary, band)}
       </section>
 
-      <section class="fam-more" aria-labelledby="famMoreTitle">
+      <section class="fam-more" data-fold aria-labelledby="famMoreTitle">
         <h2 id="famMoreTitle">${I.L("hub.more.heading")}</h2>
         <ul class="fam-links">
           <li><a href="${BASE}/family/help?grades=${band}">${icon("help")} ${I.L("hub.more.help")}</a></li>

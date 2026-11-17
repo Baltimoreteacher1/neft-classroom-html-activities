@@ -157,7 +157,7 @@ async function chooserHTML(ctx, index, entries) {
           }
           ${groups.map(
             ([k, list]) =>
-              html`<section class="task-group" id="spk-${k}" aria-labelledby="spk-${k}-h">
+              html`<section class="task-group" id="spk-${k}" data-fold aria-labelledby="spk-${k}-h">
                 <header>
                   <h2 id="spk-${k}-h">${icon(TYPES[k][1])} ${kindT(k)}</h2>
                   <p class="fine">${I.T(...TYPES[k][2])}</p>

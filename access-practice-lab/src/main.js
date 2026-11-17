@@ -28,6 +28,7 @@ import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js"
 import { initStartFresh } from "./reset.js";
 import { mountReturnBar } from "./intro/return-bar.js";
 import { mountStudioVideo } from "./studio-video-mount.js";
+import { applyFolds } from "./fold.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 import { registerFor } from "./register.js";
@@ -450,6 +451,7 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   mountShell(ctx);
   mountReturnBar(ctx);
   view.mount?.(root, ctx);
+  applyFolds(root);
   if (fk) {
     const target = root.querySelector(fk)
       || root.querySelector(".feedback, .saved-note")

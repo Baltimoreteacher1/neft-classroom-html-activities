@@ -392,3 +392,36 @@
 .lph-front:focus:not(:focus-visible) {
   outline: none;
 }
+
+/* ── calm first screen (2026-11-17) ───────────────────────────────────────
+   The welcome video sat in the left column under the title and pushed the grade ruler a full screen down while
+   the right column held one card. On wide screens the video joins Today's mission in the right column, and the
+   ruler keeps one line of help (the long counts and notes stay on the explore pages). */
+@media (min-width: 900px) {
+  .lph {
+    grid-template-areas:
+      "roles roles"
+      "title student"
+      "lead student"
+      "grade video";
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .lph-intro {
+    display: contents;
+  }
+  .lph-intro > h1 {
+    grid-area: title;
+  }
+  .lph-intro > .lph-lead {
+    grid-area: lead;
+  }
+  .lph-intro > studio-video,
+  .lph-intro > .studio-video {
+    grid-area: video;
+    align-self: start;
+  }
+}
+.lph .grade-focus-counts,
+.lph .grade-focus-note {
+  display: none;
+}

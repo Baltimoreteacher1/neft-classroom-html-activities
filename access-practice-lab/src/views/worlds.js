@@ -155,10 +155,10 @@ function hubHTML(ctx, index, progress) {
       </aside>
     </section>
     ${connectedWorldsHTML(I, band)}
-    <section class="cw-classic" aria-labelledby="cw-classic-title"><h2 id="cw-classic-title">${I.T("More domain worlds", "Más mundos por destreza")}</h2><p>${I.T("Try focused listening, reading, speaking, and writing scenarios.", "Prueba situaciones enfocadas de comprensión auditiva, lectura, expresión oral y escritura.")}</p>
+    <section class="cw-classic" data-fold aria-labelledby="cw-classic-title"><h2 id="cw-classic-title">${I.T("More domain worlds", "Más mundos por destreza")}</h2><p>${I.T("Try focused listening, reading, speaking, and writing scenarios.", "Prueba situaciones enfocadas de comprensión auditiva, lectura, expresión oral y escritura.")}</p>
     <nav class="world-grid" aria-label="${I.S("Choose a domain world", "Elige un mundo por destreza")}">${WORLDS.map((w) => tile(w, band, progress))}</nav></section>
     ${scienceLabCardHTML(I, band)}
-    <section class="panel world-bridge">
+    <section class="panel world-bridge" data-fold>
       <h2>${I.T("Connected language missions", "Misiones de lenguaje conectadas")}</h2>
       <p>${I.T("Listen, read, collect evidence, discuss, and write through a complete investigation.", "Escucha, lee, reúne evidencia, conversa y escribe en una investigación completa.")}</p>
       <div class="task-grid world-bridge-grid">${bridge.map((m) => connectedCard(m, band, null))}</div>

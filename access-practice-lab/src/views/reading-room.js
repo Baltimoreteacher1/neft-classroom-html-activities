@@ -23,6 +23,10 @@ let activePhase = "first";
 let activeMode = "practice";
 let openedLessonId = "";
 let notice = "";
+// The shelf opens with one screen of texts; "Show more" adds a row of twelve. Any filter change starts over.
+const SHELF_STEP = 12;
+let shelfLimit = SHELF_STEP;
+let shelfKey = "";
 
 // Chrome strings go through I (set at the top of render and of each event handler). Lesson, story and strategy text,
 // vocabulary, questions and answer choices come from JSON and stay English.
@@ -166,6 +170,13 @@ function filterLessons(lessons, state) {
 
 function shelfHTML(ctx, lessons, state) {
   const filtered = filterLessons(lessons, state);
+  const key = [query, grade, genreFilter, lengthFilter, onlyBookmarks].join("|");
+  if (key !== shelfKey) {
+    shelfKey = key;
+    shelfLimit = SHELF_STEP;
+  }
+  const shown = filtered.slice(0, shelfLimit);
+  const left = filtered.length - shown.length;
   const last = lessons.find((l) => l.id === state.lastRead);
   const recentRows = state.recent
     .map((rid) => lessons.find((l) => l.id === rid))
@@ -182,7 +193,7 @@ function shelfHTML(ctx, lessons, state) {
     <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">${T("The reading shelf", "El estante de lectura")}</p><h2 id="rr-library-title">${T("Choose a text", "Elige un texto")}</h2></div></div>
       <div class="rr-filters"><label class="rr-search">${T("Search texts", "Buscar textos")} <input data-rr-search type="search" value="${esc(query)}" placeholder="${A("Topic, skill, or title", "Tema, destreza o título")}"></label><label class="rr-filter">${T("Genre", "Género")}<select data-rr-genre><option value="">${A("All genres", "Todos los géneros")}</option>${genres.map((g) => `<option value="${esc(g)}" ${genreFilter === g ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></label><label class="rr-filter">${T("Grade cluster", "Grupo de grados")}<select data-rr-grade><option value="">${A("All clusters", "Todos los grupos")}</option>${clusterOptions(grade)}<option value="3-5-local" ${grade === "3-5-local" ? "selected" : ""}>${A("Grades 3–5 local · WIDA cluster unspecified", "Grados 3–5 locales · grupo de WIDA sin especificar")}</option></select></label><label class="rr-filter">${T("Reading length", "Extensión de la lectura")}<select data-rr-length><option value="">${A("Any length", "Cualquier extensión")}</option><option value="short" ${lengthFilter === "short" ? "selected" : ""}>${A("Short practice · under 180 words", "Práctica corta · menos de 180 palabras")}</option><option value="extended" ${lengthFilter === "extended" ? "selected" : ""}>${A("Extended practice · 180–349 words", "Práctica extendida · 180–349 palabras")}</option><option value="sustained" ${lengthFilter === "sustained" ? "selected" : ""}>${A("Sustained reads · 350+ words", "Lecturas sostenidas · 350+ palabras")}</option></select></label></div>
       <div class="rr-count-row"><p class="rr-count" aria-live="polite">${T(`${filtered.length} of ${lessons.length} authored reading lessons`, `${filtered.length} de ${lessons.length} lecciones de lectura`)}</p><button type="button" class="rr-reset" data-rr-bookmark-filter aria-pressed="${onlyBookmarks}">${ic("bookmark")} ${onlyBookmarks ? T("Showing bookmarks", "Mostrando marcadores") : T("Show bookmarks only", "Mostrar solo marcadores")}</button></div>
-      <div class="rr-books">${filtered.length ? filtered.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>${T("No texts match yet", "Ningún texto coincide todavía")}</h3><p>${T("Try another topic, grade cluster, or reading length.", "Prueba otro tema, grupo de grados o extensión de lectura.")}</p></div>`}</div></section>
+      <div class="rr-books">${filtered.length ? shown.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>${T("No texts match yet", "Ningún texto coincide todavía")}</h3><p>${T("Try another topic, grade cluster, or reading length.", "Prueba otro tema, grupo de grados o extensión de lectura.")}</p></div>`}</div>${left > 0 ? `<p class="rr-more"><button type="button" class="btn" data-rr-more>${T(`Show ${Math.min(left, SHELF_STEP)} more`, `Mostrar ${Math.min(left, SHELF_STEP)} más`)} ${ic("chevron-down")}</button> <span class="fine">${T(`${shown.length} of ${filtered.length} shown`, `${shown.length} de ${filtered.length} mostrados`)}</span></p>` : ""}</section>
     <section class="rr-legacy"><div><p class="rr-eyebrow">${T("More short practice", "Más práctica corta")}</p><h2>${T("Existing Reading activities", "Actividades de lectura existentes")}</h2><p>${T("Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.", "Abre las actividades de lectura del Laboratorio ACCESS. Estas prácticas cortas son aparte de las lecciones de varias partes de arriba.")}</p></div><a class="btn" href="${BASE}/Reading?grades=${esc(ctx.band)}">${T("Browse Reading practice", "Ver práctica de lectura")} ${ic("arrow-right")}</a></section>
     <section class="rr-tools"><div><h2>${T("Your reading tools", "Tus herramientas de lectura")}</h2><p>${T("Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.", "Los marcadores, las anotaciones, las preferencias y el avance en las lecciones se quedan en este navegador. No se sincronizan entre dispositivos.")}</p><ul class="rr-tool-links"><li><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${ic("words")} ${T("Open Word Builder", "Abrir el Constructor de palabras")}</a></li><li><a href="${BASE}/reading-room/words">${ic("bookmark")} ${T(`Open Reading Word Notebook (${state.words.length})`, `Abrir el Cuaderno de palabras de lectura (${state.words.length})`)}</a></li><li><a href="${BASE}/reading-room/family">${ic("families")} ${T("Family reading at home", "Lectura en familia en casa")}</a></li><li><a href="${BASE}/reading-room/teacher">${ic("teacher")} ${T("Local teacher progress view", "Vista local del avance para docentes")}</a></li><li><a href="${BASE}/reading-room/pathways">${ic("road")} ${T("Workshop pathways", "Rutas del taller")}</a></li></ul></div><div class="rr-tools-reset"><button type="button" class="rr-reset" data-rr-action="clear">${T("Clear local Reading Room data", "Borrar los datos locales de la Sala de lectura")}</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</div></section></section>`;
 }
@@ -801,7 +812,7 @@ function saveOrganizer(el){const s=loadReadingState(),id=el.dataset.rrLesson,key
 function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.conferences={...(s.conferences||{}),[id]:{...(s.conferences?.[id]||{}),[el.dataset.rrConference]:el.value,updatedAt:new Date().toISOString()}};saveReadingState(s);}
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
-export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return true;const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return true;if(e.target.closest("[data-rr-more]")){shelfLimit+=SHELF_STEP;ctx.rerender();return true;}const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
   if (b.dataset.rrNoticeMove) {
     if (b.dataset.rrNoticeMove === "strategy" && id?.startsWith("strategy-")) {
       const lessonId = id.slice("strategy-".length);

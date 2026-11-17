@@ -600,7 +600,7 @@ export async function render(ctx) {
         ${await journeyEvidenceHTML(I, band, ledger)}
 
         <section>
-          <section class="panel practice-report" aria-labelledby="practiceReportTitle">
+          <section class="panel practice-report" data-fold aria-labelledby="practiceReportTitle">
             <div class="practice-report-head"><div><p class="eyebrow">${formatDate(todayISO())} · ${bandLabel(band)} · ${pathway}</p><h2 id="practiceReportTitle">${I.T("ACCESS-style practice report", "Informe de práctica estilo ACCESS")}</h2></div>
               <div class="row-actions no-print"><button type="button" class="btn small" data-refresh-report>${icon("retry")} ${I.T("Update My Report", "Actualizar mi informe")}</button><button type="button" class="btn btn-primary small" data-print>${icon("print")} ${I.T("Print Practice Report", "Imprimir informe de práctica")}</button></div>
             </div>
@@ -658,7 +658,7 @@ export async function render(ctx) {
         ${postcardsHTML}
 
         <section aria-labelledby="passMiles">
-          <section class="pass-cosmetics" aria-labelledby="passCosmeticsTitle"><h2 id="passCosmeticsTitle">Passport decorations</h2><p class="fine">Earn XP for meaningful practice, then choose a small decoration. Every lesson and support stays available either way.</p><p class="pass-xp"><strong>${engagement.xp} XP</strong> · participation points, not a proficiency score.</p><div class="pass-cosmetic-list">${[{ id: "trail-glow", need: 25, label: "Trail glow", icon: "worlds" }, { id: "map-pin", need: 60, label: "Golden map pin", icon: "road" }, { id: "word-wings", need: 100, label: "Word wings", icon: "writing" }].map((item) => html`<button type="button" class="btn" data-equip-cosmetic="${item.id}" ${engagement.xp < item.need ? "disabled" : ""} aria-pressed="${engagement.cosmetic === item.id}">${icon(item.icon)} ${item.label} · ${item.need} XP ${engagement.xp >= item.need ? (engagement.cosmetic === item.id ? "· Selected" : "· Unlocked") : "· Locked"}</button>`)}</div></section>
+          <section class="pass-cosmetics" data-fold aria-labelledby="passCosmeticsTitle"><h2 id="passCosmeticsTitle">Passport decorations</h2><p class="fine">Earn XP for meaningful practice, then choose a small decoration. Every lesson and support stays available either way.</p><p class="pass-xp"><strong>${engagement.xp} XP</strong> · participation points, not a proficiency score.</p><div class="pass-cosmetic-list">${[{ id: "trail-glow", need: 25, label: "Trail glow", icon: "worlds" }, { id: "map-pin", need: 60, label: "Golden map pin", icon: "road" }, { id: "word-wings", need: 100, label: "Word wings", icon: "writing" }].map((item) => html`<button type="button" class="btn" data-equip-cosmetic="${item.id}" ${engagement.xp < item.need ? "disabled" : ""} aria-pressed="${engagement.cosmetic === item.id}">${icon(item.icon)} ${item.label} · ${item.need} XP ${engagement.xp >= item.need ? (engagement.cosmetic === item.id ? "· Selected" : "· Unlocked") : "· Locked"}</button>`)}</div></section>
           <div class="pass-heading-row">
             <h2 id="passMiles" class="pass-heading">${I.T("Milestones", "Logros")}</h2>
             <p class="fine">

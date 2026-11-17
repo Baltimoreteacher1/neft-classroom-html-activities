@@ -171,7 +171,7 @@ async function chooserHTML(ctx, index, entries) {
           }
           ${forms.map(
             (f) =>
-              html`<section class="task-group" id="wrt-${f}" aria-labelledby="wrt-${f}-h">
+              html`<section class="task-group" id="wrt-${f}" data-fold aria-labelledby="wrt-${f}-h">
                 <header><h2 id="wrt-${f}-h">${icon(formIcon(f))} ${formName(f)}</h2><p class="fine">${FORM_META[f] ? I.T(FORM_META[f][1], FORM_META[f][2]) : ""}</p></header>
                 <div class="task-grid">${tasks.filter((t) => t.form === f).map((t) => card(t))}</div>
               </section>`,

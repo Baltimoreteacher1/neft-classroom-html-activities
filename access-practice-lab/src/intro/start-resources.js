@@ -92,6 +92,7 @@ export function resourcesHTML() {
   return html`<section
     class="ov-section ov-resources"
     id="ov-resources"
+    data-fold
     aria-labelledby="ovResTitle"
   >
     <div class="ov-head">
@@ -149,7 +150,7 @@ const getsFor = (pick) => [
 export function familiesHTML(pick) {
   const handout = familyData.FAMILY_HANDOUT;
   const band = FAMILY_LABEL[pick] || "Grades 6–8";
-  return html`<section class="ov-section ov-families" id="ov-families" aria-labelledby="ovFamTitle">
+  return html`<section class="ov-section ov-families" id="ov-families" data-fold aria-labelledby="ovFamTitle">
     <div class="ov-fam-card">
       <div class="ov-fam-intro">
         <p class="eyebrow">For families · Practice Together</p>

@@ -20,6 +20,10 @@ import { BASE, announce, html, icon, raw, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
 
 const state = { section: "", for: "", skill: "", kind: "", q: "" };
+// Each group opens with six places; "Show all" expands that group. Any filter or search shows every match.
+const PREVIEW = 6;
+const expandedGroups = new Set();
+const filtering = () => Boolean(state.q || state.for || state.skill || state.kind);
 let I = null;
 let band = "6-8";
 
@@ -131,8 +135,9 @@ function resultsHTML() {
               : html`<h2 id="xp-g-${g.id}" class="visually-hidden">${I.T("Places", "Lugares")}</h2>`
           }
           <ul class="xp-grid" role="list">
-            ${g.items.map(cardHTML)}
+            ${(filtering() || expandedGroups.has(g.id) ? g.items : g.items.slice(0, PREVIEW)).map(cardHTML)}
           </ul>
+          ${!filtering() && !expandedGroups.has(g.id) && g.items.length > PREVIEW ? html`<p class="xp-more"><button type="button" class="btn small" data-xp-more="${g.id}">${I.T(`Show all ${g.items.length}`, `Mostrar los ${g.items.length}`)} ${icon("chevron-down")}</button></p>` : ""}
         </section>`,
     )}`;
 }
@@ -257,6 +262,12 @@ export function onInput(e) {
 }
 
 export function onClick(e) {
+  const more = e.target.closest("[data-xp-more]");
+  if (more) {
+    expandedGroups.add(more.dataset.xpMore);
+    refresh();
+    return true;
+  }
   const chip = e.target.closest("[data-xp-filter]");
   if (chip) {
     const name = chip.dataset.xpFilter;

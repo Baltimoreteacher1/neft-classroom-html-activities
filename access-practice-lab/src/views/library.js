@@ -109,7 +109,7 @@ function resultHTML() {
 
 function learningAreasHTML() {
   const groups = filterLearningAreas(learningAreaCards(band), LEARNING_AREAS, filters.q);
-  return html`<section class="lib-studios" id="learning-areas" aria-labelledby="learningAreasTitle">
+  return html`<section class="lib-studios" id="learning-areas" data-fold aria-labelledby="learningAreasTitle">
     <h2 id="learningAreasTitle">${icon("reading")} ${I.T("Learn by area", "Aprende por área")}</h2>
     <p class="fine">${I.T("Choose a learning area to find lessons and practice that connect.", "Elige un área de aprendizaje para encontrar lecciones y prácticas relacionadas.")}</p>
     ${groups.length ? html`<ul class="lib-studio-grid">${groups.flatMap((area) => area.cards.map((card) => html`<li class="lib-studio">
@@ -126,7 +126,7 @@ const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
 
 /** The WIDA ACCESS practice studios: full standalone pages, so plain links rather than library items. */
 function studiosHTML() {
-  return html`<section class="lib-studios" id="studios" aria-labelledby="studiosTitle">
+  return html`<section class="lib-studios" id="studios" data-fold aria-labelledby="studiosTitle">
     <h2 id="studiosTitle">${icon("sparkle")} ${I.T("Practice studios", "Estudios de práctica")}</h2>
     <p class="fine">${I.T("Longer, test-style practice for each skill. Each studio opens as its own page and saves your work on this device.", "Práctica más larga, al estilo de la prueba, para cada destreza. Cada estudio se abre en su propia página, en inglés, y guarda tu trabajo en este dispositivo.")}</p>
     <ul class="lib-studio-grid">${STUDIOS.map(
@@ -141,7 +141,7 @@ function studiosHTML() {
 
 /** The Voice Lab (/voice): speaking and listening workouts inside the lab, listed by group. */
 function voiceLabHTML(band) {
-  return html`<section class="lib-studios lib-voice" id="voice-lab" aria-labelledby="voiceLabTitle">
+  return html`<section class="lib-studios lib-voice" id="voice-lab" data-fold aria-labelledby="voiceLabTitle">
     <h2 id="voiceLabTitle">${icon("speaking")} ${I.T("Voice Lab: speaking and listening workouts", "Laboratorio de voz: ejercicios para hablar y escuchar")}</h2>
     <p class="fine">${I.T("Hear a model, say it yourself and compare. Nothing is timed.", "Escucha un modelo, dilo tú y compara. Nada tiene tiempo límite.")} <a href="${BASE}/voice?grades=${band}">${I.T("Open the Voice Lab", "Abrir el Laboratorio de voz")}</a></p>
     <ul class="lib-studio-grid">${VOICE_GROUPS.map(
