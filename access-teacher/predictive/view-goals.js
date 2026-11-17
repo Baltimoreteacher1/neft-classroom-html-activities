@@ -658,13 +658,14 @@ export function renderGoalForm(ws) {
         ),
       ),
     ),
-    h("div", { class: "gf-controls no-print" }, who, goalsStep, supports),
+    // The action bar sits above both panes, so print and download are one tap away whichever pane is showing.
     h(
       "div",
-      { class: "gf-preview-wrap" },
+      { class: "gf-actions-bar no-print" },
       actions,
       ui.saved ? h("p", { class: "gf-saved", role: "status" }, ui.saved) : null,
-      previewEl,
     ),
+    h("div", { class: "gf-controls no-print" }, who, goalsStep, supports),
+    h("div", { class: "gf-preview-wrap" }, previewEl),
   );
 }
