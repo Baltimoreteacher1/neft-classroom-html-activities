@@ -2,7 +2,7 @@
 // (/explore/<practice|play|prep|progress|teach|family|help>). Filters (who, skill, kind, words) live in the URL
 // (?for=teacher&skill=Reading&kind=game&q=…) so a teacher can share a filtered view. Everything it lists comes from
 // src/sitemap.js, the same registry the navigation and the section bar read.
-import { isEarlyBand } from "../bands.js";
+import { bandLabel, bandLabelEs, isEarlyBand } from "../bands.js";
 import { crumbsHTML } from "../components.js";
 import { EARLY_VIEWS } from "../early/gate.js";
 import { i18nFor } from "../i18n.js";
@@ -15,8 +15,9 @@ import {
   SKILLS,
   inBand as inContentBand,
   matchesOf,
+  skillLead,
 } from "../sitemap.js";
-import { BASE, announce, html, icon, raw, toHtml } from "../util.js";
+import { BASE, announce, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
 
 const state = { section: "", for: "", skill: "", kind: "", q: "" };
@@ -36,6 +37,23 @@ const norm = (s) =>
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "");
+// The places a learner opened from Explore, newest first, so the hub can say "Opened" and offer "Pick up again".
+// Only ids and times live here; nothing about the work itself.
+const RECENT_KEY = "accessPracticeLab:v1:exploreRecent";
+const RECENT_MAX = 12;
+const readRecent = () => {
+  const list = safeJson(storage.get(RECENT_KEY), []);
+  return Array.isArray(list) ? list.filter((r) => r && typeof r.id === "string") : [];
+};
+function rememberOpened(id) {
+  if (!DESTINATIONS.some((d) => d.id === id)) return;
+  const list = [{ id, at: Date.now() }, ...readRecent().filter((r) => r.id !== id)].slice(0, RECENT_MAX);
+  storage.set(RECENT_KEY, JSON.stringify(list));
+}
+// What the count calls the places in a section ("38 studios and practice sets").
+const COUNT_NOUN = {
+  practice: ["studios and practice sets", "estudios y prácticas"],
+};
 const hrefOf = (d) =>
   d.href.startsWith("/")
     ? d.href
@@ -74,24 +92,55 @@ export function matches(d, f = state, b = band) {
   return true;
 }
 
-function cardHTML(d) {
+// The title is the card's one link (stretched over the whole card), so a screen reader hears a short link name and
+// can move card to card by heading; the description and tags are read as the card's text.
+function cardHTML(d, { start = false, opened = new Set() } = {}) {
   const tags = [I.S(...KINDS[d.kind])];
   if (d.skill !== "Mixed" && state.section !== "practice")
     tags.push(I.S(...SKILLS.find((s) => s.id === d.skill).title));
   if (d.for.length === 1 && d.for[0] !== "student")
     tags.push(I.S(...AUDIENCES.find((a) => a.id === d.for[0]).title));
-  return html`<li class="xp-card" data-xp-id="${d.id}">
-    <a class="xp-card-link" href="${hrefOf(d)}" ${d.external ? raw('rel="noopener"') : ""}>
-      <span class="xp-card-ico" aria-hidden="true">${icon(d.icon)}</span>
-      <span class="xp-card-body">
-        <span class="xp-card-title"
-          >${I.T(...d.title)}${d.external ? html` <span class="xp-ext">${I.T("(EduWonderLab)", "(EduWonderLab)")}</span>` : ""}</span
+  const seen = opened.has(d.id);
+  return html`<li class="xp-card${start ? " is-start" : ""}" data-xp-id="${d.id}" data-kind="${d.kind}">
+    ${start ? html`<span class="xp-flag">${icon("sparkle")}${I.T("Start here", "Empieza aquí")}</span>` : ""}
+    <span class="xp-card-ico" aria-hidden="true">${icon(d.icon)}</span>
+    <span class="xp-card-body">
+      <h3 class="xp-card-title">
+        <a class="xp-card-link" href="${hrefOf(d)}" data-xp-open="${d.id}" ${d.external ? raw('rel="noopener"') : ""}
+          >${I.T(...d.title)}${d.external ? html` <span class="xp-ext">${I.T("(EduWonderLab)", "(EduWonderLab)")}</span>` : ""}</a
         >
-        <span class="xp-card-text">${I.T(...d.text)}</span>
-        <span class="xp-tags">${tags.map((t) => html`<span class="xp-tag">${t}</span>`)}</span>
-      </span>
-    </a>
+      </h3>
+      <span class="xp-card-text">${I.T(...d.text)}</span>
+      <span class="xp-tags"
+        >${tags.map((t, i) => html`<span class="xp-tag${i === 0 ? " xp-tag-kind" : ""}">${t}</span>`)}${
+          seen ? html`<span class="xp-tag xp-tag-seen">${icon("check")}${I.T("Opened", "Abierto")}</span>` : ""
+        }</span
+      >
+    </span>
   </li>`;
+}
+
+/** "Pick up again": the last three places opened from Explore that this view lists. */
+function recentHTML(list) {
+  if (filtering()) return "";
+  const byId = new Map(list.map((d) => [d.id, d]));
+  const recent = readRecent()
+    .map((r) => byId.get(r.id))
+    .filter(Boolean)
+    .slice(0, 3);
+  if (!recent.length) return "";
+  return html`<section class="xp-recent" aria-labelledby="xp-recent-h">
+    <h2 id="xp-recent-h" class="xp-recent-title">${icon("replay")}${I.T("Pick up again", "Retoma donde ibas")}</h2>
+    <ul class="xp-recent-list" role="list">
+      ${recent.map(
+        (d) => html`<li>
+          <a href="${hrefOf(d)}" data-xp-open="${d.id}"
+            ><span class="xp-card-ico" aria-hidden="true">${icon(d.icon)}</span><span>${I.T(...d.title)}</span>${icon("arrow-right")}</a
+          >
+        </li>`,
+      )}
+    </ul>
+  </section>`;
 }
 
 /** Results grouped by section (directory) or by skill (Practice hub). */
@@ -117,25 +166,38 @@ function resultsHTML() {
     id: s.id,
     title: s.title,
     icon: s.icon,
+    lead: skillLead(s, band),
     items: list.filter((d) => d.skill === s.id),
-  })).filter((g) => g.items.length);
+  }))
+    .filter((g) => g.items.length)
+    // The first practice set in a skill is the guided way in, so it carries "Start here".
+    .map((g) => ({ ...g, startId: g.id !== "Mixed" ? g.items.find((d) => d.kind === "practice")?.id : undefined }));
   const use = groups || (state.section === "practice" ? bySkill : bySection);
-  return html`<p class="xp-count" role="status">
-      ${I.T(`${list.length} places`, `${list.length} lugares`)}
+  const opened = new Set(readRecent().map((r) => r.id));
+  const noun = COUNT_NOUN[state.section] || ["places", "lugares"];
+  return html`${recentHTML(list)}
+    <p class="xp-count" role="status">
+      ${I.T(`${list.length} ${noun[0]} for ${bandLabel(band)}`, `${list.length} ${noun[1]} para ${bandLabelEs(band)}`)}
     </p>
     ${use.map(
       (g) =>
         html`<section class="xp-group" aria-labelledby="xp-g-${g.id}">
           ${
             g.title
-              ? html`<h2 id="xp-g-${g.id}" class="xp-group-title">
-                  ${g.icon ? icon(g.icon) : ""}${I.T(...g.title)}
+              ? html`<div class="xp-group-head">
+                  <h2 id="xp-g-${g.id}" class="xp-group-title">
+                    ${g.icon ? html`<span class="xp-group-ico" aria-hidden="true">${icon(g.icon)}</span>` : ""}${I.T(...g.title)}
+                    <span class="xp-group-n">${g.items.length}</span>
+                  </h2>
+                  ${g.lead ? html`<p class="xp-group-lead">${I.T(...g.lead)}</p>` : ""}
                   ${!state.section ? html`<a class="xp-group-all" href="${BASE}/explore/${g.id}?grades=${band}">${I.T("Open this section", "Abrir esta sección")}</a>` : ""}
-                </h2>`
+                </div>`
               : html`<h2 id="xp-g-${g.id}" class="visually-hidden">${I.T("Places", "Lugares")}</h2>`
           }
           <ul class="xp-grid" role="list">
-            ${(filtering() || expandedGroups.has(g.id) ? g.items : g.items.slice(0, PREVIEW)).map(cardHTML)}
+            ${(filtering() || expandedGroups.has(g.id) ? g.items : g.items.slice(0, PREVIEW)).map((d) =>
+              cardHTML(d, { opened, start: g.startId === d.id }),
+            )}
           </ul>
           ${!filtering() && !expandedGroups.has(g.id) && g.items.length > PREVIEW ? html`<p class="xp-more"><button type="button" class="btn small" data-xp-more="${g.id}">${I.T(`Show all ${g.items.length}`, `Mostrar los ${g.items.length}`)} ${icon("chevron-down")}</button></p>` : ""}
         </section>`,
@@ -189,14 +251,23 @@ function filtersHTML() {
         autocomplete="off"
       />
     </label>
-    ${audiences.length > 1 ? chips("for", audiences, state.for, { label: I.S("Who it is for", "Para quién"), text: I.T("Everyone", "Todos") }) : ""}
     ${skills.length > 1 ? chips("skill", skills, state.skill, { label: I.S("Skill", "Destreza"), text: I.T("Every skill", "Toda destreza") }) : ""}
-    ${kinds.length > 1 ? chips("kind", kinds, state.kind, { label: I.S("Kind of place", "Tipo de lugar"), text: I.T("Every kind", "Todo tipo") }) : ""}
+    ${
+      audiences.length > 1 || kinds.length > 1
+        ? html`<details class="xp-more-filters" ${state.for || state.kind ? raw("open") : ""}>
+            <summary>${icon("settings")}${I.T("More filters", "Más filtros")}</summary>
+            <div class="xp-more-body">
+              ${audiences.length > 1 ? chips("for", audiences, state.for, { label: I.S("Who it is for", "Para quién"), text: I.T("Everyone", "Todos") }) : ""}
+              ${kinds.length > 1 ? chips("kind", kinds, state.kind, { label: I.S("Kind of place", "Tipo de lugar"), text: I.T("Every kind", "Todo tipo") }) : ""}
+            </div>
+          </details>`
+        : ""
+    }
   </div>`;
 }
 
 function sectionTabsHTML() {
-  return html`<nav class="xp-sections" aria-label="${I.S("Sections", "Secciones")}">
+  return html`<nav class="xp-sections" aria-label="${I.S("Explore sections", "Secciones para explorar")}">
     <a href="${BASE}/explore?grades=${band}" ${!state.section ? raw('aria-current="page"') : ""}
       >${icon("grid")}${I.T("Everything", "Todo")}</a
     >
@@ -221,7 +292,7 @@ export async function render(ctx) {
     ? I.S(...sec.title)
     : I.S("Everything on The Language Page", "Todo en The Language Page");
   const lead = sec
-    ? sec.lead
+    ? sec.bandLead?.[band] || sec.lead
     : [
         "Every studio, game, story world, test-prep tool and guide, in one place. Filter by who you are, a skill or the kind of place.",
         "Todos los estudios, juegos, mundos, herramientas de preparación y guías en un lugar. Filtra por quién eres, una destreza o el tipo de lugar.",
@@ -236,6 +307,7 @@ export async function render(ctx) {
     html: html`${crumbsHTML(trail, { i18n: I })}
       <div class="xp">
         <header class="xp-head">
+          ${sec ? html`<p class="xp-band">${icon("classroom")}${I.T(bandLabel(band), bandLabelEs(band))}</p>` : ""}
           <h1 tabindex="-1">
             ${sec ? I.T(...sec.title) : I.T("Everything on The Language Page", "Todo en The Language Page")}
           </h1>
@@ -262,6 +334,11 @@ export function onInput(e) {
 }
 
 export function onClick(e) {
+  const open = e.target.closest("[data-xp-open]");
+  if (open) {
+    rememberOpened(open.dataset.xpOpen);
+    return false; // the link still navigates
+  }
   const more = e.target.closest("[data-xp-more]");
   if (more) {
     expandedGroups.add(more.dataset.xpMore);

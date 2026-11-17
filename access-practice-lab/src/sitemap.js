@@ -48,6 +48,17 @@ export const SECTIONS = Object.freeze([
       "Open practice: listening, reading, speaking, writing and words, plus the reader, stories and library. Pick a skill, then a studio.",
       "Práctica libre: escuchar, leer, hablar, escribir y palabras, además del lector, los cuentos y la biblioteca. Elige una destreza y luego un estudio.",
     ),
+    // The Practice hub speaks to the grade band it is showing.
+    bandLead: {
+      "3-5": P(
+        "Practice built for grades 3–5: short texts, picture support and sentence frames in every studio. Pick a skill, then start with the card marked Start here.",
+        "Práctica para los grados 3 a 5: textos cortos, apoyo con imágenes y marcos de oración en cada estudio. Elige una destreza y empieza con la tarjeta marcada Empieza aquí.",
+      ),
+      "6-8": P(
+        "Practice built for grades 6–8: academic texts, argument and evidence across science, social studies and literature. Pick a skill, then start with the card marked Start here.",
+        "Práctica para los grados 6 a 8: textos académicos, argumentos y evidencia en ciencias, estudios sociales y literatura. Elige una destreza y empieza con la tarjeta marcada Empieza aquí.",
+      ),
+    },
   },
   {
     id: "play",
@@ -87,14 +98,103 @@ export const SECTIONS = Object.freeze([
   },
 ]);
 
+// `lead` is the one-line "what you will do" under each skill on the Practice hub, by content band (`any` for the rest).
 export const SKILLS = Object.freeze([
-  { id: "Listening", icon: "listening", title: P("Listening", "Escuchar") },
-  { id: "Speaking", icon: "speaking", title: P("Speaking", "Hablar") },
-  { id: "Reading", icon: "reading", title: P("Reading", "Leer") },
-  { id: "Writing", icon: "writing", title: P("Writing", "Escribir") },
-  { id: "Words", icon: "words", title: P("Words & grammar", "Palabras y gramática") },
-  { id: "Mixed", icon: "sparkle", title: P("All four skills", "Las cuatro destrezas") },
+  {
+    id: "Listening",
+    icon: "listening",
+    title: P("Listening", "Escuchar"),
+    lead: {
+      "3-5": P(
+        "Follow directions and catch the main idea and key details in short school talks.",
+        "Sigue indicaciones y capta la idea principal y los detalles clave en charlas escolares cortas.",
+      ),
+      "6-8": P(
+        "Track a speaker's claim, evidence and key details in class discussions and short lectures.",
+        "Sigue la afirmación, la evidencia y los detalles clave de quien habla en discusiones y charlas de clase.",
+      ),
+      any: P("Hear it, then answer.", "Escucha y luego responde."),
+    },
+  },
+  {
+    id: "Speaking",
+    icon: "speaking",
+    title: P("Speaking", "Hablar"),
+    lead: {
+      "3-5": P(
+        "Describe, explain and retell in full sentences, then listen back to your own voice.",
+        "Describe, explica y vuelve a contar en oraciones completas; luego escucha tu propia voz.",
+      ),
+      "6-8": P(
+        "State a claim, back it with evidence and build on a classmate's idea in academic talk.",
+        "Di una afirmación, apóyala con evidencia y amplía la idea de un compañero en la conversación académica.",
+      ),
+      any: P("Plan, record and listen back.", "Planea, graba y escucha."),
+    },
+  },
+  {
+    id: "Reading",
+    icon: "reading",
+    title: P("Reading", "Leer"),
+    lead: {
+      "3-5": P(
+        "Find the main idea, key details and evidence in short texts from every subject.",
+        "Encuentra la idea principal, los detalles clave y la evidencia en textos cortos de todas las materias.",
+      ),
+      "6-8": P(
+        "Analyze claims, text structure and evidence in science, social studies and literature.",
+        "Analiza afirmaciones, estructura del texto y evidencia en ciencias, estudios sociales y literatura.",
+      ),
+      any: P("Read a short text, then answer.", "Lee un texto corto y luego responde."),
+    },
+  },
+  {
+    id: "Writing",
+    icon: "writing",
+    title: P("Writing", "Escribir"),
+    lead: {
+      "3-5": P(
+        "Build clear sentences and paragraphs that explain, tell a story or give an opinion.",
+        "Construye oraciones y párrafos claros que explican, cuentan una historia o dan una opinión.",
+      ),
+      "6-8": P(
+        "Write arguments and explanations with precise words, transitions and cited evidence.",
+        "Escribe argumentos y explicaciones con palabras precisas, transiciones y evidencia citada.",
+      ),
+      any: P("Build sentences with word help.", "Construye oraciones con ayuda de palabras."),
+    },
+  },
+  {
+    id: "Words",
+    icon: "words",
+    title: P("Words & grammar", "Palabras y gramática"),
+    lead: {
+      "3-5": P(
+        "Grow the school words, word parts and sentence patterns you use in class every day.",
+        "Amplía las palabras escolares, las partes de palabras y los patrones de oración que usas en clase cada día.",
+      ),
+      "6-8": P(
+        "Own academic vocabulary, word parts and the grammar of longer, more complex sentences.",
+        "Domina el vocabulario académico, las partes de palabras y la gramática de oraciones más largas y complejas.",
+      ),
+      any: P("Words and sentence patterns.", "Palabras y patrones de oración."),
+    },
+  },
+  {
+    id: "Mixed",
+    icon: "sparkle",
+    title: P("All four skills", "Las cuatro destrezas"),
+    lead: {
+      any: P(
+        "Bigger projects that put listening, speaking, reading and writing to work together.",
+        "Proyectos más grandes que ponen a trabajar juntas la escucha, el habla, la lectura y la escritura.",
+      ),
+    },
+  },
 ]);
+
+/** A skill's one-line lead for a content band: [en, es]. */
+export const skillLead = (skill, band) => skill.lead?.[band] || skill.lead?.any || null;
 
 export const KINDS = Object.freeze({
   practice: P("Practice set", "Práctica"),

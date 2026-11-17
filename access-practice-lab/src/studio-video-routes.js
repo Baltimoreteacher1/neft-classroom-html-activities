@@ -42,6 +42,6 @@ export const STUDIO_VIDEO_ROUTES = {
   },
   "/access-practice-lab/explore/practice": {
     "id": "clip-four-skills",
-    "after": ".jump-in"
+    "after": ".xp-results"
   }
 };
