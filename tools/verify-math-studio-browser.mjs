@@ -108,15 +108,15 @@ async function lesson(ctx, id) {
     );
     ok(shown.length === 1 && shown[0] === stage, id, `stage ${stage}: shown ${shown}`);
     const words = await page.$eval(`#${stage}`, (el) => el.innerText.trim().split(/\s+/).length);
-    // Explore opens on one short step (the parts walkthrough shows a sentence at a time), so it needs fewer words.
-    const min = stage === "explore" ? 30 : 60;
+    // Explore and Understand open on one short step and build from there, so they need fewer words up front.
+    const min = stage === "explore" || stage === "understand" ? 25 : 60;
     ok(words > min, id, `stage ${stage} nearly empty (${words} words)`);
     ok(page.url().endsWith(`#${stage}`), id, `hash not ${stage}`);
   }
   ok(
     await page.$eval(
       "#understand",
-      (el, line) => el.innerText.includes(line),
+      (el, line) => el.textContent.includes(line),
       L.understand.iDo.lines[0].slice(0, 30),
     ),
     id,
@@ -153,6 +153,13 @@ async function lesson(ctx, id) {
     );
   }
   // Practice -> model -> back, on a verified hand-off.
+  // Understand builds one step at a time: only step 1 shows, and Continue opens the next.
+  await page.click('.ms-stagebar [data-stage-link="understand"]');
+  const visible = () =>
+    page.$$eval("#understand [data-ustep]", (els) => els.filter((e) => !e.hidden).length);
+  ok((await visible()) === 1, id, "Understand did not start on one step");
+  await page.click('#understand [data-ustep="0"] [data-ucontinue]');
+  ok((await visible()) === 2, id, "Continue did not open the next Understand step");
   const level = L.practice.regular.find((i) => i.model)
     ? "regular"
     : L.practice.challenge.find((i) => i.model)
@@ -160,6 +167,7 @@ async function lesson(ctx, id) {
       : null;
   if (level) {
     const item = L.practice[level].find((i) => i.model);
+    await page.click('.ms-stagebar [data-stage-link="practice"]');
     await page.click(`.ms-levels [data-level="${level}"]`);
     await page.click(`#ms-runner [data-jump="${item.id}"]`);
     await page.click('#ms-runner [data-act="model"]');
@@ -341,7 +349,7 @@ async function partsPath(page, L, id) {
   const fig = await page.$eval("#understand .ms-partsfig", (el) => el.innerText);
   for (const word of ["Coefficient", "Variable", "Constant", "Terms"])
     ok(fig.includes(word), id, `Understand parts figure missing ${word} after tapping`);
-  const vocab = await page.$eval("#understand .ms-words", (el) => el.innerText);
+  const vocab = await page.$eval("#understand .ms-words", (el) => el.textContent);
   for (const word of ["Coefficient", "Variable", "Constant", "Term"])
     ok(vocab.includes(word), id, `vocabulary missing ${word}`);
   await page.click('.ms-stagebar [data-stage-link="explore"]');
@@ -349,7 +357,9 @@ async function partsPath(page, L, id) {
 
 const desktop = await browser.newContext({ viewport: { width: 1366, height: 800 } });
 for (const id of ids)
-  await lesson(desktop, id).catch((e) => fail(id, `crashed: ${e.message.split("\n")[0]}`));
+  await lesson(desktop, id).catch((e) =>
+    fail(id, `crashed: ${e.message.split("\n").slice(0, 3).join(" ")}`),
+  );
 
 // Phone width: no horizontal scroll on any stage (sample of one lesson per unit).
 const phone = await browser.newContext({

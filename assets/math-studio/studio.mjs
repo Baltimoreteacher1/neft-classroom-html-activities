@@ -228,8 +228,37 @@ notes.addEventListener('input', () => { state.explore.notes = notes.value; save(
   if (qs.length) show();
 }
 
-// ---- Understand: tap the words, walk the examples one step at a time, answer Your turn ----
+// ---- Understand: one step at a time, simple to harder; each step opens when the one before it is done ----
 function setupUnderstand() {
+  const steps = $$('#understand [data-ustep]');
+  const progress = $('#understand .ms-uprogress');
+  const reached = () => Math.min(state.understand.step || 0, steps.length - 1);
+  const show = () => {
+    const at = reached();
+    steps.forEach((sec, i) => {
+      sec.hidden = i > at;
+      const next = $('[data-ucontinue]', sec);
+      if (next) next.closest('.ms-ustep__next').hidden = i < at;
+    });
+    progress.innerHTML = bi(`Step ${at + 1} of ${steps.length}`, `Paso ${at + 1} de ${steps.length}`);
+  };
+  const ready = (sec) => {
+    // A step with questions opens the next one only after each question is answered or worked through.
+    const qs = $$('[data-uq]', sec);
+    return qs.every((q) => state.understand.checks[q.dataset.uq]?.result);
+  };
+  const gate = (sec) => { const b = $('[data-ucontinue]', sec); if (b) b.disabled = !ready(sec); };
+  steps.forEach((sec, i) => {
+    $('[data-ucontinue]', sec)?.addEventListener('click', () => {
+      state.understand.step = Math.max(reached(), i + 1);
+      show();
+      save();
+      steps[i + 1]?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      steps[i + 1]?.querySelector('h3')?.focus?.();
+    });
+  });
+
+  // Words: say it, then tap to check.
   const cards = $$('#understand .ms-flip');
   const score = $('#understand .ms-flip__score');
   cards.forEach((b) => b.addEventListener('click', () => {
@@ -239,17 +268,38 @@ function setupUnderstand() {
     const seen = cards.filter((c) => c.getAttribute('aria-expanded') === 'true').length;
     if (score) score.innerHTML = bi(`${seen} of ${cards.length} words checked`, `${seen} de ${cards.length} palabras revisadas`);
   }));
+
+  // Questions: the word check from the lesson's words, then an easier and a harder practice question.
+  const regular = L.practice.regular;
+  const harder = regular.find((it) => /^onLevel/.test(it.id) && it !== regular[0]) || regular[regular.length - 1];
+  const sources = { words: L.understand.wordQuiz || [], 0: regular.slice(0, 1), 1: harder && harder !== regular[0] ? [harder] : regular.slice(1, 2) };
+  $$('#understand [data-ucheck]').forEach((host) => {
+    const items = sources[host.dataset.ucheck] || [];
+    const sec = host.closest('[data-ustep]');
+    host.innerHTML = items.map((it) => `<div data-uq="${esc(it.id)}"></div>`).join('');
+    items.forEach((it, k) => renderItem($(`[data-uq="${CSS.escape(it.id)}"]`, host), it, {
+      label: host.dataset.ucheck === 'words' ? [`Word ${k + 1} of ${items.length}`, `Palabra ${k + 1} de ${items.length}`] : ['Check yourself', 'Compruébalo'],
+      misconceptions: L.misconceptions,
+      rec: state.understand.checks[it.id],
+      onChange: (rec) => { state.understand.checks[it.id] = rec; gate(sec); save(); },
+    }));
+    gate(sec);
+  });
+
+  // Worked examples: one step at a time.
   $$('#understand [data-walk]').forEach((card) => {
     const lines = $$('li', card);
     let shown = 1;
-    const show = () => {
+    const walk = () => {
       lines.forEach((li, i) => { li.hidden = i >= shown; });
       $('.ms-walk', card).hidden = shown >= lines.length;
     };
-    $('[data-walk-next]', card).addEventListener('click', () => { shown++; show(); });
-    $('[data-walk-all]', card).addEventListener('click', () => { shown = lines.length; show(); });
-    show();
+    $('[data-walk-next]', card).addEventListener('click', () => { shown++; walk(); });
+    $('[data-walk-all]', card).addEventListener('click', () => { shown = lines.length; walk(); });
+    walk();
   });
+
+  // 6-5: tap each coloured part to name it.
   const fig = $('#understand [data-partsfig]');
   if (fig) {
     const parts = $$('[data-fig-part]', fig);
@@ -267,6 +317,7 @@ function setupUnderstand() {
     ans.value = state.understand.answer || '';
     ans.addEventListener('input', () => { state.understand.answer = ans.value; save(); });
   }
+  show();
 }
 
 // ---- Practice: Regular and Challenge in one runner ----

@@ -204,7 +204,7 @@ export function freshState(lessonId) {
   return {
     version: 1, lessonId, stage: 'explore', visited: [], updatedAt: 0,
     explore: { started: false, prediction: '', notes: '', values: null, checks: {} },
-    understand: { answer: '' },
+    understand: { step: 0, answer: '', checks: {} },
     practice: { level: 'regular', current: { regular: null, challenge: null }, items: {} },
     apply: { responses: {}, compared: {} },
     reflect: { items: {}, writing: '', revised: {} },

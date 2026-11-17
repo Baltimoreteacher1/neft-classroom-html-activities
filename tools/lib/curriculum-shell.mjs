@@ -86,6 +86,8 @@ export function withCurriculumShell(html, active = "", options = {}) {
     target && !/class="skip-link"/.test(html)
       ? `<a class="ewl-skip" href="#${target}">Skip to main content</a>`
       : "";
-  const nav = `<!-- curriculum-shell:begin -->\n${skip}${courseNav(active, options)}\n<!-- curriculum-shell:end -->\n`;
+  // `nav: false` (student-only pages such as the Learning Lab) keeps the shell's fonts, styles and Learning
+  // supports but leaves out the teacher-facing course navigation.
+  const nav = `<!-- curriculum-shell:begin -->\n${skip}${options.nav === false ? "" : courseNav(active, options)}\n<!-- curriculum-shell:end -->\n`;
   return html.replace(/(<body[^>]*>)\s*/, `$1\n${nav}`);
 }

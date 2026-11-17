@@ -88,8 +88,6 @@ export function auditLesson(L, manifestLesson) {
     warn.push("reflect: only one independent check (no fresh transfer item)");
   if (!r.errorAnalysis) warn.push("reflect: no error-analysis item");
   if (!onDisk(L.lab.href)) fail.routes.push(`lab missing: ${L.lab.href}`);
-  for (const res of L.resources || [])
-    if (!onDisk(res.href)) fail.routes.push(`resource missing: ${res.href}`);
   // Spanish fields are skipped: "TODO" is emphatic Spanish ("TODO el molde"), not a to-do.
   const text = JSON.stringify(L, (k, v) => (k.endsWith("Es") ? undefined : v));
   if (PLACEHOLDER.test(text)) fail.registry.push(`placeholder text: ${PLACEHOLDER.exec(text)[0]}`);

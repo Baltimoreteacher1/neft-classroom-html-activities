@@ -62,19 +62,52 @@ function lessonWords(L) {
   return isTopic ? { topic: first, list: rest } : { topic: null, list: [first, ...rest] };
 }
 
+/** The word check in Understand: two "which word means…?" questions from the lesson's own words, three choices each. */
+function wordQuiz(L) {
+  const { list } = lessonWords(L);
+  const words = list.filter((v) => v.definition);
+  if (words.length < 3) return [];
+  return words.slice(0, 2).map((v, i) => {
+    const others = words.filter((w) => w !== v).slice(i, i + 2);
+    const choices = [v, ...others];
+    // Rotate so the right answer is not always first.
+    const shift = (i + 1) % choices.length;
+    const order = [...choices.slice(shift), ...choices.slice(0, shift)];
+    return {
+      id: `words-${i}`,
+      kind: "mc",
+      prompt: `Which word means: “${v.definition}”`,
+      promptEs: v.definitionEs ? `¿Qué palabra significa: «${v.definitionEs}»?` : undefined,
+      choices: order.map((w) => w.term),
+      choicesEs: order.every((w) => w.termEs) ? order.map((w) => w.termEs) : undefined,
+      correct: order.indexOf(v),
+      hints: [
+        "Look back at the word cards above.",
+        `Find the card whose meaning talks about: ${v.definition.split(/[.;]/)[0].toLowerCase()}.`,
+      ],
+      explanation: `${v.term}: ${v.definition}`,
+      explanationEs: v.termEs && v.definitionEs ? `${v.termEs}: ${v.definitionEs}` : undefined,
+    };
+  });
+}
+
 /** Words to know, shown first: Explore gets the first four, Understand all of them. */
 function wordCards(list, { flip = false } = {}) {
   const meaning = (v) =>
     `<p>${bi(v.definition, v.definitionEs)}</p>${v.example ? `<p class="ms-muted">${esc(v.example)}</p>` : ""}`;
-  // Understand: each card is a button; the student says what the word means, then taps to check.
-  return `<ul class="ms-words${flip ? " ms-words--flip" : ""}">${list
+  // Understand: each card is a button; the student says what the word means, then taps to check. The picture comes
+  // with the meaning, full size, so it does not give the answer away first.
+  if (flip)
+    return `<ul class="ms-words ms-words--flip">${list
+      .map(
+        (v) =>
+          `<li><div><button type="button" class="ms-flip" aria-expanded="false"><strong>${bi(v.term, v.termEs)}</strong><span class="ms-flip__hint">${bi("Tap to check what it means", "Toca para ver qué significa")}</span></button><div class="ms-flip__back" hidden>${v.image ? `<img class="ms-flip__img" src="${esc(v.image)}" alt="${esc(`Picture for ${v.term}`)}" loading="lazy">` : ""}${meaning(v)}</div></div></li>`,
+      )
+      .join("")}</ul>`;
+  return `<ul class="ms-words">${list
     .map(
       (v) =>
-        `<li>${v.image ? `<img src="${esc(v.image)}" alt="" width="56" height="56" loading="lazy">` : ""}<div>${
-          flip
-            ? `<button type="button" class="ms-flip" aria-expanded="false"><strong>${bi(v.term, v.termEs)}</strong><span class="ms-flip__hint">${bi("Tap to check what it means", "Toca para ver qué significa")}</span></button><div class="ms-flip__back" hidden>${meaning(v)}</div>`
-            : `<strong>${bi(v.term, v.termEs)}</strong>${meaning(v)}`
-        }</div></li>`,
+        `<li>${v.image ? `<img src="${esc(v.image)}" alt="" width="56" height="56" loading="lazy">` : ""}<div><strong>${bi(v.term, v.termEs)}</strong>${meaning(v)}</div></li>`,
     )
     .join("")}</ul>`;
 }
@@ -125,26 +158,85 @@ function partsFigure(x) {
   return `<figure class="ms-partsfig" data-partsfig><figcaption><strong>${bi("Parts of an expression: tap each coloured part", "Partes de una expresión: toca cada parte de color")}</strong></figcaption><div class="ms-expr" role="group" aria-label="${esc(`${vt} ${op} ${x.b}`)}">${term(`${x.a === 1 ? "" : tok("coefficient", x.a)}${tok("variable", x.variable)}`)}<span class="ms-op" aria-hidden="true">${op}</span>${term(tok("constant", x.b))}</div><ul class="ms-legend" aria-live="polite">${item("coefficient", `Coefficient: ${x.a} — the number multiplied by the variable`, `Coeficiente: ${x.a} — el número que multiplica a la variable`)}${item("variable", `Variable: ${x.variable} — a letter for a number that can change`, `Variable: ${x.variable} — una letra para un número que puede cambiar`)}${item("constant", `Constant: ${x.b} — a number with no variable; it stays the same`, `Constante: ${x.b} — un número sin variable; no cambia`)}<li class="ms-legend--term" data-fig-legend="term" hidden>${bi(`Terms: 2 — the parts joined by + or −: ${vt} and ${x.b}`, `Términos: 2 — las partes unidas por + o −: ${vt} y ${x.b}`)}</li></ul></figure>`;
 }
 
+/**
+ * Understand, built one step at a time from simple to harder: (the parts, 6-5) → words → a word check → the idea →
+ * Watch me → Let's do one together → Your turn → an easier then a harder check question → the key idea.
+ * Each step opens when the one before it is done (studio.mjs); the runtime fills the word check and the questions.
+ */
 function understand(L) {
   const u = L.understand;
   const list = u.vocabulary || [];
-  // One column, read top to bottom: the parts (6-5), the words, the idea, the worked examples, then the summary.
+  const cont = (en = "Continue", es = "Continuar") =>
+    `<p class="ms-ustep__next"><button type="button" class="ms-btn" data-ucontinue>${bi(en, es)}</button></p>`;
+  const step = (key, en, es, body, next = cont()) => ({ key, en, es, body, next });
+  const steps_ = [
+    L.explore?.kind === "expression-parts" &&
+      step(
+        "parts",
+        "The parts of an expression",
+        "Las partes de una expresión",
+        partsFigure(L.explore),
+      ),
+    list.length &&
+      step(
+        "words",
+        "Words to know",
+        "Palabras clave",
+        `<p class="ms-muted">${bi("Say what each word means, then tap the card to check.", "Di qué significa cada palabra y luego toca la tarjeta para comprobar.")}</p>${wordCards(list, { flip: true })}<p class="ms-flip__score" aria-live="polite"></p>`,
+      ),
+    wordQuiz(L).length &&
+      step(
+        "wordcheck",
+        "Check the words",
+        "Comprueba las palabras",
+        `<div data-ucheck="words"></div>`,
+        cont(),
+      ),
+    step(
+      "idea",
+      u.heading || "The big idea",
+      u.headingEs || "La idea principal",
+      `${u.intro ? `<p class="ms-lead">${bi(u.intro, u.introEs)}</p>` : ""}${u.picture ? `<figure class="ms-picture"><img src="${esc(u.picture.src)}" alt="${esc(u.picture.alt || "")}" loading="lazy"><figcaption>${bi(u.picture.context || "", u.picture.contextEs)}</figcaption></figure>` : ""}`,
+    ),
+    u.iDo && step("ido", "Watch me", "Mírame", steps(u.iDo)),
+    u.weDo &&
+      step(
+        "wedo",
+        "Let’s do one together",
+        "Hagamos uno juntos",
+        `<p class="ms-muted">${bi("Before each step, say what you think comes next. Then show it.", "Antes de cada paso, di qué crees que sigue. Luego muéstralo.")}</p>${steps(u.weDo)}`,
+      ),
+    u.youDo && step("youdo", "Your turn", "Tu turno", steps(u.youDo, true)),
+    L.practice.regular.length &&
+      step(
+        "check1",
+        "Check yourself: a first question",
+        "Compruébalo: una primera pregunta",
+        `<div data-ucheck="0"></div>`,
+      ),
+    L.practice.regular.length > 1 &&
+      step(
+        "check2",
+        "Check yourself: a harder question",
+        "Compruébalo: una pregunta más difícil",
+        `<div data-ucheck="1"></div>`,
+      ),
+    step(
+      "summary",
+      "Put it together",
+      "Júntalo todo",
+      `${keyIdea(u.keyIdea, u.keyIdeaEs)}${u.mistake ? `<details class="ms-support"><summary>${bi("Watch out for a common mistake", "Cuidado con un error común")}</summary><p>${esc(u.mistake)}</p></details>` : ""}${u.frame ? `<details class="ms-support"><summary>${bi("Sentence frame", "Marco de oración")}</summary><p class="ms-frame">${bi(u.frame, u.frameEs)}</p></details>` : ""}`,
+      `<p class="ms-row"><button type="button" class="ms-btn" data-goto="practice">${bi("Go to Practice", "Ir a Practica")}</button><button type="button" class="ms-btn ms-btn--quiet" data-goto="explore">${bi("See it in the model", "Míralo en el modelo")}</button></p>`,
+    ),
+  ].filter(Boolean);
   return `<div class="ms-understand">
-    ${L.explore?.kind === "expression-parts" ? partsFigure(L.explore) : ""}
-    ${list.length ? `<section class="ms-start"><h3>${bi("1. Words to know", "1. Palabras clave")}</h3><p class="ms-muted">${bi("Say what each word means, then tap the card to check.", "Di qué significa cada palabra y luego toca la tarjeta para comprobar.")}</p>${wordCards(list, { flip: true })}<p class="ms-flip__score" aria-live="polite"></p></section>` : ""}
-    <section>
-      <h3>${bi(`${list.length ? "2. " : ""}${u.heading || "The big idea"}`, u.headingEs ? `${list.length ? "2. " : ""}${u.headingEs}` : "")}</h3>
-      ${u.intro ? `<p class="ms-lead">${bi(u.intro, u.introEs)}</p>` : ""}
-      ${u.picture ? `<figure class="ms-picture"><img src="${esc(u.picture.src)}" alt="${esc(u.picture.alt || "")}" loading="lazy"><figcaption>${bi(u.picture.context || "", u.picture.contextEs)}</figcaption></figure>` : ""}
-    </section>
-    <section>
-      <h3>${bi(`${list.length ? "3. " : ""}Follow the examples`, `${list.length ? "3. " : ""}Sigue los ejemplos`)}</h3>
-      <div class="ms-cra" role="group" aria-label="Worked examples">${steps(u.iDo)}${steps(u.weDo)}${steps(u.youDo, true)}</div>
-    </section>
-    ${keyIdea(u.keyIdea, u.keyIdeaEs)}
-    ${u.mistake ? `<details class="ms-support"><summary>${bi("Watch out for a common mistake", "Cuidado con un error común")}</summary><p>${esc(u.mistake)}</p></details>` : ""}
-    ${u.frame ? `<details class="ms-support"><summary>${bi("Sentence frame", "Marco de oración")}</summary><p class="ms-frame">${bi(u.frame, u.frameEs)}</p></details>` : ""}
-    <p><button type="button" class="ms-btn ms-btn--quiet" data-goto="explore">${bi("See it in the model", "Míralo en el modelo")}</button></p>
+    <p class="ms-uprogress" aria-live="polite"></p>
+    ${steps_
+      .map(
+        (st, i) =>
+          `<section class="ms-ustep" data-ustep="${i}" data-ukey="${st.key}"${i ? " hidden" : ""} aria-labelledby="ms-u-${st.key}"><h3 id="ms-u-${st.key}" tabindex="-1">${bi(`Step ${i + 1} of ${steps_.length}: ${st.en}`, `Paso ${i + 1} de ${steps_.length}: ${st.es}`)}</h3>${st.body}${st.next}</section>`,
+      )
+      .join("")}
   </div>`;
 }
 
@@ -192,7 +284,7 @@ const stageHead = (i, key, en, es, lead, leadEs) =>
 
 export function lessonPage(L, stamp) {
   const css = `/assets/math-studio/studio.css?v=${stamp}`;
-  const data = { ...L, resources: undefined };
+
   const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -209,7 +301,6 @@ export function lessonPage(L, stamp) {
 <body class="ms" data-lesson="${esc(L.id)}">
 <header class="ms-hero">
   <div class="ms-wrap">
-    <nav class="ms-crumbs" aria-label="Breadcrumb"><a href="/curriculum/units/">Lessons</a><a href="/lessons/${esc(L.id)}/">Lesson ${esc(L.id)}</a><span aria-current="page">Learning Lab</span></nav>
     <div class="ms-hero__row">
       <div>
         <p class="ms-eyebrow">Learning Lab (Practice HTML) · Unit ${esc(L.unit)} · Lesson ${esc(L.id)}${L.standard ? ` · ${esc(L.standard)}` : ""}</p>
@@ -279,17 +370,13 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
     <div id="ms-reflect"><p class="ms-muted">Loading…</p></div>
     <div id="ms-evidence" class="ms-evidence"></div>
   </section>
-  <details class="ms-teacher">
-    <summary>Teacher resources for lesson ${esc(L.id)}</summary>
-    <ul>${L.resources.map((r) => `<li><a href="${esc(r.href)}">${esc(r.label)}</a></li>`).join("")}</ul>
-  </details>
 </main>
-<script type="application/json" id="ms-data">${json(data)}</script>
+<script type="application/json" id="ms-data">${json({ ...L, understand: { ...L.understand, wordQuiz: wordQuiz(L) } })}</script>
 <script type="module" src="/assets/math-studio/studio.mjs?v=${stamp}"></script>
 </body>
 </html>
 `;
-  return withCurriculumShell(html, "units");
+  return withCurriculumShell(html, "units", { nav: false });
 }
 
 export function finderPage(lessons, stamp) {

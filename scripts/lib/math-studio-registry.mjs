@@ -249,21 +249,6 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
         })
       : undefined;
   const [practiceUrl, challengeUrl] = studioUrls(id);
-  const resources = [
-    ["Interactive lesson", `/lessons/${id}/`],
-    ["Slides", `/lessons/${id}/slides.html`],
-    ["Student notes", `/lessons/${id}/notes.html`],
-    ["Worksheet", `/lessons/${id}/worksheet.html`],
-    ["Printable lesson", `/lessons/${id}/printable.html`],
-    ["Vocabulary", `/lessons/${id}/vocab.html`],
-    ["Small group: support", `/lessons/${id}-group1/`],
-    ["Small group: challenge", `/lessons/${id}-group2/`],
-    ["Part 2 · Apply", `/lessons/${id}-part2/`],
-    ["Family homework", `/lessons/${id}/homework.html`],
-    ["Lesson path (one page)", `/math/lesson-path/${id}/`],
-  ]
-    .filter(([, href]) => has(href))
-    .map(([label, href]) => ({ label, href }));
 
   return clean({
     id,
@@ -392,7 +377,6 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
           }),
         ]),
     ),
-    resources,
   });
 }
 

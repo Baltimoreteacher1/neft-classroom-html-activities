@@ -168,19 +168,6 @@ body.ms .ms-hero h1 {
   font-size: 1.08rem;
   color: #eef3f8;
 }
-.ms-crumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  font-size: 0.92rem;
-  margin-bottom: 12px;
-}
-.ms-crumbs a {
-  color: #d9ecff;
-}
-.ms-crumbs span {
-  color: #fff;
-}
 .ms-hero__row {
   display: flex;
   justify-content: space-between;
@@ -786,25 +773,6 @@ body.ms .ms-dot[data-result="trying"] {
   font-weight: 700;
   color: var(--ms-navy);
 }
-.ms-teacher {
-  margin: 10px 0 40px;
-  padding: 12px 18px;
-  background: var(--ms-paper);
-  border: 1px solid var(--ms-line);
-  border-radius: var(--ms-radius);
-}
-.ms-teacher summary {
-  cursor: pointer;
-  font-weight: 700;
-  color: var(--ms-navy);
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-}
-.ms-teacher ul {
-  columns: 2;
-  padding-inline-start: 20px;
-}
 
 /* Finder */
 .ms-unit {
@@ -878,9 +846,6 @@ body.ms .skip-link:focus {
     justify-items: start;
     text-align: start;
   }
-  .ms-teacher ul {
-    columns: 1;
-  }
 }
 @media (max-width: 600px) {
   .ms-wrap {
@@ -919,9 +884,6 @@ body.ms .skip-link:focus {
 body.ms.curriculum-product .ewl-course-nav {
   position: static;
 }
-body.ms .ms-crumbs a {
-  color: #d9ecff;
-}
 .ms-choice.is-wrong,
 .ms-choice.is-wrong:has(input:checked) {
   border-color: var(--ms-terra-ink);
@@ -938,10 +900,6 @@ body.ms .ms-h1-sub {
 @media (max-width: 600px) {
   .ms-hero {
     padding: 12px 0 14px;
-  }
-  .ms-crumbs {
-    margin-bottom: 6px;
-    font-size: 0.85rem;
   }
   body.ms .ms-hero h1 {
     font-size: 1.6rem;
@@ -1112,8 +1070,11 @@ body.ms .ms-like__term input, body.ms .ms-like__term select { width: 64px; }
 .ms-parts__say.ms-legend--coefficient { border-inline-start-color: var(--ms-terra); }
 .ms-parts__say.ms-legend--variable { border-inline-start-color: var(--ms-teal); }
 .ms-parts__say.ms-legend--constant { border-inline-start-color: var(--ms-mustard); }
-body.ms .ms-tok.is-dim, .ms-op.is-dim { opacity: 0.3; }
-.ms-term.is-quiet .ms-term__brace, .ms-term.is-quiet .ms-term__label { opacity: 0.25; }
+/* Faded parts keep readable text (contrast), only the colour fill steps back. */
+body.ms .ms-tok.is-dim { background: #f1f1ef; border-color: #d4d4d0; color: var(--ms-muted); }
+.ms-op.is-dim { color: var(--ms-muted); }
+.ms-term.is-quiet .ms-term__brace { opacity: 0.25; }
+.ms-term.is-quiet .ms-term__label { color: var(--ms-muted); }
 .ms-parts [hidden], .ms-try [hidden] { display: none !important; }
 .ms-start__topic { margin: 0 0 12px; font-size: 1.05rem; }
 .ms-explore.is-learning .ms-guide { display: none; }
@@ -1133,3 +1094,12 @@ body.ms .ms-partsfig .ms-tok.is-on { box-shadow: 0 0 0 4px var(--ms-navy); }
 .ms-start h4 { margin: 4px 0 8px; color: var(--ms-navy); }
 #ms-gate [hidden], #explore [data-after-gate][hidden], #ms-explore-body[hidden] { display: none !important; }
 .ms-model .direct-click-place { display: none; }
+/* Understand, step by step. */
+.ms-uprogress { margin: 0; color: var(--ms-muted); font-weight: 700; }
+.ms-ustep { background: var(--ms-paper); border: 1px solid var(--ms-line); border-radius: var(--ms-radius); padding: 14px 18px; }
+.ms-ustep h3 { margin: 0 0 10px; color: var(--ms-navy); }
+.ms-ustep h3:focus { outline: none; }
+.ms-ustep__next { margin: 14px 0 0; }
+.ms-ustep[hidden], .ms-ustep__next[hidden] { display: none !important; }
+.ms-ustep .ms-picture, .ms-ustep .ms-partsfig { margin: 8px 0 0; }
+.ms-flip__img { display: block; width: 100%; max-width: 220px; height: auto; max-height: 160px; object-fit: contain; margin: 8px 0 4px; background: var(--ms-cream); border-radius: 8px; }
