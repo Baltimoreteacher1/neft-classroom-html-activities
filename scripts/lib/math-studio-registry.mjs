@@ -5,10 +5,23 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { verifyHandoff, verifySolve } from "../../assets/math-studio/core.mjs";
+import { hasRealVocabImage, resolveVocabImage } from "../../engine/core/vocab-images.js";
 import { controls, evaluate } from "../../curriculum/learning-labs/shared/math.mjs";
 import { blueprints } from "../../tools/learning-labs/blueprints.mjs";
 import { loadLessonConfig, REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 import { studioUrls } from "../generate-lesson-paths.mjs";
+
+/**
+ * A word's picture, found the way every other page finds it (engine/core/vocab-images.js): the lesson's own pinned
+ * image when it exists, else the shared library's picture for that word. Words with only a generic category tile
+ * get none, rather than a picture that means nothing.
+ */
+function vocabImage(v) {
+  if (v.image && existsSync(join(REPO_ROOT, v.image))) return v.image;
+  if (!hasRealVocabImage(v.term)) return undefined;
+  const src = resolveVocabImage(v.term);
+  return existsSync(join(REPO_ROOT, src)) ? src : undefined;
+}
 
 /** Units in scope: the taught units with Practice Studios. Units 1 and 10 are not taught (Joel, 10-07 and 11-11). */
 export const MATH_STUDIO_UNITS = [2, 3, 4, 5, 6, 7, 8, 9];
@@ -309,7 +322,7 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
           aliases: v.aliases,
           definition: v.definition,
           definitionEs: v.definitionEs,
-          image: v.image && has(v.image) ? v.image : undefined,
+          image: vocabImage(v),
           example: v.visual,
         }),
       ),
