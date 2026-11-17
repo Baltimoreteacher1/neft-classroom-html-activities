@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "3130d8e248bf";
+const BUILD_HASH = "002c28db0ff9";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -46,7 +46,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
   "/access-practice-lab/src/early/gate.js?v=dc7e5bb7a200",
   "/access-practice-lab/src/wayfinding.js?v=7947224eada7",
-  "/access-practice-lab/src/sitemap.js?v=21cbab18f818",
+  "/access-practice-lab/src/sitemap.js?v=a04689caa297",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
   "/access-practice-lab/src/content.js?v=b352e379ff6d",
@@ -82,7 +82,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/intro/return-bar.js?v=79c35e605cef",
   "/access-practice-lab/src/intro/data.js?v=b892b13ace14",
   "/access-practice-lab/src/studio-video-mount.js?v=74d8218601a7",
-  "/access-practice-lab/src/studio-video-routes.js?v=f661e32dd956",
+  "/access-practice-lab/src/studio-video-routes.js?v=245006e156d1",
   "/access-practice-lab/src/fold.js?v=61a347e26b69",
   "/access-practice-lab/src/views/home.js?v=27245f262bf1",
   "/access-practice-lab/src/lang/adapt.js?v=61f2ee6f6b67",
@@ -200,7 +200,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/language-games.css?v=e79a35061d11",
   "/access-practice-lab/book-collab.css?v=dea5714036f5",
   "/access-practice-lab/wayfinding.css?v=4f2abe71931d",
-  "/access-practice-lab/registers.css?v=10b28cf2d2ba",
+  "/access-practice-lab/registers.css?v=8acfb8e6bc81",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971bc05",
   "/access-practice-lab/src/acc/adapt/mastery.js?v=6f68f26cce40",
   "/access-practice-lab/src/acc/analytics/evidence.js?v=f7255a9c4954",

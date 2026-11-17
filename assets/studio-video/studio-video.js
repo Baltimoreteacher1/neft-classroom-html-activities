@@ -37,11 +37,7 @@ class StudioVideo extends HTMLElement {
   connectedCallback() {
     if (this.upgraded || this.observed) return;
     this.observed = true;
-    if (prefersReducedMotion()) {
-      this.dataset.reducedMotion = "true";
-      const transcript = this.querySelector(".sv-transcript");
-      if (transcript) transcript.open = true;
-    }
+    if (prefersReducedMotion()) this.dataset.reducedMotion = "true";
     lazily(this);
   }
 

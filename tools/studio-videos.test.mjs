@@ -437,7 +437,7 @@ test("component promises hold, and each detector fires on a mutation of the real
     [mutate("js", 'track.kind = "captions"', 'track.kind = "subtitles"'), /captions <track>/],
     [mutate("js", "video.muted = !narrated", "video.muted = false"), /muted/],
     [mutate("js", /IntersectionObserver/g, "Nope"), /IntersectionObserver/],
-    [mutate("js", "transcript.open = true", "transcript.open = false"), /reduced-motion/],
+    [mutate("js", /prefers-reduced-motion/g, "motion-pref"), /reduced-motion/],
     [{ ...base, js: `${base.js}\nvideo.autoplay = true;` }, /autoplay/],
     [{ ...base, js: `${base.js}\nsetTimeout(() => video.play(), 0);` }, /only play\(\) call/],
     [
@@ -453,7 +453,7 @@ test("component promises hold, and each detector fires on a mutation of the real
       mutate("css", "prefers-reduced-motion: reduce", "prefers-reduced-motion: none"),
       /reduced-motion/,
     ],
-    [mutate("markup", "<summary>Captions text</summary>", "<summary>Text</summary>"), /disclosure/],
+    [{ ...base, markup: `${base.markup}<p class="sv-note">Captions are on.</p>` }, /no text under the video/],
     [mutate("markup", 'alt=""', 'alt="x" data-x'), /alt/],
     [mutate("markup", "sv-fallback-label", "sv-x"), /labelled link/],
   ];

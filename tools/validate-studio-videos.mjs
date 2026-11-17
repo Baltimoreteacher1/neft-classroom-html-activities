@@ -66,10 +66,7 @@ export function componentProblems(sources) {
     /IntersectionObserver/.test(js),
     "the player must load lazily through an IntersectionObserver",
   );
-  need(
-    /prefers-reduced-motion/.test(js) && /transcript\.open\s*=\s*true/.test(js),
-    "prefers-reduced-motion must open the captions text",
-  );
+  need(/prefers-reduced-motion/.test(js), "the player must honour prefers-reduced-motion");
   need(
     /prefers-reduced-motion:\s*reduce/.test(css),
     "the stylesheet needs a prefers-reduced-motion block",
@@ -85,11 +82,11 @@ export function componentProblems(sources) {
       !/(?:src|href|url\()\s*=?\s*["']?https?:\/\//i.test(text),
       `${name} must not request a third-party URL`,
     );
+  // Product decision studio-video-no-text-under-video (Joel 2026-11-17): no note or captions text under the video.
   need(
-    /<details class="sv-transcript"><summary>Captions text<\/summary>/.test(markup),
-    "the card needs a captions text disclosure",
+    !/class="sv-(?:note|transcript|cues)"/.test(markup),
+    "no text under the video: the note and captions text were removed by product decision studio-video-no-text-under-video",
   );
-  need(/<ol class="sv-cues" aria-label=/.test(markup), "the cue list needs an accessible name");
   need(
     /<img [^>]*width="\d+" height="\d+"[^>]*alt=""/.test(markup),
     "the poster needs width, height and (decorative) empty alt",

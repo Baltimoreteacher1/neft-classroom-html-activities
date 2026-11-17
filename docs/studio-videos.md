@@ -106,9 +106,9 @@ default. Without JavaScript the card is a labelled link to the MP4 plus the full
 silent, and the card says so.
 
 **Narrated films.** An entry with `"narrated": true` is a film with a spoken track and no burned-in captions: its
-card says it has narration, the player does not force the video muted, and the captions track is `default`
+the player does not force the video muted, and the captions track is `default`
 (showing from the first word; the viewer can turn it off). Everything else is unchanged: click to play, no
-autoplay, `preload="none"`, the full cue list under "Captions text". `tools/language-intro/overview/` holds the
+autoplay, `preload="none"`, no note or captions text under the video (product decision `studio-video-no-text-under-video`, Joel 2026-11-17; the words are the captions track). `tools/language-intro/overview/` holds the
 source of the one narrated film (script, real-site capture, narration, Remotion composition; see its README).
 
 ## Checking it in a browser (not part of the gate: needs a browser with H.264)

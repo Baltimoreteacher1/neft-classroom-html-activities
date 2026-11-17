@@ -122,7 +122,7 @@ export const withoutBlock = stripBlocks;
 const HUBS = {
   eduwonderlab: {
     title: "Videos | EduWonderLab",
-    lead: "Short animated lessons from EduWonderLab. Each one has captions and a written copy of its words.",
+    lead: "Short animated lessons from EduWonderLab. Each one has captions you can turn on or off in the player.",
     fonts: "/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css",
     nav: [
       ["/", "Neft Teacher home"],
@@ -133,7 +133,7 @@ const HUBS = {
   },
   languagepage: {
     title: "Videos | The Language Page",
-    lead: "Short animated videos from The Language Page. Each one has captions and a written copy of its words.",
+    lead: "Short animated videos from The Language Page. Each one has captions you can turn on or off in the player.",
     fonts: "/assets/fonts/fraunces-87aa83.css",
     fontsExtra: "/assets/fonts/atkinson-hyperlegible-nunito-76729d.css",
     nav: [["/access-practice-lab/", "The Language Page home"]],

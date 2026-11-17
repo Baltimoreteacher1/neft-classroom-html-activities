@@ -1500,8 +1500,8 @@ export const DESTINATIONS = Object.freeze([
     match: [],
     title: P("Videos", "Videos"),
     text: P(
-      "Short animated videos with English captions and a written copy.",
-      "Videos animados cortos con subtítulos en inglés y una copia escrita.",
+      "Short animated videos with English captions.",
+      "Videos animados cortos con subtítulos en inglés.",
     ),
   },
   {
