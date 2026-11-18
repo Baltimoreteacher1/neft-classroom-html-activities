@@ -268,48 +268,68 @@ body.th-body .lab-main {
 }
 .th-task-group.lab-main {
   min-height: 0;
-  padding-block: clamp(1.5rem, 3vw, 2.4rem) var(--s-5);
+  width: min(1136px, 100% - 2rem);
+  margin: 0 auto;
+  border-block-end: 1px solid var(--line);
   scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
 }
-.th-task-heading {
-  width: min(1136px, 100% - 2rem);
-  margin: 0 auto var(--s-4);
-  padding-block-end: var(--s-3);
-  border-block-end: 1px solid var(--line);
+.th-task-summary {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  min-block-size: 5rem;
+  padding-block: 0.75rem;
+  cursor: pointer;
+  list-style: none;
 }
-.th-task-heading p {
-  margin: 0 0 0.2rem;
+.th-task-summary::-webkit-details-marker { display: none; }
+.th-task-summary::marker { content: ""; }
+.th-task-summary:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: var(--r-md);
+}
+.th-task-step {
+  flex: none;
   color: var(--teal);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
 }
-.th-task-heading h2 {
-  margin: 0;
+.th-task-label { display: grid; gap: 0.2rem; }
+.th-task-label strong {
   color: var(--ink);
-  font: 700 clamp(1.4rem, 1.15rem + 1vw, 1.9rem)/1.2 var(--font-display, var(--font));
-  text-wrap: balance;
+  font: 700 clamp(1.15rem, 1rem + 0.7vw, 1.45rem)/1.2 var(--font-display, var(--font));
 }
-.th-task-heading span {
-  display: block;
-  margin-block-start: 0.25rem;
-  color: var(--ink-2);
+.th-task-label > span { color: var(--ink-2); font-size: 0.9rem; }
+.th-task-toggle {
+  margin-inline-start: auto;
+  flex: none;
+  color: var(--brand-deep);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
-.th-task-group > .th-sec {
-  width: min(1136px, 100% - 2rem);
+.th-task-toggle::after { content: "＋"; margin-inline-start: 0.5rem; }
+.th-task-group[open] .th-task-toggle::before { content: "Hide tools"; }
+.th-task-group[open] .th-task-toggle { font-size: 0; }
+.th-task-group[open] .th-task-toggle::before { font-size: 0.85rem; }
+.th-task-group[open] .th-task-toggle::after { content: "−"; font-size: 1rem; }
+.th-task-group-content { padding-block: 0.5rem var(--s-4); }
+.th-task-group-content > .th-sec {
+  width: 100%;
 }
-.th-task-group #classEvidence {
+.th-task-group-content #classEvidence {
   width: min(1136px, 100% - 2rem);
   margin-inline: auto;
   scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
 }
-.th-task-group #hub {
+.th-task-group-content #hub {
   width: min(1136px, 100% - 2rem);
   margin-inline: auto;
   padding: 0 0 var(--s-5);
   scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
 }
-.th-task-group #familyTripHost:empty {
+.th-task-group-content #familyTripHost:empty {
   display: none;
 }
 .th-task-group:focus {
@@ -1256,7 +1276,7 @@ body.th-body .fold-toggle {
 }
 @media (max-width: 559px) {
   .tc-action-grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 .tc-action-card {
@@ -1609,7 +1629,7 @@ body.th-body .fold-toggle {
 }
 @media (min-width: 1100px) {
   .tc-action-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .tc-action-card {
     flex-direction: column;
@@ -1757,7 +1777,7 @@ body.th-body .fold-toggle {
   .th-intro .th-hero .lead {
     display: none;
   }
-  /* Phones: titles only, so all five tasks fit on the first screen. */
+  /* Phones: compact titles make all six choices quick to scan. */
   .tc-action-card {
     align-items: center;
     min-height: 3.25rem;
@@ -1771,6 +1791,11 @@ body.th-body .fold-toggle {
     width: 2rem;
     height: 2rem;
   }
+  .th-task-summary { align-items: flex-start; gap: 0.55rem; }
+  .th-task-step { font-size: 0.66rem; padding-block-start: 0.25rem; }
+  .th-task-label > span { font-size: 0.8rem; }
+  .th-task-toggle { font-size: 0 !important; }
+  .th-task-toggle::after { font-size: 1rem; }
 }
 
 /* Site navigation: the same six places as every lab page (Home · Teachers · Students · Families · Find Resources · Help). */

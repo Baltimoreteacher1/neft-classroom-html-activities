@@ -47,12 +47,13 @@ import { findTaskHTML, planToolsHTML, prepareTaskHTML } from "/access-teacher/hu
 
 export const SAVED_PATHWAYS_KEY = "accessTeacher:v1:savedPathways";
 
-// The five tasks shown on arrival. Each opens its panel in place; picking it again closes it.
+// The six choices shown on arrival. Each opens its panel in place; picking it again closes it.
 export const COMMAND_ACTIONS = Object.freeze([
   { id: "find", icon: "search", title: "Find an Activity", lead: "Search activities, printables and answer keys." },
   { id: "plan", icon: "road", title: "Plan a Lesson", lead: "Build a short lesson from ready activities." },
   { id: "create", icon: "sparkle", title: "Create Something", lead: "Make a book, an activity or a class link." },
   { id: "analyze", icon: "growth", title: "Review Student Progress", lead: "See what students did and what to teach next." },
+  { id: "data", icon: "growth", title: "Analyze ACCESS Data", lead: "Explore score patterns and language growth." },
   { id: "prepare", icon: "tests", title: "Prepare for ACCESS", lead: "Test practice, the simulator and a weekly plan." },
 ]);
 
@@ -524,17 +525,9 @@ export async function mountCommandCenter(host) {
         <div>
           <h3>Review Student Progress</h3>
           <p class="fine">
-            All analysis distinguishes observed performance from estimates. Practice activities record
-            first attempts, supported vs. independent work, and revisions—never an invented WIDA score.
+            Review classroom evidence, response history, and the next teaching steps. Practice records
+            first attempts, supported vs. independent work, and revisions.
           </p>
-        </div>
-        <div class="tc-stage-actions">
-          <a class="btn btn-primary small" href="/access-teacher/predictive/">
-            ${icon("growth")} Open WIDA Data Studio
-          </a>
-          <a class="btn small" href="/access-teacher/predictive/?demo=1">
-            Try Data Studio with Sample Class
-          </a>
         </div>
       </div>
 
@@ -555,11 +548,6 @@ export async function mountCommandCenter(host) {
 
       <div class="tc-rec-grid">
         <article class="tc-rec-card">
-          <strong>WIDA Data Intelligence Studio</strong>
-          <span class="fine">Import official ACCESS or MODEL scores, analyze domain bottlenecks, view longitudinal trajectories, and form instructional groups.</span>
-          <a class="btn small" href="/access-teacher/predictive/">Open Data Studio →</a>
-        </article>
-        <article class="tc-rec-card">
           <strong>Speaking &amp; Writing Review Queue</strong>
           <span class="fine">Read and listen to student submissions, give rubric feedback, and assign targeted follow-up loops.</span>
           <a class="btn small" href="#accReview">Jump to Review Queue →</a>
@@ -579,6 +567,28 @@ export async function mountCommandCenter(host) {
           <span class="fine">See who joined with your class code, what you assigned, and the check-ins students sent.</span>
           <a class="btn small" href="#liveClass">Jump to Live Class →</a>
         </article>
+      </div>
+    </div>`;
+  }
+
+  function renderDataTab() {
+    return html`<div class="tc-workspace" id="tcData" role="region" aria-labelledby="tc-tab-data">
+      <div class="tc-ws-head">
+        <div>
+          <h3>WIDA Data Studio</h3>
+          <p class="fine">
+            Explore score patterns, domain strengths, longitudinal growth, and hypothetical score scenarios.
+            Results distinguish observed data from estimates and explain each analysis in plain language.
+          </p>
+        </div>
+        <div class="tc-stage-actions">
+          <a class="btn btn-primary small" href="/access-teacher/predictive/">
+            ${icon("growth")} Open Data Studio
+          </a>
+          <a class="btn small" href="/access-teacher/predictive/?demo=1">
+            Try with Sample Data
+          </a>
+        </div>
       </div>
     </div>`;
   }
@@ -665,6 +675,7 @@ export async function mountCommandCenter(host) {
       support: renderSupportTab,
       assign: renderAssignTab,
       analyze: renderAnalyzeTab,
+      data: renderDataTab,
       create: renderCreateTab,
       prepare: () => prepareTaskHTML(state.band),
     };

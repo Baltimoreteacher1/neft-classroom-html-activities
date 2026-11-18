@@ -108,19 +108,19 @@ async function sweep(label) {
   await page.setViewportSize({ width: 1280, height: 900 });
 }
 
-// 1. Teacher Hub's Review Student Progress task exposes the studio and its sample-data route.
+// 1. Teacher Hub's dedicated Data Studio card exposes the studio and its sample-data route.
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "domcontentloaded" });
 await openHubSections(page);
-const reviewProgress = page.locator("#tc-tab-analyze");
-if ((await reviewProgress.getAttribute("aria-expanded")) !== "true") await reviewProgress.click();
-await page.locator("#tcAnalyze").waitFor();
+const dataAction = page.locator("#tc-tab-data");
+if ((await dataAction.getAttribute("aria-expanded")) !== "true") await dataAction.click();
+await page.locator("#tcData").waitFor();
 ok(
-  (await page.locator(`#tcAnalyze a[href="${WS}"]`).count()) > 0,
-  "Review Student Progress opens WIDA Data Studio",
+  (await page.locator(`#tcData a[href="${WS}"]`).count()) > 0,
+  "Analyze ACCESS Data card opens WIDA Data Studio",
 );
 ok(
-  (await page.locator(`#tcAnalyze a[href="${WS}?demo=1"]`).count()) > 0,
-  "Review Student Progress keeps the sample-data entry point",
+  (await page.locator(`#tcData a[href="${WS}?demo=1"]`).count()) > 0,
+  "Analyze ACCESS Data card keeps the sample-data entry point",
 );
 
 // 2. First visit opens the sample class; My class with no data shows the welcome screen.
