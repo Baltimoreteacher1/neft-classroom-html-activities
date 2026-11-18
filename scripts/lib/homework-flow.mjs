@@ -84,12 +84,12 @@ export function renderLookAndLearn(
       </section>`
           : ""
       }
+      ${modelHtml}
       <button type="button" class="fp-understand-cta" ${act("openFamilyStudio", "understand")} aria-haspopup="dialog">
         <span class="fp-understand-icon" aria-hidden="true">📖</span>
         <span><strong>${bi("New to this? Understand it first", "¿Es nuevo? Primero entiéndanlo")}</strong>
         <small>${bi("Watch it, move it, spot a mistake: about 3 minutes", "Mírenlo, muévanlo, encuentren un error: unos 3 minutos")}</small></span>
       </button>
-      ${modelHtml}
       ${
         steps.length
           ? `<details class="fp-card fp-example" aria-labelledby="hw_example_label" data-reveal>

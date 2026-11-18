@@ -42,6 +42,9 @@ function renderModelStage(v3, lessonId) {
       <h3 class="hw-colearn-title" id="hw_model_title">${bi("The picture for tonight", "El dibujo de hoy")}</h3>
       <p class="hw-colearn-lead">${bi("In class we used", "En clase usamos")} <strong>${pair(v3.classModel.name)}</strong>.</p>
       <figure class="hw-colearn-svg-stage">${figure}</figure>
+      <div class="hw-colearn-actions">
+        <button type="button" class="fm-btn hw-try-model-btn" data-act="switchHomeworkTab" data-args='["explore"]'>${bi("Try the interactive model →", "Probar el modelo interactivo →")}</button>
+      </div>
     </section>`;
 }
 
