@@ -57,7 +57,30 @@ export const V3_LEARN_JS = `
       });
     }
   }
+  function selectExprVal(btn) {
+    var box = btn.closest('.hw-expr-inspect');
+    var row = btn.closest('.hw-expr-try');
+    var out = box && box.querySelector('.hw-expr-val-result');
+    if (!row || !out) return;
+    var val = Number(btn.getAttribute('data-expr-val'));
+    var coef = Number(row.getAttribute('data-expr-coef'));
+    var op = row.getAttribute('data-expr-op');
+    var c = Number(row.getAttribute('data-expr-const'));
+    var prod = coef * val;
+    var total = op === '+' ? prod + c : prod - c;
+    row.querySelectorAll('[data-expr-val]').forEach(function (b) {
+      var on = b === btn;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var es = document.body.classList.contains('lang-mode-es') || document.documentElement.lang === 'es';
+    out.textContent = coef + '(' + val + ') ' + op + ' ' + c + ' = ' + prod + ' ' + op + ' ' + c + ' = ' + total +
+      (es ? ' — el término variable cambia, la constante ' + c + ' queda igual.' : ' — the variable term changes, while the constant ' + c + ' stays the same.');
+    out.hidden = false;
+  }
   document.addEventListener('click', function (e) {
+    var valBtn = e.target.closest('[data-expr-val]');
+    if (valBtn) return selectExprVal(valBtn);
     var exprHit = e.target.closest('[data-expr-chip], [data-expr-part]');
     if (exprHit) {
       var part = exprHit.getAttribute('data-expr-chip') || exprHit.getAttribute('data-expr-part');

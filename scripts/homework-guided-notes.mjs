@@ -10289,7 +10289,15 @@ function switchHomeworkTab(tabId) {
     if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
     const fill = document.getElementById('tab_progress_fill');
     if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
-
+    const trackFill = document.getElementById('hw_tab_track_fill');
+    if (trackFill) trackFill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  }
+  if (hwTabsBooted && leaving && leaving !== tabId) {
+    const panelsHost = document.getElementById('hw_tab_panels');
+    if (panelsHost && typeof panelsHost.scrollIntoView === 'function') {
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      panelsHost.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    }
   }
 
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId, leaving !== tabId ? leaving : '');

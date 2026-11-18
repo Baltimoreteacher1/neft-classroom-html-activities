@@ -107,6 +107,26 @@ function renderExprInspector(model) {
             descEs: `En conjunto, ${d.lhs} ${d.op} ${d.rhs} es una ecuación: dos expresiones unidas por ${d.op}.`,
           },
         ];
+  const coefN = kind === "exprparts" ? Number(d.coef) : Number.NaN;
+  const constN = kind === "exprparts" ? Number(d.constant) : Number.NaN;
+  const canTry =
+    kind === "exprparts" &&
+    Number.isFinite(coefN) &&
+    Number.isFinite(constN) &&
+    (d.op === "+" || d.op === "-" || d.op === "−");
+  const tryHtml = canTry
+    ? `
+        <div class="hw-expr-try" data-expr-coef="${esc(coefN)}" data-expr-var="${esc(d.variable)}" data-expr-op="${esc(d.op)}" data-expr-const="${esc(constN)}">
+          <span class="hw-expr-try-label">${bi(`Plug in ${d.variable}:`, `Prueba ${d.variable}:`)}</span>
+          ${[1, 3, 5]
+            .map(
+              (v) =>
+                `<button type="button" class="hw-expr-val-btn" data-expr-val="${v}" aria-pressed="false">${esc(d.variable)} = ${v}</button>`,
+            )
+            .join("")}
+        </div>
+        <p class="hw-expr-val-result" role="status" aria-live="polite" hidden></p>`
+    : "";
   return `
       <div class="hw-expr-inspect" data-expr-inspect>
         <p class="hw-expr-inspect-prompt">${bi("Tap a part above or below to see what it does:", "Toca una parte arriba o abajo para ver qué hace:")}</p>
@@ -115,7 +135,7 @@ function renderExprInspector(model) {
         </div>
         <div class="hw-expr-explain" role="status" aria-live="polite" hidden>
           ${items.map((it) => `<p class="hw-expr-explain-item" data-expr-explain="${esc(it.id)}" hidden>${bi(it.descEn, it.descEs)}</p>`).join("")}
-        </div>
+        </div>${tryHtml}
       </div>`;
 }
 
