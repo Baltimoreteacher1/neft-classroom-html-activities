@@ -34,7 +34,26 @@
           "Multiplica 5 por ese mismo número."
         ],
         "x": "20 × 5 = 100, so multiply 5 by 5 as well: 5 × 5 = 25. That makes 25 out of 100, which is 25%.",
-        "xEs": "20 × 5 = 100, así que multiplica también 5 por 5: 5 × 5 = 25. Eso da 25 de 100, que es 25%."
+        "xEs": "20 × 5 = 100, así que multiplica también 5 por 5: 5 × 5 = 25. Eso da 25 de 100, que es 25%.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Marbles",
+            "vals": [
+              0,
+              5,
+              20
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              null,
+              "100%"
+            ]
+          }
+        }
       },
       {
         "kind": "num",
@@ -69,7 +88,26 @@
           "Suma eso a los 20 cm originales."
         ],
         "x": "100% of 20 cm is 20 cm and 50% of 20 cm is 10 cm. 150% = 100% + 50%, so the plant was 20 + 10 = 30 cm tall.",
-        "xEs": "100% de 20 cm es 20 cm y 50% de 20 cm es 10 cm. 150% = 100% + 50%, así que la planta medía 20 + 10 = 30 cm."
+        "xEs": "100% de 20 cm es 20 cm y 50% de 20 cm es 10 cm. 150% = 100% + 50%, así que la planta medía 20 + 10 = 30 cm.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Height (cm)",
+            "vals": [
+              0,
+              20,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "100%",
+              "150%"
+            ]
+          }
+        }
       },
       {
         "kind": "mc",
@@ -273,7 +311,44 @@
           "Luego resta las 30 monedas que cuesta el sombrero."
         ],
         "x": "100% of 80 is 80, and 25% of 80 is 20, so 125% is 100 coins. After the 30-coin hat, 100 − 30 = 70 coins are left.",
-        "xEs": "100% de 80 es 80 y 25% de 80 es 20, así que 125% es 100 monedas. Después del sombrero de 30 monedas, 100 − 30 = 70 monedas."
+        "xEs": "100% de 80 es 80 y 25% de 80 es 20, así que 125% es 100 monedas. Después del sombrero de 30 monedas, 100 − 30 = 70 monedas.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Coins",
+            "vals": [
+              0,
+              80,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "100%",
+              "125%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "What is 25% of the 80 starting coins?",
+            "qEs": "¿Cuánto es el 25% de las 80 monedas del inicio?",
+            "a": "20",
+            "calc": "80 * 25 / 100",
+            "unit": "coins",
+            "unitEs": "monedas"
+          },
+          {
+            "q": "How many coins does the player have in the evening, before buying the hat?",
+            "qEs": "¿Cuántas monedas tiene el jugador en la noche, antes de comprar el sombrero?",
+            "a": "100",
+            "calc": "80 + 20",
+            "unit": "coins",
+            "unitEs": "monedas"
+          }
+        ]
       },
       {
         "title": "Over the goal",
@@ -356,7 +431,26 @@
             "El resultado es el número de parcelas de tomate de cada 100."
           ],
           "x": "50 × 2 = 100, so 18 × 2 = 36. That is 36 out of 100, or 36%.",
-          "xEs": "50 × 2 = 100, así que 18 × 2 = 36. Eso es 36 de 100, o 36%."
+          "xEs": "50 × 2 = 100, así que 18 × 2 = 36. Eso es 36 de 100, o 36%.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Plots",
+              "vals": [
+                0,
+                18,
+                50
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                null,
+                "100%"
+              ]
+            }
+          }
         },
         {
           "title": "Bean plots",
@@ -391,7 +485,43 @@
             "Luego escribe esa parte de 50 como una parte de 100."
           ],
           "x": "50 − 18 − 21 = 11 plots have beans. Since 50 × 2 = 100, 11 × 2 = 22. That is 22 out of 100, or 22%.",
-          "xEs": "50 − 18 − 21 = 11 parcelas tienen frijoles. Como 50 × 2 = 100, 11 × 2 = 22. Eso es 22 de 100, o 22%."
+          "xEs": "50 − 18 − 21 = 11 parcelas tienen frijoles. Como 50 × 2 = 100, 11 × 2 = 22. Eso es 22 de 100, o 22%.",
+          "viz": {
+            "t": "tape",
+            "parts": [
+              {
+                "v": 18,
+                "l": "tomatoes"
+              },
+              {
+                "v": 21,
+                "l": "peppers"
+              },
+              {
+                "v": "?",
+                "l": "beans"
+              }
+            ],
+            "total": 50
+          },
+          "guide": [
+            {
+              "q": "How many plots have tomatoes or peppers?",
+              "qEs": "¿Cuántas parcelas tienen tomates o pimientos?",
+              "a": "39",
+              "calc": "18 + 21",
+              "unit": "plots",
+              "unitEs": "parcelas"
+            },
+            {
+              "q": "How many plots are left for beans?",
+              "qEs": "¿Cuántas parcelas quedan para los frijoles?",
+              "a": "11",
+              "calc": "50 - 39",
+              "unit": "plots",
+              "unitEs": "parcelas"
+            }
+          ]
         },
         {
           "title": "Bigger garden",
@@ -426,7 +556,26 @@
             "Súmalo a las 50 parcelas que tiene el huerto ahora."
           ],
           "x": "100% of 50 is 50 plots and 50% of 50 is 25 plots. 150% = 100% + 50%, so the garden will have 50 + 25 = 75 plots.",
-          "xEs": "100% de 50 es 50 parcelas y 50% de 50 es 25 parcelas. 150% = 100% + 50%, así que el huerto tendrá 50 + 25 = 75 parcelas."
+          "xEs": "100% de 50 es 50 parcelas y 50% de 50 es 25 parcelas. 150% = 100% + 50%, así que el huerto tendrá 50 + 25 = 75 parcelas.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Plots",
+              "vals": [
+                0,
+                50,
+                null
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "100%",
+                "150%"
+              ]
+            }
+          }
         }
       ]
     },
@@ -499,7 +648,37 @@
           "Multiplica el número de mentas que quedan por ese mismo número."
         ],
         "x": "25 − 8 = 17 mints are left. Since 25 × 4 = 100, 17 × 4 = 68. That is 68 out of 100, or 68%.",
-        "xEs": "25 − 8 = 17 mentas quedan. Como 25 × 4 = 100, 17 × 4 = 68. Eso es 68 de 100, o 68%."
+        "xEs": "25 − 8 = 17 mentas quedan. Como 25 × 4 = 100, 17 × 4 = 68. Eso es 68 de 100, o 68%.",
+        "viz": {
+          "t": "tape",
+          "parts": [
+            {
+              "v": 8,
+              "l": "eaten"
+            },
+            {
+              "v": "?",
+              "l": "left"
+            }
+          ],
+          "total": 25
+        },
+        "guide": [
+          {
+            "q": "What number do you multiply 25 by to get 100?",
+            "qEs": "¿Por qué número multiplicas 25 para obtener 100?",
+            "a": "4",
+            "calc": "100 / 25"
+          },
+          {
+            "q": "How many mints are left in the box?",
+            "qEs": "¿Cuántas mentas quedan en la caja?",
+            "a": "17",
+            "calc": "25 - 8",
+            "unit": "mints",
+            "unitEs": "mentas"
+          }
+        ]
       },
       {
         "title": "Tall sunflower",
@@ -573,7 +752,12 @@
           "Multiplica el numerador 7 por ese mismo número."
         ],
         "x": "7/20 = 35/100 because 20 × 5 = 100 and 7 × 5 = 35. So 35/100 is 0.35, or 35%.",
-        "xEs": "7/20 = 35/100 porque 20 × 5 = 100 y 7 × 5 = 35. Entonces 35/100 es 0.35, o 35%."
+        "xEs": "7/20 = 35/100 porque 20 × 5 = 100 y 7 × 5 = 35. Entonces 35/100 es 0.35, o 35%.",
+        "viz": {
+          "t": "bar1",
+          "n": 7,
+          "d": 20
+        }
       },
       {
         "kind": "num",
@@ -608,7 +792,40 @@
           "Resta el 82% del equipo B del porcentaje del equipo A."
         ],
         "x": "17/20 = 85/100 = 85%. Team B won 82%. 85 − 82 = 3, so Team A's win percent is 3 percentage points higher.",
-        "xEs": "17/20 = 85/100 = 85%. El equipo B ganó 82%. 85 − 82 = 3, así que el porcentaje de victorias del equipo A es 3 puntos porcentuales más alto."
+        "xEs": "17/20 = 85/100 = 85%. El equipo B ganó 82%. 85 − 82 = 3, así que el porcentaje de victorias del equipo A es 3 puntos porcentuales más alto.",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Team",
+            "Win record"
+          ],
+          "rows": [
+            [
+              "Team A",
+              "17 wins in 20 games"
+            ],
+            [
+              "Team B",
+              "82% of games won"
+            ]
+          ]
+        },
+        "guide": [
+          {
+            "q": "What number do you multiply 20 by to get 100?",
+            "qEs": "¿Por qué número multiplicas 20 para obtener 100?",
+            "a": "5",
+            "calc": "100 / 20"
+          },
+          {
+            "q": "What is Team A's win percent?",
+            "qEs": "¿Cuál es el porcentaje de victorias del equipo A?",
+            "a": "85",
+            "calc": "17 * 5",
+            "unit": "%",
+            "unitEs": "%"
+          }
+        ]
       },
       {
         "kind": "mc",
@@ -837,7 +1054,44 @@
           "Resta las 17 respuestas correctas de Mia al número de Dev."
         ],
         "x": "84% of 25 = 0.84 × 25 = 21 questions. Dev got 21 right and Mia got 17 right, so Dev got 21 − 17 = 4 more.",
-        "xEs": "84% de 25 = 0.84 × 25 = 21 preguntas. Dev acertó 21 y Mia acertó 17, así que Dev acertó 21 − 17 = 4 más."
+        "xEs": "84% de 25 = 0.84 × 25 = 21 preguntas. Dev acertó 21 y Mia acertó 17, así que Dev acertó 21 − 17 = 4 más.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Questions",
+            "vals": [
+              0,
+              null,
+              25
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "84%",
+              "100%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "How many questions is 1% of the 25-question quiz?",
+            "qEs": "¿Cuántas preguntas es el 1% del examen de 25 preguntas?",
+            "a": "0.25",
+            "calc": "25 / 100",
+            "unit": "questions",
+            "unitEs": "preguntas"
+          },
+          {
+            "q": "How many questions did Dev get right?",
+            "qEs": "¿Cuántas preguntas acertó Dev?",
+            "a": "21",
+            "calc": "0.25 * 84",
+            "unit": "questions",
+            "unitEs": "preguntas"
+          }
+        ]
       },
       {
         "title": "Pizza share",
@@ -920,7 +1174,26 @@
             "10% de 40 es 4, así que 30% es 12. Halla también el 5% restante."
           ],
           "x": "35% = 0.35, and 0.35 × 40 = 14. So 14 muffins were sold.",
-          "xEs": "35% = 0.35, y 0.35 × 40 = 14. Así que se vendieron 14 panecillos."
+          "xEs": "35% = 0.35, y 0.35 × 40 = 14. Así que se vendieron 14 panecillos.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Items sold",
+              "vals": [
+                0,
+                null,
+                40
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "35%",
+                "100%"
+              ]
+            }
+          }
         },
         {
           "title": "Brownie percent",
@@ -955,7 +1228,33 @@
             "Escribe los brownies de 40 como porcentaje."
           ],
           "x": "Cookies: 40 ÷ 4 = 10. Muffins: 14. Brownies: 40 − 10 − 14 = 16. 16/40 = 0.4 = 40%.",
-          "xEs": "Galletas: 40 ÷ 4 = 10. Panecillos: 14. Brownies: 40 − 10 − 14 = 16. 16/40 = 0.4 = 40%."
+          "xEs": "Galletas: 40 ÷ 4 = 10. Panecillos: 14. Brownies: 40 − 10 − 14 = 16. 16/40 = 0.4 = 40%.",
+          "guide": [
+            {
+              "q": "How many items were cookies?",
+              "qEs": "¿Cuántos artículos fueron galletas?",
+              "a": "10",
+              "calc": "40 / 4",
+              "unit": "items",
+              "unitEs": "artículos"
+            },
+            {
+              "q": "How many items were muffins?",
+              "qEs": "¿Cuántos artículos fueron panecillos?",
+              "a": "14",
+              "calc": "40 * 35 / 100",
+              "unit": "items",
+              "unitEs": "artículos"
+            },
+            {
+              "q": "How many items were brownies?",
+              "qEs": "¿Cuántos artículos fueron brownies?",
+              "a": "16",
+              "calc": "40 - 10 - 14",
+              "unit": "items",
+              "unitEs": "artículos"
+            }
+          ]
         },
         {
           "title": "Bake more",
@@ -1034,7 +1333,12 @@
           "Multiplica el decimal por 100 para obtener el porcentaje."
         ],
         "x": "3 ÷ 4 = 0.75, and 0.75 = 75 out of 100. The bottle is 75% full.",
-        "xEs": "3 ÷ 4 = 0.75, y 0.75 = 75 de 100. La botella está llena al 75%."
+        "xEs": "3 ÷ 4 = 0.75, y 0.75 = 75 de 100. La botella está llena al 75%.",
+        "viz": {
+          "t": "bar1",
+          "n": 3,
+          "d": 4
+        }
       },
       {
         "title": "Phone battery",
@@ -1069,7 +1373,25 @@
           "Resta los dos porcentajes."
         ],
         "x": "Tia: 0.35 = 35%. Marco: 3/5 = 0.6 = 60%. Marco's battery is 60 − 35 = 25 percentage points higher.",
-        "xEs": "Tia: 0.35 = 35%. Marco: 3/5 = 0.6 = 60%. La batería de Marco está 60 − 35 = 25 puntos porcentuales más alta."
+        "xEs": "Tia: 0.35 = 35%. Marco: 3/5 = 0.6 = 60%. La batería de Marco está 60 − 35 = 25 puntos porcentuales más alta.",
+        "guide": [
+          {
+            "q": "What is Marco's battery, 3/5, as a percent?",
+            "qEs": "¿Cuál es la batería de Marco, 3/5, como porcentaje?",
+            "a": "60",
+            "calc": "3 * 100 / 5",
+            "unit": "%",
+            "unitEs": "%"
+          },
+          {
+            "q": "What is Tia's battery, 0.35, as a percent?",
+            "qEs": "¿Cuál es la batería de Tia, 0.35, como porcentaje?",
+            "a": "35",
+            "calc": "0.35 * 100",
+            "unit": "%",
+            "unitEs": "%"
+          }
+        ]
       },
       {
         "title": "Lunch survey",
@@ -1104,7 +1426,26 @@
           "Multiplica el 21 por ese mismo número."
         ],
         "x": "21/50 = 42/100, because 50 × 2 = 100 and 21 × 2 = 42. So 42% of the students chose pizza.",
-        "xEs": "21/50 = 42/100, porque 50 × 2 = 100 y 21 × 2 = 42. Así que 42% de los estudiantes eligió la pizza."
+        "xEs": "21/50 = 42/100, porque 50 × 2 = 100 y 21 × 2 = 42. Así que 42% de los estudiantes eligió la pizza.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Students",
+            "vals": [
+              0,
+              21,
+              50
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              null,
+              "100%"
+            ]
+          }
+        }
       }
     ]
   },
@@ -1178,7 +1519,17 @@
           "Resta los que caminan de 400."
         ],
         "x": "25% is one fourth. 400 ÷ 4 = 100 students walk. The rest do not walk: 400 − 100 = 300 students.",
-        "xEs": "25% es un cuarto. 400 ÷ 4 = 100 estudiantes caminan. El resto no camina: 400 − 100 = 300 estudiantes."
+        "xEs": "25% es un cuarto. 400 ÷ 4 = 100 estudiantes caminan. El resto no camina: 400 − 100 = 300 estudiantes.",
+        "guide": [
+          {
+            "q": "About how many students walk to school (25% of 400)?",
+            "qEs": "¿Aproximadamente cuántos estudiantes caminan a la escuela (25% de 400)?",
+            "a": "100",
+            "calc": "400 / 4",
+            "unit": "students",
+            "unitEs": "estudiantes"
+          }
+        ]
       },
       {
         "kind": "mc",
@@ -1223,7 +1574,26 @@
           "Halla ese porcentaje de referencia de 200."
         ],
         "x": "198 is close to 200, and 52% is close to 50%, or one half. Half of 200 is 200 ÷ 2 = 100, so about 100 seats are filled.",
-        "xEs": "198 está cerca de 200, y 52% está cerca de 50%, o la mitad. La mitad de 200 es 200 ÷ 2 = 100, así que hay aproximadamente 100 asientos ocupados."
+        "xEs": "198 está cerca de 200, y 52% está cerca de 50%, o la mitad. La mitad de 200 es 200 ÷ 2 = 100, así que hay aproximadamente 100 asientos ocupados.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Seats",
+            "vals": [
+              0,
+              null,
+              198
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "52%",
+              "100%"
+            ]
+          }
+        }
       },
       {
         "title": "Tip estimate",
@@ -1390,7 +1760,44 @@
           "Resta los lápices vendidos de 600."
         ],
         "x": "Round to 600. 10% of 600 is 60, so 30% is 180. About 600 − 180 = 420 pencils are left.",
-        "xEs": "Redondea a 600. El 10% de 600 es 60, así que el 30% es 180. Quedan aproximadamente 600 − 180 = 420 lápices."
+        "xEs": "Redondea a 600. El 10% de 600 es 60, así que el 30% es 180. Quedan aproximadamente 600 − 180 = 420 lápices.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Pencils",
+            "vals": [
+              0,
+              null,
+              598
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "30%",
+              "100%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "What is 10% of 600 pencils?",
+            "qEs": "¿Cuánto es el 10% de 600 lápices?",
+            "a": "60",
+            "calc": "600 / 10",
+            "unit": "pencils",
+            "unitEs": "lápices"
+          },
+          {
+            "q": "About how many pencils are sold on Monday?",
+            "qEs": "¿Aproximadamente cuántos lápices se venden el lunes?",
+            "a": "180",
+            "calc": "60 * 3",
+            "unit": "pencils",
+            "unitEs": "lápices"
+          }
+        ]
       },
       {
         "title": "Better coupon",
@@ -1431,7 +1838,27 @@
           "Estima cada descuento en dólares y compáralos."
         ],
         "x": "Round $38 to $40: 25% of $40 is 40 ÷ 4 = $10. 10% of $90 is 90 ÷ 10 = $9. Coupon A saves about $10, which is more than $9.",
-        "xEs": "Redondea $38 a $40: el 25% de $40 es 40 ÷ 4 = $10. El 10% de $90 es 90 ÷ 10 = $9. El cupón A ahorra unos $10, que es más que $9."
+        "xEs": "Redondea $38 a $40: el 25% de $40 es 40 ÷ 4 = $10. El 10% de $90 es 90 ÷ 10 = $9. El cupón A ahorra unos $10, que es más que $9.",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Coupon",
+            "Percent off",
+            "Item price"
+          ],
+          "rows": [
+            [
+              "A",
+              "25%",
+              "$38"
+            ],
+            [
+              "B",
+              "10%",
+              "$90"
+            ]
+          ]
+        }
       }
     ],
     "scenario": {
@@ -1473,7 +1900,32 @@
             "Multiplica esa cantidad por 3 para obtener 30%."
           ],
           "x": "10% of $600 is $60, so 30% is 3 × $60 = $180. The bus will cost about $180.",
-          "xEs": "El 10% de $600 es $60, así que el 30% es 3 × $60 = $180. El autobús costará unos $180."
+          "xEs": "El 10% de $600 es $60, así que el 30% es 3 × $60 = $180. El autobús costará unos $180.",
+          "viz": {
+            "t": "bars",
+            "labels": [
+              "Bus",
+              "Tickets",
+              "Snacks"
+            ],
+            "values": [
+              30,
+              50,
+              10
+            ],
+            "ylabel": "Percent of budget",
+            "max": 100
+          },
+          "guide": [
+            {
+              "q": "What is 10% of $600?",
+              "qEs": "¿Cuánto es el 10% de $600?",
+              "a": "60",
+              "calc": "600 / 10",
+              "unit": "dollars",
+              "unitEs": "dólares"
+            }
+          ]
         },
         {
           "title": "Money left",
@@ -1508,7 +1960,48 @@
             "Halla ese porcentaje sobrante de $600."
           ],
           "x": "30% + 50% + 10% = 90%, so 10% is left. 10% of $600 is $60. About $60 is left.",
-          "xEs": "30% + 50% + 10% = 90%, así que sobra 10%. El 10% de $600 es $60. Sobran unos $60."
+          "xEs": "30% + 50% + 10% = 90%, así que sobra 10%. El 10% de $600 es $60. Sobran unos $60.",
+          "viz": {
+            "t": "bars",
+            "labels": [
+              "Bus",
+              "Tickets",
+              "Snacks"
+            ],
+            "values": [
+              30,
+              50,
+              10
+            ],
+            "ylabel": "Percent of budget",
+            "max": 100
+          },
+          "guide": [
+            {
+              "q": "About how many dollars will the bus cost?",
+              "qEs": "¿Aproximadamente cuántos dólares costará el autobús?",
+              "a": "180",
+              "calc": "600 / 10 * 3",
+              "unit": "dollars",
+              "unitEs": "dólares"
+            },
+            {
+              "q": "About how many dollars will the tickets cost?",
+              "qEs": "¿Aproximadamente cuántos dólares costarán las entradas?",
+              "a": "300",
+              "calc": "600 / 2",
+              "unit": "dollars",
+              "unitEs": "dólares"
+            },
+            {
+              "q": "About how many dollars will the bus, tickets, and snacks cost together?",
+              "qEs": "¿Aproximadamente cuántos dólares costarán juntos el autobús, las entradas y los refrigerios?",
+              "a": "540",
+              "calc": "180 + 300 + 60",
+              "unit": "dollars",
+              "unitEs": "dólares"
+            }
+          ]
         },
         {
           "title": "Coupon or snacks",
@@ -1549,7 +2042,22 @@
             "Compara las dos cantidades."
           ],
           "x": "Tickets cost about 50% of $600 = $300, so a 10% coupon saves about $30. Snacks are 10% of $600 = $60. $30 is less than $60, so the coupon will not pay for the snacks.",
-          "xEs": "Las entradas cuestan aproximadamente 50% de $600 = $300, así que un cupón de 10% ahorra unos $30. Los refrigerios son 10% de $600 = $60. $30 es menos que $60, así que el cupón no alcanza para los refrigerios."
+          "xEs": "Las entradas cuestan aproximadamente 50% de $600 = $300, así que un cupón de 10% ahorra unos $30. Los refrigerios son 10% de $600 = $60. $30 es menos que $60, así que el cupón no alcanza para los refrigerios.",
+          "viz": {
+            "t": "bars",
+            "labels": [
+              "Bus",
+              "Tickets",
+              "Snacks"
+            ],
+            "values": [
+              30,
+              50,
+              10
+            ],
+            "ylabel": "Percent of budget",
+            "max": 100
+          }
         }
       ]
     },
@@ -1622,7 +2130,25 @@
           "Resta el descuento de $50."
         ],
         "x": "Round to $50. 10% of $50 is $5, so 20% is $10. The shirt costs about $50 − $10 = $40.",
-        "xEs": "Redondea a $50. El 10% de $50 es $5, así que el 20% es $10. La camisa costará unos $50 − $10 = $40."
+        "xEs": "Redondea a $50. El 10% de $50 es $5, así que el 20% es $10. La camisa costará unos $50 − $10 = $40.",
+        "guide": [
+          {
+            "q": "What is 10% of $50?",
+            "qEs": "¿Cuánto es el 10% de $50?",
+            "a": "5",
+            "calc": "50 / 10",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          },
+          {
+            "q": "What is 20% of $50, the amount of the discount?",
+            "qEs": "¿Cuánto es el 20% de $50, el monto del descuento?",
+            "a": "10",
+            "calc": "5 * 2",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          }
+        ]
       },
       {
         "title": "Theater seats",
@@ -1657,7 +2183,17 @@
           "Halla una cuarta parte de 80 y multiplícala por 3."
         ],
         "x": "Round to 80. One fourth of 80 is 20, so three fourths is 3 × 20 = 60. About 60 seats are filled.",
-        "xEs": "Redondea a 80. Una cuarta parte de 80 es 20, así que tres cuartas partes son 3 × 20 = 60. Hay unos 60 asientos ocupados."
+        "xEs": "Redondea a 80. Una cuarta parte de 80 es 20, así que tres cuartas partes son 3 × 20 = 60. Hay unos 60 asientos ocupados.",
+        "guide": [
+          {
+            "q": "What is one fourth (25%) of 80 seats?",
+            "qEs": "¿Cuánto es una cuarta parte (25%) de 80 asientos?",
+            "a": "20",
+            "calc": "80 / 4",
+            "unit": "seats",
+            "unitEs": "asientos"
+          }
+        ]
       }
     ]
   },
@@ -1696,7 +2232,26 @@
           "Multiplica 60 por 0.35."
         ],
         "x": "35% of 60 = 0.35 × 60 = 21. The discount takes $21 off the price.",
-        "xEs": "35% de 60 = 0.35 × 60 = 21. El descuento le quita $21 al precio."
+        "xEs": "35% de 60 = 0.35 × 60 = 21. El descuento le quita $21 al precio.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Price ($)",
+            "vals": [
+              0,
+              null,
+              60
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "35%",
+              "100%"
+            ]
+          }
+        }
       },
       {
         "kind": "num",
@@ -1731,7 +2286,44 @@
           "Divide el total entre 4 amigos."
         ],
         "x": "Tip: 20% of 48 = 0.2 × 48 = 9.6. Total: 48 + 9.6 = 57.6. Split 4 ways: 57.6 ÷ 4 = 14.4, so each friend pays $14.40.",
-        "xEs": "Propina: 20% de 48 = 0.2 × 48 = 9.6. Total: 48 + 9.6 = 57.6. Dividido entre 4: 57.6 ÷ 4 = 14.4, así que cada amigo paga $14.40."
+        "xEs": "Propina: 20% de 48 = 0.2 × 48 = 9.6. Total: 48 + 9.6 = 57.6. Dividido entre 4: 57.6 ÷ 4 = 14.4, así que cada amigo paga $14.40.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Dollars",
+            "vals": [
+              0,
+              48,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "100%",
+              "120%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "How many dollars is the 20% tip on the $48 bill?",
+            "qEs": "¿Cuántos dólares es la propina de 20% sobre la cuenta de $48?",
+            "a": "9.6",
+            "calc": "48 * 20 / 100",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          },
+          {
+            "q": "How many dollars is the bill plus the tip?",
+            "qEs": "¿Cuántos dólares son la cuenta más la propina?",
+            "a": "57.6",
+            "calc": "48 + 9.6",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          }
+        ]
       },
       {
         "kind": "mc",
@@ -1776,7 +2368,27 @@
           "Compara la cantidad en dólares con $25."
         ],
         "x": "30% of 80 = 0.30 × 80 = 24, so Store A takes off $24. Store B takes off $25, which is more.",
-        "xEs": "30% de 80 = 0.30 × 80 = 24, así que la tienda A quita $24. La tienda B quita $25, que es más."
+        "xEs": "30% de 80 = 0.30 × 80 = 24, así que la tienda A quita $24. La tienda B quita $25, que es más.",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Store",
+            "Discount",
+            "Jacket price"
+          ],
+          "rows": [
+            [
+              "A",
+              "30% off",
+              "$80"
+            ],
+            [
+              "B",
+              "$25 off",
+              "$80"
+            ]
+          ]
+        }
       },
       {
         "title": "Sale price",
@@ -1946,7 +2558,33 @@
           "Suma el impuesto al precio de oferta."
         ],
         "x": "20% of $75 is $15, so the sale price is $60. The tax is 10% of $60 = $6. The final price is $60 + $6 = $66.",
-        "xEs": "El 20% de $75 es $15, así que el precio de oferta es $60. El impuesto es 10% de $60 = $6. El precio final es $60 + $6 = $66."
+        "xEs": "El 20% de $75 es $15, así que el precio de oferta es $60. El impuesto es 10% de $60 = $6. El precio final es $60 + $6 = $66.",
+        "guide": [
+          {
+            "q": "How many dollars does the 20% discount take off $75?",
+            "qEs": "¿Cuántos dólares le quita a $75 el descuento de 20%?",
+            "a": "15",
+            "calc": "75 * 20 / 100",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          },
+          {
+            "q": "What is the sale price after the discount?",
+            "qEs": "¿Cuál es el precio de oferta después del descuento?",
+            "a": "60",
+            "calc": "75 - 15",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          },
+          {
+            "q": "How many dollars is the 10% tax on the sale price?",
+            "qEs": "¿Cuántos dólares es el impuesto de 10% sobre el precio de oferta?",
+            "a": "6",
+            "calc": "60 * 10 / 100",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          }
+        ]
       },
       {
         "title": "Gym coupon",
@@ -1991,7 +2629,27 @@
           "Compara ese precio con $35."
         ],
         "x": "15% of $40 = 0.15 × 40 = $6, so Gym A costs 40 − 6 = $34. That is less than Gym B's $35, so Gym A costs less.",
-        "xEs": "15% de $40 = 0.15 × 40 = $6, así que el gimnasio A cuesta 40 − 6 = $34. Eso es menos que los $35 del gimnasio B, así que el gimnasio A cuesta menos."
+        "xEs": "15% de $40 = 0.15 × 40 = $6, así que el gimnasio A cuesta 40 − 6 = $34. Eso es menos que los $35 del gimnasio B, así que el gimnasio A cuesta menos.",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Gym",
+            "Cost per month",
+            "Coupon"
+          ],
+          "rows": [
+            [
+              "A",
+              "$40",
+              "15% off"
+            ],
+            [
+              "B",
+              "$35",
+              "None"
+            ]
+          ]
+        }
       }
     ],
     "scenario": {
@@ -2033,7 +2691,26 @@
             "El 10% de 40 es 4. Construye el 65% a partir de ahí."
           ],
           "x": "65% = 0.65, and 0.65 × 40 = 26. The Hawks won 26 games.",
-          "xEs": "65% = 0.65, y 0.65 × 40 = 26. Los Hawks ganaron 26 partidos."
+          "xEs": "65% = 0.65, y 0.65 × 40 = 26. Los Hawks ganaron 26 partidos.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Games",
+              "vals": [
+                0,
+                null,
+                40
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "65%",
+                "100%"
+              ]
+            }
+          }
         },
         {
           "title": "Missed shots",
@@ -2068,7 +2745,42 @@
             "Resta los tiros que encestó de los tiros que lanzó."
           ],
           "x": "Dana made 0.45 × 120 = 54 shots. She missed 120 − 54 = 66 shots.",
-          "xEs": "Dana encestó 0.45 × 120 = 54 tiros. Falló 120 − 54 = 66 tiros."
+          "xEs": "Dana encestó 0.45 × 120 = 54 tiros. Falló 120 − 54 = 66 tiros.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Shots",
+              "vals": [
+                0,
+                null,
+                120
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "45%",
+                "100%"
+              ]
+            }
+          },
+          "guide": [
+            {
+              "q": "What is 45% written as a decimal?",
+              "qEs": "¿Cómo se escribe 45% como decimal?",
+              "a": "0.45",
+              "calc": "45 / 100"
+            },
+            {
+              "q": "How many shots did Dana make?",
+              "qEs": "¿Cuántos tiros encestó Dana?",
+              "a": "54",
+              "calc": "120 * 0.45",
+              "unit": "shots",
+              "unitEs": "tiros"
+            }
+          ]
         },
         {
           "title": "More wins",
@@ -2103,7 +2815,44 @@
             "Resta las victorias de esta temporada de las de la próxima."
           ],
           "x": "70% of 50 = 0.7 × 50 = 35 wins. This season the team won 26. So 35 − 26 = 9 more wins.",
-          "xEs": "70% de 50 = 0.7 × 50 = 35 victorias. Esta temporada el equipo ganó 26. Así que 35 − 26 = 9 victorias más."
+          "xEs": "70% de 50 = 0.7 × 50 = 35 victorias. Esta temporada el equipo ganó 26. Así que 35 − 26 = 9 victorias más.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Games",
+              "vals": [
+                0,
+                null,
+                50
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "70%",
+                "100%"
+              ]
+            }
+          },
+          "guide": [
+            {
+              "q": "How many games did the team win this season (65% of 40)?",
+              "qEs": "¿Cuántos partidos ganó el equipo esta temporada (65% de 40)?",
+              "a": "26",
+              "calc": "40 * 65 / 100",
+              "unit": "games",
+              "unitEs": "partidos"
+            },
+            {
+              "q": "How many games would the team win next season (70% of 50)?",
+              "qEs": "¿Cuántos partidos ganaría el equipo la próxima temporada (70% de 50)?",
+              "a": "35",
+              "calc": "50 * 70 / 100",
+              "unit": "games",
+              "unitEs": "partidos"
+            }
+          ]
         }
       ]
     },
@@ -2176,7 +2925,23 @@
           "Resta el descuento de $40."
         ],
         "x": "25% of $40 = 0.25 × 40 = $10. The sale price is 40 − 10 = $30.",
-        "xEs": "25% de $40 = 0.25 × 40 = $10. El precio de oferta es 40 − 10 = $30."
+        "xEs": "25% de $40 = 0.25 × 40 = $10. El precio de oferta es 40 − 10 = $30.",
+        "guide": [
+          {
+            "q": "What is 25% written as a decimal?",
+            "qEs": "¿Cómo se escribe 25% como decimal?",
+            "a": "0.25",
+            "calc": "25 / 100"
+          },
+          {
+            "q": "How many dollars is the discount on the $40 game?",
+            "qEs": "¿Cuántos dólares es el descuento del juego de $40?",
+            "a": "10",
+            "calc": "40 * 0.25",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          }
+        ]
       },
       {
         "title": "Older videos",
@@ -2211,7 +2976,23 @@
           "Resta los videos nuevos de 250."
         ],
         "x": "14% of 250 = 0.14 × 250 = 35 new videos. The videos that are not new: 250 − 35 = 215.",
-        "xEs": "14% de 250 = 0.14 × 250 = 35 videos nuevos. Los videos que no son nuevos: 250 − 35 = 215."
+        "xEs": "14% de 250 = 0.14 × 250 = 35 videos nuevos. Los videos que no son nuevos: 250 − 35 = 215.",
+        "guide": [
+          {
+            "q": "What is 14% written as a decimal?",
+            "qEs": "¿Cómo se escribe 14% como decimal?",
+            "a": "0.14",
+            "calc": "14 / 100"
+          },
+          {
+            "q": "How many of the 250 videos are new?",
+            "qEs": "¿Cuántos de los 250 videos son nuevos?",
+            "a": "35",
+            "calc": "250 * 0.14",
+            "unit": "videos",
+            "unitEs": "videos"
+          }
+        ]
       }
     ]
   },
@@ -2250,7 +3031,36 @@
           "Multiplica esa cantidad por 10 para obtener el 100%, el total."
         ],
         "x": "60% is 6 tenths of the whole, so 10% = 18 ÷ 6 = 3 games. The whole is 100%, which is 10 × 3 = 30 games.",
-        "xEs": "60% son 6 décimos del total, así que 10% = 18 ÷ 6 = 3 partidos. El total es 100%, que son 10 × 3 = 30 partidos."
+        "xEs": "60% son 6 décimos del total, así que 10% = 18 ÷ 6 = 3 partidos. El total es 100%, que son 10 × 3 = 30 partidos.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Games",
+            "vals": [
+              0,
+              18,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "60%",
+              "100%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "60% is 6 groups of 10%. How many games is 10%?",
+            "qEs": "El 60% son 6 grupos de 10%. ¿Cuántos partidos es el 10%?",
+            "a": "3",
+            "calc": "18 / 6",
+            "unit": "games",
+            "unitEs": "partidos"
+          }
+        ]
       },
       {
         "kind": "num",
@@ -2285,7 +3095,44 @@
           "Multiplica por 10 para obtener el precio total y luego resta los $45 ya ahorrados."
         ],
         "x": "30% is 3 tenths, so 10% of the price = 45 ÷ 3 = 15. The whole price is 10 × 15 = $150. Jordan needs $150 − $45 = $105 more.",
-        "xEs": "30% son 3 décimos, así que el 10% del precio = 45 ÷ 3 = 15. El precio total es 10 × 15 = $150. Jordan necesita $150 − $45 = $105 más."
+        "xEs": "30% son 3 décimos, así que el 10% del precio = 45 ÷ 3 = 15. El precio total es 10 × 15 = $150. Jordan necesita $150 − $45 = $105 más.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Dollars",
+            "vals": [
+              0,
+              45,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "30%",
+              "100%"
+            ]
+          }
+        },
+        "guide": [
+          {
+            "q": "30% is 3 groups of 10%. How many dollars is 10% of the price?",
+            "qEs": "El 30% son 3 grupos de 10%. ¿Cuántos dólares es el 10% del precio?",
+            "a": "15",
+            "calc": "45 / 3",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          },
+          {
+            "q": "What is the full price of the bike?",
+            "qEs": "¿Cuál es el precio total de la bicicleta?",
+            "a": "150",
+            "calc": "15 * 10",
+            "unit": "dollars",
+            "unitEs": "dólares"
+          }
+        ]
       },
       {
         "kind": "mc",
@@ -2330,7 +3177,26 @@
           "Multiplica esa cantidad por 10 para hallar el 100% de los visitantes."
         ],
         "x": "40% is 4 tenths, so 10% = 56 ÷ 4 = 14 visitors. The whole is 100%, which is 10 × 14 = 140 visitors.",
-        "xEs": "40% son 4 décimos, así que 10% = 56 ÷ 4 = 14 visitantes. El total es 100%, que son 10 × 14 = 140 visitantes."
+        "xEs": "40% son 4 décimos, así que 10% = 56 ÷ 4 = 14 visitantes. El total es 100%, que son 10 × 14 = 140 visitantes.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Visitors",
+            "vals": [
+              0,
+              56,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "40%",
+              "100%"
+            ]
+          }
+        }
       },
       {
         "title": "Pages read",
@@ -2489,7 +3355,33 @@
           "Suma las ventas del domingo a las 36 del sábado."
         ],
         "x": "40% is 36, so 10% is 9 and the whole pile is 90. On Sunday it sold 30% of 90 = 27. Together: 36 + 27 = 63 pumpkins.",
-        "xEs": "El 40% es 36, así que el 10% es 9 y el montón completo es 90. El domingo vendió el 30% de 90 = 27. Juntos: 36 + 27 = 63 calabazas."
+        "xEs": "El 40% es 36, así que el 10% es 9 y el montón completo es 90. El domingo vendió el 30% de 90 = 27. Juntos: 36 + 27 = 63 calabazas.",
+        "guide": [
+          {
+            "q": "40% is 4 groups of 10%. How many pumpkins is 10% of the pile?",
+            "qEs": "El 40% son 4 grupos de 10%. ¿Cuántas calabazas es el 10% del montón?",
+            "a": "9",
+            "calc": "36 / 4",
+            "unit": "pumpkins",
+            "unitEs": "calabazas"
+          },
+          {
+            "q": "How many pumpkins are in the whole pile?",
+            "qEs": "¿Cuántas calabazas hay en todo el montón?",
+            "a": "90",
+            "calc": "9 * 10",
+            "unit": "pumpkins",
+            "unitEs": "calabazas"
+          },
+          {
+            "q": "How many pumpkins were sold on Sunday (30% of the pile)?",
+            "qEs": "¿Cuántas calabazas se vendieron el domingo (30% del montón)?",
+            "a": "27",
+            "calc": "9 * 3",
+            "unit": "pumpkins",
+            "unitEs": "calabazas"
+          }
+        ]
       },
       {
         "title": "Leo's claim",
@@ -2572,7 +3464,36 @@
             "Multiplica el resultado por 10 para obtener 100%."
           ],
           "x": "10% is 18 ÷ 3 = 6 projects. 100% is 6 × 10 = 60 projects. The fair has 60 projects.",
-          "xEs": "El 10% es 18 ÷ 3 = 6 proyectos. El 100% es 6 × 10 = 60 proyectos. La feria tiene 60 proyectos."
+          "xEs": "El 10% es 18 ÷ 3 = 6 proyectos. El 100% es 6 × 10 = 60 proyectos. La feria tiene 60 proyectos.",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Projects",
+              "vals": [
+                0,
+                18,
+                null
+              ]
+            },
+            "bottom": {
+              "label": "Percent",
+              "vals": [
+                "0%",
+                "30%",
+                "100%"
+              ]
+            }
+          },
+          "guide": [
+            {
+              "q": "30% is 3 groups of 10%. How many projects is 10%?",
+              "qEs": "El 30% son 3 grupos de 10%. ¿Cuántos proyectos es el 10%?",
+              "a": "6",
+              "calc": "18 / 3",
+              "unit": "projects",
+              "unitEs": "proyectos"
+            }
+          ]
         },
         {
           "title": "Ribbons",
@@ -2607,7 +3528,25 @@
             "Ese número es el número de listones."
           ],
           "x": "The fair has 60 projects. 20% of 60 = 0.2 × 60 = 12. The judges will give 12 ribbons.",
-          "xEs": "La feria tiene 60 proyectos. 20% de 60 = 0.2 × 60 = 12. Los jueces darán 12 listones."
+          "xEs": "La feria tiene 60 proyectos. 20% de 60 = 0.2 × 60 = 12. Los jueces darán 12 listones.",
+          "guide": [
+            {
+              "q": "How many projects are in the fair altogether?",
+              "qEs": "¿Cuántos proyectos hay en total en la feria?",
+              "a": "60",
+              "calc": "18 * 100 / 30",
+              "unit": "projects",
+              "unitEs": "proyectos"
+            },
+            {
+              "q": "How many projects is 10% of all the projects?",
+              "qEs": "¿Cuántos proyectos es el 10% de todos los proyectos?",
+              "a": "6",
+              "calc": "60 / 10",
+              "unit": "projects",
+              "unitEs": "proyectos"
+            }
+          ]
         },
         {
           "title": "More ribbons",
@@ -2686,7 +3625,26 @@
           "Halla el número en cuatro cuartas partes iguales."
         ],
         "x": "25% is one fourth, and one fourth of the class is 6 students. The whole class is 4 × 6 = 24 students.",
-        "xEs": "25% es una cuarta parte, y una cuarta parte de la clase son 6 estudiantes. La clase completa es 4 × 6 = 24 estudiantes."
+        "xEs": "25% es una cuarta parte, y una cuarta parte de la clase son 6 estudiantes. La clase completa es 4 × 6 = 24 estudiantes.",
+        "viz": {
+          "t": "dnl",
+          "top": {
+            "label": "Students",
+            "vals": [
+              0,
+              6,
+              null
+            ]
+          },
+          "bottom": {
+            "label": "Percent",
+            "vals": [
+              "0%",
+              "25%",
+              "100%"
+            ]
+          }
+        }
       },
       {
         "title": "Eggs left",
@@ -2721,7 +3679,25 @@
           "Resta los huevos usados del total."
         ],
         "x": "20% is 12, so 10% is 6 and 100% is 60 eggs. The bakery has 60 − 12 = 48 eggs left.",
-        "xEs": "20% es 12, así que 10% es 6 y 100% es 60 huevos. A la panadería le quedan 60 − 12 = 48 huevos."
+        "xEs": "20% es 12, así que 10% es 6 y 100% es 60 huevos. A la panadería le quedan 60 − 12 = 48 huevos.",
+        "guide": [
+          {
+            "q": "20% is 2 groups of 10%. How many eggs is 10%?",
+            "qEs": "El 20% son 2 grupos de 10%. ¿Cuántos huevos es el 10%?",
+            "a": "6",
+            "calc": "12 / 2",
+            "unit": "eggs",
+            "unitEs": "huevos"
+          },
+          {
+            "q": "How many eggs did the bakery have at the start?",
+            "qEs": "¿Cuántos huevos tenía la panadería al principio?",
+            "a": "60",
+            "calc": "6 * 10",
+            "unit": "eggs",
+            "unitEs": "huevos"
+          }
+        ]
       },
       {
         "title": "Hats in stock",

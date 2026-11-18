@@ -76,7 +76,12 @@
     if (typeof v === "number") return Number.isFinite(v) ? { v, t: fmt(v) } : null;
     const t = String(v).trim();
     if (!t) return null;
-    return Number.isFinite(Number(t)) ? { v: Number(t), t: fmt(Number(t)) } : { v: null, t };
+    if (Number.isFinite(Number(t))) return { v: Number(t), t: fmt(Number(t)) };
+    // a fraction ("3/4") or mixed number ("1 1/2") keeps its printed form and gets its size, so a tape of
+    // "3/4 cup" next to "6 cups" is drawn to scale instead of as an unknown
+    const m = t.match(/^(?:(\d+)\s+)?(\d+)\/(\d+)$/);
+    if (m && Number(m[3]) > 0) return { v: Number(m[1] || 0) + Number(m[2]) / Number(m[3]), t };
+    return { v: null, t };
   };
   /** Estimated text width in px, good enough to keep labels apart without measuring a DOM. */
   const tw = (s, z = 14, bold = false) => {

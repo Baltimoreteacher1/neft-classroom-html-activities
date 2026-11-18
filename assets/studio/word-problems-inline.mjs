@@ -48,6 +48,7 @@ async function boot() {
     mountProblem(slot, p, {
       id: `wpi-${n}`,
       solved: !!solved[key],
+      example: set?.example,
       onSolved: () => save(key),
     });
     host.hidden = false;

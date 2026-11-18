@@ -8,7 +8,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
-import { loadWordProblems } from "../tools/validate-word-problems.mjs";
+import { loadWordProblems, vizRenderer } from "../tools/validate-word-problems.mjs";
 import { buildRegistry } from "./lib/math-studio-registry.mjs";
 import { validateWordProblems } from "./lib/word-problems-data.mjs";
 import { wordProblemsPage } from "./lib/word-problems-page.mjs";
@@ -19,6 +19,7 @@ export function outputs() {
   const problems = validateWordProblems(
     byLesson,
     lessons.map((/** @type {any} */ l) => l.id),
+    { renderViz: vizRenderer() },
   );
   if (problems.length) throw new Error(`word problems:\n  ${problems.join("\n  ")}`);
   const units = /** @type {Record<string, Record<string, any>>} */ ({});
@@ -26,7 +27,27 @@ export function outputs() {
     const unit = l.id.split("-")[0];
     units[unit] ??= {};
     const { problems, scenario, steps } = byLesson[l.id];
-    units[unit][l.id] = { title: l.title, problems, scenario, steps };
+    // The lesson's own worked example ("Watch me") and words, from the Learning Lab registry: shown after two
+    // misses and in the word bank, so the help a student gets is the lesson's, not new text.
+    const iDo = l.understand?.iDo;
+    const example = iDo?.lines?.length
+      ? {
+          title: iDo.title || "Watch me",
+          titleEs: iDo.titleEs,
+          lines: iDo.lines,
+          linesEs: iDo.linesEs,
+        }
+      : undefined;
+    const words = (l.understand?.vocabulary || [])
+      .filter((/** @type {any} */ v) => v.term && v.definition && v.role !== "concept")
+      .slice(0, 8)
+      .map((/** @type {any} */ v) => ({
+        term: v.term,
+        termEs: v.termEs,
+        def: v.definition,
+        defEs: v.definitionEs,
+      }));
+    units[unit][l.id] = { title: l.title, problems, scenario, steps, example, words };
   }
   const files = new Map();
   for (const [unit, data] of Object.entries(units)) {

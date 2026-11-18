@@ -31,8 +31,51 @@ export function evalCalc(/** @type {any} */ expr) {
 
 const close = sameValue;
 
-function problemIssues(/** @type {any} */ p, /** @type {string} */ where) {
+/** Optional extras on any problem: a figure (`viz`, a StudioViz spec) and step-by-step checkpoints (`guide`). */
+function extrasIssues(/** @type {any} */ p, /** @type {string} */ where, /** @type {any} */ opts) {
   const out = [];
+  if (p.viz !== undefined) {
+    if (!p.viz || typeof p.viz !== "object" || typeof p.viz.t !== "string")
+      out.push(`${where}.viz needs a type t`);
+    else if (opts.renderViz) {
+      const svg = String(opts.renderViz(p.viz));
+      if (
+        !svg.startsWith("<svg") ||
+        svg.includes("data-viz-error") ||
+        svg.includes("Figure unavailable")
+      )
+        out.push(
+          `${where}.viz does not draw: ${(svg.match(/aria-label="([^"]*)"/) || [])[1] || "no svg"}`,
+        );
+    }
+  }
+  if (p.guide !== undefined) {
+    if (p.kind !== "num") out.push(`${where}.guide is only for typed-number problems`);
+    if (!Array.isArray(p.guide) || p.guide.length < 1 || p.guide.length > 4)
+      out.push(`${where}.guide needs 1-4 checkpoints`);
+    else
+      p.guide.forEach((/** @type {any} */ g, /** @type {number} */ i) => {
+        const w = `${where}.guide[${i}]`;
+        if (!str(g.q, 10) || !str(g.qEs, 10)) out.push(`${w} needs q and qEs`);
+        const a = parseAnswer(g.a);
+        const c = evalCalc(g.calc);
+        if (!Number.isFinite(a) || !Number.isFinite(c) || !close(a, c))
+          out.push(`${w}: calc ${g.calc} must equal ${g.a}`);
+        if (g.unit !== undefined && (!str(g.unit, 1) || !str(g.unitEs, 1)))
+          out.push(`${w}: unit needs unitEs`);
+        if (Number.isFinite(a) && close(a, parseAnswer(p.a)))
+          out.push(`${w}: a checkpoint gives the final answer; stop one step before it`);
+      });
+  }
+  return out;
+}
+
+function problemIssues(
+  /** @type {any} */ p,
+  /** @type {string} */ where,
+  /** @type {any} */ opts = {},
+) {
+  const out = [...extrasIssues(p, where, opts)];
   for (const k of ["title", "titleEs"]) if (!str(p[k], 3)) out.push(`${where}.${k} is required`);
   for (const k of ["q", "qEs", "x", "xEs"])
     if (!str(p[k], 30)) out.push(`${where}.${k} (30+ chars) is required`);
@@ -150,8 +193,9 @@ export const STEPS = 3;
 /**
  * @param {Record<string, any>} byLesson lesson id -> { problems: [...] }
  * @param {string[]} lessonIds every lesson that must have word problems
+ * @param {{ renderViz?: (spec: any) => string }} [opts] renderViz draws a figure so a broken spec fails
  */
-export function validateWordProblems(byLesson, lessonIds) {
+export function validateWordProblems(byLesson, lessonIds, opts = {}) {
   const out = [];
   for (const id of lessonIds) {
     const set = byLesson[id];
@@ -166,7 +210,7 @@ export function validateWordProblems(byLesson, lessonIds) {
       out.push(`${id}: at least two problems must ask for a typed number`);
     if (!P.some((p) => p.kind === "build"))
       out.push(`${id}: at least one problem must be a build task`);
-    P.forEach((p, i) => out.push(...problemIssues(p, `${id}.problems[${i}]`)));
+    P.forEach((p, i) => out.push(...problemIssues(p, `${id}.problems[${i}]`, opts)));
     const sc = set.scenario;
     if (
       !sc ||
@@ -180,11 +224,11 @@ export function validateWordProblems(byLesson, lessonIds) {
       out.push(`${id}.scenario.setup refers to a picture or table`);
     const parts = Array.isArray(sc?.parts) ? sc.parts : [];
     if (parts.length !== 3) out.push(`${id}.scenario needs exactly 3 linked parts`);
-    parts.forEach((p, i) => out.push(...problemIssues(p, `${id}.scenario.parts[${i}]`)));
+    parts.forEach((p, i) => out.push(...problemIssues(p, `${id}.scenario.parts[${i}]`, opts)));
     const steps = Array.isArray(set.steps) ? set.steps : [];
     if (steps.length !== STEPS)
       out.push(`${id}.steps needs exactly ${STEPS} in-step real-world checks`);
-    steps.forEach((p, i) => out.push(...problemIssues(p, `${id}.steps[${i}]`)));
+    steps.forEach((p, i) => out.push(...problemIssues(p, `${id}.steps[${i}]`, opts)));
     const seen = new Set();
     for (const p of [...P, ...parts, ...steps]) {
       const key = String(p.q || "")

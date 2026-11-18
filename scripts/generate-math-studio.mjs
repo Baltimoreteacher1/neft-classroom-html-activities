@@ -16,10 +16,12 @@ import { coverageReport } from "./lib/math-studio-coverage.mjs";
 import { finderPage, lessonPage } from "./lib/math-studio-page.mjs";
 import { buildRegistry } from "./lib/math-studio-registry.mjs";
 import {
+  vizScripts,
   WP_STEP_PANELS,
   wordProblemsCta,
   wordProblemsInline,
   wordProblemsInlineHead,
+  wordProblemsVersion,
 } from "./lib/word-problems-page.mjs";
 
 const read = (rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
@@ -59,7 +61,7 @@ function unit4Studio(html, id, url) {
   let out = html.replace(BAR, "").replace(CTA, "").replace(WP, "");
   // before the u4-clarity block when there is one: inject-u4-lab-bench.mjs rewrites that block in place and
   // leaves anything above it alone, so the two generators agree on the order
-  const headBlock = `<!-- word-problems-head:begin -->\n${wordProblemsInlineHead()}\n<!-- word-problems-head:end -->\n`;
+  const headBlock = `<!-- word-problems-head:begin -->\n${vizScripts(wordProblemsVersion())}\n${wordProblemsInlineHead()}\n<!-- word-problems-head:end -->\n`;
   const anchor = out.includes("<!-- u4-clarity:begin") ? "  <!-- u4-clarity:begin" : "</head>";
   out = out.replace(anchor, `${headBlock}${anchor}`);
   WP_STEP_PANELS.forEach((panel, n) => {

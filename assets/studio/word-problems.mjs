@@ -36,6 +36,7 @@ const back = /^\/math\/[a-z0-9-]+(\/[a-z0-9-]+)*\/$/.test(from)
 const state = {
   /** @type {{ p: any, scenario: boolean, n: number }[]} */ steps: [],
   /** @type {any} */ scenario: null,
+  /** @type {any} */ example: null,
   i: 0,
   done: false,
   /** @type {number[]} */ solved: [],
@@ -89,6 +90,7 @@ function renderStep() {
     setup: s.scenario ? `${sc.title}: ${sc.setup}` : undefined,
     setupEs: s.scenario ? `${sc.titleEs}: ${sc.setupEs}` : undefined,
     solved: state.solved.includes(state.i),
+    example: state.example,
     onSolved: () => {
       if (!state.solved.includes(state.i)) state.solved.push(state.i);
       saveSolved();
@@ -160,6 +162,17 @@ async function boot() {
   }
   if (!set?.problems?.length) return fail();
   state.scenario = set.scenario || null;
+  state.example = set.example || null;
+  if (set.words?.length) {
+    const box = $("wp-words");
+    box.innerHTML = `<summary>${bi("Word bank", "Banco de palabras")} <span class="wp-words-n">${set.words.length}</span></summary><dl>${set.words
+      .map(
+        (/** @type {any} */ w) =>
+          `<dt>${bi(w.term, w.termEs)}</dt><dd>${bi(w.def, w.defEs)}</dd>`,
+      )
+      .join("")}</dl>`;
+    box.hidden = false;
+  }
   state.steps = [
     ...set.problems.map((/** @type {any} */ p, /** @type {number} */ k) => ({ p, scenario: false, n: k + 1 })),
     ...(set.scenario?.parts || []).map((/** @type {any} */ p, /** @type {number} */ k) => ({ p, scenario: true, n: k + 1 })),

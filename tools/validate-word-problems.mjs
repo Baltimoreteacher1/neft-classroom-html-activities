@@ -6,8 +6,15 @@ import { join } from "node:path";
 import { buildRegistry } from "../scripts/lib/math-studio-registry.mjs";
 import { evalCalc, parseAnswer, validateWordProblems } from "../scripts/lib/word-problems-data.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
+import { loadStudio } from "./lib/studio-vm.mjs";
 
 const DIR = join(REPO_ROOT, "data/word-problems");
+
+/** StudioViz.render in node:vm, so a figure spec that cannot draw fails the gate. */
+export function vizRenderer() {
+  const ctx = loadStudio({ gen: false, viz: true });
+  return (/** @type {any} */ spec) => ctx.StudioViz.render(spec);
+}
 
 /** Every lesson id -> its problem set, read from the per-unit files. */
 export function loadWordProblems() {
@@ -101,17 +108,18 @@ function selfTest() {
   delete build.calc;
   delete table.calc;
   delete table.fw;
-  const set = () => ({
-    problems: [v(good, 1), v(good, 2), v(good, 3), v(good, 4), v(good, 5), build, table],
-    scenario: {
-      title: "Art room",
-      titleEs: "Salón de arte",
-      setup: "The art room packs pencil pouches of 4 pencils each and keeps 6 extra pencils.",
-      setupEs: "El salón de arte llena bolsas de 4 lápices y guarda 6 lápices extra.",
-      parts: [v(good, 6), v(good, 7), v(good, 8)],
-    },
-    steps: [v(good, 9), v(good, 10), v(good, 11)],
-  });
+  const set = () =>
+    structuredClone({
+      problems: [v(good, 1), v(good, 2), v(good, 3), v(good, 4), v(good, 5), build, table],
+      scenario: {
+        title: "Art room",
+        titleEs: "Salón de arte",
+        setup: "The art room packs pencil pouches of 4 pencils each and keeps 6 extra pencils.",
+        setupEs: "El salón de arte llena bolsas de 4 lápices y guarda 6 lápices extra.",
+        parts: [v(good, 6), v(good, 7), v(good, 8)],
+      },
+      steps: [v(good, 9), v(good, 10), v(good, 11)],
+    });
   const issues = (/** @type {any} */ x) => validateWordProblems({ x }, ["x"]);
   ok(issues(set()).length === 0, `clean set passes ${issues(set()).join("; ")}`);
   const bad = (/** @type {(s: any) => void} */ f, /** @type {string} */ m) => {
@@ -130,6 +138,44 @@ function selfTest() {
   bad((s) => (s.steps[0] = s.problems[0]), "a repeated question fails");
   bad((s) => (s.problems[0].q += " Use the table shown below."), "picture words fail");
   ok(validateWordProblems({}, ["x"]).length > 0, "missing lesson fails");
+  const renderViz = vizRenderer();
+  const withOpts = (/** @type {any} */ x) => validateWordProblems({ x }, ["x"], { renderViz });
+  const extra = set();
+  extra.problems[0].viz = { t: "tape", parts: [{ v: 4, l: "pouch" }, { v: 4 }, { v: 4 }] };
+  extra.problems[0].guide = [
+    {
+      q: "How many pencils are in the 3 pouches?",
+      qEs: "¿Cuántos lápices hay en las 3 bolsas?",
+      a: "12",
+      calc: "4 * 3",
+    },
+    {
+      q: "How many extra pencils are there?",
+      qEs: "¿Cuántos lápices extra hay?",
+      a: "6",
+      calc: "6",
+    },
+  ];
+  ok(withOpts(extra).length === 0, `a figure and a guide pass ${withOpts(extra).join("; ")}`);
+  const badViz = set();
+  badViz.problems[0].viz = { t: "shape", s: "blob" };
+  ok(withOpts(badViz).length > 0, "a figure that cannot draw fails");
+  const giveaway = set();
+  giveaway.problems[0].guide = [
+    {
+      q: "How many pencils are in the 3 pouches?",
+      qEs: "¿Cuántos lápices hay en las 3 bolsas?",
+      a: "12",
+      calc: "4 * 3",
+    },
+    {
+      q: "How many pencils is that in all?",
+      qEs: "¿Cuántos lápices son en total?",
+      a: "18",
+      calc: "12 + 6",
+    },
+  ];
+  ok(withOpts(giveaway).length > 0, "a guide whose last checkpoint is the answer fails");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -143,7 +189,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const byLesson = Object.fromEntries(
     Object.entries(all).filter(([id]) => !units || units.has(id.split("-")[0])),
   );
-  const problems = validateWordProblems(byLesson, ids);
+  const problems = validateWordProblems(byLesson, ids, { renderViz: vizRenderer() });
   if (ids.length < (units ? 1 : 72)) problems.push(`only ${ids.length} lessons found`);
   if (problems.length) {
     console.error(problems.map((p) => `  ✗ ${p}`).join("\n"));

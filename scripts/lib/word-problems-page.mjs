@@ -15,7 +15,14 @@ export const WP_RUNTIME = [
   "assets/studio/word-problems-answer.mjs",
   "assets/studio/word-problems.css",
   "assets/studio/word-problems-card.css",
+  "assets/studio-viz.js",
+  "assets/studio-viz-geo.js",
+  "assets/studio-viz-model.js",
 ];
+/** The figure renderer the cards draw with; the generated studios already load it. */
+const VIZ_SCRIPTS = ["studio-viz.js", "studio-viz-geo.js", "studio-viz-model.js"];
+export const vizScripts = (/** @type {string} */ v) =>
+  VIZ_SCRIPTS.map((f) => `  <script src="/assets/${f}?v=${v}" defer></script>`).join("\n");
 /** Which studio step (index into a 5-step studio) shows each in-step "Real-world check": steps 2, 3 and 5. */
 export const WP_STEP_PANELS = [1, 2, 4];
 
@@ -70,6 +77,7 @@ export function wordProblemsPage(v = wordProblemsVersion()) {
   <link rel="icon" href="/assets/favicon.svg">
   <link rel="stylesheet" href="/assets/studio/word-problems.css?v=${v}">
   <link rel="stylesheet" href="/assets/studio/word-problems-card.css?v=${v}">
+${vizScripts(v)}
   <script type="module" src="/assets/studio/word-problems.mjs?v=${v}"></script>
 ${NSR_HEAD}
 </head>
@@ -83,6 +91,7 @@ ${NSR_HEAD}
     </div>
   </header>
   <main class="wp-main" id="wp-main">
+    <details class="wp-words" id="wp-words" hidden></details>
     <div class="wp-progress"><div class="wp-dots" id="wp-dots" role="group" aria-label="Problems"></div><p><span class="t-en">Solve each one. Hints are there when you need them.</span><span class="t-es" lang="es">Resuelve cada uno. Las pistas están ahí cuando las necesites.</span></p></div>
     <div id="wp-stage" aria-live="polite"></div>
   </main>

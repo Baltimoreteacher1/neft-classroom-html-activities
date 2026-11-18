@@ -130,7 +130,29 @@ function answerArea(/** @type {any} */ p, /** @type {string} */ id) {
       )
       .join("")}</tbody></table></div>`;
   return `<div class="wp-answer"><label for="${id}-input">${bi("Your answer", "Tu respuesta")}</label>
-    <div class="wp-answer-row"><input id="${id}-input" class="wp-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">${p.unit ? `<span class="wp-unit">${bi(p.unit, p.unitEs)}</span>` : ""}</div></div>`;
+    <div class="wp-answer-row"><input id="${id}-input" class="wp-input" data-wp-main type="text" inputmode="decimal" autocomplete="off" spellcheck="false">${p.unit ? `<span class="wp-unit">${bi(p.unit, p.unitEs)}</span>` : ""}</div></div>`;
+}
+
+const SPEECH = typeof window !== "undefined" && "speechSynthesis" in window;
+
+/** The problem's figure, drawn by the studio renderer (assets/studio-viz*.js) when the page loaded it. */
+function figure(/** @type {any} */ spec) {
+  const V = typeof window !== "undefined" ? /** @type {any} */ (window).StudioViz : null;
+  if (!spec || !V?.render) return "";
+  return `<figure class="wp-figure">${V.render(spec)}</figure>`;
+}
+
+const spanish = () => typeof document !== "undefined" && document.body.classList.contains("show-es");
+
+/** Read text aloud in the language on screen; a second tap stops it. */
+function speak(/** @type {string} */ en, /** @type {string | undefined} */ es) {
+  const synth = window.speechSynthesis;
+  if (synth.speaking) return synth.cancel();
+  const useEs = spanish() && !!es;
+  const u = new SpeechSynthesisUtterance(String(useEs ? es : en).replace(/×/g, " times ").replace(/÷/g, " divided by "));
+  u.lang = useEs ? "es-US" : "en-US";
+  u.rate = 0.95;
+  synth.speak(u);
 }
 
 /**
@@ -138,23 +160,30 @@ function answerArea(/** @type {any} */ p, /** @type {string} */ id) {
  * @param {HTMLElement} host
  * @param {any} p
  * @param {{ id: string, label?: string, labelEs?: string, setup?: string, setupEs?: string, solved?: boolean,
+ *   example?: { title: string, titleEs?: string, lines: string[], linesEs?: string[] },
  *   onSolved?: () => void, next?: { en: string, es: string, go: () => void } | null }} o
  */
 export function mountProblem(host, p, o) {
   const id = o.id;
   host.innerHTML = `<article class="wp-card" aria-labelledby="${id}-title">
     ${o.label ? `<p class="wp-count">${bi(o.label, o.labelEs)}</p>` : ""}
-    <h2 id="${id}-title" class="wp-title" tabindex="-1">${bi(p.title, p.titleEs)}</h2>
+    <div class="wp-title-row"><h2 id="${id}-title" class="wp-title" tabindex="-1">${bi(p.title, p.titleEs)}</h2>${
+      SPEECH ? `<button type="button" class="wp-btn wp-btn--small wp-read" data-wp-read aria-label="Read this problem aloud"><span aria-hidden="true">🔊</span> ${bi("Read", "Leer")}</button>` : ""
+    }</div>
     ${o.setup ? `<div class="wp-setup">${bi(o.setup, o.setupEs)}</div>` : ""}
     <p class="wp-q">${bi(p.q, p.qEs)}</p>
+    ${figure(p.viz)}
+    ${p.guide ? `<details class="wp-guide" data-wp-guide><summary>${bi("Guide me step by step", "Guíame paso a paso")}</summary><ol class="wp-guide-steps"></ol></details>` : ""}
     <form class="wp-form" novalidate>
       ${answerArea(p, id)}
       <div class="wp-actions">
         <button type="submit" class="wp-btn wp-btn--primary">${bi("Check", "Revisar")}</button>
         <button type="button" class="wp-btn" data-wp-hint>${bi("Hint 1 of 3", "Pista 1 de 3")}</button>
+        ${o.example ? `<button type="button" class="wp-btn" data-wp-example hidden>${bi("See a worked example", "Ver un ejemplo resuelto")}</button>` : ""}
       </div>
     </form>
     <ol class="wp-hints" aria-live="polite"></ol>
+    <div class="wp-example" data-wp-example-box hidden></div>
     <div class="wp-feedback" role="status" aria-live="polite"></div>
   </article>`;
   const q = (/** @type {string} */ s) => /** @type {HTMLElement} */ (host.querySelector(s));
@@ -179,7 +208,16 @@ export function mountProblem(host, p, o) {
     if (hints >= 3) btn.hidden = true;
     else btn.innerHTML = bi(`Hint ${hints + 1} of 3`, `Pista ${hints + 1} de 3`);
   };
+  let misses = 0;
   const miss = (/** @type {string | undefined} */ f, /** @type {string | undefined} */ fEs) => {
+    misses++;
+    // after two misses, offer the lesson's own worked example and the step-by-step guide
+    if (misses >= 2) {
+      const ex = host.querySelector("[data-wp-example]");
+      if (ex) /** @type {HTMLElement} */ (ex).hidden = false;
+      const g = /** @type {HTMLDetailsElement | null} */ (host.querySelector("[data-wp-guide]"));
+      if (g && !g.open) g.open = true;
+    }
     const more = hints < 3;
     feedback(
       "is-miss",
@@ -226,7 +264,7 @@ export function mountProblem(host, p, o) {
     for (const el of host.querySelectorAll("input, .wp-form button, .wp-tile"))
       /** @type {HTMLInputElement} */ (el).disabled = true;
     if (restored) {
-      if (p.kind === "num") /** @type {HTMLInputElement} */ (q(".wp-input")).value = p.a;
+      if (p.kind === "num") /** @type {HTMLInputElement} */ (q("[data-wp-main]")).value = p.a;
       if (p.kind === "mc")
         /** @type {HTMLInputElement} */ (host.querySelectorAll(`input[name="${id}-choice"]`)[p.ai]).checked = true;
       if (p.kind === "build") {
@@ -289,7 +327,7 @@ export function mountProblem(host, p, o) {
         `${inputs.length - wrong} de ${inputs.length} celdas están bien. Revisa las marcadas.`,
       );
     }
-    const raw = /** @type {HTMLInputElement} */ (q(".wp-input")).value;
+    const raw = /** @type {HTMLInputElement} */ (q("[data-wp-main]")).value;
     const v = parseAnswer(raw);
     if (!raw.trim()) return feedback("is-nudge", bi("Type your answer first.", "Primero escribe tu respuesta."));
     if (!Number.isFinite(v))
@@ -304,6 +342,59 @@ export function mountProblem(host, p, o) {
     check();
   });
   q("[data-wp-hint]").addEventListener("click", hint);
+  host.querySelector("[data-wp-read]")?.addEventListener("click", () =>
+    speak(
+      [o.setup, p.q].filter(Boolean).join(" "),
+      [o.setupEs, p.qEs].filter(Boolean).join(" ") || undefined,
+    ),
+  );
+  host.querySelector("[data-wp-example]")?.addEventListener("click", (e) => {
+    const ex = /** @type {any} */ (o.example);
+    const box = q("[data-wp-example-box]");
+    box.innerHTML = `<p class="wp-example-title">${bi(`Worked example: ${ex.title}`, `Ejemplo resuelto: ${ex.titleEs || ex.title}`)}</p><ol>${ex.lines
+      .map((/** @type {string} */ l, /** @type {number} */ k) => `<li>${bi(l, ex.linesEs?.[k])}</li>`)
+      .join("")}</ol><p class="wp-example-note">${bi("Same idea, different numbers. Now try your problem again.", "La misma idea con otros números. Ahora vuelve a intentar tu problema.")}</p>`;
+    box.hidden = false;
+    /** @type {HTMLElement} */ (e.currentTarget).hidden = true;
+  });
+  const guide = /** @type {HTMLDetailsElement | null} */ (host.querySelector("[data-wp-guide]"));
+  if (guide) {
+    const list = /** @type {HTMLElement} */ (guide.querySelector(".wp-guide-steps"));
+    const step = (/** @type {number} */ k) => {
+      const g = p.guide[k];
+      list.insertAdjacentHTML(
+        "beforeend",
+        `<li data-wp-step="${k}"><p>${bi(g.q, g.qEs)}</p><div class="wp-answer-row"><input class="wp-input wp-input--step" type="text" inputmode="decimal" autocomplete="off" aria-label="Step ${k + 1} answer">${g.unit ? `<span class="wp-unit">${bi(g.unit, g.unitEs)}</span>` : ""}<button type="button" class="wp-btn wp-btn--small" data-wp-step-check>${bi("Check step", "Revisar paso")}</button></div><p class="wp-step-fb" role="status" aria-live="polite"></p></li>`,
+      );
+    };
+    guide.addEventListener("toggle", () => {
+      if (guide.open && !list.children.length) step(0);
+    });
+    list.addEventListener("click", (e) => {
+      const btn = /** @type {HTMLElement} */ (e.target).closest("[data-wp-step-check]");
+      if (!btn) return;
+      const li = /** @type {HTMLElement} */ (btn.closest("[data-wp-step]"));
+      const k = Number(li.dataset.wpStep);
+      const inp = /** @type {HTMLInputElement} */ (li.querySelector("input"));
+      const fb = /** @type {HTMLElement} */ (li.querySelector(".wp-step-fb"));
+      if (!sameValue(parseAnswer(inp.value), parseAnswer(p.guide[k].a))) {
+        fb.innerHTML = bi("Not yet. Check this step and try again.", "Todavía no. Revisa este paso y vuelve a intentarlo.");
+        fb.className = "wp-step-fb is-miss";
+        return;
+      }
+      inp.disabled = true;
+      /** @type {HTMLButtonElement} */ (btn).disabled = true;
+      fb.className = "wp-step-fb is-right";
+      fb.innerHTML = `<span aria-hidden="true">✓</span> ${bi("Step done.", "Paso listo.")}`;
+      if (k + 1 < p.guide.length) step(k + 1);
+      else
+        list.insertAdjacentHTML(
+          "beforeend",
+          `<li class="wp-guide-done">${bi("You have the pieces. Now answer the whole question below.", "Ya tienes las partes. Ahora responde toda la pregunta abajo.")}</li>`,
+        );
+      /** @type {HTMLInputElement | null} */ (list.querySelector("li:last-child input"))?.focus();
+    });
+  }
   if (o.solved) solved(true);
   return { focus: () => q(`#${id}-title`).focus() };
 }
