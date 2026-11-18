@@ -128,7 +128,7 @@ export function renderExponent(m, opts = {}) {
     const top = y + r * (CH + GAP_Y);
     let card = `<rect x="${f1(x)}" y="${f1(top)}" width="${f1(cw)}" height="${CH}" rx="10" fill="${COLOR.white}" stroke="${COLOR.ink}" stroke-width="1.5"/>`;
     card += `<circle cx="${f1(x + 16)}" cy="${f1(top + 15)}" r="11" fill="${COLOR.navy}"/>${text(x + 16, top + 20, String(s.n), { size: 14, weight: 700, fill: COLOR.white })}`;
-    card += text(x + 34, top + 20, L(lang, s.n === 1 ? "step" : "step", "paso"), { size: 13, anchor: "start", fill: COLOR.muted });
+    card += text(x + 34, top + 20, `${m.base}${sup(s.n)} · ${L(lang, "step", "paso")} ${s.n}`, { size: 13, weight: 700, anchor: "start", fill: COLOR.ink });
     card += drawBlock(m.base, s, x + 6, top + 26, cw - 12, GH - 6, lang);
     const labelTop = top + 22 + GH + 6;
     let ly = labelTop + 13;

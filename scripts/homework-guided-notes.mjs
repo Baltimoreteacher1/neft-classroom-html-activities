@@ -2297,26 +2297,66 @@ function conceptVisual(config) {
   if (topic === "exponents") {
     return {
       svg: conceptFrame({
-        label: "Two to the third power equals two times two times two, which equals eight",
+        label:
+          "Exponent progression on base 2: two to the first is 2, two squared is 2 times 2 equals 4, two cubed is 2 times 2 times 2 equals 8, and two to the fourth is 2 times 2 times 2 times 2 equals 16",
         tone: "amber",
-        height: 380,
-        title: "Exponent / Exponente",
+        height: 452,
+        title: "Exponents: Repeated Multiplication / Exponentes: Multiplicación repetida",
         body: `
-        <text x="96" y="168" font-size="84" font-weight="800" fill="var(--fm-primary)">2</text>
-        <text x="150" y="118" font-size="46" font-weight="800" fill="var(--fm-m-unknown)">3</text>
-        <text x="196" y="168" font-size="46" font-weight="700" fill="var(--fm-primary)">=</text>
-        <text x="246" y="168" font-size="46" font-weight="800" fill="var(--fm-primary)">2 × 2 × 2</text>
-        <text x="478" y="168" font-size="46" font-weight="800" fill="var(--fm-m-part)">= 8</text>
-        <path d="M120 184 L120 212" stroke="var(--fm-primary)" stroke-width="2.5" fill="none"/>
-        <text x="120" y="238" text-anchor="middle" font-size="21" font-weight="700" fill="var(--fm-primary)">base</text>
-        <path d="M164 108 L176 86" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5" fill="none"/>
-        <text x="186" y="80" font-size="21" font-weight="700" fill="var(--fm-m-unknown)">exponent</text>
-        <rect x="46" y="272" width="548" height="72" rx="16" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="3"/>
-        <text x="320" y="318" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-m-unknown)">✗  2 + 2 + 2 = 6  is NOT 2³</text>`,
+        <!-- Top Anatomy Card: Base & Exponent -->
+        ${conceptCard(34, 66, 572, 122)}
+        <text x="86" y="148" font-size="68" font-weight="800" fill="var(--fm-primary)">2</text>
+        <text x="132" y="106" font-size="38" font-weight="800" fill="var(--fm-m-unknown)">3</text>
+        <text x="172" y="146" font-size="38" font-weight="800" fill="var(--fm-primary)">=  2 × 2 × 2</text>
+        <text x="412" y="146" font-size="38" font-weight="800" fill="var(--fm-m-part)">=  8</text>
+        <path d="M104 156 L104 172" stroke="var(--fm-primary)" stroke-width="2.5" fill="none"/>
+        <text class="concept-title-en" x="104" y="183" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-primary)">base (factor to multiply)</text>
+        <text class="concept-title-es" lang="es" x="104" y="183" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-primary)">base (factor que se multiplica)</text>
+        <path d="M148 94 L164 82" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5" fill="none"/>
+        <text class="concept-title-en" x="172" y="85" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">exponent: how many 2s to multiply (3 factors)</text>
+        <text class="concept-title-es" lang="es" x="172" y="85" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">exponente: cuántos 2 se multiplican (3 factores)</text>
+
+        <!-- Middle Progression Card: Increasing the Exponent by 1 on the Same Base -->
+        ${conceptCard(34, 200, 572, 162)}
+        <text class="concept-title-en" x="54" y="226" font-size="15" font-weight="800" fill="var(--fm-m-part)">SAME BASE (2), INCREASING THE EXPONENT (+1 MULTIPLIES BY 2 AGAIN):</text>
+        <text class="concept-title-es" lang="es" x="54" y="226" font-size="15" font-weight="800" fill="var(--fm-m-part)">MISMA BASE (2), AUMENTANDO EL EXPONENTE (+1 MULTIPLICA POR 2 OTRA VEZ):</text>
+
+        <!-- 4 Step Boxes: 2^1, 2^2, 2^3, 2^4 -->
+        <rect x="48" y="240" width="118" height="106" rx="10" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+        <text x="107" y="272" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-primary)">2¹</text>
+        <text x="107" y="298" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">2</text>
+        <text x="107" y="330" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">= 2</text>
+
+        <text x="177" y="292" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">×2 →</text>
+
+        <rect x="190" y="240" width="118" height="106" rx="10" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+        <text x="249" y="272" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-primary)">2²</text>
+        <text x="249" y="298" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">2 × 2</text>
+        <text x="249" y="330" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">= 4</text>
+
+        <text x="319" y="292" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">×2 →</text>
+
+        <rect x="332" y="240" width="118" height="106" rx="10" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2.5"/>
+        <text x="391" y="272" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-primary)">2³</text>
+        <text x="391" y="298" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">2 × 2 × 2</text>
+        <text x="391" y="330" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">= 8</text>
+
+        <text x="461" y="292" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">×2 →</text>
+
+        <rect x="474" y="240" width="118" height="106" rx="10" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+        <text x="533" y="272" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-primary)">2⁴</text>
+        <text x="533" y="298" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-primary)">2 × 2 × 2 × 2</text>
+        <text x="533" y="330" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">= 16</text>
+
+        <!-- Bottom Misconception Guard -->
+        <rect x="34" y="374" width="572" height="58" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5"/>
+        <text class="concept-title-en" x="320" y="410" text-anchor="middle" font-size="21" font-weight="800" fill="var(--fm-m-unknown)">✗  2³ is NOT 2 × 3 = 6  (multiply three 2s: 2 × 2 × 2 = 8)</text>
+        <text class="concept-title-es" lang="es" x="320" y="410" text-anchor="middle" font-size="21" font-weight="800" fill="var(--fm-m-unknown)">✗  2³ NO es 2 × 3 = 6  (multiplica tres 2: 2 × 2 × 2 = 8)</text>`,
       }),
       capEn:
-        "The exponent tells you how many times to MULTIPLY the base — never how many times to add it.",
-      capEs: "El exponente dice cuántas veces MULTIPLICAR la base — nunca cuántas veces sumarla.",
+        "The base is the repeated factor. The exponent tells how many times to multiply that base together — each +1 on the exponent multiplies by the base again.",
+      capEs:
+        "La base es el factor que se repite. El exponente dice cuántas veces multiplicar esa base entre sí — cada +1 en el exponente multiplica por la base otra vez.",
     };
   }
 
@@ -3118,6 +3158,47 @@ export function renderLearningTonight(config) {
         </div>
       </div>
     </section>`;
+}
+
+export function renderPrimaryConceptVisual(config) {
+  const keyEn = keyIdea(config);
+  const keyEs = keyIdeaEs(config);
+  const deeperIdea = `
+      <details class="family-why">
+        <summary><span class="lang-en">Why this works</span><span class="lang-es" lang="es">Por qué funciona</span></summary>
+        <p class="lang-en">${esc(completeSentence(keyEn))}</p>
+        <p class="lang-es" lang="es">${esc(completeSentence(keyEs))}</p>
+      </details>`;
+  if (config.familyBigIdeaFormat === "simple-visual") {
+    const unit4Vis = renderUnit4FamilyBigIdeaVisual(config);
+    if (!unit4Vis) return "";
+    return `
+      <section class="fp-card fp-concept-start big-idea" aria-label="Key concept visual" data-aria-en="Key concept visual" data-aria-es="Modelo visual del concepto clave">
+        <h3 class="fp-label">🎯 <span class="lang-en">Key concept visual</span><span class="lang-es" lang="es">Modelo visual del concepto clave</span></h3>
+        <div class="family-big-idea-piece">
+          ${unit4Vis}
+          <div class="family-big-idea-copy">
+            ${deeperIdea}
+          </div>
+        </div>
+      </section>`;
+  }
+  const visual = conceptVisual(config);
+  if (!visual?.svg) return "";
+  const caption =
+    visual.capEn || visual.capEs
+      ? `<figcaption class="concept-visual-caption">${visual.capEn ? `<span class="lang-en">${esc(visual.capEn)}</span>` : ""}${visual.capEs ? `<span class="lang-es" lang="es">${esc(visual.capEs)}</span>` : ""}</figcaption>`
+      : "";
+  const hasZoomable = /<(svg|img)\b/i.test(visual.svg);
+  const zoomBtn = hasZoomable
+    ? `<button type="button" class="concept-zoom-btn" ${act("openConceptZoom", EL)}><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button>`
+    : "";
+  return `
+      <section class="fp-card fp-concept-start big-idea" aria-label="Key concept visual" data-aria-en="Key concept visual" data-aria-es="Modelo visual del concepto clave">
+        <h3 class="fp-label">🎯 <span class="lang-en">Key concept visual</span><span class="lang-es" lang="es">Modelo visual del concepto clave</span></h3>
+        <figure class="concept-visual-wrap">${visual.svg}${caption}${zoomBtn}</figure>
+        ${deeperIdea}
+      </section>`;
 }
 
 export function renderConceptExplainer(config) {
@@ -8336,9 +8417,10 @@ export function renderLearnTab(
   /* STEP 1: Look & Learn. The goal, one worked example, the picture; notice/wonder and the prerequisite
      check are optional folds, not part of the path. */
   const hasModel = Boolean(missionModelFor(config));
+  const conceptVisualHtml = renderPrimaryConceptVisual(config);
   const connect = `
     <div ${tabPanelAttrs("connect")}>
-      ${renderLookAndLearn(config, { modelHtml: pieces.model, wordsHtml: caseFileHtml, noticeHtml: renderNoticeWonder(), warmupHtml: `${renderConfidence("before")}${pieces.spiral}` })}
+      ${renderLookAndLearn(config, { conceptVisualHtml, modelHtml: pieces.model, wordsHtml: caseFileHtml, noticeHtml: renderNoticeWonder(), warmupHtml: `${renderConfidence("before")}${pieces.spiral}` })}
     </div>`;
   /* STEP 2: Try Together. One guided problem, the interactive model (the older visual lab only where
      the engine has no model for the lesson), the lesson's tool, one optional family question. */

@@ -113,7 +113,7 @@ export function renderMissionStart() {
         <div class="hw-path-picker" data-family-path-picker data-quick-claim="One example and ${MISSION_PRACTICE_COUNT} problems" role="group" aria-label="Choose a learning path" data-aria-en="Choose a learning path" data-aria-es="Elige una ruta de aprendizaje"></div>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startFamilyPath")}><span class="lang-en">Start Quick Practice</span><span class="lang-es" lang="es">Empezar práctica rápida</span></button>
         <div class="hw-session-routes" id="hw_session_routes"></div>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades or account. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Se guarda aquí.</span></p>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Se guarda aquí.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;

@@ -807,6 +807,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     ui.trapField = field(bag, { id: `${id0}-trap`, label: T("linearTrap"), readonly: true });
 
     ui.tableWrap = h("div", { class: "fm-view fm-exp-table-wrap", tabindex: "0", role: "region", "aria-label": T("tableToggle") });
+    ui.progressionWrap = h("section", { class: "fm-view fm-exp-progression", role: "region", "aria-label": T("power") });
     ui.pic = h("div", { class: "fm-exp-pic" });
     ui.picZero = h("p", { class: "fm-explain" });
     ui.picKey = "";
@@ -848,6 +849,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     put(
       root,
       ui.prompt,
+      ui.progressionWrap,
       h("section", { class: "fm-view fm-exp-copies", "aria-label": T("picture") }, ui.pic, ui.picZero),
       h("details", { class: "fm-view fm-exp-growth" }, h("summary", null, T("growthSummary")), ui.svg),
       h(
@@ -1020,6 +1022,81 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     slider.handle?.setAttribute("transform", `translate(${X(clamp(current, min, max))} ${TRACK.y})`);
   }
 
+  function renderProgression(d) {
+    clear(ui.progressionWrap);
+    const maxStep = Math.max(4, Math.min(d.maxExponent, Math.max(d.exponent, 4)));
+    const rows = [];
+    for (let k = 1; k <= maxStep; k++) {
+      const chain = Array.from({ length: k }, () => d.base).join(" × ");
+      const val = powInt(d.base, k);
+      const isCurrent = k === d.exponent;
+      rows.push(
+        h(
+          "tr",
+          { class: isCurrent ? "is-active" : null },
+          h("td", null, h("strong", null, pow(d.base, k))),
+          h("td", null, t(L, { en: `${k} ${k === 1 ? "factor" : "factors"} of ${d.base}`, es: `${k} ${k === 1 ? "factor" : "factores"} de ${d.base}` })),
+          h("td", null, k === 1 ? `${d.base}` : chain),
+          h("td", null, h("strong", null, `= ${val.toLocaleString("en-US")}`)),
+          h("td", null, k === 1 ? t(L, { en: "Start with 1 factor", es: "Empieza con 1 factor" }) : `× ${d.base}`)
+        )
+      );
+    }
+    const trapVal = d.base * d.exponent;
+    const showTrap = d.exponent > 1 && d.power !== trapVal;
+    put(
+      ui.progressionWrap,
+      h(
+        "p",
+        { class: "fm-sub" },
+        h(
+          "strong",
+          null,
+          t(L, {
+            en: `How ${pow(d.base, d.exponent)} works: Base ${d.base} is the factor you multiply. Exponent ${d.exponent} tells how many ${d.base}s to multiply together.`,
+            es: `Cómo funciona ${pow(d.base, d.exponent)}: La base ${d.base} es el factor que se multiplica. El exponente ${d.exponent} dice cuántos ${d.base} se multiplican entre sí.`,
+          })
+        )
+      ),
+      h(
+        "p",
+        { class: "fm-explain" },
+        t(L, {
+          en: `Watch the exponent increase on base ${d.base}: each +1 on the exponent multiplies by one more ${d.base} (× ${d.base}).`,
+          es: `Mira cómo aumenta el exponente en la base ${d.base}: cada +1 en el exponente multiplica por un ${d.base} más (× ${d.base}).`,
+        })
+      ),
+      h(
+        "table",
+        { class: "fm-table" },
+        h(
+          "thead",
+          null,
+          h(
+            "tr",
+            null,
+            h("th", { scope: "col" }, t(L, { en: "Power", es: "Potencia" })),
+            h("th", { scope: "col" }, t(L, { en: "Exponent meaning", es: "Qué dice el exponente" })),
+            h("th", { scope: "col" }, t(L, { en: "Repeated multiplication", es: "Multiplicación repetida" })),
+            h("th", { scope: "col" }, t(L, { en: "Value", es: "Valor" })),
+            h("th", { scope: "col" }, t(L, { en: "Each +1 exponent", es: "Cada +1 al exponente" }))
+          )
+        ),
+        h("tbody", null, ...rows)
+      ),
+      showTrap
+        ? h(
+            "p",
+            { class: "fm-explain" },
+            t(L, {
+              en: `✗ Common trap: ${pow(d.base, d.exponent)} is NOT ${d.base} × ${d.exponent} = ${trapVal}. Multiply ${d.exponent} factors of ${d.base}: ${d.factorsChain} = ${d.power}.`,
+              es: `✗ Error común: ${pow(d.base, d.exponent)} NO es ${d.base} × ${d.exponent} = ${trapVal}. Multiplica ${d.exponent} factores de ${d.base}: ${d.factorsChain} = ${d.power}.`,
+            })
+          )
+        : null
+    );
+  }
+
   function renderTable(d) {
     clear(ui.tableWrap);
     ui.tableWrap.hidden = !d.views.table;
@@ -1148,6 +1225,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     if (ui.compareBtn) ui.compareBtn.setAttribute("aria-pressed", String(d.compare));
     if (ui.tableBtn) ui.tableBtn.setAttribute("aria-pressed", String(d.views.table));
     if (ui.undoBtn) ui.undoBtn.disabled = !model.canUndo();
+    renderProgression(d);
     renderTable(d);
     renderPrediction(d);
     ui.explain.textContent = model.getMathematicalExplanation(L);

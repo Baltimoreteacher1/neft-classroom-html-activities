@@ -53,10 +53,10 @@ export function stepHead(n, titleEn, titleEs, leadEn, leadEs) {
       </header>`;
 }
 
-/** Step 1. Goal, one worked example (numbered, bilingual), the picture, why it works. */
+/** Step 1. Goal, clear concept visual, one worked example (numbered, bilingual), the picture, why it works. */
 export function renderLookAndLearn(
   config,
-  { modelHtml = "", wordsHtml = "", noticeHtml = "", warmupHtml = "" },
+  { conceptVisualHtml = "", modelHtml = "", wordsHtml = "", noticeHtml = "", warmupHtml = "" },
 ) {
   const notes = config?.familyNotes || {};
   const goal =
@@ -84,6 +84,7 @@ export function renderLookAndLearn(
       </section>`
           : ""
       }
+      ${conceptVisualHtml}
       ${modelHtml}
       <button type="button" class="fp-understand-cta" ${act("openFamilyStudio", "understand")} aria-haspopup="dialog">
         <span class="fp-understand-icon" aria-hidden="true">📖</span>

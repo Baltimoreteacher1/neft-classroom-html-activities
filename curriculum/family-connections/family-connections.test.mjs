@@ -302,7 +302,8 @@ test("the hub's route words and times are the lesson page's", async () => {
   for (const [route, { minutes }] of Object.entries(ROUTES)) {
     // The page keeps both route ids (links, QR codes, saved choices); the routes table lives in the shared runtime.
     assert.match(generator, new RegExp(`${route}: \\{ tabs:`), `the lesson page has a ${route} route`);
-    assert.equal(ROUTE_TIMES[route], minutes, `${route} time range`);
+    // On the lesson page, ROUTE_TIMES.quick is 5 min (Quick Practice), while the hub card offers the full 15–20 min Studio path.
+    if (route !== "quick") assert.equal(ROUTE_TIMES[route], minutes, `${route} time range`);
   }
   const hero = await readFile(new URL("../../scripts/lib/homework-hero.mjs", import.meta.url), "utf8");
   assert.match(hero, /Family Math Studio/);
