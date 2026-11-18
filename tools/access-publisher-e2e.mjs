@@ -214,7 +214,8 @@ const text = (page) => page.locator("#app").innerText();
     "replay by part plays that recorded part",
   );
   ok(
-    (await page.evaluate(() => window.__spoken.length)) === 0,
+    // The first tap speaks one silent "." to unlock speech on iOS (src/audio-session.js); that is not lesson speech.
+    (await page.evaluate(() => window.__spoken.filter((t) => t !== ".").length)) === 0,
     "recorded audio is used instead of speech",
   );
   await page.locator("fieldset.pd-order li").first().waitFor();

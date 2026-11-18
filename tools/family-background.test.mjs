@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
+import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 import { baseLessonOf, checkBackground } from "./lib/family-background.mjs";
 
 const ROOT = new URL("../", import.meta.url);
@@ -31,12 +32,12 @@ test("the contract rejects a wrong answer key, a copied translation and a broken
 });
 
 test("every Unit 2-9 lesson with a family homework page has background knowledge", () => {
-  const lessons = readdirSync(new URL("lessons/", ROOT))
+  const lessons = readdirSync(LESSONS_DIR)
     .map(baseLessonOf)
     .filter((id) => id && Number(id.split("-")[0]) >= 2 && Number(id.split("-")[0]) <= 9);
   const pages = [...new Set(lessons)].filter((id) => {
     try {
-      readFileSync(new URL(`lessons/${id}/homework.html`, ROOT));
+      readFileSync(lessonPath(id, "homework.html"));
       return true;
     } catch {
       return false;

@@ -1,6 +1,6 @@
 // Markup for Math Studio: the lesson page (/math/studio/<id>/), the finder (/math/studio/), and the five-stage bar that
 // the Practice and Challenge studios and the Learning Labs carry so they read as stages of one product.
-import { buildVocabMatcher, isConceptEntry } from "../../engine/core/vocab-match.js";
+import { buildVocabMatcher, isConceptEntry } from "@eduwonderlab/engine/core/vocab-match.js";
 import { withCurriculumShell } from "../../tools/lib/curriculum-shell.mjs";
 import { backgroundData } from "./homework-background.mjs";
 
@@ -24,7 +24,6 @@ export const STAGE_INFO = [
 
 /** The compact five-stage bar. `current` is a stage key; on the studio page the runtime keeps aria-current in step. */
 export function stageBar(id, current, { inPage = false, label = "", from = "practice" } = {}) {
-  const base = `/math/studio/${id}/`;
   return `${stageNav(id, current, { inPage, label })}${!inPage && current === "practice" ? backgroundStrip(id, from) : ""}`;
 }
 

@@ -190,12 +190,17 @@ const overflow = (page) => page.evaluate(() => document.documentElement.scrollWi
   await page.fill("#labSearchInput", "reading");
   await page.keyboard.press("Enter");
   await page.waitForURL(/\/search\?q=reading/);
-  await page.waitForSelector(".sx-card");
-  check((await page.locator(".sx-card").count()) > 0, "search page: results from the header box");
-  await page.click("[data-sx-kind=word]");
+  // The Resource Finder (src/views/search.js, src/finder/card.js): result cards are .fx-card, and the Word kind
+  // sits under "More filters"; a word result is the only card with a "Hear it" button.
+  await page.waitForSelector(".fx-card");
+  check((await page.locator(".fx-card").count()) > 0, "search page: results from the header box");
+  await page.click(".fx-more > summary");
+  await page.click('[data-fx-f="kind"][data-fx-v="word"]');
+  await page.waitForFunction(() => /[?&]kind=word\b/.test(location.search));
+  await page.waitForSelector(".fx-card");
   check(
-    (await page.locator(".sx-card .sx-r-kind", { hasText: "Word" }).count()) ===
-      (await page.locator(".sx-card").count()),
+    (await page.locator(".fx-card:has([data-say])").count()) ===
+      (await page.locator(".fx-card").count()),
     "search page: the Word filter shows only words",
   );
   check(

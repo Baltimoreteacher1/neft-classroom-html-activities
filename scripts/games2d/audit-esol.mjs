@@ -27,12 +27,12 @@ const GAME_PATH_RE =
 // Directory subtrees to walk (cheap pre-filter; final gate is GAME_PATH_RE).
 const ROOTS = ["math", "games"];
 
-// Match a real "esol" token but never the "solv"/"solut" word families
+// Match a real "esol" token but never the "solv"/"solut"/"solid" word families
 // (solve, solvable, resolve, resolutions, camelCase identifiers like
-// "simulateSolve"/"verifySolvable" — all contain the substring "esol" once
-// lowercased or via "r-esol-utions"). We strip every word containing either
+// "simulateSolve"/"verifySolvable"/"gateSolid" — all contain the substring "esol" once
+// lowercased or via "r-esol-utions"). We strip every word containing any
 // stem first, then look for any remaining "esol".
-const SOLVE_RE = /\w*(?:solv|solut)\w*/gi;
+const SOLVE_RE = /\w*(?:solv|solut|solid)\w*/gi;
 const ESOL_RE = /esol/i;
 
 // Code comments are never student-facing, so a comment that merely mentions the

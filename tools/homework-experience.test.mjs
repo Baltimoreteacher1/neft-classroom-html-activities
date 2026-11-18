@@ -18,7 +18,7 @@ import {
   renderTonightStrip,
 } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
-import { renderMissionStart } from "../scripts/lib/homework-mission.mjs";
+import { ROUTE_TIMES, renderMissionStart } from "../scripts/lib/homework-mission.mjs";
 import { lessonPath, REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const ROOT = REPO_ROOT.replace(/\/$/, "");
@@ -183,7 +183,7 @@ test("the tonight strip follows the route", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "quick";
   w.hwRenderTonight();
-  assert.equal(w.document.querySelector("[data-hw-tonight-time]").textContent, "15–20");
+  assert.equal(w.document.querySelector("[data-hw-tonight-time]").textContent, ROUTE_TIMES.quick);
 });
 
 test("the mystery challenge quotes a standalone stem and never a stem that points elsewhere", () => {

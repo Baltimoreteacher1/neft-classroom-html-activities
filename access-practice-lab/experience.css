@@ -662,7 +662,9 @@ mark {
 }
 
 /* ── 5 · collection book ────────────────────────────────────────────────────────────────── */
-.cb-grid {
+/* Scoped to .cb-page: boards.css (Choice Boards) also defines .cb-grid and .cb-badge, and the one-request lab
+   bundle loads both sheets on every page, so the unscoped board rules turned this grid into 3 narrow columns. */
+.cb-page .cb-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
   gap: var(--s-3);
@@ -670,8 +672,10 @@ mark {
   padding: 0;
   list-style: none;
 }
-.cb-badge {
+.cb-page .cb-badge {
   display: flex;
+  color: inherit;
+  font-weight: inherit;
   gap: var(--s-3);
   align-items: flex-start;
   padding: var(--s-3);
@@ -679,16 +683,16 @@ mark {
   border-radius: var(--radius);
   background: var(--surface);
 }
-.cb-badge.is-earned {
+.cb-page .cb-badge.is-earned {
   border-style: solid;
   border-color: var(--sage-500);
   background: var(--sage-200);
 }
-.cb-badge h4 {
+.cb-page .cb-badge h4 {
   margin: 0 0 var(--s-1);
   font-size: 1.05rem;
 }
-.cb-badge p {
+.cb-page .cb-badge p {
   margin: var(--s-1) 0 0;
 }
 .cb-medal {
