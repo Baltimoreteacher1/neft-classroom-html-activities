@@ -22,7 +22,11 @@
   border: 1px solid var(--line);
   border-top: 6px solid var(--room);
   border-radius: var(--r-lg);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--room-soft) 55%, var(--surface)) 0, var(--surface) 7rem);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--room-soft) 55%, var(--surface)) 0,
+    var(--surface) 7rem
+  );
   box-shadow: var(--edge-light), var(--shadow);
 }
 .act-bar {
@@ -150,9 +154,14 @@
 .activity-workspace .stimulus {
   position: sticky;
   top: 5.25rem;
+  scroll-margin-top: calc(var(--lab-top-h, 0px) + 1rem);
   max-height: calc(100vh - 6.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+/* "Start" moves focus here; show the ring for keyboard users only. */
+.activity-workspace .stimulus:focus:not(:focus-visible) {
+  outline: none;
 }
 .activity-workspace .response-workspace {
   border: 2px solid color-mix(in srgb, var(--room) 32%, var(--line));
@@ -717,7 +726,9 @@ details.helpers[open] > summary {
   font-size: 1.125rem;
   line-height: 1.45;
   cursor: pointer;
-  box-shadow: var(--edge-light), 0 1px 2px rgb(16 30 90 / 6%);
+  box-shadow:
+    var(--edge-light),
+    0 1px 2px rgb(16 30 90 / 6%);
   transition:
     border-color var(--dur-2) var(--ease-out),
     background-color var(--dur-2) var(--ease-out),
@@ -740,7 +751,9 @@ details.helpers[open] > summary {
 .choice:hover {
   border-color: var(--room);
   background: color-mix(in srgb, var(--room) 6%, #fff);
-  box-shadow: var(--edge-light), 0 6px 14px -8px color-mix(in srgb, var(--room) 50%, transparent);
+  box-shadow:
+    var(--edge-light),
+    0 6px 14px -8px color-mix(in srgb, var(--room) 50%, transparent);
 }
 .choice.is-on {
   border-color: var(--room);
@@ -968,7 +981,9 @@ details.helpers[open] > summary {
   border: 1px solid transparent;
   border-left: 6px solid;
   border-radius: 14px;
-  box-shadow: var(--edge-light), 0 8px 18px -12px rgb(16 30 90 / 22%);
+  box-shadow:
+    var(--edge-light),
+    0 8px 18px -12px rgb(16 30 90 / 22%);
 }
 .feedback p {
   margin: 0.3rem 0;
@@ -1433,12 +1448,34 @@ details.helpers[open] > summary {
   background: var(--surface);
   color: var(--ink-2);
 }
-.practice-score h3 { margin: 0.15rem 0 0.4rem; color: var(--ink); }
-.practice-score .eyebrow { margin: 0; color: var(--room-ink); font-weight: 700; }
-.practice-score ul { display: grid; gap: 0.25rem; margin: 0.75rem 0; padding: 0; list-style: none; }
-.practice-score li { display: flex; gap: 0.55rem; align-items: flex-start; }
-.practice-score li.is-met > span { color: var(--right); font-weight: 800; }
-.practice-score li.is-next > span { color: var(--ink-3); }
+.practice-score h3 {
+  margin: 0.15rem 0 0.4rem;
+  color: var(--ink);
+}
+.practice-score .eyebrow {
+  margin: 0;
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.practice-score ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+.practice-score li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+.practice-score li.is-met > span {
+  color: var(--right);
+  font-weight: 800;
+}
+.practice-score li.is-next > span {
+  color: var(--ink-3);
+}
 
 /* ── "How sure are you?" — optional, before Check ─────────────────────── */
 .sure-row {
@@ -1506,8 +1543,7 @@ details.helpers[open] > summary {
 }
 .activity.d-speaking .act-head {
   background:
-    radial-gradient(50% 120% at 100% 0%, rgb(219 163 185 / 22%), transparent 65%),
-    var(--surface);
+    radial-gradient(50% 120% at 100% 0%, rgb(219 163 185 / 22%), transparent 65%), var(--surface);
 }
 .activity.d-speaking .recorder {
   border-color: color-mix(in srgb, var(--speaking) 30%, transparent);
@@ -1519,8 +1555,17 @@ details.helpers[open] > summary {
 .activity.d-writing textarea[data-note] {
   padding-left: 2.75rem;
   background:
-    linear-gradient(90deg, transparent 2.1rem, rgb(210 139 88 / 50%) 2.1rem 2.2rem, transparent 2.2rem),
-    repeating-linear-gradient(180deg, transparent 0 calc(1.9rem - 1px), #efe1cd calc(1.9rem - 1px) 1.9rem),
+    linear-gradient(
+      90deg,
+      transparent 2.1rem,
+      rgb(210 139 88 / 50%) 2.1rem 2.2rem,
+      transparent 2.2rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 calc(1.9rem - 1px),
+      #efe1cd calc(1.9rem - 1px) 1.9rem
+    ),
     var(--ivory);
   background-position: 0 0.55rem;
   line-height: 1.9rem;
@@ -1625,9 +1670,23 @@ details.helpers[open] > summary {
   height: 38px;
   font-size: 1.2rem;
 }
+.task-card-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.task-start {
+  min-height: 44px;
+}
 @media (max-width: 640px) {
   .task-steps {
     grid-template-columns: 1fr;
+  }
+  .task-card-foot .task-start {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -1727,10 +1786,18 @@ details.helpers[open] > summary {
   width: 32px;
   height: 32px;
 }
-.jump-tile.d-listening .jump-icon { color: var(--ocean-900); }
-.jump-tile.d-speaking .jump-icon { color: var(--rose-900); }
-.jump-tile.d-writing .jump-icon { color: var(--copper-900); }
-.jump-tile.d-reading .jump-icon { color: var(--brand); }
+.jump-tile.d-listening .jump-icon {
+  color: var(--ocean-900);
+}
+.jump-tile.d-speaking .jump-icon {
+  color: var(--rose-900);
+}
+.jump-tile.d-writing .jump-icon {
+  color: var(--copper-900);
+}
+.jump-tile.d-reading .jump-icon {
+  color: var(--brand);
+}
 .jump-mixed a {
   background: var(--brand);
   border-color: var(--brand);

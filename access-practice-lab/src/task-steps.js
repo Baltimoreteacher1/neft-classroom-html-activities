@@ -9,8 +9,8 @@ const FIRST = {
   Listening: {
     early: ["Listen.", "Escucha."],
     upper: [
-      "Press Play and listen. You can listen again.",
-      "Presiona Reproducir y escucha. Puedes escuchar otra vez.",
+      "Press Listen. Replay the recording to catch details.",
+      "Presiona Escuchar. Repite la grabación para captar detalles.",
     ],
   },
   Reading: {
@@ -23,8 +23,8 @@ const FIRST = {
   Speaking: {
     early: ["Think. What will you say?", "Piensa. ¿Qué vas a decir?"],
     upper: [
-      "Plan what you will say. Use a sentence starter.",
-      "Planea lo que vas a decir. Usa un inicio de oración.",
+      "Think of your main idea and one useful detail.",
+      "Piensa en tu idea principal y un detalle útil.",
     ],
   },
   Writing: {
@@ -50,7 +50,9 @@ function doStep(a, domain, early) {
     case "multipleChoice":
       return early
         ? ["Tap one answer.", "Toca una respuesta."]
-        : ["Choose the one best answer.", "Elige la mejor respuesta."];
+        : domain === "Speaking"
+          ? ["Choose the best model, then say your own answer.", "Elige el mejor modelo y luego di tu propia respuesta."]
+          : ["Choose the one best answer.", "Elige la mejor respuesta."];
     case "multiSelect":
       return early
         ? [`Tap ${n} answers.`, `Toca ${n} respuestas.`]
@@ -135,6 +137,12 @@ export function taskSteps(a, domain, band) {
 export function taskCardHTML(I, a, domain, band, directions) {
   const early = isEarlyBand(band);
   const steps = taskSteps(a, domain, band);
+  const start = {
+    Listening: ["Start listening", "Empezar a escuchar"],
+    Reading: ["Start reading", "Empezar a leer"],
+    Speaking: ["Start speaking", "Empezar a hablar"],
+    Writing: ["Start writing", "Empezar a escribir"],
+  }[domain] || ["Start activity", "Empezar la actividad"];
   return html`<section class="task-card ${early ? "is-early" : ""}" aria-labelledby="taskCardTitle">
     <h2 id="taskCardTitle" class="task-card-title">
       ${icon("flag")} ${I.T("Your task", "Tu tarea")}
@@ -151,5 +159,8 @@ export function taskCardHTML(I, a, domain, band, directions) {
           </li>`,
       )}
     </ol>
+    <div class="task-card-foot">
+      <a class="btn btn-primary task-start" href="#activity-source">${I.T(...start)} ${icon("arrow-right")}</a>
+    </div>
   </section>`;
 }

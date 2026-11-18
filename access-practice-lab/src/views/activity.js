@@ -264,8 +264,8 @@ function stimulusHTML(a, ctx) {
   // Learn with help adds the Listening Strategy Lab and an interactive transcript; "on my own" keeps
   // only the player (play, stop, speed) and, after an answer, the plain transcript.
   const lab = listening && a.script && mode === "supported";
-  return html`${lab ? listeningStrategyHTML(a.id, { purpose: listeningPurpose(a), parts: listeningSegments(a.script), played: playCount(a.id) > 0 || answeredOnce, notes: loadListenNotes(storage, a.id), open: helpUsed.has(a.id) }) : ""}
-  ${listening && a.script ? listenPlayerHTML(a.id, a.script, { rate: ctx.prefs.rate }) : ""}
+  return html`${listening && a.script ? listenPlayerHTML(a.id, a.script, { rate: ctx.prefs.rate }) : ""}
+  ${lab ? listeningStrategyHTML(a.id, { purpose: listeningPurpose(a), parts: listeningSegments(a.script), played: playCount(a.id) > 0 || answeredOnce, notes: loadListenNotes(storage, a.id), open: helpUsed.has(a.id) }) : ""}
   ${listening && a.script && answeredOnce ? transcriptHTML(a.id, a.script, lab ? { interactive: true, tags: listenTags.get(a.id), target: c?.diag && !c.ok ? c.diag.segment : null } : {}) : ""} ${visualsHTML(a)}
   ${
     hasPassage
@@ -298,7 +298,7 @@ function stimulusHTML(a, ctx) {
     a.prompt && !hasPassage
       ? html`<div class="prompt">
           <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
+          ${cur.domain !== "Reading" || mode === "supported" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
         </div>`
       : ""
   }
@@ -518,7 +518,7 @@ function writingHTML(a) {
       <textarea
         rows="${cur.level === "C" ? 10 : 6}"
         data-note
-        spellcheck="false"
+        spellcheck="${mode === "supported"}"
         placeholder="${a.responsePlaceholder || I.S("Write your answer here.", "Escribe tu respuesta aquí.")}"
         ${IGN}
       >
@@ -680,7 +680,7 @@ function independentLink(href) {
 }
 
 /** Everything the lesson frame adds around the task, derived from the activity plus its skill family. */
-function lessonFrameView(a, es, meta, tier, done) {
+function lessonFrameView(a, es, done) {
   curFamily = familyFor(lessonLearn, cur.domain, a.skill);
   const key = curFamily ? seenKey(cur.band, cur.domain, curFamily.id) : "";
   const c = checked.get(a.id);
@@ -694,9 +694,6 @@ function lessonFrameView(a, es, meta, tier, done) {
   const words = mode === "supported" ? keyWords(a) : [];
   const model = {
     skill: { en: a.skill || a.title, es: es.skill || a.skill || a.title },
-    domainIcon: meta.icon,
-    domainName: I.T(meta.name, meta.es),
-    tierName: tier ? I.T(tier.name, tier.es) : cur.level,
     minutes: minutesOf(a),
     can: curFamily?.can || null,
     focus: asList(a.wida).slice(0, 2).map(tx),
@@ -716,6 +713,25 @@ function lessonFrameView(a, es, meta, tier, done) {
     printHead: printHeadHTML(I, a.title),
     printFoot: printFootHTML(I),
   };
+}
+
+function sourceHeading(I, domain, listening) {
+  if (listening) return I.T("Listen and notice", "Escucha y observa");
+  if (domain === "Reading") return I.T("Read and notice", "Lee y observa");
+  if (domain === "Writing") return I.T("Read and plan", "Lee y planifica");
+  return I.T("Look and plan", "Mira y planifica");
+}
+
+function responseHeading(I, domain, type) {
+  if (type === "worksheet") return I.T("Work on paper", "Trabaja en papel");
+  if (domain === "Speaking")
+    return type === "constructed"
+      ? I.T("Speak and review", "Habla y revisa")
+      : I.T("Warm up your speaking", "Prepara tu respuesta oral");
+  if (domain === "Reading") return I.T("Answer from the text", "Responde con el texto");
+  if (domain === "Listening") return I.T("Answer what you heard", "Responde sobre lo que escuchaste");
+  if (domain === "Writing") return I.T("Write and revise", "Escribe y mejora");
+  return I.T("Respond and review", "Responde y revisa");
 }
 
 let I = makeI18n("en");
@@ -783,7 +799,7 @@ export async function render(ctx) {
   const journeyStops = stopSlices(cur.list.length);
   const journeyStop = Math.max(1, journeyStops.findIndex(([from, to]) => cur.index >= from && cur.index < to) + 1);
   const country = COUNTRIES[cur.domain]?.[cur.level];
-  const lf = lessonFrameView(a, es, meta, tier, done);
+  const lf = lessonFrameView(a, es, done);
   return {
     title: a.title,
     html: html`${crumbsHTML([
@@ -815,13 +831,13 @@ export async function render(ctx) {
         </header>
         ${lf.learn}
         <div class="activity-workspace">
-        <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? I.T("Listen and notice", "Escucha y observa") : cur.domain === "Reading" ? I.T("Read and notice", "Lee y observa") : I.T("Look and plan", "Mira y planifica")}</h2>${stimulusHTML(a, ctx)}</section>
-        <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? I.T("Speak and review", "Habla y revisa") : a.type === "worksheet" ? I.T("Work on paper", "Trabaja en papel") : I.T("Respond and review", "Responde y revisa")}</h2>
+        <section id="activity-source" tabindex="-1" class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${sourceHeading(I, cur.domain, listening)}</h2>${stimulusHTML(a, ctx)}</section>
+        <section class="response-workspace" aria-labelledby="responseHeading"><h2 id="responseHeading" class="workbook-heading"><span aria-hidden="true">2</span> ${responseHeading(I, cur.domain, a.type)}</h2>
         ${
           hasPassage && a.prompt
             ? html`<div class="prompt response-prompt">
                 <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
+                ${cur.domain !== "Reading" || mode === "supported" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
               </div>`
             : ""
         }
@@ -833,7 +849,7 @@ export async function render(ctx) {
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="${I.S("Your answer", "Tu respuesta")}">${answerZone(a)}</section>
         ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Your first try stays in your history.", "Tu primer intento queda en tu historial.")}</p></div>` : ""}
-        </div></div>
+        </section></div>
         ${lf.after}
         <p class="save-explainer">${I.T("Writing and checklists save on this browser. Audio does not.", "La escritura y las listas se guardan en este navegador. El audio no.")} <a href="${BASE}/family/save">${I.T("Save & continue later", "Guardar y continuar después")}</a></p>
       </article>

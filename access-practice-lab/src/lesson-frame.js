@@ -159,15 +159,13 @@ export function railHTML(I, arc, { learnAvailable }) {
   </nav>`;
 }
 
-/** Skill, domain, level and time chips plus the "I can" goal and the language focus. */
+/** The skill and time sit beside the goal. Domain, level and grade already appear in the header above. */
 export function goalHTML(I, m) {
   return html`<div class="lf-meta" role="list">
       <span class="lf-chip lf-chip--skill" role="listitem"
         ><span class="lf-chip-k">${I.T("Skill", "Destreza")}</span>
         <span lang="en">${m.skill.en}</span></span
       >
-      <span class="lf-chip" role="listitem">${icon(m.domainIcon)} ${m.domainName}</span>
-      <span class="lf-chip" role="listitem">${m.tierName}</span>
       ${m.minutes ? html`<span class="lf-chip" role="listitem">${icon("clock")} ${I.T(`${m.minutes} min`, `${m.minutes} min`)}</span>` : ""}
     </div>
     <section class="lf-goal" aria-labelledby="lf-goal-h">

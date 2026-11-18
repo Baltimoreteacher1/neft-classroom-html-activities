@@ -17,6 +17,7 @@ const HIDDEN_VIEWS = new Set([
   "explore",
   "play",
   "search",
+  "activity",
 ]);
 
 /** Pages that make sense for any grade band: switching grade keeps the learner on the same page. */
