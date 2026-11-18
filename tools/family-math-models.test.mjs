@@ -47,6 +47,7 @@ const MUST_MENTION = {
   balance: ["3", "11", "unknown"],
   order: ["4 + 3 × (9 − 7)²", "4 + 3 × 2²", "4 + 12", "16", "parentheses"],
   exprparts: ["12", "t", "50"],
+  eqparts: ["3x + 4", "=", "19"],
 };
 
 const withoutVarFallbacks = (svg) => svg.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, "var()");

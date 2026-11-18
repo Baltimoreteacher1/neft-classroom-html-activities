@@ -471,33 +471,37 @@ function exprparts(d, { lang }) {
   const cxConst = 252;
   const out = [];
 
-  const box = (x, w, h, cls, val) => {
-    out.push(`<rect class="${cls}" x="${n1(x - w / 2)}" y="${n1(cy - h / 2)}" width="${w}" height="${h}" rx="8"/>`);
-    out.push(text(x, cy + 7, val, { cls: "m-t m-n" }));
-  };
-  box(cxCoef, 52, 42, "m-p", coef);
-  box(cxVar, 40, 42, "m-a", variable);
-  out.push(text(cxOp, cy + 7, op, { cls: "m-t m-n" }));
-  box(cxConst, 56, 42, "m-u", constant);
-
+  const box = (x, w, h, cls, val) =>
+    `<rect class="${cls}" x="${n1(x - w / 2)}" y="${n1(cy - h / 2)}" width="${w}" height="${h}" rx="8"/>${text(x, cy + 7, val, { cls: "m-t m-n" })}`;
   const callout = (x1, y1, x2, y2, lbl, cls) => {
-    out.push(`<path class="m-gr" d="M${n1(x1)} ${n1(y1)}L${n1(x2)} ${n1(y2)}"/>`);
-    out.push(head(x2, y2, y2 > y1 ? "d" : "u"));
     const pw = Math.max(108, textW(lbl, 13) + 18);
     const py = y1 < y2 ? y1 - 24 : y1 + 2;
-    out.push(`<rect class="${cls}" x="${n1(x1 - pw / 2)}" y="${n1(py)}" width="${n1(pw)}" height="24" rx="12"/>`);
-    out.push(text(x1, py + 16, lbl, { cls: "m-t" }));
+    return [
+      `<path class="m-gr" d="M${n1(x1)} ${n1(y1)}L${n1(x2)} ${n1(y2)}"/>`,
+      head(x2, y2, y2 > y1 ? "d" : "u"),
+      `<rect class="${cls}" x="${n1(x1 - pw / 2)}" y="${n1(py)}" width="${n1(pw)}" height="24" rx="12"/>`,
+      text(x1, py + 16, lbl, { cls: "m-t" }),
+    ].join("");
   };
 
-  callout(68, 32, cxCoef, cy - 23, tr(lang, "Coefficient", "Coeficiente"), "m-p");
-  callout(182, 32, cxVar, cy - 23, tr(lang, "Variable", "Variable"), "m-a");
-  callout(296, 32, cxConst, cy - 23, tr(lang, "Constant", "Constante"), "m-u");
-  callout(cxOp, 158, cxOp, cy + 18, tr(lang, "Operator", "Operador"), "m-p");
+  out.push(
+    `<g class="m-part-hit" data-expr-part="coef">${box(cxCoef, 52, 42, "m-p", coef)}${callout(68, 32, cxCoef, cy - 23, tr(lang, "Coefficient", "Coeficiente"), "m-p")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="variable">${box(cxVar, 40, 42, "m-a", variable)}${callout(182, 32, cxVar, cy - 23, tr(lang, "Variable", "Variable"), "m-a")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="op">${text(cxOp, cy + 7, op, { cls: "m-t m-n" })}${callout(cxOp, 158, cxOp, cy + 18, tr(lang, "Operator", "Operador"), "m-p")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="constant">${box(cxConst, 56, 42, "m-u", constant)}${callout(296, 32, cxConst, cy - 23, tr(lang, "Constant", "Constante"), "m-u")}</g>`,
+  );
 
   const bx1 = cxCoef - 26;
   const bx2 = cxVar + 20;
-  out.push(`<path class="m-ln" fill="none" d="M${n1(bx1)} 124v7H${n1(bx2)}v-7"/>`);
-  out.push(text((bx1 + bx2) / 2, 149, tr(lang, `Variable term: ${coef}${variable}`, `Término variable: ${coef}${variable}`), { cls: "m-t" }));
+  out.push(
+    `<g class="m-part-hit" data-expr-part="term"><path class="m-ln" fill="none" d="M${n1(bx1)} 124v7H${n1(bx2)}v-7"/>${text((bx1 + bx2) / 2, 149, tr(lang, `Variable term: ${coef}${variable}`, `Término variable: ${coef}${variable}`), { cls: "m-t" })}</g>`,
+  );
 
   const desc = tr(
     lang,
@@ -505,6 +509,53 @@ function exprparts(d, { lang }) {
     `Expresión algebraica ${coef}${variable} ${op} ${constant}: ${coef} es el coeficiente, ${variable} es la variable, ${op} es el operador, ${constant} es la constante y ${coef}${variable} es el término variable.`,
   );
   return { h: 192, body: out.join(""), desc };
+}
+
+// ---------------------------------------------------------------- eqparts
+function eqparts(d, { lang }) {
+  assertKeys(d, ["lhs", "op", "rhs"], 'model "eqparts" data');
+  need(d, "eqparts", "lhs", "op", "rhs");
+  const lhs = String(d.lhs);
+  const op = String(d.op);
+  const rhs = String(d.rhs);
+  const cy = 96;
+  const cxLhs = 86;
+  const cxOp = 180;
+  const cxRhs = 274;
+  const out = [];
+
+  const box = (x, w, h, cls, val) =>
+    `<rect class="${cls}" x="${n1(x - w / 2)}" y="${n1(cy - h / 2)}" width="${w}" height="${h}" rx="8"/>${text(x, cy + 7, val, { cls: "m-t m-n" })}`;
+  const callout = (x1, y1, x2, y2, lbl, cls) => {
+    const pw = Math.max(92, textW(lbl, 13) + 18);
+    const py = y1 < y2 ? y1 - 24 : y1 + 2;
+    return [
+      `<path class="m-gr" d="M${n1(x1)} ${n1(y1)}L${n1(x2)} ${n1(y2)}"/>`,
+      head(x2, y2, y2 > y1 ? "d" : "u"),
+      `<rect class="${cls}" x="${n1(x1 - pw / 2)}" y="${n1(py)}" width="${n1(pw)}" height="24" rx="12"/>`,
+      text(x1, py + 16, lbl, { cls: "m-t" }),
+    ].join("");
+  };
+
+  out.push(
+    `<g class="m-part-hit" data-expr-part="lhs">${box(cxLhs, 96, 42, "m-p", lhs)}${callout(70, 32, cxLhs, cy - 23, tr(lang, "Left side", "Lado izquierdo"), "m-p")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="eq">${box(cxOp, 40, 42, "m-a", op)}${callout(cxOp, 32, cxOp, cy - 23, tr(lang, "Equals", "Igual"), "m-a")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="rhs">${box(cxRhs, 96, 42, "m-u", rhs)}${callout(290, 32, cxRhs, cy - 23, tr(lang, "Right side", "Lado derecho"), "m-u")}</g>`,
+  );
+  out.push(
+    `<g class="m-part-hit" data-expr-part="equation"><path class="m-ln" fill="none" d="M38 124v7H322v-7"/>${text(180, 149, tr(lang, "Both sides have equal value", "Ambos lados tienen igual valor"), { cls: "m-t" })}</g>`,
+  );
+
+  const desc = tr(
+    lang,
+    `Equation ${lhs} ${op} ${rhs}: ${lhs} is the left side, ${op} means both sides are equal, and ${rhs} is the right side.`,
+    `Ecuación ${lhs} ${op} ${rhs}: ${lhs} es el lado izquierdo, ${op} significa que ambos lados son iguales y ${rhs} es el lado derecho.`,
+  );
+  return { h: 168, body: out.join(""), desc };
 }
 
 // ---------------------------------------------------------------- dispatcher
@@ -522,6 +573,7 @@ const MODELS = {
   order,
   kcf: renderKcf,
   exprparts,
+  eqparts,
 };
 
 export const MODEL_KINDS = Object.freeze([...Object.keys(MODELS), "none"]);
