@@ -245,12 +245,19 @@ function numberline(d, { lang }) {
   const xv = (v) => x0 + ((v - min) / (max - min)) * (x1 - x0);
   const y = 104;
   const longest = Math.max(...Array.from({ length: count }, (_, i) => minus(clean(min + i * step)).length));
-  const every = Math.max(1, Math.ceil((longest * 8.6 + 6) / (((x1 - x0) / (count - 1)))));
+  const minGap = longest * 8.6 + 6;
+  const every = Math.max(1, Math.ceil(minGap / ((x1 - x0) / (count - 1))));
   const out = [`<path class="m-ln" d="M${PAD} ${y}H${W - PAD - 6}"/>${head(W - PAD, y, "r")}${head(PAD, y, "l")}`];
+  let lastTickX = -999;
   for (let i = 0; i < count; i++) {
     const v = min + i * step;
-    out.push(`<path class="m-ln" d="M${n1(xv(v))} ${y - 6}v12"/>`);
-    if (i % every === 0 || i === count - 1) out.push(text(xv(v), y + 28, minus(clean(v))));
+    const tx = xv(v);
+    out.push(`<path class="m-ln" d="M${n1(tx)} ${y - 6}v12"/>`);
+    const showEnd = i === count - 1 && tx - lastTickX >= minGap;
+    if (i % every === 0 || showEnd) {
+      out.push(text(tx, y + 28, minus(clean(v))));
+      lastTickX = tx;
+    }
   }
   const pts = (d.points ?? []).map((p, k) => {
     assertKeys(p, ["value", "label", "kind"], `model "numberline" data.points[${k}]`);
@@ -262,22 +269,23 @@ function numberline(d, { lang }) {
     return { ...p, kind };
   });
   const sorted = [...pts].sort((a, b) => a.value - b.value);
-  let lastX = -999;
-  let tier = 0;
+  const tierRight = [-999, -999, -999];
   const descs = [];
   for (const p of sorted) {
     const x = xv(p.value);
-    tier = x - lastX < 56 ? (tier + 1) % 2 : 0;
-    lastX = x;
     const s = p.kind === "unknown" && !p.label ? "?" : lab(p.label ?? p.value, lang);
+    const w = textW(s, 16);
+    const lx = clampX(x, w);
+    let tier = 0;
+    while (tier < 2 && lx - w / 2 <= tierRight[tier] + 10) tier++;
+    tierRight[tier] = lx + w / 2;
     const ly = y - 34 - tier * 24;
     if (p.kind === "given") out.push(`<circle class="m-dot" cx="${n1(x)}" cy="${y}" r="7"/>`);
     if (p.kind === "unknown") out.push(`<circle class="m-u" cx="${n1(x)}" cy="${y}" r="11"/>${text(x, y + 6, "?", { cls: "m-q" })}`);
     if (p.kind === "answer") out.push(`<circle class="m-a" cx="${n1(x)}" cy="${y}" r="11"/><circle cx="${n1(x)}" cy="${y}" r="5" fill="var(--m-answer-ink,#0F7C4A)"/>`);
     if (p.kind === "error") out.push(`<path class="m-x" d="M${n1(x - 8)} ${y - 8}l16 16M${n1(x + 8)} ${y - 8}l-16 16"/>`);
     out.push(`<path class="m-gr" d="M${n1(x)} ${ly + 6}V${y - 13}"/>`);
-    const w = textW(s, 16);
-    out.push(text(clampX(x, w), ly, s, { cls: "m-t m-n" }));
+    out.push(text(lx, ly, s, { cls: "m-t m-n" }));
     descs.push(
       p.kind === "unknown"
         ? tr(lang, "an unknown point marked with ?", "un punto desconocido marcado con ?")

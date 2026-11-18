@@ -107,7 +107,7 @@ function hwMotionMount() {
     host.className = 'hw-mission-model hw-motion';
     host.setAttribute('data-no-listen', ''); /* written after the stop opens, so the stop's Read-aloud does not race it; the figure carries its own text description */
     host.setAttribute('aria-labelledby', 'hw_motion_title');
-    host.innerHTML = '<div class="hw-mm-head"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><h2 class="hw-mm-title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</h2></div><div class="hw-motion-steps"><p>' + HW_MOTION_INTRO.steps.join('</p><p>') + '</p></div><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div>';
+    host.innerHTML = '<details class="hw-motion-details"><summary class="hw-motion-summary"><span class="hw-mm-badge">' + HW_MOTION_INTRO.badge + '</span><span class="hw-motion-summary__title" id="hw_motion_title">' + HW_MOTION_INTRO.title + '</span></summary><div class="hw-motion-body"><div class="hw-motion-steps"><p>' + HW_MOTION_INTRO.steps.join('</p><p>') + '</p></div><p class="hw-mm-howto">' + HW_MOTION_INTRO.help + '</p><div class="hw-mm-stage" data-motion-stage></div></div></details>';
     host.hidden = false;
   }
   var stage = host.querySelector('[data-motion-stage]');

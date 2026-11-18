@@ -282,8 +282,8 @@ export function renderCoord(d, { lang, minNumeralPx = 0 }) {
   // A caller that prints the model at a fixed width (the take-home sheet) states the smallest numeral it can accept.
   // A dense plane then keeps numerals at that size and numbers every k-th gridline, never a smaller numeral.
   // Without it (the web), every gridline is numbered and dense planes shrink the numerals, as above.
-  let kx = 1;
-  let ky = 1;
+  let kx = quad && px < 28 ? 2 : 1;
+  let ky = quad && py < 28 ? 2 : 1;
   if (minNumeralPx) {
     const natX = px >= 20 ? 14 : Math.max(9, Math.floor(px * 0.7));
     const natY = py >= 16 ? 14 : Math.max(9, Math.floor(py * 0.85));
@@ -298,10 +298,10 @@ export function renderCoord(d, { lang, minNumeralPx = 0 }) {
       ky = Math.ceil((fontY + 4) / py);
     }
   }
-  out.push(text(x0 - 6, y0 + 18, "0", { anchor: "end", extra: fx || fy }));
+  out.push(text(x0 - 3, y0 + (quad && py < 18 ? 12 : 16), "0", { anchor: "end", extra: fx || fy }));
   for (let i = 0; i <= nx; i++) {
     const v = lx + i;
-    if (v !== 0 && v % kx === 0) out.push(text(left + i * px, y0 + 18, minus(String(v)), { extra: fx }));
+    if (v !== 0 && v % kx === 0) out.push(text(left + i * px, y0 + 20, minus(String(v)), { extra: fx }));
   }
   for (let j = 0; j <= ny; j++) {
     const v = ly + j;

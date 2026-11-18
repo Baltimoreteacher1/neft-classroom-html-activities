@@ -67,6 +67,21 @@ const COPY = {
     moreTickets: "+{n} more",
     ariaDesc:
       "Interactive concert pricing model for {expr}. Currently t = {t} tickets, total cost = ${total}.",
+    partsTitle: "Parts of an algebraic expression",
+    partsLead: "Know each part before you build or solve.",
+    coefLabel: "Coefficient (multiplies)",
+    varLabel: "Variable (unknown)",
+    opLabel: "Operator",
+    constLabel: "Constant (stays fixed)",
+    varTermLabel: "Variable term",
+    tapAsk: {
+      coef: "Tap the coefficient (the number multiplying the variable):",
+      var: "Tap the variable (the letter for an unknown number):",
+      const: "Tap the constant (the number that stays alone):",
+      term: "Tap the variable term (coefficient × variable):",
+    },
+    tapHit: "Yes! In {expr}, {part} is the {name}.",
+    tapMiss: "Look at the arrows above: {picked} is not the {name}. Try another part!",
   },
   es: {
     title: "Estudio de Boletos y Lugar del Concierto",
@@ -106,7 +121,22 @@ const COPY = {
     ticketEach: "${rate} c/u",
     moreTickets: "+{n} más",
     ariaDesc:
-      "Modelo interactivo de precios de concierto para {expr}. Actualmente t = {t} boletos, costo total = ${total}.",
+      "Modelo interactivo para {expr}. Ahora t = {t} boletos, costo total = ${total}.",
+    partsTitle: "Partes de una expresión algebraica",
+    partsLead: "Conoce cada parte antes de construir o resolver.",
+    coefLabel: "Coeficiente (multiplica)",
+    varLabel: "Variable (incógnita)",
+    opLabel: "Operador",
+    constLabel: "Constante (no cambia)",
+    varTermLabel: "Término variable",
+    tapAsk: {
+      coef: "Toca el coeficiente (el número que multiplica a la variable):",
+      var: "Toca la variable (la letra de un número desconocido):",
+      const: "Toca la constante (el número que está solo):",
+      term: "Toca el término variable (coeficiente × variable):",
+    },
+    tapHit: "¡Sí! En {expr}, {part} es el/la {name}.",
+    tapMiss: "Mira las flechas de arriba: {picked} no es el/la {name}. ¡Prueba otra parte!",
   },
 };
 
@@ -212,6 +242,69 @@ export const create = defineFamily({
     return { rate: state.rate, fixed: state.fixed, varName: state.varName, initial: state.t };
   },
 });
+
+function drawPartsSvg(host, st, c) {
+  clear(host);
+  const W = 540;
+  const H = 196;
+  const s = svg("svg", {
+    viewBox: `0 0 ${W} ${H}`,
+    class: "fm-svg lp-parts-svg",
+    role: "img",
+    "aria-label": `${st.expr}: ${st.rate} ${c.coefLabel}, ${st.varName} ${c.varLabel}, + ${c.opLabel}, ${st.fixed} ${c.constLabel}`,
+  });
+
+  // Expression tokens centered around y = 96
+  const cy = 96;
+  const cxCoef = 192;
+  const cxVar = 246;
+  const cxOp = 296;
+  const cxConst = 352;
+
+  // Token boxes
+  const box = (x, y, w, h, cls, label, txtCls = "fm-svg-text") => {
+    s.appendChild(svg("rect", { class: cls, x: x - w / 2, y: y - h / 2, width: w, height: h, rx: 10 }));
+    const t = svg("text", { x, y: y + 8, "text-anchor": "middle", class: txtCls, style: "font-size:24px;font-weight:800" });
+    t.textContent = label;
+    s.appendChild(t);
+  };
+
+  box(cxCoef, cy, 56, 46, "fm-tile fm-tile-x", String(st.rate), "fm-svg-text fm-tile-label");
+  box(cxVar, cy, 44, 46, "fm-pill-bg", st.varName, "fm-svg-text fm-svg-strong");
+  const opTxt = svg("text", { x: cxOp, y: cy + 8, "text-anchor": "middle", class: "fm-svg-text", style: "font-size:26px;font-weight:800" });
+  opTxt.textContent = "+";
+  s.appendChild(opTxt);
+  box(cxConst, cy, 62, 46, "fm-tile fm-tile-u", String(st.fixed), "fm-svg-text fm-tile-u-text");
+
+  // Callout arrow helper
+  const callout = (x1, y1, x2, y2, label, pillCls, anchor = "middle") => {
+    s.appendChild(svg("line", { class: "fm-connector", x1, y1, x2, y2 }));
+    const dir = y2 > y1 ? 1 : -1;
+    s.appendChild(svg("path", { class: "fm-arrowhead", d: `M${x2} ${y2} l-4 ${-6 * dir} l8 0 z` }));
+    const pw = Math.max(110, label.length * 7.8 + 18);
+    const py = y1 < y2 ? y1 - 24 : y1 + 4;
+    s.appendChild(svg("rect", { class: pillCls, x: x1 - pw / 2, y: py, width: pw, height: 24, rx: 12 }));
+    const lbl = svg("text", { x: x1, y: py + 16, "text-anchor": anchor, class: "fm-svg-text", style: "font-size:12.5px;font-weight:700" });
+    lbl.textContent = label;
+    s.appendChild(lbl);
+  };
+
+  callout(88, 34, cxCoef, cy - 25, c.coefLabel, "fm-pill-bg");
+  callout(256, 34, cxVar, cy - 25, c.varLabel, "fm-pill-bg");
+  callout(434, 34, cxConst, cy - 25, c.constLabel, "fm-pill-whole");
+  callout(cxOp, 162, cxOp, cy + 20, c.opLabel, "fm-pill-bg");
+
+  // Variable term bracket underneath 12t
+  const bx1 = cxCoef - 28;
+  const bx2 = cxVar + 22;
+  const bmid = (bx1 + bx2) / 2;
+  s.appendChild(svg("path", { class: "fm-axis", fill: "none", d: `M${bx1} 126 v8 H${bx2} v-8` }));
+  const vt = svg("text", { x: bmid, y: 152, "text-anchor": "middle", class: "fm-svg-text fm-svg-strong", style: "font-size:13px;font-weight:800" });
+  vt.textContent = `${c.varTermLabel}: ${st.rate}${st.varName}`;
+  s.appendChild(vt);
+
+  host.appendChild(s);
+}
 
 function drawVenueSvg(host, st, c) {
   clear(host);
@@ -464,6 +557,52 @@ export function mount(root, model, opts = {}) {
       ]);
       wrap.appendChild(head);
 
+      // Parts of an Algebraic Expression (normative labeled diagram + interactive tap practice)
+      const partsCard = el("section", { class: "fm-view lp-parts-card", "aria-label": c.partsTitle });
+      const partsHead = el("div", { class: "lp-parts-head" }, [
+        el("h4", { class: "lp-card-h", text: c.partsTitle }),
+        el("p", { class: "lp-parts-lead", text: c.partsLead }),
+      ]);
+      const partsSvgHost = el("div", { class: "lp-parts-svg-host" });
+      const quizPrompt = el("p", { class: "lp-quiz-prompt" });
+      const quizChips = el("div", { class: "fm-row lp-quiz-chips", role: "group" });
+      const quizFeedback = el("p", { class: "fm-explain lp-quiz-fb", role: "status" });
+      let quizIdx = 0;
+      const QUIZ_KEYS = ["coef", "var", "const", "term"];
+      const renderPartsQuiz = () => {
+        const st = model.getState();
+        const qKey = QUIZ_KEYS[quizIdx % QUIZ_KEYS.length];
+        const nameMap = {
+          coef: c.coefLabel.split(" (")[0],
+          var: c.varLabel.split(" (")[0],
+          const: c.constLabel.split(" (")[0],
+          term: c.varTermLabel,
+        };
+        const partMap = {
+          coef: String(st.rate),
+          var: st.varName,
+          const: String(st.fixed),
+          term: `${st.rate}${st.varName}`,
+        };
+        quizPrompt.textContent = c.tapAsk[qKey];
+        quizChips.textContent = "";
+        for (const k of QUIZ_KEYS) {
+          const btn = el("button", { type: "button", class: "fm-btn lp-quiz-btn", text: partMap[k] });
+          bag.on(btn, "click", () => {
+            if (k === qKey) {
+              quizFeedback.textContent = fmt(c.tapHit, { expr: st.expr, part: partMap[k], name: nameMap[qKey] });
+              quizIdx = (quizIdx + 1) % QUIZ_KEYS.length;
+              setTimeout(() => renderPartsQuiz(), 900);
+            } else {
+              quizFeedback.textContent = fmt(c.tapMiss, { picked: partMap[k], name: nameMap[qKey] });
+            }
+          });
+          quizChips.appendChild(btn);
+        }
+      };
+      partsCard.append(partsHead, partsSvgHost, quizPrompt, quizChips, quizFeedback);
+      wrap.appendChild(partsCard);
+
       // Venue illustration
       const venueHost = el("div", { class: "lp-venue-host" });
       wrap.appendChild(venueHost);
@@ -553,6 +692,8 @@ export function mount(root, model, opts = {}) {
 
       root.appendChild(wrap);
       view.refs = {
+        partsSvgHost,
+        renderPartsQuiz,
         venueHost,
         slider,
         numInput,
@@ -590,6 +731,8 @@ export function mount(root, model, opts = {}) {
       r.rateVal.textContent = `$${st.rate}`;
       r.feeVal.textContent = `$${st.fixed}`;
 
+      drawPartsSvg(r.partsSvgHost, st, c);
+      r.renderPartsQuiz();
       drawVenueSvg(r.venueHost, st, c);
       drawGraphSvg(r.graphHost, st, c);
 

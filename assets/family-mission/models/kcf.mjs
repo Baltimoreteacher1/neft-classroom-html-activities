@@ -289,8 +289,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
           rx: 2,
         }),
       );
-      if (pw >= 16) {
-        svg.append(stext(px + pw / 2, yB + 16, share < 0.99 ? "…" : String(i + 1), "fm-svg-text fm-tile-label", "middle"));
+      if (pw >= 16 && share >= 0.99) {
+        svg.append(stext(px + pw / 2, yB + 16, String(i + 1), "fm-svg-text fm-tile-label", "middle"));
       }
     }
     svg.append(
