@@ -24,15 +24,21 @@ import {
   EASY_DIR,
   engineMatcher,
   LAYER_FILE,
-  NOVEL_DIR,
   listBooks,
   loadLayer,
+  NOVEL_DIR,
 } from "./lib/gn-layer.mjs";
 
 const books = listBooks();
 // 41 Axiom City books, plus one per show lesson-book spec (tools/build-lesson-books.mjs)
-const showBooks = readdirSync(join(NOVEL_DIR, "_engine/books")).filter((f) => f.endsWith(".json")).length;
-assert.equal(books.length, 41 + showBooks, `expected 41 Axiom City books plus ${showBooks} show books`);
+const showBooks = readdirSync(join(NOVEL_DIR, "_engine/books")).filter((f) =>
+  f.endsWith(".json"),
+).length;
+assert.equal(
+  books.length,
+  41 + showBooks,
+  `expected 41 Axiom City books plus ${showBooks} show books`,
+);
 const layerSrc = readFileSync(LAYER_FILE, "utf8");
 const layer = loadLayer();
 

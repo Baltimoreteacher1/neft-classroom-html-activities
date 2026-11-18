@@ -4,8 +4,22 @@
 import { evaluateExpression, parseAnswerValue } from "../../scripts/lib/rational.mjs";
 
 export const SIZES = { cover: [640, 896], wide: [1024, 576], tall: [576, 768], square: [768, 768] };
-const ICONS = ["#sig-pow", "#sig-tile", "#sig-graph", "#sig-table", "#sig-ops", "#sig-flask", "#sig-swap", "#sig-watch"];
-const CELL_CLASS = { full: "panel gn-panel panel3d", half: "panel gn-panel gn-half", third: "panel gn-panel gn-third", "two-thirds": "panel gn-panel gn-two-thirds" };
+const ICONS = [
+  "#sig-pow",
+  "#sig-tile",
+  "#sig-graph",
+  "#sig-table",
+  "#sig-ops",
+  "#sig-flask",
+  "#sig-swap",
+  "#sig-watch",
+];
+const CELL_CLASS = {
+  full: "panel gn-panel panel3d",
+  half: "panel gn-panel gn-half",
+  third: "panel gn-panel gn-third",
+  "two-thirds": "panel gn-panel gn-two-thirds",
+};
 const POS = {
   tl: "top:6px;left:6px;max-width:70%",
   tr: "top:6px;right:6px;max-width:70%",
@@ -20,15 +34,26 @@ const attr = (s) => esc(s).replace(/"/g, "&quot;");
 /* ---------- pages ---------- */
 
 function cell(c, companion) {
-  const parts = [`<div class="${CELL_CLASS[c.size || "full"]}">${c.art ? `\${globalThis.ART(${JSON.stringify(c.art)})}` : ""}`];
+  const parts = [
+    `<div class="${CELL_CLASS[c.size || "full"]}">${c.art ? `\${globalThis.ART(${JSON.stringify(c.art)})}` : ""}`,
+  ];
   if (c.loc) parts.push(`<div class="caption loc">${c.loc}</div>`);
   for (const b of c.balloons || []) {
-    const cls = ["balloon", b.who.toUpperCase() === companion.toUpperCase() ? "vex gn-side" : "", b.tail === "r" ? "tail-r" : ""]
+    const cls = [
+      "balloon",
+      b.who.toUpperCase() === companion.toUpperCase() ? "vex gn-side" : "",
+      b.tail === "r" ? "tail-r" : "",
+    ]
       .filter(Boolean)
       .join(" ");
-    parts.push(`<div class="${cls}" style="${POS[b.pos || "tl"]}"><span class="who">${esc(b.who.toUpperCase())}</span>${b.t}</div>`);
+    parts.push(
+      `<div class="${cls}" style="${POS[b.pos || "tl"]}"><span class="who">${esc(b.who.toUpperCase())}</span>${b.t}</div>`,
+    );
   }
-  if (c.sfx) parts.push(`<div class="sfx" style="${POS[c.sfx.pos || "tl"].split(";").slice(0, 2).join(";")}">${esc(c.sfx.t)}</div>`);
+  if (c.sfx)
+    parts.push(
+      `<div class="sfx" style="${POS[c.sfx.pos || "tl"].split(";").slice(0, 2).join(";")}">${esc(c.sfx.t)}</div>`,
+    );
   if (c.sign)
     parts.push(
       `<div class="gn-sign gn-${c.sign.style || "chalk"}" data-gn-skip style="left:${c.sign.x || "60%"};top:${c.sign.y || "44%"}">${c.sign.t}</div>`,
@@ -54,7 +79,9 @@ function titleHtml(spec, companion) {
 
 function journalHtml(spec, world) {
   const j = spec.journal;
-  const rows = j.rows.map(([b, t]) => `    <div class="jrow"><b>${b}</b><span>${t}</span></div>`).join("\n");
+  const rows = j.rows
+    .map(([b, t]) => `    <div class="jrow"><b>${b}</b><span>${t}</span></div>`)
+    .join("\n");
   return `\n  <h2 class="splashtitle" style="font-size:1.4rem">${world.journalTitle}</h2>\n  <div class="journal"><h4>${j.heading}</h4>\n${rows}\n  </div>\n  <div class="caption">${j.quote}</div>`;
 }
 
@@ -64,21 +91,32 @@ function certHtml(spec, world, next) {
 
 /* ---------- gate answer key (generated from the items, never typed twice) ---------- */
 
-const plain = (h) => String(h).replace(/<[^>]+>/g, "").replace(/&amp;/g, "&");
+const plain = (h) =>
+  String(h)
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&");
 
 function itemKey(it) {
   if (it.type === "choice") {
     const ok = it.options.find((o) => o.ok);
-    const traps = it.options.filter((o) => !o.ok).map((o) => `${plain(o.t)} — ${plain(o.fb || "")}`);
+    const traps = it.options
+      .filter((o) => !o.ok)
+      .map((o) => `${plain(o.t)} — ${plain(o.fb || "")}`);
     return `${plain(it.q)} → ${plain(ok.t)} (traps: ${traps.join("; ")})`;
   }
   if (it.type === "number") {
     const traps = (it.fb || []).map((f) => `${f.eq} — ${plain(f.msg)}`);
     return `${plain(it.label)} ${it.answer}${traps.length ? ` (traps: ${traps.join("; ")})` : ""}`;
   }
-  if (it.type === "order") return `${plain(it.q)} → ${it.answer.map((id) => plain(it.cards.find((c) => c.id === id).t)).join(", ")}`;
-  if (it.type === "multi") return `${plain(it.q)} → ${it.options.filter((o) => o.ok).map((o) => plain(o.t)).join(", ")}`;
-  if (it.type === "grid") return `${plain(it.q)} → ${it.answer.map((p) => `(${p[0]}, ${p[1]})`).join(" ")}`;
+  if (it.type === "order")
+    return `${plain(it.q)} → ${it.answer.map((id) => plain(it.cards.find((c) => c.id === id).t)).join(", ")}`;
+  if (it.type === "multi")
+    return `${plain(it.q)} → ${it.options
+      .filter((o) => o.ok)
+      .map((o) => plain(o.t))
+      .join(", ")}`;
+  if (it.type === "grid")
+    return `${plain(it.q)} → ${it.answer.map((p) => `(${p[0]}, ${p[1]})`).join(" ")}`;
   if (it.type === "numberline") {
     const a = it.answer;
     return `${plain(it.q)} → ${a.value}${it.inequality ? `, ${a.closed ? "closed" : "open"} circle, ray ${a.dir}` : ""}`;
@@ -93,42 +131,60 @@ export function auditSpec(spec) {
   const out = [];
   const bad = (m) => out.push(`${spec.lesson}: ${m}`);
   const artIds = new Set([...(spec.panels || []).map((p) => p.id), "cover"]);
-  const cellsOf = [...(spec.intro?.cells || []), ...(spec.win?.cells || []), ...(spec.pages || []).flatMap((p) => p.cells || [])];
-  for (const c of cellsOf) if (c.art && !artIds.has(c.art)) bad(`cell uses art "${c.art}" that has no panel`);
+  const cellsOf = [
+    ...(spec.intro?.cells || []),
+    ...(spec.win?.cells || []),
+    ...(spec.pages || []).flatMap((p) => p.cells || []),
+  ];
+  for (const c of cellsOf)
+    if (c.art && !artIds.has(c.art)) bad(`cell uses art "${c.art}" that has no panel`);
   const used = new Set(cellsOf.map((c) => c.art));
   used.add("cover");
   for (const id of artIds) if (!used.has(id)) bad(`panel "${id}" is never used by a page`);
   const gates = spec.gates || [];
   if (gates.length < 3) bad("needs 3 gates and a boss gate");
   const gateIds = new Set(gates.map((g) => g.id));
-  for (const p of spec.pages || []) if (p.gate && !gateIds.has(p.gate)) bad(`page names missing gate ${p.gate}`);
+  for (const p of spec.pages || [])
+    if (p.gate && !gateIds.has(p.gate)) bad(`page names missing gate ${p.gate}`);
   for (const g of gates) {
-    if (!Array.isArray(g.hints) || g.hints.length !== 2) bad(`${g.id}: exactly two hints (conceptual, procedural)`);
-    if (!g.worked?.steps?.length || !g.worked.q || g.worked.a === undefined) bad(`${g.id}: worked example needs steps, q, a`);
+    if (!Array.isArray(g.hints) || g.hints.length !== 2)
+      bad(`${g.id}: exactly two hints (conceptual, procedural)`);
+    if (!g.worked?.steps?.length || !g.worked.q || g.worked.a === undefined)
+      bad(`${g.id}: worked example needs steps, q, a`);
     if (!(g.items || []).length) bad(`${g.id}: no items`);
     (g.items || []).forEach((it, i) => {
       const at = `${g.id}.${i + 1}`;
       if (it.type === "choice") {
         if (it.options.filter((o) => o.ok).length !== 1) bad(`${at}: exactly one correct option`);
-        for (const o of it.options) if (!o.ok && !o.fb) bad(`${at}: wrong option "${plain(o.t)}" needs named feedback`);
+        for (const o of it.options)
+          if (!o.ok && !o.fb) bad(`${at}: wrong option "${plain(o.t)}" needs named feedback`);
         if (it.options.length < 3) bad(`${at}: at least 3 options`);
       } else if (it.type === "number") {
         const exact = it.calc === undefined ? null : evaluateExpression(String(it.calc));
         const stated = parseAnswerValue(String(it.answer));
-        if (it.calc === undefined) bad(`${at}: number item needs "calc", an expression that recomputes the answer`);
+        if (it.calc === undefined)
+          bad(`${at}: number item needs "calc", an expression that recomputes the answer`);
         else if (exact === null) bad(`${at}: calc "${it.calc}" is not evaluable`);
-        else if (stated === null || !exact.eq(stated)) bad(`${at}: calc "${it.calc}" = ${exact} but answer is ${it.answer}`);
+        else if (stated === null || !exact.eq(stated))
+          bad(`${at}: calc "${it.calc}" = ${exact} but answer is ${it.answer}`);
         for (const f of it.fb || []) {
           const v = parseAnswerValue(String(f.eq));
-          if (v && stated && v.eq(stated)) bad(`${at}: feedback for ${f.eq} equals the right answer`);
+          if (v && stated && v.eq(stated))
+            bad(`${at}: feedback for ${f.eq} equals the right answer`);
         }
       } else if (it.type === "order") {
-        if (new Set(it.answer).size !== it.cards.length || !it.answer.every((id) => it.cards.some((c) => c.id === id))) bad(`${at}: answer must list every card once`);
+        if (
+          new Set(it.answer).size !== it.cards.length ||
+          !it.answer.every((id) => it.cards.some((c) => c.id === id))
+        )
+          bad(`${at}: answer must list every card once`);
       } else if (it.type === "multi") {
-        if (!it.options.some((o) => o.ok) || it.options.every((o) => o.ok)) bad(`${at}: needs right and wrong options`);
+        if (!it.options.some((o) => o.ok) || it.options.every((o) => o.ok))
+          bad(`${at}: needs right and wrong options`);
       } else if (it.type === "grid") {
         if (!it.answer?.length) bad(`${at}: grid needs answer points`);
-        else if (it.answer.some((p) => Math.abs(p[0]) > it.range || Math.abs(p[1]) > it.range)) bad(`${at}: answer outside grid range`);
+        else if (it.answer.some((p) => Math.abs(p[0]) > it.range || Math.abs(p[1]) > it.range))
+          bad(`${at}: answer outside grid range`);
       } else if (it.type === "numberline") {
         const a = it.answer;
         if (a.value < it.min || a.value > it.max) bad(`${at}: answer off the line`);
@@ -143,7 +199,8 @@ export function auditSpec(spec) {
   const words = (s) => String(s).split(/\s+/).length;
   for (const p of spec.panels || []) {
     if (words(p.alt) < 6) bad(`panel ${p.id}: alt needs 6+ words`);
-    if (/\b(image|picture|illustration) of\b/i.test(p.alt)) bad(`panel ${p.id}: alt must not say "image of"`);
+    if (/\b(image|picture|illustration) of\b/i.test(p.alt))
+      bad(`panel ${p.id}: alt must not say "image of"`);
   }
   return out;
 }
@@ -268,7 +325,8 @@ export function compileContent(spec, world) {
   const companion = world.companion.name;
   const gates = spec.gates.map((g, i) => ({ ...g, icon: g.icon || ICONS[i % ICONS.length] }));
   const pages = [{ ch: `Lesson ${spec.lesson} · ${spec.title}`, html: titleHtml(spec, companion) }];
-  for (const p of spec.pages) pages.push({ ch: p.ch, ...(p.gate ? { gate: p.gate } : {}), html: pageHtml(p, companion) });
+  for (const p of spec.pages)
+    pages.push({ ch: p.ch, ...(p.gate ? { gate: p.gate } : {}), html: pageHtml(p, companion) });
   if (spec.win) pages.push({ ch: spec.win.ch, html: pageHtml(spec.win, companion) });
   pages.push({ ch: `End Matter · ${world.journalName}`, html: journalHtml(spec, world) });
   pages.push({ ch: "End Matter · Certificate", html: certHtml(spec, world, spec.next) });
@@ -276,13 +334,34 @@ export function compileContent(spec, world) {
   const teacher = {
     suggested: spec.teacher.suggested,
     standards: spec.teacher.standards,
-    answers: gates.map((g) => [g.id === "boss" ? "Boss" : `Gate ${g.id.slice(1)}`, g.items.map(itemKey).join(" | ")]),
+    answers: gates.map((g) => [
+      g.id === "boss" ? "Boss" : `Gate ${g.id.slice(1)}`,
+      g.items.map(itemKey).join(" | "),
+    ]),
   };
-  const volume = { num: spec.num, slug: `l${spec.lesson.replace("-", "")}${spec.world.replace(/-/g, "").slice(0, 3)}`, title: spec.title, unit: `Lesson ${spec.lesson} · ${spec.topic}`, accent: world.theme.accent, nextTeaser: spec.next ? `LESSON ${spec.next.lesson} — ${spec.next.title.toUpperCase()}` : "" };
-  const gateSpecs = gates.map((g) => ({ id: g.id, title: g.title, icon: g.icon, prompt: g.prompt, hints: g.hints, worked: g.worked, items: g.items, pass: g.pass }));
+  const volume = {
+    num: spec.num,
+    slug: `l${spec.lesson.replace("-", "")}${spec.world.replace(/-/g, "").slice(0, 3)}`,
+    title: spec.title,
+    unit: `Lesson ${spec.lesson} · ${spec.topic}`,
+    accent: world.theme.accent,
+    nextTeaser: spec.next ? `LESSON ${spec.next.lesson} — ${spec.next.title.toUpperCase()}` : "",
+  };
+  const gateSpecs = gates.map((g) => ({
+    id: g.id,
+    title: g.title,
+    icon: g.icon,
+    prompt: g.prompt,
+    hints: g.hints,
+    worked: g.worked,
+    items: g.items,
+    pass: g.pass,
+  }));
   return [
     // object-literal keys, as in every other book: tools/lib/gn-layer.mjs reads `unit: "..."` to find the lesson
-    `const VOLUME = {\n${Object.entries(volume).map(([k, v]) => `  ${k}: ${JSON.stringify(v)},`).join("\n")}\n};`,
+    `const VOLUME = {\n${Object.entries(volume)
+      .map(([k, v]) => `  ${k}: ${JSON.stringify(v)},`)
+      .join("\n")}\n};`,
     `const BADGES = ${JSON.stringify(badges, null, 2)};`,
     `const GATE_SPECS = ${JSON.stringify(gateSpecs, null, 2).replace(/</g, "\\u003c")};`,
     RUNTIME.trim(),
@@ -310,7 +389,10 @@ export function panelsJson(spec, world) {
   );
   return {
     book: `${spec.world}-l${spec.lesson}-${spec.slug}`,
-    generated: "from _engine/books/" + spec.lesson + ".json by tools/build-lesson-books.mjs — edit the spec, not this file",
+    generated:
+      "from _engine/books/" +
+      spec.lesson +
+      ".json by tools/build-lesson-books.mjs — edit the spec, not this file",
     generator: { model: "gemini-3.1-flash-image" },
     pack: { scale: 0.85, quality: 78, maxBytes: 2500000, maxWidth: 3200 },
     fragments: world.fragments,

@@ -46,7 +46,8 @@ export const artDir = (s) => join(ENGINE, "art", `${s.world}-l${s.lesson}`);
 
 function swap(html, re, to, what) {
   const hits = html.match(new RegExp(re.source, re.flags.replace("g", "") + "g"));
-  if (!hits || hits.length !== 1) throw new Error(`shell has ${hits ? hits.length : 0} match(es) for ${what}, expected 1`);
+  if (!hits || hits.length !== 1)
+    throw new Error(`shell has ${hits ? hits.length : 0} match(es) for ${what}, expected 1`);
   return html.replace(re, () => to);
 }
 
@@ -69,23 +70,71 @@ export function buildHtml(spec, world, shell) {
   const brand = world.brand;
   const comp = world.companion.name;
   const label = `LESSON ${spec.lesson}`;
-  let h = shell.replace(/<!-- ac-holopad-injected:begin -->[\s\S]*?<!-- ac-holopad-injected:end -->\n?/, "");
-  h = swap(h, /<title>[\s\S]*?<\/title>/, `<title>${world.title} Lesson ${spec.lesson} — ${spec.title} | Interactive Graphic Novel | ${spec.pageTitle}</title>`, "title");
+  let h = shell.replace(
+    /<!-- ac-holopad-injected:begin -->[\s\S]*?<!-- ac-holopad-injected:end -->\n?/,
+    "",
+  );
+  h = swap(
+    h,
+    /<title>[\s\S]*?<\/title>/,
+    `<title>${world.title} Lesson ${spec.lesson} — ${spec.title} | Interactive Graphic Novel | ${spec.pageTitle}</title>`,
+    "title",
+  );
   h = swap(
     h,
     /<meta name="description" content="[^"]*">/,
     `<meta name="description" content="Interactive Grade 6 math graphic novel for lesson ${spec.lesson} (${world.title}): ${spec.covers}. Free-read, gates coach but never block. EduWonderLab.">`,
     "meta description",
   );
-  h = swap(h, /aria-label="Cover of Axiom City[^"]*"/, `aria-label="Cover of ${world.title}, Lesson ${spec.lesson}: ${spec.title}. ${spec.cover.alt.replace(/"/g, "&quot;")}"`, "cover label");
+  h = swap(
+    h,
+    /aria-label="Cover of Axiom City[^"]*"/,
+    `aria-label="Cover of ${world.title}, Lesson ${spec.lesson}: ${spec.title}. ${spec.cover.alt.replace(/"/g, "&quot;")}"`,
+    "cover label",
+  );
   h = swap(h, /<h1>[\s\S]*?<\/h1>/, `<h1>${spec.coverTitle}</h1>`, "cover h1");
-  h = swap(h, /<span class="vol">[\s\S]*?<\/span>/, `<span class="vol">${label} · ${spec.topic}</span>`, "cover vol");
-  h = swap(h, /<div id="coverBottom">[\s\S]*?<\/div>/, `<div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · LESSON ${spec.lesson}<br>EDUWONDERLAB</span></div>`, "cover bottom");
-  h = swap(h, /<div class="brand">AXIOM CITY<small>[\s\S]*?<\/small><\/div>/, `<div class="brand">${brand}<small>L${spec.lesson} · ${spec.title.toUpperCase()}</small></div>`, "hud brand");
-  h = swap(h, /<h2 id="tmTitle">[\s\S]*?<\/h2>/, `<h2 id="tmTitle">Teacher Guide — Lesson ${spec.lesson}</h2>`, "teacher title");
-  h = swap(h, /<span>AXIOM CITY · EDUWONDERLAB<\/span>/, `<span>${brand} · EDUWONDERLAB</span>`, "spine");
-  h = swap(h, /<div class="series">AXIOM CITY<\/div>/, `<div class="series">${brand}</div>`, "series");
-  h = swap(h, /<div class="kicker" style="opacity:\.4">AXIOM CITY<\/div>/, `<div class="kicker" style="opacity:.4">${brand}</div>`, "page footer");
+  h = swap(
+    h,
+    /<span class="vol">[\s\S]*?<\/span>/,
+    `<span class="vol">${label} · ${spec.topic}</span>`,
+    "cover vol",
+  );
+  h = swap(
+    h,
+    /<div id="coverBottom">[\s\S]*?<\/div>/,
+    `<div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · LESSON ${spec.lesson}<br>EDUWONDERLAB</span></div>`,
+    "cover bottom",
+  );
+  h = swap(
+    h,
+    /<div class="brand">AXIOM CITY<small>[\s\S]*?<\/small><\/div>/,
+    `<div class="brand">${brand}<small>L${spec.lesson} · ${spec.title.toUpperCase()}</small></div>`,
+    "hud brand",
+  );
+  h = swap(
+    h,
+    /<h2 id="tmTitle">[\s\S]*?<\/h2>/,
+    `<h2 id="tmTitle">Teacher Guide — Lesson ${spec.lesson}</h2>`,
+    "teacher title",
+  );
+  h = swap(
+    h,
+    /<span>AXIOM CITY · EDUWONDERLAB<\/span>/,
+    `<span>${brand} · EDUWONDERLAB</span>`,
+    "spine",
+  );
+  h = swap(
+    h,
+    /<div class="series">AXIOM CITY<\/div>/,
+    `<div class="series">${brand}</div>`,
+    "series",
+  );
+  h = swap(
+    h,
+    /<div class="kicker" style="opacity:\.4">AXIOM CITY<\/div>/,
+    `<div class="kicker" style="opacity:.4">${brand}</div>`,
+    "page footer",
+  );
   h = h.replace(/\bVEX\b/g, comp);
   h = swap(h, /<\/head>/, `${themeCss(world)}</head>`, "head end");
   const a = h.match(CONTENT_START);
@@ -114,10 +163,16 @@ function keepInjected(fresh, old) {
   if (was && layer.test(out)) out = out.replace(layer, () => was[0]);
   // the art stylesheet block sits immediately before </head> (tools/inject-gn-art.mjs puts it there)
   const head = old.match(/<!-- gn-art:begin[\s\S]*?<!-- gn-art:end -->\n?/);
-  if (head) out = out.replace(/<!-- gn-art:begin[\s\S]*?<!-- gn-art:end -->\n?/, "").replace("</head>", () => `${head[0]}</head>`);
+  if (head)
+    out = out
+      .replace(/<!-- gn-art:begin[\s\S]*?<!-- gn-art:end -->\n?/, "")
+      .replace("</head>", () => `${head[0]}</head>`);
   // the art script lives inside the content region, just before `const PAGES` (tools/inject-gn-art.mjs puts it there)
   const art = old.match(/\/\* gn-art:begin[\s\S]*?\/\* gn-art:end \*\/\n?/);
-  if (art) out = out.replace(/\/\* gn-art:begin[\s\S]*?\/\* gn-art:end \*\/\n?/, "").replace(/^const PAGES = /m, () => `${art[0]}const PAGES = `);
+  if (art)
+    out = out
+      .replace(/\/\* gn-art:begin[\s\S]*?\/\* gn-art:end \*\/\n?/, "")
+      .replace(/^const PAGES = /m, () => `${art[0]}const PAGES = `);
   return out;
 }
 
@@ -151,8 +206,10 @@ function main() {
     const entry = configEntry(s, world, cfg.standard);
     if (check) {
       if (html !== old) problems.push(`${s.lesson}: ${bookName(s)}.html is stale`);
-      if (!existsSync(pjFile) || readFileSync(pjFile, "utf8") !== pj) problems.push(`${s.lesson}: panels.json is stale`);
-      if (JSON.stringify(cfg.graphicNovel) !== JSON.stringify(entry)) problems.push(`${s.lesson}: config graphicNovel is stale`);
+      if (!existsSync(pjFile) || readFileSync(pjFile, "utf8") !== pj)
+        problems.push(`${s.lesson}: panels.json is stale`);
+      if (JSON.stringify(cfg.graphicNovel) !== JSON.stringify(entry))
+        problems.push(`${s.lesson}: config graphicNovel is stale`);
       continue;
     }
     writeFileSync(file, html);
