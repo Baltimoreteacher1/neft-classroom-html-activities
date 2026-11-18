@@ -1,0 +1,533 @@
+{
+  "lesson": "2-10",
+  "world": "clip-squad",
+  "slug": "the-fake-average",
+  "num": 21001,
+  "title": "The Fake Average",
+  "coverTitle": "FAKE<br><em>AVERAGE</em>",
+  "topic": "APPROPRIATE MEASURES",
+  "pageTitle": "Choose Appropriate Measures",
+  "covers": "choosing between mean and median based on outliers and data shape (symmetric vs. skewed)",
+  "cert": "choosing the best measure of center (mean or median) when outliers or skew are present",
+  "cover": {
+    "prompt": "{{style}}. {{notext}}. Comic book cover, quest-style showdown inside {{studio}}. {{max}} stands in front of a giant glowing blank billboard, grinning smugly and pointing upward. Below him, {{nova}}, {{mei}} and {{jaylen}} hold up a blank bar chart showing four tiny bars and one huge spike. {{blink}} shines a spotlight on the spike. Plain dark studio ceiling space above the heads.",
+    "alt": "Max poses smugly in front of a giant blank billboard while Nova, Mei and Jaylen hold up a chart with four tiny bars and one huge spike."
+  },
+  "panels": [
+    {
+      "id": "p1-brag",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Wide establishing panel inside {{studio}}: {{nova}}, {{dex}}, {{mei}} and {{jaylen}} crowd around a large blank monitor showing a blank video-stats page. {{blink}} hovers near the screen with wide-eyed alarm. Plain open wall space above the heads.",
+      "alt": "Nova, Dex, Mei and Jaylen crowd around a blank studio monitor while Blink hovers in alarm."
+    },
+    {
+      "id": "p1-max-poster",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. Close-up panel of {{max}} leaning on a blank promotional poster, winking and pointing with both thumbs at himself. Plain open wall space above the heads.",
+      "alt": "Max winks and points both thumbs at himself beside a blank promotional poster."
+    },
+    {
+      "id": "p2-bars",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{mei}} points at a blank bar chart on her whiteboard showing four short bars clustered on the left and one towering tall bar far on the right. {{nova}} crosses her arms, unimpressed. {{blink}} hovers by the tall bar. Plain open wall space above the heads.",
+      "alt": "Mei points at a blank whiteboard chart with four short bars and one towering bar while Nova crosses her arms."
+    },
+    {
+      "id": "p3-sort",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. {{jaylen}} lines up five blank index cards in a neat row on a desk while {{dex}} looks at the middle card. {{blink}} shines a teal beam on the middle card. Plain open wall space above the heads.",
+      "alt": "Jaylen lines up five blank index cards in order on a desk while Dex looks at the middle card and Blink shines a light."
+    },
+    {
+      "id": "p4-sym",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. {{mei}} holds up a blank tablet showing a neat, balanced hill-shaped dot plot with no far-away dots. {{blink}} nods happily beside it. Plain open wall space above the heads.",
+      "alt": "Mei holds up a blank tablet showing a balanced hill-shaped dot plot while Blink hovers happily beside it."
+    },
+    {
+      "id": "p5-judge",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Dramatic quest finale inside {{studio}}: {{max}} stands at a sponsor booth holding a blank contract, looking nervous, while {{nova}}, {{mei}} and {{jaylen}} present a blank evidence board. {{blink}} records everything. Plain open ceiling space above the heads.",
+      "alt": "Max looks nervous at a sponsor booth while Nova, Mei and Jaylen present a blank evidence board and Blink records."
+    },
+    {
+      "id": "p6-win",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Celebration panel inside {{studio}}: {{nova}}, {{dex}}, {{mei}} and {{jaylen}} high-five around the studio desk while {{blink}} projects a happy teal glow. Plain open wall space above the heads.",
+      "alt": "Nova, Dex, Mei and Jaylen high-five around the studio desk while Blink projects a happy teal glow."
+    }
+  ],
+  "intro": {
+    "caption": "Lesson 2-10 — choose appropriate measures. Max Maxwell is bragging to sponsors about his '200K average views'! Clip Squad goes on a fact-checking quest to judge his claim.",
+    "cells": [
+      {
+        "art": "p1-brag",
+        "size": "full",
+        "balloons": [
+          {
+            "who": "Jaylen",
+            "t": "Max told the sponsors his clips average 200K views! Chat is losing its mind!",
+            "pos": "tl"
+          },
+          {
+            "who": "Blink",
+            "t": "I pulled his last five clips: 12K, 15K, 14K, 19K, and 940K. Look at that last one!",
+            "pos": "br"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "ch": "Chapter 1 · Spot the Outlier",
+      "cells": [
+        {
+          "art": "p1-max-poster",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Max",
+              "t": "Add 'em up: 1,000K divided by 5 is 200K! Totally typical!",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-bars",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "Four clips are under 20K! That ONE 940K viral clip is an OUTLIER dragging the mean up!",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "An <b>outlier</b> is a value far away from the rest of the data. It pulls the <b>mean</b> toward itself, even when most values are nowhere near it."
+    },
+    {
+      "ch": "Gate 1 · Spot the Outlier",
+      "gate": "g1",
+      "cells": [
+        {
+          "art": "p2-bars",
+          "size": "full",
+          "sign": {
+            "t": "12K, 15K, 14K, 19K, 940K",
+            "style": "scrawl",
+            "x": "60%",
+            "y": "36%"
+          },
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Check Max's numbers yourself. One extreme spike changes the whole mean.",
+              "pos": "bl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 2 · Pick the Fair Measure",
+      "gate": "g2",
+      "cells": [
+        {
+          "art": "p3-sort",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Jaylen",
+              "t": "Sort the five clips first! The MEDIAN ignores how giant that 940K spike is.",
+              "pos": "tl"
+            },
+            {
+              "who": "Dex",
+              "t": "12, 14, 15, 19, 940 — the middle one is way closer to a normal clip!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 3 · Shape Decides",
+      "gate": "g3",
+      "cells": [
+        {
+          "art": "p4-sym",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "When data is symmetric with NO outliers, the mean is great!",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-bars",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Blink",
+              "t": "When data is SKEWED or has an outlier, pick the median!",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Boss Gate · Expose the Claim",
+      "gate": "boss",
+      "cells": [
+        {
+          "art": "p5-judge",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Max",
+              "t": "Fine, try my sponsor earnings: $10, $15, $12, $13, $950! Still a $200 average!",
+              "pos": "tl"
+            },
+            {
+              "who": "Nova",
+              "t": "Sponsors want the truth, Max. Judge the claim with the right measure!",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "win": {
+    "ch": "Chapter 4 · Fact-Check Complete",
+    "cells": [
+      {
+        "art": "p6-win",
+        "size": "full",
+        "sfx": {
+          "t": "BUSTED!",
+          "pos": "tl"
+        },
+        "balloons": [
+          {
+            "who": "Blink",
+            "t": "Fake average exposed! Sponsors signed with Clip Squad instead — no outlier tricks needed!",
+            "pos": "br"
+          }
+        ]
+      }
+    ],
+    "caption": "Use the <b>mean</b> for symmetric data with no outliers; use the <b>median</b> when an outlier or skewed shape pulls the mean away from typical."
+  },
+  "gates": [
+    {
+      "id": "g1",
+      "title": "Gate 1 · Spot the Outlier",
+      "badge": "Spike Spotter — Outliers",
+      "prompt": "Inspect Max's five clip view counts (in thousands): <b>12, 15, 14, 19, 940</b>.",
+      "hints": [
+        "Conceptual: an outlier sits far apart from the main cluster of data.",
+        "Procedural: compare all 5 numbers to spot the extreme one, then add all 5 and divide by 5 to see what it does to the mean."
+      ],
+      "worked": {
+        "steps": [
+          "Example: 8, 10, 9, 11, 62.",
+          "Four values sit between 8 and 11; 62 is far away — so 62 is the outlier.",
+          "Mean = (8 + 10 + 9 + 11 + 62) ÷ 5 = 100 ÷ 5 = 20 (pulled above 4 of the 5 values!)."
+        ],
+        "q": "Which number is the outlier in 4, 6, 5, 7, 78?",
+        "a": "78"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "In 12, 15, 14, 19, 940 (thousands), which value is the outlier?",
+          "aria": "outlier in 12, 15, 14, 19, 940",
+          "answer": "940",
+          "calc": "940",
+          "fb": [
+            {
+              "eq": "12",
+              "msg": "12 sits right next to 14, 15, and 19. Look for the value far away from the cluster."
+            },
+            {
+              "eq": "200",
+              "msg": "200 is the mean, not one of the five clip values."
+            },
+            {
+              "eq": "15",
+              "msg": "15 is right in the middle of the cluster, not an outlier."
+            }
+          ],
+          "fbDefault": "Pick the single value in 12, 15, 14, 19, 940 that is far from all the others."
+        },
+        {
+          "type": "number",
+          "label": "What mean (in thousands) does Max get for 12, 15, 14, 19, 940?",
+          "aria": "mean of 12, 15, 14, 19, 940",
+          "answer": "200",
+          "calc": "(12 + 15 + 14 + 19 + 940) / 5",
+          "fb": [
+            {
+              "eq": "1000",
+              "msg": "1000 is the total views. Divide by 5 clips to get the mean!"
+            },
+            {
+              "eq": "15",
+              "msg": "15 is the median, not the mean."
+            }
+          ],
+          "fbDefault": "Add 12 + 15 + 14 + 19 + 940 = 1000, then divide by 5."
+        }
+      ],
+      "pass": "940K is the outlier, and it drags the mean up to 200K — higher than 4 out of 5 clips!"
+    },
+    {
+      "id": "g2",
+      "title": "Gate 2 · Pick the Measure",
+      "badge": "Fair Judge — Mean vs. Median",
+      "prompt": "Find the median of Max's clips and decide which measure of center is fairer.",
+      "hints": [
+        "Conceptual: the median depends on order, not size — one giant spike cannot drag it upward.",
+        "Procedural: sort the numbers from least to greatest first, then pick the middle number."
+      ],
+      "worked": {
+        "steps": [
+          "Example ticket prices: $45, $50, $48, $52, $55, $260.",
+          "Sort: 45, 48, 50, 52, 55, 260. Middle pair is 50 and 52 → median = $51.",
+          "$260 is an outlier pulling the mean to $85, so the median ($51) is fairer."
+        ],
+        "q": "Find the median of 10, 14, 12, 16, 98.",
+        "a": "14"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Median of 12, 15, 14, 19, 940 (sort least to greatest first!):",
+          "aria": "median of 12, 15, 14, 19, 940",
+          "answer": "15",
+          "calc": "15",
+          "fb": [
+            {
+              "eq": "14",
+              "msg": "14 is in the middle BEFORE sorting! Sort least to greatest: 12, 14, 15, 19, 940."
+            },
+            {
+              "eq": "200",
+              "msg": "200 is the mean, not the median."
+            },
+            {
+              "eq": "940",
+              "msg": "940 is the maximum, not the middle value."
+            }
+          ],
+          "fbDefault": "Sort 12, 14, 15, 19, 940 and pick the middle value."
+        },
+        {
+          "type": "choice",
+          "q": "Which measure best describes Max's typical clip (<b>12K, 15K, 14K, 19K, 940K</b>)?",
+          "options": [
+            {
+              "t": "Mean (200K), because it uses every number in the list",
+              "fb": "Using every number lets the 940K outlier pull the mean to 200K — higher than 4 of the 5 clips!"
+            },
+            {
+              "t": "Median (15K), because the 940K outlier pulls the mean way above normal clips",
+              "ok": true
+            },
+            {
+              "t": "Mean (200K), because bigger averages sound better",
+              "fb": "A fair measure describes what is typical, not what sounds flashiest."
+            },
+            {
+              "t": "Median (14K), because 14 is in the middle before sorting",
+              "fb": "Always sort first! Sorted 12, 14, 15, 19, 940 has median 15K."
+            }
+          ]
+        }
+      ],
+      "pass": "15K! That's the real story of Max's channel."
+    },
+    {
+      "id": "g3",
+      "title": "Gate 3 · Shape Decides",
+      "badge": "Shape Reader — Symmetric vs. Skewed",
+      "prompt": "Match the best measure of center to each data set's shape.",
+      "hints": [
+        "Conceptual: symmetric data with no outliers balances nicely around the mean; skewed data or outliers pull the mean toward the tail.",
+        "Procedural: check for any extreme value or long tail. Outlier or skew → median. Symmetric, no outlier → mean."
+      ],
+      "worked": {
+        "steps": [
+          "Set A: 20, 22, 21, 19, 23 → clustered evenly, no outliers → mean (21) works great.",
+          "Set B: 20, 22, 21, 19, 98 → 98 skews the data high → median (21) is better."
+        ],
+        "q": "Which measure is better for skewed data with an extreme high value: mean or median?",
+        "a": "median"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Clip Squad's last 5 videos got <b>28K, 30K, 29K, 31K, 32K</b> views (symmetric, no outliers). Which measure fits best?",
+          "options": [
+            {
+              "t": "Only 32K, because it is the highest",
+              "fb": "32K is the maximum, not a measure of center."
+            },
+            {
+              "t": "Mean (30K), because the data is symmetric with no outliers",
+              "ok": true
+            },
+            {
+              "t": "Neither, because the numbers are too close together",
+              "fb": "Closely clustered symmetric data is ideal for the mean!"
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "q": "Six sponsor offers are <b>$15, $18, $16, $17, $15, $72</b>. Which measure best represents a typical offer?",
+          "options": [
+            {
+              "t": "Mean, because $72 is part of the data",
+              "fb": "$72 is a huge outlier that pulls the mean to $25.50 — higher than 5 of the 6 offers!"
+            },
+            {
+              "t": "Mean, because there are an even number of offers",
+              "fb": "Even vs. odd count does not decide mean vs. median — outliers and skew do!"
+            },
+            {
+              "t": "Median, because $72 is an outlier that skews the data",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "pass": "Symmetric → mean; skewed or outlier → median! Clip Squad takes the evidence board to the sponsor booth."
+    },
+    {
+      "id": "boss",
+      "title": "Boss Gate · Expose the Claim",
+      "badge": "Truth Judge — Boss Gate",
+      "prompt": "Judge Max's final sponsor claim and lock in the rule for choosing mean vs. median.",
+      "hints": [
+        "Conceptual: a fair measure of center sits near the bulk of the data, not out in a tail.",
+        "Procedural: sort the data to find the median, check if an outlier is distorting the mean, and justify your choice."
+      ],
+      "worked": {
+        "steps": [
+          "Example: 5, 8, 6, 7, 74.",
+          "Sort: 5, 6, 7, 8, 74 → median is 7.",
+          "The outlier 74 pulls the mean to 20, so median (7) is the fairer measure."
+        ],
+        "q": "What is the median of 21, 25, 22, 24, 180?",
+        "a": "24"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Lock 1 · Max's 5 streams earned <b>$10, $15, $12, $13, $950</b>. He claims a typical stream earns <b>$200</b>. Does his claim hold?",
+          "options": [
+            {
+              "t": "Yes — $200 is the exact mean, so it is typical",
+              "fb": "The mean is $200, but 4 out of 5 streams earned $15 or less! That is not typical."
+            },
+            {
+              "t": "No — $950 is an outlier pulling the mean to $200, while typical is near the median ($13)",
+              "ok": true
+            },
+            {
+              "t": "No — the median is $12, the middle of the unsorted list",
+              "fb": "Sort first: $10, $12, $13, $15, $950 has a median of $13, not $12."
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "label": "Lock 2 · Median of $10, $15, $12, $13, $950:",
+          "aria": "median of 10, 15, 12, 13, 950",
+          "answer": "13",
+          "calc": "13",
+          "fb": [
+            {
+              "eq": "12",
+              "msg": "Sort least to greatest first: 10, 12, 13, 15, 950."
+            },
+            {
+              "eq": "200",
+              "msg": "200 is the mean, pulled up by $950."
+            },
+            {
+              "eq": "950",
+              "msg": "950 is the outlier, not the median."
+            }
+          ],
+          "fbDefault": "Sort 10, 12, 13, 15, 950 and pick the middle value."
+        },
+        {
+          "type": "choice",
+          "q": "Lock 3 · When is the <b>mean</b> better than the <b>median</b>?",
+          "options": [
+            {
+              "t": "When one huge outlier pulls the average up",
+              "fb": "That is when you should use the MEDIAN."
+            },
+            {
+              "t": "When the data is heavily skewed to one side",
+              "fb": "Skewed data pulls the mean toward the tail — use the median!"
+            },
+            {
+              "t": "When the data is roughly symmetric with no outliers",
+              "ok": true
+            },
+            {
+              "t": "Whenever you want the biggest possible number",
+              "fb": "Pick the measure that fairly describes the data, not the biggest number."
+            }
+          ]
+        }
+      ],
+      "pass": "CLAIM BUSTED! $13 median vs. $200 fake average — the sponsors walk away from Max's booth!"
+    }
+  ],
+  "journal": {
+    "heading": "Lesson 2-10 — what the fake average taught us",
+    "rows": [
+      [
+        "Spot outliers.",
+        "An outlier sits far from the rest of the data and pulls the mean toward itself."
+      ],
+      [
+        "Use the median.",
+        "When data has an outlier or is skewed, the median resists the pull and shows what is typical."
+      ],
+      [
+        "Use the mean.",
+        "When data is roughly symmetric with no outliers, the mean is a great summary."
+      ],
+      [
+        "Sort first!",
+        "Always order the values from least to greatest before finding the median."
+      ]
+    ],
+    "quote": "\"One viral spike does not make every Tuesday a hit.\" — Nova"
+  },
+  "teacher": {
+    "suggested": "Use during or after lesson 2-10 (Choose Appropriate Measures) as one focused read. Covers spotting outliers, seeing how outliers pull the mean, and choosing between mean and median based on symmetry vs. skew.",
+    "standards": [
+      [
+        "6.DS.6d",
+        "Relate the choice of measures of center and variability to the shape of the data distribution",
+        "Gate 1, Gate 2, Gate 3, Boss"
+      ]
+    ]
+  }
+}

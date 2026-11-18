@@ -15,6 +15,7 @@
  *
  *   node tools/build-lesson-books.mjs [6-1 6-2 ...]   build (all specs when no ids)
  *   node tools/build-lesson-books.mjs --check          exit 1 if a spec fails its audit or an output is stale
+ *   node tools/build-lesson-books.mjs --audit <spec>   audit one or more spec JSON files without building
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -179,8 +180,27 @@ function keepInjected(fresh, old) {
 function main() {
   const args = process.argv.slice(2);
   const check = args.includes("--check");
+  const audit = args.includes("--audit");
   const only = args.filter((a) => !a.startsWith("--"));
   const W = worlds();
+  if (audit) {
+    if (!only.length) {
+      console.error("usage: node tools/build-lesson-books.mjs --audit <spec.json> [...]");
+      process.exit(1);
+    }
+    const problems = [];
+    for (const f of only) {
+      const s = readJson(f);
+      if (!W[s.world]) problems.push(`${s.lesson}: unknown world ${s.world}`);
+      else problems.push(...auditSpec(s));
+    }
+    if (problems.length) {
+      console.error(problems.map((p) => `✗ ${p}`).join("\n"));
+      process.exit(1);
+    }
+    console.log(`audit clean (${only.length})`);
+    return;
+  }
   const shell = readFileSync(SHELL, "utf8");
   const all = specs();
   const problems = [];

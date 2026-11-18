@@ -1,0 +1,519 @@
+{
+  "lesson": "2-4",
+  "world": "clip-squad",
+  "slug": "algorithm-escape-room",
+  "num": 2401,
+  "title": "Algorithm Escape Room",
+  "coverTitle": "ALGORITHM<br><em>ESCAPE</em>",
+  "topic": "BOX PLOTS",
+  "pageTitle": "Represent and Describe Data in a Box Plot",
+  "covers": "finding the five-number summary (min, Q1, median, Q3, max) and reading a box plot",
+  "cert": "finding the five-number summary and building and reading box plots",
+  "cover": {
+    "prompt": "{{style}}. {{notext}}. Comic book cover, dramatic escape-room studio shot. {{nova}}, {{mei}} and {{dex}} stand in front of a locked metallic vault door with a blank digital keypad and glowing teal lasers. {{blink}} hovers near the keypad scanning it. Plain open dark wall space above the heads.",
+    "alt": "Nova, Mei and Dex stand in front of a locked metallic vault door with a blank digital keypad while Blink scans it."
+  },
+  "panels": [
+    {
+      "id": "p1-trapped",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Wide establishing panel inside a locked neon-lit escape room studio: {{nova}}, {{dex}}, {{mei}} and {{jaylen}} look at a large locked steel door with a blank wall screen above it. {{blink}} hovers near the door. Plain open wall space above the heads.",
+      "alt": "Nova, Dex, Mei and Jaylen stand inside a locked neon-lit escape room facing a steel door and blank wall screen while Blink hovers."
+    },
+    {
+      "id": "p1-max-screen",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. Close-up panel of {{max}} smirking on a glowing blank wall monitor, holding up five fingers. The same scene continues up to the top edge with plain open wall space above the heads.",
+      "alt": "Max Maxwell smirks from a glowing monitor while holding up five fingers."
+    },
+    {
+      "id": "p2-keypad",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{mei}} points at a row of nine glowing blank tiles on a puzzle table while {{nova}} jots notes on a blank clipboard. {{blink}} hovers over the middle tile. Plain open wall space above the heads.",
+      "alt": "Mei points at nine glowing blank tiles on a puzzle table while Nova takes notes and Blink hovers over the middle tile."
+    },
+    {
+      "id": "p3-halves",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. {{dex}} reaches for the middle tile while {{mei}} gently blocks his hand, pointing to the four tiles on the left and four tiles on the right. {{blink}} watches from above. Plain open wall space above the heads.",
+      "alt": "Mei blocks Dex's hand from the middle tile and points to the left and right halves while Blink watches."
+    },
+    {
+      "id": "p4-boxmodel",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{nova}} and {{jaylen}} study a large blank glass puzzle board with a rectangle box and two lines extending from its sides, drawn with no numbers. {{blink}} shines a teal beam on the box. Plain open wall space above the heads.",
+      "alt": "Nova and Jaylen study a blank glass board showing a box-and-whisker outline while Blink shines a teal beam on it."
+    },
+    {
+      "id": "p5-vault",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Dramatic finale panel: {{mei}}, {{nova}}, {{dex}} and {{jaylen}} stand before the final vault lock with three glowing blank key slots. {{blink}} projects a bright light onto the lock. Plain open wall space above the heads.",
+      "alt": "Mei, Nova, Dex and Jaylen stand before a final vault lock with three glowing blank key slots while Blink lights it up."
+    },
+    {
+      "id": "p6-win",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Celebration panel: the steel escape-room door swings wide open into {{studio}}, and {{nova}}, {{dex}}, {{mei}} and {{jaylen}} cheer while {{blink}} zooms out ahead of them. Plain open wall space above the heads.",
+      "alt": "The escape-room door swings open into the studio as Nova, Dex, Mei, Jaylen and Blink cheer and burst out."
+    }
+  ],
+  "intro": {
+    "caption": "Lesson 2-4 — box plots. Max Maxwell locked Clip Squad inside an algorithm escape room! Every lock asks for the five-number summary.",
+    "cells": [
+      {
+        "art": "p1-trapped",
+        "size": "full",
+        "balloons": [
+          {
+            "who": "Jaylen",
+            "t": "Whoa! Max locked the studio door! Our stream viewers are waiting!",
+            "pos": "tl"
+          },
+          {
+            "who": "Blink",
+            "t": "Three locks on this door. Each one wants pieces of a box plot!",
+            "pos": "br"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "ch": "Chapter 1 · Five Numbers to Freedom",
+      "cells": [
+        {
+          "art": "p1-max-screen",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Max Maxwell",
+              "t": "Five-number summary, losers! Min, Q1, median, Q3, max. Bet you mess up the quartiles!",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-keypad",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "First lock gives 9 ordered view counts in thousands: 4, 7, 9, 12, 15, 18, 20, 24, 30.",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "A box plot is built from five key numbers: <b>minimum</b>, <b>Q1</b>, <b>median</b>, <b>Q3</b>, and <b>maximum</b>."
+    },
+    {
+      "ch": "Gate 1 · Min, Median, and Max",
+      "gate": "g1",
+      "cells": [
+        {
+          "art": "p2-keypad",
+          "size": "full",
+          "sign": {
+            "t": "4, 7, 9, 12, 15, 18, 20, 24, 30",
+            "style": "chalk",
+            "x": "50%",
+            "y": "28%"
+          },
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Start with the easiest three: the minimum, the median, and the maximum!",
+              "pos": "bl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 2 · Split the Halves",
+      "gate": "g2",
+      "cells": [
+        {
+          "art": "p3-halves",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Dex",
+              "t": "Easy! Keep the median 15 inside the lower half, right?",
+              "pos": "tl"
+            },
+            {
+              "who": "Mei",
+              "t": "Stop! Leave OUT the single median! The lower half is just 4, 7, 9, 12!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 3 · Build the Box",
+      "gate": "g3",
+      "cells": [
+        {
+          "art": "p4-boxmodel",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Lock 3 draws the box plot! Remember what the box itself covers and what the whiskers reach.",
+              "pos": "tl"
+            },
+            {
+              "who": "Blink",
+              "t": "The box holds the middle half. The whiskers stretch to the extremes!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Boss Gate · The Final Vault Lock",
+      "gate": "boss",
+      "cells": [
+        {
+          "art": "p5-vault",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "One last set: 10, 14, 18, 22, 28, 32, 40. Three final slots!",
+              "pos": "tl"
+            },
+            {
+              "who": "Dex",
+              "t": "Do not include the median in the halves, and do not confuse Q1 with the minimum!",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "win": {
+    "ch": "Chapter 4 · Escape Complete",
+    "cells": [
+      {
+        "art": "p6-win",
+        "size": "full",
+        "sfx": {
+          "t": "CLANK!",
+          "pos": "tl"
+        },
+        "balloons": [
+          {
+            "who": "Jaylen",
+            "t": "We're out! Max's escape room could not hold the Clip Squad!",
+            "pos": "br"
+          }
+        ]
+      }
+    ],
+    "caption": "A box plot displays the five-number summary: minimum, Q1 (median of the lower half), median, Q3 (median of the upper half), and maximum. The box spans from Q1 to Q3 and holds the middle 50% of the data."
+  },
+  "gates": [
+    {
+      "id": "g1",
+      "title": "Gate 1 · Min, Median, and Max",
+      "badge": "Lock 1 — Extremes & Center",
+      "prompt": "Use the 9 ordered view counts (in thousands): <b>4, 7, 9, 12, 15, 18, 20, 24, 30</b>.",
+      "hints": [
+        "Conceptual: the minimum is the least value, the maximum is the greatest value, and the median is the middle of the ordered list.",
+        "Procedural: with 9 ordered values, the middle one is the 5th value."
+      ],
+      "worked": {
+        "steps": [
+          "Practice set (7 ordered values): 3, 5, 8, 11, 14, 19, 25.",
+          "Minimum = 3 (first), Maximum = 25 (last).",
+          "With 7 values, the 4th value is in the middle: Median = 11."
+        ],
+        "q": "What is the median of 2, 6, 10, 14, 18?",
+        "a": "10"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Median of 4, 7, 9, 12, 15, 18, 20, 24, 30:",
+          "aria": "median of the nine view counts",
+          "answer": "15",
+          "calc": "15",
+          "fb": [
+            {
+              "eq": "4",
+              "msg": "4 is the minimum, not the middle."
+            },
+            {
+              "eq": "12",
+              "msg": "12 is the 4th value. With 9 values, the middle is the 5th."
+            }
+          ],
+          "fbDefault": "Count in 5 spots from either end of the 9 ordered numbers."
+        },
+        {
+          "type": "choice",
+          "q": "What are the <b>minimum</b> and <b>maximum</b> of 4, 7, 9, 12, 15, 18, 20, 24, 30?",
+          "options": [
+            {
+              "t": "Min = 4, Max = 30",
+              "ok": true
+            },
+            {
+              "t": "Min = 7, Max = 24",
+              "fb": "Those are inside the ends. Minimum is the very smallest; maximum is the very largest."
+            },
+            {
+              "t": "Min = 0, Max = 30",
+              "fb": "There is no 0 in the data set. Read from the actual values."
+            }
+          ]
+        }
+      ],
+      "pass": "Click! Lock 1 opens: Min = 4, Median = 15, Max = 30."
+    },
+    {
+      "id": "g2",
+      "title": "Gate 2 · Find Q1 and Q3",
+      "badge": "Lock 2 — Quartile Splitter",
+      "prompt": "Find <b>Q1</b> and <b>Q3</b> for <b>4, 7, 9, 12, 15, 18, 20, 24, 30</b>. Remember: leave out the single median <b>15</b> when splitting into halves!",
+      "hints": [
+        "Conceptual: Q1 is the median of the lower half, and Q3 is the median of the upper half — never the minimum or maximum.",
+        "Procedural: lower half is 4, 7, 9, 12 (average 7 and 9). Upper half is 18, 20, 24, 30 (average 20 and 24)."
+      ],
+      "worked": {
+        "steps": [
+          "Practice set (7 values): 2, 5, 9, [13], 17, 21, 29. Leave out the median 13.",
+          "Lower half is 2, 5, 9 → its middle is Q1 = 5.",
+          "Upper half is 17, 21, 29 → its middle is Q3 = 21."
+        ],
+        "q": "What is Q1 of 1, 3, 6, 10, 12, 15, 20?",
+        "a": "3"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Q1 (median of lower half 4, 7, 9, 12):",
+          "aria": "first quartile Q1",
+          "answer": "8",
+          "calc": "(7 + 9) / 2",
+          "fb": [
+            {
+              "eq": "9",
+              "msg": "You included the median 15 in the lower half! Leave out 15, so the lower half is 4, 7, 9, 12."
+            },
+            {
+              "eq": "4",
+              "msg": "4 is the minimum, not Q1. Q1 is the median of the lower half."
+            },
+            {
+              "eq": "7",
+              "msg": "7 is only the 2nd value. Average the middle two of the lower half (7 and 9)."
+            }
+          ],
+          "fbDefault": "Average the two middle numbers of 4, 7, 9, 12."
+        },
+        {
+          "type": "number",
+          "label": "Q3 (median of upper half 18, 20, 24, 30):",
+          "aria": "third quartile Q3",
+          "answer": "22",
+          "calc": "(20 + 24) / 2",
+          "fb": [
+            {
+              "eq": "20",
+              "msg": "You included the median 15 in the upper half! Leave out 15, so the upper half is 18, 20, 24, 30."
+            },
+            {
+              "eq": "30",
+              "msg": "30 is the maximum, not Q3. Q3 is the median of the upper half."
+            }
+          ],
+          "fbDefault": "Average the two middle numbers of 18, 20, 24, 30."
+        }
+      ],
+      "pass": "Click! Lock 2 opens: Q1 = 8 and Q3 = 22."
+    },
+    {
+      "id": "g3",
+      "title": "Gate 3 · Build the Box",
+      "badge": "Lock 3 — Box Plot Anatomy",
+      "prompt": "Your five-number summary is <b>Min = 4, Q1 = 8, Median = 15, Q3 = 22, Max = 30</b>. Read the box plot.",
+      "hints": [
+        "Conceptual: the box holds the middle 50% of the data, and the whiskers reach out to the minimum and maximum.",
+        "Procedural: the left edge of the box is Q1, the right edge is Q3, and the line inside is the median."
+      ],
+      "worked": {
+        "steps": [
+          "Suppose a box plot has Min = 1, Q1 = 6, Median = 10, Q3 = 16, Max = 25.",
+          "The box stretches from Q1 (6) to Q3 (16), holding the middle 50% of values.",
+          "The whiskers reach from 6 down to 1 and from 16 up to 25."
+        ],
+        "q": "In that practice plot, where does the right whisker end?",
+        "a": "25"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Which two values form the left and right edges of the <b>BOX</b>?",
+          "options": [
+            {
+              "t": "4 and 30",
+              "fb": "4 and 30 are the ends of the whiskers, not the box."
+            },
+            {
+              "t": "8 and 22",
+              "ok": true
+            },
+            {
+              "t": "8 and 15",
+              "fb": "15 is the median line inside the box. The box stretches from Q1 to Q3."
+            },
+            {
+              "t": "4 and 15",
+              "fb": "4 is the minimum whisker tip. The box goes from Q1 (8) to Q3 (22)."
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "q": "What percent of the data sits <b>inside the box</b> (between Q1 = 8 and Q3 = 22)?",
+          "options": [
+            {
+              "t": "25%",
+              "fb": "25% is just one quarter (like from Min to Q1). The box covers two quarters."
+            },
+            {
+              "t": "50%",
+              "ok": true
+            },
+            {
+              "t": "75%",
+              "fb": "75% would cover three quarters. The box covers the middle half."
+            },
+            {
+              "t": "100%",
+              "fb": "100% is from Min to Max, including both whiskers."
+            }
+          ]
+        }
+      ],
+      "pass": "Click! Lock 3 opens — the box spans 8 to 22 and holds the middle 50%."
+    },
+    {
+      "id": "boss",
+      "title": "Boss Gate · Open the Last Lock",
+      "badge": "Escape Master — Boss Gate",
+      "prompt": "Crack the final vault using this 7-value data set: <b>10, 14, 18, 22, 28, 32, 40</b>.",
+      "hints": [
+        "Conceptual: leave out the single median (22) before finding Q1 and Q3, and never confuse Q1 with the minimum.",
+        "Procedural: lower half is 10, 14, 18; upper half is 28, 32, 40."
+      ],
+      "worked": {
+        "steps": [
+          "Practice 7 values: 5, 9, 12, [15], 19, 24, 31.",
+          "Leave out 15. Q1 is the middle of 5, 9, 12 → 9.",
+          "Q3 is the middle of 19, 24, 31 → 24. The line inside the box sits at 15."
+        ],
+        "q": "What is the median of 5, 9, 12, 15, 19, 24, 31?",
+        "a": "15"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Lock 1 · Find Q1 of 10, 14, 18, 22, 28, 32, 40:",
+          "aria": "Q1 of the final vault data",
+          "answer": "14",
+          "calc": "14",
+          "fb": [
+            {
+              "eq": "10",
+              "msg": "10 is the minimum, not Q1. Q1 is the middle of the lower half (10, 14, 18)."
+            },
+            {
+              "eq": "16",
+              "msg": "Leave out the median 22 when finding the lower half: 10, 14, 18."
+            }
+          ],
+          "fbDefault": "Find the middle number of the lower half: 10, 14, 18."
+        },
+        {
+          "type": "number",
+          "label": "Lock 2 · Find Q3 of 10, 14, 18, 22, 28, 32, 40:",
+          "aria": "Q3 of the final vault data",
+          "answer": "32",
+          "calc": "32",
+          "fb": [
+            {
+              "eq": "40",
+              "msg": "40 is the maximum, not Q3."
+            },
+            {
+              "eq": "30",
+              "msg": "Leave out the median 22; the upper half is 28, 32, 40."
+            }
+          ],
+          "fbDefault": "Find the middle number of the upper half: 28, 32, 40."
+        },
+        {
+          "type": "choice",
+          "q": "Lock 3 · In a box plot for <b>10, 14, 18, 22, 28, 32, 40</b>, where does the line inside the box sit?",
+          "options": [
+            {
+              "t": "At 22, the median",
+              "ok": true
+            },
+            {
+              "t": "At 14, Q1",
+              "fb": "14 is the left edge of the box."
+            },
+            {
+              "t": "At 25, halfway between 10 and 40",
+              "fb": "The line inside the box is the median (22), not the midpoint of min and max."
+            }
+          ]
+        }
+      ],
+      "pass": "CLANG! Q1 = 14, Q3 = 32, Median = 22. The escape room door swings open!"
+    }
+  ],
+  "journal": {
+    "heading": "Lesson 2-4 — what the escape room taught us",
+    "rows": [
+      [
+        "Five-number summary.",
+        "Minimum, Q1, median, Q3, and maximum — the five values that build every box plot."
+      ],
+      [
+        "Leave out the median.",
+        "When an odd-count data set has one single middle number, exclude it before finding Q1 and Q3."
+      ],
+      [
+        "Q1 is not the min.",
+        "The minimum is the whisker tip; Q1 is the median of the lower half and starts the box."
+      ],
+      [
+        "The middle 50%.",
+        "The box stretches from Q1 to Q3 and always holds the middle half of the data."
+      ]
+    ],
+    "quote": "\"Leave the single median out when you split the halves, and the lock opens every time.\" — Mei"
+  },
+  "teacher": {
+    "suggested": "Use during or after lesson 2-4 (Represent and Describe Data in a Box Plot) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: the five-number summary, excluding the single median when finding Q1/Q3, and interpreting the box and whiskers.",
+    "standards": [
+      [
+        "6.DS.5",
+        "Display numerical data in plots on a number line, including dot plots, histograms, and box plots",
+        "Gate 1, Gate 2, Gate 3, Boss"
+      ]
+    ]
+  }
+}

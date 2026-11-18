@@ -1,0 +1,527 @@
+{
+  "lesson": "2-9",
+  "world": "clip-squad",
+  "slug": "the-wobbly-drone",
+  "num": 2901,
+  "title": "The Wobbly Drone",
+  "coverTitle": "WOBBLY<br><em>DRONE</em>",
+  "topic": "MEAN ABSOLUTE DEVIATION",
+  "pageTitle": "Describe Data by Mean Absolute Deviation",
+  "covers": "computing the mean absolute deviation (MAD) to measure spread around the mean and comparing consistency",
+  "cert": "finding the mean absolute deviation (MAD) and using it to compare spread",
+  "cover": {
+    "prompt": "{{style}}. {{notext}}. Comic book cover, repair workbench inside {{studio}}. {{blink}} hovers crookedly with one wiggly propeller, leaving dashed motion trails. {{mei}} holds a wrench and a blank tablet, {{dex}} ducks as a prop wobbles, and {{nova}} watches with a clipboard. Plain open studio wall space above the heads.",
+    "alt": "Blink hovers crookedly over a studio workbench while Mei holds a wrench, Dex ducks, and Nova watches with a clipboard."
+  },
+  "panels": [
+    {
+      "id": "p1-wobble",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Wide establishing panel inside {{studio}}. {{blink}} hovers unevenly near the ceiling, zig-zagging up and down. {{nova}}, {{dex}}, {{mei}} and {{jaylen}} look up from a long workbench with drone tools. Plain open wall space above the heads.",
+      "alt": "Blink hovers unevenly near the studio ceiling while Nova, Dex, Mei and Jaylen watch from the tool workbench."
+    },
+    {
+      "id": "p1-dex-zero",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. Close-up panel of {{dex}} holding up a blank notepad with a triumphant grin, making a big zero sign with his thumb and finger. Plain open wall space above the heads.",
+      "alt": "Dex grins triumphantly and makes a zero sign with his fingers while holding a blank notepad."
+    },
+    {
+      "id": "p2-chart",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{mei}} stands at a blank whiteboard with a marker, drawing a straight horizontal center line and small vertical arrows above and below it. {{nova}} leans in to look. {{blink}} hovers beside the board. Plain open wall space above the heads.",
+      "alt": "Mei draws a center line and vertical arrows on a blank whiteboard while Nova watches and Blink hovers."
+    },
+    {
+      "id": "p3-repair",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. {{mei}} tightens a tiny screw on {{blink}}'s propeller with a mini screwdriver on the workbench while {{jaylen}} holds a blank data logbook. Plain open wall space above the heads.",
+      "alt": "Mei tightens a screw on Blink's propeller at the workbench while Jaylen holds a blank data logbook."
+    },
+    {
+      "id": "p4-compare",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. {{nova}} holds two hovering mini-drones side by side—wait no, {{nova}} holds a blank comparison clipboard while {{blink}} and a sleek black rival drone hover beside her. Plain open wall space above the heads.",
+      "alt": "Nova holds a blank comparison clipboard while Blink and a sleek rival drone hover side by side."
+    },
+    {
+      "id": "p5-test",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Flight test inside {{studio}}: {{blink}} hovers rock-steady in the center of a glowing teal target ring while {{mei}}, {{nova}} and {{dex}} watch from behind a safety line. Plain open wall space above the heads.",
+      "alt": "Blink hovers rock-steady inside a glowing target ring while Mei, Nova and Dex watch from behind a safety line."
+    },
+    {
+      "id": "p6-win",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Celebration panel inside {{studio}}: {{blink}} hovers proudly at eye level, shooting a steady crisp beam, while {{nova}}, {{dex}}, {{mei}} and {{jaylen}} cheer around the workbench. Plain open wall space above the heads.",
+      "alt": "Blink hovers steadily in the studio while Nova, Dex, Mei and Jaylen cheer around the workbench."
+    }
+  ],
+  "intro": {
+    "caption": "Lesson 2-9 — mean absolute deviation (MAD). Blink's stunt footage is shaking! Before Dex can blame the floor, Mei measures how far Blink's hover heights stray from the mean.",
+    "cells": [
+      {
+        "art": "p1-wobble",
+        "size": "full",
+        "balloons": [
+          {
+            "who": "Nova",
+            "t": "Blink's footage is wobbling! Five test hovers hit 18, 22, 20, 24, and 16 feet.",
+            "pos": "tl"
+          },
+          {
+            "who": "Blink",
+            "t": "I am NOT wobbly! My average height is totally fine!",
+            "pos": "br"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "ch": "Chapter 1 · Find the Center First",
+      "gate": "g1",
+      "cells": [
+        {
+          "art": "p2-chart",
+          "size": "full",
+          "sign": {
+            "t": "18, 22, 20, 24, 16",
+            "style": "scrawl",
+            "x": "66%",
+            "y": "36%"
+          },
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "To measure spread around the mean, we have to find the mean first!",
+              "pos": "bl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 2 · Why Absolute Value?",
+      "cells": [
+        {
+          "art": "p1-dex-zero",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Dex",
+              "t": "Deviations from 20 are −2, +2, 0, +4, −4. They add to ZERO! Blink has zero wobble!",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-chart",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "Signed deviations ALWAYS cancel to zero! Take the ABSOLUTE VALUE so every distance is nonnegative.",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "A <b>deviation</b> is how far a value is from the mean. Taking the <b>absolute value</b> turns every deviation into a nonnegative distance."
+    },
+    {
+      "ch": "Gate 2 · Absolute Deviations",
+      "gate": "g2",
+      "cells": [
+        {
+          "art": "p3-repair",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Jaylen",
+              "t": "No canceling out! Turn every deviation into a positive distance (or zero) and add them up.",
+              "pos": "tl"
+            },
+            {
+              "who": "Blink",
+              "t": "Hey! Go easy on the wrench, Mei!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 3 · Average the Distances",
+      "gate": "g3",
+      "cells": [
+        {
+          "art": "p4-compare",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Do not stop at the sum! Divide by how many values there are to get the MAD.",
+              "pos": "tl"
+            },
+            {
+              "who": "Blink",
+              "t": "Smaller MAD means steadier hover! Let's beat that test drone!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Boss Gate · Pick the Steadier Drone",
+      "gate": "boss",
+      "cells": [
+        {
+          "art": "p5-test",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "Rotor tightened! Now let's compare MADs and see if Blink is ready to film.",
+              "pos": "tl"
+            },
+            {
+              "who": "Dex",
+              "t": "If Blink holds steady, I get to do the mega ramp replay!",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "win": {
+    "ch": "Chapter 4 · Steady Cam",
+    "cells": [
+      {
+        "art": "p6-win",
+        "size": "full",
+        "sfx": {
+          "t": "ZZZZT!",
+          "pos": "tl"
+        },
+        "balloons": [
+          {
+            "who": "Blink",
+            "t": "MAD down to 0.5 feet! Crisp footage, zero excuses, and Dex is cleared for replay!",
+            "pos": "br"
+          }
+        ]
+      }
+    ],
+    "caption": "The <b>mean absolute deviation (MAD)</b> is the average distance of data values from the mean. Smaller MAD means less spread and more consistency."
+  },
+  "gates": [
+    {
+      "id": "g1",
+      "title": "Gate 1 · Find the Mean",
+      "badge": "Center Finder — Step 1 of MAD",
+      "prompt": "Find the mean of each drone's 5 test hover heights before measuring spread.",
+      "hints": [
+        "Conceptual: MAD measures distance from the mean, so you must find the mean first.",
+        "Procedural: add all 5 heights, then divide by 5."
+      ],
+      "worked": {
+        "steps": [
+          "Example heights: 10, 14, 12, 16, 8.",
+          "Add: 10 + 14 + 12 + 16 + 8 = 60.",
+          "Divide by 5: 60 ÷ 5 = 12 ft."
+        ],
+        "q": "Find the mean of 9, 13, 11, 15, 7.",
+        "a": "11"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Mean of Blink's hovers (18, 22, 20, 24, 16):",
+          "aria": "mean of 18, 22, 20, 24, 16",
+          "answer": "20",
+          "calc": "(18 + 22 + 20 + 24 + 16) / 5",
+          "fb": [
+            {
+              "eq": "100",
+              "msg": "100 is the sum of the 5 hovers. Divide by 5 to find the mean."
+            },
+            {
+              "eq": "24",
+              "msg": "24 is the highest hover, not the mean."
+            },
+            {
+              "eq": "16",
+              "msg": "16 is the lowest hover, not the mean."
+            }
+          ],
+          "fbDefault": "Add 18 + 22 + 20 + 24 + 16 = 100, then divide by 5."
+        },
+        {
+          "type": "number",
+          "label": "Mean of Drone B's hovers (4, 8, 6, 10, 2):",
+          "aria": "mean of 4, 8, 6, 10, 2",
+          "answer": "6",
+          "calc": "(4 + 8 + 6 + 10 + 2) / 5",
+          "fb": [
+            {
+              "eq": "30",
+              "msg": "30 is the sum! Divide by 5 hovers."
+            },
+            {
+              "eq": "5",
+              "msg": "5 is how many hovers there are, not the mean height."
+            }
+          ],
+          "fbDefault": "Add 4 + 8 + 6 + 10 + 2 = 30, then divide by 5."
+        }
+      ],
+      "pass": "Blink's mean is 20 ft and Drone B's is 6 ft. Now let's measure how far they stray!"
+    },
+    {
+      "id": "g2",
+      "title": "Gate 2 · Absolute Deviations",
+      "badge": "Distance Tracker — Absolute Value",
+      "prompt": "Find the nonnegative distance of each hover from the mean — no canceling out!",
+      "hints": [
+        "Conceptual: distance from the mean is never negative. Even a value below the mean adds to the spread.",
+        "Procedural: for each value, compute |value − mean|, then add all 5 distances together."
+      ],
+      "worked": {
+        "steps": [
+          "Example: 7, 11, 10, 13, 9 with mean 10.",
+          "Absolute deviations: |7−10|=3, |11−10|=1, |10−10|=0, |13−10|=3, |9−10|=1.",
+          "Sum of absolute deviations: 3 + 1 + 0 + 3 + 1 = 8."
+        ],
+        "q": "What is the absolute deviation of 15 from a mean of 19?",
+        "a": "4"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "For 18, 22, 20, 24, 16 (mean 20), sum of all 5 absolute deviations:",
+          "aria": "sum of absolute deviations from 20 for 18, 22, 20, 24, 16",
+          "answer": "12",
+          "calc": "2 + 2 + 0 + 4 + 4",
+          "fb": [
+            {
+              "eq": "0",
+              "msg": "0 happens when you keep minus signs (−2 + 2 + 0 + 4 − 4)! Use absolute value so all distances are nonnegative."
+            },
+            {
+              "eq": "2.4",
+              "msg": "2.4 is the MAD (after dividing by 5). This box asks for the SUM of the 5 absolute deviations."
+            }
+          ],
+          "fbDefault": "Add |18−20| + |22−20| + |20−20| + |24−20| + |16−20| = 2 + 2 + 0 + 4 + 4."
+        },
+        {
+          "type": "choice",
+          "q": "Why do we take the <b>absolute value</b> of each deviation before averaging?",
+          "options": [
+            {
+              "t": "So negative and positive deviations do not cancel to zero",
+              "ok": true
+            },
+            {
+              "t": "To turn every deviation into a negative number",
+              "fb": "Absolute value makes every deviation 0 or positive, never negative."
+            },
+            {
+              "t": "To delete any value equal to the mean",
+              "fb": "A value equal to the mean has a deviation of 0, and we still keep it in the count!"
+            },
+            {
+              "t": "To double the largest distance",
+              "fb": "Absolute value only removes minus signs; it does not double any distance."
+            }
+          ]
+        }
+      ],
+      "pass": "Sum of absolute deviations is 12 — zero canceling! Dex puts his zero sign away."
+    },
+    {
+      "id": "g3",
+      "title": "Gate 3 · Compute the MAD",
+      "badge": "Spread Calculator — Mean Absolute Deviation",
+      "prompt": "Finish the MAD by dividing the sum of absolute deviations by the total number of values.",
+      "hints": [
+        "Conceptual: MAD is the AVERAGE of the absolute deviations — including any 0s in the count.",
+        "Procedural: divide the sum of all absolute deviations by how many data values there are."
+      ],
+      "worked": {
+        "steps": [
+          "Example: 5, 11, 8, 12, 4 (mean 8).",
+          "Absolute deviations: 3, 3, 0, 4, 4. Sum = 14.",
+          "Divide by 5 values: 14 ÷ 5 = 2.8."
+        ],
+        "q": "Sum of absolute deviations is 15 across 5 values. What is the MAD?",
+        "a": "3"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Blink's MAD for 18, 22, 20, 24, 16 (sum of absolute deviations = 12, count = 5):",
+          "aria": "Blink's MAD for 18, 22, 20, 24, 16",
+          "answer": "2.4",
+          "calc": "12 / 5",
+          "fb": [
+            {
+              "eq": "12",
+              "msg": "12 is the sum of absolute deviations! Don't forget to divide by 5."
+            },
+            {
+              "eq": "3",
+              "msg": "Did you divide 12 by 4? Keep the 0 deviation in the count — there are 5 values!"
+            },
+            {
+              "eq": "0",
+              "msg": "Remember to use absolute values so the deviations don't cancel."
+            }
+          ],
+          "fbDefault": "Divide the sum of absolute deviations (12) by 5."
+        },
+        {
+          "type": "number",
+          "label": "Find the MAD of 4, 9, 7, 10, 5 (mean 7):",
+          "aria": "MAD of 4, 9, 7, 10, 5",
+          "answer": "2",
+          "calc": "(3 + 2 + 0 + 3 + 2) / 5",
+          "fb": [
+            {
+              "eq": "10",
+              "msg": "10 is the sum of the absolute deviations (3 + 2 + 0 + 3 + 2). Now divide by 5!"
+            },
+            {
+              "eq": "2.5",
+              "msg": "Keep the 0 deviation from 7 in the count: divide 10 by 5, not 4."
+            }
+          ],
+          "fbDefault": "Find |x − 7| for each value (3, 2, 0, 3, 2), add to 10, and divide by 5."
+        }
+      ],
+      "pass": "Blink's MAD is 2.4 ft! Now Mei tightens the rotor for the final test."
+    },
+    {
+      "id": "boss",
+      "title": "Boss Gate · Pick the Steadier Drone",
+      "badge": "Repair Lead — Boss Gate",
+      "prompt": "Compare two drones, calculate Blink's post-repair MAD, and explain what MAD = 0 means.",
+      "hints": [
+        "Conceptual: a smaller MAD means data points cluster tightly around the mean (more consistent).",
+        "Procedural: find the mean, find each |value − mean|, sum them, and divide by the total count."
+      ],
+      "worked": {
+        "steps": [
+          "Example: post-repair hovers 12, 18, 15, 15 (mean 15).",
+          "Absolute deviations: 3, 3, 0, 0. Sum = 6.",
+          "MAD = 6 ÷ 4 = 1.5 ft."
+        ],
+        "q": "Data set: 9, 11, 10, 10 (mean 10). Sum of absolute deviations?",
+        "a": "2"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Lock 1 · Drone A and Drone B both have a mean of <b>20 ft</b>. Drone A's MAD is <b>0.8 ft</b> and Drone B's MAD is <b>2.4 ft</b>. Which is steadier?",
+          "options": [
+            {
+              "t": "Drone B, because a bigger MAD means higher flights",
+              "fb": "A bigger MAD means MORE spread — more wobbling away from 20 ft!"
+            },
+            {
+              "t": "Both are equally steady because their means match",
+              "fb": "Two data sets can share the same mean (20 ft) and have very different spread!"
+            },
+            {
+              "t": "Drone A, because a smaller MAD means flights stay closer to the mean",
+              "ok": true
+            },
+            {
+              "t": "Drone A, because its mean is smaller",
+              "fb": "Both drones have the exact same mean of 20 ft."
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "label": "Lock 2 · After repair, Blink's 4 hovers are 19, 21, 20, 20 (mean 20). New MAD:",
+          "aria": "Blink's new MAD for 19, 21, 20, 20",
+          "answer": "0.5",
+          "calc": "(1 + 1 + 0 + 0) / 4",
+          "fb": [
+            {
+              "eq": "2",
+              "msg": "2 is the sum of absolute deviations (1 + 1 + 0 + 0). Divide by 4 hovers!"
+            },
+            {
+              "eq": "1",
+              "msg": "Don't skip the two 0 deviations! Divide 2 by all 4 hovers."
+            }
+          ],
+          "fbDefault": "Add |19−20| + |21−20| + |20−20| + |20−20| = 2, then divide by 4."
+        },
+        {
+          "type": "choice",
+          "q": "Lock 3 · What does it mean if a drone's MAD is <b>0</b>?",
+          "options": [
+            {
+              "t": "Every hover was at the exact same height, with zero spread",
+              "ok": true
+            },
+            {
+              "t": "Half the hovers were above the mean and half below",
+              "fb": "Symmetric data can still have a large MAD. Zero MAD means zero distance from the mean."
+            },
+            {
+              "t": "The drone never left the ground",
+              "fb": "A drone hovering at 20, 20, 20, 20 has a mean of 20 and a MAD of 0!"
+            },
+            {
+              "t": "We forgot to take absolute values",
+              "fb": "If every value equals the mean, even the absolute deviations are 0."
+            }
+          ]
+        }
+      ],
+      "pass": "0.5 ft MAD! Blink locks into a rock-steady hover — ready for stunt cam!"
+    }
+  ],
+  "journal": {
+    "heading": "Lesson 2-9 — what the wobbly drone taught us",
+    "rows": [
+      [
+        "1. Find the mean.",
+        "MAD measures spread around the mean, so compute the mean first."
+      ],
+      [
+        "2. Absolute deviations.",
+        "Find |value − mean| for every data point so negative and positive differences do not cancel to 0."
+      ],
+      [
+        "3. Divide by count.",
+        "Average the absolute deviations — including any 0s in the total count."
+      ],
+      [
+        "Smaller MAD.",
+        "A smaller MAD means the data values cluster closer to the mean (steadier, less spread)."
+      ]
+    ],
+    "quote": "\"Wobble is just data asking for a wrench.\" — Mei"
+  },
+  "teacher": {
+    "suggested": "Use during or after lesson 2-9 (Describe Data by Mean Absolute Deviation) as one focused read. Covers computing MAD in three steps, why absolute value prevents signed deviations from canceling, and comparing spread.",
+    "standards": [
+      [
+        "6.DS.6c",
+        "Give quantitative measures of variability (mean absolute deviation) and describe patterns",
+        "Gate 1, Gate 2, Gate 3, Boss"
+      ]
+    ]
+  }
+}

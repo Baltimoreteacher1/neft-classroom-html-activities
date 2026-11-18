@@ -391,7 +391,7 @@ const BADGES = [
   {
     "id": "g3",
     "icon": "#sig-graph",
-    "label": "Converter — Mixed Numbers and Checks"
+    "label": "Verifier — Divide Fractions and Check"
   },
   {
     "id": "boss",
@@ -535,69 +535,69 @@ const GATE_SPECS = [
   },
   {
     "id": "g3",
-    "title": "Gate 3 · The Mixed-Number Round",
+    "title": "Gate 3 · Divide and Check",
     "icon": "#sig-graph",
-    "prompt": "Code: \u003cb>2 1/2 ÷ 3/4\u003c/b>. Rewrite the mixed number as an improper fraction, divide, then check by multiplying.",
+    "prompt": "Code: \u003cb>5/6 ÷ 2/3\u003c/b>. Divide by multiplying by the reciprocal, then check by multiplying.",
     "hints": [
-      "Conceptual: a mixed number is one amount. You cannot flip or multiply it until it is a single fraction.",
-      "Procedural: 2 1/2 → (2 × 2) + 1 = 5, so 5/2. Then keep 5/2, flip 3/4, and multiply. Check: quotient × divisor should give 5/2."
+      "Conceptual: 5/6 ÷ 2/3 asks how many 2/3s fit in 5/6. Multiplying the quotient by 2/3 must bring you back to 5/6.",
+      "Procedural: keep 5/6, flip 2/3 to 3/2, and multiply: 5/6 × 3/2 = 15/12 = 5/4 (or 1 1/4). Check: quotient × divisor = 5/6."
     ],
     "worked": {
       "steps": [
-        "Practice code: 1 1/2 ÷ 1/4. Rewrite 1 1/2: (2 × 1) + 1 = 3, so 3/2.",
-        "3/2 × 4/1 = 12/2 = 6.",
-        "Check: 6 × 1/4 = 6/4 = 1 1/2. It matches."
+        "Practice code: 3/4 ÷ 1/2. Keep 3/4 and flip 1/2 to 2/1.",
+        "3/4 × 2/1 = 6/4 = 1 1/2.",
+        "Check: 1 1/2 × 1/2 = 3/2 × 1/2 = 3/4. It matches."
       ],
-      "q": "What is 2 1/3 ÷ 1/3?",
-      "a": "7"
+      "q": "What is 2/3 ÷ 1/6?",
+      "a": "4"
     },
     "items": [
       {
         "type": "number",
-        "label": "2 1/2 ÷ 3/4 =",
-        "aria": "two and one half divided by three fourths",
-        "answer": "3 1/3",
-        "calc": "(5/2) / (3/4)",
+        "label": "5/6 ÷ 2/3 =",
+        "aria": "five sixths divided by two thirds",
+        "answer": "1 1/4",
+        "calc": "(5/6) / (2/3)",
         "fb": [
           {
-            "eq": "15/8",
-            "msg": "15/8 is 5/2 × 3/4. You did not flip the divisor. Use 5/2 × 4/3."
+            "eq": "5/9",
+            "msg": "5/9 is 5/6 × 2/3. You did not flip the divisor. Use 5/6 × 3/2."
           },
           {
-            "eq": "3/10",
-            "msg": "You flipped the dividend: 2/5 × 3/4. Keep 5/2 and flip 3/4."
+            "eq": "4/5",
+            "msg": "You flipped the dividend: 6/5 × 2/3. Keep 5/6 and flip 2/3."
           },
           {
-            "eq": "8/3",
-            "msg": "8/3 is only 2 ÷ 3/4. You dropped the 1/2. Write 2 1/2 as 5/2 first."
+            "eq": "9/5",
+            "msg": "You flipped both fractions: 6/5 × 3/2. Only flip 2/3."
           }
         ],
-        "fbDefault": "2 1/2 = 5/2. Then 5/2 × 4/3. Simplify the answer."
+        "fbDefault": "Keep 5/6, flip 2/3 to 3/2, and multiply: 15/12. Simplify the answer."
       },
       {
         "type": "choice",
-        "q": "Which multiplication checks \u003cb>2 1/2 ÷ 3/4 = 3 1/3\u003c/b>?",
+        "q": "Which multiplication checks \u003cb>5/6 ÷ 2/3 = 1 1/4\u003c/b>?",
         "options": [
           {
-            "t": "3 1/3 × 3/4 = 2 1/2",
+            "t": "1 1/4 × 2/3 = 5/6",
             "ok": true
           },
           {
-            "t": "3 1/3 × 4/3 = 2 1/2",
-            "fb": "Check with the divisor itself, 3/4, not its reciprocal. 10/3 × 4/3 is 40/9."
+            "t": "1 1/4 × 3/2 = 5/6",
+            "fb": "Check with the divisor itself, 2/3, not its reciprocal. 5/4 × 3/2 is 15/8."
           },
           {
-            "t": "2 1/2 × 3/4 = 3 1/3",
-            "fb": "That multiplies the dividend. 5/2 × 3/4 is 15/8. Multiply the QUOTIENT by the divisor."
+            "t": "5/6 × 2/3 = 1 1/4",
+            "fb": "That multiplies the dividend. 5/6 × 2/3 is 5/9. Multiply the QUOTIENT by the divisor."
           },
           {
-            "t": "3 1/3 × 2 1/2 = 3/4",
-            "fb": "That product is about 8, not 3/4. Multiply the quotient by the divisor to get back the dividend."
+            "t": "1 1/4 × 5/6 = 2/3",
+            "fb": "5/4 × 5/6 is 25/24, not 2/3. Multiply the quotient by the divisor to get back the dividend."
           }
         ]
       }
     ],
-    "pass": "10/3 × 3/4 = 30/12 = 2 1/2. The check lands on the dividend. Teo whispers, \"The 2 was never classified.\""
+    "pass": "5/4 × 2/3 = 10/12 = 5/6. The check lands on the dividend. Teo whispers, \"That check was never classified.\""
   },
   {
     "id": "boss",
@@ -606,7 +606,7 @@ const GATE_SPECS = [
     "prompt": "Three final codes. Pick your method for each: common denominators or the reciprocal. Then beat Vale's claim.",
     "hints": [
       "Conceptual: both methods give the same quotient. The trap is always the same: which fraction gets flipped?",
-      "Procedural: mixed number → improper fraction first. Keep the dividend, flip only the divisor, multiply, simplify."
+      "Procedural: keep the dividend, flip only the divisor, multiply, and simplify."
     ],
     "worked": {
       "steps": [
@@ -642,50 +642,50 @@ const GATE_SPECS = [
       },
       {
         "type": "number",
-        "label": "Code 2 · 1 3/4 ÷ 2/3 =",
-        "aria": "one and three fourths divided by two thirds",
-        "answer": "2 5/8",
-        "calc": "(7/4) / (2/3)",
+        "label": "Code 2 · 3/4 ÷ 2/5 =",
+        "aria": "three fourths divided by two fifths",
+        "answer": "1 7/8",
+        "calc": "(3/4) / (2/5)",
         "fb": [
           {
-            "eq": "7/6",
-            "msg": "7/6 is 7/4 × 2/3. You flipped neither fraction. Use 7/4 × 3/2."
+            "eq": "3/10",
+            "msg": "3/10 is 3/4 × 2/5. You flipped neither fraction. Use 3/4 × 5/2."
           },
           {
-            "eq": "8/21",
-            "msg": "You flipped the dividend: 4/7 × 2/3. Keep 7/4 and flip 2/3."
+            "eq": "8/15",
+            "msg": "You flipped the dividend: 4/3 × 2/5. Keep 3/4 and flip 2/5."
           },
           {
-            "eq": "1 1/2",
-            "msg": "That is 1 ÷ 2/3 alone. You dropped the 3/4. Write 1 3/4 as 7/4 first."
+            "eq": "10/3",
+            "msg": "You flipped both fractions: 4/3 × 5/2. Keep 3/4 and flip only 2/5."
           }
         ],
-        "fbDefault": "1 3/4 = 7/4. Then 7/4 × 3/2 = 21/8. Write it as a mixed number if you like."
+        "fbDefault": "Keep 3/4, flip 2/5 to 5/2, and multiply: 3/4 × 5/2 = 15/8."
       },
       {
         "type": "choice",
-        "q": "Code 3 · Vale buzzes: \"\u003cb>5/6 ÷ 2/3\u003c/b>: flip 5/6, so 6/5 × 2/3 = 4/5.\" Who is right?",
+        "q": "Code 3 · Vale buzzes: \"\u003cb>5/8 ÷ 3/4\u003c/b>: flip 5/8, so 8/5 × 3/4 = 6/5.\" Who is right?",
         "options": [
           {
-            "t": "Vale is right: the answer is 4/5",
-            "fb": "6/5 × 2/3 is 4/5, but Vale flipped the dividend. That is the wrong card."
+            "t": "Vale is right: the answer is 6/5",
+            "fb": "8/5 × 3/4 is 6/5, but Vale flipped the dividend. That is the wrong card."
           },
           {
-            "t": "Vale flipped the dividend. 5/6 × 3/2 = 1 1/4",
+            "t": "Vale flipped the dividend. 5/8 × 4/3 = 5/6",
             "ok": true
           },
           {
-            "t": "Flip both: 6/5 × 3/2 = 1 4/5",
-            "fb": "Flipping both is still wrong. The dividend, 5/6, stays the same."
+            "t": "Flip both: 8/5 × 4/3 = 32/15",
+            "fb": "Flipping both is still wrong. The dividend, 5/8, stays the same."
           },
           {
-            "t": "Flip neither: 5/6 × 2/3 = 5/9",
-            "fb": "Multiplying without flipping finds 2/3 OF 5/6. Division needs the reciprocal of the divisor."
+            "t": "Flip neither: 5/8 × 3/4 = 15/32",
+            "fb": "Multiplying without flipping finds 3/4 OF 5/8. Division needs the reciprocal of the divisor."
           }
         ]
       }
     ],
-    "pass": "DING DING DING. 3 1/2, 2 5/8, and 1 1/4 — all three codes cracked. Vale flipped the wrong card one time too many."
+    "pass": "DING DING DING. 3 1/2, 1 7/8, and 5/6 — all three codes cracked. Vale flipped the wrong card one time too many."
   }
 ];
 
@@ -862,17 +862,17 @@ const PAGES = [
   </div>`
   },
   {
-    "ch": "Chapter 3 · The Mixed-Number Round",
+    "ch": "Chapter 3 · The Check Round",
     "gate": "g3",
     "html": `
   <div class="gn-comic">
     <div class="panel gn-panel gn-half">${globalThis.ART("p4-vale")}
-      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">VALE</span>Round three is mixed numbers. Your rookie will love it.</div>
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">VALE</span>Round three is tricky fractions. Your rookie will flip the wrong one.</div>
       </div>
     <div class="panel gn-panel gn-half">${globalThis.ART("p1-teo")}
-      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">TEO</span>Mixed numbers are classified. ...Ivy, what do I do with the 2?</div>
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">TEO</span>Checking by multiplying is classified. ...Ivy, which one do I multiply by?</div>
       </div>
-    <div class="caption">A mixed number like 2 1/2 must become an improper fraction first: 2 × 2 + 1 = 5, so 2 1/2 = 5/2. Then divide, and check by multiplying back.</div>
+    <div class="caption">Every division answer can be checked by multiplying: quotient × divisor = dividend. Keep the first fraction, flip only the second, multiply, and check.</div>
   </div>`
   },
   {
@@ -905,8 +905,8 @@ const PAGES = [
     <div class="jrow"><b>What it asks.</b><span>3/4 ÷ 3/8 asks how many 3/8s fit in 3/4. The answer is the quotient: 2.</span></div>
     <div class="jrow"><b>Common denominators.</b><span>Rename both with the same denominator: 3/4 = 6/8. Then 6 eighths ÷ 3 eighths = 6 ÷ 3 = 2.</span></div>
     <div class="jrow"><b>Flip the divisor.</b><span>Keep the dividend, multiply by the reciprocal of the divisor: 4/5 ÷ 2/3 = 4/5 × 3/2 = 6/5. Never flip the dividend.</span></div>
-    <div class="jrow"><b>Mixed numbers first.</b><span>Write a mixed number as an improper fraction before you divide: 2 1/2 = 5/2.</span></div>
-    <div class="jrow"><b>Check it.</b><span>Quotient × divisor = dividend: 3 1/3 × 3/4 = 2 1/2.</span></div>
+    <div class="jrow"><b>Simplify or keep.</b><span>Quotients like 5/4 and 1 1/4 are the same value. Keep the dividend whole when you flip the divisor.</span></div>
+    <div class="jrow"><b>Check it.</b><span>Quotient × divisor = dividend: 1 1/4 × 2/3 = 5/4 × 2/3 = 5/6.</span></div>
   </div>
   <div class="caption">"Keep, flip, multiply. In that order. Flip the wrong card and you're on Vale's team." — Chip</div>`
   },
@@ -927,7 +927,7 @@ const PAGES = [
 ];
 
 const TEACHER = {
-  "suggested": "Use during or after lesson 6-2 (Division Expressions with Fractions and Mixed Numbers) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: what a fraction ÷ fraction quotient means, common denominators, multiplying by the reciprocal of the divisor, rewriting mixed numbers as improper fractions, and checking by multiplying. The trap is flipping the dividend, both fractions, or neither.",
+  "suggested": "Use during or after lesson 6-2 (Division Expressions with Fractions and Mixed Numbers) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: what a fraction ÷ fraction quotient means, common denominators, multiplying by the reciprocal of the divisor, and checking by multiplying. The trap is flipping the dividend, both fractions, or neither.",
   "standards": [
     [
       "6.NOS.1",
@@ -946,11 +946,11 @@ const TEACHER = {
     ],
     [
       "Gate 3",
-      "2 1/2 ÷ 3/4 = 3 1/3 (traps: 15/8 — 15/8 is 5/2 × 3/4. You did not flip the divisor. Use 5/2 × 4/3.; 3/10 — You flipped the dividend: 2/5 × 3/4. Keep 5/2 and flip 3/4.; 8/3 — 8/3 is only 2 ÷ 3/4. You dropped the 1/2. Write 2 1/2 as 5/2 first.) | Which multiplication checks 2 1/2 ÷ 3/4 = 3 1/3? → 3 1/3 × 3/4 = 2 1/2 (traps: 3 1/3 × 4/3 = 2 1/2 — Check with the divisor itself, 3/4, not its reciprocal. 10/3 × 4/3 is 40/9.; 2 1/2 × 3/4 = 3 1/3 — That multiplies the dividend. 5/2 × 3/4 is 15/8. Multiply the QUOTIENT by the divisor.; 3 1/3 × 2 1/2 = 3/4 — That product is about 8, not 3/4. Multiply the quotient by the divisor to get back the dividend.)"
+      "5/6 ÷ 2/3 = 1 1/4 (traps: 5/9 — 5/9 is 5/6 × 2/3. You did not flip the divisor. Use 5/6 × 3/2.; 4/5 — You flipped the dividend: 6/5 × 2/3. Keep 5/6 and flip 2/3.; 9/5 — You flipped both fractions: 6/5 × 3/2. Only flip 2/3.) | Which multiplication checks 5/6 ÷ 2/3 = 1 1/4? → 1 1/4 × 2/3 = 5/6 (traps: 1 1/4 × 3/2 = 5/6 — Check with the divisor itself, 2/3, not its reciprocal. 5/4 × 3/2 is 15/8.; 5/6 × 2/3 = 1 1/4 — That multiplies the dividend. 5/6 × 2/3 is 5/9. Multiply the QUOTIENT by the divisor.; 1 1/4 × 5/6 = 2/3 — 5/4 × 5/6 is 25/24, not 2/3. Multiply the quotient by the divisor to get back the dividend.)"
     ],
     [
       "Boss",
-      "Code 1 · 7/8 ÷ 1/4 = 3 1/2 (traps: 7/32 — 7/32 is 7/8 × 1/4. Flip the divisor: 7/8 × 4/1.; 2/7 — You flipped the dividend: 8/7 × 1/4. Keep 7/8 and flip 1/4.; 32/7 — You flipped both fractions. Only 1/4 gets flipped.) | Code 2 · 1 3/4 ÷ 2/3 = 2 5/8 (traps: 7/6 — 7/6 is 7/4 × 2/3. You flipped neither fraction. Use 7/4 × 3/2.; 8/21 — You flipped the dividend: 4/7 × 2/3. Keep 7/4 and flip 2/3.; 1 1/2 — That is 1 ÷ 2/3 alone. You dropped the 3/4. Write 1 3/4 as 7/4 first.) | Code 3 · Vale buzzes: \"5/6 ÷ 2/3: flip 5/6, so 6/5 × 2/3 = 4/5.\" Who is right? → Vale flipped the dividend. 5/6 × 3/2 = 1 1/4 (traps: Vale is right: the answer is 4/5 — 6/5 × 2/3 is 4/5, but Vale flipped the dividend. That is the wrong card.; Flip both: 6/5 × 3/2 = 1 4/5 — Flipping both is still wrong. The dividend, 5/6, stays the same.; Flip neither: 5/6 × 2/3 = 5/9 — Multiplying without flipping finds 2/3 OF 5/6. Division needs the reciprocal of the divisor.)"
+      "Code 1 · 7/8 ÷ 1/4 = 3 1/2 (traps: 7/32 — 7/32 is 7/8 × 1/4. Flip the divisor: 7/8 × 4/1.; 2/7 — You flipped the dividend: 8/7 × 1/4. Keep 7/8 and flip 1/4.; 32/7 — You flipped both fractions. Only 1/4 gets flipped.) | Code 2 · 3/4 ÷ 2/5 = 1 7/8 (traps: 3/10 — 3/10 is 3/4 × 2/5. You flipped neither fraction. Use 3/4 × 5/2.; 8/15 — You flipped the dividend: 4/3 × 2/5. Keep 3/4 and flip 2/5.; 10/3 — You flipped both fractions: 4/3 × 5/2. Keep 3/4 and flip only 2/5.) | Code 3 · Vale buzzes: \"5/8 ÷ 3/4: flip 5/8, so 8/5 × 3/4 = 6/5.\" Who is right? → Vale flipped the dividend. 5/8 × 4/3 = 5/6 (traps: Vale is right: the answer is 6/5 — 8/5 × 3/4 is 6/5, but Vale flipped the dividend. That is the wrong card.; Flip both: 8/5 × 4/3 = 32/15 — Flipping both is still wrong. The dividend, 5/8, stays the same.; Flip neither: 5/8 × 3/4 = 15/32 — Multiplying without flipping finds 3/4 OF 5/8. Division needs the reciprocal of the divisor.)"
     ]
   ]
 };

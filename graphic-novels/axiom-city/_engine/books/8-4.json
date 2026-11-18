@@ -168,7 +168,7 @@
       "caption": "Every value that makes an inequality true is a solution. All of them together make the <b>solution set</b>."
     },
     {
-      "ch": "Round 3 · Paint the Signs",
+      "ch": "Round 3 · Read the Signs",
       "gate": "g3",
       "cells": [
         {
@@ -177,7 +177,7 @@
           "balloons": [
             {
               "who": "Rafi",
-              "t": "Closed circle if the number counts. Open circle if it doesn't. The ray points to the riders who fit.",
+              "t": "\"More than\" and \"less than\" leave the boundary number out. \"At least\" and \"no more than\" keep it in.",
               "pos": "bl"
             }
           ]
@@ -226,7 +226,7 @@
         ]
       }
     ],
-    "caption": "\"At least\" means ≥ and \"no more than\" means ≤: the number counts, so the circle is closed. \"More than\" means > and \"less than\" means <: the number does not count, so the circle is open."
+    "caption": "\"At least\" means ≥ and \"no more than\" means ≤: the boundary number counts. \"More than\" means > and \"less than\" means <: the boundary number does not count."
   },
   "gates": [
     {
@@ -365,72 +365,72 @@
     },
     {
       "id": "g3",
-      "title": "Round 3 · Paint the Signs",
-      "badge": "Sign Painter — Number Lines",
-      "prompt": "Rafi paints a number line on every sign. Place the circle, pick open or closed, and point the ray.",
+      "title": "Round 3 · Read the Signs",
+      "badge": "Sign Reader — Strict vs Inclusive",
+      "prompt": "Tell the rules apart: does the boundary number count or not?",
       "hints": [
-        "Conceptual: a closed circle means the number is a solution (≥ or ≤). An open circle means it is not (> or <).",
-        "Procedural: tap the number from the rule. Choose closed for ≥ or ≤. Point the ray right for bigger values, left for smaller values."
+        "Conceptual: \"more than\" (>) and \"less than\" (<) leave out the boundary number. \"At least\" (≥) and \"no more than\" (≤) include it.",
+        "Procedural: test the boundary number itself. If it makes the rule true, use ≥ or ≤. If it makes the rule false, use > or <."
       ],
       "worked": {
         "steps": [
-          "Practice rule: t ≥ 40.",
-          "40 counts, so draw a closed circle at 40.",
-          "\"Or more\" means bigger numbers, so the ray points right."
+          "Practice rule: \"Fewer than 12 people per boat.\" Let p be the people.",
+          "Can 12 people ride? No — \"fewer than 12\" means 12 does not count.",
+          "So the rule is p < 12."
         ],
-        "q": "For s ≤ 5, what circle do you draw and which way does the ray point?",
-        "a": "A closed circle at 5, ray pointing left."
+        "q": "For \"more than 5 tickets\" with t, does 5 count?",
+        "a": "No, so t > 5."
       },
       "items": [
         {
-          "type": "numberline",
-          "q": "The Screamer sign: show <b>h ≥ 48</b>.",
-          "min": 44,
-          "max": 54,
-          "step": 1,
-          "inequality": true,
-          "answer": {
-            "value": 48,
-            "closed": true,
-            "dir": "right"
-          },
-          "fb": [
+          "type": "choice",
+          "q": "The Kiddie Train sign says riders must be <b>under 42 inches</b> tall. Which inequality fits the height <b>h</b>?",
+          "options": [
             {
-              "at": 47,
-              "msg": "47 is Gus's height, not the rule. The rule starts at 48."
+              "t": "h ≤ 42",
+              "fb": "\"Under 42\" does not include 42. A 42-inch rider is not under 42, so use <."
             },
             {
-              "at": 49,
-              "msg": "That starts at 49 and leaves out 48. Put the circle on 48."
+              "t": "h < 42",
+              "ok": true
+            },
+            {
+              "t": "h > 42",
+              "fb": "Wrong direction. > means taller than 42 inches."
+            },
+            {
+              "t": "h ≥ 42",
+              "fb": "Wrong direction, and it includes 42. Under 42 means smaller than 42."
             }
-          ],
-          "fbDefault": "Put the circle on the number in the rule: 48.",
-          "fbClosed": "An open circle leaves out 48. \"At least 48\" includes 48, so use a closed circle.",
-          "fbOpen": "This rule does not include its number, so use an open circle.",
-          "fbDir": "≥ means 48 or MORE. Taller riders are bigger numbers, so point the ray right."
+          ]
         },
         {
-          "type": "numberline",
-          "q": "The Kiddie Train sign: riders <b>no more than 42 inches</b>. Show <b>h ≤ 42</b>.",
-          "min": 36,
-          "max": 46,
-          "step": 1,
-          "inequality": true,
-          "answer": {
-            "value": 42,
-            "closed": true,
-            "dir": "left"
-          },
-          "fb": [
+          "type": "multi",
+          "q": "The Funhouse rule is <b>h < 42</b>. Tap every height that can ride.",
+          "options": [
             {
-              "at": 41,
-              "msg": "That leaves out 42. A rider who is exactly 42 inches can ride. Put the circle on 42."
+              "t": "38 inches",
+              "ok": true,
+              "fb": "38 < 42 is true, so 38 can ride."
+            },
+            {
+              "t": "41 inches",
+              "ok": true,
+              "fb": "41 < 42 is true, so 41 can ride."
+            },
+            {
+              "t": "42 inches",
+              "ok": false,
+              "fb": "42 < 42 is false. < leaves out the boundary number 42."
+            },
+            {
+              "t": "45 inches",
+              "ok": false,
+              "fb": "45 < 42 is false. 45 is too tall for this ride."
             }
           ],
-          "fbDefault": "Put the circle on the number in the rule: 42.",
-          "fbClosed": "\"No more than 42\" includes 42, so the circle is closed.",
-          "fbOpen": "This rule does not include its number, so use an open circle.",
-          "fbDir": "≤ means 42 or LESS. Shorter riders are smaller numbers, so point the ray left."
+          "fbMiss": "Check every height that is strictly less than 42.",
+          "fbExtra": "Careful: 42 is NOT less than 42."
         }
       ],
       "pass": "Two new signs hang at the rides. Gus reads one out loud. Correctly. The crowd gasps."
@@ -439,16 +439,16 @@
       "id": "boss",
       "title": "Final Question · Krank's Last Rule",
       "badge": "Rule Champion — Final Question",
-      "prompt": "Three parts. Write the rule, test a rider, and paint the sign.",
+      "prompt": "Three parts. Write the rule, test a rider, and match a real-world constraint.",
       "hints": [
         "Conceptual: \"more than\" and \"less than\" do not include the number (> and <). \"At least\" and \"no more than\" do (≥ and ≤).",
-        "Procedural: write the rule with the letter first, test the value by substituting, then use an open circle for > or <."
+        "Procedural: write the rule with the letter first, then test any value by substituting it for the variable."
       ],
       "worked": {
         "steps": [
           "Practice: \"More than 30 points wins a badge.\" Let p be the points.",
           "\"More than 30\" does not include 30, so the rule is p > 30.",
-          "On a number line: an open circle at 30 and a ray to the right."
+          "Test 30: 30 > 30 is false. Test 31: 31 > 30 is true."
         ],
         "q": "Write \"fewer than 9 riders\" with r.",
         "a": "r < 9"
@@ -481,7 +481,7 @@
           "q": "Part 2 · The Mega Drop rule is <b>h ≥ 52</b>. Gus is <b>47</b> inches tall. Can he ride?",
           "options": [
             {
-              "t": "Yes — 50 is close to 52",
+              "t": "Yes — 47 is close to 52",
               "fb": "Close doesn't count. 47 ≥ 52 is false."
             },
             {
@@ -493,36 +493,35 @@
               "fb": "Nice try, Gus. Measure the rider, not the head: 47 ≥ 52 is false."
             },
             {
-              "t": "No — 50 ≥ 52 is false",
+              "t": "No — 47 ≥ 52 is false",
               "ok": true
             }
           ]
         },
         {
-          "type": "numberline",
-          "q": "Part 3 · Paint the prize sign: show <b>t > 20</b>.",
-          "min": 16,
-          "max": 26,
-          "step": 1,
-          "inequality": true,
-          "answer": {
-            "value": 20,
-            "closed": false,
-            "dir": "right"
-          },
-          "fb": [
+          "type": "choice",
+          "q": "Part 3 · Which situation fits the rule <b>t > 20</b>?",
+          "options": [
             {
-              "at": 21,
-              "msg": "The circle goes on the number in the rule, 20. An open circle there shows 20 is not included."
+              "t": "You need at least 20 tickets for a big prize.",
+              "fb": "\"At least 20\" includes 20, which is t ≥ 20."
+            },
+            {
+              "t": "You need more than 20 tickets for a big prize.",
+              "ok": true
+            },
+            {
+              "t": "You can spend no more than 20 tickets here.",
+              "fb": "\"No more than 20\" means 20 or less, which is t ≤ 20."
+            },
+            {
+              "t": "You have fewer than 20 tickets left.",
+              "fb": "\"Fewer than 20\" is t < 20, the opposite direction."
             }
-          ],
-          "fbDefault": "Put the circle on the number in the rule: 20.",
-          "fbOpen": "20 tickets is NOT more than 20. Use an open circle to leave 20 out.",
-          "fbClosed": "This rule includes its number, so use a closed circle.",
-          "fbDir": "\"More than\" means bigger numbers, so point the ray right."
+          ]
         }
       ],
-      "pass": "t > 20, \"no\" for Gus, and an open circle at 20. The board lights up. Hana and Gus win as a team."
+      "pass": "t > 20, \"no\" for Gus, and matching \"more than 20\" to t > 20. The board lights up. Hana and Gus win as a team."
     }
   ],
   "journal": {
@@ -534,11 +533,11 @@
       ],
       [
         "At least / no more than.",
-        "\"At least 48\" is h ≥ 48. \"No more than 6\" is r ≤ 6. The number counts, so the circle is closed."
+        "\"At least 48\" is h ≥ 48. \"No more than 6\" is r ≤ 6. The boundary number counts."
       ],
       [
         "More than / less than.",
-        "\"More than 20\" is t > 20. The number does not count, so the circle is open."
+        "\"More than 20\" is t > 20. \"Under 42\" is h < 42. The boundary number does not count."
       ],
       [
         "Test a value.",
@@ -546,13 +545,13 @@
       ],
       [
         "Gus's trap.",
-        "Pointing the ray the wrong way, or leaving out the number on the sign. Read the words, then pick the symbol."
+        "Flipping the sign or forgetting whether the boundary number counts. Read the words, then test the boundary."
       ]
     ],
     "quote": "\"No more than one funnel cake per raccoon. I read that as 'at least.'\" — Bandit"
   },
   "teacher": {
-    "suggested": "Use during or after lesson 8-4 (Write and Represent Inequalities) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: translating at least, no more than, more than and less than into inequality symbols, testing values, and showing a rule on a number line.",
+    "suggested": "Use during or after lesson 8-4 (Write and Represent Inequalities) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: translating at least, no more than, more than and less than into inequality symbols, and testing values against a rule (number-line graphing follows in 8-5).",
     "standards": [
       [
         "6.AT.9",

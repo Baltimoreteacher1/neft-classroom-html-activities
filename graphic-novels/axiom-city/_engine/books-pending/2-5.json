@@ -1,0 +1,494 @@
+{
+  "lesson": "2-5",
+  "world": "clip-squad",
+  "slug": "creator-court",
+  "num": 2501,
+  "title": "Creator Court",
+  "coverTitle": "CREATOR<br><em>COURT</em>",
+  "topic": "RANGE & IQR",
+  "pageTitle": "Describe Data by Range and Interquartile Range",
+  "covers": "computing range and interquartile range (IQR) and choosing IQR when extreme values stretch the range",
+  "cert": "computing range and interquartile range and comparing spread fairly",
+  "cover": {
+    "prompt": "{{style}}. {{notext}}. Comic book cover, dramatic courtroom-style school auditorium shot. {{nova}} stands behind a wooden podium holding a gavel, while {{mei}} holds up a blank chart on one side and {{max}} leans smugly on the opposite table. {{blink}} hovers above the podium. Plain open wall space above the heads.",
+    "alt": "Nova stands at a courtroom podium with a gavel while Mei holds a blank chart, Max Maxwell leans smugly, and Blink hovers overhead."
+  },
+  "panels": [
+    {
+      "id": "p1-court",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Wide establishing panel inside a school auditorium set up like a mock courtroom. {{nova}} sits at the judge bench, {{mei}} and {{jaylen}} sit at one table with a laptop, and {{max}} stands at the rival table pointing dramatically. {{blink}} hovers in the center. Plain open wall space above the heads.",
+      "alt": "Nova sits at a mock courtroom judge bench while Mei and Jaylen face Max Maxwell across the room and Blink hovers."
+    },
+    {
+      "id": "p1-max-point",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. Close-up panel of {{max}} wearing his shiny gold jacket, grinning smugly and holding up one finger. The same scene continues up to the top edge with plain open wall space above the heads.",
+      "alt": "Max Maxwell grins smugly in his shiny gold jacket while holding up one finger."
+    },
+    {
+      "id": "p2-range",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{mei}} stands beside a large blank courtroom display board, holding a marker and looking determined. {{jaylen}} leans forward at the table watching her. {{blink}} hovers near the board. Plain open wall space above the heads.",
+      "alt": "Mei holds a marker beside a blank courtroom display board while Jaylen watches and Blink hovers nearby."
+    },
+    {
+      "id": "p3-iqr",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. {{mei}} holds up two fingers on each hand to frame a small middle space while {{dex}} leans in from the side nodding. {{blink}} shines a teal beam on the space between her hands. Plain open wall space above the heads.",
+      "alt": "Mei frames a small middle space with her hands while Dex nods and Blink shines a teal beam."
+    },
+    {
+      "id": "p4-compare",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. {{nova}} leans over the judge bench holding two blank evidence cards side by side, comparing them carefully. {{blink}} floats beside her shoulder. Plain open wall space above the heads.",
+      "alt": "Nova leans over the judge bench comparing two blank evidence cards side by side while Blink floats near her."
+    },
+    {
+      "id": "p5-verdict",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Dramatic courtroom climax: {{nova}} raises a wooden gavel high, {{max}} looks shocked at the rival table, and {{mei}} and {{jaylen}} point to a glowing blank wall screen. {{blink}} flashes a spotlight. Plain open wall space above the heads.",
+      "alt": "Nova raises a gavel while Max Maxwell looks shocked and Mei and Jaylen point to a glowing blank wall screen."
+    },
+    {
+      "id": "p6-win",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Celebration panel outside the auditorium: {{nova}}, {{mei}}, {{dex}} and {{jaylen}} high-five happily as {{blink}} zooms in a loop above them. Plain open wall space above the heads.",
+      "alt": "Nova, Mei, Dex and Jaylen high-five happily outside the auditorium as Blink loops overhead."
+    }
+  ],
+  "intro": {
+    "caption": "Lesson 2-5 — range and interquartile range. Max Maxwell drags Clip Squad into Creator Court, claiming his channel is steadier because both channels have the exact same median of 22 thousand views.",
+    "cells": [
+      {
+        "art": "p1-court",
+        "size": "full",
+        "balloons": [
+          {
+            "who": "Nova",
+            "t": "Order in Creator Court! Both channels have a median of 22 thousand views. Who is actually steadier?",
+            "pos": "tl"
+          },
+          {
+            "who": "Blink",
+            "t": "Equal medians do NOT mean equal spread! Time to measure range and IQR.",
+            "pos": "br"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "ch": "Chapter 1 · The Full Span",
+      "cells": [
+        {
+          "art": "p1-max-point",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Max Maxwell",
+              "t": "My views hit 95 thousand once! Beat that, Clip Squad!",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-range",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "You also had a 5-thousand flop, Max! Let's check the <b>range</b> of both channels first.",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "<b>Range = greatest − least</b>. It measures the full span of all the data, so one extreme high or low value stretches it."
+    },
+    {
+      "ch": "Gate 1 · Compute the Range",
+      "gate": "g1",
+      "cells": [
+        {
+          "art": "p2-range",
+          "size": "full",
+          "sign": {
+            "t": "Range = Max − Min",
+            "style": "scrawl",
+            "x": "66%",
+            "y": "35%"
+          },
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "Clip Squad (thousands): 18, 20, 21, 22, 23, 24, 26. Max (thousands): 5, 19, 20, 22, 23, 24, 95.",
+              "pos": "bl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 2 · Measure the Middle Half",
+      "gate": "g2",
+      "cells": [
+        {
+          "art": "p3-iqr",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Mei",
+              "t": "Max's 5 and 95 stretched his range to 90. What about the <b>middle 50%</b>?",
+              "pos": "tl"
+            },
+            {
+              "who": "Dex",
+              "t": "That's the <b>IQR</b> — Q3 minus Q1! It ignores the wild extremes.",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 3 · Compare the Spread",
+      "gate": "g3",
+      "cells": [
+        {
+          "art": "p4-compare",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Let's put both spreads on the bench. Range tells the whole story; IQR tells the middle half.",
+              "pos": "tl"
+            },
+            {
+              "who": "Blink",
+              "t": "Do not let one viral outlier fool the court!",
+              "pos": "br"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Boss Gate · The Verdict",
+      "gate": "boss",
+      "cells": [
+        {
+          "art": "p5-verdict",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Nova",
+              "t": "Final case! Two new teams both have a median of 30. Judge the evidence fairly!",
+              "pos": "tl"
+            },
+            {
+              "who": "Max Maxwell",
+              "t": "Hey! You're supposed to just look at the biggest range!",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "win": {
+    "ch": "Chapter 4 · Case Dismissed",
+    "cells": [
+      {
+        "art": "p6-win",
+        "size": "full",
+        "sfx": {
+          "t": "BANG!",
+          "pos": "tl"
+        },
+        "balloons": [
+          {
+            "who": "Jaylen",
+            "t": "Verdict is in! Clip Squad is steadier in both range and IQR!",
+            "pos": "br"
+          }
+        ]
+      }
+    ],
+    "caption": "Both range (greatest − least) and IQR (Q3 − Q1) measure spread. The range is stretched by extreme values, while the IQR measures only the middle 50% of the data."
+  },
+  "gates": [
+    {
+      "id": "g1",
+      "title": "Gate 1 · Compute the Range",
+      "badge": "Exhibit A — Full Range",
+      "prompt": "Compare the 7-video view counts (in thousands). Clip Squad: <b>18, 20, 21, 22, 23, 24, 26</b>. Max: <b>5, 19, 20, 22, 23, 24, 95</b>.",
+      "hints": [
+        "Conceptual: range measures how far apart the lowest and highest values are across the entire data set.",
+        "Procedural: subtract the least value from the greatest value (greatest − least)."
+      ],
+      "worked": {
+        "steps": [
+          "Practice set: 12, 15, 19, 21, 30.",
+          "Greatest value = 30, least value = 12.",
+          "Range = 30 − 12 = 18."
+        ],
+        "q": "What is the range of 7, 11, 14, 20?",
+        "a": "13"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Range of Clip Squad's views (18, 20, 21, 22, 23, 24, 26):",
+          "aria": "range of Clip Squad views",
+          "answer": "8",
+          "calc": "26 - 18",
+          "fb": [
+            {
+              "eq": "44",
+              "msg": "Range is greatest MINUS least, not greatest plus least."
+            },
+            {
+              "eq": "22",
+              "msg": "22 is the median (center), not the range (spread)."
+            }
+          ],
+          "fbDefault": "Subtract the least value (18) from the greatest value (26)."
+        },
+        {
+          "type": "number",
+          "label": "Range of Max's views (5, 19, 20, 22, 23, 24, 95):",
+          "aria": "range of Max views",
+          "answer": "90",
+          "calc": "95 - 5",
+          "fb": [
+            {
+              "eq": "100",
+              "msg": "Subtract the least from the greatest: 95 − 5, not 95 + 5."
+            },
+            {
+              "eq": "22",
+              "msg": "22 is the median, not the range."
+            }
+          ],
+          "fbDefault": "Subtract the least value (5) from the greatest value (95)."
+        }
+      ],
+      "pass": "Exhibit A logged: Clip Squad's range is 8, while Max's range explodes to 90!"
+    },
+    {
+      "id": "g2",
+      "title": "Gate 2 · Compute the IQR",
+      "badge": "Exhibit B — Middle Half",
+      "prompt": "Now measure only the middle 50% using <b>IQR = Q3 − Q1</b>. Clip Squad: <b>Q1 = 20, Q3 = 24</b>. Max: <b>Q1 = 19, Q3 = 24</b>.",
+      "hints": [
+        "Conceptual: the interquartile range (IQR) is the width of the box on a box plot — the spread of the middle half of the data.",
+        "Procedural: subtract Q1 from Q3 (Q3 − Q1), ignoring the minimum and maximum."
+      ],
+      "worked": {
+        "steps": [
+          "Practice set: Min = 4, Q1 = 10, Median = 15, Q3 = 22, Max = 60.",
+          "Ignore 4 and 60 — use only Q1 and Q3.",
+          "IQR = Q3 − Q1 = 22 − 10 = 12."
+        ],
+        "q": "If Q1 = 30 and Q3 = 45, what is the IQR?",
+        "a": "15"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Clip Squad's IQR (Q1 = 20, Q3 = 24):",
+          "aria": "Clip Squad interquartile range",
+          "answer": "4",
+          "calc": "24 - 20",
+          "fb": [
+            {
+              "eq": "8",
+              "msg": "8 is the full range (26 − 18). The IQR is Q3 − Q1."
+            },
+            {
+              "eq": "44",
+              "msg": "Subtract Q1 from Q3: 24 − 20, do not add."
+            }
+          ],
+          "fbDefault": "Compute Q3 − Q1 = 24 − 20."
+        },
+        {
+          "type": "number",
+          "label": "Max's IQR (Q1 = 19, Q3 = 24):",
+          "aria": "Max interquartile range",
+          "answer": "5",
+          "calc": "24 - 19",
+          "fb": [
+            {
+              "eq": "90",
+              "msg": "90 is Max's full range (95 − 5). The IQR only uses Q3 − Q1."
+            },
+            {
+              "eq": "43",
+              "msg": "Subtract Q1 from Q3: 24 − 19."
+            }
+          ],
+          "fbDefault": "Compute Q3 − Q1 = 24 − 19."
+        }
+      ],
+      "pass": "Exhibit B logged: Clip Squad's IQR is 4, and Max's IQR is 5!"
+    },
+    {
+      "id": "g3",
+      "title": "Gate 3 · Compare the Spread",
+      "badge": "Cross-Exam — Range vs IQR",
+      "prompt": "Compare Clip Squad (<b>range 8, IQR 4</b>) and Max (<b>range 90, IQR 5</b>).",
+      "hints": [
+        "Conceptual: extreme values stretch the range, while the IQR stays focused on the middle 50%.",
+        "Procedural: check which numbers each measure uses before deciding what is true."
+      ],
+      "worked": {
+        "steps": [
+          "Creator X has range 50 and IQR 6. Most videos sit in a 6-unit band, with one huge viral hit stretching the range.",
+          "The IQR is always less than or equal to the range because the middle half sits inside the full set."
+        ],
+        "q": "Can the IQR ever be larger than the range?",
+        "a": "No — the middle half sits inside the full span"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Why is Max's range (<b>90</b>) so much larger than his IQR (<b>5</b>)?",
+          "options": [
+            {
+              "t": "Because the extremes (5 and 95) stretch the range, while the middle half (19 to 24) is tight",
+              "ok": true
+            },
+            {
+              "t": "Because range is always 18 times bigger than IQR",
+              "fb": "There is no fixed multiplier; extreme values stretch the range."
+            },
+            {
+              "t": "Because IQR includes the highest value",
+              "fb": "IQR only uses Q1 and Q3, so it ignores extreme values."
+            }
+          ]
+        },
+        {
+          "type": "multi",
+          "q": "Which statements are <b>TRUE</b> about Clip Squad (range 8, IQR 4) vs Max (range 90, IQR 5)? Select all that apply.",
+          "options": [
+            {
+              "t": "Clip Squad has a smaller range than Max",
+              "ok": true
+            },
+            {
+              "t": "Clip Squad has a smaller IQR than Max",
+              "ok": true
+            },
+            {
+              "t": "Max's middle 50% of videos varies by 90 thousand views",
+              "ok": false,
+              "fb": "90 is Max's full range. His middle 50% varies by 5 (the IQR)."
+            },
+            {
+              "t": "Both creators have the exact same median (22)",
+              "ok": true
+            }
+          ],
+          "fbMiss": "Three of the four statements are true — check range, IQR, and median.",
+          "fbExtra": "90 is Max's full range, not the spread of his middle 50%."
+        }
+      ],
+      "pass": "Cross-examination complete! One viral outlier stretched Max's range, not his middle half."
+    },
+    {
+      "id": "boss",
+      "title": "Boss Gate · Deliver the Verdict",
+      "badge": "Chief Justice — Boss Gate",
+      "prompt": "Rule on a second case. <b>Team A:</b> Min 12, Q1 25, Med 30, Q3 35, Max 42 (Range = 30, IQR = 10). <b>Team B:</b> Min 2, Q1 28, Med 30, Q3 32, Max 92 (Range = 90).",
+      "hints": [
+        "Conceptual: a smaller range does NOT guarantee a smaller IQR. Compare IQR to judge the middle 50%.",
+        "Procedural: compute Team B's IQR using Q3 − Q1, then compare Team B's IQR to Team A's IQR (10)."
+      ],
+      "worked": {
+        "steps": [
+          "Team X has range 20, IQR 14. Team Y has range 80, IQR 6.",
+          "Even though Team Y's range is huge, its middle 50% (IQR 6) is much tighter than Team X's (IQR 14)."
+        ],
+        "q": "Which team has the steadier middle 50%?",
+        "a": "Team Y (smaller IQR)"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "What is Team B's IQR (Q1 = 28, Q3 = 32)?",
+          "aria": "Team B interquartile range",
+          "answer": "4",
+          "calc": "32 - 28",
+          "fb": [
+            {
+              "eq": "90",
+              "msg": "90 is Team B's range (92 − 2). IQR is Q3 − Q1."
+            },
+            {
+              "eq": "60",
+              "msg": "Subtract Q1 from Q3: 32 − 28."
+            }
+          ],
+          "fbDefault": "Compute Q3 − Q1 = 32 − 28."
+        },
+        {
+          "type": "choice",
+          "q": "Max's lawyer claims: <b>'Team A is steadier in the middle 50% because Team A has a smaller range!'</b> Does the evidence support that claim?",
+          "options": [
+            {
+              "t": "No — Team B's IQR is 4 vs Team A's 10, so Team B's middle 50% is actually steadier",
+              "ok": true
+            },
+            {
+              "t": "Yes — smaller range always means smaller IQR",
+              "fb": "Not true! Team B has a huge range (90) from two outliers, but a tiny IQR (4)."
+            },
+            {
+              "t": "No — both teams have the same spread because both medians are 30",
+              "fb": "Equal medians do not mean equal spread."
+            }
+          ]
+        }
+      ],
+      "pass": "GAVEL DOWN! The court rules: check both range AND IQR, and never let one outlier decide!"
+    }
+  ],
+  "journal": {
+    "heading": "Lesson 2-5 — what Creator Court taught us",
+    "rows": [
+      [
+        "Range.",
+        "Greatest minus least. It measures the full spread of all the data, so extreme values stretch it."
+      ],
+      [
+        "Interquartile range (IQR).",
+        "Q3 minus Q1. It measures the spread of the middle 50% of the data and ignores extreme outliers."
+      ],
+      [
+        "Center vs. spread.",
+        "Two data sets can have the exact same median while having very different ranges and IQRs."
+      ],
+      [
+        "Choosing the measure.",
+        "Use IQR when outliers stretch the range and you want to compare how steady the middle half is."
+      ]
+    ],
+    "quote": "\"One viral spike stretches the range, not the IQR. Case dismissed!\" — Nova"
+  },
+  "teacher": {
+    "suggested": "Use during or after lesson 2-5 (Describe Data by Range and Interquartile Range) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: computing range and IQR, distinguishing full spread from middle-50% spread, and resisting outliers.",
+    "standards": [
+      [
+        "6.DS.3",
+        "Recognize that a measure of center summarizes all values with a single number, while a measure of variation describes how its values vary",
+        "Gate 1, Gate 2, Gate 3, Boss"
+      ]
+    ]
+  }
+}
