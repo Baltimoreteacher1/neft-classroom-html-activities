@@ -97,7 +97,8 @@ for (const name of BUILT_EPISODES) {
   }
 }
 
-const episodeFiles = walkHtml(EPISODES);
+// Axiom City episodes only: the show lesson books (tools/build-lesson-books.mjs) carry their own palettes.
+const episodeFiles = walkHtml(EPISODES).filter((f) => /\/axiom-city-[^/]+\.html$/.test(f));
 assert.equal(
   episodeFiles.length,
   31,

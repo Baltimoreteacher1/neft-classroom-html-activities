@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =============================================================================
- * gn-layer.test.mjs — the shared Axiom City layer is wired into all 41 books, and its data is true.
+ * gn-layer.test.mjs — the shared layer is wired into all 41 Axiom City books and every show lesson book, and its data is true.
  * -----------------------------------------------------------------------------
  * graphic-novels/_shared/gn-layer.js adds vocabulary pop-ups, an Easy read switch and formatting fixes
  * to every book from ONE script plus a per-book sentinel block (tools/inject-gn-layer.mjs). What can go
@@ -11,7 +11,7 @@
  * verifier that has stopped catching changed numbers. The browser half is tools/verify-gn-layer-browser.mjs.
  * ========================================================================== */
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import vm from "node:vm";
@@ -24,12 +24,15 @@ import {
   EASY_DIR,
   engineMatcher,
   LAYER_FILE,
+  NOVEL_DIR,
   listBooks,
   loadLayer,
 } from "./lib/gn-layer.mjs";
 
 const books = listBooks();
-assert.equal(books.length, 41, "expected 41 Axiom City books");
+// 41 Axiom City books, plus one per show lesson-book spec (tools/build-lesson-books.mjs)
+const showBooks = readdirSync(join(NOVEL_DIR, "_engine/books")).filter((f) => f.endsWith(".json")).length;
+assert.equal(books.length, 41 + showBooks, `expected 41 Axiom City books plus ${showBooks} show books`);
 const layerSrc = readFileSync(LAYER_FILE, "utf8");
 const layer = loadLayer();
 

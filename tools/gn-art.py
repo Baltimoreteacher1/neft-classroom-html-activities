@@ -133,7 +133,7 @@ def cmd_generate(args):
         )
 
 
-GEMINI_MODEL = os.environ.get("GN_GEMINI_MODEL", "gemini-2.5-flash-image")
+GEMINI_MODEL = os.environ.get("GN_GEMINI_MODEL", "gemini-3.1-flash-image")
 GEMINI_RATIOS = [
     "1:1",
     "2:3",
@@ -337,19 +337,49 @@ def cmd_pack(args):
     )
 
 
+def cmd_sheet(args):
+    """One contact sheet of a book's raw panels, labelled by id, for reviewing every image at once."""
+    from PIL import Image, ImageDraw
+
+    spec = load(args.spec)
+    raw = raw_dir(spec)
+    cell = 380
+    ims = []
+    for p in pick(spec, args.only):
+        f = raw / f"{p['id']}.png"
+        if f.exists():
+            im = Image.open(f).convert("RGB")
+            im.thumbnail((cell, cell))
+            ims.append((p["id"], im))
+    cols = 4
+    rows = max(1, (len(ims) + cols - 1) // cols)
+    sheet = Image.new("RGB", (cols * cell, rows * (cell + 18)), "white")
+    draw = ImageDraw.Draw(sheet)
+    for i, (pid, im) in enumerate(ims):
+        x, y = (i % cols) * cell, (i // cols) * (cell + 18)
+        sheet.paste(im, (x, y + 18))
+        draw.text((x + 4, y + 3), pid, fill="black")
+    out = Path(args.out or raw / "sheet.png")
+    sheet.save(out)
+    print(f"{out}: {len(ims)} panels")
+
+
 def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("generate", "pack", "prompts"):
+    for name in ("generate", "pack", "prompts", "sheet"):
         s = sub.add_parser(name)
         s.add_argument("spec")
         s.add_argument("--only")
         s.add_argument("--force", action="store_true")
         s.add_argument("--engine", choices=("flux", "gemini"), default="flux")
+        s.add_argument("--out")
     args = ap.parse_args()
-    {"generate": cmd_generate, "pack": cmd_pack, "prompts": cmd_prompts}[args.cmd](args)
+    {"generate": cmd_generate, "pack": cmd_pack, "prompts": cmd_prompts, "sheet": cmd_sheet}[
+        args.cmd
+    ](args)
 
 
 if __name__ == "__main__":

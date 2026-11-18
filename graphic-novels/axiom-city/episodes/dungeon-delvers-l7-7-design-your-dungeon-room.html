@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dungeon Delvers Lesson 7-7 — Design Your Dungeon Room | Interactive Graphic Novel | Represent Polygons on the Coordinate Plane</title>
+<meta name="description" content="Interactive Grade 6 math graphic novel for lesson 7-7 (Dungeon Delvers): how to draw a polygon from its vertex coordinates, find side lengths from coordinates, and tell perimeter (the distance around) from area (the space inside). Free-read, gates coach but never block. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--navy);border-color:#1FA6A2;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES — U6·E2 "The Power Ring" (accent amber, matches Vol 6 story world) ================= */
+:root{--accent:var(--amber)}
+/* contrast fixes: amber surfaces need NAVY text for AA (vol-06 set) */
+.gatebox header{color:var(--navy)}
+.gatebox header .gicon{color:var(--navy)}
+.hudbtn[aria-pressed="true"]{color:var(--navy)}
+#coverTitle .vol{color:var(--navy)}
+.workedsteps .st b.n{color:var(--navy)}
+.navarrow:hover{color:var(--navy)}
+.balloon .who{color:#8a6a1c}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#b78a2e}
+.beaker .cnt{color:#8a6a1c}
+.gatebox{background:linear-gradient(180deg,#ffffff,#fdf6e7)}
+.rt-table td.given{background:#fdf6e7}
+.choicebtn:hover{background:#fdf6e7}
+</style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+<style id="world-theme">/* DUNGEON DELVERS: palette for every book of the show (tools/build-lesson-books.mjs) */
+:root{--navy:#1B2433;--teal:#2BB3A3;--amber:#F5B841;--coral:#E4572E;--accent:var(--teal)}
+body{background:radial-gradient(120% 120% at 50% 0%,#2a3a4f 0%,#141c27 55%,#0a0f16 100%)}
+.balloon .who{color:#A0601A}
+.gatebox header,.gatebox header .gicon,#coverTitle .vol{color:#ffffff}
+.journal .jrow{flex-wrap:wrap}.journal .jrow b{flex:0 0 auto;max-width:100%;overflow-wrap:normal;word-break:normal;hyphens:manual}.journal .jrow span{flex:1 1 12rem;min-width:0}
+</style>
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FA6A2"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#e11d48" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="45" r="24" fill="#f2c29b" stroke="#17324D" stroke-width="4"/><path d="M26 44 Q26 18 50 18 Q74 18 74 44 Q66 28 50 28 Q34 28 26 44Z" fill="#0f172a" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="45" r="2.6" fill="#17324D"/><circle cx="58" cy="45" r="2.6" fill="#17324D"/><path d="M43 56 q7 6 14 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#1d4ed8" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="45" r="24" fill="#693b1e" stroke="#17324D" stroke-width="4"/><path d="M28 38 Q30 16 50 16 Q70 16 72 38 Z" fill="#0f172a" stroke="#17324D" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 4 14 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#059669" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="22" r="14" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#d89668" stroke="#17324D" stroke-width="4"/><path d="M27 42 Q50 26 73 42 Q66 28 50 28 Q34 28 27 42Z" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- DEV: teal tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#b45309" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="46" r="24" fill="#c68453" stroke="#17324D" stroke-width="4"/><path d="M27 42 L32 22 L43 30 L50 18 L57 30 L68 22 L73 42 Z" fill="#1e293b" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- PIP: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- u6·e2 additions: the glitch (signature lie retuned to this episode's 2⁶=12), Ada's vault dial, power + tile sigils (vol 6), order-of-operations sigil, the second ring -->
+<g id="sym-glitch"><path d="M30 78 Q18 70 24 56 Q12 52 22 40 Q14 28 30 28 Q32 14 46 22 Q56 10 64 24 Q80 18 76 36 Q90 42 80 54 Q88 66 72 70 Q74 84 58 78 Q48 90 38 78 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="3" opacity=".92"/><g stroke="#E2674A" stroke-width="2.5" stroke-linecap="round"><path d="M28 44 l10 -5 M62 39 l10 5"/></g><circle cx="40" cy="50" r="4.2" fill="#F2C15B"/><circle cx="62" cy="50" r="4.2" fill="#F2C15B"/><circle cx="40" cy="50" r="1.7" fill="#17324D"/><circle cx="62" cy="50" r="1.7" fill="#17324D"/><path d="M42 64 q9 6 18 -2" fill="none" stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round"/><g font-family="Consolas,monospace" font-weight="700" font-size="9" fill="#7CF2EC"><text x="28" y="22">2⁶=12?</text></g><g stroke="#7CF2EC" stroke-width="1.5" opacity=".7" stroke-linecap="round"><line x1="18" y1="60" x2="8" y2="64"/><line x1="84" y1="58" x2="94" y2="62"/><line x1="50" y1="10" x2="50" y2="3"/></g></g>
+<g id="sym-vault"><circle cx="50" cy="50" r="44" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="33" fill="#17324D" stroke="#F2C15B" stroke-width="3"/><circle cx="50" cy="50" r="12" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g stroke="#F2C15B" stroke-width="4" stroke-linecap="round"><line x1="50" y1="38" x2="50" y2="22"/><line x1="50" y1="62" x2="50" y2="78"/><line x1="38" y1="50" x2="22" y2="50"/><line x1="62" y1="50" x2="78" y2="50"/></g><g fill="#7CF2EC" font-family="Consolas,monospace" font-weight="700" font-size="10"><text x="32" y="32">3n</text><text x="58" y="32">+5</text><text x="30" y="76">x²</text><text x="58" y="76">12</text></g></g>
+<g id="sig-pow"><text x="34" y="64" font-family="Arial Black,Arial" font-weight="900" font-size="44" fill="#17324D" text-anchor="middle">3</text><text x="62" y="40" font-family="Arial Black,Arial" font-weight="900" font-size="26" fill="#E2674A" text-anchor="middle">4</text><path d="M22 76 q28 14 56 0" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-tile"><rect x="14" y="30" width="32" height="32" rx="5" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><rect x="54" y="30" width="32" height="32" rx="5" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><text x="30" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#17324D">3n</text><text x="70" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#fff">+5</text><rect x="34" y="64" width="32" height="22" rx="5" fill="#fff" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-ops"><circle cx="24" cy="44" r="15" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="44" r="15" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><circle cx="76" cy="44" r="15" fill="#fff" stroke="#17324D" stroke-width="4"/><text x="24" y="49" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">( )</text><text x="50" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#fff">x²</text><text x="76" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#17324D">+−</text><path d="M18 72 H76 l-7 -7 M76 72 l-7 7" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sym-powring"><circle cx="50" cy="50" r="46" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="35" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC"><text x="50" y="24" text-anchor="middle">2⁶</text><text x="79" y="55" text-anchor="middle">5³</text><text x="50" y="89" text-anchor="middle">3²</text><text x="21" y="55" text-anchor="middle">10³</text></g><circle cx="50" cy="50" r="11" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><line x1="50" y1="40" x2="50" y2="27" stroke="#F2C15B" stroke-width="4" stroke-linecap="round"/><g stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round" opacity=".8"><line x1="50" y1="4" x2="50" y2="11"/><line x1="50" y1="89" x2="50" y2="96"/><line x1="4" y1="50" x2="11" y2="50"/><line x1="89" y1="50" x2="96" y2="50"/></g></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Dungeon Delvers, Lesson 7-7: Design Your Dungeon Room. Bao, Sol and Kwame stand in the doorway of a half-built stone room. Sol holds a blank blueprint and Kwame carries a stack of stone tiles while Pip glows above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
+    <div class="spine"><span>DUNGEON DELVERS · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">DUNGEON DELVERS</div>
+      <h1>DUNGEON<br><em>ROOM</em></h1>
+      <span class="vol">LESSON 7-7 · POLYGONS ON THE COORDINATE PLANE</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · LESSON 7-7<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">DUNGEON DELVERS<small>L7-7 · DESIGN YOUR DUNGEON ROOM</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — Lesson 7-7</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">PIP · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 8701,
+  slug: "l77dun",
+  title: "Design Your Dungeon Room",
+  unit: "Lesson 7-7 · POLYGONS ON THE COORDINATE PLANE",
+  accent: "var(--teal)",
+  nextTeaser: "LESSON 7-8 — PORTAL JUMP",
+};
+
+const BADGES = [
+  {
+    "id": "g1",
+    "icon": "#sig-pow",
+    "label": "Corner Placer — Vertices"
+  },
+  {
+    "id": "g2",
+    "icon": "#sig-tile",
+    "label": "Wall Walker — Side Lengths"
+  },
+  {
+    "id": "g3",
+    "icon": "#sig-graph",
+    "label": "Room Planner — Perimeter and Area"
+  },
+  {
+    "id": "boss",
+    "icon": "#sig-table",
+    "label": "Room Designer — Boss Gate"
+  }
+];
+
+const GATE_SPECS = [
+  {
+    "id": "g1",
+    "title": "Gate 1 · Plot the Vertices",
+    "icon": "#sig-pow",
+    "prompt": "Pin the four corners of the camp room: \u003cb>(−4, 3)\u003c/b>, \u003cb>(2, 3)\u003c/b>, \u003cb>(2, −1)\u003c/b> and \u003cb>(−4, −1)\u003c/b>.",
+    "hints": [
+      "Conceptual: each vertex is an ordered pair. The first number moves you across, the second moves you up or down.",
+      "Procedural: start at (0, 0) for each point. Move left or right by x, then up or down by y. Negative means left or down."
+    ],
+    "worked": {
+      "steps": [
+        "Practice room: (1, 1), (5, 1), (5, 4) and (1, 4).",
+        "(5, 1): go right 5, up 1. (5, 4): right 5, up 4. (1, 4): right 1, up 4.",
+        "Connect them in order and the last side goes back to (1, 1). The shape is a rectangle."
+      ],
+      "q": "A rectangle has vertices (−3, 2), (1, 2) and (1, −2). What is the fourth vertex?",
+      "a": "(−3, −2)"
+    },
+    "items": [
+      {
+        "type": "grid",
+        "q": "Tap all four corners of the camp room.",
+        "range": 6,
+        "answer": [
+          [
+            -4,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            -1
+          ],
+          [
+            -4,
+            -1
+          ]
+        ],
+        "fb": [
+          {
+            "at": [
+              3,
+              -4
+            ],
+            "msg": "That's (3, −4): x and y are swapped. For (−4, 3), go left 4 first, then up 3."
+          },
+          {
+            "at": [
+              3,
+              2
+            ],
+            "msg": "That's (3, 2): x and y are swapped. For (2, 3), go right 2 first, then up 3."
+          },
+          {
+            "at": [
+              -1,
+              2
+            ],
+            "msg": "That's (−1, 2): x and y are swapped. For (2, −1), go right 2 first, then down 1."
+          },
+          {
+            "at": [
+              -1,
+              -4
+            ],
+            "msg": "That's (−1, −4): x and y are swapped. For (−4, −1), go left 4 first, then down 1."
+          },
+          {
+            "at": [
+              4,
+              3
+            ],
+            "msg": "That's (4, 3). The x is −4, so go LEFT 4, not right."
+          }
+        ],
+        "fbDefault": "Check each corner: x across first, then y up or down. You need exactly four points."
+      },
+      {
+        "type": "choice",
+        "q": "Which vertex is joined to \u003cb>(2, 3)\u003c/b> by a \u003cb>vertical\u003c/b> wall?",
+        "options": [
+          {
+            "t": "(−4, 3)",
+            "fb": "(−4, 3) shares the y-coordinate 3, so that wall is horizontal, not vertical."
+          },
+          {
+            "t": "(−4, −1)",
+            "fb": "(−4, −1) shares no coordinate with (2, 3). It is the opposite corner."
+          },
+          {
+            "t": "(3, 2)",
+            "fb": "(3, 2) is not a vertex of this room. It is (2, 3) with x and y swapped."
+          },
+          {
+            "t": "(2, −1)",
+            "ok": true
+          }
+        ]
+      }
+    ],
+    "pass": "Four glowing pins, four straight walls. The room is a rectangle, and Grimble squints at it suspiciously."
+  },
+  {
+    "id": "g2",
+    "title": "Gate 2 · Side Lengths",
+    "icon": "#sig-tile",
+    "prompt": "Use the coordinates to find how long each wall is. No measuring rope needed.",
+    "hints": [
+      "Conceptual: two vertices on the same wall share one coordinate. The OTHER coordinate tells you how long the wall is.",
+      "Procedural: take the absolute values of the coordinates that change. Opposite signs: add them. Same sign: subtract."
+    ],
+    "worked": {
+      "steps": [
+        "Practice wall: (−5, 1) to (−1, 1). The y's match, so the wall is horizontal.",
+        "−5 and −1 are both negative, on the same side of zero.",
+        "|−5| − |−1| = 5 − 1 = 4 units."
+      ],
+      "q": "How long is the wall from (3, −5) to (3, 2)?",
+      "a": "7 units"
+    },
+    "items": [
+      {
+        "type": "number",
+        "label": "Top wall · (−4, 3) to (2, 3):",
+        "aria": "length of the top wall in units",
+        "answer": "6",
+        "calc": "4 + 2",
+        "fb": [
+          {
+            "eq": "2",
+            "msg": "That's 4 − 2. The x's −4 and 2 are on opposite sides of zero, so add: 4 + 2."
+          },
+          {
+            "eq": "-6",
+            "msg": "A side length is never negative. It is 6 units."
+          },
+          {
+            "eq": "0",
+            "msg": "The y's are both 3, so the wall is flat. Look at the x's, −4 and 2."
+          }
+        ],
+        "fbDefault": "The y's match. Find the distance from x = −4 to x = 2."
+      },
+      {
+        "type": "number",
+        "label": "Right wall · (2, 3) to (2, −1):",
+        "aria": "length of the right wall in units",
+        "answer": "4",
+        "calc": "3 + 1",
+        "fb": [
+          {
+            "eq": "2",
+            "msg": "That's 3 − 1. The y's 3 and −1 are on opposite sides of the x-axis, so add: 3 + 1."
+          },
+          {
+            "eq": "-4",
+            "msg": "A side length is never negative. It is 4 units."
+          },
+          {
+            "eq": "0",
+            "msg": "The x's are both 2, so the wall is vertical. Look at the y's, 3 and −1."
+          }
+        ],
+        "fbDefault": "The x's match. Find the distance from y = 3 to y = −1."
+      }
+    ],
+    "pass": "The room is 6 units wide and 4 units tall. Anya coils up the measuring rope: they never needed it."
+  },
+  {
+    "id": "g3",
+    "title": "Gate 3 · Perimeter or Area?",
+    "icon": "#sig-graph",
+    "prompt": "The room is \u003cb>6 units\u003c/b> by \u003cb>4 units\u003c/b>. The crystal fence goes AROUND the walls. The rug covers the whole FLOOR.",
+    "hints": [
+      "Conceptual: perimeter measures the edge (a length). Area counts the unit squares inside (a space). Ask: around, or inside?",
+      "Procedural: perimeter = add all four sides. Area of a rectangle = length × width."
+    ],
+    "worked": {
+      "steps": [
+        "Practice room: 5 units by 3 units.",
+        "Perimeter: 5 + 3 + 5 + 3 = 16 units of fence around it.",
+        "Area: 5 × 3 = 15 unit squares of rug inside it."
+      ],
+      "q": "A room is 7 units by 2 units. What is its perimeter?",
+      "a": "18 units"
+    },
+    "items": [
+      {
+        "type": "choice",
+        "q": "Sol puts a crystal fence along every wall. Which measurement tells how much fence she needs?",
+        "options": [
+          {
+            "t": "The perimeter",
+            "ok": true
+          },
+          {
+            "t": "The area",
+            "fb": "Area counts the squares inside the room. A fence runs along the edge, so you need the distance around."
+          },
+          {
+            "t": "The top wall only",
+            "fb": "The fence goes along every wall, not just one. Add all four sides."
+          },
+          {
+            "t": "The number of vertices",
+            "fb": "The room has 4 vertices, but a fence is a length. Add the side lengths."
+          }
+        ]
+      },
+      {
+        "type": "number",
+        "label": "Crystal fence (perimeter), units:",
+        "aria": "perimeter of the room in units",
+        "answer": "20",
+        "calc": "6 + 4 + 6 + 4",
+        "fb": [
+          {
+            "eq": "24",
+            "msg": "24 is 6 × 4, the AREA: squares inside. The fence goes around, so add the four sides."
+          },
+          {
+            "eq": "10",
+            "msg": "10 is only two sides, 6 + 4. A rectangle has four sides: add the other two."
+          }
+        ],
+        "fbDefault": "Walk around the room: 6 + 4 + 6 + 4."
+      },
+      {
+        "type": "number",
+        "label": "Rug squares (area):",
+        "aria": "area of the room in square units",
+        "answer": "24",
+        "calc": "6 * 4",
+        "fb": [
+          {
+            "eq": "20",
+            "msg": "20 is the perimeter, the distance around. That's Kwame's rug, and it left a hole. Count the squares inside."
+          },
+          {
+            "eq": "10",
+            "msg": "10 is 6 + 4. Area does not add the sides. Count the squares: 4 rows of 6."
+          }
+        ],
+        "fbDefault": "The floor has 4 rows of 6 squares. Multiply 6 × 4."
+      }
+    ],
+    "pass": "20 units of crystal fence and a 24-square rug. Kwame rolls out the new rug and the trapdoor stays shut."
+  },
+  {
+    "id": "boss",
+    "title": "Boss Gate · Grimble's Judging Desk",
+    "icon": "#sig-table",
+    "prompt": "The treasure vault has three corners: \u003cb>(1, −2)\u003c/b>, \u003cb>(5, −2)\u003c/b> and \u003cb>(5, −5)\u003c/b>. It is a rectangle. Each grid unit is \u003cb>2 meters\u003c/b>.",
+    "hints": [
+      "Conceptual: a rectangle's opposite sides match, so the missing corner shares an x with one vertex and a y with another.",
+      "Procedural: find the side lengths in units first. Add them for the perimeter. Then multiply the units by the scale to get meters."
+    ],
+    "worked": {
+      "steps": [
+        "Practice: a rectangle is 2 units by 6 units, and each unit is 5 meters.",
+        "Perimeter in units: 2 + 6 + 2 + 6 = 16 units.",
+        "In meters: 16 × 5 = 80 meters."
+      ],
+      "q": "Each unit is 10 meters. A side is 3 units long. How long is it in meters?",
+      "a": "30 meters"
+    },
+    "items": [
+      {
+        "type": "grid",
+        "q": "Tap the fourth corner of the vault.",
+        "range": 6,
+        "answer": [
+          [
+            1,
+            -5
+          ]
+        ],
+        "fb": [
+          {
+            "at": [
+              -5,
+              1
+            ],
+            "msg": "That's (−5, 1): x and y are swapped. The corner sits below (1, −2), so x = 1 and y = −5."
+          },
+          {
+            "at": [
+              1,
+              5
+            ],
+            "msg": "Right x, wrong sign on y. The vault is below the x-axis, so y = −5."
+          },
+          {
+            "at": [
+              -1,
+              -5
+            ],
+            "msg": "Right y, wrong sign on x. The corner sits straight below (1, −2), so x = 1."
+          }
+        ],
+        "fbDefault": "The missing corner shares x with (1, −2) and y with (5, −5)."
+      },
+      {
+        "type": "number",
+        "label": "Vault perimeter, in units:",
+        "aria": "perimeter of the vault in grid units",
+        "answer": "14",
+        "calc": "4 + 3 + 4 + 3",
+        "fb": [
+          {
+            "eq": "12",
+            "msg": "12 is 4 × 3, the AREA. The fence goes around: add the four sides."
+          },
+          {
+            "eq": "7",
+            "msg": "7 is only two sides, 4 + 3. Add all four sides."
+          },
+          {
+            "eq": "18",
+            "msg": "Check the width: x goes from 1 to 5, both positive, so it's 5 − 1 = 4, not 6."
+          }
+        ],
+        "fbDefault": "Width: 5 − 1 = 4 units. Height: 5 − 2 = 3 units. Add all four sides."
+      },
+      {
+        "type": "number",
+        "label": "Vault fence, in meters:",
+        "aria": "perimeter of the vault in meters",
+        "answer": "28",
+        "calc": "(4 + 3 + 4 + 3) * 2",
+        "fb": [
+          {
+            "eq": "14",
+            "msg": "14 is the perimeter in grid units. Each unit is 2 meters, so multiply by 2."
+          },
+          {
+            "eq": "24",
+            "msg": "24 is the area, 12, times 2. The fence is the perimeter: 14 units × 2 meters."
+          },
+          {
+            "eq": "48",
+            "msg": "48 is the floor space in square meters, 8 × 6. The fence is a length around the edge."
+          }
+        ],
+        "fbDefault": "Find the perimeter in units, then multiply by 2 meters per unit."
+      }
+    ],
+    "pass": "Vault corner (1, −5), 14 units around, 28 meters of fence. Grimble drops his monocle and hands over the golden cup."
+  }
+];
+
+function mkfeed(el, msg, ok) { el.textContent = msg; el.className = "gatefeedback " + (ok ? "good" : "bad"); }
+const GN_NUM = (s) => {
+  let t = String(s).trim().replace(/[−–—]/g, "-").replace(/[$%]/g, "").replace(/,(?=\d{3}\b)/g, "").replace(/\s+/g, " ").trim();
+  let m = t.match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+  if (m) return (m[1] ? -1 : 1) * (+m[2] + +m[3] / +m[4]);
+  m = t.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+  if (m) return +m[1] / +m[2];
+  t = t.replace(/\s+/g, "");
+  return /^-?\d*\.?\d+$/.test(t) ? parseFloat(t) : NaN;
+};
+const GN_EQ = (a, b) => Math.abs(a - b) < 1e-9;
+function gnChoice(it, body, st) {
+  const box = document.createElement("div");
+  box.innerHTML = '<div class="gn-q">' + it.q + '</div><div class="choicebtns">' + it.options.map((o, i) => '<button class="choicebtn" aria-pressed="false" data-i="' + i + '">' + o.t + "</button>").join("") + "</div>";
+  body.appendChild(box);
+  box.querySelectorAll(".choicebtns button").forEach((b) => b.addEventListener("click", () => {
+    box.querySelectorAll(".choicebtns button").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true"); st.pick = +b.dataset.i; st.api.sound("blip");
+  }));
+  return () => {
+    if (st.pick === undefined) return "Answer every question in this gate.";
+    const o = it.options[st.pick]; return o.ok ? "" : o.fb;
+  };
+}
+function gnNumber(it, body, st) {
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0";
+  row.innerHTML = '<span style="font:900 1.05rem Arial Black,Arial;color:var(--navy)">' + it.label + '</span><input class="numin" inputmode="decimal" aria-label="' + (it.aria || "your answer") + '">';
+  body.appendChild(row);
+  const inp = row.querySelector("input");
+  return () => {
+    const v = GN_NUM(inp.value); const want = GN_NUM(it.answer);
+    inp.className = "numin " + (GN_EQ(v, want) ? "ok" : "no");
+    if (isNaN(v)) return it.fbEmpty || "Type a number for every answer box.";
+    if (GN_EQ(v, want)) return "";
+    for (const f of it.fb || []) if (GN_EQ(v, GN_NUM(f.eq))) return f.msg;
+    return it.fbDefault || "Not yet. Check your steps and try again.";
+  };
+}
+function gnOrder(it, body, st) {
+  const box = document.createElement("div"); const seq = [];
+  const paint = () => box.querySelectorAll(".choicebtns button").forEach((b) => { const k = seq.indexOf(b.dataset.id); b.setAttribute("aria-pressed", k >= 0 ? "true" : "false"); b.dataset.n = k >= 0 ? k + 1 : ""; b.querySelector("i").textContent = k >= 0 ? " #" + (k + 1) : ""; });
+  box.innerHTML = '<div class="gn-q">' + it.q + '</div><div class="choicebtns">' + it.cards.map((c) => '<button class="choicebtn" aria-pressed="false" data-id="' + c.id + '">' + c.t + "<i></i></button>").join("") + "</div>";
+  body.appendChild(box);
+  box.querySelectorAll(".choicebtns button").forEach((b) => b.addEventListener("click", () => { const k = seq.indexOf(b.dataset.id); if (k >= 0) seq.splice(k, 1); else seq.push(b.dataset.id); paint(); st.api.sound("blip"); }));
+  return () => {
+    if (seq.length < it.cards.length) return "Tap all " + it.cards.length + " cards in order. Tap a card again to take it back.";
+    return seq.join() === it.answer.join() ? "" : it.fb;
+  };
+}
+function gnMulti(it, body, st) {
+  const box = document.createElement("div");
+  box.innerHTML = '<div class="gn-q">' + it.q + '</div><div class="choicebtns">' + it.options.map((o, i) => '<button class="choicebtn" aria-pressed="false" data-i="' + i + '">' + o.t + "</button>").join("") + "</div>";
+  body.appendChild(box);
+  box.querySelectorAll(".choicebtns button").forEach((b) => b.addEventListener("click", () => { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); st.api.sound("blip"); }));
+  return () => {
+    const on = [...box.querySelectorAll(".choicebtns button")].map((b) => b.getAttribute("aria-pressed") === "true");
+    for (let i = 0; i < it.options.length; i++) if (on[i] && !it.options[i].ok) return it.options[i].fb || it.fbExtra;
+    for (let i = 0; i < it.options.length; i++) if (!on[i] && it.options[i].ok) return it.fbMiss;
+    return "";
+  };
+}
+function gnGrid(it, body, st) {
+  const R = it.range, S = 24, W = (2 * R + 2) * S, pts = [];
+  const X = (x) => (x + R + 1) * S, Y = (y) => (R + 1 - y) * S;
+  let g = "";
+  for (let i = -R; i <= R; i++) { g += '<line x1="' + X(i) + '" y1="' + Y(-R) + '" x2="' + X(i) + '" y2="' + Y(R) + '" stroke="' + (i === 0 ? "#17324D" : "#c8d3df") + '" stroke-width="' + (i === 0 ? 2.5 : 1) + '"/><line x1="' + X(-R) + '" y1="' + Y(i) + '" x2="' + X(R) + '" y2="' + Y(i) + '" stroke="' + (i === 0 ? "#17324D" : "#c8d3df") + '" stroke-width="' + (i === 0 ? 2.5 : 1) + '"/>'; if (i && i % 2 === 0) g += '<text x="' + X(i) + '" y="' + (Y(0) + 14) + '" font-size="10" text-anchor="middle" fill="#24323F">' + i + '</text><text x="' + (X(0) - 6) + '" y="' + (Y(i) + 3) + '" font-size="10" text-anchor="end" fill="#24323F">' + i + "</text>"; }
+  let hit = ""; for (let x = -R; x <= R; x++) for (let y = -R; y <= R; y++) hit += '<circle class="gp" data-x="' + x + '" data-y="' + y + '" cx="' + X(x) + '" cy="' + Y(y) + '" r="11" fill="transparent" tabindex="0" role="button" aria-label="point ' + x + ", " + y + '"/>';
+  const box = document.createElement("div");
+  box.innerHTML = '<div class="gn-q">' + it.q + '</div><svg class="gategrid" viewBox="0 0 ' + W + " " + W + '" style="width:100%;max-width:' + Math.min(W, 380) + 'px;background:#fff;border:3px solid var(--navy);border-radius:8px" role="group" aria-label="coordinate grid">' + g + '<g class="dots"></g>' + hit + '</svg><div class="gn-gridnote" style="font:600 .85rem Segoe UI">Tap a spot to place a point. Tap it again to remove it.</div>';
+  body.appendChild(box);
+  const dots = box.querySelector(".dots");
+  const draw = () => { dots.innerHTML = pts.map((p) => '<circle cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="6" fill="var(--coral)" stroke="var(--navy)" stroke-width="2"/>').join(""); };
+  box.querySelectorAll(".gp").forEach((c) => { const go = () => { const p = [+c.dataset.x, +c.dataset.y]; const k = pts.findIndex((q) => q[0] === p[0] && q[1] === p[1]); if (k >= 0) pts.splice(k, 1); else pts.push(p); draw(); st.api.sound("blip"); }; c.addEventListener("click", go); c.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } }); });
+  return () => {
+    if (!pts.length) return "Place the point" + (it.answer.length > 1 ? "s" : "") + " on the grid first.";
+    const key = (p) => p[0] + "," + p[1], want = it.answer.map(key).sort().join("|"), got = pts.map(key).sort().join("|");
+    if (got === want) return "";
+    for (const f of it.fb || []) if (pts.some((p) => key(p) === f.at.join(","))) return f.msg;
+    return it.fbDefault || "Not quite. Check each coordinate: x first, then y.";
+  };
+}
+function gnLine(it, body, st) {
+  const S = 36, n = Math.round((it.max - it.min) / it.step), W = n * S + 40, state = { value: undefined, closed: true, dir: "right" };
+  const X = (v) => 20 + ((v - it.min) / it.step) * S;
+  let g = '<line x1="20" y1="50" x2="' + (W - 20) + '" y2="50" stroke="#17324D" stroke-width="3"/>', hit = "";
+  for (let i = 0; i <= n; i++) { const v = +(it.min + i * it.step).toFixed(6); g += '<line x1="' + X(v) + '" y1="42" x2="' + X(v) + '" y2="58" stroke="#17324D" stroke-width="2"/><text x="' + X(v) + '" y="78" font-size="11" text-anchor="middle" fill="#24323F">' + (it.labels && it.labels[i] !== undefined ? it.labels[i] : v) + "</text>"; hit += '<circle class="lp" data-v="' + v + '" cx="' + X(v) + '" cy="50" r="15" fill="transparent" tabindex="0" role="button" aria-label="mark ' + v + '"/>'; }
+  const box = document.createElement("div");
+  box.innerHTML = '<div class="gn-q">' + it.q + '</div>' + (it.inequality ? '<div class="choicebtns"><button class="choicebtn" data-c="closed" aria-pressed="true">Closed circle (includes it)</button><button class="choicebtn" data-c="open" aria-pressed="false">Open circle (not included)</button><button class="choicebtn" data-d="left" aria-pressed="false">Ray points left</button><button class="choicebtn" data-d="right" aria-pressed="true">Ray points right</button></div>' : "") + '<svg viewBox="0 0 ' + W + ' 96" style="width:100%;max-width:' + W + 'px;background:#fff;border:3px solid var(--navy);border-radius:8px" role="group" aria-label="number line">' + g + '<g class="mk"></g>' + hit + '</svg>';
+  body.appendChild(box);
+  const mk = box.querySelector(".mk");
+  const draw = () => { if (state.value === undefined) { mk.innerHTML = ""; return; } const x = X(state.value); let s = ""; if (it.inequality) { const to = state.dir === "right" ? W - 14 : 14; s += '<line x1="' + x + '" y1="50" x2="' + to + '" y2="50" stroke="var(--coral)" stroke-width="6"/>'; } s += '<circle cx="' + x + '" cy="50" r="8" fill="' + (it.inequality && !state.closed ? "#fff" : "var(--coral)") + '" stroke="var(--navy)" stroke-width="3"/>'; mk.innerHTML = s; };
+  box.querySelectorAll(".lp").forEach((c) => { const go = () => { state.value = +c.dataset.v; draw(); st.api.sound("blip"); }; c.addEventListener("click", go); c.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } }); });
+  box.querySelectorAll("[data-c],[data-d]").forEach((b) => b.addEventListener("click", () => { if (b.dataset.c) { state.closed = b.dataset.c === "closed"; box.querySelectorAll("[data-c]").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false")); } else { state.dir = b.dataset.d; box.querySelectorAll("[data-d]").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false")); } draw(); }));
+  return () => {
+    if (state.value === undefined) return "Tap the number line to place your mark.";
+    const a = it.answer;
+    if (!GN_EQ(state.value, a.value)) { for (const f of it.fb || []) if (GN_EQ(state.value, f.at)) return f.msg; return it.fbDefault || "That mark is not in the right place. Check the number again."; }
+    if (it.inequality) { if (state.closed !== a.closed) return a.closed ? it.fbClosed : it.fbOpen; if (state.dir !== a.dir) return it.fbDir; }
+    return "";
+  };
+}
+const GN_ITEMS = { choice: gnChoice, number: gnNumber, order: gnOrder, multi: gnMulti, grid: gnGrid, numberline: gnLine };
+function gnRun(spec, body, api) {
+  body.innerHTML = "";
+  const checks = spec.items.map((it) => GN_ITEMS[it.type](it, body, { api }));
+  api.onCheck(() => { for (const c of checks) { const m = c(); if (m) return api.fail(m); } api.pass(spec.pass); });
+}
+const GATES = {};
+for (const s of GATE_SPECS) GATES[s.id] = { title: s.title, icon: s.icon, prompt: s.prompt, hints: s.hints, worked: s.worked, render(body, api) { gnRun(s, body, api); } };
+
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/dungeon-delvers-l7-7 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/dungeon-delvers-l7-7-design-your-dungeon-room.webp?v=75cef0bec0","w":2610,"h":1742,"f":{"cover":[0,0,544,762,"Bao, Sol and Kwame stand in the doorway of a half-built stone room. Sol holds a blank blueprint and Kwame carries a stack of stone tiles while Pip glows above them.",[]],"p1-table":[0,762,870,490,"The four delvers lean over a stone table covered by a large blank grid parchment while Pip the lantern sprite hovers above it.",[]],"p1-grimble":[544,0,490,653,"Grimble the goblin stands on a crate and proudly holds up a shiny golden trophy cup, grinning slyly in the torchlight.",[]],"p2-pins":[1034,0,653,653,"Sol presses glowing pins into a blank grid map on the stone wall while Pip floats beside her shoulder and lights the map.",[]],"p3-measure":[870,762,870,490,"Anya and Bao stretch a long knotted measuring rope along one wall of a new empty stone room, from one corner to the other.",[]],"p4-rug":[1687,0,653,653,"Kwame flails as a floor tile tips open like a trapdoor under his foot, beside a rug that covers only part of the floor, while Pip covers its eyes.",[]],"p5-judge":[1740,762,870,490,"Grimble peers through his monocle at a blank blueprint from behind a tall judge's desk while Sol and Anya stand confidently in front of him.",[]],"p6-win":[0,1252,870,490,"The four delvers cheer inside a cozy finished room with a rug covering the whole floor and glowing crystals along every wall while Pip spins above.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
+const PAGES = [
+  {
+    "ch": "Lesson 7-7 · Design Your Dungeon Room",
+    "html": `
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">DUNGEON <em>ROOM</em></h2>
+  <div class="caption" style="display:inline-block">Lesson 7-7 — polygons on the coordinate plane. Grimble is running a contest: design the best new room for Floor −7. The prize is a golden cup. The party has one map and four corners to place.</div></div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p1-table")}
+      <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">SOL</span>A room is a <b>polygon</b>. We plot each corner, each <b>vertex</b>, and connect them in order.</div>
+      <div class="balloon vex gn-side" style="bottom:6px;right:6px;max-width:70%"><span class="who">PIP</span>Ooh, a camp room! With walls! And a rug! Do not let Kwame order the rug.</div>
+      </div>
+  </div>`
+  },
+  {
+    "ch": "Chapter 1 · The Contest",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel gn-half">${globalThis.ART("p1-grimble")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">GRIMBLE</span>Best room wins my golden cup! Only slightly fake gold.</div>
+      </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p2-pins")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">SOL</span>Our corners: (−4, 3), (2, 3), (2, −1) and (−4, −1). Connect them in order and we get a rectangle.</div>
+      </div>
+    <div class="caption">Every vertex is an ordered pair: <b>x first</b>, across; <b>y second</b>, up or down. Then connect the vertices in order to close the shape.</div>
+  </div>`
+  },
+  {
+    "ch": "Gate 1 · Plot the Vertices",
+    "gate": "g1",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p2-pins")}
+      <div class="balloon vex gn-side" style="bottom:6px;left:6px;max-width:70%"><span class="who">PIP</span>Four pins, four corners. x across first, then y!</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:32%;top:30%">(−4, 3) (2, 3)<br>(2, −1) (−4, −1)</div>
+      </div>
+  </div>`
+  },
+  {
+    "ch": "Chapter 2 · Walk the Walls",
+    "gate": "g2",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p3-measure")}
+      <div class="balloon" style="bottom:6px;left:6px;max-width:70%"><span class="who">ANYA</span>The top wall goes from (−4, 3) to (2, 3). Same y, so it's flat. How long is it?</div>
+      <div class="balloon tail-r" style="bottom:6px;right:6px;max-width:70%"><span class="who">BAO</span>−4 and 2 are on opposite sides of zero. I think we add.</div>
+      </div>
+  </div>`
+  },
+  {
+    "ch": "Chapter 3 · The Rug Problem",
+    "gate": "g3",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel gn-half">${globalThis.ART("p4-rug")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">KWAME</span>The walls add up to 20, so I bought 20 rug squares! Why is the floor... OPENING?</div>
+      </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p3-measure")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none"><span class="who">BAO</span>20 is the way AROUND. A rug covers the INSIDE. Those are different numbers.</div>
+      </div>
+    <div class="caption"><b>Perimeter</b> is the distance around a polygon, the sum of its side lengths. <b>Area</b> is the number of unit squares inside it.</div>
+  </div>`
+  },
+  {
+    "ch": "Boss Gate · Grimble's Judging Desk",
+    "gate": "boss",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p5-judge")}
+      <div class="balloon" style="bottom:6px;left:6px;max-width:70%"><span class="who">GRIMBLE</span>Last room: a treasure vault. Fence it, and tell me the fence in METERS. Each grid unit is 2 meters.</div>
+      <div class="balloon tail-r" style="bottom:6px;right:6px;max-width:70%"><span class="who">SOL</span>A scale! Count units first, then change to meters.</div>
+      </div>
+  </div>`
+  },
+  {
+    "ch": "Chapter 4 · Room Complete",
+    "html": `
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p6-win")}
+      <div class="balloon" style="bottom:6px;left:6px;max-width:70%"><span class="who">KWAME</span>I am never buying a rug by the perimeter again.</div>
+      <div class="balloon vex gn-side" style="bottom:6px;right:6px;max-width:70%"><span class="who">PIP</span>20 units of crystal fence, 24 rug squares, zero trapdoors. Best room on the floor!</div>
+      <div class="sfx" style="top:6px;left:6px">CLINK!</div>
+      </div>
+    <div class="caption">Plot the vertices, connect them in order, and use coordinates to find each side. Add the sides for the perimeter. Multiply length × width for a rectangle's area.</div>
+  </div>`
+  },
+  {
+    "ch": "End Matter · Pip's Dungeon Log",
+    "html": `
+  <h2 class="splashtitle" style="font-size:1.4rem">PIP'S <em>DUNGEON LOG</em></h2>
+  <div class="journal"><h4>Lesson 7-7 — what the dungeon room taught us</h4>
+    <div class="jrow"><b>Plot the vertices.</b><span>Each corner is an ordered pair. Plot (−4, 3), (2, 3), (2, −1), (−4, −1) and connect them in order to close the polygon.</span></div>
+    <div class="jrow"><b>Side lengths.</b><span>Two vertices on one side share a coordinate. (−4, 3) to (2, 3): opposite signs, so 4 + 2 = 6 units.</span></div>
+    <div class="jrow"><b>Perimeter vs. area.</b><span>Perimeter goes AROUND: 6 + 4 + 6 + 4 = 20 units. Area fills the INSIDE: 6 × 4 = 24 square units.</span></div>
+    <div class="jrow"><b>Scale.</b><span>If one grid unit is 2 meters, a 14-unit fence is 14 × 2 = 28 meters.</span></div>
+    <div class="jrow"><b>Kwame's trap.</b><span>He bought 20 rug squares because the walls added to 20. A rug needs the area, 24, so 4 squares were missing.</span></div>
+  </div>
+  <div class="caption">"Around is a fence. Inside is a rug. Kwame, write that down." — Pip</div>`
+  },
+  {
+    "ch": "End Matter · Certificate",
+    "html": `
+  <div id="certificate">
+    <div class="kicker">DUNGEON DELVERS · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Lesson 7-7: Design Your Dungeon Room</b> and proved mastery: drawing polygons from vertices and using coordinates to find side lengths, perimeter and area.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Next episode: <a href="/graphic-novels/axiom-city/episodes/dungeon-delvers-l7-8-portal-jump.html">Portal Jump</a> (Lesson 7-8).</div>`
+  }
+];
+
+const TEACHER = {
+  "suggested": "Use during or after lesson 7-7 (Represent Polygons on the Coordinate Plane) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: plotting polygon vertices, finding side lengths from coordinates that share an x or a y, perimeter and area of rectangles on the plane, and using a scale.",
+  "standards": [
+    [
+      "6.GR.3",
+      "Draw polygons in the coordinate plane from vertex coordinates; use coordinates to find side lengths and solve problems",
+      "Gate 1, Gate 2, Gate 3, Boss"
+    ]
+  ],
+  "answers": [
+    [
+      "Gate 1",
+      "Tap all four corners of the camp room. → (-4, 3) (2, 3) (2, -1) (-4, -1) | Which vertex is joined to (2, 3) by a vertical wall? → (2, −1) (traps: (−4, 3) — (−4, 3) shares the y-coordinate 3, so that wall is horizontal, not vertical.; (−4, −1) — (−4, −1) shares no coordinate with (2, 3). It is the opposite corner.; (3, 2) — (3, 2) is not a vertex of this room. It is (2, 3) with x and y swapped.)"
+    ],
+    [
+      "Gate 2",
+      "Top wall · (−4, 3) to (2, 3): 6 (traps: 2 — That's 4 − 2. The x's −4 and 2 are on opposite sides of zero, so add: 4 + 2.; -6 — A side length is never negative. It is 6 units.; 0 — The y's are both 3, so the wall is flat. Look at the x's, −4 and 2.) | Right wall · (2, 3) to (2, −1): 4 (traps: 2 — That's 3 − 1. The y's 3 and −1 are on opposite sides of the x-axis, so add: 3 + 1.; -4 — A side length is never negative. It is 4 units.; 0 — The x's are both 2, so the wall is vertical. Look at the y's, 3 and −1.)"
+    ],
+    [
+      "Gate 3",
+      "Sol puts a crystal fence along every wall. Which measurement tells how much fence she needs? → The perimeter (traps: The area — Area counts the squares inside the room. A fence runs along the edge, so you need the distance around.; The top wall only — The fence goes along every wall, not just one. Add all four sides.; The number of vertices — The room has 4 vertices, but a fence is a length. Add the side lengths.) | Crystal fence (perimeter), units: 20 (traps: 24 — 24 is 6 × 4, the AREA: squares inside. The fence goes around, so add the four sides.; 10 — 10 is only two sides, 6 + 4. A rectangle has four sides: add the other two.) | Rug squares (area): 24 (traps: 20 — 20 is the perimeter, the distance around. That's Kwame's rug, and it left a hole. Count the squares inside.; 10 — 10 is 6 + 4. Area does not add the sides. Count the squares: 4 rows of 6.)"
+    ],
+    [
+      "Boss",
+      "Tap the fourth corner of the vault. → (1, -5) | Vault perimeter, in units: 14 (traps: 12 — 12 is 4 × 3, the AREA. The fence goes around: add the four sides.; 7 — 7 is only two sides, 4 + 3. Add all four sides.; 18 — Check the width: x goes from 1 to 5, both positive, so it's 5 − 1 = 4, not 6.) | Vault fence, in meters: 28 (traps: 14 — 14 is the perimeter in grid units. Each unit is 2 meters, so multiply by 2.; 24 — 24 is the area, 12, times 2. The fence is the perimeter: 14 units × 2 meters.; 48 — 48 is the floor space in square meters, 8 × 6. The fence is a length around the edge.)"
+    ]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">DUNGEON DELVERS</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK PIP — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask PIP worked examples, but never block turning the page (Neft 2026-06-11) */}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → PIP worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+  <script src="/assets/formula-popup.js" defer></script>
+<!-- nt-gn-teacher-gate:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
+<script>(function(){function hide(){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}try{var asked=new URLSearchParams(location.search).get("teacher")==="1";var unlocked=localStorage.getItem("nt-teacher-mode")==="1";if(!(asked&&unlocked)){hide();}}catch(e){hide();}})();</script>
+<!-- nt-gn-teacher-gate:end -->
+<!-- gn-layer:begin (shared layer: vocabulary pop-ups, Easy read switch, formatting; vocabulary from named 7-7 — tools/inject-gn-layer.mjs) -->
+<script type="application/json" id="gn-vocab">[{"term":"vertex","termEs":"vértice","definition":"A corner point of a polygon, named by an ordered pair on the coordinate plane.","definitionEs":"Un punto de esquina de un polígono, nombrado por un par ordenado en el plano de coordenadas.","visual":"The park's corner at (2, 4) — one corner, named by an ordered pair.","img":"/assets/vocab-images/ordered-pair.svg","lesson":"7-7"},{"term":"polygon","termEs":"polígono","definition":"A closed figure made of line segments; on the plane you draw it by plotting the vertices and connecting them in order.","definitionEs":"Una figura cerrada hecha de segmentos; en el plano se dibuja marcando los vértices y conectándolos en orden.","visual":"Plot (2, 4), (5, 4), (5, −4), (2, −4) and join them — a rectangle appears.","img":"/assets/vocab-images/regular-polygon.svg","lesson":"7-7"},{"term":"perimeter","termEs":"perímetro","definition":"The total distance around a polygon — the sum of all its side lengths.","definitionEs":"La distancia total alrededor de un polígono: la suma de todos sus lados.","visual":"2(9.5) + 2(6.75) = 32.5 units around the deck.","img":"/assets/vocab-images/perimeter.svg","lesson":"7-7"},{"term":"distance between vertices","termEs":"distancia entre vértices","definition":"When two vertices share an x- or y-coordinate, the distance between them is the absolute difference of the other coordinates.","definitionEs":"Cuando dos vértices comparten una coordenada x o y, la distancia es la diferencia absoluta de las otras coordenadas.","visual":"(2, 4) and (5, 4) share y, so the side is |5 − 2| = 3 units.","img":"/assets/vocab-images/distance.svg","lesson":"7-7"},{"term":"scale","termEs":"escala","definition":"What one grid unit stands for in the real situation.","definitionEs":"Lo que representa una unidad de la cuadrícula en la situación real.","visual":"Each grid unit = 100 feet, so 8 units of map is 800 real feet.","img":"/assets/vocab-images/scale-factor.svg","lesson":"7-7"},{"term":"Side length","termEs":"Longitud del lado","definition":"The distance between two vertices that are joined by a side.","definitionEs":"La distancia entre dos vértices unidos por un lado.","visual":"Found with absolute value when the points share a coordinate.","img":"/assets/vocab-images/segment.svg","lesson":"7-7"}]</script>
+<script type="application/json" id="gn-easy">{"v":1,"map":{}}</script>
+<script src="/graphic-novels/_shared/gn-layer.js" defer></script>
+<!-- gn-layer:end -->
+</body>
+</html>

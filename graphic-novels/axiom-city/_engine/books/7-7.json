@@ -1,0 +1,627 @@
+{
+  "lesson": "7-7",
+  "world": "dungeon-delvers",
+  "slug": "design-your-dungeon-room",
+  "num": 8701,
+  "title": "Design Your Dungeon Room",
+  "coverTitle": "DUNGEON<br><em>ROOM</em>",
+  "topic": "POLYGONS ON THE COORDINATE PLANE",
+  "pageTitle": "Represent Polygons on the Coordinate Plane",
+  "covers": "how to draw a polygon from its vertex coordinates, find side lengths from coordinates, and tell perimeter (the distance around) from area (the space inside)",
+  "cert": "drawing polygons from vertices and using coordinates to find side lengths, perimeter and area",
+  "cover": {
+    "prompt": "{{style}}. {{notext}}. Comic book cover, heroic low-angle shot inside a half-built stone room in {{dungeon}}. Three kids stand in the doorway, left to right: {{bao}}; {{sol}}, holding a large rolled-out blank blueprint; {{kwame}}, carrying a stack of stone tiles. {{pip}} floats above, glowing. Plain dark cave rock across the top quarter of the picture.",
+    "alt": "Bao, Sol and Kwame stand in the doorway of a half-built stone room. Sol holds a blank blueprint and Kwame carries a stack of stone tiles while Pip glows above them."
+  },
+  "panels": [
+    {
+      "id": "p1-table",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Wide establishing panel in {{dungeon}}. Four kids lean over a big stone table, faces small: {{anya}}, {{kwame}}, {{sol}}, {{bao}}. {{pip}} hovers over the table. A large blank parchment with faint square grid lines covers the table. Mossy stone walls with torches rise behind them, with open wall space above their heads.",
+      "alt": "The four delvers lean over a stone table covered by a large blank grid parchment while Pip the lantern sprite hovers above it."
+    },
+    {
+      "id": "p1-grimble",
+      "size": "tall",
+      "prompt": "{{style}}. {{notext}}. {{grimble}} stands on a wooden crate holding up a shiny golden trophy cup with both hands, grinning slyly. Torchlight glints on his monocle. The same scene continues up to the top edge with plain open cave wall above his head.",
+      "alt": "Grimble the goblin stands on a crate and proudly holds up a shiny golden trophy cup, grinning slyly in the torchlight."
+    },
+    {
+      "id": "p2-pins",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. {{sol}} presses glowing pins into a large blank parchment map pinned flat to a stone wall, the map has faint square grid lines. {{pip}} floats next to her shoulder, lighting the map. The same scene continues up to the top edge with plain open cave wall above the heads.",
+      "alt": "Sol presses glowing pins into a blank grid map on the stone wall while Pip floats beside her shoulder and lights the map."
+    },
+    {
+      "id": "p3-measure",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Inside a new empty stone room in {{dungeon}}: {{anya}} and {{bao}} stretch a long knotted measuring rope along the bottom of one stone wall, from corner to corner. Bare stone floor. Plain stone wall space above their heads.",
+      "alt": "Anya and Bao stretch a long knotted measuring rope along one wall of a new empty stone room, from one corner to the other."
+    },
+    {
+      "id": "p4-rug",
+      "size": "square",
+      "prompt": "{{style}}. {{notext}}. Funny panel: {{kwame}} stands on a stone floor next to a small square rug that covers only part of the room. Under his foot a floor tile tips open like a trapdoor and he wobbles, arms flailing, shield flying. {{pip}} covers its eyes. The same scene continues up to the top edge with plain open wall above the heads.",
+      "alt": "Kwame flails as a floor tile tips open like a trapdoor under his foot, beside a rug that covers only part of the floor, while Pip covers its eyes."
+    },
+    {
+      "id": "p5-judge",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. A torchlit contest hall in {{dungeon}}. {{grimble}} sits behind a tall judge's desk, peering through his monocle at a blank blueprint. {{sol}} and {{anya}} stand in front of the desk, confident. Torchlit mossy stone walls rise behind them, with open wall space above their heads.",
+      "alt": "Grimble peers through his monocle at a blank blueprint from behind a tall judge's desk while Sol and Anya stand confidently in front of him."
+    },
+    {
+      "id": "p6-win",
+      "size": "wide",
+      "prompt": "{{style}}. {{notext}}. Celebration panel: a cozy finished rectangular stone room with a soft rug covering the whole floor and a fence of glowing crystals along every wall. {{anya}}, {{kwame}}, {{sol}} and {{bao}} cheer in the middle. {{pip}} spins above them. The same scene continues up to the top edge with plain open wall above the heads.",
+      "alt": "The four delvers cheer inside a cozy finished room with a rug covering the whole floor and glowing crystals along every wall while Pip spins above."
+    }
+  ],
+  "intro": {
+    "caption": "Lesson 7-7 — polygons on the coordinate plane. Grimble is running a contest: design the best new room for Floor −7. The prize is a golden cup. The party has one map and four corners to place.",
+    "cells": [
+      {
+        "art": "p1-table",
+        "size": "full",
+        "balloons": [
+          {
+            "who": "Sol",
+            "t": "A room is a <b>polygon</b>. We plot each corner, each <b>vertex</b>, and connect them in order.",
+            "pos": "tl"
+          },
+          {
+            "who": "Pip",
+            "t": "Ooh, a camp room! With walls! And a rug! Do not let Kwame order the rug.",
+            "pos": "br"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "ch": "Chapter 1 · The Contest",
+      "cells": [
+        {
+          "art": "p1-grimble",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Grimble",
+              "t": "Best room wins my golden cup! Only slightly fake gold.",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p2-pins",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Sol",
+              "t": "Our corners: (−4, 3), (2, 3), (2, −1) and (−4, −1). Connect them in order and we get a rectangle.",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "Every vertex is an ordered pair: <b>x first</b>, across; <b>y second</b>, up or down. Then connect the vertices in order to close the shape."
+    },
+    {
+      "ch": "Gate 1 · Plot the Vertices",
+      "gate": "g1",
+      "cells": [
+        {
+          "art": "p2-pins",
+          "size": "full",
+          "sign": {
+            "t": "(−4, 3) (2, 3)<br>(2, −1) (−4, −1)",
+            "style": "scrawl",
+            "x": "32%",
+            "y": "30%"
+          },
+          "balloons": [
+            {
+              "who": "Pip",
+              "t": "Four pins, four corners. x across first, then y!",
+              "pos": "bl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 2 · Walk the Walls",
+      "gate": "g2",
+      "cells": [
+        {
+          "art": "p3-measure",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Anya",
+              "t": "The top wall goes from (−4, 3) to (2, 3). Same y, so it's flat. How long is it?",
+              "pos": "bl"
+            },
+            {
+              "who": "Bao",
+              "t": "−4 and 2 are on opposite sides of zero. I think we add.",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ch": "Chapter 3 · The Rug Problem",
+      "gate": "g3",
+      "cells": [
+        {
+          "art": "p4-rug",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Kwame",
+              "t": "The walls add up to 20, so I bought 20 rug squares! Why is the floor... OPENING?",
+              "pos": "top"
+            }
+          ]
+        },
+        {
+          "art": "p3-measure",
+          "size": "half",
+          "balloons": [
+            {
+              "who": "Bao",
+              "t": "20 is the way AROUND. A rug covers the INSIDE. Those are different numbers.",
+              "pos": "top",
+              "tail": "r"
+            }
+          ]
+        }
+      ],
+      "caption": "<b>Perimeter</b> is the distance around a polygon, the sum of its side lengths. <b>Area</b> is the number of unit squares inside it."
+    },
+    {
+      "ch": "Boss Gate · Grimble's Judging Desk",
+      "gate": "boss",
+      "cells": [
+        {
+          "art": "p5-judge",
+          "size": "full",
+          "balloons": [
+            {
+              "who": "Grimble",
+              "t": "Last room: a treasure vault. Fence it, and tell me the fence in METERS. Each grid unit is 2 meters.",
+              "pos": "bl"
+            },
+            {
+              "who": "Sol",
+              "t": "A scale! Count units first, then change to meters.",
+              "pos": "br",
+              "tail": "r"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "win": {
+    "ch": "Chapter 4 · Room Complete",
+    "cells": [
+      {
+        "art": "p6-win",
+        "size": "full",
+        "sfx": {
+          "t": "CLINK!",
+          "pos": "tl"
+        },
+        "balloons": [
+          {
+            "who": "Kwame",
+            "t": "I am never buying a rug by the perimeter again.",
+            "pos": "bl"
+          },
+          {
+            "who": "Pip",
+            "t": "20 units of crystal fence, 24 rug squares, zero trapdoors. Best room on the floor!",
+            "pos": "br"
+          }
+        ]
+      }
+    ],
+    "caption": "Plot the vertices, connect them in order, and use coordinates to find each side. Add the sides for the perimeter. Multiply length × width for a rectangle's area."
+  },
+  "gates": [
+    {
+      "id": "g1",
+      "title": "Gate 1 · Plot the Vertices",
+      "badge": "Corner Placer — Vertices",
+      "prompt": "Pin the four corners of the camp room: <b>(−4, 3)</b>, <b>(2, 3)</b>, <b>(2, −1)</b> and <b>(−4, −1)</b>.",
+      "hints": [
+        "Conceptual: each vertex is an ordered pair. The first number moves you across, the second moves you up or down.",
+        "Procedural: start at (0, 0) for each point. Move left or right by x, then up or down by y. Negative means left or down."
+      ],
+      "worked": {
+        "steps": [
+          "Practice room: (1, 1), (5, 1), (5, 4) and (1, 4).",
+          "(5, 1): go right 5, up 1. (5, 4): right 5, up 4. (1, 4): right 1, up 4.",
+          "Connect them in order and the last side goes back to (1, 1). The shape is a rectangle."
+        ],
+        "q": "A rectangle has vertices (−3, 2), (1, 2) and (1, −2). What is the fourth vertex?",
+        "a": "(−3, −2)"
+      },
+      "items": [
+        {
+          "type": "grid",
+          "q": "Tap all four corners of the camp room.",
+          "range": 6,
+          "answer": [
+            [
+              -4,
+              3
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              -1
+            ],
+            [
+              -4,
+              -1
+            ]
+          ],
+          "fb": [
+            {
+              "at": [
+                3,
+                -4
+              ],
+              "msg": "That's (3, −4): x and y are swapped. For (−4, 3), go left 4 first, then up 3."
+            },
+            {
+              "at": [
+                3,
+                2
+              ],
+              "msg": "That's (3, 2): x and y are swapped. For (2, 3), go right 2 first, then up 3."
+            },
+            {
+              "at": [
+                -1,
+                2
+              ],
+              "msg": "That's (−1, 2): x and y are swapped. For (2, −1), go right 2 first, then down 1."
+            },
+            {
+              "at": [
+                -1,
+                -4
+              ],
+              "msg": "That's (−1, −4): x and y are swapped. For (−4, −1), go left 4 first, then down 1."
+            },
+            {
+              "at": [
+                4,
+                3
+              ],
+              "msg": "That's (4, 3). The x is −4, so go LEFT 4, not right."
+            }
+          ],
+          "fbDefault": "Check each corner: x across first, then y up or down. You need exactly four points."
+        },
+        {
+          "type": "choice",
+          "q": "Which vertex is joined to <b>(2, 3)</b> by a <b>vertical</b> wall?",
+          "options": [
+            {
+              "t": "(−4, 3)",
+              "fb": "(−4, 3) shares the y-coordinate 3, so that wall is horizontal, not vertical."
+            },
+            {
+              "t": "(−4, −1)",
+              "fb": "(−4, −1) shares no coordinate with (2, 3). It is the opposite corner."
+            },
+            {
+              "t": "(3, 2)",
+              "fb": "(3, 2) is not a vertex of this room. It is (2, 3) with x and y swapped."
+            },
+            {
+              "t": "(2, −1)",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "pass": "Four glowing pins, four straight walls. The room is a rectangle, and Grimble squints at it suspiciously."
+    },
+    {
+      "id": "g2",
+      "title": "Gate 2 · Side Lengths",
+      "badge": "Wall Walker — Side Lengths",
+      "prompt": "Use the coordinates to find how long each wall is. No measuring rope needed.",
+      "hints": [
+        "Conceptual: two vertices on the same wall share one coordinate. The OTHER coordinate tells you how long the wall is.",
+        "Procedural: take the absolute values of the coordinates that change. Opposite signs: add them. Same sign: subtract."
+      ],
+      "worked": {
+        "steps": [
+          "Practice wall: (−5, 1) to (−1, 1). The y's match, so the wall is horizontal.",
+          "−5 and −1 are both negative, on the same side of zero.",
+          "|−5| − |−1| = 5 − 1 = 4 units."
+        ],
+        "q": "How long is the wall from (3, −5) to (3, 2)?",
+        "a": "7 units"
+      },
+      "items": [
+        {
+          "type": "number",
+          "label": "Top wall · (−4, 3) to (2, 3):",
+          "aria": "length of the top wall in units",
+          "answer": "6",
+          "calc": "4 + 2",
+          "fb": [
+            {
+              "eq": "2",
+              "msg": "That's 4 − 2. The x's −4 and 2 are on opposite sides of zero, so add: 4 + 2."
+            },
+            {
+              "eq": "-6",
+              "msg": "A side length is never negative. It is 6 units."
+            },
+            {
+              "eq": "0",
+              "msg": "The y's are both 3, so the wall is flat. Look at the x's, −4 and 2."
+            }
+          ],
+          "fbDefault": "The y's match. Find the distance from x = −4 to x = 2."
+        },
+        {
+          "type": "number",
+          "label": "Right wall · (2, 3) to (2, −1):",
+          "aria": "length of the right wall in units",
+          "answer": "4",
+          "calc": "3 + 1",
+          "fb": [
+            {
+              "eq": "2",
+              "msg": "That's 3 − 1. The y's 3 and −1 are on opposite sides of the x-axis, so add: 3 + 1."
+            },
+            {
+              "eq": "-4",
+              "msg": "A side length is never negative. It is 4 units."
+            },
+            {
+              "eq": "0",
+              "msg": "The x's are both 2, so the wall is vertical. Look at the y's, 3 and −1."
+            }
+          ],
+          "fbDefault": "The x's match. Find the distance from y = 3 to y = −1."
+        }
+      ],
+      "pass": "The room is 6 units wide and 4 units tall. Anya coils up the measuring rope: they never needed it."
+    },
+    {
+      "id": "g3",
+      "title": "Gate 3 · Perimeter or Area?",
+      "badge": "Room Planner — Perimeter and Area",
+      "prompt": "The room is <b>6 units</b> by <b>4 units</b>. The crystal fence goes AROUND the walls. The rug covers the whole FLOOR.",
+      "hints": [
+        "Conceptual: perimeter measures the edge (a length). Area counts the unit squares inside (a space). Ask: around, or inside?",
+        "Procedural: perimeter = add all four sides. Area of a rectangle = length × width."
+      ],
+      "worked": {
+        "steps": [
+          "Practice room: 5 units by 3 units.",
+          "Perimeter: 5 + 3 + 5 + 3 = 16 units of fence around it.",
+          "Area: 5 × 3 = 15 unit squares of rug inside it."
+        ],
+        "q": "A room is 7 units by 2 units. What is its perimeter?",
+        "a": "18 units"
+      },
+      "items": [
+        {
+          "type": "choice",
+          "q": "Sol puts a crystal fence along every wall. Which measurement tells how much fence she needs?",
+          "options": [
+            {
+              "t": "The perimeter",
+              "ok": true
+            },
+            {
+              "t": "The area",
+              "fb": "Area counts the squares inside the room. A fence runs along the edge, so you need the distance around."
+            },
+            {
+              "t": "The top wall only",
+              "fb": "The fence goes along every wall, not just one. Add all four sides."
+            },
+            {
+              "t": "The number of vertices",
+              "fb": "The room has 4 vertices, but a fence is a length. Add the side lengths."
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "label": "Crystal fence (perimeter), units:",
+          "aria": "perimeter of the room in units",
+          "answer": "20",
+          "calc": "6 + 4 + 6 + 4",
+          "fb": [
+            {
+              "eq": "24",
+              "msg": "24 is 6 × 4, the AREA: squares inside. The fence goes around, so add the four sides."
+            },
+            {
+              "eq": "10",
+              "msg": "10 is only two sides, 6 + 4. A rectangle has four sides: add the other two."
+            }
+          ],
+          "fbDefault": "Walk around the room: 6 + 4 + 6 + 4."
+        },
+        {
+          "type": "number",
+          "label": "Rug squares (area):",
+          "aria": "area of the room in square units",
+          "answer": "24",
+          "calc": "6 * 4",
+          "fb": [
+            {
+              "eq": "20",
+              "msg": "20 is the perimeter, the distance around. That's Kwame's rug, and it left a hole. Count the squares inside."
+            },
+            {
+              "eq": "10",
+              "msg": "10 is 6 + 4. Area does not add the sides. Count the squares: 4 rows of 6."
+            }
+          ],
+          "fbDefault": "The floor has 4 rows of 6 squares. Multiply 6 × 4."
+        }
+      ],
+      "pass": "20 units of crystal fence and a 24-square rug. Kwame rolls out the new rug and the trapdoor stays shut."
+    },
+    {
+      "id": "boss",
+      "title": "Boss Gate · Grimble's Judging Desk",
+      "badge": "Room Designer — Boss Gate",
+      "prompt": "The treasure vault has three corners: <b>(1, −2)</b>, <b>(5, −2)</b> and <b>(5, −5)</b>. It is a rectangle. Each grid unit is <b>2 meters</b>.",
+      "hints": [
+        "Conceptual: a rectangle's opposite sides match, so the missing corner shares an x with one vertex and a y with another.",
+        "Procedural: find the side lengths in units first. Add them for the perimeter. Then multiply the units by the scale to get meters."
+      ],
+      "worked": {
+        "steps": [
+          "Practice: a rectangle is 2 units by 6 units, and each unit is 5 meters.",
+          "Perimeter in units: 2 + 6 + 2 + 6 = 16 units.",
+          "In meters: 16 × 5 = 80 meters."
+        ],
+        "q": "Each unit is 10 meters. A side is 3 units long. How long is it in meters?",
+        "a": "30 meters"
+      },
+      "items": [
+        {
+          "type": "grid",
+          "q": "Tap the fourth corner of the vault.",
+          "range": 6,
+          "answer": [
+            [
+              1,
+              -5
+            ]
+          ],
+          "fb": [
+            {
+              "at": [
+                -5,
+                1
+              ],
+              "msg": "That's (−5, 1): x and y are swapped. The corner sits below (1, −2), so x = 1 and y = −5."
+            },
+            {
+              "at": [
+                1,
+                5
+              ],
+              "msg": "Right x, wrong sign on y. The vault is below the x-axis, so y = −5."
+            },
+            {
+              "at": [
+                -1,
+                -5
+              ],
+              "msg": "Right y, wrong sign on x. The corner sits straight below (1, −2), so x = 1."
+            }
+          ],
+          "fbDefault": "The missing corner shares x with (1, −2) and y with (5, −5)."
+        },
+        {
+          "type": "number",
+          "label": "Vault perimeter, in units:",
+          "aria": "perimeter of the vault in grid units",
+          "answer": "14",
+          "calc": "4 + 3 + 4 + 3",
+          "fb": [
+            {
+              "eq": "12",
+              "msg": "12 is 4 × 3, the AREA. The fence goes around: add the four sides."
+            },
+            {
+              "eq": "7",
+              "msg": "7 is only two sides, 4 + 3. Add all four sides."
+            },
+            {
+              "eq": "18",
+              "msg": "Check the width: x goes from 1 to 5, both positive, so it's 5 − 1 = 4, not 6."
+            }
+          ],
+          "fbDefault": "Width: 5 − 1 = 4 units. Height: 5 − 2 = 3 units. Add all four sides."
+        },
+        {
+          "type": "number",
+          "label": "Vault fence, in meters:",
+          "aria": "perimeter of the vault in meters",
+          "answer": "28",
+          "calc": "(4 + 3 + 4 + 3) * 2",
+          "fb": [
+            {
+              "eq": "14",
+              "msg": "14 is the perimeter in grid units. Each unit is 2 meters, so multiply by 2."
+            },
+            {
+              "eq": "24",
+              "msg": "24 is the area, 12, times 2. The fence is the perimeter: 14 units × 2 meters."
+            },
+            {
+              "eq": "48",
+              "msg": "48 is the floor space in square meters, 8 × 6. The fence is a length around the edge."
+            }
+          ],
+          "fbDefault": "Find the perimeter in units, then multiply by 2 meters per unit."
+        }
+      ],
+      "pass": "Vault corner (1, −5), 14 units around, 28 meters of fence. Grimble drops his monocle and hands over the golden cup."
+    }
+  ],
+  "journal": {
+    "heading": "Lesson 7-7 — what the dungeon room taught us",
+    "rows": [
+      [
+        "Plot the vertices.",
+        "Each corner is an ordered pair. Plot (−4, 3), (2, 3), (2, −1), (−4, −1) and connect them in order to close the polygon."
+      ],
+      [
+        "Side lengths.",
+        "Two vertices on one side share a coordinate. (−4, 3) to (2, 3): opposite signs, so 4 + 2 = 6 units."
+      ],
+      [
+        "Perimeter vs. area.",
+        "Perimeter goes AROUND: 6 + 4 + 6 + 4 = 20 units. Area fills the INSIDE: 6 × 4 = 24 square units."
+      ],
+      [
+        "Scale.",
+        "If one grid unit is 2 meters, a 14-unit fence is 14 × 2 = 28 meters."
+      ],
+      [
+        "Kwame's trap.",
+        "He bought 20 rug squares because the walls added to 20. A rug needs the area, 24, so 4 squares were missing."
+      ]
+    ],
+    "quote": "\"Around is a fence. Inside is a rug. Kwame, write that down.\" — Pip"
+  },
+  "teacher": {
+    "suggested": "Use during or after lesson 7-7 (Represent Polygons on the Coordinate Plane) as one focused read. Whole-class on a projector, pairs on devices, or independent practice. It covers only this lesson: plotting polygon vertices, finding side lengths from coordinates that share an x or a y, perimeter and area of rectangles on the plane, and using a scale.",
+    "standards": [
+      [
+        "6.GR.3",
+        "Draw polygons in the coordinate plane from vertex coordinates; use coordinates to find side lengths and solve problems",
+        "Gate 1, Gate 2, Gate 3, Boss"
+      ]
+    ]
+  }
+}
