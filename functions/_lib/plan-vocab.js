@@ -3688,7 +3688,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/practice-studio/6-5/",
-    title: "Write and Evaluate Algebraic Expressions · Interactive Practice Studio (Grade 6)",
+    title: "Parts of an Algebraic Expression · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -5037,6 +5037,12 @@ export const ACTIVITIES = [
   {
     path: "/math/vocab-deck/",
     title: "Bilingual Vocab Deck",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/word-problems/",
+    title: "Word problems",
     category: "Math Tool",
     unit: null,
   },

@@ -1,0 +1,64 @@
+.expression-parts {
+  margin: 0 0 24px;
+  padding: clamp(16px, 2vw, 22px);
+  border: 2px solid #b9d9d6;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f7f4ec, #eaf7f4);
+  color: #17324d;
+  box-shadow: 0 12px 30px #17324d15;
+}
+.parts-heading { max-width: 70ch; }
+.parts-kicker { font-size: .8rem; font-weight: 850; letter-spacing: .12em; color: #136b68; }
+.parts-heading h2 { margin: 4px 0 6px; font-size: clamp(1.4rem, 2.5vw, 1.85rem); line-height: 1.15; }
+.parts-heading p { margin: 5px 0; font-size: 1.05rem; line-height: 1.5; }
+.parts-layout { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(240px, .85fr); align-items: center; gap: 16px; margin: 14px 0; }
+.parts-equation { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 12px; border-radius: 20px; background: #fff; border: 1px solid #cbdedb; min-height: 125px; box-shadow: 0 5px 14px #17324d10; }
+.parts-token { display: grid; place-items: center; width: 75px; height: 95px; border-radius: 16px; font-size: 2.5rem; font-weight: 900; line-height: 1; border: 2px solid currentColor; }
+.parts-token small { display: block; padding: 5px 2px; text-align: center; font-size: .62rem; font-weight: 800; line-height: 1.1; }
+.parts-coef { background: #e2f4f2; color: #0b6663; }
+.parts-var { background: #fff0cd; color: #785005; }
+.parts-constant { background: #e7eef8; color: #244e87; }
+.parts-operator { font-size: 2rem; font-weight: 800; margin: 0 4px; }
+.parts-legend { padding: 18px 20px; border-radius: 18px; background: #fff; border: 1px solid #cbdedb; }
+.parts-legend p { margin: 4px 0 10px; font-size: 1rem; line-height: 1.45; }
+.parts-legend p:last-child { margin-bottom: 0; }
+.parts-interact { padding: 14px 18px; border-radius: 18px; background: #17324d; color: #fff; }
+.parts-interact label { display: block; font-size: 1.08rem; font-weight: 700; }
+.parts-interact label strong { display: inline-grid; place-items: center; min-width: 36px; min-height: 36px; margin-left: 5px; border-radius: 10px; background: #f2c15b; color: #17324d; font-size: 1.3rem; }
+.parts-interact input[type=range] { display: block; width: min(100%, 450px); margin: 16px 0 18px; accent-color: #f2c15b; cursor: pointer; }
+.parts-interact input:focus-visible { outline: 3px solid #f2c15b; outline-offset: 4px; }
+.parts-pouches { display: flex; flex-wrap: wrap; gap: 10px; min-height: 60px; }
+.parts-pouch { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 64px; padding: 7px; border: 2px solid #83d0c8; border-radius: 13px; background: #22546a; }
+.parts-pencils { display: flex; gap: 2px; }
+.parts-pencil { display: block; width: 7px; height: 28px; border-radius: 3px 3px 1px 1px; background: linear-gradient(to bottom, #fbe3a2 0 15%, #f2c15b 15% 85%, #d78753 85%); border-bottom: 3px solid #eee3cc; }
+.parts-pouch small { font-size: .72rem; font-weight: 800; }
+.parts-extra { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 2px dashed #e6edf7; border-radius: 13px; }
+.parts-extra .parts-pencils { flex-wrap: wrap; width: 52px; }
+.parts-extra small { max-width: 58px; font-size: .7rem; font-weight: 800; line-height: 1.1; }
+.parts-ticket, .parts-fee { display: grid; place-items: center; min-width: 62px; min-height: 58px; padding: 5px 8px; border-radius: 11px; background: #e2f4f2; color: #17324d; border: 2px solid #83d0c8; font-weight: 800; }
+.parts-ticket { border-style: dashed; }
+.parts-ticket small, .parts-fee small { font-size: .7rem; }
+.parts-fee { background: #fff0cd; border-color: #f2c15b; }
+.parts-total { display: inline-block; margin-top: 14px; padding: 9px 14px; border-radius: 10px; background: #f2c15b; color: #17324d; font-size: 1.2rem; font-weight: 850; }
+.parts-rule { margin: 12px 0 0; font-size: 1rem; line-height: 1.4; }
+body[data-theme=dark] .expression-parts { background: linear-gradient(135deg, #17324d, #174c53); border-color: #489c98; color: #fff; }
+body[data-theme=dark] .parts-equation, body[data-theme=dark] .parts-legend { background: #203c51; border-color: #618b92; color: #fff; }
+body[data-theme=dark] .parts-kicker { color: #8fe0d6; }
+body[data-theme=dark] .parts-interact { background: #102b3c; }
+@media (max-width: 700px) {
+  .parts-layout { grid-template-columns: 1fr; gap: 8px; margin: 10px 0; }
+  .parts-equation { min-height: 0; padding: 8px; }
+  .parts-token { width: 64px; height: 84px; font-size: 2.1rem; }
+  .parts-legend { padding: 10px 14px; font-size: .95rem; }
+  .parts-legend p { margin: 0 0 4px; }
+  .parts-interact { padding: 12px 14px; }
+  .parts-pouches { gap: 6px; min-height: 0; }
+  .parts-pouch { min-width: 52px; padding: 5px; }
+  /* phones: the first question should be close to the top, so the model is a compact reference */
+  .expression-parts { padding: 12px; }
+  .expression-parts .parts-heading h2 { font-size: 1.2rem; margin: 2px 0; }
+  /* the legend above already says which parts change; the closing rule repeats it */
+  .expression-parts .parts-rule { display: none; }
+  .parts-total { margin-top: 6px; }
+}
+@media print { .parts-interact input { display: none; } .expression-parts { box-shadow: none; break-inside: avoid; } }

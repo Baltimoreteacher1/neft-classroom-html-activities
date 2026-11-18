@@ -205,6 +205,7 @@
     const bar = document.createElement("div");
     bar.id = "ewl-hud";
     bar.className = "ewl-hud";
+    bar.setAttribute("data-menu", "");
     bar.setAttribute("role", "region");
     bar.setAttribute("aria-label", "Activity status");
     bar.innerHTML = `<div class="ewl-hud-path" role="radiogroup" aria-label="Pathway">${PATHS.map(

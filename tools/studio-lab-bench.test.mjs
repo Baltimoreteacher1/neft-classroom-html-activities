@@ -166,16 +166,24 @@ for (const id of ids) {
     const rel = `math/practice-studio/${id}/${mode === "practice" ? "" : "challenge/"}index.html`;
     assert.ok(existsSync(join(REPO_ROOT, rel)), `${rel} exists`);
     const data = pageData(rel);
+    // A lesson with an authored focusPractice (6-5) replaces its whole Practice page; the bench stays on Challenge.
+    if (mode === "practice" && ld.focusPractice) {
+      assert.ok(
+        data.sections.every((s) => s.items.every((it) => !/^lab-/.test(it.id || ""))),
+        `${rel}: a focused Practice page carries no bench items`,
+      );
+      continue;
+    }
     assert.ok(data.labV, `${rel} ships the lab content stamp`);
-    // Practice opens with the explore items (section 1, "explore first") and keeps the mission in section 4; Challenge keeps all
-    // of its bench in section 3
+    // Practice opens with short questions: the long model task and writing items (bench.before) wait with the mission in
+    // optional section 4, after the stamped items; Challenge keeps all of its bench in section 3
     const labIds = (/** @type {number} */ n) =>
       data.sections[n].items.filter((it) => /^lab-/.test(it.id || "")).map((it) => it.id);
     const wantAt =
       mode === "practice"
         ? {
-            0: items.practice.before.map((it) => it.id),
-            3: items.practice.after.map((it) => it.id),
+            0: [],
+            3: [...items.practice.before, ...items.practice.after].map((it) => it.id),
           }
         : { 2: [...items.challenge.before, ...items.challenge.after].map((it) => it.id) };
     for (const [n, want] of Object.entries(wantAt))
@@ -190,16 +198,28 @@ for (const id of ids) {
       Object.values(wantAt).flat().length,
       `${id} ${mode}: no bench item sits anywhere else`,
     );
-    // the section the bench leads (Practice 1, Challenge 3): existing items keep their ids, the bench is added around them
-    const sec = data.sections[mode === "practice" ? 0 : 2];
-    const gen = sec.items.filter((it) => !/^lab-/.test(it.id || ""));
-    assert.ok(
-      gen.every((it) => !/^lab-/.test(it.id)),
-      "no generated item takes a bench id",
-    );
-    const first = sec.items.findIndex((it) => !/^lab-/.test(it.id));
-    const lead = mode === "practice" ? items.practice.before.length : items.challenge.before.length;
-    assert.equal(first, lead, `${id} ${mode}: bench items lead the section`);
+    // Practice: section 1 starts with a short question, and the bench follows the stamped items in section 4.
+    // Challenge: the bench leads section 3. Existing items keep their ids either way.
+    if (mode === "practice") {
+      assert.ok(
+        !/^lab-/.test(data.sections[0].items[0]?.id || ""),
+        `${id}: Practice opens with a short question`,
+      );
+      const sec = data.sections[3];
+      const firstLab = sec.items.findIndex((it) => /^lab-/.test(it.id || ""));
+      assert.ok(
+        firstLab > 0 && sec.items.slice(firstLab).every((it) => /^lab-/.test(it.id)),
+        `${id} practice: bench items follow the stamped items in section 4`,
+      );
+    } else {
+      const sec = data.sections[2];
+      const first = sec.items.findIndex((it) => !/^lab-/.test(it.id));
+      assert.equal(
+        first,
+        items.challenge.before.length,
+        `${id} challenge: bench items lead the section`,
+      );
+    }
     for (const it of data.sections
       .flatMap((x) => x.items)
       .filter((x) => x.k === "lab" || x.k === "mission"))

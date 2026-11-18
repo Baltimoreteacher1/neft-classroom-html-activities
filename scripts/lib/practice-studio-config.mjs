@@ -627,8 +627,7 @@ export function buildSections(
       for (const it of others) {
         if (!diverse.includes(it)) diverse.push(it);
       }
-      const needed = Math.min(others.length, Math.max(3, 4 - acts.length));
-      return { items: [...diverse.slice(0, needed), ...acts] };
+      return { items: [...diverse.slice(0, 4), ...acts] };
     }
     return {
       items: Array.from({ length: Math.min(f?.slots || 3, ld.bench ? 2 : 3) }, () => ({
@@ -638,6 +637,13 @@ export function buildSections(
     };
   };
   const freshPractice = compactFresh(ld.fresh);
+  // A few optional challenge questions in every Practice studio: the lesson's own extending items first, then
+  // its generators at level 4. Each carries `ch` so the runtime labels it "Challenge · optional".
+  const gens = (Array.isArray(ld.fresh) ? ld.fresh : []).filter((x) => x.k === "gen");
+  const challengeGens = [...new Set(gens.map((x) => x.g))].map((g) => ({ k: "gen", g, level: 4 }));
+  const optionalChallenge = [...stretch.slice(0, 2), ...challengeGens, ...challengeGens]
+    .slice(0, 3)
+    .map((it) => ({ ...it, ch: 1 }));
 
   const isHinge = (it) =>
     it &&
@@ -669,10 +675,10 @@ export function buildSections(
   const lists = {
     practice: [
       compactList(getReady, 3),
-      compactList(allApproaching, 3),
-      compactList(allL2, 3),
-      freshPractice,
-      compactList(allMastery, 3),
+      compactList(allApproaching, 5),
+      compactList(allL2, 5),
+      { ...freshPractice, items: [...freshPractice.items, ...optionalChallenge] },
+      compactList(allMastery, 4),
     ],
     challenge: [
       climb,
@@ -715,7 +721,9 @@ export function buildSections(
       const benched = bench && i === (mode === "practice" ? 3 : 2);
       // Explore first: in Practice the lab's explore-and-write items open the studio (section 1) instead of waiting in section 4;
       // the mission stays in section 4. Their ids are unchanged, so saved progress keeps its keys.
-      const opener = bench && mode === "practice" && i === 0 ? bench.before : [];
+      // A long model challenge and writing task used to precede the first short question in every
+      // practice studio. Keep both available, but place them with optional hands-on practice.
+      const modelPractice = bench && mode === "practice" && i === 3 ? bench.before : [];
       // The "Which move?" item joins Practice section 3 and Challenge section 4, after the stamped items, with a fixed id.
       const move =
         ld.moves?.[mode] && i === (mode === "practice" ? 2 : 3)
@@ -734,12 +742,18 @@ export function buildSections(
         pEs: g.pEs,
         items: benched
           ? mode === "practice"
-            ? [...items, ...bench.after]
+            ? [...items, ...modelPractice, ...bench.after]
             : [...bench.before, ...items, ...bench.after]
-          : [...opener, ...items, ...move],
+          : [...items, ...move],
         ...(sec.pool ? { pool: stamp(sec.pool, i + 1) } : {}),
       };
     });
+  }
+  if (ld.focusPractice) {
+    out.practice = ld.focusPractice.sections.map((section, i) => ({
+      ...section,
+      items: stamp(section.items, i + 1),
+    }));
   }
   return { sections: out, left };
 }

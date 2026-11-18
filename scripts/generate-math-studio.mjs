@@ -4,8 +4,7 @@
 //   math/studio/index.html          the finder
 //   data/math-studio/registry.json  the machine-readable integration inventory
 //   docs/math-studio/COVERAGE.md    the lesson-by-lesson coverage audit
-//   the five-stage bar on the hand-built Unit 4 practice studios (between math-studio-bar markers)
-// The generated Practice studios and the Learning Labs carry the same bar from their own generators.
+//   the hand-built Unit 4 practice studios: no duplicate lesson-stage bar, a Word problems button after the last step
 //   node scripts/generate-math-studio.mjs [--check]
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -14,8 +13,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
 import { studioUrls } from "./generate-lesson-paths.mjs";
 import { coverageReport } from "./lib/math-studio-coverage.mjs";
-import { finderPage, lessonPage, stageBar } from "./lib/math-studio-page.mjs";
+import { finderPage, lessonPage } from "./lib/math-studio-page.mjs";
 import { buildRegistry } from "./lib/math-studio-registry.mjs";
+import { wordProblemsCta } from "./lib/word-problems-page.mjs";
 
 const read = (rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
 const ASSET_DIR = "assets/math-studio";
@@ -32,12 +32,17 @@ function stamp() {
   return h.digest("hex").slice(0, 10);
 }
 
-/** The bar on a hand-built Unit 4 studio page, right after <body>. */
-function withBar(html, id) {
-  const bar = `\n<!-- math-studio-bar:begin -->\n<link rel="stylesheet" href="/assets/math-studio/stage-bar.css">\n${stageBar(id, "practice")}\n<!-- math-studio-bar:end -->`;
-  const clean = html.replace(BAR, "");
-  if (!/<body[^>]*>/.test(clean)) throw new Error(`No <body> in Unit 4 studio for ${id}`);
-  return clean.replace(/<body[^>]*>/, (m) => m + bar);
+const CTA = /\n?[ \t]*<!-- word-problems-cta:begin -->[\s\S]*?<!-- word-problems-cta:end -->/;
+
+/** A hand-built Unit 4 studio: no duplicate lesson-stage bar, and the Word problems button closing its last step. */
+function unit4Studio(html, id, url) {
+  const clean = html.replace(BAR, "").replace(CTA, "");
+  const start = clean.indexOf('id="panel-5"');
+  const end = clean.indexOf("</section>", start);
+  if (start < 0 || end < 0 || clean.slice(start, end).includes("<section"))
+    throw new Error(`Unit 4 studio ${url} has no simple panel-5 to close with Word problems`);
+  const cta = `\n      <!-- word-problems-cta:begin -->\n      ${wordProblemsCta(id, url)}\n      <!-- word-problems-cta:end -->\n    `;
+  return clean.slice(0, end).replace(/\s*$/, "") + cta + clean.slice(end);
 }
 
 export function outputs() {
@@ -99,7 +104,7 @@ export function outputs() {
     for (const url of studioUrls(L.id)) {
       const rel = `${url.replace(/^\//, "")}index.html`;
       if (!rel.startsWith("math/unit-4/")) continue;
-      files.set(rel, withBar(read(rel), L.id));
+      files.set(rel, unit4Studio(read(rel), L.id, url));
     }
   }
   return { files, coverage, lessons, stats };

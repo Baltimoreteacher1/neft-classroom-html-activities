@@ -1,0 +1,341 @@
+/* Word problems page (/math/word-problems/). Same classroom palette as the practice studios (assets/studio/clarity.css). */
+:root {
+  --brand: #164e63;
+  --brand-dark: #123247;
+  --brand-tint: #e8f3f5;
+  --paper: #f3f6f8;
+  --surface: #ffffff;
+  --border: #cbd5de;
+  --ink: #182532;
+  --ink-muted: #405363;
+  --ok: #28785f;
+  --ok-tint: #e7f4ee;
+  --ok-line: #a6d2bf;
+  --bad: #a83c3c;
+  --bad-tint: #fbecec;
+  --bad-line: #e4b2b2;
+  --warn-tint: #fff5db;
+  --warn-line: #dfc276;
+  --on-brand: #ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand: #80cbd3;
+    --brand-dark: #10232e;
+    --brand-tint: #24434e;
+    --paper: #111d26;
+    --surface: #1c2d38;
+    --border: #405562;
+    --ink: #f1f5f7;
+    --ink-muted: #c4d0d8;
+    --ok: #68bf99;
+    --ok-tint: #1b3a32;
+    --ok-line: #3f7a62;
+    --bad: #f0a3a3;
+    --bad-tint: #3d2224;
+    --bad-line: #7a4547;
+    --warn-tint: #3e3520;
+    --warn-line: #8d6a1d;
+    --on-brand: #10232e;
+    color-scheme: dark;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font:
+    17px/1.55 system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.t-es {
+  display: none;
+}
+body.show-es .t-es {
+  display: inline;
+}
+body.show-es .t-en {
+  display: none;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.wp-skip {
+  position: absolute;
+  left: -999px;
+}
+.wp-skip:focus {
+  left: 16px;
+  top: 8px;
+  z-index: 5;
+  background: var(--surface);
+  padding: 8px 12px;
+}
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.wp-header {
+  background: var(--brand-dark);
+  color: #fff;
+  padding: 10px 16px;
+}
+.wp-header__row {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.wp-header a,
+.wp-header button {
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+  font: inherit;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.wp-header h1 {
+  font-size: 19px;
+  margin: 0;
+  flex: 1 1 200px;
+}
+.wp-header h1 small {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.wp-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.wp-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+  flex-wrap: wrap;
+}
+.wp-progress p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+.wp-dots {
+  display: flex;
+  gap: 8px;
+}
+.wp-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.wp-dot.is-current {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+.wp-dot.is-solved {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: var(--surface);
+}
+
+.wp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(18, 50, 71, 0.08);
+}
+.wp-count {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.wp-card h2 {
+  margin: 4px 0 10px;
+  font-size: 22px;
+}
+.wp-q {
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+.wp-answer label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 6px;
+}
+.wp-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+#wp-input {
+  font: inherit;
+  font-size: 20px;
+  width: 11ch;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.wp-unit {
+  color: var(--ink-muted);
+}
+.wp-choices {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.wp-choice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  min-height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.wp-choice:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+.wp-choice input {
+  margin-top: 5px;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.wp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.wp-btn {
+  font: inherit;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 2px solid var(--brand);
+  background: var(--surface);
+  color: var(--brand);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.wp-btn--primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.wp-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.wp-hints {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.wp-hints li {
+  background: var(--warn-tint);
+  border: 1px solid var(--warn-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.wp-feedback:empty {
+  display: none;
+}
+.wp-feedback {
+  margin-top: 16px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+}
+.wp-feedback p {
+  margin: 0 0 8px;
+}
+.wp-feedback.is-miss {
+  background: var(--bad-tint);
+  border-color: var(--bad-line);
+}
+.wp-feedback.is-right {
+  background: var(--ok-tint);
+  border-color: var(--ok-line);
+}
+.wp-feedback.is-nudge {
+  background: var(--brand-tint);
+}
+.wp-gotit {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ok);
+}
+.wp-done {
+  text-align: center;
+}
+.wp-done .wp-actions {
+  justify-content: center;
+}
+.wp-done-mark {
+  font-size: 44px;
+  margin: 0;
+  color: var(--ok);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wp-feedback.is-right {
+    animation: wp-pop 0.25s ease-out;
+  }
+  @keyframes wp-pop {
+    from {
+      transform: scale(0.98);
+      opacity: 0.4;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}

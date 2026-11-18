@@ -1,8 +1,8 @@
 // HTML templates for the Practice Studio v2 pages: a lesson's Practice page, its Challenge twin, and the finder.
 // The runtime (assets/studio/*.js) draws the problems from the JSON this page ships; this file only lays out the shell.
 
-import { stageBar } from "./math-studio-page.mjs";
 import { FAVICON } from "./practice-studio-worlds.mjs";
+import { wordProblemsCta } from "./word-problems-page.mjs";
 
 export const esc = (/** @type {any} */ s) =>
   String(s ?? "").replace(
@@ -17,10 +17,10 @@ export const json = (/** @type {any} */ o) =>
     .split(String.fromCharCode(0x2029))
     .join("\\u2029");
 
-const NSR_HEAD = `  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+export const NSR_HEAD = `  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->`;
-const NSR_BODY = `<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+export const NSR_BODY = `<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->`;
 
@@ -107,6 +107,19 @@ function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>
   );
 }
 
+function expressionPartsModel() {
+  return `<section class="expression-parts" aria-labelledby="parts-title">
+      <div class="parts-heading"><span class="parts-kicker">SEE THE IDEA <span lang="es">· MIRA LA IDEA</span></span><h2 id="parts-title">One expression, three parts</h2><p id="parts-intro">Each pouch has <strong>4 pencils</strong>. There are <strong>6 extra pencils</strong>. The number of pouches can change.</p><p id="parts-intro-es" class="t-es" lang="es">Cada bolsa tiene <strong>4 lápices</strong>. Hay <strong>6 lápices extra</strong>. El número de bolsas puede cambiar.</p></div>
+      <div class="parts-layout">
+        <div class="parts-equation" id="parts-equation" aria-label="4 times n plus 6">
+          <span class="parts-token parts-coef"><span id="parts-coef">4</span><small>coefficient <span lang="es">· coeficiente</span></small></span><span class="parts-token parts-var"><span id="parts-var">n</span><small>variable <span lang="es">· variable</span></small></span><span class="parts-operator">+</span><span class="parts-token parts-constant"><span id="parts-constant">6</span><small>constant <span lang="es">· constante</span></small></span>
+        </div>
+        <div class="parts-legend" id="parts-legend"><p><strong>4n</strong> means <strong>4 pencils in each pouch × n pouches</strong>.</p><p class="t-es" lang="es"><strong>4n</strong> significa <strong>4 lápices en cada bolsa × n bolsas</strong>.</p><p><strong>6</strong> is added once. <strong>4n</strong> and <strong>6</strong> are the two <strong>terms</strong>.</p><p class="t-es" lang="es"><strong>6</strong> se suma una vez. <strong>4n</strong> y <strong>6</strong> son los dos <strong>términos</strong>.</p></div>
+      </div>
+      <div class="parts-interact"><label for="parts-count"><span id="parts-slider-label">Change the number of pouches:</span> <strong id="parts-count-value">2</strong><span id="parts-slider-label-es" class="t-es" lang="es">Cambia el número de bolsas</span></label><input id="parts-count" type="range" min="1" max="5" value="2"><div id="parts-pouches" class="parts-pouches" aria-hidden="true"></div><div class="parts-total" id="parts-total" role="status" aria-live="polite">4 × 2 + 6 = 14 pencils</div><p class="parts-rule" id="parts-rule">The <strong>variable</strong> changes. The <strong>coefficient</strong> and <strong>constant</strong> stay the same.</p><p class="t-es parts-rule" id="parts-rule-es" lang="es">La <strong>variable</strong> cambia. El <strong>coeficiente</strong> y la <strong>constante</strong> siguen iguales.</p></div>
+    </section>`;
+}
+
 /**
  * @param {object} o
  * @param {string} o.id lesson id, e.g. "5-2"
@@ -136,8 +149,8 @@ export function pageFor({
 }) {
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
-  const title = cfg.title || `Lesson ${id}`;
   const challenge = mode === "challenge";
+  const title = (!challenge && ld.focusPractice?.title) || cfg.title || `Lesson ${id}`;
   const total = sections.reduce((a, s) => a + s.items.length, 0);
   const otherUrl = challenge
     ? `/math/practice-studio/${id}/`
@@ -178,6 +191,7 @@ export function pageFor({
   const story = challenge ? ld.challengeStory : ld.story;
   const storyEs = challenge ? ld.challengeStoryEs : ld.storyEs;
   const label = challenge ? "Challenge Studio" : "Interactive Practice Studio";
+  const partsModel = !challenge && ld.focusPractice?.model === "expression-parts";
   // Closed in the markup: assets/studio/clarity.js opens it on a student's first visit, and it is a small chip after that.
   const missionCard = `<details class="mission-card">
         <summary><span class="world-glyph" aria-hidden="true">${world.emoji}</span><span class="mission-title">${bi("Mission", "Misión")} · ${bi(world.name, world.nameEs)}${challenge ? ` · ${bi("night shift", "turno de noche")}` : ""}</span></summary>
@@ -202,6 +216,7 @@ export function pageFor({
       <div class="topic-strip"><div><p class="stage-eyebrow">${bi(`Stage ${i + 1} of ${sections.length}`, `Etapa ${i + 1} de ${sections.length}`)}${s.optional ? ` · ${bi("Optional", "Opcional")}` : ""}</p><h2>${bi(s.name, s.nameEs)}</h2><p class="stage-purpose">${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div>
         <div class="stepper-bar"><div class="dots-row" id="dots-${i + 1}" role="group" aria-label="${esc(s.name)} problems"></div></div></div>
       <div class="stage-card" id="stage-${i + 1}"></div>
+      ${i === sections.length - 1 ? wordProblemsCta(id, challenge ? `/math/practice-studio/${id}/challenge/` : `/math/practice-studio/${id}/`) : ""}
       ${printList(s.items)}
     </section>`,
     )
@@ -217,13 +232,13 @@ export function pageFor({
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="${FAVICON(world.emoji)}">
 ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
+${partsModel ? '  <link rel="stylesheet" href="/assets/studio/expression-parts.css">' : ""}
 ${NSR_HEAD}
-  <link rel="stylesheet" href="/assets/math-studio/stage-bar.css">
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
+${partsModel ? '  <script src="/assets/studio/expression-parts.js" defer></script>' : ""}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
-  ${stageBar(id, "practice", { from: challenge ? "challenge" : "practice" })}
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">
@@ -255,9 +270,11 @@ ${tabs}
     <div id="complete-banner" class="complete-banner" role="status" hidden></div>
 
     <div class="studio-context">
-      ${targetChip(/^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", ld.targetEs)}
+      ${targetChip(partsModel ? ld.focusPractice.target : /^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", partsModel ? ld.focusPractice.targetEs : ld.targetEs)}
       ${missionCard}
 ${ld.glossary?.length ? `      ${glossaryBlock(ld.glossary)}\n` : ""}    </div>
+
+${partsModel ? `    ${expressionPartsModel()}` : ""}
 
 ${panels}
   </main>

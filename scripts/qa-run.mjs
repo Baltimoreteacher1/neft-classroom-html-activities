@@ -469,6 +469,20 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // Word problems after every curriculum practice studio (/math/word-problems/): authored data, the shared page and
+  // runtime, its generator and gate, and the button the studio generators write. Must precede the assets/studio rule.
+  [
+    /^(data\/word-problems\/|math\/word-problems\/|assets\/studio\/word-problems[^/]*\.(mjs|css)$|scripts\/(generate-studio-word-problems\.mjs|lib\/word-problems-(data|page)\.mjs)$|tools\/validate-word-problems\.mjs$)/,
+    [
+      "validate:word-problems",
+      "validate:practice-studio-data",
+      "validate:math-studio",
+      "validate:static",
+      "validate:js-syntax",
+      "test",
+      "check",
+    ],
+  ],
   [
     /^(assets\/studio(-act|-gen)?\/|assets\/studio-comfort\.js|assets\/studio-viz[^/]*\.js|assets\/u4-(studio|adaptive-investigation)[^/]*\.(js|css)|curriculum\/learning-labs\/shared\/models\/|data\/practice-studio\/|math\/practice-studio\/|scripts\/(generate-practice-studios|generate-practice-skill-graph)\.mjs|scripts\/lib\/practice-studio-[^/]+\.mjs|tools\/lib\/studio-boot\.mjs|tools\/(studio-[^/]+\.test\.mjs|verify-studio-(guess|layout|linked-models|pathways)-browser\.mjs))$/,
     [
