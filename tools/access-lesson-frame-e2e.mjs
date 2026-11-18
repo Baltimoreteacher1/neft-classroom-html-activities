@@ -211,6 +211,8 @@ for (const width of [360, 1366]) {
   await page.click(`[data-ans-hot="${right[0]}"]`);
   await page.click(`[data-ans-hot="${wrong[0]}"]`);
   await page.click("[data-check]");
+  // Compact feedback (4a98c7e652): the well / next-step parts sit under "More help", opened by the learner.
+  await page.click(".feedback.is-hint details.fb-more > summary");
   await page.waitForSelector(".feedback.is-hint .lf-fb-part");
   const heads = await page.locator(".feedback .lf-fb-part h3").allTextContents();
   ok(

@@ -11,9 +11,9 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "700bc0526d22";
+const BUILD_HASH = "2435dc2fbf15";
 const PRECACHE_CORE = [
-  "/access-practice-lab/ds.css?v=d1bded988c3b",
+  "/access-practice-lab/ds.css?v=e29b341425af",
   "/access-practice-lab/home.css?v=f83bff904edd",
   "/access-practice-lab/home-start.css?v=f6ae6e2eea7d",
   "/access-practice-lab/progress.css?v=fde69787809c",
@@ -154,7 +154,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/guided.css?v=4c3a8039689b",
   "/access-practice-lab/tour.css?v=5b178b615766",
   "/access-practice-lab/voice.css?v=a73c965c687d",
-  "/access-practice-lab/activity.css?v=9d01b84ee5b6",
+  "/access-practice-lab/activity.css?v=28a26066e41c",
   "/access-practice-lab/lesson-frame.css?v=6d2999cac0de",
   "/access-practice-lab/room.css?v=fa30867e3828",
   "/access-practice-lab/tests.css?v=ebbc261c8d58",
@@ -192,7 +192,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-n.css?v=9636b7c90c3e",
   "/access-practice-lab/games-o.css?v=d25a329e8a62",
   "/access-practice-lab/games-p.css?v=fb900f520c8a",
-  "/access-practice-lab/labs.css?v=70e4170c8ffa",
+  "/access-practice-lab/labs.css?v=f272eaac386f",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/path.css?v=95e1a443bf59",
   "/access-practice-lab/scaffold.css?v=99b2f6576ff7",

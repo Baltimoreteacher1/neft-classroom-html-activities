@@ -163,7 +163,8 @@
   --r-xl: 30px;
   --target: 3rem;
   --shadow:
-    0 1px 1px rgb(12 34 52 / 6%), 0 3px 8px rgb(12 34 52 / 6%), 0 14px 28px -14px rgb(12 34 52 / 20%);
+    0 1px 1px rgb(12 34 52 / 6%), 0 3px 8px rgb(12 34 52 / 6%),
+    0 14px 28px -14px rgb(12 34 52 / 20%);
   --shadow-card: 0 1px 2px rgb(12 34 52 / 7%), 0 8px 22px -10px rgb(12 34 52 / 16%);
   --shadow-lift:
     0 1px 2px rgb(12 34 52 / 8%), 0 10px 20px -6px rgb(12 34 52 / 18%),
@@ -266,7 +267,10 @@ h2 {
   color: var(--ink);
   text-wrap: balance;
   font-variant-ligatures: none;
-  font-feature-settings: "liga" 0, "dlig" 0, "calt" 0;
+  font-feature-settings:
+    "liga" 0,
+    "dlig" 0,
+    "calt" 0;
 }
 h1 {
   font-size: clamp(2rem, 1.45rem + 2.4vw, 3.1rem);
@@ -360,8 +364,12 @@ a:hover {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: var(--ink);
   border-bottom: 1px solid var(--line);
-  box-shadow: var(--edge-light), 0 6px 22px -10px rgb(12 34 52 / 16%);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow:
+    var(--edge-light),
+    0 6px 22px -10px rgb(12 34 52 / 16%);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 .lab-brand {
   display: flex;
@@ -716,7 +724,9 @@ a:hover {
   font: 700 1rem/1.2 var(--font);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: var(--edge-light), 0 1px 2px rgb(12 34 52 / 8%);
+  box-shadow:
+    var(--edge-light),
+    0 1px 2px rgb(12 34 52 / 8%);
   transition:
     background-color var(--dur-2) var(--ease-out),
     border-color var(--dur-2) var(--ease-out),
@@ -728,7 +738,9 @@ a:hover {
   background: var(--surface-2);
   color: var(--ink);
   transform: translateY(-1px);
-  box-shadow: var(--edge-light), 0 6px 14px -4px rgb(12 34 52 / 18%);
+  box-shadow:
+    var(--edge-light),
+    0 6px 14px -4px rgb(12 34 52 / 18%);
 }
 .btn:active,
 .ghost:active {
@@ -736,6 +748,9 @@ a:hover {
 }
 .btn-primary {
   background: linear-gradient(180deg, var(--mi-600) 0%, var(--brand) 100%);
+  /* Solid base under the gradient: a hover that swaps in a flat color (registers.css) then fades
+     dark-to-dark instead of from transparent, so white text never flashes on the panel behind. */
+  background-color: var(--brand);
   border-color: var(--brand);
   color: #ffffff;
   box-shadow:
@@ -851,7 +866,10 @@ a:hover {
   border-radius: var(--r-lg);
   padding: clamp(1.2rem, 2.5vw, 1.85rem);
   box-shadow: var(--edge-light), var(--shadow-card);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 .panel {
   margin: var(--s-4) 0;
@@ -1067,7 +1085,9 @@ details > summary + * {
 .band-btn[aria-pressed="true"] {
   background: var(--brand);
   color: #fff;
-  box-shadow: var(--edge-light-dark), 0 2px 6px -1px rgb(18 58 92 / 45%);
+  box-shadow:
+    var(--edge-light-dark),
+    0 2px 6px -1px rgb(18 58 92 / 45%);
 }
 .grade-focus {
   display: grid;
@@ -1959,7 +1979,6 @@ body[data-lab-band="6-8"] .studio-card {
     margin-bottom: 0.2rem;
   }
 }
-
 
 /* ── folds: secondary page sections closed behind their own heading (src/fold.js) ── */
 .fold-toggle {
