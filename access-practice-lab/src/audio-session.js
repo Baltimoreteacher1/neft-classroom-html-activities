@@ -77,7 +77,11 @@ export function audioContext() {
 
 // The first real tap unlocks speech and Web Audio. pointerdown alone is not a user activation for speech on iOS,
 // so touchend and click are listened to as well; whichever comes first does the work, once.
-if (typeof document !== "undefined" && typeof window !== "undefined") {
+if (
+  typeof document !== "undefined" &&
+  typeof document.addEventListener === "function" &&
+  typeof window !== "undefined"
+) {
   let done = false;
   const unlock = () => {
     if (done) return;
