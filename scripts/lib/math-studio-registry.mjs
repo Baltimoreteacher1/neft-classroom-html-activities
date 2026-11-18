@@ -5,8 +5,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { verifyHandoff, verifySolve } from "../../assets/math-studio/core.mjs";
-import { hasRealVocabImage, resolveVocabImage } from "../../engine/core/vocab-images.js";
 import { controls, evaluate } from "../../curriculum/learning-labs/shared/math.mjs";
+import { hasRealVocabImage, resolveVocabImage } from "../../engine/core/vocab-images.js";
 import { blueprints } from "../../tools/learning-labs/blueprints.mjs";
 import { loadLessonConfig, REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 import { studioUrls } from "../generate-lesson-paths.mjs";

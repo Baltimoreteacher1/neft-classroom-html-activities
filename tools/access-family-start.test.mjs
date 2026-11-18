@@ -2,14 +2,14 @@
 // choice among them, never the only door. Every link carries the chosen grade, and the FAQ is bilingual.
 import assert from "node:assert/strict";
 import test from "node:test";
+import { GRADE_PICKS } from "../access-practice-lab/src/grade-bands.js";
+import { FAMILY_FAQ } from "../access-practice-lab/src/intro/family-help.js";
 import {
   DEFAULT_QUICK_MINUTES,
   FAMILY_TIPS,
   familyChoices,
   quickMinutes,
 } from "../access-practice-lab/src/intro/family-start.js";
-import { FAMILY_FAQ } from "../access-practice-lab/src/intro/family-help.js";
-import { GRADE_PICKS } from "../access-practice-lab/src/grade-bands.js";
 
 const MAIN = ["quick", "skills", "together", "understand", "help"];
 const bilingual = (pair) => Array.isArray(pair) && pair[0] && pair[1] && pair[0] !== pair[1];
@@ -18,10 +18,17 @@ test("every grade gets the five main choices in order, plus the tour and Family 
   for (const { id } of GRADE_PICKS) {
     for (const tourHost of [true, false]) {
       const choices = familyChoices(id, { tourHost });
-      assert.deepEqual(choices.slice(0, 5).map((c) => c.id), MAIN, "the 5-minute activity leads, then the main choices");
+      assert.deepEqual(
+        choices.slice(0, 5).map((c) => c.id),
+        MAIN,
+        "the 5-minute activity leads, then the main choices",
+      );
       const tour = choices.find((c) => c.id === "tour");
       assert.ok(tour, "the Family Tour stays available");
-      assert.ok(choices.find((c) => c.id === "corner"), "Family Corner stays available");
+      assert.ok(
+        choices.find((c) => c.id === "corner"),
+        "Family Corner stays available",
+      );
       assert.ok(choices.length > 1, "the tour is never the only door");
       assert.match(tour.href, tourHost ? /\/family-tour\// : /\/practice-together/);
       for (const c of choices) {
@@ -33,13 +40,20 @@ test("every grade gets the five main choices in order, plus the tour and Family 
         }
       }
       const skills = choices.find((c) => c.id === "skills");
-      assert.deepEqual(skills.links.map((l) => l.id).sort(), ["listening", "reading", "speaking", "writing"], "four skill rooms");
+      assert.deepEqual(
+        skills.links.map((l) => l.id).sort(),
+        ["listening", "reading", "speaking", "writing"],
+        "four skill rooms",
+      );
     }
   }
 });
 
 test("grades K-3 read together in their own Story Time, older grades in the Reading Room", () => {
-  const read = (pick) => familyChoices(pick, { tourHost: false }).find((c) => c.id === "together").links.find((l) => l.id === "read").href;
+  const read = (pick) =>
+    familyChoices(pick, { tourHost: false })
+      .find((c) => c.id === "together")
+      .links.find((l) => l.id === "read").href;
   for (const pick of ["K", "1", "2-3"]) assert.match(read(pick), /\/early\?/);
   for (const pick of ["4-5", "6-8"]) assert.match(read(pick), /\/reading-room\?/);
 });
@@ -64,7 +78,9 @@ test("guidance lines and the family FAQ are bilingual, and the FAQ never present
       assert.ok(bilingual(label));
     }
   }
-  const meaning = FAMILY_FAQ.find((f) => f.id === "meaning").a.map((p) => p[0]).join(" ");
+  const meaning = FAMILY_FAQ.find((f) => f.id === "meaning")
+    .a.map((p) => p[0])
+    .join(" ");
   assert.match(meaning, /not a test score/);
   assert.doesNotMatch(FAMILY_FAQ.flatMap((f) => f.a.flat()).join(" "), /WIDA|proficien|level \d/i);
 });

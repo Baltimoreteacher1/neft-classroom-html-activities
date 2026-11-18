@@ -44,5 +44,9 @@ test("every Unit 2-9 lesson with a family homework page has background knowledge
   });
   const have = new Set(files.map((f) => f.replace(/\.json$/, "")));
   assert.ok(pages.length >= 70, `found ${pages.length} lessons`);
-  assert.deepEqual(pages.filter((id) => !have.has(id)), [], "lessons with no background file");
+  assert.deepEqual(
+    pages.filter((id) => !have.has(id)),
+    [],
+    "lessons with no background file",
+  );
 });

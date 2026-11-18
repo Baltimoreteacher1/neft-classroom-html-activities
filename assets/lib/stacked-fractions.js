@@ -88,7 +88,10 @@
       if (!ruler) {
         const svg = document.createElementNS(SVG_NS, "svg");
         svg.setAttribute("aria-hidden", "true");
-        svg.setAttribute("style", "position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden;visibility:hidden");
+        svg.setAttribute(
+          "style",
+          "position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden;visibility:hidden",
+        );
         ruler = document.createElementNS(SVG_NS, "text");
         svg.append(ruler);
         document.body.append(svg);
@@ -108,13 +111,17 @@
   };
   function svgText(proto, x, y, str, size, anchor) {
     const t = document.createElementNS(SVG_NS, "text");
-    for (const a of proto.attributes) if (!/^(x|y|dx|dy|text-anchor|style)$/.test(a.name)) t.setAttribute(a.name, a.value);
+    for (const a of proto.attributes)
+      if (!/^(x|y|dx|dy|text-anchor|style)$/.test(a.name)) t.setAttribute(a.name, a.value);
     t.setAttribute("x", x.toFixed(1));
     t.setAttribute("y", y.toFixed(1));
     t.setAttribute("text-anchor", anchor);
     // The label's resolved colour, set directly: a drawing's CSS may colour labels through a child selector
     // (svg > text) that no longer matches once the pieces sit inside a group.
-    t.setAttribute("style", `${proto.getAttribute("style") || ""};font-size:${size.toFixed(1)}px;fill:${labelFill}`);
+    t.setAttribute(
+      "style",
+      `${proto.getAttribute("style") || ""};font-size:${size.toFixed(1)}px;fill:${labelFill}`,
+    );
     t.textContent = str;
     return t;
   }

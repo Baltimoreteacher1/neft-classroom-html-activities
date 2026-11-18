@@ -160,7 +160,9 @@ try {
     (await page.locator(".session-finish [data-done-hub]").count()) === 1,
     "session ending offers the way back to the Student Hub",
   );
-  await page.goto(`${base}/access-practice-lab/?grades=${found.band}`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/access-practice-lab/?grades=${found.band}`, {
+    waitUntil: "networkidle",
+  });
   await page.locator("details.lph-dashboard > summary").click();
   await page.waitForSelector("[data-weekly-goal]");
   await page.locator("[data-weekly-goal]").selectOption("3");

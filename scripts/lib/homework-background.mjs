@@ -10,7 +10,7 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { checkBackground, baseLessonOf } from "../../tools/lib/family-background.mjs";
+import { baseLessonOf, checkBackground } from "../../tools/lib/family-background.mjs";
 
 const DIR = new URL("../../data/family-background/", import.meta.url);
 let cache = null;
@@ -21,7 +21,9 @@ export function backgroundData() {
   cache = {};
   if (!existsSync(DIR)) return cache;
   const errors = [];
-  for (const file of readdirSync(DIR).filter((f) => f.endsWith(".json")).sort()) {
+  for (const file of readdirSync(DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort()) {
     const id = file.replace(/\.json$/, "");
     const data = JSON.parse(readFileSync(new URL(file, DIR), "utf8"));
     errors.push(...checkBackground(data, id));
@@ -40,14 +42,15 @@ export function backgroundBundle() {
 
 export const hasBackground = (pageId) => Boolean(backgroundData()[baseLessonOf(pageId)]);
 
-const bi = (en, es) => `<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
+const bi = (en, es) =>
+  `<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
 
 /** The runtime, with the content bundle's hashed path baked in. */
 export const backgroundRuntime = () =>
-  HOMEWORK_BACKGROUND_TEMPLATE.replace("__BG_BUNDLE__", `/assets/homework/${backgroundBundle().name}`).replace(
-    "__BG_LESSONS__",
-    JSON.stringify(Object.keys(backgroundData())),
-  );
+  HOMEWORK_BACKGROUND_TEMPLATE.replace(
+    "__BG_BUNDLE__",
+    `/assets/homework/${backgroundBundle().name}`,
+  ).replace("__BG_LESSONS__", JSON.stringify(Object.keys(backgroundData())));
 
 const HOMEWORK_BACKGROUND_TEMPLATE = String.raw`
 /* Background knowledge sheet (scripts/lib/homework-background.mjs). */

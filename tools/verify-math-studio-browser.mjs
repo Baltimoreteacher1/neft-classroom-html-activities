@@ -104,12 +104,22 @@ async function lesson(ctx, id) {
   // button was pressed), each skill has its picture, and the quick check answers right and wrong.
   ok(L.background?.length >= 1, id, "no background knowledge for this lesson");
   await page.click("#ms-bg-open");
-  await page.waitForSelector("#ms-bg-dialog[open] .ms-bg-skill", { timeout: 5000 }).catch(() => fail(id, "Background knowledge did not open"));
+  await page
+    .waitForSelector("#ms-bg-dialog[open] .ms-bg-skill", { timeout: 5000 })
+    .catch(() => fail(id, "Background knowledge did not open"));
   const skillCards = (await page.$$("#ms-bg-dialog .ms-bg-skill")).length;
-  ok(skillCards === L.background.length, id, `background shows ${skillCards} of ${L.background.length} skills`);
-  await page.waitForSelector("#ms-bg-dialog .ms-bg-figure svg", { timeout: 5000 }).catch(() => fail(id, "background picture did not draw"));
+  ok(
+    skillCards === L.background.length,
+    id,
+    `background shows ${skillCards} of ${L.background.length} skills`,
+  );
+  await page
+    .waitForSelector("#ms-bg-dialog .ms-bg-figure svg", { timeout: 5000 })
+    .catch(() => fail(id, "background picture did not draw"));
   for (let k = 0; k < L.background.length; k++) {
-    await page.$eval(`#ms-bg-dialog [data-skill="${k}"]`, (el) => { el.hidden = false; });
+    await page.$eval(`#ms-bg-dialog [data-skill="${k}"]`, (el) => {
+      el.hidden = false;
+    });
     while (await page.$(`#ms-bg-dialog [data-skill="${k}"] [data-bg-next]:not([hidden])`))
       await page.click(`#ms-bg-dialog [data-skill="${k}"] [data-bg-next]`);
     const c = L.background[k].check;
@@ -117,7 +127,9 @@ async function lesson(ctx, id) {
     await page.check(`#ms-bg-dialog [data-skill="${k}"] input[value="${wrong}"]`);
     await page.click(`#ms-bg-dialog [data-skill="${k}"] [data-act="check"]`);
     ok(
-      (await page.$eval(`#ms-bg-dialog [data-skill="${k}"] .ms-feedback`, (el) => el.innerText)).trim().length > 0,
+      (
+        await page.$eval(`#ms-bg-dialog [data-skill="${k}"] .ms-feedback`, (el) => el.innerText)
+      ).trim().length > 0,
       id,
       `background skill ${k + 1}: no feedback on a wrong answer`,
     );

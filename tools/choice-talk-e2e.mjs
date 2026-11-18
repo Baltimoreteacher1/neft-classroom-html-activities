@@ -33,12 +33,20 @@ const check = (ok, msg) => {
 
 async function axe(page, label) {
   await page.addScriptTag({ content: axeSource });
-  const r = await page.evaluate(() => window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa", "wcag22aa"] }));
+  const r = await page.evaluate(() =>
+    window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa", "wcag22aa"] }),
+  );
   const bad = r.violations.filter((v) => ["serious", "critical"].includes(v.impact));
-  check(!bad.length, `${label}: axe serious/critical ${bad.map((v) => `${v.id} ${v.nodes.map((n) => n.html.slice(0, 90)).join(" ; ")}`).join(", ") || "0"}`);
+  check(
+    !bad.length,
+    `${label}: axe serious/critical ${bad.map((v) => `${v.id} ${v.nodes.map((n) => n.html.slice(0, 90)).join(" ; ")}`).join(", ") || "0"}`,
+  );
 }
 const noOverflow = async (page, label) =>
-  check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: no sideways scroll`);
+  check(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+    `${label}: no sideways scroll`,
+  );
 
 for (const width of [1280, 390]) {
   const ctx = await browser.newContext({ viewport: { width, height: 900 } });
@@ -46,13 +54,22 @@ for (const width of [1280, 390]) {
   const errors = [];
   // "web-vitals" is a bare npm specifier Vite resolves at build time; the source tree cannot (CLAUDE.md, smoke:injection).
   page.on("pageerror", (e) => !/"web-vitals"/.test(e.message) && errors.push(e.message));
-  page.on("console", (m) => m.type() === "error" && !/favicon|Failed to load resource.*\/api\/|"web-vitals"/.test(m.text()) && errors.push(m.text()));
+  page.on(
+    "console",
+    (m) =>
+      m.type() === "error" &&
+      !/favicon|Failed to load resource.*\/api\/|"web-vitals"/.test(m.text()) &&
+      errors.push(m.text()),
+  );
   const W = `@${width}`;
 
   // Home: both new cards present for 3-5.
   await page.goto(`${LAB}/?grades=3-5`, { waitUntil: "networkidle" });
-  check(await page.locator('a[href*="choice-boards"]').count() > 0, `${W} home links Choice Boards`);
-  check(await page.locator('a[href*="talk-table"]').count() > 0, `${W} home links Talk Table`);
+  check(
+    (await page.locator('a[href*="choice-boards"]').count()) > 0,
+    `${W} home links Choice Boards`,
+  );
+  check((await page.locator('a[href*="talk-table"]').count()) > 0, `${W} home links Talk Table`);
 
   // Choice Boards hub → board → three in a row.
   await page.goto(`${LAB}/choice-boards?grades=3-5`, { waitUntil: "networkidle" });
@@ -66,22 +83,43 @@ for (const width of [1280, 390]) {
     await page.locator(`[data-cb-open="${i}"]`).click();
     await page.waitForSelector("#cbSquare");
     if (i === 0) {
-      check(await page.locator("#cbSquare [data-say]").count() >= 2, `${W} listening square has listen buttons`);
+      check(
+        (await page.locator("#cbSquare [data-say]").count()) >= 2,
+        `${W} listening square has listen buttons`,
+      );
       await page.locator("[data-cb-note]").fill("Nia's reasons are stronger.");
-      check((await page.locator('[data-cb-done="0"]').getAttribute("aria-pressed")) === "false", `${W} done button states aria-pressed="false"`);
-      check((await page.locator('[data-cb-open="0"]').getAttribute("aria-expanded")) === "true", `${W} open square states aria-expanded="true"`);
+      check(
+        (await page.locator('[data-cb-done="0"]').getAttribute("aria-pressed")) === "false",
+        `${W} done button states aria-pressed="false"`,
+      );
+      check(
+        (await page.locator('[data-cb-open="0"]').getAttribute("aria-expanded")) === "true",
+        `${W} open square states aria-expanded="true"`,
+      );
       await page.waitForTimeout(800); // let the smooth scroll to the panel finish before measuring targets
       await axe(page, `${W} open square`);
     }
     await page.locator(`[data-cb-done="${i}"]`).click();
     await page.waitForSelector(`.cb-cell.is-done [data-cb-open="${i}"]`);
   }
-  check((await page.locator(".cb-cell.is-line").count()) === 3, `${W} diagonal shows three in a row`);
-  check(/Three in a row|Tres en l/.test(await page.locator(".cb-status").innerText()), `${W} status celebrates`);
+  check(
+    (await page.locator(".cb-cell.is-line").count()) === 3,
+    `${W} diagonal shows three in a row`,
+  );
+  check(
+    /Three in a row|Tres en l/.test(await page.locator(".cb-status").innerText()),
+    `${W} status celebrates`,
+  );
   await page.reload({ waitUntil: "networkidle" });
-  check((await page.locator(".cb-cell.is-done").count()) === 3, `${W} done squares survive a reload`);
+  check(
+    (await page.locator(".cb-cell.is-done").count()) === 3,
+    `${W} done squares survive a reload`,
+  );
   await page.locator('[data-cb-open="0"]').click();
-  check((await page.locator("[data-cb-note]").inputValue()).includes("Nia"), `${W} note survives a reload`);
+  check(
+    (await page.locator("[data-cb-note]").inputValue()).includes("Nia"),
+    `${W} note survives a reload`,
+  );
   await noOverflow(page, `${W} board`);
 
   // K board (adult-read band) renders.
@@ -91,7 +129,10 @@ for (const width of [1280, 390]) {
   // Talk Table: talk, card stays, another card changes.
   await page.goto(`${LAB}/talk-table?grades=6-8`, { waitUntil: "networkidle" });
   const q1 = await page.locator("#ttQ").innerText();
-  check(q1.length > 10 && (await page.locator('.tt-side[lang="es"] .tt-q').innerText()).length > 10, `${W} card shows English and Spanish`);
+  check(
+    q1.length > 10 && (await page.locator('.tt-side[lang="es"] .tt-q').innerText()).length > 10,
+    `${W} card shows English and Spanish`,
+  );
   await page.locator("[data-tt-follow]").click();
   check(await page.locator("#ttFollow").isVisible(), `${W} follow-up opens`);
   await page.locator("[data-tt-talked]").click();
@@ -106,8 +147,14 @@ for (const width of [1280, 390]) {
 
   // Passport card reads both.
   await page.goto(`${LAB}/passport?grades=3-5`, { waitUntil: "networkidle" });
-  const more = await page.locator(".pass-more").innerText().catch(() => "");
-  check(/Choice Boards[\s\S]*3/.test(more) && /Talk Table/.test(more), `${W} passport shows Choice Boards and Talk Table`);
+  const more = await page
+    .locator(".pass-more")
+    .innerText()
+    .catch(() => "");
+  check(
+    /Choice Boards[\s\S]*3/.test(more) && /Talk Table/.test(more),
+    `${W} passport shows Choice Boards and Talk Table`,
+  );
   await noOverflow(page, `${W} passport`);
 
   // Lesson Builder: one-tap start, week plan.
@@ -115,7 +162,10 @@ for (const width of [1280, 390]) {
   await page.locator('[data-lb-quick="explain-evidence"]').click();
   await page.waitForSelector(".lb-plan");
   check((await page.locator(".lb-phase").count()) >= 6, `${W} quick start builds a lesson`);
-  check(await page.locator(".lb-home-q").count() === 1, `${W} family phase shows the Talk Table question`);
+  check(
+    (await page.locator(".lb-home-q").count()) === 1,
+    `${W} family phase shows the Talk Table question`,
+  );
   await page.locator("[data-lb-week]").click();
   await page.waitForSelector(".lb-week");
   check((await page.locator(".lb-day").count()) === 5, `${W} week has 5 days`);

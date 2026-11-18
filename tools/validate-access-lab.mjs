@@ -205,7 +205,10 @@ function checkPicture(where, pic) {
   // larger on disk than a flat outline drawing while costing a few KB on the wire.
   const sent = gzipSync(readFileSync(file), { level: 9 }).length;
   if (sent > PICTURE_GZIP_BUDGET)
-    err(where, `${pic.src} is ${Math.round(sent / 1024)} KB compressed (budget ${PICTURE_GZIP_BUDGET / 1024} KB)`);
+    err(
+      where,
+      `${pic.src} is ${Math.round(sent / 1024)} KB compressed (budget ${PICTURE_GZIP_BUDGET / 1024} KB)`,
+    );
 }
 
 function checkChart(where, chart) {

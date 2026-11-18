@@ -105,6 +105,13 @@ export function quickFinder() {
   return FINDER.map(([goal, label, route]) => {
     const path = route.startsWith("/access-teacher") ? route : `${SITE.base}${route}`;
     const url = publicUrl(path);
-    return { goal, label, path, url, short: url.replace(/^https:\/\//, ""), gated: /teacher/i.test(path) };
+    return {
+      goal,
+      label,
+      path,
+      url,
+      short: url.replace(/^https:\/\//, ""),
+      gated: /teacher/i.test(path),
+    };
   });
 }
