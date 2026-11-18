@@ -606,6 +606,22 @@ main {
   font-size: 0.9rem;
   margin: 0 0 var(--s3);
 }
+.problem-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(17rem, 0.85fr);
+  align-items: center;
+  gap: var(--s5);
+}
+.question-column,
+.response-column {
+  min-width: 0;
+}
+.response-column .choices {
+  margin-bottom: var(--s3);
+}
+.response-column .answer-row label:not(.sr-only) {
+  width: 100%;
+}
 .problem {
   font-size: var(--fs-problem);
   font-weight: 600;
@@ -645,6 +661,15 @@ main {
   gap: var(--s2);
   flex-wrap: wrap;
   margin-bottom: var(--s3);
+}
+@media (max-width: 680px) {
+  .problem-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s3);
+  }
+  .problem-layout .problem {
+    margin-bottom: var(--s2);
+  }
 }
 .feedback {
   margin-top: var(--s4);

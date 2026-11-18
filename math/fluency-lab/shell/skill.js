@@ -203,14 +203,20 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     body.innerHTML = `
       <div class="panel practice">
         <p class="practice-meta">${esc(tr("Problem {n}", { n: count }))}${badge ? ` · <span class="tag">${esc(badge)}</span>` : ""}</p>
-        <div class="problem-row"><p class="problem" id="problem">${esc(question)}</p>${readAloudOn(skill.grade) ? listenButton(esc(tr("Listen"))) : ""}</div>
-        ${item.choices ? `<div class="choices" role="group" aria-labelledby="problem">${item.choices.map((c, i) => `<button type="button" class="btn btn-choice" data-pick="${esc(c)}" aria-pressed="false">${esc(labels[i] ?? c)}</button>`).join("")}</div>` : ""}
-        <form class="answer-row" data-form>
-          <label class="sr-only" for="answer">${esc(tr("Your answer"))}</label>
-          <input id="answer" class="answer" autocomplete="off" ${item.choices ? "hidden" : ""} placeholder="${esc(tr("Your answer"))}" aria-describedby="feedback"/>
-          ${item.unit ? `<span class="unit">${esc(item.unit)}</span>` : ""}
-          <button class="btn btn-primary" data-check>${esc(tr("Check answer"))}</button>
-        </form>
+        <div class="problem-layout">
+          <div class="question-column">
+            <div class="problem-row"><p class="problem" id="problem">${esc(question)}</p>${readAloudOn(skill.grade) ? listenButton(esc(tr("Listen"))) : ""}</div>
+          </div>
+          <div class="response-column">
+            ${item.choices ? `<div class="choices" role="group" aria-labelledby="problem">${item.choices.map((c, i) => `<button type="button" class="btn btn-choice" data-pick="${esc(c)}" aria-pressed="false">${esc(labels[i] ?? c)}</button>`).join("")}</div>` : ""}
+            <form class="answer-row" data-form>
+              <label class="sr-only" for="answer">${esc(tr("Your answer"))}</label>
+              <input id="answer" class="answer" autocomplete="off" ${item.choices ? "hidden" : ""} placeholder="${esc(tr("Your answer"))}" aria-describedby="feedback"/>
+              ${item.unit ? `<span class="unit">${esc(item.unit)}</span>` : ""}
+              <button class="btn btn-primary" data-check>${esc(tr("Check answer"))}</button>
+            </form>
+          </div>
+        </div>
         <div class="feedback" id="feedback" data-fb aria-live="polite"></div>
         <div class="help" data-help hidden></div>
         <div class="actions actions-quiet">
