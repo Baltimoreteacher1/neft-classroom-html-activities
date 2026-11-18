@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "97af3b4b01b4";
+const BUILD_HASH = "6d228ee0e171";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=d1bded988c3b",
   "/access-practice-lab/home.css?v=f83bff904edd",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=7d7f1b25115e",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=d1ee34c22b67",
+  "/access-practice-lab/src/main.js?v=91148327c7f7",
   "/access-practice-lab/src/brand.js?v=aa10e7cfb67f",
   "/access-practice-lab/src/components.js?v=096d3b9ad54a",
   "/access-practice-lab/src/grade.js?v=84bc1f2d104d",
@@ -47,12 +47,12 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
   "/access-practice-lab/src/audience.js?v=70e79b60b39f",
   "/access-practice-lab/src/early/gate.js?v=2cb7b6c689c5",
-  "/access-practice-lab/src/wayfinding.js?v=a47417708bc5",
+  "/access-practice-lab/src/wayfinding.js?v=962969446efe",
+  "/access-practice-lab/src/grade-bands.js?v=f68093c034d6",
   "/access-practice-lab/src/sitemap.js?v=431c06f5d3b8",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
   "/access-practice-lab/src/content.js?v=8d120786e17b",
-  "/access-practice-lab/src/grade-bands.js?v=f68093c034d6",
   "/access-practice-lab/src/store.js?v=d648fc5c5654",
   "/access-practice-lab/src/lang/ledger.js?v=e16dfd00f9e0",
   "/access-practice-lab/src/lang/studio.js?v=fe989ddb7881",

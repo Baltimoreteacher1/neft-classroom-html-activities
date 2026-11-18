@@ -724,7 +724,7 @@ document.addEventListener("change", (e) => {
     const from = parseRoute();
     if (!next || (next === app.band && !(from.view === "home" && !from.grades))) return;
     ctx.setBand(next);
-    navigate(gradeSwitchTarget(from, app.band, { canOpen: (r) => !isEarlyBand(app.band) || earlyCanOpen(r) }));
+    navigate(gradeSwitchTarget(from, app.band, { canOpen: (r) => !isEarlyBand(app.band) || earlyCanOpen(r), currentSearch: location.search }));
     return;
   }
   if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }

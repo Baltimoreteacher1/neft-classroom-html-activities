@@ -22,6 +22,27 @@ test("band-neutral pages stay on the same page", () => {
     `${BASE}/site-guide?grades=6-8`,
   );
 });
+test("the family hub keeps a grade choice when the header grade changes", () => {
+  assert.equal(
+    gradeSwitchTarget({ view: "family-start" }, "6-8"),
+    `${BASE}/family-start?pick=6-8&grades=6-8`,
+  );
+  assert.equal(
+    gradeSwitchTarget({ view: "family-start" }, "3-5"),
+    `${BASE}/family-start?pick=4-5&grades=3-5`,
+  );
+});
+test("the Resource Finder keeps its query and filters when the header grade changes", () => {
+  const target = gradeSwitchTarget({ view: "search" }, "6-8", {
+    currentSearch: "?for=family&kind=practice&q=reading%20stories&grades=3-5",
+  });
+  const url = new URL(target, "https://thelanguagepage.com");
+  assert.equal(url.pathname, `${BASE}/search`);
+  assert.equal(url.searchParams.get("grades"), "6-8");
+  assert.equal(url.searchParams.get("for"), "family");
+  assert.equal(url.searchParams.get("kind"), "practice");
+  assert.equal(url.searchParams.get("q"), "reading stories");
+});
 test("an explore hub keeps its section", () => {
   assert.equal(
     gradeSwitchTarget({ view: "explore", id: "practice" }, "3-5", { canOpen: open }),

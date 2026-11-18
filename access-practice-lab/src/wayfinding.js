@@ -4,6 +4,7 @@
 // everywhere. Hidden on the home page, inside focused test mode, inside a guided-experience frame and in the K–3 band
 // (which has its own picture-first home).
 import { BAND_INFO, isEarlyBand } from "./bands.js";
+import { GRADE_PICKS } from "./grade-bands.js";
 import { SECTION_BY_ID, SKILLS, locate, siblings } from "./sitemap.js";
 import { BASE, html, icon, raw } from "./util.js";
 
@@ -15,6 +16,7 @@ const HIDDEN_VIEWS = new Set([
   "assess",
   "explore",
   "play",
+  "search",
 ]);
 
 /** Pages that make sense for any grade band: switching grade keeps the learner on the same page. */
@@ -29,10 +31,22 @@ const GRADE_NEUTRAL_VIEWS = new Set([
  * new band in the URL); a band-specific page (an activity, a test, a world, a mission) goes to its section's hub for
  * the new band, so the switch never shows another band's activity or a dead end. Pure: no DOM, no storage.
  */
-export function gradeSwitchTarget(route = {}, band, { canOpen = () => true } = {}) {
+export function gradeSwitchTarget(route = {}, band, { canOpen = () => true, currentSearch = "" } = {}) {
   const view = route.view || "home";
   const hub = (sectionId) => `${BASE}/explore/${sectionId}?grades=${band}`;
   if (view === "home" || view === "early") return `${BASE}/?grades=${band}`;
+  if (view === "family-start") {
+    const pick = GRADE_PICKS.find((p) => p.content.includes(band))?.id;
+    return `${BASE}/family-start?${pick ? `pick=${pick}&` : ""}grades=${band}`;
+  }
+  if (view === "search") {
+    const source = new URLSearchParams(currentSearch);
+    const params = new URLSearchParams();
+    for (const key of ["q", "for", "all", "skill", "kind", "format", "time"])
+      if (source.has(key)) params.set(key, source.get(key));
+    params.set("grades", band);
+    return `${BASE}/search?${params}`;
+  }
   const hubRoute = { view: "explore", grades: band };
   if (view === "explore" && route.id) return canOpen(hubRoute) ? hub(route.id) : `${BASE}/?grades=${band}`;
   if (GRADE_NEUTRAL_VIEWS.has(view) && !(route.id && view !== "explore") && canOpen({ ...route, grades: band }))
