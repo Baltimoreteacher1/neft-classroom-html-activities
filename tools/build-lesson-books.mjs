@@ -19,6 +19,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { lessonPath } from "./lib/curriculum-source.mjs";
 import { auditSpec, compileContent, panelsJson } from "./lib/lesson-book.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -145,7 +146,7 @@ function main() {
     const html = keepInjected(buildHtml(s, world, shell), old);
     const pj = `${JSON.stringify(panelsJson(s, world), null, 2)}\n`;
     const pjFile = join(artDir(s), "panels.json");
-    const cfgFile = join(ROOT, "lessons", s.lesson, "config.json");
+    const cfgFile = lessonPath(s.lesson, "config.json");
     const cfg = readJson(cfgFile);
     const entry = configEntry(s, world, cfg.standard);
     if (check) {
