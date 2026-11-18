@@ -77,6 +77,7 @@ export function formerTopLinks(band, T) {
       ];
   return [
     { id: "access-prep", icon: "tests", label: T("Access Prep", "Preparación ACCESS"), href: `${BASE}/access-prep${q}`, featured: true },
+    ...(!isEarlyBand(band) ? [{ id: "ready-plan", icon: "road", label: T("My readiness plan", "Mi plan de preparación"), href: `${BASE}/ready-plan${q}` }] : []),
     ...learner,
     { id: "book-studio", icon: "writing", label: T("Create a Book", "Crear un libro"), href: `${BASE}/book-studio${q}` },
     { id: "site-guide", icon: "help", label: T("Site Guide", "Guía del sitio"), href: `${BASE}/site-guide${q}` },

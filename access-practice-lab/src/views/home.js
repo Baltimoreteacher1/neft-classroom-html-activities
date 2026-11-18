@@ -554,7 +554,9 @@ export async function render(ctx) {
                   <h3 id="roadStripTitle">${week.taskType}: ${week.theme}</h3>
                   <p class="fine">${week.focus}</p>
                 </div>
-                <a class="btn" href="${BASE}/road/${week.n}?grades=${band}"
+                <a class="btn" href="${BASE}/ready-plan?grades=${band}"
+                  >${icon("sparkle")} ${I.T("Make this my plan", "Crear mi plan")}</a
+                ><a class="btn" href="${BASE}/road/${week.n}?grades=${band}"
                   >${I.T("Open this week", "Abrir esta semana")}${icon("arrow-right")}</a
                 >
               </div>`
