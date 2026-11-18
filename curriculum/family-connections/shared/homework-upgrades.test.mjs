@@ -7,7 +7,10 @@ import { publicationChecks, renderPublicationChecks, homeworkLinkErrors } from "
 import { renderHomeworkHub } from "./homework-hub.js";
 
 const now = new Date("2026-09-30T16:00:00Z");
-const lessons = [{ id: "3-2", title: "Unit rates", homeworkPath: "/lessons/3-2/homework.html" }];
+const lessons = [
+  { id: "3-2", title: "Unit rates", titleEs: "Tarifas unitarias", homeworkPath: "/lessons/3-2/homework.html" },
+  { id: "1-1", title: "Math is everywhere", titleEs: "Las matemáticas están en todas partes", homeworkPath: "/lessons/1-1/homework.html" },
+];
 function snapshot(start, id = "3-2") {
   const value = createDefaultSnapshot();
   value.publishedAt = "2026-09-28T14:00:00Z";
@@ -16,12 +19,44 @@ function snapshot(start, id = "3-2") {
   return value;
 }
 function withDom(action) {
-  const dom = new JSDOM('<div id="root"></div>');
+  const dom = new JSDOM('<div id="root"></div>', { url: "https://eduwonderlab.com/curriculum/family-connections/" });
   const previous = globalThis.document;
+  const previousWindow = globalThis.window;
   globalThis.document = dom.window.document;
+  globalThis.window = dom.window;
   try { action(document.getElementById("root")); }
-  finally { globalThis.document = previous; dom.window.close(); }
+  finally { globalThis.document = previous; globalThis.window = previousWindow; dom.window.close(); }
 }
+
+test("current family week shows private progress, confidence growth, and the next assigned activity", () => {
+  withDom((root) => {
+    const current = snapshot("2026-09-28");
+    Object.assign(current.sections[0].week.days[1], { status: "lesson", lessonId: "1-1" });
+    const store = root.ownerDocument.defaultView.localStorage;
+    store.setItem("hw_exp_3-2_goal_met", "1");
+    store.setItem("hw_exp_1-1_conf_before", "1");
+    store.setItem("hw_exp_1-1_conf_after", "3");
+    renderHomeworkHub(root, current, lessons, "all-families", "en", { now });
+    const card = root.querySelector(".family-learning-card");
+    assert.ok(card);
+    assert.match(card.querySelector(".family-learning-week").textContent, /Week of Sep 28, 2026/);
+    assert.match(card.querySelector(".family-learning-progress").textContent, /1 of 2 practice activities completed/);
+    assert.equal(card.querySelector(".family-learning-meter").value, 1);
+    assert.equal(card.querySelector(".family-learning-meter").max, 2);
+    assert.match(card.querySelector(".family-learning-detail").textContent, /felt more sure after practicing Math is everywhere/);
+    assert.equal(card.querySelector(".family-learning-next").getAttribute("href"), "/lessons/1-1/homework.html?route=quick&lang=en&section=all-families");
+    assert.match(card.querySelector(".family-learning-privacy").textContent, /not sent to school/);
+    root.ownerDocument.defaultView.print = () => {};
+    card.querySelector(".family-learning-print-button").click();
+    assert.ok(root.ownerDocument.body.classList.contains("family-learning-print"));
+    root.ownerDocument.defaultView.dispatchEvent(new root.ownerDocument.defaultView.Event("afterprint"));
+    assert.ok(!root.ownerDocument.body.classList.contains("family-learning-print"));
+
+    renderHomeworkHub(root, current, lessons, "all-families", "es", { now });
+    assert.match(root.querySelector(".family-learning-card").textContent, /actividades de práctica completadas/);
+    assert.match(root.querySelector(".family-learning-card").textContent, /No se envía a la escuela/);
+  });
+});
 
 test("publishing a future week retains current homework and chooses nearest future only when needed", () => {
   const next = snapshot("2026-10-05");

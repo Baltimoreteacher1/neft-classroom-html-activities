@@ -17,7 +17,7 @@ import {
   tonightAnywayPanel,
   welcomeCard,
 } from "./hub-panels.js";
-import { homeworkHref, sessionsForWeek, sessionTwoPath } from "./hub-routes.js";
+import { DEFAULT_ROUTE, homeworkHref, sessionsForWeek, sessionTwoPath } from "./hub-routes.js";
 
 export function schoolDate(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -111,6 +111,128 @@ export function isCompanionLessonDone(lessonId) {
   } catch {
     return false;
   }
+}
+
+function companionConfidence(lessonId) {
+  if (!lessonId) return null;
+  try {
+    const store = globalThis.document?.defaultView?.localStorage || globalThis.localStorage;
+    const before = Number(store?.getItem(`hw_exp_${lessonId}_conf_before`));
+    const after = Number(store?.getItem(`hw_exp_${lessonId}_conf_after`));
+    return before >= 1 && before <= 3 && after >= 1 && after <= 3 ? { before, after } : null;
+  } catch {
+    return null;
+  }
+}
+
+function familyLearningCard(assignments, sessions, sectionId, weekStart, lang, linkLang) {
+  const es = lang === "es";
+  const t = (en, spanish) => (es ? spanish : en);
+  const practiceAssignments = assignments.filter((item) => item.kind !== "unit-review");
+  const lessonIdFor = (item) =>
+    sessions.get(item.entry.day) === 2 ? `${item.id}-part2` : item.id;
+  const completed = practiceAssignments.filter((item) =>
+    isCompanionLessonDone(lessonIdFor(item)) || isCompanionLessonDone(item.id),
+  ).length;
+  const next = practiceAssignments.find(
+    (item) => !isCompanionLessonDone(lessonIdFor(item)) && !isCompanionLessonDone(item.id),
+  ) || null;
+  const confidenceGrowth = assignments.find((item) => {
+    const signal = companionConfidence(lessonIdFor(item));
+    return signal && signal.after > signal.before;
+  });
+  const card = el("section", undefined, "family-learning-card");
+  card.setAttribute("aria-labelledby", "family-learning-title");
+  const heading = el("h3", t("Your learning this week", "Lo que aprendieron esta semana"));
+  heading.id = "family-learning-title";
+  card.append(heading);
+  card.append(
+    el(
+      "p",
+      t(`Week of ${dateLabel(weekStart, lang)}`, `Semana del ${dateLabel(weekStart, lang)}`),
+      "family-learning-week",
+    ),
+  );
+
+  const progress = el("p", undefined, "family-learning-progress");
+  const total = practiceAssignments.length;
+  const progressLabel = t(
+    `${completed} of ${total} practice ${total === 1 ? "activity" : "activities"} completed on this device`,
+    `${completed} de ${total} actividades de práctica completadas en este dispositivo`,
+  );
+  progress.textContent = progressLabel;
+  progress.setAttribute("role", "status");
+  card.append(progress);
+  const meter = el("progress", undefined, "family-learning-meter");
+  meter.max = Math.max(total, 1);
+  meter.value = completed;
+  meter.setAttribute("aria-hidden", "true");
+  card.append(meter);
+
+  const detail = confidenceGrowth
+    ? t(
+        `You felt more sure after practicing ${confidenceGrowth.title}. That is a useful sign of learning.`,
+        `Te sentiste con más seguridad después de practicar ${confidenceGrowth.titleEs || confidenceGrowth.title}. Es una señal útil de aprendizaje.`,
+      )
+    : completed > 0
+      ? t(
+          "Practice is adding up. Ask: “Which example helped the math make sense?”",
+          "La práctica se va sumando. Pregunta: «¿Qué ejemplo te ayudó a entender las matemáticas?»",
+        )
+      : t(
+          "Practice is optional. When you begin, your progress will appear here on this device.",
+          "La práctica es opcional. Al empezar, tu progreso aparecerá aquí en este dispositivo.",
+        );
+  card.append(el("p", detail, "family-learning-detail"));
+  if (next) {
+    const session = sessions.get(next.entry.day);
+    const path = session === 2
+      ? sessionTwoPath(next.id)
+      : HOMEWORK_PATH_PATTERN.test(next.homeworkPath)
+      ? next.homeworkPath
+      : `/lessons/${next.id}/homework.html`;
+    const action = link(
+      t(`Continue with ${next.title}`, `Continuar con ${next.titleEs || next.title}`),
+      homeworkHref(path, {
+        route: next.kind === "unit-review" ? "" : DEFAULT_ROUTE,
+        lang: linkLang,
+        sectionId,
+      }),
+      "button family-learning-next",
+    );
+    card.append(action);
+  } else if (total) {
+    card.append(
+      el(
+        "p",
+        t("You visited every practice activity in this week’s plan.", "Visitaste todas las actividades de práctica del plan de esta semana."),
+        "family-learning-finish",
+      ),
+    );
+  }
+  card.append(
+    el(
+      "p",
+      t(
+        "This snapshot reads only practice saved in this browser. It is not sent to school.",
+        "Este resumen solo lee la práctica guardada en este navegador. No se envía a la escuela.",
+      ),
+      "family-learning-privacy",
+    ),
+  );
+  const print = el("button", t("Print this snapshot", "Imprimir este resumen"), "button button-secondary family-learning-print-button");
+  print.type = "button";
+  print.addEventListener("click", () => {
+    document.body.classList.add("family-learning-print");
+    window.addEventListener(
+      "afterprint",
+      () => document.body.classList.remove("family-learning-print"),
+      { once: true },
+    );
+    window.print();
+  });
+  card.append(print);
+  return card;
 }
 
 /** The public page and authenticated preview use exactly the same view. */
@@ -270,6 +392,8 @@ export function renderHomeworkHub(
     const sessions = new Map(
       sessionsForWeek(assignments).map((value, index) => [assignments[index].entry.day, value]),
     );
+    if (!preview && !archive && phase === "current" && assignments.some((item) => item.kind !== "unit-review"))
+      week.append(familyLearningCard(assignments, sessions, section.id, section.week.startDate, lang, linkLang));
     if (assignments.some((item) => item.kind === "lesson")) week.append(routeIntro(lang));
     const list = el("div", undefined, "homework-list");
     const byDay = new Map(assignments.map((item) => [item.entry.day, item]));

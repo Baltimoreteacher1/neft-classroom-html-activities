@@ -184,6 +184,84 @@ button:disabled { opacity: .6; cursor: wait; }
 .publication-warning { color: #65450d; }
 @media print { .week-navigation, .publication-checks, .class-link { display: none !important; } }
 
+/* A private, family-facing weekly snapshot: progress is read from the lesson's
+   existing on-device save, with one clear next step and a gentle reflection. */
+.family-learning-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 20px;
+  margin: 20px 0 10px;
+  padding: 20px 22px;
+  border: 1px solid #a8c4c0;
+  border-radius: 12px;
+  background: #eaf3f0;
+}
+.family-learning-card h3 {
+  margin: 0;
+  color: #17324d;
+  font: 700 1.3rem/1.25 Fraunces, Georgia, serif;
+}
+.family-learning-week { grid-column: 1; margin: -4px 0 2px; color: #52636a; font-size: .9rem; }
+.family-learning-progress {
+  grid-column: 1;
+  margin: 0;
+  color: #0d625e;
+  font-weight: 800;
+}
+.family-learning-meter {
+  grid-column: 1;
+  display: block;
+  width: min(100%, 460px);
+  height: 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: #d1e1dc;
+  accent-color: #0d625e;
+}
+.family-learning-meter::-webkit-progress-bar { border-radius: 999px; background: #d1e1dc; }
+.family-learning-meter::-webkit-progress-value { border-radius: 999px; background: #0d625e; }
+.family-learning-meter::-moz-progress-bar { border-radius: 999px; background: #0d625e; }
+.family-learning-detail,
+.family-learning-finish,
+.family-learning-privacy {
+  grid-column: 1;
+  max-width: 65ch;
+  margin: 0;
+}
+.family-learning-detail { color: #35464b; }
+.family-learning-privacy { color: #52636a; font-size: .88rem; }
+.family-learning-next { grid-column: 2; grid-row: 2 / span 4; white-space: normal; }
+@media (max-width: 40rem) {
+  .family-learning-card { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 17px; }
+  .family-learning-card h3,
+  .family-learning-week,
+  .family-learning-progress,
+  .family-learning-meter,
+  .family-learning-detail,
+  .family-learning-finish,
+  .family-learning-privacy,
+  .family-learning-next { grid-column: 1; grid-row: auto; }
+  .family-learning-next { width: 100%; margin-top: 4px; }
+}
+@media print { .family-learning-card { break-inside: avoid; background: white; } }
+@media print {
+  body.family-learning-print .ewl-course-nav,
+  body.family-learning-print .lang-bar,
+  body.family-learning-print .hub-header,
+  body.family-learning-print .toolbar,
+  body.family-learning-print #main > .family-studio-entry,
+  body.family-learning-print #family-homework > .message-panel,
+  body.family-learning-print #family-week > :not(.family-learning-card),
+  body.family-learning-print .family-learning-next,
+  body.family-learning-print .family-learning-print-button { display: none !important; }
+  body.family-learning-print #main { width: 100%; margin: 0; padding: 0; }
+  body.family-learning-print #family-homework,
+  body.family-learning-print #family-week { width: 100%; margin: 0; padding: 0; border: 0; background: white; }
+  body.family-learning-print .family-learning-card { display: block; border: 1px solid #9aa9a4; }
+}
+
 /* ---- Family Math Studio hub: language switch, first-time class, welcome note,
    time chooser, and the "Tonight anyway" panel. ---- */
 .lang-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; width: min(1000px, calc(100% - 48px)); margin: 14px auto 0; }
