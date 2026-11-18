@@ -42,15 +42,27 @@ test("student start joins practice, adventures and studios, with a saved-work tr
   const page = dom((await students.render(ctx)).html);
   const smart = page.querySelector("#stuSmart");
   const library = page.querySelector("#stuLibraryTitle");
-  assert.ok(smart && library && smart.compareDocumentPosition(library) & 4, "skill chooser comes before the library");
-  assert.equal(page.querySelector('[data-student-place="adventures"]').getAttribute("href"), "/language-adventures/");
-  assert.equal(page.querySelector('[data-student-place="studios"]').getAttribute("href"), "/studios/language");
-  assert.equal(page.querySelectorAll('[data-student-place]').length, 2);
+  assert.ok(
+    smart && library && smart.compareDocumentPosition(library) & 4,
+    "skill chooser comes before the library",
+  );
+  assert.equal(
+    page.querySelector('[data-student-place="adventures"]').getAttribute("href"),
+    "/language-adventures/",
+  );
+  assert.equal(
+    page.querySelector('[data-student-place="studios"]').getAttribute("href"),
+    "/studios/language",
+  );
+  assert.equal(page.querySelectorAll("[data-student-place]").length, 2);
   assert.equal(students.transferStep("Reading").href, "/language-adventures/");
   assert.equal(students.transferStep("Writing").href, "/studios/language");
   const I = makeI18n("es", "es");
   const transfer = dom(students.transferHTML(I, "Speaking", "Mi respuesta"));
-  assert.equal(transfer.querySelector('[data-transfer-step]').getAttribute("href"), "/studios/language");
+  assert.equal(
+    transfer.querySelector("[data-transfer-step]").getAttribute("href"),
+    "/studios/language",
+  );
   assert.match(transfer.body.textContent, /Usa lo que practicaste/);
 });
 
