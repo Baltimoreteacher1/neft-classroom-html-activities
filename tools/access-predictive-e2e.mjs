@@ -69,6 +69,7 @@ const TABS = [
   "growth",
   "forecasts",
   "classroom",
+  "analysis",
   "planner",
   "reports",
   "toolkit",
@@ -314,6 +315,31 @@ await sub("scenarios");
 ok(
   (await page.locator('[data-kind="hypothetical"]').count()) === 1,
   "scenarios are labelled hypothetical",
+);
+ok(
+  (await page.locator("#piScenarioOverallTitle").innerText()) === "Overall score with these changes",
+  "scenario slider area states the Overall score outcome and its limits",
+);
+await page.locator('[data-scenario="Reading:level"]').evaluate((el) => {
+  el.value = "0.5";
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+});
+ok(
+  (await page.locator('[data-scenario="Reading:level"]').inputValue()) === "0.5" &&
+    (await page.locator('[data-scenario-overall]').count()) === 1,
+  "changing a domain score recalculates the hypothetical Overall result",
+);
+await page.click("[data-scenario-reset]");
+await tab("analysis");
+ok(
+  (await page.locator("#piAnalysisDistribution").count()) === 1 &&
+    (await page.locator("#piAnalysisCompare").count()) === 1,
+  "Statistical Lab shows a cohort summary and matched domain analysis",
+);
+ok(
+  (await page.locator("#piAnalysisDomainResult").innerText()).includes("minus") &&
+    (await page.locator("#piAnalysisGrowthResult").count()) === 1,
+  "domain analysis explains its paired comparison",
 );
 ok(
   !(

@@ -7,6 +7,7 @@ import { clear, h, s } from "./dom.js";
 import { forecastFor, transitionsByKey, validateAll } from "./forecast.js";
 import { KEYS, loadRealStudents, loadState, read, saveState, write } from "./store.js";
 import { renderAsk } from "./view-ask.js";
+import { renderAnalysis } from "./view-analysis.js";
 import { renderClassroom } from "./view-classroom.js";
 import { renderGlance } from "./view-glance.js";
 import { dropZone, renderData, startManual } from "./view-data.js";
@@ -28,6 +29,7 @@ const TABS = [
   { id: "growth", label: "Growth", render: renderGrowth },
   { id: "forecasts", label: "Forecasts & Scenarios", render: renderForecasts },
   { id: "classroom", label: "Classroom Insights", render: renderClassroom },
+  { id: "analysis", label: "Statistical Lab", render: renderAnalysis },
   { id: "planner", label: "Instructional Planner", render: renderPlanner },
   { id: "reports", label: "Reports", render: renderReports },
   { id: "toolkit", label: "Toolkit", render: renderToolkit },
@@ -156,6 +158,7 @@ const ICONS = {
   reports: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6",
   data: "M12 3v12M7 10l5 5 5-5M4 21h16",
   toolkit: "M14 7l3-3 3 3-3 3M3 21l8-8M9 3l2 2-6 6-2-2zM15 13l6 6-2 2-6-6",
+  analysis: "M4 19V5m0 14h16M7 15l3-4 3 2 5-7M17 6h1v1",
 };
 export const icon = (id) =>
   s("svg", { viewBox: "0 0 24 24", class: "pi-ico", "aria-hidden": "true", focusable: "false" }, s("path", { d: ICONS[id] || ICONS.overview }));

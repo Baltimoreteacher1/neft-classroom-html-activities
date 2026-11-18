@@ -167,6 +167,33 @@ function scenarios(ws) {
         ];
       }),
     ),
+    (() => {
+      const overall = res.composites.Overall;
+      return h(
+        "section",
+        { class: "pi-card pi-scenario-overall", "aria-labelledby": "piScenarioOverallTitle" },
+        h("h3", { id: "piScenarioOverallTitle" }, "Overall score with these changes"),
+        overall.status === "illustrative"
+          ? h(
+              "p",
+              { class: "pi-scenario-total", "data-scenario-overall": "illustrative" },
+              h("strong", {}, `${overall.base} → ${overall.scale}`),
+              ` scale-score points (${overall.change > 0 ? "+" : ""}${overall.change})`,
+            )
+          : h(
+              "p",
+              { class: "pi-scenario-total", "data-scenario-overall": overall.status },
+              overall.status === "no-rule"
+                ? "A verified Overall scale-score calculation is not available for this assessment scale."
+                : "Enter all four reported domain scale scores to calculate the illustrative Overall scale score.",
+            ),
+        h(
+          "p",
+          { class: "fine" },
+          "This is the weighted Overall composite scale score only when the assessment scale has verified weights. It is arithmetic on the values you chose, not a forecast. An Overall proficiency level cannot be derived here from domain levels or this scale score; WIDA's official score report remains the source for that level.",
+        ),
+      );
+    })(),
     explain({
       summary: `This is arithmetic on changes you chose. It shows how the composite weights respond (Reading and Writing weigh most in Overall); it does not say these changes will happen, or that any amount of instruction causes them. Priorities in this scenario: ${res.priorities.join(" and ") || "none"}.`,
       how: h(
