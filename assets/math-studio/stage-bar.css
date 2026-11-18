@@ -95,7 +95,12 @@
   .ms-stagebar ol {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  /* Larger text (the studios' Comfort panel) leaves each of five columns too narrow for "Understand": the bar wraps
+     to two rows rather than pushing the last stage off the screen. */
+  html:is([data-comfort-size="2"], [data-comfort-size="3"]) .ms-stagebar ol {
+    grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
   }
   .ms-stagebar li a {
     flex-direction: column;

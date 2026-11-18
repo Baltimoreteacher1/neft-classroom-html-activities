@@ -167,9 +167,9 @@ for (const id of ids) {
   }
   assert.ok(
     hub.includes(
-      `<!-- practice-studio:${id} --><a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><a class="res" href="/math/lesson-path/${id}/#lp-motion">See it move</a><!-- /practice-studio -->`,
+      `<!-- practice-studio:${id} --><a class="res res--studio" href="/math/studio/${id}/">Learning Lab (Practice HTML)</a><a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><a class="res" href="/math/lesson-path/${id}/#lp-motion">See it move</a><!-- /practice-studio -->`,
     ),
-    `[${id}] both studio links are on its row`,
+    `[${id}] the Learning Lab and both studio links are on its row`,
   );
 
   /* answers are the lesson's own: re-derive each converted config multiple-choice item and find it on the page */
