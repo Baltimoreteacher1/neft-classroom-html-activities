@@ -46,6 +46,7 @@ const MUST_MENTION = {
   fraction: ["8", "3", "3/8"],
   balance: ["3", "11", "unknown"],
   order: ["4 + 3 × (9 − 7)²", "4 + 3 × 2²", "4 + 12", "16", "parentheses"],
+  exprparts: ["12", "t", "50"],
 };
 
 const withoutVarFallbacks = (svg) => svg.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, "var()");

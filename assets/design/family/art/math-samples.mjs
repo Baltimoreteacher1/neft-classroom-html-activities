@@ -101,4 +101,5 @@ export const SAMPLES = [
   },
   { id: "kcf", kind: "kcf", data: { dividend: "3/4", divisor: "6" } },
   { id: "kcf-mixed", kind: "kcf", data: { dividend: "1 1/2", divisor: "3/4" } },
+  { id: "exprparts", kind: "exprparts", data: { coef: "12", variable: "t", op: "+", constant: "50" } },
 ];

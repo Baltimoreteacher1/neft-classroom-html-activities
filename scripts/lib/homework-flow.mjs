@@ -99,9 +99,11 @@ export function renderLookAndLearn(
       </details>`
           : ""
       }
-      ${wordsHtml ? `<details class="fp-optional"><summary>${bi("Words to know (optional)", "Palabras que conviene saber (opcional)")}</summary>${wordsHtml}</details>` : ""}
-      ${noticeHtml ? `<details class="fp-optional"><summary>${bi("Say what you notice (optional)", "Cuenten qué notan (opcional)")}</summary>${noticeHtml}</details>` : ""}
-      ${warmupHtml ? `<details class="fp-optional"><summary>${bi("Quick look back (optional)", "Un repaso rápido (opcional)")}</summary>${warmupHtml}</details>` : ""}`;
+      ${
+        wordsHtml || noticeHtml || warmupHtml
+          ? `<div class="fp-optional-group">${wordsHtml ? `<details class="fp-optional"><summary>${bi("Words to know (optional)", "Palabras que conviene saber (opcional)")}</summary>${wordsHtml}</details>` : ""}${noticeHtml ? `<details class="fp-optional"><summary>${bi("Say what you notice (optional)", "Cuenten qué notan (opcional)")}</summary>${noticeHtml}</details>` : ""}${warmupHtml ? `<details class="fp-optional"><summary>${bi("Quick look back (optional)", "Un repaso rápido (opcional)")}</summary>${warmupHtml}</details>` : ""}</div>`
+          : ""
+      }`;
 }
 
 /** Step 2. One guided problem tied to the example, the interactive model, one family question. */

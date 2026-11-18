@@ -456,6 +456,57 @@ function order(d, { lang }) {
   return { h: y + 4, body: out.join(""), desc };
 }
 
+// ---------------------------------------------------------------- exprparts
+function exprparts(d, { lang }) {
+  assertKeys(d, ["coef", "variable", "op", "constant"], 'model "exprparts" data');
+  need(d, "exprparts", "coef", "variable", "op", "constant");
+  const coef = String(d.coef);
+  const variable = String(d.variable);
+  const op = String(d.op);
+  const constant = String(d.constant);
+  const cy = 96;
+  const cxCoef = 104;
+  const cxVar = 156;
+  const cxOp = 202;
+  const cxConst = 252;
+  const out = [];
+
+  const box = (x, w, h, cls, val) => {
+    out.push(`<rect class="${cls}" x="${n1(x - w / 2)}" y="${n1(cy - h / 2)}" width="${w}" height="${h}" rx="8"/>`);
+    out.push(text(x, cy + 7, val, { cls: "m-t m-n" }));
+  };
+  box(cxCoef, 52, 42, "m-p", coef);
+  box(cxVar, 40, 42, "m-a", variable);
+  out.push(text(cxOp, cy + 7, op, { cls: "m-t m-n" }));
+  box(cxConst, 56, 42, "m-u", constant);
+
+  const callout = (x1, y1, x2, y2, lbl, cls) => {
+    out.push(`<path class="m-gr" d="M${n1(x1)} ${n1(y1)}L${n1(x2)} ${n1(y2)}"/>`);
+    out.push(head(x2, y2, y2 > y1 ? "d" : "u"));
+    const pw = Math.max(108, textW(lbl, 13) + 18);
+    const py = y1 < y2 ? y1 - 24 : y1 + 2;
+    out.push(`<rect class="${cls}" x="${n1(x1 - pw / 2)}" y="${n1(py)}" width="${n1(pw)}" height="24" rx="12"/>`);
+    out.push(text(x1, py + 16, lbl, { cls: "m-t" }));
+  };
+
+  callout(68, 32, cxCoef, cy - 23, tr(lang, "Coefficient", "Coeficiente"), "m-p");
+  callout(182, 32, cxVar, cy - 23, tr(lang, "Variable", "Variable"), "m-a");
+  callout(296, 32, cxConst, cy - 23, tr(lang, "Constant", "Constante"), "m-u");
+  callout(cxOp, 158, cxOp, cy + 18, tr(lang, "Operator", "Operador"), "m-p");
+
+  const bx1 = cxCoef - 26;
+  const bx2 = cxVar + 20;
+  out.push(`<path class="m-ln" fill="none" d="M${n1(bx1)} 124v7H${n1(bx2)}v-7"/>`);
+  out.push(text((bx1 + bx2) / 2, 149, tr(lang, `Variable term: ${coef}${variable}`, `Término variable: ${coef}${variable}`), { cls: "m-t" }));
+
+  const desc = tr(
+    lang,
+    `Algebraic expression ${coef}${variable} ${op} ${constant}: ${coef} is the coefficient, ${variable} is the variable, ${op} is the operator, ${constant} is the constant, and ${coef}${variable} is the variable term.`,
+    `Expresión algebraica ${coef}${variable} ${op} ${constant}: ${coef} es el coeficiente, ${variable} es la variable, ${op} es el operador, ${constant} es la constante y ${coef}${variable} es el término variable.`,
+  );
+  return { h: 192, body: out.join(""), desc };
+}
+
 // ---------------------------------------------------------------- dispatcher
 const MODELS = {
   tape,
@@ -470,6 +521,7 @@ const MODELS = {
   balance: renderBalance,
   order,
   kcf: renderKcf,
+  exprparts,
 };
 
 export const MODEL_KINDS = Object.freeze([...Object.keys(MODELS), "none"]);

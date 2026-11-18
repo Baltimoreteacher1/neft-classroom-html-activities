@@ -337,17 +337,27 @@
 
   /* ── Optional folds: notice/wonder, look-back, the celebrate extras ────── */
   .fp-optional {
-    background: var(--fm-sunken);
+    background: var(--fm-raised);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
     padding: 0;
   }
   .fp-optional > summary {
     display: flex;
     align-items: center;
+    gap: var(--fm-space-2);
     min-block-size: 2.75rem;
     padding-inline: var(--fm-space-4);
     cursor: pointer;
     font-weight: var(--fm-fw-semibold);
     color: var(--fm-text-muted);
+  }
+  .fp-optional > summary::before {
+    content: "▸";
+    color: var(--fm-accent-ink);
+  }
+  .fp-optional[open] > summary::before {
+    content: "▾";
   }
   .fp-optional[open] > summary {
     border-block-end: 1px solid var(--fm-border);
@@ -448,6 +458,42 @@
     margin-top: var(--fm-space-3);
     padding-top: var(--fm-space-3);
     border-top: 1px solid var(--fm-border);
+  }
+  .fm-hero__art {
+    max-block-size: 140px;
+  }
+  .fp-understand-cta {
+    background: var(--fm-surface);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    padding: var(--fm-space-2) var(--fm-space-3);
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-colearn-svg-stage svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-inline: auto;
+  }
+  .fp-optional-group {
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    overflow: hidden;
+    background: var(--fm-raised);
+  }
+  .fp-optional-group .fp-optional {
+    border: 0;
+    border-radius: 0;
+  }
+  .fp-optional-group .fp-optional + .fp-optional {
+    border-top: 1px solid var(--fm-border);
+  }
+  @media (min-width: 60rem) {
+    .fp-shell > aside {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+    }
   }
 
   /* The model figures read their colours from --m-* with a hex fallback; map them onto the family tokens so
