@@ -107,7 +107,7 @@ export function celebrationHtml({
     ${stars ? `<p class="cheer-stars">${esc(starsText(stars))}</p>` : ""}
     ${stickers.length ? `<p class="cheer-stickers">${esc(stickers.length > 1 ? t("New stickers!") : t("New sticker!"))} ${stickers.map((s) => `<span class="cheer-sticker"><span aria-hidden="true">${s.icon}</span> ${esc(t(s.name))}</span>`).join(" ")}</p>` : ""}
     ${buddyHtml(look, kind, n, "buddy-cheer")}
-    ${next}
+    ${next ? `<details class="answer-details reward-next"><summary>${esc(tr("Explore next skills"))}</summary>${next}</details>` : ""}
   </div>`;
 }
 

@@ -14,7 +14,7 @@ import { explainFrame, wordsToKnow } from "./language.js";
 import { bindListen, listenButton, readAloudOn } from "./prefs.js";
 import { loadTutor, recordMasteryReflection, recordPractice, saveLastVisit, skillMeter } from "./store.js";
 import { meterHtml } from "./meter.js";
-import { afterAnswer, afterSolution, loadAwards } from "./practice-cheer.js";
+import { afterAnswer, loadAwards } from "./practice-cheer.js";
 import { esc, gradeName, lang, named, pickL, tr } from "./words.js";
 import { skillPath } from "./routes.js";
 
@@ -276,10 +276,10 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
         streakIndependent = independent ? streakIndependent + 1 : 0;
         fb.className = "feedback is-right";
         fb.innerHTML = `<p><span class="cheer-mark" aria-hidden="true">✓</span><strong>${esc(tr("Correct."))}</strong> ${esc(independent ? tr("Solved on your own.") : tr("You solved it with help. Try one on your own to show what you know."))}</p>
-          ${whyHtml(item, solved, es)}`;
+          <details class="answer-details"><summary>${esc(tr("See why"))}</summary>${whyHtml(item, solved, es)}${explainFrame({ correct: true, count })}</details>`;
         if (independent) {
           const eventId = `${sessionId}:${count}`;
-          fb.insertAdjacentHTML("beforeend", `<fieldset class="strategy-reflection"><legend>${esc(tr("Strategies I used"))}</legend>
+          fb.insertAdjacentHTML("beforeend", `<details class="answer-details reflection-details"><summary>${esc(tr("Reflect on your strategy"))}</summary><fieldset class="strategy-reflection"><legend>${esc(tr("Strategies I used"))}</legend>
             <label><input type="radio" name="strategy-${count}" value="visual"/> ${esc(tr("I used a visual"))}</label>
             <label><input type="radio" name="strategy-${count}" value="decomposition"/> ${esc(tr("I broke numbers apart"))}</label>
             <label><input type="radio" name="strategy-${count}" value="fact"/> ${esc(tr("I recalled a fact"))}</label>
@@ -287,7 +287,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
             <label><input type="radio" name="helped-${count}" value="yes"/> ${esc(tr("Yes"))}</label>
             <label><input type="radio" name="helped-${count}" value="no"/> ${esc(tr("Not sure yet"))}</label>
             <button type="button" class="btn btn-quiet" data-save-reflection disabled>${esc(tr("Save reflection"))}</button>
-          </fieldset>`);
+          </fieldset></details>`);
           const reflection = fb.querySelector(".strategy-reflection");
           const saveReflection = reflection.querySelector("[data-save-reflection]");
           const updateReflectionButton = () => {
@@ -302,34 +302,33 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
             }
           });
         }
-        finishProblem(fb, true);
+        finishProblem(fb);
       } else if (tries < 2) {
         streakIndependent = 0;
         fb.className = "feedback is-wrong";
+        helpBtn?.setAttribute("hidden", "");
+        anotherBtn?.setAttribute("hidden", "");
         fb.innerHTML = `<p><strong>${esc(tr("Not yet."))}</strong> ${esc(missNote(item, raw))}</p>`;
         const visual = ladder.findIndex((r) => r.kind === "visual");
         if (visual > -1 && helpUsed <= visual) {
-          // Visual explanation coaching: after a miss, the picture of THIS problem opens beside the note.
-          helpUsed = visual + 1;
-          helpBox.hidden = false;
-          helpBox.innerHTML = rungHtml(ladder[visual]);
-          mountFrames(helpBox);
-          if (helpBtn && helpUsed >= ladder.length) helpBtn.hidden = true;
+          // Keep a useful picture one tap away without displacing the retry action.
+          fb.insertAdjacentHTML("beforeend", `<details class="answer-details"><summary>${esc(tr("See a picture"))}</summary>${rungHtml(ladder[visual])}</details>`);
+          mountFrames(fb);
         }
+        body.querySelector("[data-check]").textContent = tr("Try again");
         input.select();
       } else {
         fb.className = "feedback is-wrong";
         fb.innerHTML = `<p><strong>${esc(tr("Here is the solution. A fresh problem of the same kind is next."))}</strong></p>
-          ${solutionHtml(item, solved, es)}`;
+          <details class="answer-details"><summary>${esc(tr("See the solution"))}</summary>${solutionHtml(item, solved, es)}</details>`;
         mountFrames(fb);
-        finishProblem(fb, false);
-        afterSolution(fb, count);
+        finishProblem(fb);
       }
       afterAnswer({ root, skill, before, correct, independent, firstTry: tries === 1, fb, live: say, n: count });
     });
   }
 
-  function finishProblem(fb, correct) {
+  function finishProblem(fb) {
     body.querySelector("[data-check]").disabled = true;
     body.querySelector("#answer").readOnly = true;
     body.querySelectorAll("[data-pick]").forEach((b) => (b.disabled = true));
@@ -340,8 +339,7 @@ export function mountSkill(root, skill, { stage = "see", go, live }) {
     const base = missesInRow >= 2 ? prerequisites(skill)[0] : null;
     fb.insertAdjacentHTML(
       "beforeend",
-      `${base ? `<p class="prereq">${esc(tr("This skill builds on"))} <a href="?grade=${base.grade}&skill=${esc(base.id)}">${esc(named(base.title))}</a>. ${esc(tr("A short review there can help."))}</p>` : ""}
-      ${explainFrame({ correct, count })}
+      `${base ? `<details class="answer-details"><summary>${esc(tr("Review a building block"))}</summary><p class="prereq">${esc(tr("This skill builds on"))} <a href="?grade=${base.grade}&skill=${esc(base.id)}">${esc(named(base.title))}</a>. ${esc(tr("A short review there can help."))}</p></details>` : ""}
       <div class="actions"><button type="button" class="btn btn-primary" data-again>${esc(tr("Next problem"))}</button></div>`,
     );
     const next = fb.querySelector("[data-again]");
