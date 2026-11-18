@@ -35,7 +35,34 @@ export const V3_LEARN_JS = `
     if (m === 'copilot') { var g = document.getElementById('hw_grownup'); if (g) g.open = true; }
     try { localStorage.setItem('hw_persona_' + LESSON, m); } catch (e) {}
   }
+  function selectExprPart(card, part) {
+    if (!card) return;
+    var active = card.getAttribute('data-selected-part') === part ? '' : part;
+    card.setAttribute('data-selected-part', active);
+    card.querySelectorAll('[data-expr-chip]').forEach(function (b) {
+      var on = active && b.getAttribute('data-expr-chip') === active;
+      b.classList.toggle('is-active', !!on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    card.querySelectorAll('[data-expr-part]').forEach(function (g) {
+      var match = g.getAttribute('data-expr-part') === active;
+      g.classList.toggle('is-selected', !!active && match);
+      g.classList.toggle('is-dimmed', !!active && !match);
+    });
+    var box = card.querySelector('.hw-expr-explain');
+    if (box) {
+      box.hidden = !active;
+      box.querySelectorAll('[data-expr-explain]').forEach(function (p) {
+        p.hidden = p.getAttribute('data-expr-explain') !== active;
+      });
+    }
+  }
   document.addEventListener('click', function (e) {
+    var exprHit = e.target.closest('[data-expr-chip], [data-expr-part]');
+    if (exprHit) {
+      var part = exprHit.getAttribute('data-expr-chip') || exprHit.getAttribute('data-expr-part');
+      return selectExprPart(exprHit.closest('#hw_family_bridge_60s'), part);
+    }
     var t = e.target.closest('[data-persona-btn], .hw-transfer-choice-btn, .hw-glitch-step-btn, .hw-spiral-opt-btn');
     if (!t) return;
     if (t.hasAttribute('data-persona-btn')) {

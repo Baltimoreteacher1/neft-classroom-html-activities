@@ -7905,7 +7905,36 @@ body.no-speech .hw-listen-bar, body.no-speech .hw-listen, body.no-speech .btn-re
 }
 @media (max-width:600px) {
 .homework-tab-chrome {
-  position: static;
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  padding: 6px 8px;
+}
+.homework-tab-chrome::before,
+.hw-tab-meta-row,
+.hw-studio-zone {
+  display: none;
+}
+.homework-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+.homework-tab-btn {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 4px 2px;
+  text-align: center;
+}
+.homework-tab-btn .tab-label {
+  font-size: var(--fm-fs-xs);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .hw-tab-meta-row {
   flex-wrap: wrap;

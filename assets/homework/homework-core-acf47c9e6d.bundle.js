@@ -1408,13 +1408,13 @@ function updateStopNav(tabId) {
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
-  /* The one forward button names where it goes: "Next: Try Together". */
+  /* The one forward button names where it goes: "Next: Step 2 — Build". */
   var nextTab = document.getElementById('hw_tab_' + tabs[i + 1]);
   if (next && nextTab) {
     var nEn = nextTab.querySelector('.tab-en'), nEs = nextTab.querySelector('.tab-es');
     var spans = next.querySelectorAll('span');
-    if (spans[0] && nEn) spans[0].textContent = 'Next: ' + nEn.textContent;
-    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: ' + nEs.textContent;
+    if (spans[0] && nEn) spans[0].textContent = 'Next: Step ' + (i + 2) + ' — ' + nEn.textContent + ' →';
+    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: Paso ' + (i + 2) + ' — ' + nEs.textContent + ' →';
   }
 }
 
@@ -6195,7 +6195,34 @@ else hwPracticeBoot();
     if (m === 'copilot') { var g = document.getElementById('hw_grownup'); if (g) g.open = true; }
     try { localStorage.setItem('hw_persona_' + LESSON, m); } catch (e) {}
   }
+  function selectExprPart(card, part) {
+    if (!card) return;
+    var active = card.getAttribute('data-selected-part') === part ? '' : part;
+    card.setAttribute('data-selected-part', active);
+    card.querySelectorAll('[data-expr-chip]').forEach(function (b) {
+      var on = active && b.getAttribute('data-expr-chip') === active;
+      b.classList.toggle('is-active', !!on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    card.querySelectorAll('[data-expr-part]').forEach(function (g) {
+      var match = g.getAttribute('data-expr-part') === active;
+      g.classList.toggle('is-selected', !!active && match);
+      g.classList.toggle('is-dimmed', !!active && !match);
+    });
+    var box = card.querySelector('.hw-expr-explain');
+    if (box) {
+      box.hidden = !active;
+      box.querySelectorAll('[data-expr-explain]').forEach(function (p) {
+        p.hidden = p.getAttribute('data-expr-explain') !== active;
+      });
+    }
+  }
   document.addEventListener('click', function (e) {
+    var exprHit = e.target.closest('[data-expr-chip], [data-expr-part]');
+    if (exprHit) {
+      var part = exprHit.getAttribute('data-expr-chip') || exprHit.getAttribute('data-expr-part');
+      return selectExprPart(exprHit.closest('#hw_family_bridge_60s'), part);
+    }
     var t = e.target.closest('[data-persona-btn], .hw-transfer-choice-btn, .hw-glitch-step-btn, .hw-spiral-opt-btn');
     if (!t) return;
     if (t.hasAttribute('data-persona-btn')) {

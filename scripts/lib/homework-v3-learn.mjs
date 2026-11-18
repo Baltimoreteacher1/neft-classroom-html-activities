@@ -34,6 +34,91 @@ export function v3Of(config, lessonId) {
   return v3;
 }
 
+function renderExprInspector(model) {
+  const kind = model?.kind;
+  const d = model?.data;
+  if (!d || (kind !== "exprparts" && kind !== "eqparts")) return "";
+  const items =
+    kind === "exprparts"
+      ? [
+          {
+            id: "coef",
+            en: "Coefficient",
+            es: "Coeficiente",
+            descEn: `${d.coef} is the coefficient — the number multiplied by the variable ${d.variable}.`,
+            descEs: `${d.coef} es el coeficiente: el número que multiplica a la variable ${d.variable}.`,
+          },
+          {
+            id: "variable",
+            en: "Variable",
+            es: "Variable",
+            descEn: `${d.variable} is the variable — a letter standing for a number that can change.`,
+            descEs: `${d.variable} es la variable: una letra que representa un número que puede cambiar.`,
+          },
+          {
+            id: "op",
+            en: "Operator",
+            es: "Operador",
+            descEn: `${d.op} is the operator — the math sign showing how the terms combine.`,
+            descEs: `${d.op} es el operador: el signo matemático que muestra cómo se combinan los términos.`,
+          },
+          {
+            id: "constant",
+            en: "Constant",
+            es: "Constante",
+            descEn: `${d.constant} is the constant — a fixed number that stays the same on its own.`,
+            descEs: `${d.constant} es la constante: un número fijo que no cambia por sí solo.`,
+          },
+          {
+            id: "term",
+            en: `Variable term: ${d.coef}${d.variable}`,
+            es: `Término variable: ${d.coef}${d.variable}`,
+            descEn: `${d.coef}${d.variable} is the variable term — the coefficient and variable working together.`,
+            descEs: `${d.coef}${d.variable} es el término variable: el coeficiente y la variable trabajando juntos.`,
+          },
+        ]
+      : [
+          {
+            id: "lhs",
+            en: "Left side",
+            es: "Lado izquierdo",
+            descEn: `${d.lhs} is the left expression of the equation.`,
+            descEs: `${d.lhs} es la expresión del lado izquierdo de la ecuación.`,
+          },
+          {
+            id: "eq",
+            en: "Equals",
+            es: "Igual",
+            descEn: `${d.op} means both sides have the exact same value.`,
+            descEs: `${d.op} significa que ambos lados tienen exactamente el mismo valor.`,
+          },
+          {
+            id: "rhs",
+            en: "Right side",
+            es: "Lado derecho",
+            descEn: `${d.rhs} is the right expression that balances the left side.`,
+            descEs: `${d.rhs} es la expresión del lado derecho que equilibra al lado izquierdo.`,
+          },
+          {
+            id: "equation",
+            en: "Balanced equation",
+            es: "Ecuación balanceada",
+            descEn: `Together, ${d.lhs} ${d.op} ${d.rhs} is an equation: two expressions joined by ${d.op}.`,
+            descEs: `En conjunto, ${d.lhs} ${d.op} ${d.rhs} es una ecuación: dos expresiones unidas por ${d.op}.`,
+          },
+        ];
+  return `
+      <div class="hw-expr-inspect" data-expr-inspect>
+        <p class="hw-expr-inspect-prompt">${bi("Tap a part above or below to see what it does:", "Toca una parte arriba o abajo para ver qué hace:")}</p>
+        <div class="hw-expr-chips" role="group" aria-label="${esc("Parts to inspect")}">
+          ${items.map((it) => `<button type="button" class="hw-expr-chip" data-expr-chip="${esc(it.id)}" aria-pressed="false">${bi(it.en, it.es)}</button>`).join("")}
+        </div>
+        <div class="hw-expr-explain" role="status" aria-live="polite" hidden>
+          ${items.map((it) => `<p class="hw-expr-explain-item" data-expr-explain="${esc(it.id)}" hidden>${bi(it.descEn, it.descEs)}</p>`).join("")}
+        </div>
+      </div>`;
+}
+
 function renderModelStage(v3, lessonId) {
   if (v3.kind === "mindset") return "";
   const figure = renderModelFigure(v3.model, lessonId);
@@ -42,6 +127,7 @@ function renderModelStage(v3, lessonId) {
       <h3 class="hw-colearn-title" id="hw_model_title">${bi("The picture for tonight", "El dibujo de hoy")}</h3>
       <p class="hw-colearn-lead">${bi("In class we used", "En clase usamos")} <strong>${pair(v3.classModel.name)}</strong>.</p>
       <figure class="hw-colearn-svg-stage">${figure}</figure>
+      ${renderExprInspector(v3.model)}
       <div class="hw-colearn-actions">
         <button type="button" class="fm-btn hw-try-model-btn" data-act="switchHomeworkTab" data-args='["explore"]'>${bi("Try the interactive model →", "Probar el modelo interactivo →")}</button>
       </div>

@@ -10228,13 +10228,13 @@ function updateStopNav(tabId) {
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
-  /* The one forward button names where it goes: "Next: Try Together". */
+  /* The one forward button names where it goes: "Next: Step 2 — Build". */
   var nextTab = document.getElementById('hw_tab_' + tabs[i + 1]);
   if (next && nextTab) {
     var nEn = nextTab.querySelector('.tab-en'), nEs = nextTab.querySelector('.tab-es');
     var spans = next.querySelectorAll('span');
-    if (spans[0] && nEn) spans[0].textContent = 'Next: ' + nEn.textContent;
-    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: ' + nEs.textContent;
+    if (spans[0] && nEn) spans[0].textContent = 'Next: Step ' + (i + 2) + ' — ' + nEn.textContent + ' →';
+    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: Paso ' + (i + 2) + ' — ' + nEs.textContent + ' →';
   }
 }
 
