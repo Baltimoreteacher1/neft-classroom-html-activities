@@ -7,7 +7,7 @@
 // Continue appears only when this device has real unfinished work (the same rules as the home Continue card).
 import { rememberAudience } from "../audience.js";
 import { isEarlyBand } from "../bands.js";
-import { bandDomains, loadStudioIndex } from "../content.js";
+import { bandDomains, findActivity, loadStudioIndex } from "../content.js";
 import { getEngagement } from "../engagement.js";
 import { activeGradeFocus } from "../grade-focus.js";
 import { GRADE_PICKS, currentPick, resolvePick } from "../grade-bands.js";
@@ -15,6 +15,7 @@ import { latestModuleResume } from "../home-resume.js";
 import { i18nFor } from "../i18n.js";
 import { loadStudio } from "../lang/studio.js";
 import { jumpSetAttrs, pickSet, practicePool } from "../quick-start.js";
+import { loadRecord, needsReview } from "../store.js";
 import { DEST_BY_ID, SECTION_BY_ID } from "../sitemap.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, TIERS, html, icon } from "../util.js";
 import { continueTarget, recentRoom } from "./home-start.js";
@@ -90,6 +91,38 @@ export const doors = (band) =>
       line: ["Your Passport, stamps and journey.", "Tu pasaporte, sellos y recorrido."],
     },
   ].filter((d) => d.href);
+
+const MORE_PLACES = [
+  {
+    id: "adventures",
+    href: "/language-adventures/",
+    name: ["Story Adventures", "Aventuras con cuentos"],
+    line: ["Make choices in a story, then speak and write about them.", "Toma decisiones en un cuento y luego habla y escribe sobre ellas."],
+  },
+  {
+    id: "studios",
+    href: "/studios/language",
+    name: ["Language Studios", "Estudios del lenguaje"],
+    line: ["Build words, rehearse ideas, and revise your writing.", "Forma palabras, ensaya ideas y revisa tu escritura."],
+  },
+];
+
+export function transferStep(domain) {
+  if (domain === "Speaking" || domain === "Writing") return MORE_PLACES[1];
+  return MORE_PLACES[0];
+}
+
+export function transferHTML(I, domain, title = "") {
+  const place = transferStep(domain);
+  const domainName = DOMAIN_META[domain];
+  return html`<section class="stu-transfer panel" aria-labelledby="stuTransferTitle">
+    <div>
+      <h2 id="stuTransferTitle">${I.T("Use what you practiced", "Usa lo que practicaste")}</h2>
+      <p>${title ? html`${I.T("You worked on", "Trabajaste en")} <span lang="en">${title}</span>. ` : ""}${domainName ? I.T(`Now try ${domainName.name.toLowerCase()} in a different activity.`, `Ahora prueba ${domainName.es.toLowerCase()} en otra actividad.`) : I.T("Try a new kind of language activity.", "Prueba otra actividad de lenguaje.")}</p>
+    </div>
+    <a class="btn btn-primary" href="${place.href}" data-transfer-step>${I.T(...place.name)} ${icon("arrow-right")}</a>
+  </section>`;
+}
 
 const hubUrl = (pick, band, extra = {}) =>
   `${BASE}/students?${new URLSearchParams({ pick, grades: band, ...extra })}`;
@@ -269,6 +302,14 @@ export async function render(ctx) {
   const support = pool.levels.includes(route.support) ? route.support : "";
   const quick = pickSet(pool.atLevel, pool.isDone);
   const resume = await resumeTarget(I, ctx, band);
+  const last = getEngagement(ctx.prefs).lastSession;
+  const lastItems = last?.band === band
+    ? (await Promise.all((last.ids || []).map((id) => findActivity(id).catch(() => null)))).filter(Boolean)
+    : [];
+  const lastItem = lastItems.reverse().find((item) => {
+    const result = loadRecord(item.band, item.domain, item.level).results?.[item.activity.id];
+    return result?.date && Date.parse(result.date) >= Date.parse(last.started) && !needsReview(result);
+  });
   const gradeName = GRADE_PICKS.find((p) => p.id === pick)?.name || ["", ""];
   return {
     title,
@@ -283,6 +324,8 @@ export async function render(ctx) {
         </p>
         ${quick.length ? html`<a class="btn btn-primary btn-big stu-quick" ${jumpSetAttrs(band, quick, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))} data-student-quick>${icon("play")} ${I.T("Start practicing", "Empezar a practicar")}</a>` : ""}
       </div>
+      ${lastItem ? transferHTML(I, lastItem.domain, lastItem.activity.title) : ""}
+      ${pool.rows.length ? smartHTML(I, { pick, band, skill, support, pool }) : ""}
       <section class="stu-library" aria-labelledby="stuLibraryTitle">
         <div class="stu-section-head">
           <div>
@@ -296,7 +339,10 @@ export async function render(ctx) {
           ${doors(band).map((d) => doorHTML(I, d))}
         </ul>
       </section>
-      ${pool.rows.length ? smartHTML(I, { pick, band, skill, support, pool }) : ""}
+      <section class="stu-more" aria-labelledby="stuMoreTitle">
+        <h2 id="stuMoreTitle">${I.T("Explore more of The Language Page", "Explora más de The Language Page")}</h2>
+        <ul class="stu-more-links" role="list">${MORE_PLACES.map((place) => html`<li><a href="${place.href}" data-student-place="${place.id}"><strong>${I.T(...place.name)}</strong><span>${I.T(...place.line)}</span>${icon("arrow-right")}</a></li>`)}</ul>
+      </section>
     </article>`,
   };
 }

@@ -8,7 +8,7 @@ import { i18nFor } from "../i18n.js";
 import { jumpSetAttrs, pickSet, practicePool } from "../quick-start.js";
 import { loadRecord, needsReview } from "../store.js";
 import { ART, BASE, DOMAIN_META, html, icon } from "../util.js";
-import { studentHubHref } from "./students.js";
+import { studentHubHref, transferHTML } from "./students.js";
 
 function sessionFor(ctx) {
   const engagement = getEngagement(ctx.prefs);
@@ -104,6 +104,7 @@ export async function render(ctx) {
         </div>
       </div>
       ${await nextStepsHTML(I, ctx, session, practiced)}
+      ${transferHTML(I, practiced.at(-1)?.domain, practiced.at(-1)?.activity.title)}
       <details class="done-list">
         <summary>${I.T("What you practiced", "Lo que practicaste")}</summary>
         <ul>

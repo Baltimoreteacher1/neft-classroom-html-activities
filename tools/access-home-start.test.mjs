@@ -34,6 +34,25 @@ globalThis.fetch = async (url) => ({
 });
 const home = await import("../access-practice-lab/src/views/home.js");
 const start = await import("../access-practice-lab/src/views/home-start.js");
+const students = await import("../access-practice-lab/src/views/students.js");
+
+test("student start joins practice, adventures and studios, with a saved-work transfer", async () => {
+  const ctx = ctxFor("3-5", "en", { gradePick: "4-5" });
+  ctx.route = { view: "students", grades: "3-5", pick: "4-5" };
+  const page = dom((await students.render(ctx)).html);
+  const smart = page.querySelector("#stuSmart");
+  const library = page.querySelector("#stuLibraryTitle");
+  assert.ok(smart && library && smart.compareDocumentPosition(library) & 4, "skill chooser comes before the library");
+  assert.equal(page.querySelector('[data-student-place="adventures"]').getAttribute("href"), "/language-adventures/");
+  assert.equal(page.querySelector('[data-student-place="studios"]').getAttribute("href"), "/studios/language");
+  assert.equal(page.querySelectorAll('[data-student-place]').length, 2);
+  assert.equal(students.transferStep("Reading").href, "/language-adventures/");
+  assert.equal(students.transferStep("Writing").href, "/studios/language");
+  const I = makeI18n("es", "es");
+  const transfer = dom(students.transferHTML(I, "Speaking", "Mi respuesta"));
+  assert.equal(transfer.querySelector('[data-transfer-step]').getAttribute("href"), "/studios/language");
+  assert.match(transfer.body.textContent, /Usa lo que practicaste/);
+});
 
 // The full home is the ?grades= route; a bare home (grades: "") is the grade chooser.
 const ctxFor = (band, lang = "en", prefs = {}, grades = band) => {
