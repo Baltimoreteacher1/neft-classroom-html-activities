@@ -292,9 +292,18 @@ function choicesHTML(I, choices, quick) {
         <span class="fs-step" aria-hidden="true">3</span
         >${I.T("Or choose what to do", "O elija qué hacer")}
       </h2>
-      <ul class="fs-doors">
-        ${main.map((c) => choiceHTML(I, c))}
-      </ul>
+      <p class="fs-choice-intro">${I.T("Choose what fits your family today. You can return and try something else anytime.", "Elija lo que le sirva a su familia hoy. Puede volver y probar otra opción cuando quiera.")}</p>
+      <div class="fs-groups">
+        <section class="fs-group" aria-labelledby="fsPracticeTitle">
+          <h3 id="fsPracticeTitle">${I.T("Practice and play", "Practicar y jugar")}</h3>
+          <ul class="fs-doors">${main.filter((c) => ["skills", "together"].includes(c.id)).map((c) => choiceHTML(I, c))}</ul>
+        </section>
+        <section class="fs-group" aria-labelledby="fsSupportTitle">
+          <h3 id="fsSupportTitle">${I.T("Progress and help", "Progreso y ayuda")}</h3>
+          <ul class="fs-doors">${main.filter((c) => ["understand", "help"].includes(c.id)).map((c) => choiceHTML(I, c))}</ul>
+        </section>
+      </div>
+      <p class="fs-finder"><a href="${BASE}/search?for=family&grades=${quick.band}">${I.T("Browse all family-friendly resources", "Ver todos los recursos para familias")} ${icon("arrow-right")}</a></p>
       <p class="fs-more">
         <a class="btn btn-secondary" href="${tour.href}" data-family-start="tour"
           >${icon(tour.icon)} ${I.T(tour.name[0], tour.name[1])}</a

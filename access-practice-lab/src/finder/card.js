@@ -9,6 +9,18 @@ import { KIND_VALUES, SKILL_VALUES } from "./facets.js";
 
 const label = (list, id) => list.find(([v]) => v === id)?.[1] || null;
 
+const openLabel = (I, kind) => {
+  const labels = {
+    practice: ["Start practice", "Empezar la práctica"],
+    game: ["Play game", "Jugar"],
+    test: ["Open practice test", "Abrir la prueba de práctica"],
+    printable: ["Open printable", "Abrir para imprimir"],
+    guide: ["Read guide", "Leer la guía"],
+    story: ["Read story", "Leer el cuento"],
+  };
+  return I.T(...(labels[kind] || ["Open resource", "Abrir recurso"]));
+};
+
 /** "Student-facing", "Teacher-facing" or "Family", plus "Family" when families use it too. */
 export function audienceLabel(I, d) {
   const f = d.for || [];
@@ -116,7 +128,7 @@ export function resultCard(I, r, n, band, qw, saved) {
         href
           ? html`<div class="fx-actions" role="group" aria-labelledby="${headId}">
                 <a class="btn small btn-primary" href="${href}"
-                  >${I.T("Open", "Abrir")}<span class="visually-hidden">: ${title}</span></a
+                  >${openLabel(I, d.rk)}<span class="visually-hidden">: ${title}</span></a
                 >
                 <button
                   type="button"

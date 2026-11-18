@@ -249,6 +249,7 @@ export async function render(ctx) {
     <h1 id="stuTitle" tabindex="-1">
       ${I.T("What do you want to do today?", "¿Qué quieres hacer hoy?")}
     </h1>
+    <p class="lead">${I.T("Choose your grade, then pick one way to learn. You can change your choice anytime.", "Elige tu grado y después una forma de aprender. Puedes cambiar de opción cuando quieras.")}</p>
   </header>`;
   const title = I.S(
     "Students: what do you want to do today?",
@@ -282,10 +283,19 @@ export async function render(ctx) {
         </p>
         ${quick.length ? html`<a class="btn btn-primary btn-big stu-quick" ${jumpSetAttrs(band, quick, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))} data-student-quick>${icon("play")} ${I.T("Start practicing", "Empezar a practicar")}</a>` : ""}
       </div>
-      <ul class="stu-doors" role="list">
-        ${resume ? doorHTML(I, { id: "continue", art: "ds/progress-growth", href: resume.href, name: ["Continue where I left off", "Seguir donde lo dejé"] }, resume.title) : ""}
-        ${doors(band).map((d) => doorHTML(I, d))}
-      </ul>
+      <section class="stu-library" aria-labelledby="stuLibraryTitle">
+        <div class="stu-section-head">
+          <div>
+            <p class="eyebrow">${I.T("Your learning library", "Tu biblioteca de aprendizaje")}</p>
+            <h2 id="stuLibraryTitle">${I.T("Pick a place to start", "Elige por dónde empezar")}</h2>
+          </div>
+          <a class="stu-all" href="${BASE}/search?for=student&grades=${band}">${I.T("Find all activities", "Buscar todas las actividades")} ${icon("arrow-right")}</a>
+        </div>
+        <ul class="stu-doors" role="list">
+          ${resume ? doorHTML(I, { id: "continue", art: "ds/progress-growth", href: resume.href, name: ["Continue where I left off", "Seguir donde lo dejé"] }, resume.title) : ""}
+          ${doors(band).map((d) => doorHTML(I, d))}
+        </ul>
+      </section>
       ${pool.rows.length ? smartHTML(I, { pick, band, skill, support, pool }) : ""}
     </article>`,
   };
