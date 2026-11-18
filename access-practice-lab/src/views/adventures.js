@@ -289,12 +289,32 @@ function doneHTML(I, w, m, band, entry, progress) {
     </div>
   </section>`;
 }
+const MISSION_PHASES = [
+  ["mission", "1. Mission", "1. Misión"],
+  ["investigate", "2. Investigate", "2. Investigar"],
+  ["communicate", "3. Communicate", "3. Comunicar"],
+  ["outcome", "4. See What Happens", "4. Ver qué pasa"],
+  ["reflect", "5. Reflect or Revise", "5. Reflexionar o revisar"],
+];
+
+function missionPhaseFor(view, scene) {
+  if (view === "start") return "mission";
+  if (view === "done") return "reflect";
+  const k = scene?.kind;
+  if (k === "clues" || k === "order") return "investigate";
+  if (k === "respond") return "communicate";
+  if (k === "choice") return "outcome";
+  return "mission";
+}
+
 function runnerHTML(I, w, m, band, entry, scenes, view, progress) {
   const i = entry.scene;
   const total = scenes.length;
   const pos = view === "done" ? total : view === "start" ? 0 : i + 1;
   const ready = view === "scene" && A.sceneReady(scenes[i], entry.answers[i]);
   const last = view === "scene" && A.nextIndex(scenes, i, entry.answers[i]) === "done";
+  const activePhase = missionPhaseFor(view, scenes[i]);
+  const activeMeta = MISSION_PHASES.find(([id]) => id === activePhase) || MISSION_PHASES[0];
   return html`<article class="adv-run" style="${themeStyle(w)}" aria-labelledby="advMissionH">
     <header class="adv-run-head">
       <p class="eyebrow">
@@ -309,7 +329,19 @@ function runnerHTML(I, w, m, band, entry, scenes, view, progress) {
         <span
           >${view === "done" ? I.T("Complete", "Completa") : view === "start" ? I.T(`${total} scenes`, `${total} escenas`) : I.T(`Scene ${pos} of ${total}`, `Escena ${pos} de ${total}`)}</span
         >
-        ${entry.mode ? html`<span class="chip">${entry.supported ? I.T("With help", "Con ayuda") : I.T("On my own", "Por mi cuenta")}</span>` : ""}
+        <span class="chip is-phase">${I.T(activeMeta[1], activeMeta[2])}</span>
+        ${
+          entry.mode
+            ? html`<button
+                type="button"
+                class="chip adv-support-toggle"
+                data-adv-switch="${entry.mode === "help" ? "own" : "help"}"
+                title="${I.S("Switch support level without losing your work", "Cambiar nivel de apoyo sin perder tu trabajo")}"
+              >
+                ${entry.supported ? I.T("With help (switch)", "Con ayuda (cambiar)") : I.T("On my own (get help)", "Por mi cuenta (pedir ayuda)")}
+              </button>`
+            : ""
+        }
       </div>
     </header>
     ${view === "start" ? startHTML(I, w, m, band) : view === "done" ? doneHTML(I, w, m, band, entry, progress) : sceneHTML(I, scenes[i], i, entry.answers[i] || {}, entry, w)}
@@ -536,6 +568,13 @@ export function onClick(e, ctx) {
   const handled = withEntry(ctx, ({ w, m, band, progress, entry, scenes, i, a }) => {
     const done = () => (save(progress), ctx.rerender(), true);
     const s = scenes[i];
+    if (ds.advSwitch) {
+      entry.mode = ds.advSwitch;
+      if (ds.advSwitch === "help") entry.supported = true;
+      save(progress);
+      ctx.rerender();
+      return true;
+    }
     if (ds.advMode) {
       entry.mode = ds.advMode;
       entry.supported = ds.advMode === "help";

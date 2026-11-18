@@ -47,6 +47,9 @@ export function normalizeCharacter(raw = {}) {
     expression: EXPRESSIONS.includes(raw.expression) ? raw.expression : "neutral",
     traits: (Array.isArray(raw.traits) ? raw.traits : []).slice(0, 6).map((t) => str(t, 30)),
     role: str(raw.role, 80),
+    motivations: str(raw.motivations, 200),
+    knows: str(raw.knows, 240),
+    speakingStyle: str(raw.speakingStyle, 120),
     relationships: (Array.isArray(raw.relationships) ? raw.relationships : [])
       .slice(0, 8)
       .map((r) => ({

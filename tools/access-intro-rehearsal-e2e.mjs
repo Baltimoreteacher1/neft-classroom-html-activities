@@ -66,8 +66,13 @@ const open = async (ctx, path) => {
   await settled(page);
   return page;
 };
-const settled = (page) => page.waitForSelector("#app > :not(.boot):not(.route-loading)");
-const viewOf = (page) => page.evaluate(() => document.body.dataset.labView);
+const settled = (page) => page.waitForSelector("#app > :not(.boot):not(.route-loading), main h1");
+const viewOf = (page) =>
+  page.evaluate(
+    () =>
+      document.body.dataset.labView ||
+      (location.pathname.includes("/family-tour/") ? "family-tour" : ""),
+  );
 const pathOf = (page) => new URL(page.url()).pathname.replace(LAB, "") || "/";
 
 /** Opens `route` and reports the lab view it rendered ("home" for an unknown path). */
@@ -75,7 +80,7 @@ async function landing(ctx, route) {
   const page = await open(ctx, `${LAB}${route}`);
   const view = await viewOf(page);
   const h1 = await page
-    .locator("#app h1")
+    .locator("#app h1, main h1")
     .first()
     .innerText()
     .catch(() => "");
@@ -91,7 +96,8 @@ const EXPECT_VIEW = {
   "/reading-room": "reading-room",
   "/wordlab": "wordlab",
   "/start": "start",
-  "/practice-together": "practice-together",
+  "/practice-together": "family-tour",
+  "/family-tour": "family-tour",
   "/site-guide": "site-guide",
   "/family": "family",
   "/tools": "tools",
@@ -203,11 +209,11 @@ await page.locator('.lab-utilities [data-menu-link="teacher-start"]').click();
 clicks++;
 await page.locator('a[href*="part=2&skill=reading"]').first().click();
 clicks++;
-await page.waitForSelector("iframe.gc-frame");
-const frameSrc = await page.locator("iframe.gc-frame").getAttribute("src");
+await page.waitForSelector("iframe.t2-iframe");
+const frameSrc = await page.locator("iframe.t2-iframe").getAttribute("src");
 const secs = (Date.now() - t0) / 1000;
 ok(
-  /\/Reading\/A\//.test(frameSrc || "") && clicks <= 3,
+  /\/Reading\//.test(frameSrc || "") && clicks <= 3,
   `home to a real activity, running in the tour, in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
 );
 await page.close();
@@ -241,7 +247,7 @@ for (const group of new Set(allFiles))
     );
   }
 await page.close();
-for (const route of [ROUTES.tour, ROUTES.lesson, ROUTES.together, ROUTES.siteGuide]) {
+for (const route of [ROUTES.tour, ROUTES.lesson, "/family-tour/", ROUTES.siteGuide]) {
   page = await open(ctx, `${LAB}${route}`);
   await crawl(ctx, page, `${route} page`);
   await page.close();

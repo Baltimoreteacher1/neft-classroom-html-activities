@@ -68,11 +68,14 @@ export function openCharacters(E, editId = "") {
       <fieldset><legend>${esc(tr("Choose how they look (the same look is used on every page)", "Elige cómo se ve (el mismo aspecto en todas las páginas)"))}</legend><div class="bk-art-pick" role="radiogroup">${CHAR_ART.map((a) => `<label class="bk-art-opt${edit.art === a.key ? " is-on" : ""}"><input type="radio" name="bkCharArt" data-c="art" value="${a.key}" ${edit.art === a.key ? "checked" : ""}><img alt="${esc(a.key.replace("char-", ""))}" src="${artSrc(a.key)}"></label>`).join("")}</div></fieldset>
       <label class="bk-f"><span>${esc(tr("What do they look like? (also read aloud to people who cannot see the picture)", "¿Cómo se ven? (también se lee en voz alta a quienes no ven la imagen)"))}</span><input data-c="appearance" maxlength="300" value="${esc(edit.appearance)}"></label>
       <div class="bk-grid2"><label class="bk-f"><span>${esc(tr("Role in the story", "Papel en el cuento"))}</span><input data-c="role" maxlength="80" value="${esc(edit.role)}"></label><label class="bk-f"><span>${esc(tr("Personality (commas)", "Personalidad (comas)"))}</span><input data-c="traits" maxlength="120" value="${esc(edit.traits.join(", "))}"></label>
+      <label class="bk-f"><span>${esc(tr("What they want (motivation)", "Qué quiere (motivación)"))}</span><input data-c="motivations" maxlength="200" value="${esc(edit.motivations || "")}" placeholder="${esc(tr("e.g., find the missing map", "ej., encontrar el mapa perdido"))}"></label>
+      <label class="bk-f"><span>${esc(tr("How they talk (speaking style)", "Cómo habla (estilo)"))}</span><input data-c="speakingStyle" maxlength="120" value="${esc(edit.speakingStyle || "")}" placeholder="${esc(tr("e.g., polite and curious", "ej., amable y curioso"))}"></label>
       <label class="bk-f"><span>${esc(tr("Usually looks", "Normalmente se ve"))}</span><select data-c="expression">${opts(
         EXPRESSIONS.map((x) => [x, tr(...EXPRESSION_LABEL[x])]),
         edit.expression,
       )}</select></label>
       <label class="bk-f"><span>${esc(tr("Voice speed", "Velocidad de voz"))}</span><input type="range" min="0.6" max="1.6" step="0.1" data-c="rate" value="${edit.voice.rate}"></label><label class="bk-f"><span>${esc(tr("Voice pitch", "Tono de voz"))}</span><input type="range" min="0.5" max="1.8" step="0.1" data-c="pitch" value="${edit.voice.pitch}"></label></div>
+      <label class="bk-f"><span>${esc(tr("Information this character knows", "Información que este personaje sabe"))}</span><input data-c="knows" maxlength="240" value="${esc(edit.knows || "")}" placeholder="${esc(tr("Facts this character knows in your story…", "Datos que este personaje sabe en tu historia…"))}"></label>
       <button type="button" class="btn small ghost" data-st="test-voice" data-id="${edit.id}">${bkIcon("speaker")} ${esc(tr("Hear the voice", "Escuchar la voz"))}</button>
       <details><summary>${esc(tr("Different looks for feelings (optional)", "Aspectos distintos para emociones (opcional)"))}</summary>${EXPRESSIONS.filter(
         (x) => x !== "neutral",
@@ -174,7 +177,7 @@ export function openCharacters(E, editId = "") {
     if (!t.dataset?.c || !edit) return;
     if (
       e.type === "input" &&
-      !["name", "appearance", "role", "traits", "rate", "pitch"].includes(t.dataset.c) &&
+      !["name", "appearance", "role", "traits", "motivations", "knows", "speakingStyle", "rate", "pitch"].includes(t.dataset.c) &&
       !t.dataset.c.startsWith("rel.")
     )
       return;
@@ -182,6 +185,9 @@ export function openCharacters(E, editId = "") {
     if (k === "name") edit.name = t.value.slice(0, 40);
     else if (k === "appearance") edit.appearance = t.value;
     else if (k === "role") edit.role = t.value;
+    else if (k === "motivations") edit.motivations = t.value.slice(0, 200);
+    else if (k === "knows") edit.knows = t.value.slice(0, 240);
+    else if (k === "speakingStyle") edit.speakingStyle = t.value.slice(0, 120);
     else if (k === "traits")
       edit.traits = t.value
         .split(",")

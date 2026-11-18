@@ -599,6 +599,30 @@ export async function render(ctx) {
           </ul>
         </header>
 
+        <section class="panel pass-journey-summary" aria-labelledby="passJourneyTitle">
+          <div class="pass-journey-head">
+            <h2 id="passJourneyTitle">${I.T("My Language Journey", "Mi camino de lenguaje")}</h2>
+            <p class="fine">${I.T("Your saved work, how your drafts grew, and one clear next step.", "Tu trabajo guardado, cómo crecieron tus borradores y un paso claro para seguir.")}</p>
+          </div>
+          <div class="pass-journey-cols">
+            <article class="pass-journey-card">
+              <h3>${icon("library")} ${I.T("My Work", "Mi trabajo")}</h3>
+              <p>${stamps ? I.T(`${stamps} finished activities saved on this device.`, `${stamps} actividades terminadas guardadas en este dispositivo.`) : I.T("Your books, adventures, and writing appear here as you finish them.", "Tus libros, aventuras y escritos aparecerán aquí al terminarlos.")}</p>
+              <a class="btn small" href="${BASE}/book-studio?grades=${band}">${I.T("Open Book Studio", "Abrir Estudio de libros")}</a>
+            </article>
+            <article class="pass-journey-card">
+              <h3>${icon("retry")} ${I.T("My Improvements", "Mis mejoras")}</h3>
+              <p>${revisions ? I.T(`You revised ${revisions} time${revisions === 1 ? "" : "s"} after feedback. Compare your drafts side by side.`, `Revisaste ${revisions} ${revisions === 1 ? "vez" : "veces"} después de recibir comentarios. Compara tus borradores lado a lado.`) : I.T("When you revise a draft or adventure response, you can compare before and after here.", "Cuando revises un borrador o respuesta de aventura, podrás comparar antes y después aquí.")}</p>
+              <a class="btn small" href="${BASE}/time-machine?grades=${band}">${I.T("Open Time Machine", "Abrir Máquina del Tiempo")}</a>
+            </article>
+            <article class="pass-journey-card">
+              <h3>${icon("arrow-right")} ${I.T("My Next Step", "Mi siguiente paso")}</h3>
+              <p>${nextDomain ? I.T(`Try one activity in ${room(nextDomain.domain)} or continue where you left off.`, `Prueba una actividad de ${room(nextDomain.domain)} o continúa donde lo dejaste.`) : I.T("Start a guided mission in Adventure Worlds or practice Task Words.", "Empieza una misión guiada en Mundos de aventura o practica Palabras de tarea.")}</p>
+              <a class="btn small btn-primary" href="${nextDomain ? `${BASE}/${nextDomain.domain}?grades=${band}` : `${BASE}/adventures?grades=${band}`}">${I.T("Continue learning", "Seguir aprendiendo")}</a>
+            </article>
+          </div>
+        </section>
+
         ${livingPortfolioHTML(I, band)}
         ${await journeyEvidenceHTML(I, band, ledger)}
 

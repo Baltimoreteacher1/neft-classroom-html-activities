@@ -30,10 +30,15 @@ export function frameHTML(
       data-prep-set="${set.id}"
     >
       <header class="prep-skill-head">
-        <p class="prep-eyebrow">${icon(skill.icon)} ${I.T(skill.title, skill.titleEs)}</p>
+        <div class="prep-head-top">
+          <p class="prep-eyebrow">${icon(skill.icon)} ${I.T(skill.title, skill.titleEs)}</p>
+          <p class="prep-step-counter" aria-hidden="true">
+            ${I.T(`Step ${step + 1} of ${steps.length}`, `Paso ${step + 1} de ${steps.length}`)}
+          </p>
+        </div>
         <h1 tabindex="-1">${I.T(set.title, set.titleEs || set.title)}</h1>
         <p class="prep-chips">
-          ${set.area ? html`<span class="cat-chip">${set.area}</span>` : ""}
+          ${set.area ? html`<span class="cat-chip is-area">${set.area}</span>` : ""}
           ${set.kind ? html`<span class="cat-chip">${I.T(set.kind, KIND_ES[set.kind] || set.kind)}</span>` : ""}
           ${set.mode ? html`<span class="cat-chip">${I.T(set.mode, set.mode === "Speaking" ? "Hablar" : "Escribir")}</span>` : ""}
           <span class="cat-chip"
@@ -41,6 +46,9 @@ export function frameHTML(
             ${I.T(`About ${set.minutes || 6} min`, `Unos ${set.minutes || 6} min`)}</span
           >
         </p>
+        <div class="prep-progress-track" aria-hidden="true">
+          <span class="prep-progress-fill" style="width:${Math.round(((step + 1) / Math.max(1, steps.length)) * 100)}%"></span>
+        </div>
         <ol class="prep-rail" aria-label="${I.S("Steps", "Pasos")}">
           ${steps.map(
             (s, i) =>
@@ -58,10 +66,11 @@ export function frameHTML(
       </header>
       <section class="prep-step panel" aria-labelledby="prepStepH">
         <h2 id="prepStepH" class="prep-step-h">
+          <span class="prep-step-badge" aria-hidden="true">${step + 1}</span>
           <span class="visually-hidden"
             >${I.T(`Step ${step + 1} of ${steps.length}:`, `Paso ${step + 1} de ${steps.length}:`)}</span
           >
-          ${I.T(steps[step][0], steps[step][1])}
+          <span>${I.T(steps[step][0], steps[step][1])}</span>
         </h2>
         ${body}
       </section>

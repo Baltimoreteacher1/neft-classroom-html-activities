@@ -237,6 +237,58 @@ export function coachQuestion(text) {
   return "Read it aloud. Which sentence do you like best? What could you add to make it even clearer?";
 }
 
+function timeMachineHTML(E, page) {
+  const tr = E.I.S;
+  const b = E.core.S.book;
+  const revs = (b.work?.revisions || []).filter((r) => !r.pageId || r.pageId === page.id);
+  const view = E.tmView === "teacher" ? "teacher" : "student";
+  const frames = [
+    tr("I changed this sentence because I wanted to show…", "Cambié esta oración porque quería mostrar…"),
+    tr("I added a clearer detail so the reader knows…", "Agregué un detalle más claro para que el lector sepa…"),
+    tr("I used a stronger word instead of…", "Usé una palabra más precisa en lugar de…"),
+  ];
+  return `<details class="bk-tm" ${revs.length ? "open" : ""}>
+    <summary>${bkIcon("clock")} ${esc(view === "teacher" ? tr("Author's Time Machine · Review revision evidence", "Máquina del Tiempo · Revisar evidencia de revisión") : tr("Author's Time Machine · See how your story grew", "Máquina del Tiempo · Mira cómo creció tu historia"))}</summary>
+    <div class="bk-tm-body">
+      <div class="bk-btnrow" role="group" aria-label="${esc(tr("Comparison view", "Vista de comparación"))}">
+        <button type="button" class="btn small ${view === "student" ? "btn-primary" : "ghost"}" data-dock="tm-student">${esc(tr("Student view", "Vista estudiante"))}</button>
+        <button type="button" class="btn small ${view === "teacher" ? "btn-primary" : "ghost"}" data-dock="tm-teacher">${esc(tr("Teacher view", "Vista docente"))}</button>
+      </div>
+      ${
+        revs.length
+          ? revs
+              .slice(-3)
+              .reverse()
+              .map(
+                (r, idx) => `<article class="bk-tm-pair">
+            <div class="bk-tm-cols">
+              <div class="bk-tm-col">
+                <p class="bk-tm-label">${esc(tr("Before (original draft)", "Antes (borrador original)"))}</p>
+                <p class="bk-tm-text">${esc(r.before || "—")}</p>
+              </div>
+              <div class="bk-tm-col is-after">
+                <p class="bk-tm-label">${esc(tr("After (your revision)", "Después (tu revisión)"))}</p>
+                <p class="bk-tm-text">${esc(r.after || "—")}</p>
+              </div>
+            </div>
+            ${r.note ? `<p class="fine"><strong>${esc(view === "teacher" ? tr("Prompt / target:", "Meta:") : tr("Coach question:", "Pregunta:"))}</strong> ${esc(r.note)}</p>` : ""}
+            <label class="bk-f">
+              <span>${esc(tr("Why did you make this change?", "¿Por qué hiciste este cambio?"))}</span>
+              <input data-tm-why="${revs.length - 1 - idx}" maxlength="240" value="${esc(r.why || "")}" placeholder="${esc(tr("I changed this sentence because…", "Cambié esta oración porque…"))}">
+            </label>
+            <div class="bk-btnrow">
+              ${frames.map((f, fi) => `<button type="button" class="btn small ghost" data-dock="tm-frame" data-idx="${revs.length - 1 - idx}" data-frame="${fi}">${esc(f.slice(0, 38))}…</button>`).join("")}
+              <button type="button" class="btn small btn-primary" data-dock="tm-save-why" data-idx="${revs.length - 1 - idx}">${esc(tr("Save my reason", "Guardar mi razón"))}</button>
+            </div>
+          </article>`,
+              )
+              .join("")
+          : `<p class="fine">${esc(tr("Ask the Language Coach a question and save a new sentence to see your before-and-after drafts side by side.", "Hazle una pregunta al entrenador y guarda una nueva oración para ver tus borradores antes y después lado a lado."))}</p>`
+      }
+    </div>
+  </details>`;
+}
+
 function improveHTML(E, page) {
   const tr = E.I.S;
   const b = E.core.S.book;
@@ -255,6 +307,7 @@ function improveHTML(E, page) {
       ${stage.after ? `<p class="bk-coach-after" role="status">${esc(stage.after)}</p>` : ""}</div>`
         : `<p class="fine">${esc(tr("Your teacher turned the coach off for this book.", "Tu docente apagó el entrenador para este libro."))}</p>`
     }
+    ${timeMachineHTML(E, page)}
     ${isTeacher() ? `<label class="bk-chk"><input type="checkbox" data-dock-coach ${coachOn ? "checked" : ""}> <span>${esc(tr("Language coach on for this book", "Entrenador de lenguaje activado para este libro"))}</span></label>` : ""}
     ${noAlt ? `<p class="bk-warn">${esc(tr(`${noAlt} picture(s) on this page need a description.`, `${noAlt} imagen(es) en esta página necesitan una descripción.`))}</p>` : `<p class="fine">${bkIcon("check")} ${esc(tr("Every picture on this page has a description.", "Cada imagen de esta página tiene una descripción."))}</p>`}</section>`;
 }
@@ -414,6 +467,34 @@ export async function onDockClick(E, e) {
       ),
     };
     redock();
+  } else if (act === "tm-student") {
+    E.tmView = "student";
+    redock();
+  } else if (act === "tm-teacher") {
+    E.tmView = "teacher";
+    redock();
+  } else if (act === "tm-frame") {
+    const idx = Number(b.dataset.idx);
+    const fi = Number(b.dataset.frame);
+    const frames = [
+      tr("I changed this sentence because I wanted to show ", "Cambié esta oración porque quería mostrar "),
+      tr("I added a clearer detail so the reader knows ", "Agregué un detalle más claro para que el lector sepa "),
+      tr("I used a stronger word instead of ", "Usé una palabra más precisa en lugar de "),
+    ];
+    const inp = E.root.querySelector(`[data-tm-why="${idx}"]`);
+    if (inp && frames[fi]) {
+      inp.value = frames[fi];
+      inp.focus();
+    }
+  } else if (act === "tm-save-why") {
+    const idx = Number(b.dataset.idx);
+    const inp = E.root.querySelector(`[data-tm-why="${idx}"]`);
+    const revs = (book.work?.revisions || []).filter((r) => !r.pageId || r.pageId === page.id);
+    if (revs[idx] && inp) {
+      revs[idx].why = inp.value.trim().slice(0, 240);
+      core.commit({ render: false });
+      E.say(tr("Saved your revision reason.", "Razón de revisión guardada."));
+    }
   } else if (act === "approve") {
     const p = book.publish;
     book.publish = {

@@ -19,15 +19,21 @@ const TASK_ES = {
 };
 
 function tableHTML(I) {
-  return html`<dl class="prep-taskwords">
-    ${Object.entries(TASK_WORDS).map(
-      ([w, d]) =>
-        html`<div class="prep-taskword">
-          <dt>${w} <span class="prep-es" lang="es">(${TASK_ES[w]})</span></dt>
-          <dd>${I.T(d[0], d[1])}</dd>
-        </div>`,
-    )}
-  </dl>`;
+  return html`<div class="prep-org-reference">
+    <p class="prep-org-label">${icon("reading")} ${I.T("Task Word Graphic Organizer", "Organizador gráfico de palabras de tarea")}</p>
+    <dl class="prep-taskwords">
+      ${Object.entries(TASK_WORDS).map(
+        ([w, d]) =>
+          html`<div class="prep-taskword">
+            <dt>
+              <span class="prep-taskword-verb">${w}</span>
+              <span class="prep-es" lang="es">${TASK_ES[w]}</span>
+            </dt>
+            <dd>${I.T(d[0], d[1])}</dd>
+          </div>`,
+      )}
+    </dl>
+  </div>`;
 }
 
 const optionsFrom = (list, seed) =>
@@ -44,99 +50,124 @@ function promptHTML(I, set, i, st) {
   const wordOpts = optionsFrom(p.choices, `${set.id}:w${i}`);
   const rightWord = wordOpts.find((o) => o.text === p.taskText).id;
   const picked = new Set(st.answers?.[`n${i}`] || []);
-  return html`<blockquote class="prep-prompt"><p>${p.prompt}</p></blockquote>
-    <p>${hearBtn(I, p.prompt, I.T("Hear the prompt", "Escuchar la consigna"))}</p>
+  return html`<div class="prep-org-prompt">
+      <div class="prep-org-prompt-bar">
+        <span class="prep-org-kicker">${icon("reading")} ${I.T(`Prompt ${i + 1}`, `Consigna ${i + 1}`)}</span>
+        ${hearBtn(I, p.prompt, I.T("Hear the prompt", "Escuchar la consigna"))}
+      </div>
+      <blockquote class="prep-prompt"><p>${p.prompt}</p></blockquote>
+    </div>
 
-    ${choicesHTML(I, { name: `w${i}`, label: I.T("1. Which word tells you what to do?", "1. ¿Qué palabra te dice qué hacer?"), options: wordOpts, picked: st.answers?.[`w${i}`], answer: rightWord, checked: word ? "mark" : null })}
-    ${word?.ok ? "" : checkBtn(I, `check-w-${i}`, Boolean(st.answers?.[`w${i}`]))}
-    ${
-      word
-        ? resultHTML(I, {
-            ok: word.ok,
-            lead: word.ok
-              ? html`<strong>${p.taskText}</strong>:
-                  ${I.T(TASK_WORDS[p.taskWord][0], TASK_WORDS[p.taskWord][1])}`
-              : I.T(
-                  "That word names the topic. Find the word that tells you what to DO.",
-                  "Esa palabra nombra el tema. Busca la palabra que te dice qué HACER.",
-                ),
-          })
-        : ""
-    }
+    <div class="prep-org-flow">
+      <div class="prep-org-stage ${word?.ok ? "is-done" : "is-active"}">
+        <div class="prep-org-stage-head">
+          <span class="prep-org-num" aria-hidden="true">${word?.ok ? icon("check") : "1"}</span>
+          <span class="prep-org-stage-title">${I.T("Spot the Action Word", "Identifica la palabra de acción")}</span>
+        </div>
+        ${choicesHTML(I, { name: `w${i}`, label: I.T("1. Which word tells you what to do?", "1. ¿Qué palabra te dice qué hacer?"), options: wordOpts, picked: st.answers?.[`w${i}`], answer: rightWord, checked: word ? "mark" : null })}
+        ${word?.ok ? "" : checkBtn(I, `check-w-${i}`, Boolean(st.answers?.[`w${i}`]))}
+        ${
+          word
+            ? resultHTML(I, {
+                ok: word.ok,
+                lead: word.ok
+                  ? html`<strong>${p.taskText}</strong>:
+                      ${I.T(TASK_WORDS[p.taskWord][0], TASK_WORDS[p.taskWord][1])}`
+                  : I.T(
+                      "That word names the topic. Find the word that tells you what to DO.",
+                      "Esa palabra nombra el tema. Busca la palabra que te dice qué HACER.",
+                    ),
+              })
+            : ""
+        }
+      </div>
     ${
       word?.ok
-        ? html`<fieldset class="prep-q">
-              <legend>
-                ${I.T("2. What must a complete answer include? Check every one.", "2. ¿Qué debe incluir una respuesta completa? Marca cada una.")}
-              </legend>
-              <div class="choices">
-                ${p.needs.map((n) => {
-                  const on = picked.has(n.id);
-                  const state = needs && on ? (n.right ? "is-right" : "is-wrong") : "";
-                  return html`<label class="choice ${on ? "is-on" : ""} ${state}">
-                    <input
-                      type="checkbox"
-                      value="${n.id}"
-                      data-prep-box="n${i}"
-                      ${on ? raw("checked") : ""}
-                      ${needs?.ok ? raw("disabled") : ""}
-                      data-nsr-ignore
-                    />
-                    <span class="opt-text">${n.text}</span>
-                  </label>`;
-                })}
+        ? html`<div class="prep-org-stage ${needs?.ok ? "is-done" : "is-active"}">
+              <div class="prep-org-stage-head">
+                <span class="prep-org-num" aria-hidden="true">${needs?.ok ? icon("check") : "2"}</span>
+                <span class="prep-org-stage-title">${I.T("Build the Answer Checklist", "Arma la lista de partes necesarias")}</span>
               </div>
-            </fieldset>
-            ${needs?.ok ? "" : checkBtn(I, `check-n-${i}`, picked.size > 0)}
-            ${
-              needs
-                ? resultHTML(I, {
-                    ok: needs.ok,
-                    lead: needs.ok
-                      ? I.T(
-                          "Those are the parts this task needs.",
-                          "Esas son las partes que necesita esta tarea.",
-                        )
-                      : [
-                          needs.wrong.length
-                            ? I.T(
-                                `${needs.wrong.length === 1 ? "One choice belongs" : `${needs.wrong.length} choices belong`} to a different task word.`,
-                                `${needs.wrong.length === 1 ? "Una opción pertenece" : `${needs.wrong.length} opciones pertenecen`} a otra palabra de tarea.`,
-                              )
-                            : "",
-                          needs.missed.length
-                            ? I.T(
-                                `${needs.missed.length === 1 ? "One more part is" : `${needs.missed.length} more parts are`} still unchecked.`,
-                                `${needs.missed.length === 1 ? "Falta marcar una parte" : `Faltan ${needs.missed.length} partes`}.`,
-                              )
-                            : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" "),
-                  })
-                : ""
-            }`
+              <fieldset class="prep-q">
+                <legend>
+                  ${I.T("2. What must a complete answer include? Check every one.", "2. ¿Qué debe incluir una respuesta completa? Marca cada una.")}
+                </legend>
+                <div class="choices">
+                  ${p.needs.map((n) => {
+                    const on = picked.has(n.id);
+                    const state = needs && on ? (n.right ? "is-right" : "is-wrong") : "";
+                    return html`<label class="choice ${on ? "is-on" : ""} ${state}">
+                      <input
+                        type="checkbox"
+                        value="${n.id}"
+                        data-prep-box="n${i}"
+                        ${on ? raw("checked") : ""}
+                        ${needs?.ok ? raw("disabled") : ""}
+                        data-nsr-ignore
+                      />
+                      <span class="opt-text">${n.text}</span>
+                    </label>`;
+                  })}
+                </div>
+              </fieldset>
+              ${needs?.ok ? "" : checkBtn(I, `check-n-${i}`, picked.size > 0)}
+              ${
+                needs
+                  ? resultHTML(I, {
+                      ok: needs.ok,
+                      lead: needs.ok
+                        ? I.T(
+                            "Those are the parts this task needs.",
+                            "Esas son las partes que necesita esta tarea.",
+                          )
+                        : [
+                            needs.wrong.length
+                              ? I.T(
+                                  `${needs.wrong.length === 1 ? "One choice belongs" : `${needs.wrong.length} choices belong`} to a different task word.`,
+                                  `${needs.wrong.length === 1 ? "Una opción pertenece" : `${needs.wrong.length} opciones pertenecen`} a otra palabra de tarea.`,
+                                )
+                              : "",
+                            needs.missed.length
+                              ? I.T(
+                                  `${needs.missed.length === 1 ? "One more part is" : `${needs.missed.length} more parts are`} still unchecked.`,
+                                  `${needs.missed.length === 1 ? "Falta marcar una parte" : `Faltan ${needs.missed.length} partes`}.`,
+                                )
+                              : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" "),
+                    })
+                  : ""
+              }
+            </div>`
         : ""
     }
     ${
       needs?.ok
-        ? html`${choicesHTML(I, { name: `a${i}`, label: I.T("3. Which answer does the task?", "3. ¿Qué respuesta cumple la tarea?"), options: p.answers, picked: st.answers?.[`a${i}`], answer: p.answer, checked: ans ? "mark" : null })}
-          ${ans?.ok ? "" : checkBtn(I, `check-a-${i}`, Boolean(st.answers?.[`a${i}`]))}
-          ${
-            ans
-              ? resultHTML(I, {
-                  ok: ans.ok,
-                  lead: ans.ok
-                    ? p.why
-                    : I.T(
-                        "That answer does a different task. Which one does what the task word asks?",
-                        "Esa respuesta hace otra tarea. ¿Cuál hace lo que pide la palabra de tarea?",
-                      ),
-                })
-              : ""
-          }`
+        ? html`<div class="prep-org-stage ${ans?.ok ? "is-done" : "is-active"}">
+            <div class="prep-org-stage-head">
+              <span class="prep-org-num" aria-hidden="true">${ans?.ok ? icon("check") : "3"}</span>
+              <span class="prep-org-stage-title">${I.T("Choose the Complete Response", "Elige la respuesta completa")}</span>
+            </div>
+            ${choicesHTML(I, { name: `a${i}`, label: I.T("3. Which answer does the task?", "3. ¿Qué respuesta cumple la tarea?"), options: p.answers, picked: st.answers?.[`a${i}`], answer: p.answer, checked: ans ? "mark" : null })}
+            ${ans?.ok ? "" : checkBtn(I, `check-a-${i}`, Boolean(st.answers?.[`a${i}`]))}
+            ${
+              ans
+                ? resultHTML(I, {
+                    ok: ans.ok,
+                    lead: ans.ok
+                      ? p.why
+                      : I.T(
+                          "That answer does a different task. Which one does what the task word asks?",
+                          "Esa respuesta hace otra tarea. ¿Cuál hace lo que pide la palabra de tarea?",
+                        ),
+                  })
+                : ""
+            }
+          </div>`
         : ""
-    }`;
+    }
+    </div>`;
 }
 
 export function body(I, set, st, step) {
