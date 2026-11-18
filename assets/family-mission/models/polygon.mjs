@@ -278,13 +278,22 @@ function drawFigure(d, L) {
     }
     if (d.split === 0) g.append(stext(CX + 10, CY - 8, t(L, STR.center), "fm-svg-text fm-svg-muted"));
   } else {
+    for (let i = 0; i < d.n; i++) {
+      g.append(s("line", { class: "fm-grid-lines", x1: CX, y1: CY, x2: v[i][0], y2: v[i][1] }));
+    }
     const baseY = CY + R * Math.cos(Math.PI / d.n);
+    const bTxt = `base = ${len(d, L, d.side)}`;
+    const hTxt = `${T2(L, "height", "altura")} = ${len(d, L, d.apothem)}`;
+    const bw = Math.max(76, bTxt.length * 8 + 16);
+    const hw = Math.max(82, hTxt.length * 8 + 16);
     g.append(
       s("line", { class: "fm-polygon-base", x1: v[0][0], y1: v[0][1], x2: v[1][0], y2: v[1][1] }),
       s("line", { class: "fm-polygon-height", x1: CX, y1: CY, x2: CX, y2: baseY }),
       s("path", { class: "fm-polygon-right", d: `M${f1(CX - 9)},${f1(baseY)} v-9 h9` }),
-      stext(CX, baseY + 24, `base = ${len(d, L, d.side)}`, "fm-svg-text fm-polygon-tag", "middle"),
-      stext(CX + 10, (CY + baseY) / 2 + 5, `${T2(L, "height", "altura")} = ${len(d, L, d.apothem)}`, "fm-svg-text fm-polygon-tag fm-svg-strong"),
+      s("rect", { class: "fm-pill-whole", x: CX - bw / 2, y: baseY + 9, width: bw, height: 22, rx: 11 }),
+      stext(CX, baseY + 24, bTxt, "fm-svg-text fm-polygon-tag", "middle"),
+      s("rect", { class: "fm-pill-bg", x: CX + 8, y: (CY + baseY) / 2 - 11, width: hw, height: 22, rx: 11 }),
+      stext(CX + 16, (CY + baseY) / 2 + 5, hTxt, "fm-svg-text fm-polygon-tag fm-svg-strong"),
     );
   }
   return g;

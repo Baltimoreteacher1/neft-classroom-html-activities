@@ -418,8 +418,9 @@ function stack(g, left, w, base, a, b) {
     const cls = `fm-tile ${isX ? "fm-tile-x" : "fm-tile-u"}${sign(v) < 0 ? " fm-neg" : ""}`;
     if (v.d !== 1 || n > 10) {
       // Not countable as tiles: one wide block carries the exact amount.
-      g.append(s("rect", { class: cls, x: left + 4, y: y - 26, width: w - 8, height: 26 }), stext(left + w / 2, y - 8, `${num(v)}${isX ? "x" : ""}`, "fm-svg-text", "middle"));
-      y -= 30;
+      const textCls = isX ? "fm-svg-text fm-tile-label" : "fm-svg-text fm-tile-u-text";
+      g.append(s("rect", { class: cls, x: left + 4, y: y - 28, width: w - 8, height: 28, rx: 5 }), stext(left + w / 2, y - 9, `${num(v)}${isX ? "x" : ""}`, textCls, "middle"));
+      y -= 32;
       return;
     }
     const per = Math.max(1, Math.floor((w - 8) / (size + 2)));
@@ -427,7 +428,7 @@ function stack(g, left, w, base, a, b) {
       const row = Math.floor(i / per);
       const px = left + 4 + (i % per) * (size + 2);
       const py = y - (row + 1) * (size + 2);
-      g.append(s("rect", { class: cls, x: px, y: py, width: size, height: size }));
+      g.append(s("rect", { class: cls, x: px, y: py, width: size, height: size, rx: isX ? 4 : 3 }));
       if (isX) g.append(stext(px + size / 2, py + size - 6, sign(v) < 0 ? `${MINUS}x` : "x", "fm-svg-text fm-tile-label", "middle"));
     }
     y -= Math.ceil(n / per) * (size + 2) + (n ? 4 : 0);
@@ -446,7 +447,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
   const T = (k) => t(L, STR[k]);
 
   function guessSlider() {
-    const svg = s("svg", { class: "fm-svg fm-guess", viewBox: `0 0 ${W} 54`, role: "group", "aria-label": T("try") });
+    const svg = s("svg", { class: "fm-svg fm-guess", viewBox: `0 0 ${W} 64`, role: "group", "aria-label": T("try") });
     const g = s("g");
     const handle = readonly ? null : s("g", { class: "fm-handle" }, s("circle", { class: "fm-hit", r: 40 }), s("circle", { class: "fm-ring", r: 17 }), s("circle", { class: "fm-knob", r: 10 }));
     svg.append(g);
@@ -532,12 +533,22 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     clear(ui.fixed);
     const deg = d.tilt === "left" ? -6 : d.tilt === "right" ? 6 : 0;
     ui.body.setAttribute("transform", `rotate(${deg} 180 ${BASE + 4})`);
-    ui.body.append(s("rect", { class: "fm-beam-bar", x: 16, y: BASE, width: 328, height: 8, rx: 3 }));
-    stack(ui.body, 22, 148, BASE, d.eq.a, d.eq.b);
-    stack(ui.body, 190, 148, BASE, d.eq.c, d.eq.d);
+    ui.body.append(
+      s("rect", { class: "fm-beam-bar", x: 16, y: BASE, width: 328, height: 8, rx: 4 }),
+      s("rect", { class: "fm-balance-pan", x: 20, y: BASE - 5, width: 148, height: 6, rx: 3 }),
+      s("rect", { class: "fm-balance-pan", x: 192, y: BASE - 5, width: 148, height: 6, rx: 3 }),
+    );
+    stack(ui.body, 22, 144, BASE - 5, d.eq.a, d.eq.b);
+    stack(ui.body, 194, 144, BASE - 5, d.eq.c, d.eq.d);
     const sym = d.tilt === "left" ? ">" : d.tilt === "right" ? "<" : "=";
-    ui.fixed.append(s("path", { class: "fm-fulcrum", d: `M180 ${BASE + 6} L162 ${BASE + 32} L198 ${BASE + 32} Z` }), stext(180, 66, sym, "fm-svg-text fm-sym", "middle"));
-    ui.fixed.append(stext(96, 206, lin(d.eq.a, d.eq.b), "fm-svg-text fm-svg-strong", "middle"), stext(264, 206, lin(d.eq.c, d.eq.d), "fm-svg-text fm-svg-strong", "middle"));
+    ui.fixed.append(
+      s("path", { class: "fm-fulcrum", d: `M180 ${BASE + 6} L162 ${BASE + 32} L198 ${BASE + 32} Z` }),
+      s("rect", { class: "fm-fulcrum", x: 148, y: BASE + 30, width: 64, height: 6, rx: 3 }),
+      s("circle", { class: "fm-balance-pivot", cx: 180, cy: BASE + 4, r: 5 }),
+      s("circle", { class: "fm-sym-badge", cx: 180, cy: 36, r: 17 }),
+      stext(180, 42, sym, "fm-svg-text fm-sym", "middle"),
+    );
+    ui.fixed.append(stext(94, 206, lin(d.eq.a, d.eq.b), "fm-svg-text fm-svg-strong", "middle"), stext(266, 206, lin(d.eq.c, d.eq.d), "fm-svg-text fm-svg-strong", "middle"));
   }
 
   function drawTray(d) {
@@ -560,10 +571,10 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     clear(g);
     const r = d.range;
     const X = (n) => TRACK.x0 + ((TRACK.x1 - TRACK.x0) * (n + r)) / (2 * r);
-    g.append(s("line", { class: "fm-axis", x1: TRACK.x0, x2: TRACK.x1, y1: TRACK.y, y2: TRACK.y }));
+    g.append(s("rect", { class: "fm-track-rail", x: TRACK.x0, y: TRACK.y - 3, width: TRACK.x1 - TRACK.x0, height: 6, rx: 3 }));
     for (let k = -r; k <= r; k++) {
-      g.append(s("line", { class: "fm-tick", x1: X(k), x2: X(k), y1: TRACK.y - 5, y2: TRACK.y + 5 }));
-      if (k === -r || k === 0 || k === r) g.append(stext(X(k), TRACK.y + 26, num(frac(k)), "fm-svg-text", "middle"));
+      g.append(s("line", { class: "fm-tick", x1: X(k), x2: X(k), y1: TRACK.y + 4, y2: TRACK.y + (k === 0 ? 12 : 9) }));
+      if (k === -r || k === 0 || k === r) g.append(stext(X(k), TRACK.y + 30, num(frac(k)), "fm-svg-text", "middle"));
     }
     const x = d.x ? clamp(toNumber(d.x), -r, r) : 0;
     ui.slider.handle?.setAttribute("transform", `translate(${X(x)} ${TRACK.y})`);

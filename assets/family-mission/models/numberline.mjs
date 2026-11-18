@@ -521,11 +521,18 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
   function axis(g, d) {
     const r = d.range;
     const skip = Math.ceil((2 * r + 1) / 11);
-    g.append(s("line", { class: "fm-axis", x1: LX.x0 - 8, x2: LX.x1 + 8, y1: LX.y, y2: LX.y }));
+    g.append(
+      s("line", { class: "fm-axis", x1: LX.x0 - 10, x2: LX.x1 + 10, y1: LX.y, y2: LX.y }),
+      s("path", { class: "fm-arrowhead", d: `M${LX.x0 - 15} ${LX.y} l7 -4.5 l0 9 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${LX.x1 + 15} ${LX.y} l-7 -4.5 l0 9 z` }),
+    );
     for (let k = -r; k <= r; k++) {
-      const long = k === 0 ? 10 : 6;
-      g.append(s("line", { class: "fm-tick", x1: X(k, r), x2: X(k, r), y1: LX.y - long, y2: LX.y + long }));
-      if (k % skip === 0 || k === -r || k === r) g.append(stext(X(k, r), LX.y + 30, num(frac(k)), "fm-svg-text", "middle"));
+      const isZero = k === 0;
+      const long = isZero ? 11 : 6;
+      g.append(s("line", { class: isZero ? "fm-axis" : "fm-tick", x1: X(k, r), x2: X(k, r), y1: LX.y - long, y2: LX.y + long }));
+      if (k % skip === 0 || k === -r || k === r || isZero) {
+        g.append(stext(X(k, r), LX.y + 30, num(frac(k)), isZero ? "fm-svg-text fm-svg-strong" : "fm-svg-text", "middle"));
+      }
     }
   }
 
@@ -582,8 +589,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const lane = new Map(d.sorted.map((v, k) => [num(v), k]));
     d.values.forEach((v, i) => {
       const x = X(toNumber(v), d.range);
-      const y = 22 + (lane.get(num(v)) % 2) * 26;
-      g.append(s("line", { class: "fm-connector", x1: x, x2: x, y1: y + 6, y2: LX.y }), stext(x, y, num(v), "fm-svg-text fm-svg-strong", "middle"), s("circle", { class: "fm-end fm-end-closed", cx: x, cy: LX.y, r: 11 }), stext(x, LX.y + 5, String(rank(i)), "fm-svg-text fm-on-dot", "middle"));
+      const y = 18 + (lane.get(num(v)) % 3) * 18;
+      g.append(s("line", { class: "fm-connector", x1: x, x2: x, y1: y + 6, y2: LX.y }), stext(x, y, num(v), "fm-svg-text fm-svg-strong", "middle"), s("circle", { class: "fm-end fm-end-closed", cx: x, cy: LX.y, r: 9.5 }), stext(x, LX.y + 5, String(rank(i)), "fm-svg-text fm-on-dot", "middle"));
     });
     clear(ui.order);
     d.order.forEach((k, pos) => {

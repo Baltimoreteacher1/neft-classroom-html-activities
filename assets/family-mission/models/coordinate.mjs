@@ -420,7 +420,25 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       const p = W / 2 + k * u;
       g.append(s("line", { class: "fm-grid-line", x1: p, x2: p, y1: W / 2 - HALF, y2: W / 2 + HALF }), s("line", { class: "fm-grid-line", y1: p, y2: p, x1: W / 2 - HALF, x2: W / 2 + HALF }));
     }
-    g.append(s("line", { class: `fm-axis${d.reflect === "x" ? " fm-mirror" : ""}`, x1: W / 2 - HALF - 6, x2: W / 2 + HALF + 6, y1: W / 2, y2: W / 2 }), s("line", { class: `fm-axis${d.reflect === "y" ? " fm-mirror" : ""}`, y1: W / 2 - HALF - 6, y2: W / 2 + HALF + 6, x1: W / 2, x2: W / 2 }));
+    g.append(
+      s("line", { class: `fm-axis${d.reflect === "x" ? " fm-mirror" : ""}`, x1: W / 2 - HALF - 6, x2: W / 2 + HALF + 6, y1: W / 2, y2: W / 2 }),
+      s("line", { class: `fm-axis${d.reflect === "y" ? " fm-mirror" : ""}`, y1: W / 2 - HALF - 6, y2: W / 2 + HALF + 6, x1: W / 2, x2: W / 2 }),
+      s("path", { class: "fm-arrowhead", d: `M${W / 2 + HALF + 11} ${W / 2} l-7 -4 l0 8 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${W / 2 - HALF - 11} ${W / 2} l7 -4 l0 8 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${W / 2} ${W / 2 - HALF - 11} l-4 7 l8 0 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${W / 2} ${W / 2 + HALF + 11} l-4 -7 l8 0 z` }),
+    );
+    const qOff = HALF - 16;
+    for (const [qx, qy, qn] of [
+      [W / 2 + qOff, W / 2 - qOff + 4, "I"],
+      [W / 2 - qOff, W / 2 - qOff + 4, "II"],
+      [W / 2 - qOff, W / 2 + qOff + 4, "III"],
+      [W / 2 + qOff, W / 2 + qOff + 4, "IV"],
+    ]) {
+      const ql = stext(qx, qy, qn, "fm-svg-text fm-svg-muted", "middle");
+      ql.setAttribute("opacity", "0.55");
+      g.append(ql);
+    }
     g.append(tick(W / 2 - 6, W / 2 + 18, 0, "end"));
     for (let k = 1; k <= d.range; k++) {
       for (const sg of [1, -1]) {
@@ -441,8 +459,15 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       g.append(s("line", { class: "fm-connector", x1: X(o.x, d), y1: Y(o.y, d), x2: cx, y2: cy }), s("rect", { class: "fm-ghost", x: cx - 7, y: cy - 7, width: 14, height: 14, transform: `rotate(45 ${cx} ${cy})` }), stext(cx + 12, cy - 11, `${NAMES[i]}′`, "fm-svg-text"));
     });
     d.points.forEach((p, i) => {
+      const [px, py] = [X(p.x, d), Y(p.y, d)];
+      if (i === 0) {
+        g.append(
+          s("line", { class: "fm-connector", x1: px, y1: py, x2: px, y2: W / 2 }),
+          s("line", { class: "fm-connector", x1: px, y1: py, x2: W / 2, y2: py }),
+        );
+      }
       if (readonly) {
-        g.append(s("circle", { class: "fm-knob", cx: X(p.x, d), cy: Y(p.y, d), r: 9 }), stext(X(p.x, d) + 13, Y(p.y, d) - 11, NAMES[i], "fm-svg-text fm-svg-strong"));
+        g.append(s("circle", { class: "fm-knob", cx: px, cy: py, r: 9 }), stext(px + 13, py - 11, NAMES[i], "fm-svg-text fm-svg-strong"));
       }
     });
     if (readonly) return;

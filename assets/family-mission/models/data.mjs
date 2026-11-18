@@ -407,7 +407,11 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     }
     const mx = X(Number(S.mean.n) / S.mean.d, d);
     const md = X(Number(S.median.n) / S.median.d, d);
-    g.append(s("line", { class: "fm-median", x1: md, x2: md, y1: 8, y2: AX.base }), s("path", { class: "fm-mean", d: `M${mx} ${AX.base + 8} l-8 14 l16 0 z` }));
+    g.append(
+      s("line", { class: "fm-median", x1: md, x2: md, y1: 18, y2: AX.base }),
+      stext(md, 13, L === "es" ? "Med" : "Med", "fm-svg-text fm-svg-strong", "middle"),
+      s("path", { class: "fm-mean", d: `M${mx} ${AX.base + 32} l-7 12 l14 0 z` }),
+    );
     ui.cur?.setAttribute("transform", `translate(${X(d.cursor, d)} ${AX.h - 20})`);
     ui.tbody.replaceChildren();
     const rows = [

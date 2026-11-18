@@ -379,6 +379,7 @@ const STR = {
 const TAPE = { w: 360, x: 14, bw: 270, bh: 26, gap: 8 };
 const LINE = { w: 360, x0: 20, x1: 340, top: 44, bottom: 96, h: 146 };
 const GRID_LINES = Array.from({ length: 11 }, (_, i) => `M2 ${2 + i * 10}H102M${2 + i * 10} 2V102`).join("");
+const GRID_CROSS = "M52 2V102M2 52H102";
 let uid = 0;
 
 const stepNum = (d) => toNumber(d.step);
@@ -547,7 +548,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
   function drawTape(d) {
     clear(ui.bars);
     const rows = d.grids;
-    const H = 10 + rows * (TAPE.bh + TAPE.gap);
+    const rulerH = 20;
+    const H = 12 + rows * (TAPE.bh + TAPE.gap) + rulerH;
     ui.tapeSvg.setAttribute("viewBox", `0 0 ${TAPE.w} ${H}`);
     let last = { x: TAPE.x, y: 0 };
     for (let i = 0; i < rows; i++) {
@@ -555,12 +557,28 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       const f = fillOf(d.percent, i);
       const w = (toNumber(f) / 100) * TAPE.bw;
       ui.bars.append(
-        s("rect", { class: "fm-tape-bg", x: TAPE.x, y, width: TAPE.bw, height: TAPE.bh }),
-        s("rect", { class: "fm-fill", x: TAPE.x, y, width: w, height: TAPE.bh }),
-        s("rect", { class: "fm-tape-ref", x: TAPE.x, y, width: TAPE.bw, height: TAPE.bh }),
-        stext(TAPE.x + TAPE.bw + 6, y + TAPE.bh / 2 + 5, pct(f), "fm-svg-text"),
+        s("rect", { class: "fm-tape-bg", x: TAPE.x, y, width: TAPE.bw, height: TAPE.bh, rx: 4 }),
+      );
+      if (w > 0) {
+        ui.bars.append(s("rect", { class: "fm-fill", x: TAPE.x, y, width: w, height: TAPE.bh, rx: w >= 8 ? 4 : 0 }));
+      }
+      for (const q of [25, 50, 75]) {
+        const qx = TAPE.x + (q / 100) * TAPE.bw;
+        ui.bars.append(s("line", { class: "fm-grid-lines", x1: qx, x2: qx, y1: y + 2, y2: y + TAPE.bh - 2 }));
+      }
+      ui.bars.append(
+        s("rect", { class: "fm-tape-ref", x: TAPE.x, y, width: TAPE.bw, height: TAPE.bh, rx: 4 }),
+        stext(TAPE.x + TAPE.bw + 8, y + TAPE.bh / 2 + 5, pct(f), "fm-svg-text fm-svg-strong"),
       );
       last = { x: TAPE.x + w, y: y + TAPE.bh / 2 };
+    }
+    const ry = 8 + rows * (TAPE.bh + TAPE.gap);
+    for (const mark of [0, 25, 50, 75, 100]) {
+      const mx = TAPE.x + (mark / 100) * TAPE.bw;
+      ui.bars.append(
+        s("line", { class: "fm-tick", x1: mx, x2: mx, y1: ry - 4, y2: ry + 2 }),
+        stext(mx, ry + 13, `${mark}%`, "fm-svg-text fm-svg-muted", mark === 0 ? "start" : mark === 100 ? "end" : "middle"),
+      );
     }
     ui.tapeHandle?.setAttribute("transform", `translate(${last.x} ${last.y})`);
   }
@@ -586,12 +604,17 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     if (part > 0 && cells < 100) {
       svg.append(s("rect", { class: "fm-fill", x: 2 + cols * 10, y: 102 - (rows + 1) * 10 + 10 * (1 - part), width: 10, height: 10 * part }));
     }
-    svg.append(s("path", { class: "fm-grid-lines", d: GRID_LINES }), s("rect", { class: "fm-grid-edge", x: 2, y: 2, width: 100, height: 100 }));
+    svg.append(
+      s("path", { class: "fm-grid-lines", d: GRID_LINES }),
+      s("path", { class: "fm-grid-cross", d: GRID_CROSS }),
+      s("rect", { class: "fm-grid-edge", x: 2, y: 2, width: 100, height: 100, rx: 2 }),
+    );
     if (d.fine && g === d.grids - 1) {
       const c = Math.min(99, cells);
       svg.append(s("rect", { class: "fm-zoomcell", x: 2 + (c % 10) * 10, y: 92 - Math.floor(c / 10) * 10, width: 10, height: 10 }));
     }
-    return h("figure", { class: "fm-grid-fig" }, svg, h("figcaption", { class: "fm-cap" }, pct(f)));
+    const cap = f.d === 1 ? `${num(f)}/100 · ${pct(f)}` : pct(f);
+    return h("figure", { class: "fm-grid-fig" }, svg, h("figcaption", { class: "fm-cap" }, cap));
   }
 
   function drawGrids(d) {
@@ -619,9 +642,15 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const skip = Math.ceil((count + 1) / 6);
     const g = ui.lineBody;
     g.append(
-      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1, y1: LINE.top, y2: LINE.top }),
-      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1, y1: LINE.bottom, y2: LINE.bottom }),
+      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1 + 6, y1: LINE.top, y2: LINE.top }),
+      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1 + 6, y1: LINE.bottom, y2: LINE.bottom }),
+      s("path", { class: "fm-arrowhead", d: `M${LINE.x1 + 11} ${LINE.top} l-7 -4.5 l0 9 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${LINE.x1 + 11} ${LINE.bottom} l-7 -4.5 l0 9 z` }),
     );
+    if (d.maxPercent >= 100) {
+      const x100 = X(100);
+      g.append(s("line", { class: "fm-tape-ref", x1: x100, x2: x100, y1: LINE.top, y2: LINE.bottom }));
+    }
     for (let k = 0; k <= count; k++) {
       const x = X(k * 100);
       g.append(

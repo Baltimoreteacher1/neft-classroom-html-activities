@@ -584,7 +584,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
   const T = (k) => t(L, STR[k]);
 
   function makeTrackSlider(labelKey) {
-    const svg = s("svg", { class: "fm-svg fm-guess", viewBox: `0 0 ${W} 48`, role: "group", "aria-label": T(labelKey) });
+    const svg = s("svg", { class: "fm-svg fm-guess", viewBox: `0 0 ${W} 58`, role: "group", "aria-label": T(labelKey) });
     const g = s("g");
     const handle = readonly
       ? null
@@ -1010,11 +1010,11 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     clear(g);
     const span = Math.max(1, max - min);
     const X = (n) => TRACK.x0 + ((TRACK.x1 - TRACK.x0) * (n - min)) / span;
-    g.append(s("line", { class: "fm-axis", x1: TRACK.x0, x2: TRACK.x1, y1: TRACK.y, y2: TRACK.y }));
+    g.append(s("rect", { class: "fm-track-rail", x: TRACK.x0, y: TRACK.y - 3, width: TRACK.x1 - TRACK.x0, height: 6, rx: 3 }));
     for (let k = min; k <= max; k++) {
       g.append(
-        s("line", { class: "fm-tick", x1: X(k), x2: X(k), y1: TRACK.y - 5, y2: TRACK.y + 5 }),
-        stext(X(k), TRACK.y + 20, k === min ? `${labelPrefix}${k}` : String(k), "fm-svg-text fm-tick-label", "middle")
+        s("line", { class: "fm-tick", x1: X(k), x2: X(k), y1: TRACK.y + 4, y2: TRACK.y + 10 }),
+        stext(X(k), TRACK.y + 27, k === min ? `${labelPrefix}${k}` : String(k), "fm-svg-text fm-tick-label", "middle")
       );
     }
     slider.handle?.setAttribute("transform", `translate(${X(clamp(current, min, max))} ${TRACK.y})`);

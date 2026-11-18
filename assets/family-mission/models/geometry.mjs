@@ -446,6 +446,17 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const u = unit(d);
     const P = (x, y) => [ox + x * u, oy - y * u];
     const [b, b2, hh] = [f(d.b), f(d.b2), f(d.h)];
+    // Subtle 1-unit background grid so students can count square units and verify base × height.
+    const cols = Math.floor((W - ox - 16) / u);
+    const rows = Math.floor((oy - 14) / u);
+    for (let c = 0; c <= cols; c++) {
+      const gx = ox + c * u;
+      g.append(s("line", { class: "fm-grid-bg-unit", x1: gx, x2: gx, y1: oy - rows * u, y2: oy }));
+    }
+    for (let r = 0; r <= rows; r++) {
+      const gy = oy - r * u;
+      g.append(s("line", { class: "fm-grid-bg-unit", x1: ox, x2: ox + cols * u, y1: gy, y2: gy }));
+    }
     const shapes = {
       rect: [P(0, 0), P(b, 0), P(b, hh), P(0, hh)],
       parallelogram: [P(0, 0), P(b, 0), P(b + sx, hh), P(sx, hh)],
@@ -506,7 +517,14 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       for (let j = 1; j < c.layers; j++) line(ox, oy - (hh * j) / c.layers, ox + l, oy - (hh * j) / c.layers);
       for (let k = 1; k < c.deep; k++) line(ox + (wu * dx * k) / c.deep, topY + (wu * dy * k) / c.deep, ox + l + (wu * dx * k) / c.deep, topY + (wu * dy * k) / c.deep);
     }
-    g.append(stext(ox + l / 2, oy + 17, `l = ${num(d.l)}`, "fm-svg-text", "middle"), stext(ox - 6, oy - hh / 2 + 5, `h = ${num(d.h)}`, "fm-svg-text", "end"), stext(ox + l + wu * dx + 6, topY + wu * dy + 4, `w = ${num(d.w)}`, "fm-svg-text"));
+    g.append(
+      s("line", { class: "fm-tick", x1: ox, x2: ox + l, y1: oy + 7, y2: oy + 7 }),
+      s("line", { class: "fm-tick", x1: ox, x2: ox, y1: oy + 4, y2: oy + 10 }),
+      s("line", { class: "fm-tick", x1: ox + l, x2: ox + l, y1: oy + 4, y2: oy + 10 }),
+      stext(ox + l / 2, oy + 22, `l = ${num(d.l)}`, "fm-svg-text fm-svg-strong", "middle"),
+      stext(ox - 8, oy - hh / 2 + 5, `h = ${num(d.h)}`, "fm-svg-text fm-svg-strong", "end"),
+      stext(ox + l + wu * dx + 8, topY + wu * dy + 4, `w = ${num(d.w)}`, "fm-svg-text fm-svg-strong"),
+    );
     ui.read.textContent = `${T("cubes")}: ${c.across} × ${c.deep} × ${c.layers} = ${c.total} · ${T("volume")}: ${num(d.volume)}`;
   }
 

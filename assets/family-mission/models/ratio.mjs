@@ -504,17 +504,26 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
       { k: "b", y: 82, count: d.b, total: d.B },
     ];
     for (const tp of tapes) {
-      ui.tapeBody.append(stext(TAPE.x, tp.y - 8, `${lab(d, tp.k, L)}: ${num(tp.total)}`, "fm-svg-text"));
+      const fullW = tp.count * u * d.maxN;
+      const activeW = tp.count * u * n;
+      ui.tapeBody.append(
+        stext(TAPE.x, tp.y - 8, `${lab(d, tp.k, L)}: ${num(tp.total)}`, "fm-svg-text fm-svg-strong"),
+        s("rect", { class: "fm-tape-bg", x: TAPE.x, y: tp.y, width: fullW, height: 26, rx: 4 }),
+      );
       for (let i = 0; i < Math.ceil(n); i++) {
         const share = Math.min(1, n - i);
         ui.tapeBody.append(
-          s("rect", { class: i % 2 ? "fm-fill fm-fill-alt" : "fm-fill", x: TAPE.x + i * tp.count * u, y: tp.y, width: tp.count * u * share, height: 24 }),
+          s("rect", { class: i % 2 ? "fm-fill fm-fill-alt" : "fm-fill", x: TAPE.x + i * tp.count * u, y: tp.y, width: tp.count * u * share, height: 26, rx: 2 }),
         );
       }
-      ui.tapeBody.append(s("rect", { class: "fm-tape-ref", x: TAPE.x, y: tp.y, width: tp.count * u * n, height: 24 }));
+      for (let k = 1; k < d.maxN; k++) {
+        const tx = TAPE.x + k * tp.count * u;
+        ui.tapeBody.append(s("line", { class: "fm-grid-lines", x1: tx, x2: tx, y1: tp.y + 2, y2: tp.y + 24 }));
+      }
+      ui.tapeBody.append(s("rect", { class: "fm-tape-ref", x: TAPE.x, y: tp.y, width: activeW, height: 26, rx: 4 }));
     }
     const longest = d.a >= d.b ? tapes[0] : tapes[1];
-    ui.tapeHandle?.setAttribute("transform", `translate(${TAPE.x + longest.count * u * n} ${longest.y + 12})`);
+    ui.tapeHandle?.setAttribute("transform", `translate(${TAPE.x + longest.count * u * n} ${longest.y + 13})`);
   }
 
   function drawLine(d) {
@@ -523,8 +532,10 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const X = (n) => LINE.x0 + ((LINE.x1 - LINE.x0) * n) / d.maxN;
     const skip = Math.ceil((d.maxN + 1) / 7);
     g.append(
-      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1, y1: LINE.top, y2: LINE.top }),
-      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1, y1: LINE.bottom, y2: LINE.bottom }),
+      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1 + 6, y1: LINE.top, y2: LINE.top }),
+      s("line", { class: "fm-axis", x1: LINE.x0, x2: LINE.x1 + 6, y1: LINE.bottom, y2: LINE.bottom }),
+      s("path", { class: "fm-arrowhead", d: `M${LINE.x1 + 11} ${LINE.top} l-7 -4.5 l0 9 z` }),
+      s("path", { class: "fm-arrowhead", d: `M${LINE.x1 + 11} ${LINE.bottom} l-7 -4.5 l0 9 z` }),
     );
     for (let k = 0; k <= d.maxN; k++) {
       const x = X(k);
@@ -534,11 +545,18 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     for (const r of d.rows) g.append(s("circle", { class: "fm-dot fm-dot-row", cx: X(toNumber(r)), cy: LINE.bottom, r: 4 }));
     const x = X(toNumber(d.n));
     const lx = clamp(x, 34, LINE.w - 34);
+    const topStr = num(d.A);
+    const botStr = num(d.B);
+    const pillW = (str) => Math.max(34, str.length * 10 + 14);
+    const tw = pillW(topStr);
+    const bw = pillW(botStr);
     g.append(
       s("line", { class: "fm-connector", x1: x, x2: x, y1: LINE.top, y2: LINE.bottom }),
       s("circle", { class: "fm-dot", cx: x, cy: LINE.top, r: 6 }),
-      stext(lx, LINE.top - 28, num(d.A), "fm-svg-text fm-svg-strong", "middle"),
-      stext(lx, LINE.bottom + 52, num(d.B), "fm-svg-text fm-svg-strong", "middle"),
+      s("rect", { class: "fm-pill-bg", x: lx - tw / 2, y: LINE.top - 43, width: tw, height: 21, rx: 10 }),
+      stext(lx, LINE.top - 28, topStr, "fm-svg-text fm-svg-strong", "middle"),
+      s("rect", { class: "fm-pill-bg", x: lx - bw / 2, y: LINE.bottom + 37, width: bw, height: 21, rx: 10 }),
+      stext(lx, LINE.bottom + 52, botStr, "fm-svg-text fm-svg-strong", "middle"),
     );
     ui.lineHandle?.setAttribute("transform", `translate(${x} ${LINE.bottom})`);
   }

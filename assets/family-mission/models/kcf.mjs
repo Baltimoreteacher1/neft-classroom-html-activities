@@ -4,7 +4,7 @@
 // Flip the second, then multiply across and simplify. Every step of the picture is real arithmetic
 // on exact integers; the check at the end multiplies the answer back.
 import { parseKcfNumber } from "../../design/family/art/math-models-kcf.mjs";
-import { button, createView, defineFamily, h, put, t } from "./core.mjs";
+import { button, clear, createView, defineFamily, h, put, s, stext, t } from "./core.mjs";
 
 export const id = "kcf";
 export const label = { en: "Keep, Change, Flip", es: "Mantener, Cambiar, Invertir" };
@@ -203,6 +203,8 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     const st0 = model.getState();
     ui.picks = st0.presets.length > 1 && !readonly ? h("div", { class: "fm-kcf-picks", role: "group", "aria-label": T("problem") }) : null;
     ui.expr = h("p", { class: "fm-kcf-expr", role: "group" });
+    ui.barSvg = s("svg", { class: "fm-svg", viewBox: "0 0 360 108", role: "img" });
+    ui.barSec = h("section", { class: "fm-view fm-kcf-bars" }, ui.barSvg);
     ui.moves = h("div", { class: "fm-kcf-moves", role: "group", "aria-label": T("tap") });
     ui.hint = h("p", { class: "fm-explain fm-kcf-hint", role: "status" });
     ui.result = h("div", { class: "fm-kcf-result", hidden: "" });
@@ -220,7 +222,7 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
         });
       }
     }
-    put(root, ui.picks, ui.expr, ui.moves, ui.hint, ui.result);
+    put(root, ui.picks, ui.expr, ui.barSec, ui.moves, ui.hint, ui.result);
     put(root, ui.desc);
     if (!readonly) {
       ui.undo = button(bag, T("undo"), { onClick: () => model.undo() });
@@ -229,8 +231,83 @@ export function mount(root, model, { lang = "en", onChange, readonly = false } =
     }
   }
 
+  function drawBars(d) {
+    const svg = ui.barSvg;
+    clear(svg);
+    const a = parseKcfNumber(d.problem.dividend);
+    const b = parseKcfNumber(d.problem.divisor);
+    const aVal = a.n / a.d;
+    const bVal = b.n / b.d;
+    const wholes = Math.max(1, Math.ceil(Math.max(aVal, bVal)));
+    const x0 = 16;
+    const bw = 328;
+    const unitW = bw / wholes;
+    const yA = 22;
+    const yB = 68;
+    const bh = 22;
+
+    svg.setAttribute("aria-label", `${d.problem.dividend} ÷ ${d.problem.divisor}`);
+    svg.append(
+      stext(x0, 15, `${d.problem.dividend}`, "fm-svg-text fm-svg-strong"),
+      stext(x0 + bw, 15, t(L, { en: `${wholes} whole${wholes === 1 ? "" : "s"}`, es: `${wholes} entero${wholes === 1 ? "" : "s"}` }), "fm-svg-text fm-svg-muted", "end"),
+      s("rect", { class: "fm-tape-bg", x: x0, y: yA, width: bw, height: bh, rx: 4 }),
+      s("rect", { class: "fm-fill", x: x0, y: yA, width: aVal * unitW, height: bh, rx: 3 }),
+    );
+    for (let w = 0; w < wholes; w++) {
+      const wx = x0 + w * unitW;
+      if (w > 0) svg.append(s("line", { class: "fm-axis", x1: wx, x2: wx, y1: yA - 2, y2: yA + bh + 2 }));
+      if (wholes <= 6 && a.d > 1 && a.d <= 12) {
+        for (let k = 1; k < a.d; k++) {
+          const tx = wx + (k / a.d) * unitW;
+          svg.append(s("line", { class: "fm-grid-lines", x1: tx, x2: tx, y1: yA + 2, y2: yA + bh - 2 }));
+        }
+      }
+    }
+    svg.append(s("rect", { class: "fm-grid-edge", x: x0, y: yA, width: bw, height: bh, rx: 4 }));
+
+    // Divisor pieces tiled across the dividend
+    const q = aVal / bVal;
+    const pieceW = bVal * unitW;
+    const count = Math.ceil(q - 1e-9);
+    const maxDraw = Math.min(count, 16);
+    svg.append(
+      stext(x0, yB - 7, t(L, { en: `Groups of ${d.problem.divisor}`, es: `Grupos de ${d.problem.divisor}` }), "fm-svg-text"),
+      s("rect", { class: "fm-tape-bg", x: x0, y: yB, width: bw, height: bh, rx: 4 }),
+    );
+    for (let i = 0; i < maxDraw; i++) {
+      const share = Math.min(1, q - i);
+      const px = x0 + i * pieceW;
+      const pw = pieceW * share;
+      if (pw <= 0.5) break;
+      svg.append(
+        s("rect", {
+          class: i % 2 ? "fm-fill fm-fill-alt" : "fm-fill",
+          x: px,
+          y: yB,
+          width: pw,
+          height: bh,
+          rx: 2,
+        }),
+      );
+      if (pw >= 16) {
+        svg.append(stext(px + pw / 2, yB + 16, share < 0.99 ? "…" : String(i + 1), "fm-svg-text fm-tile-label", "middle"));
+      }
+    }
+    svg.append(
+      s("line", {
+        class: "fm-connector",
+        x1: x0 + aVal * unitW,
+        x2: x0 + aVal * unitW,
+        y1: yA + bh,
+        y2: yB,
+      }),
+      s("rect", { class: "fm-tape-ref", x: x0, y: yB, width: aVal * unitW, height: bh, rx: 4 }),
+    );
+  }
+
   function sync() {
     const d = model.getState();
+    drawBars(d);
     const st = { dividend: d.problem.dividend, divisor: d.problem.divisor };
     const word = (k, on) => (on ? h("span", { class: `fm-kcf-tag fm-kcf-tag-${k}` }, t(L, STEP[k])) : h("span", { class: "fm-kcf-tag fm-kcf-tag-none", "aria-hidden": "true" }, "·"));
     const cell = (cls, node, tag) => h("span", { class: `fm-kcf-cell ${cls}` }, node, tag);
