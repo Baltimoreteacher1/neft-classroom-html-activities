@@ -50,6 +50,8 @@ const htmlFiles = walk(root).filter((path) => extname(path) === ".html");
 for (const file of htmlFiles) {
   const content = readFileSync(file, "utf8");
   const rel = file.replace(`${root}/`, "");
+  // Homework word panels are HTML fragments fetched into a full lesson page, not standalone documents.
+  if (/^assets\/homework\/homework-words-[\w-]+-[0-9a-f]{10}\.html$/.test(rel)) continue;
   if (!/<!doctype html>/i.test(content)) errors.push(`${rel}: missing <!DOCTYPE html>`);
   // Whitespace/newline-tolerant: many pages format <meta ...> and <title> across lines.
   if (!/<meta\s[^>]*name=["']viewport["']/i.test(content))
@@ -62,9 +64,19 @@ for (const file of htmlFiles) {
   const srcs = [...content.matchAll(/src="([^"]+)"/g)].map((match) => match[1]);
   const rootLinks = [...hrefs, ...srcs]
     .filter((asset) => asset.startsWith("/") && !asset.startsWith("//"))
-    .filter((asset) => !asset.includes("#") && !asset.includes("?"));
+    .filter((asset) => !asset.includes("#") && !asset.includes("?"))
+    // A few scripts construct href strings inside HTML literals; those are not static links.
+    .filter((asset) => !asset.includes("' + "));
   rootLinks.forEach((asset) => {
-    const normalized = asset.endsWith("/") ? `${asset}index.html` : asset;
+    // Next static exports encode dynamic folder names like [chapterId] in script URLs.
+    // The server decodes these paths before lookup; validate the same filesystem target.
+    let decoded = asset;
+    try {
+      decoded = decodeURI(asset);
+    } catch {
+      // Keep the original path so a malformed URL is still reported below.
+    }
+    const normalized = decoded.endsWith("/") ? `${decoded}index.html` : decoded;
     if (
       asset.match(/\.(css|js|json|txt|xml|png|jpg|jpeg|webp|svg|ico)$/i) &&
       !VITE_EMITTED_ASSETS.has(asset) &&

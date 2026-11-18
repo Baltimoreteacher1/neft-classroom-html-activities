@@ -8,6 +8,7 @@ import { bandLabelEs } from "../bands.js";
 import { KIND_VALUES, SKILL_VALUES } from "./facets.js";
 
 const label = (list, id) => list.find(([v]) => v === id)?.[1] || null;
+const supportEs = { A: "Más apoyo", B: "Algo de apoyo", C: "Más independencia" };
 
 const openLabel = (I, kind) => {
   const labels = {
@@ -42,6 +43,7 @@ function metaList(I, d) {
   const items = [
     [kind ? I.S(kind.en, kind.es) : "", "kind"],
     [bandsText(I, d), "band"],
+    [d.level && TIERS[d.level] ? I.S(`Support: ${TIERS[d.level].range}`, `Apoyo: ${supportEs[d.level]}`) : "", "support"],
     [skill ? I.S(skill.en, skill.es) : "", "skill"],
     [audienceLabel(I, d), "for"],
     [

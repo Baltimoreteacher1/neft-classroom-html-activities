@@ -204,8 +204,8 @@
 }
 
 /* ── header: compact on phones and small tablets ───────────────────────── */
-/* Three short rows, nothing scrolls sideways: brand with read-aloud, search and More; the six places as a 3 × 2
-   grid of labelled buttons; then grade, language, voice and comfort. Not sticky here (three rows would cover a
+/* Three short rows, nothing scrolls sideways: brand with read-aloud, search and More; four principal places in
+   one row (Home is the logo and Help is in More); then grade, language, voice and comfort. Not sticky here (the rows cover a
    fifth of a phone screen). The More menu opens as a screen-wide panel under the first row, and no ancestor of it
    carries a mask, filter or transform, so the fixed panel is laid out against the screen, never clipped. */
 @media (max-width: 719px) {
@@ -264,7 +264,7 @@
   .lab-top .lab-tools > .top-link.top-aud {
     order: 3 !important;
     display: inline-flex !important;
-    flex: 1 1 calc(33.333% - 0.3rem) !important;
+    flex: 1 1 calc(25% - 0.3rem) !important;
     min-width: 0 !important;
     min-height: 2.75rem;
     align-items: center;
@@ -281,8 +281,11 @@
     text-align: center;
     white-space: normal !important;
   }
+  .lab-top .lab-tools > .top-link.top-aud:is(.top-aud-home, .top-aud-help) {
+    display: none !important;
+  }
   .lab-top .lab-tools > .top-link.top-aud > .ico {
-    display: inline-block;
+    display: none;
     flex: none;
   }
   .lab-top .lab-tools > .top-link.top-aud > span {
@@ -299,6 +302,11 @@
   }
   .lab-top .lab-tools > .top-link.top-aud[aria-current="page"]::after {
     display: none;
+  }
+  @media (max-width: 359px) {
+    .lab-top .lab-tools > .top-link.top-aud {
+      flex-basis: calc(50% - 0.3rem) !important;
+    }
   }
   .lab-top .lab-tools > :is(.grade-select, .lang-switch, .mode-flag) {
     order: 5 !important;

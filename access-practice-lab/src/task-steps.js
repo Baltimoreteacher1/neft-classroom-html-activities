@@ -16,8 +16,8 @@ const FIRST = {
   Reading: {
     early: ["Look and read.", "Mira y lee."],
     upper: [
-      "Read the text. Look for the words in the question.",
-      "Lee el texto. Busca las palabras de la pregunta.",
+      "Read the text. Find an idea or detail that helps answer the question.",
+      "Lee el texto. Busca una idea o un detalle que ayude a responder la pregunta.",
     ],
   },
   Speaking: {
@@ -29,7 +29,10 @@ const FIRST = {
   },
   Writing: {
     early: ["Think. What will you write?", "Piensa. ¿Qué vas a escribir?"],
-    upper: ["Plan your ideas. Use the word bank.", "Planea tus ideas. Usa el banco de palabras."],
+    upper: [
+      "Plan your answer. Choose words that make your meaning clear.",
+      "Planea tu respuesta. Elige palabras que expresen tu idea con claridad.",
+    ],
   },
   "Model-Test": {
     early: ["Look and listen.", "Mira y escucha."],
@@ -110,14 +113,14 @@ function lastStep(a, domain, early) {
       : early
         ? ["Read it again.", "Léelo otra vez."]
         : [
-            "Read it again and check the list, then save.",
-            "Léelo otra vez, revisa la lista y guarda.",
+            "Read your answer again and revise one part.",
+            "Vuelve a leer tu respuesta y mejora una parte.",
           ];
   return early
     ? ["Tap Check.", "Toca Revisar."]
     : [
-        "Press Check. If you miss, you get a hint first.",
-        "Presiona Revisar. Si fallas, primero recibes una pista.",
+        "Press Check. Read the feedback, then try again if needed.",
+        "Presiona Revisar. Lee los comentarios y vuelve a intentar si hace falta.",
       ];
 }
 
@@ -137,7 +140,8 @@ export function taskCardHTML(I, a, domain, band, directions) {
       ${icon("flag")} ${I.T("Your task", "Tu tarea")}
     </h2>
     ${directions}
-    <ol class="task-steps" aria-label="${I.S("How to do it", "Cómo hacerlo")}">
+    <h3 id="taskHowTitle" class="task-how-title">${I.T("How to do it", "Cómo hacerlo")}</h3>
+    <ol class="task-steps" aria-labelledby="taskHowTitle">
       ${steps.map(
         ([en, es], i) =>
           html`<li>
