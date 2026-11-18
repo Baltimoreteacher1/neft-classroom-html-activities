@@ -15,7 +15,12 @@ import { studioUrls } from "./generate-lesson-paths.mjs";
 import { coverageReport } from "./lib/math-studio-coverage.mjs";
 import { finderPage, lessonPage } from "./lib/math-studio-page.mjs";
 import { buildRegistry } from "./lib/math-studio-registry.mjs";
-import { wordProblemsCta } from "./lib/word-problems-page.mjs";
+import {
+  WP_STEP_PANELS,
+  wordProblemsCta,
+  wordProblemsInline,
+  wordProblemsInlineHead,
+} from "./lib/word-problems-page.mjs";
 
 const read = (rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
 const ASSET_DIR = "assets/math-studio";
@@ -33,16 +38,44 @@ function stamp() {
 }
 
 const CTA = /\n?[ \t]*<!-- word-problems-cta:begin -->[\s\S]*?<!-- word-problems-cta:end -->/;
+const WP =
+  /\n?[ \t]*<!-- word-problems-(?:head|step-\d):begin -->[\s\S]*?<!-- word-problems-(?:head|step-\d):end -->/g;
 
-/** A hand-built Unit 4 studio: no duplicate lesson-stage bar, and the Word problems button closing its last step. */
+/** Insert `block` at the end of panel `n` (before its closing </section>), which must hold no nested section. */
+function intoPanel(html, n, block, url) {
+  const start = html.indexOf(`id="panel-${n}"`);
+  // skip the closing tags of our own "Real-world check" cards, which sit inside the panel
+  const own = /<section class="wp-inline"[\s\S]*?<\/section>/g;
+  const tail = html.slice(start).replace(own, (m) => " ".repeat(m.length));
+  const end = start < 0 ? -1 : start + tail.indexOf("</section>");
+  if (start < 0 || end < start || tail.slice(0, end - start).includes("<section"))
+    throw new Error(`Unit 4 studio ${url} has no simple panel-${n}`);
+  return html.slice(0, end).replace(/\s*$/, "") + block + html.slice(end);
+}
+
+/** A hand-built Unit 4 studio: no duplicate lesson-stage bar, "Real-world check" cards in steps 2, 3 and 5, and the
+ * Word problems button closing its last step. */
 function unit4Studio(html, id, url) {
-  const clean = html.replace(BAR, "").replace(CTA, "");
-  const start = clean.indexOf('id="panel-5"');
-  const end = clean.indexOf("</section>", start);
-  if (start < 0 || end < 0 || clean.slice(start, end).includes("<section"))
-    throw new Error(`Unit 4 studio ${url} has no simple panel-5 to close with Word problems`);
-  const cta = `\n      <!-- word-problems-cta:begin -->\n      ${wordProblemsCta(id, url)}\n      <!-- word-problems-cta:end -->\n    `;
-  return clean.slice(0, end).replace(/\s*$/, "") + cta + clean.slice(end);
+  let out = html.replace(BAR, "").replace(CTA, "").replace(WP, "");
+  // before the u4-clarity block when there is one: inject-u4-lab-bench.mjs rewrites that block in place and
+  // leaves anything above it alone, so the two generators agree on the order
+  const headBlock = `<!-- word-problems-head:begin -->\n${wordProblemsInlineHead()}\n<!-- word-problems-head:end -->\n`;
+  const anchor = out.includes("<!-- u4-clarity:begin") ? "  <!-- u4-clarity:begin" : "</head>";
+  out = out.replace(anchor, `${headBlock}${anchor}`);
+  WP_STEP_PANELS.forEach((panel, n) => {
+    out = intoPanel(
+      out,
+      panel + 1,
+      `\n      <!-- word-problems-step-${n}:begin -->\n      ${wordProblemsInline(id, n)}\n      <!-- word-problems-step-${n}:end -->\n    `,
+      url,
+    );
+  });
+  return intoPanel(
+    out,
+    5,
+    `\n      <!-- word-problems-cta:begin -->\n      ${wordProblemsCta(id, url)}\n      <!-- word-problems-cta:end -->\n    `,
+    url,
+  );
 }
 
 export function outputs() {

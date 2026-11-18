@@ -8,6 +8,7 @@ const TIMER_WORDS =
   /\b(timer|countdown|count down|beat the clock|seconds left|race against the clock|against the clock)\b/i;
 
 import { parseAnswer, sameValue } from "../../assets/studio/word-problems-answer.mjs";
+import { buildKey, sameBuild } from "../../assets/studio/word-problems-card.mjs";
 
 export { parseAnswer };
 
@@ -80,9 +81,71 @@ function problemIssues(/** @type {any} */ p, /** @type {string} */ where) {
       if (!nums.some((s) => close(parseAnswer(s), c)))
         out.push(`${where}: calc ${p.calc} = ${c} does not appear in the correct choice`);
     }
-  } else out.push(`${where}.kind must be "num" or "mc"`);
+  } else if (p.kind === "build") {
+    // tap tiles to assemble the answer: every accepted answer must be buildable from the tiles given
+    const tiles = Array.isArray(p.tiles) ? p.tiles.map(String) : [];
+    if (tiles.length < 3 || tiles.length > 12) out.push(`${where}.tiles needs 3-12 tiles`);
+    if (!Array.isArray(p.a) || !p.a.length || !p.a.every((seq) => Array.isArray(seq) && seq.length))
+      out.push(`${where}.a must list accepted tile sequences`);
+    else
+      p.a.forEach((/** @type {string[]} */ seq, /** @type {number} */ i) => {
+        const pool = [...tiles];
+        for (const t of seq) {
+          const k = pool.indexOf(String(t));
+          if (k < 0) out.push(`${where}.a[${i}] uses "${t}", which is not a spare tile`);
+          else pool.splice(k, 1);
+        }
+      });
+    const keys = new Set((p.a || []).map((/** @type {string[]} */ seq) => buildKey(seq)));
+    if (tiles.length && keys.size && tiles.length <= Math.max(...(p.a || []).map((x) => x.length)))
+      out.push(`${where}.tiles need at least one extra (distractor) tile`);
+    if (!Array.isArray(p.fw) || p.fw.length < 1)
+      out.push(`${where}.fw needs 1+ common wrong builds`);
+    else
+      p.fw.forEach((/** @type {any} */ w, /** @type {number} */ i) => {
+        if (
+          !str(w.v, 1) ||
+          keys.has(buildKey([w.v])) ||
+          (!p.exact &&
+            (p.a || []).some((/** @type {string[]} */ seq) => sameBuild(seq.join(" "), w.v)))
+        )
+          out.push(`${where}.fw[${i}].v is empty or equivalent to a correct build`);
+        if (!str(w.f, 15) || !str(w.fEs, 15)) out.push(`${where}.fw[${i}] needs f and fEs`);
+      });
+    for (const h of p.h || [])
+      for (const k of keys)
+        if (k.length >= 3 && buildKey([h]).includes(k))
+          out.push(`${where}: a hint shows the answer`);
+  } else if (p.kind === "table") {
+    const n = Array.isArray(p.hd) ? p.hd.length : 0;
+    if (n < 2) out.push(`${where}.hd needs 2+ headers`);
+    if (!Array.isArray(p.hdEs) || p.hdEs.length !== n) out.push(`${where}.hdEs must match hd`);
+    let blanks = 0;
+    if (!Array.isArray(p.rows) || p.rows.length < 2) out.push(`${where}.rows needs 2+ rows`);
+    else
+      p.rows.forEach((/** @type {any[]} */ row, /** @type {number} */ r) => {
+        if (!Array.isArray(row) || row.length !== n)
+          return out.push(`${where}.rows[${r}] must have ${n} cells`);
+        row.forEach((cell, c) => {
+          if (cell && typeof cell === "object") {
+            blanks++;
+            const a = parseAnswer(cell.a);
+            const v = evalCalc(cell.calc);
+            if (!Number.isFinite(a) || !Number.isFinite(v) || !close(v, a))
+              out.push(
+                `${where}.rows[${r}][${c}]: calc ${cell.calc} must equal the answer ${cell.a}`,
+              );
+          } else if (!str(String(cell ?? ""), 1)) out.push(`${where}.rows[${r}][${c}] is empty`);
+        });
+      });
+    if (blanks < 2 || blanks > 8) out.push(`${where}: a table needs 2-8 blank cells`);
+  } else out.push(`${where}.kind must be "num", "mc", "build" or "table"`);
   return out;
 }
+
+/** Per lesson: the Word problems page, its scenario, and the in-step "Real-world check" cards (studio steps 2, 3, 5). */
+export const PROBLEMS = 7;
+export const STEPS = 3;
 
 /**
  * @param {Record<string, any>} byLesson lesson id -> { problems: [...] }
@@ -96,15 +159,40 @@ export function validateWordProblems(byLesson, lessonIds) {
       out.push(`${id}: no word problems`);
       continue;
     }
-    if (!Array.isArray(set.problems) || set.problems.length < 2 || set.problems.length > 3) {
-      out.push(`${id}: needs 2–3 problems`);
-      continue;
+    const P = Array.isArray(set.problems) ? set.problems : [];
+    if (P.length !== PROBLEMS)
+      out.push(`${id}: needs exactly ${PROBLEMS} problems (has ${P.length})`);
+    if (P.filter((p) => p.kind === "num").length < 2)
+      out.push(`${id}: at least two problems must ask for a typed number`);
+    if (!P.some((p) => p.kind === "build"))
+      out.push(`${id}: at least one problem must be a build task`);
+    P.forEach((p, i) => out.push(...problemIssues(p, `${id}.problems[${i}]`)));
+    const sc = set.scenario;
+    if (
+      !sc ||
+      !str(sc.title, 3) ||
+      !str(sc.titleEs, 3) ||
+      !str(sc.setup, 40) ||
+      !str(sc.setupEs, 40)
+    )
+      out.push(`${id}.scenario needs title, titleEs and a 40+ character setup in both languages`);
+    else if (PICTURE_WORDS.test(sc.setup))
+      out.push(`${id}.scenario.setup refers to a picture or table`);
+    const parts = Array.isArray(sc?.parts) ? sc.parts : [];
+    if (parts.length !== 3) out.push(`${id}.scenario needs exactly 3 linked parts`);
+    parts.forEach((p, i) => out.push(...problemIssues(p, `${id}.scenario.parts[${i}]`)));
+    const steps = Array.isArray(set.steps) ? set.steps : [];
+    if (steps.length !== STEPS)
+      out.push(`${id}.steps needs exactly ${STEPS} in-step real-world checks`);
+    steps.forEach((p, i) => out.push(...problemIssues(p, `${id}.steps[${i}]`)));
+    const seen = new Set();
+    for (const p of [...P, ...parts, ...steps]) {
+      const key = String(p.q || "")
+        .trim()
+        .toLowerCase();
+      if (seen.has(key)) out.push(`${id}: the question "${key.slice(0, 50)}…" appears twice`);
+      seen.add(key);
     }
-    if (!set.problems.some((/** @type {any} */ p) => p.kind === "num"))
-      out.push(`${id}: at least one problem must ask for a typed number`);
-    set.problems.forEach((/** @type {any} */ p, /** @type {number} */ i) =>
-      out.push(...problemIssues(p, `${id}.problems[${i}]`)),
-    );
   }
   for (const id of Object.keys(byLesson))
     if (!lessonIds.includes(id)) out.push(`${id}: not a curriculum practice lesson`);

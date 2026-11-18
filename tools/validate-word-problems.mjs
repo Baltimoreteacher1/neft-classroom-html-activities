@@ -68,23 +68,68 @@ function selfTest() {
     x: "4 × 3 = 12 pencils in the pouches, plus 6 extra makes 18 pencils.",
     xEs: "4 × 3 = 12 lápices en las bolsas, más 6 extra son 18 lápices.",
   };
-  ok(
-    validateWordProblems({ x: { problems: [good, good] } }, ["x"]).length === 0,
-    "clean set passes",
-  );
-  ok(
-    validateWordProblems({ x: { problems: [good, { ...good, calc: "4 * 3" }] } }, ["x"]).length > 0,
-    "wrong calc fails",
-  );
-  ok(validateWordProblems({ x: { problems: [good] } }, ["x"]).length > 0, "one problem fails");
+  const v = (/** @type {any} */ p, /** @type {number} */ n) => ({ ...p, q: `${p.q} (${n})` });
+  const build = {
+    ...good,
+    kind: "build",
+    q: "Build the expression for the pencils in n pouches of 4 pencils plus 6 extra pencils.",
+    tiles: ["4n", "6n", "+", "6", "4"],
+    a: [
+      ["4n", "+", "6"],
+      ["6", "+", "4n"],
+    ],
+    fw: [
+      {
+        v: "6n + 4",
+        f: "This puts the extras in every pouch.",
+        fEs: "Esto pone los extra en cada bolsa.",
+      },
+    ],
+  };
+  const table = {
+    ...good,
+    kind: "table",
+    q: "Fill in the pencils for each number of pouches when each pouch holds 4 pencils.",
+    hd: ["Pouches", "Pencils"],
+    hdEs: ["Bolsas", "Lápices"],
+    rows: [
+      ["1", "4"],
+      ["2", { a: "8", calc: "4 * 2" }],
+      ["3", { a: "12", calc: "4 * 3" }],
+    ],
+  };
+  delete build.calc;
+  delete table.calc;
+  delete table.fw;
+  const set = () => ({
+    problems: [v(good, 1), v(good, 2), v(good, 3), v(good, 4), v(good, 5), build, table],
+    scenario: {
+      title: "Art room",
+      titleEs: "Salón de arte",
+      setup: "The art room packs pencil pouches of 4 pencils each and keeps 6 extra pencils.",
+      setupEs: "El salón de arte llena bolsas de 4 lápices y guarda 6 lápices extra.",
+      parts: [v(good, 6), v(good, 7), v(good, 8)],
+    },
+    steps: [v(good, 9), v(good, 10), v(good, 11)],
+  });
+  const issues = (/** @type {any} */ x) => validateWordProblems({ x }, ["x"]);
+  ok(issues(set()).length === 0, `clean set passes ${issues(set()).join("; ")}`);
+  const bad = (/** @type {(s: any) => void} */ f, /** @type {string} */ m) => {
+    const s = set();
+    f(s);
+    ok(issues(s).length > 0, m);
+  };
+  bad((s) => (s.problems[0].calc = "4 * 3"), "wrong calc fails");
+  bad((s) => s.problems.pop(), "six problems fail");
+  bad((s) => (s.problems[5] = v(good, 12)), "no build task fails");
+  bad((s) => (s.problems[5].a = [["4n", "+", "7"]]), "a build answer not made of the tiles fails");
+  bad((s) => (s.problems[5].tiles = ["4n", "+", "6"]), "a build with no spare tile fails");
+  bad((s) => (s.problems[6].rows[1][1].calc = "4 * 3"), "a wrong table cell fails");
+  bad((s) => s.scenario.parts.pop(), "a two-part scenario fails");
+  bad((s) => s.steps.pop(), "two in-step checks fail");
+  bad((s) => (s.steps[0] = s.problems[0]), "a repeated question fails");
+  bad((s) => (s.problems[0].q += " Use the table shown below."), "picture words fail");
   ok(validateWordProblems({}, ["x"]).length > 0, "missing lesson fails");
-  ok(
-    validateWordProblems(
-      { x: { problems: [good, { ...good, q: `${good.q} Use the table shown below.` }] } },
-      ["x"],
-    ).length > 0,
-    "picture words fail",
-  );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

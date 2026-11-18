@@ -2,7 +2,12 @@
 // The runtime (assets/studio/*.js) draws the problems from the JSON this page ships; this file only lays out the shell.
 
 import { FAVICON } from "./practice-studio-worlds.mjs";
-import { wordProblemsCta } from "./word-problems-page.mjs";
+import {
+  WP_STEP_PANELS,
+  wordProblemsCta,
+  wordProblemsInline,
+  wordProblemsInlineHead,
+} from "./word-problems-page.mjs";
 
 export const esc = (/** @type {any} */ s) =>
   String(s ?? "").replace(
@@ -216,6 +221,7 @@ export function pageFor({
       <div class="topic-strip"><div><p class="stage-eyebrow">${bi(`Stage ${i + 1} of ${sections.length}`, `Etapa ${i + 1} de ${sections.length}`)}${s.optional ? ` · ${bi("Optional", "Opcional")}` : ""}</p><h2>${bi(s.name, s.nameEs)}</h2><p class="stage-purpose">${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div>
         <div class="stepper-bar"><div class="dots-row" id="dots-${i + 1}" role="group" aria-label="${esc(s.name)} problems"></div></div></div>
       <div class="stage-card" id="stage-${i + 1}"></div>
+      ${WP_STEP_PANELS.includes(i) ? wordProblemsInline(id, WP_STEP_PANELS.indexOf(i)) : ""}
       ${i === sections.length - 1 ? wordProblemsCta(id, challenge ? `/math/practice-studio/${id}/challenge/` : `/math/practice-studio/${id}/`) : ""}
       ${printList(s.items)}
     </section>`,
@@ -235,6 +241,7 @@ ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
 ${partsModel ? '  <link rel="stylesheet" href="/assets/studio/expression-parts.css">' : ""}
 ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
+${wordProblemsInlineHead()}
 ${partsModel ? '  <script src="/assets/studio/expression-parts.js" defer></script>' : ""}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">

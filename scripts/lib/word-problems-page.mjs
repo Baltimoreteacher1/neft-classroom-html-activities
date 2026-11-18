@@ -1,9 +1,52 @@
 // Markup for the Word problems step: the button every curriculum practice studio shows after its last step,
 // and the shared page it opens (/math/word-problems/?lesson=<id>).
 
+import { createHash } from "node:crypto";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 import { NSR_BODY, NSR_HEAD } from "./practice-studio-pages.mjs";
 
 export const WORD_PROBLEMS_URL = "/math/word-problems/";
+export const WP_RUNTIME = [
+  "assets/studio/word-problems.mjs",
+  "assets/studio/word-problems-card.mjs",
+  "assets/studio/word-problems-inline.mjs",
+  "assets/studio/word-problems-answer.mjs",
+  "assets/studio/word-problems.css",
+  "assets/studio/word-problems-card.css",
+];
+/** Which studio step (index into a 5-step studio) shows each in-step "Real-world check": steps 2, 3 and 5. */
+export const WP_STEP_PANELS = [1, 2, 4];
+
+let cachedVersion = "";
+/** One cache stamp for the word-problems runtime and data, shared by the page and every studio that embeds a card. */
+export function wordProblemsVersion() {
+  if (cachedVersion) return cachedVersion;
+  const h = createHash("sha1");
+  for (const f of WP_RUNTIME) h.update(readFileSync(join(REPO_ROOT, f)));
+  const dir = join(REPO_ROOT, "data/word-problems");
+  for (const f of readdirSync(dir)
+    .filter((n) => n.endsWith(".json"))
+    .sort())
+    h.update(readFileSync(join(dir, f)));
+  cachedVersion = h.digest("hex").slice(0, 10);
+  return cachedVersion;
+}
+
+/** Head tags a studio needs for its in-step cards. */
+export const wordProblemsInlineHead = () => {
+  const v = wordProblemsVersion();
+  return `  <link rel="stylesheet" href="/assets/studio/word-problems-card.css?v=${v}">\n  <script type="module" src="/assets/studio/word-problems-inline.mjs?v=${v}"></script>`;
+};
+
+/** A "Real-world check" card slot: the runtime fills it with the lesson's steps[n] problem. */
+export function wordProblemsInline(/** @type {string} */ id, /** @type {number} */ n) {
+  return `<section class="wp-inline" data-wp-lesson="${id}" data-wp-step="${n}" data-wp-v="${wordProblemsVersion()}" aria-label="Real-world check" hidden>
+        <p class="wp-inline-kicker"><span class="t-en">Real-world check</span><span class="t-es" lang="es">Aplícalo en la vida real</span></p>
+        <div data-wp-host></div>
+      </section>`;
+}
 
 /** The "Word problems" button that closes a studio's final step. `from` is the studio page to return to. */
 export function wordProblemsCta(/** @type {string} */ id, /** @type {string} */ from) {
@@ -15,7 +58,7 @@ export function wordProblemsCta(/** @type {string} */ id, /** @type {string} */ 
 }
 
 /** The shared page; the runtime fills it from /math/word-problems/unit-<n>.json. */
-export function wordProblemsPage(/** @type {string} */ v) {
+export function wordProblemsPage(v = wordProblemsVersion()) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -26,6 +69,7 @@ export function wordProblemsPage(/** @type {string} */ v) {
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="/assets/favicon.svg">
   <link rel="stylesheet" href="/assets/studio/word-problems.css?v=${v}">
+  <link rel="stylesheet" href="/assets/studio/word-problems-card.css?v=${v}">
   <script type="module" src="/assets/studio/word-problems.mjs?v=${v}"></script>
 ${NSR_HEAD}
 </head>

@@ -1,0 +1,222 @@
+/* One word-problem card (assets/studio/word-problems-card.mjs): the Word problems page and the "Real-world check"
+   cards inside the practice studios. Colours come from the host page's tokens (clarity.css on the studios,
+   word-problems.css on the page), with the classroom palette as the fallback. */
+.wp-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #cbd5de);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(18, 50, 71, 0.08);
+}
+.wp-count {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-muted, #405363);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.wp-card h2 {
+  margin: 4px 0 10px;
+  font-size: 22px;
+}
+.wp-q {
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+.wp-answer label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 6px;
+}
+.wp-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wp-card .wp-input {
+  font: inherit;
+  font-size: 20px;
+  width: 11ch;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 2px solid var(--border, #cbd5de);
+  border-radius: 8px;
+  background: var(--surface, #ffffff);
+  color: var(--ink, #182532);
+}
+.wp-unit {
+  color: var(--ink-muted, #405363);
+}
+.wp-choices {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.wp-choice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  min-height: 44px;
+  border: 2px solid var(--border, #cbd5de);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.wp-choice:has(input:checked) {
+  border-color: var(--brand, #164e63);
+  background: var(--brand-tint, #e8f3f5);
+}
+.wp-choice input {
+  margin-top: 5px;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.wp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.wp-btn {
+  font: inherit;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 2px solid var(--brand, #164e63);
+  background: var(--surface, #ffffff);
+  color: var(--brand, #164e63);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.wp-btn--primary {
+  background: var(--brand, #164e63);
+  color: var(--on-brand, var(--surface, #ffffff));
+}
+.wp-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.wp-hints {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.wp-hints li {
+  background: var(--warn-tint, #fff5db);
+  border: 1px solid var(--warn-line, #dfc276);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.wp-feedback:empty {
+  display: none;
+}
+.wp-feedback {
+  margin-top: 16px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border, #cbd5de);
+}
+.wp-feedback p {
+  margin: 0 0 8px;
+}
+.wp-feedback.is-miss {
+  background: var(--bad-tint, #fbecec);
+  border-color: var(--bad-line, #e4b2b2);
+}
+.wp-feedback.is-right {
+  background: var(--ok-tint, #e7f4ee);
+  border-color: var(--ok-line, #a6d2bf);
+}
+.wp-feedback.is-nudge {
+  background: var(--brand-tint, #e8f3f5);
+}
+.wp-gotit {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ok, #28785f);
+}
+.wp-done {
+  text-align: center;
+}
+.wp-done .wp-actions {
+  justify-content: center;
+}
+.wp-done-mark {
+  font-size: 44px;
+  margin: 0;
+  color: var(--ok, #28785f);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wp-feedback.is-right {
+    animation: wp-pop 0.25s ease-out;
+  }
+  @keyframes wp-pop {
+    from {
+      transform: scale(0.98);
+      opacity: 0.4;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+.wp-card .t-es { display: none; }
+body.show-es .wp-card .t-es { display: inline; }
+body.show-es .wp-card .t-en { display: none; }
+.wp-setup {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--brand, #164e63);
+  border-radius: 8px;
+  background: var(--brand-tint, #e8f3f5);
+  font-size: 1rem;
+}
+.wp-btn--small { min-height: 44px; padding: 6px 14px; font-size: 0.95rem; }
+.wp-build-label { margin: 0 0 6px; font-weight: 700; }
+.wp-build-answer {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  min-height: 56px; padding: 6px 8px; margin-bottom: 10px;
+  border: 2px dashed var(--border, #cbd5de); border-radius: 10px;
+}
+.wp-build-empty { color: var(--ink-muted, #405363); font-size: 0.95rem; }
+.wp-build-tiles { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.wp-tile {
+  min-width: 44px; min-height: 44px; padding: 6px 12px;
+  border: 2px solid var(--brand, #164e63); border-radius: 10px;
+  background: var(--surface, #ffffff); color: var(--ink, #182532);
+  font: inherit; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+}
+.wp-tile.is-placed { background: var(--brand-tint, #e8f3f5); }
+.wp-tile:disabled { opacity: 0.35; cursor: default; }
+.wp-table-wrap { overflow-x: auto; margin-bottom: 4px; }
+.wp-table { border-collapse: collapse; min-width: 220px; }
+.wp-table th, .wp-table td {
+  border: 1px solid var(--border, #cbd5de); padding: 6px 10px; text-align: center;
+}
+.wp-table th { background: var(--brand-tint, #e8f3f5); }
+.wp-table input {
+  width: 7ch; min-height: 40px; font: inherit; text-align: center;
+  border: 2px solid var(--border, #cbd5de); border-radius: 6px;
+  background: var(--surface, #ffffff); color: var(--ink, #182532);
+}
+.wp-table input[aria-invalid="true"] { border-color: var(--bad, #a83c3c); background: var(--bad-tint, #fbecec); }
+/* the in-step "Real-world check" (word-problems-inline.mjs) */
+.wp-inline { margin: 18px 0 6px; }
+.wp-inline-kicker {
+  margin: 0 0 6px; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-muted, #405363);
+}
+.wp-inline .wp-card h2 { font-size: 1.2rem; }
+@media print { .wp-inline { display: none; } }
