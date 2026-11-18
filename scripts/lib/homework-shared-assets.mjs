@@ -114,9 +114,10 @@ export function writeSharedFiles(root, files, { prune = true } = {}) {
   if (!prune) return;
   for (const name of readdirSync(dir)) {
     if (
-      /^homework-(base|layer|legacy|core|vocab|tokens|family|art|background)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(
+      (/^homework-(base|layer|legacy|core|vocab|tokens|family|art|background)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(
         name,
-      ) &&
+      ) ||
+        /^homework-(vocab|words)-[a-z0-9-]+-[0-9a-f]{10}\.(json|html)$/.test(name)) &&
       !(name in files)
     ) {
       rmSync(join(dir, name));
@@ -140,7 +141,24 @@ export function staleSharedFiles(root, files) {
  * which have no server to fetch /assets/homework/ from.
  */
 export function inlineSharedFromDisk(root, html) {
-  return html.replace(
+  const withWords = html.replace(
+    /<div data-family-lazy-content data-src="([^"]+)" role="status"><\/div>/g,
+    (tag, src) => {
+      const file = join(root, src.replace(/^\/+/, "").split("?")[0]);
+      return existsSync(file) ? readFileSync(file, "utf8").trim() : tag;
+    },
+  );
+  const withVocab = withWords.replace(
+    /<script type="application\/json" id="vocab_quiz_data" data-src="([^"]+)"\s*><\/script>/g,
+    (tag, src) => {
+      const rel = src.replace(/^\/+/, "").split("?")[0];
+      const file = join(root, rel);
+      if (!existsSync(file)) return tag;
+      const data = readFileSync(file, "utf8").replace(/<\/script/gi, "<\\/script");
+      return `<script type="application/json" id="vocab_quiz_data" data-src="${src}">${data}</script>`;
+    },
+  );
+  return withVocab.replace(
     /<link rel="stylesheet" href="\/(assets\/(?:homework|design\/family)\/[\w.-]+\.css)(?:\?v=\w+)?">|<script src="\/(assets\/homework\/[\w.-]+\.js)"><\/script>/g,
     (_, css, js) => {
       const text = readFileSync(join(root, css || js), "utf8");

@@ -24,6 +24,7 @@ import { renderVisualMathLab, VISUAL_LABS_JS } from "../scripts/homework-visual-
 import { renderExperienceDialogs } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
 import { MISSION_PRACTICE_COUNT, renderMissionStart } from "../scripts/lib/homework-mission.mjs";
+import { inlineSharedFromDisk } from "../scripts/lib/homework-shared-assets.mjs";
 import { renderStudioButtons } from "../scripts/lib/homework-studio.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
@@ -227,6 +228,46 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   dom.window.close();
 });
 
+test("the three family paths are bilingual, persist locally, and start at their existing lesson step", () => {
+  const dom = runtime();
+  const w = dom.window;
+  w.mountFamilyPaths();
+  const cards = [...w.document.querySelectorAll("[data-family-path]")];
+  assert.deepEqual(
+    cards.map((card) => card.dataset.familyPath),
+    ["quick", "together", "explore"],
+  );
+  assert.equal(cards[0].getAttribute("aria-pressed"), "true");
+
+  w.selectFamilyPath("together");
+  assert.equal(w.localStorage.getItem("hw_family_path_3-2"), "together");
+  assert.equal(cards[1].getAttribute("aria-pressed"), "true");
+  assert.match(w.document.getElementById("hw_start_button").textContent, /Start Learn Together/);
+
+  let opened = "";
+  w.switchHomeworkTab = (tab) => {
+    opened = tab;
+  };
+  w.startHomework = () => {};
+  w.startFamilyPath();
+  assert.equal(opened, "connect");
+
+  w.document.body.dataset.activeTab = "check";
+  opened = "";
+  w.startFamilyPath();
+  assert.equal(opened, "", "the selected path resumes at the current step");
+
+  w.selectFamilyPath("explore");
+  w.startFamilyPath();
+  assert.equal(opened, "explore");
+  assert.equal(
+    w.localStorage.getItem("hw_route_3-2"),
+    null,
+    "path choice does not reset the practice route",
+  );
+  dom.window.close();
+});
+
 test("2.1 models statistical questions and handles the common classification misconceptions", () => {
   const dom = new JSDOM(readFileSync(lessonPath("2-1", "homework.html"), "utf8"), {
     runScripts: "outside-only",
@@ -332,9 +373,14 @@ test("family homework is one five-step flow; games and photobooth stay on the ra
       id,
     );
     const start = d.querySelector(".hw-mission-start").textContent;
-    assert.match(start, /15–20/);
+    assert.ok(
+      d.querySelector("[data-family-path-picker]").dataset.quickClaim.includes("5 problems"),
+    );
+    assert.match(HOMEWORK_TABS_JS, /15–20 min/);
+    assert.match(HOMEWORK_TABS_JS, /10–15 min/);
+    assert.match(HOMEWORK_TABS_JS, /5 min/);
     assert.match(start, /Start/);
-    assert.match(start, /Explore more/);
+    assert.ok(d.querySelector('.hw-fun-zone [data-open-sheet="hw_explore_sheet"]'), id);
     assert.match(d.querySelector("#hw_explore_sheet").textContent, /25–35/);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
     assert.equal(d.querySelectorAll("#hw_time_remaining").length, 0, id);
@@ -458,7 +504,8 @@ test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful 
 });
 
 test("Words stop is cards, then a picture quiz, then matching — no filter bar or mastery stars", () => {
-  const page = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
+  const raw = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
+  const page = inlineSharedFromDisk(process.cwd(), raw);
   const d = new JSDOM(page).window.document;
   const panel = d.querySelector("#hw_panel_words");
   assert.equal(panel.querySelectorAll(".btn-filter, .vocab-master-toggle").length, 0);

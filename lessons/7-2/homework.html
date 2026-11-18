@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="/assets/design/family/family.css?v=d8ebb062f9">
 <link rel="stylesheet" href="/assets/design/family/body.css?v=e5e6a274a7">
 <link rel="stylesheet" href="/assets/design/family/mission.css?v=5b770ae3c0">
-<link rel="stylesheet" href="/assets/design/family/flow.css?v=530d478800">
+<link rel="stylesheet" href="/assets/design/family/flow.css?v=ae1fe6dd6a">
 <link rel="stylesheet" href="/assets/design/family/dimension.css?v=886e201c7a">
 <link rel="stylesheet" href="/assets/homework/homework-art-c570469465.css">
 <link rel="stylesheet" href="/assets/homework/homework-legacy-899dab8324.css">
@@ -130,11 +130,10 @@
 
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q"><span class="lang-en">Today&#039;s Family Practice</span><span class="lang-es" lang="es">La práctica familiar de hoy</span></h2>
-        <p class="hw-mission-lead fm-hero__promise"><span class="lang-en">Five steps, about 15–20 min: Discover, Build, solve 10 in three levels, Improve, Celebrate.</span><span class="lang-es" lang="es">Cinco pasos, unos 15–20 min: Descubrir, Construir, resolver 10 en tres niveles, Mejorar y Celebrar.</span></p>
-        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" data-act="startHomework"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
-        <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
+        <div class="hw-path-picker" data-family-path-picker data-quick-claim="One example and 5 problems" role="group" aria-label="Choose a learning path" data-aria-en="Choose a learning path" data-aria-es="Elige una ruta de aprendizaje"></div>
+        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" data-act="startFamilyPath"><span class="lang-en">Start Quick Practice</span><span class="lang-es" lang="es">Empezar práctica rápida</span></button>
         <div class="hw-session-routes" id="hw_session_routes"></div>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. No timer. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Sin cronómetro. Se guarda en este dispositivo.</span></p>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades or account. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Se guarda aquí.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>
@@ -153,9 +152,9 @@
         </p>
 
         <ul class="hw-tonight fm-cluster" aria-label="Tonight at a glance">
-          <li class="fm-chip"><strong><span data-hw-tonight-time>15–20</span> min</strong></li>
+          <li class="fm-chip"><strong><span data-hw-tonight-time>5</span> min</strong></li>
           <li class="fm-chip"><svg class="fm-icon fm-icon--sm" aria-hidden="true" focusable="false"><use href="#fi-pencil"/></svg> <span><span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></span></li>
-          <li class="fm-chip"><svg class="fm-icon fm-icon--sm" aria-hidden="true" focusable="false"><use href="#fi-star"/></svg> <span><span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>10</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></span></li>
+          <li class="fm-chip"><svg class="fm-icon fm-icon--sm" aria-hidden="true" focusable="false"><use href="#fi-star"/></svg> <span><span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>5</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></span></li>
         </ul>
         </div>
     <dialog class="fm-sheet hw-tools-menu" id="hw_more_sheet" aria-labelledby="hw_more_title">
@@ -599,8 +598,8 @@
     <div class="hw-goal-card fp-progress">
       <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
       <p class="fp-progress-text">
-        <span class="lang-en"><strong><span data-hw-goal-count>10</span> problems.</strong> Hints are always okay.</span>
-        <span class="lang-es" lang="es"><strong><span data-hw-goal-count>10</span> problemas.</strong> Las pistas siempre están bien.</span>
+        <span class="lang-en"><strong><span data-hw-goal-count>5</span> problems.</strong> Hints are always okay.</span>
+        <span class="lang-es" lang="es"><strong><span data-hw-goal-count>5</span> problemas.</strong> Las pistas siempre están bien.</span>
       </p>
       <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
     </div>
@@ -4258,8 +4257,8 @@
           <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
           <p class="hw-mystery-stem"><span class="lang-en">It is the last problem in Level up. It is the hardest one — and you can do it.</span><span class="lang-es" lang="es">Es el último problema de «Sube de nivel». Es el más difícil, y tú puedes resolverlo.</span></p>
           <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
-            <span class="lang-en">Locked. Finish <span data-hw-goal-count>10</span> problems and it opens.</span>
-            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>10</span> problemas y se abre.</span>
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>5</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>5</span> problemas y se abre.</span>
           </p>
           <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden data-act="hwOpenMystery">
             <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
@@ -4276,536 +4275,7 @@
         </button>
       </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="words" id="hw_panel_words" role="tabpanel" hidden>
-
-      <h2 class="section-title"><span aria-hidden="true">📚</span> <span class="lang-en">Words to know</span><span class="lang-es" lang="es">Palabras clave</span></h2>
-      <p class="vocab-family-note bilingual-block">
-        <span class="lang-en">1. Tap a card to flip it. 2. Play the quiz. 3. Match the words.</span>
-        <span class="lang-es" lang="es">1. Toca una tarjeta para voltearla. 2. Haz la prueba. 3. Empareja las palabras.</span>
-      </p>
-      <div class="vocab-container">
-
-            <div class="vocab-card" id="vocab_card_0" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Rational Numbers on the Number Line","Números racionales en la recta numérica"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Rational Numbers on the Number Line"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-rational-numbers-on-the-number-line.svg" alt="Illustration of Rational Numbers on the Number Line: Each fraction or decimal has one exact spot on the line." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Rational Numbers on the Number Line">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Rational Numbers on the Number Line</span>
-                      <span class="lang-es" lang="es">Números racionales en la recta numérica</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Números racionales en la recta numérica</p>
-                    <div class="vocab-visual-hint">💡 −3/2 = −1.5 and 1/2 = 0.5 each sit at one exact point.</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Rational Numbers on the Number Line</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Números racionales en la recta numérica</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Rational Numbers on the Number Line</span>
-                      <span class="lang-es" lang="es">Números racionales en la recta numérica</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Números racionales en la recta numérica</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">Each fraction or decimal has one exact spot on the line.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cada fracción o decimal tiene un lugar exacto en la recta.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>−3/2 = −1.5 and 1/2 = 0.5 each sit at one exact point.</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[0,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[0,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_1" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Rational number","Número racional"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Rational number"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-rational-number.svg" alt="Illustration of Rational number: A number you can write as a fraction." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Rational number">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Rational number</span>
-                      <span class="lang-es" lang="es">Número racional</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Número racional</p>
-                    <div class="vocab-visual-hint">💡 −1/2, 0 and 5/4 each sit at one exact point.</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Rational number</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Número racional</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Rational number</span>
-                      <span class="lang-es" lang="es">Número racional</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Número racional</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A number you can write as a fraction.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número que puedes escribir como fracción.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>−1/2, 0 and 5/4 each sit at one exact point.</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[1,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[1,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_2" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Fraction","Fracción"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Fraction"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Fraction: A number that shows part of a whole." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Fraction">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Fraction</span>
-                      <span class="lang-es" lang="es">Fracción</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Fracción</p>
-                    <div class="vocab-visual-hint">💡 3/4 means 3 out of 4 equal parts — like 3 slices of a pizza cut into 4</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Fraction</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Fracción</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Fraction</span>
-                      <span class="lang-es" lang="es">Fracción</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Fracción</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A number that shows part of a whole.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número que muestra una parte de un todo.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>3/4 means 3 out of 4 equal parts — like 3 slices of a pizza cut into 4</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[2,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[2,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_3" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Decimal","Decimal"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Decimal"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/decimal.svg" alt="Illustration of Decimal: A number with a dot, like 0.5, that shows a part." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Decimal">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Decimal</span>
-                      <span class="lang-es" lang="es">Decimal</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Decimal</p>
-                    <div class="vocab-visual-hint">💡 0.5 = 1/2 (halfway between 0 and 1 on the number line)</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Decimal</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Decimal</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Decimal</span>
-                      <span class="lang-es" lang="es">Decimal</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Decimal</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A number with a dot, like 0.5, that shows a part.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número con un punto, como 0.5, que muestra una parte.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>0.5 = 1/2 (halfway between 0 and 1 on the number line)</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[3,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[3,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_4" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Number line","Recta numérica"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Number line"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Number line: A line with numbers in order, left to right." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Number line">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Number line</span>
-                      <span class="lang-es" lang="es">Recta numérica</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Recta numérica</p>
-                    <div class="vocab-visual-hint">💡 A line with marks at -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Number line</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Recta numérica</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Number line</span>
-                      <span class="lang-es" lang="es">Recta numérica</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Recta numérica</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A line with numbers in order, left to right.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una recta con los números en orden, de izquierda a derecha.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A line with marks at -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[4,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[4,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_5" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Equivalent","Equivalente"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Equivalent"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: The same value shown in a new way." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Equivalent">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Equivalent</span>
-                      <span class="lang-es" lang="es">Equivalente</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Equivalente</p>
-                    <div class="vocab-visual-hint">💡 1/2 = 0.5 = 2/4 — all name the same point on the number line</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Equivalent</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Equivalente</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Equivalent</span>
-                      <span class="lang-es" lang="es">Equivalente</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Equivalente</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">The same value shown in a new way.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El mismo valor escrito de otra manera.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>1/2 = 0.5 = 2/4 — all name the same point on the number line</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[5,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[5,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_6" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Integer","Número entero"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Integer"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: A whole number or its opposite, like 2 and −2." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Integer">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Integer</span>
-                      <span class="lang-es" lang="es">Número entero</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Número entero</p>
-                    <div class="vocab-visual-hint">💡 ..., -3, -2, -1, 0, 1, 2, 3, ...</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Integer</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Número entero</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Integer</span>
-                      <span class="lang-es" lang="es">Número entero</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Número entero</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A whole number or its opposite, like 2 and −2.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número de contar, su opuesto o el cero, como 2, −2 y 0.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>..., -3, -2, -1, 0, 1, 2, 3, ...</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[6,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[6,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" id="vocab_card_7" data-act="hwFlipCard">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" data-act="speakMathWord" data-args='["Opposite","Opuesto"]' data-stop title="Listen" data-title-en="Listen" data-title-es="Escuchar" aria-label="Pronounce Opposite"><span aria-hidden="true">🔊</span> <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                  </div>
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/opposite.svg" alt="Illustration of Opposite: A number the same distance from 0 on the other side." loading="lazy" width="260" height="195" />
-                  </div>
-                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="Opposite">
-                    <h3 class="vocab-term term-text">
-                      <span class="lang-en">Opposite</span>
-                      <span class="lang-es" lang="es">Opuesto</span>
-                    </h3>
-                    <p class="vocab-es" lang="es">Opuesto</p>
-                    <div class="vocab-visual-hint">💡 −2.85 and 2.85</div>
-                  </div>
-                  <button type="button" class="flip-prompt" aria-expanded="false" data-act="hwFlipCard" data-stop>
-                    <span class="flip-icon" aria-hidden="true">↻</span>
-                    <span class="lang-en">Tap to see definition of Opposite</span>
-                    <span class="lang-es" lang="es">Toca para ver la definición de Opuesto</span>
-                  </button>
-                </div>
-                <div class="vocab-card-back" inert>
-                  <div class="vocab-back-header">
-                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
-                    <h4 class="vocab-back-term">
-                      <span class="lang-en">Opposite</span>
-                      <span class="lang-es" lang="es">Opuesto</span>
-                    </h4>
-                    <p class="vocab-back-term-es" lang="es">Opuesto</p>
-                  </div>
-                  <div class="vocab-back-content">
-                    <p class="vocab-def">A number the same distance from 0 on the other side.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número a la misma distancia del 0, del otro lado.</p>
-                    <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>−2.85 and 2.85</span></div>
-                  </div>
-                  <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" data-act="markVocabCardKnown" data-args='[7,true]' data-stop><span class="lang-en">Got it! <span aria-hidden="true">👍</span></span><span class="lang-es" lang="es">¡Lo sé! <span aria-hidden="true">👍</span></span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" data-act="markVocabCardKnown" data-args='[7,false]' data-stop><span class="lang-en">Review <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Repasar <span aria-hidden="true">🔄</span></span></button>
-                  </div>
-                  <button type="button" class="flip-back-prompt" data-act="hwFlipCard" data-stop>
-                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
-                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
-                  </button>
-                </div>
-              </div>
-            </div>
-      </div>
-
-    <div class="vocab-quiz card-ish" id="vocab_quiz">
-      <h3 class="vq-title"><span aria-hidden="true">🎯</span> <span class="lang-en">Word Quiz</span><span class="lang-es" lang="es">Prueba de palabras</span></h3>
-      <div class="vq-stars" id="vocab_quiz_stars" aria-hidden="true"></div>
-      <div id="vocab_quiz_play">
-        <p class="vq-ask"><span class="lang-en">Which word fits?</span><span class="lang-es" lang="es">¿Qué palabra encaja?</span></p>
-        <div class="vq-card">
-          <img class="vq-img" id="vocab_quiz_img" alt="" width="200" height="150" hidden />
-          <p class="vq-prompt" id="vocab_quiz_prompt"></p>
-        </div>
-        <div class="vq-choices" id="vocab_quiz_choices"></div>
-        <p class="vq-feedback" id="vocab_quiz_feedback" role="status" aria-live="polite"></p>
-        <button type="button" class="btn btn-primary vq-next" id="vocab_quiz_next" data-act="nextVocabQuiz" hidden><span class="lang-en">Next ➔</span><span class="lang-es" lang="es">Siguiente ➔</span></button>
-      </div>
-      <div class="vq-done" id="vocab_quiz_done" hidden>
-        <p class="vq-done-title">🎉 <span class="lang-en">Quiz done!</span><span class="lang-es" lang="es">¡Prueba terminada!</span></p>
-        <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
-        <button type="button" class="btn btn-secondary" data-act="startVocabQuiz"><span class="lang-en">Play again <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Jugar de nuevo <span aria-hidden="true">🔄</span></span></button>
-      </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Rational Numbers on the Number Line","termEs":"Números racionales en la recta numérica","def":"Each fraction or decimal has one exact spot on the line.","defEs":"Cada fracción o decimal tiene un lugar exacto en la recta.","img":"/assets/vocab-images/concept-rational-numbers-on-the-number-line.svg","alt":"Illustration of Rational Numbers on the Number Line: Each fraction or decimal has one exact spot on the line."},{"term":"Rational number","termEs":"Número racional","def":"A number you can write as a fraction.","defEs":"Un número que puedes escribir como fracción.","img":"/assets/vocab-images/concept-rational-number.svg","alt":"Illustration of Rational number: A number you can write as a fraction."},{"term":"Fraction","termEs":"Fracción","def":"A number that shows part of a whole.","defEs":"Un número que muestra una parte de un todo.","img":"/assets/vocab-images/fraction.svg","alt":"Illustration of Fraction: A number that shows part of a whole."},{"term":"Decimal","termEs":"Decimal","def":"A number with a dot, like 0.5, that shows a part.","defEs":"Un número con un punto, como 0.5, que muestra una parte.","img":"/assets/vocab-images/decimal.svg","alt":"Illustration of Decimal: A number with a dot, like 0.5, that shows a part."},{"term":"Number line","termEs":"Recta numérica","def":"A line with numbers in order, left to right.","defEs":"Una recta con los números en orden, de izquierda a derecha.","img":"/assets/vocab-images/number-line.svg","alt":"Illustration of Number line: A line with numbers in order, left to right."},{"term":"Equivalent","termEs":"Equivalente","def":"The same value shown in a new way.","defEs":"El mismo valor escrito de otra manera.","img":"/assets/vocab-images/fraction.svg","alt":"Illustration of Equivalent: The same value shown in a new way."},{"term":"Integer","termEs":"Número entero","def":"A whole number or its opposite, like 2 and −2.","defEs":"Un número de contar, su opuesto o el cero, como 2, −2 y 0.","img":"/assets/vocab-images/integer.svg","alt":"Illustration of Integer: A whole number or its opposite, like 2 and −2."},{"term":"Opposite","termEs":"Opuesto","def":"A number the same distance from 0 on the other side.","defEs":"Un número a la misma distancia del 0, del otro lado.","img":"/assets/vocab-images/opposite.svg","alt":"Illustration of Opposite: A number the same distance from 0 on the other side."}]</script>
-    </div>
-
-    <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="8">
-      <div class="vocab-game-header">
-        <div class="vocab-game-title">
-          <span class="vocab-game-icon" aria-hidden="true">⚡</span>
-          <div>
-            <h3 class="vocab-game-h3">
-              <span class="lang-en">Match the Words</span>
-              <span class="lang-es" lang="es">Empareja las palabras</span>
-            </h3>
-            <p class="vocab-game-sub bilingual-block">
-              <span class="lang-en">Tap a word on the left, then tap its matching definition on the right!</span>
-              <span class="lang-es" lang="es">¡Toca una palabra a la izquierda y su significado a la derecha!</span>
-            </p>
-          </div>
-        </div>
-        <div class="vocab-game-status">
-          <span class="vocab-game-counter">
-            <span class="lang-en">Matched: </span><span class="lang-es" lang="es">Emparejadas: </span>
-            <strong id="vocab_match_count">0</strong> / 8
-          </span>
-        </div>
-      </div>
-      <div class="vocab-match-board">
-        <div class="vocab-match-col col-terms" aria-label="Vocabulary terms">
-
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="0" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Rational Numbers on the Number Line</span>
-              <span class="chip-label-es" lang="es">Números racionales en la recta numérica</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="1" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Rational number</span>
-              <span class="chip-label-es" lang="es">Número racional</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="2" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Fraction</span>
-              <span class="chip-label-es" lang="es">Fracción</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="3" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Decimal</span>
-              <span class="chip-label-es" lang="es">Decimal</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="4" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Number line</span>
-              <span class="chip-label-es" lang="es">Recta numérica</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="5" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Equivalent</span>
-              <span class="chip-label-es" lang="es">Equivalente</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="6" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Integer</span>
-              <span class="chip-label-es" lang="es">Número entero</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="7" data-side="term" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Opposite</span>
-              <span class="chip-label-es" lang="es">Opuesto</span>
-            </button>
-        </div>
-        <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
-
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A number the same distance from 0 on the other side.</span>
-              <span class="chip-label-es" lang="es">Un número a la misma distancia del 0, del otro lado.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">Each fraction or decimal has one exact spot on the line.</span>
-              <span class="chip-label-es" lang="es">Cada fracción o decimal tiene un lugar exacto en la recta.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A number you can write as a fraction.</span>
-              <span class="chip-label-es" lang="es">Un número que puedes escribir como fracción.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A number that shows part of a whole.</span>
-              <span class="chip-label-es" lang="es">Un número que muestra una parte de un todo.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A number with a dot, like 0.5, that shows a part.</span>
-              <span class="chip-label-es" lang="es">Un número con un punto, como 0.5, que muestra una parte.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A line with numbers in order, left to right.</span>
-              <span class="chip-label-es" lang="es">Una recta con los números en orden, de izquierda a derecha.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">The same value shown in a new way.</span>
-              <span class="chip-label-es" lang="es">El mismo valor escrito de otra manera.</span>
-            </button>
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" data-act="selectVocabMatchChip" data-args='["$el"]'>
-              <span class="chip-label-en">A whole number or its opposite, like 2 and −2.</span>
-              <span class="chip-label-es" lang="es">Un número de contar, su opuesto o el cero, como 2, −2 y 0.</span>
-            </button>
-        </div>
-      </div>
-      <div class="vocab-game-win" id="vocab_match_win" hidden>
-        <div class="win-banner">
-          <span class="win-emoji" aria-hidden="true">🎉</span>
-          <div class="win-text">
-            <strong><span class="lang-en">Vocab Master! All 8 words matched!</span><span class="lang-es" lang="es">¡Maestro del Vocabulario! ¡Todas las palabras emparejadas!</span></strong>
-            <p><span class="lang-en">Great job connecting the math vocabulary. Explore the flashcards below!</span><span class="lang-es" lang="es">Excelente conectando el vocabulario. ¡Exploren las tarjetas abajo!</span></p>
-          </div>
-          <button type="button" class="btn btn-sm btn-secondary" data-act="resetVocabMatchGame">
-            <span class="lang-en">Play Again <span aria-hidden="true">🔄</span></span><span class="lang-es" lang="es">Jugar de nuevo <span aria-hidden="true">🔄</span></span>
-          </button>
-        </div>
-      </div>
-    </div>
-      <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" data-act="goNextHomeworkStop" data-args='["words"]'>
-          <span class="lang-en">Continue ➔</span>
-          <span class="lang-es" lang="es">Continuar ➔</span>
-        </button>
-      </div>
-    </div>
+<div class="tab-panel-inner" data-tab-panel="words" id="hw_panel_words" role="tabpanel" hidden><div data-family-lazy-content data-src="/assets/homework/homework-words-7-2-74f94e0e80.html" role="status"></div></div>
 
     <div class="tab-panel-inner" data-tab-panel="play" id="hw_panel_play" role="tabpanel" hidden>
       <h2 class="section-title"><span aria-hidden="true">🎮</span> <span class="lang-en">Play</span><span class="lang-es" lang="es">Jugar</span></h2>
@@ -5560,7 +5030,7 @@
     <div class="score-progress-container">
       <div class="score-text">
         <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
-        <span id="progress_text" role="status">0 / 10</span>
+        <span id="progress_text" role="status">0 / 5</span>
         <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
         <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
@@ -5588,7 +5058,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"","titleEs":"","lines":["I will plot -2.5 on the number line.","First, the integers it falls between: -2.5 is between -2 and -3.","The .5 means halfway, so I split the space between -2 and -3 in half.","I place my dot exactly halfway between -2 and -3. That is -2.5."],"linesEs":["Voy a marcar -2.5 en la recta numérica.","Primero, los números enteros entre los que cae: -2.5 está entre -2 y -3.","El .5 significa a la mitad, así que parto en dos el espacio entre -2 y -3.","Coloco mi punto exactamente a la mitad entre -2 y -3. Ese es -2.5."]};
 </script>
 <script src="/assets/homework/homework-vocab-82a28823c0.bundle.js"></script>
-<script src="/assets/homework/homework-core-c30c4591d5.bundle.js"></script>
+<script src="/assets/homework/homework-core-151a7b2a82.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

@@ -53,6 +53,8 @@ export function linkedFiles(html) {
   }
   for (const m of html.matchAll(/<script\b[^>]*\ssrc="([^"]+)"[^>]*>/gi))
     if (m[1].startsWith("/")) js.push(m[1].split("?")[0]);
+  for (const m of html.matchAll(/\bdata-src="(\/assets\/homework\/[^"?#]+)"/gi))
+    if (!css.includes(m[1]) && !js.includes(m[1])) js.push(m[1]);
   return { css, js };
 }
 
@@ -64,7 +66,8 @@ export function measurePage(html, read) {
     (p) => p.startsWith("/assets/homework/") && read(p) == null,
   );
   const unhashed = [...css, ...js].filter(
-    (p) => p.startsWith("/assets/homework/") && !/-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(p),
+    (p) =>
+      p.startsWith("/assets/homework/") && !/-[0-9a-f]{10}\.(css|js|bundle\.js|json|html)$/.test(p),
   );
   const htmlGzip = gz(html);
   const cssGzip = sizeOf(css);

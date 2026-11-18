@@ -194,7 +194,15 @@ function routeInfo(root) {
     }),
   );
   const quick = buttons.find((b) => b.mode === "quick");
-  const claimed = quick ? ROUTE_RE.exec(quick.text) : null;
+  const pathQuick = find(root, (n) => n.attrs["data-family-path"] === "quick");
+  const quickClaimHost = find(root, (n) => n.attrs["data-quick-claim"] !== undefined);
+  const claimed = quick
+    ? ROUTE_RE.exec(quick.text)
+    : pathQuick
+      ? ROUTE_RE.exec(enText(pathQuick))
+      : quickClaimHost
+        ? ROUTE_RE.exec(quickClaimHost.attrs["data-quick-claim"])
+        : null;
   /* The mission page has no route cards: its start card says "solve N" and the practice card
      "Today's practice: N problems", and the default route is the mission. */
   const start = find(root, (n) => hasClass(n, "hw-mission-start"));

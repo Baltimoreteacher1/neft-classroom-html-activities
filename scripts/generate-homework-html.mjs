@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -42,8 +43,10 @@ import {
   renderRefrigeratorSheet,
   renderWelcomeBanner,
   renderWordsTab,
+  renderWordsToKnow,
   renderWorkbenchTools,
   selectQuickCheckProblems,
+  vocabQuizItems,
 } from "./homework-guided-notes.mjs";
 import { MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
 import { STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
@@ -54,11 +57,7 @@ import { WEB_PRINT_CSS } from "./lib/family-takehome-css.mjs";
 import { stampForUnit, WORKSPACE_JS, workspaceHtml } from "./lib/family-workspace.mjs";
 import { A11Y_CSS, a11yMarkup } from "./lib/homework-a11y.mjs";
 import { act, actOn, EL, EV, HOMEWORK_ACTIONS_JS } from "./lib/homework-actions.mjs";
-import { HOMEWORK_FRACTIONS_JS } from "./lib/homework-fractions.mjs";
-import {
-  backgroundRuntime,
-  backgroundBundle,
-} from "./lib/homework-background.mjs";
+import { backgroundBundle, backgroundRuntime } from "./lib/homework-background.mjs";
 import { CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
 import { CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { LEGACY_SHELL_CSS } from "./lib/homework-design-links.mjs";
@@ -72,6 +71,7 @@ import {
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { renderImprove } from "./lib/homework-flow.mjs";
 import { FLOW_JS } from "./lib/homework-flow-js.mjs";
+import { HOMEWORK_FRACTIONS_JS } from "./lib/homework-fractions.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
@@ -1261,7 +1261,7 @@ function sceneOf(lessonId, config) {
   return en ? { en, es: iDo.linesEs?.[0] || en } : null;
 }
 
-function generateHtml(lessonId, config) {
+function generateHtml(lessonId, config, vocabDataUrl = "", vocabPanelUrl = "") {
   config.lessonId = config.lessonId || lessonId;
   config.id = config.id || lessonId;
   /* A `-part2` config titles itself "2.1 · Part II" — the label the lesson page
@@ -1399,7 +1399,7 @@ function generateHtml(lessonId, config) {
     renderDoneTab(config, lessonId),
     mission.talk,
     mission.apply,
-    renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
+    renderWordsTab(vocab, resolveVocabImage, vocabImageAlt, vocabDataUrl, vocabPanelUrl),
     renderPlayTabPanel(config, lessonId),
     renderPhotoboothTab(config, lessonId),
   ].join("\n");
@@ -2004,7 +2004,7 @@ function resetVocabMatchGame() {
 }
 
 // Word Quiz: a picture and a meaning, then three words to choose from.
-const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false };
+const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false, loading: false };
 
 function vocabQuizBilingual(parent, en, es) {
   const a = document.createElement("span");
@@ -2032,6 +2032,28 @@ function vocabQuizShuffle(list) {
 function startVocabQuiz() {
   const data = document.getElementById("vocab_quiz_data");
   if (!data) return;
+  if (!data.textContent.trim() && data.dataset.src) {
+    if (vocabQuiz.loading) return;
+    vocabQuiz.loading = true;
+    fetch(data.dataset.src, { credentials: "same-origin" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Vocabulary data unavailable");
+        return response.json();
+      })
+      .then((items) => {
+        vocabQuiz.loading = false;
+        data.textContent = JSON.stringify(items);
+        startVocabQuiz();
+      })
+      .catch(() => {
+        vocabQuiz.loading = false;
+        document.getElementById("vocab_quiz_feedback").textContent =
+          document.documentElement.lang === "es"
+            ? "No se pudo cargar el repaso de palabras. Inténtalo de nuevo."
+            : "The vocabulary review could not load. Please try again.";
+      });
+    return;
+  }
   try {
     vocabQuiz.items = JSON.parse(data.textContent);
   } catch (e) {
@@ -4577,7 +4599,30 @@ function main() {
   const staleHomework = [];
   const sharedFiles = {};
   for (const { id, config } of lessons) {
-    const homeworkHtml = stripAuthorComments(a11yMarkup(localizeBilingualLabels(generateHtml(id, config))));
+    const vocab = withPlainDefinitions(config.vocabulary || [], id);
+    const vocabItems = vocabQuizItems(vocab, resolveVocabImage, vocabImageAlt);
+    let vocabDataUrl = "";
+    if (Array.isArray(vocabItems) && vocabItems.length >= 2) {
+      const json = `${JSON.stringify(vocabItems).replace(/</g, "\\u003c")}\n`;
+      const stamp = createHash("sha256").update(json).digest("hex").slice(0, 10);
+      const asset = `homework-vocab-${id}-${stamp}.json`;
+      sharedFiles[asset] = json;
+      vocabDataUrl = `/assets/homework/${asset}`;
+    }
+    let vocabPanelUrl = "";
+    const vocabPanelHtml = renderWordsToKnow(vocab, resolveVocabImage, vocabImageAlt, vocabDataUrl);
+    if (vocabPanelHtml) {
+      const processedPanel = a11yMarkup(localizeBilingualLabels(vocabPanelHtml))
+        .replace(/[ \t]+$/gm, "")
+        .trimEnd();
+      const panelMarkup = `${processedPanel}\n`;
+      const asset = `homework-words-${id}-${createHash("sha256").update(panelMarkup).digest("hex").slice(0, 10)}.html`;
+      sharedFiles[asset] = panelMarkup;
+      vocabPanelUrl = `/assets/homework/${asset}`;
+    }
+    const homeworkHtml = stripAuthorComments(
+      a11yMarkup(localizeBilingualLabels(generateHtml(id, config, vocabDataUrl, vocabPanelUrl))),
+    );
     const lessonPath = join(lessonsDir, id, "homework.html");
     const split = externalizeSharedCode(
       `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`,

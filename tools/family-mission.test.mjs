@@ -48,8 +48,8 @@ test("the five steps are defined once, in teaching order, with the optional stop
     OPTIONAL_STOPS.map((s) => s.id),
     ["talk", "apply", "words", "play", "photobooth"],
   );
-  assert.equal(MISSION_PRACTICE_COUNT, 10);
-  assert.equal(ROUTE_TIMES.quick, "15–20");
+  assert.equal(MISSION_PRACTICE_COUNT, 5);
+  assert.equal(ROUTE_TIMES.quick, "5");
   assert.equal(ROUTE_TIMES.full, "25–35");
 });
 
@@ -90,8 +90,16 @@ test("the default route shows exactly the problems it says: the stated count, th
     runScripts: "outside-only",
   });
   const text = dom.window.document.querySelector(".hw-mission-start").textContent;
-  assert.match(text, new RegExp(`solve ${MISSION_PRACTICE_COUNT}`));
-  assert.match(text, new RegExp(ROUTE_TIMES.quick));
+  assert.equal(
+    dom.window.document.querySelector("[data-quick-claim]").getAttribute("data-quick-claim"),
+    `One example and ${MISSION_PRACTICE_COUNT} problems`,
+  );
+  assert.equal(
+    dom.window.document.querySelector("[data-family-path-picker]").dataset.quickClaim,
+    `One example and ${MISSION_PRACTICE_COUNT} problems`,
+  );
+  assert.match(text, /Start Quick Practice/);
+  assert.match(ROUTE_TIMES.quick, /5/);
   const html = readFileSync(lessonPath("4-1-part2", "homework.html"), "utf8");
   assert.match(
     html,

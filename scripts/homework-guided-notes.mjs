@@ -8064,9 +8064,9 @@ export function renderVocabMatchChallenge(vocabList) {
  * Questions are built in the browser from a JSON island, so the page carries
  * the words once.
  */
-export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
+export function vocabQuizItems(vocabList, resolveVocabImage, vocabImageAlt) {
   if (!Array.isArray(vocabList) || vocabList.length < 2) return "";
-  const items = vocabList.map((v) => ({
+  return vocabList.map((v) => ({
     term: v.term || "",
     termEs: v.termEs || v.term || "",
     def: v.definition || "",
@@ -8074,7 +8074,10 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
     img: resolveVocabImage(v.term || "", v.image) || "",
     alt: vocabImageAlt(v.term || "", v.definition || ""),
   }));
-  const island = JSON.stringify(items).replace(/</g, "\\u003c");
+}
+
+export function renderVocabQuiz(vocabList, dataUrl = "") {
+  if (!Array.isArray(vocabList) || vocabList.length < 2) return "";
   return `
     <div class="vocab-quiz card-ish" id="vocab_quiz">
       <h3 class="vq-title">🎯 <span class="lang-en">Word Quiz</span><span class="lang-es" lang="es">Prueba de palabras</span></h3>
@@ -8094,15 +8097,15 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" ${act("startVocabQuiz")}><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">${island}</script>
+      <script type="application/json" id="vocab_quiz_data" data-src="${esc(dataUrl)}"></script>
     </div>`;
 }
 
-export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
+export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt, vocabDataUrl = "") {
   if (!Array.isArray(vocabList) || vocabList.length === 0) return "";
 
   const hasVocabGame = vocabList.length >= 2;
-  const quizHtml = hasVocabGame ? renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) : "";
+  const quizHtml = hasVocabGame ? renderVocabQuiz(vocabList, vocabDataUrl) : "";
   const matchHtml = hasVocabGame ? renderVocabMatchChallenge(vocabList) : "";
 
   return `
@@ -8371,8 +8374,17 @@ export function renderLearnTab(
   return { connect, explore, talk, apply };
 }
 
-export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
-  const inner = renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt);
+export function renderWordsTab(
+  vocabList,
+  resolveVocabImage,
+  vocabImageAlt,
+  vocabDataUrl = "",
+  lazyUrl = "",
+) {
+  if (lazyUrl && Array.isArray(vocabList) && vocabList.length) {
+    return `<div ${tabPanelAttrs("words", true)}><div data-family-lazy-content data-src="${esc(lazyUrl)}" role="status"></div></div>`;
+  }
+  const inner = renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt, vocabDataUrl);
   if (!inner) {
     return `<div ${tabPanelAttrs("words", true)}><p class="lang-en">No vocabulary listed for this lesson.</p><p class="lang-es" lang="es">No hay vocabulario listado para esta lección.</p></div>`;
   }
@@ -9829,6 +9841,72 @@ function routeStorageKey() {
   return 'hw_route_' + (window.LESSON_ID || location.pathname);
 }
 
+function mountFamilyPaths() {
+  var host = document.querySelector('[data-family-path-picker]');
+  if (!host || host.dataset.mounted) return;
+  host.dataset.mounted = '1';
+  var bi = function (en, es) {
+    return '<span class="lang-en">' + en + '</span><span class="lang-es" lang="es">' + es + '</span>';
+  };
+  host.innerHTML =
+    '<button type="button" class="hw-path-card is-selected" data-family-path="quick" aria-pressed="true" data-act="selectFamilyPath" data-args="[&quot;quick&quot;]">' +
+      '<span class="hw-path-time">5 min</span><strong>' + bi('Quick Practice', 'Práctica rápida') + '</strong>' +
+      '<span>' + bi('Problems with hints and a retry.', 'Problemas con pistas y otro intento.') + '</span></button>' +
+    '<button type="button" class="hw-path-card" data-family-path="together" aria-pressed="false" data-act="selectFamilyPath" data-args="[&quot;together&quot;]">' +
+      '<span class="hw-path-time">10–15 min</span><strong>' + bi('Learn Together', 'Aprender juntos') + '</strong>' +
+      '<span>' + bi('Model, example, then try one.', 'Modelo, ejemplo y luego inténtalo.') + '</span></button>' +
+    '<button type="button" class="hw-path-card" data-family-path="explore" aria-pressed="false" data-act="selectFamilyPath" data-args="[&quot;explore&quot;]">' +
+      '<span class="hw-path-time">15–20 min</span><strong>' + bi('Explore & Play', 'Explorar y jugar') + '</strong>' +
+      '<span>' + bi('Model, family mission, and lesson games.', 'Modelo, misión familiar y juegos.') + '</span></button>';
+}
+
+function familyPathStorageKey() {
+  return 'hw_family_path_' + (window.LESSON_ID || location.pathname);
+}
+
+var FAMILY_PATHS = {
+  quick: { en: 'Start Quick Practice', es: 'Empezar práctica rápida', tab: 'connect' },
+  together: { en: 'Start Learn Together', es: 'Empezar Aprender juntos', tab: 'connect' },
+  explore: { en: 'Start Explore & Play', es: 'Empezar Explorar y jugar', tab: 'explore' }
+};
+
+function selectFamilyPath(path) {
+  if (!Object.prototype.hasOwnProperty.call(FAMILY_PATHS, path)) path = 'quick';
+  document.querySelectorAll('[data-family-path]').forEach(function (card) {
+    var selected = card.getAttribute('data-family-path') === path;
+    card.classList.toggle('is-selected', selected);
+    card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  });
+  var start = document.getElementById('hw_start_button');
+  var label = FAMILY_PATHS[path];
+  if (start) setBiText(start, label.en, label.es);
+  if (path === 'together' && typeof hwSetQuestMode === 'function') hwSetQuestMode('together');
+  else if (window.__hwSetQuestMode) window.__hwSetQuestMode('solo');
+  try { localStorage.setItem(familyPathStorageKey(), path); } catch (e) {}
+}
+
+function startFamilyPath() {
+  var path = 'quick';
+  try { path = localStorage.getItem(familyPathStorageKey()) || 'quick'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(FAMILY_PATHS, path)) path = 'quick';
+  var activePath = '';
+  try { activePath = localStorage.getItem(familyPathStorageKey() + '_active') || ''; } catch (e) {}
+  if (activePath === path && document.body.dataset.activeTab && document.body.dataset.activeTab !== 'connect') {
+    startHomework();
+    return;
+  }
+  try { localStorage.setItem(familyPathStorageKey() + '_active', path); } catch (e) {}
+  var tab = FAMILY_PATHS[path].tab;
+  switchHomeworkTab(tab);
+  startHomework();
+}
+
+function restoreFamilyPath() {
+  var path = 'quick';
+  try { path = localStorage.getItem(familyPathStorageKey()) || 'quick'; } catch (e) {}
+  selectFamilyPath(path);
+}
+
 function activeHomeworkRoute() {
   return HOMEWORK_ROUTES[normalizeHomeworkRoute(document.body.dataset.homeworkRoute)];
 }
@@ -10219,7 +10297,27 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
-  if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
+  if (tabId === 'words' && document.querySelector('#hw_panel_words [data-family-lazy-content]')) {
+    var wordsHost = document.querySelector('#hw_panel_words [data-family-lazy-content]');
+    if (!window.hwFamilyWordsLoading) {
+      window.hwFamilyWordsLoading = fetch(wordsHost.dataset.src, { credentials: 'same-origin' })
+        .then(function(response) { if (!response.ok) throw new Error('Vocabulary activity unavailable'); return response.text(); })
+        .then(function(markup) { wordsHost.outerHTML = markup; window.hwFamilyWordsLoaded = true; })
+        .catch(function() {
+          wordsHost.setAttribute('role', 'alert');
+          wordsHost.textContent = document.documentElement.lang === 'es'
+            ? 'No se pudo cargar la actividad de palabras. Inténtalo de nuevo.'
+            : 'The vocabulary activity could not load. Please try again.';
+          window.hwFamilyWordsLoading = null;
+        });
+    }
+    if (window.hwFamilyWordsLoading) window.hwFamilyWordsLoading.then(function() {
+      if (document.body.dataset.activeTab === 'words' && window.hwFamilyWordsLoaded) {
+        if (!window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
+        if (typeof initHomeworkVocabPopups === 'function') initHomeworkVocabPopups();
+      }
+    });
+  } else if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
   if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
@@ -10848,6 +10946,8 @@ function initHomeworkPage() {
   setTimeout(function () { hwTabsBooted = true; }, 0);
   restoreParentSignoff();
   initHomeworkShareLinks();
+  mountFamilyPaths();
+  restoreFamilyPath();
   var start = document.getElementById('hw_start_button');
   if (start && document.body.dataset.activeTab !== 'connect') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();

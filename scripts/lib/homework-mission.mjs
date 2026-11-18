@@ -19,7 +19,7 @@ import { missionModelFor } from "./homework-mission-models.mjs";
 import { LESSON_PAGE_IDS } from "./homework-sequence.mjs";
 
 /** Practice items in today's mission. The goal, the "N problems" copy and the route limit all read this. */
-export const MISSION_PRACTICE_COUNT = 10;
+export const MISSION_PRACTICE_COUNT = 5;
 
 /**
  * The mission's three levels over its practice problems, in order. `size` is how many problems the level
@@ -27,13 +27,13 @@ export const MISSION_PRACTICE_COUNT = 10;
  * level-up celebration and the Finish badges all read it (client copy in homework-levels-js.mjs).
  */
 export const MISSION_LEVELS = [
-  { id: "warmup", size: 3, en: "Warm-up", es: "Calentamiento", icon: "🔥" },
-  { id: "build", size: 4, en: "Build", es: "Construir", icon: "🧱" },
+  { id: "warmup", size: 2, en: "Warm-up", es: "Calentamiento", icon: "🔥" },
+  { id: "build", size: 2, en: "Build", es: "Construir", icon: "🧱" },
   { id: "apply", size: 3, en: "Apply", es: "Aplicar", icon: "🚀" },
 ];
 
 /** Route times, one source for the start card, the Explore more sheet and the hub. */
-export const ROUTE_TIMES = { quick: "15–20", full: "25–35" };
+export const ROUTE_TIMES = { quick: "5", full: "25–35" };
 
 /** The route a first visit lands on. Keep in step with HOMEWORK_ROUTE_DEFAULT in homework-guided-notes.mjs. */
 export const DEFAULT_ROUTE = "quick";
@@ -110,14 +110,10 @@ export function renderMissionStart() {
   return `
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Practice", "La práctica familiar de hoy")}</h2>
-        <p class="hw-mission-lead fm-hero__promise">${bi(
-          `Five steps, about ${ROUTE_TIMES.quick} min: Discover, Build, solve ${MISSION_PRACTICE_COUNT} in three levels, Improve, Celebrate.`,
-          `Cinco pasos, unos ${ROUTE_TIMES.quick} min: Descubrir, Construir, resolver ${MISSION_PRACTICE_COUNT} en tres niveles, Mejorar y Celebrar.`,
-        )}</p>
-        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
-        <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
+        <div class="hw-path-picker" data-family-path-picker data-quick-claim="One example and ${MISSION_PRACTICE_COUNT} problems" role="group" aria-label="Choose a learning path" data-aria-en="Choose a learning path" data-aria-es="Elige una ruta de aprendizaje"></div>
+        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startFamilyPath")}><span class="lang-en">Start Quick Practice</span><span class="lang-es" lang="es">Empezar práctica rápida</span></button>
         <div class="hw-session-routes" id="hw_session_routes"></div>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. No timer. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Sin cronómetro. Se guarda en este dispositivo.</span></p>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades or account. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Se guarda aquí.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;

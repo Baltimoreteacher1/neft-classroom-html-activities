@@ -9,6 +9,90 @@
    Muted sunken surfaces = optional tools. Every treatment below is one of these.
    ============================================================================ */
 @layer patterns {
+  /* ── Three lesson paths: one shared objective, three clear entry points ── */
+  .hw-path-picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--fm-space-2);
+    min-block-size: 6rem;
+    margin-block: var(--fm-space-3);
+  }
+  .hw-path-card {
+    display: grid;
+    align-content: start;
+    gap: var(--fm-space-1);
+    min-inline-size: 0;
+    min-block-size: 7.5rem;
+    padding: var(--fm-space-3);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    background: var(--fm-raised);
+    color: var(--fm-text);
+    text-align: start;
+    cursor: pointer;
+  }
+  .hw-path-card strong {
+    color: var(--fm-primary);
+    font-family: var(--fm-font-display);
+    font-size: var(--fm-fs-md);
+    line-height: var(--fm-lh-heading);
+  }
+  .hw-path-card > span:last-child {
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+    line-height: var(--fm-lh-body);
+  }
+  .hw-path-card .hw-path-time {
+    color: var(--fm-accent-ink);
+    font-size: var(--fm-fs-xs);
+    font-weight: var(--fm-fw-bold);
+  }
+  .hw-path-card:hover { border-color: var(--fm-accent-ink); }
+  .hw-path-card.is-selected {
+    border: 2px solid var(--fm-accent-ink);
+    background: var(--fm-accent-tint);
+  }
+  .hw-path-card:focus-visible {
+    outline: 3px solid var(--fm-highlight);
+    outline-offset: 2px;
+  }
+  @media (max-width: 40rem) {
+    .hw-path-picker {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      min-block-size: 5.5rem;
+      gap: var(--fm-space-1);
+      margin-block: var(--fm-space-1);
+    }
+    .hw-path-card {
+      min-block-size: 5.5rem;
+      padding: var(--fm-space-1);
+      gap: 2px;
+      align-content: center;
+      text-align: center;
+    }
+    .hw-path-card strong { font-size: var(--fm-fs-sm); }
+    .hw-path-card > span:last-child {
+      overflow: hidden;
+      font-size: 0.8125rem;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  @media (max-width: 22.5rem) {
+    .hw-path-picker {
+      min-block-size: 3.5rem;
+      margin-block: 0;
+    }
+    .hw-path-card {
+      min-block-size: 3.5rem;
+      padding: 4px;
+    }
+    .hw-path-card .hw-path-time,
+    .hw-path-card > span:last-child { display: none; }
+    .hw-path-card strong { font-size: 0.8125rem; }
+  }
+
   /* ── Step rail: five numbered steps, the current one named ─────────────── */
   @media (max-width: 859px) {
     .homework-tab-bar {

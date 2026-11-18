@@ -996,7 +996,7 @@ function initFamilyGames() {
    Each path is a complete, optional experience. Time values are estimates,
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 10 },
+  quick: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 5 },
   full: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 0 }
 };
 /* One six-stage mission. The two routes differ only in how many practice problems the Practice
@@ -1012,6 +1012,72 @@ function normalizeHomeworkRoute(mode) {
 
 function routeStorageKey() {
   return 'hw_route_' + (window.LESSON_ID || location.pathname);
+}
+
+function mountFamilyPaths() {
+  var host = document.querySelector('[data-family-path-picker]');
+  if (!host || host.dataset.mounted) return;
+  host.dataset.mounted = '1';
+  var bi = function (en, es) {
+    return '<span class="lang-en">' + en + '</span><span class="lang-es" lang="es">' + es + '</span>';
+  };
+  host.innerHTML =
+    '<button type="button" class="hw-path-card is-selected" data-family-path="quick" aria-pressed="true" data-act="selectFamilyPath" data-args="[&quot;quick&quot;]">' +
+      '<span class="hw-path-time">5 min</span><strong>' + bi('Quick Practice', 'Práctica rápida') + '</strong>' +
+      '<span>' + bi('Problems with hints and a retry.', 'Problemas con pistas y otro intento.') + '</span></button>' +
+    '<button type="button" class="hw-path-card" data-family-path="together" aria-pressed="false" data-act="selectFamilyPath" data-args="[&quot;together&quot;]">' +
+      '<span class="hw-path-time">10–15 min</span><strong>' + bi('Learn Together', 'Aprender juntos') + '</strong>' +
+      '<span>' + bi('Model, example, then try one.', 'Modelo, ejemplo y luego inténtalo.') + '</span></button>' +
+    '<button type="button" class="hw-path-card" data-family-path="explore" aria-pressed="false" data-act="selectFamilyPath" data-args="[&quot;explore&quot;]">' +
+      '<span class="hw-path-time">15–20 min</span><strong>' + bi('Explore & Play', 'Explorar y jugar') + '</strong>' +
+      '<span>' + bi('Model, family mission, and lesson games.', 'Modelo, misión familiar y juegos.') + '</span></button>';
+}
+
+function familyPathStorageKey() {
+  return 'hw_family_path_' + (window.LESSON_ID || location.pathname);
+}
+
+var FAMILY_PATHS = {
+  quick: { en: 'Start Quick Practice', es: 'Empezar práctica rápida', tab: 'connect' },
+  together: { en: 'Start Learn Together', es: 'Empezar Aprender juntos', tab: 'connect' },
+  explore: { en: 'Start Explore & Play', es: 'Empezar Explorar y jugar', tab: 'explore' }
+};
+
+function selectFamilyPath(path) {
+  if (!Object.prototype.hasOwnProperty.call(FAMILY_PATHS, path)) path = 'quick';
+  document.querySelectorAll('[data-family-path]').forEach(function (card) {
+    var selected = card.getAttribute('data-family-path') === path;
+    card.classList.toggle('is-selected', selected);
+    card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  });
+  var start = document.getElementById('hw_start_button');
+  var label = FAMILY_PATHS[path];
+  if (start) setBiText(start, label.en, label.es);
+  if (path === 'together' && typeof hwSetQuestMode === 'function') hwSetQuestMode('together');
+  else if (window.__hwSetQuestMode) window.__hwSetQuestMode('solo');
+  try { localStorage.setItem(familyPathStorageKey(), path); } catch (e) {}
+}
+
+function startFamilyPath() {
+  var path = 'quick';
+  try { path = localStorage.getItem(familyPathStorageKey()) || 'quick'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(FAMILY_PATHS, path)) path = 'quick';
+  var activePath = '';
+  try { activePath = localStorage.getItem(familyPathStorageKey() + '_active') || ''; } catch (e) {}
+  if (activePath === path && document.body.dataset.activeTab && document.body.dataset.activeTab !== 'connect') {
+    startHomework();
+    return;
+  }
+  try { localStorage.setItem(familyPathStorageKey() + '_active', path); } catch (e) {}
+  var tab = FAMILY_PATHS[path].tab;
+  switchHomeworkTab(tab);
+  startHomework();
+}
+
+function restoreFamilyPath() {
+  var path = 'quick';
+  try { path = localStorage.getItem(familyPathStorageKey()) || 'quick'; } catch (e) {}
+  selectFamilyPath(path);
 }
 
 function activeHomeworkRoute() {
@@ -1093,7 +1159,7 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ["Today's mission: " + 10 + ' practice problems. Stop whenever you need.', 'Misión de hoy: ' + 10 + ' problemas de práctica. Pueden parar cuando lo necesiten.'],
+      quick: ["Today's mission: " + 5 + ' practice problems. Stop whenever you need.', 'Misión de hoy: ' + 5 + ' problemas de práctica. Pueden parar cuando lo necesiten.'],
       full: ['Extended practice: every practice problem. Everything is optional.', 'Práctica extendida: todos los problemas. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
@@ -1404,7 +1470,27 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
-  if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
+  if (tabId === 'words' && document.querySelector('#hw_panel_words [data-family-lazy-content]')) {
+    var wordsHost = document.querySelector('#hw_panel_words [data-family-lazy-content]');
+    if (!window.hwFamilyWordsLoading) {
+      window.hwFamilyWordsLoading = fetch(wordsHost.dataset.src, { credentials: 'same-origin' })
+        .then(function(response) { if (!response.ok) throw new Error('Vocabulary activity unavailable'); return response.text(); })
+        .then(function(markup) { wordsHost.outerHTML = markup; window.hwFamilyWordsLoaded = true; })
+        .catch(function() {
+          wordsHost.setAttribute('role', 'alert');
+          wordsHost.textContent = document.documentElement.lang === 'es'
+            ? 'No se pudo cargar la actividad de palabras. Inténtalo de nuevo.'
+            : 'The vocabulary activity could not load. Please try again.';
+          window.hwFamilyWordsLoading = null;
+        });
+    }
+    if (window.hwFamilyWordsLoading) window.hwFamilyWordsLoading.then(function() {
+      if (document.body.dataset.activeTab === 'words' && window.hwFamilyWordsLoaded) {
+        if (!window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
+        if (typeof initHomeworkVocabPopups === 'function') initHomeworkVocabPopups();
+      }
+    });
+  } else if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
   if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
@@ -2033,6 +2119,8 @@ function initHomeworkPage() {
   setTimeout(function () { hwTabsBooted = true; }, 0);
   restoreParentSignoff();
   initHomeworkShareLinks();
+  mountFamilyPaths();
+  restoreFamilyPath();
   var start = document.getElementById('hw_start_button');
   if (start && document.body.dataset.activeTab !== 'connect') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
@@ -4646,7 +4734,7 @@ function toggleQuickOptional() {
 
 
 /* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
-var HW_ROUTE_TIMES = {"quick":"15–20","full":"25–35"};
+var HW_ROUTE_TIMES = {"quick":"5","full":"25–35"};
 var HW_ROUTE_DEFAULT = "quick";
 
 /* The Learning-supports icon lives in the stop tracker's utility row on every page, so
@@ -5372,7 +5460,7 @@ else hwMissionBoot();
 function hwFlowCoreSections() {
   return Array.prototype.filter.call(document.querySelectorAll('.problem-section'), function (s) {
     return !s.closest('.more-practice') && !s.hidden;
-  }).slice(0, 10);
+  }).slice(0, 5);
 }
 
 /* Remember what a wrong pick showed, in both languages, so Check & Improve can name it later. */
@@ -5589,8 +5677,8 @@ document.addEventListener('click', function (e) { if (e.target && e.target.close
 
 
 /* ── Levels, challenge round, celebration, Watch it ──────────────────── */
-var HW_LEVELS = [{"id":"warmup","size":3,"en":"Warm-up","es":"Calentamiento","icon":"🔥"},{"id":"build","size":4,"en":"Build","es":"Construir","icon":"🧱"},{"id":"apply","size":3,"en":"Apply","es":"Aplicar","icon":"🚀"}];
-var HW_MISSION_N = 10;
+var HW_LEVELS = [{"id":"warmup","size":2,"en":"Warm-up","es":"Calentamiento","icon":"🔥"},{"id":"build","size":2,"en":"Build","es":"Construir","icon":"🧱"},{"id":"apply","size":3,"en":"Apply","es":"Aplicar","icon":"🚀"}];
+var HW_MISSION_N = 5;
 var HW_CELEBRATE_URL = '/assets/family-mission/celebrate/index.mjs';
 var HW_CELEBRATE_CSS = '/assets/family-mission/celebrate/celebrate.css';
 var HW_EXPLAIN_URL = '/assets/family-mission/explain/index.mjs';
@@ -7123,7 +7211,7 @@ function resetVocabMatchGame() {
 }
 
 // Word Quiz: a picture and a meaning, then three words to choose from.
-const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false };
+const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false, loading: false };
 
 function vocabQuizBilingual(parent, en, es) {
   const a = document.createElement("span");
@@ -7151,6 +7239,28 @@ function vocabQuizShuffle(list) {
 function startVocabQuiz() {
   const data = document.getElementById("vocab_quiz_data");
   if (!data) return;
+  if (!data.textContent.trim() && data.dataset.src) {
+    if (vocabQuiz.loading) return;
+    vocabQuiz.loading = true;
+    fetch(data.dataset.src, { credentials: "same-origin" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Vocabulary data unavailable");
+        return response.json();
+      })
+      .then((items) => {
+        vocabQuiz.loading = false;
+        data.textContent = JSON.stringify(items);
+        startVocabQuiz();
+      })
+      .catch(() => {
+        vocabQuiz.loading = false;
+        document.getElementById("vocab_quiz_feedback").textContent =
+          document.documentElement.lang === "es"
+            ? "No se pudo cargar el repaso de palabras. Inténtalo de nuevo."
+            : "The vocabulary review could not load. Please try again.";
+      });
+    return;
+  }
   try {
     vocabQuiz.items = JSON.parse(data.textContent);
   } catch (e) {
