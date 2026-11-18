@@ -184,7 +184,7 @@ const firstUnique = (items, n) => {
     .slice(0, n);
 };
 
-export function lessonRecord(lesson, lab, labContent, traps, stats, override = null) {
+export function lessonRecord(lesson, lab, labContent, traps, stats, override = null, extra = {}) {
   const id = lesson.id;
   const cfg = loadLessonConfig(id);
   const P = cfg.practice || {};
@@ -251,7 +251,13 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
       .map(({ it }) => eaItem(it, "error"))
       .find(Boolean) || null;
   for (const t of [exit, transfer].flatMap((x) => x?.tags || [])) if (t) tags.add(t);
-  const open = (P.extending || []).find((it) => it.type === "open-response" && it.stem);
+  const open = (P.extending || []).find(
+    (it) => it.type === "open-response" && (it.stem || it.prompt),
+  );
+  const wpList = extra.wordProblems || [];
+  const wpPrimary = wpList.find((p) => p.guide?.length) || wpList[0] || null;
+  const wpChallenge = wpList.length > 1 ? wpList[wpList.length - 1] : null;
+  const createTask = extra.createTask || { prompt: lab.create };
   const ci = cfg.launch?.conceptIntro || {};
   const steps = (k) =>
     ci[k]?.lines?.length
@@ -332,37 +338,103 @@ export function lessonRecord(lesson, lab, labContent, traps, stats, override = n
     }),
     practice: { regular, challenge, urls: { regular: practiceUrl, challenge: challengeUrl } },
     apply: clean({
-      wordProblem: cfg.revealWordProblem?.text
+      wordProblem: wpPrimary
         ? clean({
-            title: cfg.revealWordProblem.title,
-            text: cfg.revealWordProblem.text,
-            image:
-              cfg.revealWordProblem.image && has(cfg.revealWordProblem.image)
-                ? cfg.revealWordProblem.image
-                : undefined,
-            imageAlt: cfg.revealWordProblem.imageAlt,
-            sample: cfg.revealWordProblem.sampleAnswer,
+            title: wpPrimary.title,
+            titleEs: wpPrimary.titleEs,
+            prompt: wpPrimary.q,
+            promptEs: wpPrimary.qEs,
+            answer: wpPrimary.a,
+            unit: wpPrimary.unit,
+            unitEs: wpPrimary.unitEs,
+            guide: wpPrimary.guide,
+            hints: wpPrimary.h,
+            hintsEs: wpPrimary.hEs,
+            misconceptions: wpPrimary.fw,
+            sample: wpPrimary.x,
+            sampleEs: wpPrimary.xEs,
+            keywords: (cfg.vocabulary || [])
+              .slice(0, 5)
+              .map((v) => v.term)
+              .filter(Boolean),
+            keywordsEs: (cfg.vocabulary || [])
+              .slice(0, 5)
+              .map((v) => v.termEs)
+              .filter(Boolean),
           })
-        : undefined,
-      reasoning: open
-        ? clean({
-            prompt: open.stem,
-            promptEs: open.stemEs,
-            sample: open.sampleAnswer,
-            keywords: open.keywords,
-            hint: open.hint,
-          })
-        : undefined,
+        : cfg.revealWordProblem?.text
+          ? clean({
+              title: cfg.revealWordProblem.title,
+              prompt: cfg.revealWordProblem.text,
+              image:
+                cfg.revealWordProblem.image && has(cfg.revealWordProblem.image)
+                  ? cfg.revealWordProblem.image
+                  : undefined,
+              imageAlt: cfg.revealWordProblem.imageAlt,
+              sample: cfg.revealWordProblem.sampleAnswer,
+            })
+          : undefined,
       scenario: cfg.connect?.scenario
         ? clean({
             text: cfg.connect.scenario,
             textEs: cfg.connect.scenarioEs,
+            question:
+              cfg.connect.promptQuestion ||
+              "Complete the mathematical reasoning and explain how the numbers fit the situation.",
+            questionEs:
+              cfg.connect.promptQuestionEs ||
+              "Completa el razonamiento matemático y explica cómo encajan los números en la situación.",
             prompt: cfg.connect.prompt,
             promptEs: cfg.connect.promptEs,
+            answers: cfg.connect.answers,
+            diagram: cfg.connect.diagram,
             sample: cfg.connect.modelAnswer,
+            sampleEs: cfg.connect.modelAnswerEs,
             keywords: cfg.connect.keywords,
+            keywordsEs: cfg.connect.keywordsEs,
           })
         : undefined,
+      reasoning: open
+        ? clean({
+            prompt: open.stem || open.prompt,
+            promptEs: open.stemEs || open.promptEs,
+            sample: open.sampleAnswer || open.explanation,
+            sampleEs: open.sampleAnswerEs || open.explanationEs,
+            hints: open.hints,
+            hintsEs: open.hintsEs,
+            sentenceFrame: open.sentenceFrame,
+            sentenceFrameEs: open.sentenceFrameEs,
+            keywords: open.keywords,
+          })
+        : wpChallenge
+          ? clean({
+              title: wpChallenge.title,
+              titleEs: wpChallenge.titleEs,
+              prompt: wpChallenge.q,
+              promptEs: wpChallenge.qEs,
+              hints: wpChallenge.h,
+              hintsEs: wpChallenge.hEs,
+              sample: wpChallenge.x,
+              sampleEs: wpChallenge.xEs,
+              keywords: (cfg.vocabulary || [])
+                .slice(0, 5)
+                .map((v) => v.term)
+                .filter(Boolean),
+              keywordsEs: (cfg.vocabulary || [])
+                .slice(0, 5)
+                .map((v) => v.termEs)
+                .filter(Boolean),
+            })
+          : undefined,
+      create: clean({
+        prompt: createTask.prompt || lab.create,
+        promptEs: createTask.promptEs,
+        sample: createTask.sample,
+        sampleEs: createTask.sampleEs,
+        rubric: createTask.rubric,
+        keywords: createTask.keywords,
+        keywordsEs: createTask.keywordsEs,
+      }),
       optional: [
         ...(cfg.projects || [])
           .filter((p) => p.href?.startsWith("/") && has(p.href))
@@ -405,6 +477,8 @@ export function buildRegistry() {
   const labFor = new Map(blueprints.flatMap((b) => b.lessons.map((l) => [l, b])));
   const stats = { verified: 0, refused: 0 };
   const overrides = readJson("data/math-studio/explore-overrides.json").lessons;
+  const applyCreate = readJson("data/math-studio/apply-create.json");
+  const wpByUnit = new Map();
   const lessons = [];
   const skipped = [];
   for (const lesson of manifest.lessons) {
@@ -421,7 +495,16 @@ export function buildRegistry() {
         `Math Studio: lesson ${lesson.id} has no Learning Lab in tools/learning-labs/blueprints.mjs`,
       );
     const labContent = readJson(`curriculum/learning-labs/${lab.id}/content.json`);
-    lessons.push(lessonRecord(lesson, lab, labContent, traps, stats, overrides[lesson.id] || null));
+    if (!wpByUnit.has(lesson.unit)) {
+      wpByUnit.set(lesson.unit, readJson(`data/word-problems/unit-${lesson.unit}.json`));
+    }
+    const wordProblems = wpByUnit.get(lesson.unit)?.[lesson.id]?.problems || [];
+    lessons.push(
+      lessonRecord(lesson, lab, labContent, traps, stats, overrides[lesson.id] || null, {
+        wordProblems,
+        createTask: applyCreate[lesson.id] || null,
+      }),
+    );
   }
   const ids = lessons.map((l) => l.id);
   if (new Set(ids).size !== ids.length)

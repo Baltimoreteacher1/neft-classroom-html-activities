@@ -3,6 +3,7 @@
 import { buildVocabMatcher, isConceptEntry } from "@eduwonderlab/engine/core/vocab-match.js";
 import { withCurriculumShell } from "../../tools/lib/curriculum-shell.mjs";
 import { backgroundData } from "./homework-background.mjs";
+import { renderDiagram } from "./math-studio-figures.mjs";
 
 export const esc = (s) =>
   String(s ?? "").replace(
@@ -290,44 +291,126 @@ function understand(L) {
   </div>`;
 }
 
+function blanksMarkup(prompt, promptEs, answers) {
+  if (!prompt) return "";
+  const build = (str, lang) => {
+    let i = 0;
+    return esc(str).replace(/___/g, () => {
+      const idx = i++;
+      const ans = answers?.[idx];
+      const w = ans && String(ans).length > 8 ? 130 : 72;
+      return `<input class="ms-blank" type="text" data-blank-lang="${lang}" data-blank-idx="${idx}" style="width:${w}px" aria-label="${lang === "es" ? `Espacio ${idx + 1}` : `Blank ${idx + 1}`}" autocomplete="off" spellcheck="false">`;
+    });
+  };
+  const hasBlanks = prompt.includes("___");
+  const enHtml = build(prompt, "en");
+  const esHtml = promptEs ? build(promptEs, "es") : "";
+  const inner = `<p class="ms-frame ms-frame--interactive"><span class="t-en">${enHtml}</span>${esHtml && esHtml !== enHtml ? `<span class="t-es" lang="es">${esHtml}</span>` : ""}</p>`;
+  if (!hasBlanks || !answers?.some((a) => a !== null && a !== undefined)) return inner;
+  return `${inner}<div class="ms-row ms-row--tight"><button type="button" class="ms-btn ms-btn--quiet ms-btn--sm" data-check-blanks>${bi("Check blanks", "Revisar espacios")}</button><span class="ms-inline-fb" data-blanks-fb role="status" aria-live="polite"></span></div>`;
+}
+
 function apply(L) {
   const a = L.apply;
-  const task = (key, title, titleEs, body, extra = "") =>
-    `<article class="ms-task" data-apply="${key}"><h3>${bi(title, titleEs)}</h3>${body}<label class="ms-label" for="ms-apply-${key}">${bi("My work and reasoning", "Mi trabajo y razonamiento")}</label><textarea id="ms-apply-${key}" rows="5" data-apply-input="${key}"></textarea>${extra}<div class="ms-row"><button type="button" class="ms-btn ms-btn--quiet" data-compare="${key}">${bi("Compare with a sample", "Comparar con un ejemplo")}</button></div><div class="ms-compare" data-compare-out="${key}" hidden></div></article>`;
+  const hintBox = (key, hints) =>
+    hints?.length
+      ? `<div class="ms-row ms-row--tight"><button type="button" class="ms-btn ms-btn--quiet ms-btn--sm" data-apply-hint="${key}">${bi("Hint", "Pista")}</button></div><div class="ms-hints" data-apply-hints="${key}"></div>`
+      : "";
+  const task = (
+    key,
+    title,
+    titleEs,
+    body,
+    extra = "",
+    labelEn = "My work and reasoning",
+    labelEs = "Mi trabajo y razonamiento",
+  ) =>
+    `<article class="ms-task" data-apply="${key}"><h3>${bi(title, titleEs)}</h3>${body}${extra}<label class="ms-label" for="ms-apply-${key}">${bi(labelEn, labelEs)}</label><textarea id="ms-apply-${key}" rows="4" data-apply-input="${key}"></textarea><div class="ms-row"><button type="button" class="ms-btn ms-btn--quiet" data-compare="${key}">${bi("Check & compare", "Revisar y comparar")}</button></div><div class="ms-compare" data-compare-out="${key}" hidden></div></article>`;
+
   const parts = [];
-  if (a.wordProblem)
+  if (a.wordProblem) {
+    const wp = a.wordProblem;
+    const guide = wp.guide?.[0]
+      ? `<div class="ms-apply-step" data-guide-box="word"><p class="ms-eyebrow">${bi("Step 1 · Guide me", "Paso 1 · Guíame")}</p><p>${bi(wp.guide[0].q, wp.guide[0].qEs)}</p><div class="ms-row ms-row--tight"><input class="ms-input ms-input--sm" type="text" inputmode="decimal" data-guide-input="word" aria-label="Step 1 answer" autocomplete="off"><span class="ms-muted">${wp.guide[0].unit ? bi(wp.guide[0].unit, wp.guide[0].unitEs) : ""}</span><button type="button" class="ms-btn ms-btn--quiet ms-btn--sm" data-guide-check="word">${bi("Check step", "Revisar paso")}</button></div><div class="ms-inline-fb" data-guide-fb="word" role="status" aria-live="polite"></div></div>`
+      : "";
+    const solveBox =
+      wp.answer != null
+        ? `<div class="ms-apply-step" data-word-box="word"><p class="ms-eyebrow">${bi(wp.guide?.[0] ? "Step 2 · Final answer" : "Solve", wp.guide?.[0] ? "Paso 2 · Respuesta final" : "Resuelve")}</p><div class="ms-row ms-row--tight"><input class="ms-input ms-input--sm" type="text" inputmode="decimal" data-word-input="word" aria-label="Final numeric answer" autocomplete="off"><span class="ms-muted">${wp.unit ? bi(wp.unit, wp.unitEs) : ""}</span><button type="button" class="ms-btn ms-btn--sm" data-word-check="word">${bi("Check answer", "Revisar respuesta")}</button></div><div class="ms-inline-fb" data-word-fb="word" role="status" aria-live="polite"></div></div>`
+        : "";
+    const img = wp.image
+      ? `<img class="ms-task__img" src="${esc(wp.image)}" alt="${esc(wp.imageAlt || "")}" loading="lazy">`
+      : "";
     parts.push(
       task(
         "word",
-        a.wordProblem.title || "Apply it",
-        "",
-        `${a.wordProblem.image ? `<img class="ms-task__img" src="${esc(a.wordProblem.image)}" alt="${esc(a.wordProblem.imageAlt || "")}" loading="lazy">` : ""}<p>${esc(a.wordProblem.text)}</p>`,
+        wp.title ? `Apply in context: ${wp.title}` : "Apply in context",
+        wp.titleEs ? `Aplica en contexto: ${wp.titleEs}` : "Aplica en contexto",
+        `${img}<p class="ms-prompt">${bi(wp.prompt || wp.text, wp.promptEs)}</p>`,
+        `${guide}${solveBox}${hintBox("word", wp.hints)}`,
+        "Explain how you solved it",
+        "Explica cómo lo resolviste",
       ),
     );
-  if (a.scenario)
+  }
+  if (a.scenario) {
+    const sc = a.scenario;
+    const diagram = sc.diagram ? renderDiagram(sc.diagram) : "";
+    const q = sc.question
+      ? `<p class="ms-apply-question"><strong>${bi("Question:", "Pregunta:")}</strong> ${bi(sc.question, sc.questionEs)}</p>`
+      : "";
+    const blanks = blanksMarkup(sc.prompt, sc.promptEs, sc.answers);
     parts.push(
       task(
         "scenario",
         "Real-world connection",
         "Conexión con el mundo real",
-        `<p>${bi(a.scenario.text, a.scenario.textEs)}</p>${a.scenario.prompt ? `<p class="ms-frame">${bi(a.scenario.prompt, a.scenario.promptEs)}</p>` : ""}`,
+        `<p>${bi(sc.text, sc.textEs)}</p>${diagram}${q}`,
+        blanks,
       ),
     );
-  if (a.reasoning)
+  }
+  if (a.reasoning) {
+    const r = a.reasoning;
+    const frame = r.sentenceFrame
+      ? `<p class="ms-frame">${bi(r.sentenceFrame, r.sentenceFrameEs)}</p>`
+      : "";
     parts.push(
       task(
         "reasoning",
-        "Reasoning challenge",
-        "Reto de razonamiento",
-        `<p>${bi(a.reasoning.prompt, a.reasoning.promptEs)}</p>`,
+        r.title ? `Reasoning challenge: ${r.title}` : "Reasoning challenge",
+        r.titleEs ? `Reto de razonamiento: ${r.titleEs}` : "Reto de razonamiento",
+        `<p class="ms-prompt">${bi(r.prompt, r.promptEs)}</p>`,
+        `${frame}${hintBox("reasoning", r.hints)}`,
       ),
     );
-  // Simple to harder: a word problem, a real situation, a reasoning challenge, then an open Create task.
-  parts.push(task("create", `Create: ${L.lab.title}`, "Crea", `<p>${esc(L.lab.create)}</p>`));
+  }
+  const cr = a.create || { prompt: L.lab.create };
+  const rubricHtml = cr.rubric?.length
+    ? `<fieldset class="ms-rubric"><legend>${bi("Self-check rubric", "Lista de verificación")}</legend>${cr.rubric
+        .map(
+          (item, i) =>
+            `<label class="ms-rubric__item"><input type="checkbox" data-rubric-idx="${i}"><span>${bi(item.en, item.es)}</span></label>`,
+        )
+        .join("")}</fieldset>`
+    : "";
+  const scratchpad = `<div class="ms-scratchpad"><p class="ms-eyebrow">${bi("Quick test bench (try numbers or expressions)", "Banco de prueba rápido (prueba números o expresiones)")}</p><div class="ms-row ms-row--tight"><input class="ms-input ms-input--expr" type="text" data-calc-expr placeholder="e.g. 5t + 12 or 25 + 8*6" aria-label="Expression to test" autocomplete="off"><input class="ms-input ms-input--vars" type="text" data-calc-vars placeholder="t=4" aria-label="Variable values (optional)" autocomplete="off"><button type="button" class="ms-btn ms-btn--quiet ms-btn--sm" data-calc-run>${bi("Evaluate", "Evaluar")}</button><span class="ms-calc-out" data-calc-out aria-live="polite"></span></div></div>`;
+  parts.push(
+    task(
+      "create",
+      `Create & verify: ${L.title}`,
+      "Crea y verifica",
+      `<p class="ms-prompt">${bi(cr.prompt, cr.promptEs)}</p>`,
+      `${scratchpad}${rubricHtml}`,
+      "My creation and explanation",
+      "Mi creación y explicación",
+    ),
+  );
+
+  const hud = `<div class="ms-apply-hud" id="ms-apply-hud"><span class="ms-apply-hud__stat" data-apply-hud="progress"></span><span class="ms-apply-hud__stat" data-apply-hud="checks"></span><button type="button" class="ms-btn ms-btn--quiet ms-btn--sm" data-apply-print>${bi("Print / Save Apply Work", "Imprimir / Guardar trabajo")}</button></div>`;
   const optional = a.optional?.length
     ? `<aside class="ms-optional"><h3>${bi("Optional: projects and stories", "Opcional: proyectos e historias")}</h3><p class="ms-muted">${bi("For extra exploration. These do not count as evidence of mastery.", "Para explorar más. No cuentan como evidencia de dominio.")}</p><ul>${a.optional.map((o) => `<li><a href="${esc(o.href)}">${esc(o.label)}</a></li>`).join("")}</ul></aside>`
     : "";
-  return `<div class="ms-apply">${parts.join("")}</div>${optional}`;
+  return `${hud}<div class="ms-apply">${parts.join("")}</div>${optional}`;
 }
 
 const stageHead = (i, key, en, es, lead, leadEs) =>

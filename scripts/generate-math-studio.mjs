@@ -119,9 +119,7 @@ export function outputs() {
               .filter((i) => i.model)
               .map((i) => i.id),
           },
-          apply: Object.keys(L.apply)
-            .filter((k) => k !== "optional")
-            .concat("create"),
+          apply: Object.keys(L.apply).filter((k) => k !== "optional"),
           reflect: {
             checks: L.reflect.checks.map((c) => c.id),
             errorAnalysis: Boolean(L.reflect.errorAnalysis),

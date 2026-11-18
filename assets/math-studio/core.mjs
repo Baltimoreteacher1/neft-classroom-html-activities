@@ -206,7 +206,7 @@ export function freshState(lessonId) {
     explore: { started: false, prediction: '', notes: '', values: null, checks: {} },
     understand: { step: 0, answer: '', checks: {} },
     practice: { level: 'regular', current: { regular: null, challenge: null }, items: {} },
-    apply: { responses: {}, compared: {} },
+    apply: { responses: {}, compared: {}, checks: {}, hints: {}, blanks: [], rubric: [] },
     reflect: { items: {}, writing: '', revised: {} },
     background: {},
     handoff: null,
@@ -266,4 +266,107 @@ export function evidence(state, data) {
     },
     errors,
   };
+}
+
+/**
+ * Safe arithmetic and simple algebraic evaluator for the Apply quick test bench.
+ * Supports +, -, *, /, ^, parentheses, implicit multiplication (3p, 2(4)), and var=val pairs.
+ */
+export function evalMathExpr(exprText, varsText = '') {
+  const vars = {};
+  for (const part of String(varsText || '').split(/[,;\s]+/)) {
+    const m = /^([a-zA-Z])\s*=\s*(-?\d+(?:\.\d+)?)$/.exec(part.trim());
+    if (m) vars[m[1].toLowerCase()] = Number(m[2]);
+  }
+  const src = String(exprText || '').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\$/g, '').trim();
+  if (!src) return { ok: false, error: 'empty' };
+  const tokens = [];
+  let i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if (/\s/.test(ch)) { i++; continue; }
+    if (/\d|\./.test(ch)) {
+      let num = '';
+      while (i < src.length && /[\d.]/.test(src[i])) num += src[i++];
+      if (isNaN(Number(num))) return { ok: false, error: 'number' };
+      tokens.push({ t: 'num', v: Number(num) });
+      continue;
+    }
+    if (/[a-zA-Z]/.test(ch)) {
+      const name = ch.toLowerCase();
+      if (!(name in vars)) return { ok: false, error: 'var', name };
+      tokens.push({ t: 'num', v: vars[name] });
+      i++;
+      continue;
+    }
+    if ('+-*/^()'.includes(ch)) { tokens.push({ t: 'op', v: ch }); i++; continue; }
+    return { ok: false, error: 'char', ch };
+  }
+  // Insert implicit multiplication: num followed by '(' or '(' followed by num? Wait: num + var already became num + num!
+  const norm = [];
+  for (let k = 0; k < tokens.length; k++) {
+    const cur = tokens[k], prev = norm[norm.length - 1];
+    if (prev && ((prev.t === 'num' && cur.t === 'num') || (prev.t === 'num' && cur.v === '(') || (prev.v === ')' && (cur.t === 'num' || cur.v === '(')))) {
+      norm.push({ t: 'op', v: '*' });
+    }
+    norm.push(cur);
+  }
+  let pos = 0;
+  const peek = () => norm[pos];
+  const eat = () => norm[pos++];
+  const parsePrimary = () => {
+    const tk = peek();
+    if (!tk) throw new Error('eof');
+    if (tk.t === 'op' && tk.v === '-') { eat(); return -parsePrimary(); }
+    if (tk.t === 'op' && tk.v === '+') { eat(); return parsePrimary(); }
+    if (tk.t === 'num') { eat(); return tk.v; }
+    if (tk.t === 'op' && tk.v === '(') {
+      eat();
+      const val = parseExpr();
+      if (!peek() || peek().v !== ')') throw new Error('paren');
+      eat();
+      return val;
+    }
+    throw new Error('token');
+  };
+  const parsePow = () => {
+    let left = parsePrimary();
+    while (peek()?.t === 'op' && peek().v === '^') { eat(); left = Math.pow(left, parsePow()); }
+    return left;
+  };
+  const parseTerm = () => {
+    let left = parsePow();
+    while (peek()?.t === 'op' && (peek().v === '*' || peek().v === '/')) {
+      const op = eat().v;
+      const right = parsePow();
+      if (op === '/' && right === 0) throw new Error('div0');
+      left = op === '*' ? left * right : left / right;
+    }
+    return left;
+  };
+  const parseExpr = () => {
+    let left = parseTerm();
+    while (peek()?.t === 'op' && (peek().v === '+' || peek().v === '-')) {
+      const op = eat().v;
+      left = op === '+' ? left + parseTerm() : left - parseTerm();
+    }
+    return left;
+  };
+  try {
+    const value = parseExpr();
+    if (pos !== norm.length || !Number.isFinite(value)) return { ok: false, error: 'syntax' };
+    return { ok: true, value: Math.round(value * 1e6) / 1e6 };
+  } catch (e) {
+    return { ok: false, error: e.message || 'syntax' };
+  }
+}
+
+/** 3-pillar coaching check for Apply written responses. */
+export function analyzeReasoning(text, keywords = []) {
+  const s = String(text || '');
+  const hasMathEvidence = /\d/.test(s);
+  const kw = keywordEvidence(s, keywords);
+  const hasKeywords = !keywords.length || kw.used.length > 0;
+  const hasExplanation = /\b(because|since|means|represents|therefore|so|for each|per|equals|porque|ya que|significa|representa|por cada|entonces|igual)\b/i.test(s) || s.trim().length >= 45;
+  return { hasMathEvidence, hasKeywords, hasExplanation, kw };
 }

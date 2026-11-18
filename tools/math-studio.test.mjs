@@ -4,10 +4,12 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { areas } from "../assets/math-studio/composite.mjs";
 import {
+  analyzeReasoning,
   checkChoice,
   checkNumber,
   checkStep,
   checkTransfer,
+  evalMathExpr,
   evidence,
   freshRecord,
   freshState,
@@ -552,6 +554,38 @@ t("evidence keeps independent, supported and revealed apart", () => {
   );
   assert.equal(e.reflect.independent, 1);
   assert.equal(e.errors["ratio-inverted"], 1);
+});
+
+// ---- Apply: evaluator, reasoning coach, and 72-lesson completeness ----
+t("evalMathExpr evaluates arithmetic and algebraic expressions safely", () => {
+  assert.deepEqual(evalMathExpr("25 + 8 * 6"), { ok: true, value: 73 });
+  assert.deepEqual(evalMathExpr("3p + 5", "p=6"), { ok: true, value: 23 });
+  assert.deepEqual(evalMathExpr("4(x + 3)", "x=2"), { ok: true, value: 20 });
+  assert.equal(evalMathExpr("3p + 5").error, "var");
+  assert.equal(evalMathExpr("10 / 0").ok, false);
+});
+
+t("analyzeReasoning detects numbers, lesson vocabulary, and explanation", () => {
+  const res = analyzeReasoning("The total is 25 + 8h because 25 is the constant setup fee.", [
+    "constant",
+    "coefficient",
+  ]);
+  assert.equal(res.hasMathEvidence, true);
+  assert.equal(res.hasKeywords, true);
+  assert.equal(res.hasExplanation, true);
+});
+
+t("every lesson in registry has all 4 interactive Apply tasks", () => {
+  for (const L of lessons) {
+    assert.ok(L.apply.wordProblem?.prompt, `${L.id} missing wordProblem.prompt`);
+    assert.ok(L.apply.scenario?.question, `${L.id} missing scenario.question`);
+    assert.ok(L.apply.reasoning?.prompt, `${L.id} missing reasoning.prompt`);
+    assert.ok(
+      L.apply.create?.prompt && L.apply.create?.promptEs,
+      `${L.id} missing bilingual create`,
+    );
+    assert.equal(L.apply.create?.rubric?.length, 3, `${L.id} create.rubric should have 3 items`);
+  }
 });
 
 // ---- Generated files are current ----

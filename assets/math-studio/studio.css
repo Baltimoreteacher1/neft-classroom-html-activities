@@ -1180,3 +1180,103 @@ body.ms .ms-flip:hover, body.ms .ms-flip:focus-visible { background: var(--ms-te
 .ms-bg-steps ol { margin: 0; padding-inline-start: 1.4em; display: grid; gap: 6px; font-size: 18px; }
 .ms-bg-example { margin: 0; padding: 12px 14px; border-inline-start: 5px solid var(--ms-teal); border-radius: 8px; background: var(--ms-teal-soft); font-size: 18px; }
 .ms-bg-check { border-top: 1px solid var(--ms-line); padding-top: 10px; }
+
+/* Upgraded Apply stage */
+.ms-apply-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  background: var(--ms-paper);
+  border: 1px solid var(--ms-line);
+  border-radius: var(--ms-radius);
+}
+.ms-apply-hud__stat { font-weight: 700; color: var(--ms-navy); font-size: 0.95rem; }
+.ms-btn--sm { padding: 6px 12px; font-size: 0.9rem; min-height: 36px; }
+.ms-row--tight { gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.ms-apply-step {
+  margin: 12px 0;
+  padding: 12px 14px;
+  background: var(--ms-cream);
+  border: 1px solid var(--ms-line);
+  border-radius: 10px;
+}
+.ms-input--sm { max-width: 140px; }
+.ms-input--expr { flex: 1 1 180px; min-width: 0; }
+.ms-input--vars { flex: 0 1 110px; min-width: 80px; }
+.ms-inline-fb { font-size: 0.92rem; font-weight: 600; margin-top: 4px; }
+.ms-inline-fb.is-ok, .ms-calc-out.is-ok { color: #0f6b47; }
+.ms-inline-fb.is-warn, .ms-calc-out.is-warn { color: #9c3d10; }
+.ms-calc-out { font-weight: 700; font-size: 1rem; }
+.ms-apply-question {
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: var(--ms-teal-soft);
+  border-inline-start: 4px solid var(--ms-teal-ink);
+  border-radius: 8px;
+}
+.ms-diagram {
+  margin: 12px 0;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--ms-line);
+  border-radius: 10px;
+}
+.ms-diagram__title { margin: 0 0 6px; font-weight: 700; text-align: center; color: var(--ms-navy); }
+.ms-diagram__caption { margin: 6px 0 0; font-size: 0.85rem; text-align: center; color: var(--ms-muted); }
+.ms-diagram__svg { display: block; width: 100%; height: auto; max-width: 520px; margin: 0 auto; }
+.ms-diagram__expr { margin: 0; text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--ms-navy); }
+.ms-mini-table { width: 100%; max-width: 320px; margin: 0 auto; border-collapse: collapse; font-size: 0.95rem; }
+.ms-mini-table th, .ms-mini-table td { border: 1px solid var(--ms-line); padding: 6px 10px; text-align: center; }
+.ms-mini-table th { background: var(--ms-cream); color: var(--ms-navy); }
+.ms-frame--interactive { line-height: 2.1; }
+.ms-blank {
+  display: inline-block;
+  margin: 2px 3px;
+  padding: 3px 8px;
+  font: inherit;
+  border: 2px solid var(--ms-teal-ink);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ms-ink);
+  max-width: 100%;
+}
+.ms-blank.is-ok { border-color: #0f6b47; background: #ecf9f2; }
+.ms-blank.is-wrong { border-color: #b43c1e; background: #fff1ed; }
+.ms-scratchpad {
+  margin: 12px 0;
+  padding: 12px 14px;
+  background: var(--ms-cream);
+  border: 1px solid var(--ms-line);
+  border-radius: 10px;
+}
+.ms-rubric {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--ms-line);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+}
+.ms-rubric legend { font-weight: 700; color: var(--ms-navy); padding: 0 6px; }
+.ms-rubric__item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.ms-rubric__item input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+.ms-coach-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.ms-coach-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.ms-coach-pill.is-ok { background: #e3f5ec; color: #0b5a3b; }
+.ms-coach-pill.is-miss { background: #f3f4f6; color: #475569; }
+@media print {
+  .ms-stagebar, .ms-pager, .ms-apply-hud button, [data-compare], [data-apply-hint], [data-guide-check], [data-word-check], [data-check-blanks], .ms-scratchpad { display: none !important; }
+  #apply .ms-task[hidden] { display: block !important; page-break-inside: avoid; margin-bottom: 16px; }
+}
