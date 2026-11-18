@@ -144,76 +144,6 @@
   font-size: 0.9375rem;
   color: var(--ink-2);
 }
-.th-doors {
-  padding-top: var(--s-5);
-  padding-bottom: var(--s-2);
-}
-.th-doors-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.4vw, 1.75rem);
-}
-.th-doors-lead {
-  margin: var(--s-1) 0 var(--s-4);
-}
-.th-door-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
-  gap: var(--s-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.th-door {
-  display: grid;
-  align-content: start;
-  gap: var(--s-2);
-  padding: var(--s-4);
-  border: 1px solid var(--line);
-  border-top: 4px solid var(--door, var(--brand));
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-}
-.th-door.is-teach { --door: var(--listening); }
-.th-door.is-review { --door: var(--speaking); }
-.th-door.is-plan { --door: var(--reading); }
-.th-door.is-find { --door: var(--writing); }
-.th-door h3 {
-  margin: 0;
-  font-size: 1.15rem;
-}
-.th-door > p {
-  margin: 0;
-  color: var(--ink-2);
-  font-size: 1rem;
-}
-.th-door ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-  margin: var(--s-1) 0 0;
-  padding: 0;
-  list-style: none;
-}
-.th-door a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.3rem 0.9rem;
-  border: 1.5px solid var(--line-control);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 1rem;
-  text-decoration: none;
-}
-.th-door a:hover {
-  border-color: var(--door, var(--brand));
-  background: var(--brand-soft);
-  color: var(--brand-deep);
-}
 .th-tile {
   display: inline-grid;
   flex: none;
@@ -251,6 +181,139 @@ body.th-body .lab-main {
 #hub {
   padding-top: var(--s-5);
   padding-bottom: var(--s-7);
+}
+
+/* Teacher Hub task navigation and section hierarchy. Existing domain colors and type tokens stay in use. */
+.th-more-tools.lab-main,
+.th-label-key.lab-main,
+.th-task-nav.lab-main {
+  min-height: 0;
+  padding-block: 0.35rem;
+}
+.th-more-tools,
+.th-label-key {
+  color: var(--ink-2);
+}
+.th-more-tools summary,
+.th-label-key summary {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.2em;
+}
+.th-more-tools[open] summary,
+.th-label-key[open] summary {
+  margin-block-end: var(--s-2);
+}
+.th-more-tools .th-home {
+  margin-block-end: var(--s-3);
+}
+.th-label-key .th-legend {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  margin: 0 0 var(--s-3);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.th-task-nav {
+  position: sticky;
+  top: var(--lab-top-h, 4rem);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  border-block: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: 0 5px 12px -12px rgb(12 34 52 / 28%);
+}
+.th-task-nav-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
+}
+.th-task-nav-label {
+  padding-inline: 0.4rem;
+  color: var(--ink-3);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.th-task-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.th-task-nav a:hover,
+.th-task-nav a:focus-visible {
+  background: var(--surface-2);
+}
+.th-task-nav a[aria-current="location"] {
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+.th-task-group.lab-main {
+  min-height: 0;
+  padding-block: clamp(1.5rem, 3vw, 2.4rem) var(--s-5);
+  scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
+}
+.th-task-heading {
+  width: min(1136px, 100% - 2rem);
+  margin: 0 auto var(--s-4);
+  padding-block-end: var(--s-3);
+  border-block-end: 1px solid var(--line);
+}
+.th-task-heading p {
+  margin: 0 0 0.2rem;
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.th-task-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 700 clamp(1.4rem, 1.15rem + 1vw, 1.9rem)/1.2 var(--font-display, var(--font));
+  text-wrap: balance;
+}
+.th-task-heading span {
+  display: block;
+  margin-block-start: 0.25rem;
+  color: var(--ink-2);
+}
+.th-task-group > .th-sec {
+  width: min(1136px, 100% - 2rem);
+}
+.th-task-group #classEvidence {
+  width: min(1136px, 100% - 2rem);
+  margin-inline: auto;
+  scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
+}
+.th-task-group #hub {
+  width: min(1136px, 100% - 2rem);
+  margin-inline: auto;
+  padding: 0 0 var(--s-5);
+  scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
+}
+.th-task-group #familyTripHost:empty {
+  display: none;
+}
+.th-task-group:focus {
+  outline: none;
 }
 
 /* ── sections ──────────────────────────────────────────────────────────── */
@@ -951,8 +1014,9 @@ del {
 
 /* ── print ─────────────────────────────────────────────────────────────── */
 @media print {
-  .th-doors,
-  .th-hero .th-legend,
+  .th-task-nav,
+  .th-more-tools,
+  .th-label-key,
   .th-plbar,
   .th-skip,
   .no-print {
@@ -1130,64 +1194,6 @@ del {
   margin: var(--s-4) 0;
   white-space: nowrap;
   overflow: hidden;
-}
-
-/* Predictive Intelligence entry point (opens /access-teacher/predictive/). */
-.th-predictive {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  min-height: 44px;
-  margin: var(--s-4, 1rem) 0 0;
-  padding: 1rem 1.25rem;
-  border: 2px solid var(--brand);
-  border-radius: 14px;
-  background: var(--brand);
-  color: var(--on-brand);
-  text-decoration: none;
-}
-.th-predictive-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin: 0.25rem 0 0;
-}
-.th-predictive-go,
-.th-predictive-demo {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 1.1rem;
-  border-radius: 10px;
-  border: 2px solid var(--on-brand);
-  font-weight: 800;
-  text-decoration: none;
-}
-.th-predictive-go {
-  background: var(--on-brand);
-  color: var(--brand-deep);
-}
-.th-predictive-demo {
-  color: var(--on-brand);
-}
-.th-predictive-go:hover,
-.th-predictive-demo:hover {
-  text-decoration: underline;
-}
-.th-predictive-go:focus-visible,
-.th-predictive-demo:focus-visible {
-  outline: 3px solid var(--focus, #1d4ed8);
-  outline-offset: 3px;
-}
-.th-predictive-title {
-  margin: 0;
-  color: var(--on-brand);
-  font: 800 1.25rem/1.2 var(--font-display, var(--font));
-}
-.th-predictive-desc {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.4;
 }
 
 /* Grade-band and audio-first chips on K-3 activity rows */
@@ -1738,9 +1744,13 @@ body.th-body .fold-toggle {
   gap: 0.35rem;
   min-height: 2.75rem;
 }
-.th-doors .th-legend {
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  margin-bottom: var(--s-4);
+@media (max-width: 760px) {
+  .th-task-nav {
+    justify-content: flex-start;
+  }
+  .th-task-nav-main {
+    width: 100%;
+  }
 }
 @media (max-width: 559px) {
   .th-intro .th-hero .eyebrow,

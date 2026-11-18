@@ -62,6 +62,7 @@ const S = {
   limit: PAGE,
 };
 const root = document.getElementById("hub");
+const familyTripHost = document.getElementById("familyTripHost");
 const abs = (p) => new URL(p, location.origin).href;
 const actUrl = (r) =>
   r.domain === "Model-Test"
@@ -394,6 +395,8 @@ async function render() {
         : ""
     }
   `);
+  const familyTrip = root.querySelector("#familyTrip");
+  if (familyTrip && familyTripHost) familyTripHost.replaceChildren(familyTrip);
 }
 
 function setBand(band) {
@@ -441,18 +444,18 @@ root.addEventListener("change", (e) => {
   S.picked = e.target.checked ? [...S.picked, id] : S.picked.filter((x) => x !== id);
   render();
 });
+familyTripHost?.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-trip-copy]")) return;
+  const url = new URL(`${BASE}/family/trip`, location.origin);
+  url.searchParams.set("grades", familyTripHost.querySelector("[data-trip-grade]")?.value || "6-8");
+  url.searchParams.set("skill", familyTripHost.querySelector("[data-trip-skill]")?.value || "Listening");
+  copyText(url.href).then((ok) => {
+    const status = familyTripHost.querySelector("[data-trip-status]");
+    if (status) status.textContent = ok ? "Family Trip link copied." : "Copy was unavailable. Use the Open link button.";
+  });
+});
 root.addEventListener("click", (e) => {
   const t = e.target;
-  if (t.closest("[data-trip-copy]")) {
-    const url = new URL(`${BASE}/family/trip`, location.origin);
-    url.searchParams.set("grades", root.querySelector("[data-trip-grade]")?.value || "6-8");
-    url.searchParams.set("skill", root.querySelector("[data-trip-skill]")?.value || "Listening");
-    copyText(url.href).then((ok) => {
-      const status = root.querySelector("[data-trip-status]");
-      if (status) status.textContent = ok ? "Family Trip link copied." : "Copy was unavailable. Use the Open link button.";
-    });
-    return;
-  }
   if (t.closest("[data-reset-filters]")) {
     Object.assign(S, { q: "", domain: "", level: "", type: "", limit: PAGE });
     render().then(() => root.querySelector('[data-f="q"]')?.focus());
@@ -494,13 +497,13 @@ root.addEventListener("click", (e) => {
     render();
   }
 });
-root.addEventListener("change", (e) => {
+familyTripHost?.addEventListener("change", (e) => {
   if (!e.target.matches("[data-trip-grade], [data-trip-skill]")) return;
   if (e.target.matches("[data-trip-grade]")) S.tripGrade = e.target.value;
   if (e.target.matches("[data-trip-skill]")) S.tripSkill = e.target.value;
   const grade = S.tripGrade;
   const skill = S.tripSkill;
-  const link = root.querySelector("[data-trip-open]");
+  const link = familyTripHost.querySelector("[data-trip-open]");
   if (link) link.href = `${BASE}/family/trip?grades=${encodeURIComponent(grade)}&skill=${encodeURIComponent(skill)}`;
 });
 

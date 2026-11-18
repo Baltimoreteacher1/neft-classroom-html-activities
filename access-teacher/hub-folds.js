@@ -6,7 +6,7 @@ import { applyFolds } from "/access-practice-lab/src/fold.js";
 const SECTIONS = "section.th-sec[id], #classEvidencePanel";
 
 function fold() {
-  // evidence.js renders its panel without an id; name it so the door link and the fold key are stable.
+  // evidence.js renders its panel without an id; name it so section links and fold keys stay stable.
   const evidence = document.querySelector("#classEvidence > .panel");
   if (evidence && !evidence.id) evidence.id = "classEvidencePanel";
   for (const s of document.querySelectorAll(SECTIONS)) {
@@ -14,9 +14,6 @@ function fold() {
     if (s.dataset.foldKey && !s.querySelector(":scope > .fold-body")) delete s.dataset.foldKey;
     if (!s.hasAttribute("data-fold")) s.setAttribute("data-fold", s.id === "liveClass" ? "open" : "");
   }
-  // A door link whose section this grade band does not have (weekly links, forms…) is hidden, never a dead end.
-  for (const a of document.querySelectorAll(".th-door a[href^='#']"))
-    a.parentElement.hidden = !document.getElementById(a.hash.slice(1));
   const active = document.activeElement;
   const sel = active && "selectionStart" in active ? [active.selectionStart, active.selectionEnd] : null;
   applyFolds(document);
