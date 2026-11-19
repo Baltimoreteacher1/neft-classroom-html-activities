@@ -417,8 +417,13 @@ const solvedCount = (page, unit4) =>
 
 /* ---- the sweep ----------------------------------------------------------------------------------------- */
 try {
+  /** A focused Practice page (authored `focusPractice`) carries no lab bench by decision (tools/studio-lab-bench.test.mjs pins it). */
+  const focusedPractice = (/** @type {string} */ id) =>
+    JSON.parse(readFileSync(join(REPO_ROOT, `data/practice-studio/${id}.json`), "utf8"))
+      .focusPractice;
   const runPage = async ({ id, mode }) => {
     const unit4 = /^4-/.test(id);
+    if (!unit4 && mode === "practice" && focusedPractice(id)) return;
     {
       const where = `${id} ${mode}`;
       const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });

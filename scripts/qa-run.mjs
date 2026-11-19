@@ -485,7 +485,7 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(assets\/studio(-act|-gen)?\/|assets\/studio-comfort\.js|assets\/studio-viz[^/]*\.js|assets\/u4-(studio|adaptive-investigation)[^/]*\.(js|css)|curriculum\/learning-labs\/shared\/models\/|data\/practice-studio\/|math\/practice-studio\/|scripts\/(generate-practice-studios|generate-practice-skill-graph)\.mjs|scripts\/lib\/practice-studio-[^/]+\.mjs|tools\/lib\/studio-boot\.mjs|tools\/(studio-[^/]+\.test\.mjs|verify-studio-(guess|layout|linked-models|pathways)-browser\.mjs))$/,
+    /^(assets\/studio(-act|-gen)?\/|assets\/studio-(comfort\.js|polish\.css)|assets\/studio-viz[^/]*\.js|assets\/u4-(studio|adaptive-investigation)[^/]*\.(js|css)|curriculum\/learning-labs\/shared\/models\/|data\/practice-studio\/|math\/practice-studio\/|scripts\/(generate-practice-studios|generate-practice-skill-graph)\.mjs|scripts\/lib\/practice-studio-[^/]+\.mjs|tools\/lib\/studio-boot\.mjs|tools\/(studio-[^/]+\.test\.mjs|verify-studio-(guess|layout|linked-models|pathways)-browser\.mjs))$/,
     [
       "test",
       "validate:practice-studio-data",

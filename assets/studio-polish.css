@@ -1,0 +1,185 @@
+/* Practice Studio polish layer. Loaded LAST on every studio page (scripts/generate-practice-studios.mjs), so it only refines
+   spacing, rhythm, contrast and touch comfort. It changes no content, no behaviour and no navigation. Same specificity
+   convention as studio-dimension.css (`html:root body …`) so it wins without !important. */
+
+/* ---- 1. Top chrome: header, part switch and the stage trail read as one calm block ------------------------------------ */
+html:root body .part-switcher-bar {
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border-bottom: 0;
+}
+html:root body .part-switcher-inner {
+  padding: 10px 20px 2px;
+  gap: 6px;
+}
+html:root body .part-switch-btn {
+  min-height: 36px;
+  font-size: 0.92rem;
+}
+html:root body .focus-progress {
+  height: 3px;
+  background: var(--well);
+}
+html:root body .tab-bar {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---- 2. Stage header: a clear title row, then the problem dots, with room to breathe --------------------------------- */
+html:root body .topic-strip {
+  margin: 20px 0 14px;
+  align-items: center;
+  gap: 12px 24px;
+}
+html:root body .topic-strip h2 {
+  margin: 2px 0 0;
+  line-height: 1.15;
+}
+html:root body .stage-eyebrow {
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+html:root body .stage-purpose {
+  max-width: 62ch;
+  margin: 6px 0 0;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+html:root body .stepper-bar .dots-row {
+  gap: 8px;
+}
+
+/* ---- 3. The problem card: one soft surface, tools quiet, the question first ---------------------------------------- */
+html:root body .stage-card {
+  padding: clamp(14px, 2.2vw, 24px);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 2px rgb(16 27 56 / 0.06),
+    0 14px 32px -22px rgb(16 27 56 / 0.35);
+}
+html:root body .item-head {
+  gap: 8px;
+  margin-bottom: 10px;
+}
+html:root body .item-tools {
+  gap: 6px;
+  align-items: center;
+}
+html:root body .tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 12px;
+  border-width: 1px;
+  background: transparent;
+  font-weight: 650;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+html:root body .tool-btn[hidden] {
+  display: none;
+}
+html:root body .tool-btn:hover {
+  background: var(--brand-tint);
+}
+html:root body .item-q {
+  margin: 4px 0 16px;
+  line-height: 1.4;
+}
+html:root body .lang-es-tap {
+  vertical-align: middle;
+  margin-left: 6px;
+}
+html:root body .choice-stack {
+  gap: 10px;
+}
+html:root body .choice-btn {
+  min-height: 52px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+html:root body .choice-btn:hover:not(:disabled) {
+  box-shadow: 0 2px 10px -4px rgb(16 27 56 / 0.3);
+}
+
+/* ---- 4. Help: hint, workspace and Check sit as one tidy support row -------------------------------------------------- */
+html:root body .hint-area {
+  margin-top: 16px;
+  border-radius: 14px;
+  gap: 8px;
+}
+html:root body .hint-left {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+}
+
+/* ---- 5. The lesson model card above the stages: lighter frame, tighter rhythm ----------------------------------------- */
+html:root body .expression-parts,
+html:root body .alg-expr-card {
+  margin: 0 0 20px;
+  border-width: 1px;
+  border-radius: 20px;
+}
+html:root body .parts-interact {
+  border-radius: 16px;
+}
+html:root body .parts-interact input[type="range"] {
+  width: 100%;
+  max-width: none;
+}
+
+/* ---- 6. Footer: readable in light mode (the dimension layer made it transparent but kept the pale link colour) ------------- */
+html:root body .app-footer {
+  margin-top: 32px;
+  padding: 20px 24px 28px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+html:root body .app-footer .footer-wrap {
+  gap: 6px 16px;
+}
+html:root body .app-footer a,
+html:root body .app-footer a:visited {
+  color: var(--brand);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html:root body .app-footer a:hover {
+  color: var(--brand-dark, var(--brand));
+}
+html:root body[data-theme="dark"] .app-footer a,
+html:root body[data-theme="dark"] .app-footer a:visited {
+  color: var(--sun);
+}
+
+/* ---- 7. Phones: tools wrap in one tidy row, nothing is cramped against the floating buttons ------------------------------- */
+@media (max-width: 600px) {
+  html:root body .topic-strip {
+    margin: 14px 0 10px;
+  }
+  html:root body .item-tools {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  html:root body .tool-btn {
+    min-height: 40px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+  html:root body .stage-card {
+    border-radius: 16px;
+  }
+  html:root body .app-footer {
+    padding: 18px 16px 88px;
+  }
+}
+
+/* ---- 8. Motion: respect the student's setting ---------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html:root body .choice-btn {
+    transition: none;
+  }
+}

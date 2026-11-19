@@ -134,6 +134,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/studio-comfort.css",
     "assets/dimension.css",
     "assets/studio-dimension.css",
+    "assets/studio-polish.css",
   ];
   // The studio typefaces, self-hosted (public/assets/fonts, served at /assets/fonts). Content-named, so never stamped.
   const fonts = ["/assets/fonts/inter-aee799.css", "/assets/fonts/plus-jakarta-sans-4f1f37.css"];

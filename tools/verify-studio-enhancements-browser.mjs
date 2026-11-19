@@ -225,17 +225,23 @@ try {
     await spy(page);
     await page.goto(`${origin}/math/practice-studio/3-5/`);
     await page.locator(".item-q").first().waitFor();
-    // Practice opens with the lab's explore items (W4a); the streak is built on the plain questions after them
-    await page.evaluate(() => {
+    // Build the streak in a section with MORE than three plain questions: in a three-question section the third answer also
+    // completes the section, and "Section complete" rightly replaces the streak toast. (Practice section 1 holds exactly three
+    // questions since the lab items moved to section 4.)
+    const tab = await page.evaluate(() => {
       const a = /** @type {any} */ (window).StudioRT.api;
-      a.state.idx[1] = a.sections[0].items.findIndex(
-        (/** @type {any} */ x) => !/^lab-/.test(x.id || ""),
-      );
-      a.render(1);
+      const plain = (/** @type {any} */ x) => !/^lab-/.test(x.id || "");
+      const t =
+        a.sections.findIndex((/** @type {any} */ s) => s.items.filter(plain).length > 3) + 1;
+      a.state.idx[t] = a.sections[t - 1].items.findIndex(plain);
+      return t;
     });
+    assert.ok(tab > 0, "a section with more than three plain questions exists");
+    await page.locator(`.tab-btn[data-tab="${tab}"]`).click();
+    await page.evaluate((t) => /** @type {any} */ (window).StudioRT.api.render(t), tab);
     for (let i = 0; i < 3; i++) {
-      await solveCurrent(page, "#stage-1", 1);
-      await page.locator("#stage-1 .next-btn").click();
+      await solveCurrent(page, `#stage-${tab}`, tab);
+      await page.locator(`#stage-${tab} .next-btn`).click();
     }
     await page.waitForSelector("#comfort-toast.show", { timeout: 4000 });
     assert.match(await page.locator("#comfort-toast").innerText(), /3 in a row/);

@@ -46,7 +46,11 @@ const THINKING = "assets/u4-studio-thinking.js";
 const TYPE = "assets/u4-studio-type.js";
 const INVESTIGATION_STYLE = "assets/u4-adaptive-investigation.css";
 /** The dimensional layer, last in <head> so it wins over every studio sheet (shared tokens first). */
-const DIMENSION = ["assets/dimension.css", "assets/studio-dimension.css"];
+const DIMENSION = [
+  "assets/dimension.css",
+  "assets/studio-dimension.css",
+  "assets/studio-polish.css",
+];
 /** The studio typefaces (self-hosted, content-named), the same pair the generated studios load. */
 const FONTS = ["/assets/fonts/inter-aee799.css", "/assets/fonts/plus-jakarta-sans-4f1f37.css"];
 const INVESTIGATION_SCRIPT = "assets/u4-adaptive-investigation.js";
