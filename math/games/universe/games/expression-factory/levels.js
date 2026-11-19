@@ -39,7 +39,7 @@ export const LEVELS = [
       },
       {
         kind: "build",
-        target: [M("+", 1), M("*", 4)],
+        target: [M("*", 5), M("+", 4)],
         slots: 2,
         ops: OPS,
         xs: [1, 2, 3, 4],

@@ -68,12 +68,12 @@ export async function drive({ host, u, fail, axe }) {
   await build(
     1,
     [
-      ["× multiply", 4],
+      ["× multiply", 5],
       ["+ add", 4],
     ],
-    "12",
+    "14",
   );
-  if (!(await room(1)).done) return fail("4x + 4 did not fill the order for 4(x + 1)");
+  if (!(await room(1)).done) return fail("5x + 4 did not fill its order");
   await build(
     2,
     [

@@ -115,10 +115,10 @@ function play(index) {
   o = g.run(0);
   assert.equal(o.ok, true);
   assert.equal(g.w().solids[g.w().rooms[0].gate].open, 1);
-  g.set(1, [M("*", 4), M("+", 1)]);
+  g.set(1, [M("*", 5), M("+", 1)]);
   assert.equal(g.run(1).ok, false);
-  g.set(1, [M("*", 4), M("+", 4)]);
-  assert.equal(g.run(1).ok, true, "4x + 4 fills the order for 4(x + 1): equivalent is enough");
+  g.set(1, [M("*", 5), M("+", 4)]);
+  assert.equal(g.run(1).ok, true, "5x + 4 fills its order");
   g.set(2, [M("*", 2), M("-", 1)]);
   assert.equal(g.run(2).ok, true);
 }

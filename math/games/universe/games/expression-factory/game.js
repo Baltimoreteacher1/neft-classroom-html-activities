@@ -52,8 +52,8 @@ class ExpressionFactory extends UniverseGame {
         standard: "6.AT.6a",
         title: { en: "Assembly Line", es: "Línea de ensamblaje" },
         discovery: {
-          en: "An expression is a set of operations done to a number. Order matters: 3x + 2 multiplies first, 3(x + 2) adds first.",
-          es: "Una expresión es un conjunto de operaciones que se le hacen a un número. El orden importa: 3x + 2 multiplica primero, 3(x + 2) suma primero.",
+          en: "An expression is a set of operations done to a number. Order matters: 3x + 2 means multiply by 3 first, then add 2.",
+          es: "Una expresión es un conjunto de operaciones que se le hacen a un número. El orden importa: 3x + 2 significa multiplicar por 3 primero y luego sumar 2.",
         },
       },
       {
