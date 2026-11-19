@@ -71,3 +71,13 @@ My class), and `effectiveFeedback(loop)` returns the instructor's next step when
 ## Tests
 
 `node --test tools/intel-engine.test.mjs` · `node tools/intel-e2e.mjs`
+
+## The teacher's view: class intelligence
+
+`access-teacher/intel/` (mounted in Teacher Hub > Review Student Progress, `/access-teacher/?task=analyze`). `model.js`
+(`buildInsight`, pure) turns a live class's summaries (`classlink.js`) and imported Passport codes (`roster-store.js`) into,
+per WIDA domain: what students did (counts), a strength (the engine's grounded strength with a verbatim quote, or a Reading /
+Listening skill read right on their own), ONE next move and an assign spec; plus the students to check in with.
+`wording.js` holds every sentence (EN/ES), `panel.js` renders it and assigns through the existing class API
+(`assignToClass`, on the teacher's click). It follows the hub's grade band. No score, level, percent or timer, and no new
+network call. Test: `node --test tools/access-class-intelligence.test.mjs`.

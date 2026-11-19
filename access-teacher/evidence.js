@@ -35,11 +35,12 @@ import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util.js";
 import { createExtras } from "./evidence-extras.js";
+import { ROSTER_KEY, upgradeStudent } from "./roster-store.js";
 import { copyGroupPlaylist, groupBand } from "./group-playlist.js";
 import { normalizeFluencyReport } from "./math-fluency-report.js";
 import { expeditionsTable } from "./expeditions-table.js"; // teacher: Language Expeditions stamps
 
-const KEY = "accessTeacher:v1:roster";
+const KEY = ROSTER_KEY;
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
 const LESSON_KEY = "accessTeacher:v1:miniLessons";
 const OVERRIDE_KEY = "accessTeacher:v1:skillOverrides";
@@ -57,13 +58,6 @@ function read(key, fallback) {
     return fallback;
   }
 }
-/** Older rosters had no section or id; give them both so nothing is lost. */
-const upgrade = (s) => ({
-  ...s,
-  section: s.section || "Unsorted",
-  id: s.id || `${s.section || "Unsorted"}|${s.alias}|${s.band}`,
-});
-
 const T = {
   blueprint: null,
   alignment: null,
@@ -71,7 +65,7 @@ const T = {
   alignmentPage: 1,
   alignmentReviews: read(ALIGNMENT_REVIEW_KEY, {}),
   studio: { speaking: [], writing: [], missions: [] },
-  students: read(KEY, []).map(upgrade),
+  students: read(KEY, []).map(upgradeStudent),
   scores: read(`${KEY}:scores`, []),
   tab: "class",
   pick: "",

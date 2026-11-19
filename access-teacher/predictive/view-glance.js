@@ -610,6 +610,13 @@ export function renderGlance(ws) {
     "div",
     { class: "pi-stack pi-glance" },
     heading(2, "Class at a glance"),
+    h(
+      "p",
+      { class: "pi-note" },
+      "These are official results. For what students did in practice, strengths and the next thing to teach, open ",
+      h("a", { href: "/access-teacher/?task=analyze" }, "Class intelligence in the Teacher Hub"),
+      ".",
+    ),
     newSince(ws),
     h("div", { class: "pi-gl-top" }, attentionPanel(ws, all), nextSteps(ws, all)),
     h(

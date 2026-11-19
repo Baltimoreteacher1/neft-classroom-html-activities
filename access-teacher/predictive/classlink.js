@@ -64,24 +64,35 @@ export function memberFor(classStudents, name) {
 export { supportLevelFor };
 
 let indexCache = null;
-const loadIndex = async () =>
+export const loadIndex = async () =>
   (indexCache ||= await (await fetch("/access-practice-lab/content/index.json")).json());
 
 /**
- * Pick `count` activities for a domain, band and level that the class has not been given yet, add them to the
- * class's assignments and save. Returns { ok, added: [titles], error }.
+ * The next `count` activities for a domain, band and support choice that the class does not have yet: the chosen
+ * support first, any other after it. The one pick rule, used by the assign button and by the panels that preview it.
  */
-export async function assignToClass(cls, { band, domain, level, count = 2 }) {
+export function pickActivities(index, assignments, { band, domain, support, count = 2 }) {
+  const pool = assignableActivities(index, band, domain);
+  return [...pool.filter((r) => r.level === support), ...pool.filter((r) => r.level !== support)]
+    .filter((r) => !assignments.some((a) => a.id === r.id))
+    .slice(0, count);
+}
+
+/**
+ * Pick `count` activities for a domain and band that the class has not been given yet, add them to the class's
+ * assignments and save. The support choice is `support` ("A" most help to "C" least) or, from a reported WIDA
+ * `level`, supportLevelFor(level). Returns { ok, added: [titles], error }.
+ */
+export async function assignToClass(cls, { band, domain, level, support, count = 2 }) {
   const index = await loadIndex();
   const current = await loadClass(cls);
   if (!current.ok) return { ok: false, error: current.error, added: [] };
-  const support = supportLevelFor(level);
-  const pool = assignableActivities(index, band, domain);
-  const fresh = [
-    ...pool.filter((r) => r.level === support),
-    ...pool.filter((r) => r.level !== support),
-  ].filter((r) => !current.assignments.some((a) => a.id === r.id));
-  const picks = fresh.slice(0, count);
+  const picks = pickActivities(index, current.assignments, {
+    band,
+    domain,
+    support: support || supportLevelFor(level),
+    count,
+  });
   if (!picks.length) return { ok: false, error: "nothing-new", added: [] };
   const list = [...current.assignments, ...picks.map(toAssignment)].slice(-MAX_ASSIGNMENTS);
   const res = await client(cls).settings({ assignments: list });

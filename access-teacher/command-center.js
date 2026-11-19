@@ -22,8 +22,6 @@ import {
 } from "/access-practice-lab/src/resource-intelligence.js";
 import { DESTINATIONS } from "/access-practice-lab/src/sitemap.js";
 import { BAND_INFO, CONTENT_BANDS } from "/access-practice-lab/src/bands.js";
-import { allRecords } from "/access-practice-lab/src/store.js";
-import { loadLedger } from "/access-practice-lab/src/lang/ledger.js";
 import {
   BASE,
   announce,
@@ -108,6 +106,11 @@ export function deleteSavedPathway(id) {
   return next;
 }
 
+const initialTask = () => {
+  const t = typeof location === "undefined" ? "" : new URLSearchParams(location.search).get("task");
+  return COMMAND_ACTIONS.some((a) => a.id === t) ? t : "";
+};
+
 export async function mountCommandCenter(host) {
   if (!host) return;
   const index = await loadIndex().catch(() => null);
@@ -115,8 +118,9 @@ export async function mountCommandCenter(host) {
 
   const band = hubBand();
   const state = {
-    // No task is open on arrival (2026-11-17): the teacher sees five choices, not a lesson builder.
-    activeTab: "",
+    // No task is open on arrival (2026-11-17): the teacher sees the choices, not a lesson builder.
+    // `?task=analyze` (the Data Studio's link) opens Review Student Progress.
+    activeTab: initialTask(),
     band,
     // Plan a Lesson state
     planBand: band,
@@ -512,62 +516,10 @@ export async function mountCommandCenter(host) {
     </div>`;
   }
 
+  /** "Review Student Progress": the one class intelligence view (intel/panel.js), mounted after render. */
   function renderAnalyzeTab() {
-    const ledger = loadLedger();
-    const entries = ledger.entries || [];
-    const records = allRecords();
-    const completedCount = records.reduce((n, r) => n + (r.record?.complete?.length || 0), 0);
-    const independentCount = entries.filter((e) => e.stage === "independent").length;
-    const supportedCount = entries.filter((e) => e.stage === "supported").length;
-
-    return html`<div class="tc-workspace" id="tcAnalyze" role="region" aria-labelledby="tc-tab-analyze">
-      <div class="tc-ws-head">
-        <div>
-          <h3>Review Student Progress</h3>
-          <p class="fine">
-            Review classroom evidence, response history, and the next teaching steps. Practice records
-            first attempts, supported vs. independent work, and revisions.
-          </p>
-        </div>
-      </div>
-
-      <ul class="tc-stat-grid">
-        <li class="tc-stat-card">
-          <strong>${completedCount}</strong>
-          <span>Completed activities on this device</span>
-        </li>
-        <li class="tc-stat-card">
-          <strong>${entries.length}</strong>
-          <span>Speaking &amp; writing ledger entries</span>
-        </li>
-        <li class="tc-stat-card">
-          <strong>${independentCount} / ${supportedCount}</strong>
-          <span>Independent vs. supported responses</span>
-        </li>
-      </ul>
-
-      <div class="tc-rec-grid">
-        <article class="tc-rec-card">
-          <strong>Speaking &amp; Writing Review Queue</strong>
-          <span class="fine">Read and listen to student submissions, give rubric feedback, and assign targeted follow-up loops.</span>
-          <a class="btn small" href="#accReview">Jump to Review Queue →</a>
-        </article>
-        <article class="tc-rec-card">
-          <strong>Class Language Evidence &amp; Heat Map</strong>
-          <span class="fine">Inspect Key Language Use coverage (Narrate, Inform, Explain, Argue) and build group playlists.</span>
-          <a class="btn small" href="#classEvidencePanel">Jump to Class Evidence →</a>
-        </article>
-        <article class="tc-rec-card">
-          <strong>Learning Insights &amp; Reteaching</strong>
-          <span class="fine">Spot repeated error patterns and launch targeted Error Detective or scaffolded practice.</span>
-          <a class="btn small" href="#accInsights">Jump to Learning Insights →</a>
-        </article>
-        <article class="tc-rec-card">
-          <strong>Live Class, Class Codes &amp; Passport Check-ins</strong>
-          <span class="fine">See who joined with your class code, what you assigned, and the check-ins students sent.</span>
-          <a class="btn small" href="#liveClass">Jump to Live Class →</a>
-        </article>
-      </div>
+    return html`<div class="tc-workspace ti-panel" id="tcAnalyze" role="region" aria-labelledby="tiTitle">
+      <div id="tiHost"><p class="fine" role="status">Loading your class…</p></div>
     </div>`;
   }
 
@@ -737,6 +689,16 @@ export async function mountCommandCenter(host) {
       </p>
       ${tourState.open ? renderHubTourHTML(registry, tourState, state.statusNote) : ""}
     </div>`);
+    if (task === "analyze") mountIntelligence();
+  }
+
+  /** The intelligence panel follows the page's grade band; it is rebuilt with the rest of the command center. */
+  function mountIntelligence() {
+    const slot = host.querySelector("#tiHost");
+    if (!slot) return;
+    import("/access-teacher/intel/panel.js").then((m) =>
+      m.mountClassIntelligence(slot, { band: state.band, onBand: (b) => setBand(b) }),
+    );
   }
 
   /** One grade band for the whole page: this panel, the URL and (via `th:band`) the activity list below. */
