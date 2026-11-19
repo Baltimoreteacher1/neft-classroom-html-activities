@@ -70,6 +70,7 @@ const TABS = [
   "forecasts",
   "classroom",
   "analysis",
+  "lab",
   "planner",
   "reports",
   "toolkit",
@@ -316,7 +317,8 @@ ok(
   "scenarios are labelled hypothetical",
 );
 ok(
-  (await page.locator("#piScenarioOverallTitle").innerText()) === "Overall score with these changes",
+  (await page.locator("#piScenarioOverallTitle").innerText()) ===
+    "Overall score with these changes",
   "scenario slider area states the Overall score outcome and its limits",
 );
 await page.locator('[data-scenario="Reading:level"]').evaluate((el) => {
@@ -325,10 +327,33 @@ await page.locator('[data-scenario="Reading:level"]').evaluate((el) => {
 });
 ok(
   (await page.locator('[data-scenario="Reading:level"]').inputValue()) === "0.5" &&
-    (await page.locator('[data-scenario-overall]').count()) === 1,
+    (await page.locator("[data-scenario-overall]").count()) === 1,
   "changing a domain score recalculates the hypothetical Overall result",
 );
 await page.click("[data-scenario-reset]");
+await tab("lab");
+ok((await page.locator(".pi-lab-card").count()) === 6, "Deeper tools offers six questions");
+for (const id of ["groups", "together", "unusual", "speed", "project"]) {
+  await page.click(`[data-lab="${id}"]`);
+  await page.waitForSelector(".pi-lab-headline");
+  const text = await page.locator(".pi-lab").textContent();
+  ok(
+    ["What this means", "What to try", "How sure to be"].every((t) => text.includes(t)) &&
+      !/NaN|undefined|Infinity/.test(text),
+    `Deeper tool "${id}" answers in plain lines with no broken numbers`,
+  );
+  if (AxeBuilder) {
+    const r = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    const bad = r.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+    ok(
+      !bad.length,
+      `Deeper tool "${id}": axe has no serious/critical violations${bad.length ? ` — ${bad.map((v) => `${v.id}: ${v.nodes[0]?.target}`).join(" | ")}` : ""}`,
+    );
+  }
+  await page.click(".pi-lab-top .btn");
+}
 await tab("analysis");
 ok(
   (await page.locator("#piAnalysisDistribution").count()) === 1 &&

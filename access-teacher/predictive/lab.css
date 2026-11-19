@@ -1,0 +1,52 @@
+/* Deeper tools (view-lab.js). Design-system tokens from ds.css only. */
+.pi-lab-grid { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
+.pi-lab-card { display: grid; gap: var(--s-2); align-content: start; text-align: start; min-height: 6rem; padding: var(--s-4); border: 1.5px solid var(--line-strong); border-radius: var(--r-lg); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; box-shadow: var(--shadow-card), var(--edge-light); transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1); }
+.pi-lab-card strong { font-family: var(--font-display); font-size: 1.2rem; color: var(--brand-ink); }
+.pi-lab-card span { color: var(--ink-2); }
+.pi-lab-card:hover { transform: translateY(-2px); border-color: var(--brand); }
+.pi-lab-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.pi-lab-top { display: grid; gap: var(--s-1); justify-items: start; }
+.pi-lab-title, .pi-lab-ask { margin: 0; }
+.pi-lab-title { font-family: var(--font-display); font-size: 1.5rem; }
+.pi-lab-ask { color: var(--ink-2); }
+
+.pi-lab-answer { display: grid; gap: var(--s-3); border-inline-start: 8px solid var(--teal); background: linear-gradient(135deg, var(--teal-soft), var(--surface) 65%); }
+.pi-lab-answer.is-wait { border-inline-start-color: var(--accent); background: var(--surface); }
+.pi-lab-headline { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 1.05rem + 1vw, 1.7rem); line-height: 1.25; }
+.pi-lab-line { display: grid; gap: var(--s-1); }
+.pi-lab-line p { margin: 0; max-width: var(--measure); font-size: 1.05rem; line-height: 1.55; }
+.pi-lab-label { color: var(--ink-3); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.pi-lab-groups { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+.pi-lab-group h4 { margin: 0; font-family: var(--font-display); }
+.pi-lab-sub { margin: var(--s-1) 0 var(--s-3); font-weight: 700; color: var(--brand-ink); }
+.pi-lab-bars { display: grid; gap: var(--s-2); margin: 0 0 var(--s-3); padding: 0; list-style: none; }
+.pi-lab-bars li { display: grid; grid-template-columns: 5.5rem 1fr 2.2rem; gap: var(--s-2); align-items: center; }
+.pi-lab-track { display: block; height: 0.7rem; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.pi-lab-fill { display: block; height: 100%; background: var(--teal); }
+
+.pi-lab-matrix td, .pi-lab-matrix th { text-align: center; }
+.pi-lab-matrix th[scope="row"] { text-align: start; }
+.pi-lab-cell { display: block; min-width: 3rem; padding: var(--s-2); border-radius: var(--r-xs); font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); background: var(--surface-2); }
+.pi-lab-cell.is-1 { background: var(--teal-soft); }
+.pi-lab-cell.is-2 { background: color-mix(in srgb, var(--teal) 35%, var(--surface)); }
+.pi-lab-cell.is-3 { background: var(--teal); color: var(--on-brand); }
+.pi-lab-cell.is-diag { color: var(--ink-3); background: transparent; }
+.pi-lab-list { display: grid; gap: var(--s-2); margin: var(--s-3) 0 0; padding-inline-start: 1.2rem; }
+
+.pi-lab-diverge { position: relative; display: block; width: 8rem; height: 0.8rem; border-radius: 999px; background: var(--surface-3); }
+.pi-lab-diverge::before { content: ""; position: absolute; inset-block: -2px; inset-inline-start: 50%; width: 2px; background: var(--ink-3); }
+.pi-lab-diverge span { position: absolute; inset-block: 0; border-radius: 999px; background: var(--teal); }
+.pi-lab-diverge.is-up span { inset-inline-start: 50%; }
+.pi-lab-diverge.is-down span { inset-inline-end: 50%; background: var(--writing); }
+
+.pi-lab-range { position: relative; display: block; width: 10rem; height: 0.9rem; border-radius: 999px; background: var(--surface-3); }
+.pi-lab-span { position: absolute; inset-block: 0.2rem; border-radius: 999px; background: color-mix(in srgb, var(--teal) 45%, var(--surface)); }
+.pi-lab-dot { position: absolute; inset-block-start: 50%; width: 0.9rem; height: 0.9rem; margin: -0.45rem 0 0 -0.45rem; border-radius: 50%; background: var(--brand); border: 2px solid var(--surface); }
+
+.pi-lab-pick { border: 1.5px solid var(--line-strong); border-radius: var(--r-lg); }
+.pi-lab-pick legend { padding: 0 var(--s-2); font-weight: 800; }
+.pi-lab-checks { display: grid; gap: var(--s-1) var(--s-4); grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); }
+.pi-lab-check { display: flex; gap: var(--s-2); align-items: center; min-height: 44px; }
+.pi-lab-check input { width: 1.4rem; height: 1.4rem; flex: none; }
+@media (prefers-reduced-motion: reduce) { .pi-lab-card { transition: none; } }

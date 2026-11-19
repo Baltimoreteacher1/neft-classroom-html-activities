@@ -10,6 +10,7 @@ import { renderAsk } from "./view-ask.js";
 import { renderAnalysis } from "./view-analysis.js";
 import { renderClassroom } from "./view-classroom.js";
 import { renderGlance } from "./view-glance.js";
+import { renderLab } from "./view-lab.js";
 import { dropZone, renderData, startManual } from "./view-data.js";
 import { renderForecasts } from "./view-forecasts.js";
 import { renderGrowth } from "./view-growth.js";
@@ -30,6 +31,7 @@ const TABS = [
   { id: "forecasts", label: "Forecasts & Scenarios", render: renderForecasts },
   { id: "classroom", label: "Classroom Insights", render: renderClassroom },
   { id: "analysis", label: "Statistical Lab", render: renderAnalysis },
+  { id: "lab", label: "Deeper tools", render: renderLab },
   { id: "planner", label: "Instructional Planner", render: renderPlanner },
   { id: "reports", label: "Reports", render: renderReports },
   { id: "toolkit", label: "Toolkit", render: renderToolkit },
@@ -159,6 +161,7 @@ const ICONS = {
   data: "M12 3v12M7 10l5 5 5-5M4 21h16",
   toolkit: "M14 7l3-3 3 3-3 3M3 21l8-8M9 3l2 2-6 6-2-2zM15 13l6 6-2 2-6-6",
   analysis: "M4 19V5m0 14h16M7 15l3-4 3 2 5-7M17 6h1v1",
+  lab: "M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M8 15h8",
 };
 export const icon = (id) =>
   s("svg", { viewBox: "0 0 24 24", class: "pi-ico", "aria-hidden": "true", focusable: "false" }, s("path", { d: ICONS[id] || ICONS.overview }));
