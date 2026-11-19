@@ -174,6 +174,35 @@ export const WORD_ROOMS = [
   ],
 ];
 
+// Extra practice for Factory Run stages 1 and 2 (same skills, new phrases), so
+// the early stages are twice as long. Appended after WORD_ROOMS on purpose:
+// the card order in `mix` follows definition order.
+export const RUN_EXTRA = [
+  [
+    words("7 more than x", "7 más que x", "x + 7", ["7x", "x − 7"]),
+    words("The sum of a and 8", "La suma de a y 8", "a + 8", ["8a", "a − 8"]),
+    words("k increased by 4", "k aumentado en 4", "k + 4", ["k − 4", "4k"]),
+    words("Subtract 3 from b", "Resta 3 de b", "b − 3", ["3 − b", "b + 3"], { "3 − b": REV_SUB }),
+    words("h fewer than 10", "h menos que 10", "10 − h", ["h − 10", "10 + h"], { "h − 10": REV_SUB }),
+    words("A number plus 12", "Un número más 12", "n + 12", ["12n", "n − 12"]),
+    words("A number decreased by 8", "Un número disminuido en 8", "n − 8", ["8 − n", "n + 8"], {
+      "8 − n": REV_SUB,
+    }),
+    words("The difference between f and 9", "La diferencia entre f y 9", "f − 9", ["9 − f", "f + 9"], {
+      "9 − f": REV_SUB,
+    }),
+  ],
+  [
+    words("The product of 8 and w", "El producto de 8 y w", "8w", ["w + 8", "w ÷ 8"]),
+    words("4 times s", "4 veces s", "4s", ["s + 4", "s ÷ 4"]),
+    words("n times 7", "n veces 7", "7n", ["n + 7", "n ÷ 7"]),
+    words("c divided by 5", "c dividido entre 5", "c ÷ 5", ["5 ÷ c", "5c"], { "5 ÷ c": REV_DIV }),
+    words("m split into 6 equal groups", "m repartido en 6 grupos iguales", "m ÷ 6", ["6m", "m − 6"]),
+    words("One third of p", "Un tercio de p", "p ÷ 3", ["3p", "p − 3"]),
+    words("The product of 9 and d", "El producto de 9 y d", "9d", ["d + 9", "d ÷ 9"]),
+  ],
+];
+
 /** The prompt a crate carries, in the student's language. */
 export function quizPrompt(item, lang, when) {
   return item.phrase ? item.phrase[lang] || item.phrase.en : `${item.show}, ${when} ${item.when}`;

@@ -9,12 +9,12 @@
 // takes it. Nothing counts down. The last stage is the Glitch Bot chase:
 // every right gate zaps the bot.
 
-import { WORD_ROOMS } from "../quiz.js";
+import { RUN_EXTRA, WORD_ROOMS } from "../quiz.js";
 
 export const LANES = [-2.6, 0, 2.6];
 export const STAGES = [
-  { id: "words-add", key: "stageWordsAdd", items: WORD_ROOMS[0] },
-  { id: "words-mul", key: "stageWordsMul", items: WORD_ROOMS[1] },
+  { id: "words-add", key: "stageWordsAdd", items: [...WORD_ROOMS[0], ...RUN_EXTRA[0]] },
+  { id: "words-mul", key: "stageWordsMul", items: [...WORD_ROOMS[1], ...RUN_EXTRA[1]] },
   { id: "substitute", key: "stageSubstitute", items: WORD_ROOMS[2] },
   { id: "two-step", key: "stageTwoStep", items: WORD_ROOMS[3] },
   { id: "boss", key: "stageBoss", items: WORD_ROOMS[4], boss: true },
