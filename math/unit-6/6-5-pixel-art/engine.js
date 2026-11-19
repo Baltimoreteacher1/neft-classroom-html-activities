@@ -88,12 +88,13 @@
   document.documentElement.style.setProperty("--accent", A.accent);
   document.documentElement.style.setProperty("--bgc", A.bg);
   document.documentElement.style.setProperty("--cols", COLS);
-  document.title = `${A.title} — Pixel Art | Lesson 6-5 | Neft Teacher`;
+  const MY = A.mystery; // names and emoji stay hidden until the picture is finished
+  document.title = `${MY.title} — Pixel Art | Lesson 6-5 | Neft Teacher`;
   const stars = (t) => "★".repeat(t) + "☆".repeat(3 - t);
   $("#app").innerHTML = `
     <header class="top">
       <a class="back" href="/math/unit-6/6-5-pixel-art/">← Pixel Art Studio</a>
-      <div class="ttl"><span class="em" aria-hidden="true">${A.emoji}</span><div><h1>${esc(A.title)}</h1><p>${esc(A.tagline)}</p></div></div>
+      <div class="ttl"><span class="em" id="hdrEm" aria-hidden="true">🎨</span><div><h1 id="hdrTitle">${esc(MY.title)}</h1><p>${esc(A.tagline)}</p></div></div>
       <div class="tools">
         <button class="btn ghost" id="howBtn" type="button">How to play</button>
         <button class="btn ghost" id="printBtn" type="button">🖨️ Print worksheet</button>
@@ -107,11 +108,11 @@
       <button class="btn" id="tKey" type="button">🖨️ Print answer key</button></div>`
         : ""
     }
-    <p class="story">${esc(A.story)}</p>
+    <p class="story" id="storyP">${esc(A.story)}</p>
     <div class="meter" aria-live="polite"><div class="bar"><i id="barFill"></i></div><span id="meterTxt"></span></div>
     <main class="stage">
       <section class="boardWrap" aria-label="Pixel canvas">
-        <div class="board" id="board" role="grid" tabindex="0" aria-label="${esc(A.title)} paint by number board. Arrow keys move, Space paints."></div>
+        <div class="board" id="board" role="grid" tabindex="0" aria-label="${esc(MY.title)} paint by number board. Arrow keys move, Space paints."></div>
         <p class="boardHint" id="boardHint">Unlock a paint can, pick it, then tap or drag on squares with its code.</p>
       </section>
       <aside class="shelf" aria-label="Paint cans">
@@ -130,7 +131,7 @@
       <ol><li><b>Pick a locked can</b> and solve its ${A.mode === "write" ? "phrase: write the expression, then evaluate it" : "expression: evaluate it for the given value"}.</li>
       <li>The answer is the can's <b>code number</b>. The can unlocks!</li>
       <li><b>Select the can</b>, then tap or drag across squares showing that same number.</li>
-      <li>Paint every square to reveal <b>${esc(A.title)}</b>.</li></ol>
+      <li>Paint every square to reveal the <b>mystery picture</b>.</li></ol>
       <p class="muted">Tip: tap <b>Fill all</b> on a can to paint every square of that colour at once. Your progress saves on this device.</p>
       <form method="dialog"><button class="btn primary">Let's paint!</button></form>
     </dialog>
@@ -422,7 +423,10 @@
   function finish(quiet) {
     finished = true;
     board.classList.add("done");
-    $("#boardHint").innerHTML = `🎉 <b>${esc(A.title)}</b> is complete! Mistakes: ${S.mistakes}.`;
+    $("#hdrTitle").textContent = A.title;
+    $("#hdrEm").textContent = A.emoji;
+    document.title = `${A.title} — Pixel Art | Lesson 6-5 | Neft Teacher`;
+    $("#boardHint").innerHTML = `🎉 Mystery solved: it's <b>${esc(A.title)}</b>! Mistakes: ${S.mistakes}.`;
     if (!REDUCED) burst(innerWidth / 2, innerHeight / 3, 140);
     const other = A.next
       ? `<a class="btn" href="${A.next.href}">Next picture: ${esc(A.next.label)} →</a>`
@@ -451,7 +455,7 @@
     cv.toBlob((b) => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(b);
-      a.download = `${A.id}-pixel-art.png`;
+      a.download = `mystery-picture-${MY.n}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     });
@@ -536,7 +540,7 @@
       )
       .join("");
     $("#printSheet").innerHTML =
-      `<h1>${A.emoji} ${esc(A.title)} — Pixel Art${withKey ? " (ANSWER KEY)" : ""}</h1>
+      `<h1>🎨 ${esc(MY.title)} — Pixel Art${withKey ? " (ANSWER KEY)" : ""}</h1>
       <p class="pl">Name: ______________________ &nbsp; Date: ____________ &nbsp; Lesson 6-5 · 6.AT.6a</p>
       <p>${esc(A.story)} Solve each row. Your answer is the code number, so use that colour on the grid.</p>
       <table><thead><tr><th>#</th><th>Task</th><th>Code</th><th>Colour</th></tr></thead><tbody>${rows}</tbody></table>

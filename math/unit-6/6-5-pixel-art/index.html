@@ -100,7 +100,7 @@
         <h1>🎨 Pixel Art Studio</h1>
         <p>
           Crack each paint can by working with algebraic expressions, then paint by number to reveal
-          the picture. Two pictures, two challenges.
+          a mystery picture. Two mysteries, two challenges. No peeking!
         </p>
       </header>
       <div class="cards" id="cards"></div>
@@ -116,12 +116,12 @@
         boombox: {
           tag: "Evaluate · 10 cans",
           desc: "Evaluate expressions with one or two variables, parentheses, and exponents.",
-          href: "boombox/",
+          href: "picture-1/",
         },
         axolotl: {
           tag: "Write + Evaluate · 8 cans",
           desc: "Turn word phrases into expressions, then evaluate them. Watch the word order!",
-          href: "axolotl/",
+          href: "picture-2/",
         },
       };
       const cards = document.getElementById("cards");
@@ -135,20 +135,33 @@
           u = Object.keys(s.unlocked || {}).length;
         } catch {}
         const total = [...A.grid.join("")].filter((c) => c !== ".").length;
+        const solved = n >= total;
         const a = document.createElement("a");
         a.className = "card";
         a.href = m.href;
         a.innerHTML = `<canvas width="${A.grid[0].length * 8}" height="${A.grid.length * 8}" aria-hidden="true"></canvas>
-          <span class="tag">${m.tag}</span><h2>${A.emoji} ${A.title}</h2><p>${m.desc}</p>
-          <span class="prog">${n === 0 && u === 0 ? "Not started" : n >= total ? "Complete ✓" : `${u} cans unlocked · ${Math.round((100 * n) / total)}% painted`}</span>
-          <span class="btn primary go">${n === 0 && u === 0 ? "Start painting" : n >= total ? "View picture" : "Continue"} →</span>`;
-        const g = a.querySelector("canvas").getContext("2d");
-        A.grid.forEach((row, r) =>
-          [...row].forEach((ch, c) => {
-            g.fillStyle = ch === "." ? A.bg : A.colors[ch].hex;
-            g.fillRect(c * 8, r * 8, 8, 8);
-          }),
-        );
+          <span class="tag">${m.tag}</span><h2>${solved ? A.emoji + " " + A.title : "🎨 " + A.mystery.title}</h2><p>${m.desc}</p>
+          <span class="prog">${n === 0 && u === 0 ? "Not started" : solved ? "Mystery solved ✓" : `${u} cans unlocked · ${Math.round((100 * n) / total)}% painted`}</span>
+          <span class="btn primary go">${n === 0 && u === 0 ? "Start painting" : solved ? "View picture" : "Continue"} →</span>`;
+        const cv = a.querySelector("canvas");
+        const g = cv.getContext("2d");
+        if (solved) {
+          A.grid.forEach((row, r) =>
+            [...row].forEach((ch, c) => {
+              g.fillStyle = ch === "." ? A.bg : A.colors[ch].hex;
+              g.fillRect(c * 8, r * 8, 8, 8);
+            }),
+          );
+        } else {
+          // Mystery: never preview the picture. Just a question mark on the paper grid.
+          g.fillStyle = "#121a40";
+          g.fillRect(0, 0, cv.width, cv.height);
+          g.fillStyle = "#ffc933";
+          g.font = `900 ${cv.height * 0.72}px system-ui, sans-serif`;
+          g.textAlign = "center";
+          g.textBaseline = "middle";
+          g.fillText("?", cv.width / 2, cv.height / 2 + 4);
+        }
         cards.append(a);
       }
     </script>

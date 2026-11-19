@@ -12,8 +12,9 @@ window.PIXEL_ARTS.axolotl = {
   emoji: "🦎",
   tagline: "Write the expression, then evaluate it to unlock each colour.",
   story:
-    "Axel the axolotl is hiding in the reef and his colours are locked in paint cans! Each can has a word phrase. Write the matching expression, then evaluate it. The answer is the can's code.",
-  next: { href: "/math/unit-6/6-5-pixel-art/boombox/", label: "Boombox Beats" },
+    "A hidden picture has lost its colours, and they are locked in paint cans! Each can has a word phrase. Write the matching expression, then evaluate it. The answer is the can's code. Paint by number to reveal the mystery picture.",
+  mystery: { n: 2, title: "Mystery Picture 2" },
+  next: { href: "/math/unit-6/6-5-pixel-art/picture-1/", label: "Mystery Picture 1" },
   accent: "#ff7eb3",
   bg: "#0f5f8f",
   grid: [
@@ -36,7 +37,7 @@ window.PIXEL_ARTS.axolotl = {
   ],
   colors: {
     A: {
-      name: "Bubble Aqua",
+      name: "Aqua",
       hex: "#7fdcff",
       tier: 1,
       q: {
@@ -66,7 +67,7 @@ window.PIXEL_ARTS.axolotl = {
       },
     },
     W: {
-      name: "Sparkle White",
+      name: "White",
       hex: "#ffffff",
       tier: 1,
       q: {
@@ -96,7 +97,7 @@ window.PIXEL_ARTS.axolotl = {
       },
     },
     P: {
-      name: "Axel Pink",
+      name: "Soft Pink",
       hex: "#ffb6c9",
       tier: 2,
       q: {
@@ -111,7 +112,7 @@ window.PIXEL_ARTS.axolotl = {
       },
     },
     M: {
-      name: "Berry Smile",
+      name: "Berry Red",
       hex: "#c2185b",
       tier: 2,
       q: {
@@ -126,7 +127,7 @@ window.PIXEL_ARTS.axolotl = {
       },
     },
     H: {
-      name: "Gill Hot Pink",
+      name: "Hot Pink",
       hex: "#ff4f8b",
       tier: 3,
       q: {

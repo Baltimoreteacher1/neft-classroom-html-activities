@@ -9,8 +9,9 @@ window.PIXEL_ARTS.boombox = {
   emoji: "📻",
   tagline: "Evaluate expressions to unlock the paint cans.",
   story:
-    "The studio blackout drained every colour from Mia's boombox! Each paint can is locked behind an algebra label. Evaluate the expression to crack the can's code, then paint by number.",
-  next: { href: "/math/unit-6/6-5-pixel-art/axolotl/", label: "Axel the Axolotl" },
+    "A power cut drained every colour from a hidden picture! Each paint can is locked behind an algebra label. Evaluate the expression to crack the can's code, then paint by number to reveal the mystery picture.",
+  mystery: { n: 1, title: "Mystery Picture 1" },
+  next: { href: "/math/unit-6/6-5-pixel-art/picture-2/", label: "Mystery Picture 2" },
   accent: "#ffc933",
   bg: "#1fa39b",
   grid: [
