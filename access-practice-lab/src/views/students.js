@@ -5,6 +5,7 @@
 //   3. smart start (?skill= then ?support=): skill, then how much help, then a real five-activity Jump in set
 //      (src/quick-start.js), started as a practice session so it ends on the "You finished!" screen.
 // Continue appears only when this device has real unfinished work (the same rules as the home Continue card).
+import { keepInView } from "../keep-in-view.js";
 import { rememberAudience } from "../audience.js";
 import { isEarlyBand } from "../bands.js";
 import { bandDomains, findActivity, loadStudioIndex } from "../content.js";
@@ -361,6 +362,6 @@ export function mount(root, ctx) {
   const next =
     root.querySelector(r.support ? "[data-student-start]" : "#stuQ2") ||
     root.querySelector("#stuSmart");
-  next?.scrollIntoView({ block: "center" });
+  keepInView(next);
   if (r.support) root.querySelector("[data-student-start]")?.focus({ preventScroll: true });
 }

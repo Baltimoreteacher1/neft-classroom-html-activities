@@ -3,6 +3,7 @@
 // answer. Speech recognition (src/stt.js: on-device first, then the browser's standard service, then typing)
 // fills an editable transcript; the Language Coach works from that transcript, and from the loudness envelope for
 // time speaking and pauses (on this device).
+import { keepInView } from "../keep-in-view.js";
 import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
 import { crumbsHTML, setComponentsI18n } from "../components.js";
@@ -1120,12 +1121,12 @@ export function onClick(e, ctx) {
   }
   if (t.closest("[data-again-word]")) {
     const target = document.querySelector("[data-rec-start], [data-manual-take]");
-    target?.scrollIntoView({ block: "center" });
+    keepInView(target);
     target?.focus();
     return true;
   }
   if (t.closest("[data-again]")) {
-    document.querySelector("[data-rec-start]")?.scrollIntoView({ block: "center" });
+    keepInView(document.querySelector("[data-rec-start]"));
     document.querySelector("[data-rec-start]")?.focus();
     return true;
   }

@@ -4,6 +4,7 @@
 // each check is a ledger entry (src "flagship"; supported when Spanish help was opened or the model was shown; first vs
 // revision). Progress is saved on this device (key accessPracticeLab:v1:flagship) and resumes where the learner
 // stopped. No timers, points or rankings: the reward is the next chapter and the learner's own artifact.
+import { keepInView } from "../keep-in-view.js";
 import { openInBookStudio } from "../book/handoff.js";
 import { crumbsHTML } from "../components.js";
 import {
@@ -153,10 +154,7 @@ function next(ctx, key) {
   requestAnimationFrame(() => {
     const h = document.querySelector("#lgStepH") || document.querySelector("#lgDoneH");
     h?.focus();
-    h?.scrollIntoView({
-      block: "start",
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    });
+    keepInView(h);
   });
   return true;
 }

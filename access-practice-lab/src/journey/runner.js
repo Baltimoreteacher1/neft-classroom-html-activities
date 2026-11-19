@@ -2,6 +2,7 @@
 // renderStep() builds the page for /journey/<mNN>/<step>; mountStep() mounts the current engine UI;
 // handleClick() runs the runner's own controls (support level, On my own, word help, repeat).
 // All collaborators arrive through `deps` (see runner-deps.js), so tests can drive this with fakes.
+import { keepInView } from "../keep-in-view.js";
 import { i18nFor } from "../i18n.js";
 import { html, icon, raw } from "../util.js";
 import {
@@ -320,7 +321,7 @@ export function mountStep(root) {
     setTimeout(() => {
       const heading = page.querySelector("#jrDoneTitle");
       heading?.focus({ preventScroll: true });
-      heading?.scrollIntoView?.({ block: "start" });
+      keepInView(heading);
     }, 0);
 }
 

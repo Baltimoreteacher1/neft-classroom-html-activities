@@ -2,8 +2,11 @@
 // One header, breadcrumb trail and footer with the practice-material disclaimer, driven by routes.js. Mounts on
 // <body data-acc-section="teacher|tour|expedition|…">. Idempotent. The Practice Lab app has its own chrome and uses
 // footerBlock() from here so the disclaimer is worded once.
+import { installCalmFocus } from "../keep-in-view.js";
 import { chrome } from "./copy.js";
 import { ACC_ROUTES, NAV_IDS, routeById, trail } from "./routes.js";
+
+installCalmFocus(); // programmatic focus never recentres the page (src/keep-in-view.js)
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const label = (r, lang) => (lang === "es" ? r.es : r.en);

@@ -85,6 +85,7 @@ import { listLoops, loadIntel, nextStage as loopStage } from "../intel/loop.js";
 import { loopPanelHTML, onLoopClick, onLoopInput, startTextLoop } from "../intel/ui.js";
 import { taskCardHTML } from "../task-steps.js";
 import { familyFor, learnPanelHTML } from "../lesson-learn.js";
+import { keepInView } from "../keep-in-view.js";
 import {
   MARKS,
   annotateBarHTML,
@@ -981,7 +982,7 @@ const reduceMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)
 function goTo(selector, { focus = true } = {}) {
   const el = document.querySelector(selector);
   if (!el) return;
-  el.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+  keepInView(el, { smooth: !reduceMotion() }); // moves only if it is out of sight, and only as far as the nearest edge
   if (!focus) return;
   if (!el.matches("button, input, select, textarea, a[href]")) el.tabIndex = -1;
   el.focus({ preventScroll: true });

@@ -2,6 +2,7 @@
 // WIDA Key Language Use, a 3×3 board of short tasks. The learner picks any three squares in a row. Every square works
 // in class or at home with only this page and paper. No timer, no score; done squares and notes stay on this device.
 // Rules and content checks: src/lang/boards.js. Content: content/choice-boards.json.
+import { keepInView } from "../keep-in-view.js";
 import { bandLabel, bandLabelEs } from "../bands.js";
 import { crumbsHTML } from "../components.js";
 import { loadChoiceBoards } from "../content.js";
@@ -325,7 +326,7 @@ export async function onClick(e, ctx) {
     ui.flash = "";
     await ctx.rerender();
     document.getElementById("cbSquareTitle")?.focus();
-    document.getElementById("cbSquare")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    keepInView(document.getElementById("cbSquare"));
     return true;
   }
   if (t.matches("[data-cb-close]")) {

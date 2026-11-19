@@ -11,6 +11,7 @@
 // checks (length, sentences, a required connector, capitals and end punctuation via lang/errors.js), a self-check and
 // a model. Each finished land earns a stamp; stamps are not a score. Any land can be opened from the journey bar.
 // Inside a land the learner steers the explorer to each stop and gathers collectibles (…-explore.js).
+import { keepInView } from "../keep-in-view.js";
 import { cancelDictation, toggleDictation } from "../dictation-ui.js";
 import { isRecording, start as startRec, stop as stopRec, takesFor } from "../recorder.js";
 import { playRecording, speak } from "../speech.js";
@@ -491,7 +492,7 @@ export default {
         n.setAttribute("tabindex", "-1");
       // In explore mode keep the trail in view: the learner is about to steer it.
       n?.focus({ preventScroll: s.at === "walk" });
-      if (s.at === "walk") scene.scrollIntoView({ block: "start", behavior: motionOK() ? "smooth" : "auto" });
+      if (s.at === "walk") keepInView(scene, { smooth: motionOK() });
       focusSel = "";
     }
     if (s.at !== "walk") return feelStop;

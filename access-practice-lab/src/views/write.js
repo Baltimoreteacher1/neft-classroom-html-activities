@@ -2,6 +2,7 @@
 // targeted feedback, revision, evidence collection and a portfolio. Feedback describes what is on the
 // page (see lang/analyze.js); it never scores, and it is withheld from "on my own" attempts until the
 // learner submits a draft. The learner's first draft is always kept so growth is visible.
+import { keepInView } from "../keep-in-view.js";
 import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
 import { pathwayBannerHTML, pathwayContext } from "../pathways/banner.js";
 import { crumbsHTML } from "../components.js";
@@ -682,7 +683,7 @@ export function onClick(e, ctx) {
   }
   if (t.closest("[data-revise]")) {
     const d = document.querySelector("[data-draft]");
-    d?.scrollIntoView({ block: "center" });
+    keepInView(d);
     d?.focus();
     return true;
   }

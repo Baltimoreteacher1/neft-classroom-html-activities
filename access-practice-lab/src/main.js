@@ -7,6 +7,7 @@
 // New: /tests, /road[/<week>], /family, /passport, /play?ids=…, /tools, and
 // ?grades=3-5|6-8 on any URL.
 import { brandTitle } from "./brand.js";
+import { installCalmFocus } from "./keep-in-view.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
 import { gradeSwitchTarget } from "./wayfinding.js";
@@ -34,6 +35,8 @@ import * as homeView from "./views/home.js";
 import { registerFor } from "./register.js";
 import { familyTourHost } from "./family-tour-host.js";
 import { sessionHref, startSession } from "./engagement.js";
+
+installCalmFocus(); // a click redraws a panel; it should not also move the page (src/keep-in-view.js)
 
 // Inside a guided experience's live panel (Teacher Tour, family walkthrough) (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
 // language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
