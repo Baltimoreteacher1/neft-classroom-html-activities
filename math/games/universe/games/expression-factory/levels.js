@@ -5,13 +5,26 @@
 // value of x; every machine they pass does one operation to that value; the
 // truck takes a crate only if it carries what the order asks for at that x.
 //
+//   quiz      (6-5) Word Crates: words to symbols, substitute, evaluate
 //   build     (6-5) build the order's expression from machines
+//   identify  (6-5) a line is already built; pick the expression it makes
+//   match     (6-5) the order is an expression; pick the line that makes it
 //   twin      (6-6, 6-8) a reference line already runs above yours; build a
 //             DIFFERENT line that matches it on every crate
 //   streamline (6-14, 6-15) the old line has too many machines; rebuild it
 //             with fewer slots so every crate still matches
 
 import { makeBody } from "../../runtime/physics.js";
+import { WORD_ROOMS } from "./quiz.js";
+
+/** Word Crates belt: the stamping station, the queue behind it, and the truck. */
+export const STATION_X = 480;
+export const QUEUE_X = 370;
+export const CRATE_GAP = 74;
+export const TRUCK_X = 995;
+
+/** Rooms where the student picks from cards instead of building the line. */
+export const isPick = (r) => r.kind === "identify" || r.kind === "match" || r.kind === "quiz";
 
 export const FLOOR = 520;
 export const BELT_Y = 400;
@@ -26,33 +39,23 @@ const OPS = ["+", "-", "*"];
 
 export const LEVELS = [
   {
+    id: "word-crates",
+    lesson: "6-5",
+    rooms: WORD_ROOMS.map((items) => ({ kind: "quiz", items })),
+  },
+  {
     id: "assembly-line",
     lesson: "6-5",
+    // Easy first: one box, then two. Build, read, and match lines in turn.
     rooms: [
-      {
-        kind: "build",
-        target: [M("*", 3), M("+", 2)],
-        slots: 2,
-        ops: OPS,
-        xs: [1, 2, 3, 4],
-        predict: 3,
-      },
-      {
-        kind: "build",
-        target: [M("*", 5), M("+", 4)],
-        slots: 2,
-        ops: OPS,
-        xs: [1, 2, 3, 4],
-        predict: 2,
-      },
-      {
-        kind: "build",
-        target: [M("*", 2), M("-", 1)],
-        slots: 2,
-        ops: OPS,
-        xs: [2, 3, 5, 6],
-        predict: 5,
-      },
+      { kind: "build", target: [M("+", 4)], slots: 1, ops: OPS, xs: [1, 2, 3, 4], predict: 3 },
+      { kind: "identify", target: [M("*", 3)], options: [[M("+", 3)], [M("*", 3)], [M("-", 3)]], slots: 1, ops: OPS, xs: [1, 2, 3, 4] },
+      { kind: "build", target: [M("*", 2)], slots: 1, ops: OPS, xs: [1, 2, 3, 4], predict: 5 },
+      { kind: "match", target: [M("-", 2)], options: [[M("+", 2)], [M("*", 2)], [M("-", 2)]], slots: 1, ops: OPS, xs: [3, 4, 5, 6] },
+      { kind: "build", target: [M("*", 3), M("+", 2)], slots: 2, ops: OPS, xs: [1, 2, 3, 4], predict: 3 },
+      { kind: "identify", target: [M("*", 2), M("+", 5)], options: [[M("*", 5), M("+", 2)], [M("*", 2), M("+", 5)], [M("*", 2), M("-", 5)]], slots: 2, ops: OPS, xs: [1, 2, 3, 4] },
+      { kind: "build", target: [M("*", 2), M("-", 1)], slots: 2, ops: OPS, xs: [2, 3, 5, 6], predict: 5 },
+      { kind: "match", target: [M("*", 4), M("-", 3)], options: [[M("*", 3), M("-", 4)], [M("*", 4), M("+", 3)], [M("*", 4), M("-", 3)]], slots: 2, ops: OPS, xs: [2, 3, 4, 5] },
     ],
   },
   {
@@ -126,12 +129,37 @@ export function createWorld(index, seed) {
     const x0 = i * ROOM;
     const gate = solids.length;
     solids.push({ x: x0 + 1060, y: 120, w: 26, h: FLOOR - 120, kind: "gate", open: 0 });
+    if (r.kind === "quiz")
+      return {
+        i,
+        x0,
+        kind: "quiz",
+        items: r.items,
+        // Where the student is: crate `at`, step `step`; misses on this crate; crates right first try.
+        at: 0,
+        step: 0,
+        miss: 0,
+        firstTry: 0,
+        streak: 0,
+        best: 0,
+        // Each crate's place on the belt, eased toward its slot every tick.
+        pos: r.items.map((_, k) => QUEUE_X - k * CRATE_GAP),
+        target: [],
+        line: [],
+        xs: [],
+        gate,
+        run: null,
+        done: 0,
+        runs: 0,
+      };
     return {
       i,
       x0,
       kind: r.kind,
       target: r.target.map((m) => ({ ...m })),
-      line: Array.from({ length: r.slots }, () => null),
+      // An identify room's line is already built; every other room starts empty.
+      line: Array.from({ length: r.slots }, (_, k) => (r.kind === "identify" ? { ...r.target[k] } : null)),
+      options: r.options?.map((o) => o.map((m) => ({ ...m }))),
       ops: r.ops.slice(),
       xs: r.xs.slice(),
       predict: r.predict ?? null,

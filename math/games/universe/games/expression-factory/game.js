@@ -1,5 +1,9 @@
 // EXPRESSION FACTORY — a real-time automation puzzle (6-5, 6-6, 6-8, 6-14, 6-15).
 //
+// Level 1, Word Crates (6-5): every crate carries a phrase or an expression;
+// the student packs it by picking cards: words to symbols, then substitute,
+// multiply first, solve. Level 2 builds, reads and matches machine lines.
+//
 // The line under the belt IS the expression. Walk the factory floor, install
 // a machine in each slot (one operation each), and pull the lever: crates
 // carrying values of x come down the belt, every machine stamps its operation
@@ -10,10 +14,10 @@
 import { el } from "../../runtime/chrome.js";
 import { action, chips } from "../../runtime/controls.js";
 import { define, UniverseGame } from "../../runtime/shell.js";
-import { BELT_X0, createWorld, FLOOR, LEVELS, slotX } from "./levels.js";
+import { BELT_X0, createWorld, FLOOR, isPick, LEVELS, slotX } from "./levels.js";
 import { evaluate, fracText, machineText, simplest, write } from "./math.js";
-import { draw, drawBackdrop } from "./render.js";
-import { built, currentRoom, rules } from "./rules.js";
+import { draw, drawBackdrop, quizPrompt } from "./render.js";
+import { built, crateHome, currentRoom, rules } from "./rules.js";
 import { STRINGS } from "./strings.js";
 
 const WORDS = [
@@ -25,6 +29,10 @@ const WORDS = [
   "reject",
   "twinOrder",
   "streamOrder",
+  "identifyOrder",
+  "quizBoard",
+  "quizWhen",
+  "quizStreak",
 ];
 const OP_KEYS = { "+": "opAdd", "-": "opSub", "*": "opMul" };
 const NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -47,13 +55,23 @@ class ExpressionFactory extends UniverseGame {
     concepts: [],
     levels: [
       {
+        id: "word-crates",
+        lesson: "6-5",
+        standard: "6.AT.6a",
+        title: { en: "Word Crates", es: "Cajas de palabras" },
+        discovery: {
+          en: "Key words name operations: sum means +, product means ×. To evaluate, put the number in for the letter, multiply first, then add or subtract.",
+          es: "Las palabras clave nombran operaciones: suma significa +, producto significa ×. Para evaluar, pon el número en lugar de la letra, multiplica primero y luego suma o resta.",
+        },
+      },
+      {
         id: "assembly-line",
         lesson: "6-5",
         standard: "6.AT.6a",
         title: { en: "Assembly Line", es: "Línea de ensamblaje" },
         discovery: {
-          en: "An expression is a set of operations done to a number. Order matters: 3x + 2 means multiply by 3 first, then add 2.",
-          es: "Una expresión es un conjunto de operaciones que se le hacen a un número. El orden importa: 3x + 2 significa multiplicar por 3 primero y luego sumar 2.",
+          en: "An expression is a set of operations done to a number. Order matters: 3x + 2 means multiply by 3 first, then add 2. A line and its expression say the same thing, so you can build one, read one, or match one to the other.",
+          es: "Una expresión es un conjunto de operaciones que se le hacen a un número. El orden importa: 3x + 2 significa multiplicar por 3 primero y luego sumar 2. Una línea y su expresión dicen lo mismo, así que puedes armar una, leerla o relacionarla con la otra.",
         },
       },
       {
@@ -81,6 +99,22 @@ class ExpressionFactory extends UniverseGame {
     ],
     mechanics: [
       {
+        id: "words-to-symbols",
+        action: "pick the expression a phrase names",
+        relationship: "key words name operations; fewer than and less than reverse the order",
+        stateChange: "the crate is packed and moves to the truck",
+        visible: "the crate slides into the truck and the count goes up",
+        evidence: "accuracy decision per pick; tag op-reversed-subtraction or op-reversed-division",
+      },
+      {
+        id: "evaluate-expression",
+        action: "substitute the value, multiply first, then solve, one card per step",
+        relationship: "an expression has one value for each value of its variable",
+        stateChange: "each right step writes a line of work; the last ships the crate",
+        visible: "the work grows line by line; the crate moves to the truck",
+        evidence: "accuracy decision per step; tag order-of-operations-left-to-right for adding first",
+      },
+      {
         id: "write-expression",
         action: "install one operation per slot, then run the line",
         relationship:
@@ -90,6 +124,14 @@ class ExpressionFactory extends UniverseGame {
           "crate labels change at each stamp; the truck takes right crates, the chute takes wrong ones",
         evidence:
           "accuracy decision per run; tag order-of-operations-left-to-right for the same machines in the wrong order",
+      },
+      {
+        id: "match-expression",
+        action: "pick the expression a built line makes, or the line that makes an expression",
+        relationship: "a line of machines and its written expression give every crate the same value",
+        stateChange: "the picked card is run against the line, crate for crate",
+        visible: "matching crates reach the truck; crates where the two disagree go to the chute",
+        evidence: "accuracy decision per pick with the written choice",
       },
       {
         id: "equivalent-expressions",
@@ -127,9 +169,20 @@ class ExpressionFactory extends UniverseGame {
     super.connectedCallback();
     // Clicking or tapping the factory opens the build panel: no walking needed.
     if (first) this.canvas.addEventListener("click", () => this.openBuild());
+    // Number keys pick a card: 1 is the first card, 2 the second.
+    if (first)
+      this.$("panel").addEventListener("keydown", (e) => {
+        const b = this.$("panel").querySelector(`button[data-card="${e.key}"]`);
+        if (!b) return;
+        e.preventDefault();
+        b.click();
+      });
   }
 
   focus(w) {
+    // Word Crates: frame the board, the station and the queue left of the panel.
+    const r = currentRoom(w);
+    if (r.kind === "quiz") return { x: r.x0 + 610 + (w.p.x - r.x0 - 70) * 0.3, y: w.p.y - 160, face: w.p.face };
     return { x: w.p.x + w.p.w / 2, y: w.p.y - 160, face: w.p.face };
   }
 
@@ -151,18 +204,43 @@ class ExpressionFactory extends UniverseGame {
       const at = this.stamps.get(`${room}:${slot}:${ref ? 1 : 0}`);
       return at === undefined ? 0 : Math.max(0, 1 - (now - at) / 0.22);
     };
+    // Word Crates motion runs on display time, so crates still slide while a panel is open.
+    const dt = Math.min(0.05, Math.max(0, now - (this.drawnAt ?? now)));
+    this.drawnAt = now;
+    if (this.shownWorld !== w) {
+      this.shownWorld = w;
+      this.shown = w.rooms.map((r) => (r.kind === "quiz" ? r.pos.slice() : null));
+    }
+    for (const r of w.rooms)
+      if (r.kind === "quiz") {
+        const sh = this.shown[r.i];
+        for (let k = 0; k < sh.length; k++) sh[k] += (crateHome(r, k) - sh[k]) * (1 - Math.exp(-dt * 5));
+      }
+    const shake = this.shake;
     draw(ctx, w, t, {
       words: this.words,
+      crateX: (r, k) => this.shown[r.i][k],
+      hop: (r, k) => {
+        const gap = Math.abs(crateHome(r, k) - this.shown[r.i][k]);
+        return gap < 2 || this.reduced ? 0 : Math.abs(Math.sin(this.shown[r.i][k] / 28)) * Math.min(22, gap * 0.2);
+      },
+      shakeX: (r, k) => {
+        if (!shake || shake.room !== r.i || k !== r.at || this.reduced) return 0;
+        const age = now - shake.at;
+        return age > 0.4 ? 0 : Math.sin(age * 70) * 9 * (1 - age / 0.4);
+      },
       press,
       acting: this.mode === "panel",
       oriMood: this.oriMood,
+      lang: this.lang,
       talk: this.caption?.who === "ori",
     });
   }
 
   onLevelStart(index) {
     this.said = {};
-    this.say("ori", this.t(["hello", "helloTwin", "helloStream"][index]), "curious");
+    this.quizNote = "";
+    this.say("ori", this.t(["helloWords", "hello", "helloTwin", "helloStream"][index]), "curious");
     this.later(1.2, () => this.openBuild());
   }
 
@@ -184,8 +262,11 @@ class ExpressionFactory extends UniverseGame {
   objective(w, r = currentRoom(w)) {
     if (w.rooms.every((x) => x.done)) return this.t("objExit");
     if (r.done) return this.t("objNext");
+    if (r.kind === "quiz") return this.t("objQuiz", { n: r.at + 1, total: r.items.length });
     if (r.run) return this.t("objRunning");
     if (r.kind === "build") return this.t("objBuild", { expr: write(r.target) });
+    if (r.kind === "identify") return this.t("objIdentify");
+    if (r.kind === "match") return this.t("objMatch", { expr: write(r.target) });
     if (r.kind === "twin") return this.t("objTwin", { expr: write(r.target) });
     return this.t("objStream", { n: r.target.length, expr: write(r.target), slots: r.line.length });
   }
@@ -195,8 +276,11 @@ class ExpressionFactory extends UniverseGame {
     return [
       this.tx(this.level.title),
       this.objective(w),
-      `${this.words?.yourLine || "Your line"}: ${write(built(r)) || "x"}`,
-    ].join(". ");
+      // An identify room's written line is the answer, so it is not read out.
+      r.kind === "identify" ? "" : `${this.words?.yourLine || "Your line"}: ${write(built(r)) || "x"}`,
+    ]
+      .filter(Boolean)
+      .join(". ");
   }
 
   stations(w) {
@@ -208,7 +292,7 @@ class ExpressionFactory extends UniverseGame {
         room: r.i,
         type: "lever",
         x: r.x0 + 100,
-        what: this.t("useBuild"),
+        what: this.t(r.kind === "quiz" ? "useQuiz" : isPick(r) ? "usePick" : "useBuild"),
       });
       r.line.forEach((_, i) =>
         out.push({
@@ -217,7 +301,7 @@ class ExpressionFactory extends UniverseGame {
           slot: i,
           type: "slot",
           x: slotX(r, i, r.line.length),
-          what: this.t("useBuild"),
+          what: this.t(isPick(r) ? "usePick" : "useBuild"),
         }),
       );
     }
@@ -251,6 +335,8 @@ class ExpressionFactory extends UniverseGame {
 
   /** One panel: every box at once, the written line under them, and the run. */
   buildConsole(r) {
+    if (r.kind === "quiz") return this.quizConsole(r);
+    if (isPick(r)) return this.pickConsole(r);
     this.openPanel(this.t("buildTitle"), (body) => {
       const preview = el("div.math");
       const paint = () => {
@@ -267,6 +353,122 @@ class ExpressionFactory extends UniverseGame {
       );
       paint();
     });
+  }
+
+  /** Big answer cards: easy to read and to tap. */
+  cards(labels, onPick) {
+    return el(
+      "div.chips",
+      { role: "group" },
+      labels.map((label, i) =>
+        el(
+          "button",
+          {
+            type: "button",
+            "data-card": i + 1,
+            "aria-label": label,
+            style: "font-size:1.35em;padding:12px 20px;min-width:96px;min-height:56px",
+            on: { click: () => onPick(label) },
+          },
+          el("span", { "aria-hidden": "true", style: "opacity:.55;font-size:.6em;margin-right:8px" }, String(i + 1)),
+          label,
+        ),
+      ),
+    );
+  }
+
+  /** Word Crates: the crate's prompt, the work so far, this step's cards, and help after a miss. */
+  quizConsole(r) {
+    const item = r.items[r.at];
+    if (!item) return;
+    const st = item.steps[r.step];
+    const hint = { pickExpr: "hintWords", askSub: "hintSub", askMult: "hintMult", askSolve: "hintSolve" }[st.ask];
+    const prompt = item.phrase
+      ? this.t("quizWords", { phrase: quizPrompt(item, this.lang) })
+      : this.t("quizEval", { expr: item.show, when: item.when });
+    const streak = r.streak > 1 ? ` · 🔥 ${this.t("quizStreak", { n: r.streak })}` : "";
+    this.openPanel(this.t("quizTitle"), (body) =>
+      body.append(
+        el("p.muted", null, this.t("progress", { n: r.at, total: r.items.length }) + streak),
+        el("h3", { style: "font-size:1.5em;margin:0" }, prompt),
+        r.step
+          ? el(
+              "div.stack",
+              null,
+              el("p.muted", null, this.t("quizWork")),
+              el("div.math", null, [item.show, ...item.steps.slice(0, r.step).map((x) => x.answer)].join("  →  ")),
+            )
+          : null,
+        el("p.note", null, this.t(st.ask)),
+        r.at === 0 && r.step === 0 && !r.miss ? el("p.muted", null, this.t("keysTip")) : null,
+        this.cards(st.choices, (choice) => this.answerCrate(r, choice)),
+        this.quizNote ? el("p", { role: "status", style: "font-weight:700" }, this.quizNote) : null,
+        r.miss ? el("p.note", null, `💡 ${this.t(hint)}`) : null,
+        item.phrase
+          ? el(
+              "details",
+              null,
+              el("summary", null, this.t("wordBank")),
+              ["bankAdd", "bankSub", "bankMul", "bankDiv"].map((k) => el("p.muted", null, this.t(k))),
+            )
+          : null,
+      ),
+    );
+    this.$("panel").scrollTop = 0;
+  }
+
+  answerCrate(r, choice) {
+    const before = r.at;
+    const right = choice === r.items[r.at].steps[r.step].answer;
+    this.decide(
+      "answer",
+      { en: `Picked ${choice}`, es: `Eligió ${choice}` },
+      { type: "answer", room: r.i, choice },
+      { mechanic: r.items[r.at].mechanic, detail: { choice } },
+    );
+    if (!right) this.quizNote = this.t("quizMiss");
+    else if (r.at === before) this.quizNote = this.t("quizStepOk");
+    else {
+      // Packed: close the panel so the crate is seen riding into the truck, then the next crate.
+      this.quizNote = this.t("quizCrate", { n: before + 1 });
+      this.closePanel();
+      if (r.done) {
+        this.quizNote = "";
+        if (r.firstTry === r.items.length) this.toast(this.t("perfect", { n: r.firstTry }));
+      } else {
+        this.toast(this.quizNote);
+        this.quizNote = "";
+        this.later(1, () => this.openBuild());
+      }
+      return;
+    }
+    this.quizConsole(r);
+  }
+
+  /** Identify and match rooms: cards to pick from instead of boxes to fill. */
+  pickConsole(r) {
+    const card = (line) =>
+      r.kind === "identify" ? write(line) : line.map(machineText).join("  →  ");
+    this.openPanel(this.t("pickTitle"), (body) =>
+      body.append(
+        el("p.note", null, this.objective(this.world, r)),
+        el("p.muted", null, this.t(r.kind === "identify" ? "identifyHow" : "matchHow", { xs: r.xs.join(", ") })),
+        chips(
+          r.options.map((line, i) => ({ label: card(line), value: i })),
+          () => false,
+          (o) => {
+            this.closePanel();
+            const text = card(r.options[o.value]);
+            this.decide(
+              "pick",
+              { en: `Picked ${text}`, es: `Eligió ${text}` },
+              { type: "pick", room: r.i, i: o.value },
+              { mechanic: "match-expression", detail: { choice: text } },
+            );
+          },
+        ),
+      ),
+    );
   }
 
   /** Box `slot`: an operation and a number or x, changed in place. */
@@ -364,9 +566,16 @@ class ExpressionFactory extends UniverseGame {
       case "lever":
         this.audio.sfx("power");
         break;
-      case "crateOk":
+      case "crateOk": {
+        const r = this.world.rooms[e.room];
         this.audio.sfx("pickup");
+        this.fx.emit(r.x0 + 995, 360, 10 + Math.min(e.streak, 8) * 3, 150, 0, -Math.PI / 2, Math.PI, 0.6);
+        if (e.streak >= 3 && e.streak % 3 === 0) {
+          this.audio.sfx("discover");
+          this.say("ori", this.t("onFire", { n: e.streak }), "eureka");
+        }
         break;
+      }
       case "crateReject":
         this.audio.sfx("strain");
         break;
@@ -374,6 +583,17 @@ class ExpressionFactory extends UniverseGame {
         this.audio.sfx("tick");
         break;
       case "outcome":
+        // Word Crates: the stamp comes down on a right card; a wrong one rattles the crate.
+        if (e.room !== undefined && this.world.rooms[e.room]?.kind === "quiz") {
+          if (e.ok) {
+            this.stamps.set(`${e.room}:0:0`, this.now);
+            this.audio.sfx("lock");
+          } else {
+            this.shake = { room: e.room, at: this.now };
+            this.audio.sfx("strain");
+          }
+          break;
+        }
         // Right for some crates and wrong for others: say once that a line must work for every x.
         if (!e.ok && e.vars?.n > 0 && e.detail?.misses?.length && !this.said.oneRight) {
           this.said.oneRight = 1;
@@ -384,6 +604,11 @@ class ExpressionFactory extends UniverseGame {
         break;
       case "solved": {
         const r = this.world.rooms[e.room];
+        if (r.kind === "quiz") {
+          const share = r.firstTry / r.items.length;
+          const stars = share >= 0.9 ? "★★★" : share >= 0.6 ? "★★☆" : "★☆☆";
+          this.later(0.6, () => this.toast(this.t("quizStars", { stars })));
+        }
         this.fx.emit(r.x0 + BELT_X0 + 800, 380, 30, 170, 0, -Math.PI / 2, Math.PI * 2, 0.9);
         this.audio.sfx("discover");
         this.later(2.5, () => this.afterSolved(e.room));

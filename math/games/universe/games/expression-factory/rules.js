@@ -9,7 +9,7 @@
 
 import { stepBody } from "../../runtime/physics.js";
 import { q } from "../../runtime/sim.js";
-import { BELT_X0, BELT_X1, FLOOR, slotX } from "./levels.js";
+import { BELT_X0, BELT_X1, CRATE_GAP, FLOOR, isPick, QUEUE_X, STATION_X, slotX, TRUCK_X } from "./levels.js";
 import { eqFrac, equivalent, evaluate, frac, isLinear, linear, runMachine, sameChain } from "./math.js";
 
 const SPEED = 3;
@@ -28,7 +28,7 @@ function newCrates(r, line) {
   return r.xs.map((x, i) => ({ x, v: frac(x), pos: -i * SPACING, stage: 0, state: "wait", line }));
 }
 
-function stepCrates(r, crates, slotsLine, ev, ref) {
+function stepCrates(r, crates, slotsLine, ev, ref, target) {
   const n = slotsLine.length;
   const len = BELT_X1 - BELT_X0;
   for (const c of crates) {
@@ -46,7 +46,7 @@ function stepCrates(r, crates, slotsLine, ev, ref) {
       c.stage++;
     }
     if (c.pos >= len) {
-      const want = evaluate(r.target, c.x);
+      const want = evaluate(target, c.x);
       c.state = eqFrac(c.v, want) ? "ok" : "reject";
       if (!ref) ev.push({ type: c.state === "ok" ? "crateOk" : "crateReject", room: r.i, x: c.x });
     }
@@ -54,8 +54,7 @@ function stepCrates(r, crates, slotsLine, ev, ref) {
 }
 
 /** Which slip a wrong line shows, in the site's misconception vocabulary. */
-function slipOf(r, line) {
-  const t = r.target;
+function slipOf(t, line) {
   if (!isLinear(t) || !isLinear(line)) return undefined;
   const want = linear(t);
   const got = linear(line);
@@ -71,8 +70,18 @@ function slipOf(r, line) {
   return undefined;
 }
 
+// The mechanic and lesson each kind of room is evidence for.
+const KIND = {
+  build: { mechanic: "write-expression", lesson: "6-5" },
+  quiz: { mechanic: "evaluate-expression", lesson: "6-5" },
+  identify: { mechanic: "match-expression", lesson: "6-5" },
+  match: { mechanic: "match-expression", lesson: "6-5" },
+  twin: { mechanic: "equivalent-expressions", lesson: "6-6" },
+  streamline: { mechanic: "simplify-expression", lesson: "6-15" },
+};
+
 function finishRun(w, r, ev) {
-  const line = r.run.line;
+  const { line, want } = r.run;
   const allOk = r.run.crates.every((c) => c.state === "ok");
   const differs = r.kind !== "twin" || !sameChain(line, r.target);
   const ok = allOk && differs;
@@ -86,15 +95,10 @@ function finishRun(w, r, ev) {
       n: r.run.crates.length - misses.length,
       total: r.run.crates.length,
     },
-    mechanic:
-      r.kind === "build"
-        ? "write-expression"
-        : r.kind === "twin"
-          ? "equivalent-expressions"
-          : "simplify-expression",
-    lesson: r.kind === "build" ? "6-5" : r.kind === "twin" ? "6-6" : "6-15",
-    misconception: ok ? undefined : allOk ? undefined : slipOf(r, line),
-    detail: { line, equivalent: equivalent(line, r.target), misses },
+    mechanic: KIND[r.kind].mechanic,
+    lesson: KIND[r.kind].lesson,
+    misconception: ok ? undefined : allOk ? undefined : slipOf(want, line),
+    detail: { line, equivalent: equivalent(line, want), misses },
   });
   // The finished crates stay stacked in the truck and the chute until the next run.
   r.lastCrates = r.run.crates;
@@ -106,11 +110,66 @@ function finishRun(w, r, ev) {
   }
 }
 
+/** Where a Word Crates crate belongs: done in the truck, current at the station, the rest queued. */
+export function crateHome(r, k) {
+  if (k < r.at) return TRUCK_X;
+  if (k === r.at) return STATION_X;
+  return QUEUE_X - (k - r.at - 1) * CRATE_GAP;
+}
+
+/** One pick on the current crate. A right pick moves to the next step; the last step ships the crate. */
+function answer(w, r, choice, ev) {
+  const item = r.items[r.at];
+  const st = item.steps[r.step];
+  const ok = choice === st.answer;
+  const last = r.step === item.steps.length - 1;
+  ev.push({
+    type: "outcome",
+    ok,
+    key: !ok ? "quizMiss" : last ? "quizCrate" : "quizStep",
+    room: r.i,
+    vars: { n: r.at + 1, total: r.items.length },
+    mechanic: item.mechanic,
+    lesson: "6-5",
+    misconception: ok ? undefined : st.slips?.[choice],
+    detail: { prompt: item.show || item.phrase.en, ask: st.ask, choice },
+  });
+  if (!ok) {
+    r.miss++;
+    r.streak = 0;
+    return;
+  }
+  if (!last) {
+    r.step++;
+    return;
+  }
+  if (!r.miss) {
+    r.firstTry++;
+    r.streak++;
+    r.best = Math.max(r.best, r.streak);
+  }
+  r.miss = 0;
+  r.step = 0;
+  r.at++;
+  ev.push({ type: "crateOk", room: r.i, streak: r.streak });
+  if (r.at === r.items.length) {
+    r.done = 1;
+    w.solids[r.gate].open = 1;
+    ev.push({ type: "solved", room: r.i });
+  }
+}
+
 function step(w, mask, prevMask, ev) {
+  for (const r of w.rooms)
+    if (r.kind === "quiz")
+      r.pos = r.pos.map((p, k) => {
+        const d = crateHome(r, k) - p;
+        return Math.abs(d) < 1 ? crateHome(r, k) : q(p + d * 0.12);
+      });
   for (const r of w.rooms) {
     if (!r.run) continue;
-    stepCrates(r, r.run.crates, r.run.slots, ev, false);
-    if (r.run.ref) stepCrates(r, r.run.ref, r.target, ev, true);
+    stepCrates(r, r.run.crates, r.run.slots, ev, false, r.run.want);
+    if (r.run.ref) stepCrates(r, r.run.ref, r.target, ev, true, r.target);
     const busy =
       r.run.crates.some((c) => c.state === "wait" || c.state === "belt") ||
       (r.run.ref && r.run.ref.some((c) => c.state === "wait" || c.state === "belt"));
@@ -136,7 +195,7 @@ function apply(w, a, ev) {
   const r = a.room !== undefined ? w.rooms[a.room] : null;
   switch (a.type) {
     case "set":
-      if (r.run || r.done) return;
+      if (r.run || r.done || isPick(r)) return;
       r.line[a.slot] = a.m ? { ...a.m } : null;
       ev.push({ type: "setSlot", room: r.i, slot: a.slot });
       return;
@@ -147,10 +206,34 @@ function apply(w, a, ev) {
       const line = built(r);
       r.run = {
         line,
+        want: r.target,
         slots: r.line.map((m) => m && { ...m }),
         crates: newCrates(r, line),
         // Twin and streamline rooms run the reference line above, crate for crate.
         ref: r.kind === "build" ? null : newCrates(r, r.target),
+      };
+      ev.push({ type: "lever", room: r.i });
+      return;
+    }
+    case "answer":
+      if (r.kind !== "quiz" || r.done) return;
+      answer(w, r, a.choice, ev);
+      return;
+    case "pick": {
+      const opt = r.options?.[a.i];
+      if (!opt || r.run || r.done) return;
+      r.runs++;
+      r.lastCrates = null;
+      // Identify: the built line is run against the picked expression.
+      // Match: the picked line is installed and run against the order.
+      if (r.kind === "match") r.line = r.line.map((_, k) => (opt[k] ? { ...opt[k] } : null));
+      const line = built(r);
+      r.run = {
+        line,
+        want: r.kind === "match" ? r.target : opt,
+        slots: r.line.map((m) => m && { ...m }),
+        crates: newCrates(r, line),
+        ref: null,
       };
       ev.push({ type: "lever", room: r.i });
       return;
