@@ -156,6 +156,7 @@ const NEEDS_DIST = new Set([
   "validate:resource-baseline",
   "validate:dist-file-budget",
   "validate:projects-registry",
+  "validate:projects-identity",
   "validate:notebook",
   "validate:notebook-render",
   "validate:flow-walk",
@@ -943,6 +944,20 @@ const COVERAGE = [
     ["test"],
   ],
   [/^curriculum\/about\//, ["validate:about", "audit:links"]],
+  // PROJECT IDENTITY — one look per project: themes + scenes (tools/lib/project-identity), the generated
+  // tokens/art and the shared layout (shared/projects/identity). The identity gate reruns the builder
+  // in --check mode and sweeps every page that carries the layer. Must precede the generic rules below.
+  [
+    /^(shared\/projects\/identity\/|tools\/(lib\/project-identity\/|(build|inject|validate)-projects?-identity\.mjs$)|public\/assets\/fonts\/project-identity\.css$)/,
+    [
+      "validate:projects-identity",
+      "validate:projects-registry",
+      "validate:projects-gallery-browser",
+      "validate:js-syntax",
+      "validate:injection",
+      "validate:static",
+    ],
+  ],
   // Project Studio (8 unit studios x 3 phases in Chromium) — scoped to its own
   // surface so unrelated deploys do not pay ~90s for it. Must precede the
   // generic /^curriculum\/projects\// rule below.

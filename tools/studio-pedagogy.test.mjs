@@ -461,7 +461,10 @@ function boot(id, mode, { search = "", store = {} } = {}) {
     errors.push(a.map(String).join(" ").slice(0, 240));
     warn.apply(w.console, []);
   };
-  const srcs = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1].split("?")[0]);
+  // Classic scripts only: w.eval cannot run an ES module (the word-problem cards, which have their own tests).
+  const srcs = [...html.matchAll(/<script(?![^>]*type="module")[^>]+src="([^"]+)"/g)].map(
+    (m) => m[1].split("?")[0],
+  );
   for (const src of srcs)
     try {
       w.eval(read(src.replace(/^\//, "")));

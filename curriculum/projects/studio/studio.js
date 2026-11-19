@@ -22,6 +22,8 @@ const esc = (s) =>
 const main = $("#main");
 const id = new URL(location.href).searchParams.get("project");
 const project = getProject(id);
+// The identity layer (shared/projects/identity) themes the whole page from this attribute.
+if (project) document.documentElement.dataset.project = project.id;
 const stages = ["Plan", "Build", "Test", "Revise", "Explain"];
 let state,
   workbench,

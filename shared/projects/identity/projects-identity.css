@@ -1,0 +1,446 @@
+/* ==========================================================================
+   Projects IDENTITY — one distinct look per project, from tokens.
+
+   Tokens (--id-*) are generated per project into projects-identity-tokens.css by
+   tools/build-project-identity.mjs; this file is the shared structure that consumes them and is
+   deliberately free of any project-specific value. `[data-project]` is set on <body> by
+   tools/inject-projects-identity.mjs (classic pages) and on <html> by the Studio script.
+   Loaded after every other projects-* stylesheet so it wins ties without !important.
+   ========================================================================== */
+
+/* --- Page palette: remap the page's own variables so every component recolours together. --- */
+body[data-project] {
+  --navy: var(--id-ink);
+  --blue: var(--id-accent);
+  --blue-lt: var(--id-tint);
+  --teal: var(--id-accent-b);
+  --teal-lt: var(--id-tint-soft);
+  --bg: var(--id-paper);
+  --line: var(--id-line);
+  --pro-display: var(--id-display);
+  --pro-ring: 0 0 0 3px color-mix(in srgb, var(--id-accent) 34%, transparent);
+  background:
+    radial-gradient(
+      1100px 440px at 78% -180px,
+      color-mix(in srgb, var(--id-accent) 11%, transparent),
+      transparent 70%
+    ),
+    var(--id-paper);
+}
+
+/* --- Display type: the project's own face on titles. --- */
+body[data-project] .hero h1,
+body[data-project] .card-title,
+body[data-project] .section-heading h2 {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  letter-spacing: var(--id-display-track);
+  text-wrap: balance;
+}
+
+/* --- Hero: a left-aligned masthead over the project's own scene. --- */
+body[data-project] .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: clamp(380px, 44vw, 520px);
+  padding: clamp(34px, 5vw, 64px) clamp(22px, 5vw, 64px);
+  text-align: left;
+  color: var(--id-hero-fg);
+  background: var(--id-hero-bg);
+  border-top: 5px solid var(--id-glow);
+  box-shadow: none;
+}
+body[data-project] > .hero {
+  padding-inline: max(22px, calc((100vw - 1120px) / 2));
+}
+/* The scene. */
+body[data-project] .hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto auto;
+  height: min(100%, 640px);
+  width: var(--id-art-width);
+  border-radius: 0;
+  background: var(--id-art) right center / cover no-repeat;
+  -webkit-mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  opacity: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+/* Poster scrim keeps the copy readable over the scene; split layouts have none. */
+body[data-project] .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: var(--id-art-scrim);
+  -webkit-mask-image: none;
+  mask-image: none;
+  z-index: 0;
+  pointer-events: none;
+}
+body[data-project] .hero > * {
+  position: relative;
+  z-index: 1;
+  max-width: var(--id-copy-width);
+}
+
+/* Emblem: the project's emoji becomes a tilted badge in the highlight colour. */
+body[data-project] .hero-emoji {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 0 18px;
+  border-radius: 18px;
+  background: var(--id-glow);
+  color: var(--id-ink);
+  font-size: 34px;
+  line-height: 1;
+  transform: rotate(-5deg);
+  filter: none;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--id-ink) 34%, transparent);
+}
+body[data-project] .hero h1 {
+  margin: 0 0 14px;
+  font-size: calc(clamp(2.3rem, 5.2vw, 3.7rem) * var(--id-display-scale));
+  line-height: 1.02;
+  color: var(--id-hero-fg);
+  text-shadow: none;
+}
+body[data-project] .hero-sub,
+body[data-project] .hero-copy,
+body[data-project] .hero > p {
+  margin: 0 0 20px;
+  max-width: 52ch;
+  font-size: clamp(1.02rem, 1.6vw, 1.18rem);
+  line-height: 1.5;
+  color: var(--id-hero-soft);
+  text-align: left;
+}
+
+/* Standards and unit tags. */
+body[data-project] .hero-tags {
+  justify-content: flex-start;
+  margin: 0 0 20px;
+}
+body[data-project] .tag {
+  background: var(--id-chip-bg);
+  border: 1px solid var(--id-chip-bd);
+  color: var(--id-hero-fg);
+  text-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body[data-project] .tag.gold {
+  background: var(--id-glow);
+  border-color: transparent;
+  color: var(--id-ink);
+  box-shadow: none;
+}
+
+/* The one action that matters: open the current mission. */
+body[data-project] .hero .studio-entry {
+  align-self: flex-start;
+  margin: 0 0 18px;
+  padding: 12px 18px;
+  text-align: left;
+  background: var(--id-glow);
+  color: var(--id-ink);
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--id-ink) 30%, transparent);
+}
+body[data-project] .hero .studio-entry span {
+  color: color-mix(in srgb, var(--id-ink) 86%, transparent);
+  font-size: 0.86rem;
+}
+/* !important (documented): entry.css forces this link blue with !important, which is unreadable on the highlight colour. */
+body[data-project] .hero .studio-entry a {
+  color: var(--id-ink) !important;
+  text-decoration-thickness: 2px;
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  font-size: 1.05rem;
+}
+
+/* Support level, language and read-aloud controls. */
+body[data-project] .hero .level-bar {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  max-width: none;
+  width: fit-content;
+  margin-inline: 0;
+  border-radius: 16px;
+  background: var(--id-chip-bg);
+  border: 1px solid var(--id-chip-bd);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body[data-project] .hero .level-btn {
+  background: transparent;
+  color: var(--id-hero-fg);
+  border: 1px solid transparent;
+  text-shadow: none;
+  white-space: nowrap;
+}
+body[data-project] .hero .level-btn.active {
+  background: var(--id-hero-fg);
+  color: var(--id-hero-inv);
+}
+body[data-project] .hero .level-btn:focus-visible {
+  outline: 3px solid var(--id-glow);
+  outline-offset: 2px;
+}
+
+/* Inline-styled primary button in the statistics-of-my-life hero. */
+body[data-project] .hero .btn.primary,
+body[data-project] .hero button.primary {
+  background: var(--id-glow);
+  color: var(--id-ink);
+}
+
+/* Step track, session tags and primary buttons take the project accent. */
+body[data-project] .btn-primary,
+body[data-project] .dc-step1-launch-btn,
+body[data-project] .dc-session-tag.active,
+body[data-project] .pro-totop {
+  background: var(--id-accent);
+  color: #fff;
+}
+body[data-project].pro-projects .nav-btn:not(.ghost) {
+  background: linear-gradient(135deg, var(--id-accent), color-mix(in srgb, var(--id-accent) 62%, var(--id-ink)));
+  color: #fff;
+}
+body[data-project] .dc-step1-launch {
+  border-color: color-mix(in srgb, var(--id-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--id-tint) 55%, #fff);
+}
+body[data-project] .pro-readbar {
+  background: linear-gradient(90deg, var(--id-accent), var(--id-glow));
+}
+body[data-project] .ntm-chip-code {
+  color: var(--id-accent);
+}
+
+/* The mission card ("Community Math Studio" panel): same structure, project colours. */
+body[data-project] .cms-goals {
+  border-top-color: var(--id-accent);
+  background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--id-tint) 40%, #fff));
+}
+body[data-project] .cms-goals :is(.cms-kicker, .cms-en, h3, summary),
+body[data-project] .cms-goals summary {
+  color: var(--id-accent-b);
+}
+body[data-project] .cms-roadmap li::marker {
+  color: var(--id-accent);
+}
+
+@media (max-width: 760px) {
+  body[data-project] .hero {
+    min-height: 0;
+  }
+  body[data-project] .hero > * {
+    max-width: 100%;
+  }
+  /* On a phone the scene becomes a quiet backdrop behind the copy. */
+  body[data-project] .hero::before {
+    width: 100%;
+    opacity: 0.32;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+@media print {
+  body[data-project] .hero::before,
+  body[data-project] .hero::after {
+    display: none;
+  }
+}
+
+/* --- World Architect: its own two-column banner, same tokens. --- */
+body[data-project="world-architect"] {
+  --navy: var(--id-ink);
+  --navy2: var(--id-deep);
+  --teal: var(--id-accent);
+  --teal2: color-mix(in srgb, var(--id-accent) 80%, #000);
+  --amber: var(--id-accent-b);
+  --cream: var(--id-paper);
+  --cream2: var(--id-tint);
+}
+body[data-project="world-architect"] .hero-banner {
+  isolation: isolate;
+  background: var(--id-hero-bg);
+}
+body[data-project="world-architect"] .hero-banner::before {
+  inset: 0 0 auto auto;
+  height: min(100%, 640px);
+  width: var(--id-art-width);
+  background: var(--id-art) right center / cover no-repeat;
+  background-size: cover;
+  -webkit-mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  z-index: 0;
+}
+body[data-project="world-architect"] .hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--id-art-scrim);
+  z-index: 0;
+  pointer-events: none;
+}
+body[data-project="world-architect"] .hero-content {
+  z-index: 1;
+}
+body[data-project="world-architect"] .hero-title {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  font-size: calc(clamp(2.2rem, 4.4vw, 3.1rem) * var(--id-display-scale));
+  letter-spacing: var(--id-display-track);
+}
+body[data-project="world-architect"] .hero-title span,
+body[data-project="world-architect"] .hero-kicker,
+body[data-project="world-architect"] .hero-mission h3 {
+  color: var(--id-glow);
+}
+body[data-project="world-architect"] .hero-mission {
+  background: color-mix(in srgb, var(--id-ink) 66%, transparent);
+  border-color: var(--id-chip-bd);
+}
+body[data-project="world-architect"] .hero-banner .studio-entry {
+  background: var(--id-glow);
+  border: 0;
+}
+body[data-project="world-architect"] .hero-banner .studio-entry a {
+  color: var(--id-ink) !important;
+}
+body[data-project="world-architect"] .hero-banner .studio-entry span {
+  color: color-mix(in srgb, var(--id-ink) 86%, transparent);
+}
+
+/* --- Unit hubs (/math/unit-N/projects/): the hero follows the flagship, each version card its own project.
+   projects-premium.css styles this hero at a higher specificity, so the rules below repeat its selector. --- */
+body[data-project].pk-hub .hero.compact-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: clamp(340px, 36vw, 440px);
+  padding: clamp(28px, 4vw, 52px);
+  border-radius: 28px;
+  border-top: 6px solid var(--id-glow);
+  background: var(--id-hero-bg);
+  color: var(--id-hero-fg);
+  box-shadow: none;
+  isolation: isolate;
+}
+body[data-project].pk-hub .hero.compact-hero::before {
+  inset: 0 0 auto auto;
+  height: min(100%, 640px);
+  width: var(--id-art-width);
+  background: var(--id-art) right center / cover no-repeat;
+  -webkit-mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  opacity: 1;
+  z-index: 0;
+}
+body[data-project].pk-hub .hero.compact-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--id-art-scrim);
+  z-index: 0;
+  pointer-events: none;
+}
+body[data-project].pk-hub .hero.compact-hero > * {
+  grid-column: auto;
+  max-width: var(--id-copy-width);
+}
+body[data-project].pk-hub .hero.compact-hero .hero-illustration {
+  grid-row: auto;
+  margin-top: 6px !important;
+}
+body[data-project].pk-hub .hero .eyebrow {
+  color: var(--id-hero-fg);
+}
+body[data-project].pk-hub .hero h1 {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  letter-spacing: var(--id-display-track);
+  font-size: calc(clamp(2.2rem, 5vw, 3.4rem) * var(--id-display-scale));
+  line-height: 1.04;
+  color: var(--id-hero-fg);
+}
+body[data-project].pk-hub .hero .hero-copy {
+  color: var(--id-hero-soft);
+}
+@media (max-width: 760px) {
+  body[data-project].pk-hub .hero.compact-hero {
+    min-height: 0;
+  }
+  body[data-project].pk-hub .hero.compact-hero > * {
+    max-width: 100%;
+  }
+  body[data-project].pk-hub .hero.compact-hero::before {
+    width: 100%;
+    opacity: 0.3;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+body[data-project].pk-hub .hero-illustration {
+  /* !important (documented): the figure is centred by an inline style on the element. */
+  text-align: left !important;
+}
+.pk-hub .activity-card[data-project] {
+  position: relative;
+  overflow: hidden;
+  padding-top: 196px;
+}
+.pk-hub .activity-card[data-project]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 164px;
+  background: var(--id-art) 100% 50% / auto 138% no-repeat, var(--id-tint);
+}
+.pk-hub .activity-card[data-project] h3 {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  letter-spacing: var(--id-display-track);
+  color: var(--id-accent);
+}
+.pk-hub .activity-card[data-project] .card-kicker {
+  color: var(--id-accent-b);
+}
+.pk-hub .activity-card[data-project] .button-link {
+  background: var(--id-accent);
+  border-color: var(--id-accent);
+  color: #fff;
+}
+@media (forced-colors: active) {
+  .pk-hub .activity-card[data-project]::before {
+    display: none;
+  }
+  .pk-hub .activity-card[data-project] {
+    padding-top: 1.25rem;
+  }
+}

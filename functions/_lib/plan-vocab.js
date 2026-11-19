@@ -3699,6 +3699,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-5/part-2/",
+    title: "Algebraic Expressions · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-6/",
     title: "Identify Equivalent Algebraic Expressions · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",

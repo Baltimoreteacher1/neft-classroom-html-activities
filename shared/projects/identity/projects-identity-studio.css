@@ -1,0 +1,124 @@
+/* ==========================================================================
+   Projects IDENTITY, Studio mission view. Same tokens as projects-identity.css; this file maps
+   them onto the Studio's own markup (curriculum/projects/studio/studio.js). `data-project` is set
+   on <html> by the Studio script when a mission is open; the catalog view carries none and is
+   unchanged. The Studio's dark theme (:root[data-theme="dark"]) outranks the palette remap here
+   on purpose, so a student who picks Dark still gets the Studio's own dark palette.
+   ========================================================================== */
+
+html[data-project] {
+  --paper: var(--id-paper);
+  --teal: var(--id-accent);
+  --blue: var(--id-accent-b);
+  --lime: var(--id-tint);
+  --soft: var(--id-tint-soft);
+  --line: var(--id-line);
+}
+
+html[data-project] .site-header {
+  box-shadow: inset 0 -4px 0 var(--id-accent);
+}
+
+html[data-project] .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, var(--id-copy-width)) minmax(0, 1fr);
+  align-content: end;
+  align-items: start;
+  gap: 18px 24px;
+  min-height: clamp(380px, 36vw, 480px);
+  margin: 18px 0 22px;
+  padding: clamp(26px, 4vw, 52px);
+  border-radius: 28px;
+  border-top: 6px solid var(--id-glow);
+  background: var(--id-hero-bg);
+  color: var(--id-hero-fg);
+}
+html[data-project] .hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto auto;
+  height: min(100%, 640px);
+  width: var(--id-art-width);
+  background: var(--id-art) right center / cover no-repeat;
+  -webkit-mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  mask-image: var(--id-art-mask), linear-gradient(180deg, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  z-index: 0;
+  pointer-events: none;
+}
+html[data-project] .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--id-art-scrim);
+  z-index: 0;
+  pointer-events: none;
+}
+html[data-project] .hero > * {
+  position: relative;
+  z-index: 1;
+}
+html[data-project] .hero .eyebrow,
+html[data-project] .hero h1,
+html[data-project] .hero .lede {
+  color: var(--id-hero-fg);
+}
+html[data-project] .hero h1 {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  letter-spacing: var(--id-display-track);
+  font-size: calc(clamp(2.3rem, 5vw, 3.7rem) * var(--id-display-scale));
+  line-height: 1.02;
+  text-wrap: balance;
+}
+html[data-project] .hero .lede {
+  color: var(--id-hero-soft);
+  max-width: 46ch;
+}
+html[data-project] .hero .chip {
+  background: var(--id-chip-bg);
+  border: 1px solid var(--id-chip-bd);
+  color: var(--id-hero-fg);
+}
+html[data-project] .hero-stamp {
+  grid-column: 1;
+  justify-self: start;
+  max-width: 440px;
+  transform: rotate(-1deg);
+  background: var(--id-glow);
+  color: var(--id-ink);
+  border: 0;
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--id-ink) 38%, transparent);
+}
+html[data-project] .hero-stamp strong,
+html[data-project] .hero-stamp p {
+  color: var(--id-ink);
+}
+
+html[data-project] #stage-heading,
+html[data-project] .panel h2,
+html[data-project] .sidebar h2 {
+  font-family: var(--id-display);
+  font-weight: var(--id-display-weight);
+  letter-spacing: var(--id-display-track);
+}
+
+@media (max-width: 760px) {
+  html[data-project] .hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  html[data-project] .hero::before {
+    width: 100%;
+    opacity: 0.3;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html[data-project] .hero-stamp {
+    justify-self: start;
+  }
+}

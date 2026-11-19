@@ -472,14 +472,32 @@
         overlay.classList.add("fade-out");
         setTimeout(function () {
           overlay.remove();
-          /* Return focus to the page so keyboard users are not stranded on
-             <body>: the first heading of the project, else what had focus. */
-          var target = document.querySelector(".hero h1") || previouslyFocused;
+          /* Continue into the project: bring the first project block after the hero (the
+             step wizard, or the mission brief on the longer pages) to the top of the screen
+             and move focus to its first visible heading, so keyboard and screen-reader users
+             land on the work and everyone else is not left staring at the hero. */
+          var hero = document.querySelector(".hero");
+          var start = hero && hero.nextElementSibling;
+          while (start && start.getBoundingClientRect().height < 200)
+            start = start.nextElementSibling;
+          var heading =
+            start &&
+            Array.prototype.slice
+              .call(start.querySelectorAll("h2, h3, .card-title, [class*='title']"))
+              .filter(function (el) {
+                return el.getBoundingClientRect().height > 0;
+              })[0];
+          var target = heading || start || hero || previouslyFocused;
           if (target && typeof target.focus === "function") {
             if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
             try {
-              target.focus();
+              target.focus({ preventScroll: true });
             } catch (_e) {}
+          }
+          if (start && typeof start.scrollIntoView === "function") {
+            var calm =
+              window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            start.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
           }
         }, 250);
       });

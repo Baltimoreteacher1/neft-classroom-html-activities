@@ -16,7 +16,9 @@ function pageHtml(page) {
   html = html.replace(/<!-- u4-lab-bench:begin[\s\S]*?<!-- u4-lab-bench:end -->/, "");
   html = html.replace(
     /<script\b([^>]*?)\bsrc="(\/[^"?]+)(?:\?[^"]*)?"([^>]*)><\/script>/g,
-    (_m, _a, src) => {
+    (_m, attrs, src) => {
+      // ES modules (the word-problem cards) cannot run as classic scripts in jsdom; their own tests cover them.
+      if (/\btype="module"/.test(attrs)) return "";
       const file = join(REPO_ROOT, src);
       if (!existsSync(file)) return "";
       return `<script>${readFileSync(file, "utf8").replace(/<\/script/g, "<\\/script")}</script>`;

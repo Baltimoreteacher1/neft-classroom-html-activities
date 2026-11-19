@@ -209,15 +209,16 @@ test.describe("Pre-Unit culminating project", () => {
   });
 
   test("the three levels carry different work, not different numbers", async ({ page }) => {
-    // LEVEL 0 is not "the project with hints". The shared meta layer replaces
-    // the six-step wizard with the single worked task authored in
-    // projects-meta-config.json, and hides the trail entirely — so the tier is
-    // verified through that shell, not through the page's own .lvl0-only
-    // blocks, which the shell covers.
+    // LEVEL 0 is the same project with extra support: the shared meta layer puts
+    // the single worked task authored in projects-meta-config.json at the top of
+    // Step 1, and the student then carries on through the project. The trail and
+    // the step content stay visible, so the tier is verified through the support
+    // shell AND through the fact that the project continues.
     await open(page, 0);
     const shell = page.locator(".ntm-l0-shell");
     await expect(shell).toBeVisible();
-    await expect(page.locator(".step-trail")).toBeHidden();
+    await expect(page.locator(".step-trail")).toBeVisible();
+    await expect(page.locator("#step-1")).toBeVisible();
     await expect(shell).toContainText(/one bus holds 24/i);
     await expect(shell).toContainText(/4 students are still waiting/i);
     const level0 = await shell.innerText();
