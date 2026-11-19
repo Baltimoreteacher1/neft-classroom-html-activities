@@ -5,10 +5,7 @@
 import { glow, label, PAL, plate, rr } from "../../runtime/art.js";
 import { BLOCK, BOARD_X, FLOOR, LEDGE, SPRING, stepOf, TRUCK_X } from "./arena.js";
 
-/** The prompt a Word Crates crate carries, in the student's language. */
-export function quizPrompt(item, lang, when) {
-  return item.phrase ? item.phrase[lang] || item.phrase.en : `${item.show}, ${when} ${item.when}`;
-}
+import { quizPrompt } from "./quiz.js";
 
 const fill = (ctx, color, x, y, w, h, r) => {
   ctx.fillStyle = color;

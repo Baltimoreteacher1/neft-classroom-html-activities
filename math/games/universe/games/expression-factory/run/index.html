@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+    <title>Factory Run | 3D Expression Runner | Lesson 6-5</title>
+    <meta
+      name="description"
+      content="Lesson 6-5 (6.AT.6a): a 3D runner in the Algebra Works. Turn words into expressions, substitute and evaluate, dodge hazards, collect gears and beat the Glitch Bot."
+    />
+    <link rel="stylesheet" href="./run.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/games/engine3d/vendor/three/build/three.module.js",
+          "three/addons/": "/games/engine3d/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="/assets/edupulse-bridge.js" defer></script>
+    <script>
+      // The game reports its own completion and score; the bridge never auto-fires.
+      window.NeftCanvasBridgeConfig = { activityId: "universe-expression-factory-run", activityTitle: "Factory Run", manual: true, finishButton: false };
+    </script>
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <main>
+      <div id="stage" tabindex="0" role="application" aria-label="Factory Run: a 3D runner. Use the lane cards or arrow keys."></div>
+      <div id="hud" hidden>
+        <div class="top">
+          <div class="pill"><b id="stageName"></b><span aria-hidden="true">·</span><span id="crate"></span></div>
+          <div class="pill" id="gears"></div>
+          <div class="pill hot" id="combo"></div>
+          <div class="pill" id="powers"></div>
+          <button class="pill btnp" id="btnPause" type="button" aria-label="Pause">⏸</button>
+        </div>
+        <div class="bar"><div id="progress"></div></div>
+        <div id="bossBar" hidden><span>🤖</span><div><div id="bossFill"></div></div></div>
+        <div class="prompt" aria-live="polite">
+          <div id="q"></div>
+          <div id="ask"></div>
+        </div>
+        <div id="hint" hidden></div>
+        <div id="toast" class="toast" hidden></div>
+        <div class="controls">
+          <button type="button" class="ctl" id="btnSlide" aria-label="Slide">⤓</button>
+          <div class="cards" role="group" aria-label="Lanes">
+            <button type="button" class="lane" id="card0"><small>1</small><span class="v"></span></button>
+            <button type="button" class="lane" id="card1"><small>2</small><span class="v"></span></button>
+            <button type="button" class="lane" id="card2"><small>3</small><span class="v"></span></button>
+          </div>
+          <button type="button" class="ctl" id="btnJump" aria-label="Jump">⤒</button>
+        </div>
+      </div>
+      <div id="menu"></div>
+      <div id="live" class="sr" aria-live="polite"></div>
+      <noscript>This game needs JavaScript turned on.</noscript>
+    </main>
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
+  </body>
+</html>

@@ -173,3 +173,8 @@ export const WORD_ROOMS = [
     eval2("7p − 10", "p = 3", "7 × 3 − 10", ["73 − 10", "7 + 3 − 10"], "21 − 10", ["10 − 10"], 11, [0, 63]),
   ],
 ];
+
+/** The prompt a crate carries, in the student's language. */
+export function quizPrompt(item, lang, when) {
+  return item.phrase ? item.phrase[lang] || item.phrase.en : `${item.show}, ${when} ${item.when}`;
+}

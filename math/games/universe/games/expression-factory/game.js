@@ -17,7 +17,7 @@ import { define, UniverseGame } from "../../runtime/shell.js";
 import { BELT_X0, createWorld, FLOOR, isPick, LEVELS, slotX } from "./levels.js";
 import { evaluate, fracText, machineText, simplest, write } from "./math.js";
 import { draw, drawBackdrop } from "./render.js";
-import { quizPrompt } from "./render-arena.js";
+import { quizPrompt } from "./quiz.js";
 import { BLOCK, SLOT_X } from "./arena.js";
 import { built, currentRoom, rules } from "./rules.js";
 import { STRINGS } from "./strings.js";
