@@ -4,6 +4,7 @@
 //   /family            home            /family/start     setup (language, grade, who, time)
 //   /family/practice   planner+finder  /family/trip      guided six-stop trip
 //   /family?mission=mNN  Family Mission Companion (Learning Journey)
+//   /family/story      Family Language Story (a teacher's note, opened from a link)
 //   /family/progress   what we practiced
 //   /family/help       help center     /family/save      Save & Continue Later
 // Old /family?skill=…&minutes=…&level=… links (teacher shares) open the planner's finder.
@@ -17,10 +18,12 @@ import * as planner from "../family/planner.js";
 import * as progress from "../family/progress.js";
 import * as save from "../family/save.js";
 import * as setup from "../family/setup.js";
+import { storyCardHTML } from "../family/story/card.js";
+import * as story from "../family/story/page.js";
 import * as trip from "../family/trip.js";
 import * as understand from "../family/understand.js";
 
-const PAGES = { "": hub, start: setup, understand, practice: planner, trip, progress, help, save };
+const PAGES = { "": hub, start: setup, understand, practice: planner, trip, progress, help, save, story };
 const LEGACY_FILTERS = ["skill", "minutes", "level"];
 
 const COMPANION = {};
@@ -52,7 +55,8 @@ export async function render(ctx) {
   const cont = await continueSectionHTML(ctx, I).catch(() => "");
   // Connected Pathways: the family conversation card for the pathway this child is on (nothing when there is none).
   const talk = familyHubCardHTML(I);
-  return cont || talk ? { ...page, html: html`${cont}${talk}${page.html}` } : page;
+  const note = storyCardHTML(I);
+  return { ...page, html: html`${cont}${note}${talk}${page.html}` };
 }
 
 export const mount = (root, ctx) => current.mount?.(root, ctx);

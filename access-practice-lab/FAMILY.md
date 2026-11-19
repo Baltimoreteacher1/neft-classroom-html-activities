@@ -68,6 +68,37 @@ activity cannot supply is dropped, never guessed. With no goal it says it is giv
 child's answers, so it never claims to know the error. Spanish goals and directions for all 501 activities are in
 `content/es-guide.json` (machine-drafted — see limitations). Hidden when setup says "my child practices on their own".
 
+## Family Language Story (`/family/story`)
+
+A teacher shares one short, warm note per student: something to celebrate (the child's own sentence, word for word),
+what was practiced this week (a count of days and the skills, never a score), and three conversation starters with a
+sentence frame and "say it in English, Spanish or both". No score, level, percent, timer or proficiency label.
+
+| Piece            | File                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------- |
+| Every sentence   | `src/family/story/wording.js` (EN + ES, grade-5 reading level; the link carries ids, not prose)        |
+| Model + sanitizer| `src/family/story/model.js` (`normalizeStory`, `compose`, `readAloud`, `replyMessage`)                 |
+| Share link       | `src/family/story/link.js` (`encodeStory`, `decodeStory`, `storyUrl`)                                  |
+| Family page      | `src/family/story/page.js`, `render.js`, `audio.js`, `store.js`, `card.js`; `family-story.css`         |
+| Teacher view     | `access-teacher/family-share/` (`panel.js`, `editor.js`, `result.js`, `print.js`, `evidence.js`)       |
+| Where it appears | Teacher Hub > Review Student Progress > **Share with families**; Data Studio link; Family Corner card |
+
+**Link contract.** `/access-practice-lab/family/story#1&n=&l=&d=&w=&c=&s=&q=&m=&t=&x=&k=`: first name the teacher typed
+(never copied from a roster), page language, skills, practice days, celebration id, three talk ids, one verbatim quote
+(+ wrote/said), one teacher note (+ language), week start. It is in the URL fragment, so no server receives it. No
+class code, roster, alias or student id exists in it. Every key is re-validated on read; free text with an email, link,
+phone number or long digit run is refused whole. The short form (no quote or note) is what the printed QR code holds.
+The family page clears the fragment from the address bar and keeps the note on that phone only
+(`accessPracticeLabFamily:v1:*`, outside the Passport backup namespace); "Remove from this phone" forgets it.
+
+**Teacher control.** A link exists only for a story the teacher approved; editing after approval withdraws it until
+approved again. Nothing is sent: the teacher copies a link or prints cards (`accessTeacher:v1:familyShare`, this browser).
+
+**Reply loop.** "We tried it" and "how did it go" build a short English + Spanish note the family sends through the
+way they already talk with the class (phone share sheet or copy). The page sends nothing.
+
+Tests: `node --test tools/access-family-story.test.mjs`. Spanish is machine-drafted and awaits native review.
+
 ## Tests
 
 | Command                                  | Proves                                                                                                                                                                                                                             |

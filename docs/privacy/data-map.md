@@ -440,3 +440,14 @@ branch of `apiBase` was exercised.
 Limits: engine-rendered lesson pages (`/lessons/<id>/`) need `dist/` (Vite) and were not loaded; their
 behaviour is READ from `engine/core/*` only. Production D1 contents, Worker secrets and Cloudflare
 dashboard settings were not inspected.
+
+## ACCESS Practice Lab: Family Language Story (added 2026-11-19)
+
+No endpoint, no new network call. Browser storage: `accessTeacher:v1:familyShare` (teacher's drafts and the approved
+fragment per student; first name only if the teacher typed one; quotes come from the student's own saved work, and a
+quote or note with contact details is refused) and, on a family's phone, `accessPracticeLabFamily:v1:story` and
+`:tries` (the approved fragment; which talks were marked "we tried it"). Both are removable (`Remove from this phone`).
+A share link carries the approved story in the URL fragment (`#1&n=&d=&w=&c=&s=&q=&t=&k=`), which is never sent to a
+server, and the family page clears it from the address bar on load. Not verified: whether Cloudflare Web Analytics'
+edge beacon records `location.href` including the fragment before it is cleared; check before sharing links at scale.
+Contract and tests: `access-practice-lab/FAMILY.md`, `tools/access-family-story.test.mjs`.

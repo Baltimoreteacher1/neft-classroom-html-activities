@@ -1,0 +1,406 @@
+/* Family Language Story (src/family/story/render.js). Design-system tokens only (ds.css). Shared by the family page
+   (/family/story), the teacher's live preview and the printed card. Phone first; one column; 44px+ targets. */
+.fls {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 44rem;
+  margin-inline: auto;
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+.fls h1,
+.fls h2 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+.fls p {
+  margin: 0;
+}
+.fls-hero {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--shadow-card), var(--edge-light);
+}
+.fls-hero { --bi-es-color: currentColor; }
+.fls .fls-hero :is(h1, p) { color: inherit; }
+.fls-card h2 { display: flex; gap: var(--s-2); align-items: flex-start; }
+.fls-say { margin-block-start: var(--s-1); }
+.fls-hero h1 {
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.4rem);
+  line-height: 1.15;
+}
+.fls-hero h1:focus-visible {
+  outline: 3px solid var(--on-brand);
+  outline-offset: 4px;
+}
+.fls-eyebrow,
+.fls-weeklabel {
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  opacity: 0.92;
+}
+.fls-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.fls-top .btn {
+  min-height: 52px;
+}
+.fls-hero .btn:not(.btn-primary) {
+  background: transparent;
+  color: var(--on-brand);
+  border-color: var(--on-brand);
+}
+.fls-hero .btn-primary {
+  background: var(--on-brand);
+  color: var(--brand);
+  border-color: var(--on-brand);
+}
+
+.fls-card {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card), var(--edge-light);
+}
+.fls-card h2 {
+  font-size: 1.4rem;
+}
+.fls-line,
+.fls-big {
+  font-size: 1.25rem;
+}
+.fls-big {
+  font-family: var(--font-display);
+  line-height: 1.35;
+}
+.fls-label {
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fls-quiet {
+  color: var(--ink-2);
+}
+
+.fls-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fls-skills li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-3) 0 var(--s-2);
+  border-radius: 999px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+}
+.fls-tile {
+  display: inline-grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--room);
+  color: #fff;
+  flex: none;
+}
+.fls-tile .ico {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.fls-celebrate {
+  background: linear-gradient(135deg, var(--hint-soft), var(--surface) 75%);
+  border-inline-start: 8px solid var(--writing, var(--brand));
+}
+.fls-quote {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}
+.fls-quote figcaption {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.fls-quote blockquote {
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 1.3rem;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.fls-talk-card {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-inline-start: 6px solid var(--room);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.fls-talk-card.is-featured {
+  background: var(--room-soft);
+}
+.fls-skill-tag {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--room-ink);
+  font-weight: 800;
+}
+.fls-ask {
+  font-size: 1.2rem;
+}
+.fls-frame {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  border: 2px dashed var(--line-strong);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.fls-either {
+  color: var(--ink-2);
+  font-size: 1rem;
+}
+.fls-more-grid {
+  display: grid;
+  gap: var(--s-3);
+}
+@media (min-width: 40rem) {
+  .fls-more-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.fls-actions,
+.fls-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  align-items: center;
+}
+.fls .btn,
+.fls .chip,
+.fls .ghost.small {
+  min-height: 48px;
+}
+.fls-try[aria-pressed="true"] {
+  background: var(--right-soft);
+  color: var(--right);
+  border-color: var(--right);
+  font-weight: 800;
+}
+.fls-say {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  vertical-align: middle;
+}
+.fls-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.fls-check {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  min-height: 44px;
+}
+.fls-check input {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.fls-message {
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  white-space: pre-line;
+}
+.fls-note {
+  background: var(--surface-2);
+}
+.fls-foot {
+  display: grid;
+  gap: var(--s-3);
+}
+.fls-qr {
+  display: none;
+}
+.fls-hub {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+.fls-empty {
+  max-width: 44rem;
+  margin-inline: auto;
+  display: grid;
+  gap: var(--s-3);
+}
+.fls-steps {
+  margin: 0;
+  padding-inline-start: 1.4rem;
+}
+.fls-bad {
+  color: var(--wrong);
+  font-weight: 700;
+  min-height: 1.5em;
+}
+.fls-tools {
+  max-width: 44rem;
+  margin: var(--s-4) auto 0;
+}
+.fls-for {
+  margin: 0 0 var(--s-2);
+  color: #444;
+  font-size: 9pt;
+}
+.fls-print {
+  display: none;
+}
+
+@media (max-width: 30rem) {
+  .fls-hero,
+  .fls-card {
+    padding: var(--s-4);
+  }
+  .fls-top .btn,
+  .fls-actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+@media print {
+  /* family.css prints only the weekly quest card on family pages; the story is the page here. */
+  body[data-lab-view="family"] #app > .fls { display: grid !important; }
+  body[data-printing="fam-story"] > :not(.fls-print) {
+    display: none !important;
+  }
+  body[data-printing="fam-story"] .fls-print {
+    display: block;
+  }
+  .fls-page {
+    break-after: page;
+    page-break-after: always;
+    color: #000;
+    font-size: 11pt;
+  }
+  .fls-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  .fls-page.is-both {
+    font-size: 9pt;
+  }
+  .fls {
+    max-width: none;
+    gap: 6pt;
+    font-size: 10.5pt;
+    line-height: 1.35;
+  }
+  .fls:has(.bi-es) {
+    font-size: 8.5pt;
+  }
+  .fls h2 {
+    font-size: 1.15em;
+  }
+  .fls-big,
+  .fls-line,
+  .fls-ask,
+  .fls-frame {
+    font-size: 1.05em;
+  }
+  .fls-quote blockquote {
+    font-size: 1.1em;
+    padding: 4pt 8pt;
+  }
+  .fls-label,
+  .fls-either {
+    font-size: 0.9em;
+  }
+  .fls-talk-card {
+    padding: 6pt 8pt;
+    gap: 3pt;
+  }
+  .fls-hero {
+    background: none;
+    color: #000;
+    padding: 0 0 6pt;
+    border-bottom: 2px solid #000;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .fls-card {
+    box-shadow: none;
+    break-inside: avoid;
+    padding: 8pt;
+    border: 1px solid #666;
+    border-radius: 6pt;
+    background: none;
+  }
+  .fls-celebrate,
+  .fls-talk-card.is-featured {
+    background: none;
+  }
+  .fls-talk-card {
+    border: 1px solid #666;
+    break-inside: avoid;
+  }
+  .fls-frame {
+    border-color: #000;
+  }
+  .fls-tile {
+    background: none;
+    color: #000;
+    border: 1px solid #000;
+  }
+  .fls-skills li {
+    background: none;
+    color: #000;
+    border: 1px solid #666;
+  }
+  .fls-more-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .fls-qr {
+    display: flex;
+    gap: 8pt;
+    align-items: center;
+  }
+  .fls-qr svg {
+    width: 1.1in;
+    height: 1.1in;
+  }
+  .fls a {
+    color: #000;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fls * {
+    transition: none !important;
+  }
+}
