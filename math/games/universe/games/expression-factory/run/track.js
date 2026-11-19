@@ -22,6 +22,7 @@ export const STAGES = [
 
 export const FEEL = {
   speed: { chill: 3, normal: 4.5 },
+  boosts: [1, 1.5, 2], // in-run speed-up multipliers the player can pick
   stageBoost: 0.1,
   jumpV: 9.2,
   gravity: 24,
@@ -57,6 +58,7 @@ export function newRun(stage, { pace = "chill", seed = 7 } = {}) {
     dist: 0,
     speed: FEEL.speed[pace] + stage * FEEL.stageBoost,
     pace,
+    boost: 1,
     lane: 1,
     x: LANES[1],
     y: 0,
@@ -162,6 +164,11 @@ export function input(s, cmd) {
     s.slideT = FEEL.slideT;
     if (s.y > 0) s.vy = -FEEL.jumpV;
   } else if (typeof cmd === "number" && cmd >= 0 && cmd <= 2) s.lane = cmd;
+}
+
+/** Set the in-run speed multiplier to one of FEEL.boosts. */
+export function setBoost(s, boost) {
+  if (FEEL.boosts.includes(boost)) s.boost = boost;
 }
 
 /** The gate row the player is running toward. */
@@ -296,7 +303,7 @@ export function tick(s, dt) {
   if (s.done) return ev;
   // Ease off just before a gate row, so there is time to read the cards.
   const gate = s.objs.find((o) => o.kind === "gate" && !o.passed && o.z > s.dist && o.z - s.dist < 12);
-  const speed = s.speed * (s.stumbleT > 0 ? 0.45 : 1) * (gate ? 0.6 : 1);
+  const speed = s.speed * s.boost * (s.stumbleT > 0 ? 0.45 : 1) * (gate ? 0.6 : 1);
   if (s.stumbleT > 0) s.stumbleT = Math.max(0, s.stumbleT - dt);
   if (s.slideT > 0) s.slideT = Math.max(0, s.slideT - dt);
   if (s.magnetT > 0) s.magnetT = Math.max(0, s.magnetT - dt);

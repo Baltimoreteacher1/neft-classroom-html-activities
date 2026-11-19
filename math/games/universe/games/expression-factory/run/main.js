@@ -5,7 +5,7 @@ import { createFeel } from "../../../../../../games/engine3d/feel.js";
 import { quizPrompt } from "../quiz.js";
 import { createWorld } from "./scene.js";
 import { STRINGS } from "./strings.js";
-import { input, newRun, STAGES, stars, stepOf, tick } from "./track.js";
+import { FEEL, input, newRun, setBoost, STAGES, stars, stepOf, tick } from "./track.js";
 
 const KEY = "ewl-factory-run-v1";
 const SHOP = {
@@ -25,6 +25,7 @@ function load() {
     skin: "teal",
     hat: "none",
     pace: "chill",
+    boost: 1,
     sound: true,
   };
   try {
@@ -205,6 +206,19 @@ const KEYS = {
   ArrowDown: "slide",
   s: "slide",
 };
+function stepBoost(dir) {
+  if (!run) return;
+  const i = FEEL.boosts.indexOf(run.boost);
+  const next = FEEL.boosts[(i + dir + FEEL.boosts.length) % FEEL.boosts.length];
+  setBoost(run, next);
+  save.boost = next;
+  persist();
+  paintBoost();
+}
+function paintBoost() {
+  $("btnSpeed").textContent = `⏩ ×${run.boost}`;
+  $("btnSpeed").setAttribute("aria-label", `${t("pace")} ×${run.boost}`);
+}
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (mode === "play") pause();
@@ -212,6 +226,10 @@ addEventListener("keydown", (e) => {
     return;
   }
   if (mode !== "play") return;
+  if (e.key === "+" || e.key === "=" || e.key === "-" || e.key === "_") {
+    e.preventDefault();
+    return stepBoost(e.key === "-" || e.key === "_" ? -1 : 1);
+  }
   const cmd = KEYS[e.key] ?? (["1", "2", "3"].includes(e.key) ? { pick: Number(e.key) - 1 } : null);
   if (cmd === null) return;
   e.preventDefault();
@@ -237,6 +255,7 @@ $("stage").addEventListener("pointerup", (e) => {
 );
 $("btnJump").addEventListener("click", () => mode === "play" && input(run, "jump"));
 $("btnSlide").addEventListener("click", () => mode === "play" && input(run, "slide"));
+$("btnSpeed").addEventListener("click", () => mode === "play" && stepBoost(1));
 $("btnPause").addEventListener("click", () => (mode === "play" ? pause() : resume()));
 document.addEventListener("visibilitychange", () => document.hidden && mode === "play" && pause());
 
@@ -355,6 +374,8 @@ function shopScreen() {
 function start(i) {
   world?.reset();
   run = newRun(i, { pace: save.pace, seed: Date.now() % 100000 });
+  setBoost(run, save.boost);
+  paintBoost();
   lastCards = "";
   mode = "play";
   $("menu").hidden = true;
