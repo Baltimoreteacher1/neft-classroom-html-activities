@@ -72,7 +72,7 @@ try {
     const page = await open(`${lab}?view=teacher&grade=6`);
     const t4 = page.locator("#teacher-4");
     await t4.locator(".t4").waitFor();
-    check((await page.locator("#teacher-4 [role=tab]").count()) === 7, "teacher: seven tabs (assignments, insights, reports, map, assessments, lesson plan, class tools)");
+    check((await page.locator("#teacher-4 [role=tab]").count()) === 8, "teacher: eight tabs (assignments, insights, intervention, reports, map, assessments, lesson plan, class tools)");
     await page.locator("#t4-tab-insights").click();
     await t4.locator("[data-t4-files]").setInputFiles(files);
     await page.waitForTimeout(400);

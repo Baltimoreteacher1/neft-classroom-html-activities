@@ -47,6 +47,7 @@ import { directedSkillPlan, findDirectedSkill, skillExample, skillExplanation, s
 import { dailyMission, encodePlan, MINUTE_CHOICES, missionTopics, planSession, themeText } from "./fm2/session.js";
 import { createGuidedStore } from "./fm2/guided/guided-core.js";
 import { createStore, dayKey, minutesThisWeek, streak } from "./fm2/store.js";
+import { buildFamilyCompanion, renderFamilyCompanionHtml } from "./companion.js";
 
 const params = new URLSearchParams(location.search);
 const $ = (selector) => document.querySelector(selector);
@@ -475,6 +476,17 @@ function draw() {
   renderStory($("#story-body"), { grade: S.grade, lang });
   $("#print-coach").hidden = !info.plan && !info.recs.length;
   paint($("#rw-body"), realworldHtml());
+  const companionRegion = $("#companion-region");
+  if (companionRegion) {
+    const firstSkill = S.loaded ? skillsFor(S.games, S.grade)?.[0] : null;
+    const targetKey = S.selectedSkill
+      ? `${S.grade}:${S.selectedSkill}`
+      : firstSkill
+        ? `${S.grade}:${firstSkill.id}`
+        : `${S.grade}:${S.grade === 6 ? "ratios" : "add-sub-5"}`;
+    const tutorData = sanitizeTutor(readLocal(profileKey("ewl-fluency-tutor-v2", S.profile), emptyTutor()));
+    paint(companionRegion, renderFamilyCompanionHtml(buildFamilyCompanion({ skillKey: targetKey, tutorRecord: tutorData, lang: S.lang }), S.lang));
+  }
   $("#tonight-link").href = familySessionLaunch({
     grade: S.grade,
     profile: S.profile,

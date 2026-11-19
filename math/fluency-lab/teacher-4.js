@@ -15,10 +15,12 @@ import { createClassState, mountInsights, mountReports } from "./teacher-4-class
 import { mountAssessmentBuilder, mountLessonPlanner } from "./e8/assessment-ui.js";
 import { mountMasteryMap } from "./e8/teacher-hub-ui.js";
 import { mountClassTools } from "./teacher-class-tools.js";
+import { mountInterventionBuilder } from "./teacher-intervention.js";
 
 const TABS = () => [
   { id: "assign", label: t("Assignments") },
   { id: "insights", label: t("Class insights") },
+  { id: "intervention", label: t("Plan Intervention") },
   { id: "reports", label: t("Reports and privacy") },
   { id: "map", label: t("Mastery map") },
   { id: "assess", label: t("Assessments") },
@@ -49,8 +51,13 @@ export function mountTeacher4(
   const klass = (sharedClass ??= createClassState({ deviceLearners: () => currentDevice() }));
   const tabs = TABS();
   container.innerHTML = `<section class="t4" aria-labelledby="t4-title">
-    <header class="t4-head"><p class="t4-eyebrow">${esc(t("Teacher tools"))}</p><h2 id="t4-title">${esc(t("Assign, understand, report"))}</h2>
-      <p>${esc(t("Differentiated assignments, what to reteach, and flexible groups, from learner files you open. Everything stays on this device."))}</p></header>
+    <header class="t4-head"><p class="t4-eyebrow">${esc(t("Teacher tools"))}</p><h2 id="t4-title">${esc(t("Who needs support? Why? What should I do next?"))}</h2>
+      <p>${esc(t("Review observed progress, assign curriculum-aligned practice, and build small-group interventions. Everything stays private on this device."))}</p>
+      <nav class="t4-primary-nav" aria-label="${esc(t("Primary teacher actions"))}" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem">
+        <button type="button" class="btn-secondary" data-t4-jump="insights" style="min-height:44px;padding:.5rem 1rem">${esc(t("Review Progress"))}</button>
+        <button type="button" class="btn-secondary" data-t4-jump="assign" style="min-height:44px;padding:.5rem 1rem">${esc(t("Assign Practice"))}</button>
+        <button type="button" class="btn-secondary" data-t4-jump="intervention" style="min-height:44px;padding:.5rem 1rem">${esc(t("Plan Intervention"))}</button>
+      </nav></header>
     <div class="t4-tabs" role="tablist" aria-label="${esc(t("Teacher tools"))}">${tabs.map((tab, index) => `<button type="button" role="tab" class="t4-tab" id="t4-tab-${tab.id}" aria-controls="t4-panel-${tab.id}" aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${esc(tab.label)}</button>`).join("")}</div>
     ${tabs.map((tab, index) => `<div role="tabpanel" class="t4-panelwrap" id="t4-panel-${tab.id}" aria-labelledby="t4-tab-${tab.id}" ${index ? "hidden" : ""}></div>`).join("")}</section>`;
   const panel = (id) => container.querySelector(`#t4-panel-${id}`);
@@ -64,6 +71,7 @@ export function mountTeacher4(
       if (selected && focus) button.focus();
     }
     if (id === "assign") assign.refresh();
+    if (id === "intervention") intervention.refresh();
     if (id === "reports") reports.refresh();
     if (id === "map") map.refresh();
     if (id === "lesson") lessonPlan.refresh();
@@ -88,6 +96,7 @@ export function mountTeacher4(
       prefill(plan);
     },
   });
+  const intervention = mountInterventionBuilder(panel("intervention"), { klass, grade, onPrint, announce });
   const reports = mountReports(panel("reports"), { klass, onPrint, announce });
   const map = mountMasteryMap(panel("map"), {
     klass,
@@ -103,6 +112,9 @@ export function mountTeacher4(
   const lessonPlan = mountLessonPlanner(panel("lesson"), { klass, grade });
   mountClassTools(panel("tools"), { grade, onPrint, announce });
 
+  container.querySelectorAll("[data-t4-jump]").forEach((btn) => {
+    btn.addEventListener("click", () => show(btn.dataset.t4Jump, { focus: true }));
+  });
   const tablist = container.querySelector("[role=tablist]");
   tablist.addEventListener("click", (event) => {
     const tab = event.target.closest("[role=tab]");

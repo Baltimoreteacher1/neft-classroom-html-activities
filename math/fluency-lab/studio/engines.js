@@ -20,6 +20,7 @@ import * as place from "./engine-place.js";
 import * as power from "./engine-power.js";
 import * as ratio from "./engine-ratio.js";
 import * as round from "./engine-round.js";
+import * as strands from "./engine-strands.js";
 import { questionEs } from "../question-es.js";
 import { peekCap } from "../step-leak.js";
 
@@ -41,8 +42,9 @@ export const ENGINES = {
   decimal: { id: "decimal", label: L("Decimals and division", "Decimales y división"), ...decimal },
   geo: { id: "geo", label: L("Geometry, signs and factors", "Geometría, signos y factores"), ...geo },
   area: { id: "area", label: L("Arrays and area", "Arreglos y área"), ...area },
+  strands: { id: "strands", label: L("Visual strategy model", "Modelo visual de estrategia"), ...strands },
 };
-const ORDER = ["place", "fraction", "fracmul", "round", "digits", "hops", "power", "factors", "graph", "early", "expr", "decimal", "geo", "line", "balance", "ratio", "area"];
+const ORDER = ["place", "fraction", "fracmul", "round", "digits", "hops", "power", "factors", "graph", "early", "expr", "decimal", "geo", "line", "balance", "ratio", "area", "strands"];
 
 // Worded steps as frames, for skills with no manipulable model yet.
 const wrapText = (text, width = 46) => {

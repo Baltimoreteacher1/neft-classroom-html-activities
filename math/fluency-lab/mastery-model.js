@@ -211,3 +211,130 @@ export function masterySummary(history, now = Date.now()) {
       hintsTrend: lateHints < earlyHints ? "decreasing" : lateHints === earlyHints ? "steady" : "increasing" },
   };
 }
+
+// Explicit 5-stage evidence-based learning progression (Exploring -> Developing -> Practicing -> Independent -> Retained).
+// Distinguishes fluency, understanding, assisted practice, and multi-day retention without opaque percentages.
+export const LEARNING_STAGES = Object.freeze([
+  "exploring",
+  "developing",
+  "practicing",
+  "independent",
+  "retained",
+]);
+
+export const LEARNING_STAGE_LABELS = Object.freeze({
+  exploring: { en: "Exploring", es: "Explorando" },
+  developing: { en: "Developing", es: "Desarrollando" },
+  practicing: { en: "Practicing", es: "Practicando" },
+  independent: { en: "Independent", es: "Independiente" },
+  retained: { en: "Retained", es: "Retenido" },
+});
+
+export function learningStage(record = {}, now = Date.now()) {
+  const recent = Array.isArray(record.recent) ? record.recent : [];
+  const entries = distinctEntries(recent);
+  const independentEntries = entries.filter((e) => e.independent && (e.level ?? 1) >= 1);
+  const independentCorrect = independentEntries.filter((e) => e.correct);
+  const assistedEntries = entries.filter((e) => !e.independent || (e.level ?? 1) < 1);
+  const assistedCorrect = assistedEntries.filter((e) => e.correct);
+  const independentAccuracy = independentEntries.length
+    ? independentCorrect.length / independentEntries.length
+    : null;
+  const recentThreeIndependent = independentEntries.slice(-3);
+  const lastThreeAccurate =
+    recentThreeIndependent.length === 3 && recentThreeIndependent.every((e) => e.correct);
+  const retentionDays = new Set(independentCorrect.map((e) => day(e.at || now))).size;
+  const overdue = Boolean(record.dueAt && now - record.dueAt > 7 * DAY);
+  const insufficientEvidence = independentEntries.length < 3;
+
+  const criteria = {
+    hasAnyAttempt: entries.length > 0,
+    hasAssistedOrEarlySuccess: assistedCorrect.length > 0 || independentCorrect.length > 0,
+    hasThreeIndependent: independentEntries.length >= 3,
+    independentAccuracyAtLeast80: independentAccuracy !== null && independentAccuracy >= 0.8,
+    hasSixIndependentCorrect: independentCorrect.length >= 6,
+    lastThreeIndependentCorrect: lastThreeAccurate,
+    retainedAcrossDays: retentionDays >= 2 && !overdue,
+  };
+
+  let stage = "exploring";
+  let reason = {
+    en: "Not enough independent attempts yet to judge mastery. Exploring the concept and visual model.",
+    es: "Aún no hay suficientes intentos independientes para evaluar el dominio. Explorando el concepto y el modelo visual.",
+  };
+  let nextStep = {
+    en: "Explore the visual model and try 3 independent problems.",
+    es: "Explora el modelo visual e intenta 3 problemas por tu cuenta.",
+  };
+
+  if (
+    criteria.hasSixIndependentCorrect &&
+    criteria.independentAccuracyAtLeast80 &&
+    criteria.lastThreeIndependentCorrect &&
+    criteria.retainedAcrossDays
+  ) {
+    stage = "retained";
+    reason = {
+      en: `${independentCorrect.length} independent successes (${Math.round(independentAccuracy * 100)}%) across ${retentionDays} separate days, including the last 3 in a row.`,
+      es: `${independentCorrect.length} aciertos independientes (${Math.round(independentAccuracy * 100)}%) en ${retentionDays} días distintos, incluidos los últimos 3 seguidos.`,
+    };
+    nextStep = {
+      en: "Scheduled retrieval checks will keep this skill fresh over time.",
+      es: "Las revisiones espaciadas mantendrán esta destreza firme con el tiempo.",
+    };
+  } else if (
+    criteria.hasSixIndependentCorrect &&
+    criteria.independentAccuracyAtLeast80 &&
+    criteria.lastThreeIndependentCorrect
+  ) {
+    stage = "independent";
+    reason = {
+      en: `${independentCorrect.length} independent successes (${Math.round(independentAccuracy * 100)}%) and 3 in a row on their own; needs a fresh check on another day to confirm retention.`,
+      es: `${independentCorrect.length} aciertos independientes (${Math.round(independentAccuracy * 100)}%) y 3 seguidos por su cuenta; falta una comprobación en otro día para confirmar retención.`,
+    };
+    nextStep = {
+      en: "Return on another day for a fresh independent retention check.",
+      es: "Vuelve otro día para una comprobación independiente de retención.",
+    };
+  } else if (criteria.hasThreeIndependent && independentCorrect.length >= 2) {
+    stage = "practicing";
+    reason = {
+      en: `${independentCorrect.length} of ${independentEntries.length} independent answers correct (${Math.round(independentAccuracy * 100)}%); building consistency toward independent mastery.`,
+      es: `${independentCorrect.length} de ${independentEntries.length} respuestas independientes correctas (${Math.round(independentAccuracy * 100)}%); construyendo consistencia.`,
+    };
+    nextStep = {
+      en: "Practice without hints until 6 independent successes with 80%+ accuracy.",
+      es: "Practica sin pistas hasta lograr 6 aciertos independientes con 80%+ de precisión.",
+    };
+  } else if (criteria.hasAssistedOrEarlySuccess) {
+    stage = "developing";
+    reason = {
+      en: `${assistedCorrect.length} supported and ${independentCorrect.length} independent successes so far. Early understanding is forming.`,
+      es: `${assistedCorrect.length} aciertos con apoyo y ${independentCorrect.length} independientes hasta ahora. La comprensión inicial está creciendo.`,
+    };
+    nextStep = {
+      en: "Use the strategy model, then try 3 fresh problems independently.",
+      es: "Usa el modelo de estrategia y luego intenta 3 problemas nuevos por tu cuenta.",
+    };
+  }
+
+  return {
+    stage,
+    stageIndex: LEARNING_STAGES.indexOf(stage),
+    label: LEARNING_STAGE_LABELS[stage],
+    insufficientEvidence,
+    overdue,
+    criteria,
+    metrics: {
+      totalAttempts: entries.length,
+      independentAttempts: independentEntries.length,
+      independentCorrect: independentCorrect.length,
+      independentAccuracy: independentAccuracy === null ? null : Math.round(independentAccuracy * 100),
+      assistedAttempts: assistedEntries.length,
+      assistedCorrect: assistedCorrect.length,
+      retentionDays,
+    },
+    reason,
+    nextStep,
+  };
+}
