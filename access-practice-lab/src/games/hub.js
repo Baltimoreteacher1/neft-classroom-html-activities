@@ -2,7 +2,7 @@
 // teacher sequences, family picks, history and achievements.
 import { BASE, html, icon, raw } from "../util.js";
 import { scene, mascot } from "./art.js";
-import { filterGames, inProgress, lastPlay, newAwards, parsePath, pathwayProgress, playsOf, recommend } from "./plan.js";
+import { chipCount, filterGames, inProgress, lastPlay, newAwards, parsePath, pathwayProgress, playsOf, recommend, relaxFilters } from "./plan.js";
 import { ACHIEVEMENTS, GAME, GAMES, KLUS, PATHWAYS, SKILLS } from "./registry.js";
 import { KLU_ES, SKILL_ES, chips } from "./screens.js";
 import { SUP } from "./engine.js";
@@ -51,7 +51,7 @@ function card(g, I, band, games, q, { why } = {}) {
 }
 
 function filterBar(I, band, q) {
-  const group = (key, label, options) => html`<div class="gs-filter" role="group" aria-label="${label}"><span class="gs-filter-l">${label}</span>${options.map(([value, text]) => html`<a class="gs-fchip" href="${hubHref(band, q, { [key]: value })}" aria-current="${(q[key] || "all") === value ? "true" : "false"}">${text}</a>`)}</div>`;
+  const group = (key, label, options) => html`<div class="gs-filter" role="group" aria-label="${label}"><span class="gs-filter-l">${label}</span>${options.map(([value, text]) => (q[key] || "all") !== value && !chipCount(q, band, key, value) ? html`<span class="gs-fchip gs-fchip-off" aria-disabled="true" title="${I.S("No game has this with your other choices", "Ningún juego tiene esto con tus otras opciones")}">${text}</span>` : html`<a class="gs-fchip" href="${hubHref(band, q, { [key]: value })}" aria-current="${(q[key] || "all") === value ? "true" : "false"}">${text}</a>`)}</div>`;
   return html`<section class="gs-filters panel" aria-label="${I.S("Find a game", "Buscar un juego")}">
     ${group("skill", I.S("Skill", "Destreza"), [["all", I.T("All", "Todas")], ...SKILLS.map((s) => [s, I.T(s === "Integrated" ? "Integrated" : s, SKILL_ES[s])])])}
     ${group("klu", I.S("Key Language Use", "Uso clave del lenguaje"), [["all", I.T("All", "Todos")], ...KLUS.map((k) => [k, I.T(k, KLU_ES[k])])])}
@@ -97,7 +97,8 @@ function historyPanel(I, band, games) {
   </section>`;
 }
 
-export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
+export function hubHTML(ctx, I, games, query, band, { focus = [] } = {}) {
+  const { q, relaxed } = relaxFilters(query, band);
   const list = filterGames(q, band);
   const recs = recommend(games, band, { n: 3, focus });
   const live = inProgress(games, band);
@@ -126,6 +127,7 @@ export function hubHTML(ctx, I, games, q, band, { focus = [] } = {}) {
         <a class="btn ${prog.complete ? "" : "btn-primary"}" href="${BASE}/games/${prog.next || ids[0]}?${new URLSearchParams({ grades: band, path: ids.join(","), ...(q.mode ? { mode: q.mode } : {}) })}">${icon("road")}${prog.complete ? I.T("Play the path again", "Repetir el recorrido") : prog.done.length ? I.T("Continue the path", "Continuar el recorrido") : I.T("Start the path", "Empezar el recorrido")}</a></article>`; })}</div></section>
     <section id="gs-all" class="gs-all" data-fold="${filtered ? "open" : ""}" aria-labelledby="gs-all-h"><h2 id="gs-all-h">${I.T("All games", "Todos los juegos")} <small>(${list.length})</small></h2>
       ${filterBar(I, band, q)}
+      ${relaxed.length ? html`<p class="gs-note fine" role="status">${I.T("No game fits every filter you chose, so some were cleared.", "Ningún juego cumple todos los filtros elegidos, así que se quitaron algunos.")}</p>` : ""}
       ${list.length ? html`<div class="gs-grid">${list.map((g) => card(g, I, band, games, q))}</div>` : html`<p class="panel empty-state">${I.T("No games match those filters.", "Ningún juego coincide con esos filtros.")} <a href="${hubHref(band, {}, {})}">${I.T("Clear filters", "Quitar filtros")}</a></p>`}
     </section>
     <section class="gs-family panel" id="gs-family" data-fold aria-labelledby="gs-fam-h"><h2 id="gs-fam-h">${icon("families")}${I.T("Playing at home", "Jugar en casa")}</h2>

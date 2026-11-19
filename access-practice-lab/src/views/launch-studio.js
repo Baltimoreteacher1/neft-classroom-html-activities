@@ -60,7 +60,7 @@ function stationPanel({ options, card }) {
 }
 
 function options(items, selected, emptyLabel) {
-  return html`<option value="">${emptyLabel}</option>${items.map((item) => html`<option value="${item.value}" ${item.value === selected ? "selected" : ""}>${item.label}</option>`)}`;
+  return html`<option value="">${emptyLabel}</option>${items.map((item) => html`<option value="${item.value}" ${item.value === selected ? "selected" : ""} ${item.disabled && item.value !== selected ? "disabled" : ""}>${item.label}</option>`)}`;
 }
 
 function taskUrl(row) {
@@ -72,6 +72,18 @@ function taskUrl(row) {
 }
 
 function selectedRow() { return state.rows.find((row) => row.id === state.selected) || null; }
+
+/** Never leave the teacher on a combination with no activity: clear the narrowest filter that empties the list. */
+function relaxLaunchFilters() {
+  for (const k of ["length", "skill", "domain"]) if (!filteredRows().length && state[k]) state[k] = "";
+}
+
+/** A session length is offered only when some activity fits it with the domain and skill already chosen. */
+const lengthOption = (value, label) => ({
+  value,
+  label,
+  disabled: !state.rows.some((r) => (!state.domain || r.domain === state.domain) && (!state.skill || r.skill === state.skill) && Number(r.minutes || 0) <= Number(value)),
+});
 
 function filteredRows() {
   return state.rows.filter((row) =>
@@ -100,7 +112,7 @@ function configureHTML(rows, skills, domains, taskOptions) {
     <label class="field">${I.T("Grade band", "Nivel de grados")}<select data-launch-field="band">${bandOptions(I.mode === "es").map(([value, label]) => html`<option value="${value}" ${state.band === value ? "selected" : ""}>${label}</option>`)}</select></label>
     <label class="field">${I.T("Language domain", "Dominio del lenguaje")}<select data-launch-field="domain">${options(domains, state.domain, I.S("All four domains", "Los cuatro dominios"))}</select></label>
     <label class="field">${I.T("Target skill", "Destreza meta")}<select data-launch-field="skill">${options(skills.map((s) => ({ value: s, label: s })), state.skill, I.S("Any skill", "Cualquier destreza"))}</select></label>
-    <label class="field">${I.T("Session length", "Duración de la sesión")}<select data-launch-field="length">${options([{ value: "10", label: I.S("Up to 10 minutes", "Hasta 10 minutos") }, { value: "20", label: I.S("Up to 20 minutes", "Hasta 20 minutos") }, { value: "30", label: I.S("Up to 30 minutes", "Hasta 30 minutos") }], state.length, I.S("Any length", "Cualquier duración"))}</select></label>
+    <label class="field">${I.T("Session length", "Duración de la sesión")}<select data-launch-field="length">${options([lengthOption("10", I.S("Up to 10 minutes", "Hasta 10 minutos")), lengthOption("20", I.S("Up to 20 minutes", "Hasta 20 minutos")), lengthOption("30", I.S("Up to 30 minutes", "Hasta 30 minutos"))], state.length, I.S("Any length", "Cualquier duración"))}</select></label>
     <label class="field">${I.T("Practice mode", "Modo de práctica")}<select data-launch-field="mode"><option value="learning" ${state.mode === "learning" ? "selected" : ""}>${I.S("Learning — supports and feedback", "Aprendizaje: con apoyos y comentarios")}</option><option value="independent" ${state.mode === "independent" ? "selected" : ""}>${I.S("Independent — try on your own first", "Independiente: intente primero por su cuenta")}</option></select></label>
     <label class="field teacher-launch-task">${I.T("Activity", "Actividad")}<select data-launch-field="selected" ${rows.length ? "" : "disabled"}>${options(taskOptions, state.selected, rows.length ? I.S("Choose an activity", "Elija una actividad") : I.S("No matching activities", "No hay actividades que coincidan"))}</select></label>
   </div>`;
@@ -121,10 +133,11 @@ export async function render(ctx) {
   state.band = ctx.band;
   try { state.rows = await bandRows(state.band); }
   catch { state.rows = []; }
+  relaxLaunchFilters();
   const rows = filteredRows();
   if (!rows.some((row) => row.id === state.selected)) state.selected = rows[0]?.id || "";
   const row = selectedRow();
-  const skills = [...new Set(state.rows.filter((r) => !state.domain || r.domain === state.domain).map((r) => r.skill).filter(Boolean))].sort();
+  const skills = [...new Set(state.rows.filter((r) => (!state.domain || r.domain === state.domain) && (!state.length || Number(r.minutes || 0) <= Number(state.length))).map((r) => r.skill).filter(Boolean))].sort();
   const url = taskUrl(row);
   const domains = CORE_DOMAINS.map((name) => ({ value: name, label: domainName(name) }));
   const taskOptions = rows.map((r) => ({ value: r.id, label: `${r.title} · ${domainName(r.domain)} · ${r.minutes || "—"} min` }));

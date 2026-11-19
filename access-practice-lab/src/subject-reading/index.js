@@ -66,17 +66,15 @@ const allDone = (state) => ECOSYSTEM_SEQUENCE.every((id) => recordOf(state, id).
 
 function hub(ctx, state, I) {
   const q = new URLSearchParams(location.search);
-  const grade = q.get("grade") || "all";
-  const subject = q.get("subject") || "all";
-  const complexity = q.get("complexity") || "all";
+  const fits = (f) => READINGS.filter((r) => (f.grade === "all" || r.grade === f.grade) && (f.subject === "all" || r.subject === f.subject) && (f.complexity === "all" || r.complexity === f.complexity));
+  // A link or bookmark can name a combination with no reading: clear the narrowest filter until one matches.
+  const f = { grade: q.get("grade") || "all", subject: q.get("subject") || "all", complexity: q.get("complexity") || "all" };
+  for (const k of ["complexity", "subject", "grade"]) if (!fits(f).length) f[k] = "all";
+  const { grade, subject, complexity } = f;
   const options = (name, values, selected) => html`<select aria-label="${name}" data-sr-filter="${name.toLowerCase()}">
-    ${values.map((value) => html`<option value="${value}" ${value === selected ? "selected" : ""}>${value === "all" ? I.S(`All ${name.toLowerCase()}s`, `Todos los ${name.toLowerCase()}s`) : value}</option>`)}
+    ${values.map((value) => html`<option value="${value}" ${value === selected ? "selected" : ""} ${value !== selected && !fits({ ...f, [name.toLowerCase()]: value }).length ? "disabled" : ""}>${value === "all" ? I.S(`All ${name.toLowerCase()}s`, `Todos los ${name.toLowerCase()}s`) : value}</option>`)}
   </select>`;
-  const list = READINGS.filter((reading) =>
-    (grade === "all" || reading.grade === grade) &&
-    (subject === "all" || reading.subject === subject) &&
-    (complexity === "all" || reading.complexity === complexity),
-  );
+  const list = fits(f);
   return html`<div class="sr-page sr-hub">
     <header class="sr-hero"><p class="eyebrow">${I.T("Reading Investigation Lab", "Laboratorio de investigación de lectura")}</p><h1 tabindex="-1">${I.T("Read across subjects. Build an explanation.", "Lee sobre distintas materias. Construye una explicación.")}</h1><p>${I.T("Choose a reading, inspect words in context, collect evidence, write, revise, and apply your thinking in the next investigation. Your work stays on this device.", "Elige una lectura, examina palabras en contexto, reúne evidencia, escribe, revisa y aplica tus ideas en la siguiente investigación. Tu trabajo queda en este dispositivo.")}</p></header>
     <section class="sr-feature" aria-labelledby="sr-unit"><div><p class="eyebrow">${I.T("Connected Grade 6 unit", "Unidad conectada de sexto grado")}</p><h2 id="sr-unit">${I.T("Ecosystems: from food webs to new evidence", "Ecosistemas: de las redes alimentarias a nueva evidencia")}</h2><p>${I.T("Three original readings move from relationships to population change, then to an unfamiliar forest problem. Each stop asks for evidence and an explanation.", "Tres lecturas originales van de las relaciones a los cambios de población y luego a un problema forestal nuevo. Cada etapa pide evidencia y una explicación.")}</p></div><ol>${ECOSYSTEM_SEQUENCE.map((id) => { const r = READING_BY_ID[id]; const done = Boolean(recordOf(state, id).completedAt); return html`<li><a href="${href(id, r.band)}"><strong>${r.title}</strong><span>${done ? I.T("Completed", "Completado") : I.T(`Reading ${r.order}`, `Lectura ${r.order}`)}</span></a></li>`; })}</ol></section>

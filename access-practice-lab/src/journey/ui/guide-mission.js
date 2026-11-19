@@ -83,10 +83,12 @@ function stepLinks(I, band, id, step) {
 function stepRow(I, ctx, step) {
   const { id, band, modes, compact } = ctx;
   const doms = stepDomains(step.id, modes, id, band);
-  return html`<li class="jg-step" data-step="${step.id}">
+  const focus = ctx.domain && doms.includes(ctx.domain);
+  return html`<li class="jg-step${focus ? " jg-step-focus" : ""}" data-step="${step.id}">
     <div class="jg-stephead">
       <span class="jg-stepn" aria-hidden="true">${step.n}</span>
       <h4>${tx(I, step.label)}</h4>
+      ${focus ? html`<span class="jg-focus">${I.T(`${DOMAIN_NAME[ctx.domain][0]} focus`, `Enfoque en ${DOMAIN_NAME[ctx.domain][1]}`)}</span>` : ""}
       <span class="jg-min">${I.T(`about ${step.minutes} min`, `unos ${step.minutes} min`)}</span>
     </div>
     ${domainChips(I, doms)}

@@ -3,7 +3,7 @@
 // Links built here carry no learner data: assigning a mission writes nothing about a student anywhere.
 import { MOVES } from "../../lang/purpose.js";
 import { BASE, TIERS } from "../../util.js";
-import { BANDS, KLUS, MISSION_IDS, STEP_IDS } from "../curriculum.js";
+import { BANDS, KLUS, MISSIONS, MISSION_IDS, STEP_IDS } from "../curriculum.js";
 
 export const DOMAINS = ["Listening", "Speaking", "Reading", "Writing"];
 export const DOMAIN_NAME = {
@@ -391,15 +391,27 @@ export const familyPath = (band, mission) => `${BASE}/family?mission=${mission}&
 // ── filters ───────────────────────────────────────────────────────────────────
 const pick = (v, allowed, fallback = "") => (allowed.includes(v) ? v : fallback);
 
+/**
+ * One mission belongs to one Key Language Use, so a mission and a different purpose can never both be chosen. The field
+ * the person just changed wins: choosing a mission sets its purpose, choosing a purpose drops a mission that does not fit.
+ */
+export function reconcileFilters(f, changed = "mission") {
+  if (!f.mission || !f.klu || MISSIONS[f.mission].klu === f.klu) return f;
+  return changed === "klu" ? { ...f, mission: "" } : { ...f, klu: MISSIONS[f.mission].klu };
+}
+
 /** Filters from a URL query string (or URLSearchParams). Unknown values fall back to "everything". */
-export function parseFilters(search = "", defaultBand = "6-8") {
+export function parseFilters(search = "", defaultBand = "6-8", changed = "mission") {
   const q = search instanceof URLSearchParams ? search : new URLSearchParams(search);
-  return {
-    band: pick(q.get("band") || q.get("grades"), BANDS, pick(defaultBand, BANDS, "6-8")),
-    klu: pick(q.get("klu"), KLUS),
-    domain: pick(q.get("domain"), DOMAINS),
-    mission: pick(q.get("mission"), MISSION_IDS),
-  };
+  return reconcileFilters(
+    {
+      band: pick(q.get("band") || q.get("grades"), BANDS, pick(defaultBand, BANDS, "6-8")),
+      klu: pick(q.get("klu"), KLUS),
+      domain: pick(q.get("domain"), DOMAINS),
+      mission: pick(q.get("mission"), MISSION_IDS),
+    },
+    changed,
+  );
 }
 
 /** Filters from an options object ({ band, klu, domain, mission }); unknown values fall back to "everything". */
@@ -446,15 +458,15 @@ export function stepDomains(step, modes, mission, band) {
   return own ? [own] : [];
 }
 
-/** Does a mission match the filters? Listening and Reading are in every mission (step 2); Speaking vs Writing follows step 4 and 6. */
+/** Does any step of a mission work in a domain? Every mission does: discover speaks, understand listens and reads, build writes. */
+export const missionHasDomain = (modes, mission, band, domain) =>
+  STEP_IDS.some((step) => stepDomains(step, modes, mission, band).includes(domain));
+
+/** Does a mission match the filters? The domain filter never hides a mission; it marks the steps that use that domain (see stepRow). */
 export function matchesFilters(f, id, mission, modes) {
   if (f.mission && f.mission !== id) return false;
   if (f.klu && mission.klu !== f.klu) return false;
-  if ((f.domain === "Speaking" || f.domain === "Writing") && modes?.[id]) {
-    const m = modes[id][f.band];
-    return [m?.communicate, m?.show].some((k) => KIND_DOMAIN[k] === f.domain);
-  }
-  return true;
+  return !f.domain || missionHasDomain(modes, id, f.band, f.domain);
 }
 
 export const ALL_STEPS = STEP_IDS;

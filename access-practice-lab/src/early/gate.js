@@ -14,6 +14,9 @@ export const EARLY_VIEWS = new Set([
   "room",
   "library",
   "passport",
+  // The 22 studio games are written for grades 3-8; the games page for an early band lists that band's own
+  // activities by skill instead (games/early-play.js).
+  "games",
   "tools",
   "move",
   "family",

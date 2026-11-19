@@ -6,9 +6,11 @@ import { award } from "../engagement.js";
 import { i18nFor } from "../i18n.js";
 import { loadLedger, buildProfile, focusAreas } from "../lang/ledger.js";
 import { SUP, rng, supOf } from "../games/engine.js";
+import { earlyPlayHTML } from "../games/early-play.js";
 import { hubHTML, hubHref } from "../games/hub.js";
-import { nextInPath, newAwards, parsePath, pathwayProgress, recommend, suggestSupport } from "../games/plan.js";
-import { GAME } from "../games/registry.js";
+import { bandRows } from "../content.js";
+import { bandOk, nextInPath, newAwards, parsePath, pathwayProgress, recommend, suggestSupport } from "../games/plan.js";
+import { GAME, GAMES } from "../games/registry.js";
 import { expeditionsHubClick } from "../games/language-expeditions-assign.js";
 import { doneHTML, frameHTML, startHTML, transferHTML } from "../games/screens.js";
 import { loadGames, saveGames, sessionKey, summarizeRounds } from "../games/state.js";
@@ -105,6 +107,11 @@ export async function render(ctx) {
   const id = ctx.route.id;
   const q = query();
   if (!id) {
+    if (!GAMES.some((g) => bandOk(g, band))) {
+      HUB = { ctx };
+      LIVE = null;
+      return { title: I.S("Language Game Studio", "Estudio de juegos de lenguaje"), html: earlyPlayHTML(I, band, await bandRows(band).catch(() => [])) };
+    }
     const games = loadGames();
     let focus = [];
     try {

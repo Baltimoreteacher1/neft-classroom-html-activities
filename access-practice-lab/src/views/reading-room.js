@@ -168,7 +168,16 @@ function filterLessons(lessons, state) {
   });
 }
 
+/** A combination of grade, genre and length with no text clears the narrowest filter, so the shelf is never empty by choice. */
+function relaxShelf(lessons, state) {
+  if (query || onlyBookmarks) return;
+  if (!filterLessons(lessons, state).length) lengthFilter = "";
+  if (!filterLessons(lessons, state).length) genreFilter = "";
+  if (!filterLessons(lessons, state).length) grade = "";
+}
+
 function shelfHTML(ctx, lessons, state) {
+  relaxShelf(lessons, state);
   const filtered = filterLessons(lessons, state);
   const key = [query, grade, genreFilter, lengthFilter, onlyBookmarks].join("|");
   if (key !== shelfKey) {

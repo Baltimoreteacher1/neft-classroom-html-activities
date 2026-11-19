@@ -67,7 +67,7 @@ function filterForm(I, f, opts) {
     )}
     ${select(I, "klu", ["Language purpose", "Propósito del lenguaje"], [["", all], ...KLUS.map((k) => [k, txS(I, KLU_NAME[k])])], f.klu)}
     ${select(I, "domain", ["Domain", "Dominio"], [["", all], ...DOMAINS.map((d) => [d, txS(I, DOMAIN_NAME[d])])], f.domain)}
-    ${select(I, "mission", ["Mission", "Misión"], [["", all], ...MISSION_IDS.map((m) => [m, I.S(...MISSIONS[m].title)])], f.mission)}
+    ${select(I, "mission", ["Mission", "Misión"], [["", all], ...MISSION_IDS.filter((m) => !f.klu || MISSIONS[m].klu === f.klu).map((m) => [m, I.S(...MISSIONS[m].title)])], f.mission)}
     <div class="jg-filter-actions">
       <button type="submit" class="btn btn-primary">
         ${I.T("Apply filters", "Aplicar filtros")}
@@ -203,7 +203,7 @@ function printablesSection(I, f, opts) {
 }
 
 function missionList(I, f, opts) {
-  const ctxBase = { band: f.band, modes: opts.modes, compact: !!opts.compact, hub: !!opts.hub };
+  const ctxBase = { band: f.band, domain: f.domain, modes: opts.modes, compact: !!opts.compact, hub: !!opts.hub };
   const groups = UNITS.map((u) => ({
     u,
     ids: u.missions.filter((id) => matchesFilters(f, id, MISSIONS[id], opts.modes)),
@@ -216,7 +216,7 @@ function missionList(I, f, opts) {
         </p>`
       : f.domain
         ? html`<p class="jg-fine">
-            ${I.T("Listening and Reading are in every mission (step 2). Speaking or Writing follows each mission's conversation or draft (steps 4 to 6).", "Escuchar y leer están en todas las misiones (paso 2). Hablar o escribir depende de la conversación o el borrador de cada misión (pasos 4 a 6).")}
+            ${I.T(`Every mission uses all four domains. The steps that work on ${DOMAIN_NAME[f.domain][0]} are marked on each card.`, `Todas las misiones usan los cuatro dominios. Los pasos que trabajan ${DOMAIN_NAME[f.domain][1]} están marcados en cada tarjeta.`)}
           </p>`
         : "";
   return html`<div class="jg-list" id="missions">
@@ -298,8 +298,8 @@ export async function render(ctx) {
 }
 
 // ── mount (filters, details, copy, print) ─────────────────────────────────────
-const fieldsOf = (form) =>
-  parseFilters(new URLSearchParams(new FormData(form)), form.elements.band?.value);
+const fieldsOf = (form, changed) =>
+  parseFilters(new URLSearchParams(new FormData(form)), form.elements.band?.value, changed);
 
 async function copyLink(path, status) {
   const url = new URL(path, location.origin).href;
@@ -347,7 +347,7 @@ export function mountGuide(root, { I, opts = {}, urlState = true } = {}) {
   };
   host.addEventListener("change", (e) => {
     const form = e.target.closest?.("[data-gd-filters]");
-    if (form) redraw(fieldsOf(form));
+    if (form) redraw(fieldsOf(form, e.target.name));
   });
   host.addEventListener("submit", (e) => {
     const form = e.target.closest?.("[data-gd-filters]");

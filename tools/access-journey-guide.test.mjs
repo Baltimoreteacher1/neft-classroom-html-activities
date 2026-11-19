@@ -100,34 +100,30 @@ test("filters narrow the list: Key Language Use, mission, band, and domain from 
   const klu = idsOf(parse(render("en", { band: "6-8", klu: "Explain" })));
   assert.deepEqual(klu, ["m07", "m08", "m09"]);
   assert.deepEqual(idsOf(parse(render("en", { band: "6-8", mission: "m05" }))), ["m05"]);
-  assert.deepEqual(idsOf(parse(render("en", { band: "6-8", klu: "Argue", mission: "m02" }))), []);
-  assert.match(
-    parse(render("en", { band: "6-8", klu: "Argue", mission: "m02" })).body.textContent,
-    /No mission matches/,
+  // A mission belongs to one purpose, so a conflicting pair never dead-ends: the mission wins and the purpose follows it.
+  const conflict = parse(render("en", { band: "6-8", klu: "Argue", mission: "m02" }));
+  assert.deepEqual(idsOf(conflict), ["m02"]);
+  assert.doesNotMatch(conflict.body.textContent, /No mission matches/);
+  assert.equal(
+    data.reconcileFilters({ band: "6-8", klu: "Argue", mission: "m02", domain: "" }, "klu").mission,
+    "",
   );
   for (const band of BANDS) {
     const doc = parse(render("en", { band, mission: "m08" }));
     for (const a of all(doc, "a[href*='/journey/m08/']"))
       assert.match(a.getAttribute("href"), new RegExp(`grades=${band}&assigned=1`));
   }
-  for (const domain of ["Speaking", "Writing"])
+  // The domain filter never hides a mission: every mission uses all four domains, and the steps that do are marked.
+  for (const domain of data.DOMAINS)
     for (const band of BANDS) {
-      const got = idsOf(parse(render("en", { band, domain, modes: MODES })));
-      assert.ok(got.length > 0, `${domain} ${band}`);
-      for (const id of got) {
-        const m = MODES[id][band];
+      const doc = parse(render("en", { band, domain, modes: MODES }));
+      assert.equal(idsOf(doc).length, 12, `${domain} ${band}: every mission stays listed`);
+      for (const card of all(doc, ".jg-mission"))
         assert.ok(
-          [m.communicate, m.show].some((k) => data.KIND_DOMAIN[k] === domain),
-          `${id} ${domain} ${band}`,
+          card.querySelector(".jg-step-focus"),
+          `${domain} ${band}: a step is marked on every card`,
         );
-      }
     }
-  for (const band of BANDS) {
-    const s = new Set(idsOf(parse(render("en", { band, domain: "Speaking", modes: MODES }))));
-    const w = new Set(idsOf(parse(render("en", { band, domain: "Writing", modes: MODES }))));
-    for (const id of MISSION_IDS)
-      assert.ok(s.has(id) || w.has(id), `${id} ${band} is Speaking or Writing`);
-  }
   assert.equal(
     idsOf(parse(render("en", { band: "6-8", domain: "Listening" }))).length,
     12,

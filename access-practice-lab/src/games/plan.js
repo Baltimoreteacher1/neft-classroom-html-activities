@@ -16,6 +16,27 @@ export function filterGames(q = {}, band = "6-8") {
     .filter((g) => !q.home || g.home);
 }
 
+const FILTER_KEYS = ["skill", "klu", "diff", "min", "home"];
+const isSet = (q, k) => q[k] && q[k] !== "all";
+
+/**
+ * A hub URL can name a combination no game has (a bookmark, or a chip pressed beside a narrow filter). Drop the
+ * filters one by one, most specific first, until at least one game matches. `relaxed` names what was dropped.
+ */
+export function relaxFilters(q = {}, band = "6-8") {
+  const next = { ...q };
+  const relaxed = [];
+  for (const k of ["min", "diff", "home", "klu", "skill"]) {
+    if (filterGames(next, band).length || !isSet(next, k)) continue;
+    next[k] = "";
+    relaxed.push(k);
+  }
+  return { q: next, relaxed };
+}
+
+/** How many games a filter chip would show if pressed now, with every other filter kept. */
+export const chipCount = (q, band, key, value) => filterGames({ ...q, [key]: value }, band).length;
+
 export const playsOf = (games, id, band) => games.history.filter((h) => h.game === id && (!band || h.band === band));
 export const lastPlay = (games, id, band) => playsOf(games, id, band).slice(-1)[0] || null;
 export const inProgress = (games, band) =>
