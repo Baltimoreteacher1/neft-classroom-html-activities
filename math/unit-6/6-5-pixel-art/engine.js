@@ -312,10 +312,10 @@
     const right = { ...q.choices.find((c) => c.ok), i: q.choices.findIndex((c) => c.ok) };
     const opts = [...wrong];
     opts.splice(k.charCodeAt(0) % q.choices.length, 0, right); // answer position varies by can
-    dlg.innerHTML = `${head(k, "Step 1 · Write the expression")}
-      <p class="phrase">“${esc(q.phrase)}”</p>
+    dlg.innerHTML = `${head(k, q.situation ? "Step 1 · Translate the situation" : "Step 1 · Write the expression")}
+      <p class="phrase${q.situation ? " long" : ""}">${q.situation ? esc(q.situation) : `“${esc(q.phrase)}”`}</p>
       <div class="opts" role="group" aria-label="Choose the matching expression">${opts.map((o) => `<button type="button" class="opt" data-i="${o.i}">${esc(o.t)}</button>`).join("")}</div>
-      <p class="fb" id="fb" role="status" aria-live="polite">Which expression matches the words?</p>`;
+      <p class="fb" id="fb" role="status" aria-live="polite">Which expression matches?</p>`;
     dlg.onclick = (e) => {
       if (e.target.matches("[data-close]") || e.target === dlg) return dlg.close();
       const b = e.target.closest(".opt");
@@ -341,8 +341,8 @@
     const q = A.colors[k].q,
       vars = q.vars;
     let tries = 0;
-    dlg.innerHTML = `${head(k, fromWrite ? "Step 2 · Evaluate it" : "Evaluate the expression")}
-      <div class="exprCard"><div class="expr">${esc(expr)}</div><div class="when">when ${esc(varLine(vars))}</div></div>
+    dlg.innerHTML = `${head(k, fromWrite ? (q.use ? "Step 2 · Use your expression" : "Step 2 · Evaluate it") : "Evaluate the expression")}
+      <div class="exprCard"><div class="expr">${esc(expr)}</div><div class="when">when ${esc(varLine(vars))}</div>${q.use ? `<p class="use">${esc(q.use)}</p>` : ""}</div>
       <form class="ans" id="ansForm" autocomplete="off"><label for="ans">Value =</label>
         <input id="ans" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-describedby="fb" />
         <button class="btn primary" type="submit">Check</button>
@@ -523,7 +523,7 @@
       .map((k, i) => {
         const q = A.colors[k].q;
         const task = q.choices
-          ? `Write an expression for “${esc(q.phrase)}”, then evaluate it when ${esc(varLine(q.vars))}.<div class="line">${withKey ? esc(exprOf(k)) : ""}</div>`
+          ? `${q.situation ? esc(q.situation) + " Write an expression, then use it" : `Write an expression for “${esc(q.phrase)}”, then evaluate it`} when ${esc(varLine(q.vars))}.${q.use ? " " + esc(q.use) : ""}<div class="line">${withKey ? esc(exprOf(k)) : ""}</div>`
           : `Evaluate <b>${esc(q.expr)}</b> when ${esc(varLine(q.vars))}.`;
         return `<tr><td>${i + 1}</td><td>${task}</td><td class="ansBox">${withKey ? CODE[k] : ""}</td><td><span class="chip" style="--c:${A.colors[k].hex}"></span> ${esc(A.colors[k].name)}</td></tr>`;
       })

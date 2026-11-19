@@ -1,6 +1,7 @@
 // Axel the Axolotl — Lesson 6-5 pixel art (WRITE + EVALUATE mode).
 // Step 1: choose the expression that matches the words. Step 2: evaluate it.
 // The value is the paint can's code. Codes are computed by engine.js.
+(() => {
 window.PIXEL_ARTS = window.PIXEL_ARTS || {};
 
 const mc = (ok, ...wrong) => [{ t: ok, ok: true }, ...wrong.map(([t, why]) => ({ t, why }))];
@@ -161,3 +162,4 @@ window.PIXEL_ARTS.axolotl = {
     },
   },
 };
+})();
