@@ -667,6 +667,34 @@ function renderEvidence() {
   });
 }
 
+function setupStudioEmbed() {
+  const wrap = $('#ms-embed-wrap');
+  const frame = $('#ms-embed-frame');
+  const ext = $('#ms-embed-external');
+  const close = $('#ms-embed-close');
+  if (!wrap || !frame) return;
+  for (const btn of document.querySelectorAll('[data-ms-embed]')) {
+    btn.addEventListener('click', () => {
+      const url = btn.getAttribute('data-ms-embed');
+      if (!url) return;
+      const sep = url.includes('?') ? '&' : '?';
+      frame.setAttribute('src', `${url}${sep}embed=1`);
+      if (ext) ext.setAttribute('href', url);
+      wrap.hidden = false;
+      for (const b of document.querySelectorAll('[data-ms-embed]')) {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      }
+    });
+  }
+  close?.addEventListener('click', () => {
+    wrap.hidden = true;
+    frame.removeAttribute('src');
+    for (const b of document.querySelectorAll('[data-ms-embed]')) {
+      b.setAttribute('aria-pressed', 'false');
+    }
+  });
+}
+
 // ---- Boot ----
 if (resumed) {
   const box = $('#ms-resume');
@@ -675,6 +703,7 @@ if (resumed) {
 }
 setupApply();
 setupUnderstand();
+setupStudioEmbed();
 setLevel(state.practice.level);
 renderReflect();
 showHandoff();

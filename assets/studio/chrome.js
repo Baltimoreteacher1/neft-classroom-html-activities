@@ -16,6 +16,15 @@
  */
 (() => {
   const W = /** @type {any} */ (window);
+  if (new URLSearchParams(location.search).get("embed") === "1") {
+    document.body.dataset.embed = "1";
+    document.querySelectorAll(".part-switch-btn").forEach((a) => {
+      const href = a.getAttribute("href");
+      if (href && !href.includes("embed=1")) {
+        a.setAttribute("href", `${href}${href.includes("?") ? "&" : "?"}embed=1`);
+      }
+    });
+  }
   const node = document.getElementById("studio-data");
   if (!node) return;
 

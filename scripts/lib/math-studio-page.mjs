@@ -491,8 +491,20 @@ ${stageBar(L.id, "explore", { inPage: true, label: `Lesson ${L.id}` })}
     <div id="ms-runner" class="ms-runner" role="tabpanel" aria-labelledby="tab-regular"><p class="ms-muted">Loading practice…</p></div>
     <aside class="ms-full">
       <h3>${bi("Full practice studios", "Estudios de práctica completos")}</h3>
-      <p class="ms-muted">${bi("Five sections of practice with hands-on activities, fresh problems and your saved progress.", "Cinco secciones de práctica con actividades, problemas nuevos y tu progreso guardado.")}</p>
-      <div class="ms-row"><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.regular)}">${bi("Open Regular Practice Studio", "Abrir el estudio de práctica Regular")}</a>${L.id === "6-5" ? `<a class="ms-btn ms-btn--quiet" href="/math/practice-studio/6-5/part-2/">${bi("Open Part II: Algebraic Expressions", "Abrir Parte II: Expresiones algebraicas")}</a>` : ""}<a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.challenge)}">${bi("Open Challenge Practice Studio", "Abrir el estudio de práctica de Reto")}</a></div>
+      <p class="ms-muted">${bi("Five sections of practice with hands-on activities, fresh problems and your saved progress — open them right here or in a new view.", "Cinco secciones de práctica con actividades, problemas nuevos y tu progreso guardado: ábrelas aquí mismo o en otra vista.")}</p>
+      <div class="ms-row">
+        <button type="button" class="ms-btn ms-btn--quiet" data-ms-embed="${esc(L.practice.urls.regular)}">${bi("Regular Practice Studio", "Estudio de práctica Regular")}</button>
+        ${L.id === "6-5" ? `<button type="button" class="ms-btn ms-btn--quiet" data-ms-embed="/math/practice-studio/6-5/part-2/">${bi("Part II: Algebraic Expressions", "Parte II: Expresiones algebraicas")}</button>` : ""}
+        <button type="button" class="ms-btn ms-btn--quiet" data-ms-embed="${esc(L.practice.urls.challenge)}">${bi("Challenge Practice Studio", "Estudio de práctica de Reto")}</button>
+      </div>
+      <div class="ms-embed-wrap" id="ms-embed-wrap" hidden>
+        <div class="ms-embed-bar">
+          <a class="ms-btn ms-btn--link" id="ms-embed-external" href="${esc(L.practice.urls.regular)}">${bi("Open full page", "Abrir página completa")}</a>
+          <button type="button" class="ms-btn ms-btn--quiet" id="ms-embed-close">${bi("Hide studio", "Ocultar estudio")}</button>
+        </div>
+        <iframe class="ms-studio-embed" id="ms-embed-frame" title="Full practice studio" loading="lazy"></iframe>
+      </div>
+      <noscript><div class="ms-row"><a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.regular)}">${bi("Open Regular Practice Studio", "Abrir el estudio de práctica Regular")}</a>${L.id === "6-5" ? `<a class="ms-btn ms-btn--quiet" href="/math/practice-studio/6-5/part-2/">${bi("Open Part II: Algebraic Expressions", "Abrir Parte II: Expresiones algebraicas")}</a>` : ""}<a class="ms-btn ms-btn--quiet" href="${esc(L.practice.urls.challenge)}">${bi("Open Challenge Practice Studio", "Abrir el estudio de práctica de Reto")}</a></div></noscript>
     </aside>
   </section>
   <section class="ms-stage" id="apply" data-stage="apply" aria-labelledby="h-apply">
