@@ -802,6 +802,7 @@ ok(
   "passport can produce share codes with synthetic literacy evidence",
 );
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await page.locator("#task-review > summary").click();
 await openHubSections(page);
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");
@@ -958,6 +959,7 @@ await page.evaluate(() => {
 });
 await page.reload({ waitUntil: "networkidle" });
 // A reload starts the hub folded again (fold state lives only for the tab), so open it as a teacher does.
+await page.locator("#task-review > summary").click();
 await openHubSections(page);
 await page.locator('[data-tab="blueprint"]').click();
 await page.locator("[data-align-reset]").click();
@@ -1311,6 +1313,7 @@ const teacherCtx = await browser.newContext({ viewport: { width: 1200, height: 9
 const tPage = await teacherCtx.newPage();
 tPage.on("pageerror", (e) => !noise.test(e.message) && problems.push(`pageerror: ${e.message}`));
 await tPage.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await tPage.locator("#task-review > summary").click();
 await openHubSections(tPage);
 await tPage.waitForSelector('[data-tab="plans"]');
 await tPage.locator('[data-tab="plans"]').click();
@@ -1442,6 +1445,7 @@ await go(`${BASE}/vocabulary`);
 await axeCheck("vocabulary word builder");
 await capture("vocabulary-desktop.png");
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await page.locator("#task-review > summary").click();
 await openHubSections(page);
 await page.waitForSelector("#classEvidence td.t-title");
 await axeCheck("teacher dashboard");

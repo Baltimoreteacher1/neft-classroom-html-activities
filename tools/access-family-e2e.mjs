@@ -835,8 +835,11 @@ try {
   {
     const page = await newPage({ width: 1280 });
     await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+    await page.locator("#task-plan > summary").click();
     await openHubSections(page);
     await page.waitForSelector("#familyTrip");
+    const tripToggle = page.locator("#familyTrip .fold-toggle");
+    if ((await tripToggle.getAttribute("aria-expanded")) !== "true") await tripToggle.click();
     await page.locator("[data-trip-grade]").selectOption("3-5");
     await page.locator("[data-trip-skill]").selectOption("Writing");
     ok(
@@ -849,6 +852,9 @@ try {
       (await page.locator('a[href*="language-passport-teacher-key.pdf"]').count()) === 1,
       "Teacher Hub: teacher key is linked inside the gated hub",
     );
+    await page.locator("#task-find > summary").click();
+    const contentToggle = page.locator("#accContent .fold-toggle");
+    if ((await contentToggle.getAttribute("aria-expanded")) !== "true") await contentToggle.click();
     await page.locator("[data-f=domain]").selectOption("Reading");
     await page.locator("[data-reset-filters]").click();
     ok(

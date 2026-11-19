@@ -119,7 +119,7 @@ function copyStandaloneHtml() {
   // treatment as UNHASHED_BUNDLES, verified by content.
   const BUILT_HTML_ENTRIES = ["curriculum/forge/index.html"];
 
-  return {
+  const plugin = {
     name: "copy-standalone-html",
     // closeBundle also fires when a Vite DEV server closes (tools/verify-*-browser.mjs create
     // one). Without this guard that copied raw source over a finished dist/, including the
@@ -485,6 +485,21 @@ function copyStandaloneHtml() {
       bustSwCaches(resolve(__dirname, "dist"));
     },
   };
+  const copyStandaloneOutput = plugin.closeBundle;
+  let copyComplete = false;
+  const copyOnce = function (...args) {
+    if (copyComplete) return;
+    copyComplete = true;
+    try {
+      return copyStandaloneOutput.apply(this, args);
+    } catch (error) {
+      copyComplete = false;
+      throw error;
+    }
+  };
+  plugin.writeBundle = copyOnce;
+  plugin.closeBundle = copyOnce;
+  return plugin;
 }
 
 // Generated family homework is a standalone HTML page and points at the fixed
