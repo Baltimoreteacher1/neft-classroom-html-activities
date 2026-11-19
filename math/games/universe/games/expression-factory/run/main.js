@@ -105,14 +105,15 @@ function paintHud() {
   $("progress").style.width = `${Math.round((r.at / r.items.length) * 100)}%`;
   // Lane cards: the next gate row's choices, tap to steer into that lane.
   const row = nextRow(r);
-  const sig = row.map((o) => `${o.lane}:${o.choice ?? "x"}`).join("|") + r.lane;
+  const sig = row.map((o) => `${o.lane}:${o.choice ?? "x"}:${o.broken ? 1 : 0}`).join("|") + r.lane;
   if (sig !== lastCards) {
     lastCards = sig;
     [0, 1, 2].forEach((lane) => {
       const b = $(`card${lane}`);
       const o = row.find((x) => x.lane === lane);
       b.querySelector(".v").textContent = o ? (o.kind === "wall" ? "✕" : o.choice) : "";
-      b.disabled = !o || o.kind === "wall";
+      b.disabled = !o || o.kind === "wall" || !!o.broken;
+      b.classList.toggle("broken", !!o?.broken);
       b.classList.toggle("on", r.lane === lane);
       b.setAttribute(
         "aria-label",
@@ -155,6 +156,12 @@ function onEvent(e) {
     case "gear":
       sfx("add");
       break;
+    case "blast":
+      sfx("pop");
+      break;
+    case "quick":
+      setTimeout(() => toast(t("quick", { n: e.gears }), "ok"), 700);
+      break;
     case "power":
       sfx("fanfare");
       toast(t(e.power), "ok");
@@ -182,14 +189,9 @@ if (world)
       for (const e of tick(run, step)) onEvent(e);
       paintHud();
     }
-    if (run) world.sync(run, mode === "play" ? step : 0, clock, { sign: signText });
+    if (run) world.sync(run, mode === "play" ? step : 0, clock);
   });
 
-function signText(o) {
-  const item = run.items[o.at];
-  if (!item) return "";
-  return `${quizPrompt(item, lang, t("when"))}\n${t(item.steps[o.step].ask).split("·").pop().trim()}`;
-}
 
 // ---------- input ----------
 const KEYS = {
@@ -210,7 +212,7 @@ addEventListener("keydown", (e) => {
     return;
   }
   if (mode !== "play") return;
-  const cmd = KEYS[e.key] ?? (["1", "2", "3"].includes(e.key) ? Number(e.key) - 1 : null);
+  const cmd = KEYS[e.key] ?? (["1", "2", "3"].includes(e.key) ? { pick: Number(e.key) - 1 } : null);
   if (cmd === null) return;
   e.preventDefault();
   input(run, cmd);
@@ -230,7 +232,7 @@ $("stage").addEventListener("pointerup", (e) => {
 });
 [0, 1, 2].forEach((lane) =>
   $(`card${lane}`).addEventListener("click", () => {
-    if (mode === "play") input(run, lane);
+    if (mode === "play") input(run, { pick: lane });
   }),
 );
 $("btnJump").addEventListener("click", () => mode === "play" && input(run, "jump"));
@@ -358,7 +360,8 @@ function start(i) {
   $("menu").hidden = true;
   $("hud").hidden = false;
   sfx("select");
-  if (run.boss) toast(t("bossIntro"), "ok");
+  toast(run.boss ? t("bossIntro") : t("startTip"), "ok");
+  toastUntil = clock + 3.5;
   $("stage").focus();
 }
 

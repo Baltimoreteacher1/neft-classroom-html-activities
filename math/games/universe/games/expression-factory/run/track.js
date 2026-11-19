@@ -21,14 +21,14 @@ export const STAGES = [
 ];
 
 export const FEEL = {
-  speed: { chill: 7.5, normal: 9.5 },
-  stageBoost: 0.45,
+  speed: { chill: 3, normal: 4.5 },
+  stageBoost: 0.1,
   jumpV: 9.2,
   gravity: 24,
   slideT: 0.75,
   laneRate: 14, // lane changes per second of travel (eased)
   stumbleT: 0.9,
-  gateGap: 52, // prompt sign to gate row
+  gateGap: 38, // prompt sign to gate row
   lead: 14, // first hazard after the sign
   afterGate: 10, // next sign after a gate row
 };
@@ -75,6 +75,7 @@ export function newRun(stage, { pace = "chill", seed = 7 } = {}) {
     rand: rng(seed + stage * 977),
     done: 0,
     hint: null,
+    pending: [],
   };
   spawnSegment(s, 16);
   return s;
@@ -111,15 +112,17 @@ function spawnSegment(s, z0) {
     s.objs.push({ kind: "wall", z: gateZ, lane: free, seg });
   }
   // Hazards between the sign and the gates; never two in one row that close every lane.
-  const types = ["barrier", "pipe", "block"];
-  for (let z = z0 + FEEL.lead; z < gateZ - 12; z += 9 + Math.floor(r() * 5)) {
-    const n = r() < 0.35 ? 2 : 1;
+  // Chill keeps it simple: one crate or low bar at a time, no pipes, more room.
+  const chill = s.pace === "chill";
+  const types = chill ? ["barrier", "block"] : ["barrier", "pipe", "block"];
+  for (let z = z0 + FEEL.lead; z < gateZ - 12; z += (chill ? 14 : 9) + Math.floor(r() * 5)) {
+    const n = !chill && r() < 0.35 ? 2 : 1;
     const used = new Set();
     for (let k = 0; k < n; k++) {
       let lane = Math.floor(r() * 3);
       while (used.has(lane)) lane = (lane + 1) % 3;
       used.add(lane);
-      const kind = types[Math.floor(r() * (n === 2 ? 2 : 3))];
+      const kind = types[Math.floor(r() * (n === 2 ? 2 : types.length))];
       s.objs.push({ kind: s.boss && r() < 0.4 ? "orb" : kind, z, lane, seg });
     }
     // A line of gears in a lane left free at this row.
@@ -149,6 +152,7 @@ const hazard = (k) =>
 /** Input: "left" | "right" | "jump" | "slide" | a lane number 0-2 (pick a card by number). */
 export function input(s, cmd) {
   if (s.done) return;
+  if (cmd && typeof cmd === "object" && "pick" in cmd) return pickCard(s, cmd.pick);
   if (cmd === "left") s.lane = Math.max(0, s.lane - 1);
   else if (cmd === "right") s.lane = Math.min(2, s.lane + 1);
   else if (cmd === "jump" && s.y === 0) {
@@ -158,6 +162,54 @@ export function input(s, cmd) {
     s.slideT = FEEL.slideT;
     if (s.y > 0) s.vy = -FEEL.jumpV;
   } else if (typeof cmd === "number" && cmd >= 0 && cmd <= 2) s.lane = cmd;
+}
+
+/** The gate row the player is running toward. */
+function nextRow(s) {
+  const ahead = s.objs.filter((o) => o.kind === "gate" && !o.passed && o.z > s.dist);
+  if (!ahead.length) return [];
+  const z = Math.min(...ahead.map((o) => o.z));
+  return ahead.filter((o) => o.z === z);
+}
+
+/**
+ * Answer from the cards: the right card blasts its gate open at once (and steers
+ * into that lane, with a quick-pick bonus); a wrong card breaks that gate, gives
+ * the hint, and the row stays to pick again. Events wait for the next tick.
+ */
+function pickCard(s, lane) {
+  const g = nextRow(s).find((o) => o.lane === lane);
+  if (!g || g.broken) return;
+  const ev = s.pending;
+  if (!g.right) {
+    const st = stepOf(s);
+    const item = s.items[s.at];
+    g.broken = 1;
+    s.tries++;
+    s.combo = 0;
+    s.hint = st.ask;
+    ev.push({
+      type: "gate",
+      ok: false,
+      card: 1,
+      choice: g.choice,
+      lane,
+      z: g.z,
+      ask: st.ask,
+      misconception: st.slips?.[g.choice],
+      mechanic: item.mechanic,
+      prompt: item.show || item.phrase.en,
+    });
+    return;
+  }
+  s.lane = lane;
+  const early = g.z - s.dist > 8;
+  ev.push({ type: "blast", lane, z: g.z });
+  passGate(s, g, ev);
+  if (early) {
+    s.gears += 3;
+    ev.push({ type: "quick", gears: 3 });
+  }
 }
 
 /** Hit by a hazard: the shield takes it, otherwise a stumble and the combo is gone. */
@@ -240,9 +292,11 @@ function passGate(s, o, ev) {
 
 /** Advance the run by dt seconds; returns the events of this step. */
 export function tick(s, dt) {
-  const ev = [];
+  const ev = s.pending.splice(0);
   if (s.done) return ev;
-  const speed = s.speed * (s.stumbleT > 0 ? 0.45 : 1);
+  // Ease off just before a gate row, so there is time to read the cards.
+  const gate = s.objs.find((o) => o.kind === "gate" && !o.passed && o.z > s.dist && o.z - s.dist < 12);
+  const speed = s.speed * (s.stumbleT > 0 ? 0.45 : 1) * (gate ? 0.6 : 1);
   if (s.stumbleT > 0) s.stumbleT = Math.max(0, s.stumbleT - dt);
   if (s.slideT > 0) s.slideT = Math.max(0, s.slideT - dt);
   if (s.magnetT > 0) s.magnetT = Math.max(0, s.magnetT - dt);

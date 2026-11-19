@@ -123,7 +123,7 @@ for (let i = 0; i < STAGES.length; i++) {
   assert.ok(e.some((x) => x.type === "shieldPop"));
   assert.equal(s.shield, 0);
   // Jumping clears a barrier; sliding clears a pipe.
-  s.objs = [{ kind: "barrier", z: s.dist + 2.5, lane: 1, seg: 0 }];
+  s.objs = [{ kind: "barrier", z: s.dist + 1.2, lane: 1, seg: 0 }];
   input(s, "jump");
   e = [];
   const end2 = s.dist + 4;
@@ -142,6 +142,36 @@ for (let i = 0; i < STAGES.length; i++) {
     "a slide clears a pipe",
   );
   assert.equal(LANES.length, 3);
+}
+
+// Answer cards: a wrong card breaks its gate and keeps the row; the right card blasts through at once.
+{
+  const s = newRun(0);
+  const row = s.objs.filter((o) => o.kind === "gate" && o.seg === s.seq);
+  const wrong = row.find((g) => !g.right);
+  input(s, { pick: wrong.lane });
+  let e = tick(s, DT);
+  assert.ok(
+    e.some((x) => x.type === "gate" && !x.ok && x.card),
+    "a wrong card is a miss",
+  );
+  assert.ok(wrong.broken && !wrong.passed, "the wrong gate breaks; the row stays");
+  assert.equal(s.at, 0);
+  const right = row.find((g) => g.right);
+  input(s, { pick: right.lane });
+  e = tick(s, DT);
+  assert.ok(
+    e.some((x) => x.type === "blast"),
+    "the right card fires a blast",
+  );
+  assert.ok(e.some((x) => x.type === "gate" && x.ok));
+  assert.ok(
+    e.some((x) => x.type === "quick"),
+    "an early pick earns the quick-pick bonus",
+  );
+  assert.equal(s.at, 1, "the crate is packed");
+  assert.equal(s.lane, right.lane, "Wren steers into the blasted lane");
+  assert.equal(s.firstTry, 0, "a crate with a miss is not first try");
 }
 
 // Determinism: the same seed lays out the same track.

@@ -210,29 +210,7 @@ const POWER_ICON = { magnet: "🧲", shield: "🛡", double: "×2" };
 function makeObj(o) {
   const g = new THREE.Group();
   const x = LANES[o.lane ?? 1];
-  if (o.kind === "sign") {
-    // The billboard over the track carries the question.
-    const frame = new THREE.Mesh(
-      new RoundedBoxGeometry(8.6, 1.9, 0.25, 3, 0.1),
-      std(0x16294a, { metalness: 0.4 }),
-    );
-    frame.position.set(0, 4.3, 0);
-    const trim = new THREE.Mesh(
-      new THREE.BoxGeometry(8.8, 0.08, 0.3),
-      std(0xf2b84b, { emissive: 0xb07a10, emissiveIntensity: 1.2 }),
-    );
-    trim.position.set(0, 3.32, 0.02);
-    const text = textPlane(o.text || "", 1.1, { size: 90 });
-    text.position.set(0, 4.35, 0.14);
-    if (text.geometry.parameters.width > 8.2)
-      text.scale.setScalar(8.2 / text.geometry.parameters.width);
-    for (const side of [-1, 1]) {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.4, 0.2), std(0x6b4a2c));
-      post.position.set(side * 4.2, 1.7, 0);
-      g.add(post);
-    }
-    g.add(frame, trim, text);
-  } else if (o.kind === "gate") {
+  if (o.kind === "gate") {
     const glow = new THREE.Mesh(
       new RoundedBoxGeometry(2.2, 1.5, 0.12, 3, 0.1),
       new THREE.MeshStandardMaterial({
@@ -422,12 +400,13 @@ export function createWorld(mount, { skin = "teal", hat = "none", reduced = fals
   const bot = makeBot();
   scene.add(bot);
   const bursts = new Bursts(scene);
+  const beams = [];
   const meshes = new Map();
   let shake = 0;
   let hurt = 0;
   let camX = 0;
 
-  function sync(run, dt, t, texts) {
+  function sync(run, dt, t) {
     // Track sections leapfrog ahead of the player.
     const base = Math.floor(run.dist / CHUNK) * CHUNK - CHUNK;
     chunks.forEach((c, i) => {
@@ -435,10 +414,10 @@ export function createWorld(mount, { skin = "teal", hat = "none", reduced = fals
     });
     // Objects within sight get a mesh; passed and collected ones lose it.
     for (const o of run.objs) {
-      const near = o.z - run.dist < SEEN && o.z - run.dist > -12 && !o.gone;
+      // The question lives in the HUD banner; the sign marker is not drawn.
+      const near = o.kind !== "sign" && o.z - run.dist < SEEN && o.z - run.dist > -12 && !o.gone;
       let m = meshes.get(o);
       if (near && !m) {
-        if (o.kind === "sign") o.text = texts.sign(o);
         m = makeObj(o);
         meshes.set(o, m);
         scene.add(m);
@@ -455,6 +434,11 @@ export function createWorld(mount, { skin = "teal", hat = "none", reduced = fals
       if (m.userData.bob) m.userData.bob.position.y = 0.55 + Math.abs(Math.sin(t * 4 + o.z)) * 0.5;
       if (m.userData.steam) m.userData.steam.scale.setScalar(1 + Math.sin(t * 6 + o.z) * 0.3);
       if (m.userData.panel && o.passed) m.userData.panel.material.opacity = 0.2;
+      if (m.userData.panel && o.broken && !m.userData.red) {
+        m.userData.red = 1;
+        m.userData.panel.material.color.setHex(0xe0604a);
+        m.userData.panel.material.emissive.setHex(0x6b1a10);
+      }
     }
     for (const [o, m] of meshes)
       if (!run.objs.includes(o)) {
@@ -503,9 +487,33 @@ export function createWorld(mount, { skin = "teal", hat = "none", reduced = fals
       key.target.position.set(0, 0, pz - 6);
     }
     bursts.update(dt);
+    for (const b of beams) {
+      b.life -= dt || 0.016;
+      b.m.material.opacity = Math.max(0, b.life / 0.35);
+      if (b.life <= 0) scene.remove(b.m);
+    }
+    if (beams.some((b) => b.life <= 0)) beams.splice(0, beams.length, ...beams.filter((b) => b.life > 0));
   }
 
   function fx(e, run) {
+    if (e.type === "blast") {
+      // A beam from Wren to the gate, then the gate bursts.
+      const from = new THREE.Vector3(run.x, 1.2, -run.dist);
+      const to = new THREE.Vector3(LANES[e.lane], 2.2, -e.z);
+      const len = from.distanceTo(to);
+      const beam = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, len, 8),
+        new THREE.MeshBasicMaterial({ color: 0x7fe6ff, toneMapped: false, transparent: true, opacity: 0.9 }),
+      );
+      beam.position.copy(from).lerp(to, 0.5);
+      beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize());
+      scene.add(beam);
+      beams.push({ m: beam, life: 0.35 });
+      bursts.emit(to, 0x7fe6ff, 36, 7);
+      bursts.emit(to, 0xffd166, 24, 5);
+      shake = 0.25;
+      return;
+    }
     const at = new THREE.Vector3(LANES[e.lane ?? run.lane], 1.6, -run.dist - 1.5);
     if (e.type === "gate") {
       bursts.emit(at, e.ok ? 0x6be08a : 0xff6b5c, e.ok ? 30 : 18, e.ok ? 6 : 4);
