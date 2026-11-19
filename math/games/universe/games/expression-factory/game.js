@@ -16,8 +16,10 @@ import { action, chips } from "../../runtime/controls.js";
 import { define, UniverseGame } from "../../runtime/shell.js";
 import { BELT_X0, createWorld, FLOOR, isPick, LEVELS, slotX } from "./levels.js";
 import { evaluate, fracText, machineText, simplest, write } from "./math.js";
-import { draw, drawBackdrop, quizPrompt } from "./render.js";
-import { built, crateHome, currentRoom, rules } from "./rules.js";
+import { draw, drawBackdrop } from "./render.js";
+import { quizPrompt } from "./render-arena.js";
+import { BLOCK, SLOT_X } from "./arena.js";
+import { built, currentRoom, rules } from "./rules.js";
 import { STRINGS } from "./strings.js";
 
 const WORDS = [
@@ -33,6 +35,9 @@ const WORDS = [
   "quizBoard",
   "quizWhen",
   "quizStreak",
+  "bossName",
+  "jumpHint",
+  "landHint",
 ];
 const OP_KEYS = { "+": "opAdd", "-": "opSub", "*": "opMul" };
 const NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -180,9 +185,12 @@ class ExpressionFactory extends UniverseGame {
   }
 
   focus(w) {
-    // Word Crates: frame the board, the station and the queue left of the panel.
+    // Word Crates: keep the arena (board, blocks, truck) framed while the player runs about.
     const r = currentRoom(w);
-    if (r.kind === "quiz") return { x: r.x0 + 610 + (w.p.x - r.x0 - 70) * 0.3, y: w.p.y - 160, face: w.p.face };
+    if (r.kind === "quiz") {
+      const x = Math.min(Math.max(w.p.x + w.p.w / 2, r.x0 + 540), r.x0 + 620);
+      return { x, y: w.p.y - 160, face: w.p.face };
+    }
     return { x: w.p.x + w.p.w / 2, y: w.p.y - 160, face: w.p.face };
   }
 
@@ -204,35 +212,21 @@ class ExpressionFactory extends UniverseGame {
       const at = this.stamps.get(`${room}:${slot}:${ref ? 1 : 0}`);
       return at === undefined ? 0 : Math.max(0, 1 - (now - at) / 0.22);
     };
-    // Word Crates motion runs on display time, so crates still slide while a panel is open.
-    const dt = Math.min(0.05, Math.max(0, now - (this.drawnAt ?? now)));
-    this.drawnAt = now;
-    if (this.shownWorld !== w) {
-      this.shownWorld = w;
-      this.shown = w.rooms.map((r) => (r.kind === "quiz" ? r.pos.slice() : null));
-    }
-    for (const r of w.rooms)
-      if (r.kind === "quiz") {
-        const sh = this.shown[r.i];
-        for (let k = 0; k < sh.length; k++) sh[k] += (crateHome(r, k) - sh[k]) * (1 - Math.exp(-dt * 5));
-      }
-    const shake = this.shake;
+    // Word Crates effects run on display time, so they play while a panel is open.
+    const fx = this.arena || (this.arena = { flash: {}, flying: [], hurt: {} });
+    fx.flying = fx.flying.filter((f) => now - f.at < 0.8);
     draw(ctx, w, t, {
       words: this.words,
-      crateX: (r, k) => this.shown[r.i][k],
-      hop: (r, k) => {
-        const gap = Math.abs(crateHome(r, k) - this.shown[r.i][k]);
-        return gap < 2 || this.reduced ? 0 : Math.abs(Math.sin(this.shown[r.i][k] / 28)) * Math.min(22, gap * 0.2);
+      lang: this.lang,
+      flash: (r, slot) => {
+        const f = fx.flash[r.i];
+        return f && f.slot === slot && now - f.at < 0.5 ? f : null;
       },
-      shakeX: (r, k) => {
-        if (!shake || shake.room !== r.i || k !== r.at || this.reduced) return 0;
-        const age = now - shake.at;
-        return age > 0.4 ? 0 : Math.sin(age * 70) * 9 * (1 - age / 0.4);
-      },
+      hurt: (r) => now - (fx.hurt[r.i] ?? -9) < 0.4,
+      flying: (r) => fx.flying.filter((f) => f.room === r.i).map((f) => ({ ...f, age: now - f.at })),
       press,
       acting: this.mode === "panel",
       oriMood: this.oriMood,
-      lang: this.lang,
       talk: this.caption?.who === "ori",
     });
   }
@@ -241,7 +235,8 @@ class ExpressionFactory extends UniverseGame {
     this.said = {};
     this.quizNote = "";
     this.say("ori", this.t(["helloWords", "hello", "helloTwin", "helloStream"][index]), "curious");
-    this.later(1.2, () => this.openBuild());
+    // Word Crates is played on the stage (jump, land); tapping opens the cards instead.
+    if (this.world.rooms[0].kind !== "quiz") this.later(1.2, () => this.openBuild());
   }
 
   /** Open the build panel for the room the student is in, unless it is done or running. */
@@ -262,7 +257,7 @@ class ExpressionFactory extends UniverseGame {
   objective(w, r = currentRoom(w)) {
     if (w.rooms.every((x) => x.done)) return this.t("objExit");
     if (r.done) return this.t("objNext");
-    if (r.kind === "quiz") return this.t("objQuiz", { n: r.at + 1, total: r.items.length });
+    if (r.kind === "quiz") return this.t(r.boss ? "objBoss" : "objQuiz", { n: r.at + 1, total: r.items.length });
     if (r.run) return this.t("objRunning");
     if (r.kind === "build") return this.t("objBuild", { expr: write(r.target) });
     if (r.kind === "identify") return this.t("objIdentify");
@@ -286,7 +281,8 @@ class ExpressionFactory extends UniverseGame {
   stations(w) {
     const out = [];
     for (const r of w.rooms) {
-      if (r.done) continue;
+      // Word Crates is answered on the stage itself (or by tapping it), not at a station.
+      if (r.done || r.kind === "quiz") continue;
       out.push({
         id: `lever${r.i}`,
         room: r.i,
@@ -415,6 +411,12 @@ class ExpressionFactory extends UniverseGame {
       ),
     );
     this.$("panel").scrollTop = 0;
+  }
+
+  /** The hint for the step a room is on. */
+  hintFor(r) {
+    const st = r.items[r.at]?.steps[r.step];
+    return this.t({ pickExpr: "hintWords", askSub: "hintSub", askMult: "hintMult", askSolve: "hintSolve" }[st?.ask] || "hintSolve");
   }
 
   answerCrate(r, choice) {
@@ -566,10 +568,26 @@ class ExpressionFactory extends UniverseGame {
       case "lever":
         this.audio.sfx("power");
         break;
+      case "gear":
+        this.audio.sfx("pickup");
+        this.fx.emit(e.x, e.y, 14, 120, 0, 0, Math.PI * 2, 0.5);
+        break;
+      case "spring":
+        this.audio.sfx("dash");
+        break;
       case "crateOk": {
         const r = this.world.rooms[e.room];
+        const fx = this.arena || (this.arena = { flash: {}, flying: [], hurt: {} });
+        const k = Math.max(0, e.slot ?? 1);
+        fx.flying.push({ room: e.room, x: r.x0 + SLOT_X[k], y: BLOCK.y, at: this.now });
+        delete fx.flash[e.room];
+        if (r.boss) {
+          fx.hurt[e.room] = this.now;
+          this.camera.kick(6);
+          this.audio.sfx("strain");
+        }
         this.audio.sfx("pickup");
-        this.fx.emit(r.x0 + 995, 360, 10 + Math.min(e.streak, 8) * 3, 150, 0, -Math.PI / 2, Math.PI, 0.6);
+        this.fx.emit(r.x0 + 1005, FLOOR - 80, 10 + Math.min(e.streak, 8) * 3, 150, 0, -Math.PI / 2, Math.PI, 0.6);
         if (e.streak >= 3 && e.streak % 3 === 0) {
           this.audio.sfx("discover");
           this.say("ori", this.t("onFire", { n: e.streak }), "eureka");
@@ -585,12 +603,13 @@ class ExpressionFactory extends UniverseGame {
       case "outcome":
         // Word Crates: the stamp comes down on a right card; a wrong one rattles the crate.
         if (e.room !== undefined && this.world.rooms[e.room]?.kind === "quiz") {
-          if (e.ok) {
-            this.stamps.set(`${e.room}:0:0`, this.now);
-            this.audio.sfx("lock");
-          } else {
-            this.shake = { room: e.room, at: this.now };
-            this.audio.sfx("strain");
+          const fx = this.arena || (this.arena = { flash: {}, flying: [], hurt: {} });
+          fx.flash[e.room] = { slot: e.slot, ok: e.ok, at: this.now };
+          this.audio.sfx(e.ok ? "lock" : "strain");
+          if (!e.ok) {
+            this.camera.kick(3);
+            // On the stage, a miss says what to look for; in the panel the hint is already shown.
+            if (this.mode === "play") this.say("ori", this.hintFor(this.world.rooms[e.room]), "thinking");
           }
           break;
         }
@@ -627,6 +646,7 @@ class ExpressionFactory extends UniverseGame {
     const next = this.world.rooms.find((x) => !x.done);
     if (next) {
       this.moveTo(next.x0 + 100);
+      if (next.boss) this.say("ori", this.t("bossIntro"), "worried");
       this.openBuild();
     } else this.moveTo(this.world.exit.x + 60);
   }

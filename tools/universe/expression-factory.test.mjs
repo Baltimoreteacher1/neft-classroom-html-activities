@@ -3,11 +3,12 @@
 // played through the rules, and the slips recognised.
 import assert from "node:assert/strict";
 import {
-  createWorld,
-  LEVELS,
-  STATION_X,
-  TRUCK_X,
-} from "../../math/games/universe/games/expression-factory/levels.js";
+  BLOCK,
+  LEDGE,
+  SLOT_X,
+  SPRING,
+} from "../../math/games/universe/games/expression-factory/arena.js";
+import { createWorld, LEVELS } from "../../math/games/universe/games/expression-factory/levels.js";
 import {
   equivalent,
   evaluate,
@@ -17,7 +18,7 @@ import {
   write,
 } from "../../math/games/universe/games/expression-factory/math.js";
 import { rules } from "../../math/games/universe/games/expression-factory/rules.js";
-import { Simulation } from "../../math/games/universe/runtime/sim.js";
+import { IN, Simulation } from "../../math/games/universe/runtime/sim.js";
 import { Timeline } from "../../math/games/universe/runtime/timeline.js";
 
 const M = (op, k) => (k === undefined ? { op } : { op, k });
@@ -221,16 +222,75 @@ function play(index) {
     g.w().rooms[4].items.length,
     "the streak counts crates in a row",
   );
-  const g2 = play(0);
-  for (let k = 0; k < 3; k++) {
-    const r = g2.w().rooms[3];
-    g2.act({ type: "answer", room: 3, choice: r.items[0].steps[r.step].answer });
-  }
-  const r3 = g2.w().rooms[3];
-  assert.equal(r3.at, 1);
-  for (let i = 0; i < 200; i++) g2.tl.step(0);
-  assert.equal(r3.pos[0], TRUCK_X, "a packed crate rides into the truck");
-  assert.equal(r3.pos[1], STATION_X, "the next crate comes to the station");
+  assert.ok(
+    LEVELS[0].rooms.at(-1).boss && !LEVELS[0].rooms[0].boss,
+    "the last room is the Glitch Bot",
+  );
+}
+
+// Level 1 on the stage: jump into a block, land on a ledge, ride the spring, grab gears.
+{
+  const g = play(0);
+  const w = g.w;
+  const tick = (mask, n) => {
+    for (let k = 0; k < n; k++) {
+      g.tl.step(mask);
+      g.sim.drain(g.log);
+    }
+  };
+  const under = (room, slot) =>
+    g.act({ type: "travel", room, x: w().rooms[room].x0 + SLOT_X[slot] });
+  const outcomes = () => g.log.filter((e) => e.type === "outcome");
+  tick(0, 30);
+  // Crate 1 is "3 more than y": find the right block and jump into it.
+  const st = w().rooms[0].items[0].steps[0];
+  const wrong = st.choices.findIndex((c) => c !== st.answer);
+  under(0, wrong);
+  tick(0, 20);
+  tick(IN.JUMP, 30);
+  let o = outcomes().at(-1);
+  assert.deepEqual([o.ok, o.slot], [false, wrong], "a head-bump on a wrong block is a miss");
+  tick(0, 40);
+  under(0, st.choices.indexOf(st.answer));
+  tick(0, 20);
+  tick(IN.JUMP, 30);
+  o = outcomes().at(-1);
+  assert.deepEqual(
+    [o.ok, o.key],
+    [true, "quizCrate"],
+    "a head-bump on the right block packs the crate",
+  );
+  assert.equal(w().rooms[0].at, 1);
+  // Value ledges: room 2 crate 1 (n + 6, n = 4). Substitute by block, then land on 10.
+  const r2 = w().rooms[2];
+  const it = r2.items[0];
+  tick(0, 40);
+  g.act({ type: "answer", room: 2, choice: it.steps[0].answer });
+  assert.equal(w().solids[r2.blocks[0]].open, 1, "blocks hide for a value step");
+  assert.equal(w().solids[r2.ledges[0]].open, 0, "ledges show for a value step");
+  const slot = it.steps[1].choices.indexOf(it.steps[1].answer);
+  g.act({ type: "travel", room: 2, x: r2.x0 + SLOT_X[slot] });
+  tick(0, 20);
+  tick(IN.JUMP, 70);
+  tick(0, 40);
+  o = outcomes().at(-1);
+  assert.deepEqual(
+    [o.ok, o.key, o.detail.prompt],
+    [true, "quizCrate", "n + 6"],
+    "landing on the value packs the crate",
+  );
+  // The spring launches high enough for the top gear.
+  g.act({ type: "travel", x: r2.x0 + SPRING.x + SPRING.w / 2 });
+  tick(0, 60);
+  assert.ok(
+    g.log.some((e) => e.type === "spring" && e.room === 2),
+    "the spring fires",
+  );
+  assert.ok(r2.gears[0].got, "the spring reaches the high gear");
+  assert.ok(
+    BLOCK.y + BLOCK.h > 520 - 40 - 104 && LEDGE.y > 520 - 100,
+    "blocks and ledges are within one jump",
+  );
 }
 
 // Level 2: building expressions, easy first; the reversed order is the classic slip.

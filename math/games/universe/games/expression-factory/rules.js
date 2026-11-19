@@ -8,8 +8,9 @@
 //   which crates it fails.
 
 import { stepBody } from "../../runtime/physics.js";
-import { q } from "../../runtime/sim.js";
-import { BELT_X0, BELT_X1, CRATE_GAP, FLOOR, isPick, QUEUE_X, STATION_X, slotX, TRUCK_X } from "./levels.js";
+import { IN, q } from "../../runtime/sim.js";
+import { stepArena, syncArena } from "./arena.js";
+import { BELT_X0, BELT_X1, FLOOR, isPick, slotX } from "./levels.js";
 import { eqFrac, equivalent, evaluate, frac, isLinear, linear, runMachine, sameChain } from "./math.js";
 
 const SPEED = 3;
@@ -110,15 +111,8 @@ function finishRun(w, r, ev) {
   }
 }
 
-/** Where a Word Crates crate belongs: done in the truck, current at the station, the rest queued. */
-export function crateHome(r, k) {
-  if (k < r.at) return TRUCK_X;
-  if (k === r.at) return STATION_X;
-  return QUEUE_X - (k - r.at - 1) * CRATE_GAP;
-}
-
 /** One pick on the current crate. A right pick moves to the next step; the last step ships the crate. */
-function answer(w, r, choice, ev) {
+function answer(w, r, choice, ev, slot = r.items[r.at].steps[r.step].choices.indexOf(choice)) {
   const item = r.items[r.at];
   const st = item.steps[r.step];
   const ok = choice === st.answer;
@@ -128,6 +122,7 @@ function answer(w, r, choice, ev) {
     ok,
     key: !ok ? "quizMiss" : last ? "quizCrate" : "quizStep",
     room: r.i,
+    slot,
     vars: { n: r.at + 1, total: r.items.length },
     mechanic: item.mechanic,
     lesson: "6-5",
@@ -141,6 +136,7 @@ function answer(w, r, choice, ev) {
   }
   if (!last) {
     r.step++;
+    syncArena(w, r);
     return;
   }
   if (!r.miss) {
@@ -151,21 +147,16 @@ function answer(w, r, choice, ev) {
   r.miss = 0;
   r.step = 0;
   r.at++;
-  ev.push({ type: "crateOk", room: r.i, streak: r.streak });
+  ev.push({ type: "crateOk", room: r.i, slot, streak: r.streak });
   if (r.at === r.items.length) {
     r.done = 1;
     w.solids[r.gate].open = 1;
     ev.push({ type: "solved", room: r.i });
   }
+  syncArena(w, r);
 }
 
 function step(w, mask, prevMask, ev) {
-  for (const r of w.rooms)
-    if (r.kind === "quiz")
-      r.pos = r.pos.map((p, k) => {
-        const d = crateHome(r, k) - p;
-        return Math.abs(d) < 1 ? crateHome(r, k) : q(p + d * 0.12);
-      });
   for (const r of w.rooms) {
     if (!r.run) continue;
     stepCrates(r, r.run.crates, r.run.slots, ev, false, r.run.want);
@@ -176,7 +167,16 @@ function step(w, mask, prevMask, ev) {
     if (!busy) finishRun(w, r, ev);
   }
   const p = w.p;
-  stepBody(p, w.solids, mask, prevMask, ev);
+  const vyBefore = p.vy;
+  if (p.springT > 0) p.springT--;
+  const held = p.springT > 0 && p.vy < 0 ? IN.JUMP : 0;
+  stepBody(p, w.solids, mask | held, prevMask | held, ev);
+  // Word Crates: a head-bump on a block or a landing on a ledge is an answer.
+  const here = currentRoom(w);
+  if (here.kind === "quiz") {
+    const hit = stepArena(w, here, vyBefore, ev);
+    if (hit) answer(w, here, hit.choice, ev, hit.slot);
+  }
   if (p.x < 0) p.x = 0;
   if (p.x > w.w - p.w) p.x = w.w - p.w;
   for (const c of w.checkpoints)

@@ -15,18 +15,13 @@
 //             with fewer slots so every crate still matches
 
 import { makeBody } from "../../runtime/physics.js";
+import { buildArena, FLOOR, syncArena } from "./arena.js";
 import { WORD_ROOMS } from "./quiz.js";
-
-/** Word Crates belt: the stamping station, the queue behind it, and the truck. */
-export const STATION_X = 480;
-export const QUEUE_X = 370;
-export const CRATE_GAP = 74;
-export const TRUCK_X = 995;
 
 /** Rooms where the student picks from cards instead of building the line. */
 export const isPick = (r) => r.kind === "identify" || r.kind === "match" || r.kind === "quiz";
 
-export const FLOOR = 520;
+export { FLOOR };
 export const BELT_Y = 400;
 export const REF_Y = 250;
 const ROOM = 1100;
@@ -41,7 +36,8 @@ export const LEVELS = [
   {
     id: "word-crates",
     lesson: "6-5",
-    rooms: WORD_ROOMS.map((items) => ({ kind: "quiz", items })),
+    // The last room is the Glitch Bot.
+    rooms: WORD_ROOMS.map((items, i) => ({ kind: "quiz", items, boss: i === WORD_ROOMS.length - 1 })),
   },
   {
     id: "assembly-line",
@@ -135,6 +131,8 @@ export function createWorld(index, seed) {
         x0,
         kind: "quiz",
         items: r.items,
+        ...buildArena(x0, i, solids, r.boss),
+        stood: -1,
         // Where the student is: crate `at`, step `step`; misses on this crate; crates right first try.
         at: 0,
         step: 0,
@@ -142,8 +140,6 @@ export function createWorld(index, seed) {
         firstTry: 0,
         streak: 0,
         best: 0,
-        // Each crate's place on the belt, eased toward its slot every tick.
-        pos: r.items.map((_, k) => QUEUE_X - k * CRATE_GAP),
         target: [],
         line: [],
         xs: [],
@@ -169,7 +165,7 @@ export function createWorld(index, seed) {
       runs: 0,
     };
   });
-  return {
+  const world = {
     rng: seed >>> 0 || 1,
     tick: 0,
     level: index,
@@ -183,4 +179,6 @@ export function createWorld(index, seed) {
     checkpoints: rooms.map((r) => ({ id: `cp${r.i}`, x: r.x0 + 40, y: FLOOR, hit: 0 })),
     done: 0,
   };
+  for (const r of rooms) if (r.kind === "quiz") syncArena(world, r);
+  return world;
 }

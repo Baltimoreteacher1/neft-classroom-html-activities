@@ -16,7 +16,8 @@ import {
   sky,
 } from "../../runtime/art.js";
 import { H, W } from "../../runtime/chrome.js";
-import { BELT_X0, BELT_X1, BELT_Y, FLOOR, REF_Y, STATION_X, slotX, TRUCK_X } from "./levels.js";
+import { BELT_X0, BELT_X1, BELT_Y, FLOOR, REF_Y, slotX } from "./levels.js";
+import { drawArena } from "./render-arena.js";
 import { fracText, machineText, write } from "./math.js";
 
 let girders;
@@ -121,68 +122,8 @@ function crate(ctx, x, y, c, ghost) {
   ctx.globalAlpha = 1;
 }
 
-/** The prompt a Word Crates crate carries, in the student's language. */
-export function quizPrompt(item, lang, when) {
-  return item.phrase ? item.phrase[lang] || item.phrase.en : `${item.show}, ${when} ${item.when}`;
-}
-
-function quizCrate(ctx, x, y, text, glowing) {
-  const s = 64;
-  ctx.fillStyle = glowing ? "#a77a2c" : "#8a6a2c";
-  rr(ctx, x - s / 2, y - s, s, s, 8);
-  ctx.fill();
-  ctx.strokeStyle = "rgba(42,26,2,0.6)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(x - s / 2 + 6, y - s + 6, s - 12, s - 12);
-  label(ctx, text, x, y - s / 2, text.length > 5 ? 13 : 17, PAL.cream);
-}
-
-/** Word Crates: one stamping station, a queue of crates, and the truck. */
-function quizRoom(ctx, w, r, t, words, view) {
-  const ox = r.x0;
-  belt(ctx, ox + BELT_X0, ox + BELT_X1, BELT_Y, t, false);
-  machine(ctx, ox + STATION_X, BELT_Y, { op: "+", k: 0 }, t, view.press(r.i, 0, false), false, true);
-  const item = r.items[r.at];
-  const bx = ox + STATION_X;
-  plate(ctx, bx - 250, 150, 500, 104, PAL.gold);
-  label(ctx, words.quizBoard.replace("{n}", Math.min(r.at + 1, r.items.length)).replace("{total}", r.items.length), bx, 168, 13, PAL.muted);
-  label(ctx, item ? quizPrompt(item, view.lang, words.quizWhen) : "✓", bx, 198, 24, PAL.cream);
-  if (r.streak > 1) label(ctx, `🔥 ${words.quizStreak.replace("{n}", r.streak)}`, bx, 124, 16, PAL.tealGlow);
-  // Truck with its load count.
-  const tx = ox + BELT_X1 + 20;
-  ctx.fillStyle = "#24406b";
-  rr(ctx, tx, BELT_Y - 10, 90, 70, 8);
-  ctx.fill();
-  ctx.fillStyle = PAL.ok;
-  ctx.fillRect(tx, BELT_Y - 10, 90, 6);
-  label(ctx, words.truck, tx + 45, BELT_Y + 14, 12, PAL.cream);
-  label(ctx, `${r.at} / ${r.items.length}`, tx + 45, BELT_Y + 38, 18, PAL.gold);
-  // Packed crates stack in the truck; the rest hop along the belt toward their places.
-  for (let k = 0; k < Math.min(r.at, 6); k++) {
-    ctx.fillStyle = "#8a6a2c";
-    rr(ctx, tx + 8 + (k % 3) * 26, BELT_Y - 34 - Math.floor(k / 3) * 22, 22, 20, 3);
-    ctx.fill();
-  }
-  r.items.forEach((it, k) => {
-    const px = view.crateX(r, k);
-    if (k < r.at && px >= TRUCK_X - 4) return;
-    const x = ox + px;
-    if (x < ox + BELT_X0 - 40) return;
-    quizCrate(ctx, x + view.shakeX(r, k), BELT_Y - view.hop(r, k), it.show || "Aa", k === r.at);
-  });
-  const g = w.solids[r.gate];
-  if (!g.open) {
-    ctx.fillStyle = "#4a3a2c";
-    ctx.fillRect(g.x, g.y, g.w, g.h);
-    for (let y = g.y + 20; y < g.y + g.h; y += 40) {
-      ctx.fillStyle = PAL.gold;
-      ctx.fillRect(g.x + 4, y, g.w - 8, 6);
-    }
-  } else glow(ctx, g.x + 13, FLOOR - 120, 70, PAL.ok, 0.3);
-}
-
 function room(ctx, w, r, t, words, view) {
-  if (r.kind === "quiz") return quizRoom(ctx, w, r, t, words, view);
+  if (r.kind === "quiz") return drawArena(ctx, w, r, t, words, view);
   const ox = r.x0;
   const run = r.run;
   // Reference line (twin, streamline): a ghost belt above, running the order.
