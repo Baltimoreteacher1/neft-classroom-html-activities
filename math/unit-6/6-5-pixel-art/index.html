@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lesson 6-5 Pixel Art Studio: two paint-by-number pictures unlocked by writing and evaluating algebraic expressions."
+    />
+    <title>Pixel Art Studio | Lesson 6-5 | Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./pixel.css" />
+    <style>
+      .hero {
+        text-align: center;
+        margin: 22px 0 8px;
+      }
+      .hero h1 {
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
+      }
+      .hero p {
+        color: var(--muted);
+        max-width: 60ch;
+        margin: 10px auto 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 22px;
+        margin-top: 26px;
+      }
+      .card {
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        padding: 18px;
+        text-decoration: none;
+        color: var(--ink);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition:
+          transform 0.15s,
+          border-color 0.15s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+      }
+      .card canvas {
+        width: 100%;
+        max-width: 320px;
+        aspect-ratio: 1;
+        margin: 0 auto;
+        image-rendering: pixelated;
+        border-radius: 14px;
+        border: 3px solid var(--line);
+        background: #0b1030;
+      }
+      .card h2 {
+        font-size: 1.4rem;
+      }
+      .card p {
+        margin: 0;
+        color: #d5ddf6;
+      }
+      .tag {
+        display: inline-block;
+        align-self: flex-start;
+        font-size: 0.8rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 99px;
+        background: #0b1030;
+        color: var(--accent);
+      }
+      .prog {
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+      .go {
+        margin-top: auto;
+        align-self: flex-start;
+      }
+      .note {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 26px;
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <a class="back" href="/lessons/6-5/"
+        >← Lesson 6-5: Write and Evaluate Algebraic Expressions</a
+      >
+      <header class="hero">
+        <h1>🎨 Pixel Art Studio</h1>
+        <p>
+          Crack each paint can by working with algebraic expressions, then paint by number to reveal
+          the picture. Two pictures, two challenges.
+        </p>
+      </header>
+      <div class="cards" id="cards"></div>
+      <p class="note">
+        Standard 6.AT.6a · Progress saves on this device · Teachers: add <b>?teacher=1</b> to a
+        picture's link for an answer key.
+      </p>
+    </div>
+    <script src="./art/boombox.js"></script>
+    <script src="./art/axolotl.js"></script>
+    <script>
+      const META = {
+        boombox: {
+          tag: "Evaluate · 10 cans",
+          desc: "Evaluate expressions with one or two variables, parentheses, and exponents.",
+          href: "boombox/",
+        },
+        axolotl: {
+          tag: "Write + Evaluate · 8 cans",
+          desc: "Turn word phrases into expressions, then evaluate them. Watch the word order!",
+          href: "axolotl/",
+        },
+      };
+      const cards = document.getElementById("cards");
+      for (const [id, m] of Object.entries(META)) {
+        const A = window.PIXEL_ARTS[id];
+        let n = 0,
+          u = 0;
+        try {
+          const s = JSON.parse(localStorage.getItem("ewl-pixel-6-5-" + id) || "{}");
+          n = (s.painted || []).length;
+          u = Object.keys(s.unlocked || {}).length;
+        } catch {}
+        const total = [...A.grid.join("")].filter((c) => c !== ".").length;
+        const a = document.createElement("a");
+        a.className = "card";
+        a.href = m.href;
+        a.innerHTML = `<canvas width="${A.grid[0].length * 8}" height="${A.grid.length * 8}" aria-hidden="true"></canvas>
+          <span class="tag">${m.tag}</span><h2>${A.emoji} ${A.title}</h2><p>${m.desc}</p>
+          <span class="prog">${n === 0 && u === 0 ? "Not started" : n >= total ? "Complete ✓" : `${u} cans unlocked · ${Math.round((100 * n) / total)}% painted`}</span>
+          <span class="btn primary go">${n === 0 && u === 0 ? "Start painting" : n >= total ? "View picture" : "Continue"} →</span>`;
+        const g = a.querySelector("canvas").getContext("2d");
+        A.grid.forEach((row, r) =>
+          [...row].forEach((ch, c) => {
+            g.fillStyle = ch === "." ? A.bg : A.colors[ch].hex;
+            g.fillRect(c * 8, r * 8, 8, 8);
+          }),
+        );
+        cards.append(a);
+      }
+    </script>
+  </body>
+</html>
