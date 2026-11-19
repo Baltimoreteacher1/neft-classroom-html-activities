@@ -10,7 +10,7 @@
 import { stepBody } from "../../runtime/physics.js";
 import { q } from "../../runtime/sim.js";
 import { BELT_X0, BELT_X1, FLOOR, slotX } from "./levels.js";
-import { eqFrac, equivalent, evaluate, frac, linear, runMachine, sameChain } from "./math.js";
+import { eqFrac, equivalent, evaluate, frac, isLinear, linear, runMachine, sameChain } from "./math.js";
 
 const SPEED = 3;
 const SPACING = 70;
@@ -56,6 +56,7 @@ function stepCrates(r, crates, slotsLine, ev, ref) {
 /** Which slip a wrong line shows, in the site's misconception vocabulary. */
 function slipOf(r, line) {
   const t = r.target;
+  if (!isLinear(t) || !isLinear(line)) return undefined;
   const want = linear(t);
   const got = linear(line);
   // Most specific first: multiplied the x but not the number (k(x + c) read as kx + c).

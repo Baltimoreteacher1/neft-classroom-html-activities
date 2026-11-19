@@ -261,6 +261,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .panel .note{color:var(--cream);font-size:.95em}
 .stepper{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center}
 .stepper output{min-width:2.4em;text-align:center;font-size:1.3em;font-weight:700;font-variant-numeric:tabular-nums;color:var(--glow)}
+.slotrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.panel select{min-height:44px;padding:6px 10px;font:inherit;font-weight:700;color:var(--cream);background:var(--navy);border:1px solid var(--navy3);border-radius:10px}
+.panel select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips button{padding:6px 12px}
 .model{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;min-height:48px;background:var(--navy);border:1px dashed var(--navy3);border-radius:12px;padding:8px}

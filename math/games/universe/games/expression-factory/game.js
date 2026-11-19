@@ -8,7 +8,7 @@
 // another shows exactly which crates it fails: equivalence means every x.
 
 import { el } from "../../runtime/chrome.js";
-import { action, chips, stepper } from "../../runtime/controls.js";
+import { action, chips } from "../../runtime/controls.js";
 import { define, UniverseGame } from "../../runtime/shell.js";
 import { BELT_X0, createWorld, FLOOR, LEVELS, slotX } from "./levels.js";
 import { evaluate, fracText, machineText, simplest, write } from "./math.js";
@@ -26,7 +26,12 @@ const WORDS = [
   "twinOrder",
   "streamOrder",
 ];
-const OP_KEYS = { "+": "opAdd", "-": "opSub", "*": "opMul", "+x": "opAddX" };
+const OP_KEYS = { "+": "opAdd", "-": "opSub", "*": "opMul" };
+const NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+/** A box's operation and its number-or-x, as the machine the factory runs. */
+const encode = (op, operand) => (operand === "x" ? { op: `${op}x` } : { op, k: Number(operand) });
+const decode = (m) => (m.op.endsWith("x") ? { op: m.op[0], operand: "x" } : { op: m.op, operand: String(m.k) });
 
 class ExpressionFactory extends UniverseGame {
   static def = {
@@ -117,6 +122,13 @@ class ExpressionFactory extends UniverseGame {
     return createWorld(index, seed);
   }
 
+  connectedCallback() {
+    const first = !this.started;
+    super.connectedCallback();
+    // Clicking or tapping the factory opens the build panel: no walking needed.
+    if (first) this.canvas.addEventListener("click", () => this.openBuild());
+  }
+
   focus(w) {
     return { x: w.p.x + w.p.w / 2, y: w.p.y - 160, face: w.p.face };
   }
@@ -151,11 +163,26 @@ class ExpressionFactory extends UniverseGame {
   onLevelStart(index) {
     this.said = {};
     this.say("ori", this.t(["hello", "helloTwin", "helloStream"][index]), "curious");
+    this.later(1.2, () => this.openBuild());
   }
 
-  objective(w) {
-    if (w.rooms.every((r) => r.done)) return this.t("objExit");
-    const r = currentRoom(w);
+  /** Open the build panel for the room the student is in, unless it is done or running. */
+  openBuild() {
+    if (this.mode !== "play") return;
+    const r = currentRoom(this.world);
+    if (!r.done && !r.run) this.buildConsole(r);
+  }
+
+  /** Move to a point on the floor as a recorded step, so it rewinds like any other. */
+  moveTo(x) {
+    this.timeline.mark("travel", { en: "Next line", es: "Siguiente línea" }, { type: "travel", x, y: FLOOR });
+    this.timeline.resolve({ ok: true, key: "" });
+    const f = this.focus(this.world);
+    this.camera.snap(f.x, f.y);
+  }
+
+  objective(w, r = currentRoom(w)) {
+    if (w.rooms.every((x) => x.done)) return this.t("objExit");
     if (r.done) return this.t("objNext");
     if (r.run) return this.t("objRunning");
     if (r.kind === "build") return this.t("objBuild", { expr: write(r.target) });
@@ -181,7 +208,7 @@ class ExpressionFactory extends UniverseGame {
         room: r.i,
         type: "lever",
         x: r.x0 + 100,
-        what: this.t("useLever"),
+        what: this.t("useBuild"),
       });
       r.line.forEach((_, i) =>
         out.push({
@@ -190,7 +217,7 @@ class ExpressionFactory extends UniverseGame {
           slot: i,
           type: "slot",
           x: slotX(r, i, r.line.length),
-          what: this.t("useSlot", { n: i + 1 }),
+          what: this.t("useBuild"),
         }),
       );
     }
@@ -219,129 +246,113 @@ class ExpressionFactory extends UniverseGame {
 
   interact(s) {
     const r = this.world.rooms[s.room];
-    if (r.run) return;
-    if (s.type === "slot") this.slotConsole(r, s.slot);
-    else this.leverConsole(r);
+    if (!r.run) this.buildConsole(r);
   }
 
-  slotConsole(r, slot) {
-    const cur = r.line[slot];
-    let op = cur?.op || r.ops[0];
-    let k = cur?.k || 2;
-    this.openPanel(this.t("slotTitle", { n: slot + 1 }), (body) => {
-      const math = el("div.math");
-      const show = () => {
-        math.textContent = machineText(op === "+x" ? { op } : { op, k });
+  /** One panel: every box at once, the written line under them, and the run. */
+  buildConsole(r) {
+    this.openPanel(this.t("buildTitle"), (body) => {
+      const preview = el("div.math");
+      const paint = () => {
+        preview.textContent = write(built(r)) || "x";
       };
-      const kRow = stepper(
-        this,
-        this.t("slotK"),
-        () => k,
-        (v) => {
-          k = v;
-          show();
-        },
-        1,
-        12,
-      );
       body.append(
-        el("p.note", null, this.t("slotNote")),
-        math,
-        el("p.muted", null, this.t("slotOp")),
-        chips(
-          r.ops.map((o) => ({ label: this.t(OP_KEYS[o]), value: o })),
-          (o) => o.value === op,
-          (o) => {
-            op = o.value;
-            kRow.hidden = op === "+x";
-            show();
-          },
-        ),
-        kRow,
-        action(
-          this.t("slotSet"),
-          () => {
-            this.closePanel();
-            const m = op === "+x" ? { op } : { op, k };
-            this.decide(
-              "machine",
-              {
-                en: `Slot ${slot + 1}: ${machineText(m)}`,
-                es: `Lugar ${slot + 1}: ${machineText(m)}`,
-              },
-              { type: "set", room: r.i, slot, m },
-              { mechanic: "write-expression" },
-            );
-          },
-          ".primary",
-        ),
-        action(
-          this.t("slotEmpty"),
-          () => {
-            this.closePanel();
-            this.decide(
-              "machine",
-              { en: `Slot ${slot + 1}: empty`, es: `Lugar ${slot + 1}: vacío` },
-              { type: "set", room: r.i, slot, m: null },
-              { mechanic: "write-expression" },
-            );
-          },
-          ".ghost",
-        ),
+        el("p.note", null, this.objective(this.world, r)),
+        el("p.muted", null, this.t("buildHow")),
+        ...r.line.map((_, i) => this.boxRow(r, i, paint)),
+        el("p.muted", null, this.t("yourLine")),
+        preview,
+        el("p.muted", null, this.t("leverNote", { xs: r.xs.join(", ") })),
+        this.runControls(r),
       );
-      kRow.hidden = op === "+x";
-      show();
+      paint();
     });
   }
 
-  leverConsole(r) {
-    const line = built(r);
-    const mech =
-      r.kind === "build"
-        ? "write-expression"
-        : r.kind === "twin"
-          ? "equivalent-expressions"
-          : "simplify-expression";
+  /** Box `slot`: an operation and a number or x, changed in place. */
+  boxRow(r, slot, paint) {
+    const cur = r.line[slot] ? decode(r.line[slot]) : null;
+    const op = el(
+      "select",
+      { "aria-label": this.t("boxOp", { n: slot + 1 }) },
+      el("option", { value: "" }, this.t("boxEmpty")),
+      r.ops.map((o) => el("option", { value: o, selected: cur?.op === o }, this.t(OP_KEYS[o]))),
+    );
+    const num = el(
+      "select",
+      { "aria-label": this.t("boxNum", { n: slot + 1 }) },
+      ["x", ...NUMBERS].map((v) =>
+        el("option", { value: v, selected: String(v) === (cur?.operand ?? "2") }, v),
+      ),
+    );
+    const change = () => {
+      const m = op.value ? encode(op.value, num.value) : null;
+      const same = JSON.stringify(m) === JSON.stringify(r.line[slot]);
+      num.disabled = !op.value;
+      if (same) return;
+      this.decide(
+        "machine",
+        {
+          en: `Box ${slot + 1}: ${m ? machineText(m) : "empty"}`,
+          es: `Casilla ${slot + 1}: ${m ? machineText(m) : "vacía"}`,
+        },
+        { type: "set", room: r.i, slot, m },
+        { mechanic: "write-expression" },
+      );
+      paint();
+    };
+    op.addEventListener("change", change);
+    num.addEventListener("change", change);
+    num.disabled = !cur;
+    return el("div.slotrow", null, el("span", null, this.t("boxLabel", { n: slot + 1 })), op, num);
+  }
+
+  /** The run button, or, before a room's first run, the prediction that starts it. */
+  runControls(r) {
     const start = () => {
+      const line = built(r);
       this.closePanel();
       this.decide(
         "run",
         { en: `Ran ${write(line) || "x"}`, es: `Corrió ${write(line) || "x"}` },
         { type: "run", room: r.i },
-        { mechanic: mech, detail: { line: write(line), simplest: simplest(line) } },
+        {
+          mechanic:
+            r.kind === "build"
+              ? "write-expression"
+              : r.kind === "twin"
+                ? "equivalent-expressions"
+                : "simplify-expression",
+          detail: { line: write(line), simplest: simplest(line) },
+        },
       );
     };
-    this.openPanel(this.t("leverTitle"), (body) => {
-      body.append(
-        el("div.math", null, write(line) || "x"),
-        el("p.note", null, this.t("leverNote", { expr: write(line) || "x", xs: r.xs.join(", ") })),
-      );
-      // Evaluate first (6-5): one prediction per room, before its first run.
-      if (r.predict !== null && !this.predicted.has(r.i)) {
-        const x = r.predict;
-        const right = evaluate(r.target, x);
-        const opts = [right, evaluate([...r.target].reverse(), x), { n: right.n + 1, d: 1 }]
-          .map(fracText)
-          .filter((v, i, a) => a.indexOf(v) === i)
-          .sort((a, b) => Number(a) - Number(b));
-        body.append(
-          el("h3", null, this.t("predict", { x })),
-          chips(
-            opts.map((v) => ({ label: v, value: v })),
-            () => false,
-            (o) => {
-              this.predicted.add(r.i);
-              this.prediction = {
-                mechanic: "evaluate-expression",
-                choice: o.value,
-                judge: () => o.value === fracText(right),
-              };
-              start();
-            },
-          ),
-        );
-      } else body.append(action(this.t("leverGo"), start, ".primary"));
-    });
+    // Evaluate first (6-5): one prediction per room, before its first run.
+    if (r.predict === null || this.predicted.has(r.i)) return action(this.t("leverGo"), start, ".primary");
+    const x = r.predict;
+    const right = evaluate(r.target, x);
+    const opts = [right, evaluate([...r.target].reverse(), x), { n: right.n + 1, d: 1 }]
+      .map(fracText)
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .sort((a, b) => Number(a) - Number(b));
+    return el(
+      "div.stack",
+      null,
+      el("h3", null, this.t("predict", { x })),
+      chips(
+        opts.map((v) => ({ label: v, value: v })),
+        () => false,
+        (o) => {
+          this.predicted.add(r.i);
+          this.prediction = {
+            mechanic: "evaluate-expression",
+            choice: o.value,
+            judge: () => o.value === fracText(right),
+          };
+          start();
+        },
+      ),
+    );
   }
 
   onEvent(e) {
@@ -368,21 +379,35 @@ class ExpressionFactory extends UniverseGame {
           this.said.oneRight = 1;
           this.later(3, () => this.say("ori", this.t("oneRight"), "thinking"));
         }
+        // A line that missed: back to the boxes once the crates have been seen.
+        if (!e.ok) this.later(2.5, () => this.openBuild());
         break;
       case "solved": {
         const r = this.world.rooms[e.room];
         this.fx.emit(r.x0 + BELT_X0 + 800, 380, 30, 170, 0, -Math.PI / 2, Math.PI * 2, 0.9);
         this.audio.sfx("discover");
-        if (r.kind === "twin" && !this.asked.twin) this.later(3, () => this.askOnce("twin"));
-        if (r.kind === "streamline" && !this.asked.stream)
-          this.later(3, () => this.askOnce("stream"));
+        this.later(2.5, () => this.afterSolved(e.room));
         break;
       }
     }
   }
 
+  /** After a room fills: the reasoning prompt once for twin and streamline, then on to the next line. */
+  async afterSolved(i) {
+    const r = this.world.rooms[i];
+    if (!r.done || this.mode !== "play") return;
+    const kind = r.kind === "twin" ? "twin" : r.kind === "streamline" ? "stream" : null;
+    if (kind) await this.askOnce(kind);
+    if (this.mode !== "play") return;
+    const next = this.world.rooms.find((x) => !x.done);
+    if (next) {
+      this.moveTo(next.x0 + 100);
+      this.openBuild();
+    } else this.moveTo(this.world.exit.x + 60);
+  }
+
   askOnce(kind) {
-    if (this.asked[kind] || this.mode !== "play") return;
+    if (this.asked[kind] || this.mode !== "play") return undefined;
     this.asked[kind] = true;
     const o = {
       twin: {
@@ -396,7 +421,7 @@ class ExpressionFactory extends UniverseGame {
         mechanic: "simplify-expression",
       },
     }[kind];
-    this.explain(o);
+    return this.explain(o);
   }
 }
 

@@ -44,13 +44,24 @@ assert.equal(simplest([M("+", 3), M("*", 4), M("-x")]), "3x + 12");
 assert.equal(simplest([M("*", 2), M("-", 1)]), "2x − 1");
 assert.ok(equivalent([M("+", 3), M("*", 2)], [M("*", 2), M("+", 6)]));
 assert.ok(!equivalent([M("+", 3), M("*", 2)], [M("*", 2), M("+", 3)]));
+// x can go in a box: x + x is 2x, x times x is x squared, and a line with x² is not linear.
+assert.equal(write([M("*x")]), "x²");
+assert.equal(write([M("*", 3), M("*x")]), "3x²");
+assert.equal(simplest([M("+x"), M("+x")]), "3x");
+assert.ok(equivalent([M("+x"), M("+x")], [M("*", 3)]));
+assert.ok(
+  !equivalent([M("*x")], [M("*", 2)]),
+  "x times x is not 2x, though they agree at x = 0 and x = 2",
+);
+assert.ok(equivalent([M("*", 3), M("+", 5)], [M("+x"), M("+", 2), M("+x"), M("+", 3)]));
 assert.deepEqual(linear([M("+", 2), M("*", 3)]), { a: { n: 3, d: 1 }, b: { n: 6, d: 1 } });
 
 // ---------- every order is solvable within its slots, and twin rooms have a DIFFERENT answer ----------
 const KS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 for (const L of LEVELS)
   for (const r of L.rooms) {
-    const machines = r.ops.flatMap((op) => (op === "+x" ? [M("+x")] : KS.map((k) => M(op, k))));
+    // Each box takes an operation with a number or with x ("+" with x is the "+x" machine).
+    const machines = r.ops.flatMap((op) => [M(`${op}x`), ...KS.map((k) => M(op, k))]);
     let found = 0;
     for (const a of machines)
       for (const b of machines) {

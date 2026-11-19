@@ -21,6 +21,8 @@ export const BELT_X0 = 170;
 export const BELT_X1 = 930;
 
 const M = (op, k) => (k === undefined ? { op } : { op, k });
+// Every box takes one of these with a number or x: "+" with x is the "+x" machine.
+const OPS = ["+", "-", "*"];
 
 export const LEVELS = [
   {
@@ -31,7 +33,7 @@ export const LEVELS = [
         kind: "build",
         target: [M("*", 3), M("+", 2)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [1, 2, 3, 4],
         predict: 3,
       },
@@ -39,7 +41,7 @@ export const LEVELS = [
         kind: "build",
         target: [M("+", 1), M("*", 4)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [1, 2, 3, 4],
         predict: 2,
       },
@@ -47,7 +49,7 @@ export const LEVELS = [
         kind: "build",
         target: [M("*", 2), M("-", 1)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [2, 3, 5, 6],
         predict: 5,
       },
@@ -62,21 +64,21 @@ export const LEVELS = [
         kind: "twin",
         target: [M("+", 3), M("*", 2)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [0, 1, 2, 3, 4],
       },
       {
         kind: "twin",
         target: [M("*", 4), M("+", 8)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [0, 1, 2, 3, 4],
       },
       {
         kind: "twin",
         target: [M("-", 1), M("*", 5)],
         slots: 2,
-        ops: ["+", "-", "*"],
+        ops: OPS,
         xs: [1, 2, 3, 4, 5],
       },
     ],
@@ -90,21 +92,21 @@ export const LEVELS = [
         kind: "streamline",
         target: [M("+x"), M("+", 2), M("+x"), M("+", 3)],
         slots: 2,
-        ops: ["+", "-", "*", "+x"],
+        ops: OPS,
         xs: [0, 1, 2, 3, 4],
       },
       {
         kind: "streamline",
         target: [M("*", 2), M("+", 6), M("+x")],
         slots: 2,
-        ops: ["+", "-", "*", "+x"],
+        ops: OPS,
         xs: [0, 1, 2, 3, 4],
       },
       {
         kind: "streamline",
         target: [M("+", 3), M("*", 4), M("-x")],
         slots: 2,
-        ops: ["+", "-", "*", "+x"],
+        ops: OPS,
         xs: [0, 1, 2, 3, 4],
       },
     ],

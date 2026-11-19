@@ -2,7 +2,7 @@
 // Lessons 6-5 (write and evaluate algebraic expressions), 6-6 / 6-8
 // (equivalent expressions), 6-14 (the distributive property), 6-15
 // (simplify). A production line is a chain of machines, each one operation:
-//   { op: "+", k }  { op: "-", k }  { op: "*", k }  { op: "/", k }  { op: "+x" }  { op: "-x" }
+//   { op: "+", k }  { op: "-", k }  { op: "*", k }  { op: "/", k }  { op: "+x" }  { op: "-x" }  { op: "*x" }
 // A crate enters carrying a value of x and leaves carrying the expression's
 // value. Values are exact fractions { n, d } so ÷ never rounds.
 
@@ -34,6 +34,8 @@ export function runMachine(m, v, x) {
       return frac(v.n + x * v.d, v.d);
     case "-x":
       return frac(v.n - x * v.d, v.d);
+    case "*x":
+      return frac(v.n * x, v.d);
     default:
       return v;
   }
@@ -55,31 +57,41 @@ export function linear(line) {
   return { a: frac(at1.n * at0.d - at0.n * at1.d, at1.d * at0.d), b: at0 };
 }
 
+/** True when the line is a·x + b: multiplying by x makes a line a polynomial of higher degree. */
+export const isLinear = (line) => !line.some((m) => m.op === "*x");
+
 /**
- * Two lines are equivalent when they agree for every value of x. Both are
- * linear in x, so agreeing at two values proves it; the factory still tests
- * every crate, because that is what the student sees.
+ * Two lines are equivalent when they agree for every value of x. A line has
+ * at most one × x per machine, so five values settle any line the factory can
+ * build; the factory still tests every crate, because that is what the
+ * student sees.
  */
 export function equivalent(a, b) {
-  return [0, 1].every((x) => eqFrac(evaluate(a, x), evaluate(b, x)));
+  return [0, 1, 2, 3, 4].every((x) => eqFrac(evaluate(a, x), evaluate(b, x)));
 }
 
 /** Written form of a line, the way a person writes it: 3(x + 2), 2x + 6, (x + 4) ÷ 2. */
 export function write(line) {
   let s = "x";
-  let kind = "atom"; // atom | prod | sum
-  let coef = 1; // x scaled so far, while the expression is still k·x
+  let kind = "mono"; // mono | prod | sum
+  let coef = 1; // while the expression is still one term, coef·x^pow
+  let pow = 1;
+  const mono = () => `${coef === 1 ? "" : coef}x${pow === 2 ? "²" : ""}`;
   for (const m of line) {
     if (m.op === "*") {
-      if (kind === "atom") {
+      if (kind === "mono") {
         coef *= m.k;
-        s = `${coef}x`;
-        kind = "prod";
-      } else if (kind === "prod" && /^\d+x$/.test(s)) {
-        coef *= m.k;
-        s = `${coef}x`;
+        s = mono();
       } else {
         s = `${m.k}(${s})`;
+        kind = "prod";
+      }
+    } else if (m.op === "*x") {
+      if (kind === "mono" && pow === 1) {
+        pow = 2;
+        s = mono();
+      } else {
+        s = `x(${s})`;
         kind = "prod";
       }
     } else if (m.op === "/") {
@@ -104,6 +116,7 @@ export function write(line) {
 
 /** The simplest written form of a line's linear form: 3x + 5, 2x − 1, 4x. */
 export function simplest(line) {
+  if (!isLinear(line)) return write(line);
   const { a, b } = linear(line);
   const A = fracText(a);
   const ax = a.n === 0 ? "" : A === "1" ? "x" : A === "-1" ? "−x" : `${A}x`;
@@ -121,6 +134,8 @@ export const machineText = (m) =>
     ? "− x"
     : m.op === "+x"
     ? "+ x"
+    : m.op === "*x"
+    ? "× x"
     : m.op === "*"
       ? `× ${m.k}`
       : m.op === "/"
