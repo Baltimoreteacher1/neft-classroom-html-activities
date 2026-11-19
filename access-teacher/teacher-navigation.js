@@ -12,6 +12,9 @@ function openContainingGroup(target) {
     ? element
     : element?.closest?.("details.th-task-group");
   if (group) group.open = true;
+  const sec = element?.closest?.("section.th-sec[data-fold], #classEvidencePanel[data-fold]");
+  const toggle = sec?.querySelector?.(':scope > .fold-head .fold-toggle[aria-expanded="false"]');
+  if (toggle) toggle.click();
   return group;
 }
 

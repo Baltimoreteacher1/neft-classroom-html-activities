@@ -12,7 +12,7 @@ function fold() {
   for (const s of document.querySelectorAll(SECTIONS)) {
     // A script replaced this section's HTML: drop the stale key so the fold is rebuilt.
     if (s.dataset.foldKey && !s.querySelector(":scope > .fold-body")) delete s.dataset.foldKey;
-    if (!s.hasAttribute("data-fold")) s.setAttribute("data-fold", s.id === "liveClass" ? "open" : "");
+    if (!s.hasAttribute("data-fold")) s.setAttribute("data-fold", s.id === "liveClass" || s.id === "activities" ? "open" : "");
   }
   const active = document.activeElement;
   const sel = active && "selectionStart" in active ? [active.selectionStart, active.selectionEnd] : null;

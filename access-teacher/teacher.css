@@ -238,6 +238,42 @@ body.th-body .lab-main {
   align-items: center;
   gap: 0.2rem;
 }
+.th-find-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-block-end: var(--s-4);
+  padding: 0.25rem 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.th-find-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.th-find-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.35rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.th-find-link:hover,
+.th-find-link:focus-visible {
+  background: var(--surface);
+  color: var(--brand);
+}
+.th-find-cta {
+  white-space: nowrap;
+}
 .th-task-nav-label {
   padding-inline: 0.4rem;
   color: var(--ink-3);
@@ -324,10 +360,13 @@ body.th-body .lab-main {
   scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
 }
 .th-task-group-content #hub {
-  width: min(1136px, 100% - 2rem);
+  width: 100%;
   margin-inline: auto;
-  padding: 0 0 var(--s-5);
+  padding: 0;
   scroll-margin-top: calc(var(--lab-top-h, 4rem) + 5rem);
+}
+.th-task-group-content .th-sec {
+  margin-bottom: var(--s-3);
 }
 .th-task-group-content #familyTripHost:empty {
   display: none;
@@ -358,6 +397,9 @@ body.th-body .lab-main {
   gap: var(--s-3) var(--s-5);
   margin-bottom: var(--s-4);
 }
+.th-sec-head > div:first-child {
+  flex: 1 1 20rem;
+}
 .th-sec-head h2 {
   margin: 0 0 var(--s-1);
   font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
@@ -381,10 +423,20 @@ body.th-body .lab-main {
 }
 
 /* filters */
-.hub-filters,
+.hub-filters {
+  display: grid;
+  grid-template-columns: minmax(12rem, 2fr) repeat(3, minmax(8.5rem, 1fr)) auto;
+  gap: var(--s-2);
+  align-items: center;
+  margin: 0 0 var(--s-4);
+}
+.hub-filters [data-reset-filters] {
+  min-height: 2.75rem;
+  white-space: nowrap;
+}
 .library-filters {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--s-3);
   align-items: end;
   margin: 0 0 var(--s-4);
@@ -392,9 +444,6 @@ body.th-body .lab-main {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-2);
-}
-.library-filters {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .hub-filters .field,
 .library-filters .field {

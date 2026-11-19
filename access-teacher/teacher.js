@@ -44,7 +44,7 @@ const TYPE_LABEL = {
   worksheet: "Printable",
 };
 
-const PAGE = 25;
+const PAGE = 15;
 let lastRows = [];
 // The page's grade band comes from ?grades= (set by the band switch in "What would you like to do today?").
 const urlBand = new URLSearchParams(location.search).get("grades");
@@ -151,19 +151,6 @@ async function render() {
   const levelsOf = (d) => Object.keys(index.bands[S.band].domains[d].levels);
   const forms = S.band === "6-8" ? Object.entries(shared.officialForms || {}) : [];
   root.innerHTML = toHtml(html`
-
-    <section class="th-sec" id="familyTrip" aria-labelledby="familyTripTitle">
-      <header class="th-sec-head"><div><h2 id="familyTripTitle">Assign a Family Trip</h2>
-        <p class="fine">Choose a grade band and skill, then copy a student-facing link. Progress stays on the family’s device.</p></div>${TAG_STUDENT}</header>
-      <div class="th-trip-link">
-        <label class="field"><span>Grade band</span><select data-trip-grade>${bandOptions().map(([value, label]) => html`<option value="${value}" ${S.tripGrade === value ? "selected" : ""}>${label}</option>`)}</select></label>
-        <label class="field"><span>Skill</span><select data-trip-skill>${["Listening", "Speaking", "Reading", "Writing"].map((d) => html`<option value="${d}" ${S.tripSkill === d ? "selected" : ""}>${d}</option>`)}</select></label>
-        <button type="button" class="btn btn-primary" data-trip-copy>Copy Family Trip link</button>
-        <a class="btn small" data-trip-open href="${BASE}/family/trip?grades=${S.tripGrade}&skill=${S.tripSkill}">Open link</a>
-      </div>
-      <p class="fine" role="status" data-trip-status aria-live="polite"></p>
-      <p><a class="btn small" href="${BASE}/paper-passport/language-passport-teacher-key.pdf" target="_blank" rel="noopener">Open teacher country key (PDF)</a></p>
-    </section>
 
     <section class="th-sec" id="activities" aria-labelledby="actTitle">
       <header class="th-sec-head">
@@ -363,6 +350,19 @@ async function render() {
           </section>`
         : ""
     }
+
+    <section class="th-sec" id="familyTrip" aria-labelledby="familyTripTitle">
+      <header class="th-sec-head"><div><h2 id="familyTripTitle">Assign a Family Trip</h2>
+        <p class="fine">Choose a grade band and skill, then copy a student-facing link. Progress stays on the family’s device.</p></div>${TAG_STUDENT}</header>
+      <div class="th-trip-link">
+        <label class="field"><span>Grade band</span><select data-trip-grade>${bandOptions().map(([value, label]) => html`<option value="${value}" ${S.tripGrade === value ? "selected" : ""}>${label}</option>`)}</select></label>
+        <label class="field"><span>Skill</span><select data-trip-skill>${["Listening", "Speaking", "Reading", "Writing"].map((d) => html`<option value="${d}" ${S.tripSkill === d ? "selected" : ""}>${d}</option>`)}</select></label>
+        <button type="button" class="btn btn-primary" data-trip-copy>Copy Family Trip link</button>
+        <a class="btn small" data-trip-open href="${BASE}/family/trip?grades=${S.tripGrade}&skill=${S.tripSkill}">Open link</a>
+      </div>
+      <p class="fine" role="status" data-trip-status aria-live="polite"></p>
+      <p><a class="btn small" href="${BASE}/paper-passport/language-passport-teacher-key.pdf" target="_blank" rel="noopener">Open teacher country key (PDF)</a></p>
+    </section>
 
     <section class="th-sec" id="guide" aria-labelledby="guideTitle">
       <header class="th-sec-head"><div><h2 id="guideTitle">How to use it</h2></div>${TAG_TEACHER}</header>

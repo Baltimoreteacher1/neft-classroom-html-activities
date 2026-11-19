@@ -852,7 +852,9 @@ try {
       (await page.locator('a[href*="language-passport-teacher-key.pdf"]').count()) === 1,
       "Teacher Hub: teacher key is linked inside the gated hub",
     );
-    await page.locator("#task-find > summary").click();
+    if (!(await page.locator("#task-find").evaluate((el) => el.open))) {
+      await page.locator("#task-find > summary").click();
+    }
     const contentToggle = page.locator("#accContent .fold-toggle");
     if ((await contentToggle.getAttribute("aria-expanded")) !== "true") await contentToggle.click();
     await page.locator("[data-f=domain]").selectOption("Reading");
