@@ -615,6 +615,8 @@ export function renderGlance(ws) {
       { class: "pi-note" },
       "These are official results. For what students did in practice, strengths and the next thing to teach, open ",
       h("a", { href: "/access-teacher/?task=analyze" }, "Class intelligence in the Teacher Hub"),
+      ". To tell a family what their child practiced and how to talk about it at home, use ",
+      h("a", { href: "/access-teacher/?task=analyze&share=families" }, "Share with families"),
       ".",
     ),
     newSince(ws),

@@ -1,0 +1,191 @@
+/* "Share with families" teacher view (access-teacher/family-share/panel.js). Design-system tokens only. The family page
+   it previews is styled by access-practice-lab/family-story.css. */
+.fsh-head {
+  margin-block-end: var(--s-4);
+}
+.fsh-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+}
+.fsh-head h3:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.fsh-grid {
+  display: grid;
+  gap: var(--s-5);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 62rem) {
+  .fsh-grid {
+    grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+  }
+  .fsh-side {
+    position: sticky;
+    top: var(--s-4);
+  }
+}
+.fsh-form {
+  display: grid;
+  gap: var(--s-4);
+}
+.fsh-form h4,
+.fsh-side h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+.fsh-field {
+  display: grid;
+  gap: var(--s-1);
+}
+.fsh-field > label,
+.fsh-label,
+.fsh-set legend {
+  font-weight: 800;
+}
+.fsh-field input[type="text"],
+.fsh-field select,
+.fsh-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.fsh-field input:focus-visible,
+.fsh-field select:focus-visible,
+.fsh-field textarea:focus-visible,
+.fsh-seg-btn:focus-visible,
+.fsh-choice input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.fsh-facts {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+.fsh-facts p {
+  margin: 0;
+}
+.fsh-set {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.fsh-set legend {
+  padding-inline: var(--s-2);
+}
+.fsh-set p {
+  margin: 0;
+}
+.fsh-choice {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  min-height: 44px;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.fsh-choice input {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-block-start: 0.2rem;
+  flex: none;
+}
+.fsh-choice blockquote {
+  margin: 0 0 var(--s-1);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.fsh-choice:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--surface-2);
+}
+.fsh-quiet {
+  color: var(--ink-2);
+}
+.fsh-seg,
+.fsh-plang {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+.fsh-seg-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fsh-seg-btn[aria-pressed="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.fsh-side {
+  display: grid;
+  gap: var(--s-3);
+}
+.fsh-phone {
+  max-height: 78vh;
+  overflow: auto;
+  padding: var(--s-3);
+  border: 6px solid var(--ink);
+  border-radius: 28px;
+  background: var(--bg);
+}
+.fsh-phone .fls {
+  font-size: 1rem;
+}
+.fsh-result {
+  display: grid;
+  gap: var(--s-3);
+}
+.fsh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.fsh-actions .btn,
+.fsh-batch .btn {
+  min-height: 48px;
+  justify-content: center;
+}
+.fsh-field input[readonly] {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+.fsh-batch p {
+  margin: 0;
+}
+@media (max-width: 40rem) {
+  .fsh-actions .btn {
+    flex: 1 1 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fsh-seg-btn {
+    transition: none;
+  }
+}

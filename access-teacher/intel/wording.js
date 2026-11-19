@@ -82,6 +82,7 @@ export function copy(S) {
     ),
     classLabel: S("Class", "Clase"),
     refresh: S("Refresh", "Actualizar"),
+    shareFamilies: S("Share with families", "Compartir con las familias"),
     langName: S("Language", "Idioma"),
     summary: (s) =>
       S(

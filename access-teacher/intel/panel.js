@@ -139,6 +139,9 @@ export async function mountClassIntelligence(root, { band = "6-8", onBand = null
         source
           ? el("button", { type: "button", class: "ti-btn", "data-ti": "refresh" }, c.refresh)
           : "",
+        source
+          ? el("button", { type: "button", class: "ti-btn ti-share", "data-ti": "families" }, c.shareFamilies)
+          : "",
       ),
       ui.sample && source?.id === SAMPLE_ID
         ? el(
@@ -365,6 +368,7 @@ export async function mountClassIntelligence(root, { band = "6-8", onBand = null
       root.querySelector(`[data-ti-lang="${ui.lang}"]`)?.focus();
     } else if (t.dataset.tiBand) onBand?.(t.dataset.tiBand);
     else if (t.dataset.ti === "refresh") await render(true);
+    else if (t.dataset.ti === "families") await openFamilyShare();
     else if (t.dataset.ti === "sample" || t.dataset.ti === "leave-sample") {
       ui.sample = t.dataset.ti === "sample";
       ui.sourceId = ui.sample ? SAMPLE_ID : null;
@@ -406,6 +410,19 @@ export async function mountClassIntelligence(root, { band = "6-8", onBand = null
     root.querySelector("#tiSource")?.focus();
   });
 
+  /** "Share with families" (access-teacher/family-share): the teacher's approve-and-share view for this class. */
+  async function openFamilyShare() {
+    const { mountFamilyShare } = await import("../family-share/panel.js");
+    await mountFamilyShare(root, {
+      source,
+      band,
+      roster,
+      lang: ui.lang,
+      onLang: (l) => (ui.lang = l),
+      onBack: () => render(),
+    });
+  }
+
   async function currentInsight() {
     const data = await loadSource(source, { roster });
     return buildInsight({
@@ -418,5 +435,5 @@ export async function mountClassIntelligence(root, { band = "6-8", onBand = null
   }
 
   await render();
+  if (new URLSearchParams(location.search).get("share") === "families" && source) await openFamilyShare();
 }
-
