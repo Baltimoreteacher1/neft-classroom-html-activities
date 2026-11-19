@@ -391,3 +391,18 @@
   display: table;
   overflow: visible;
 }
+
+/* An instrument-like viewport. Selected inspection points remain visibly named. */
+.slx-figure { padding: clamp(.65rem, 1.5vw, 1.1rem); border: 1px solid #b9c9bc; border-radius: 22px; background: #f8faf2; box-shadow: 0 12px 30px #254a3512; }
+.slx-hero-svg { border-width: 1px; border-color: #9aafa2; border-radius: 14px; box-shadow: none; }
+.slx-stage { isolation: isolate; }
+.slx-spot { background: #204e48; box-shadow: 0 2px 0 #14362f, 0 4px 15px #183d322b; }
+.slx-spot.is-on { background: #7d431d; box-shadow: 0 0 0 5px #f4dca2, 0 4px 12px #183d3230; z-index: 2; }
+.slx-spot-label { position: absolute; top: calc(100% + .5rem); left: 50%; transform: translateX(-50%); width: max-content; max-width: 12rem; padding: .4rem .6rem; border-radius: 7px; background: #183f3a; color: #fffdf5; font-size: .9rem; font-weight: 700; line-height: 1.35; white-space: normal; pointer-events: none; opacity: 0; }
+.slx-spot:is(:hover,:focus-visible,.is-on) .slx-spot-label { opacity: 1; }
+.slx-cap { padding: .5rem .25rem 0; font-size: 1rem; line-height: 1.6; }
+.slx-obs { border: 1px solid #a6bfa9; border-left: 5px solid #356854; background: #eef5e8; padding: 1.25rem; }
+.slx-setup { border-color: #b7c7b7; background: #fffef6; }
+.slx-run-art { border-radius: 14px; overflow: hidden; background: #f3f4e8; }
+@media (max-width: 540px) { .slx-spot-label { max-width: 8rem; font-size: .8rem; } .slx-figure { padding: .55rem; border-radius: 16px; } }
+@media print { .slx-spot-label { display: none; } .slx-figure { box-shadow: none; } }

@@ -278,13 +278,13 @@ export async function render(ctx) {
     : fromUrl || (ctx.prefs.gradePick ? currentPick(ctx.band, ctx.prefs.gradePick, ctx.bands) : "");
   if (fromUrl && fromUrl !== ctx.prefs.gradePick) ctx.setPrefs({ gradePick: fromUrl });
   const band = pick ? resolvePick(pick, ctx.bands).band : "";
-  const head = html`<header class="stu-head">
+  const head = html`<header class="stu-head stu-illustrated"><div class="stu-head-copy">
     <p class="eyebrow">${icon("sparkle")} ${I.T("For students", "Para estudiantes")}</p>
     <h1 id="stuTitle" tabindex="-1">
       ${I.T("What do you want to do today?", "¿Qué quieres hacer hoy?")}
     </h1>
     <p class="lead">${I.T("Choose your grade, then pick one way to learn. You can change your choice anytime.", "Elige tu grado y después una forma de aprender. Puedes cambiar de opción cuando quieras.")}</p>
-  </header>`;
+  </div><img class="stu-landscape" src="${BASE}/pictures/premium/learning-landscape.svg" alt="" width="840" height="360" decoding="async" /></header>`;
   const title = I.S(
     "Students: what do you want to do today?",
     "Estudiantes: ¿qué quieres hacer hoy?",

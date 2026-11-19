@@ -3,9 +3,11 @@
 import { crumbsHTML, recorderHTML } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { isRecording } from "../recorder.js";
+import { speak, stop as stopSpeech } from "../speech.js";
 import { ART, BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
 const CONV_KEY = "accessPracticeLab:v1:conversation";
+let playback = null;
 
 export const SCENARIOS = [
   {
@@ -141,7 +143,7 @@ function roleOf(scenario, speaker) {
   const role = entry?.[1].match(/\(([^)]+)\)/)?.[1] || "";
   return { role, isTeacher: entry?.[0] === "teacher" };
 }
-const initial = (speaker) => speaker.replace(/^(Ms|Mr|Mrs|Dr)\.?\s+/i, "").charAt(0).toUpperCase();
+
 
 function scenarioNav(scenario, band) {
   return html`<nav class="cv-scenarios" aria-label="${I.S("Choose a conversation scenario", "Elige una conversación")}">
@@ -213,11 +215,19 @@ function turnHTML(scenario, turn, turnIdx, chosen) {
   const last = turnIdx === scenario.turns.length - 1;
   return html`<div class="cv-dialogue">
       <div class="cv-msg ${isTeacher ? "is-teacher" : ""}">
-        <span class="cv-avatar" aria-hidden="true">${initial(turn.speaker)}</span>
+        <figure class="cv-stage" data-state="${isRecording(key) ? "listening" : "ready"}">
+          <div class="cv-scene" aria-hidden="true">
+            <img class="cv-environment" src="${BASE}/pictures/conversation/${scenario.id === "ecosystem-debate" ? "field-station" : "archive-room"}.svg" alt="" width="800" height="620" />
+            <img class="cv-character" src="${BASE}/pictures/conversation/${isTeacher ? "guide" : "partner"}.svg" alt="" width="360" height="430" />
+            <span class="cv-audio-rings"></span>
+          </div>
+          <figcaption><span class="cv-scene-context">${scenario.id === "ecosystem-debate" ? I.T("Field research station", "Estación de investigación") : I.T("The evidence archive", "El archivo de evidencia")}</span><strong>${turn.speaker}</strong><span data-conv-state role="status">${isRecording(key) ? I.T("Your microphone is recording", "Tu micrófono está grabando") : I.T("Ready for your conversation", "Todo listo para conversar")}</span></figcaption>
+        </figure>
         <div class="cv-bubble">
           <p class="cv-who"><strong>${turn.speaker}</strong>${role ? html`<span>${role}</span>` : ""}</p>
           <p class="cv-speech">${turn.speech}</p>
-          <button type="button" class="btn ghost small" data-say="${turn.speech}">${icon("volume")} ${I.T(`Hear ${turn.speaker} speak`, `Escuchar a ${turn.speaker}`)}</button>
+          <button type="button" class="btn ghost small" data-conv-hear="${turn.speech}">${icon("volume")} ${I.T(`Hear ${turn.speaker} speak`, `Escuchar a ${turn.speaker}`)}</button>
+          <button type="button" class="btn ghost small" data-conv-stop>${icon("stop")} ${I.T("Stop audio", "Detener audio")}</button>
         </div>
       </div>
 
@@ -271,6 +281,28 @@ export async function render(ctx) {
 
 export function onConversationEvent(t, ctx) {
   const L = i18nFor(ctx);
+  const hear = t.closest("[data-conv-hear]");
+  if (hear) {
+    const stage = document.querySelector(".cv-stage");
+    const status = stage?.querySelector("[data-conv-state]");
+    const token = {};
+    playback = token;
+    if (stage) stage.dataset.state = "playing";
+    if (status) status.textContent = L.S("Audio playing · transcript below", "Audio en reproducción · transcripción abajo");
+    speak(hear.dataset.convHear, { rate: ctx.prefs.rate }).then((completed) => {
+      if (playback !== token) return;
+      playback = null;
+      if (stage?.isConnected) stage.dataset.state = "ready";
+      if (status?.isConnected) status.textContent = completed
+        ? L.S("Your turn · rehearse a response", "Tu turno · ensaya una respuesta")
+        : L.S("Audio unavailable or stopped · read the transcript below", "Audio no disponible o detenido · lee la transcripción abajo");
+    });
+    return false; // No rerender: preserve the active audio and status nodes.
+  }
+  if (t.closest("[data-conv-stop]")) {
+    stopSpeech();
+    return false;
+  }
   const sId = scenarioOf(ctx.route.scenarioId || "ecosystem-debate").id;
   const saved = loadSaved();
   saved[sId] = saved[sId] || { turn: 0, choices: {} };
@@ -278,6 +310,7 @@ export function onConversationEvent(t, ctx) {
 
   const select = t.closest("[data-conv-select]");
   if (select) {
+    stopSpeech();
     saved[sId].choices[saved[sId].turn || 0] = Number(select.dataset.convSelect);
     save();
     announce(L.S("Response selected.", "Respuesta elegida."));
@@ -285,6 +318,7 @@ export function onConversationEvent(t, ctx) {
   }
 
   if (t.closest("[data-conv-next]")) {
+    stopSpeech();
     const scenario = scenarioOf(sId);
     const cur = saved[sId].turn || 0;
     if (cur < scenario.turns.length - 1) {
@@ -300,6 +334,7 @@ export function onConversationEvent(t, ctx) {
   }
 
   if (t.closest("[data-conv-prev]")) {
+    stopSpeech();
     const cur = saved[sId].turn || 0;
     if (cur > 0) {
       saved[sId].turn = cur - 1;
@@ -320,5 +355,7 @@ export function onConversationEvent(t, ctx) {
 }
 
 export function unmount() {
+  playback = null;
+  stopSpeech();
   finished.clear();
 }

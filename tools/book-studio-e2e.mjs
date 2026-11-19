@@ -429,7 +429,73 @@ try {
   await page.keyboard.press("ArrowRight");
   await page.waitForTimeout(700);
   ok(/Page|Pages/.test(await page.locator("[data-r-pos]").innerText()), "arrow key turns the page");
-  if (SHOTS) await page.screenshot({ path: join(SHOTS, "reader-desktop.png") });
+  await page.locator("[data-r-seek]").evaluate((input) => {
+    input.value = "1";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  ok(
+    (await page.locator("[data-r-seek]").getAttribute("aria-valuetext")).includes("Page 1"),
+    "reader rail seeks directly to the cover with an accessible page label",
+  );
+  await page.locator('[data-r="settings"]').click();
+  await page.locator('[data-rp="atmosphere"]').selectOption("evening");
+  ok(
+    (await page.locator("[data-bk-reader]").getAttribute("data-atmosphere")) === "evening",
+    "evening atmosphere changes only the reader surround",
+  );
+  await page.reload();
+  await page.waitForSelector(".bk-reader .bk-book .bk-page");
+  ok(
+    (await page.locator("[data-bk-reader]").getAttribute("data-atmosphere")) === "evening",
+    "reading atmosphere survives reload",
+  );
+  await page.locator('[data-r="settings"]').click();
+  await page.locator('[data-rp="atmosphere"]').selectOption("daylight");
+  await page.locator('[data-r="settings"]').click();
+  // The reorder exercise above intentionally inserts an unfinished page before the cover.
+  // Capture the authored spread, rather than that deliberately empty draft page.
+  await page.locator("[data-r-seek]").evaluate((input) => {
+    input.value = "2";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.locator("[data-r-seek]").focus();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  ok(
+    (await page.locator("[data-r-seek]").inputValue()) === "4",
+    "keyboard page rail advances across both pages of a spread",
+  );
+  await page.locator("[data-r-seek]").evaluate((input) => {
+    input.value = "3";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.reload();
+  await page.waitForSelector(".bk-reader .bk-book .bk-page");
+  ok(
+    (await page.locator("[data-r-seek]").inputValue()) === "3",
+    "reader resumes the requested second page within a spread",
+  );
+  await page.locator("[data-r-seek]").evaluate((input) => {
+    input.value = "2";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.waitForFunction(() => !document.querySelector(".is-entering"));
+  if (SHOTS) {
+    await page.screenshot({ path: join(SHOTS, "reader-desktop.png"), fullPage: true });
+    for (const [name, width, height] of [
+      ["tablet", 820, 1180],
+      ["phone", 390, 844],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await page.waitForTimeout(150);
+      ok(
+        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+        `${name}: reader has no horizontal overflow`,
+      );
+      await page.screenshot({ path: join(SHOTS, `reader-${name}.png`), fullPage: true });
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
   if (AxeBuilder) {
     await page.waitForFunction(() => !document.querySelector(".is-entering"));
     await page.waitForTimeout(400);

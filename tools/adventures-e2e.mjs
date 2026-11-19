@@ -118,6 +118,26 @@ async function play(page, s, label, { wrongFirst = true } = {}) {
     );
   }
   if (s.kind === "clues") {
+    const inspect = page.locator(".museum-case-hotspot");
+    if (await inspect.count()) {
+      await inspect.scrollIntoViewIfNeeded();
+      await page.locator(".museum-gallery-art img").evaluate((image) => image.decode());
+      await inspect.focus();
+      await inspect.press("Enter");
+      ok(
+        await page.evaluate(() => document.activeElement?.id === "museum-evidence"),
+        `${label}: keyboard inspection opens written evidence`,
+      );
+      const box = await inspect.boundingBox();
+      ok(
+        box && box.width >= 44 && box.height >= 44 && box.height <= 70,
+        `${label}: inspection target stays readable and correctly sized`,
+      );
+      ok(
+        await inspect.evaluate((link) => !link.closest('[aria-hidden="true"]')),
+        `${label}: inspection control is exposed to assistive technology`,
+      );
+    }
     const bad = s.clues.find((c) => !c.relevant);
     if (wrongFirst) {
       await page.click(`[data-adv-clue="${bad.id}"]`);

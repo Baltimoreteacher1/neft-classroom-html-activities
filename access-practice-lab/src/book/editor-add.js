@@ -1,6 +1,7 @@
 // The Add toolbar: text, pictures, illustrations, shapes, speech bubbles, drawing, recordings, video and comic panels.
 // Every tool is a real button or a <details> menu, so the whole toolbar works from the keyboard.
 import * as db from "./db.js";
+import { CURATED_SCENES, importCuratedScene, sceneOf, sceneSource, readableSceneBacking } from "./curated-scenes.js";
 import { ART, ART_CATS } from "./art.js";
 import {
   MediaError,
@@ -153,6 +154,7 @@ function artDialog(E, { background = false } = {}) {
   d.innerHTML = `<form method="dialog" class="bk-dialog-inner bk-art-dialog">
     <header class="bk-dialog-head"><h2 id="bkDialogTitle">${esc(background ? tr("Choose a page background", "Elige un fondo de página") : tr("Illustrations", "Ilustraciones"))}</h2><button class="bk-tbtn" value="close" aria-label="${esc(tr("Close", "Cerrar"))}">${bkIcon("close")}</button></header>
     <label class="bk-search"><span class="sr-only">${esc(tr("Search illustrations", "Buscar ilustraciones"))}</span><input type="search" data-art-search placeholder="${esc(tr("Search: cat, city, rocket…", "Buscar: gato, ciudad, cohete…"))}" /></label>
+    <section class="bk-art-cat" data-art-cat="curated"><h3>${esc(tr("Illustrated scene backgrounds", "Fondos de escenas ilustradas"))}</h3><p>${esc(tr("Optional original paintings, saved inside project and EPUB exports. The background picker adds readable panels behind text; Illustrations adds an editable picture.", "Ilustraciones originales opcionales que se incluyen en proyectos y EPUB. El selector de fondo agrega paneles legibles detrás del texto; Ilustraciones agrega una imagen editable."))}</p><div class="bk-art-grid">${CURATED_SCENES.map((scene) => `<button type="button" class="bk-art-pick" data-art-scene="${scene.id}" data-art-name="${esc(`${scene.en} ${scene.es}`.toLowerCase())}"><img src="${sceneSource(scene.id, true)}" alt="" loading="lazy" /><span>${esc(tr(scene.en, scene.es))}</span></button>`).join("")}</div></section>
     ${cats
       .map(
         (c) =>
@@ -194,7 +196,7 @@ export async function onAddBar(E, { target, action, file }) {
   const { core } = E;
   const tr = E.I.S;
   const btn = target?.closest?.(
-    "[data-bk-add], [data-art-pick], [data-bk-newpage], [data-bk-banner-close]",
+    "[data-bk-add], [data-art-pick], [data-art-scene], [data-bk-newpage], [data-bk-banner-close]",
   );
   if (target && !btn) {
     // A click on the dialog backdrop closes it.
@@ -207,6 +209,48 @@ export async function onAddBar(E, { target, action, file }) {
   }
   const act = action || btn.dataset.bkAdd;
   if (btn) closeMenus(E.root);
+  if (btn?.dataset.artScene) {
+    if (E.curatedSceneBusy) return true;
+    E.curatedSceneBusy = true;
+    const asBackground = E.dialog.dataset.mode === "bg";
+    const pageId = core.page().id;
+    const bookId = core.S.book.id;
+    const scene = sceneOf(btn.dataset.artScene);
+    btn.disabled = true;
+    E.say(tr("Saving this scene on your device…", "Guardando esta escena en tu dispositivo…"));
+    try {
+      if (asBackground && core.page().elements.some((el) => el.type === "text" && /data-c=|color\s*[=:]/i.test(el.html || "")))
+        throw new MediaError("scene-text", "This page uses mixed text colours. Add the scene through Illustrations to preserve its readability.", "Esta página usa varios colores de texto. Agrega la escena desde Ilustraciones para conservar su legibilidad.");
+      const { blob, width, height } = await importCuratedScene(scene?.id);
+      if (core.page().id !== pageId || core.S.book.id !== bookId)
+        throw new MediaError("scene-page", "Your page changed. Open the gallery on the page where you want this scene.", "Tu página cambió. Abre la galería en la página donde quieres esta escena.");
+      const media = await db.putMedia(bookId, blob, { name: `${scene.id}.jpg`, kind: "image" });
+      await db.mediaUrl(media);
+      const targetPage = core.S.book.pages.find((page) => page.id === pageId);
+      if (!targetPage) throw new MediaError("scene-page", "That page is no longer in this book.", "Esa página ya no está en este libro.");
+      const size = fitOnPage(width, height, FORMATS[core.S.book.format].ratio);
+      const image = makeElement("image", { media,
+        ...(asBackground ? { x: 0, y: 0, w: 100, h: 100, fit: "cover", locked: true }
+          : { x: (100 - size.w) / 2, y: (100 - size.h) / 2, ...size, fit: "contain" }),
+        alt: E.ctx.prefs?.lang === "es" ? scene.altEs : scene.altEn });
+      if (asBackground) {
+        for (const el of targetPage.elements) {
+          if (el.type === "text" && !el.style?.bg)
+            el.style = { ...el.style, bg: readableSceneBacking(el.style?.color) };
+        }
+        targetPage.elements.unshift(image);
+      } else targetPage.elements.push(image);
+      core.S.selected = image.id;
+      core.commit();
+      E.dialog.close();
+      E.renderAll();
+      E.say(asBackground
+        ? tr("Scene placed behind the page with readable text panels. Unlock the image to move or remove it. Check the autosave status above.", "Escena colocada detrás de la página con paneles de texto legibles. Desbloquea la imagen para moverla o quitarla. Revisa el estado de guardado arriba.")
+        : tr("Scene added as an editable picture. The autosave status above confirms when your book is saved.", "Escena agregada como imagen editable. El estado de guardado arriba confirma cuándo se guarda el libro."));
+    } catch (error) { mediaFail(E, error); }
+    finally { E.curatedSceneBusy = false; btn.disabled = false; }
+    return true;
+  }
   if (btn?.dataset.artPick) {
     const key = btn.dataset.artPick;
     const art = ART.find((a) => a.key === key);
@@ -412,10 +456,10 @@ document.addEventListener("input", (e) => {
   if (!q) return;
   const term = q.value.trim().toLowerCase();
   const dlg = q.closest("dialog");
-  dlg.querySelectorAll("[data-art-pick]").forEach((b) => {
+  dlg.querySelectorAll("[data-art-pick], [data-art-scene]").forEach((b) => {
     b.hidden = !!term && !b.dataset.artName.includes(term);
   });
   dlg.querySelectorAll("[data-art-cat]").forEach((s) => {
-    s.hidden = ![...s.querySelectorAll("[data-art-pick]")].some((b) => !b.hidden);
+    s.hidden = ![...s.querySelectorAll("[data-art-pick], [data-art-scene]")].some((b) => !b.hidden);
   });
 });

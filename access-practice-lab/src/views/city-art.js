@@ -204,7 +204,7 @@ export function cityMapSVG() {
       const [px, py] = b.at;
       const x = (px / 100) * 1000 - 85;
       const y = (py / 100) * 620 - 62;
-      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">${(FACADES[b.id] || (() => ""))()}</g>`;
+      return `<g class="city-map-building" data-place="${e(b.id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">${(FACADES[b.id] || (() => ""))()}</g>`;
     }).join("");
     return `<svg class="city-map-svg" viewBox="0 0 1000 620" width="1000" height="620" aria-hidden="true" focusable="false">${s}</svg>`;
   });
@@ -302,7 +302,7 @@ const INTERIORS = {
 export function interiorSVG(place, { npc, learner, mood = "neutral", label = "" }) {
   const name = label || place.name.en;
   const back = noDefs(() => (INTERIORS[place.id] || INTERIORS.cafe)());
-  return `<svg class="city-scene-svg" viewBox="0 0 640 280" width="640" height="280" role="img" aria-label="${e(name)}"><title>${e(name)}</title>${back}${characterSVG(learner, "neutral", 150, 202, 1.35)}${characterSVG(npc.look, mood, 480, 202, 1.35, true)}</svg>`;
+  return `<svg class="city-scene-svg" viewBox="0 0 640 280" width="640" height="280" role="img" aria-label="${e(name)}"><title>${e(name)}</title>${back}<g class="city-room-light" aria-hidden="true"><path d="M0 0h175L340 200H180Z" fill="#fff9de" opacity=".12"/><path d="M0 202h640" stroke="#765e48" stroke-width="2" opacity=".25"/><path d="m155 280 110-78m220 78-110-78M0 246h640" stroke="#896d50" stroke-width="1" opacity=".12"/><ellipse cx="320" cy="247" rx="172" ry="17" fill="#fff6df" opacity=".22"/></g>${characterSVG(learner, "neutral", 150, 202, 1.35)}${characterSVG(npc.look, mood, 480, 202, 1.35, true)}</svg>`;
 }
 
 /** A small portrait of a building's character for cards and the greeting. */

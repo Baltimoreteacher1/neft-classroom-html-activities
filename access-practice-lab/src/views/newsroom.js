@@ -25,6 +25,7 @@ import {
 } from "../lang/newsroom.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { announce, esc, html, icon, raw } from "../util.js";
+import { newsroomDeskHTML } from "./newsroom-scene.js";
 import { heroArt } from "./studio-art.js";
 import {
   renderAfterChange,
@@ -446,6 +447,7 @@ export async function render(ctx) {
           <h1 tabindex="-1">${picSvg(p.pic, "mini")} ${I.T(p.title, p.titleEs)}</h1>
         </header>
         <div class="no-print">${stepNav(I, band, p.id, step)}${levelPickerHTML(I, level, "data-sk-level", true)}</div>
+        ${newsroomDeskHTML(I, s, step)}
         ${body}
       </div>`,
   };
@@ -472,6 +474,11 @@ export function onInput(e, ctx) {
   const st = state();
   store(st, el, current.id);
   save(st);
+  const story = st.stories[current.id];
+  const notes = document.querySelector('[data-nr-desk-notes]');
+  const words = document.querySelector('[data-nr-desk-words]');
+  if (notes) notes.textContent = String(planCount(story.w5));
+  if (words) words.textContent = String(storyWords(story.draft, story.fmt || 'article'));
 }
 export function onChange(e, ctx) {
   const t = e.target;

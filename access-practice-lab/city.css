@@ -509,3 +509,21 @@
     transition: none;
   }
 }
+
+/* Streets and interior conversations use the same restrained scene frame. */
+.city-page .city-map-art { border: 1px solid #9cae9a; box-shadow: 0 12px 35px #254b3220; }
+.city-page .city-map { border-radius: var(--r-lg); isolation: isolate; }
+.city-page .city-pin { transition: background-color 160ms, border-color 160ms; }
+.city-page .city-pin-name { padding: .35rem .6rem; background: #fffdf3; color: #183f41; border: 1px solid #a9bca3; border-radius: 8px; box-shadow: 0 2px 8px #193d3020; }
+.city-page .city-pin:hover, .city-page .city-pin:focus-visible { background: #fff9db45; border-color: #285b4d; }
+.city-page .city-stage { border: 1px solid #abbba9; box-shadow: 0 12px 28px #163c3020; background: #f2ecd9; }
+.city-page .city-step { border-top: 4px solid #3d6d5c; }
+.city-page .city-pips { padding-block: .65rem; }
+.city-page .city-step :is(button, a):focus-visible { outline: 3px solid #245b52; outline-offset: 4px; }
+.city-map:has(.city-pins li:nth-child(1) a:is(:hover,:focus-visible)) .city-map-building:nth-last-child(6),
+.city-map:has(.city-pins li:nth-child(2) a:is(:hover,:focus-visible)) .city-map-building:nth-last-child(5),
+.city-map:has(.city-pins li:nth-child(3) a:is(:hover,:focus-visible)) .city-map-building:nth-last-child(4),
+.city-map:has(.city-pins li:nth-child(4) a:is(:hover,:focus-visible)) .city-map-building:nth-last-child(3),
+.city-map:has(.city-pins li:nth-child(5) a:is(:hover,:focus-visible)) .city-map-building:nth-last-child(2),
+.city-map:has(.city-pins li:nth-child(6) a:is(:hover,:focus-visible)) .city-map-building:last-child { filter: drop-shadow(0 0 5px #f6ca58); }
+@media (prefers-reduced-motion: reduce) { .city-page .city-pin { transition: none; } }

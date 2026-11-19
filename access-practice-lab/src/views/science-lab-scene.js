@@ -83,7 +83,7 @@ export function phenomenonSceneHTML(
   const buttons = spots
     .map(
       (h, i) =>
-        `<button type="button" class="slx-spot${h.id === look ? " is-on" : ""}" data-slx-look="${h.id}" style="left:${h.x}%;top:${h.y}%" aria-pressed="${h.id === look}" aria-label="${esc(`${I.S("Look closely at", "Mira de cerca")}: ${both(I, h.label)}`)}"><span aria-hidden="true">${i + 1}</span></button>`,
+        `<button type="button" class="slx-spot${h.id === look ? " is-on" : ""}" data-slx-look="${h.id}" style="left:${h.x}%;top:${h.y}%" aria-pressed="${h.id === look}" aria-label="${esc(`${I.S("Look closely at", "Mira de cerca")}: ${both(I, h.label)}`)}"><span aria-hidden="true">${i + 1}</span><span class="slx-spot-label" aria-hidden="true">${esc(both(I, h.label))}</span></button>`,
     )
     .join("");
   return raw(

@@ -164,11 +164,30 @@ function watchHeaderHeight() {
   const header = document.querySelector(".lab-top");
   if (headerWatched || !header || typeof ResizeObserver === "undefined") return;
   headerWatched = true;
+  let frame = 0;
   const sync = () => {
+    if (!header.isConnected) return;
     const sticky = getComputedStyle(header).position === "sticky";
-    document.documentElement.style.setProperty("--lab-top-h", `${sticky ? Math.round(header.getBoundingClientRect().height) : 0}px`);
+    const value = `${sticky ? Math.round(header.getBoundingClientRect().height) : 0}px`;
+    const style = document.documentElement.style;
+    if (style.getPropertyValue("--lab-top-h") !== value) style.setProperty("--lab-top-h", value);
   };
-  new ResizeObserver(sync).observe(header);
+  // Publishing an inherited layout variable inside ResizeObserver delivery can
+  // trigger another header measurement in WebKit. Coalesce publication into the
+  // next frame, outside the observer's current layout/delivery cycle.
+  new ResizeObserver(() => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      sync();
+    });
+  }).observe(header);
+  window.addEventListener("pagehide", () => {
+    cancelAnimationFrame(frame);
+    frame = 0;
+  });
+  // A restored page may have canceled its final publication before entering BFCache.
+  window.addEventListener("pageshow", sync);
   sync();
 }
 

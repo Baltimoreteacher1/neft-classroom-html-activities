@@ -5,6 +5,7 @@
 // voice sends no boundary events (several do not) the reader says so and highlights the text box being read instead:
 // it never animates a fake word-by-word highlight that is not tied to the voice.
 import * as db from "./db.js";
+import { readerAtmosphere, pagePosition } from "./reader-theme.js";
 import { bkIcon } from "./icons.js";
 import { FORMATS, newId, pageSpeech, readingOrder } from "./model.js";
 import { esc, pageAltText, pageHTML, preloadMedia } from "./render.js";
@@ -97,8 +98,9 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
   const spreadOf = (pageIndex) => spreads().findIndex((s) => s.includes(pageIndex));
   const start = opts.shared || opts.review ? 0 : Math.min(n - 1, db.getReadPage(book.id));
   R.spread = Math.max(0, spreadOf(start));
+  R.seekPage = start;
 
-  root.innerHTML = `<div class="bk-reader${rtl ? " is-rtl" : ""}" data-bk-reader>
+  root.innerHTML = `<div class="bk-reader${rtl ? " is-rtl" : ""}" data-bk-reader data-atmosphere="${readerAtmosphere(R.prefs.atmosphere)}">
     <header class="bk-reader-bar">
       ${opts.shared ? `<a class="btn ghost small" href="/access-practice-lab/book-studio">${bkIcon("book")}<span>${esc(tr("Book Studio", "Book Studio"))}</span></a>` : `<a class="btn ghost small" href="/access-practice-lab/book-studio/edit/${book.id}">${bkIcon("draw")}<span>${esc(tr("Back to editing", "Volver a editar"))}</span></a>`}
       <h1 class="bk-reader-title" tabindex="-1">${esc(book.title)}</h1>
@@ -118,6 +120,10 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
       <button type="button" class="bk-turn bk-turn-prev" data-r="prev" aria-label="${esc(tr("Previous page", "Página anterior"))}">${rtl ? "›" : "‹"}</button>
       <div class="bk-book" data-r-book aria-live="polite"></div>
       <button type="button" class="bk-turn bk-turn-next" data-r="next" aria-label="${esc(tr("Next page", "Página siguiente"))}">${rtl ? "‹" : "›"}</button>
+    </div>
+    <div class="bk-reading-rail">
+      <label class="bk-reading-seek"><span>${esc(tr("Your place in the book", "Tu lugar en el libro"))}</span><input type="range" min="1" max="${n}" step="1" value="1" data-r-seek aria-label="${esc(tr("Go to page", "Ir a la página"))}" /></label>
+      <span class="bk-reading-count" data-r-count></span>
     </div>
     <div class="bk-reader-tray" data-r-tray></div>
     <section class="intel-book" data-r-coach hidden aria-label="${esc(tr("Language coach", "Entrenador de lenguaje"))}"></section>
@@ -167,6 +173,15 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
         { once: true },
       );
     }
+    // Keep the requested page within a spread. Resetting to its first page would trap
+    // keyboard range users on page 2 when they try to move through pages 3 and 4.
+    R.seekPage = idx.includes(R.seekPage) ? R.seekPage : idx[0];
+    const position = pagePosition(R.seekPage, n);
+    const seek = $("[data-r-seek]");
+    seek.value = String(position.page + 1);
+    seek.setAttribute("aria-valuetext", `${tr("Page", "Página")} ${position.page + 1} ${tr("of", "de")} ${position.total}`);
+    seek.style.setProperty("--bk-read-position", `${position.fraction * 100}%`);
+    $("[data-r-count]").textContent = `${position.page + 1} / ${position.total}`;
     sizeBook();
     renderTray();
     startScenes(idx);
@@ -178,7 +193,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
           : `${tr("Page", "Página")} ${idx[0] + 1} ${tr("of", "de")} ${n}`;
     $('[data-r="prev"]').disabled = R.spread === 0;
     $('[data-r="next"]').disabled = R.spread === s.length - 1;
-    if (!opts.shared && !opts.review) db.setReadPage(book.id, idx[0]);
+    if (!opts.shared && !opts.review) db.setReadPage(book.id, R.seekPage);
     if (opts.review) renderReview();
   }
 
@@ -349,6 +364,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
     const voices = "speechSynthesis" in window ? voicesFor(book.lang === "es" ? "es" : lang) : [];
     const p = R.prefs;
     return `<div class="bk-reader-settings-inner">
+      <label class="bk-field"><span>${esc(tr("Reading atmosphere", "Ambiente de lectura"))}</span><select data-rp="atmosphere"><option value="daylight" ${readerAtmosphere(p.atmosphere) === "daylight" ? "selected" : ""}>${esc(tr("Daylight · warm paper", "Luz de día · papel cálido"))}</option><option value="evening" ${p.atmosphere === "evening" ? "selected" : ""}>${esc(tr("Evening · deep harbor", "Noche · puerto profundo"))}</option></select></label>
       <label class="bk-field"><span>${esc(tr("Reading speed", "Velocidad de lectura"))} <output data-r-rate-out>${p.rate.toFixed(1)}×</output></span><input type="range" min="0.5" max="1.6" step="0.1" value="${p.rate}" data-rp="rate" /></label>
       ${voices.length ? `<label class="bk-field"><span>${esc(tr("Voice", "Voz"))}</span><select data-rp="voice"><option value="">${esc(tr("Automatic", "Automática"))}</option>${voices.map((v) => `<option value="${esc(v.voiceURI)}" ${p.voice === v.voiceURI ? "selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("")}</select></label>` : `<p class="fine">${esc(tr("This device has no voice for this language. Recordings in the book still play.", "Este dispositivo no tiene voz para este idioma. Las grabaciones del libro sí se reproducen."))}</p>`}
       <label class="bk-check"><input type="checkbox" data-rp="highlight" ${p.highlight ? "checked" : ""} /> ${esc(tr("Highlight words while reading", "Resaltar palabras al leer"))}</label>
@@ -480,6 +496,14 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
   root.addEventListener("input", (e) => {
     if (coach.onInput(e)) return;
     if (sup.onInput(e)) return;
+    if (e.target.matches("[data-r-seek]")) {
+      const position = pagePosition(Number(e.target.value) - 1, n);
+      stopSpeech();
+      R.seekPage = position.page;
+      R.spread = Math.max(0, spreadOf(position.page));
+      render(0);
+      return;
+    }
     const k = e.target.dataset?.rp;
     if (!k) return;
     const v =
@@ -490,6 +514,7 @@ export async function mountReader(root, ctx, book, I, opts = {}) {
           : e.target.value;
     R.prefs[k] = v;
     savePrefs(R.prefs);
+    if (k === "atmosphere") $("[data-bk-reader]").dataset.atmosphere = readerAtmosphere(v);
     if (k === "rate") $("[data-r-rate-out]").textContent = `${v.toFixed(1)}×`;
     if (k === "spread" || k === "lowData") {
       const first = spreads()[R.spread]?.[0] ?? 0;

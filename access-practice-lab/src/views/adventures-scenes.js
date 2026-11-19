@@ -1,6 +1,7 @@
 // Adventure Worlds scene screens (one scene per screen): story, read, listen, clues, choice, order, respond,
 // checkpoint (ADVENTURE-SCHEMA.md). Pure markup builders; state and events live in src/views/adventures.js.
 // Every control is a button, link, textarea or disclosure: no drag-only interaction anywhere.
+import { museumSceneHTML } from "./museum-scene.js";
 import { ADV_ART } from "../adventures/art.js";
 import * as K from "../adventures/checks.js";
 import { ART } from "../book/art.js";
@@ -148,14 +149,15 @@ function checkpoint(I, s) {
 }
 
 // ── thinking scenes ──────────────────────────────────────────────────────────
-function clues(I, s, i, a) {
+function clues(I, s, i, a, world) {
   const picked = a.picked || [];
   const aside = a.aside || [];
   const st = K.boardStatus(s, picked);
   const last = s.clues.find((c) => c.id === a.last);
   return html`<section class="adv-scene adv-clues" aria-labelledby="advSceneH">
     <h2 id="advSceneH">${I.T(s.prompt.en, s.prompt.es)}</h2>
-    <div class="adv-clue-grid">
+    ${world?.id === "mystery-museum" ? museumSceneHTML(I, s.clues, picked) : ""}
+    <div class="adv-clue-grid" ${world?.id === "mystery-museum" ? raw('id="museum-evidence" tabindex="-1" role="region" aria-label="Written clues"') : ""}>
       <ul class="adv-clue-list" aria-label="${I.S("Clues to examine", "Pistas para examinar")}">
         ${s.clues.map((c) => {
           const kept = picked.includes(c.id);
@@ -411,7 +413,7 @@ export function sceneHTML(I, s, i, a, entry, world) {
   if (s.kind === "story") return story(I, s, i, a, world);
   if (s.kind === "read") return read(I, s, i, a);
   if (s.kind === "listen") return listen(I, s, i, a);
-  if (s.kind === "clues") return clues(I, s, i, a);
+  if (s.kind === "clues") return clues(I, s, i, a, world);
   if (s.kind === "choice") return choice(I, s, i, a);
   if (s.kind === "order") return order(I, s, i, a);
   if (s.kind === "respond") return respond(I, s, i, a, entry);

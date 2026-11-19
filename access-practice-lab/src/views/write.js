@@ -41,6 +41,7 @@ const IGN = raw("data-nsr-ignore");
 let S = null;
 let I = makeI18n("en"); // set at the top of render(); helpers and handlers below read it
 const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
+const focusedTasks = new Set();
 const chosen = new Map(); // task id → stage picked before the first attempt
 const save = () => {
   if (S?.state) S.state.updatedAt = new Date().toISOString();
@@ -413,7 +414,7 @@ export async function render(ctx) {
   return {
     title: task.title,
     html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}${pathwayBannerHTML(ctx)}
-      <article class="activity studio-view write-studio d-writing">
+      <article class="activity studio-view write-studio d-writing ${focusedTasks.has(task.id) ? "is-focused" : ""}">
         <header class="act-head">
           <div class="act-bar">
             <p class="act-context">${icon("writing")} ${I.T("Writing Studio", "Estudio de escritura")} · ${formName(task.form)} · ${task.keyUse}</p>
@@ -443,7 +444,7 @@ export async function render(ctx) {
           <div class="studio-col">
 
             <section class="panel editor-panel" id="wrt-write">
-              <h3><span class="step-badge">3</span> ${I.T("Write", "Escribir")}</h3>
+              <div class="writing-workspace-head"><h3><span class="step-badge">3</span> ${I.T("Write", "Escribir")}</h3><button type="button" class="btn small" data-writing-focus aria-pressed="${focusedTasks.has(task.id)}">${focusedTasks.has(task.id) ? I.T("Show sources & plan", "Mostrar fuentes y plan") : I.T("Focus on writing", "Enfocarme en escribir")}</button></div>
               <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")} <span class="fine">${I.T("Saved on this device as you type", "Se guarda en este dispositivo mientras escribes")}</span></span><textarea id="wrt-draft" rows="${task.expected.paragraphs > 1 ? 16 : 11}" spellcheck="false" data-draft ${IGN}>
 ${text}</textarea></label>
               <p class="meter"><span class="meter-bar"><span style="width:${Math.min(100, Math.round((wordCount(text) / goalMin) * 100))}%"></span></span><span data-meter>${meterText(wordCount(text), goalMin, task.expected.maxWords)}</span></p>
@@ -585,6 +586,13 @@ export function onClick(e, ctx) {
   }
   if (onLoopClick(e, ctx)) return true;
   if (!S.task) return false;
+  if (t.closest("[data-writing-focus]")) {
+    if (focusedTasks.has(S.task.id)) focusedTasks.delete(S.task.id);
+    else focusedTasks.add(S.task.id);
+    ctx.rerender();
+    return true;
+  }
+
   if (t.closest("[data-intel-coach]")) {
     const text = S.state.analyzedText || S.state.versions.at(-1)?.text || "";
     if (!text.trim()) return true;

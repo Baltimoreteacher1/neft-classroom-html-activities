@@ -163,6 +163,11 @@ test("a story goes from plan to front page; frames and picture work by button; e
     ["how", "with wood and wire"],
   ])
     type(nr, ctx, m.root, `[data-nr-w5="${k}"]`, v, "onInput");
+  assert.equal(
+    m.root.querySelector("[data-nr-desk-notes]").textContent,
+    "6",
+    "editorial desk reflects live reporting notes without remounting",
+  );
   type(nr, ctx, m.root, '[data-nr-w5="how"]', "with wood and wire", "onChange");
   click(nr, ctx, m.root, '[data-nr-fmt="newscast"]');
   m = await mount(nr, ctx);

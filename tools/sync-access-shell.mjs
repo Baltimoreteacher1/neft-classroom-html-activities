@@ -138,7 +138,8 @@ else {
 const content = walk(join(dir, "content"), (n) => n.endsWith(".json")).map(
   (f) => `${BASE}/content/${f}`,
 );
-const pictures = walk(join(dir, "pictures"), (n) => n.endsWith(".svg")).map(
+// Raster scene variants belong in the optional offline pack, never the critical install path.
+const pictures = walk(join(dir, "pictures"), (n) => /\.(svg|png|jpe?g|webp|avif)$/i.test(n)).map(
   (f) => `${BASE}/pictures/${f}`,
 );
 const staticUrls = staticChain(entryUrl);

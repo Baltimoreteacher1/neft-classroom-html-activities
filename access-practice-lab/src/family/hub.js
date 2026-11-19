@@ -94,7 +94,7 @@ export async function render(ctx, I) {
           </div>
           ${phase ? html`<aside class="fam-window"><span class="fam-window-ico">${icon("calendar")}</span><div><span class="window-kicker">${I.L("hub.window.label")}</span><strong>${date(win.start)} – ${date(win.end)}</strong><span>${I.L("hub.window.note")}</span></div></aside>` : ""}
         </div>
-        <div class="prog-hero-art"><img src="${ART}/family-home.svg" alt="" width="420" height="300" /></div>
+        <div class="prog-hero-art"><img src="${BASE}/pictures/premium/family-reading.svg" alt="" width="720" height="480" /></div>
       </section>
       <nav class="fam-primary-doors" aria-label="${I.S("Four family actions", "Cuatro acciones para la familia")}">
         <a class="fam-door-card" data-fam-action="start" href="${BASE}/family/practice?grades=${band}">
