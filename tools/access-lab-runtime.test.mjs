@@ -16,7 +16,7 @@ globalThis.localStorage = {
   removeItem: (key) => values.delete(key),
 };
 globalThis.window = { scrollTo() {} };
-globalThis.document = { getElementById: () => null };
+globalThis.document = { getElementById: () => null, addEventListener() {} };
 const view = await import("../access-practice-lab/src/views/test.js");
 const fixture = {
   id: "runtime-fixture",

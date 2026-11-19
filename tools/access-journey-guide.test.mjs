@@ -477,10 +477,11 @@ test("the Teacher Hub panel mounts the same missions and adds teacher packets", 
   );
   root.remove();
   const html = await readFile(join(REPO_ROOT, "access-teacher/index.html"), "utf8");
-  assert.match(html, /<a href="#journeyGuide">Journey mission guide<\/a>/);
+  const tasks = await readFile(join(REPO_ROOT, "access-teacher/hub-tasks.js"), "utf8");
+  assert.match(tasks, /<a class="chip" href="#journeyGuide">Mission guide<\/a>/);
   assert.match(
     html,
-    /<section id="journeyGuide" class="th-sec lab-main" aria-labelledby="journeyGuideTitle">/,
+    /<section id="journeyGuide" class="th-sec" aria-labelledby="journeyGuideTitle">/,
   );
   assert.match(html, /<h2 id="journeyGuideTitle"[^>]*>Learning Journey: mission guide<\/h2>/);
   assert.match(html, /href="\/access-practice-lab\/journey-guide\.css"/);

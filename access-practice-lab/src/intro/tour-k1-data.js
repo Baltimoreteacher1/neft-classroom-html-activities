@@ -56,7 +56,7 @@ export const K1_ACTIVITIES = {
     "K",
     "story",
     "/early/story",
-    p("Story Time: Our Neighborhood Garden", "Hora del cuento: Nuestro huerto del vecindario"),
+    p("Story Time Library", "Biblioteca Hora del cuento"),
   ),
   "k-phonics": page(
     "K",

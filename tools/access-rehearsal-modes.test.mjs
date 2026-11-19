@@ -14,7 +14,11 @@ globalThis.localStorage = {
   removeItem: (key) => values.delete(key),
 };
 globalThis.window = { scrollTo() {} };
-globalThis.document = { getElementById: () => null, querySelector: () => null };
+globalThis.document = {
+  getElementById: () => null,
+  querySelector: () => null,
+  addEventListener() {},
+};
 
 const { loadTestRecord, saveTestRecord } = await import("../access-practice-lab/src/store.js");
 const { toHtml } = await import("../access-practice-lab/src/util.js");
