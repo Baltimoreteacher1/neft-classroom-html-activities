@@ -125,8 +125,16 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/practice-together`,
   `${LAB_BASE}/family-start`,
   `${LAB_BASE}/site-guide`,
-  // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
+  // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js) and studios.
   `${LAB_BASE}/early`,
+  `${LAB_BASE}/early/story`,
+  `${LAB_BASE}/early/phonics`,
+  `${LAB_BASE}/early/rhyme`,
+  `${LAB_BASE}/early/words`,
+  `${LAB_BASE}/early/sight-words`,
+  `${LAB_BASE}/early/sentences`,
+  `${LAB_BASE}/early/discover`,
+  `${LAB_BASE}/early/family`,
   // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio
   // gradebook under /wida-access/ are not on this host.
   ...STUDIOS.map((s) => studioPath(s.slug)),
