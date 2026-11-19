@@ -60,7 +60,7 @@ function profileLabel(means) {
   };
 }
 
-export function groupsModel(rows) {
+export function groupsModel(rows, total = rows.length) {
   if (rows.length < 6) return tooFew(6, rows.length, "all four skills reported");
   const fit = bestGrouping(rows.map((r) => r.v));
   const clarity = !fit || fit.silhouette < 0.25 ? "none" : fit.silhouette < 0.5 ? "some" : "clear";
@@ -102,8 +102,7 @@ export function groupsModel(rows) {
     n: rows.length,
     groups,
     headline: `Your ${rows.length} students fall into ${fit.k} groups.`,
-    plain:
-      "Students in a group have a similar mix of Listening, Speaking, Reading and Writing. The groups are a handy way to plan, not labels for a child.",
+    plain: `Students in a group have a similar mix of Listening, Speaking, Reading and Writing. The groups are a handy way to plan, not labels for a child.${total > rows.length ? ` ${plural(total - rows.length, "student")} left out because a skill score is missing.` : ""}`,
     act: "Use each group's focus skill for a short small-group lesson this week. Students can move groups as they grow.",
     sure,
   };

@@ -121,6 +121,8 @@ test("models: each tool gives a headline and the plain lines on the sample class
   );
   assert.ok(all.speed.rows.length >= 8);
   assert.deepEqual(M.groupsModel(rows), all.groups, "repeatable");
+  const withGap = M.groupsModel(rows, rows.length + 1);
+  assert.match(withGap.plain, /1 student left out because a skill score is missing/);
 });
 
 test("models: a class too small for a tool gets a reason, never a number", () => {

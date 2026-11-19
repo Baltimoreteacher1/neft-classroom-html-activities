@@ -114,7 +114,7 @@ function answer(m, details) {
 }
 
 function groupsView(ws, cohort) {
-  const m = groupsModel(cohortRows(cohort));
+  const m = groupsModel(cohortRows(cohort), cohort.records.length);
   const cards = m.ok
     ? m.groups.map((g, i) =>
         h(
