@@ -304,24 +304,26 @@ export function validateLessonData(id, data, worlds = null) {
     if (!str(data.getReadyWhy, 40))
       p.push(`${id}: getReadyWhy (40+ chars) is required when getReady is replaced`);
   }
-  if (data.focusPractice) {
-    const focus = data.focusPractice;
+  for (const [key, allowedModel] of [
+    ["focusPractice", "expression-parts"],
+    ["focusPracticePart2", "algebraic-expressions"],
+  ]) {
+    if (!data[key]) continue;
+    const focus = data[key];
     if (!str(focus.title, 8) || !str(focus.target, 20) || !str(focus.targetEs, 20))
-      p.push(`${id}.focusPractice: title and bilingual targets are required`);
-    if (focus.model !== "expression-parts")
-      p.push(`${id}.focusPractice: unknown model ${focus.model}`);
+      p.push(`${id}.${key}: title and bilingual targets are required`);
+    if (focus.model !== allowedModel) p.push(`${id}.${key}: unknown model ${focus.model}`);
     if (!Array.isArray(focus.sections) || focus.sections.length !== 5)
-      p.push(`${id}.focusPractice: exactly 5 sections are required`);
+      p.push(`${id}.${key}: exactly 5 sections are required`);
     else
       focus.sections.forEach((section, i) => {
-        for (const key of ["name", "nameEs", "desc", "descEs", "p", "pEs"])
-          if (!str(section[key], 3))
-            p.push(`${id}.focusPractice.sections[${i}].${key} is required`);
+        for (const k of ["name", "nameEs", "desc", "descEs", "p", "pEs"])
+          if (!str(section[k], 3)) p.push(`${id}.${key}.sections[${i}].${k} is required`);
         if (!Array.isArray(section.items) || !section.items.length)
-          p.push(`${id}.focusPractice.sections[${i}]: items are required`);
+          p.push(`${id}.${key}.sections[${i}]: items are required`);
         else
           section.items.forEach((it, j) =>
-            p.push(...itemProblems(it, `${id}.focusPractice.sections[${i}].items[${j}]`)),
+            p.push(...itemProblems(it, `${id}.${key}.sections[${i}].items[${j}]`)),
           );
       });
   }

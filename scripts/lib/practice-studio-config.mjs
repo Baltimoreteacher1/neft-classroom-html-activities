@@ -755,5 +755,11 @@ export function buildSections(
       items: stamp(section.items, i + 1),
     }));
   }
+  if (ld.focusPracticePart2) {
+    out.part2 = ld.focusPracticePart2.sections.map((section, i) => ({
+      ...section,
+      items: stamp(section.items, i + 1),
+    }));
+  }
   return { sections: out, left };
 }

@@ -288,6 +288,32 @@ export function outputs(opts = {}) {
         }),
       );
     }
+    if (built.sections.part2) {
+      const part2Sections = built.sections.part2;
+      for (const s of part2Sections)
+        if (s.items.length < MIN_ITEMS)
+          throw new Error(
+            `${id} part2: section "${s.name}" has ${s.items.length} items (need ${MIN_ITEMS})`,
+          );
+      files.set(
+        `math/practice-studio/${id}/part-2/index.html`,
+        pageFor({
+          id,
+          mode: "practice",
+          part2: true,
+          cfg,
+          ld,
+          world,
+          sections: typographizeItems(part2Sections),
+          assets,
+          resources: studentResources(id, labs),
+          traps,
+          pedagogy: pedagogyData(pedagogy.lessons[id]),
+          lang,
+          concept,
+        }),
+      );
+    }
     entries.push({ id, title: cfg.title || id, emoji: world.emoji, world: worldId });
     for (const sec of built.sections.practice)
       for (const spec of sec.items)

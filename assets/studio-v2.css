@@ -724,3 +724,65 @@ body[data-ewl-state="LESSON_MASTERED"] .complete-banner {
   }
 }
 
+/* Part I / Part II switcher bar in the white space right under the header */
+.part-switcher-bar {
+  background: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border, #dbe3ee);
+}
+.part-switcher-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.part-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border, #cbd5e1);
+  background: var(--surface-soft, #f4f7fb);
+  color: var(--ink, #17324d);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.part-switch-btn:hover {
+  border-color: var(--brand, #136b68);
+  background: var(--brand-tint, #e8f4f2);
+}
+.part-switch-btn.is-active {
+  background: var(--brand-dark, #1B2C3F);
+  border-color: var(--brand-dark, #1B2C3F);
+  color: #ffffff;
+}
+.part-switch-btn:focus-visible {
+  outline: 3px solid var(--brand, #136b68);
+  outline-offset: 2px;
+}
+body[data-theme="dark"] .part-switcher-bar {
+  background: var(--surface, #162230);
+  border-bottom-color: var(--border, #2b3c4e);
+}
+body[data-theme="dark"] .part-switch-btn {
+  background: #203245;
+  border-color: #364e66;
+  color: #e6eef8;
+}
+body[data-theme="dark"] .part-switch-btn.is-active {
+  background: #136b68;
+  border-color: #8fe0d6;
+  color: #ffffff;
+}
+@media print {
+  .part-switcher-bar {
+    display: none !important;
+  }
+}
+

@@ -112,6 +112,57 @@ function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>
   );
 }
 
+function algebraicExpressionsModel() {
+  return `<section class="expression-parts alg-expr-card" aria-labelledby="alg-title">
+      <div class="parts-heading">
+        <span class="parts-kicker">WORDS TO MATH SYMBOLS <span lang="es">· PALABRAS A SÍMBOLOS</span></span>
+        <h2 id="alg-title">Turn clue words into algebraic expressions</h2>
+        <p id="alg-intro">Pick an operation to see its clue words. Watch for <strong>* order is reversed</strong> with <em>fewer than</em>, <em>less than</em>, and <em>subtracted from</em>.</p>
+        <p id="alg-intro-es" class="t-es" lang="es">Elige una operación para ver sus palabras clave. Pon atención a <strong>* el orden se invierte</strong> con <em>fewer than</em>, <em>less than</em> y <em>subtracted from</em>.</p>
+      </div>
+      <div class="alg-clue-tabs" role="tablist" aria-label="Operation clue words">
+        <button type="button" class="alg-op-tab is-active" data-op="+" aria-selected="true">+ <span class="t-en">Add</span><span class="t-es" lang="es">Sumar</span></button>
+        <button type="button" class="alg-op-tab" data-op="-" aria-selected="false">− <span class="t-en">Subtract</span><span class="t-es" lang="es">Restar</span></button>
+        <button type="button" class="alg-op-tab" data-op="*" aria-selected="false">× <span class="t-en">Multiply</span><span class="t-es" lang="es">Multiplicar</span></button>
+        <button type="button" class="alg-op-tab" data-op="/" aria-selected="false">÷ <span class="t-en">Divide</span><span class="t-es" lang="es">Dividir</span></button>
+      </div>
+      <div class="alg-clue-panel" id="alg-clue-panel" aria-live="polite"></div>
+      <div class="parts-interact alg-builder">
+        <div class="alg-presets" id="alg-presets" role="group" aria-label="Try a phrase"></div>
+        <div class="alg-stage-row">
+          <div class="alg-phrase-box">
+            <span class="alg-box-label"><span class="t-en">Words</span><span class="t-es" lang="es">Palabras</span></span>
+            <strong id="alg-phrase-en">A number plus 9</strong>
+            <span class="t-es alg-phrase-es" id="alg-phrase-es" lang="es">Un número más 9</span>
+          </div>
+          <span class="alg-arrow" aria-hidden="true">→</span>
+          <div class="alg-expr-box">
+            <span class="alg-box-label"><span class="t-en">Algebraic Expression</span><span class="t-es" lang="es">Expresión algebraica</span></span>
+            <strong id="alg-expr-out">n + 9</strong>
+          </div>
+        </div>
+        <label for="alg-n-slider"><span class="t-en">Test a value for n:</span><span class="t-es" lang="es">Prueba un valor para n:</span> <strong id="alg-n-val">4</strong></label>
+        <input id="alg-n-slider" type="range" min="1" max="6" value="4">
+        <div class="parts-total" id="alg-eval-out" role="status" aria-live="polite">4 + 9 = 13</div>
+        <p class="parts-rule" id="alg-rule">A letter like <strong>n</strong> stands for &ldquo;a number.&rdquo; Pick the operation from the clue word, then check the order.</p>
+        <p class="t-es parts-rule" id="alg-rule-es" lang="es">Una letra como <strong>n</strong> representa &ldquo;un número&rdquo;. Elige la operación según la palabra clave y revisa el orden.</p>
+      </div>
+    </section>`;
+}
+
+function partSwitcherBar(id, isPart2) {
+  return `  <nav class="part-switcher-bar" aria-label="Lesson parts">
+    <div class="part-switcher-inner">
+      <a class="part-switch-btn${!isPart2 ? " is-active" : ""}" href="/math/practice-studio/${id}/"${!isPart2 ? ' aria-current="page"' : ""}>
+        <span class="t-en">Part I</span><span class="t-es" lang="es">Parte I</span>
+      </a>
+      <a class="part-switch-btn${isPart2 ? " is-active" : ""}" href="/math/practice-studio/${id}/part-2/"${isPart2 ? ' aria-current="page"' : ""}>
+        <span class="t-en">Part II: Algebraic Expressions</span><span class="t-es" lang="es">Parte II: Expresiones algebraicas</span>
+      </a>
+    </div>
+  </nav>`;
+}
+
 function expressionPartsModel() {
   return `<section class="expression-parts" aria-labelledby="parts-title">
       <div class="parts-heading"><span class="parts-kicker">SEE THE IDEA <span lang="es">· MIRA LA IDEA</span></span><h2 id="parts-title">One expression, three parts</h2><p id="parts-intro">Each pouch has <strong>4 pencils</strong>. There are <strong>6 extra pencils</strong>. The number of pouches can change.</p><p id="parts-intro-es" class="t-es" lang="es">Cada bolsa tiene <strong>4 lápices</strong>. Hay <strong>6 lápices extra</strong>. El número de bolsas puede cambiar.</p></div>
@@ -141,6 +192,7 @@ function expressionPartsModel() {
 export function pageFor({
   id,
   mode,
+  part2 = false,
   cfg,
   ld,
   world,
@@ -155,7 +207,13 @@ export function pageFor({
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
   const challenge = mode === "challenge";
-  const title = (!challenge && ld.focusPractice?.title) || cfg.title || `Lesson ${id}`;
+  const isPart2 = !challenge && part2 && !!ld.focusPracticePart2;
+  const hasPartSwitcher = !challenge && !!ld.focusPracticePart2;
+  const title =
+    (isPart2 && ld.focusPracticePart2?.title) ||
+    (!challenge && ld.focusPractice?.title) ||
+    cfg.title ||
+    `Lesson ${id}`;
   const total = sections.reduce((a, s) => a + s.items.length, 0);
   const otherUrl = challenge
     ? `/math/practice-studio/${id}/`
@@ -164,7 +222,7 @@ export function pageFor({
     v: 2,
     lesson: id,
     mode,
-    storageKey: `neft_studio_${id}_${mode}_v2`,
+    storageKey: isPart2 ? `neft_studio_${id}_part2_v2` : `neft_studio_${id}_${mode}_v2`,
     otherUrl,
     bannerText: challenge
       ? `Boss cleared! You finished the Challenge for ${title}.`
@@ -196,7 +254,9 @@ export function pageFor({
   const story = challenge ? ld.challengeStory : ld.story;
   const storyEs = challenge ? ld.challengeStoryEs : ld.storyEs;
   const label = challenge ? "Challenge Studio" : "Interactive Practice Studio";
-  const partsModel = !challenge && ld.focusPractice?.model === "expression-parts";
+  const partsModel = !challenge && !isPart2 && ld.focusPractice?.model === "expression-parts";
+  const algExprModel =
+    !challenge && isPart2 && ld.focusPracticePart2?.model === "algebraic-expressions";
   // Closed in the markup: assets/studio/clarity.js opens it on a student's first visit, and it is a small chip after that.
   const missionCard = `<details class="mission-card">
         <summary><span class="world-glyph" aria-hidden="true">${world.emoji}</span><span class="mission-title">${bi("Mission", "Misión")} · ${bi(world.name, world.nameEs)}${challenge ? ` · ${bi("night shift", "turno de noche")}` : ""}</span></summary>
@@ -238,11 +298,13 @@ export function pageFor({
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="${FAVICON(world.emoji)}">
 ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
-${partsModel ? '  <link rel="stylesheet" href="/assets/studio/expression-parts.css">' : ""}
+${partsModel || algExprModel ? '  <link rel="stylesheet" href="/assets/studio/expression-parts.css">' : ""}
+${algExprModel ? '  <link rel="stylesheet" href="/assets/studio/algebraic-expressions.css">' : ""}
 ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 ${wordProblemsInlineHead()}
 ${partsModel ? '  <script src="/assets/studio/expression-parts.js" defer></script>' : ""}
+${algExprModel ? '  <script src="/assets/studio/algebraic-expressions.js" defer></script>' : ""}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
@@ -264,7 +326,7 @@ ${partsModel ? '  <script src="/assets/studio/expression-parts.js" defer></scrip
       </div>
     </div>
   </header>
-
+${hasPartSwitcher ? `\n${partSwitcherBar(id, isPart2)}\n` : ""}
   <nav class="tab-bar" aria-label="${challenge ? "Challenge" : "Practice"} sections">
     <div class="tab-list" role="tablist">
 ${tabs}
@@ -277,11 +339,11 @@ ${tabs}
     <div id="complete-banner" class="complete-banner" role="status" hidden></div>
 
     <div class="studio-context">
-      ${targetChip(partsModel ? ld.focusPractice.target : /^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", partsModel ? ld.focusPractice.targetEs : ld.targetEs)}
+      ${targetChip(isPart2 ? ld.focusPracticePart2.target : partsModel ? ld.focusPractice.target : /^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", isPart2 ? ld.focusPracticePart2.targetEs : partsModel ? ld.focusPractice.targetEs : ld.targetEs)}
       ${missionCard}
 ${ld.glossary?.length ? `      ${glossaryBlock(ld.glossary)}\n` : ""}    </div>
 
-${partsModel ? `    ${expressionPartsModel()}` : ""}
+${partsModel ? `    ${expressionPartsModel()}` : ""}${algExprModel ? `    ${algebraicExpressionsModel()}` : ""}
 
 ${panels}
   </main>
