@@ -63,6 +63,9 @@ const CHROME = {
     checkpoint: "Sector restored · Level {level} unlocked!",
     masteryCheckpoint: "Elite circuit cleared · A fresh wave is ready!",
     cores: "Energy cores: {n}",
+    streak: "Streak: {n}",
+    fever: "🔥 Fever {n}×",
+    shieldSaved: " 🛡️ Shield saved your streak!",
     saved: "Progress saves on this device.",
     notSaved: "Progress stays for this visit only.",
     solvedAt: "Solved. {stars} of 3 cores.",
@@ -89,6 +92,9 @@ const CHROME = {
     checkpoint: "¡Sector restaurado · Nivel {level} desbloqueado!",
     masteryCheckpoint: "¡Circuito de élite completado · comienza otra ronda!",
     cores: "Núcleos de energía: {n}",
+    streak: "Racha: {n}",
+    fever: "🔥 ¡Fiebre {n}×!",
+    shieldSaved: " 🛡️ ¡Tu escudo salvó tu racha!",
     saved: "El progreso se guarda en este dispositivo.",
     notSaved: "El progreso queda solo durante esta visita.",
     solvedAt: "Resuelto. {stars} de 3 núcleos.",
@@ -105,7 +111,9 @@ const STYLE = `
   display:block;max-width:${W}px;margin:0 auto;color:var(--ink);font:16px/1.45 "Atkinson Hyperlegible",system-ui,sans-serif}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-.shell{background:var(--bg);border:2px solid var(--edge);border-radius:18px;overflow:hidden}
+.shell{background:var(--bg);border:2px solid var(--edge);border-radius:18px;overflow:hidden;transition:border-color .25s ease,box-shadow .25s ease}
+.shell.fever{border-color:#facc15;box-shadow:0 0 22px rgba(250,204,21,.22)}
+.streak-pill{color:#fde68a;font-weight:800}
 .bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--edge)}
 h1{font-size:1.15rem;margin:0;letter-spacing:.02em}
 .meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
@@ -214,6 +222,8 @@ export class EduWonderEngine extends HTMLElement {
     this.misses = 0;
     this.solved = false;
     this.roundStart = 0;
+    this.streak = 0;
+    this.shield = false;
     this.misconceptions = [];
     this.tiersUsed = 0;
     this.seed = Number(new URLSearchParams(location.search).get("seed")) || Date.now() % 1e9;
@@ -238,7 +248,7 @@ export class EduWonderEngine extends HTMLElement {
       <div class="shell">
         <div class="bar">
           <h1 id="title"></h1>
-          <div class="meta"><span id="round"></span><span id="level"></span><span id="cores"></span></div>
+          <div class="meta"><span id="round"></span><span id="level"></span><span id="cores"></span><span id="streak" class="streak-pill" hidden></span></div>
           <div class="bar-end">
             <div class="tools">
               <fieldset id="tiers"><legend id="tierLegend"></legend></fieldset>
@@ -449,6 +459,20 @@ export class EduWonderEngine extends HTMLElement {
     this.bindText(this.$("round"), "round", () => ({ n: this.roundIndex }));
     this.bindText(this.$("level"), "level", () => ({ n: this.level }));
     this.bindText(this.$("cores"), "cores", () => ({ n: this.cores }));
+    this.binders.push(() => {
+      const st = this.$("streak");
+      const sh = this.shield ? " 🛡️" : "";
+      if (st) {
+        st.hidden = this.streak < 1 && !this.shield;
+        st.textContent =
+          (this.streak >= 3
+            ? this.t("fever", { n: this.streak })
+            : this.streak > 0
+              ? this.t("streak", { n: this.streak })
+              : "") + sh;
+      }
+      this.shadowRoot.querySelector(".shell")?.classList.toggle("fever", this.streak >= 3);
+    });
     this.campaignPips = Array.from({ length: LEVELS * SOLVES_PER_LEVEL }, () => {
       const pip = document.createElement("i");
       pip.setAttribute("aria-hidden", "true");
@@ -577,8 +601,10 @@ export class EduWonderEngine extends HTMLElement {
       const levelCleared = this.solvedAtLevel + 1 >= SOLVES_PER_LEVEL;
       const wasFinalLevel = this.level === LEVELS;
       this.solved = true;
+      if (this.misses === 0) this.streak++;
+      if ((this.streak === 3 || levelCleared) && !this.shield) this.shield = true;
       // Support and retries never reduce a student's reward for finishing.
-      const stars = 3;
+      const stars = 3 + (this.streak >= 3 ? 1 : 0) + (levelCleared ? 2 : 0);
       this.cores += stars;
       this.totalSolved++;
       this.solvedAtLevel++;
@@ -608,12 +634,19 @@ export class EduWonderEngine extends HTMLElement {
       this.persist(true);
     } else {
       this.misses++;
+      let shieldNote = "";
+      if (this.shield && this.streak > 0) {
+        this.shield = false;
+        shieldNote = this.t("shieldSaved");
+      } else {
+        this.streak = 0;
+      }
       if (r.misconception && !this.misconceptions.includes(r.misconception))
         this.misconceptions.push(r.misconception);
       this.synth.strain();
       haptic([15]);
       this.scene3d?.stumble();
-      const text = this.t(r.key, r.vars);
+      const text = this.t(r.key, r.vars) + shieldNote;
       this.setFeedback(text);
       this.shout(text);
       this.onMiss(r);

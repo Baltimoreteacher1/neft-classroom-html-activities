@@ -365,6 +365,14 @@
         <button type="button" class="primary" id="pa-picker-go">Launch Topic ▶</button>
       </div>
     </dialog>
+    <dialog id="pa-guide-dialog" aria-labelledby="pa-guide-title" style="max-width:680px;width:92vw;border-radius:18px;border:2px solid #22d3ee;background:#0f172a;color:#f1f5f9;padding:20px 24px;font-family:Nunito,Segoe UI,sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;">
+        <h2 id="pa-guide-title" style="margin:0;font-size:20px;color:#22d3ee;">📖 Words to Math Symbols</h2>
+        <button type="button" id="pa-guide-close" style="background:#1e293b;color:#f1f5f9;border:1px solid #475569;border-radius:10px;padding:6px 14px;font-weight:800;cursor:pointer;">✕ Close</button>
+      </div>
+      <div id="pa-guide-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:14px;line-height:1.45;"></div>
+      <p id="pa-guide-note" style="margin:12px 0 0;padding:10px 12px;border-radius:10px;background:rgba(250,204,21,0.14);border:1px solid rgba(250,204,21,0.4);color:#fde68a;font-weight:700;font-size:13.5px;"></p>
+    </dialog>
     <main
       id="pa-stage"
       aria-label="Practice Arcade game"
@@ -654,6 +662,63 @@
         let isReviewMode = false; // true for unit / multi-lesson cumulative review
         let themeId = "default"; // lesson config "theme" id → palette
         let mascot = "🎮"; // lesson config "themeEmoji" → guide character
+        let customMaxRounds = 0; // per-lesson / player-chosen run length (0 → MAX_ROUNDS)
+        let cheatSheetMode = ""; // e.g. "words-to-symbols"
+        let noSolveMode = false; // skip evaluation/solve items when true
+
+        function openWordsGuide() {
+          const dlg = document.getElementById("pa-guide-dialog");
+          if (!dlg) return;
+          const es = lang === "es";
+          const title = document.getElementById("pa-guide-title");
+          const body = document.getElementById("pa-guide-body");
+          const note = document.getElementById("pa-guide-note");
+          const closeBtn = document.getElementById("pa-guide-close");
+          if (title) title.textContent = es ? "📖 Palabras a símbolos matemáticos" : "📖 Words to Math Symbols";
+          if (closeBtn) closeBtn.textContent = es ? "✕ Cerrar" : "✕ Close";
+          const cols = es
+            ? [
+                { sym: "+ Sumar", color: "#34d399", words: "Más que, Suma, En total, Aumentado en, Depósito, Ganancia, Subir, Creció, Más largo que" },
+                { sym: "− Restar", color: "#fb7185", words: "Diferencia, Disminuido en, Menos, Quitar, Retirar, Perdió, Descuento, Menos que *, Más corto que *" },
+                { sym: "× Multiplicar", color: "#38bdf8", words: "Producto, Por, Veces, Cada, Doble (× 2), Triple (× 3), De" },
+                { sym: "÷ Dividir", color: "#facc15", words: "Cociente, Dividido entre, Repartir en, Compartir, Por cada, La mitad (÷ 2)" },
+              ]
+            : [
+                { sym: "+ Add", color: "#34d399", words: "Add, Altogether, Ascend, Deposit, Gain, Grew, Increase, Longer than, More, Plus, Save, Sum, Total" },
+                { sym: "− Subtract", color: "#fb7185", words: "Below, Decrease, Descend, Difference, Discount, Fewer, Less, Lost, Minus, Remove, Subtract, Take away, Withdraw, Fewer than *, Less than *" },
+                { sym: "× Multiply", color: "#38bdf8", words: "Double (× 2), Every, Of, Product, Times, Triple (× 3), Twice" },
+                { sym: "÷ Divide", color: "#facc15", words: "Distribute, Divide, Find each, Find per, Half (÷ 2), Quotient, Share, Split into" },
+              ];
+          if (body) {
+            body.replaceChildren();
+            cols.forEach((c) => {
+              const card = document.createElement("div");
+              card.style.cssText = "background:rgba(30,41,59,0.9);border:1px solid " + c.color + ";border-radius:12px;padding:10px 12px;";
+              const h = document.createElement("div");
+              h.style.cssText = "font-weight:900;font-size:16px;color:" + c.color + ";margin-bottom:6px;";
+              h.textContent = c.sym;
+              const p = document.createElement("div");
+              p.style.cssText = "color:#e2e8f0;font-size:13px;";
+              p.textContent = c.words;
+              card.append(h, p);
+              body.appendChild(card);
+            });
+          }
+          if (note) {
+            note.textContent = es
+              ? "* ¡Cuidado! 'menos que' y 'quitar de' invierten el orden: 'w menos que 7' es 7 − w."
+              : "* Order is reversed for 'fewer than', 'less than', and 'take away from': 'w fewer than 7' → 7 − w.";
+          }
+          if (closeBtn && !closeBtn.dataset.bound) {
+            closeBtn.dataset.bound = "1";
+            closeBtn.addEventListener("click", () => {
+              if (typeof dlg.close === "function") dlg.close();
+              else dlg.removeAttribute("open");
+            });
+          }
+          if (typeof dlg.showModal === "function") dlg.showModal();
+          else dlg.setAttribute("open", "open");
+        }
         // Difficulty tier the student chose on the Title screen. Level 1 = support,
         // Level 2 = enrichment; "both" plays everything. Persisted per device.
         let tier = "both";
@@ -1125,16 +1190,17 @@
           if (isReviewMode) pool = shuffle(pool);
           // Replay with NEW challenges: when the lesson has more items than one
           // run plays, the ones the last finished run used go to the back.
+          const targetCap = isReviewMode ? 12 : customMaxRounds || MAX_ROUNDS;
           try {
             const played = new Set(
               JSON.parse(localStorage.getItem("pa-played-" + activeLesson) || "[]"),
             );
-            if (played.size && pool.length > (isReviewMode ? 12 : MAX_ROUNDS))
+            if (played.size && pool.length > targetCap)
               pool = pool
                 .filter((r) => !played.has(roundKey(r)))
                 .concat(pool.filter((r) => played.has(roundKey(r))));
           } catch (_) {}
-          rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
+          rounds = pool.slice(0, targetCap);
           // Guarantee hands-on interactive mechanics (build, numline, match,
           // sort, spot, balance, plot, chain) lead right from Round 1 and
           // interleave across the run so students immediately manipulate math
@@ -1142,7 +1208,7 @@
           const isInteractive = (r) => r && r.kind && r.kind !== "choose";
           const interactive = pool.filter(isInteractive);
           if (interactive.length) {
-            const cap = isReviewMode ? 12 : MAX_ROUNDS;
+            const cap = targetCap;
             const pick = (isReviewMode ? shuffle(interactive) : interactive).slice(
               0,
               Math.ceil((cap * 3) / 5),
@@ -1366,8 +1432,19 @@
               if (!gotTheme) {
                 if (data.theme) themeId = data.theme;
                 if (data.themeEmoji) mascot = data.themeEmoji;
+                if (Number(data.arcadeRounds) > 0 && !customMaxRounds)
+                  customMaxRounds = Number(data.arcadeRounds);
+                if (data.arcadeCheatSheet) cheatSheetMode = String(data.arcadeCheatSheet);
+                if (data.arcadeNoSolve) noSolveMode = true;
                 gotTheme = true;
               }
+              const isSolveItem = (it) => {
+                if (!data.arcadeNoSolve && !noSolveMode) return false;
+                const txt = String(it.stem || it.prompt || it.instructions || it.label || "");
+                return /\b(evaluate|evalúa|what is the cost|cuál es el costo|find the cost|does doubling)\b/i.test(
+                  txt,
+                );
+              };
               // Gather every checkable practice item this lesson authored — not
               // just practice.optional. Small-group lessons carry their rich set in
               // parallelPractice plus the differentiated practice tiers, so reading
@@ -1388,6 +1465,7 @@
               const seen = new Set();
               pool.forEach((it) => {
                 if (!it || typeof it !== "object") return;
+                if (isSolveItem(it)) return;
                 // One item can live in more than one bucket; keep the first copy.
                 const sig =
                   it.id ||
@@ -1831,9 +1909,15 @@
             return {
               kind: "build",
               prompt: it.stem || "Tap the pieces to build the answer.",
+              promptEs: it.stemEs || "",
               tokens: it.tokens.map(String),
               answer,
+              ordered: !!it.ordered,
+              acceptAnswers: Array.isArray(it.acceptAnswers)
+                ? it.acceptAnswers.map((a) => normTokens(a))
+                : null,
               why: it.explanation || "",
+              whyEs: it.explanationEs || "",
             };
           }
           if (it.type === "balance-scale") {
@@ -2549,6 +2633,56 @@
             });
             paintPills();
 
+            // ── Run length selector when the lesson has a deep vault (>10 items) ──
+            if (!isReviewMode && allRounds.length > 10) {
+              if (!customMaxRounds) customMaxRounds = MAX_ROUNDS;
+              const lenOpts = [10, 15, 20].filter((n) => n <= Math.max(15, allRounds.length));
+              const lenY = 466;
+              this.add
+                .text(
+                  W / 2 - 210,
+                  lenY,
+                  (lang === "es" ? "📚 " + allRounds.length + " retos · Ronda:" : "📚 " + allRounds.length + " challenges · Run:"),
+                  {
+                    fontFamily: "Nunito, Segoe UI, sans-serif",
+                    fontSize: "13px",
+                    fontStyle: "bold",
+                    color: "#cbd5e1",
+                  },
+                )
+                .setOrigin(0.5);
+              const lenPills = [];
+              const paintLen = () => {
+                lenPills.forEach((p) => {
+                  const sel = p.lenVal === customMaxRounds;
+                  p.setStyle({
+                    backgroundColor: sel ? "#34d399" : "rgba(255,255,255,0.10)",
+                    color: sel ? "#06283f" : "#e2e8f0",
+                  });
+                });
+              };
+              lenOpts.forEach((n, idx) => {
+                const p = this.add
+                  .text(W / 2 + 20 + idx * 78, lenY, String(n), {
+                    fontFamily: "Nunito, Segoe UI, sans-serif",
+                    fontSize: "13px",
+                    fontStyle: "bold",
+                    padding: { x: 14, y: 5 },
+                  })
+                  .setOrigin(0.5)
+                  .setInteractive({ useHandCursor: true });
+                p.lenVal = n;
+                p.on("pointerdown", () => {
+                  customMaxRounds = n;
+                  SFX.init();
+                  JUICE.audio.tap();
+                  paintLen();
+                });
+                lenPills.push(p);
+              });
+              paintLen();
+            }
+
             const start = () => {
               if (!this.scene.isActive("Title")) return;
               document.body.classList.remove("pa-title-screen");
@@ -2562,7 +2696,7 @@
               this.game.canvas.focus({ preventScroll: true });
             };
             document.getElementById("pa-phone-start").onclick = start;
-            makeButton(this, W / 2, 500, 280, 64, t("start"), start);
+            makeButton(this, W / 2, allRounds.length > 10 && !isReviewMode ? 516 : 500, 280, 60, t("start"), start);
             const keyboardStart = (event) => {
               // Native controls own their keys; selecting a level or opening
               // Game tools must not also start a round.
@@ -2673,6 +2807,7 @@
             this.power = 0;
             this.powerMax = 3;
             this.doubled = false;
+            this.shield = false; // Streak Shield: absorbs one miss without losing streak
             this.voyage = window.ExpeditionVoyage?.createState(Date.now());
             const recovering = resumeRun;
             if (recovering) {
@@ -2712,6 +2847,7 @@
             // Translucent HUD strip across the top so the score / progress /
             // stars read as one clean console bar over the busy backdrop.
             const hudBar = this.add.graphics();
+            this.hudBar = hudBar;
             hudBar.fillStyle(0x0a0f2b, 0.42);
             hudBar.fillRoundedRect(96, 8, W - 116, 46, 12);
             hudBar.lineStyle(1.5, PALETTE.panelLine, 0.4);
@@ -2791,18 +2927,50 @@
               .setDepth(30)
               .setVisible(false);
 
-            // Journey track: a goal flag the mascot walks toward, one step per round.
+            // Journey track: a glowing progress trail with milestone stars every 5 rounds.
             this.journeyY = 72;
-            this.add
-              .line(0, 0, 120, this.journeyY, W - 70, this.journeyY, this.th.accentN, 0.4)
-              .setOrigin(0, 0)
-              .setLineWidth(2);
+            this.journeyTrackBg = this.add.graphics();
+            this.journeyTrackBg.fillStyle(0x0a0f2b, 0.55);
+            this.journeyTrackBg.fillRoundedRect(120, this.journeyY - 5, W - 190, 10, 5);
+            this.journeyTrackFill = this.add.graphics();
+            const totalJ = this.runTotal || rounds.length || 10;
+            for (let m = 5; m < totalJ; m += 5) {
+              const mx = 120 + ((W - 190) * m) / totalJ;
+              this.add
+                .text(mx, this.journeyY, "🌟", { fontSize: "14px" })
+                .setOrigin(0.5)
+                .setAlpha(0.85);
+            }
             this.add.text(W - 60, this.journeyY - 11, "🏁", {
               fontSize: "18px",
             });
             this.mascotObj = this.add
               .text(120, this.journeyY, mascot, { fontSize: "28px" })
               .setOrigin(0.5);
+
+            // Optional Words-to-Symbols quick guide button (no answers, ESOL/SPED aid).
+            if (cheatSheetMode === "words-to-symbols") {
+              const guideBtn = this.add
+                .text(
+                  14,
+                  this.journeyY,
+                  lang === "es" ? "📖 Símbolos" : "📖 Symbols",
+                  {
+                    fontFamily: "Nunito, Segoe UI, sans-serif",
+                    fontSize: "13px",
+                    fontStyle: "bold",
+                    color: "#06283f",
+                    backgroundColor: "#67e8f9",
+                    padding: { x: 10, y: 5 },
+                  },
+                )
+                .setOrigin(0, 0.5)
+                .setInteractive({ useHandCursor: true });
+              guideBtn.on("pointerdown", () => {
+                SFX.pick();
+                openWordsGuide();
+              });
+            }
 
             // ── Power meter (top-left, under the score) ──────────────────────
             const pmX = 250,
@@ -3207,6 +3375,11 @@
               x1 = W - 90;
             const done = Math.min(this.idx + 1, total);
             const tx = x0 + ((x1 - x0) * done) / total;
+            if (this.journeyTrackFill) {
+              this.journeyTrackFill.clear();
+              this.journeyTrackFill.fillStyle(PALETTE.accent, 0.85);
+              this.journeyTrackFill.fillRoundedRect(120, this.journeyY - 4, Math.max(8, tx - 120), 8, 4);
+            }
             if (JUICE.reduceMotion) {
               this.mascotObj.x = tx;
               return;
@@ -3334,8 +3507,10 @@
             const ph = Math.max(70, this.promptText.height + 30);
             this.promptPanel.clear();
             this.promptPanel.fillStyle(PALETTE.panel, 0.95);
-            this.promptPanel.lineStyle(2, PALETTE.panelLine, 0.8);
             this.promptPanel.fillRoundedRect(80, 92, W - 160, ph, 14);
+            this.promptPanel.fillStyle(0xffffff, 0.06);
+            this.promptPanel.fillRoundedRect(84, 95, W - 168, Math.min(28, ph * 0.38), 11);
+            this.promptPanel.lineStyle(2, PALETTE.panelLine, 0.85);
             this.promptPanel.strokeRoundedRect(80, 92, W - 160, ph, 14);
             this.promptText.setY(92 + ph / 2);
             // Support level shows a live coach line under the prompt; renderers
@@ -3802,7 +3977,20 @@
                 gained *= 2;
                 this.doubled = false;
                 this.power = 0;
-                if (this.powerLabel) this.powerLabel.setAlpha(0.5).setScale(1);
+                if (this.powerLabel) this.powerLabel.setText("⚡").setAlpha(0.5).setScale(1);
+              }
+              const milestone = !this.retryMode && this.solvedCount > 0 && this.solvedCount % 5 === 0;
+              if (milestone) gained += 50;
+              if ((this.streak === 4 || milestone) && !this.shield) {
+                this.shield = true;
+                JUICE.floatText(
+                  this,
+                  cx,
+                  cy - 112,
+                  es ? "🛡️ ¡ESCUDO DE RACHA!" : "🛡️ STREAK SHIELD!",
+                  "#67e8f9",
+                  22,
+                );
               }
               this.score += gained;
               const cx = W / 2,
@@ -3820,6 +4008,17 @@
                 18 + Math.min(this.streak, 6) * 4,
               );
               if (this.streak >= 5) JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
+              if (milestone) {
+                JUICE.confetti(this, 1);
+                JUICE.floatText(
+                  this,
+                  cx,
+                  cy - 76,
+                  es ? "🌟 ¡META +50!" : "🌟 MILESTONE +50!",
+                  "#fde047",
+                  26,
+                );
+              }
               JUICE.floatText(
                 this,
                 cx,
@@ -3867,7 +4066,13 @@
               return;
             }
             this.tries++;
-            this.streak = 0;
+            let shieldSaved = false;
+            if (this.shield && this.streak > 0) {
+              this.shield = false;
+              shieldSaved = true;
+            } else {
+              this.streak = 0;
+            }
             this.queueRetry(r);
             if (window.ArcadeFX) {
               window.ArcadeFX.playSFX("error");
@@ -3888,7 +4093,12 @@
                   ? "\nEsta vuelve en la ronda de repaso."
                   : "\nThis one returns in the retry round."
                 : "";
-            const msg = lead + "💡 " + help.text + retryNote;
+            const shieldNote = shieldSaved
+              ? es
+                ? "\n🛡️ ¡Tu escudo salvó tu racha!"
+                : "\n🛡️ Streak Shield saved your streak!"
+              : "";
+            const msg = lead + "💡 " + help.text + retryNote + shieldNote;
             this.showFeedback(msg, "#fde68a");
             studioEvent("feedback", { correct: false, message: msg.replace(/\n/g, " ") });
             document.getElementById("practice-native-feedback").textContent = msg.replace(
@@ -3982,13 +4192,32 @@
           updateHUD() {
             this.scoreText.setText(t("score") + ": " + this.score);
             const esH = lang === "es";
+            const shieldTag = this.shield ? " 🛡️" : "";
             this.streakText.setText(
-              this.streak > 0
-                ? (esH ? "Racha " : "Streak ") + this.streak
-                : esH
-                  ? "Racha lista"
-                  : "Streak ready",
+              (this.streak >= 3
+                ? "🔥 " + this.streak + "× " + (esH ? "¡COMBO!" : "FEVER!")
+                : this.streak > 0
+                  ? (esH ? "Racha " : "Streak ") + this.streak
+                  : esH
+                    ? "Racha lista"
+                    : "Streak ready") + shieldTag,
             );
+            this.streakText.setColor(this.streak >= 3 ? "#fde047" : "#facc15");
+            if (this.hudBar) {
+              this.hudBar.clear();
+              this.hudBar.fillStyle(0x0a0f2b, 0.45);
+              this.hudBar.fillRoundedRect(96, 8, W - 116, 46, 12);
+              this.hudBar.lineStyle(
+                this.streak >= 3 ? 2.5 : 1.5,
+                this.streak >= 3 ? 0xfacc15 : PALETTE.panelLine,
+                this.streak >= 3 ? 0.9 : 0.4,
+              );
+              this.hudBar.strokeRoundedRect(96, 8, W - 116, 46, 12);
+            }
+            if (this.powerLabel) {
+              this.powerLabel.setText(this.doubled ? (esH ? "⚡ 2× ¡LISTO!" : "⚡ 2× READY!") : "⚡");
+              this.powerLabel.setColor(this.doubled ? "#22d3ee" : "#facc15");
+            }
             const earned = rateStars(
               this.solvedCount,
               this.bestStreak,
@@ -4041,7 +4270,7 @@
             const tiles = [];
             texts.forEach((c, i) => {
               const y = startY + i * gap;
-              const t = this.makeTile(W / 2, y, tileW, Math.min(52, gap - 10), i + 1 + ".  " + c);
+              const t = this.makeTile(W / 2, y, tileW, Math.min(52, gap - 10), "[" + (i + 1) + "]  " + c);
               this.layer.add(t.parts);
               tiles.push(t);
               t.bg.on(
@@ -4855,28 +5084,106 @@
           // ── Renderer: BUILD (tap pieces to assemble the answer expression) ────
           renderBuild(r) {
             this.buildSel = [];
+            const isOrdered = !!r.ordered;
+            const formatExpr = (xs) => {
+              if (!xs.length) return lang === "es" ? "( toca las piezas en orden )" : "( tap the pieces in order )";
+              if (!isOrdered) return xs.join("  ×  ");
+              let out = "";
+              xs.forEach((tk, idx) => {
+                if (idx === 0) {
+                  out += tk;
+                  return;
+                }
+                const prev = xs[idx - 1];
+                const isOp = /^[+\-−×÷]$/.test(tk);
+                const prevOp = /^[+\-−×÷]$/.test(prev);
+                const coeffVar = /^\d+(?:\.\d+)?$/.test(prev) && /^[a-z]$/i.test(tk);
+                out += coeffVar ? tk : isOp || prevOp ? " " + tk : " " + tk;
+              });
+              return out;
+            };
             const tray = this.add
-              .text(W / 2, 300, lang === "es" ? "( toca las piezas )" : "( tap the pieces )", {
-                fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "24px",
-                fontStyle: "bold",
-                color: "#ffffff",
-                backgroundColor: "rgba(255,255,255,0.10)",
-                padding: { x: 16, y: 10 },
-                align: "center",
-                wordWrap: { width: W - 200 },
-              })
-              .setOrigin(0.5);
-            this.layer.add(tray);
-            const updateTray = () => {
-              tray.setText(
-                this.buildSel.length
-                  ? this.buildSel.map((s) => s.text).join("  ×  ")
+              .text(
+                isOrdered ? W / 2 - 70 : W / 2,
+                300,
+                isOrdered
+                  ? lang === "es"
+                    ? "( toca las piezas en orden )"
+                    : "( tap the pieces in order )"
                   : lang === "es"
                     ? "( toca las piezas )"
                     : "( tap the pieces )",
-              );
+                {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "26px",
+                  fontStyle: "bold",
+                  color: "#fde68a",
+                  backgroundColor: "rgba(15,23,42,0.72)",
+                  padding: { x: 20, y: 12 },
+                  align: "center",
+                  wordWrap: { width: W - 260 },
+                },
+              )
+              .setOrigin(0.5);
+            this.layer.add(tray);
+            const updateTray = () => {
+              const txt = this.buildSel.length
+                ? formatExpr(this.buildSel.map((s) => s.text))
+                : isOrdered
+                  ? lang === "es"
+                    ? "( toca las piezas en orden )"
+                    : "( tap the pieces in order )"
+                  : lang === "es"
+                    ? "( toca las piezas )"
+                    : "( tap the pieces )";
+              tray.setText(txt);
+              tray.setColor(this.buildSel.length ? "#ffffff" : "#fde68a");
             };
+            if (isOrdered) {
+              const undoBtn = this.add
+                .text(W - 195, 300, lang === "es" ? "⌫ Deshacer" : "⌫ Undo", {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "14px",
+                  fontStyle: "bold",
+                  color: "#e2e8f0",
+                  backgroundColor: "rgba(255,255,255,0.14)",
+                  padding: { x: 10, y: 8 },
+                })
+                .setOrigin(0.5)
+                .setInteractive({ useHandCursor: true });
+              undoBtn.on("pointerdown", () => {
+                if (this.locked || !this.settled() || !this.buildSel.length) return;
+                const last = this.buildSel.pop();
+                if (last && last.tile) {
+                  last.tile.picked = false;
+                  last.tile.bg.setFillStyle(PALETTE.tile);
+                }
+                SFX.pick();
+                updateTray();
+              });
+              const clrBtn = this.add
+                .text(W - 95, 300, lang === "es" ? "✕ Borrar" : "✕ Clear", {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "14px",
+                  fontStyle: "bold",
+                  color: "#fda4af",
+                  backgroundColor: "rgba(244,63,94,0.18)",
+                  padding: { x: 10, y: 8 },
+                })
+                .setOrigin(0.5)
+                .setInteractive({ useHandCursor: true });
+              clrBtn.on("pointerdown", () => {
+                if (this.locked || !this.settled() || !this.buildSel.length) return;
+                this.buildSel.forEach((s) => {
+                  s.tile.picked = false;
+                  s.tile.bg.setFillStyle(PALETTE.tile);
+                });
+                this.buildSel = [];
+                SFX.pick();
+                updateTray();
+              });
+              this.layer.add([undoBtn, clrBtn]);
+            }
             const toks = r.tokens;
             const perRow = Math.min(4, toks.length);
             const spacing = Math.min(180, (W - 160) / perRow);
@@ -4908,43 +5215,63 @@
             });
             const check = () => {
               if (this.locked || !this.settled()) return;
-              const a = this.buildSel
-                .map((s) => s.text)
-                .slice()
-                .sort();
-              const b = r.answer.slice().sort();
-              const ok = a.length === b.length && a.every((v, i) => v === b[i]);
-              // Numeric pieces: say what the student's pieces actually multiply
-              // to, and name a non-prime piece — feedback from their own work.
+              const selSeq = this.buildSel.map((s) => s.text);
               const es = lang === "es";
+              let ok = false;
               let miss = es
                 ? "Esas piezas todavía no forman la respuesta."
                 : "Those pieces do not make the answer yet.";
-              const allNum = (xs) => xs.length && xs.every((x) => /^\d+$/.test(x));
-              if (!ok && allNum(a) && allNum(b)) {
-                const prod = (xs) => xs.reduce((m, x) => m * Number(x), 1);
-                const pa = prod(a),
-                  pb = prod(b);
-                const isPrime = (n) => {
-                  if (n < 2) return false;
-                  for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
-                  return true;
-                };
-                const needPrimes = b.every((x) => isPrime(Number(x)));
-                const comp = a.find((x) => !isPrime(Number(x)));
-                if (pa === pb && needPrimes && comp)
-                  miss = es
-                    ? "Tus piezas dan el número correcto, pero " + comp + " no es primo. Descomponlo."
-                    : "Your pieces make the right number, but " + comp + " is not prime. Break it down.";
-                else
-                  miss = es
-                    ? "Tus piezas multiplicadas dan " + pa + ". " + (pa > pb ? "Es demasiado grande." : "Es demasiado pequeño.")
-                    : "Your pieces multiply to " + pa + ". " + (pa > pb ? "That is too big." : "That is too small.");
+              if (isOrdered) {
+                const validList = r.acceptAnswers && r.acceptAnswers.length ? r.acceptAnswers : [r.answer];
+                ok = validList.some(
+                  (ans) => ans.length === selSeq.length && ans.every((v, idx) => v === selSeq[idx]),
+                );
+                if (!ok) {
+                  const sameBag =
+                    selSeq.length === r.answer.length &&
+                    selSeq.slice().sort().join("|") === r.answer.slice().sort().join("|");
+                  if (sameBag) {
+                    miss = es
+                      ? "¡Tienes las piezas correctas, pero revisa el orden! Palabras como 'menos que' y 'quitar de' invierten el orden."
+                      : "You have the right pieces, but check the order! Words like 'fewer than', 'less than', and 'take away from' reverse the order.";
+                  } else if (selSeq.length === 0) {
+                    miss = es
+                      ? "Toca las piezas para armar la expresión antes de comprobar."
+                      : "Tap the pieces to build your expression before checking.";
+                  }
+                }
+              } else {
+                const a = selSeq.slice().sort();
+                const b = r.answer.slice().sort();
+                ok = a.length === b.length && a.every((v, i) => v === b[i]);
+                // Numeric pieces: say what the student's pieces actually multiply
+                // to, and name a non-prime piece — feedback from their own work.
+                const allNum = (xs) => xs.length && xs.every((x) => /^\d+$/.test(x));
+                if (!ok && allNum(a) && allNum(b)) {
+                  const prod = (xs) => xs.reduce((m, x) => m * Number(x), 1);
+                  const pa = prod(a),
+                    pb = prod(b);
+                  const isPrime = (n) => {
+                    if (n < 2) return false;
+                    for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
+                    return true;
+                  };
+                  const needPrimes = b.every((x) => isPrime(Number(x)));
+                  const comp = a.find((x) => !isPrime(Number(x)));
+                  if (pa === pb && needPrimes && comp)
+                    miss = es
+                      ? "Tus piezas dan el número correcto, pero " + comp + " no es primo. Descomponlo."
+                      : "Your pieces make the right number, but " + comp + " is not prime. Break it down.";
+                  else
+                    miss = es
+                      ? "Tus piezas multiplicadas dan " + pa + ". " + (pa > pb ? "Es demasiado grande." : "Es demasiado pequeño.")
+                      : "Your pieces multiply to " + pa + ". " + (pa > pb ? "That is too big." : "That is too small.");
+                }
               }
               this.resolve(
                 ok,
                 ok
-                  ? r.why || (es ? "La respuesta es " : "The answer is ") + r.answer.join(" × ") + "."
+                  ? loc(r, "why") || (es ? "La expresión es " : "The expression is ") + formatExpr(r.answer) + "."
                   : miss,
               );
               if (!ok)
@@ -6019,13 +6346,16 @@
             };
             document.getElementById("practice-resume").hidden = true;
 
-            // Remember what this run played so PLAY AGAIN leads with challenges
-            // the student has not seen yet (see buildPlayList).
+            // Remember what this run played so PLAY AGAIN / NEXT WAVE leads with
+            // challenges the student has not seen yet (see buildPlayList).
             try {
-              localStorage.setItem(
-                "pa-played-" + activeLesson,
-                JSON.stringify(completedRounds.map(roundKey)),
+              const pKey = "pa-played-" + activeLesson;
+              const prevPlayed = JSON.parse(localStorage.getItem(pKey) || "[]");
+              const mergedPlayed = Array.from(
+                new Set([].concat(Array.isArray(prevPlayed) ? prevPlayed : [], completedRounds.map(roundKey))),
               );
+              const resetPlayed = mergedPlayed.length >= allRounds.length ? completedRounds.map(roundKey) : mergedPlayed;
+              localStorage.setItem(pKey, JSON.stringify(resetPlayed));
             } catch (_) {}
 
             const medal = stars >= 3 ? "🥇" : stars === 2 ? "🥈" : stars === 1 ? "🥉" : "";
@@ -6218,11 +6548,31 @@
                 next,
             );
 
-            // Next-step CTAs. From a single lesson, offer the whole-unit review
-            // as a "next level" so the arcade feels like a progression.
+            // Next-step CTAs. When more unseen challenges sit in the vault, offer
+            // a one-click "Next Wave" that rotates fresh items right into Play!
+            const hasMoreWave = allRounds.length > completedRounds.length;
             const canUnit = !isReviewMode && worldUnit > 0;
+            const nextWave = () => {
+              buildPlayList();
+              this.scene.start("Play");
+              this.game.canvas.focus({ preventScroll: true });
+            };
             const again = () => window.location.reload();
-            if (canUnit) {
+            if (hasMoreWave && canUnit) {
+              makeButton(
+                this,
+                W / 2 - 225,
+                530,
+                210,
+                56,
+                es ? "🌊 Nueva ola ▶" : "🌊 Next Wave ▶",
+                nextWave,
+              );
+              makeButton(this, W / 2, 530, 195, 56, t("playAgain"), again);
+              makeButton(this, W / 2 + 225, 530, 210, 56, t("unitReviewBtn"), () => {
+                window.location.href = "/math/games/practice-arcade/?unit=" + worldUnit;
+              });
+            } else if (canUnit) {
               makeButton(this, W / 2 - 150, 530, 264, 56, t("playAgain"), again);
               makeButton(this, W / 2 + 150, 530, 264, 56, t("unitReviewBtn"), () => {
                 window.location.href = "/math/games/practice-arcade/?unit=" + worldUnit;
