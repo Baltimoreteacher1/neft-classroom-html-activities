@@ -132,8 +132,8 @@ never hand-edited.
 - `npm run validate:access-lab` passed standalone and in the final gate (1,212
   seconds in the gate).
 - `npm run build` passed. The fresh curriculum context and plan vocabulary
-  outputs are staged. Retrieval-bank and teacher-status build side effects are
-  unchanged and excluded.
+  outputs are included in the feature commit. Retrieval-bank and teacher-status
+  build side effects were unchanged.
 - Built-preview `e2e:access-reading-path` passed all 15 units, bilingual renders,
   silent-e picture change, keyboard rounds, reader and letter views,
   responsive/a11y checks, teacher role, Finder, Today, speaking drafts, survival
@@ -151,7 +151,26 @@ never hand-edited.
   reviewed at desktop, tablet and phone widths in English and Spanish. No
   horizontal page overflow or clipped page content was observed.
 
+## Production deployment and route check, 2026-11-20
+
+- Feature release `d18cc6d2b6` was pushed to `origin/main` by the guarded ship
+  workflow. Its build stamp matched production after 220 seconds and the
+  post-deploy smoke passed 41/41.
+- Live route check confirmed `/access-practice-lab/reading-path` and
+  `/access-teacher/` return 200. It found `/library` and `/letters/a` were
+  redirecting to unrelated missing pages on `eduwonderlab.com`.
+- Route fix `3916674b1b` added query-preserving Language Page redirects for the
+  library and letter short links. The guarded ship matched its production build
+  stamp after 175 seconds; post-deploy smoke passed 41/41.
+- After that release, all four requested paths were checked on
+  `thelanguagepage.com`: Reading Path and Teacher Hub returned 200 directly;
+  `/library` resolved to `/access-practice-lab/library` and `/letters/a` to
+  `/access-practice-lab/reading-path/letters/a`, both returning 200.
+- The exact route mapping is covered by `functions/language-page-host.test.mjs`.
+  Its focused test passed, and the route-fix push gate and normal commit hook
+  each passed 4/4.
+
 The integration remains partial at the boundaries named in the feature matrix.
-Passing gates does not mean Revision 2 is fully integrated. The normal-hook
-commit, guarded deployment, and live-route checks are pending. No credential,
-production resource, real student record, or live communication was used.
+Passing gates and production routes do not mean Revision 2 is fully integrated.
+No credential, production resource, real student record, or live communication
+was used.
