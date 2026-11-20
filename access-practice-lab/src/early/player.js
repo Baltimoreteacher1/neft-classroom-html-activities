@@ -37,7 +37,11 @@ export function usesAudioFirst(prefs, band, activity, search = "") {
 }
 
 const isListening = (domain, a) => domain === "Listening" || Boolean(a.listening);
-const isPaper = (domain, a) => domain === "Writing" || a.type === "worksheet";
+// Grades 3-5 write their constructed Reading/Listening responses (as the classic page does); K-3 keep the spoken answer.
+const isPaper = (domain, a, band) =>
+  domain === "Writing" ||
+  a.type === "worksheet" ||
+  (band === "3-5" && a.type === "constructed" && domain !== "Speaking");
 
 /**
  * What the guide says when the activity opens, as language groups in speaking order:
@@ -248,8 +252,8 @@ export function render(ctx, I, cur, { nav = "" } = {}) {
   const info = BAND_INFO[cur.band] || {};
   const done = cur.record.complete.includes(a.id);
   const speaking =
-    cur.domain === "Speaking" || (a.type === "constructed" && !isPaper(cur.domain, a));
-  const paper = isPaper(cur.domain, a);
+    cur.domain === "Speaking" || (a.type === "constructed" && !isPaper(cur.domain, a, cur.band));
+  const paper = isPaper(cur.domain, a, cur.band);
   const answerable = !speaking && !paper;
   const bubble = I.mode === "es" && a.directionsEs ? a.directionsEs : a.directions;
   return {
@@ -290,7 +294,7 @@ export function render(ctx, I, cur, { nav = "" } = {}) {
           </button>
         </div>
         ${stageHTML(a, cur, I)}
-        ${a.prompt && !paper ? html`<p class="early-prompt"><span lang="en">${a.prompt}</span></p>` : ""}
+        ${a.prompt && (!paper || cur.domain !== "Writing") ? html`<p class="early-prompt"><span lang="en">${a.prompt}</span></p>` : ""}
         ${
           answerable
             ? html`${choicesHTML(a, I)}

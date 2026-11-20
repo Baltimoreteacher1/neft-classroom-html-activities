@@ -5,6 +5,8 @@
  * rule, never the answer) on choose, sort and write steps; progress survives a reload; Spanish help marks a step
  * supported; story flags from Conversation Quest are saved; the Newsroom front page goes to Book Studio; ledger entries
  * are written; axe on the hub, a map, a step and an artifact; no sideways scroll at 390px; no drag-only controls.
+ * A save made before the added chapters (every launch chapter finished) reopens with the added chapter next, and the
+ * added chapters are played with keyboard and with touch, under reduced motion.
  * `--shots <dir>` saves screenshots at 1280 and 390px. BASE=<url> to point elsewhere.
  */
 import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
@@ -202,8 +204,10 @@ try {
     (await page.locator(".lg-path-item.is-open a").count()) === 1,
     "escape room: the first room is open",
   );
+  const rooms = await page.locator(".lg-path-item").count();
+  ok(rooms === 4, `escape room 6-8 lists four rooms (${rooms})`);
   ok(
-    (await page.locator(".lg-path-item.is-locked [aria-disabled]").count()) === 2,
+    (await page.locator(".lg-path-item.is-locked [aria-disabled]").count()) === rooms - 1,
     "escape room: later rooms are locked and not links",
   );
   await axe(page, ".lg-game", "escape room map");
@@ -320,6 +324,156 @@ try {
     (await page.locator(".bk-canvas").innerText()).includes(headline.slice(0, 20)),
     "the newsroom report lands in Book Studio",
   );
+
+  // Added chapters: a learner who finished every launch chapter before they existed comes back to a new one.
+  const STORE = "accessPracticeLab:v1:flagship";
+  const E = await import(new URL(`file://${REPO_ROOT}/access-practice-lab/src/flagship/engine.js`));
+  const finishedLaunch = (band) => {
+    const st = {};
+    for (const g of E.GAMES) {
+      const bs = E.bandState(st, g.id, band);
+      for (const c of E.chaptersOf(g, band).slice(0, -1)) {
+        const cs = E.chapterState(bs, c.id);
+        for (let n = 0; n < 40 && !cs.done; n++) {
+          const step = E.activeSteps(c, cs.flags)[cs.at];
+          const ss = E.stepState(cs, step.id);
+          const input =
+            step.type === "choose"
+              ? step.options.find((o) => o.ok).id
+              : step.type === "sort"
+                ? Object.fromEntries(
+                    step.items.map((it) => [it.id, { cat: it.cat, reason: it.reason }]),
+                  )
+                : step.model;
+          const r = E.attempt(step, ss, input);
+          E.applyFlags(bs, cs, r.sets);
+          E.advance(bs, c, cs);
+        }
+      }
+    }
+    return JSON.stringify(st);
+  };
+  for (const band of ["3-5", "6-8"]) {
+    const legacy = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+      reducedMotion: "reduce",
+    });
+    await legacy.addInitScript(
+      ([key, value]) => {
+        if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+      },
+      [STORE, finishedLaunch(band)],
+    );
+    const lp = await legacy.newPage();
+    lp.on("pageerror", (e) => !/web-vitals/.test(String(e)) && errors.push(e.stack || String(e)));
+    await lp.goto(`${origin}${LAB}/language-games?grades=${band}`);
+    await lp.waitForSelector("#app h1", { timeout: 15000 });
+    const meta = await lp.locator(".lg-card-meta").allInnerTexts();
+    ok(
+      meta.length === 4 && meta.every((t) => /\b(3|4) of (4|5)\b/.test(t)),
+      `${band}: an older finished save shows one chapter still to play on every game card (${meta.join(" | ").replace(/\s+/g, " ")})`,
+    );
+    ok(
+      await lp.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches),
+      `${band}: reduced motion is on for this learner`,
+    );
+    for (const id of [
+      "escape-room",
+      "evidence-detective",
+      "conversation-quest",
+      "newsroom-challenge",
+    ]) {
+      await lp.goto(`${origin}${LAB}/language-games/${id}?grades=${band}`);
+      await lp.waitForSelector("#app h1");
+      const open = lp.locator(".lg-path-item:not(.is-done) a");
+      ok((await open.count()) === 1, `${band} ${id}: exactly the added chapter is open`);
+      const href = await open.first().getAttribute("href");
+      const chapterId = href.split("/").pop().split("?")[0];
+      await lp.goto(`${origin}${href}`);
+      await lp.waitForSelector(".lg-step");
+      if (id === "conversation-quest" || id === "escape-room")
+        await axe(lp, ".lg-play", `${band} ${id} added chapter`);
+      ok(
+        await playChapter(lp, id, band, chapterId, { wrongFirst: true }),
+        `${band} ${id}: the added chapter plays to the end from an older save`,
+      );
+      const back = await lp.evaluate((k) => JSON.parse(localStorage.getItem(k)), STORE);
+      ok(
+        back[id][band].ch[chapterId].done === true &&
+          Object.keys(back[id][band].ch).length === E.chaptersOf(E.gameById(id), band).length,
+        `${band} ${id}: the save keeps every old chapter and records the added one`,
+      );
+      const running = await lp.evaluate(
+        () =>
+          document
+            .getAnimations()
+            .filter(
+              (a) => a.playState === "running" && a.effect?.getTiming().iterations === Infinity,
+            ).length,
+      );
+      ok(running === 0, `${band} ${id}: no endless animation under reduced motion (${running})`);
+    }
+    await legacy.close();
+  }
+
+  // Keyboard only: one choose step and one write step of the reading-room negotiation, no pointer.
+  {
+    const kb = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await kb.addInitScript(
+      ([key, value]) => {
+        if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+      },
+      [STORE, finishedLaunch("6-8")],
+    );
+    const kp = await kb.newPage();
+    kp.on("pageerror", (e) => !/web-vitals/.test(String(e)) && errors.push(e.stack || String(e)));
+    await kp.goto(`${origin}${LAB}/language-games/conversation-quest/cq68-readingroom?grades=6-8`);
+    await kp.waitForSelector("#app h1");
+    const first = await currentStep(kp, "conversation-quest", "6-8", "cq68-readingroom");
+    ok(first.type === "choose", "the added chapter opens with a choice");
+    await kp.locator(`.lg-opt input[value="${first.options.find((o) => o.ok).id}"]`).focus();
+    await kp.keyboard.press("Space");
+    await kp.locator("[data-lg-check]").focus();
+    await kp.keyboard.press("Enter");
+    await kp.waitForSelector("[data-lg-next]");
+    ok(/Yes/.test(await fb(kp)), "keyboard: a choice is made with Space and checked with Enter");
+    await kp.locator("[data-lg-next]").focus();
+    await kp.keyboard.press("Enter");
+    await kp.waitForSelector("[data-lg-text]");
+    const w = await currentStep(kp, "conversation-quest", "6-8", "cq68-readingroom");
+    await kp.locator("[data-lg-text]").fill(w.model);
+    await kp.keyboard.press("Control+Enter");
+    await kp.waitForSelector("[data-lg-next]");
+    ok(/Yes/.test(await fb(kp)), "keyboard: Ctrl+Enter checks a written line");
+    await kb.close();
+  }
+
+  // Touch: a phone-sized learner taps through one added chapter.
+  {
+    const tc = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    const tp = await tc.newPage();
+    tp.on("pageerror", (e) => !/web-vitals/.test(String(e)) && errors.push(e.stack || String(e)));
+    await tc.addInitScript(
+      ([key, value]) => {
+        if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+      },
+      [STORE, finishedLaunch("3-5")],
+    );
+    await tp.goto(`${origin}${LAB}/language-games/escape-room/er35-greenhouse?grades=3-5`);
+    await tp.waitForSelector(".lg-step");
+    const s1 = await currentStep(tp, "escape-room", "3-5", "er35-greenhouse");
+    await tp.locator(`.lg-opt:has(input[value="${s1.options.find((o) => o.ok).id}"])`).tap();
+    await tp.locator("[data-lg-check]").tap();
+    await tp.waitForSelector("[data-lg-next]");
+    ok(/Yes/.test(await fb(tp)), "touch: a choice is tapped and checked in the added room");
+    const over = await tp.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    ok(over <= 1, `touch: the added room has no sideways scroll (${over}px)`);
+    await tc.close();
+  }
 
   // Phone
   const phone = await browser.newContext({

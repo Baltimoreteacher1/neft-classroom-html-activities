@@ -1,6 +1,8 @@
 // Newsroom Challenge, grades 6-8: "The Eastbrook Ledger". Content only (schema: engine.js).
 // Every assignment runs the same newsroom routine: judge source reliability, resolve a conflict between witnesses with
 // the data, sort fact from opinion, write a headline, write a 5W lead, and correct a draft sentence the editor flags.
+import { TRANSIT_68 } from "./newsroom-challenge-transit.js";
+
 const C = (en, es) => [en, es];
 
 const FACT = { id: "fact", label: C("Fact: can be checked", "Hecho: se puede comprobar") };
@@ -12,9 +14,9 @@ const EDITOR = "Mr. Haddad, editor";
 
 export const BAND_68 = {
   premise:
-    "You just joined The Eastbrook Ledger, the community newspaper that student reporters help write. Your editor, Mr. Haddad, has one rule: a story is not finished until every fact is checked against a source you can trust. Three assignments are waiting.",
+    "You just joined The Eastbrook Ledger, the community newspaper that student reporters help write. Your editor, Mr. Haddad, has one rule: a story is not finished until every fact is checked against a source you can trust. Four assignments are waiting, and the last one follows a city bus route.",
   premiseEs:
-    "Acabas de entrar a The Eastbrook Ledger, el periódico comunitario que ayudan a escribir reporteros estudiantes. Tu editor, el Sr. Haddad, tiene una regla: una noticia no está terminada hasta que cada dato se compara con una fuente confiable. Tres encargos te esperan.",
+    "Acabas de entrar a The Eastbrook Ledger, el periódico comunitario que ayudan a escribir reporteros estudiantes. Tu editor, el Sr. Haddad, tiene una regla: una noticia no está terminada hasta que cada dato se compara con una fuente confiable. Cuatro encargos te esperan, y el último sigue una ruta de autobús de la ciudad.",
   chapters: [
     {
       id: "nc68-crosswalk",
@@ -1032,5 +1034,6 @@ export const BAND_68 = {
         },
       ],
     },
+    TRANSIT_68,
   ],
 };

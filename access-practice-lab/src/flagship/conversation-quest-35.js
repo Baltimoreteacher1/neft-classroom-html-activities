@@ -2,13 +2,15 @@
 // Each encounter: an opening line (register), your own line (say), a mix-up, a repair strategy, the repair (say), and a
 // final choice that sets a story flag. Flags: toy (ch1) → ch2 intro, ch4 steps; soccer (ch2) → ch3 and ch4 intros;
 // poster (ch3) → ch4 outro.
+import { READING_ROOM_35 } from "./conversation-quest-reading-room.js";
+
 const C = (en, es) => [en, es];
 
 export const BAND_35 = {
   premise:
-    "It is a busy week on Maple Street. You have four real conversations to get through: at the market, at soccer, with your project partner, and at the library. How you speak changes how people answer, and every choice you make follows you to the next stop.",
+    "It is a busy week on Maple Street. You have five real conversations to get through: at the market, at soccer, with your project partner, at the library, and over who gets the Reading Corner. How you speak changes how people answer, and every choice you make follows you to the next stop.",
   premiseEs:
-    "Es una semana muy ocupada en la calle Maple. Tienes cuatro conversaciones reales: en el mercado, en fútbol, con tu compañero de proyecto y en la biblioteca. Cómo hablas cambia cómo te responden, y cada decisión que tomas te sigue a la próxima parada.",
+    "Es una semana muy ocupada en la calle Maple. Tienes cinco conversaciones reales: en el mercado, en fútbol, con tu compañero de proyecto, en la biblioteca y sobre quién usa el Rincón de Lectura. Cómo hablas cambia cómo te responden, y cada decisión que tomas te sigue a la próxima parada.",
   chapters: [
     {
       id: "cq35-toy",
@@ -1060,5 +1062,6 @@ export const BAND_35 = {
         },
       ],
     },
+    READING_ROOM_35,
   ],
 };

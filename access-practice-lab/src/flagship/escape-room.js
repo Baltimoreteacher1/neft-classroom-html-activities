@@ -1,5 +1,5 @@
 // Language Escape Room: rooms with locks; every lock opens only after the learner interprets evidence (a note, a map,
-// a schedule, a diagram) and explains the reasoning in a sentence that is checked. Three rooms per band, rising
+// a schedule, a diagram) and explains the reasoning in a sentence that is checked. Four rooms per band (the fourth, a greenhouse control room, was added after launch), rising
 // language demand; the final room combines the skills. Content: escape-room-35.js, escape-room-68.js.
 import { BAND_35 } from "./escape-room-35.js";
 import { BAND_68 } from "./escape-room-68.js";
@@ -7,7 +7,7 @@ import { BAND_68 } from "./escape-room-68.js";
 export const GAME = {
   id: "escape-room",
   use: "Explain",
-  chapters: 3,
+  chapters: 4,
   icon: "lock",
   art: ["bg-museum", "char-detective"],
   title: ["Language Escape Room", "Sala de escape del lenguaje"],

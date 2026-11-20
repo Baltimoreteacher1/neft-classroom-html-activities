@@ -218,10 +218,15 @@ export function buildStudioIndex(root = CONTENT_DIR) {
  */
 export function buildGlossary(root = CONTENT_DIR) {
   const byTerm = new Map();
+  // Keep established glossary meanings stable when additive activities reuse a word.
+  // New terms are still discovered below; the one intentional correction is unit rate.
+  const previous = readJson(join(root, "glossary.json"));
+  for (const entry of previous?.terms || [])
+    byTerm.set(String(entry.term).trim().toLowerCase(), entry);
   for (const { activity } of allActivities(root))
     for (const [term, def, es] of activity.vocabulary || []) {
       const key = String(term).trim().toLowerCase();
-      if (!key || byTerm.has(key)) continue;
+      if (!key || (byTerm.has(key) && key !== "unit rate")) continue;
       const m = /^([^:]+):\s*(.+)$/.exec(String(es || ""));
       byTerm.set(key, {
         term: key,

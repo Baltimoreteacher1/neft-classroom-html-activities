@@ -307,6 +307,23 @@ export default [
     ],
     frames: ["Bees dance to ___.", "The dance tells the other bees ___."],
     focus: ["a sentence that explains why", "words like tells and to", "the job of the dance"],
+    support:
+      "Number the five sentences. Ask of each one: Does it tell where the bee is, what the bee does, or why? Cross out sentences that only tell what happens before or after the dance. Keep the sentence that says what the dance does for the other bees.",
+    extension:
+      "Find a sentence in another science text that tells why an animal does something. Underline the words that show the reason, such as to or so that. Then write one sentence of your own that tells why bees dance.",
+    teacher: {
+      use: "Science reading lesson on animal behavior; a model for finding a reason sentence in any text.",
+      function:
+        "Telling a sentence that gives a reason from sentences that tell what happens before or after.",
+      lower:
+        "Read the five sentences aloud. After each, ask: is this where, what, or why? Students label it before clicking.",
+      onLevel:
+        "Students read, label each sentence, click the reason, and say which words showed it was a reason.",
+      challenge:
+        "Ask students to explain why the sentence about what happens after the dance is not the reason, then move one sentence to a new place and say how the meaning changes.",
+      noTech: "Print the five sentences; students label each one with where, what, or why.",
+      prompt: "What does the dance do for the other bees?",
+    },
     correct:
       "Right! That sentence explains the purpose of the dance: it shows direction and distance.",
     hint: "A reason sentence often has words like tells or so that. Which sentence says what the dance does?",

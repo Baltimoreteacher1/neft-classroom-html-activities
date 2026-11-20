@@ -1,6 +1,8 @@
 // Newsroom Challenge, grades 3-5: "The Maple Street Messenger". Content only (schema: engine.js).
 // Every assignment runs the same newsroom routine: judge a source, catch the witness detail that is wrong, sort fact
 // from opinion, write a headline, write a lead, and fix a draft sentence the editor flags.
+import { TRANSIT_35 } from "./newsroom-challenge-transit.js";
+
 const C = (en, es) => [en, es];
 
 const FACT = { id: "fact", label: C("Fact: can be checked", "Hecho: se puede comprobar") };
@@ -12,9 +14,9 @@ const EDITOR = "Ms. Rivera, editor";
 
 export const BAND_35 = {
   premise:
-    "You are the newest reporter at The Maple Street Messenger, your school newspaper. Your editor, Ms. Rivera, gives you three stories. Talk to people, read the numbers, and check every fact before your story goes to print.",
+    "You are the newest reporter at The Maple Street Messenger, your school newspaper. Your editor, Ms. Rivera, gives you four stories, and the last one is about a school bus. Talk to people, read the numbers, and check every fact before your story goes to print.",
   premiseEs:
-    "Eres la reportera o el reportero más nuevo de The Maple Street Messenger, el periódico de tu escuela. Tu editora, la Sra. Rivera, te da tres noticias. Habla con la gente, lee los números y revisa cada dato antes de que tu noticia se imprima.",
+    "Eres la reportera o el reportero más nuevo de The Maple Street Messenger, el periódico de tu escuela. Tu editora, la Sra. Rivera, te da cuatro noticias, y la última trata de un autobús escolar. Habla con la gente, lee los números y revisa cada dato antes de que tu noticia se imprima.",
   chapters: [
     {
       id: "nc35-garden",
@@ -939,5 +941,6 @@ export const BAND_35 = {
         },
       ],
     },
+    TRANSIT_35,
   ],
 };

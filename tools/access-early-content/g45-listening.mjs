@@ -74,6 +74,23 @@ export default [
       "the words do not and may not",
       "action words like walk and use",
     ],
+    support:
+      "Make two columns on paper: Do and Do not. Listen once and write each rule in a column. Words like do not and may not send a rule to the Do not column. Then choose every rule from the Do column.",
+    extension:
+      "Write three rules for a place you know, such as the gym or the bus. Use one rule that starts with a verb, one with do not, and one with may not. Read them to a partner, who tells which rule is hardest to follow.",
+    teacher: {
+      use: "Whole group, partners, or a listening center before students write rules for a real place.",
+      function:
+        "Finding every rule in a talk and telling rules to follow from things that are not allowed.",
+      lower:
+        "Read one sentence at a time. After each, students point to Do or Do not on the two-column chart before the next sentence.",
+      onLevel:
+        "Read once at a natural pace. Students choose all the rules, then say which words told them what is not allowed.",
+      challenge:
+        "Ask students to turn each Do rule into a Do not rule with the same meaning, then check that the meaning stays true.",
+      noTech: "Read the script aloud; students sort the rules into a Do and Do not chart on paper.",
+      prompt: "Which words told you a rule was not allowed?",
+    },
     correct: "Great listening! You caught three rules and you also heard what is not allowed.",
     hint: "Listen for the words do not and may not. Those tell you what to leave out.",
     wida: ["Inform: identify details in directions", "Notice the words not and do not"],

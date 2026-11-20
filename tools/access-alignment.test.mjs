@@ -11,8 +11,8 @@ const committed = JSON.parse(
 );
 assert.deepEqual(committed, index, "generated alignment inventory must be current");
 assert.equal(index.records.length, index.counts.total);
-assert.equal(index.counts.activityBank, 908);
-assert.equal(index.counts.studios, 40);
+assert.equal(index.counts.activityBank, 933);
+assert.equal(index.counts.studios, 56);
 assert.equal(index.counts.missions, 9);
 assert.equal(
   new Set(index.records.map((r) => r.id)).size,
@@ -24,7 +24,7 @@ assert.equal(
   0,
   "no reviewed Language Expectation IDs are authored",
 );
-assert.equal(index.counts.suggestedExpectations, 35);
+assert.equal(index.counts.suggestedExpectations, 50);
 assert.ok(index.expectationCatalog.length === 60);
 const expectationIds = new Set(index.expectationCatalog.map((x) => x.id));
 assert.ok(
@@ -35,8 +35,8 @@ assert.ok(
 assert.ok(
   index.records.some((r) => r.languageExpectationCandidates.includes("ELD-SI.4-12.Narrate")),
 );
-assert.equal(index.counts.explicitStandards, 49);
-assert.equal(index.counts.explicitKeyUses, 49);
+assert.equal(index.counts.explicitStandards, 65);
+assert.equal(index.counts.explicitKeyUses, 65);
 assert.ok(
   index.records.some((r) => r.id === "saving-the-school-garden" && r.localGradeBand === "3-5"),
 );

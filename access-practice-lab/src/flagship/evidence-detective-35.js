@@ -1,6 +1,8 @@
 // Evidence Detective, grades 3-5: "The Willow Creek Detective Club". Content only (schema: engine.js).
 // Every case: sort the clues (helps / does not help, with a reason), choose the best-supported conclusion,
 // defend it (claim + evidence + reasoning), then answer someone who disagrees.
+import { MUSEUM_35 } from "./evidence-detective-museum.js";
+
 const C = (en, es) => [en, es];
 
 const CATS = [
@@ -10,9 +12,9 @@ const CATS = [
 
 export const BAND_35 = {
   premise:
-    "You just joined the Detective Club at Willow Creek School. Detective Paz has one rule: a good detective does not guess. You read every clue, keep the ones that help, and explain your thinking. Three cases are waiting in the case box.",
+    "You just joined the Detective Club at Willow Creek School. Detective Paz has one rule: a good detective does not guess. You read every clue, keep the ones that help, and explain your thinking. Four cases are waiting in the case box, and the last one is a museum mystery.",
   premiseEs:
-    "Acabas de entrar al Club de Detectives de la Escuela Willow Creek. La detective Paz tiene una regla: un buen detective no adivina. Lees cada pista, guardas las que ayudan y explicas lo que piensas. Hay tres casos esperando en la caja de casos.",
+    "Acabas de entrar al Club de Detectives de la Escuela Willow Creek. La detective Paz tiene una regla: un buen detective no adivina. Lees cada pista, guardas las que ayudan y explicas lo que piensas. Hay cuatro casos esperando en la caja de casos, y el último es un misterio de museo.",
   chapters: [
     {
       id: "ed35-hamster",
@@ -771,5 +773,6 @@ export const BAND_35 = {
         },
       ],
     },
+    MUSEUM_35,
   ],
 };

@@ -1,6 +1,8 @@
 // Evidence Detective, grades 6-8: "The Ridgeview Evidence Unit". Content only (schema: engine.js).
 // Every case: sort the clues (relevant / irrelevant, with a reason), choose the best-supported conclusion,
 // defend it (claim + evidence + reasoning), then answer a counterclaim.
+import { MUSEUM_68 } from "./evidence-detective-museum.js";
+
 const C = (en, es) => [en, es];
 
 const CATS = [
@@ -924,5 +926,6 @@ export const BAND_68 = {
         },
       ],
     },
+    MUSEUM_68,
   ],
 };

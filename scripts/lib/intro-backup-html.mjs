@@ -1,5 +1,28 @@
 // Print markup for the Featured Lesson backup: page 1 for students (no teacher guidance), page 2 for the teacher.
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { html, raw, toHtml } from "../../access-practice-lab/src/util.js";
+
+const LAB = "/access-practice-lab/";
+const ROOT = new URL("../../access-practice-lab/", import.meta.url);
+
+function printPicture(src) {
+  let svg;
+  if (src.startsWith("data:image/svg+xml;charset=utf-8,")) {
+    svg = decodeURIComponent(src.slice(src.indexOf(",") + 1));
+  } else if (src.startsWith(LAB) && src.endsWith(".svg")) {
+    svg = readFileSync(fileURLToPath(new URL(src.slice(LAB.length), ROOT)), "utf8");
+  } else {
+    return src;
+  }
+
+  // The grain overlay forces Chromium to rasterize the whole illustration at print resolution.
+  // The underlying SVG is vector art, so omit only that subtle texture in the printable backup.
+  svg = svg
+    .replace(/<filter id="grain"[\s\S]*?<\/filter>/, "")
+    .replace(/<rect\b[^>]*filter="url\(#grain\)"[^>]*\/>/, "");
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
 
 const lines = (n) =>
   raw(`<div class="ib-lines" aria-hidden="true">${"<span></span>".repeat(n)}</div>`);
@@ -11,7 +34,7 @@ function studentPage(s) {
       <p class="ib-name"><span>Name</span><span class="ib-rule"></span></p>
     </header>
     <section class="ib-top" aria-label="Picture and task">
-      <figure class="ib-pic"><img src="${s.picture.src}" alt="${s.picture.alt}" width="345" height="216"></figure>
+      <figure class="ib-pic"><img src="${printPicture(s.picture.src)}" alt="${s.picture.alt}" width="345" height="216"></figure>
       <div class="ib-task">
         <h2>${s.promptLabel}</h2>
         <p class="ib-prompt">${s.prompt}</p>

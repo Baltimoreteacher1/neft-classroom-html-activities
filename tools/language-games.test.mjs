@@ -22,11 +22,13 @@ test("four games, each complete in grades 3-5 and 6-8 (validateGame finds nothin
     IDS,
   );
   for (const g of E.GAMES) assert.deepEqual(E.validateGame(g), [], g.id);
+  // Launch chapters plus the one added after launch (greenhouse room, museum case, reading-room encounter, transit
+  // assignment). Old chapters keep their ids and order: tools/language-games-chapters.test.mjs pins both.
   const counts = {
-    "escape-room": 3,
-    "evidence-detective": 3,
-    "conversation-quest": 4,
-    "newsroom-challenge": 3,
+    "escape-room": 4,
+    "evidence-detective": 4,
+    "conversation-quest": 5,
+    "newsroom-challenge": 4,
   };
   for (const g of E.GAMES)
     for (const b of E.BANDS) assert.equal(E.chaptersOf(g, b).length, counts[g.id], `${g.id} ${b}`);

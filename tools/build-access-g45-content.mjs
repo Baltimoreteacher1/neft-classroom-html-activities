@@ -232,8 +232,9 @@ function expandItem(spec, domain) {
   return a;
 }
 
-// Specs live in g45-<domain>.mjs (the first depth pass) and g45-<domain>-2.mjs (the publisher content pass).
-const SPEC_PARTS = ["", "-2"];
+// Specs live in g45-<domain>.mjs (the first depth pass), g45-<domain>-2.mjs (the publisher content pass) and
+// g45-<domain>-3.mjs (the Listening/Reading expansion). A part that does not exist for a domain is skipped.
+const SPEC_PARTS = ["", "-2", "-3"];
 export async function loadSpecs(domain) {
   const out = [];
   for (const part of SPEC_PARTS) {

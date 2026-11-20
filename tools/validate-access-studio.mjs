@@ -10,7 +10,8 @@
  * Detectors self-test against known-bad fixtures BEFORE the sweep.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
 
@@ -44,8 +45,16 @@ const SKILLS = ["Listening", "Reading", "Speaking", "Writing", "Decision"];
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const asList = (x) => (Array.isArray(x) ? x : x ? [x] : []);
-const failures = [];
+export const failures = [];
 const fail = (where, msg) => failures.push(`${where}: ${msg}`);
+/** Run a detector and return only the failures it added (used by tools/access-studio-elementary.test.mjs). */
+export function collect(fn) {
+  const before = failures.length;
+  fn();
+  return failures.splice(before);
+}
+// Importing this file must not sweep the content or exit: only running it does.
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 function readJson(file) {
   return JSON.parse(readFileSync(file, "utf8"));
@@ -128,13 +137,15 @@ const missions = existsSync(MISSION_DIR)
       .filter((f) => f.endsWith(".json"))
       .map((f) => [f, readJson(join(MISSION_DIR, f))])
   : [];
-for (const band of ["3-5", "6-8"]) {
-  const count = missions.filter(([, mission]) => mission.band === band).length;
-  if (count < (band === "3-5" ? 3 : 6))
-    fail(
-      `missions:coverage`,
-      `${band} needs at least ${band === "3-5" ? 3 : 6} original missions (found ${count})`,
-    );
+function checkMissionCoverage() {
+  for (const band of ["3-5", "6-8"]) {
+    const count = missions.filter(([, mission]) => mission.band === band).length;
+    if (count < (band === "3-5" ? 3 : 6))
+      fail(
+        `missions:coverage`,
+        `${band} needs at least ${band === "3-5" ? 3 : 6} original missions (found ${count})`,
+      );
+  }
 }
 
 const seen = new Map();
@@ -155,6 +166,53 @@ function commonTask(where, t) {
   checkVocab(where, t.vocab);
   if (asList(t.vocab).length < 3) fail(where, "≥3 vocab");
   checkStages(where, t.stages);
+}
+
+const words = (text) =>
+  String(text || "")
+    .split(/\s+/)
+    .filter(Boolean).length;
+/** Band 3-5 speaking: shorter turns and a model a younger learner can say; discussions need real discourse moves. */
+export function checkElementarySpeaking(w, t) {
+  if (t.targetSeconds?.[1] > 120) fail(w, "3-5 speaking: targetSeconds max must be 120 or less");
+  if (words(t.stages?.guided?.model) > 140) fail(w, "3-5 speaking: guided model over 140 words");
+  if (asList(t.successCriteria).length > 4) fail(w, "3-5 speaking: at most 4 successCriteria");
+  if (t.taskType === "discuss") {
+    const turns = asList(t.turns);
+    for (const u of turns)
+      if (!u.partner || !u.voice || words(u.say) < 6)
+        fail(w, "3-5 discuss: every partner turn needs partner, voice and a spoken line");
+    if (new Set(turns.map((u) => u.expects)).size < 2)
+      fail(w, "3-5 discuss: partner turns must ask for at least 2 different discourse moves");
+    if (!asList(t.planner).some((p) => /partner|answer|respond|reply/i.test(`${p.id} ${p.label}`)))
+      fail(w, "3-5 discuss: planner needs a slot for answering the partner");
+  }
+}
+/** Band 3-5 writing: short, sourced, one idea per organizer slot. */
+export function checkElementaryWriting(w, t) {
+  const e = t.expected || {};
+  if (!(e.minWords >= 25)) fail(w, "3-5 writing: expected.minWords must be at least 25");
+  if (!(e.maxWords <= 140)) fail(w, "3-5 writing: expected.maxWords must be 140 or less");
+  if (!(e.paragraphs >= 1 && e.paragraphs <= 3))
+    fail(w, "3-5 writing: expected.paragraphs must be 1-3");
+  if (words(t.stages?.guided?.model) > 130) fail(w, "3-5 writing: guided model over 130 words");
+  const sup = asList(t.stages?.supported?.bank).length;
+  if (sup < 6 || sup > 12) fail(w, "3-5 writing: supported bank must have 6-12 terms");
+  if (!asList(t.teacher?.lookFor).length || !asList(t.teacher?.commonIssues).length)
+    fail(w, "3-5 writing: teacher.lookFor and teacher.commonIssues required");
+}
+/** The 3-5 band must keep its own writing collection and at least one real discussion task. */
+export function checkElementaryCoverage(speakingTasks, writingTasks) {
+  const w = "coverage:3-5";
+  const wr = asList(writingTasks).filter((t) => t.band === "3-5");
+  const sp = asList(speakingTasks).filter((t) => t.band === "3-5");
+  if (wr.length < 6) fail(w, `3-5 writing needs at least 6 tasks (found ${wr.length})`);
+  if (new Set(wr.map((t) => t.form)).size < 4)
+    fail(w, "3-5 writing needs at least 4 different forms");
+  if (new Set(wr.map((t) => t.keyUse)).size < 3)
+    fail(w, "3-5 writing needs at least 3 Key Language Uses");
+  if (!sp.some((t) => t.taskType === "discuss"))
+    fail(w, "3-5 speaking needs at least 1 discuss task");
 }
 
 export function checkSpeakingTask(w, t, { inline = false } = {}) {
@@ -187,6 +245,7 @@ export function checkSpeakingTask(w, t, { inline = false } = {}) {
   const bank = asList(t.stages?.supported?.bank).length;
   if (bank < 6 || bank > 12) fail(w, "supported bank: 6-12");
   if (!inline && !t.teacher?.listenFor?.length) fail(w, "teacher.listenFor required");
+  if (!inline && t.band === "3-5") checkElementarySpeaking(w, t);
 }
 export function sweepSpeaking(data, exemplarIds = null) {
   const perType = {};
@@ -202,6 +261,9 @@ export function sweepSpeaking(data, exemplarIds = null) {
 }
 export function checkWritingTask(w, t, { inline = false } = {}) {
   commonTask(w, t);
+  if (!inline && !["6-8", "3-5"].includes(t.band))
+    fail(w, `band must be "3-5" or "6-8" (found "${t.band}")`);
+  if (!inline && t.band === "3-5") checkElementaryWriting(w, t);
   if (!WRITE_FORMS.includes(t.form)) fail(w, `form must be one of ${WRITE_FORMS}`);
   if (!asList(t.sources).length && !inline) fail(w, "writing tasks need ≥1 source");
   if (asList(t.organizer).length < 3 || t.organizer.length > 5)
@@ -433,79 +495,85 @@ function selfTest() {
     throw new Error("self-test: false positive on disclaimer");
 }
 
-selfTest();
-const exemplarIds = new Set((exemplars?.exemplars || []).map((x) => x.id));
-sweepSpeaking(speaking, exemplars ? exemplarIds : null);
-sweepWriting(writing, exemplars ? exemplarIds : null);
-const tasks = new Map([
-  ...(speaking?.tasks || []).map((t) => [t.id, "speaking"]),
-  ...(writing?.tasks || []).map((t) => [t.id, "writing"]),
-]);
-sweepExemplars(exemplars, tasks);
-const speakIds = new Set((speaking?.tasks || []).map((t) => t.id));
-const writeIds = new Set((writing?.tasks || []).map((t) => t.id));
-for (const [file, m] of missions) sweepMission(file, m, speakIds, writeIds);
+async function main() {
+  selfTest();
+  checkMissionCoverage();
+  checkElementaryCoverage(speaking?.tasks, writing?.tasks);
+  const exemplarIds = new Set((exemplars?.exemplars || []).map((x) => x.id));
+  sweepSpeaking(speaking, exemplars ? exemplarIds : null);
+  sweepWriting(writing, exemplars ? exemplarIds : null);
+  const tasks = new Map([
+    ...(speaking?.tasks || []).map((t) => [t.id, "speaking"]),
+    ...(writing?.tasks || []).map((t) => [t.id, "writing"]),
+  ]);
+  sweepExemplars(exemplars, tasks);
+  const speakIds = new Set((speaking?.tasks || []).map((t) => t.id));
+  const writeIds = new Set((writing?.tasks || []).map((t) => t.id));
+  for (const [file, m] of missions) sweepMission(file, m, speakIds, writeIds);
 
-if (patterns) {
-  const { DETECTORS, detect } = await import(
-    join(REPO_ROOT, "access-practice-lab/src/lang/errors.js")
-  );
-  const ids = new Set(DETECTORS.map((d) => d.id));
-  for (const [pid, p] of Object.entries(patterns.patterns || {})) {
-    const w = `pattern:${pid}`;
-    if (!ids.has(pid)) fail(w, "no detector with this id in src/lang/errors.js");
-    if (
-      !p.lesson?.rule ||
-      !p.lesson?.wrong ||
-      !p.lesson?.right ||
-      !p.lesson?.why ||
-      !p.lesson?.check
-    )
-      fail(w, "lesson rule/wrong/right/why/check required");
-    if (p.lesson?.wrong && !detect(p.lesson.wrong).some((f) => f.id === pid))
-      fail(w, `lesson.wrong not flagged: "${p.lesson.wrong}"`);
-    if (
-      p.lesson?.right &&
-      detect(p.lesson.right).some((h) => h.id === pid || h.confidence === "high")
-    )
-      fail(w, `lesson.right is flagged: "${p.lesson.right}"`);
-    if (asList(p.practice).length < 6) fail(w, "≥6 practice items");
-    if (asList(p.transfer).length < 2) fail(w, "≥2 transfer prompts");
-    for (const q of p.practice || []) {
-      if (!detect(q.broken).some((f) => f.id === pid))
-        fail(w, `${q.id}: broken not flagged by ${pid}: "${q.broken}"`);
-      for (const f of q.fixed || []) {
-        const hit = detect(f).filter((h) => h.id === pid || h.confidence === "high");
-        if (hit.length)
-          fail(w, `${q.id}: fixed answer still flagged (${hit.map((h) => h.id)}): "${f}"`);
+  if (patterns) {
+    const { DETECTORS, detect } = await import(
+      join(REPO_ROOT, "access-practice-lab/src/lang/errors.js")
+    );
+    const ids = new Set(DETECTORS.map((d) => d.id));
+    for (const [pid, p] of Object.entries(patterns.patterns || {})) {
+      const w = `pattern:${pid}`;
+      if (!ids.has(pid)) fail(w, "no detector with this id in src/lang/errors.js");
+      if (
+        !p.lesson?.rule ||
+        !p.lesson?.wrong ||
+        !p.lesson?.right ||
+        !p.lesson?.why ||
+        !p.lesson?.check
+      )
+        fail(w, "lesson rule/wrong/right/why/check required");
+      if (p.lesson?.wrong && !detect(p.lesson.wrong).some((f) => f.id === pid))
+        fail(w, `lesson.wrong not flagged: "${p.lesson.wrong}"`);
+      if (
+        p.lesson?.right &&
+        detect(p.lesson.right).some((h) => h.id === pid || h.confidence === "high")
+      )
+        fail(w, `lesson.right is flagged: "${p.lesson.right}"`);
+      if (asList(p.practice).length < 6) fail(w, "≥6 practice items");
+      if (asList(p.transfer).length < 2) fail(w, "≥2 transfer prompts");
+      for (const q of p.practice || []) {
+        if (!detect(q.broken).some((f) => f.id === pid))
+          fail(w, `${q.id}: broken not flagged by ${pid}: "${q.broken}"`);
+        for (const f of q.fixed || []) {
+          const hit = detect(f).filter((h) => h.id === pid || h.confidence === "high");
+          if (hit.length)
+            fail(w, `${q.id}: fixed answer still flagged (${hit.map((h) => h.id)}): "${f}"`);
+        }
+        if (!asList(q.fixed).length) fail(w, `${q.id}: needs fixed[]`);
       }
-      if (!asList(q.fixed).length) fail(w, `${q.id}: needs fixed[]`);
+      for (const t of p.transfer || [])
+        if (!t.context || !t.prompt || !(t.minWords > 0))
+          fail(w, `${t.id}: transfer needs context/prompt/minWords`);
     }
-    for (const t of p.transfer || [])
-      if (!t.context || !t.prompt || !(t.minWords > 0))
-        fail(w, `${t.id}: transfer needs context/prompt/minWords`);
+    for (const id of ids)
+      if (!patterns.patterns?.[id]) fail("patterns", `detector "${id}" has no lesson content`);
   }
-  for (const id of ids)
-    if (!patterns.patterns?.[id]) fail("patterns", `detector "${id}" has no lesson content`);
+
+  for (const [, data] of [
+    ["s", speaking],
+    ["w", writing],
+    ["e", exemplars],
+    ["p", patterns],
+    ...missions,
+  ]) {
+    const claims = scoreClaims(data);
+    if (claims.length) fail("score-claim", claims[0]);
+  }
+
+  if (failures.length) {
+    console.error(`validate:access-studio — FAIL (${failures.length})`);
+    for (const f of failures.slice(0, 80)) console.error(`  ✗ ${f}`);
+    if (failures.length > 80) console.error(`  … ${failures.length - 80} more`);
+    process.exit(1);
+  }
+  console.log(
+    `validate:access-studio — PASS · ${speaking?.tasks?.length || 0} speaking · ${writing?.tasks?.length || 0} writing · ${exemplars?.exemplars?.length || 0} exemplars · ${missions.length} missions · ${Object.keys(patterns?.patterns || {}).length} patterns`,
+  );
 }
 
-for (const [, data] of [
-  ["s", speaking],
-  ["w", writing],
-  ["e", exemplars],
-  ["p", patterns],
-  ...missions,
-]) {
-  const claims = scoreClaims(data);
-  if (claims.length) fail("score-claim", claims[0]);
-}
-
-if (failures.length) {
-  console.error(`validate:access-studio — FAIL (${failures.length})`);
-  for (const f of failures.slice(0, 80)) console.error(`  ✗ ${f}`);
-  if (failures.length > 80) console.error(`  … ${failures.length - 80} more`);
-  process.exit(1);
-}
-console.log(
-  `validate:access-studio — PASS · ${speaking?.tasks?.length || 0} speaking · ${writing?.tasks?.length || 0} writing · ${exemplars?.exemplars?.length || 0} exemplars · ${missions.length} missions · ${Object.keys(patterns?.patterns || {}).length} patterns`,
-);
+if (isMain) await main();

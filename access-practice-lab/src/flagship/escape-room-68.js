@@ -1,12 +1,14 @@
 // Language Escape Room, grades 6-8: "After Hours at the Harbor Museum". Content only (schema: engine.js).
 // Every lock is an interpret step (choose) followed by an explain step (write) with the same `lock` number.
+import { GREENHOUSE_68 } from "./escape-room-greenhouse.js";
+
 const C = (en, es) => [en, es];
 
 export const BAND_68 = {
   premise:
-    "The Harbor Museum closed at five, and your team is still inside. The curator, Ms. Okafor, left notes, maps and schedules behind. Every door has a lock, and every lock opens only when you read the evidence and explain your thinking.",
+    "The Harbor Museum closed at five, and your team is still inside. The curator, Ms. Okafor, left notes, maps and schedules behind. Every door has a lock, and every lock opens only when you read the evidence and explain your thinking. After the museum, one more job waits on the roof.",
   premiseEs:
-    "El Museo del Puerto cerró a las cinco y tu equipo sigue adentro. La curadora, la Sra. Okafor, dejó notas, mapas y horarios. Cada puerta tiene un candado, y cada candado se abre solo cuando lees la evidencia y explicas lo que piensas.",
+    "El Museo del Puerto cerró a las cinco y tu equipo sigue adentro. La curadora, la Sra. Okafor, dejó notas, mapas y horarios. Cada puerta tiene un candado, y cada candado se abre solo cuando lees la evidencia y explicas lo que piensas. Después del museo, te espera un trabajo más en el techo.",
   chapters: [
     {
       id: "er68-archive",
@@ -1003,5 +1005,6 @@ export const BAND_68 = {
         },
       ],
     },
+    GREENHOUSE_68,
   ],
 };

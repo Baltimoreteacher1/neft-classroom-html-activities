@@ -1,12 +1,14 @@
 // Language Escape Room, grades 3-5: "The Green Sprouts Scavenger Hunt". Content only (schema: engine.js).
 // Every lock is an interpret step (choose) followed by an explain step (write) with the same `lock` number.
+import { GREENHOUSE_35 } from "./escape-room-greenhouse.js";
+
 const C = (en, es) => [en, es];
 
 export const BAND_35 = {
   premise:
-    "Your school club, the Green Sprouts, is on a scavenger hunt. Ms. Rivera, the club teacher, hid clues in the garden shed, the treehouse and the school library. Every door has a lock. Read the clues, tell how you know, and open the lock!",
+    "Your school club, the Green Sprouts, is on a scavenger hunt. Ms. Rivera, the club teacher, hid clues in the garden shed, the treehouse and the school library, and one bonus lock waits in the greenhouse. Every door has a lock. Read the clues, tell how you know, and open the lock!",
   premiseEs:
-    "Tu club de la escuela, los Green Sprouts, está en una búsqueda del tesoro. La maestra Rivera escondió pistas en el cobertizo del jardín, la casa del árbol y la biblioteca de la escuela. Cada puerta tiene un candado. ¡Lee las pistas, di cómo lo sabes y abre el candado!",
+    "Tu club de la escuela, los Green Sprouts, está en una búsqueda del tesoro. La maestra Rivera escondió pistas en el cobertizo del jardín, la casa del árbol y la biblioteca de la escuela, y un candado extra espera en el invernadero. Cada puerta tiene un candado. ¡Lee las pistas, di cómo lo sabes y abre el candado!",
   chapters: [
     {
       id: "er35-shed",
@@ -785,5 +787,6 @@ export const BAND_35 = {
         },
       ],
     },
+    GREENHOUSE_35,
   ],
 };

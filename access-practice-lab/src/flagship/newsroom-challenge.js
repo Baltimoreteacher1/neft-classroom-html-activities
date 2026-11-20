@@ -1,6 +1,6 @@
 // Newsroom Challenge: interpret sources (an interview, a data chart, eyewitness accounts that conflict), judge
 // reliability, separate fact from opinion, write a headline and a lead with the 5Ws, and revise for accuracy. The
-// finished report can go to Book Studio (template informational-report). Three assignments per band.
+// finished report can go to Book Studio (template informational-report). Four assignments per band (the fourth, transit reporting, was added after launch).
 // Content: newsroom-challenge-35.js, newsroom-challenge-68.js.
 import { BAND_35 } from "./newsroom-challenge-35.js";
 import { BAND_68 } from "./newsroom-challenge-68.js";
@@ -8,7 +8,7 @@ import { BAND_68 } from "./newsroom-challenge-68.js";
 export const GAME = {
   id: "newsroom-challenge",
   use: "Inform",
-  chapters: 3,
+  chapters: 4,
   icon: "mail",
   art: ["bg-newsroom", "char-reporter"],
   title: ["Newsroom Challenge", "Desafío de la redacción"],

@@ -1731,6 +1731,14 @@
         {
           "focus": "sentence",
           "prompt": "Can you combine the walking and family-car numbers in one sentence with a list?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Your reason is a possibility, not something the table proves. Which words (might, a possible reason, may have) show that, and what else could explain the change?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "The table does not say whether the same 94 students answered both times. How can you describe the change so that it says only what the numbers show?"
         }
       ],
       "successCriteria": [
@@ -1743,13 +1751,17 @@
         "lookFor": [
           "Accurate reading of the table, including the direction of each change.",
           "Percent used appropriately (38 of 94 is about 40 percent) if attempted.",
-          "Cautious language for the reason, not an unsupported certainty."
+          "Cautious language for the reason, not an unsupported certainty.",
+          "Percent calculations checked if attempted: 38 of 94 is about 40 percent and 46 of 94 is about 49 percent",
+          "The change in counts is described accurately before any reason is offered"
         ],
         "commonIssues": [
           "Copying the table row by row without comparing.",
           "Subject-verb agreement with data: 'the results is different', 'the number of students go up'.",
           "Confusing 'number of' with 'amount of', or 'fewer' with 'less'.",
-          "Missing comparison phrases ('from 16 to 3') or switching the October and January numbers."
+          "Missing comparison phrases ('from 16 to 3') or switching the October and January numbers.",
+          "States cold weather or icy roads as the proven cause; the table shows what changed, not why",
+          "Writes that the same students changed their minds, although the table does not say who answered"
         ],
         "exemplarIds": [
           "ex-wrt-commute-report-e",
@@ -2106,6 +2118,14 @@
         {
           "focus": "sentence",
           "prompt": "Can you combine two short sentences about the same effect into one sentence with 'which' or 'so'?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Which of your cause-and-effect links does the passage actually state? Which words (helped, made it possible, may have led to) fit what the passage supports?"
+        },
+        {
+          "focus": "evidence",
+          "prompt": "The passage says that historians estimate about 20 million books. Which words (about, an estimated) show that this is not an exact count?"
         }
       ],
       "successCriteria": [
@@ -2118,13 +2138,16 @@
         "lookFor": [
           "A main idea in the introduction that previews the two effects.",
           "Each body paragraph has a topic sentence, evidence, and explanation.",
-          "Cause-and-effect chains (cheaper books lead to more readers) rather than a list of facts."
+          "Cause-and-effect chains (cheaper books lead to more readers) rather than a list of facts.",
+          "Cause-and-effect language that matches the passage (made it possible, helped, led to) and does not claim that printing was the only cause"
         ],
         "commonIssues": [
           "Paragraphs that retell the passage in order without a controlling idea.",
           "Irregular past tense: 'spended', 'maked', 'was write'; passive voice 'was copied'.",
           "Wrong form of 'book(s)' and 'copy/copies' or missing articles before 'printing press'.",
-          "Conclusions that start new ideas or only repeat the introduction word for word."
+          "Conclusions that start new ideas or only repeat the introduction word for word.",
+          "Treats the 20 million estimate as an exact count",
+          "Claims that the printing press alone caused later changes; the passage links lower prices, more readers, and faster ideas but names no other causes"
         ],
         "exemplarIds": [
           "ex-wrt-printing-press-essay-e",
@@ -2732,6 +2755,1614 @@
           "ex-wrt-science-fair-recount-e",
           "ex-wrt-science-fair-recount-d",
           "ex-wrt-science-fair-recount-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-lunch-waste-cer",
+      "band": "3-5",
+      "title": "Which Food Was Thrown Away the Most?",
+      "form": "cer",
+      "keyUse": "Explain",
+      "standards": [
+        "ELD-SC"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Word/Phrase"
+      ],
+      "contentArea": "Science",
+      "time": "20 min",
+      "scenario": "Your class weighed the food that students threw away at lunch on two days. The cafeteria manager wants to know what you found. The numbers are made-up practice data.",
+      "prompt": "Write a claim, evidence, and reasoning paragraph. Answer this question: Which food was thrown away the most? Use numbers from the table, and tell what the numbers show.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Our Lunch Weigh-In (practice data)",
+          "text": [
+            "Our class helped the cafeteria weigh the food that students threw away. We weighed it on a Tuesday and on a Thursday. We used a scale and wrote each weight in pounds.",
+            "We weighed only four foods. The numbers show how much was thrown away on those two days. They do not tell us why students threw the food away."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Food Thrown Away at Lunch",
+          "table": {
+            "caption": "Food thrown away at lunch, in pounds (practice data)",
+            "headers": [
+              "Food",
+              "Tuesday",
+              "Thursday",
+              "Both days"
+            ],
+            "rows": [
+              [
+                "Carrot sticks",
+                "9 pounds",
+                "7 pounds",
+                "16 pounds"
+              ],
+              [
+                "Rice",
+                "6 pounds",
+                "8 pounds",
+                "14 pounds"
+              ],
+              [
+                "Apple slices",
+                "4 pounds",
+                "5 pounds",
+                "9 pounds"
+              ],
+              [
+                "Chicken nuggets",
+                "3 pounds",
+                "2 pounds",
+                "5 pounds"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "claim",
+          "label": "Claim",
+          "hint": "Say which food was thrown away the most."
+        },
+        {
+          "id": "evidence",
+          "label": "Evidence",
+          "hint": "Use two numbers from the table. Write the word pounds."
+        },
+        {
+          "id": "reasoning",
+          "label": "Reasoning",
+          "hint": "Tell what the numbers show. Compare with another food."
+        },
+        {
+          "id": "idea",
+          "label": "One idea",
+          "hint": "What could the cafeteria try or ask? Use maybe or could."
+        }
+      ],
+      "expected": {
+        "minWords": 40,
+        "maxWords": 90,
+        "paragraphs": 1
+      },
+      "sourceTerms": [
+        "Carrot sticks",
+        "16 pounds",
+        "Chicken nuggets",
+        "Both days"
+      ],
+      "vocab": [
+        {
+          "term": "claim",
+          "def": "a sentence that answers the question",
+          "es": "afirmación: una oración que responde a la pregunta"
+        },
+        {
+          "term": "evidence",
+          "def": "facts or numbers that show an idea is true",
+          "es": "evidencia: hechos o números que muestran que una idea es verdadera"
+        },
+        {
+          "term": "weigh",
+          "def": "to find how heavy something is",
+          "es": "pesar: averiguar qué tan pesado es algo"
+        },
+        {
+          "term": "compare",
+          "def": "to tell how things are the same or different",
+          "es": "comparar: decir en qué se parecen o se diferencian las cosas"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "I claim that ___ was thrown away the most.",
+            "On Tuesday, students threw away ___ pounds, and on Thursday, they threw away ___ pounds.",
+            "This shows that ___ because ___.",
+            "The cafeteria could ___."
+          ],
+          "bank": [
+            "claim",
+            "evidence",
+            "pounds",
+            "both days",
+            "more than",
+            "maybe"
+          ],
+          "model": "I claim that carrot sticks were thrown away the most. On Tuesday, students threw away 9 pounds of carrot sticks, and on Thursday they threw away 7 pounds. That is 16 pounds in all. This shows that more carrot sticks were wasted than any other food, because rice was 14 pounds and chicken nuggets were only 5 pounds. The numbers do not tell us why, so the cafeteria could ask students why they did not eat the carrot sticks."
+        },
+        "supported": {
+          "bank": [
+            "claim",
+            "evidence",
+            "pounds",
+            "both days",
+            "more than",
+            "less than",
+            "this shows that",
+            "because",
+            "maybe",
+            "could"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which two numbers from the table could show how much more carrot sticks were thrown away than another food?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "What do your numbers show? Which words, like this shows that or because, connect your numbers to your claim?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "The numbers tell how much, not why. Which word, like maybe or could, shows that your idea is a guess?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which word could connect your evidence sentence to your reasoning sentence?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which exact food name and unit can replace words like stuff or a lot?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you join two short sentences about Tuesday and Thursday with and or but?"
+        }
+      ],
+      "successCriteria": [
+        "My claim answers the question.",
+        "I use two numbers from the table with the word pounds.",
+        "I say what the numbers show.",
+        "I use because or this shows that, and maybe or could when I am not sure."
+      ],
+      "teacher": {
+        "lookFor": [
+          "A claim that names one food",
+          "Numbers copied accurately, with the unit",
+          "A comparison with at least one other food",
+          "An idea about why or what to do that is written as a possibility, not as a fact"
+        ],
+        "commonIssues": [
+          "Numbers listed without saying what they show",
+          "Confusing more and most, or less and fewer",
+          "Missing plural -s (9 pound) and past-tense forms (throw away for threw away)",
+          "Writing that students did not like the carrot sticks as if the table proved it"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-lunch-waste-cer-e",
+          "ex-wrt35-lunch-waste-cer-d",
+          "ex-wrt35-lunch-waste-cer-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-garden-array-explanation",
+      "band": "3-5",
+      "title": "Count the Garden Plants Two Ways",
+      "form": "paragraph",
+      "keyUse": "Explain",
+      "standards": [
+        "ELD-MA"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Sentence"
+      ],
+      "contentArea": "Math",
+      "time": "20 min",
+      "scenario": "Mr. Diaz's class is planting bean seedlings in two garden beds. A younger student wants to know a quick way to count all the plants. The garden plan is made up for practice.",
+      "prompt": "Write a paragraph that explains two ways to find how many plants are in Bed A. Then tell whether Bed B has more plants, fewer plants, or the same number, and show how you know.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Garden Plan Notes (made-up class notes)",
+          "text": [
+            "Bed A has 4 rows of bean plants. Each row has 6 plants. The plants make an array: rows go across, and columns go down.",
+            "Zoe says she can find the total by adding the plants in each row. Ben says he can multiply. Both ways should give the same total."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Two Garden Beds",
+          "table": {
+            "caption": "How the bean plants are planted (practice plan)",
+            "headers": [
+              "Garden bed",
+              "Rows",
+              "Plants in each row"
+            ],
+            "rows": [
+              [
+                "Bed A",
+                "4 rows",
+                "6 plants in each row"
+              ],
+              [
+                "Bed B",
+                "3 rows",
+                "8 plants in each row"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "add",
+          "label": "Way 1: Add",
+          "hint": "Use repeated addition. Write the addition sentence."
+        },
+        {
+          "id": "multiply",
+          "label": "Way 2: Multiply",
+          "hint": "Write the multiplication sentence. Say what each number means."
+        },
+        {
+          "id": "bedb",
+          "label": "Compare Bed B",
+          "hint": "Find the total for Bed B. Compare it with Bed A."
+        },
+        {
+          "id": "why",
+          "label": "How I know",
+          "hint": "Say why both ways give the same total."
+        }
+      ],
+      "expected": {
+        "minWords": 40,
+        "maxWords": 100,
+        "paragraphs": 1
+      },
+      "sourceTerms": [
+        "4 rows",
+        "6 plants in each row",
+        "3 rows",
+        "array"
+      ],
+      "vocab": [
+        {
+          "term": "array",
+          "def": "objects arranged in equal rows and columns",
+          "es": "arreglo rectangular: objetos organizados en filas y columnas iguales"
+        },
+        {
+          "term": "row",
+          "def": "a line of objects that goes across",
+          "es": "fila: una línea de objetos que va de lado a lado"
+        },
+        {
+          "term": "column",
+          "def": "a line of objects that goes up and down",
+          "es": "columna: una línea de objetos que va de arriba abajo"
+        },
+        {
+          "term": "multiply",
+          "def": "to find the total of equal groups",
+          "es": "multiplicar: hallar el total de grupos iguales"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "Bed A has ___ rows with ___ plants in each row.",
+            "One way to find the total is to add ___.",
+            "Another way is to multiply ___ × ___ = ___.",
+            "Bed B has ___ rows with ___ plants in each row, so Bed B has ___ plants, which is ___ Bed A."
+          ],
+          "bank": [
+            "array",
+            "rows",
+            "columns",
+            "multiply",
+            "total",
+            "the same as"
+          ],
+          "model": "Bed A has 4 rows with 6 plants in each row. One way to find the total is to add the rows: 6 + 6 + 6 + 6 = 24. Another way is to multiply the number of rows by the plants in each row: 4 × 6 = 24. Both ways give 24 plants because multiplying is a faster way to add equal groups. Bed B has 3 rows with 8 plants in each row, so 3 × 8 = 24. Bed B has the same number of plants as Bed A, even though the array looks different."
+        },
+        "supported": {
+          "bank": [
+            "array",
+            "rows",
+            "columns",
+            "multiply",
+            "total",
+            "equal groups",
+            "the same as",
+            "more than",
+            "fewer than"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which numbers from the garden plan could you write in your number sentences?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Why do both ways give the same total? Which words, like equal groups or in each row, help you explain?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which words could show your first way and your second way, like one way and another way?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which math words (rows, columns, array, total) could replace the lines or the things?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you write a number sentence and then a sentence that tells what the numbers mean?"
+        }
+      ],
+      "successCriteria": [
+        "I explain two different ways to find the total.",
+        "I write correct number sentences for Bed A and Bed B.",
+        "I use math words such as rows, array, and total.",
+        "I tell whether Bed B has more, fewer, or the same, and I show why."
+      ],
+      "teacher": {
+        "lookFor": [
+          "Two different methods named, with correct number sentences",
+          "Math words used accurately: rows, columns, array, multiply, total",
+          "A comparison stated with evidence from both beds",
+          "An explanation that multiplication is a faster way to add equal groups"
+        ],
+        "commonIssues": [
+          "Writing 4 + 6 instead of 6 + 6 + 6 + 6, or adding rows and plants",
+          "Confusing rows and columns",
+          "Saying Bed B has more because it has more plants in each row, without finding the total",
+          "Missing plural -s (4 row, 6 plant) and the word each"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-garden-array-explanation-e",
+          "ex-wrt35-garden-array-explanation-d",
+          "ex-wrt35-garden-array-explanation-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-playground-access-letter",
+      "band": "3-5",
+      "title": "A Playground Path for Everyone",
+      "form": "letter",
+      "keyUse": "Argue",
+      "standards": [
+        "ELD-SS"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Sentence"
+      ],
+      "contentArea": "Civic / School",
+      "time": "25 min",
+      "scenario": "Your school is building a new playground. Principal Ortiz will choose what kind of path leads to the swings. You decide to write a letter. The plan and the prices are made up for practice.",
+      "prompt": "Write a letter to Principal Ortiz. Say which path you want, give two reasons that use the plan notes or the price table, and ask for a next step.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Playground Plan Notes (practice plan)",
+          "text": [
+            "The new playground will have a climbing wall, four swings, and a sandbox. A path will lead from the school door to the swings.",
+            "The planning team can build the path with wood chips or with a firm rubber surface. Wood chips are soft, but wheelchairs, walkers, and strollers can get stuck in them. A firm rubber path is flat and smooth, so more students and families can use it."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Path Options",
+          "table": {
+            "caption": "Two path choices for the playground (practice prices)",
+            "headers": [
+              "Path",
+              "Cost",
+              "Who can use it easily"
+            ],
+            "rows": [
+              [
+                "Wood chips",
+                "$600",
+                "Students who can walk on soft ground"
+              ],
+              [
+                "Firm rubber surface",
+                "$2,400",
+                "Students who walk, students who use wheelchairs or walkers, and families with strollers"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "request",
+          "label": "Greeting and request",
+          "hint": "Start with Dear and say which path you want."
+        },
+        {
+          "id": "reason1",
+          "label": "Reason 1",
+          "hint": "Use a detail from the plan notes."
+        },
+        {
+          "id": "reason2",
+          "label": "Reason 2",
+          "hint": "Use the table or think about the cost."
+        },
+        {
+          "id": "ask",
+          "label": "My question",
+          "hint": "Ask for one next step. End with Thank you and your name."
+        }
+      ],
+      "expected": {
+        "minWords": 50,
+        "maxWords": 110,
+        "paragraphs": 2
+      },
+      "sourceTerms": [
+        "wood chips",
+        "firm rubber",
+        "$2,400",
+        "wheelchairs",
+        "$600"
+      ],
+      "vocab": [
+        {
+          "term": "path",
+          "def": "a narrow way for walking or rolling",
+          "es": "sendero: camino estrecho para caminar o rodar"
+        },
+        {
+          "term": "wheelchair",
+          "def": "a chair with wheels for a person who cannot walk easily",
+          "es": "silla de ruedas: silla con ruedas para una persona que no puede caminar con facilidad"
+        },
+        {
+          "term": "surface",
+          "def": "the top layer of the ground",
+          "es": "superficie: la capa de arriba del suelo"
+        },
+        {
+          "term": "request",
+          "def": "to ask politely for something",
+          "es": "pedir (solicitar): pedir algo con cortesía"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "Dear Principal Ortiz,",
+            "I am writing to ask you to choose the ___ for the path to the swings.",
+            "One reason is that ___.",
+            "Another reason is that ___.",
+            "Could we ___? Thank you, ___."
+          ],
+          "bank": [
+            "Dear",
+            "I am writing to ask",
+            "one reason",
+            "another reason",
+            "could we",
+            "thank you"
+          ],
+          "model": "Dear Principal Ortiz, I am writing to ask you to choose the firm rubber surface for the path to the swings. One reason is that wheelchairs, walkers, and strollers can get stuck in wood chips, but the rubber path is flat and smooth. Another reason is that more students and families can use it, so everyone can get to the playground. I know the rubber path costs $2,400, which is $1,800 more than wood chips, but I think it is worth it. Could we talk about ways to pay for it? Thank you, Mia"
+        },
+        "supported": {
+          "bank": [
+            "Dear",
+            "I am writing to ask",
+            "one reason",
+            "another reason",
+            "could we",
+            "thank you",
+            "because",
+            "costs more"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which detail from the plan notes or the table could show why wood chips are a problem?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "How does your detail connect to your request? Can you add because?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "The rubber path costs more. What could you say about the cost so the principal knows you thought about it?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which words, like one reason and another reason, could start each of your reasons?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which polite word (could, would, please) fits your question?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you join two short sentences with because or but?"
+        }
+      ],
+      "successCriteria": [
+        "I start with Dear and say what I want.",
+        "I give two reasons from the plan notes or the table.",
+        "I say something about the cost of my choice.",
+        "I ask a polite question and end with Thank you and my name."
+      ],
+      "teacher": {
+        "lookFor": [
+          "A clear request in the first sentences of the letter",
+          "Reasons that use the plan (stuck in wood chips) or the numbers ($2,400, $600)",
+          "A polite tone with could or would",
+          "An honest mention of cost"
+        ],
+        "commonIssues": [
+          "A greeting but no clear request",
+          "Reasons that are only feelings (it is nice) instead of details from the plan",
+          "Subject-verb agreement with cost (it cost, the paths costs)",
+          "Letter parts: Dear ..., comma, Thank you, name"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-playground-access-letter-e",
+          "ex-wrt35-playground-access-letter-d",
+          "ex-wrt35-playground-access-letter-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-animal-shelter-letter",
+      "band": "3-5",
+      "title": "A Letter to the Animal Shelter",
+      "form": "letter",
+      "keyUse": "Inform",
+      "standards": [
+        "ELD-LA"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Word/Phrase"
+      ],
+      "contentArea": "Community / ELA",
+      "time": "25 min",
+      "scenario": "Your class collected items for the Maple Street Animal Shelter, a made-up shelter. Before you deliver the items, you write a letter to the volunteer coordinator, Ms. Greene.",
+      "prompt": "Write a letter to Ms. Greene. Tell her what your class collected, tell which items match the shelter's wish list, and ask when your class can deliver them.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Shelter Wish List (practice notice)",
+          "text": [
+            "The Maple Street Animal Shelter needs your help! This month we need blankets most of all, because the kennels get cold at night. We also welcome cans of dog food and towels. We have enough cat toys right now."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "What Our Class Collected",
+          "table": {
+            "caption": "Items our class collected for the shelter (practice data)",
+            "headers": [
+              "Item",
+              "How many"
+            ],
+            "rows": [
+              [
+                "Cans of dog food",
+                "45"
+              ],
+              [
+                "Blankets",
+                "18"
+              ],
+              [
+                "Cat toys",
+                "32"
+              ],
+              [
+                "Towels",
+                "25"
+              ],
+              [
+                "Total items",
+                "120"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "open",
+          "label": "Greeting and purpose",
+          "hint": "Start with Dear Ms. Greene and say why you are writing."
+        },
+        {
+          "id": "collected",
+          "label": "What we collected",
+          "hint": "Name the items and the numbers."
+        },
+        {
+          "id": "match",
+          "label": "Items on the wish list",
+          "hint": "Which items match what the shelter needs most?"
+        },
+        {
+          "id": "ask",
+          "label": "My question",
+          "hint": "Ask when you can deliver. Close politely."
+        }
+      ],
+      "expected": {
+        "minWords": 50,
+        "maxWords": 110,
+        "paragraphs": 2
+      },
+      "sourceTerms": [
+        "blankets",
+        "Cans of dog food",
+        "Total items",
+        "cat toys"
+      ],
+      "vocab": [
+        {
+          "term": "donate",
+          "def": "to give something to help others",
+          "es": "donar: dar algo para ayudar a otros"
+        },
+        {
+          "term": "shelter",
+          "def": "a place that takes care of animals that need a home",
+          "es": "refugio: lugar que cuida a animales que necesitan un hogar"
+        },
+        {
+          "term": "wish list",
+          "def": "a list of things someone needs or wants",
+          "es": "lista de necesidades: una lista de cosas que alguien necesita o quiere"
+        },
+        {
+          "term": "volunteer",
+          "def": "a person who helps without being paid",
+          "es": "voluntario: persona que ayuda sin recibir pago"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "Dear Ms. Greene,",
+            "Our class collected ___ items for the shelter.",
+            "We collected ___ ___, ___ ___, and ___ ___.",
+            "Your wish list says that ___, so ___.",
+            "When can we ___? Sincerely, ___."
+          ],
+          "bank": [
+            "Dear",
+            "collected",
+            "items",
+            "wish list",
+            "match",
+            "sincerely"
+          ],
+          "model": "Dear Ms. Greene, Our class collected 120 items for the Maple Street Animal Shelter. We collected 45 cans of dog food, 18 blankets, 25 towels, and 32 cat toys. Your wish list says that you need blankets most, so we are glad that we have 18 blankets for you. We also have cans of dog food and towels. We know that you have enough cat toys, so you can share ours with another shelter if you want. When can we deliver the items to your shelter? Sincerely, Room 14"
+        },
+        "supported": {
+          "bank": [
+            "Dear",
+            "collected",
+            "items",
+            "wish list",
+            "match",
+            "need most",
+            "enough",
+            "sincerely"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which numbers from the table could you add so Ms. Greene knows how many of each item you have?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Which of your items match the wish list? How can you say that with so or because?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "The wish list says the shelter has enough cat toys. How could you say that politely and still be helpful?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which words, like also and and, could join your list of items into one smooth sentence?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which exact item names from the table can replace stuff or things?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you write your list with commas and put and before the last item?"
+        }
+      ],
+      "successCriteria": [
+        "I start with Dear and say why I am writing.",
+        "I name items with the correct numbers.",
+        "I tell which items match the shelter's wish list.",
+        "I ask a question and close with Sincerely and my name."
+      ],
+      "teacher": {
+        "lookFor": [
+          "A purpose sentence near the start",
+          "Items and numbers copied accurately from the table",
+          "A clear link between the items and the wish list",
+          "A polite question and a closing"
+        ],
+        "commonIssues": [
+          "Listing every number without grouping or commas",
+          "Missing plural -s on items (18 blanket)",
+          "Past tense of collect and the use of our class collected / we are collecting",
+          "A closing that is missing or a letter with no question"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-animal-shelter-letter-e",
+          "ex-wrt35-animal-shelter-letter-d",
+          "ex-wrt35-animal-shelter-letter-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-community-garden-report",
+      "band": "3-5",
+      "title": "Bean Plants in the Community Garden",
+      "form": "report",
+      "keyUse": "Inform",
+      "standards": [
+        "ELD-SC"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Word/Phrase"
+      ],
+      "contentArea": "Science",
+      "time": "25 min",
+      "scenario": "Room 12 planted bean seeds in the community garden and measured one plant each week for four weeks. You will write a short report for the garden newsletter. The notes and numbers are made up for practice.",
+      "prompt": "Write a short report. Tell what the class did, what the numbers show about the plant's height, and one question you still have.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Room 12's Garden Notes (practice notes)",
+          "text": [
+            "Room 12 planted bean seeds in the community garden on a Monday in April. Each Friday, we measured the height of the same bean plant with a ruler and wrote it in centimeters.",
+            "In week 3, it rained on three days. In week 4, there were two sunny days and three cloudy days."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Height of One Bean Plant",
+          "table": {
+            "caption": "Height of one bean plant each Friday (practice data)",
+            "headers": [
+              "Week",
+              "Height"
+            ],
+            "rows": [
+              [
+                "Week 1",
+                "4 centimeters"
+              ],
+              [
+                "Week 2",
+                "9 centimeters"
+              ],
+              [
+                "Week 3",
+                "15 centimeters"
+              ],
+              [
+                "Week 4",
+                "22 centimeters"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "did",
+          "label": "What we did",
+          "hint": "Say who planted, what, and how you measured."
+        },
+        {
+          "id": "numbers",
+          "label": "What the numbers show",
+          "hint": "Use at least three heights from the table."
+        },
+        {
+          "id": "change",
+          "label": "How it changed",
+          "hint": "Tell how much taller the plant was in week 4 than in week 1."
+        },
+        {
+          "id": "question",
+          "label": "My question",
+          "hint": "Ask one question you still have."
+        }
+      ],
+      "expected": {
+        "minWords": 50,
+        "maxWords": 110,
+        "paragraphs": 2
+      },
+      "sourceTerms": [
+        "bean seeds",
+        "Week 1",
+        "4 centimeters",
+        "22 centimeters"
+      ],
+      "vocab": [
+        {
+          "term": "height",
+          "def": "how tall something is",
+          "es": "altura: qué tan alto es algo"
+        },
+        {
+          "term": "measure",
+          "def": "to find the size or amount of something",
+          "es": "medir: averiguar el tamaño o la cantidad de algo"
+        },
+        {
+          "term": "centimeter",
+          "def": "a small unit for measuring length",
+          "es": "centímetro: una unidad pequeña para medir longitud"
+        },
+        {
+          "term": "wonder",
+          "def": "to want to know or to ask yourself a question",
+          "es": "preguntarse: querer saber algo o hacerse una pregunta"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "Room 12 planted ___ in ___.",
+            "In week 1, the plant was ___ centimeters tall. By week 4, it was ___ centimeters tall.",
+            "The plant grew ___ centimeters in four weeks.",
+            "I still wonder ___."
+          ],
+          "bank": [
+            "planted",
+            "measured",
+            "centimeters",
+            "grew",
+            "by week 4",
+            "I wonder"
+          ],
+          "model": "Room 12 planted bean seeds in the community garden in April. Each Friday, we measured the same bean plant with a ruler. In week 1, the plant was 4 centimeters tall. In week 2, it was 9 centimeters, and in week 3, it was 15 centimeters. By week 4, it was 22 centimeters tall. That means the plant grew 18 centimeters in four weeks. It rained on three days in week 3, but we cannot say that the rain made the plant grow more. I still wonder what would happen if we measured a different plant."
+        },
+        "supported": {
+          "bank": [
+            "planted",
+            "measured",
+            "centimeters",
+            "grew",
+            "by week 4",
+            "taller than",
+            "I wonder",
+            "maybe"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which heights from the table could you add so a reader sees how the plant changed week by week?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "The notes say it rained in week 3. Do the numbers prove that the rain made the plant grow? Which words, like maybe or I wonder if, show what you do not know?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which words, like first, then, and by week 4, could show the order of the weeks?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which exact word (grew, taller, centimeters) could replace got big or a lot?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you write one sentence that tells how much the plant grew from week 1 to week 4?"
+        }
+      ],
+      "successCriteria": [
+        "I say what the class did and how we measured.",
+        "I use at least three heights with the word centimeters.",
+        "I say how much the plant grew from week 1 to week 4.",
+        "I ask a question, and I do not say the rain caused the growth unless I say maybe."
+      ],
+      "teacher": {
+        "lookFor": [
+          "Past tense for what was done: planted, measured",
+          "Heights copied accurately, with units, in the right week order",
+          "Correct subtraction for the total change (22 minus 4 is 18)",
+          "A clear difference between what the numbers show and a guess about a cause"
+        ],
+        "commonIssues": [
+          "Weeks and heights mixed up (Week 4 with 15 centimeters)",
+          "Stating that the rain made the plant grow as if it were a fact",
+          "Tense shifts between measured and measure",
+          "Missing plural -s (4 centimeter)"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-community-garden-report-e",
+          "ex-wrt35-community-garden-report-d",
+          "ex-wrt35-community-garden-report-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt35-lost-map-narrative",
+      "band": "3-5",
+      "title": "The Lost Map",
+      "form": "narrative",
+      "keyUse": "Narrate",
+      "standards": [
+        "ELD-LA"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Sentence"
+      ],
+      "contentArea": "ELA",
+      "time": "30 min",
+      "scenario": "Your class is making a book of short adventure stories. Each writer starts with the same opening and then continues the story. The story is fiction.",
+      "prompt": "Continue the story about Nia and the lost map. Use the map key to include at least two clues. Tell what happens in the beginning, the middle, and the end.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Story Starter: The Lost Map (fiction)",
+          "text": [
+            "On Saturday morning, Nia found a folded map under the steps of the library. The paper was old and soft, and one corner was torn. At the bottom of the map, someone had written: \"Follow the clues. Do not tell anyone.\"",
+            "Nia looked around. Nobody was there. She put the map in her backpack and started to walk."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Map Key (fiction)",
+          "table": {
+            "caption": "Landmarks on the lost map and the clue for each one",
+            "headers": [
+              "Landmark",
+              "Clue"
+            ],
+            "rows": [
+              [
+                "Oak tree",
+                "Turn left and count ten steps"
+              ],
+              [
+                "Blue bridge",
+                "Look under the third plank"
+              ],
+              [
+                "Red door",
+                "Knock three times and wait"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "begin",
+          "label": "Beginning",
+          "hint": "Where does Nia go first? Use one clue from the map key."
+        },
+        {
+          "id": "middle",
+          "label": "Middle",
+          "hint": "What problem or surprise happens? Use another clue."
+        },
+        {
+          "id": "end",
+          "label": "Ending",
+          "hint": "How does the story end? What does Nia find?"
+        },
+        {
+          "id": "feel",
+          "label": "Feelings",
+          "hint": "Show how Nia feels with a feeling word or with what she says."
+        }
+      ],
+      "expected": {
+        "minWords": 70,
+        "maxWords": 140,
+        "paragraphs": 2
+      },
+      "sourceTerms": [
+        "folded map",
+        "Oak tree",
+        "Blue bridge",
+        "Red door"
+      ],
+      "vocab": [
+        {
+          "term": "clue",
+          "def": "a hint that helps you find an answer",
+          "es": "pista: una ayuda para encontrar una respuesta"
+        },
+        {
+          "term": "landmark",
+          "def": "a place or object that is easy to see and remember",
+          "es": "punto de referencia: un lugar u objeto fácil de ver y recordar"
+        },
+        {
+          "term": "plank",
+          "def": "a long, flat piece of wood",
+          "es": "tabla: pieza larga y plana de madera"
+        },
+        {
+          "term": "suddenly",
+          "def": "quickly and without warning",
+          "es": "de repente: rápidamente y sin aviso"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "First, Nia ___.",
+            "Next, ___. Then, ___.",
+            "Suddenly, ___.",
+            "Nia felt ___ because ___.",
+            "In the end, ___."
+          ],
+          "bank": [
+            "first",
+            "next",
+            "then",
+            "suddenly",
+            "in the end",
+            "felt"
+          ],
+          "model": "First, Nia walked to the oak tree. She turned left and counted ten steps, just like the map said. Next, she came to the blue bridge. Nia looked under the third plank and found a small brass key. \"What does this open?\" she whispered. Then she heard footsteps behind her, and her heart beat fast. Suddenly, Mr. Lee, the librarian, stepped out and smiled. \"You found my treasure hunt!\" he said. At the red door, Nia knocked three times. In the end, she found a box of new books with her name on it, and she felt happy and proud."
+        },
+        "supported": {
+          "bank": [
+            "first",
+            "next",
+            "then",
+            "suddenly",
+            "in the end",
+            "felt",
+            "whispered",
+            "because"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which clues from the map key did you use? Where could you add one more clue exactly as the key says it?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Why does Nia do each thing? Can you add because to show her reason?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which words, like first, next, then, suddenly, and in the end, could show the order?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which feeling word could replace good or bad to show how Nia feels?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you add something Nia says, with quotation marks?"
+        }
+      ],
+      "successCriteria": [
+        "My story has a beginning, a middle, and an ending.",
+        "I use at least two clues from the map key.",
+        "I use sequence words and past-tense verbs.",
+        "I show feelings or what characters say."
+      ],
+      "teacher": {
+        "lookFor": [
+          "A beginning, middle, and ending that follow the story starter",
+          "At least two clues used as the key states them",
+          "Sequence words and consistent past tense",
+          "Details such as feelings, senses, or dialogue"
+        ],
+        "commonIssues": [
+          "Tense shifts (Nia walk, walked, walking)",
+          "A list of events joined only by and then",
+          "Dialogue without quotation marks",
+          "An ending that does not answer the problem of the story"
+        ],
+        "exemplarIds": [
+          "ex-wrt35-lost-map-narrative-e",
+          "ex-wrt35-lost-map-narrative-d",
+          "ex-wrt35-lost-map-narrative-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt-water-use-policy-argue",
+      "band": "6-8",
+      "title": "Set the Watering Schedule",
+      "form": "essay",
+      "keyUse": "Argue",
+      "standards": [
+        "ELD-SS"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Word/Phrase"
+      ],
+      "contentArea": "Civic / Math in Context",
+      "time": "35 min",
+      "scenario": "A fictional school board must choose how often to water the athletic field. The choice is about how much water the school uses and how the field looks and plays. It is not about drinking water or health. All numbers are illustrative figures made up for practice.",
+      "prompt": "Write an argument of 2 to 3 paragraphs for the school board. Recommend one watering schedule, use numbers from the table, answer the groundskeeper's concern, and explain one trade-off and one limit of the data.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "table",
+          "title": "Watering Schedules for the Athletic Field",
+          "table": {
+            "caption": "Watering schedules for the athletic field (illustrative figures for practice)",
+            "headers": [
+              "Schedule",
+              "Water used per week",
+              "Field condition rating (1 = poor, 5 = excellent)"
+            ],
+            "rows": [
+              [
+                "Every day",
+                "14,000 gallons",
+                "4.6"
+              ],
+              [
+                "3 days a week",
+                "6,000 gallons",
+                "4.2"
+              ],
+              [
+                "2 days a week",
+                "4,000 gallons",
+                "3.5"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "s2",
+          "kind": "quote",
+          "title": "Groundskeeper's Note (fictional)",
+          "text": [
+            "\"Grass needs regular water to stay in good playing condition. If we water less, I worry that the field will have more bare spots by the end of the season,\" wrote the groundskeeper, Mr. Pratt."
+          ]
+        },
+        {
+          "id": "s3",
+          "kind": "passage",
+          "title": "Board Meeting Notes (fictional)",
+          "text": [
+            "Board members agreed that the school should use less water if the field can still be used for games and gym classes. The condition ratings came from one groundskeeper over one season, so board members asked speakers to explain the trade-off clearly."
+          ]
+        }
+      ],
+      "organizer": [
+        {
+          "id": "claim",
+          "label": "Recommendation",
+          "hint": "Say which schedule the board should choose."
+        },
+        {
+          "id": "evidence",
+          "label": "Evidence",
+          "hint": "Use water numbers and condition ratings."
+        },
+        {
+          "id": "concern",
+          "label": "Concern and response",
+          "hint": "Name the groundskeeper's worry and respond to it."
+        },
+        {
+          "id": "tradeoff",
+          "label": "Trade-off and limit",
+          "hint": "What does your choice give up? What do the numbers not tell us?"
+        },
+        {
+          "id": "close",
+          "label": "Conclusion",
+          "hint": "End with your recommendation and why it balances the goals."
+        }
+      ],
+      "expected": {
+        "minWords": 130,
+        "maxWords": 260,
+        "paragraphs": 3
+      },
+      "sourceTerms": [
+        "14,000 gallons",
+        "6,000 gallons",
+        "4.2",
+        "groundskeeper"
+      ],
+      "vocab": [
+        {
+          "term": "schedule",
+          "def": "a plan that tells when things will happen",
+          "es": "horario (programa): un plan que dice cuándo van a ocurrir las cosas"
+        },
+        {
+          "term": "gallon",
+          "def": "a unit for measuring liquid",
+          "es": "galón: una unidad para medir líquidos"
+        },
+        {
+          "term": "trade-off",
+          "def": "something you give up to get something else",
+          "es": "compensación (trade-off): algo que se acepta a cambio de otra ventaja"
+        },
+        {
+          "term": "rating",
+          "def": "a number that tells how good something is",
+          "es": "calificación: un número que dice qué tan bueno es algo"
+        },
+        {
+          "term": "concern",
+          "def": "a worry about something",
+          "es": "preocupación: inquietud por algo"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "I recommend that the school board choose ___.",
+            "This schedule uses ___ gallons a week, which is ___ fewer gallons than ___.",
+            "The field condition rating is ___, compared with ___ for ___.",
+            "Mr. Pratt is concerned that ___. However, ___.",
+            "The trade-off is that ___.",
+            "Therefore, ___."
+          ],
+          "bank": [
+            "recommend",
+            "gallons",
+            "rating",
+            "concerned",
+            "trade-off",
+            "therefore"
+          ],
+          "model": "I recommend that the school board choose the 3-days-a-week schedule. This schedule uses 6,000 gallons a week, which is 8,000 fewer gallons than watering every day. The field condition rating drops only from 4.6 to 4.2, so the groundskeeper's own ratings suggest that the field would still be in good shape.\n\nMr. Pratt is concerned that less water will lead to more bare spots. However, the ratings show a small change at 3 days but a bigger drop to 3.5 at 2 days a week, so cutting further would be riskier. The trade-off is that the field may look slightly less green than it does with daily watering. These numbers come from one season and one groundskeeper, so the board should check the field again next year. Therefore, 3 days a week balances saving water with keeping the field usable."
+        },
+        "supported": {
+          "bank": [
+            "recommend",
+            "gallons",
+            "rating",
+            "concerned",
+            "however",
+            "trade-off",
+            "suggest",
+            "therefore",
+            "may",
+            "compared with",
+            "fewer than"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which numbers could show exactly how much water your schedule saves compared with another one?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Do the ratings prove what will happen to the grass? Which phrase, like suggests, may, or the ratings show, matches how much the data can prove?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "The ratings come from one groundskeeper in one season. What limit of the data should you state?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which transition, like However, In contrast, or Therefore, could connect your answer to Mr. Pratt to your recommendation?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which exact terms (gallons, rating, schedule) can replace the water stuff or how good it is?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you combine the water saved and the rating into one sentence with while or although?"
+        }
+      ],
+      "successCriteria": [
+        "I recommend one schedule and support it with numbers from the table.",
+        "I answer the groundskeeper's concern with evidence.",
+        "I explain a trade-off and a limit of the data, using careful words like may or suggests.",
+        "I connect my ideas with transitions and finish with a conclusion."
+      ],
+      "teacher": {
+        "lookFor": [
+          "A recommendation that is stated early and supported with accurate numbers",
+          "A fair response to the groundskeeper's concern that uses the table",
+          "Language that matches the data: suggests, may, in this season, rather than guarantees",
+          "A trade-off and at least one limit (one season, one rater, fictional figures)"
+        ],
+        "commonIssues": [
+          "Claiming that watering less will not hurt the field, as if the ratings proved it",
+          "Comparing the wrong rows or mixing up gallons per week and ratings",
+          "Skipping the counterclaim, or restating it without answering it",
+          "Missing transitions, and article or plural errors with data (the gallons, a ratings)"
+        ],
+        "exemplarIds": [
+          "ex-wrt-water-use-policy-argue-e",
+          "ex-wrt-water-use-policy-argue-d",
+          "ex-wrt-water-use-policy-argue-x"
+        ]
+      }
+    },
+    {
+      "id": "wrt-insulation-investigation-cer",
+      "band": "6-8",
+      "title": "Which Wrap Keeps a Cup Warmest?",
+      "form": "cer",
+      "keyUse": "Explain",
+      "standards": [
+        "ELD-SC"
+      ],
+      "dimensions": [
+        "Discourse",
+        "Word/Phrase"
+      ],
+      "contentArea": "Science",
+      "time": "25 min",
+      "scenario": "Your science group tested four ways to wrap a cup of warm water. The class science journal will publish a short written conclusion from each group. The data are illustrative numbers made up for practice.",
+      "prompt": "Write a claim, evidence, and reasoning paragraph that answers this question: Which wrap is the best insulator for keeping the water warm? Use numbers from the data table, use the lab notes to explain why the evidence supports your claim, and state one limit of this investigation.",
+      "sources": [
+        {
+          "id": "s1",
+          "kind": "passage",
+          "title": "Lab Notes: Testing Wraps",
+          "text": [
+            "Heat moves from warmer things to cooler things. An insulator is a material that slows this movement of heat. Materials that trap many tiny pockets of air, such as foam, are often good insulators because air does not carry heat well.",
+            "Every group poured 200 milliliters of water at 50 degrees Celsius into four identical cups. One cup was left bare. The other cups were wrapped in aluminum foil, felt, or a foam sleeve. A thermometer measured the water temperature after 20 minutes. Each wrap was tested three times."
+          ]
+        },
+        {
+          "id": "s2",
+          "kind": "table",
+          "title": "Water Temperature After 20 Minutes",
+          "table": {
+            "caption": "Water temperature after 20 minutes, in degrees Celsius (the starting temperature was 50 degrees for every trial; practice data)",
+            "headers": [
+              "Wrap",
+              "Trial 1",
+              "Trial 2",
+              "Trial 3"
+            ],
+            "rows": [
+              [
+                "No wrap",
+                "31",
+                "32",
+                "30"
+              ],
+              [
+                "Aluminum foil",
+                "34",
+                "33",
+                "35"
+              ],
+              [
+                "Felt",
+                "39",
+                "40",
+                "38"
+              ],
+              [
+                "Foam sleeve",
+                "43",
+                "42",
+                "44"
+              ]
+            ]
+          }
+        }
+      ],
+      "organizer": [
+        {
+          "id": "claim",
+          "label": "Claim",
+          "hint": "Answer the question in one sentence. Use the word insulator."
+        },
+        {
+          "id": "evidence",
+          "label": "Evidence",
+          "hint": "Use temperatures for the foam sleeve and one other wrap. Include the unit."
+        },
+        {
+          "id": "reasoning",
+          "label": "Reasoning",
+          "hint": "Use the lab notes to explain why the foam sleeve kept the water warmer."
+        },
+        {
+          "id": "limit",
+          "label": "A limit",
+          "hint": "What can this investigation not tell us?"
+        }
+      ],
+      "expected": {
+        "minWords": 80,
+        "maxWords": 160,
+        "paragraphs": 1
+      },
+      "sourceTerms": [
+        "foam sleeve",
+        "insulator",
+        "50 degrees",
+        "20 minutes"
+      ],
+      "vocab": [
+        {
+          "term": "insulator",
+          "def": "a material that slows the movement of heat",
+          "es": "aislante: material que hace más lento el movimiento del calor"
+        },
+        {
+          "term": "thermometer",
+          "def": "a tool that measures temperature",
+          "es": "termómetro: instrumento que mide la temperatura"
+        },
+        {
+          "term": "trial",
+          "def": "one run of an experiment",
+          "es": "ensayo: una repetición de un experimento"
+        },
+        {
+          "term": "temperature",
+          "def": "how warm or cool something is",
+          "es": "temperatura: qué tan caliente o frío está algo"
+        },
+        {
+          "term": "trap",
+          "def": "to hold something in so it cannot easily escape",
+          "es": "atrapar: retener algo para que no pueda escapar fácilmente"
+        }
+      ],
+      "stages": {
+        "guided": {
+          "frames": [
+            "I claim that the ___ is the best insulator in this test.",
+            "After 20 minutes, the water in the ___ was ___ degrees, but the water in the ___ was ___ degrees.",
+            "This evidence supports my claim because ___.",
+            "According to the lab notes, ___.",
+            "One limit of this investigation is ___."
+          ],
+          "bank": [
+            "insulator",
+            "degrees Celsius",
+            "trial",
+            "traps",
+            "according to",
+            "limit"
+          ],
+          "model": "I claim that the foam sleeve is the best insulator in this test. After 20 minutes, the water in the foam sleeve was 43 degrees Celsius in Trial 1, but the water in the bare cup was only 31 degrees. The foam sleeve also had the highest temperature in Trials 2 and 3, at 42 and 44 degrees. This evidence supports my claim because a better insulator slows the heat leaving the cup, so the water stays warmer. According to the lab notes, foam traps tiny pockets of air, and air does not carry heat well, so less heat could move out of the cup. One limit of this investigation is that we tested only four materials in three trials, so the result may not be true for other materials or thicker wraps."
+        },
+        "supported": {
+          "bank": [
+            "insulator",
+            "degrees Celsius",
+            "trial",
+            "traps",
+            "according to",
+            "because",
+            "limit",
+            "in this test"
+          ]
+        },
+        "independent": {}
+      },
+      "revisionPrompts": [
+        {
+          "focus": "evidence",
+          "prompt": "Which temperatures from several trials would show that the foam result was not a one-time accident?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "How do the lab notes explain why foam keeps water warmer? Can you connect the notes to your numbers with because?"
+        },
+        {
+          "focus": "reasoning",
+          "prompt": "Which phrase, like in this test or may, keeps your claim from covering every material in every situation?"
+        },
+        {
+          "focus": "cohesion",
+          "prompt": "Which connecting words could show how your evidence leads to your reasoning?"
+        },
+        {
+          "focus": "precision",
+          "prompt": "Which exact terms (insulator, temperature, trial) can replace hot or it worked?"
+        },
+        {
+          "focus": "sentence",
+          "prompt": "Can you combine the foam sleeve and bare cup temperatures into one comparison sentence?"
+        }
+      ],
+      "successCriteria": [
+        "My claim answers the question and uses the word insulator.",
+        "I cite temperatures from more than one trial, with units.",
+        "My reasoning uses the lab notes to explain why the evidence supports the claim.",
+        "I state one limit and keep my claim to this test."
+      ],
+      "teacher": {
+        "lookFor": [
+          "The claim names one wrap and uses the key term insulator",
+          "Temperatures from the table, with units, and a correct comparison (a higher final temperature means less heat was lost)",
+          "Reasoning that uses the lab notes (air pockets, slowed heat movement) rather than a general statement",
+          "A limit that fits this investigation (four materials, three trials, one starting temperature)"
+        ],
+        "commonIssues": [
+          "Reading a higher number as more heat lost instead of less heat lost",
+          "Claiming that foam is the best insulator for everything",
+          "Evidence from a single trial only",
+          "Verb-form and plural slips with science terms (foam keep, the air pocket traps)"
+        ],
+        "exemplarIds": [
+          "ex-wrt-insulation-investigation-cer-e",
+          "ex-wrt-insulation-investigation-cer-d",
+          "ex-wrt-insulation-investigation-cer-x"
         ]
       }
     }

@@ -2,13 +2,15 @@
 // Each encounter: an opening line (register), your own line (say), a misunderstanding, a repair strategy, the repair
 // (say), and a final choice that sets a story flag. Flags: refund (ch1) → ch2 and ch4 intros, ch4 repair step;
 // practice (ch2) → ch3 intro, ch4 bus step; project (ch3) → ch4 outro.
+import { READING_ROOM_68 } from "./conversation-quest-reading-room.js";
+
 const C = (en, es) => [en, es];
 
 export const BAND_68 = {
   premise:
-    "Your week is full of conversations that matter: a store return, a schedule clash with your coach, a group project that is falling apart, and a phone call about a lost bag. The words you choose decide how people respond, and every decision you make follows you into the next conversation.",
+    "Your week is full of conversations that matter: a store return, a schedule clash with your coach, a group project that is falling apart, a phone call about a lost bag, and a negotiation with the library manager over a room for your club. The words you choose decide how people respond, and every decision you make follows you into the next conversation.",
   premiseEs:
-    "Tu semana está llena de conversaciones importantes: una devolución en una tienda, un choque de horarios con tu entrenadora, un proyecto en grupo que se está desarmando y una llamada por una mochila perdida. Las palabras que eliges deciden cómo responde la gente, y cada decisión que tomas te sigue a la próxima conversación.",
+    "Tu semana está llena de conversaciones importantes: una devolución en una tienda, un choque de horarios con tu entrenadora, un proyecto en grupo que se está desarmando, una llamada por una mochila perdida y una negociación con el gerente de la biblioteca por una sala para tu club. Las palabras que eliges deciden cómo responde la gente, y cada decisión que tomas te sigue a la próxima conversación.",
   chapters: [
     {
       id: "cq68-return",
@@ -1277,5 +1279,6 @@ export const BAND_68 = {
         },
       ],
     },
+    READING_ROOM_68,
   ],
 };
