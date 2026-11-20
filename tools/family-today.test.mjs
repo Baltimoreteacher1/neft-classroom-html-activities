@@ -178,6 +178,120 @@ test("seed: writes nothing when the family home was never visited or holds junk"
   assert.deepEqual(runSeed({ "ewl-family-lang": "fr" }), { "ewl-family-lang": "fr" });
 });
 
+// --- Family-home button (family-app/home-link.js): old shell unchanged, Language Page app returns to the lab home ---
+function runButton({
+  host,
+  native = true,
+  path = "/access-practice-lab/Listening/A",
+  prefs,
+  family,
+  navLang = "en-US",
+}) {
+  const data = {};
+  if (prefs) data["accessPracticeLab:v1:prefs"] = JSON.stringify(prefs);
+  if (family) data["ewl-family-lang"] = family;
+  const localStorage = {
+    getItem: (k) => (k in data ? data[k] : null),
+    setItem: (k, v) => {
+      data[k] = String(v);
+    },
+  };
+  const attrs = {};
+  const link = {
+    style: {},
+    hidden: false,
+    setAttribute: (k, v) => {
+      attrs[k] = v;
+    },
+  };
+  const location = { pathname: path, hostname: host };
+  const history = {
+    pushState(_s, _t, url) {
+      location.pathname = url;
+    },
+    replaceState() {},
+  };
+  const timers = [];
+  let appended = null;
+  vm.runInNewContext(read("family-app/home-link.js"), {
+    window: {
+      Capacitor: native ? { isNativePlatform: () => true } : undefined,
+      matchMedia: () => ({ matches: false }),
+      addEventListener() {},
+      localStorage,
+    },
+    localStorage,
+    navigator: { language: navLang },
+    location,
+    history,
+    setTimeout: (fn) => timers.push(fn),
+    document: {
+      createElement: () => link,
+      body: { appendChild: (el) => (appended = el) },
+      addEventListener() {},
+    },
+  });
+  const flush = () => timers.splice(0).forEach((fn) => fn());
+  return { link, attrs, appended: () => appended, history, location, flush };
+}
+
+test("home button: old shell host keeps the family-home link and labels", () => {
+  const r = runButton({ host: "eduwonderlab.com", path: "/access-practice-lab/" });
+  assert.equal(r.link.href, "/family-app/");
+  assert.equal(r.link.textContent, "\u2302 Family home");
+  assert.equal(r.attrs["aria-label"], "Back to the family app home");
+  assert.equal(r.link.style.display, undefined, "never hidden on the old host");
+  const es = runButton({ host: "eduwonderlab.com", family: "es" });
+  assert.equal(es.link.textContent, "\u2302 Inicio");
+  assert.equal(es.attrs["aria-label"], "Volver al inicio de la app familiar");
+});
+
+test("home button: thelanguagepage.com app goes to the lab home, bilingual, hidden on the lab home", () => {
+  const r = runButton({ host: "thelanguagepage.com" });
+  assert.equal(r.link.href, "/access-practice-lab/");
+  assert.equal(r.link.textContent, "\u2302 Home");
+  assert.equal(r.attrs["aria-label"], "Back to The Language Page home");
+  assert.equal(r.appended(), r.link);
+  const es = runButton({ host: "thelanguagepage.com", prefs: { lang: "es" } });
+  assert.equal(es.link.textContent, "\u2302 Inicio");
+  assert.equal(es.attrs["aria-label"], "Volver al inicio de The Language Page");
+  const home = runButton({ host: "thelanguagepage.com", path: "/access-practice-lab/" });
+  assert.equal(home.link.hidden, true, "nowhere to go back to on the lab home");
+  assert.equal(home.link.style.display, "none");
+  // single-page route changes: leaving the home shows the button, coming back hides it
+  home.history.pushState({}, "", "/access-practice-lab/Reading/A");
+  home.flush();
+  assert.equal(home.link.hidden, false);
+  assert.equal(home.link.style.display, "inline-flex");
+  home.history.pushState({}, "", "/access-practice-lab/");
+  home.flush();
+  assert.equal(home.link.hidden, true);
+});
+
+test("home button: in the Language Page app the label follows the LAB language, not the phone or the family home", () => {
+  const phoneEs = runButton({ host: "thelanguagepage.com", navLang: "es-US" });
+  assert.equal(
+    phoneEs.link.textContent,
+    "\u2302 Home",
+    "lab has no language set: English, whatever the phone says",
+  );
+  const bi = runButton({ host: "thelanguagepage.com", prefs: { lang: "bi" }, navLang: "es-US" });
+  assert.equal(bi.link.textContent, "\u2302 Home", "EN+ES reads English");
+  const labEs = runButton({ host: "thelanguagepage.com", prefs: { lang: "es" }, navLang: "en-US" });
+  assert.equal(labEs.link.textContent, "\u2302 Inicio");
+  const www = runButton({ host: "www.thelanguagepage.com" });
+  assert.equal(www.link.href, "/access-practice-lab/");
+  // the old host still reads the family language and the phone
+  assert.equal(
+    runButton({ host: "eduwonderlab.com", navLang: "es-US" }).link.textContent,
+    "\u2302 Inicio",
+  );
+});
+
+test("home button: the same host in a plain browser tab shows nothing (not an installed app)", () => {
+  assert.equal(runButton({ host: "thelanguagepage.com", native: false }).appended(), null);
+});
+
 test("seed writes the exact values the apps read back", () => {
   // Fluency reads JSON.parse(localStorage[KEY]) === "es"; ACCESS merges the stored object over its defaults.
   const fluency = read("math/fluency-lab/lang-state.js");

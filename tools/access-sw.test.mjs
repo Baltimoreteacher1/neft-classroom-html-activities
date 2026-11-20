@@ -90,6 +90,16 @@ test("routing: what the worker serves, and what it never touches", () => {
   assert.equal(kind(sw, req(`${S}/pictures/x.svg`)), "fresh");
   assert.equal(kind(sw, req("/assets/mobile-access.css")), "fresh");
   assert.equal(kind(sw, req("/assets/nt-chrome.js")), "network");
+  // Shared modules the lab imports from outside its folder are kept for offline use: without them an activity page
+  // renders its error panel once the browser's 4-hour copy has lapsed (measured: Listening imports class-platform/client.js).
+  for (const url of [
+    "/shared/class-platform/client.js",
+    "/shared/class-platform/book-merge.js",
+    "/shared/class-platform/social.js",
+    "/shared/qr/qr-code.mjs",
+    "/family-app/home-link.js",
+  ])
+    assert.equal(kind(sw, req(url)), "fresh", url);
   assert.equal(
     kind(sw, req(`${S}/config.json?cb=1`)),
     "network",

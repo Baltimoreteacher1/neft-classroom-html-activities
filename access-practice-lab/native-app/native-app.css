@@ -1,0 +1,210 @@
+/* App settings sheet (Language Page app only; loaded by boot.js). Palette: AGENTS.md navy / teal / warm off-white,
+   no purple. Sizes in em so text follows the system text size (Dynamic Type on iPhone via -apple-system-body). */
+.nla-gear,
+.nla-sheet {
+  --nla-bg: #f7f4ec;
+  --nla-surface: #fff;
+  --nla-ink: #24323f;
+  --nla-head: #17324d;
+  --nla-muted: #4a5b66;
+  --nla-line: #c3ced5;
+  --nla-accent: #0f6f6c;
+  --nla-on-accent: #fff;
+  --nla-focus: #0b5fd1;
+}
+@media (prefers-color-scheme: dark) {
+  .nla-gear,
+  .nla-sheet {
+    --nla-bg: #0f1c26;
+    --nla-surface: #172a37;
+    --nla-ink: #e6edf1;
+    --nla-head: #f3f6f8;
+    --nla-muted: #b0c0ca;
+    --nla-line: #34495a;
+    --nla-accent: #5fd0cb;
+    --nla-on-accent: #0b1a22;
+    --nla-focus: #8cc4ff;
+  }
+}
+.nla-gear {
+  position: fixed;
+  left: calc(12px + env(safe-area-inset-left, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 2147482000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--nla-head);
+  border-radius: 50%;
+  background: var(--nla-surface);
+  color: var(--nla-head);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Room at the end of every page, so the last controls scroll clear of the gear and the Home button. */
+html.nla-native body {
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+}
+.nla-gear[hidden] {
+  display: none;
+}
+.nla-gear:focus-visible,
+.nla-sheet :focus-visible {
+  outline: 3px solid var(--nla-focus);
+  outline-offset: 2px;
+}
+.nla-sheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 36em;
+  max-height: 88vh;
+  max-height: 88dvh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: 1.25em 1.25em 0 0;
+  background: var(--nla-bg);
+  color: var(--nla-ink);
+  font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+@supports (font: -apple-system-body) {
+  .nla-sheet {
+    font: -apple-system-body;
+  }
+}
+.nla-sheet::backdrop {
+  background: rgba(10, 20, 30, 0.55);
+}
+.nla-panel {
+  box-sizing: border-box;
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1.1em calc(1.2em + env(safe-area-inset-bottom, 0px));
+}
+.nla-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding: 0.9em 0 0.6em;
+  background: var(--nla-bg);
+}
+.nla-head h2 {
+  margin: 0;
+  color: var(--nla-head);
+  font-size: 1.3em;
+  line-height: 1.25;
+}
+.nla-head h2:focus {
+  outline: none;
+}
+.nla-close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--nla-line);
+  border-radius: 50%;
+  background: var(--nla-surface);
+  color: var(--nla-head);
+  font-size: 1.5em;
+  line-height: 1;
+  cursor: pointer;
+}
+.nla-sec {
+  margin: 0 0 1.1em;
+  padding: 0.9em 1em;
+  border: 1px solid var(--nla-line);
+  border-radius: 0.9em;
+  background: var(--nla-surface);
+}
+.nla-sec h3 {
+  margin: 0 0 0.5em;
+  color: var(--nla-head);
+  font-size: 1.05em;
+}
+.nla-opts {
+  display: grid;
+  gap: 0.35em;
+}
+.nla-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  min-height: 44px;
+  cursor: pointer;
+}
+.nla-opt input {
+  flex: none;
+  width: 1.4em;
+  height: 1.4em;
+  accent-color: var(--nla-accent);
+}
+.nla-btn,
+.nla-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.1em;
+  border-radius: 1.4em;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+.nla-btn {
+  border: 0;
+  background: var(--nla-accent);
+  color: var(--nla-on-accent);
+  cursor: pointer;
+}
+.nla-link {
+  border: 2px solid var(--nla-accent);
+  color: var(--nla-accent);
+}
+.nla-p {
+  margin: 0 0 0.7em;
+}
+.nla-list {
+  margin: 0 0 0.5em;
+  padding-left: 1.2em;
+}
+.nla-note {
+  margin: 0.4em 0 0;
+  color: var(--nla-muted);
+  font-size: 0.92em;
+}
+.nla-note:empty {
+  display: none;
+}
+.nla-fine {
+  margin: 0;
+  color: var(--nla-muted);
+  font-size: 0.9em;
+  text-align: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nla-sheet[open] {
+    animation: nla-rise 0.22s ease-out;
+  }
+  @keyframes nla-rise {
+    from {
+      transform: translateY(2.5em);
+      opacity: 0;
+    }
+  }
+}
+@media (forced-colors: active) {
+  .nla-gear,
+  .nla-close,
+  .nla-sec {
+    border-color: CanvasText;
+  }
+}

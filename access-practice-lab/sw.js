@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "32acfbb96a24";
+const BUILD_HASH = "7789ec2acc42";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=51d27c263c0f",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -150,7 +150,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/home-audience.js?v=19e4f0c3f0c5",
   "/access-practice-lab/src/sitemap-ui.js?v=08f6b58fb6f1",
   "/access-practice-lab/src/platform/views/resourceHub.js?v=38a9cc68cc99",
-  "/access-practice-lab/src/bcpss-hydrate.js?v=a1c1ed4541a4",
+  "/access-practice-lab/src/bcpss-hydrate.js?v=603dcd6400bb",
   "/shared/class-platform/contract.js",
 ];
 const PRECACHE_MORE = [
@@ -2104,12 +2104,21 @@ const PREFIX = "ewl-access-";
 const CACHE = `${PREFIX}${BUILD_HASH}`;
 const FRESH_MS = 3500;
 // Modules outside the lab folder that src/main.js imports statically: without them the lab cannot start offline.
-const OUTSIDE_MODULES = ["/shared/math-language-bridge/v1.js", "/shared/math-language-bridge/v2.js"];
+const OUTSIDE_MODULES = [
+  "/shared/math-language-bridge/v1.js",
+  "/shared/math-language-bridge/v2.js",
+  "/shared/class-platform/contract.js",
+  "/shared/class-platform/client.js",
+  "/shared/class-platform/book-merge.js",
+  "/shared/class-platform/social.js",
+  "/shared/qr/qr-code.mjs",
+];
 // Shared chrome the lab loads from outside its own folder; worth having offline so the page is not unstyled.
 const OUTSIDE = [
   /^\/assets\/mobile-access\.css$/,
   /^\/shared\/save-resume\//,
-  /^\/shared\/class-platform\/contract\.js$/,
+  /^\/shared\/(?:class-platform|qr)\/[\w-]+\.m?js$/,
+  /^\/family-app\/home-link\.js$/,
   /^\/shared\/math-language-bridge\/v\d+\.js$/,
   /^\/assets\/fonts\/(?:atkinson-hyperlegible|fraunces)-[0-9a-f]+\.woff2$/,
 ];
@@ -2123,7 +2132,13 @@ function route(request, url, origin) {
   if (path === `${SCOPE}config.json` || path === `${SCOPE}sw.js`) return "network";
   const inScope = path.startsWith(SCOPE);
   if (request.mode === "navigate")
-    return inScope && !path.startsWith(`${SCOPE}printables/`) && !path.startsWith(`${SCOPE}family-tour/`) && path !== `${SCOPE}family-tour` && !path.startsWith(`${SCOPE}videos/`) && path !== `${SCOPE}videos` && !/\.[a-z0-9]+$/i.test(path)
+    return inScope &&
+      !path.startsWith(`${SCOPE}printables/`) &&
+      !path.startsWith(`${SCOPE}family-tour/`) &&
+      path !== `${SCOPE}family-tour` &&
+      !path.startsWith(`${SCOPE}videos/`) &&
+      path !== `${SCOPE}videos` &&
+      !/\.[a-z0-9]+$/i.test(path)
       ? "shell"
       : "network";
   if (inScope) return url.searchParams.has("v") && /\.(js|css)$/.test(path) ? "immutable" : "fresh";
@@ -2175,7 +2190,10 @@ async function immutableResponse(request) {
 
 // This build's copy first; an offline week pack (older, possibly) only when the build has none.
 async function savedCopy(request) {
-  const own = await caches.open(CACHE).then((cache) => cache.match(request)).catch(() => undefined);
+  const own = await caches
+    .open(CACHE)
+    .then((cache) => cache.match(request))
+    .catch(() => undefined);
   return own || caches.match(request);
 }
 
@@ -2279,7 +2297,8 @@ function packPlan(urls, origin) {
 /** The lab's own modules and styles (not content) that this build has not saved yet: needed to open a page offline. */
 async function ensureAppCode() {
   const cache = await caches.open(CACHE);
-  if (!(await cache.match(SHELL))) await cache.put(SHELL, await fetchOk(new Request(SHELL, { cache: "reload" })));
+  if (!(await cache.match(SHELL)))
+    await cache.put(SHELL, await fetchOk(new Request(SHELL, { cache: "reload" })));
   const code = [
     ...OUTSIDE_MODULES,
     ...[...PRECACHE_CORE, ...PRECACHE_MORE].filter((u) => /\.(js|css)\?v=/.test(u)),
@@ -2353,7 +2372,9 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
       event.waitUntil(
         cachePack(event.data, (p) => reply({ type: "cache-progress", ...p }))
           .then((summary) => reply({ type: "cache-done", ...summary }))
-          .catch((error) => reply({ type: "cache-error", message: String(error?.message || error) })),
+          .catch((error) =>
+            reply({ type: "cache-error", message: String(error?.message || error) }),
+          ),
       );
     }
   });
