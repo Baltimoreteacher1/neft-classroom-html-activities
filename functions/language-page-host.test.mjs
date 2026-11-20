@@ -63,6 +63,19 @@ await t("www redirects to the apex with 308, keeping path and query", () => {
   });
 });
 
+await t("Language Page library and letter short routes open their ACCESS Lab destinations", () => {
+  assert.deepEqual(at("https://thelanguagepage.com/library?grades=6-8"), {
+    kind: "redirect",
+    status: 302,
+    location: "https://thelanguagepage.com/access-practice-lab/library?grades=6-8",
+  });
+  assert.deepEqual(at("https://thelanguagepage.com/letters/a?grades=3-5"), {
+    kind: "redirect",
+    status: 302,
+    location: "https://thelanguagepage.com/access-practice-lab/reading-path/letters/a?grades=3-5",
+  });
+});
+
 await t("the root lands on the lab with a temporary redirect", () => {
   const r = at("https://thelanguagepage.com/");
   assert.equal(r.status, 302);

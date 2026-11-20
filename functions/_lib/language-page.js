@@ -192,6 +192,23 @@ export function languagePageRoute(url) {
       status: 302,
       location: `${url.origin}${LAB_BASE}/family-tour/${url.search}`,
     };
+  // Short Language Page entry points for the practice library and Reading Path letter cards.
+  if (url.pathname === "/library" || url.pathname === "/library/")
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/library${url.search}`,
+    };
+  if (
+    url.pathname === "/letters" ||
+    url.pathname === "/letters/" ||
+    url.pathname.startsWith("/letters/")
+  )
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/reading-path${url.pathname.replace(/\/$/, "")}${url.search}`,
+    };
   // thelanguagepage.com/twr is the TWR card's short address.
   if (url.pathname === "/twr" || url.pathname.startsWith("/twr/"))
     return {
