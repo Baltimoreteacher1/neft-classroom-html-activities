@@ -40,11 +40,14 @@ test("family entry has only homework and messaging; legacy meetings keep their p
   const meetings = await readFile(new URL("./meetings/index.html", import.meta.url), "utf8");
   assert.match(meetings, /id="meeting-request-form"/);
   const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
-  assert.match(app, /query\.get\(["']section["']\) \|\| preferences\.sectionId/);
-  assert.match(app, /location\.replace/);
+  const publicApp = await readFile(new URL("./shared/family-public-app.js", import.meta.url), "utf8");
+  assert.match(app, /family-public-app\.js/);
+  assert.doesNotMatch(app, /loadDraft|publishDraft|teacher-inline/);
+  assert.match(publicApp, /query\.get\("section"\) \|\| preferences\.sectionId/);
 });
 test("teacher editor lives only on a password-gated teacher route", async () => {
-  const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
+  const app = await readFile(new URL("./teacher/family-app.js", import.meta.url), "utf8");
+  const familyEntry = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
   const login = await readFile(new URL("./teacher/login.html", import.meta.url), "utf8");
   const teacherHtml = await readFile(new URL("./teacher/homework.html", import.meta.url), "utf8");
   assert.doesNotMatch(html, /id="teacher-inline"|id="inline-days"/);
@@ -54,6 +57,7 @@ test("teacher editor lives only on a password-gated teacher route", async () => 
   assert.match(html, /Teacher sign in/);
   assert.match(app, /if \(editRequested\) \{\s*try \{\s*editDraft = await loadDraft\(\)/);
   assert.match(app, /query\.get\("edit"\) === "1"\) location\.replace\(editorLoginUrl\(\)\)/);
+  assert.doesNotMatch(familyEntry, /loadDraft|publishDraft|teacher-inline/);
   assert.match(login, /family-connections\/teacher\/homework\.html/);
   assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/login.html"), true);
   assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/homework.html"), true);

@@ -15,38 +15,34 @@ export const SITE = "eduwonderlab.com";
 
 export const COPY = Object.freeze({
   en: {
-    title: "Weekly Family Practice",
+    title: "This Week · Family Math Studio",
     course: "Grade 6 Math · Mr. Neft",
-    student: "Student name",
-    period: "Class",
-    how: "Optional practice. No grades. A few minutes together helps.",
+    how: "Choose any nights that work for your family. Practice is optional and ungraded. Checkmarks stay on this device.",
     colDay: "Night",
     colTask: "What to practice",
     colDone: "Done",
-    colInitials: "Grown-up initials",
     lesson: (label, title) => `Family homework · Lesson ${label}: ${title}`,
     review: "Review night: redo one problem from this week’s homework, or play a Fluency Lab round.",
     assessment: "Learning check coming: look over your notes and one past homework.",
     noSchool: "No school",
+    talk: "Talk about your math this week",
     reflect: "One thing I learned or figured out this week:",
     footer: "Practice pages and answers:",
   },
   es: {
-    title: "Práctica familiar semanal",
+    title: "Esta semana · Estudio familiar de matemáticas",
     course: "Matemáticas de 6.º grado · Sr. Neft",
-    student: "Nombre del estudiante",
-    period: "Clase",
-    how: "Práctica opcional. Sin calificaciones. Unos minutos juntos ayudan.",
+    how: "Elijan las noches que les funcionen. La práctica es opcional y no lleva calificación. Las marcas se quedan en este dispositivo.",
     colDay: "Noche",
     colTask: "Qué practicar",
     colDone: "Listo",
-    colInitials: "Iniciales del adulto",
     lesson: (label, title) => `Tarea familiar · Lección ${label}: ${title}`,
     review:
       "Noche de repaso: repitan un problema de la tarea de esta semana, o jueguen una ronda del Laboratorio de Fluidez.",
     assessment:
       "Se acerca una evaluación: repasen sus apuntes y una tarea anterior.",
     noSchool: "No hay clases",
+    talk: "Conversen sobre las matemáticas de esta semana",
     reflect: "Algo que aprendí o descubrí esta semana:",
     footer: "Páginas de práctica y respuestas:",
   },
@@ -97,12 +93,10 @@ function nightRow(day, copy, lang, state) {
   const dayName = formatDate(day.date, lang, { weekday: "long" });
   const dateText = formatDate(day.date, lang, { month: "short", day: "numeric" });
   const checked = state?.done?.[day.date] ? " checked" : "";
-  const initials = escapeHtml(state?.initials?.[day.date] ?? "");
   return `<tr class="ws-night" data-date="${day.date}">
     <th scope="row"><span class="ws-dayname">${escapeHtml(dayName)}</span><span class="ws-date">${escapeHtml(dateText)}</span></th>
     <td class="ws-task">${taskCell(day, copy, lang)}</td>
     <td class="ws-done"><input class="ws-check" type="checkbox" data-date="${day.date}" aria-label="${escapeHtml(`${copy.colDone}: ${dayName}`)}"${checked} /></td>
-    <td class="ws-init"><input class="ws-initials" type="text" maxlength="4" autocomplete="off" data-date="${day.date}" aria-label="${escapeHtml(`${copy.colInitials}: ${dayName}`)}" value="${initials}" /></td>
   </tr>`;
 }
 
@@ -111,15 +105,14 @@ function noteRow(day, copy, lang, text, className) {
   const dateText = formatDate(day.date, lang, { month: "short", day: "numeric" });
   return `<tr class="${className}">
     <th scope="row"><span class="ws-dayname">${escapeHtml(dayName)}</span><span class="ws-date">${escapeHtml(dateText)}</span></th>
-    <td colspan="3">${escapeHtml(text)}</td>
+    <td colspan="2">${escapeHtml(text)}</td>
   </tr>`;
 }
 
 /**
  * @param {object} week a weeks.json week
  * @param {"en"|"es"} lang
- * @param {{name?: string, period?: string, signature?: string, signedOn?: string, reflection?: string,
- *          done?: Record<string, boolean>, initials?: Record<string, string>}} [state]
+ * @param {{reflection?: string, done?: Record<string, boolean>}} [state]
  */
 export function renderSheet(week, lang, state = {}) {
   const copy = COPY[lang];
@@ -127,10 +120,11 @@ export function renderSheet(week, lang, state = {}) {
   const rows = week.days
     .map((day) => {
       if (nightDates.has(day.date)) return nightRow(day, copy, lang, state);
-      return noteRow(day, copy, lang, day.note[lang] || copy.noSchool, "ws-off");
+      if (day.status === "no-class")
+        return noteRow(day, copy, lang, day.note[lang] || copy.noSchool, "ws-off");
+      return noteRow(day, copy, lang, copy.talk, "ws-talk");
     })
     .join("");
-  const attr = (value) => escapeHtml(value ?? "");
   return `<article class="ws-sheet" lang="${lang}" data-week="${week.start}">
   <header class="ws-head">
     <div>
@@ -139,13 +133,9 @@ export function renderSheet(week, lang, state = {}) {
     </div>
     <p class="ws-where"><strong>${escapeHtml(weekRange(week, lang))}</strong><br />${escapeHtml(copy.course)}</p>
   </header>
-  <div class="ws-name">
-    <label class="ws-field ws-field-name">${escapeHtml(copy.student)}<input class="ws-line" type="text" name="name" maxlength="60" autocomplete="off" value="${attr(state.name)}" /></label>
-    <label class="ws-field ws-field-period">${escapeHtml(copy.period)}<input class="ws-line" type="text" name="period" maxlength="12" autocomplete="off" value="${attr(state.period)}" /></label>
-  </div>
   <p class="ws-how">${escapeHtml(copy.how)}</p>
   <table class="ws-table">
-    <thead><tr><th scope="col">${escapeHtml(copy.colDay)}</th><th scope="col">${escapeHtml(copy.colTask)}</th><th scope="col">${escapeHtml(copy.colDone)}</th><th scope="col">${escapeHtml(copy.colInitials)}</th></tr></thead>
+    <thead><tr><th scope="col">${escapeHtml(copy.colDay)}</th><th scope="col">${escapeHtml(copy.colTask)}</th><th scope="col">${escapeHtml(copy.colDone)}</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
   <label class="ws-reflect">${escapeHtml(copy.reflect)}<textarea class="ws-lines" name="reflection" rows="3" maxlength="400">${escapeHtml(state.reflection ?? "")}</textarea></label>

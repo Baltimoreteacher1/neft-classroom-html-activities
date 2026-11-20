@@ -12,12 +12,13 @@ const { weeks } = JSON.parse(readFileSync(join(HERE, "weeks.json"), "utf8"));
 const baseline = JSON.parse(readFileSync(join(ROOT, "data/pacing-baseline-2026-27.json"), "utf8"));
 const schoolDates = new Set(baseline.days.filter((d) => d.schoolStatus === "school").map((d) => d.date));
 
-test("every night is a real school day and every school day is listed", () => {
+test("every school day is an optional check-in night", () => {
   for (const week of weeks) {
     assert.ok(week.nights.length >= 1, `${week.start} has no practice night`);
     for (const date of week.nights) assert.ok(schoolDates.has(date), `${date} is not a school day`);
-    const schoolCount = week.days.filter((d) => d.status !== "no-class").length;
-    assert.equal(week.nights.length, schoolCount, `${week.start} includes every school day`);
+    assert.deepEqual(week.nights, week.days.filter((day) => day.status !== "no-class").map((day) => day.date));
+    assert.equal("goal" in week, false);
+    assert.equal("turnIn" in week, false);
   }
 });
 
@@ -42,11 +43,12 @@ test("English and Spanish copy carry the same keys", () => {
   assert.deepEqual(Object.keys(COPY.en).sort(), Object.keys(COPY.es).sort());
 });
 
-test("the sheet renders one checkbox per night, escapes student text, and keeps saved checks", () => {
-  const week = weeks.find((w) => w.nights.length === 3);
+test("the sheet renders private optional checkboxes without collecting names or turn-in data", () => {
+  const week = weeks.find((w) => w.nights.length >= 3);
   const html = renderSheet(week, "en", { name: '"><img src=x>', done: { [week.nights[0]]: true } });
   assert.equal((html.match(/class="ws-check"/g) ?? []).length, week.nights.length);
   assert.equal((html.match(/ checked/g) ?? []).length, 1);
-  assert.ok(!html.includes("<img src=x>"));
+  assert.doesNotMatch(html, /Student name|signature|turn.in|bonus points|<img src=x>/i);
+  assert.match(html, /optional and ungraded/i);
   assert.match(weekRange(week, "es"), /de \d{4}$/);
 });

@@ -5044,28 +5044,14 @@ function hwDateKey(d) {
   return d.getFullYear() + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
 }
 function hwRecordNight() {
-  var now = new Date();
-  var key = hwDateKey(now);
+  var key = hwDateKey(new Date());
   var nights = hwNightsRead();
   if (nights.indexOf(key) === -1) {
     nights.push(key);
     nights.sort();
     try { localStorage.setItem(HW_NIGHTS_KEY, JSON.stringify(nights.slice(-120))); } catch (e) {}
   }
-  try {
-    var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
-    var wsKey = 'ws:v1:' + hwDateKey(monday);
-    var ws = JSON.parse(localStorage.getItem(wsKey) || 'null');
-    if (!ws || typeof ws !== 'object' || Array.isArray(ws)) ws = {};
-    if (!ws.done || typeof ws.done !== 'object') ws.done = {};
-    if (!ws.initials || typeof ws.initials !== 'object') ws.initials = {};
-    if (!ws.checkedAt || typeof ws.checkedAt !== 'object') ws.checkedAt = {};
-    if (!ws.done[key]) {
-      ws.done[key] = true;
-      ws.checkedAt[key] = now.toISOString();
-      localStorage.setItem(wsKey, JSON.stringify(ws));
-    }
-  } catch (e) {}
+  document.dispatchEvent(new CustomEvent('family-math-complete'));
 }
 /* Counts back from today. A school night that was missed ends the streak; tonight not being
    finished yet does not; a weekend is never required, and counts if the family did one. */

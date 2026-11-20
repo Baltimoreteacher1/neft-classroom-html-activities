@@ -409,10 +409,12 @@ for (const id of lessonIds) {
   // The AI Learning Lab, Weekly Practice Sheet, and optional Family Math Studio are
   // the allowed /curriculum/ links. The studio extends this lesson's family practice.
   // The general Math Workbench is intentionally not: each homework embeds only its matched tool.
-  const htmlNoAiHub = html.replace(
-    /\/curriculum\/(?:ai-hub|family-connections\/(?:weekly-sheet|math-studio))\/[^"'\s]*/gi,
-    "",
-  );
+  const htmlNoAiHub = html
+    .replace(/<nav class="family-shell"[\s\S]*?<\/nav>/i, "")
+    .replace(
+      /\/curriculum\/(?:ai-hub|family-connections\/(?:weekly-sheet|math-studio|shared\/family-shell\.js))\/?[^"'\s]*/gi,
+      "",
+    );
   if (
     /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||

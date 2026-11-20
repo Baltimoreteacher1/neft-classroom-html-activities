@@ -168,7 +168,7 @@ if (data) {
 
 /* ----------------------------------------------------------- 3. the wiring */
 const html = read("curriculum/family-connections/index.html");
-const app = read("curriculum/family-connections/family-app.js");
+const app = read("curriculum/family-connections/shared/family-public-app.js");
 const hub = read("curriculum/family-connections/shared/homework-hub.js");
 const panels = read("curriculum/family-connections/shared/hub-panels.js");
 const cacheAt = html.indexOf("/assets/curriculum-json-cache.js");
@@ -178,9 +178,9 @@ if (cacheAt < 0 || moduleAt < 0 || cacheAt > moduleAt)
     "family-connections/index.html must load /assets/curriculum-json-cache.js BEFORE family-app.js",
   );
 if (!/NTJsonCache\??\.json\(\s*["']\/data\/family-welcome\.json["']/.test(app))
-  fail("family-app.js must read /data/family-welcome.json through window.NTJsonCache");
+  fail("family-public-app.js must read /data/family-welcome.json through window.NTJsonCache");
 if (!/normalizeWelcome\(/.test(app))
-  fail("family-app.js must pass the welcome file through normalizeWelcome()");
+  fail("family-public-app.js must pass the welcome file through normalizeWelcome()");
 if (!/welcomeForWeek\(/.test(hub))
   fail("homework-hub.js must find the note through welcomeForWeek()");
 if (/innerHTML|insertAdjacentHTML/.test(panels))

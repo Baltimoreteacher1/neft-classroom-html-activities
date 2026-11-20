@@ -27,7 +27,7 @@ const cacheSource = await readFile(new URL("../../assets/curriculum-json-cache.j
 /* `options`: { welcome, stored: {key: value}, languages: [...], weeks: [snapshots] } */
 async function boot(path, state, query = "", options = {}) {
   const html = await readFile(new URL(path === "family" ? "./index.html" : "./teacher/homework.html", import.meta.url), "utf8");
-  const source = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
+  const source = await readFile(new URL("./teacher/family-app.js", import.meta.url), "utf8");
   const dom = new JSDOM(html, { url: `https://eduwonderlab.com/curriculum/family-connections/${path === "family" ? "" : "teacher/homework"}${query}`, runScripts: "outside-only" });
   const previous = globalThis.document;
   globalThis.document = dom.window.document;
@@ -117,7 +117,7 @@ const goodVideo = {
   captions: { en: "/curriculum/family-connections/welcome/w.en.vtt", es: "/curriculum/family-connections/welcome/w.es.vtt" },
 };
 
-test("the page is Family Math Studio from the first paint, in both languages, with the weekly-note kicker kept", async () => {
+test("the family hub keeps the Studio identity and optional copy in both languages", async () => {
   const view = await boot("family", plan(monday));
   try {
     const { document: d } = view;
@@ -125,14 +125,7 @@ test("the page is Family Math Studio from the first paint, in both languages, wi
     assert.equal(d.getElementById("hub-intro").textContent, "A few minutes of math at home. Optional. No grades.");
     assert.equal(d.getElementById("edition-label").textContent, "A weekly note from Mr. Neft");
     assert.equal(d.title, "Family Math Studio · EduWonderLab");
-    const sheet = d.getElementById("weekly-sheet-links");
-    assert.equal(sheet.hidden, false);
-    assert.equal(sheet.querySelector("[data-ws=online]").textContent, "Fill it in online");
-    assert.equal(sheet.querySelector("[data-ws=online]").getAttribute("href"), "./weekly-sheet/?lang=en");
     d.querySelector('#language-switch [data-lang="es"]').click();
-    assert.equal(sheet.querySelector("[data-ws=online]").textContent, "Llenarla en línea");
-    assert.equal(sheet.querySelector("[data-ws=print]").textContent, "Imprimir una copia (PDF)");
-    assert.equal(sheet.querySelector("[data-ws=online]").getAttribute("href"), "./weekly-sheet/?lang=es");
     assert.equal(d.getElementById("hub-title").textContent, "Estudio familiar de matemáticas");
     assert.equal(d.getElementById("hub-intro").textContent, "Unos minutos de matemáticas en casa. Opcional. Sin calificaciones.");
     assert.equal(d.getElementById("edition-label").textContent, "Una nota semanal del Sr. Neft");

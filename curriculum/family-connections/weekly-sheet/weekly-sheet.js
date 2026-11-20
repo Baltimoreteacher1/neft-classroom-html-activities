@@ -3,39 +3,32 @@
  * checkmarks on THIS device only (localStorage). Nothing is sent anywhere. */
 import { LANGS, renderSheet, weekRange } from "./sheet-render.js";
 import { todayIso, weekFor } from "./week-pick.js";
+import { readWeek } from "../shared/family-state.js";
 
 const CHROME = {
   en: {
     back: "Family Connections",
     heading: "Weekly Family Practice",
-    intro: "Optional practice. No grades. A few minutes together helps.",
+    intro: "Choose any nights that work for your family. Practice is optional and ungraded.",
     weekLabel: "Week",
     pdf: "Download this week (PDF)",
     print: "Print this week",
     all: "Download every week (PDF)",
     privacy: "Your checkmarks stay on this device. Nothing is sent to the school.",
-    progress: (n, total) => `${n} of ${total} night${total === 1 ? "" : "s"} checked`,
-    replayTitle: "This week’s replay",
-    replayLine: (n, total) => `We practiced ${n} of ${total} night${total === 1 ? "" : "s"} this week.`,
-    shareBtn: "Share a note (optional)",
-    shareCopied: "Copied! Paste into ClassDojo or a text.",
-    shareText: (n, total) => `We practiced Grade 6 math ${n} of ${total} nights this week on Family Math Studio!`,
+    close: "Close",
+    progress: (n) => `${n} nights checked · optional practice`,
   },
   es: {
     back: "Conexión con las familias",
     heading: "Práctica familiar semanal",
-    intro: "Práctica opcional. Sin calificaciones. Unos minutos juntos ayudan.",
+    intro: "Elijan las noches que les funcionen. La práctica es opcional y no lleva calificación.",
     weekLabel: "Semana",
     pdf: "Descargar esta semana (PDF)",
     print: "Imprimir esta semana",
     all: "Descargar todas las semanas (PDF)",
     privacy: "Sus marcas se quedan en este dispositivo. No se envía nada a la escuela.",
-    progress: (n, total) => `${n} de ${total} noche${total === 1 ? "" : "s"} marcada${n === 1 ? "" : "s"}`,
-    replayTitle: "Resumen de la semana",
-    replayLine: (n, total) => `Practicamos ${n} de ${total} noche${total === 1 ? "" : "s"} esta semana.`,
-    shareBtn: "Compartir una nota (opcional)",
-    shareCopied: "¡Copiado! Péguenlo en ClassDojo o en un mensaje.",
-    shareText: (n, total) => `¡Practicamos matemáticas de 6.º grado ${n} de ${total} noches esta semana en Family Math Studio!`,
+    close: "Cerrar",
+    progress: (n) => `${n} noches marcadas · práctica opcional`,
   },
 };
 
@@ -68,7 +61,8 @@ let week = weeks.find((w) => w.start === params.get("week")) ?? weekFor(weeks, p
 const stateKey = () => `ws:v1:${week.start}`;
 let state = {};
 const loadState = () => {
-  state = store.get(stateKey()) ?? {};
+  state = { ...readWeek(week.start), ...(store.get(stateKey()) ?? {}) };
+  for (const field of ["name", "period", "signature", "signedOn", "initials"]) delete state[field];
   state.done ??= {};
   state.initials ??= {};
   state.checkedAt ??= {};
@@ -89,63 +83,16 @@ function paintChrome() {
 
 function paintProgress() {
   const n = doneCount();
-  const total = week.nights.length;
   const copy = CHROME[lang];
   const box = $("wp-progress");
-  box.dataset.met = String(total > 0 && n >= total);
-  box.innerHTML = `${copy.progress(n, total)}<div class="wp-dots" aria-hidden="true">${week.nights
+  box.removeAttribute("data-met");
+  box.innerHTML = `${copy.progress(n)}<div class="wp-dots" aria-hidden="true">${week.nights
     .map((date) => `<span class="wp-dot" data-on="${Boolean(state.done[date])}"></span>`)
     .join("")}</div>`;
 }
 
 function paintSheet() {
   $("sheet").innerHTML = renderSheet(week, lang, state);
-}
-
-function paintReplay() {
-  const box = $("wp-replay");
-  if (!box) return;
-  const doneDates = week.nights.filter((date) => state.done[date]);
-  if (!doneDates.length) {
-    box.hidden = true;
-    box.replaceChildren();
-    return;
-  }
-  const copy = CHROME[lang];
-  const locale = lang === "es" ? "es-US" : "en-US";
-  const fmt = (iso) => new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
-  const byDate = new Map(week.days.map((d) => [d.date, d]));
-  const items = doneDates
-    .map((date) => {
-      const d = byDate.get(date);
-      const label = d?.status === "lesson" ? `Lesson ${d.label}` : "";
-      return `<li>✓ ${fmt(date)}${label ? ` · ${label}` : ""}</li>`;
-    })
-    .join("");
-  box.hidden = false;
-  box.innerHTML = `<h2 id="wp-replay-title">${copy.replayTitle}</h2>
-    <p>${copy.replayLine(doneDates.length, week.nights.length)}</p>
-    <ul>${items}</ul>
-    <div class="wp-replay-actions">
-      <button type="button" class="wp-btn" id="wp-share">${copy.shareBtn}</button>
-      <span class="wp-share-status" id="wp-share-status" role="status" aria-live="polite"></span>
-    </div>`;
-  $("wp-share").addEventListener("click", async () => {
-    const url = `${location.origin}${location.pathname}?week=${week.start}&lang=${lang}`;
-    const text = `${copy.shareText(doneDates.length, week.nights.length)} ${url}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: copy.heading, text, url });
-        return;
-      } catch {}
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      $("wp-share-status").textContent = copy.shareCopied;
-    } catch {
-      $("wp-share-status").textContent = url;
-    }
-  });
 }
 
 function paint() {
@@ -156,10 +103,22 @@ function paint() {
   paintReplay();
 }
 
+function paintReplay() {
+  const list = $("family-replay-days");
+  if (!list) return;
+  const checked = week.days.filter((day) => state.done?.[day.date]);
+  const items = checked.length ? checked : week.days.filter((day) => day.date <= todayIso());
+  list.replaceChildren(...(items.length ? items : [{ date: "", title: {} }]).map((day) => {
+    const item = document.createElement("li");
+    const date = day.date ? new Intl.DateTimeFormat(lang === "es" ? "es-US" : "en-US", { weekday: "long", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${day.date}T00:00:00Z`)) : "";
+    item.textContent = [date, day.title?.[lang] || (lang === "es" ? "Un momento de matemáticas en familia" : "A family math moment")].filter(Boolean).join(" · ");
+    return item;
+  }));
+}
+
 $("sheet").addEventListener("input", (event) => {
   const el = event.target;
-  if (el.matches(".ws-initials")) state.initials[el.dataset.date] = el.value.toUpperCase();
-  else if (el.name) state[el.name] = el.value;
+  if (el.name === "reflection") state[el.name] = el.value;
   else return;
   save();
 });
@@ -171,7 +130,6 @@ $("sheet").addEventListener("change", (event) => {
   else delete state.checkedAt[el.dataset.date];
   save();
   paintProgress();
-  paintReplay();
 });
 
 $("wp-week").addEventListener("change", (event) => {

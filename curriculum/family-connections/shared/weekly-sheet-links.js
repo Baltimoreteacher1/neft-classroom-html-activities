@@ -6,15 +6,15 @@ const SHEET = "./weekly-sheet/";
 const COPY = {
   en: {
     title: "Weekly practice sheet",
-    hint: "Optional practice. No grades. A few minutes together helps.",
-    online: "Fill it in online",
-    print: "Print a copy (PDF)",
+    hint: "Optional, ungraded practice. Your checkmarks stay on this device.",
+    online: "Open weekly sheet",
+    print: "Print / Save PDF",
   },
   es: {
     title: "Hoja semanal de práctica",
-    hint: "Práctica opcional. Sin calificaciones. Unos minutos juntos ayudan.",
-    online: "Llenarla en línea",
-    print: "Imprimir una copia (PDF)",
+    hint: "Práctica opcional y sin calificación. Tus marcas se quedan en este dispositivo.",
+    online: "Abrir la hoja semanal",
+    print: "Imprimir / Guardar PDF",
   },
 };
 

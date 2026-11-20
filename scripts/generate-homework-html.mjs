@@ -1473,6 +1473,7 @@ ${WEB_PRINT_CSS}
 <body${familyStyle === "standard" ? "" : ` data-family-style="${familyStyle}"`}>
 ${renderIconSprite()}
 <a class="hw-skip" href="#hw_tab_panels" ${actOn("click", "startHomework", [], { prevent: true })}><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
+<nav class="family-shell"></nav>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -4492,6 +4493,7 @@ if (document.readyState === "loading") {
 }
 </script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
+<script type="module" src="/curriculum/family-connections/shared/family-shell.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

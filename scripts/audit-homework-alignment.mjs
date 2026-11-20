@@ -161,10 +161,12 @@ const REQUIRED_MARKERS = [
     test: (h) => {
       // Allow the AI Learning Lab, Weekly Practice Sheet, and Family Math Studio. The general Math Workbench is
       // intentionally excluded because this page embeds only its lesson-matched tool.
-      const stripped = h.replace(
-        /\/curriculum\/(?:ai-hub|family-connections\/(?:weekly-sheet|math-studio))\/[^"'\s]*/gi,
-        "",
-      );
+      const stripped = h
+        .replace(/<nav class="family-shell"[\s\S]*?<\/nav>/i, "")
+        .replace(
+          /\/curriculum\/(?:ai-hub|family-connections\/(?:weekly-sheet|math-studio|shared\/family-shell\.js))\/?[^"'\s]*/gi,
+          "",
+        );
       return (
         !/\/curriculum\//i.test(stripped) &&
         !/Back to curriculum/i.test(h) &&

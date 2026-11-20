@@ -10,6 +10,13 @@
   font-display: swap;
   src: url("./fonts/baloo2-var.woff2") format("woff2");
 }
+
+/* Shared Family Math Studio navigation. */
+@layer components{
+.family-shell{display:flex;align-items:center;min-height:44px;overflow-x:auto;background:var(--fm-family-surface)}
+.family-shell>a,.family-shell>button{min-height:44px;padding:.25rem;border:1px solid var(--fm-border-strong);border-radius:.5rem;background:var(--fm-raised);color:var(--fm-primary);font:inherit;white-space:nowrap}
+.family-shell [aria-current=page],.family-shell [aria-pressed=true]{background:var(--fm-primary);color:var(--fm-on-primary)}
+}
 @font-face {
   font-family: "Nunito";
   font-style: normal;
@@ -68,6 +75,9 @@
 @layer tokens {
   :root {
     color-scheme: light dark;
+
+    /* The family surface is intentionally warm in every route and theme. */
+    --fm-family-surface: #f7f4ec;
 
     /* ── Color: surfaces ──────────────────────────────────────────────── */
     --fm-surface: light-dark(#f7f4ec, #0f1b27);

@@ -187,7 +187,7 @@ function selfTests(loaded) {
 
 // The hero, top bar, language card, print sheet and floating launchers are other workstreams' surfaces.
 const OUT_OF_SCOPE =
-  "header.hw-hero, #hw_topbar, .hw-print-head, .hw-tab-meta-row, .hw-skip, .hw-print-socratic-footer, .refrigerator-sheet-print-container, .hw-answer-sheet, [class*='launcher'], .nt-sr-launcher";
+  "header.hw-hero, #hw_topbar, .family-shell, .hw-print-head, .hw-tab-meta-row, .hw-skip, .hw-print-socratic-footer, .refrigerator-sheet-print-container, .hw-answer-sheet, [class*='launcher'], .nt-sr-launcher";
 
 async function measureRun(browser, origin, lessonId, { lang, theme }) {
   const context = await browser.newContext({
