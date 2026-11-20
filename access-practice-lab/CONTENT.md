@@ -228,3 +228,32 @@ Original, automated-checks-only content (`reviewStatus`); no human translation o
 Progress is stored only as completed `unit/item` keys under `accessPracticeLab:v1:reading-path`. A silent-e word is
 segmented as onset, split grapheme (`a_e`), coda. The Word Machine's reels and real-word list live in
 `src/reading-path/games/machine.js` and nowhere else.
+
+## Language Page integration content
+
+These resources are original, generated from source modules, and marked
+`automated-checks-only`. They have not received human language, phonics, or
+program review. Regenerate with `npm run generate:newcomer-packs` and
+`npm run generate:program-content`; validators compare generated output with
+the source and enforce the listed content contracts.
+
+- `content/packs/survival-vocabulary.json`: 12 topics × 12 EN/ES words, with
+  original SVGs in `pictures/packs/`. Other `content/packs/*.json` files cover
+  six All About Me templates, 20 arrival phrases, 36 speaking/listening cards,
+  sentence frames, six menus, subject scaffolds, an eight-page family guide,
+  and a domain checklist. See `tools/newcomer-packs.test.mjs` for current
+  machine-checkable counts. Audio and human review remain open.
+- `content/program/strategies.json`: 25 original strategy records with bilingual
+  title and organizer, 5–8 steps, distinct A/B/C supports, and observable look-fors.
+  `forms.json` contains six neutral `lp-form/1` templates with a district wording
+  slot and the “LP never decides” statement. `learning-modules.json` contains
+  twelve ten-minute modules. All are draft teaching resources, not official
+  identification, placement, compliance, or proficiency determinations.
+- Browser-local speaking assignments use `lp-speak-pack/1` in IndexedDB;
+  rehearsal settings are optional and default off. Provider-backed rooms,
+  class-linked locks, live assessment recordings, and LMS registration remain
+  unavailable. The mock room provider creates metadata only.
+- Teacher EL program records use IndexedDB `lp_el_program` version 1. Export is
+  a checksummed JSON archive. Import replaces the local program archive only
+  after schema/checksum validation. No real student records are included in
+  fixtures or acceptance checks.

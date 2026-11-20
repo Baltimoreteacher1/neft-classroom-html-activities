@@ -11,6 +11,7 @@
 // Books live on this device (src/book/db.js). Docs: access-practice-lab/BOOK-STUDIO.md.
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
+import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
 import * as db from "../book/db.js";
 import { download, exportProject, fileBase, importProject, readShared } from "../book/export.js";
 import { bkIcon } from "../book/icons.js";
@@ -71,9 +72,12 @@ export async function render(ctx) {
   await ensureStyles();
   const I = i18nFor(ctx);
   const r = ctx.route;
+  if (r.printStudio && !ACCESS_LAB_FLAGS.printStudioEnabled) return { title: I.S("Print Studio", "Estudio de impresión"), html: `<section class="panel"><h1>${I.S("This studio is not available.", "Este estudio no está disponible.")}</h1></section>` };
   const sub = r.id || "";
   const title =
-    sub === "edit"
+    r.printStudio
+      ? I.S("Print Studio", "Estudio de impresión")
+      : sub === "edit"
       ? I.S("Book editor", "Editor de libros")
       : sub === "read" || sub === "shared"
         ? I.S("Read a book", "Leer un libro")

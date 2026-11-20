@@ -50,6 +50,13 @@ export function roundFor(unit, template, options = {}) {
     9: ["hop", "hope"],
     10: ["cub", "cube"],
   };
+  const switchPictures = {
+    6: ["🧢", "🦸"],
+    7: ["🐕", "🧑"],
+    8: ["📍", "🌲"],
+    9: ["🐇", "💭"],
+    10: ["🐻", "🧊"],
+  };
   return {
     template,
     target,
@@ -60,6 +67,7 @@ export function roundFor(unit, template, options = {}) {
     pairs,
     sight: seededOrder(sight, seed).slice(0, 4),
     switchPair: pools[unit.n] || pools[6],
+    switchPictures: switchPictures[unit.n] || switchPictures[6],
     sentence: unit.sentence.en,
     sortPatterns: unit.n === 14 ? ["er", "ir", "ur"] : ["ai", "oa", "ee"],
   };

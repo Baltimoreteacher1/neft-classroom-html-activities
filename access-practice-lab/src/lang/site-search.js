@@ -268,6 +268,7 @@ export function buildDocs({
   tests = [],
   studioApp = [],
   destinations = [],
+  activityMetadata = {},
 } = {}) {
   const docs = [...PAGE_DOCS, ...COMMAND_DOCS];
   for (const c of cards)
@@ -343,7 +344,7 @@ export function buildDocs({
                 : `${domain}/${level}/${id}`,
             keys: [domain, DOMAIN_ES[domain] || "", type || ""],
             bands: [band],
-            meta: { domain, level, type, minutes: Number.isFinite(minutes) ? minutes : null },
+            meta: { domain, level, type, minutes: Number.isFinite(minutes) ? minutes : null, ...(activityMetadata[id] || {}) },
           });
         }
   const st = index?.studio || {};

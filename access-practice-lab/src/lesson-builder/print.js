@@ -5,7 +5,7 @@ import { html, toHtml } from "../util.js";
 import { FUNCTIONS, PHASES, SUPPORT_NOTE, SUPPORT_PROFILES } from "./rules.js";
 
 /** Print a clean English plan (the lesson language) in a body-level host like the Launch Studio tickets. */
-export function printLessonPlan(lesson, { rowById, phaseHref }) {
+export function lessonPlanHTML(lesson, { rowById, phaseHref, origin = globalThis.location?.origin || "" }) {
   const s = lesson.settings;
   const fn = FUNCTIONS[s.fn];
   const body = html`<article class="lb-print" lang="en">
@@ -22,7 +22,7 @@ export function printLessonPlan(lesson, { rowById, phaseHref }) {
         const href = phaseHref(p);
         return html`<li>
           <h2>${PHASES[p.key].name[0]} (${p.minutes ? `${p.minutes} min` : "at home"})</h2>
-          ${row ? html`<p><strong>Activity:</strong> ${row.title} (${row.domain}, ${row.minutes || "—"} min) — ${location.origin}${href}</p>` : p.key === "family" ? html`<p><strong>Link:</strong> ${location.origin}${href}</p>` : ""}
+          ${row ? html`<p><strong>Activity:</strong> ${row.title} (${row.domain}, ${row.minutes || "—"} min) — ${origin}${href}</p>` : p.key === "family" ? html`<p><strong>Link:</strong> ${origin}${href}</p>` : ""}
           <p><strong>Teacher:</strong> ${p.teacher}</p>
           <p><strong>Students:</strong> ${p.student}</p>
           ${p.key === "vocabulary" ? html`<p><strong>Words:</strong> ${p.words.join(", ")}</p>` : ["opening", "guided", "task", "exit"].includes(p.key) ? html`<p><strong>Frames:</strong> ${p.frames.join(" / ")}</p>` : ""}
@@ -34,6 +34,11 @@ export function printLessonPlan(lesson, { rowById, phaseHref }) {
       used.
     </p>
   </article>`;
+  return body;
+}
+
+export function printLessonPlan(lesson, options) {
+  const body = lessonPlanHTML(lesson, options);
   let host = document.getElementById("lessonPrint");
   if (!host) {
     host = Object.assign(document.createElement("div"), { id: "lessonPrint" });

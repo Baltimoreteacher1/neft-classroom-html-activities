@@ -311,3 +311,26 @@ completable and comparable.
   }
 }
 ```
+
+## Language integration resource schemas
+
+Generated newcomer pack source lives in `src/packs/newcomer-packs.js`; regenerate
+with `npm run generate:newcomer-packs`. Outputs in `content/packs/` use the
+`lp-resource-pack/1` family schema; the survival vocabulary generator and
+validator own the exact 12 × 12 bilingual word list and SVG print assets. Other
+outputs are All About Me printables, arrival phrases, speaking/listening cards,
+sentence frames, independent menus, subject scaffold packs, a family guide, and
+a four-domain “I can” checklist. Content is original and not human-reviewed.
+
+Teacher-local EL resources are generated from `src/program/content.js` by
+`npm run generate:program-content`. `content/program/strategies.json` holds 25
+validated bilingual strategy records; `forms.json` holds six neutral `lp-form/1`
+templates; `learning-modules.json` holds twelve ten-minute modules. Validators
+in `src/program/validate.js` enforce bilingual titles/organizers, distinct
+supports, required form sections and safety wording, and module duration.
+
+Speaking task drafts use `lp-speak-pack/1` and remain in browser IndexedDB.
+Rehearsal limits are opt-in. The student preview’s timer is a practice aid; it
+is not an official assessment timer or accommodation. Mock live room records
+contain aliases and synthetic provider metadata only. No audio or video is
+created by the mock provider.

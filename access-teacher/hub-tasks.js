@@ -52,6 +52,7 @@ export function findTaskHTML(band) {
       ${row("Content library", "Every unit and passage, with what each one covers.", "#accContent", "Open library")}
       ${["3-5", "6-8"].includes(band) ? row("Practice tests", "Full tests in all four skills, with teacher keys.", "#tests", "See tests") : ""}
       ${row("Printables and Word downloads", "Student packets, answer-key Word files and printable pages.", "#printables", "See printables")}
+      ${row("Newcomer resource packs", "Bilingual survival vocabulary, school routines and printable speaking supports.", destHref("newcomer-packs", band), "Open packs")}
     </ul>
   </div>`;
 }
@@ -78,6 +79,7 @@ export function prepareTaskHTML(band) {
     </div>
     <ul class="tc-link-list">
       ${destRow("tests", band)} ${destRow("assess", band)} ${destRow("road", band)}
+      ${row("Create a speaking task", "Build a local speaking assignment draft with optional rehearsal settings.", `/access-practice-lab/task-packs?grades=${band}`, "Create task pack")}
       ${row("Weekly links for class", "Post one Road to ACCESS link a week, with a family prompt.", "#weekly", "See weekly links")}
       ${["3-5", "6-8"].includes(band) ? destRow("daily-drill", band) : ""}
     </ul>
@@ -101,6 +103,7 @@ export function planToolsHTML(active, band) {
     <a class="chip" href="${destHref("lesson-builder", band)}"
       >Lesson Builder ${icon("arrow-right")}</a
     >
+    <a class="chip" href="${destHref("print-studio", band)}">Make a resource ${icon("arrow-right")}</a>
     <a class="chip" href="#accAssign">Assignment builder</a>
     <a class="chip" href="#journeyGuide">Mission guide</a>
   </nav>`;

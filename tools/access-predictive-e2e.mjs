@@ -112,6 +112,8 @@ async function sweep(label) {
 // 1. Teacher Hub's dedicated Data Studio card exposes the studio and its sample-data route.
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "domcontentloaded" });
 await openHubSections(page);
+const moreTasks = page.locator(".tc-more-tasks");
+if (!(await moreTasks.getAttribute("open"))) await moreTasks.locator("summary").click();
 const dataAction = page.locator("#tc-tab-data");
 if ((await dataAction.getAttribute("aria-expanded")) !== "true") await dataAction.click();
 await page.locator("#tcData").waitFor();

@@ -12,9 +12,14 @@ import {
   AUDIENCE_VALUES,
   BAND_VALUES,
   FORMAT_VALUES,
+  EDIT_VALUES,
+  LANGUAGE_VALUES,
   KIND_VALUES,
   MAIN_KINDS,
   SKILL_VALUES,
+  STAGE_VALUES,
+  TECH_VALUES,
+  TYPE_VALUES,
   TIME_VALUES,
   activeCount,
   applyFilters,
@@ -137,9 +142,13 @@ function bandGroup(I, r) {
 function filtersHTML(I, r) {
   const c = r.counts;
   const more = KIND_VALUES.filter(([v]) => !MAIN_KINDS.includes(v));
-  const moreOn = !!(state.format || state.time || more.some(([v]) => v === state.kind));
+  const functions = Object.keys(c.fn || {}).map((v) => [v, { en: v[0]?.toUpperCase() + v.slice(1), es: v[0]?.toUpperCase() + v.slice(1) }]);
+  const moreOn = !!(state.format || state.time || state.lang || state.tech || state.edit || state.fn || more.some(([v]) => v === state.kind));
   return html`${group(I, "for", I.T("Who it is for", "Para quién"), AUDIENCE_VALUES, c.for)}
     ${bandGroup(I, r)} ${group(I, "skill", I.T("Skill", "Destreza"), SKILL_VALUES, c.skill)}
+    ${group(I, "type", I.T("Resource type", "Tipo de recurso"), TYPE_VALUES, c.type)}
+    ${Object.values(c.stage || {}).some(Boolean) ? html`<p class="fx-note" role="note">${I.T("Classroom support choice, not a WIDA level.", "Opción de apoyo en el aula; no es un nivel WIDA.")}</p>` : ""}
+    ${group(I, "stage", I.T("Classroom support stage", "Etapa de apoyo en el aula"), STAGE_VALUES, c.stage)}
     ${group(
       I,
       "kind",
@@ -151,6 +160,10 @@ function filtersHTML(I, r) {
       <summary>${I.T("More filters", "Más filtros")}</summary>
       ${group(I, "format", I.T("Format", "Formato"), FORMAT_VALUES, c.format)}
       ${group(I, "time", I.T("Time", "Tiempo"), TIME_VALUES, c.time)}
+      ${group(I, "lang", I.T("Language", "Idioma"), LANGUAGE_VALUES, c.lang)}
+      ${group(I, "tech", I.T("Technology", "Tecnología"), TECH_VALUES, c.tech)}
+      ${group(I, "edit", I.T("Editable", "Editable"), EDIT_VALUES, c.edit)}
+      ${group(I, "fn", I.T("Language function", "Función del lenguaje"), functions, c.fn)}
       ${group(I, "kind", I.T("More kinds", "Más tipos"), more, c.kind)}
     </details>`;
 }
@@ -163,6 +176,12 @@ function activeHTML(I) {
     kind: KIND_VALUES,
     format: FORMAT_VALUES,
     time: TIME_VALUES,
+    type: TYPE_VALUES,
+    stage: STAGE_VALUES,
+    lang: LANGUAGE_VALUES,
+    tech: TECH_VALUES,
+    edit: EDIT_VALUES,
+    fn: Object.keys(data?.docs ? Object.fromEntries(data.docs.flatMap((d) => (d.fn || []).map((v) => [v, true]))) : {}).map((v) => [v, { en: v[0]?.toUpperCase() + v.slice(1), es: v[0]?.toUpperCase() + v.slice(1) }]),
   };
   const on = Object.entries(lists).filter(([k]) => state[k]);
   if (!on.length) return "";
@@ -172,7 +191,7 @@ function activeHTML(I) {
     aria-label="${I.S("Filters on", "Filtros activos")}"
   >
     ${on.map(([k, list]) => {
-      const lbl = list.find(([v]) => v === state[k])[1];
+      const lbl = list.find(([v]) => v === state[k])?.[1] || { en: state[k], es: state[k] };
       return html`<button
         type="button"
         class="chip is-on"

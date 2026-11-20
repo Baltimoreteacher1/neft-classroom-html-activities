@@ -8,14 +8,19 @@ import { buildBridge, buildDocs } from "./lang/site-search.js";
 import { STUDIO_APP_PAGES } from "./studio-app.js";
 import { DESTINATIONS } from "./sitemap.js";
 import { STUDIOS } from "./studios.js";
+import { BASE } from "./util.js";
 
 let pending = null;
 
 /** { docs, bridge }. A source that fails to load is left out; the search still works on the rest. */
 export function loadSearch() {
   pending ||= (async () => {
-    const [index, glossary] = await Promise.all([loadIndex().catch(() => null), loadGlossary().catch(() => null)]);
-    const docs = buildDocs({ index, glossary, cards: HOME_CARDS, studios: STUDIOS, studioApp: STUDIO_APP_PAGES, units: UNITS, tests: index?.tests || [], destinations: DESTINATIONS });
+    const [index, glossary, finderMetadata] = await Promise.all([
+      loadIndex().catch(() => null),
+      loadGlossary().catch(() => null),
+      fetch(`${BASE}/content/finder-metadata.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
+    ]);
+    const docs = buildDocs({ index, glossary, cards: HOME_CARDS, studios: STUDIOS, studioApp: STUDIO_APP_PAGES, units: UNITS, tests: index?.tests || [], destinations: DESTINATIONS, activityMetadata: finderMetadata?.activities || {} });
     return { docs, bridge: buildBridge(glossary) };
   })();
   pending.catch(() => {

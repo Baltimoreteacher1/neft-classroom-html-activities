@@ -21,6 +21,7 @@ export const assignmentPath = (band, domain, level, id) =>
 /** Activities of one band and skill that can be assigned (worksheets are paper-only and cannot be done in the lab). */
 export function assignableActivities(index, band, domain) {
   const b = codeBand(band);
+  if (domain === "Reading Path") return [{ id: "reading-path", title: "Reading Path · open units", type: "practice", level: "", unit: true, band: b, audioFirst: false, path: `${BASE}/reading-path?grades=${b}` }];
   const levels = index?.bands?.[b]?.domains?.[domain]?.levels || {};
   return Object.entries(levels).flatMap(([level, L]) =>
     (L.activities || [])

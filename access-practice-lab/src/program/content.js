@@ -1,0 +1,37 @@
+const pair = (en, es) => ({ en, es });
+export const DOMAINS = ["Listening", "Speaking", "Reading", "Writing"];
+export const KLUS = ["Narrate", "Inform", "Explain", "Argue"];
+const TOPICS = ["notice and wonder", "retell with sequence", "compare two ideas", "explain a cause", "support a claim"];
+const domainSpanish = { Listening: "Escuchar", Speaking: "Hablar", Reading: "Leer", Writing: "Escribir" };
+const topicSpanish = { "notice and wonder": "observar y preguntar", "retell with sequence": "volver a contar en secuencia", "compare two ideas": "comparar dos ideas", "explain a cause": "explicar una causa", "support a claim": "apoyar una afirmación" };
+const functionSpanish = { Narrate: "Narrar", Inform: "Informar", Explain: "Explicar", Argue: "Argumentar" };
+
+export const STRATEGIES = Array.from({ length: 25 }, (_, i) => {
+  const domain = DOMAINS[i % 4], klu = KLUS[Math.floor(i / 2) % 4], topic = TOPICS[i % TOPICS.length], n = i + 1;
+  const title = `${klu}: ${topic}`;
+  return {
+    id: `strategy-${String(n).padStart(2, "0")}`, title: pair(title, `${functionSpanish[klu]}: ${topicSpanish[topic]}`), domains: [domain], functions: [klu], purpose: pair(`Practice ${topic} using ${domain.toLowerCase()} evidence.`, `Practica ${topicSpanish[topic]} usando evidencia de ${domainSpanish[domain].toLowerCase()}.`), minutes: 5 + (i % 5) * 5, grouping: ["whole", "small", "pair", "independent"][i % 4], noTech: i % 2 === 0,
+    steps: ["Name the language goal.", "Preview two useful words.", "Model one short example.", "Give learners quiet think time.", "Invite practice with a partner.", "Ask learners to point to the evidence.", "Close with one reflection."],
+    scaffolds: { A: `Choose from two picture-supported ideas; begin: “I notice ___.”`, B: `Use the word bank and complete: “I notice ___, so ___.”`, C: `Compare evidence and explain: “The evidence suggests ___ because ___.”` },
+    organizer: { id: "notice-evidence", en: "Idea | Evidence | My words", es: "Idea | Evidencia | Mis palabras" },
+    lookFors: ["Uses a target word", "Refers to an example", "Builds on a partner's idea"], related: [], teacherTip: "Keep the content goal the same as supports change.", reviewStatus: "automated-checks-only",
+  };
+});
+export const PATHWAYS = ["Talk to Paragraph", "Reading for Evidence", "Academic Vocabulary", "Explain and Justify", "Active Listening", "Narrate Events"].map((title, i) => ({ id: `pathway-${i + 1}`, title, strategyIds: STRATEGIES.slice(i * 4, i * 4 + 4).map((s) => s.id) }));
+
+const field = (id, type, en, es, required = false, options = []) => ({ id, type, label: pair(en, es), required, ...(options.length ? { options } : {}) });
+const honesty = "A record of a teacher's or committee's decision. LP never decides identification, placement or reclassification. Not a compliance certification.";
+export const FORM_TEMPLATES = [
+  { id: "identification-placement", title: pair("Identification and placement record", "Registro de identificación y asignación"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("grade", "text", "Grade", "Grado"), field("homeLanguage", "text", "Home language(s)", "Idioma(s) del hogar"), field("teacherDecision", "longtext", "Teacher-entered decision and rationale", "Decisión y justificación escritas por el docente") ] },
+  { id: "annual-progress", title: pair("Annual progress review", "Revisión anual del progreso"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("year", "number", "School year", "Año escolar"), field("goals", "goalLink", "I can goals and current status", "Metas puedo y estado actual"), field("comments", "longtext", "Teacher comments", "Comentarios del docente")] },
+  { id: "committee-decision", title: pair("Reclassification committee decision record", "Registro de decisión del comité"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("criteria", "checkbox", "Committee reviewed local criteria", "El comité revisó criterios locales"), field("members", "longtext", "Committee members", "Integrantes del comité"), field("decision", "select", "Committee decision", "Decisión del comité", true, ["continue services", "monitor", "exit services", "defer"]), field("date", "date", "Decision date", "Fecha de decisión")] },
+  { id: "post-exit-monitoring", title: pair("Post-exit monitoring", "Seguimiento después de salir"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("checkpoints", "number", "Checkpoints this year", "Puntos de revisión este año"), field("date", "date", "Checkpoint date", "Fecha del punto de revisión"), field("notes", "longtext", "Teacher notes", "Notas del docente")] },
+  { id: "designated-supports", title: pair("Designated supports by test year", "Apoyos designados por año de prueba"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("year", "number", "Test year", "Año de prueba"), field("recommended", "supportsTable", "Teacher recommendation", "Recomendación del docente"), field("finalized", "supportsTable", "Finalized support", "Apoyo finalizado"), field("comments", "longtext", "Comments", "Comentarios")] },
+  { id: "family-notice", title: pair("Family notice", "Aviso para la familia"), fields: [field("alias", "text", "Student alias", "Seudónimo del estudiante", true), field("language", "text", "Preferred family language", "Idioma preferido de la familia"), field("notice", "longtext", "District wording to be completed by teacher", "Texto del distrito para completar por el docente"), field("received", "checkbox", "Receipt recorded locally", "Recepción registrada localmente")] },
+].map((form) => ({ schema: "lp-form/1", version: 1, ...form, sections: [{ id: "main", title: pair("Teacher record", "Registro del docente"), fields: form.fields }], statuses: ["draft", "in-review", "approved", "signed", "archived"], signatures: [{ role: "teacher", label: pair("Teacher", "Docente"), required: false }], districtWordingSlot: true, honestyLine: honesty, reviewStatus: "automated-checks-only" }));
+
+export const LEARNING_MODULES = [
+  ["What ACCESS is and is not", "Reading the four domains", "Key Language Uses", "Scaffolding without giving answers", "Supports and independence", "Speaking tasks and rubrics", "Writing feedback that sticks", "Academic vocabulary", "Working with families", "Newcomers in week one", "Using evidence to group", "Test-day readiness"].map((title, i) => ({ id: `module-${i + 1}`, title, minutes: 10, sections: ["What this looks like", "Try this tomorrow", "Reflection"], content: [`${title}: use the local practice tools as classroom support. They do not identify students or predict official outcomes.`, `Choose one small routine, model it, and let learners practice the same content goal with different language supports.`, "What evidence will you notice, and what teacher decision will it inform?"], reviewStatus: "automated-checks-only" })),
+].flat();
+
+export const SIGNED_RUBRIC = { id: "signed-language-practice", title: pair("Signed language (practice)", "Lengua de señas (práctica)"), scoreMode: "feedback-only", criteria: ["Handshape", "Palm orientation", "Location", "Movement", "Facial expression"].map((en) => ({ title: pair(en, en), tooltip: pair("Practice observation only; the teacher describes what they noticed.", "Observación de práctica; el docente describe lo que observó.") })) };

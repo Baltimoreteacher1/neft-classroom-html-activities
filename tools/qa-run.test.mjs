@@ -229,6 +229,27 @@ check(
     scopeFor(["tools/generate-project-studio.mjs"])?.includes("validate:unit-placement"),
   "the Project Studio generator must pull in Studio and unit placement gates",
 );
+for (const path of [
+  "tools/access-integration-e2e.mjs",
+  "tools/generate-access-finder-metadata.mjs",
+  "tools/generate-access-packs.mjs",
+  "tools/generate-newcomer-packs.mjs",
+  "tools/generate-program-content.mjs",
+  "tools/access-finder-facets.test.mjs",
+  "tools/access-packs.test.mjs",
+  "tools/family-today-plan.test.mjs",
+  "tools/lesson-pack.test.mjs",
+  "tools/live-rooms.test.mjs",
+  "tools/newcomer-packs.test.mjs",
+  "tools/program-content.test.mjs",
+  "tools/speaking-enterprise.test.mjs",
+  "tools/speaking-task-packs.test.mjs",
+]) {
+  check(
+    scopeFor([path])?.includes("validate:access-lab") && scopeFor([path])?.includes("test"),
+    `${path} must run the Access Lab validator and tests`,
+  );
+}
 check(
   scopeFor(["curriculum/fluency/unit-1-workshop.html"])?.includes(
     "validate:fluency-workshops-browser",

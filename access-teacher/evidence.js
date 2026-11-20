@@ -622,6 +622,7 @@ function diagnosticsTab() {
 }
 
 function lessonPanel() {
+  if (!ACCESS_LAB_FLAGS.nextDayLessonsEnabled) return "";
   const lesson = T.lessons.find((l) => l.id === T.selectedLesson) || T.lessons.at(-1);
   if (!lesson) return T.lessons.length ? "" : "";
   const fields = ["languageObjective", "studentObjective", "teacherModel", "guidedPractice", "studentPractice", "formativeCheck", "fadeScaffolds", "homeLanguageConnection", "extension", "evidenceToCollect"];

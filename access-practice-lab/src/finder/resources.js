@@ -243,7 +243,7 @@ const SEGMENT_ALIAS = { test: "tests", "reading-room": "reading-room", "launch-s
  * destination, `byId` maps a destination id to it.
  */
 export function enrich(d, { byRoute, byId }) {
-  if (d.rk) return d;
+  if (d.rk) return { ...d, ...sourceFacets(d) };
   const key = routeKey(d);
   const exact = byRoute.get(key);
   const seg = firstSegment(key);
@@ -254,14 +254,16 @@ export function enrich(d, { byRoute, byId }) {
     rk: near?.kind || null,
     format: "digital",
   };
-  if (d.kind === "word") return { ...d, ...base, rk: "word", for: null, skill: null };
+  const facets = sourceFacets(d);
+  if (d.kind === "word") return { ...d, ...base, ...facets, rk: "word", for: null, skill: null };
   if (d.kind === "command")
-    return { ...d, ...base, rk: "action", for: null, skill: null, format: null };
+    return { ...d, ...base, ...facets, rk: "action", for: null, skill: null, format: null };
   if (d.meta?.domain) {
     const domain = d.meta.domain;
     const model = domain === "Model-Test";
     return {
       ...d,
+      ...facets,
       for: near?.for || ST,
       skill: model ? "Mixed" : domain,
       rk: model ? "test" : "practice",
@@ -274,6 +276,7 @@ export function enrich(d, { byRoute, byId }) {
     return {
       ...d,
       ...base,
+      ...facets,
       for: ST,
       rk: "test",
       skill: d.meta?.skill || "Mixed",
@@ -284,12 +287,25 @@ export function enrich(d, { byRoute, byId }) {
     return {
       ...d,
       ...base,
+      ...facets,
       for: ST,
       rk: "studio",
       skill: FACET_SKILLS.includes(skill) ? skill : "Mixed",
     };
   }
-  return { ...d, ...base, mergedFrom: exact && MERGEABLE.test(d.id) ? exact.id : null };
+  return { ...d, ...base, ...facets, mergedFrom: exact && MERGEABLE.test(d.id) ? exact.id : null };
+}
+
+const FINDER_TYPES = new Set(["worksheet", "game", "flashcards", "word-wall", "poster", "label", "planner", "checklist", "letter", "organizer", "assessment", "lesson-pack"]);
+function sourceFacets(d) {
+  const meta = d.meta || d;
+  const type = FINDER_TYPES.has(meta.type) ? meta.type : d.rk === "game" ? "game" : d.rk === "printable" ? "worksheet" : undefined;
+  const stage = ["A", "B", "C"].includes(meta.stage) ? meta.stage : ["A", "B", "C"].includes(meta.level) ? meta.level : undefined;
+  const fn = [...new Set((Array.isArray(meta.fn) ? meta.fn : []).filter((v) => typeof v === "string" && v.trim()).map((v) => v.trim().toLocaleLowerCase()))];
+  const lang = meta.lang === "bilingual" || meta.lang === "en" ? meta.lang : d.titleEs ? "bilingual" : "en";
+  const tech = meta.tech === "none" || meta.tech === "screen" ? meta.tech : undefined;
+  const edit = meta.edit === "yes" || meta.editable === true ? "yes" : undefined;
+  return { ...(type ? { type } : {}), ...(fn.length ? { fn } : {}), ...(stage ? { stage } : {}), ...(lang ? { lang } : {}), ...(tech ? { tech } : {}), ...(edit ? { edit } : {}) };
 }
 /** Documents that ARE a page (not content inside one) and so can stand for its sitemap destination. */
 const MERGEABLE = /^(page|card|studio-app):/;

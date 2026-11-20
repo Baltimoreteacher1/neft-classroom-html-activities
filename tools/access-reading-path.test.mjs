@@ -28,6 +28,7 @@ import {
   seededOrder,
   unitDone,
 } from "../access-practice-lab/src/reading-path/model.js";
+import { paginateWordCards } from "../access-practice-lab/src/reading-path/view.js";
 
 const scope = JSON.parse(
   readFileSync(
@@ -148,6 +149,15 @@ test("a silent-e Build round is completable only by placing the split grapheme",
     }).state;
   assert.ok(s.complete);
 });
+test("Silent-e Switch supplies a before/after picture and speaks both words", () => {
+  const unit = scope.units.find((u) => u.n === 6);
+  const r = roundFor(unit, "switch");
+  assert.deepEqual(r.switchPair, ["cap", "cape"]);
+  assert.equal(r.switchPictures.length, 2);
+  const done = move(r, newGame(), { value: "e" });
+  assert.equal(done.state.complete, true);
+  assert.equal(done.replay, "cap. cape");
+});
 test("Word Machine: every listed word is reachable; non-words are not listed", () => {
   const reachable = [];
   for (const a of REELS[0])
@@ -167,4 +177,12 @@ test("round, card and stage choices accept only listed values", () => {
   const unit = scope.units.find((u) => u.id === "short-u");
   const r = roundFor(unit, "match", { cards: 9999, stage: "Z" });
   assert.equal(r.pairs.length, 6);
+});
+test("adult word-card print output paginates in exact six-card sheets", () => {
+  assert.deepEqual(paginateWordCards(["a", "b", "c", "d", "e", "f", "g", "h"]), [
+    ["a", "b", "c", "d", "e", "f"],
+    ["g", "h"],
+  ]);
+  assert.deepEqual(paginateWordCards([]), []);
+  assert.deepEqual(paginateWordCards(null), []);
 });

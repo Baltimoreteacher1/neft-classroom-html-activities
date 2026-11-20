@@ -64,6 +64,7 @@ const VIEW_LOADERS = {
   grammar: () => import("./views/grammar.js"),
   puzzles: () => import("./views/puzzles.js"),
   library: () => import("./views/library.js"),
+  packs: () => import("./views/packs.js"),
   room: () => import("./views/room.js"),
   activity: () => import("./views/activity.js"),
   test: () => import("./views/test.js"),
@@ -79,6 +80,9 @@ const VIEW_LOADERS = {
   evidence: () => import("./views/evidence.js"),
   growth: () => import("./views/growth.js"),
   speak: () => import("./views/speak.js"),
+  "task-packs": () => import("./views/task-packs.js"),
+  program: () => import("./views/program.js"),
+  partner: () => import("./views/partner.js"),
   voice: () => import("./views/voice.js"),
   arena: () => import("./views/arena.js"),
   mentor: () => import("./views/mentor.js"),
@@ -202,6 +206,13 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "language-studios")
     return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
   if (a === "reading-path") return { ...r, view: a, id: b || "", sub: c || "" };
+  if (a === "packs") return { ...r, view: a, id: b || "" };
+  if (a === "program") return { ...r, view: "program", id: b || "" };
+  if (a === "strategies") return { ...r, view: "program", id: "strategies" };
+  if (a === "live") return { ...r, view: "program", id: "live" };
+  if (a === "partner") return { ...r, view: "partner" };
+  if (a === "task-packs") return { ...r, view: "task-packs", id: b || "", sub: c || "" };
+  if (a === "print-studio") return { ...r, view: "book-studio", id: "templates", sub: "", printStudio: true };
   if (a === "science-of-reading" && b === "lesson")
     return { ...r, view: a, id: "lesson", lessonId: c || "" };
   if (a === "science-of-reading" && b === "subject-reading")
@@ -212,7 +223,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")
@@ -715,7 +726,7 @@ function interceptLink(e) {
 document.addEventListener("click", async (e) => {
   if (interceptLink(e)) return;
   // Views run first and synchronously, so they can preventDefault (answer cards).
-  if (app.view?.onClick?.(e, ctx) === true) return;
+  if (await app.view?.onClick?.(e, ctx) === true) return;
   if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConversationEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   if (app.view?.onConstructionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }

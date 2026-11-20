@@ -229,6 +229,36 @@ export const DESTINATIONS = Object.freeze([
     title: P("Reading Path", "Camino de lectura"),
     text: P("Hear sounds, build words and read 15 short books. Start in any unit.", "Escucha sonidos, construye palabras y lee 15 libros cortos. Empieza en cualquier unidad."),
   },
+  {
+    id: "newcomer-packs", section: "teach", skill: "Mixed", kind: "tool", for: TF,
+    href: "packs", icon: "library", match: [["packs"]], top: false,
+    title: P("Newcomer resource packs", "Paquetes para recién llegados"),
+    text: P("Bilingual vocabulary, school routines, speaking cards and printable supports.", "Vocabulario bilingüe, rutinas escolares, tarjetas para hablar y apoyos imprimibles."),
+  },
+  {
+    id: "print-studio", section: "teach", skill: "Mixed", kind: "studio", for: T_,
+    href: "print-studio", icon: "writing", match: [["print-studio"]], top: false,
+    title: P("Make a resource", "Crear un recurso"),
+    text: P("Open the existing Book Studio templates and editor to make and print a classroom resource.", "Abre las plantillas y el editor de Book Studio para crear e imprimir un recurso de clase."),
+  },
+  {
+    id: "el-program", section: "teach", skill: "Mixed", kind: "tool", for: T_,
+    href: "program", icon: "teacher", match: [["program"], ["strategies"]], top: false,
+    title: P("Teacher Program Studio", "Estudio de programa docente"),
+    text: P("Local learner profiles, neutral forms, strategies, language objectives, benchmarks and teacher learning.", "Perfiles locales, formularios neutrales, estrategias, objetivos de lenguaje, evaluaciones y aprendizaje docente."),
+  },
+  {
+    id: "live-speaking", section: "teach", skill: "Mixed", kind: "tool", for: T_,
+    href: "live", icon: "speaking", match: [["program", "live"]], top: false,
+    title: P("Speaking rooms (mock preview)", "Salas para hablar (vista simulada)"),
+    text: P("Preview room assignment and recording states with a local mock provider. No recordings or rooms are provisioned.", "Previsualiza grupos y estados con un proveedor local simulado. No se crean salas ni grabaciones."),
+  },
+  {
+    id: "partner-talk", section: "teach", skill: "Mixed", kind: "tool", for: T_,
+    href: "partner", icon: "speaking", match: [["partner"]], top: false,
+    title: P("Partner Talk", "Conversación en pareja"),
+    text: P("Offline same-device role cards, turn prompts and a printable listening checklist.", "Tarjetas de roles sin conexión, consignas por turno y lista de escucha imprimible."),
+  },
   // ── Practice · Listening ──────────────────────────────────────────────────────────────────
   {
     id: "listening",
@@ -313,6 +343,29 @@ export const DESTINATIONS = Object.freeze([
       "Rehearse a school speaking task, then try it on your own.",
       "Ensaya una tarea oral escolar y luego hazla por tu cuenta.",
     ),
+  },
+  {
+    id: "speaking-task-packs",
+    section: "practice",
+    skill: "Speaking",
+    kind: "tool",
+    for: ["teacher"],
+    href: "task-packs",
+    icon: "speaking",
+    title: P("Speaking task packs", "Tareas de expresión oral"),
+    text: P("Create and validate local speaking assignment drafts.", "Crea y valida borradores locales de tareas orales."),
+  },
+  {
+    id: "survival-vocabulary",
+    section: "practice",
+    skill: "Words",
+    kind: "tool",
+    for: ["student", "teacher", "family"],
+    href: "packs/survival-vocabulary",
+    icon: "words",
+    match: [["packs", "survival-vocabulary"]],
+    title: P("Survival vocabulary", "Vocabulario esencial"),
+    text: P("Practice 144 school and community words in English and Spanish.", "Practica 144 palabras escolares y comunitarias en inglés y español."),
   },
   {
     id: "arena",
@@ -1629,6 +1682,18 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "family-today",
+    section: "family",
+    skill: "Mixed",
+    kind: "tool",
+    for: F,
+    href: "family/today",
+    icon: "calendar",
+    match: [["family", "today"]],
+    title: P("Today at home", "Hoy en casa"),
+    text: P("A ten-minute plan with talk, five words, one activity and a short read-aloud.", "Un plan de diez minutos con conversación, cinco palabras, una actividad y una lectura breve."),
+  },
+  {
     id: "family-corner",
     section: "family",
     skill: "Mixed",
@@ -1763,6 +1828,7 @@ export const matchesOf = (d) =>
 
 /** Which destination a parsed route belongs to: the most specific match (one with an id) wins. */
 export function locate(route = {}) {
+  if (route.printStudio) return DEST_BY_ID["print-studio"];
   const view = route.view || "home";
   const key = route.domain || route.id || "";
   let best = null;

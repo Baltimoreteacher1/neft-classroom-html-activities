@@ -22,8 +22,9 @@ import { storyCardHTML } from "../family/story/card.js";
 import * as story from "../family/story/page.js";
 import * as trip from "../family/trip.js";
 import * as understand from "../family/understand.js";
+import * as today from "../family/today.js";
 
-const PAGES = { "": hub, start: setup, understand, practice: planner, trip, progress, help, save, story };
+const PAGES = { "": hub, start: setup, understand, practice: planner, trip, progress, help, save, story, today };
 const LEGACY_FILTERS = ["skill", "minutes", "level"];
 
 const COMPANION = {};

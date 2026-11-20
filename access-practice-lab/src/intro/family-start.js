@@ -163,12 +163,13 @@ export function familyChoices(pick, { tourHost = familyTourHost() } = {}) {
     {
       id: "corner",
       icon: "families",
-      href: `${BASE}/family${q}`,
-      name: P("Family Corner", "Rincón de la familia"),
+      href: `${BASE}/family/today${q}`,
+      name: P("Today at home", "Hoy en casa"),
       detail: P(
-        "Everything for families: progress, help in your language, weekly ideas.",
-        "Todo para las familias: progreso, ayuda en su idioma, ideas semanales.",
+        "A ready-to-use ten-minute plan for each day.",
+        "Un plan de diez minutos para cada día.",
       ),
+      links: [{ id: "family-corner", icon: "families", href: `${BASE}/family${q}`, name: P("Family Corner", "Rincón de la familia") }],
     },
   ];
 }

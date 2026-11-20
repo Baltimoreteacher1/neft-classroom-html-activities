@@ -4,12 +4,13 @@
 // text and saved configurations stay in this browser (localStorage); no roster, name, response or progress is
 // encoded, sent or collected here.
 import { bandLabel, bandLabelEs } from "../bands.js";
-import { bandRows, loadTalkTable } from "../content.js";
+import { bandRows, loadGlossary, loadTalkTable } from "../content.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { BASE, DOMAIN_META, TIERS, html, icon, storage } from "../util.js";
 import { activityHref } from "./room.js";
 import { printLessonPlan } from "../lesson-builder/print.js";
+import { buildLessonPack, downloadLessonPack } from "../lesson-builder/pack.js";
 import { QUICK_STARTS, assembleWeek, homeTalkCards, quickStart } from "../lesson-builder/week.js";
 import { familyNoteHTML, studentPageHTML, weekHTML, weekPrintHTML } from "../lesson-builder/week-ui.js";
 import { KLU_KIDS } from "../lang/boards.js";
@@ -437,6 +438,10 @@ ${lesson.objectives.language}</textarea>
           ${icon("print")} ${I.T("Print lesson plan", "Imprimir plan de lección")}</button
         ><button type="button" class="btn" data-lb-student>
           ${icon("print")} ${I.T("Print student page", "Imprimir hoja del estudiante")}</button
+        ><button type="button" class="btn" data-lb-export-pack>
+          ${icon("download")} ${I.T("Export lesson pack ZIP", "Exportar paquete de lección ZIP")}</button
+        ><button type="button" class="btn" data-lb-print-pack>
+          ${icon("print")} ${I.T("Print combined lesson pack / Save as PDF", "Imprimir paquete combinado / Guardar como PDF")}</button
         ><button type="button" class="btn" data-lb-copy>
           ${icon("copy")} ${I.T("Copy share link", "Copiar enlace para compartir")}
         </button>
@@ -578,7 +583,7 @@ export function onInput(e) {
   }
 }
 
-export function onClick(e, ctx) {
+export async function onClick(e, ctx) {
   const t = e.target.closest("button, a");
   if (!t) return false;
   const lesson = state.lesson;
@@ -660,6 +665,14 @@ export function onClick(e, ctx) {
   }
   if (t.matches("[data-lb-print]") && lesson) {
     printLessonPlan(state.lesson, { rowById, phaseHref });
+    return true;
+  }
+  if ((t.matches("[data-lb-export-pack]") || t.matches("[data-lb-print-pack]")) && lesson) {
+    const glossary = await loadGlossary().catch(() => null);
+    const card = state.talk ? homeTalkCards(state.talk, lesson.settings)[0] : null;
+    const pack = buildLessonPack(lesson, { rowById, phaseHref, homeCard: card, glossary, origin: location.origin });
+    if (t.matches("[data-lb-export-pack]")) downloadLessonPack(pack);
+    else printSheet(pack.printMarkup);
     return true;
   }
   if (t.matches("[data-lb-copy]") && lesson) {

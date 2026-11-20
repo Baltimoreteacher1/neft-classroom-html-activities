@@ -649,6 +649,14 @@ window.LESSON_PROJECTS = {
   ],
   "6-5": [
     {
+      "text": "🎨 Mystery Pixel Art 1 — Translate + Use",
+      "href": "/math/unit-6/6-5-pixel-art/picture-1/"
+    },
+    {
+      "text": "🕵️ Mystery Pixel Art 2 — Write + Evaluate",
+      "href": "/math/unit-6/6-5-pixel-art/picture-2/"
+    },
+    {
       "text": "🏆 Project — Expressions in Action",
       "href": "/math/unit-6/projects/"
     },

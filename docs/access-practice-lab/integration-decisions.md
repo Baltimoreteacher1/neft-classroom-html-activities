@@ -32,21 +32,23 @@ Pass completion and explicitly teacher-entered practice rubric points to an LMS;
 
 Generate teacher-only draft prompts with guarded model calls, template fallback and explicit Accept; never score student speech.
 
-## Implementation status after rebase
+## Implementation status, 2026-11-19
 
-The Reading Path slice includes the reviewed silent-e split-grapheme segmentation,
-one shared Word Machine reel/lexicon module, and clamping for card, round, stage,
-and reel inputs. These are implementation fixes; they do not change the seven
-product decisions above.
+The integration branch now includes substantial local implementation across Reading
+Path, resource packs, lesson-pack export, family Today, finder metadata, speaking
+task drafts and previews, mock live rooms, partner talk, and a teacher-local EL
+program workspace. The current feature-by-feature record is in
+`integration-audit.md`; it deliberately distinguishes partial work from complete
+acceptance criteria.
 
-The full Revision 2 scope remains incomplete. T1–T4 and T6, X1–X11, and E1–E9
-are unbuilt. T5 is partial: only the Reading Path game-round controls are wired;
-fleet-wide class sharing and Add to class are not implemented. T7 is partial:
-the role preference reorders the first three Teacher Hub cards, while the six
-card row still exceeds the requested CTA budget. See `integration-audit.md` for
-the per-feature inventory and release verification record.
+Nothing in these decisions authorizes production provisioning or real data use.
+The mock live provider creates metadata only. Email remains an outbox. LMS OAuth,
+student-record imports, production signatures/receipt storage, and live room
+recordings remain disabled. Content is machine-checked but lacks human translation,
+phonics, and program review.
 
-The latest `origin/main` still fails `tools/math-acronyms.test.mjs` on `STAY`,
-`EL`, and `DOBLE`. The test and source content remain unchanged. Since
-`npm run test:reads` requires every test to pass before writing its manifest,
-there is no valid `data/test-reads.json` to stage or commit yet.
+The current-main reading manifest remains blocked by unrelated tests unless the
+underlying main-branch debt is fixed: the acronym check flags `STAY`, `EL`, and
+`DOBLE`, and the content-preservation/math-studio checks also show source drift.
+Do not weaken these tests or hand-edit `data/test-reads.json`. A failed required
+gate blocks the guarded ship.

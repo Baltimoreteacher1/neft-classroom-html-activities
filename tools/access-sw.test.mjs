@@ -184,7 +184,15 @@ test("the critical cache contains only first-route assets and the background set
     ...shell.querySelectorAll('link[rel="modulepreload"]'),
     ...shell.querySelectorAll('script[type="module"][src]'),
   ].map((node) => node.getAttribute("href") || node.getAttribute("src"));
-  assert.deepEqual([...core].sort(), [...criticalSheets, ...criticalModules].sort());
+  const requiredExternalModules = ["/shared/class-platform/contract.js"];
+  assert.ok(
+    requiredExternalModules.every((url) => core.includes(url)),
+    "shared modules needed during startup remain available offline",
+  );
+  assert.deepEqual(
+    [...core].sort(),
+    [...criticalSheets, ...criticalModules, ...requiredExternalModules].sort(),
+  );
   assert.ok(
     core.length < sheets.length + Object.keys(map).length / 2,
     "critical install is materially smaller than the full lab",

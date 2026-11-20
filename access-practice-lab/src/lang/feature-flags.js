@@ -3,6 +3,12 @@
 export const ACCESS_LAB_FLAGS = Object.freeze({
   teacherRoleEnabled: true,
   readingPathEnabled: true,
+  speakingTaskPacksEnabled: true,
+  newcomerPacksEnabled: true,
+  elProgramEnabled: true,
+  printStudioEnabled: true,
+  liveRoomsMockEnabled: true,
+  sameDevicePartnerEnabled: true,
   skillGraphEnabled: true,
   speakingCoachV2Enabled: false,
   teacherDiagnosticsEnabled: true,

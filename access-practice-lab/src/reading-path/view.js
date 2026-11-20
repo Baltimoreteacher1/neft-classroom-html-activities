@@ -34,6 +34,12 @@ let scope,
   session = null,
   currentPage = 0,
   readerMode = "both";
+export function paginateWordCards(words) {
+  if (!Array.isArray(words)) return [];
+  const pages = [];
+  for (let i = 0; i < words.length; i += 6) pages.push(words.slice(i, i + 6));
+  return pages;
+}
 const get = async (name) => {
   const r = await fetch(`${BASE}/content/reading-path/${name}.json`);
   if (!r.ok) throw new Error("Reading content unavailable");
@@ -62,9 +68,9 @@ export async function render(ctx) {
   let body;
   if (!unit) {
     const next = nextUnit(scope.units, progress);
-    body = html`${head}<p>${I.T("Hear it. Build it. Read it. Start anywhere. There are no locks or timers.", "Escucha. Construye. Lee. Empieza donde quieras. No hay bloqueos ni cronómetro.")}</p><a class="btn btn-primary" href="${href(ctx, `/${next.id}`)}">${I.T("Begin", "Empezar")}</a><p><a href="${href(ctx, "/library")}">${I.T("Read-aloud library", "Biblioteca de lectura")}</a> · <a href="${href(ctx, "/letters")}">${I.T("Letters and sounds", "Letras y sonidos")}</a></p><h2>${I.T("All units", "Todas las unidades")}</h2><ol>${scope.units.map((u) => html`<li><a href="${href(ctx, `/${u.id}`)}">${title(I, u.teaches)}</a> · ${unitDone(u, progress) ? I.T("Done on this device", "Hecha en este dispositivo") : u.id === next.id ? I.T("Next suggestion", "Siguiente sugerencia") : I.T("Open", "Abierta")}</li>`)}</ol>${adultHTML(ctx, I)}`;
+    body = html`${head}<p>${I.T("Hear it. Build it. Read it. Start anywhere. There are no locks or timers.", "Escucha. Construye. Lee. Empieza donde quieras. No hay bloqueos ni cronómetro.")}</p><a class="btn btn-primary" href="${href(ctx, `/${next.id}`)}">${I.T("Begin", "Empezar")}</a><p><a href="${href(ctx, "/library")}">${I.T("Read-aloud library", "Biblioteca de lectura")}</a> · <a href="${href(ctx, "/letters")}">${I.T("Letters and sounds", "Letras y sonidos")}</a> · <a href="${BASE}/class/teacher?grades=${ctx.band}">${I.T("Add to class", "Agregar a la clase")}</a></p><h2>${I.T("All units", "Todas las unidades")}</h2><ol>${scope.units.map((u) => html`<li><a href="${href(ctx, `/${u.id}`)}">${title(I, u.teaches)}</a> · ${unitDone(u, progress) ? I.T("Done on this device", "Hecha en este dispositivo") : u.id === next.id ? I.T("Next suggestion", "Siguiente sugerencia") : I.T("Open", "Abierta")}</li>`)}</ol>${adultHTML(ctx, I)}`;
   } else if (!item) {
-    body = html`<a href="${href(ctx)}">${I.T("All units", "Todas las unidades")}</a>${head}<h2>${unit.n}. ${title(I, unit.teaches)}</h2><ul>${unit.items.map((i) => html`<li><a class="btn" href="${href(ctx, `/${unit.id}/${i.id}`)}">${title(I, i.title)}</a> ${progress[`${unit.id}/${i.id}`] ? I.T("Done", "Hecho") : ""}</li>`)}</ul>`;
+    body = html`<a href="${href(ctx)}">${I.T("All units", "Todas las unidades")}</a>${head}<h2>${unit.n}. ${title(I, unit.teaches)}</h2><p><a class="btn small" href="${BASE}/class/teacher?grades=${ctx.band}">${I.T("Add to class", "Agregar a la clase")}</a></p><ul>${unit.items.map((i) => html`<li><a class="btn" href="${href(ctx, `/${unit.id}/${i.id}`)}">${title(I, i.title)}</a> ${progress[`${unit.id}/${i.id}`] ? I.T("Done", "Hecho") : ""}</li>`)}</ul>`;
   } else {
     const back = html`<a href="${href(ctx, `/${unit.id}`)}">${I.T("Back to this unit", "Volver a esta unidad")}</a><h1>${title(I, item.title)}</h1>`;
     if (item.kind === "reader") {
@@ -122,7 +128,9 @@ function gameHTML(ctx, I, s) {
   if (r.template === "build")
     controls = html`<p lang="en">${st.placed.map((id) => r.tiles.find((t) => t.id === id)?.s).join(" · ") || "□ ".repeat(r.sounds.length)}</p><div class="row-actions">${r.tiles.map((t) => html`<button class="btn" data-rp-move="${t.id}" data-tile="${t.id}" ${st.placed.includes(t.id) ? "disabled" : ""}>${t.s}</button>`)}</div>`;
   if (r.template === "switch")
-    controls = html`<p lang="en">${st.complete ? r.switchPair[1] : r.switchPair[0]}</p><div class="row-actions">${["a", "i", "e"].map((t) => button(t, t))}</div>`;
+    controls = st.complete
+      ? html`<div class="rp-switch-pair" role="group" aria-label="${I.S("Before and after adding silent e", "Antes y después de añadir la e muda")}"><figure><span class="rp-picto" aria-hidden="true">${r.switchPictures[0]}</span><figcaption lang="en">${r.switchPair[0]}</figcaption></figure><span aria-hidden="true">→</span><figure><span class="rp-picto" aria-hidden="true">${r.switchPictures[1]}</span><figcaption lang="en">${r.switchPair[1]}</figcaption></figure></div>`
+      : html`<figure class="rp-switch-before"><span class="rp-picto" aria-hidden="true">${r.switchPictures[0]}</span><figcaption lang="en">${r.switchPair[0]}</figcaption></figure><div class="row-actions">${["a", "i", "e"].map((t) => button(t, t))}</div>`;
   if (r.template === "sight")
     controls = html`<button class="btn" data-rp-target>${I.T("Hear the word", "Escuchar la palabra")}</button><div class="row-actions" lang="en">${seededOrder(r.sight, s.seed).map((w) => button(w, w))}</div>`;
   if (r.template === "sentence")
@@ -156,7 +164,7 @@ export async function onClick(e, ctx) {
   if (b.hasAttribute("data-rp-print")) {
     const u = scope.units.find((u) => u.id === b.dataset.rpPrint);
     printSheet(
-      html`<article><h1>${title(I, u.teaches)}</h1><h2>${I.T("Word list", "Lista de palabras")}</h2><p lang="en">${u.exampleWords.join(" · ")}</p><h2>${I.T("Word cards", "Tarjetas de palabras")}</h2><div class="rp-flash" lang="en">${u.exampleWords.map((w) => html`<div>${w}</div>`)}</div><h2>${I.T("Sentence strips", "Tiras de oraciones")}</h2><p lang="en">${u.sentence.en}</p></article>`,
+      html`<article class="rp-print-pack"><section class="rp-print-intro"><h1>${title(I, u.teaches)}</h1><h2>${I.T("Word list", "Lista de palabras")}</h2><p lang="en">${u.exampleWords.join(" · ")}</p><h2>${I.T("Sentence strips", "Tiras de oraciones")}</h2><p lang="en">${u.sentence.en}</p><p lang="es">${u.sentence.es}</p><p>${I.T("Word cards · six per printed sheet", "Tarjetas de palabras · seis por hoja impresa")}</p></section><div class="rp-flash-pages" lang="en">${paginateWordCards(u.exampleWords).map((words, i) => html`<section class="rp-flash-page" data-rp-card-page="${i + 1}" aria-label="${I.S(`Word cards page ${i + 1}`, `Página ${i + 1} de tarjetas`)}">${words.map((w) => html`<div class="rp-flash-card" data-rp-print-card>${w}</div>`)}</section>`)}</div></article>`,
     );
     return true;
   }

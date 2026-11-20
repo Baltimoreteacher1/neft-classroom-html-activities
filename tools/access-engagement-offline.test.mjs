@@ -448,12 +448,18 @@ test("cache-urls saves a pack with progress and size, survives a deploy, and ans
 test("the shared module main.js imports from outside the lab is kept for offline starts", async () => {
   const { sw, stores } = loadWorker();
   const url = `${ORIGIN}/shared/math-language-bridge/v2.js`;
+  const classContract = `${ORIGIN}/shared/class-platform/contract.js`;
   assert.equal(sw.route(new Request(url), new URL(url), ORIGIN), "fresh");
+  assert.equal(sw.route(new Request(classContract), new URL(classContract), ORIGIN), "fresh");
   await sw.precache();
   await sw.cachePack({ name: "road-6-8-w1", urls: [] });
   const build = [...stores.keys()].find((k) => k.startsWith("ewl-access-"));
   assert.ok(
     await stores.get(build).match("/shared/math-language-bridge/v2.js"),
     "saved with a week pack",
+  );
+  assert.ok(
+    await stores.get(build).match("/shared/class-platform/contract.js"),
+    "static class-platform dependency is saved in the critical shell cache",
   );
 });

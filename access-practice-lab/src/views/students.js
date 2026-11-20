@@ -12,6 +12,7 @@ import { bandDomains, findActivity, loadStudioIndex } from "../content.js";
 import { getEngagement } from "../engagement.js";
 import { activeGradeFocus } from "../grade-focus.js";
 import { GRADE_PICKS, currentPick, resolvePick } from "../grade-bands.js";
+import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
 import { latestModuleResume } from "../home-resume.js";
 import { i18nFor } from "../i18n.js";
 import { loadStudio } from "../lang/studio.js";
@@ -91,7 +92,7 @@ export const doors = (band) =>
       name: ["My progress", "Mi progreso"],
       line: ["Your Passport, stamps and journey.", "Tu pasaporte, sellos y recorrido."],
     },
-  ].filter((d) => d.href);
+  ].filter((d) => d.href && (d.id !== "story" || ACCESS_LAB_FLAGS.readingPathEnabled));
 
 const MORE_PLACES = [
   {

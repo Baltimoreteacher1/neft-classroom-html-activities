@@ -10,6 +10,7 @@
 // Reuses existing content, registries, and assignment infrastructure without duplicating engines.
 
 import { TEACHER_ROLES, readTeacherRole, rememberTeacherRole, roleOrder } from "/access-practice-lab/src/audience.js";
+import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { loadIndex } from "/access-practice-lab/src/content.js";
 import {
   LESSON_STAGES,
@@ -48,13 +49,15 @@ export const SAVED_PATHWAYS_KEY = "accessTeacher:v1:savedPathways";
 
 // The six choices shown on arrival. Each opens its panel in place; picking it again closes it.
 export const COMMAND_ACTIONS = Object.freeze([
-  { id: "find", icon: "search", title: "Find an Activity", lead: "Search activities, printables and answer keys." },
-  { id: "plan", icon: "road", title: "Plan a Lesson", lead: "Build a short lesson from ready activities." },
-  { id: "create", icon: "sparkle", title: "Create Something", lead: "Make a book, an activity or a class link." },
-  { id: "analyze", icon: "growth", title: "Review Student Progress", lead: "See what students did and what to teach next." },
-  { id: "data", icon: "growth", title: "Analyze ACCESS Data", lead: "Explore score patterns and language growth." },
-  { id: "prepare", icon: "tests", title: "Prepare for ACCESS", lead: "Test practice, the simulator and a weekly plan." },
+  { id: "find", icon: "search", title: "Find an Activity", titleEs: "Buscar una actividad", lead: "Search activities, printables and answer keys.", leadEs: "Busca actividades, materiales imprimibles y claves de respuestas." },
+  { id: "plan", icon: "road", title: "Plan a Lesson", titleEs: "Planificar una lección", lead: "Build a short lesson from ready activities.", leadEs: "Crea una lección breve con actividades listas." },
+  { id: "create", icon: "sparkle", title: "Create Something", titleEs: "Crear un recurso", lead: "Make a book, an activity or a class link.", leadEs: "Crea un libro, una actividad o un enlace para la clase." },
+  { id: "analyze", icon: "growth", title: "Review Student Progress", titleEs: "Revisar el progreso", lead: "See what students did and what to teach next.", leadEs: "Revisa el trabajo y decide qué enseñar después." },
+  { id: "data", icon: "growth", title: "Analyze ACCESS Data", titleEs: "Analizar datos de ACCESS", lead: "Explore score patterns, domain strengths, longitudinal growth, and hypothetical score scenarios.", leadEs: "Explora patrones de puntajes, fortalezas por dominio, cambios entre años y escenarios hipotéticos." },
+  { id: "prepare", icon: "tests", title: "Prepare for ACCESS", titleEs: "Prepararse para ACCESS", lead: "Test practice, the simulator and a weekly plan.", leadEs: "Práctica de pruebas, simulador y plan semanal." },
 ]);
+
+const teacherLanguage = () => safeJson(storage.get("accessPracticeLab:v1:prefs"), {})?.lang === "es" ? "es" : "en";
 
 // Planning tools that open inside "Plan a Lesson" (planToolsHTML), not as tasks of their own.
 export const PLAN_TOOLS = Object.freeze([
@@ -547,6 +550,7 @@ export async function mountCommandCenter(host) {
   }
 
   function renderCreateTab() {
+    const say = (en, es) => teacherLanguage() === "es" ? es : en;
     const creations = [
       {
         title: "Create a Story or Class Book",
@@ -617,11 +621,18 @@ export async function mountCommandCenter(host) {
           </article>`,
         )}
       </div>
+      <p class="row-actions" aria-label="Teacher program tools">
+        <a class="chip" href="${BASE}/program">${say("Teacher Program Studio", "Estudio de programa docente")} →</a>
+        <a class="chip" href="${BASE}/program/strategies">${say("Strategy library", "Biblioteca de estrategias")} →</a>
+        <a class="chip" href="${BASE}/live">${say("Preview speaking rooms", "Previsualizar salas para hablar")} →</a>
+      </p>
     </div>`;
   }
 
   function render() {
     const tourState = loadHubTourState();
+    const lang = teacherLanguage();
+    const say = (en, es) => lang === "es" ? es : en;
     const tabMap = {
       find: () => findTaskHTML(state.band),
       plan: renderPlanTab,
@@ -634,12 +645,15 @@ export async function mountCommandCenter(host) {
     };
     const activeFn = tabMap[state.activeTab];
     const task = taskOf(state.activeTab);
+    const orderedActions = ACCESS_LAB_FLAGS.teacherRoleEnabled ? roleOrder(COMMAND_ACTIONS) : COMMAND_ACTIONS;
+    const primaryActions = orderedActions.slice(0, 3);
+    const moreActions = orderedActions.slice(3);
 
     host.innerHTML = toHtml(html`<div class="tc-shell">
       <div class="tc-head">
         <div>
-          <h2 id="tcTitle">What would you like to do today?</h2>
-          <p class="fine">Pick one. It opens right here.</p>
+          <h2 id="tcTitle" lang="${lang}">${say("What would you like to do today?", "¿Qué quieres hacer hoy?")}</h2>
+          <p class="fine" lang="${lang}">${say("Pick one. It opens right here.", "Elige una opción. Se abre aquí mismo.")}</p>
         </div>
         <div class="th-band tc-band">
           <span class="th-band-label" id="tcBandLabel">Grade band</span>
@@ -649,11 +663,11 @@ export async function mountCommandCenter(host) {
         </div>
       </div>
 
-      <label for="tcRole">I am a… / <span lang="es">Soy…</span></label>
-      <select id="tcRole" data-teacher-role>${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[0]} / ${r.title[1]}</option>`)}</select>
-      <p class="fine">Changes the first three cards only. / <span lang="es">Solo cambia las tres primeras tarjetas.</span></p>
-      <div class="tc-action-grid" role="group" aria-label="Teaching tasks">
-        ${roleOrder(COMMAND_ACTIONS).map(
+      ${ACCESS_LAB_FLAGS.teacherRoleEnabled ? html`<label for="tcRole" lang="${lang}">${say("I am a…", "Soy…")}</label>
+      <select id="tcRole" data-teacher-role lang="${lang}">${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[lang === "es" ? 1 : 0]}</option>`)}</select>
+      <p class="fine" lang="${lang}">${say("Changes the first three cards only.", "Solo cambia el orden de las primeras tres tarjetas.")}</p>` : ""}
+      <div class="tc-action-grid" role="group" aria-label="${say("Teaching tasks", "Tareas docentes")}">
+        ${primaryActions.map(
           (a) => html`<button
             type="button"
             id="tc-tab-${a.id}"
@@ -664,12 +678,13 @@ export async function mountCommandCenter(host) {
           >
             <span class="tc-action-ico" aria-hidden="true">${icon(a.icon)}</span>
             <span class="tc-action-body">
-              <strong>${a.title}</strong>
-              <span>${a.lead}</span>
+              <strong lang="${lang}">${say(a.title, a.titleEs)}</strong>
+              <span lang="${lang}">${say(a.lead, a.leadEs)}</span>
             </span>
           </button>`,
         )}
       </div>
+      ${moreActions.length ? html`<details class="tc-more-tasks" ${moreActions.some((a) => a.id === task) ? "open" : ""}><summary lang="${lang}">${say("More tasks", "Más tareas")}</summary><div class="tc-action-grid" role="group" aria-label="${say("More teaching tasks", "Más tareas docentes")}">${moreActions.map((a) => html`<button type="button" id="tc-tab-${a.id}" class="tc-action-card${task === a.id ? " is-active" : ""}" aria-expanded="${String(task === a.id)}" aria-controls="tcTask-${a.id}" data-tc-action="${a.id}"><span class="tc-action-ico" aria-hidden="true">${icon(a.icon)}</span><span class="tc-action-body"><strong lang="${lang}">${say(a.title, a.titleEs)}</strong><span lang="${lang}">${say(a.lead, a.leadEs)}</span></span></button>`)}</div></details>` : ""}
 
       ${COMMAND_ACTIONS.map((a) =>
         a.id === task && activeFn
@@ -720,7 +735,7 @@ export async function mountCommandCenter(host) {
     render();
   }
   host.addEventListener("change", (e) => {
-    if (e.target.matches("[data-teacher-role]")) { rememberTeacherRole(e.target.value); render(); host.querySelector("[data-teacher-role]")?.focus(); }
+    if (ACCESS_LAB_FLAGS.teacherRoleEnabled && e.target.matches("[data-teacher-role]")) { rememberTeacherRole(e.target.value); render(); host.querySelector("[data-teacher-role]")?.focus(); }
   });
   document.addEventListener("th:band", (e) => {
     if (e.detail?.from !== "tasks") setBand(e.detail?.band, { announceIt: false });

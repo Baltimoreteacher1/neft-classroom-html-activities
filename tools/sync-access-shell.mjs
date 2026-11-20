@@ -63,6 +63,9 @@ const importMap = `<!-- lab-modules:begin -->\n    <script type="importmap">\n${
 
 // ── static import chain of the entry module ───────────────────────────────────
 const STATIC_IMPORT = /(?:^|\n)\s*(?:import|export)\s+(?:[^'"()]*?\s+from\s+)?["']([^"']+)["']/g;
+// This shared contract is first used from lazy class/pathway routes, but the shell can request it during an offline
+// reload when a device already has a class link. Keep it in the install cache just like static external imports.
+const externalModules = new Set(["/shared/class-platform/contract.js"]);
 function staticChain(entry) {
   const seen = new Set();
   const visit = (url) => {
@@ -70,8 +73,10 @@ function staticChain(entry) {
     seen.add(url);
     const source = readFileSync(join(dir, "src", url.slice(`${BASE}/src/`.length)), "utf8");
     for (const [, spec] of source.matchAll(STATIC_IMPORT)) {
-      if (spec.startsWith("/")) visit(spec);
-      else if (spec.startsWith(".")) visit(posix.join(dirname(url), spec));
+      if (spec.startsWith("/")) {
+        if (spec in imports) visit(spec);
+        else externalModules.add(spec);
+      } else if (spec.startsWith(".")) visit(posix.join(dirname(url), spec));
     }
   };
   visit(entry);
@@ -145,7 +150,7 @@ const pictures = walk(join(dir, "pictures"), (n) => /\.(svg|png|jpe?g|webp|avif)
 const staticUrls = staticChain(entryUrl);
 const staticModules = new Set(staticUrls.map((url) => imports[url]));
 const criticalStyles = new Set(criticalSheets);
-const core = [...criticalSheets, ...staticModules];
+const core = [...criticalSheets, ...staticModules, ...externalModules];
 const more = [
   ...sheets.filter((url) => !criticalStyles.has(url)),
   ...Object.values(imports).filter((url) => !staticModules.has(url)),

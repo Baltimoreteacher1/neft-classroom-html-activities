@@ -60,6 +60,18 @@ export const TIME_VALUES = [
   ["20", P("20 minutes or less", "20 minutos o menos"), (m) => m <= 20],
   ["long", P("More than 20 minutes", "Más de 20 minutos"), (m) => m > 20],
 ];
+export const TYPE_VALUES = [
+  ["worksheet", P("Worksheet", "Hoja de trabajo")], ["game", P("Game", "Juego")],
+  ["flashcards", P("Flashcards", "Tarjetas didácticas")], ["word-wall", P("Word wall", "Muro de palabras")],
+  ["poster", P("Poster", "Póster")], ["label", P("Label", "Etiqueta")], ["planner", P("Planner", "Planificador")],
+  ["checklist", P("Checklist", "Lista de verificación")], ["letter", P("Letter", "Carta")],
+  ["organizer", P("Organizer", "Organizador gráfico")], ["assessment", P("Assessment", "Evaluación")],
+  ["lesson-pack", P("Lesson pack", "Paquete de lección")],
+];
+export const STAGE_VALUES = [["A", P("A · Starting", "A · Inicial")], ["B", P("B · Growing", "B · En desarrollo")], ["C", P("C · Expanding", "C · En expansión")]];
+export const LANGUAGE_VALUES = [["bilingual", P("Bilingual", "Bilingüe")], ["en", P("English", "Inglés")]];
+export const TECH_VALUES = [["none", P("No technology", "Sin tecnología")], ["screen", P("On screen", "En pantalla")]];
+export const EDIT_VALUES = [["yes", P("Editable", "Editable")]];
 export const BAND_VALUES = [
   ["K", P("K", "K")],
   ["1", P("Grade 1", "1.º")],
@@ -85,6 +97,12 @@ export function readState(params, band) {
     kind: kind in LEGACY_KIND ? LEGACY_KIND[kind] : valid(KIND_VALUES, kind),
     format: valid(FORMAT_VALUES, get("format")),
     time: valid(TIME_VALUES, get("time")),
+    type: valid(TYPE_VALUES, get("type")),
+    fn: /^[\p{L}-]{2,32}$/u.test(get("fn")) ? get("fn").toLocaleLowerCase() : "",
+    stage: valid(STAGE_VALUES, get("stage")),
+    lang: valid(LANGUAGE_VALUES, get("lang")),
+    tech: valid(TECH_VALUES, get("tech")),
+    edit: valid(EDIT_VALUES, get("edit")),
   };
 }
 
@@ -100,12 +118,13 @@ export function writeState(state, params = new URLSearchParams()) {
   set("kind", state.kind);
   set("format", state.format);
   set("time", state.time);
+  for (const key of ["type", "fn", "stage", "lang", "tech", "edit"]) set(key, state[key]);
   return out;
 }
 
 /** How many filters are on (the grade band is not counted: a band is always chosen). */
 export const activeCount = (s) =>
-  ["for", "skill", "kind", "format", "time"].filter((k) => s[k]).length;
+  ["for", "skill", "kind", "format", "time", "type", "fn", "stage", "lang", "tech", "edit"].filter((k) => s[k]).length;
 
 const inBands = (d, bands) => !bands || !d.bands || d.bands.some((b) => bands.includes(b));
 const TESTS = {
@@ -115,6 +134,12 @@ const TESTS = {
     v === "printable" ? d.rk === "printable" || d.format === "printable" : d.rk === v,
   format: (d, v) => d.format === v,
   time: (d, v) => Number.isFinite(d.minutes) && TIME_VALUES.find(([id]) => id === v)[2](d.minutes),
+  type: (d, v) => d.type === v,
+  fn: (d, v) => d.fn?.includes(v),
+  stage: (d, v) => d.stage === v,
+  lang: (d, v) => d.lang === v,
+  tech: (d, v) => d.tech === v,
+  edit: (d, v) => d.edit === v,
 };
 
 /** The bands a state limits to: a grade in the query wins, then "all grades", then the lab's band. */
@@ -141,6 +166,12 @@ export function facetCounts(docs, state, intentBands) {
     kind: KIND_VALUES,
     format: FORMAT_VALUES,
     time: TIME_VALUES,
+    type: TYPE_VALUES,
+    stage: STAGE_VALUES,
+    lang: LANGUAGE_VALUES,
+    tech: TECH_VALUES,
+    edit: EDIT_VALUES,
+    fn: [...new Set(docs.flatMap((d) => d.fn || []))].sort().map((v) => [v, P(v[0]?.toUpperCase() + v.slice(1), v[0]?.toUpperCase() + v.slice(1))]),
   };
   for (const [facet, list] of Object.entries(lists)) {
     const base = applyFilters(docs, state, intentBands, facet);

@@ -226,7 +226,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       const index = await loadIndex();
       const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, CONTENT_BANDS.map((b) => el("option", { value: b }, S(BAND_INFO[b].label, BAND_INFO[b].labelEs))));
       band.value = "6-8";
-      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, [...ASSIGN_DOMAINS, UNITS_ASSIGN].map((d) => el("option", { value: d }, d === UNITS_ASSIGN ? S("Units", "Unidades") : d)));
+      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, [...ASSIGN_DOMAINS, "Reading Path", UNITS_ASSIGN].map((d) => el("option", { value: d }, d === UNITS_ASSIGN ? S("Units", "Unidades") : d === "Reading Path" ? S("Reading Path", "Camino de lectura") : d)));
       const pick = el("select", { "aria-label": S("Activity", "Actividad") });
       let rows = [];
       const fill = async () => {
