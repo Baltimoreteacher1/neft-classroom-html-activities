@@ -136,10 +136,13 @@ test("every K–3 activity passes the early-band rules and has spoken Spanish di
         }
 });
 
-test("early home: band switch with five bands, audio-first setting, skills and extras", async () => {
+test("early home: band switch offers only supported early bands, audio-first setting, skills and extras", async () => {
   const { root, draw, click, ctx } = ctxFor("K");
   await draw();
-  assert.equal(root.querySelectorAll("[data-set-band]").length, 5);
+  assert.deepEqual(
+    [...root.querySelectorAll("[data-set-band]")].map((button) => button.dataset.setBand),
+    ["K", "1", "2-3"],
+  );
   assert.ok(
     root.querySelector('a[href*="/early/story"]'),
     "Kindergarten home leads with Story Time",
@@ -158,6 +161,12 @@ test("early home: band switch with five bands, audio-first setting, skills and e
     "Story Time is listed for Kindergarten only",
   );
   assert.ok(g23.root.querySelector('a[href*="/Listening/A/g23-"]'));
+  const invalid = ctxFor("6-8");
+  await invalid.draw();
+  assert.deepEqual(
+    [...invalid.root.querySelectorAll("[data-set-band]")].map((button) => button.dataset.setBand),
+    ["K", "1", "2-3"],
+  );
 });
 
 test("Story Time: adult-read pages, spoken questions, no score, class mode, retell page", async () => {

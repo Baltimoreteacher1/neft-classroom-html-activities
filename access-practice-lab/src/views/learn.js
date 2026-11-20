@@ -2,6 +2,7 @@
 // Covers Listening, Speaking, Reading, Writing, Academic Vocabulary, and WIDA Key Language Uses
 // across Grades 3-5 (Visual Language Discovery) and Grades 6-8 (Academic Language Studio).
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
+import { ACADEMIC_BANDS } from "../bands.js";
 import { i18nFor } from "../i18n.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { canSpeak, speak } from "../speech.js";
@@ -954,7 +955,7 @@ export async function render(ctx) {
             "Cada explicación es activa: Observa un recurso del lenguaje, Predice qué funciona, Responde con tus propias palabras, recibe comentarios al instante y Aplícalo en una actividad real.",
           )}</p>
           <div class="learn-hero-bar">
-            ${bandSwitchHTML(band, ctx.bands, { i18n: I })}
+            ${bandSwitchHTML(band, ACADEMIC_BANDS.filter((b) => ctx.bands.includes(b)), { i18n: I })}
             <span class="learn-progress-pill" role="status">
               ${icon("check")} ${T(
                 `${completedCount} of ${TRACKS.length} interactive lessons completed (${bandLabel(band)})`,

@@ -339,7 +339,11 @@ async function homeHTML(ctx, I) {
                   "Pepita lee cada instrucción en voz alta. Toca un dibujo para responder, explora mundos de Ciencias y Matemáticas o crea tus propias oraciones.",
                 )}
           </p>
-          ${bandSwitchHTML(band, ctx.bands, { i18n: I })}
+          ${bandSwitchHTML(
+            band,
+            EARLY_BANDS.filter((available) => ctx.bands.includes(available)),
+            { i18n: I },
+          )}
           <p class="early-setting">
             <button type="button" class="btn btn-primary" data-early-welcome>
               ${icon("volume")} ${I.T("Hear Pepita welcome you", "Escuchar a Pepita")}
@@ -504,7 +508,11 @@ export async function render(ctx) {
             "Esta página es para kínder, 1.º grado y grados 2–3.",
           )}
         </p>
-        ${bandSwitchHTML(ctx.band, ctx.bands, { i18n: I })}
+        ${bandSwitchHTML(
+          ctx.band,
+          EARLY_BANDS.filter((available) => ctx.bands.includes(available)),
+          { i18n: I },
+        )}
       </section>`,
     };
   // /family with a K–3 band opens the K–2 family activities (src/main.js routes it here).

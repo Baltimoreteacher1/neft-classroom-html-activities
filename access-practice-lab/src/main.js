@@ -11,7 +11,7 @@ import { installCalmFocus } from "./keep-in-view.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
 import { gradeSwitchTarget } from "./wayfinding.js";
-import { isEarlyBand, normalizeBand } from "./bands.js";
+import { BAND_INFO, EARLY_BANDS, isEarlyBand, normalizeBand } from "./bands.js";
 import { namesGradeFocus, normalizeGradeFocus } from "./grade-focus.js";
 import { announceGradeFocus } from "./grade-focus-ui.js";
 import { availableBands, loadIndex } from "./content.js";
@@ -331,6 +331,13 @@ export const ctx = {
 
 function resolveBand(route) {
   const asked = normalizeBand(route.grades);
+  if (route.view === "early") {
+    const supported = EARLY_BANDS.filter((band) => app.bands.includes(band));
+    if (supported.includes(asked)) return asked;
+    const remembered = app.prefs.band;
+    if (!asked && supported.includes(remembered)) return remembered;
+    return supported.includes("2-3") ? "2-3" : supported.at(-1) || app.bands[0];
+  }
   if (asked && app.bands.includes(asked)) return asked;
   if (route.view === "activity" && route.id && !/^\d+$/.test(route.id)) return bandOfId(route.id);
   if (route.domain === "Model-Test") return "6-8";
@@ -412,6 +419,12 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   app.route = route;
   app.band = resolveBand(route);
+  if (route.view === "early" && BAND_INFO[app.band] && normalizeBand(route.grades) !== app.band) {
+    const url = new URL(location.href);
+    url.searchParams.set("grades", BAND_INFO[app.band].picker);
+    history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    route.grades = BAND_INFO[app.band].picker;
+  }
   // Shared builders (components, items, studio and evidence UI) read the language from here, once per render.
   const I = i18nFor(ctx);
   setComponentsI18n(I);

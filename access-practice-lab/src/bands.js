@@ -18,6 +18,9 @@ export const CONTENT_BANDS = ["K", "1", "2-3", "3-5", "6-8"];
 /** Bands built for children who may not read yet: the audio-first player is their default. */
 export const EARLY_BANDS = ["K", "1", "2-3"];
 
+/** Activity switches for the 3–8 rooms; K–3 learners have dedicated early-learning routes. */
+export const ACADEMIC_BANDS = ["3-5", "6-8"];
+
 export const BAND_INFO = {
   K: {
     picker: "K",

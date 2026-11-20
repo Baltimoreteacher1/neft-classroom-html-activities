@@ -19,6 +19,7 @@ function stagesHTML(I, v) {
     ${draft.stages.map((d, i) => {
       const s = pathway?.stages.find((x) => x.key === d.key);
       const title = s ? I.S(...s.title) : d.key;
+      const previewHref = s?.route ? `${BASE}${s.route}` : "";
       const label = (en, es) =>
         I.S(`${en}: step ${i + 1}, ${title}`, `${es}: paso ${i + 1}, ${title}`);
       return html`<li class="pw-build-item">
@@ -29,6 +30,15 @@ function stagesHTML(I, v) {
           </p>
           <p class="pw-build-title">${title}</p>
           ${s ? html`<p class="fine">${I.T(...s.why)}</p>` : ""}
+          ${
+            previewHref
+              ? html`<a class="btn small" href="${previewHref}" target="_blank" rel="noopener" data-pw-activity-preview
+                  >${I.T("Preview activity", "Vista previa de la actividad")}</a
+                >`
+              : s?.kind === "transfer" || s?.kind === "family"
+                ? html`<p class="fine">${I.T("Completed inside the pathway", "Se completa dentro de la ruta")}</p>`
+                : ""
+          }
         </div>
         <div class="pw-build-acts">
           <button
@@ -77,6 +87,10 @@ function stagesHTML(I, v) {
 /** The rows of the resource list (redrawn in place while the teacher types in the search box). */
 export function resultsHTML(I, v) {
   const full = v.draft.stages.length >= MAX_STAGES;
+  const previewHref = (key) => {
+    const route = resolveKey(key, v.data)?.route;
+    return route ? `${BASE}${route}` : "";
+  };
   return html`${v.results.map(
         (r) =>
           html`<li class="pw-result">
@@ -86,6 +100,13 @@ export function resultsHTML(I, v) {
                 >${r.kind}${r.domain ? ` · ${r.domain}` : ""}${r.linked ? I.S(" · linked to this goal", " · vinculado a esta meta") : ""}</span
               ></span
             >
+            ${
+              previewHref(r.key)
+                ? html`<a class="btn small" href="${previewHref(r.key)}" target="_blank" rel="noopener" data-pw-activity-preview
+                    >${I.T("Preview", "Vista previa")}</a
+                  >`
+                : html`<span class="fine">${I.T("In-pathway activity", "Actividad dentro de la ruta")}</span>`
+            }
             <button
               type="button"
               class="btn small"

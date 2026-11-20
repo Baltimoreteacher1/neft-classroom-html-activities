@@ -4,6 +4,7 @@
 // Collaborative Communication Missions, Student Game Authoring, and Teacher Mission Builder).
 
 import { bandSwitchHTML, crumbsHTML, domainGlyph, recorderHTML } from "../components.js";
+import { ACADEMIC_BANDS } from "../bands.js";
 import { award } from "../engagement.js";
 import { i18nFor } from "../i18n.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
@@ -442,7 +443,7 @@ export async function render(ctx) {
             "Entra en mundos vivos donde lo que escuchas, lees, dices y escribes cambia lo que hacen los personajes. Haz preguntas de aclaración, cita evidencia y desbloquea consecuencias reales.",
           )}</p>
           <div class="learn-hero-bar">
-            ${bandSwitchHTML(band, ctx.bands, { i18n: I })}
+            ${bandSwitchHTML(band, ACADEMIC_BANDS.filter((b) => ctx.bands.includes(b)), { i18n: I })}
             <span class="learn-progress-pill" role="status">
               ${icon("check")} ${T(
                 `${totalCompleted} Reality mission${totalCompleted === 1 ? "" : "s"} completed on this device`,

@@ -102,6 +102,24 @@ for (const width of [390, 1366]) {
       fail(`${width} ${path}: axe ${v.id} (${v.nodes.length})`);
     if (errors.length) fail(`${width} ${path}: console ${errors.join(" | ").slice(0, 300)}`);
   }
+  await page.goto(`${BASE}/access-practice-lab/early?grades=6-8`, { waitUntil: "load" });
+  await page.waitForSelector(".early-home");
+  const earlyBands = await page
+    .locator("[data-set-band]")
+    .evaluateAll((els) => els.map((el) => el.dataset.setBand));
+  if (JSON.stringify(earlyBands) !== JSON.stringify(["K", "1", "2-3"]))
+    fail(`${width} /early offers unsupported grade bands: ${earlyBands.join(", ")}`);
+  if (new URL(page.url()).searchParams.get("grades") !== "2-3")
+    fail(`${width} /early did not redirect an unsupported grade selection to Grades 2–3`);
+  for (const path of ["/tests", "/road", "/reality", "/learn"]) {
+    await page.goto(`${BASE}/access-practice-lab${path}?grades=6-8`, { waitUntil: "load" });
+    await page.waitForSelector("#app [data-set-band]", { timeout: 20000 });
+    const offered = await page
+      .locator("[data-set-band]")
+      .evaluateAll((els) => els.map((el) => el.dataset.setBand));
+    if (JSON.stringify(offered) !== JSON.stringify(["3-5", "6-8"]))
+      fail(`${width} ${path} offers grade bands without activities: ${offered.join(", ")}`);
+  }
   // A miss keeps every choice and never shows the answer; the right pick then succeeds.
   await page.goto(`${BASE}/access-practice-lab/Listening/A/g23-l-a-garden-helper?grades=2-3`, {
     waitUntil: "load",

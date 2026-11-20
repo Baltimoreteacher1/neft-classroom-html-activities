@@ -2,6 +2,7 @@
 // per skill + a family talk prompt). The current week is picked from today's date, or from the Road week a
 // teacher set for a learner in their class.
 import { classRoadWeek } from "../class/support.js";
+import { ACADEMIC_BANDS } from "../bands.js";
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows, loadRoad } from "../content.js";
 import { loadRecord } from "../store.js";
@@ -101,7 +102,7 @@ export async function render(ctx) {
               "Una lista semanal con una meta de lenguaje y un tema para conversar en casa. La semana de la familia tiene dos actividades. Algunas semanas incluyen un reto con apoyo o un repaso de algo conocido.",
             )}
           </p>
-          ${bandSwitchHTML(band, ctx.bands)}
+          ${bandSwitchHTML(band, ACADEMIC_BANDS.filter((b) => ctx.bands.includes(b)))}
         </div>
         <div class="rd-summary" role="group" aria-label="${S("Plan progress", "Progreso del plan")}">
           <p class="rd-summary-n">${I.mode === "en" ? html`<strong>${weeksDone}</strong> of ${plan.weeks.length} weeks finished` : T(`${weeksDone} of ${plan.weeks.length} weeks finished`, `${weeksDone} de ${plan.weeks.length} semanas terminadas`)}</p>

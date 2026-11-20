@@ -176,6 +176,19 @@ test("built-in pathways: at least three, every stage is linked, routed, explaine
         );
         assert.notEqual(s.evidence.type, "none");
         if (s.kind === "access") assert.equal(s.band, band);
+        if (s.route) {
+          const href = P.stageHref(p, s);
+          assert.ok(
+            href.startsWith(`/access-practice-lab${s.route}`),
+            `${id} ${s.key} opens its activity`,
+          );
+          assert.match(href, /[?&]pw=/, `${id} ${s.key} carries pathway context`);
+        } else {
+          assert.ok(
+            ["transfer", "family"].includes(s.kind),
+            `${id} ${s.key} is completed inside the pathway`,
+          );
+        }
       }
       assert.equal(P.assignmentFor(p, null, band).ok, true);
     }

@@ -1,6 +1,7 @@
 // Test center: full tests, single-skill tests and minis for the current band,
 // plus the model-test item bank (grades 6–8) and WIDA's official practice link.
 import { bandSwitchHTML, crumbsHTML } from "../components.js";
+import { ACADEMIC_BANDS } from "../bands.js";
 import { loadIndex, loadShared } from "../content.js";
 import { loadTestRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
@@ -125,7 +126,7 @@ export async function render(ctx) {
               "Practica escuchar, leer, hablar y escribir. Estas actividades de clase fortalecen tu confianza con el idioma; no predicen un puntaje de ACCESS. No hay reloj, a menos que tú lo actives.",
             )}
           </p>
-          ${bandSwitchHTML(ctx.band, ctx.bands)}
+          ${bandSwitchHTML(ctx.band, ACADEMIC_BANDS.filter((b) => ctx.bands.includes(b)))}
         </div>
         <img class="test-hero-art" src="${ART}/test-intro.svg" alt="" width="480" height="300" />
       </header>

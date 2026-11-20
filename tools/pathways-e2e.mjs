@@ -599,6 +599,15 @@ try {
     "builder: starts from the reference pathway",
   );
   ok(
+    (await page.locator(".pw-build-list a[data-pw-activity-preview]").count()) >= 4 &&
+      (await page
+        .locator(".pw-build-list a[data-pw-activity-preview]")
+        .evaluateAll((links) =>
+          links.every((link) => link.target === "_blank" && !/[?&]pw=/.test(link.href)),
+        )),
+    "builder: every external step opens its existing activity in a separate preview",
+  );
+  ok(
     (await page.inputValue("#pwPath")) === `${LAB}/pathways/${PW}` &&
       (await page.locator(".pw-qr svg").count()) === 1,
     "builder: an unchanged built-in pathway keeps its short route and gets a QR code",
@@ -617,6 +626,10 @@ try {
   await page.fill("[data-pw-search]", "volcano");
   await page.waitForFunction(() =>
     [...document.querySelectorAll(".pw-result")].some((r) => /Volcano/.test(r.textContent)),
+  );
+  ok(
+    (await page.locator(".pw-result:has-text('Volcano') [data-pw-activity-preview]").count()) > 0,
+    "builder: searchable existing activities include a direct preview link",
   );
   ok(
     (await page.evaluate(() => document.activeElement?.id)) === "pwSearch",
