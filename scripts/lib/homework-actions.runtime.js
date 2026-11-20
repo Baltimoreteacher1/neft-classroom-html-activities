@@ -69,6 +69,15 @@
         document.querySelector(`#problem_${idx} .problem-stem .lang-${lang}`)?.textContent || "";
       window.speakHomeworkText(stem("en"), stem("es"));
     },
+    // Reads one element's English and Spanish text aloud (tap-to-reveal prompts), in the page language.
+    hwSpeakById: (_el, _ev, id) => {
+      const said = (lang) =>
+        [...document.querySelectorAll(`#${id} .lang-${lang}`)]
+          .map((node) => node.textContent.trim())
+          .filter(Boolean)
+          .join(" ");
+      window.speakHomeworkText(said("en"), said("es"));
+    },
     // Reads the grown-up's "what your student is learning" and "ask this" drawers aloud.
     hwSpeakCopilot: () => {
       const said = (lang) =>

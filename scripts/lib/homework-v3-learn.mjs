@@ -182,7 +182,7 @@ function renderGlitch(g) {
   if (!g) return "";
   return `
       <div class="hw-subcard" id="hw_spot_the_glitch">
-        <h4 class="hw-subcard-tag">${bi("Be the teacher: find the mistake", "Sé el maestro: encuentra el error")}</h4>
+        <h4 class="hw-subcard-tag">${bi("Almost right: find the mistake", "Casi correcto: encuentra el error")}</h4>
         <p class="hw-colearn-stem">${pair(g.scenario)}</p>
         <p class="hw-glitch-instruction">${bi("Tap the step where the thinking went off track. Then explain why.", "Toca el paso donde el razonamiento se desvió. Luego explica por qué.")}</p>
         <div class="hw-glitch-steps" role="group" aria-label="${esc("Steps")}">

@@ -95,18 +95,46 @@ export function renderCaregiverCopilot(config, ask) {
 }
 
 /**
- * The Talk Together body: one question, a sentence starter in both languages, what a strong
- * answer sounds like, and a no-grown-up way to do the same thing.
+ * The grown-up's questions for tonight, as tap-to-reveal prompts: the lesson's corner question first,
+ * then up to two of its own "say" prompts. Each opens on its own and can be read aloud, so a grown-up
+ * who is unsure of the mathematics reads out what is on the screen and asks it.
+ */
+export function talkPrompts(config, ask) {
+  const notes = config?.familyNotes || {};
+  const seen = new Set();
+  return [talkQuestion(config, ask), ...(notes.stuckTips?.say || [])]
+    .filter((p) => p?.en && !seen.has(p.en) && seen.add(p.en))
+    .slice(0, 3);
+}
+
+const speakButton = (id) =>
+  `<button type="button" class="btn btn-sm btn-outline-secondary hw-reveal-audio" ${act("hwSpeakById", id)}><span aria-hidden="true">🔊</span> ${bi("Listen", "Escuchar")}</button>`;
+
+/**
+ * The Talk Together body: tap-to-reveal questions with a read-aloud button, a sentence starter in
+ * both languages, what a strong answer sounds like, and a no-grown-up way to do the same thing.
  */
 export function renderTalkTogether(config, ask) {
   const notes = config?.familyNotes || {};
-  const question = talkQuestion(config, ask);
   const frame = notes.corner?.frame;
   const strong = bridgeOf(notes)?.class;
+  const prompts = talkPrompts(config, ask);
   return `
     <section class="mission-block hw-talk" id="hw_talk" aria-labelledby="hw_talk_title" data-no-vocab>
-      <h2 class="hw-talk-title" id="hw_talk_title">${bi("Talk it through", "Conversen sobre esto")}</h2>
-      <p class="hw-talk-q">${pair(question)}</p>
+      <h2 class="hw-talk-title" id="hw_talk_title">${bi("Talk about it", "Conversen sobre esto")}</h2>
+      <p class="hw-talk-solo">${bi("Tap a question to show it. A grown-up can read it out loud, or tap Listen.", "Toquen una pregunta para verla. Un adulto puede leerla en voz alta, o tocar Escuchar.")}</p>
+      ${prompts
+        .map(
+          (prompt, i) => `
+      <details class="hw-reveal" id="hw_talk_q${i + 1}">
+        <summary>${bi(`Question ${i + 1}`, `Pregunta ${i + 1}`)}</summary>
+        <div class="hw-reveal-body">
+          <p class="hw-talk-q" id="hw_talk_q${i + 1}_text">${pair(prompt)}</p>
+          ${speakButton(`hw_talk_q${i + 1}_text`)}
+        </div>
+      </details>`,
+        )
+        .join("")}
       ${
         frame?.en
           ? `<p class="hw-talk-frame"><strong>${bi("Start your answer like this:", "Empiecen su respuesta así:")}</strong> <em>${pair(frame)}</em></p>`

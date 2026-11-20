@@ -42,6 +42,7 @@ import {
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
 import { act, actOn, EL, EV, VALUE } from "./lib/homework-actions.mjs";
+import { renderAlmostRight } from "./lib/homework-almost-right.mjs";
 import { bridgeOf, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
@@ -90,6 +91,7 @@ import {
   SESSIONS,
   sessionOf,
 } from "./lib/homework-session-flow.mjs";
+import { renderStaticFallback } from "./lib/homework-static-fallback.mjs";
 import { renderCaregiverCopilot, renderTalkTogether } from "./lib/homework-talk.mjs";
 import { renderLearnPieces, v3Of } from "./lib/homework-v3-learn.mjs";
 
@@ -2980,7 +2982,7 @@ export function renderWelcomeBanner(config, lessonId) {
           es: `${familyTitlesEs[lessonId] || title}. ${v3Of(config, lessonId).hook.es}`,
         },
       }),
-      routes: renderMissionStart(),
+      routes: `${renderMissionStart()}${renderStaticFallback(config, lessonId)}`,
       extras: `
         ${renderSessionBanner(lessonId, partner)}
         <p class="hw-hero-bigidea" aria-label="Big idea">
@@ -3392,6 +3394,7 @@ export function renderCelebration(config = null, _lessonId = "") {
       <div class="homework-extra-actions">
         <button type="button" class="btn btn-secondary" ${act("hwOpenMorePractice", "check")}><span class="lang-en">➕ ${hasMorePractice ? "Try more practice problems" : "Review practice problems"}</span><span class="lang-es" lang="es">➕ ${hasMorePractice ? "Hacer más ejercicios" : "Repasar los ejercicios"}</span></button>
         <button type="button" class="btn btn-secondary" ${act("switchHomeworkTab", "photobooth")}><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
+        <a class="btn btn-secondary" href="/curriculum/family-connections/math-studio/?lesson=${encodeURIComponent(_lessonId || config?.lessonId || "")}"><span class="lang-en">🌍 Try it in your world (Math Studio)</span><span class="lang-es" lang="es">🌍 Pruébalo en tu mundo (estudio familiar)</span></a>
         <a class="btn btn-secondary" href="#parent_reflection_input" ${act("hwOpenDetails", "homework_extras_more")}><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
       </div>
       <!-- The three choices above stay visible (2026-10-02, "visible practice
@@ -8437,6 +8440,7 @@ export function renderLearnTab(
   const talk = `
     <div ${tabPanelAttrs("talk", true)}>
       ${renderTalkTogether(config, ask)}
+      ${renderAlmostRight(config)}
       ${copilotHtml}
       ${misconceptionHtml}
       ${pieces.glitch}
@@ -9947,7 +9951,8 @@ function familyPathStorageKey() {
 }
 
 var FAMILY_PATHS = {
-  quick: { en: 'Start Quick Practice', es: 'Empezar práctica rápida', tab: 'connect' },
+  /* Quick Practice opens on problem 1 (the Practice stop). The idea stop stays one tap away in the stepper. */
+  quick: { en: 'Start Quick Practice', es: 'Empezar práctica rápida', tab: 'check' },
   together: { en: 'Start Learn Together', es: 'Empezar Aprender juntos', tab: 'connect' },
   explore: { en: 'Start Explore & Play', es: 'Empezar Explorar y jugar', tab: 'explore' }
 };
