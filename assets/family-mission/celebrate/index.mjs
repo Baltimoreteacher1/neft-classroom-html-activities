@@ -132,7 +132,7 @@ export function mountCelebration(host, data, hooks = {}) {
             : ["Your celebration is waiting", "Su celebración los espera"];
     const sub =
       earned >= 2
-        ? [`You solved ${d.done} of ${d.goal} problems${d.bonus ? ` and ${d.bonus} bonus` : ""}.`, `Resolvieron ${d.done} de ${d.goal} problemas${d.bonus ? ` y ${d.bonus} extra` : ""}.`]
+        ? [`You solved ${d.done} of ${d.goal} problems${d.bonus ? ` and ${d.bonus} challenge` : ""}.`, `Resolvieron ${d.done} de ${d.goal} problemas${d.bonus ? ` y ${d.bonus} de reto` : ""}.`]
         : earned === 1
           ? [`${d.done} of ${d.goal} done. Finish the mission to earn more stars.`, `${d.done} de ${d.goal} listos. Terminen la misión para ganar más estrellas.`]
           : ["Solve a few problems in Your Turn and the stars light up.", "Resuelvan algunos problemas en Tu turno y las estrellas se encienden."];
@@ -162,7 +162,7 @@ export function mountCelebration(host, data, hooks = {}) {
           <li><strong>${d.done}/${d.goal}</strong><span>${bi("solved", "resueltos")}</span></li>
           <li><strong>${d.firstTry}</strong><span>${bi("first try", "a la primera")}</span></li>
           <li><strong>${d.fixed}</strong><span>${bi("mistakes fixed", "errores corregidos")}</span></li>
-          <li><strong>${d.bonus}</strong><span>${bi("bonus solved", "extra resueltos")}</span></li>
+          <li><strong>${d.bonus}</strong><span>${bi("challenge solved", "de reto resueltos")}</span></li>
         </ul>
 
         <div class="fm-ce-actions">

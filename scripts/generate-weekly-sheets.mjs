@@ -32,8 +32,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "curriculum/family-connections/weekly-sheet");
 const readJson = (path) => JSON.parse(readFileSync(join(ROOT, path), "utf8"));
 
-/** Bonus rule: this many practice nights earns it (fewer when the week has fewer nights). */
-const BONUS_NIGHTS = 3;
 const SHEET_CSS = readFileSync(join(OUT, "sheet.css"), "utf8");
 
 const baseline = readJson("data/pacing-baseline-2026-27.json");
@@ -68,17 +66,11 @@ export function buildWeeks() {
     });
     const schoolDays = days.filter((day) => day.status !== "no-class");
     if (!schoolDays.length) continue;
-    /* The last school day is the turn-in day; every school day before it is a practice night.
-     * A one-day week has nothing before it, so that day is the night. */
-    const nights = (schoolDays.length > 1 ? schoolDays.slice(0, -1) : schoolDays).map(
-      (d) => d.date,
-    );
+    const nights = schoolDays.map((d) => d.date);
     weeks.push({
       start: startDate,
       days,
       nights,
-      turnIn: schoolDays[schoolDays.length - 1].date,
-      goal: Math.min(BONUS_NIGHTS, nights.length),
     });
   }
   return weeks;
@@ -88,7 +80,7 @@ const weeks = buildWeeks();
 mkdirSync(join(OUT, "downloads"), { recursive: true });
 writeFileSync(
   join(OUT, "weeks.json"),
-  `${JSON.stringify({ schoolYear: baseline.schoolYear, bonusNights: BONUS_NIGHTS, weeks }, null, 1)}\n`,
+  `${JSON.stringify({ schoolYear: baseline.schoolYear, weeks }, null, 1)}\n`,
 );
 console.log(`weekly-sheet: ${weeks.length} weeks -> weeks.json`);
 if (process.argv.includes("--data-only")) process.exit(0);

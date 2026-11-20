@@ -6,13 +6,13 @@ const SHEET = "./weekly-sheet/";
 const COPY = {
   en: {
     title: "Weekly practice sheet",
-    hint: "Check off each night and show it on Friday for bonus points.",
+    hint: "Optional practice. No grades. A few minutes together helps.",
     online: "Fill it in online",
     print: "Print a copy (PDF)",
   },
   es: {
     title: "Hoja semanal de práctica",
-    hint: "Marca cada noche y muéstrala el viernes para ganar puntos extra.",
+    hint: "Práctica opcional. Sin calificaciones. Unos minutos juntos ayudan.",
     online: "Llenarla en línea",
     print: "Imprimir una copia (PDF)",
   },

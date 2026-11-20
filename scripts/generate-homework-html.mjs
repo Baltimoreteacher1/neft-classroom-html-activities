@@ -1575,7 +1575,7 @@ ${renderMathKeypad()}
         <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
         <span id="progress_text" role="status">0 / ${Math.min(MISSION_PRACTICE_COUNT, coreSelected.length)}</span>
         ${renderGoalPips("hw-pips-bar")}
-        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">challenge</span><span class="lang-es" lang="es">reto</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>

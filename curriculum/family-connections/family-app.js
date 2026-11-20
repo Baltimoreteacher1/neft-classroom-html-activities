@@ -23,6 +23,7 @@ import { normalizeWelcome } from "./shared/family-welcome.js";
 import { readLanguageMode, resolveHubLanguage, writeLanguageMode } from "./shared/hub-language.js";
 import { PRODUCT_NAME } from "./shared/hub-routes.js";
 import { paintWeeklySheetLinks } from "./shared/weekly-sheet-links.js";
+import { todayIso, weekFor } from "./weekly-sheet/week-pick.js";
 import {
   addDays,
   familyLink,
@@ -65,6 +66,7 @@ let classChosen =
 let welcome = normalizeWelcome(null);
 let snapshot = createDefaultSnapshot();
 let publishedWeeks = [];
+let pacingWeeks = [];
 let selectedWeek = query.get("week") || "";
 let lessons = [];
 let lessonChoices = [];
@@ -104,6 +106,40 @@ function renderFamilyView() {
     linkLang: languageChosen ? language : "",
     welcome,
   });
+  const isCurrentPublished =
+    record &&
+    weekPhase(record.week.startDate) === "current" &&
+    resolveSection(snapshotForWeek(snapshot, record), sectionId).week?.days?.some(
+      (d) => d.status === "lesson",
+    );
+  if (!isCurrentPublished && pacingWeeks.length) {
+    const today = todayIso();
+    const pWeek = weekFor(pacingWeeks, today);
+    const lessonDays = (pWeek?.days || []).filter((d) => d.status === "lesson" && d.lessonId);
+    const pick =
+      lessonDays.find((d) => d.date === today) ||
+      [...lessonDays].reverse().find((d) => d.date <= today) ||
+      lessonDays[0];
+    if (pick) {
+      const card = document.createElement("section");
+      card.className = "hub-start-here";
+      card.setAttribute("aria-labelledby", "hub-start-here-title");
+      const h2 = document.createElement("h2");
+      h2.id = "hub-start-here-title";
+      h2.textContent = es ? "Empieza aquí" : "Start here";
+      const sub = document.createElement("p");
+      const title = (es ? pick.title?.es : pick.title?.en) || pick.title?.en || "";
+      sub.textContent = es
+        ? `Lección ${pick.label}: ${title}`
+        : `Lesson ${pick.label}: ${title}`;
+      const cta = document.createElement("a");
+      cta.className = "button";
+      cta.href = `/lessons/${pick.lessonId}/homework.html${es ? "?lang=es" : ""}`;
+      cta.textContent = es ? "Abrir la práctica de hoy" : "Open today’s practice";
+      card.append(h2, sub, cta);
+      root.prepend(card);
+    }
+  }
   if (weeks.length) {
     const nav = document.createElement("div");
     nav.className = "week-navigation";
@@ -508,13 +544,16 @@ async function load() {
     const welcomeRequest =
       window.NTJsonCache?.json("/data/family-welcome.json").catch(() => null) ??
       Promise.resolve(null);
-    const [manifestResponse, publishedResponse] = await Promise.all([
+    const [manifestResponse, publishedResponse, pacingResponse] = await Promise.all([
       fetch("/data/curriculum-manifest.json"),
       fetch("/api/family-connections/published", { cache: "no-store" }),
+      fetch("./weekly-sheet/weeks.json").catch(() => null),
     ]);
     if (!manifestResponse.ok || !publishedResponse.ok) throw new Error("unavailable");
     const manifest = await manifestResponse.json();
     const body = await publishedResponse.json();
+    const pacingData = pacingResponse?.ok ? await pacingResponse.json().catch(() => null) : null;
+    pacingWeeks = Array.isArray(pacingData?.weeks) ? pacingData.weeks : [];
     snapshot = body.published;
     publishedWeeks = Array.isArray(body.weeks) ? body.weeks : publicHomeworkWeeks(snapshot);
     if (!Array.isArray(snapshot?.sections)) throw new Error("unavailable");

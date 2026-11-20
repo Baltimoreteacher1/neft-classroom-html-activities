@@ -19,7 +19,7 @@ export const COPY = Object.freeze({
     course: "Grade 6 Math · Mr. Neft",
     student: "Student name",
     period: "Class",
-    how: "Practice a little each night. A grown-up checks the box and adds their initials. Bring this sheet to class on the turn-in day for bonus points.",
+    how: "Optional practice. No grades. A few minutes together helps.",
     colDay: "Night",
     colTask: "What to practice",
     colDone: "Done",
@@ -28,16 +28,7 @@ export const COPY = Object.freeze({
     review: "Review night: redo one problem from this week’s homework, or play a Fluency Lab round.",
     assessment: "Learning check coming: look over your notes and one past homework.",
     noSchool: "No school",
-    turnIn: "Bring this sheet to class today",
     reflect: "One thing I learned or figured out this week:",
-    signature: "Grown-up signature",
-    date: "Date",
-    goal: (goal, nights) =>
-      `Bonus goal: practice ${goal} of ${nights} night${nights === 1 ? "" : "s"}.`,
-    teacher: "Teacher use",
-    teacherNights: "Nights counted",
-    teacherBonus: "Bonus given",
-    teacherInitials: "Initials",
     footer: "Practice pages and answers:",
   },
   es: {
@@ -45,7 +36,7 @@ export const COPY = Object.freeze({
     course: "Matemáticas de 6.º grado · Sr. Neft",
     student: "Nombre del estudiante",
     period: "Clase",
-    how: "Practiquen un poco cada noche. Un adulto marca la casilla y escribe sus iniciales. Traigan esta hoja a clase el día de entrega para ganar puntos extra.",
+    how: "Práctica opcional. Sin calificaciones. Unos minutos juntos ayudan.",
     colDay: "Noche",
     colTask: "Qué practicar",
     colDone: "Listo",
@@ -56,16 +47,7 @@ export const COPY = Object.freeze({
     assessment:
       "Se acerca una evaluación: repasen sus apuntes y una tarea anterior.",
     noSchool: "No hay clases",
-    turnIn: "Traigan esta hoja a clase hoy",
     reflect: "Algo que aprendí o descubrí esta semana:",
-    signature: "Firma del adulto",
-    date: "Fecha",
-    goal: (goal, nights) =>
-      `Meta para el punto extra: practicar ${goal} de ${nights} noche${nights === 1 ? "" : "s"}.`,
-    teacher: "Uso del maestro",
-    teacherNights: "Noches contadas",
-    teacherBonus: "Punto extra dado",
-    teacherInitials: "Iniciales",
     footer: "Páginas de práctica y respuestas:",
   },
 });
@@ -145,9 +127,7 @@ export function renderSheet(week, lang, state = {}) {
   const rows = week.days
     .map((day) => {
       if (nightDates.has(day.date)) return nightRow(day, copy, lang, state);
-      if (day.status === "no-class")
-        return noteRow(day, copy, lang, day.note[lang] || copy.noSchool, "ws-off");
-      return noteRow(day, copy, lang, copy.turnIn, "ws-turnin");
+      return noteRow(day, copy, lang, day.note[lang] || copy.noSchool, "ws-off");
     })
     .join("");
   const attr = (value) => escapeHtml(value ?? "");
@@ -168,18 +148,7 @@ export function renderSheet(week, lang, state = {}) {
     <thead><tr><th scope="col">${escapeHtml(copy.colDay)}</th><th scope="col">${escapeHtml(copy.colTask)}</th><th scope="col">${escapeHtml(copy.colDone)}</th><th scope="col">${escapeHtml(copy.colInitials)}</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <p class="ws-goal">${escapeHtml(copy.goal(week.goal, week.nights.length))}</p>
   <label class="ws-reflect">${escapeHtml(copy.reflect)}<textarea class="ws-lines" name="reflection" rows="3" maxlength="400">${escapeHtml(state.reflection ?? "")}</textarea></label>
-  <div class="ws-sign">
-    <label class="ws-field ws-field-sign">${escapeHtml(copy.signature)}<input class="ws-line" type="text" name="signature" maxlength="60" autocomplete="off" value="${attr(state.signature)}" /></label>
-    <label class="ws-field ws-field-date">${escapeHtml(copy.date)}<input class="ws-line" type="text" name="signedOn" maxlength="20" autocomplete="off" value="${attr(state.signedOn)}" /></label>
-  </div>
-  <div class="ws-teacher" aria-label="${escapeHtml(copy.teacher)}">
-    <strong>${escapeHtml(copy.teacher)}</strong>
-    <span>${escapeHtml(copy.teacherNights)}: <i class="ws-blank"></i> / ${week.nights.length}</span>
-    <span>${escapeHtml(copy.teacherBonus)}: <i class="ws-box"></i></span>
-    <span>${escapeHtml(copy.teacherInitials)}: <i class="ws-blank"></i></span>
-  </div>
   <p class="ws-foot">${escapeHtml(copy.footer)} ${SITE}/curriculum/family-connections/</p>
 </article>`;
 }

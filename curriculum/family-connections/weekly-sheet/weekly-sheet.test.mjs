@@ -8,17 +8,16 @@ import { COPY, LANGS, renderSheet, weekRange } from "./sheet-render.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../..");
-const { weeks, bonusNights } = JSON.parse(readFileSync(join(HERE, "weeks.json"), "utf8"));
+const { weeks } = JSON.parse(readFileSync(join(HERE, "weeks.json"), "utf8"));
 const baseline = JSON.parse(readFileSync(join(ROOT, "data/pacing-baseline-2026-27.json"), "utf8"));
 const schoolDates = new Set(baseline.days.filter((d) => d.schoolStatus === "school").map((d) => d.date));
 
-test("every night is a real school day, the turn-in day is not a night, and the goal is reachable", () => {
+test("every night is a real school day and every school day is listed", () => {
   for (const week of weeks) {
     assert.ok(week.nights.length >= 1, `${week.start} has no practice night`);
     for (const date of week.nights) assert.ok(schoolDates.has(date), `${date} is not a school day`);
-    if (week.nights.length < week.days.filter((d) => d.status !== "no-class").length)
-      assert.ok(!week.nights.includes(week.turnIn), `${week.start} counts its turn-in day as a night`);
-    assert.equal(week.goal, Math.min(bonusNights, week.nights.length));
+    const schoolCount = week.days.filter((d) => d.status !== "no-class").length;
+    assert.equal(week.nights.length, schoolCount, `${week.start} includes every school day`);
   }
 });
 

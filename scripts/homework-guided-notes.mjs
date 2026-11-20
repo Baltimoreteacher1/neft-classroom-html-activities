@@ -8498,7 +8498,7 @@ export function renderCheckTab(
         <span class="lang-en"><strong><span data-hw-goal-count>${goalCount}</span> problems.</strong> Hints are always okay.</span>
         <span class="lang-es" lang="es"><strong><span data-hw-goal-count>${goalCount}</span> problemas.</strong> Las pistas siempre están bien.</span>
       </p>
-      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">challenge</span><span class="lang-es" lang="es">reto</span></span>
     </div>`;
 
   const streakBanner = `
@@ -8590,7 +8590,7 @@ export function renderCheckTab(
           <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
         </summary>
         <p class="more-practice-note bilingual-block">
-          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-en">Optional. Only if your student wants more — these are challenge problems.</span>
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <section class="problems-container more-practice-container" aria-label="More practice">${moreHtml}</section>

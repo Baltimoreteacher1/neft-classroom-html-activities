@@ -10,6 +10,7 @@ import * as welcomeModule from "./shared/family-welcome.js";
 import * as hubLanguage from "./shared/hub-language.js";
 import * as hubRoutes from "./shared/hub-routes.js";
 import * as weeklySheetLinks from "./shared/weekly-sheet-links.js";
+import * as weekPick from "./weekly-sheet/week-pick.js";
 import { weekStartFor } from "./shared/pacing-week.js";
 
 const monday = weekStartFor(hub.schoolDate());
@@ -32,7 +33,7 @@ async function boot(path, state, query = "", options = {}) {
   globalThis.document = dom.window.document;
   for (const [name, value] of Object.entries(options.stored ?? {})) dom.window.localStorage.setItem(name, value);
   Object.defineProperty(dom.window.navigator, "languages", { value: options.languages ?? ["en-US", "en"], configurable: true });
-  Object.assign(dom.window, model, hub, weeks, checks, welcomeModule, hubLanguage, hubRoutes, weeklySheetLinks, {
+  Object.assign(dom.window, model, hub, weeks, checks, welcomeModule, hubLanguage, hubRoutes, weeklySheetLinks, weekPick, {
     loadDraft: async () => structuredClone(state),
     saveDraft: async (draft) => structuredClone(draft),
     publishDraft: async () => { throw new Error("Test must not publish"); },
@@ -43,6 +44,8 @@ async function boot(path, state, query = "", options = {}) {
     requested.push(String(url));
     if (String(url).includes("family-welcome"))
       return options.welcome === undefined ? new Response("{}", { status: 404 }) : new Response(JSON.stringify(options.welcome), { status: 200 });
+    if (String(url).includes("weeks.json"))
+      return new Response(JSON.stringify({ weeks: options.pacingWeeks ?? [] }), { status: 200 });
     return new Response(JSON.stringify(url.includes("manifest") ? manifest : {
       published: state, weeks: weeks.publicHomeworkWeeks(state, options.weeks ?? [plan(monday), plan(hub.addDays(monday, -7))]),
     }), { status: 200 });
@@ -271,7 +274,7 @@ test("when nothing is posted the family gets a Tonight anyway panel, not a dead 
     d.querySelector('#language-switch [data-lang="es"]').click();
     assert.match(d.querySelector(".tonight-anyway").textContent, /Todavía no hay tarea publicada\. Todo lo que ves aquí es opcional\./);
     assert.equal(d.querySelector(".catch-up-link").getAttribute("href"), `?section=all-families&week=${hub.addDays(monday, -14)}&lang=es`);
-    assert.equal(past.requested.filter((url) => !/manifest|published|family-welcome/.test(url)).length, 0, "the panel makes no network calls of its own");
+    assert.equal(past.requested.filter((url) => !/manifest|published|family-welcome|weeks\.json/.test(url)).length, 0, "the panel makes no network calls of its own");
   } finally { past.close(); }
   const nothing = await boot("family", model.createDefaultSnapshot(), "", { weeks: [] });
   try {
