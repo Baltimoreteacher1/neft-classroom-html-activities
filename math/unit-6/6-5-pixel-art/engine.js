@@ -48,6 +48,18 @@
   const CODE = Object.fromEntries(KEYS.map((k) => [k, evaluate(exprOf(k), A.colors[k].q.vars)]));
   if (new Set(Object.values(CODE)).size !== KEYS.length)
     console.warn("Pixel art: duplicate can codes", CODE);
+  // Order-of-operations step (opt-in per picture): authored "what first?" choices + intermediate rewrites.
+  const hasOoo = (k) => !!(A.ooo && A.colors[k].q.ooo);
+  const oooChain = (k) => {
+    const q = A.colors[k].q;
+    return [substitute(exprOf(k), q.vars), ...q.ooo.steps, CODE[k]];
+  };
+  KEYS.filter(hasOoo).forEach((k) =>
+    A.colors[k].q.ooo.steps.forEach((st) => {
+      if (evaluate(st, A.colors[k].q.vars) !== CODE[k])
+        console.warn("Pixel art: order-of-operations step does not equal the can code", k, st);
+    }),
+  );
   const COUNT = {};
   let TOTAL = 0;
   A.grid.forEach((row) =>
@@ -122,6 +134,7 @@
         <details class="toolbox"><summary>🧰 Math toolbox</summary>
           <div class="anat"><b class="co">3</b><b class="va">n</b> <b>+</b> <b class="cn">5</b></div>
           <ul><li><b class="co">coefficient</b> multiplies the variable</li><li><b class="va">variable</b> is a letter for an unknown number</li><li><b class="cn">constant</b> is a number on its own</li><li><b>substitute</b> to swap the variable for its value</li><li><b>evaluate</b> to find the value (multiply/divide before add/subtract)</li></ul>
+          ${A.ooo ? '<p class="pemdas"><b>Order of operations:</b> ① parentheses ② exponents ③ multiply &amp; divide (left to right) ④ add &amp; subtract (left to right)</p>' : ""}
         </details>
       </aside>
     </main>
@@ -326,7 +339,39 @@
         b.classList.add("good");
         fb.className = "fb good";
         fb.textContent = "Yes! That expression matches the words.";
-        setTimeout(() => stepEval(k, ch.t, true), REDUCED ? 0 : 700);
+        setTimeout(() => (hasOoo(k) ? stepOoo(k, ch.t) : stepEval(k, ch.t, true)), REDUCED ? 0 : 700);
+      } else {
+        b.classList.add("bad");
+        b.disabled = true;
+        fb.className = "fb bad";
+        fb.textContent = ch.why;
+        S.mistakes++;
+        save();
+      }
+    };
+  }
+  function stepOoo(k, expr) {
+    const q = A.colors[k].q,
+      first = q.ooo.first;
+    const right = { ...first.find((c) => c.ok), i: first.findIndex((c) => c.ok) };
+    const opts = first.map((c, i) => ({ ...c, i })).filter((c) => c.ok !== true);
+    opts.splice(k.charCodeAt(0) % first.length, 0, right);
+    dlg.innerHTML = `${head(k, "Step 2 · Order of operations")}
+      <div class="exprCard"><div class="expr">${esc(substitute(expr, q.vars))}</div><div class="when">after substituting ${esc(varLine(q.vars))}</div></div>
+      <p class="phrase long">Parentheses, exponents, multiply &amp; divide, then add &amp; subtract. Which step do you do <b>first</b>?</p>
+      <div class="opts ooo" role="group" aria-label="Choose the first step">${opts.map((o) => `<button type="button" class="opt" data-i="${o.i}">${esc(o.t)}</button>`).join("")}</div>
+      <p class="fb" id="fb" role="status" aria-live="polite">What does the order of operations say to do first?</p>`;
+    dlg.onclick = (e) => {
+      if (e.target.matches("[data-close]") || e.target === dlg) return dlg.close();
+      const b = e.target.closest(".opt");
+      if (!b) return;
+      const ch = first[+b.dataset.i];
+      const fb = $("#fb", dlg);
+      if (ch.ok) {
+        b.classList.add("good");
+        fb.className = "fb good";
+        fb.textContent = "Yes! That step comes first in the order of operations.";
+        setTimeout(() => stepEval(k, expr, true), REDUCED ? 0 : 700);
       } else {
         b.classList.add("bad");
         b.disabled = true;
@@ -341,7 +386,7 @@
     const q = A.colors[k].q,
       vars = q.vars;
     let tries = 0;
-    dlg.innerHTML = `${head(k, fromWrite ? (q.use ? "Step 2 · Use your expression" : "Step 2 · Evaluate it") : "Evaluate the expression")}
+    dlg.innerHTML = `${head(k, fromWrite ? (q.use ? `Step ${hasOoo(k) ? 3 : 2} · Use your expression` : "Step 2 · Evaluate it") : "Evaluate the expression")}
       <div class="exprCard"><div class="expr">${esc(expr)}</div><div class="when">when ${esc(varLine(vars))}</div>${q.use ? `<p class="use">${esc(q.use)}</p>` : ""}</div>
       <form class="ans" id="ansForm" autocomplete="off"><label for="ans">Value =</label>
         <input id="ans" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-describedby="fb" />
@@ -362,7 +407,7 @@
       input = $("#ans", dlg);
     const showHint = () => {
       fb.className = "fb hint";
-      fb.innerHTML = `Replace the variable with its value: <b>${esc(substitute(expr, vars))}</b>. Multiply and divide first, then add or subtract.`;
+      fb.innerHTML = `Replace the variable with its value: <b>${esc(substitute(expr, vars))}</b>. ${hasOoo(k) ? `Start with: <b>${esc(q.ooo.first.find((c) => c.ok).t)}</b>.` : "Multiply and divide first, then add or subtract."}`;
     };
     $("#ansForm", dlg).onsubmit = (e) => {
       e.preventDefault();
@@ -378,7 +423,7 @@
         renderShelf();
         dlg.innerHTML = `${closeBtn}<div class="win"><div class="bigChip" style="--c:${A.colors[k].hex}"></div>
           <h2 id="dlgTitle">Can unlocked!</h2>
-          <p>${esc(expr)} when ${esc(varLine(vars))} → <b>${esc(substitute(expr, vars))} = ${CODE[k]}</b></p>
+          <p>${esc(expr)} when ${esc(varLine(vars))} → <b>${hasOoo(k) ? oooChain(k).map(esc).join(" → ") : `${esc(substitute(expr, vars))} = ${CODE[k]}`}</b></p>
           <p class="codeBadge">${esc(A.colors[k].name)} = code ${CODE[k]}</p>
           <button class="btn primary" id="paintNow" type="button">Paint with it →</button></div>`;
         if (!REDUCED) burst(innerWidth / 2, innerHeight / 2, 40);
@@ -523,7 +568,7 @@
       .map((k, i) => {
         const q = A.colors[k].q;
         const task = q.choices
-          ? `${q.situation ? esc(q.situation) + " Write an expression, then use it" : `Write an expression for “${esc(q.phrase)}”, then evaluate it`} when ${esc(varLine(q.vars))}.${q.use ? " " + esc(q.use) : ""}<div class="line">${withKey ? esc(exprOf(k)) : ""}</div>`
+          ? `${q.situation ? esc(q.situation) + " Write an expression, then use it" : `Write an expression for “${esc(q.phrase)}”, then evaluate it`} when ${esc(varLine(q.vars))}.${q.use ? " " + esc(q.use) : ""}<div class="line">${withKey ? esc(exprOf(k)) : ""}</div>${hasOoo(k) ? `<div class="line">Order of operations (show your steps)${withKey ? ": " + oooChain(k).map(esc).join(" → ") : ""}</div>` : ""}`
           : `Evaluate <b>${esc(q.expr)}</b> when ${esc(varLine(q.vars))}.`;
         return `<tr><td>${i + 1}</td><td>${task}</td><td class="ansBox">${withKey ? CODE[k] : ""}</td><td><span class="chip" style="--c:${A.colors[k].hex}"></span> ${esc(A.colors[k].name)}</td></tr>`;
       })
