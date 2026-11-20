@@ -79,3 +79,18 @@ document.addEventListener("click", (event) => {
 
 revealHashTarget();
 window.addEventListener("hashchange", revealHashTarget);
+
+// Resource library cards point at sections teacher.js renders per grade band (K–1 has no tests, weekly links
+// or forms). Once the hub has rendered, hide any card whose section is not on the page.
+const libraryCards = [...document.querySelectorAll("#thLibrary [data-lib-target]")];
+const hubRoot = document.getElementById("hub");
+function syncLibrary() {
+  if (!hubRoot || hubRoot.querySelector(".boot")) return;
+  for (const card of libraryCards) {
+    card.closest("li").hidden = !document.getElementById(card.dataset.libTarget);
+  }
+}
+if (libraryCards.length && hubRoot) {
+  syncLibrary();
+  new MutationObserver(syncLibrary).observe(hubRoot, { childList: true });
+}
