@@ -552,7 +552,8 @@ test("Finish keeps every optional activity together behind the one optional fold
   const d = dom.window.document;
   const extras = d.querySelector(".homework-optional-extras");
   assert.equal(extras.tagName, "SECTION");
-  assert.equal(extras.querySelectorAll(".homework-extra-actions .btn").length, 3);
+  assert.equal(extras.querySelectorAll(".homework-extra-actions .btn").length, 4);
+  assert.ok(extras.querySelector('a[href^="/curriculum/family-connections/math-studio/"]'));
   for (const selector of [
     "#parent_name_input",
     "#parent_note_input",

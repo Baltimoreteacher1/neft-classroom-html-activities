@@ -81,11 +81,11 @@ test("No-JavaScript list: six problems, answers match the key, PDFs linked, both
     for (const item of items) {
       const letter = "ABCDE"[item.correctIndex];
       assert.ok(
-        html.includes(`${letter}.</strong> ${esc(item.explanation)}`),
+        html.includes(`<strong>${letter}.</strong> ${esc(item.explanation)}`),
         `${config.id}: EN answer line`,
       );
       assert.ok(
-        html.includes(`${letter}.</strong> ${esc(item.explanationEs)}`),
+        html.includes(`<strong>${letter}.</strong> ${esc(item.explanationEs)}`),
         `${config.id}: ES answer line`,
       );
     }
