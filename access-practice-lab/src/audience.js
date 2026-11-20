@@ -26,17 +26,27 @@ export const audienceForView = (view) => HUB_VIEWS[view] || "";
 
 export function readAudience(read = (key) => storage.get(key)) {
   const value = read(AUDIENCE_KEY);
-  return AUDIENCE_IDS.includes(value) ? value : "";
+  const audience = audienceRecord(value).audience;
+  return AUDIENCE_IDS.includes(audience) ? audience : "";
 }
 
 export function rememberAudience(audience, write = (key, value) => storage.set(key, value)) {
   if (!AUDIENCE_IDS.includes(audience)) return false;
-  return write(AUDIENCE_KEY, audience);
+  const raw = typeof storage !== "undefined" ? storage.get(AUDIENCE_KEY) : "";
+  const record = audienceRecord(raw);
+  return write(
+    AUDIENCE_KEY,
+    record.role ? JSON.stringify({ audience, role: record.role }) : audience,
+  );
 }
 
 // Header links (data-audience-link) and home doors (data-audience-door) remember their audience on click, so a hub
 // outside the lab app (the Teacher Hub) is remembered even before it loads.
-const LINK_AUDIENCE = Object.freeze({ teachers: "teacher", students: "student", families: "family" });
+const LINK_AUDIENCE = Object.freeze({
+  teachers: "teacher",
+  students: "student",
+  families: "family",
+});
 let watching = false;
 function watchAudienceLinks(doc = globalThis.document) {
   if (watching || !doc?.addEventListener) return;
@@ -72,4 +82,51 @@ export function hubLink({
   if (!hub) return null;
   if (samePath(pathname, hub.path)) return null;
   return { audience, href: hub.path, label: hub.label };
+}
+
+// A role changes card order only. Legacy string audience values remain readable.
+export const TEACHER_ROLES = Object.freeze([
+  {
+    id: "classroom",
+    title: ["Classroom teacher", "Docente de aula"],
+    order: ["find", "plan", "create"],
+  },
+  {
+    id: "esol",
+    title: ["EL/ESOL teacher", "Docente de EL/ESOL"],
+    order: ["plan", "find", "create"],
+  },
+  {
+    id: "support",
+    title: ["Support staff", "Personal de apoyo"],
+    order: ["find", "create", "plan"],
+  },
+  {
+    id: "coach",
+    title: ["Instructional coach", "Asesor de enseñanza"],
+    order: ["create", "plan", "find"],
+  },
+]);
+export function audienceRecord(raw) {
+  if (AUDIENCE_IDS.includes(raw)) return { audience: raw, role: "" };
+  try {
+    const obj = typeof raw === "string" ? JSON.parse(raw) : raw;
+    return {
+      audience: AUDIENCE_IDS.includes(obj?.audience) ? obj.audience : "",
+      role: TEACHER_ROLES.some((r) => r.id === obj?.role) ? obj.role : "",
+    };
+  } catch {
+    return { audience: "", role: "" };
+  }
+}
+export const readTeacherRole = (read = (key) => storage.get(key)) =>
+  audienceRecord(read(AUDIENCE_KEY)).role || "classroom";
+export function rememberTeacherRole(role, write = (key, value) => storage.set(key, value)) {
+  if (!TEACHER_ROLES.some((r) => r.id === role)) return false;
+  return write(AUDIENCE_KEY, JSON.stringify({ audience: "teacher", role }));
+}
+export function roleOrder(cards, role = readTeacherRole()) {
+  const first = cards.slice(0, 3);
+  const order = TEACHER_ROLES.find((r) => r.id === role)?.order || TEACHER_ROLES[0].order;
+  return [...first.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)), ...cards.slice(3)];
 }

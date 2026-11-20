@@ -8,6 +8,7 @@
 // Quick start reuses the family planner's sessions (src/family/plan.js): unfinished work first, skills spread
 // evenly, trimmed to the length chosen here (5 / 10 / 15 minutes, default 5). The length is the family planner's own
 // preference (prefs.family.minutes), so the two pages never disagree. Minutes are estimates, never a countdown.
+import { rememberAudience } from "../audience.js";
 import { normalizeBand, isEarlyBand } from "../bands.js";
 import { bandRows } from "../content.js";
 import { familyTourHost } from "../family-tour-host.js";
@@ -18,7 +19,7 @@ import { i18nFor, langSwitchHTML } from "../i18n.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, storage } from "../util.js";
 import { familyFaqHTML } from "./family-help.js";
 
-const AUDIENCE_KEY = "accessPracticeLab:v1:audience";
+
 export const DEFAULT_QUICK_MINUTES = 5;
 
 const pickFrom = (value) => (GRADE_PICKS.some((p) => p.id === value) ? value : "");
@@ -354,7 +355,7 @@ export async function render(ctx) {
 
 /** This page is the families' hub: remember the audience (a per-device convenience, never identity). */
 export function mount() {
-  storage.set(AUDIENCE_KEY, "family");
+  rememberAudience("family");
 }
 
 export function onClick(e, ctx) {

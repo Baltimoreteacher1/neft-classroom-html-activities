@@ -246,6 +246,10 @@ const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
   [
+    /^tools\/(validate-reading-path|validate-decodables|access-reading-path(?:-e2e|\.test))\.mjs$/,
+    ["validate:access-lab", "test", "validate:js-syntax", "check"],
+  ],
+  [
     /^(tools\/language-page-mystery-club\/.*|language-adventures\/mystery-club\/.*|tools\/sync-static-apps\.mjs)$/,
     [
       "validate:language-page-mystery-studio",

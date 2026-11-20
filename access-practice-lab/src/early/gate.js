@@ -9,6 +9,7 @@ export const EARLY_VIEWS = new Set([
   "home",
   "explore",
   "early",
+  "reading-path",
   "activity",
   "play",
   "room",

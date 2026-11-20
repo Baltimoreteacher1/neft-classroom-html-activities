@@ -9,6 +9,7 @@
 // The grade band chosen here is the page's band: it goes in ?grades= and a `th:band` event tells the rest of the hub.
 // Reuses existing content, registries, and assignment infrastructure without duplicating engines.
 
+import { TEACHER_ROLES, readTeacherRole, rememberTeacherRole, roleOrder } from "/access-practice-lab/src/audience.js";
 import { loadIndex } from "/access-practice-lab/src/content.js";
 import {
   LESSON_STAGES,
@@ -648,8 +649,11 @@ export async function mountCommandCenter(host) {
         </div>
       </div>
 
+      <label for="tcRole">I am a… / <span lang="es">Soy…</span></label>
+      <select id="tcRole" data-teacher-role>${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[0]} / ${r.title[1]}</option>`)}</select>
+      <p class="fine">Changes the first three cards only. / <span lang="es">Solo cambia las tres primeras tarjetas.</span></p>
       <div class="tc-action-grid" role="group" aria-label="Teaching tasks">
-        ${COMMAND_ACTIONS.map(
+        ${roleOrder(COMMAND_ACTIONS).map(
           (a) => html`<button
             type="button"
             id="tc-tab-${a.id}"
@@ -715,6 +719,9 @@ export async function mountCommandCenter(host) {
     if (announceIt) document.dispatchEvent(new Ev("th:band", { detail: { band, from: "tasks" } }));
     render();
   }
+  host.addEventListener("change", (e) => {
+    if (e.target.matches("[data-teacher-role]")) { rememberTeacherRole(e.target.value); render(); host.querySelector("[data-teacher-role]")?.focus(); }
+  });
   document.addEventListener("th:band", (e) => {
     if (e.detail?.from !== "tasks") setBand(e.detail?.band, { announceIt: false });
   });

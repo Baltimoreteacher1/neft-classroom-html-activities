@@ -104,6 +104,7 @@ const VIEW_LOADERS = {
   games: () => import("./views/games.js"),
   "publisher-demo": () => import("./views/publisher-demo.js"),
   assess: () => import("./views/assess.js"),
+  "reading-path": () => import("./reading-path/view.js"),
   "science-of-reading": () => import("./views/science-of-reading.js"),
   "subject-reading": () => import("./subject-reading/index.js"),
   "vocab-curriculum": () => import("./vocab-curriculum/view.js"),
@@ -200,6 +201,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: a, id: b || "", sub: c || "", tab: q.get("tab") || "", q: Object.fromEntries(q) };
   if (a === "language-studios")
     return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
+  if (a === "reading-path") return { ...r, view: a, id: b || "", sub: c || "" };
   if (a === "science-of-reading" && b === "lesson")
     return { ...r, view: a, id: "lesson", lessonId: c || "" };
   if (a === "science-of-reading" && b === "subject-reading")

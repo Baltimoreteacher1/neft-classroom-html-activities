@@ -1,16 +1,9 @@
-// Speaking Lab (extempore-speak): Near-carbon-copy Extempore split-pane oral assessment & rehearsal studio
-// adapted for WIDA ACCESS Speaking. Features:
-//   - Extempore Room Header with Task Type, Key Language Use, and Phase Indicator
-//   - Split-Screen Studio:
-//       Left Pane: Instructor Audio/Visual Prompt Monitor (animated waveform bars, Normal 1.0x + Slow 0.72x audio),
-//                  Exhibit A Data/Visual Stimulus Card, and Model Student Exemplar (Maya / Leo)
-//       Right Pane:
-//         - Step 0: Stimulus & Model Student analysis check
-//         - Steps 1 & 2: Tier A (Describe) & Tier B (Explain) tactile clause-tile builder + Extempore Voice Recorder
-//         - Step 3: Tier C Unscripted Oral Production Studio with One-Tap Idea Pad (insert starter frames or target
-//                   words), Live Target Word & Connector Radar Pills (light up green in real time), Voice Recorder,
-//                   and 3-Dimension WIDA Rubric Matrix
-//         - Step 4: Side-by-side 3-Turn Speaking Portfolio comparison + Family & Teacher Conference Guide
+// LP Speaking Lab: a five-step oral practice studio with a shared prompt pane.
+// Learners examine a stimulus and model, build Describe and Explain clauses,
+// plan and record an independent turn, then compare three saved speaking turns.
+// An idea pad, target-word and connector checks, practice-rubric reflection and
+// a family/teacher conference guide support revision. This is practice, not an
+// official ACCESS assessment or an automatic proficiency rating.
 import { recorderHTML } from "../components.js";
 import { isRecording } from "../recorder.js";
 import { announce, html, icon, raw } from "../util.js";

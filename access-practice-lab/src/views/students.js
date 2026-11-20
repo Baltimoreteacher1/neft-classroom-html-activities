@@ -70,7 +70,7 @@ export const doors = (band) =>
     {
       id: "story",
       art: "worlds/storyworks",
-      href: destHref("reading-room", band),
+      href: destHref("reading-path", band),
       name: ["Explore a story", "Explorar un cuento"],
       line: [
         "Read picture stories and talk about them.",

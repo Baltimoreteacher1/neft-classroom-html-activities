@@ -187,6 +187,38 @@ stored. Opening any help marks the work supported. Help items are written so the
    counters of the shared cap guard (`experience-compile` scope). Nothing enters the experience unless the instructor
    presses Accept (one undoable editor operation, validated at once). With no credential, no model or an unusable
    reply, the editor says "Built-in suggestions only" and offers the source sentences no evidence or answer uses yet.
+   **Integration exceptions, decided by Joel on 2026-11-19 ("full permission"; see
+   `docs/access-practice-lab/integration-decisions.md` and `data/product-decisions.json`):**
+   **Speaking tasks and review.** What is sent: only explicitly shared attempts, alias, task settings,
+   teacher feedback and teacher-entered rubric points through the existing authenticated class API.
+   Guards: class authorization, explicit Keep for my teacher, manual feedback release by default,
+   never model scoring. Fallback: standalone work in IndexedDB, never locked. Retention: media expires
+   after 30 days with delete controls; teacher-local task drafts remain until removed.
+   **Live speaking rooms.** What is sent: room membership aliases and consented audio (video only if
+   teacher-enabled) to a configured realtime provider and recording storage. Guards: class-scoped
+   tokens, visible recording consent, 2–6 participants, disabled cloud adapter until provisioning is
+   separately approved. Fallback: same-device partner turns; tests use a mock provider. Retention:
+   recordings expire after 30 days and can be deleted. No production bindings are created by this work.
+   **Family notice links and email.** What is sent: a teacher-approved letter and destination, only on
+   explicit delivery; acknowledgments, comments and typed signatures return through an expiring token.
+   Guards: 128-bit tokens hashed at rest, input validation and rate limits, no IP/body logs, disabled
+   email adapter and outbox-only default. Fallback: local print/PDF and queued outbox. Retention:
+   token expiry controls remote access; teacher-local letters/logs remain until removed. Provider and
+   storage retention must be configured before enabling delivery; no indefinite remote retention.
+   **EL program records and imports.** What is sent: nothing by default. Profiles, typed official
+   results, form values, local file references and append-only histories stay in teacher IndexedDB.
+   Guards: alias-only import, validated one-decimal official values, checksummed backups, teacher
+   decisions only, no certification claims. Fallback: local printable blank forms. Retention: until
+   teacher removal or Remove everything; a local backup persists wherever its owner saves it.
+   **LMS completion and points.** What is sent: completion and optional teacher-entered practice
+   points through an already configured LMS/class integration. Guards: existing authorization and
+   consent, no calculated grades, no new OAuth registration or secrets. Fallback: local CSV export.
+   Retention: existing integration retention applies; exported files are controlled by their owner.
+   **Teacher prompt drafts.** What is sent: teacher-selected band, support stage, language function,
+   topic and word limit to the site's guarded model endpoint, never student work or identifiers.
+   Guards: teacher authorization, fixed rate limits, JSON-only output, 30-word item cap, no score or
+   proficiency claims, explicit Accept. Fallback: authored template prompts. Retention: no prompt or
+   reply storage; anonymous rate-limit counters only. Student pages never call this endpoint.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,

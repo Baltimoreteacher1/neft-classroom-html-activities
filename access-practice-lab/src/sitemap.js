@@ -223,6 +223,12 @@ const F = ["family"];
 const UPPER = ["3-5", "6-8"];
 
 export const DESTINATIONS = Object.freeze([
+  {
+    id: "reading-path", section: "practice", skill: "Reading", kind: "practice", for: STF,
+    href: "reading-path", icon: "reading", match: [["reading-path"]],
+    title: P("Reading Path", "Camino de lectura"),
+    text: P("Hear sounds, build words and read 15 short books. Start in any unit.", "Escucha sonidos, construye palabras y lee 15 libros cortos. Empieza en cualquier unidad."),
+  },
   // ── Practice · Listening ──────────────────────────────────────────────────────────────────
   {
     id: "listening",

@@ -205,3 +205,26 @@ timer, and it never auto-submits.
 - Verify content invariants with `node --test tools/access-audit-content.test.mjs`, then rebuild the index and run the main lab validator.
 
 Official sources checked October 4, 2026: [WIDA online/paper administration](https://wida.wisc.edu/news/focus-wida-access-grades-1-12-0) confirms adaptive Listening/Reading, subsequent tier placement, and paper Writing for grades 1–3. [Maryland WIDA dates](https://wida.wisc.edu/about/consortium/md) supports the 2027 state window; each school schedules individual dates. Keep dates and format explanations current with these primary sources.
+
+## Reading Path (`content/reading-path/`)
+
+Original, automated-checks-only content (`reviewStatus`); no human translation or phonics review yet. Checked by
+`node tools/validate-reading-path.mjs` and `node tools/validate-decodables.mjs`.
+
+- `phonics-scope.json` — `{ schema: "lp-reading-path/1", reviewStatus, units: [...] }`. Each unit: `id`, `n` (1–15),
+  `pattern`, `graphemes`, `exampleWords` (early skin), `olderWords` (3–8 skin), `sightWords`, `sentence: {en, es}`,
+  `teaches: {en, es}` and `items`. An item is `{ id, kind: "game" | "reader" | "mini-lesson", title: {en, es} }`;
+  a game also names a `template` from `src/reading-path/games/engine.js` (`build`, `switch`, `machine`, `match`,
+  `sort`, `hunt`, `sentence`, `sight`).
+- `<unit-id>.json` — one six-page original decodable reader: `{ schema, id, unit, title, names, reviewStatus, pages:
+  [{ en, es }] }`. Each page is 30–80 words and uses only spellings the unit and earlier units have taught.
+- `library/texts.json` — `{ schema, items }`: fluency texts of kind `plays` (with `parts` and `turns`), `poetry`,
+  `riddles` (with `answer: {en, es}`), `tongue-twisters`, `fiction` and `nonfiction`; every text has `id`, `title`,
+  `text` as `{ en, es }` and a `reviewStatus`.
+- `library/letters.json` — `letters` (26: `id`, `words`, `mouth: {en, es}`, SVG `strokes`), plus `song` and
+  `fingerspelling`. `song.audio` / `song.captions` and each `fingerspelling[].src` stay empty until supplied files
+  exist; the page says "not added yet" rather than faking them.
+
+Progress is stored only as completed `unit/item` keys under `accessPracticeLab:v1:reading-path`. A silent-e word is
+segmented as onset, split grapheme (`a_e`), coda. The Word Machine's reels and real-word list live in
+`src/reading-path/games/machine.js` and nowhere else.

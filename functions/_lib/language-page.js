@@ -102,6 +102,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/worlds/science-lab`,
   `${LAB_BASE}/class`,
   `${LAB_BASE}/move`,
+  `${LAB_BASE}/reading-path`,
   `${LAB_BASE}/science-of-reading`,
   `${LAB_BASE}/science-of-reading/path`,
   `${LAB_BASE}/science-of-reading/subject-reading`,
