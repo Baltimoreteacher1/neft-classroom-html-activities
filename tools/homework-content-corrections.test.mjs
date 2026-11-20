@@ -191,8 +191,11 @@ test("temperature, quadrant ordering, and minimum price respect boundary cases",
 });
 
 test("learning directions preserve order and define integers and like terms accurately", () => {
-  assert.match(notes("6-2").watchFor[0].en, /original order/);
-  assert.match(notes("7-2").bigIdea.en, /two integers with a nonzero denominator/);
+  assert.match(notes("6-2").watchFor[0].en, /(?:original|same) order/);
+  assert.match(
+    notes("7-2").bigIdea.en,
+    /two integers.*(?:nonzero denominator|bottom number cannot be zero)/,
+  );
   assert.doesNotMatch(JSON.stringify(notes("7-2")), /whole numbers/);
   assert.match(notes("6-15").bigIdea.en, /exponent/);
   const trees = problem("6-13", "extending", 1);

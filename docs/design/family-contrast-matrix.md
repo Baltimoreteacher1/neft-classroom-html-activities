@@ -64,19 +64,19 @@ theme (the browser substitutes the system palette), so it is verified in a brows
 | accent-ink `#136e6b` | raised `#ffffff` | 6.05 | 3 | yes | teal graphic on raised |
 | success `#0f7c4a` | raised `#ffffff` | 5.25 | 3 | yes | success mark on raised |
 | error `#b3402a` | raised `#ffffff` | 5.70 | 3 | yes | fault mark on raised |
-| text `#24323f` | sunken `#efeadd` | 10.91 | 4.5 | yes | body copy on sunken |
-| text-muted `#4a555e` | sunken `#efeadd` | 6.35 | 4.5 | yes | secondary text on sunken |
-| accent-ink `#136e6b` | sunken `#efeadd` | 5.04 | 4.5 | yes | links and teal text on sunken |
-| highlight-ink `#7a5f28` | sunken `#efeadd` | 5.00 | 4.5 | yes | amber-toned text on sunken |
-| success-ink `#0b6b40` | sunken `#efeadd` | 5.48 | 4.5 | yes | success text on sunken |
-| error-ink `#a63a25` | sunken `#efeadd` | 5.37 | 4.5 | yes | fault text on sunken |
-| info-ink `#1f4d80` | sunken `#efeadd` | 7.19 | 4.5 | yes | info text on sunken |
-| border-strong `#65717c` | sunken `#efeadd` | 4.16 | 3 | yes | input and control edge on sunken |
-| focus `#17324d` | sunken `#efeadd` | 10.93 | 3 | yes | focus ring on sunken |
-| primary `#17324d` | sunken `#efeadd` | 10.93 | 3 | yes | primary button edge on sunken |
-| accent-ink `#136e6b` | sunken `#efeadd` | 5.04 | 3 | yes | teal graphic on sunken |
-| success `#0f7c4a` | sunken `#efeadd` | 4.37 | 3 | yes | success mark on sunken |
-| error `#b3402a` | sunken `#efeadd` | 4.75 | 3 | yes | fault mark on sunken |
+| text `#24323f` | sunken `#ffe8b8` | 10.91 | 4.5 | yes | body copy on sunken |
+| text-muted `#4a555e` | sunken `#ffe8b8` | 6.35 | 4.5 | yes | secondary text on sunken |
+| accent-ink `#136e6b` | sunken `#ffe8b8` | 5.04 | 4.5 | yes | links and teal text on sunken |
+| highlight-ink `#7a5f28` | sunken `#ffe8b8` | 5.00 | 4.5 | yes | amber-toned text on sunken |
+| success-ink `#0b6b40` | sunken `#ffe8b8` | 5.48 | 4.5 | yes | success text on sunken |
+| error-ink `#a63a25` | sunken `#ffe8b8` | 5.38 | 4.5 | yes | fault text on sunken |
+| info-ink `#1f4d80` | sunken `#ffe8b8` | 7.19 | 4.5 | yes | info text on sunken |
+| border-strong `#65717c` | sunken `#ffe8b8` | 4.16 | 3 | yes | input and control edge on sunken |
+| focus `#17324d` | sunken `#ffe8b8` | 10.93 | 3 | yes | focus ring on sunken |
+| primary `#17324d` | sunken `#ffe8b8` | 10.93 | 3 | yes | primary button edge on sunken |
+| accent-ink `#136e6b` | sunken `#ffe8b8` | 5.04 | 3 | yes | teal graphic on sunken |
+| success `#0f7c4a` | sunken `#ffe8b8` | 4.37 | 3 | yes | success mark on sunken |
+| error `#b3402a` | sunken `#ffe8b8` | 4.75 | 3 | yes | fault mark on sunken |
 | text-inverse `#ffffff` | inverse `#17324d` | 13.13 | 4.5 | yes | text on the inverse band |
 | focus-inverse `#f2c15b` | inverse `#17324d` | 7.85 | 3 | yes | focus ring on the inverse band |
 | focus `#17324d` | focus-halo `#ffffff` | 13.13 | 3 | yes | focus ring against its halo |
@@ -101,81 +101,81 @@ theme (the browser substitutes the system palette), so it is verified in a brows
 | info-ink `#1f4d80` | info-tint `#e3e9ef` | 7.06 | 4.5 | yes | info-ink on its tint (chips, callouts, feedback) |
 | text `#24323f` | info-tint `#e3e9ef` | 10.71 | 4.5 | yes | body copy on info-tint |
 | text-muted `#4a555e` | info-tint `#e3e9ef` | 6.24 | 4.5 | yes | secondary text on info-tint |
-| unit-1-ink `#205a35` | surface `#f7f4ec` | 7.42 | 4.5 | yes | unit 1 ink on surface |
-| unit-1-ink `#205a35` | raised `#ffffff` | 8.15 | 4.5 | yes | unit 1 ink on raised |
-| unit-1-ink `#205a35` | sunken `#efeadd` | 6.79 | 4.5 | yes | unit 1 ink on sunken |
-| unit-1-ink `#205a35` | unit-1-tint `#dfe6d9` | 6.39 | 4.5 | yes | unit 1 ink on its band |
-| text `#24323f` | unit-1-tint `#dfe6d9` | 10.27 | 4.5 | yes | body copy on unit 1 band |
-| text-muted `#4a555e` | unit-1-tint `#dfe6d9` | 5.98 | 4.5 | yes | secondary text on unit 1 band |
-| unit-1-accent `#2b7a48` | surface `#f7f4ec` | 4.80 | 3 | yes | unit 1 accent graphic on surface |
-| unit-1-accent `#2b7a48` | raised `#ffffff` | 5.28 | 3 | yes | unit 1 accent graphic on raised |
-| unit-2-ink `#17324d` | surface `#f7f4ec` | 11.94 | 4.5 | yes | unit 2 ink on surface |
-| unit-2-ink `#17324d` | raised `#ffffff` | 13.13 | 4.5 | yes | unit 2 ink on raised |
-| unit-2-ink `#17324d` | sunken `#efeadd` | 10.93 | 4.5 | yes | unit 2 ink on sunken |
-| unit-2-ink `#17324d` | unit-2-tint `#f7f4ec` | 11.94 | 4.5 | yes | unit 2 ink on its band |
-| text `#24323f` | unit-2-tint `#f7f4ec` | 11.92 | 4.5 | yes | body copy on unit 2 band |
-| text-muted `#4a555e` | unit-2-tint `#f7f4ec` | 6.94 | 4.5 | yes | secondary text on unit 2 band |
-| unit-2-accent `#17324d` | surface `#f7f4ec` | 11.94 | 3 | yes | unit 2 accent graphic on surface |
-| unit-2-accent `#17324d` | raised `#ffffff` | 13.13 | 3 | yes | unit 2 accent graphic on raised |
-| unit-3-ink `#7f3e22` | surface `#f7f4ec` | 7.31 | 4.5 | yes | unit 3 ink on surface |
-| unit-3-ink `#7f3e22` | raised `#ffffff` | 8.03 | 4.5 | yes | unit 3 ink on raised |
-| unit-3-ink `#7f3e22` | sunken `#efeadd` | 6.69 | 4.5 | yes | unit 3 ink on sunken |
-| unit-3-ink `#7f3e22` | unit-3-tint `#f1e2d6` | 6.35 | 4.5 | yes | unit 3 ink on its band |
-| text `#24323f` | unit-3-tint `#f1e2d6` | 10.35 | 4.5 | yes | body copy on unit 3 band |
-| text-muted `#4a555e` | unit-3-tint `#f1e2d6` | 6.03 | 4.5 | yes | secondary text on unit 3 band |
-| unit-3-accent `#be5d33` | surface `#f7f4ec` | 3.98 | 3 | yes | unit 3 accent graphic on surface |
-| unit-3-accent `#be5d33` | raised `#ffffff` | 4.37 | 3 | yes | unit 3 accent graphic on raised |
-| unit-4-ink `#185568` | surface `#f7f4ec` | 7.53 | 4.5 | yes | unit 4 ink on surface |
-| unit-4-ink `#185568` | raised `#ffffff` | 8.27 | 4.5 | yes | unit 4 ink on raised |
-| unit-4-ink `#185568` | sunken `#efeadd` | 6.89 | 4.5 | yes | unit 4 ink on sunken |
-| unit-4-ink `#185568` | unit-4-tint `#dce3df` | 6.34 | 4.5 | yes | unit 4 ink on its band |
-| text `#24323f` | unit-4-tint `#dce3df` | 10.04 | 4.5 | yes | body copy on unit 4 band |
-| text-muted `#4a555e` | unit-4-tint `#dce3df` | 5.85 | 4.5 | yes | secondary text on unit 4 band |
-| unit-4-accent `#1e6980` | surface `#f7f4ec` | 5.64 | 3 | yes | unit 4 accent graphic on surface |
-| unit-4-accent `#1e6980` | raised `#ffffff` | 6.20 | 3 | yes | unit 4 accent graphic on raised |
-| unit-5-ink `#694d12` | surface `#f7f4ec` | 7.15 | 4.5 | yes | unit 5 ink on surface |
-| unit-5-ink `#694d12` | raised `#ffffff` | 7.86 | 4.5 | yes | unit 5 ink on raised |
-| unit-5-ink `#694d12` | sunken `#efeadd` | 6.55 | 4.5 | yes | unit 5 ink on sunken |
-| unit-5-ink `#694d12` | unit-5-tint `#eee6d2` | 6.32 | 4.5 | yes | unit 5 ink on its band |
-| text `#24323f` | unit-5-tint `#eee6d2` | 10.53 | 4.5 | yes | body copy on unit 5 band |
-| text-muted `#4a555e` | unit-5-tint `#eee6d2` | 6.14 | 4.5 | yes | secondary text on unit 5 band |
-| unit-5-accent `#ac7f1e` | surface `#f7f4ec` | 3.29 | 3 | yes | unit 5 accent graphic on surface |
-| unit-5-accent `#ac7f1e` | raised `#ffffff` | 3.62 | 3 | yes | unit 5 accent graphic on raised |
-| unit-6-ink `#8a2512` | surface `#f7f4ec` | 8.12 | 4.5 | yes | unit 6 ink on surface |
-| unit-6-ink `#8a2512` | raised `#ffffff` | 8.92 | 4.5 | yes | unit 6 ink on raised |
-| unit-6-ink `#8a2512` | sunken `#efeadd` | 7.43 | 4.5 | yes | unit 6 ink on sunken |
-| unit-6-ink `#8a2512` | unit-6-tint `#f7f4ec` | 8.12 | 4.5 | yes | unit 6 ink on its band |
-| text `#24323f` | unit-6-tint `#f7f4ec` | 11.92 | 4.5 | yes | body copy on unit 6 band |
-| text-muted `#4a555e` | unit-6-tint `#f7f4ec` | 6.94 | 4.5 | yes | secondary text on unit 6 band |
-| unit-6-accent `#d25435` | surface `#f7f4ec` | 3.78 | 3 | yes | unit 6 accent graphic on surface |
-| unit-6-accent `#d25435` | raised `#ffffff` | 4.15 | 3 | yes | unit 6 accent graphic on raised |
-| unit-7-ink `#265183` | surface `#f7f4ec` | 7.39 | 4.5 | yes | unit 7 ink on surface |
-| unit-7-ink `#265183` | raised `#ffffff` | 8.12 | 4.5 | yes | unit 7 ink on raised |
-| unit-7-ink `#265183` | sunken `#efeadd` | 6.76 | 4.5 | yes | unit 7 ink on sunken |
-| unit-7-ink `#265183` | unit-7-tint `#dfe4e6` | 6.33 | 4.5 | yes | unit 7 ink on its band |
-| text `#24323f` | unit-7-tint `#dfe4e6` | 10.22 | 4.5 | yes | body copy on unit 7 band |
-| text-muted `#4a555e` | unit-7-tint `#dfe4e6` | 5.95 | 4.5 | yes | secondary text on unit 7 band |
-| unit-7-accent `#3674bb` | surface `#f7f4ec` | 4.37 | 3 | yes | unit 7 accent graphic on surface |
-| unit-7-accent `#3674bb` | raised `#ffffff` | 4.80 | 3 | yes | unit 7 accent graphic on raised |
-| unit-8-ink `#45561c` | surface `#f7f4ec` | 7.35 | 4.5 | yes | unit 8 ink on surface |
-| unit-8-ink `#45561c` | raised `#ffffff` | 8.07 | 4.5 | yes | unit 8 ink on raised |
-| unit-8-ink `#45561c` | sunken `#efeadd` | 6.72 | 4.5 | yes | unit 8 ink on sunken |
-| unit-8-ink `#45561c` | unit-8-tint `#e4e4d3` | 6.28 | 4.5 | yes | unit 8 ink on its band |
-| text `#24323f` | unit-8-tint `#e4e4d3` | 10.19 | 4.5 | yes | body copy on unit 8 band |
-| text-muted `#4a555e` | unit-8-tint `#e4e4d3` | 5.94 | 4.5 | yes | secondary text on unit 8 band |
-| unit-8-accent `#5a7025` | surface `#f7f4ec` | 5.06 | 3 | yes | unit 8 accent graphic on surface |
-| unit-8-accent `#5a7025` | raised `#ffffff` | 5.56 | 3 | yes | unit 8 accent graphic on raised |
-| unit-9-ink `#1d5a4c` | surface `#f7f4ec` | 7.30 | 4.5 | yes | unit 9 ink on surface |
-| unit-9-ink `#1d5a4c` | raised `#ffffff` | 8.02 | 4.5 | yes | unit 9 ink on raised |
-| unit-9-ink `#1d5a4c` | sunken `#efeadd` | 6.68 | 4.5 | yes | unit 9 ink on sunken |
-| unit-9-ink `#1d5a4c` | unit-9-tint `#dee8de` | 6.38 | 4.5 | yes | unit 9 ink on its band |
-| text `#24323f` | unit-9-tint `#dee8de` | 10.42 | 4.5 | yes | body copy on unit 9 band |
-| text-muted `#4a555e` | unit-9-tint `#dee8de` | 6.07 | 4.5 | yes | secondary text on unit 9 band |
-| unit-9-accent `#2d8d77` | surface `#f7f4ec` | 3.68 | 3 | yes | unit 9 accent graphic on surface |
-| unit-9-accent `#2d8d77` | raised `#ffffff` | 4.05 | 3 | yes | unit 9 accent graphic on raised |
+| unit-1-ink `#14532d` | surface `#f7f4ec` | 8.29 | 4.5 | yes | unit 1 ink on surface |
+| unit-1-ink `#14532d` | raised `#ffffff` | 9.11 | 4.5 | yes | unit 1 ink on raised |
+| unit-1-ink `#14532d` | sunken `#ffe8b8` | 7.59 | 4.5 | yes | unit 1 ink on sunken |
+| unit-1-ink `#14532d` | unit-1-tint `#cff3d9` | 7.58 | 4.5 | yes | unit 1 ink on its band |
+| text `#24323f` | unit-1-tint `#cff3d9` | 10.90 | 4.5 | yes | body copy on unit 1 band |
+| text-muted `#4a555e` | unit-1-tint `#cff3d9` | 6.35 | 4.5 | yes | secondary text on unit 1 band |
+| unit-1-accent `#0f9949` | surface `#f7f4ec` | 3.37 | 3 | yes | unit 1 accent graphic on surface |
+| unit-1-accent `#0f9949` | raised `#ffffff` | 3.70 | 3 | yes | unit 1 accent graphic on raised |
+| unit-2-ink `#17327a` | surface `#f7f4ec` | 10.77 | 4.5 | yes | unit 2 ink on surface |
+| unit-2-ink `#17327a` | raised `#ffffff` | 11.84 | 4.5 | yes | unit 2 ink on raised |
+| unit-2-ink `#17327a` | sunken `#ffe8b8` | 9.86 | 4.5 | yes | unit 2 ink on sunken |
+| unit-2-ink `#17327a` | unit-2-tint `#d3e4ff` | 9.20 | 4.5 | yes | unit 2 ink on its band |
+| text `#24323f` | unit-2-tint `#d3e4ff` | 10.18 | 4.5 | yes | body copy on unit 2 band |
+| text-muted `#4a555e` | unit-2-tint `#d3e4ff` | 5.93 | 4.5 | yes | secondary text on unit 2 band |
+| unit-2-accent `#1652de` | surface `#f7f4ec` | 5.80 | 3 | yes | unit 2 accent graphic on surface |
+| unit-2-accent `#1652de` | raised `#ffffff` | 6.37 | 3 | yes | unit 2 accent graphic on raised |
+| unit-3-ink `#8a2f08` | surface `#f7f4ec` | 7.67 | 4.5 | yes | unit 3 ink on surface |
+| unit-3-ink `#8a2f08` | raised `#ffffff` | 8.43 | 4.5 | yes | unit 3 ink on raised |
+| unit-3-ink `#8a2f08` | sunken `#ffe8b8` | 7.02 | 4.5 | yes | unit 3 ink on sunken |
+| unit-3-ink `#8a2f08` | unit-3-tint `#ffd9bf` | 6.40 | 4.5 | yes | unit 3 ink on its band |
+| text `#24323f` | unit-3-tint `#ffd9bf` | 9.94 | 4.5 | yes | body copy on unit 3 band |
+| text-muted `#4a555e` | unit-3-tint `#ffd9bf` | 5.79 | 4.5 | yes | secondary text on unit 3 band |
+| unit-3-accent `#dd5f16` | surface `#f7f4ec` | 3.34 | 3 | yes | unit 3 accent graphic on surface |
+| unit-3-accent `#dd5f16` | raised `#ffffff` | 3.67 | 3 | yes | unit 3 accent graphic on raised |
+| unit-4-ink `#0b5563` | surface `#f7f4ec` | 7.66 | 4.5 | yes | unit 4 ink on surface |
+| unit-4-ink `#0b5563` | raised `#ffffff` | 8.42 | 4.5 | yes | unit 4 ink on raised |
+| unit-4-ink `#0b5563` | sunken `#ffe8b8` | 7.01 | 4.5 | yes | unit 4 ink on sunken |
+| unit-4-ink `#0b5563` | unit-4-tint `#c9f0f6` | 6.93 | 4.5 | yes | unit 4 ink on its band |
+| text `#24323f` | unit-4-tint `#c9f0f6` | 10.78 | 4.5 | yes | body copy on unit 4 band |
+| text-muted `#4a555e` | unit-4-tint `#c9f0f6` | 6.28 | 4.5 | yes | secondary text on unit 4 band |
+| unit-4-accent `#0c687b` | surface `#f7f4ec` | 5.82 | 3 | yes | unit 4 accent graphic on surface |
+| unit-4-accent `#0c687b` | raised `#ffffff` | 6.40 | 3 | yes | unit 4 accent graphic on raised |
+| unit-5-ink `#6b4a00` | surface `#f7f4ec` | 7.34 | 4.5 | yes | unit 5 ink on surface |
+| unit-5-ink `#6b4a00` | raised `#ffffff` | 8.06 | 4.5 | yes | unit 5 ink on raised |
+| unit-5-ink `#6b4a00` | sunken `#ffe8b8` | 6.71 | 4.5 | yes | unit 5 ink on sunken |
+| unit-5-ink `#6b4a00` | unit-5-tint `#ffefb0` | 7.00 | 4.5 | yes | unit 5 ink on its band |
+| text `#24323f` | unit-5-tint `#ffefb0` | 11.37 | 4.5 | yes | body copy on unit 5 band |
+| text-muted `#4a555e` | unit-5-tint `#ffefb0` | 6.62 | 4.5 | yes | secondary text on unit 5 band |
+| unit-5-accent `#a77f11` | surface `#f7f4ec` | 3.36 | 3 | yes | unit 5 accent graphic on surface |
+| unit-5-accent `#a77f11` | raised `#ffffff` | 3.69 | 3 | yes | unit 5 accent graphic on raised |
+| unit-6-ink `#8b1d14` | surface `#f7f4ec` | 8.37 | 4.5 | yes | unit 6 ink on surface |
+| unit-6-ink `#8b1d14` | raised `#ffffff` | 9.20 | 4.5 | yes | unit 6 ink on raised |
+| unit-6-ink `#8b1d14` | sunken `#ffe8b8` | 7.66 | 4.5 | yes | unit 6 ink on sunken |
+| unit-6-ink `#8b1d14` | unit-6-tint `#ffd3cc` | 6.76 | 4.5 | yes | unit 6 ink on its band |
+| text `#24323f` | unit-6-tint `#ffd3cc` | 9.63 | 4.5 | yes | body copy on unit 6 band |
+| text-muted `#4a555e` | unit-6-tint `#ffd3cc` | 5.61 | 4.5 | yes | secondary text on unit 6 band |
+| unit-6-accent `#b92312` | surface `#f7f4ec` | 5.77 | 3 | yes | unit 6 accent graphic on surface |
+| unit-6-accent `#b92312` | raised `#ffffff` | 6.34 | 3 | yes | unit 6 accent graphic on raised |
+| unit-7-ink `#124b7a` | surface `#f7f4ec` | 8.26 | 4.5 | yes | unit 7 ink on surface |
+| unit-7-ink `#124b7a` | raised `#ffffff` | 9.08 | 4.5 | yes | unit 7 ink on raised |
+| unit-7-ink `#124b7a` | sunken `#ffe8b8` | 7.56 | 4.5 | yes | unit 7 ink on sunken |
+| unit-7-ink `#124b7a` | unit-7-tint `#d0eaff` | 7.30 | 4.5 | yes | unit 7 ink on its band |
+| text `#24323f` | unit-7-tint `#d0eaff` | 10.54 | 4.5 | yes | body copy on unit 7 band |
+| text-muted `#4a555e` | unit-7-tint `#d0eaff` | 6.14 | 4.5 | yes | secondary text on unit 7 band |
+| unit-7-accent `#168add` | surface `#f7f4ec` | 3.34 | 3 | yes | unit 7 accent graphic on surface |
+| unit-7-accent `#168add` | raised `#ffffff` | 3.68 | 3 | yes | unit 7 accent graphic on raised |
+| unit-8-ink `#3a5f10` | surface `#f7f4ec` | 6.77 | 4.5 | yes | unit 8 ink on surface |
+| unit-8-ink `#3a5f10` | raised `#ffffff` | 7.44 | 4.5 | yes | unit 8 ink on raised |
+| unit-8-ink `#3a5f10` | sunken `#ffe8b8` | 6.19 | 4.5 | yes | unit 8 ink on sunken |
+| unit-8-ink `#3a5f10` | unit-8-tint `#e2f5c4` | 6.41 | 4.5 | yes | unit 8 ink on its band |
+| text `#24323f` | unit-8-tint `#e2f5c4` | 11.29 | 4.5 | yes | body copy on unit 8 band |
+| text-muted `#4a555e` | unit-8-tint `#e2f5c4` | 6.57 | 4.5 | yes | secondary text on unit 8 band |
+| unit-8-accent `#386c0b` | surface `#f7f4ec` | 5.76 | 3 | yes | unit 8 accent graphic on surface |
+| unit-8-accent `#386c0b` | raised `#ffffff` | 6.33 | 3 | yes | unit 8 accent graphic on raised |
+| unit-9-ink `#0b5e55` | surface `#f7f4ec` | 6.96 | 4.5 | yes | unit 9 ink on surface |
+| unit-9-ink `#0b5e55` | raised `#ffffff` | 7.65 | 4.5 | yes | unit 9 ink on raised |
+| unit-9-ink `#0b5e55` | sunken `#ffe8b8` | 6.37 | 4.5 | yes | unit 9 ink on sunken |
+| unit-9-ink `#0b5e55` | unit-9-tint `#c8f5ee` | 6.46 | 4.5 | yes | unit 9 ink on its band |
+| text `#24323f` | unit-9-tint `#c8f5ee` | 11.07 | 4.5 | yes | body copy on unit 9 band |
+| text-muted `#4a555e` | unit-9-tint `#c8f5ee` | 6.45 | 4.5 | yes | secondary text on unit 9 band |
+| unit-9-accent `#0f967b` | surface `#f7f4ec` | 3.37 | 3 | yes | unit 9 accent graphic on surface |
+| unit-9-accent `#0f967b` | raised `#ffffff` | 3.70 | 3 | yes | unit 9 accent graphic on raised |
 | unit-10-ink `#464f5c` | surface `#f7f4ec` | 7.54 | 4.5 | yes | unit 10 ink on surface |
 | unit-10-ink `#464f5c` | raised `#ffffff` | 8.29 | 4.5 | yes | unit 10 ink on raised |
-| unit-10-ink `#464f5c` | sunken `#efeadd` | 6.90 | 4.5 | yes | unit 10 ink on sunken |
+| unit-10-ink `#464f5c` | sunken `#ffe8b8` | 6.90 | 4.5 | yes | unit 10 ink on sunken |
 | unit-10-ink `#464f5c` | unit-10-tint `#e2e1dc` | 6.33 | 4.5 | yes | unit 10 ink on its band |
 | text `#24323f` | unit-10-tint `#e2e1dc` | 10.00 | 4.5 | yes | body copy on unit 10 band |
 | text-muted `#4a555e` | unit-10-tint `#e2e1dc` | 5.83 | 4.5 | yes | secondary text on unit 10 band |
@@ -489,13 +489,13 @@ units separate when color is removed. Adjacent units differ by at least 0.02.
 
 | Unit | Accent | Luminance |
 |---:|---|---:|
-| 1 | `#2b7a48` | 0.149 |
-| 2 | `#17324d` | 0.030 |
-| 3 | `#be5d33` | 0.190 |
-| 4 | `#1e6980` | 0.119 |
-| 5 | `#ac7f1e` | 0.240 |
-| 6 | `#d25435` | 0.203 |
-| 7 | `#3674bb` | 0.169 |
-| 8 | `#5a7025` | 0.139 |
-| 9 | `#2d8d77` | 0.209 |
+| 1 | `#0f9949` | 0.234 |
+| 2 | `#1652de` | 0.115 |
+| 3 | `#dd5f16` | 0.236 |
+| 4 | `#0c687b` | 0.114 |
+| 5 | `#a77f11` | 0.234 |
+| 6 | `#b92312` | 0.116 |
+| 7 | `#168add` | 0.236 |
+| 8 | `#386c0b` | 0.116 |
+| 9 | `#0f967b` | 0.233 |
 | 10 | `#515c6b` | 0.105 |

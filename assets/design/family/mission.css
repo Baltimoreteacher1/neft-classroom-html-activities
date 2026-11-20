@@ -382,4 +382,143 @@
   .hw-fun-zone .homework-tab-extra::before {
     content: none;
   }
+
+  /* ── Sticker-book skin (2026-11): a bold, tactile layer over the same tokens. Ink outlines, hard offset
+        shadows, a dark unit-colour hero with a sunny primary button. Tokens only; motion respects the
+        reduce-motion option and prefers-reduced-motion. ── */
+  .fm-hero {
+    background: var(--unit-accent-ink);
+    background-image: none;
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    box-shadow: var(--fm-shadow-float);
+    color: var(--fm-text-inverse);
+  }
+  .fm-hero__title,
+  .fm-hero__meta {
+    color: var(--fm-text-inverse);
+  }
+  .fm-hero .fm-hook,
+  .fm-hero .fm-hook *,
+  .fm-hero__action,
+  .fm-hero__action * {
+    color: var(--fm-text);
+  }
+  .fm-hero__title {
+    font-size: var(--fm-fs-4xl);
+    font-weight: var(--fm-fw-bold);
+    letter-spacing: -0.01em;
+  }
+  .fm-btn--primary {
+    background: var(--fm-highlight);
+    color: var(--fm-on-highlight);
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    box-shadow: var(--fm-shadow-key);
+    font-weight: var(--fm-fw-bold);
+    transition:
+      transform var(--fm-dur-1) var(--fm-ease),
+      box-shadow var(--fm-dur-1) var(--fm-ease);
+  }
+  .fm-btn--primary:hover {
+    background: var(--fm-highlight);
+    transform: translateY(-2px);
+  }
+  .fm-btn--primary:active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+  .hw-path-card {
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    box-shadow: var(--fm-shadow-raised);
+  }
+  .hw-path-card.is-selected {
+    background: var(--fm-accent);
+    color: var(--fm-on-highlight);
+    transform: translateY(-2px);
+  }
+  .hw-path-card.is-selected * {
+    color: var(--fm-on-highlight);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fm-btn--primary,
+    .hw-path-card.is-selected,
+    label:has(> .choice-text),
+    button:has(> .choice-text) {
+      transition: none;
+      transform: none;
+    }
+    .fm-hero .fm-hook {
+      transform: none;
+    }
+  }
+  body {
+    background-image:
+      linear-gradient(var(--fm-shade-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--fm-shade-2) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .fm-hero::before {
+    content: "";
+    position: absolute;
+    inset-block-end: -1.5rem;
+    inset-inline-end: -1rem;
+    inline-size: 14rem;
+    block-size: 14rem;
+    background: var(--unit-accent-tint);
+    opacity: 0.22;
+    -webkit-mask: var(--unit-motif) center / contain no-repeat;
+    mask: var(--unit-motif) center / contain no-repeat;
+    pointer-events: none;
+  }
+  .fm-hero > * {
+    position: relative;
+  }
+  .fm-hero .fm-hook {
+    transform: rotate(-1.2deg);
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    box-shadow: var(--fm-shadow-raised);
+  }
+  .mission-block > h2,
+  .hw-talk-title {
+    display: inline;
+    background: linear-gradient(transparent 62%, var(--fm-highlight) 62% 92%, transparent 92%);
+    box-decoration-break: clone;
+    padding-inline: var(--fm-space-1);
+  }
+  .problem-section {
+    background: var(--fm-raised);
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    border-radius: var(--fm-radius-lg);
+    box-shadow: var(--fm-shadow-raised);
+  }
+  .problem-number-badge {
+    background: var(--unit-accent-ink);
+    color: var(--fm-text-inverse);
+    border-radius: var(--fm-radius-pill);
+    box-shadow: var(--fm-shadow-key);
+  }
+  label:has(> .choice-text),
+  button:has(> .choice-text) {
+    background: var(--fm-raised);
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    border-radius: var(--fm-radius-md);
+    box-shadow: var(--fm-shadow-key);
+    transition:
+      transform var(--fm-dur-1) var(--fm-ease),
+      box-shadow var(--fm-dur-1) var(--fm-ease);
+  }
+  label:has(> .choice-text):hover,
+  button:has(> .choice-text):hover {
+    transform: translateY(-2px);
+  }
+  label:has(> .choice-text):active,
+  button:has(> .choice-text):active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+  .homework-tab-btn[aria-current] .tab-step {
+    background: var(--fm-highlight);
+    color: var(--fm-on-highlight);
+    border: var(--fm-line-strong) solid var(--fm-key-edge);
+    box-shadow: var(--fm-shadow-key);
+  }
 }
