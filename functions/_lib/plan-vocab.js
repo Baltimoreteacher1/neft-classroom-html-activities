@@ -1993,6 +1993,24 @@ export const ACTIVITIES = [
     unit: 6,
   },
   {
+    path: "/math/unit-6/6-5-pixel-art/",
+    title: "Pixel Art Studio | Lesson 6-5",
+    category: "Activity",
+    unit: 6,
+  },
+  {
+    path: "/math/unit-6/6-5-pixel-art/picture-1/",
+    title: "Mystery Pixel Art | Lesson 6-5 · Picture 1",
+    category: "Activity",
+    unit: 6,
+  },
+  {
+    path: "/math/unit-6/6-5-pixel-art/picture-2/",
+    title: "Mystery Pixel Art | Lesson 6-5 · Picture 2",
+    category: "Activity",
+    unit: 6,
+  },
+  {
     path: "/math/unit-6/6-5-write-evaluate-algebraic-expressions/",
     title: "Lesson 6-5: Write and Evaluate Algebraic Expressions",
     category: "Activity",

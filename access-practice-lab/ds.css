@@ -106,17 +106,17 @@
   --sage-500: #5a9481;
   --sage-200: #d0e3cd;
 
-  /* ink and surfaces */
-  --ink: #0d1c2e;
-  --ink-2: #33475c;
-  --ink-3: #53636f;
-  --bg: #f8f3ea;
-  --surface: #fffcf5;
-  --surface-2: #f2ebde;
-  --surface-3: #e6dccb;
-  --line: #e2d9c8;
-  --line-strong: #b3a690;
-  --line-control: #7d7262; /* 3:1 on paper: borders of inputs, buttons, choices */
+  /* ink and surfaces — editorial Swiss-Modernist stone & ink palette */
+  --ink: #161614;
+  --ink-2: #3a3a36;
+  --ink-3: #575650;
+  --bg: #edece8;
+  --surface: #ffffff;
+  --surface-2: #e5e3dd;
+  --surface-3: #d8d7d2;
+  --line: #161614;
+  --line-strong: #161614;
+  --line-control: #161614; /* crisp 1.5px ink borders */
 
   /* action */
   --brand: #123a5c;
@@ -247,14 +247,7 @@ html {
 }
 body {
   margin: 0;
-  background:
-    radial-gradient(1200px 620px at 45% -120px, rgb(145 226 214 / 36%), transparent 72%) no-repeat,
-    radial-gradient(920px 500px at 94% -40px, rgb(245 214 168 / 42%), transparent 68%) no-repeat,
-    radial-gradient(1100px 640px at 8% 48%, rgb(213 220 235 / 32%), transparent 70%) no-repeat,
-    radial-gradient(1000px 580px at 88% 82%, rgb(208 227 205 / 28%), transparent 70%) no-repeat,
-    radial-gradient(rgb(18 58 92 / 5%) 1px, transparent 1px) 0 0 / 28px 28px,
-    var(--grain),
-    var(--bg);
+  background: var(--bg);
   color: var(--ink);
   font: 400 1.0625rem/1.6 var(--font);
   font-optical-sizing: auto;
@@ -363,11 +356,11 @@ a:hover {
   gap: var(--s-4);
   min-height: 4.25rem;
   padding: 0.6rem clamp(1rem, 2.4vw, 1.75rem);
-  background: rgb(255 252 245 / 88%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgb(237 236 232 / 94%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   color: var(--ink);
-  border-bottom: 1px solid rgb(179 166 144 / 38%);
+  border-bottom: 1px solid var(--ink);
   box-shadow:
     var(--edge-light),
     0 6px 22px -10px rgb(12 34 52 / 16%);
@@ -721,30 +714,47 @@ a:hover {
   gap: 0.55rem;
   min-height: var(--target);
   padding: 0.6rem 1.35rem;
-  border-radius: var(--radius-sm, 12px);
-  border: 1.5px solid var(--line-control);
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
   background: var(--surface);
   color: var(--ink);
   font: 700 1rem/1.2 var(--font);
   text-decoration: none;
   cursor: pointer;
-  box-shadow:
-    var(--edge-light),
-    0 1px 2px rgb(12 34 52 / 8%);
+  box-shadow: none;
   transition:
-    background-color var(--dur-2) var(--ease-out),
-    border-color var(--dur-2) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out),
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
     transform var(--dur-1) var(--ease-press);
 }
 .btn:hover {
-  border-color: var(--ink-3);
-  background: var(--surface-2);
-  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #ffffff;
   transform: translateY(-1px);
-  box-shadow:
-    var(--edge-light),
-    0 6px 14px -4px rgb(12 34 52 / 18%);
+  box-shadow: 0 4px 12px rgb(22 22 20 / 16%);
+  animation: lp-pulse 420ms var(--ease-out);
+}
+@keyframes lp-pulse {
+  0% { transform: translateY(-1px) scale(1); }
+  45% { transform: translateY(-2px) scale(1.03); }
+  100% { transform: translateY(-1px) scale(1); }
+}
+@keyframes lp-rise {
+  from { transform: translateY(8px); }
+  to { transform: translateY(0); }
+}
+.lab-brand:hover .lab-logo {
+  transform: rotate(-6deg) scale(1.06);
+  transition: transform 200ms var(--ease-press);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .panel,
+  .card {
+    animation: none !important;
+  }
 }
 .btn:active,
 .ghost:active {
@@ -866,12 +876,10 @@ a:hover {
 .panel,
 .card {
   background: var(--surface);
-  border: 1px solid rgb(179 166 144 / 48%);
-  border-radius: var(--r-lg);
+  border: 1px solid var(--ink);
+  border-radius: 6px;
   padding: clamp(1.2rem, 2.5vw, 1.85rem);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 85%),
-    var(--shadow-card);
+  box-shadow: -5px 5px 0 0 #d8d7d2, -5px 5px 0 1px var(--ink);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
