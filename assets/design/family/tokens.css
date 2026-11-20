@@ -1,37 +1,8 @@
-/* ============================================================================
-   Family Math Studio v3.0 — design TOKENS (the only file in the family system
-   that may contain a raw color value).
-
-   Everything else (family.css, pages, the specimen) reads these as var(--fm-*).
-   tools/validate-family-design-tokens.mjs fails on a raw hex/rgb()/hsl() anywhere else.
-
-   BROWSERS: colors use light-dark() (Chrome/Edge 123, Safari 17.5, Firefox 120+).
-   THEMES (attributes on <html>): data-theme="light|dark|contrast". No attribute =
-   follow prefers-color-scheme, and prefers-contrast: more selects the contrast theme.
-   OPTIONS: data-text-size="100|115|130|150"  data-spacing="more"  data-reading="dyslexia"
-            data-measure="narrow"  data-motion="reduce"  data-unit="1".."10".
-
-   BRAND ALIGNMENT. engine/design/tokens.json stays the source of the brand palette;
-   tools/build-family-tokens-report.mjs checks that every shared value below equals
-   it, except the deliberate adjustments listed here:
-     - accent-ink  #177B78 -> #136E6B : 4.22:1 on the inset surface; this holds 5.04.
-     - highlight-ink #886C33 -> #7A5F28 : 4.51:1 on paper was one rounding from failing;
-       this holds 5.47 on paper, tint and inset.
-     - success-ink #0F7C4A -> #0B6B40 : text on its own tint needs 4.5 (was 4.50).
-     - brand teal #1FA6A2 and amber #F2C15B are FILLS. Teal is 2.99:1 on white, so it is
-       decoration only; text, outlines and button fills use accent-ink.
-   ============================================================================ */
+/* Family Math Studio v3.0 — design tokens (var(--fm-*)). Brand alignment: engine/design/tokens.json. */
 
 @layer reset, tokens, base, components, patterns, utilities, unit-theme, print;
 
-/* ── Fonts ─────────────────────────────────────────────────────────────────
-   ONE display family (Baloo 2) and ONE text family (Nunito), both SIL OFL 1.1,
-   self-hosted latin WOFF2 (Spanish diacritics, inverted marks, minus, times,
-   divide are covered; the symbols not in the files fall back to the system).
-   Critical path = 3 files (baloo2-var, nunito-var, nunito-var-italic).
-   Atkinson Hyperlegible (Braille Institute, SIL OFL 1.1) loads ONLY when the family
-   turns the dyslexia-friendly option on: it then replaces both families.
-   Size-adjusted fallbacks keep the first paint from shifting when the font swaps. */
+/* Fonts: Baloo 2 + Nunito (WOFF2); Atkinson Hyperlegible on demand. */
 @font-face {
   font-family: "Baloo 2";
   font-style: normal;
