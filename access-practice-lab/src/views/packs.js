@@ -79,6 +79,7 @@ export async function render(ctx) {
           <button class="btn" type="button" data-pack-print="wall">${I.T("Print word wall", "Imprimir muro de palabras")}</button>
         </div>
         ${mode === "match" ? matchGame(I) : mode === "bingo" ? printBingo(bingoCells, I.T("Vocabulary bingo", "Bingo de vocabulario"), I) : html`<section class="lp-pack-words" aria-label="${I.S("Vocabulary words", "Palabras de vocabulario")}">${topicWords.map((w) => html`<article class="panel"><img src="${w.picture}" alt="" width="96" height="72" /><h2 lang="en">${w.en}</h2><p lang="es">${w.es}</p><div class="row-actions"><button class="btn small" type="button" data-pack-say-en="${w.en}">${I.T("Hear English", "Escuchar en inglés")}</button><button class="btn small" type="button" data-pack-say-es="${w.es}">${I.T("Hear Spanish", "Escuchar en español")}</button></div></article>`)}</section>`}
+        ${(await import("./visual-anchor-labs.js")).visualAnchorLabsHTML(ctx)}
       </article>`,
     };
   } catch (error) {
@@ -94,6 +95,8 @@ export async function onChange(e, ctx) {
 }
 
 export async function onClick(e, ctx, I = i18nFor(ctx)) {
+  const { onVisualAnchorClick } = await import("./visual-anchor-labs.js");
+  if (onVisualAnchorClick(e, ctx)) return true;
   const saveMe = e.target.closest?.("[data-about-me-save]");
   if (saveMe) {
     const values = aboutMeValues();

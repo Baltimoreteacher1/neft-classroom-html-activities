@@ -11,6 +11,7 @@ import * as K from "../lang/communication-check.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { isRecording } from "../recorder.js";
 import { speak } from "../speech.js";
+import { onCommunicationBoardClick, renderCommunicationBoard } from "./communication-board.js";
 import { BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
 const KEY = "accessPracticeLab:v1:communication";
@@ -407,7 +408,7 @@ export async function render(ctx) {
       html: html`${crumbsHTML([
         [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${band}`],
         [hubCrumb[0], null],
-      ])}${hubHTML(I, st, band)}`,
+      ])}${renderCommunicationBoard(ctx)}${hubHTML(I, st, band)}`,
     };
   const step = Math.min(
     5,
@@ -454,6 +455,7 @@ export function onInput(e, ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (onCommunicationBoardClick(e, ctx)) return true;
   const t = e.target;
   const sc = C.scenarioById(ctx.route.id || "");
   if (!sc) return false;

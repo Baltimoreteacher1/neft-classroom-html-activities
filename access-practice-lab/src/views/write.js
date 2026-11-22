@@ -454,6 +454,9 @@ ${text}</textarea></label>
               </div>
             </section>
             ${supportsHTML(task)}
+            ${(await import("../lang/register-dial.js")).registerDialHTML(ctx)}
+            ${(await import("../lang/cohesion-xray.js")).cohesionXrayHTML(ctx)}
+            ${(await import("../lang/echo-self.js")).echoSelfHTML(ctx, task.id)}
           </div>
         </div>
         ${
@@ -532,8 +535,9 @@ function feedback(ctx) {
   ctx.rerender();
 }
 
-export function onInput(e) {
+export function onInput(e, ctx) {
   if (onLoopInput(e)) return;
+  import("../lang/echo-self.js").then((m) => m.onEchoSelfInput(e, ctx));
   if (!S?.task) return;
   const t = e.target;
   if (t.matches("[data-draft]")) {
@@ -575,7 +579,13 @@ export function onChange(e, ctx) {
   }
 }
 
-export function onClick(e, ctx) {
+export async function onClick(e, ctx) {
+  const [{ onRegisterDialClick }, { onCohesionXrayClick }, { onEchoSelfClick }] = await Promise.all([
+    import("../lang/register-dial.js"),
+    import("../lang/cohesion-xray.js"),
+    import("../lang/echo-self.js"),
+  ]);
+  if (onRegisterDialClick(e, ctx) || onCohesionXrayClick(e, ctx) || onEchoSelfClick(e, ctx)) return true;
   if (onDownloadClick(e, ctx)) return true;
   if (!S) return false;
   I = i18nFor(ctx);

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Language Sheet &amp; Card Maker — ACCESS Teacher Hub</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="/access-practice-lab/ds.css" />
+    <link rel="stylesheet" href="/access-practice-lab/comfort.css" />
+    <link rel="stylesheet" href="/access-practice-lab/acc.css" />
+    <link rel="stylesheet" href="/access-practice-lab/acc-engine.css" />
+    <link rel="stylesheet" href="/access-teacher/teacher.css" />
+    <link rel="stylesheet" href="/access-teacher/maker/maker.css" />
+    <script type="module" src="/access-practice-lab/src/acc/shell.js"></script>
+  </head>
+  <body class="th-body" data-acc-section="teacher">
+    <a class="th-skip" href="#makerMain">Skip to Sheet &amp; Card Maker</a>
+    <header class="lab-top no-print">
+      <a class="lab-brand" href="/access-teacher/">
+        <span class="lab-wordmark"><strong>ACCESS Practice Lab</strong><small>Language Sheet &amp; Card Maker</small></span>
+      </a>
+      <nav class="th-tools" aria-label="Maker controls">
+        <div class="mk-lang-group" role="group" aria-label="Language mode">
+          <button type="button" class="btn small" data-mk-lang="en" aria-pressed="true">EN</button>
+          <button type="button" class="btn small" data-mk-lang="es" aria-pressed="false">ES</button>
+          <button type="button" class="btn small" data-mk-lang="both" aria-pressed="false">EN+ES</button>
+        </div>
+        <button type="button" class="btn small" data-mk-comfort aria-pressed="false">Reading Comfort (C)</button>
+        <a class="btn small" href="/access-teacher/">Teacher Hub</a>
+      </nav>
+    </header>
+
+    <main id="makerMain" class="lab-main mk-wrap" tabindex="-1">
+      <section class="mk-controls no-print" aria-labelledby="mkTitle">
+        <p class="eyebrow">Teacher Resource Generator · Print &amp; Interactive</p>
+        <h1 id="mkTitle" tabindex="-1">Language Sheet &amp; Card Maker</h1>
+        <p class="lead">Build printable PDFs and interactive student sheets from Word Lab (755 words), Survival Vocabulary (144 words), or your own bilingual list.</p>
+
+        <div class="mk-grid-form">
+          <label class="acc-field" for="mkSource">
+            <span>Word source</span>
+            <select id="mkSource" class="acc-select">
+              <option value="wordlab">Word Lab (755 academic words)</option>
+              <option value="survival">Survival Vocabulary (144 newcomer words)</option>
+              <option value="custom">Custom Word List (English | Spanish | Clue)</option>
+            </select>
+          </label>
+
+          <label class="acc-field" for="mkBand">
+            <span>Grade band</span>
+            <select id="mkBand" class="acc-select">
+              <option value="K">Kindergarten (K)</option>
+              <option value="1">Grade 1</option>
+              <option value="2-3">Grades 2–3</option>
+              <option value="3-5" selected>Grades 3–5</option>
+              <option value="6-8">Grades 6–8</option>
+            </select>
+          </label>
+
+          <label class="acc-field" for="mkTemplate">
+            <span>Output template</span>
+            <select id="mkTemplate" class="acc-select">
+              <option value="wordsearch">1. Word Search</option>
+              <option value="crossword">2. Crossword Puzzle</option>
+              <option value="matching">3. Bilingual Matching Sheet</option>
+              <option value="scramble">4. Word Scramble &amp; Spelling</option>
+              <option value="tracer">5. K–2 Handwriting / Word Tracer</option>
+              <option value="flashcards">6. SVO Frame &amp; Flashcard Deck</option>
+            </select>
+          </label>
+
+          <label class="acc-field" for="mkSheetTitle">
+            <span>Sheet title</span>
+            <input id="mkSheetTitle" type="text" class="acc-input" value="Academic Vocabulary Practice" maxlength="80" />
+          </label>
+
+          <label class="acc-field" for="mkCount">
+            <span>Word count</span>
+            <select id="mkCount" class="acc-select">
+              <option value="6">6 words</option>
+              <option value="8" selected>8 words</option>
+              <option value="10">10 words</option>
+              <option value="12">12 words</option>
+            </select>
+          </label>
+
+          <label class="acc-choice mk-check" for="mkDiagonals">
+            <input id="mkDiagonals" type="checkbox" />
+            <span>Allow diagonals (Word Search)</span>
+          </label>
+
+          <label class="acc-choice mk-check" for="mkShowKey">
+            <input id="mkShowKey" type="checkbox" />
+            <span>Show Teacher Answer Key</span>
+          </label>
+        </div>
+
+        <div id="mkCustomWrap" class="mk-custom-wrap" hidden>
+          <label class="acc-field" for="mkCustomText">
+            <span>Paste custom words (one per line: <code>English | Spanish | Clue/Definition</code>)</span>
+            <textarea id="mkCustomText" class="acc-input" rows="5">evidence | evidencia | facts that support an idea
+compare | comparar | find how two things are alike
+explain | explicar | tell how or why something happens
+cause | causa | why something happens
+effect | efecto | what happens as a result
+predict | predecir | say what might happen next</textarea>
+          </label>
+        </div>
+
+        <div class="mk-actions">
+          <button type="button" id="mkGenerate" class="btn btn-primary">Regenerate Sheet</button>
+          <button type="button" id="mkPrint" class="btn">Print / Export PDF</button>
+          <button type="button" id="mkLaunch" class="btn">Launch as Interactive Sheet</button>
+        </div>
+      </section>
+
+      <section id="mkPreview" class="mk-sheet" aria-label="Generated worksheet preview"></section>
+    </main>
+
+    <script type="module" src="/access-teacher/maker/maker.js"></script>
+  </body>
+</html>

@@ -1,7 +1,9 @@
 // Search the lightweight index, then build a shareable practice playlist.
 // Links contain content IDs only; answers and student names never leave the device.
+import { readAudience } from "../audience.js";
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows, loadIndex } from "../content.js";
+import { STANDARDS_FRAMEWORKS, matchesStandardFilter, standardsForActivity } from "../content/standards-crosswalk.js";
 import { activeGradeFocus, gradesLabel, inGradeFocus } from "../grade-focus.js";
 import { gradeFocusHTML } from "../grade-focus-ui.js";
 import { estimateMinutes } from "../learning.js";
@@ -32,13 +34,14 @@ const dom = (d) => I.T(d, DOMAIN_META[d]?.es);
 const tier = (k) => (TIERS[k] ? I.T(TIERS[k].name, TIERS[k].es) : k);
 const plural = (n, one, many) => (n === 1 ? one : many);
 
-export function filterActivities(items, { q = "", domain = "", level = "", status = "", gradeFocus = "" } = {}) {
+export function filterActivities(items, { q = "", domain = "", level = "", status = "", gradeFocus = "", std = "" } = {}) {
   const words = q.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return items.filter(
     (r) =>
       (!domain || r.domain === domain) &&
       (!level || r.level === level) &&
       (!status || r.status === status) &&
+      matchesStandardFilter(r, std) &&
       inGradeFocus(r.grades, gradeFocus) &&
       words.every((word) =>
         `${r.title} ${r.skill || ""} ${r.domain}`.toLocaleLowerCase().includes(word),
@@ -82,13 +85,22 @@ function syncURL() {
 
 function itemHTML(r) {
   const on = selected.includes(r.id);
+  const stds = standardsForActivity(r);
+  const isTeacher = readAudience() === "teacher";
   return html`<li class="library-item lib-item d-${r.domain.toLowerCase()}">
     <span class="prog-tile">${domainGlyph(r.domain)}</span>
     <div class="lib-item-body">
       <p class="lib-meta">${dom(r.domain)} · ${tier(r.level)}${gradesLabel(r.grades) ? html` · ${I.T(...gradesLabel(r.grades))}` : ""}</p>
       <a class="library-title" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}">${r.title}</a>
       <p class="fine">${r.skill || I.T("Language practice", "Práctica de lenguaje")} · ${I.T(`about ${estimateMinutes([r])} minutes`, `unos ${estimateMinutes([r])} minutos`)}</p>
+      <div class="is-std-pills" style="margin:.25rem 0;">
+        <span class="is-std-pill">WIDA: ${stds.wida}</span>
+        <span class="is-std-pill">CCSS: ${stds.ccss}</span>
+        <span class="is-std-pill">TEKS: ${stds.teks}</span>
+      </div>
       <span class="lib-status is-${r.status}">${icon(STATUS_ICON[r.status])} ${I.T(STATUS[r.status], STATUS_ES[r.status])}</span>
+      <a class="ghost small" style="margin-left:.4rem;" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}&sheet=1">${I.T("Interactive Sheet", "Hoja interactiva")}</a> <!-- ES-REVIEW -->
+      ${isTeacher ? html`<button type="button" class="ghost small" data-assign-one="${r.id}">${I.T("+ Class Assignment", "+ Tarea de clase")}</button>` : ""} <!-- ES-REVIEW -->
     </div>
     <button type="button" class="btn small library-add" data-pick="${r.id}" aria-pressed="${on}" aria-label="${on ? I.S(`Remove ${r.title} from practice set`, `Quitar ${r.title} del conjunto de práctica`) : I.S(`Add ${r.title} to practice set`, `Agregar ${r.title} al conjunto de práctica`)}">${icon(on ? "check" : "bookmark")} ${on ? I.T("Added", "Agregada") : I.T("Add", "Agregar")}</button>
   </li>`;
@@ -175,6 +187,7 @@ export async function render(ctx) {
     domain: q.get("domain") || "",
     level: q.get("level") || "",
     status: q.get("status") || "",
+    std: q.get("std") || "",
   };
   if (!CORE_DOMAINS.includes(filters.domain)) filters.domain = "";
   if (!TIERS[filters.level]) filters.level = "";
@@ -216,6 +229,7 @@ export async function render(ctx) {
       <label class="field"><span>${I.T("My progress", "Mi progreso")}</span><select id="libraryStatus" data-library-filter="status" data-nsr-ignore>${options([["", I.S("Any progress", "Cualquier progreso")], ...Object.entries(STATUS).map(([k, v]) => [k, I.S(v, STATUS_ES[k])])], filters.status)}</select></label>
     </div><p class="fine">${bandLabel(band)} · ${I.T("Progress is for this browser. Support changes tasks and scaffolds: Starting uses words and short sentences; Growing connects ideas; Expanding adds details and explanations. These are not WIDA scores.", "El progreso es solo para este navegador. El apoyo cambia las tareas y los andamios: Comenzando usa palabras y oraciones cortas; Creciendo conecta ideas; Ampliando agrega detalles y explicaciones. No son puntajes de WIDA.")}</p>
     <div class="library-quick lib-quick" aria-label="${I.S("Quick activity searches", "Búsquedas rápidas de actividades")}"><span>${I.T("Start with:", "Empieza con:")}</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="cat-chip" data-quick-topic="${topic}">${icon("search")} ${topic}</button>`)}</div>
+    <div class="library-quick lib-quick" role="group" aria-label="${I.S("Standards Crosswalk", "Correspondencia de estándares")}"><span>${I.T("Standards:", "Estándares:")}</span><button type="button" class="cat-chip" data-std-filter="" aria-pressed="${!filters.std}">${I.T("All", "Todos")}</button>${STANDARDS_FRAMEWORKS.map((fw) => html`<button type="button" class="cat-chip" data-std-filter="${fw.id}" aria-pressed="${filters.std === fw.id}">${I.T(fw.label, fw.labelEs)}</button>`)}</div> <!-- ES-REVIEW -->
     ${learningAreasHTML()}
     <div id="libraryResults">${resultHTML()}</div></section>
     </div>
@@ -257,6 +271,22 @@ export function onClick(e, ctx) {
     filters = { q: quick.dataset.quickTopic };
     syncURL();
     ctx.rerender().then(() => document.getElementById("libraryResultTitle")?.focus());
+    return true;
+  }
+  const stdBtn = t.closest("[data-std-filter]");
+  if (stdBtn) {
+    page = 1;
+    filters.std = stdBtn.dataset.stdFilter || "";
+    syncURL();
+    ctx.rerender();
+    return true;
+  }
+  const assignOne = t.closest("[data-assign-one]");
+  if (assignOne) {
+    const id = assignOne.dataset.assignOne;
+    const url = `/access-teacher/?assignIds=${encodeURIComponent(id)}#assign`;
+    window.open(url, "_blank", "noopener");
+    announce(I.S("Opened Teacher Assignment builder.", "Se abrió el creador de tareas."));
     return true;
   }
   if (t.closest("[data-clear-filters]")) {

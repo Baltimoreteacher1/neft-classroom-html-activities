@@ -56,6 +56,7 @@ const VIEW_LOADERS = {
   learn: () => import("./views/learn.js"),
   reality: () => import("./views/reality.js"),
   exhibition: () => import("./views/exhibition.js"),
+  "guided-units": () => import("./views/guided-units.js"),
   journey: () => import("./views/journey.js"),
   path: () => import("./views/path.js"),
   scaffold: () => import("./views/scaffold.js"),
@@ -270,7 +271,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "book-studio") return { ...r, view: "book-studio", id: b || "", sub: c || "" };
   if (a === "portfolio") return { ...r, view: "portfolio", id: b || "", mode: q.get("view") || "" };
   if (a === "collection") return { ...r, view: "collection", id: b || "" };
-  if (a === "units") return { ...r, view: "units", id: b || "", sub: c || "", tab: q.get("tab") || "" };
+  if (a === "units" || a === "guided-units") return { ...r, view: a, id: b || "", sub: c || "", tab: q.get("tab") || "" };
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };

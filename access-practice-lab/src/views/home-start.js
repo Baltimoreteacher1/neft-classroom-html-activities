@@ -10,6 +10,7 @@ import { ctaLabel, headline } from "../journey/ui/pages-hero.js";
 import { stepHref, tx } from "../journey/ui/pages-shared.js";
 import { sessionHref } from "../engagement.js";
 import { loadRecord } from "../store.js";
+import { recommendNextUnitSync } from "../lang/recommend-unit.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 
 const SKILL_ES = {
@@ -297,6 +298,14 @@ export function startHTML(I, ctx, data) {
     </div>
     <div class="lph-student">${frontDoorHTML(I, { target, missions, resume, dueCount })}</div>
     <div class="lph-grade">${rulerHTML(I, ctx, band, available, focusCounts)}</div>
+    ${(() => {
+      const rec = recommendNextUnitSync(band);
+      if (!rec?.unit) return "";
+      return html`<div class="panel" style="margin-top:.85rem;background:#eaf4f4;border:1.5px solid #1fa6a2;">
+        <p class="eyebrow">${I.T("Next Recommended Unit", "Siguiente unidad recomendada")}</p> <!-- ES-REVIEW -->
+        <p style="margin:.25rem 0;"><strong><a href="${BASE}/guided-units/${rec.unit.id}?grades=${band}">${I.T(...rec.unit.title)}</a></strong> — <span class="fine">${I.T(rec.reasonEn, rec.reasonEs)}</span></p>
+      </div>`;
+    })()}
     ${shortcutsHTML(I, band)}
   </section>`;
 }

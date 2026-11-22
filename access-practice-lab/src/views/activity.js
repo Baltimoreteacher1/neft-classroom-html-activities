@@ -79,6 +79,13 @@ import {
 } from "../util.js";
 import { activityHref, roomHref } from "./room.js";
 import { downloadMenuHTML, onDownloadClick } from "../download/menu.js";
+import {
+  decodeCustomSheetFromHash,
+  onInteractiveSheetClick,
+  onInteractiveSheetInput,
+  renderInteractiveSheet,
+} from "./interactive-sheet.js";
+import { onThermostatClick, thermostatHTML } from "../lang/thermostat.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
 import { esPreviewHTML } from "./es-preview.js";
 import { listLoops, loadIntel, nextStage as loopStage } from "../intel/loop.js";
@@ -744,7 +751,18 @@ export async function render(ctx) {
   setItemsI18n(I);
   loading = true;
   const snapshot = { band: ctx.band, route: { ...ctx.route }, prefs: { ...ctx.prefs } };
-  const requestedMode = new URLSearchParams(location.search).get("mode");
+  const qParams = new URLSearchParams(location.search);
+  const requestedMode = qParams.get("mode");
+  const sheetMode = qParams.get("sheet");
+  const customSheet = sheetMode === "custom" ? decodeCustomSheetFromHash() : null;
+  if (customSheet) {
+    loading = false;
+    cur = { activity: { id: `custom:${customSheet.title || "sheet"}`, title: customSheet.title || "Custom Sheet" }, band: ctx.band, domain: "Reading", level: "Expanding" };
+    return {
+      title: customSheet.title || "Interactive Sheet",
+      html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/`], [customSheet.title || I.T("Interactive Sheet", "Hoja interactiva"), null]])}${renderInteractiveSheet(ctx, null, customSheet)}`,
+    };
+  }
   const found = await resolve(snapshot);
   const shared = await loadShared().catch(() => null);
   glossary = await loadGlossary();
@@ -783,6 +801,25 @@ export async function render(ctx) {
     picked = null;
   }
   const a = cur.activity;
+  if (sheetMode === "1") {
+    const u = new URL(location.href);
+    u.searchParams.delete("sheet");
+    return {
+      title: `${a.title} — ${I.S("Interactive Sheet", "Hoja interactiva")}`,
+      html: html`${crumbsHTML([
+          [I.S("Lab", "Laboratorio"), `${BASE}/`],
+          [a.title, u.pathname + u.search],
+          [I.S("Interactive Sheet", "Hoja interactiva"), null],
+        ])}
+        <div class="is-mode-bar no-print">
+          <div class="is-mode-tabs">
+            <a class="btn small" href="${u.pathname + u.search}">${I.T("Practice View", "Vista de práctica")}</a> <!-- ES-REVIEW -->
+            <span class="btn small btn-primary" aria-current="page">${I.T("Interactive Sheet", "Hoja interactiva")}</span> <!-- ES-REVIEW -->
+          </div>
+        </div>
+        ${renderInteractiveSheet(ctx, a, null)}`,
+    };
+  }
   const es = esGuide[a.id] || {};
   mode = requestedMode === "independent" ? "independent" : "supported";
   earlyActive = early.usesAudioFirst(ctx.prefs, cur.band, a, location.search);
@@ -809,9 +846,16 @@ export async function render(ctx) {
         [a.title, null],
       ])}
       ${pathwayBannerHTML(ctx)}
+      ${thermostatHTML(ctx, cur.domain)}
       <article class="activity d-${cur.domain.toLowerCase()}">
         ${lf.printHead}
         <header class="act-head">
+          <div class="is-mode-bar no-print" style="margin-bottom:.75rem;">
+            <div class="is-mode-tabs">
+              <span class="btn small btn-primary" aria-current="page">${I.T("Practice View", "Vista de práctica")}</span> <!-- ES-REVIEW -->
+              <button type="button" class="btn small" data-switch-sheet="1">${I.T("Interactive Sheet", "Hoja interactiva")}</button> <!-- ES-REVIEW -->
+            </div>
+          </div>
           <div class="act-bar">
             <p class="act-context">
               ${icon(meta.icon)}<span>${meta.name} · ${tier?.name || cur.level} · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}</span>
@@ -1072,6 +1116,20 @@ function onFrameClick(t, a, ctx) {
 
 export function onClick(e, ctx) {
   if (!cur || loading) return;
+  if (onThermostatClick(e, ctx)) return true;
+  const sheetSwitch = e.target.closest("[data-switch-sheet]");
+  if (sheetSwitch) {
+    const u = new URL(location.href);
+    u.searchParams.set("sheet", "1");
+    ctx.navigate(u.pathname + u.search);
+    return true;
+  }
+  const qParams = new URLSearchParams(location.search);
+  const sheetMode = qParams.get("sheet");
+  if (sheetMode === "1" || sheetMode === "custom") {
+    const customSheet = sheetMode === "custom" ? decodeCustomSheetFromHash() : null;
+    if (onInteractiveSheetClick(e, ctx, cur?.activity, customSheet)) return true;
+  }
   if (onDownloadClick(e, ctx)) return true;
   if (onLoopClick(e, ctx)) return true;
   if (e.target.closest("[data-intel-coach]") && mode === "supported") {
@@ -1382,6 +1440,12 @@ export function onClick(e, ctx) {
 
 export function onChange(e, ctx) {
   if (!cur || loading) return;
+  const qParams = new URLSearchParams(location.search);
+  const sheetMode = qParams.get("sheet");
+  if (sheetMode === "1" || sheetMode === "custom") {
+    const customSheet = sheetMode === "custom" ? decodeCustomSheetFromHash() : null;
+    if (onInteractiveSheetInput(e, ctx, cur?.activity, customSheet)) return true;
+  }
   const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
@@ -1419,6 +1483,12 @@ export function onChange(e, ctx) {
 export function onInput(e) {
   if (onLoopInput(e)) return;
   if (!cur || loading) return;
+  const qParams = new URLSearchParams(location.search);
+  const sheetMode = qParams.get("sheet");
+  if (sheetMode === "1" || sheetMode === "custom") {
+    const customSheet = sheetMode === "custom" ? decodeCustomSheetFromHash() : null;
+    if (onInteractiveSheetInput(e, intelCtx, cur?.activity, customSheet)) return;
+  }
   if (e.target.matches("[data-gist]")) {
     const list = [...(gists.get(cur.activity.id) || [])];
     list[Number(e.target.dataset.gist)] = e.target.value.slice(0, 200);

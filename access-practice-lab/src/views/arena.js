@@ -479,7 +479,7 @@ export async function render(ctx) {
   const id = ctx.route.id || "";
   const topic = id ? findTopic(id) : null;
   current = topic ? { id } : null;
-  if (!id) return { title: I.S("Argument Arena", "Arena de argumentos"), html: hubHTML(ctx, I) };
+  if (!id) return { title: I.S("Argument Arena", "Arena de argumentos"), html: html`${hubHTML(ctx, I)}${(await import("./roundtable.js")).roundtableHTML(ctx)}` };
   if (!topic || topic.band !== ctx.band)
     return {
       title: I.S("Not found", "No se encontró"),
@@ -542,7 +542,9 @@ function logArgument(ctx, topic, t, level) {
   });
 }
 
-export function onClick(e, ctx) {
+export async function onClick(e, ctx) {
+  const { onRoundtableClick } = await import("./roundtable.js");
+  if (onRoundtableClick(e, ctx)) return true;
   if (levelClick(e, ctx)) return true;
   if (!current) return false;
   const I = i18nFor(ctx);
@@ -658,6 +660,7 @@ export function onClick(e, ctx) {
 }
 
 export function onInput(e) {
+  import("./roundtable.js").then((m) => m.onRoundtableInput(e));
   const f = e.target?.dataset?.arField;
   if (!f || !current) return;
   edit(current.id, (t) => {

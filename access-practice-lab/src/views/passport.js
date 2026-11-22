@@ -624,6 +624,7 @@ export async function render(ctx) {
         </section>
 
         ${livingPortfolioHTML(I, band)}
+        ${(await import("../lang/echo-self.js")).echoSelfHTML(ctx, "passport")}
         ${await journeyEvidenceHTML(I, band, ledger)}
 
         <section>
@@ -836,6 +837,7 @@ export async function render(ctx) {
 export function unmount() { postcards.unmount(); postcards.releaseAlbumUrls(); }
 export function onChange(e, ctx) { if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled) postcards.onChange(e, ctx.rerender); }
 export function onInput(e, ctx) {
+  import("../lang/echo-self.js").then((m) => m.onEchoSelfInput(e, ctx));
   if (tripJournal.onInput(e, ctx)) return;
   if (e.target.matches("[data-name]")) setStudentName(e.target.value.trim());
 }
@@ -848,6 +850,8 @@ async function shareBundle(ctx) {
 }
 
 export async function onClick(e, ctx) {
+  const { onEchoSelfClick } = await import("../lang/echo-self.js");
+  if (onEchoSelfClick(e, ctx)) return true;
   const I = i18nFor(ctx);
   if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled && postcards.onClick(e, I, ctx.rerender)) return true;
   if (tripJournal.onClick(e, ctx)) return true;

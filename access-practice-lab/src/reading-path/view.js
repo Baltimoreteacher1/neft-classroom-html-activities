@@ -7,6 +7,7 @@ import {
   unmountLetters,
 } from "./letters.js";
 import { renderLibrary, onLibraryClick, onLibraryChange } from "./library.js";
+import { renderDecodables, onDecodablesClick } from "./decodables.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, html, storage, safeJson, announce } from "../util.js";
 import { speak, stop } from "../speech.js";
@@ -59,6 +60,7 @@ function adultHTML(ctx, I) {
 export async function render(ctx) {
   if (ctx.route.id === "letters") return renderLetters(ctx);
   if (ctx.route.id === "library") return renderLibrary(ctx);
+  if (ctx.route.id === "decodable") return renderDecodables(ctx);
   await load();
   const I = i18nFor(ctx),
     progress = saved();
@@ -68,7 +70,7 @@ export async function render(ctx) {
   let body;
   if (!unit) {
     const next = nextUnit(scope.units, progress);
-    body = html`${head}<p>${I.T("Hear it. Build it. Read it. Start anywhere. There are no locks or timers.", "Escucha. Construye. Lee. Empieza donde quieras. No hay bloqueos ni cronómetro.")}</p><a class="btn btn-primary" href="${href(ctx, `/${next.id}`)}">${I.T("Begin", "Empezar")}</a><p><a href="${href(ctx, "/library")}">${I.T("Read-aloud library", "Biblioteca de lectura")}</a> · <a href="${href(ctx, "/letters")}">${I.T("Letters and sounds", "Letras y sonidos")}</a> · <a href="${BASE}/class/teacher?grades=${ctx.band}">${I.T("Add to class", "Agregar a la clase")}</a></p><h2>${I.T("All units", "Todas las unidades")}</h2><ol>${scope.units.map((u) => html`<li><a href="${href(ctx, `/${u.id}`)}">${title(I, u.teaches)}</a> · ${unitDone(u, progress) ? I.T("Done on this device", "Hecha en este dispositivo") : u.id === next.id ? I.T("Next suggestion", "Siguiente sugerencia") : I.T("Open", "Abierta")}</li>`)}</ol>${adultHTML(ctx, I)}`;
+    body = html`${head}<p>${I.T("Hear it. Build it. Read it. Start anywhere. There are no locks or timers.", "Escucha. Construye. Lee. Empieza donde quieras. No hay bloqueos ni cronómetro.")}</p><a class="btn btn-primary" href="${href(ctx, `/${next.id}`)}">${I.T("Begin", "Empezar")}</a><p><a href="${href(ctx, "/library")}">${I.T("Read-aloud library", "Biblioteca de lectura")}</a> · <a href="${href(ctx, "/decodable")}">${I.T("Decodable Mini-Books", "Minilibros decodificables")}</a> · <a href="${href(ctx, "/letters")}">${I.T("Letters and sounds", "Letras y sonidos")}</a> · <a href="${BASE}/class/teacher?grades=${ctx.band}">${I.T("Add to class", "Agregar a la clase")}</a></p><h2>${I.T("All units", "Todas las unidades")}</h2><ol>${scope.units.map((u) => html`<li><a href="${href(ctx, `/${u.id}`)}">${title(I, u.teaches)}</a> · ${unitDone(u, progress) ? I.T("Done on this device", "Hecha en este dispositivo") : u.id === next.id ? I.T("Next suggestion", "Siguiente sugerencia") : I.T("Open", "Abierta")}</li>`)}</ol>${adultHTML(ctx, I)}`;
   } else if (!item) {
     body = html`<a href="${href(ctx)}">${I.T("All units", "Todas las unidades")}</a>${head}<h2>${unit.n}. ${title(I, unit.teaches)}</h2><p><a class="btn small" href="${BASE}/class/teacher?grades=${ctx.band}">${I.T("Add to class", "Agregar a la clase")}</a></p><ul>${unit.items.map((i) => html`<li><a class="btn" href="${href(ctx, `/${unit.id}/${i.id}`)}">${title(I, i.title)}</a> ${progress[`${unit.id}/${i.id}`] ? I.T("Done", "Hecho") : ""}</li>`)}</ul>`;
   } else {
@@ -154,6 +156,7 @@ function gameHTML(ctx, I, s) {
   return html`<p>${I.T("Take your time. A wrong move replays the word.", "Tómate tu tiempo. Si te equivocas, escucharás la palabra otra vez.")}</p><button class="btn" data-rp-target>${I.T("Hear the target", "Escuchar la palabra")}</button>${controls}${st.complete ? html`<p>${I.T("Round done.", "Ronda terminada.")}</p><button class="btn btn-primary" data-rp-continue>${s.count + 1 >= s.rounds ? I.T("Finish game", "Terminar juego") : I.T("Next round", "Siguiente ronda")}</button>` : ""}<details><summary>${I.T("Round choices", "Opciones de ronda")}</summary><label for="rpStage">${I.T("Classroom support choice, not a WIDA level", "Opción de apoyo en clase, no un nivel WIDA")}</label><select id="rpStage" data-rp-stage>${["A", "B", "C"].map((n) => html`<option ${n === s.stage ? "selected" : ""}>${n}</option>`)}</select><label for="rpRounds">${I.T("Rounds", "Rondas")}</label><select id="rpRounds" data-rp-rounds>${[5, 10, 15].map((n) => html`<option ${n === s.rounds ? "selected" : ""}>${n}</option>`)}</select><button class="btn" data-rp-new>${I.T("New round", "Nueva ronda")}</button></details>`;
 }
 export async function onClick(e, ctx) {
+  if (ctx.route.id === "decodable") return onDecodablesClick(e, ctx);
   if (ctx.route.id === "letters") return onLetterClick(e, ctx);
   if (ctx.route.id === "library") return onLibraryClick(e, ctx);
   const b = e.target.closest("button");

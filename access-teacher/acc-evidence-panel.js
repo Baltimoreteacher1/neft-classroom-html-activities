@@ -73,6 +73,11 @@ export async function mountEvidencePanel(root, doc = document) {
       controls(),
       rows.length ? h(doc, "p", { class: "acc-hint", text: `${rows.length} item responses from ${sittings} ${sittings === 1 ? "sitting" : "sittings"}. Fewer than ${MIN_EVIDENCE} items in a cell is shown as “not enough yet”, never as a percentage.` }) : h(doc, "div", { class: "acc-state is-empty" }, h(doc, "p", { text: "No practice evidence on this device yet. Students practice in the Assessment simulator; their results appear here after they submit a sitting." }), h(doc, "p", { text: "Evidence that was practiced on another device appears here after you import that student’s exported file." })),
       h(doc, "p", { class: "acc-visually-hidden", text: summaryText(cells) }),
+      (() => {
+        let recCount = 0;
+        try { recCount = JSON.parse(localStorage.getItem("accessPracticeLab:v1:receptiveMastery") || "{}")?.count || 0; } catch {}
+        return h(doc, "p", { class: "acc-hint", text: `Silent-Period Receptive Bridge: ${recCount} receptive responses recorded locally (separate from mic/expressive attempts).` });
+      })(),
       table,
       h(doc, "h3", { text: "Next teaching moves" }),
       recs.length ? h(doc, "ul", { class: "acc-recs" }, ...recs.map((r) => h(doc, "li", { "data-type": r.type }, h(doc, "strong", { text: r.type.replace(/-/g, " ") + ": " }), r.text))) : h(doc, "p", { class: "acc-hint", text: "Recommendations appear when there is enough evidence to support them." }),

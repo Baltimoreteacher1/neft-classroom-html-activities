@@ -3,6 +3,7 @@
 import * as discover from "./discover.js";
 import * as family from "./family.js";
 import * as phonics from "./phonics.js";
+import * as phonicsProgression from "./phonics-progression.js";
 import * as rhyme from "./rhyme.js";
 import * as sentences from "./sentences.js";
 import * as sightWords from "./sight-words.js";
@@ -12,6 +13,7 @@ import * as words from "./words.js";
 export const PAGES = {
   story,
   phonics,
+  progression: { render: phonicsProgression.renderProgression, onClick: phonicsProgression.onProgressionClick },
   words,
   rhyme,
   "sight-words": sightWords,

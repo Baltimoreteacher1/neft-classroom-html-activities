@@ -9,6 +9,7 @@
 // evenly, trimmed to the length chosen here (5 / 10 / 15 minutes, default 5). The length is the family planner's own
 // preference (prefs.family.minutes), so the two pages never disagree. Minutes are estimates, never a countdown.
 import { rememberAudience } from "../audience.js";
+import { familyCoPilotHTML, onFamilyCoPilotClick } from "../views/family-copilot.js";
 import { normalizeBand, isEarlyBand } from "../bands.js";
 import { bandRows } from "../content.js";
 import { familyTourHost } from "../family-tour-host.js";
@@ -349,6 +350,7 @@ export async function render(ctx) {
         </p>
       </header>
       <div class="ov-start fs-start">${pickerHTML(I, pick)} ${body}</div>
+      ${familyCoPilotHTML(ctx)}
       ${familyFaqHTML(I, pick)}
     </article>`,
   };
@@ -360,6 +362,7 @@ export function mount() {
 }
 
 export function onClick(e, ctx) {
+  if (onFamilyCoPilotClick(e, ctx)) return true;
   const len = e.target.closest?.("[data-fs-minutes]");
   if (!len) return false;
   const minutes = Number(len.dataset.fsMinutes);

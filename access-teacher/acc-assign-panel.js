@@ -27,6 +27,31 @@ export async function mountAssignPanel(root, doc = document) {
   const fns = [...new Set(bank.flatMap((i) => i.functions || []))].sort();
   const state = { kind: "domain", grade: "3-5", domain: "Reading", context: "Science", klu: "Explain", fn: fns[0] || "", setId: index.sets[0].id, count: 8, includeProductive: false, title: "", earlyDomain: "Reading", earlyPick: 0 };
   let saved = (await store.settings.get("assignments", [])) || [];
+  const urlAssignIds = (new URLSearchParams(location.search).get("assignIds") || "").split(",").filter(Boolean);
+  let pendingAssignIds = [];
+  try {
+    const rawPending = JSON.parse(localStorage.getItem("accessTeacher:v1:pendingAssign") || "[]");
+    pendingAssignIds = [...new Set([...(Array.isArray(rawPending) ? rawPending : []), ...urlAssignIds])];
+    if (urlAssignIds.length) localStorage.setItem("accessTeacher:v1:pendingAssign", JSON.stringify(pendingAssignIds));
+  } catch {}
+  const pendingAssignBar = () => {
+    if (!pendingAssignIds.length) return h(doc, "span");
+    const link = `${location.origin}${BASE}/play?ids=${encodeURIComponent(pendingAssignIds.join(","))}&grades=${encodeURIComponent(state.grade)}`;
+    const copyPending = h(doc, "button", { type: "button", class: "acc-btn primary", text: "Copy Queued Sheet/Activity Link" });
+    copyPending.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(link); } catch {}
+    });
+    const clearPending = h(doc, "button", { type: "button", class: "acc-btn", text: "Clear Queue" });
+    clearPending.addEventListener("click", () => {
+      pendingAssignIds = [];
+      try { localStorage.removeItem("accessTeacher:v1:pendingAssign"); } catch {}
+      draw();
+    });
+    return h(doc, "div", { class: "acc-state is-info", role: "region", "aria-label": "Queued activities from library" },
+      h(doc, "p", { text: `Queued from Activity Library / Interactive Sheet (${pendingAssignIds.length}): ${pendingAssignIds.join(", ")}` }),
+      h(doc, "div", { class: "acc-actions" }, copyPending, clearPending),
+    );
+  };
 
   const sel = (id, label, opts, key) => {
     const s = h(doc, "select", { id, class: "acc-select" }, ...opts.map(([v, t]) => h(doc, "option", { value: v, text: t })));
@@ -84,6 +109,7 @@ export async function mountAssignPanel(root, doc = document) {
     const print = h(doc, "button", { type: "button", class: "acc-btn", "data-act": "print-assign", disabled: !picks.length, text: "Print the question list" });
     print.addEventListener("click", () => window.print());
     root.replaceChildren(
+      pendingAssignBar(),
       h(doc, "div", { class: "acc-state is-info", role: "note" }, h(doc, "p", { text: "Assignments are links to practice that students open on their own device. Nothing is sent to students or to a school system." })),
       h(doc, "div", { class: "acc-filters" }, ...fields),
       v.ok ? h(doc, "p", { class: "acc-hint", id: "asCountMsg", text: spec.kind === "simulation" ? "The whole set will be taken as a test simulation." : picks.length < spec.count ? `Only ${picks.length} matching ${picks.length === 1 ? "question exists" : "questions exist"} for these choices.` : `${picks.length} questions chosen across the matching sets.` }) : h(doc, "p", { class: "acc-state is-error", role: "alert", text: v.errors.join(" ") }),

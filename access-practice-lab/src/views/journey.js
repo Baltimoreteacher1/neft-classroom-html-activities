@@ -69,7 +69,15 @@ export async function render(ctx) {
   }
   if (params.kind === "growth") return asView(await growthPage(ctx, pages, page), "My growth");
   if (params.kind === "notfound") return asView(await pages.mapHTML(ctx, page), "Journey map");
-  return asView(await pages.homeHTML(ctx, page), "My Learning Journey");
+  const { recommendNextUnit } = await import("../lang/recommend-unit.js");
+  const rec = await recommendNextUnit(ctx.band);
+  const homeBody = await pages.homeHTML(ctx, page);
+  const recCard = rec?.unit ? html`<section class="panel" style="margin:1rem auto;max-width:960px;background:#eaf4f4;border:1.5px solid #1fa6a2;">
+    <p class="eyebrow">${page.I.T("Next Recommended Unit", "Siguiente unidad recomendada")}</p> <!-- ES-REVIEW -->
+    <h2 style="margin:.2rem 0;"><a href="${BASE}/guided-units/${rec.unit.id}?grades=${ctx.band}">${page.I.T(...rec.unit.title)}</a></h2>
+    <p class="fine">${page.I.T(rec.reasonEn, rec.reasonEs)}</p>
+  </section>` : "";
+  return asView(html`${recCard}${homeBody}`, "My Learning Journey");
 }
 
 /** /journey/growth: the evidence and Before/After cards across every mission. */

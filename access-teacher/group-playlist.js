@@ -4,8 +4,14 @@
 // Rule-based and visible: the need picks a domain and a skill pattern; activities that match come first.
 // Relative imports resolve to the same /access-practice-lab/ modules in the browser and under node:test.
 import { bandRows } from "../access-practice-lab/src/content.js";
+import { GUIDED_UNITS } from "../access-practice-lab/src/content/guided-units.js";
 import { CONTENT_BANDS } from "../access-practice-lab/src/bands.js";
 import { BASE } from "../access-practice-lab/src/util.js";
+
+export { GUIDED_UNITS };
+
+export const guidedUnitUrl = (unitId, band = "6-8") =>
+  `${BASE}/guided-units/${encodeURIComponent(unitId)}?grades=${encodeURIComponent(band)}`;
 
 /** What each kind of group needs: the domain to draw from and the skill words that match the need. */
 export const GROUP_NEEDS = Object.freeze({

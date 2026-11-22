@@ -757,6 +757,9 @@ export async function render(ctx) {
                   </div>
                   <div class="studio-col">
                     ${recorderBlock(task, S.state)} ${supportsHTML(task)}
+                    ${(await import("../lang/silent-bridge.js")).silentBridgeHTML(ctx, task.id)}
+                    ${(await import("../lang/prosody-mirror.js")).prosodyMirrorHTML(ctx, task.prompt || "Evidence helps explain how systems change over time.")}
+                    ${(await import("../lang/echo-self.js")).echoSelfHTML(ctx, task.id)}
                     ${
                       task.taskType === "discuss"
                         ? html`<section class="panel conversation">
@@ -956,7 +959,13 @@ function analyze(ctx) {
   ctx.rerender();
 }
 
-export function onClick(e, ctx) {
+export async function onClick(e, ctx) {
+  const [{ onSilentBridgeClick }, { onProsodyMirrorClick }, { onEchoSelfClick }] = await Promise.all([
+    import("../lang/silent-bridge.js"),
+    import("../lang/prosody-mirror.js"),
+    import("../lang/echo-self.js"),
+  ]);
+  if (onSilentBridgeClick(e, ctx) || (await onProsodyMirrorClick(e, ctx)) || onEchoSelfClick(e, ctx)) return true;
   if (onDownloadClick(e, ctx)) return true;
   if (onLoopClick(e, ctx)) return true;
   if (!S?.task) return false;
