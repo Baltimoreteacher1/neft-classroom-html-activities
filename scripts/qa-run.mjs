@@ -458,6 +458,14 @@ const COVERAGE = [
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
+  // TEACHER UPGRADES (vocabulary sets, assignment status, book editions, presentation mode) — the unit tests are in `npm test`; the browser test needs a server, so (like the other
+  // access-*-e2e files) it is run by hand before shipping a change: `node tools/<name>-e2e.mjs` (vocab-sets, assign-status,
+  // book-editions, present-mode).
+  [
+    /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
+    ["test", "validate:js-syntax", "check"],
+  ],
+
   // UNIT 4 PRACTICE STUDIO — ten hand-authored pages share one stylesheet and
   // one engagement layer (stars, trail, Bonus Round). The test re-derives every
   // Bonus Round trio from its own text and holds each page to the shared layer
@@ -945,7 +953,7 @@ const COVERAGE = [
   // The class platform (docs/class-platform.md): its endpoint tests run the real
   // Function over node:sqlite; the migration is pinned to SCHEMA by that test.
   [
-    /^(functions\/(api\/class\/|_lib\/class-platform\/|_lib\/model-call\.js$)|shared\/class-platform\/|migrations\/0011_class_platform\.sql$|docs\/class-platform\.md$)/,
+    /^(functions\/(api\/class\/|_lib\/class-platform\/|_lib\/model-call\.js$)|shared\/class-platform\/|migrations\/0011_class_platform\.sql$|migrations\/0016_class_assign_status\.sql$|docs\/class-platform\.md$)/,
     ["test"],
   ],
   [

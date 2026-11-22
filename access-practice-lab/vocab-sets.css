@@ -1,0 +1,324 @@
+/* Vocabulary Sets (src/views/vocab-sets.js, src/vocab-sets/practice.js). Tokens only (ds.css). */
+
+.vs {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.vs-panel h1,
+.vs-panel h2 {
+  margin-block: 0 0.4rem;
+}
+.vs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-block: var(--s-3) 0;
+}
+.vs-row .btn,
+.vs-row .ghost,
+.vs-pick,
+.vs-mode {
+  min-height: 44px;
+}
+.vs-file {
+  position: relative;
+  cursor: pointer;
+}
+.vs-file:focus-within {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* forms */
+.vs-field {
+  display: grid;
+  gap: 0.25rem;
+  margin-block: var(--s-3) 0;
+}
+.vs-field > span {
+  font-weight: 600;
+}
+.vs-field input[type="text"],
+.vs-field select,
+.vs-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.vs-field textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.vs-errors {
+  margin-block: var(--s-3) 0;
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-inline-start: 6px solid var(--writing-ink);
+  border-radius: 12px;
+  background: var(--writing-soft);
+}
+.vs-errors ul {
+  margin: 0.3rem 0 var(--s-2);
+  padding-inline-start: 1.2rem;
+}
+.vs-msg {
+  min-height: 1.4em;
+  margin-block: var(--s-3) 0;
+  color: var(--ink-2);
+}
+
+/* the set list and the mode chooser */
+.vs-sets,
+.vs-modes {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.vs-sets li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.vs-sets li > div {
+  display: grid;
+  gap: 0.1rem;
+}
+.vs-modes {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
+.vs-mode {
+  display: grid;
+  gap: 0.2rem;
+  height: 100%;
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-block-start: 6px solid var(--brand-ink);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.vs-mode span {
+  color: var(--ink-2);
+}
+.vs-mode:hover,
+.vs-mode:focus-visible {
+  background: var(--brand-soft);
+}
+
+/* practice */
+.vs-run {
+  min-height: 18rem;
+}
+.vs-stage {
+  display: grid;
+  gap: var(--s-3);
+}
+.vs-count {
+  margin: 0;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.vs-card {
+  display: grid;
+  gap: 0.6rem;
+  align-content: center;
+  min-height: 15rem;
+  padding: var(--s-4);
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.vs-card[aria-pressed="true"] {
+  border-color: var(--brand-ink);
+  background: var(--brand-soft);
+}
+.vs-term {
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.vs-def {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.vs-ex,
+.vs-tr,
+.vs-hint {
+  margin: 0;
+  color: var(--ink-2);
+}
+.vs-ex {
+  font-style: italic;
+}
+.vs-big .vs-card {
+  min-height: 60vh;
+}
+.vs-big .vs-term {
+  font-size: clamp(3rem, 12vw, 7rem);
+}
+.vs-big .vs-def {
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+}
+.vs-big .vs-ex,
+.vs-big .vs-tr {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+}
+.vs-controls {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+.vs-controls .btn,
+.vs-controls .ghost {
+  justify-content: center;
+  border: 2px solid var(--line);
+}
+.vs-controls .btn:not(.ghost) {
+  border-color: var(--brand-ink);
+}
+@media (min-width: 34rem) {
+  .vs-controls {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.vs-tools {
+  justify-content: space-between;
+}
+.vs-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+}
+.vs-check input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.vs-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+.vs-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.vs-pick {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.vs-pick[aria-pressed="true"] {
+  border-color: var(--brand-ink);
+  background: var(--brand-soft);
+}
+.vs-pick:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+.vs-sentence {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.5;
+}
+.vs-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+}
+.vs-bank span {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.vs-done {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border-radius: 16px;
+  background: var(--brand-soft);
+}
+.vs-done:focus {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@media (max-width: 34rem) {
+  .vs-cols {
+    grid-template-columns: 1fr;
+  }
+  .vs-sets li {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vs-card,
+  .vs-pick,
+  .vs-mode {
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+}
+
+/* printing (inside the shared #sheetPrint host, boards.css) */
+.vs-print-line {
+  margin: 0 0 0.6rem;
+}
+.vs-print-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+}
+.vs-print-card {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px dashed #555;
+  break-inside: avoid;
+}
+.vs-print-card strong {
+  font-size: 14pt;
+}
+.vs-print-cols {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1rem;
+}
+.vs-print-bank {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #555;
+}

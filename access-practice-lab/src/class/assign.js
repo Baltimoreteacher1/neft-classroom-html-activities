@@ -42,8 +42,18 @@ export function assignableActivities(index, band, domain) {
 export const assignmentLabel = (S, row) =>
   row.unit ? `${S(bandLabel(row.band), bandLabelEs(row.band))} · ${row.title}` : `${S(bandLabel(row.band), bandLabelEs(row.band))} · ${S("Level", "Nivel")} ${row.level} · ${row.title}${row.audioFirst ? ` · ${S("audio-first", "con audio primero")}` : ""}`;
 
-/** The saved assignment as the class server stores it: id, title, app-relative path, due date. */
-export const toAssignment = (row) => ({ id: row.id, title: row.title, path: row.path, due: null });
+/** The saved assignment as the class server stores it: id, title, app-relative path, due date, and optional lifecycle fields. */
+export const toAssignment = (row, extras = {}) => ({
+  id: row.id,
+  title: row.title,
+  path: row.path,
+  due: extras.due || null,
+  // Optional lifecycle fields; left out when not chosen so a plain assignment stays exactly what it was.
+  ...(extras.availableFrom ? { availableFrom: extras.availableFrom } : {}),
+  ...(extras.attempts ? { attempts: extras.attempts } : {}),
+  ...(extras.draft ? { draft: true } : {}),
+  ...(extras.supports ? { supports: extras.supports } : {}),
+});
 
 /** Grade-band name of a saved assignment, read from its link (older links without ?grades= are 6-8). */
 export const assignmentBand = (path) => codeBand(/[?&]grades=([\w-]+)/.exec(String(path || ""))?.[1], "6-8");

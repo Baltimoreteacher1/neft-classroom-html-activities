@@ -19,6 +19,11 @@
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
 import {
+  ASSIGN_STATUS_SCHEMA,
+  astatusPruneStatements,
+  astatusPurgeStatements,
+} from "./assign-status-schema.js";
+import {
   COLLAB_SCHEMA,
   collabPruneStatements,
   collabPurgeStatements,
@@ -150,6 +155,7 @@ export async function ensureSchema(db) {
       ...BOOK_SCHEMA,
       ...COLLAB_SCHEMA,
       ...EXPERIENCE_SCHEMA,
+      ...ASSIGN_STATUS_SCHEMA,
     ].map((sql) => db.prepare(sql)),
   );
   ready.add(db);
@@ -210,6 +216,7 @@ export function purgeStatements(db, code) {
   return [
     ...socialPurgeStatements(db, code),
     ...bookPurgeStatements(db, code),
+    ...astatusPurgeStatements(db, code),
     ...collabPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_experience WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
@@ -230,6 +237,7 @@ export async function pruneExpired(db, now) {
   await db.batch([
     ...socialPruneStatements(db, now, gone),
     ...bookPruneStatements(db, now, gone),
+    ...astatusPruneStatements(db, now, gone),
     ...collabPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_experience WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),

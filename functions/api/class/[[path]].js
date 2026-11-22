@@ -30,6 +30,7 @@
  * apps stay device-only, exactly as before this endpoint existed.
  * ========================================================================== */
 
+import { isAvailable } from "../../../shared/class-platform/assignment-lifecycle.js";
 import {
   APPS,
   cleanText,
@@ -47,6 +48,8 @@ import {
   validateSettings,
 } from "../../../shared/class-platform/contract.js";
 import { handleAi } from "../../_lib/class-platform/ai.js";
+import { handleAssignStatus } from "../../_lib/class-platform/assign-status.js";
+import { astatusStudentStatements } from "../../_lib/class-platform/assign-status-schema.js";
 import { handleAudio } from "../../_lib/class-platform/audio.js";
 import { collabStudentStatements } from "../../_lib/class-platform/book-collab-schema.js";
 import { bookStudentStatements } from "../../_lib/class-platform/book-schema.js";
@@ -123,6 +126,10 @@ async function requireStudent(ctx, raw) {
 
 const settingsOf = (cls) => parseJson(cls.settings_json, {});
 
+/** Learners and the public class page see only released work whose start date has come; the teacher sees all of it. */
+const visibleAssignments = (list, now) =>
+  (list || []).filter((a) => isAvailable(a, new Date(now).toISOString().slice(0, 10)));
+
 async function summaries(db, code, doc) {
   const res = await db
     .prepare(
@@ -156,7 +163,7 @@ const routes = {
         settings.goal,
         rows.map((r) => parseJson(r.summary_json, {})),
       ),
-      assignments: settings.assignments || [],
+      assignments: visibleAssignments(settings.assignments, ctx.now),
     };
   },
 
@@ -346,7 +353,7 @@ const routes = {
         settings.goal,
         classRows.map((r) => parseJson(r.summary_json, {})),
       ),
-      assignments: settings.assignments || [],
+      assignments: visibleAssignments(settings.assignments, ctx.now),
     };
   },
 
@@ -491,6 +498,7 @@ const routes = {
     await db.batch([
       ...socialStudentStatements(db, code, id),
       ...bookStudentStatements(db, code, id),
+      ...astatusStudentStatements(db, code, id),
       ...collabStudentStatements(db, code, id),
       db.prepare(`DELETE FROM class_platform_doc WHERE code = ? AND student_id = ?`).bind(code, id),
       db
@@ -555,6 +563,7 @@ export const onRequest = handler({
     if (seg === "room") return handleRoom(ctx, parts[1] || "");
     if (seg === "audio") return handleAudio(ctx, parts[1] || "");
     if (seg === "review") return handleReview(ctx, parts[1] || "");
+    if (seg === "astatus") return handleAssignStatus(ctx, parts[1] || "");
     if (seg === "pairs") return handlePairs(ctx, parts[1] || "");
     if (seg === "scenes") return handleScenes(ctx, parts[1] || "");
     if (seg === "bsupport") return handleBookSupports(ctx, parts[1] || "");

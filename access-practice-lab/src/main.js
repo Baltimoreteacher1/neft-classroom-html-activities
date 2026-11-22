@@ -29,6 +29,7 @@ import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js"
 import { initStartFresh } from "./reset.js";
 import { mountReturnBar } from "./intro/return-bar.js";
 import { mountStudioVideo } from "./studio-video-mount.js";
+import { installPresentMode, syncPresent } from "./present-mode.js";
 import { applyFolds } from "./fold.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
@@ -146,6 +147,7 @@ const VIEW_LOADERS = {
   pathways: () => import("./views/pathways.js"),
   "choice-boards": () => import("./views/choice-boards.js"),
   "talk-table": () => import("./views/talk-table.js"),
+  "vocab-sets": () => import("./views/vocab-sets.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -212,6 +214,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "live") return { ...r, view: "program", id: "live" };
   if (a === "partner") return { ...r, view: "partner" };
   if (a === "task-packs") return { ...r, view: "task-packs", id: b || "", sub: c || "" };
+  if (a === "vocab-sets") return { ...r, view: "vocab-sets", id: b || "", sub: c || "" };
   if (a === "print-studio") return { ...r, view: "book-studio", id: "templates", sub: "", printStudio: true };
   if (a === "science-of-reading" && b === "lesson")
     return { ...r, view: a, id: "lesson", lessonId: c || "" };
@@ -478,6 +481,7 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   root.removeAttribute("aria-busy");
   // A route listed in data/studio-videos.json gets its video card; every other route does nothing here.
   void mountStudioVideo(root, location.pathname, () => token === app.rendering);
+  syncPresent();
   // Orientation on navigation only: the new screen settles in place (reduced motion turns this off).
   if (routeChanged && app.rendered) {
     root.classList.remove("is-entering");
@@ -764,6 +768,7 @@ document.addEventListener("change", (e) => {
   app.view?.onChange?.(e, ctx);
 });
 document.addEventListener("input", (e) => app.view?.onInput?.(e, ctx));
+installPresentMode();
 document.addEventListener("keydown", (e) => app.view?.onKey?.(e, ctx));
 // The app renders asynchronously, so it restores scroll itself (navigate() saves scrollY into history.state).
 if (typeof history !== "undefined" && "scrollRestoration" in history) history.scrollRestoration = "manual";

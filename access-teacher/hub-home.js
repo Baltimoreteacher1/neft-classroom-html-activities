@@ -41,6 +41,7 @@ function quickTools() {
     },
     { label: "Interactive games", href: destHref("games", band), ico: "worlds" },
     { label: "Class code and student links", href: "#liveClass", ico: "classroom" },
+    { label: "Vocabulary sets", href: destHref("vocab-sets", band), ico: "words" },
   ];
 }
 

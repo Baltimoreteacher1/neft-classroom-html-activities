@@ -189,3 +189,22 @@ is intended). They are already live and need no Form work:
 If any of these is ever lost, recreate the file by hand in the Mailbox folder,
 set it to **Anyone with the link → Editor**, and paste its `/edit` URL into the
 matching key in `mailbox-links.js`.
+
+## Opening the forms to students and families who are not signed in (2026-11-20)
+
+**Symptom:** a form opens for you but students and families see "You must sign in to access this content".
+**Cause (measured, not guessed):** all 224 responder links in this repo answer HTTP 401 to an anonymous visitor, while a
+made-up form id answers 404 — so the forms exist and each one has the Google Forms setting that requires sign-in to
+the school account. Nothing in this site (its headers, its links, its pages) causes it, and the site cannot override it.
+Owner links (`/edit`) are meant for the form's owner and stay private.
+
+**Fix (run once by the forms' owner):** paste [`teacher-tools/post-forms/open-forms-to-responders.gs`](../teacher-tools/post-forms/open-forms-to-responders.gs)
+into https://script.google.com while signed in to the school account. It ships report-only (`DRY_RUN = true`), covers
+the 216 forms whose editor id is in this repo, turns off "requires sign-in" only (`setRequireLogin(false)`), and can be
+undone with `undoOpenForms()`. A form limited to one response per person, or collecting verified emails, forces
+sign-in by design; the script lists those as NEEDS DECISION rather than changing your design. The four mailbox forms
+and any other form without an editor id here go in `EXTRA_FORM_IDS`.
+
+**Check (anyone, read-only):** `node teacher-tools/post-forms/check-forms-open.mjs` (add `--list` to see each blocked
+form). Before the fix it reports 0 of 224 open. If the school's Workspace admin enforces "restrict to our
+organization", the change can be refused or reset and the fix belongs to the admin.

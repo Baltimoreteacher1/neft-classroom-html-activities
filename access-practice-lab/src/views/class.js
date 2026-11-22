@@ -7,6 +7,7 @@ import { feedbackCard, loadMyReviews } from "../class/feedback-card.js";
 import { api, languageSummary, leaveClass, loadLink, refreshClassSupport, setAssignments, startSync } from "../class/link.js";
 import { assignmentBandText } from "../class/assign.js";
 import { el, errorText, statusText } from "../class/dom.js";
+import { learnerStatusRow } from "../class/assign-status-ui.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, html } from "../util.js";
 import { loadVoiceNotes } from "../class/voice.js";
@@ -45,6 +46,7 @@ export function mount(root, ctx) {
   let info = null;
   let notes = [];
   let reviews = [];
+  let statuses = new Map(); // assignment id -> this learner's status (src/class/assign-status-ui.js)
   let timer = null;
   let shownKey = ""; // the student key, shown until the learner says they wrote it down
   const live = (msg) => {
@@ -71,10 +73,11 @@ export function mount(root, ctx) {
   async function refresh() {
     const link = loadLink();
     if (!link) return;
-    const [i, n, r] = await Promise.all([classInfo(link.code), loadVoiceNotes(link), loadMyReviews(api, link), refreshClassSupport(link)]);
+    const [i, n, r, st] = await Promise.all([classInfo(link.code), loadVoiceNotes(link), loadMyReviews(api, link), api.astatusMine(link), refreshClassSupport(link)]);
     if (i.ok) setInfo(i);
     notes = n;
     reviews = r;
+    statuses = new Map((st?.statuses || []).map((x) => [x.assignmentId, x]));
     draw();
   }
 
@@ -120,6 +123,7 @@ export function mount(root, ctx) {
 
   function assignmentCards() {
     const list = info?.assignments || [];
+    const link = loadLink();
     const done = new Set(languageSummary({ assignmentIds: assignmentIds() }).assignmentsDone);
     return el(
       "section",
@@ -137,6 +141,17 @@ export function mount(root, ctx) {
                 el("span", { class: "fine" }, ` · ${assignmentBandText(S, a.path)}`),
                 a.due ? el("span", { class: "fine" }, ` · ${S("due", "para el")} ${a.due}`) : null,
                 el("span", { class: done.has(a.id) ? "cls-done" : "cls-todo" }, ` ${done.has(a.id) ? S("Done", "Hecho") : S("To do", "Por hacer")}`),
+                statuses.has(a.id)
+                  ? learnerStatusRow({
+                      S,
+                      status: statuses.get(a.id),
+                      onAct: async (action) => {
+                        const res = await api.astatusAct(link, { assignmentId: a.id, action });
+                        live(res.ok ? S("Saved.", "Guardado.") : errorText(S, res.error));
+                        await refresh();
+                      },
+                    })
+                  : null,
               ),
             ),
           )

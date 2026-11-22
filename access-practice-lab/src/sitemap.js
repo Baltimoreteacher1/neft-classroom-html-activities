@@ -242,6 +242,12 @@ export const DESTINATIONS = Object.freeze([
     text: P("Open the existing Book Studio templates and editor to make and print a classroom resource.", "Abre las plantillas y el editor de Book Studio para crear e imprimir un recurso de clase."),
   },
   {
+    id: "vocab-sets", section: "teach", skill: "Words", kind: "studio", for: T_,
+    href: "vocab-sets", icon: "words", match: [["vocab-sets"]], top: false,
+    title: P("Vocabulary sets", "Conjuntos de vocabulario"),
+    text: P("Make your own word lists, practice them four ways, share a student link and print cards.", "Crea tus propias listas de palabras, practícalas de cuatro maneras, comparte un enlace para estudiantes e imprime tarjetas."),
+  },
+  {
     id: "el-program", section: "teach", skill: "Mixed", kind: "tool", for: T_,
     href: "program", icon: "teacher", match: [["program"], ["strategies"]], top: false,
     title: P("Teacher Program Studio", "Estudio de programa docente"),

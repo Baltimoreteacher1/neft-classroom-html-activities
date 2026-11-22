@@ -135,6 +135,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     const rosterBody = el("tbody");
     const goalLine = el("p", { class: "fine" });
     const assignBox = el("div");
+    const statusBox = el("div");
     const quizBox = el("div");
     const notesBox = el("div");
     const heatBox = el("div");
@@ -176,6 +177,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       el("section", { class: "cls-card" }, el("h4", {}, S("Scoring queue", "Cola de revisión")), queueBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Family reports", "Informes para las familias")), familyReportControls(S, () => roster?.students || [])),
       el("section", { class: "cls-card" }, el("h4", {}, S("Assignments", "Tareas")), assignBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Assignment status", "Estado de las tareas")), statusBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Book Studio writing coach (AI)", "Asesor de escritura de Book Studio (IA)")),
         el("p", { class: "fine" }, S("When on, a student can choose to send the words of one page or sentence to this site's coach, which only asks questions and suggests words. It never writes for them and nothing is kept.", "Si está activado, un estudiante puede enviar las palabras de una página u oración al asesor de este sitio, que solo hace preguntas y sugiere palabras. Nunca escribe por el estudiante y no se guarda nada.")),
         el("label", { for: "ctAiCoach", class: "row-actions" }, coachToggle, S("Allow the writing coach in Book Studio", "Permitir el asesor de escritura en Book Studio"))),
@@ -236,13 +238,74 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       band.onchange = domain.onchange = fill;
       fill();
       const list = roster?.settings?.assignments || [];
+      const { levelInfo, MAX_LEVEL, profileOf } = await import("../support-engine/engine.js");
+      const due = el("input", { type: "date", "aria-label": S("Due date", "Fecha de entrega") });
+      const from = el("input", { type: "date", "aria-label": S("Available from", "Disponible desde") });
+      const tries = el("select", { "aria-label": S("Tries allowed", "Intentos permitidos") }, [1, 2, 3, 4, 5].map((n) => el("option", { value: String(n), ...(n === 3 ? { selected: "" } : {}) }, String(n))));
+      const draft = el("input", { type: "checkbox", id: "ctDraft", "data-nsr-ignore": "" });
+      const level = el("select", { "aria-label": S("Support level", "Nivel de apoyo") }, [
+        el("option", { value: "" }, S("No assigned support", "Sin apoyo asignado")),
+        ...Array.from({ length: MAX_LEVEL }, (_, n) => el("option", { value: String(n + 1) }, `${S(levelInfo(n + 1).en, levelInfo(n + 1).es)} (${S("support grouping", "grupo de apoyo")})`)),
+      ]);
+      const meta = (a) =>
+        [
+          a.draft ? S("Draft", "Borrador") : "",
+          a.due ? `${S("due", "para el")} ${a.due}` : "",
+          a.availableFrom ? `${S("starts", "comienza")} ${a.availableFrom}` : "",
+          a.attempts ? `${a.attempts} ${S("tries", "intentos")}` : "",
+          a.supports ? S("with supports", "con apoyos") : "",
+        ]
+          .filter(Boolean)
+          .join(" · ");
       assignBox.replaceChildren(
-        list.length ? el("ul", { class: "cls-list" }, list.map((a) => el("li", {}, a.title || a.id, el("span", { class: "fine" }, ` · ${assignmentBandText(S, a.path)} `), el("button", { type: "button", class: "btn small ghost", onclick: () => saveAssignments(list.filter((x) => x.id !== a.id)) }, S("Remove", "Quitar"))))) : el("p", {}, S("Nothing assigned yet.", "Todavía no hay tareas asignadas.")),
-        el("div", { class: "row-actions" }, band, domain, pick, el("button", { type: "button", class: "btn", onclick: () => {
-          const row = rows[Number(pick.value)];
-          if (!row || list.some((a) => a.id === row.id)) return;
-          saveAssignments([...list, toAssignment(row)]);
-        } }, S("Assign", "Asignar"))),
+        list.length
+          ? el(
+              "ul",
+              { class: "cls-list" },
+              list.map((a) =>
+                el(
+                  "li",
+                  {},
+                  a.title || a.id,
+                  el("span", { class: "fine" }, ` · ${assignmentBandText(S, a.path)} ${meta(a) ? `· ${meta(a)} ` : ""}`),
+                  a.draft ? el("button", { type: "button", class: "btn small", onclick: () => saveAssignments(list.map((x) => (x.id === a.id ? { ...x, draft: false } : x))) }, S("Release to learners", "Publicar para los estudiantes")) : null,
+                  el("button", { type: "button", class: "btn small ghost", onclick: () => saveAssignments(list.filter((x) => x.id !== a.id)) }, S("Remove", "Quitar")),
+                ),
+              ),
+            )
+          : el("p", {}, S("Nothing assigned yet.", "Todavía no hay tareas asignadas.")),
+        el("div", { class: "row-actions" }, band, domain, pick),
+        el(
+          "div",
+          { class: "row-actions" },
+          el("label", {}, S("Due", "Entrega"), " ", due),
+          el("label", {}, S("Available from", "Disponible desde"), " ", from),
+          el("label", {}, S("Tries", "Intentos"), " ", tries),
+          level,
+          el("label", {}, draft, " ", S("Save as draft", "Guardar como borrador")),
+          el(
+            "button",
+            {
+              type: "button",
+              class: "btn",
+              onclick: () => {
+                const row = rows[Number(pick.value)];
+                if (!row || list.some((a) => a.id === row.id)) return;
+                saveAssignments([
+                  ...list,
+                  toAssignment(row, {
+                    due: due.value,
+                    availableFrom: from.value,
+                    attempts: Number(tries.value) === 3 ? 0 : Number(tries.value),
+                    draft: draft.checked,
+                    supports: level.value ? profileOf(Number(level.value)) : null,
+                  }),
+                ]);
+              },
+            },
+            S("Assign", "Asignar"),
+          ),
+        ),
       );
     }
     loadRoster();
@@ -250,6 +313,10 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     drawQuiz(quizBox);
     drawNotes(notesBox);
     drawReviewQueue(queueBox, { S, api, live });
+    import("./assign-status-ui.js").then((m) => {
+      const board = m.mountAssignBoard(statusBox, { S, api, live });
+      if (board?.unmount) timers.push({ unmount: board.unmount });
+    });
     import("./social-teacher.js").then((m) => {
       const social = m.mountSocialPanel(socialBox, { S, code: current.code, passcode: current.passcode, siteKey, fetchImpl, live });
       // The social panel polls on its own timer; stop it with the panel's other timers.

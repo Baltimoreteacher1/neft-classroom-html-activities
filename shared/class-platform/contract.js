@@ -12,6 +12,8 @@
  * Pure and dependency-free: no DOM, no fetch, no clock (callers pass `now`).
  * ========================================================================== */
 
+import { cleanAssignmentExtras } from "./assignment-lifecycle.js";
+
 export const APPS = Object.freeze(["fluency", "language"]);
 export const DOCS = Object.freeze(["fluency", "language"]);
 
@@ -211,6 +213,8 @@ export function validateSettings(raw, app) {
       const due = a.due == null ? null : String(a.due);
       if (due !== null && !/^\d{4}-\d{2}-\d{2}$/.test(due))
         return { ok: false, error: "invalid-due" };
+      const extras = cleanAssignmentExtras(a);
+      if (!extras.ok) return { ok: false, error: extras.error };
       out.assignments.push({
         id: a.id,
         app,
@@ -223,6 +227,11 @@ export function validateSettings(raw, app) {
             ? a.path
             : "",
         due,
+        // Optional lifecycle fields; an assignment without them behaves exactly as before.
+        ...(extras.value.availableFrom ? { availableFrom: extras.value.availableFrom } : {}),
+        ...(a.attempts != null ? { attempts: extras.value.attempts } : {}),
+        ...(extras.value.draft ? { draft: true } : {}),
+        ...(extras.value.supports ? { supports: extras.value.supports } : {}),
       });
     }
   }

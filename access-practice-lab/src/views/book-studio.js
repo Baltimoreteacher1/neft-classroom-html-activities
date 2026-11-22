@@ -30,6 +30,8 @@ import { KEY_USES, clusterForBand, programFor } from "../book/programs.js";
 import { templateForBand } from "../book/template-bands.js";
 import { CREATION_MODES, adventureSkeleton } from "../book/story.js";
 import { makePage } from "../book/model.js";
+import { LEVELS } from "../book/lang/profiles.js";
+import { compareEditions, editionLevel, isEdition } from "../book/editions.js";
 import { TEMPLATE_GROUPS, templateById, templatesFor } from "../book/templates.js";
 import { BASE, announce, html } from "../util.js";
 
@@ -291,7 +293,7 @@ function notFound(box, I) {
 
 // ── bookshelf ────────────────────────────────────────────────────────────────
 
-function coverCard(book, I, { pending } = {}) {
+function coverCardBase(book, I, { pending } = {}) {
   const lang = I.mode === "es" ? "es" : "en";
   const st = STATUSES[book.status] || STATUSES.draft;
   const from = book.collab
@@ -326,13 +328,60 @@ function coverCard(book, I, { pending } = {}) {
   </li>`;
 }
 
+// ── support editions: a copy of a book made for one support level (src/book/editions.js) ──────────────────────────────
+const levelName = (n, I) => {
+  const l = LEVELS.find((x) => x.n === n);
+  return l ? I.S(l.en, l.es) : "";
+};
+
+function editionPanelHTML(book, I) {
+  const options = LEVELS.map((l) => `<option value="${l.n}">${esc(`${l.n}. ${I.S(l.en, l.es)}`)}</option>`).join("");
+  return `<div class="bk-confirm" role="group" data-edition-panel aria-label="${esc(I.S("Make a support edition", "Crear una edición con apoyos"))}">
+    <p class="fine">${esc(I.S("An edition keeps the story exactly as written and carries only the language supports for one support level. A support level is your grouping, not an official proficiency level.", "Una edición conserva la historia tal como está escrita y lleva solo los apoyos de lenguaje de un nivel de apoyo. Un nivel de apoyo es tu agrupación, no un nivel oficial de dominio."))}</p>
+    <label>${esc(I.S("Support level", "Nivel de apoyo"))} <select data-edition-level>${options}</select></label>
+    <label>${esc(I.S("Edition name (optional)", "Nombre de la edición (opcional)"))} <input type="text" data-edition-label maxlength="40" /></label>
+    <button type="button" class="btn small btn-primary" data-shelf="edition-make" data-id="${book.id}">${esc(I.S("Make edition", "Crear edición"))}</button>
+    <button type="button" class="btn small ghost" data-shelf="edition-cancel" data-id="${book.id}">${esc(I.S("Cancel", "Cancelar"))}</button>
+  </div>`;
+}
+
+function comparePanelHTML(book, original, I) {
+  if (!original) {
+    return `<div class="bk-confirm" role="status">${esc(I.S("The original book is not on this device, so there is nothing to compare with.", "El libro original no está en este dispositivo, así que no hay con qué comparar."))}</div>`;
+  }
+  const c = compareEditions(original, book);
+  const list = (items) => (items.length ? `<ul>${items.map((x) => `<li>${esc(x.title)}</li>`).join("")}</ul>` : `<p class="fine">${esc(I.S("None", "Ninguno"))}</p>`);
+  return `<div class="bk-confirm" role="region" aria-label="${esc(I.S("Compare with the original", "Comparar con el original"))}">
+    <p><strong>${esc(c.sameStory ? I.S("The story is the same as the original.", "La historia es igual a la original.") : I.S("The story text is different from the original. Check that the thinking the story asks for did not change.", "El texto de la historia es diferente del original. Verifica que no haya cambiado lo que la historia pide pensar."))}</strong></p>
+    <p class="fine">${esc(I.S(`This edition: ${c.a.supports} supports, ${c.a.words} words. Original: ${c.b.supports} supports, ${c.b.words} words.`, `Esta edición: ${c.a.supports} apoyos, ${c.a.words} palabras. Original: ${c.b.supports} apoyos, ${c.b.words} palabras.`))}</p>
+    <p>${esc(I.S("Only in the original (left out of this edition):", "Solo en el original (no están en esta edición):"))}</p>${list(c.onlyB)}
+    <p>${esc(I.S("Only in this edition:", "Solo en esta edición:"))}</p>${list(c.onlyA)}
+  </div>`;
+}
+
+function coverCard(book, I, { pending, editionOpen, compareWith } = {}) {
+  let card = coverCardBase(book, I, { pending });
+  const dup = /<button type="button" data-shelf="duplicate"[^>]*>[^<]*<\/button>/.exec(card);
+  const extra = [
+    `<button type="button" data-shelf="edition-open" data-id="${book.id}">${esc(I.S("Make a support edition…", "Crear una edición con apoyos…"))}</button>`,
+    isEdition(book) ? `<button type="button" data-shelf="compare" data-id="${book.id}">${esc(I.S("Compare with the original", "Comparar con el original"))}</button>` : "",
+  ].join("");
+  if (dup) card = card.replace(dup[0], dup[0] + extra);
+  if (isEdition(book)) {
+    const chip = `<p class="fine" data-edition-chip>${esc(I.S("Support edition", "Edición con apoyos"))}: ${esc(levelName(editionLevel(book), I))}</p>`;
+    card = card.replace('<p class="bk-card-meta">', `${chip}<p class="bk-card-meta">`);
+  }
+  const panels = `${editionOpen ? editionPanelHTML(book, I) : ""}${compareWith !== undefined ? comparePanelHTML(book, compareWith, I) : ""}`;
+  return panels ? card.replace(/<\/div>\s*<\/li>\s*$/, `${panels}</div></li>`) : card;
+}
+
 async function renderHome(box, ctx, I) {
   const lang = I.mode === "es" ? "es" : "en";
   let books = await db.listBooks();
   await Promise.all(
     books.slice(0, 40).map((b) => preloadMedia({ ...b, pages: [b.pages[0]] }).catch(() => {})),
   );
-  const state = { q: "", status: "all", pending: null };
+  const state = { q: "", status: "all", pending: null, edition: null, compare: null };
   const last = books.find((b) => b.id === db.getLast()) || books[0];
   const persisted = navigator.storage?.persisted
     ? await navigator.storage.persisted().catch(() => false)
@@ -349,7 +398,15 @@ async function renderHome(box, ctx, I) {
         (!q || `${b.title} ${b.author}`.toLowerCase().includes(q)),
     );
     box.querySelector("[data-shelf-list]").innerHTML = list.length
-      ? list.map((b) => coverCard(b, I, { pending: state.pending === b.id })).join("")
+      ? list
+          .map((b) =>
+            coverCard(b, I, {
+              pending: state.pending === b.id,
+              editionOpen: state.edition === b.id,
+              compareWith: state.compare === b.id ? books.find((x) => x.id === b.source?.id) || null : undefined,
+            }),
+          )
+          .join("")
       : `<li class="bk-empty-row">${esc(books.length ? I.S("No books match.", "Ningún libro coincide.") : I.S("No books yet. Create your first one!", "Todavía no hay libros. ¡Crea el primero!"))}</li>`;
     box.querySelector("[data-shelf-count]").textContent = `${list.length}`;
   };
@@ -511,6 +568,40 @@ async function renderHome(box, ctx, I) {
       books.unshift(saved);
       draw();
       announce(I.S("Copy made.", "Copia hecha."));
+    } else if (act === "edition-open") {
+      state.edition = id;
+      state.pending = null;
+      draw();
+      box.querySelector("[data-edition-level]")?.focus();
+    } else if (act === "edition-cancel") {
+      state.edition = null;
+      draw();
+    } else if (act === "compare") {
+      state.compare = state.compare === id ? null : id;
+      draw();
+    } else if (act === "edition-make") {
+      const src = books.find((x) => x.id === id);
+      const panel = b.closest("[data-edition-panel]");
+      const level = Number(panel.querySelector("[data-edition-level]").value);
+      const label = panel.querySelector("[data-edition-label]").value;
+      const { createEdition } = await import("../book/editions.js");
+      const made = createEdition(src, { level, label });
+      const map = await db.copyMedia(mediaIds(src), made.book.id);
+      for (const p of made.book.pages) {
+        p.narration = map[p.narration] || "";
+        for (const el of p.elements)
+          for (const k of ["media", "poster", "captions"]) if (el[k]) el[k] = map[el[k]] || "";
+      }
+      const saved = await db.saveBook(made.book);
+      books.unshift(saved);
+      state.edition = null;
+      draw();
+      announce(
+        I.S(
+          `Edition made: ${made.kept} supports kept, ${made.left} left out.`,
+          `Edición creada: ${made.kept} apoyos incluidos, ${made.left} no incluidos.`,
+        ),
+      );
     } else if (act === "download") {
       const src = books.find((x) => x.id === id);
       download(await exportProject(src), `${fileBase(src)}.langbook`);

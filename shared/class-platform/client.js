@@ -157,6 +157,16 @@ export function studentApi(doc) {
     /** The teacher's reviews of this learner's shared work: descriptor chips and a comment, never a score. */
     reviewMine: (link, fetchImpl = fetch) =>
       request(fetchImpl, `review/mine?code=${link.code}`, { headers: studentHeaders(link) }),
+    /** This learner's status on each released assignment: state, attempt, late flag, the teacher's comment. */
+    astatusMine: (link, fetchImpl = fetch) =>
+      request(fetchImpl, `astatus/mine?code=${link.code}`, { headers: studentHeaders(link) }),
+    /** Move this learner's own work: action is "start" or "submit". The server refuses anything else. */
+    astatusAct: (link, { assignmentId, action }, fetchImpl = fetch) =>
+      request(fetchImpl, "astatus/act", {
+        method: "POST",
+        headers: studentHeaders(link),
+        body: { code: link.code, assignmentId, action },
+      }),
     /** Bytes of one recording or note, fetched with the learner's headers (an <audio src> cannot send them). */
     async audioBlob(link, audioId, fetchImpl = fetch) {
       try {
@@ -216,6 +226,15 @@ export function createTeacherClient({
     audioDelete: (audioId) => call("audio/delete", { audioId }),
     reviewQueue: () => call(`review/queue?code=${code}`),
     reviewMark: (review) => call("review/mark", review),
+    /** Every assignment by every learner: counts per state and each learner's status. */
+    astatusBoard: () => call(`astatus/board?code=${code}`),
+    /** A teacher move on one learner's work: action is "review", "request_revision" or "reassign". */
+    astatusAct: (change) => call("astatus/act", change),
+    /** One learner's recent transitions on one assignment. */
+    astatusHistory: (assignmentId, studentId) =>
+      call(
+        `astatus/history?code=${code}&assignmentId=${encodeURIComponent(assignmentId)}&studentId=${studentId}`,
+      ),
     /** Bytes of one recording, fetched with the teacher's own headers (an <audio src> cannot send them). */
     async audioBlob(audioId) {
       try {

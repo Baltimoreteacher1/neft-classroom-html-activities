@@ -11,6 +11,7 @@ import { i18nFor, makeI18n } from "./i18n.js";
 import { splitSentences, tagLabel } from "./lang/evidence-notebook.js";
 import { LISTEN_NOTE_FIELDS, listeningSegments, signalParts } from "./learning.js";
 import { hubLink } from "./audience.js";
+import { presentButtonHTML } from "./present-mode.js";
 import { bandLabelEs } from "./bands.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, icon, raw } from "./util.js";
 
@@ -575,6 +576,6 @@ export const crumbsHTML = (items, { i18n = null } = {}) =>
     <ol>
       ${items.map(([label, href], i) => (i === 0 && href && LAB_HOME.test(href) ? [(i18n || I).S("Home", "Inicio"), `${BASE}/`] : [label, href])).map(([label, href]) => html`<li>${href ? html`<a href="${href}">${label}</a>` : html`<span aria-current="page">${label}</span>`}</li>`)}
     </ol>
-    ${hubBackHTML(i18n || I)}
+    ${hubBackHTML(i18n || I)}${presentButtonHTML(i18n || I)}
   </nav>`;
 export { BASE };
