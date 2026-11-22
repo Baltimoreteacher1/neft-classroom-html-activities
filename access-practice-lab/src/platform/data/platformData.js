@@ -21,6 +21,22 @@ export function getLanguageMeta(code) {
 // ── Module 1: Content-to-Language Bridge Samples ──────────────────────────────
 export const BRIDGE_SAMPLES = [
   {
+    id: "k2-sci-living",
+    subject: "Science",
+    grade: "Grades K–2",
+    klu: "Inform",
+    title: "How Plants & Seeds Grow",
+    text: "A seed needs water and sunlight to grow into a plant. First, the roots grow down into the soil. Next, the stem grows up toward the light, because the leaves make food for the plant.",
+  },
+  {
+    id: "k2-math-shapes",
+    subject: "Math",
+    grade: "Grades K–2",
+    klu: "Explain",
+    title: "Comparing Shapes & Sides",
+    text: "A square has four equal sides, whereas a triangle has only three sides. Both shapes are flat, however a square has four square corners.",
+  },
+  {
     id: "sci-g6-ecosystems",
     subject: "Science",
     grade: "Grade 6",
@@ -131,6 +147,36 @@ export const L1_AUDIO_CUES = {
 // ── Module 3: Sentence Architect Studio ───────────────────────────────────────
 export const ARCHITECT_KERNELS = [
   {
+    id: "k2-seed-grew",
+    klu: "Inform",
+    subject: "K–2 Science",
+    kernel: "The seed grew.",
+    whoWhat: "The seed",
+    action: "grew",
+    whyHow: "water and warm sunlight",
+    blocks: [
+      { id: "k1", slot: "verb", category: "Action Verb", text: "sprouted tall green leaves", levelBoost: 1 },
+      { id: "k2", slot: "prep", category: "Where Phrase", text: "in the wet soil", levelBoost: 1 },
+      { id: "k3", slot: "connector", category: "Sequence Word", text: "first,", levelBoost: 1 },
+      { id: "k4", slot: "evidence", category: "Why Clause", text: "because it got water and warm sunlight", levelBoost: 2 },
+    ],
+  },
+  {
+    id: "k2-dog-ran",
+    klu: "Narrate",
+    subject: "K–2 Story",
+    kernel: "The dog ran.",
+    whoWhat: "The dog",
+    action: "ran",
+    whyHow: "chasing the red ball",
+    blocks: [
+      { id: "kd1", slot: "verb", category: "Action Verb", text: "bounded across the grass", levelBoost: 1 },
+      { id: "kd2", slot: "prep", category: "Where Phrase", text: "near the sunny park", levelBoost: 1 },
+      { id: "kd3", slot: "connector", category: "Time Word", text: "suddenly,", levelBoost: 1 },
+      { id: "kd4", slot: "evidence", category: "Why Clause", text: "so it could catch the red ball", levelBoost: 2 },
+    ],
+  },
+  {
     id: "explain-plant",
     klu: "Explain",
     subject: "Science",
@@ -195,6 +241,26 @@ export const ARCHITECT_KERNELS = [
 // ── Module 4: Adaptive Speaking Simulator ─────────────────────────────────────
 export const SPEAKING_PROMPTS = [
   {
+    id: "k2-weather",
+    subject: "K–2 Science",
+    klu: "Inform",
+    title: "Tell About a Rainy Day",
+    prompt: "Look outside on a rainy day. Tell two things plants or animals do when it rains.",
+    starter: "When it rains outside, the plants...",
+    wordBank: ["rain", "water", "soil", "grow", "because"],
+    modelSample: "When it rains outside, the soil gets wet. The plants drink the water because it helps them grow.",
+  },
+  {
+    id: "k2-apples",
+    subject: "K–2 Math",
+    klu: "Explain",
+    title: "Compare Two Baskets",
+    prompt: "One basket has 5 red apples and another basket has 3 green apples. Which basket has more, and how do you know?",
+    starter: "The first basket has more apples because...",
+    wordBank: ["more", "fewer", "compare", "five", "because"],
+    modelSample: "The first basket has more apples because five is greater than three.",
+  },
+  {
     id: "speak-ecosystem",
     subject: "Science",
     klu: "Explain",
@@ -228,6 +294,8 @@ export const SPEAKING_PROMPTS = [
 
 // ── Module 5: Reclassification Radar Demo Roster (Zero PII) ──────────────────
 export const DEMO_ROSTER = [
+  { id: "stu-k1", alias: "Leo T.", grade: "K", l1: "es", listening: 4.3, speaking: 3.7, reading: 4.1, writing: 3.6, threshold: 4.5 },
+  { id: "stu-k2", alias: "Nadia B.", grade: "2", l1: "ar", listening: 4.6, speaking: 4.2, reading: 4.3, writing: 3.9, threshold: 4.5 },
   { id: "stu-1", alias: "Maya R.", grade: "6", l1: "es", listening: 4.8, speaking: 3.9, reading: 4.6, writing: 4.1, threshold: 4.5 },
   { id: "stu-2", alias: "Mateo S.", grade: "6", l1: "es", listening: 4.4, speaking: 4.3, reading: 4.2, writing: 3.7, threshold: 4.5 },
   { id: "stu-3", alias: "Amira K.", grade: "7", l1: "ar", listening: 4.9, speaking: 4.6, reading: 4.7, writing: 4.2, threshold: 4.5 },
@@ -296,21 +364,22 @@ export const FAMILY_CARD_LABELS = {
   pt: { title: "Cartão de Orgulho da Família", week: "Crescimento Desta Semana", pride: "Momento de Orgulho", dinner: "Pergunta de 2 Minutos no Jantar", privacy: "Privacidade em Primeiro Lugar: Nenhum dado pessoal ou áudio é armazenado em servidores externos.", print: "Imprimir Cartão", copy: "Copiar Link" },
 };
 
-// ── Resource Library Catalog (New + Legacy Harmonized) ────────────────────────
+// ── Resource Library Catalog (New + Legacy Harmonized, K-8) ───────────────────
 export const RESOURCE_LIBRARY = [
-  { id: "bridge", pillar: "Prepare", title: "Content-to-Language Bridge", outcome: "Scan any lesson text for traps, cognates & tiered frames.", grade: "Grades 3–8", domain: "Teacher", route: "bridge", isNew: true },
-  { id: "architect", pillar: "Practice", title: "Sentence Architect Studio", outcome: "Snap connectors, verbs & evidence to level up sentences.", grade: "Grades 3–8", domain: "Writing", route: "architect", isNew: true },
-  { id: "simulator", pillar: "Practice", title: "Adaptive Speaking Simulator", outcome: "Record answers with measured lifelines & rubric feedback.", grade: "Grades 3–8", domain: "Speaking", route: "simulator", isNew: true },
-  { id: "radar", pillar: "Evidence & Family", title: "Reclassification Radar", outcome: "Spot bubble students & build 4-week domain sprints.", grade: "Teacher", domain: "Evidence", route: "radar", isNew: true },
-  { id: "family-bridge", pillar: "Evidence & Family", title: "Bilingual Family Bridge", outcome: "Share zero-login Pride Cards & dinner prompts in 7 L1s.", grade: "K–8 Families", domain: "Family", route: "family-bridge", isNew: true },
+  { id: "bridge", pillar: "Prepare", title: "Content-to-Language Bridge", outcome: "Scan any K–8 lesson text for traps, cognates & tiered frames.", grade: "Grades K–8", domain: "Teacher", route: "bridge", isNew: true },
+  { id: "architect", pillar: "Practice", title: "Sentence Architect Studio", outcome: "Snap connectors, verbs & evidence to level up K–8 sentences.", grade: "Grades K–8", domain: "Writing", route: "architect", isNew: true },
+  { id: "simulator", pillar: "Practice", title: "Adaptive Speaking Simulator", outcome: "Record K–8 answers with measured lifelines & rubric feedback.", grade: "Grades K–8", domain: "Speaking", route: "simulator", isNew: true },
+  { id: "radar", pillar: "Evidence & Family", title: "Reclassification Radar", outcome: "Spot K–8 bubble students & build 4-week domain sprints.", grade: "Grades K–8", domain: "Evidence", route: "radar", isNew: true },
+  { id: "family-bridge", pillar: "Evidence & Family", title: "Bilingual Family Bridge", outcome: "Share zero-login Pride Cards & dinner prompts in 7 L1s.", grade: "Grades K–8", domain: "Family", route: "family-bridge", isNew: true },
   { id: "pricing", pillar: "Evidence & Family", title: "Plans & School PO Quote", outcome: "Compare Teacher Pro & generate a printable school quote.", grade: "Admin", domain: "Account", route: "pricing", isNew: true },
-  // Legacy ACCESS Practice Lab rooms & studios
-  { id: "legacy-listening", pillar: "Practice", title: "Listening Room", outcome: "Follow classroom directions and catch key details.", grade: "Grades 3–8", domain: "Listening", route: "Listening", isNew: false },
-  { id: "legacy-reading", pillar: "Practice", title: "Reading Room", outcome: "Read short passages, find evidence & main ideas.", grade: "Grades 3–8", domain: "Reading", route: "Reading", isNew: false },
-  { id: "legacy-speaking", pillar: "Practice", title: "Speaking Studio", outcome: "Plan, record, and listen back to academic prompts.", grade: "Grades 3–8", domain: "Speaking", route: "speak", isNew: false },
-  { id: "legacy-writing", pillar: "Practice", title: "Writing Studio", outcome: "Draft and revise structured responses with feedback.", grade: "Grades 3–8", domain: "Writing", route: "write", isNew: false },
+  // Legacy ACCESS Practice Lab rooms & studios (K-8)
+  { id: "legacy-early", pillar: "Practice", title: "Early Learners Hub (K–2)", outcome: "Picture-first listening, speaking, reading & writing for K–2.", grade: "Grades K–2", domain: "Early K–2", route: "early", isNew: false },
+  { id: "legacy-listening", pillar: "Practice", title: "Listening Room", outcome: "Follow classroom directions and catch key details.", grade: "Grades K–8", domain: "Listening", route: "Listening", isNew: false },
+  { id: "legacy-reading", pillar: "Practice", title: "Reading Room", outcome: "Read short passages, find evidence & main ideas.", grade: "Grades K–8", domain: "Reading", route: "Reading", isNew: false },
+  { id: "legacy-speaking", pillar: "Practice", title: "Speaking Studio", outcome: "Plan, record, and listen back to academic prompts.", grade: "Grades K–8", domain: "Speaking", route: "speak", isNew: false },
+  { id: "legacy-writing", pillar: "Practice", title: "Writing Studio", outcome: "Draft and revise structured responses with feedback.", grade: "Grades K–8", domain: "Writing", route: "write", isNew: false },
   { id: "legacy-detective", pillar: "Practice", title: "Language Error Detective", outcome: "Spot and revise 25 recurring academic language patterns.", grade: "Grades 3–8", domain: "Writing", route: "detective", isNew: false },
-  { id: "legacy-tests", pillar: "Practice", title: "Practice Tests", outcome: "Rehearse full multi-domain ACCESS-style test sets.", grade: "Grades 3–8", domain: "Assessment", route: "tests", isNew: false },
-  { id: "legacy-road", pillar: "Prepare", title: "Road to ACCESS", outcome: "12-week sequenced classroom preparation roadmap.", grade: "Grades 3–8", domain: "Planning", route: "road", isNew: false },
-  { id: "legacy-passport", pillar: "Evidence & Family", title: "My Passport", outcome: "Portable ACCESS1 progress code & saved work.", grade: "Grades 3–8", domain: "Evidence", route: "passport", isNew: false },
+  { id: "legacy-tests", pillar: "Practice", title: "Practice Tests", outcome: "Rehearse full multi-domain ACCESS-style test sets.", grade: "Grades K–8", domain: "Assessment", route: "tests", isNew: false },
+  { id: "legacy-road", pillar: "Prepare", title: "Road to ACCESS", outcome: "12-week sequenced classroom preparation roadmap.", grade: "Grades K–8", domain: "Planning", route: "road", isNew: false },
+  { id: "legacy-passport", pillar: "Evidence & Family", title: "My Passport", outcome: "Portable ACCESS1 progress code & saved work.", grade: "Grades K–8", domain: "Evidence", route: "passport", isNew: false },
 ];

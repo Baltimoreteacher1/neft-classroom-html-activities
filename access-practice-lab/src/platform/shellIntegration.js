@@ -11,11 +11,7 @@ import { getLogEvents, isDebugEnabled, subscribeLogs } from "./services/logger.j
 import { STORAGE_KEYS, readStorage, updateStorage } from "./services/storageService.js";
 
 function resolveEffectiveTheme(prefTheme) {
-  if (prefTheme === "light" || prefTheme === "dark") return prefTheme;
-  if (typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
-  return "light";
+  return prefTheme === "dark" ? "dark" : "light";
 }
 
 export function applyPlatformAttributes() {
@@ -94,7 +90,7 @@ export function mountPlatformControls(ctx) {
   applyPlatformAttributes();
   const prefs = readStorage(STORAGE_KEYS.PREFS);
   const role = prefs.role || "teacher";
-  const theme = prefs.theme || "auto";
+  const theme = prefs.theme === "dark" ? "dark" : "light";
   const l1 = prefs.l1 || "es";
 
   let bar = document.getElementById("tlpControlBar");
@@ -134,7 +130,7 @@ export function mountPlatformControls(ctx) {
         </select>
       </label>
       <button type="button" class="tlp-icon-btn" id="tlpThemeToggle" aria-label="Toggle color theme">
-        ${theme === "dark" ? "🌙 Dark" : theme === "light" ? "☀️ Light" : "◐ Auto"}
+        ${theme === "dark" ? "🌙 Dark" : "☀️ Light"}
       </button>
       <a class="tlp-icon-btn tlp-teacher-only" href="${BASE}/pricing" style="text-decoration:none">Plans</a>
     </div>
@@ -193,8 +189,7 @@ export function mountPlatformControls(ctx) {
   });
 
   bar.querySelector("#tlpThemeToggle")?.addEventListener("click", () => {
-    const order = ["auto", "light", "dark"];
-    const next = order[(order.indexOf(theme) + 1) % order.length];
+    const next = theme === "dark" ? "light" : "dark";
     updateStorage(STORAGE_KEYS.PREFS, { theme: next });
     applyPlatformAttributes();
     ctx.rerender();

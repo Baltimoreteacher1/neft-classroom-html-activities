@@ -21,7 +21,7 @@ const DEFAULT_STATES = {
   [STORAGE_KEYS.PREFS]: () => ({
     schemaVersion: SCHEMA_VERSION,
     role: "teacher", // "teacher" | "student" | "family"
-    theme: "auto",   // "auto" | "light" | "dark"
+    theme: "light",  // "light" | "dark"
     l1: "es",        // "es" | "ar" | "zh" | "fr" | "uk" | "ru" | "pt" | "en"
     cognateSpotlight: true,
     updatedAt: null,

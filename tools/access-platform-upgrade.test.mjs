@@ -66,13 +66,18 @@ test("entitlementService: tier switching and Free Starter gating", () => {
 });
 
 test("intelligenceAdapter: Content-to-Language Bridge scanner & L1 transfer", () => {
-  const sci = BRIDGE_SAMPLES[0];
+  const sci = BRIDGE_SAMPLES.find((s) => s.id === "sci-g6-ecosystems");
   const scan = scanLessonText(sci.text, "es");
   assert.ok(scan.polysemousHits.some((h) => h.word === "table"));
   assert.ok(scan.connectorHits.some((h) => h.word === "consequently"));
   assert.ok(scan.syntaxHits.length >= 1);
   assert.ok(scan.cognateHits.some((c) => c.word === "ecosystem"));
   assert.equal(scan.scaffolds.level12.frames.length, 2);
+
+  const k2 = BRIDGE_SAMPLES.find((s) => s.id === "k2-sci-living");
+  assert.ok(k2);
+  const k2Scan = scanLessonText(k2.text, "es");
+  assert.ok(k2Scan.connectorHits.some((h) => h.word === "because"));
 
   const esFindings = analyzeL1Transfer("Is raining outside.", "es");
   assert.ok(esFindings.some((f) => f.pattern.includes("Pronoun Drop")));
@@ -82,7 +87,7 @@ test("intelligenceAdapter: Content-to-Language Bridge scanner & L1 transfer", ()
 });
 
 test("intelligenceAdapter: Sentence Architect & Speaking Simulator", () => {
-  const kernel = ARCHITECT_KERNELS[0];
+  const kernel = ARCHITECT_KERNELS.find((k) => k.id === "explain-plant");
   const baseEval = evaluateSentenceArchitecture(kernel, {});
   assert.equal(baseEval.level, 1);
 
@@ -91,13 +96,19 @@ test("intelligenceAdapter: Sentence Architect & Speaking Simulator", () => {
   assert.equal(fullEval.level, 5);
   assert.ok(fullEval.sentence.includes("photosynthesis"));
 
-  const sp = SPEAKING_PROMPTS[0];
+  const k2Kernel = ARCHITECT_KERNELS.find((k) => k.id === "k2-seed-grew");
+  assert.ok(k2Kernel);
+
+  const sp = SPEAKING_PROMPTS.find((p) => p.id === "speak-ecosystem");
   const indEval = evaluateSpeakingResponse(sp, sp.modelSample, []);
   assert.equal(indEval.lifelineTier, "Independent");
   assert.ok(indEval.band >= 4);
 
   const scafEval = evaluateSpeakingResponse(sp, sp.modelSample, ["starter", "wordbank"]);
   assert.equal(scafEval.lifelineTier, "Heavily Scaffolded");
+
+  const k2Sp = SPEAKING_PROMPTS.find((p) => p.id === "k2-weather");
+  assert.ok(k2Sp);
 });
 
 test("intelligenceAdapter: Reclassification Radar bubble detection & 4-week sprint", () => {

@@ -143,8 +143,18 @@ export async function render(ctx) {
                   <input type="text" name="alias" required placeholder="e.g., Elena V." />
                 </label>
                 <label class="tlp-field">
-                  <span>Grade</span>
-                  <input type="text" name="grade" required value="6" />
+                  <span>Grade (K–8)</span>
+                  <select name="grade">
+                    <option value="K">Kindergarten</option>
+                    <option value="1">Grade 1</option>
+                    <option value="2">Grade 2</option>
+                    <option value="3">Grade 3</option>
+                    <option value="4">Grade 4</option>
+                    <option value="5">Grade 5</option>
+                    <option value="6" selected>Grade 6</option>
+                    <option value="7">Grade 7</option>
+                    <option value="8">Grade 8</option>
+                  </select>
                 </label>
                 <label class="tlp-field">
                   <span>Home Language</span>
