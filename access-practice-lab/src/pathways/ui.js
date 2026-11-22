@@ -3,6 +3,7 @@
 // shows what each stage's own feature recorded (never a click), independent and supported work apart, and no
 // points, levels, timers or percentages anywhere.
 import { loopPanelHTML } from "../intel/ui.js";
+import { SUPPORT_NOTE, levelForTier, suggest } from "../support-engine/engine.js";
 import { BASE, html, icon } from "../util.js";
 import { familyCardHTML } from "./family-card.js";
 import { SUPPORTS, kluFor, widaEntries } from "./graph.js";
@@ -95,10 +96,14 @@ function helpHTML(I, objective, band, pathway, task, open) {
     return html`<p class="fine">
       ${I.T("Your teacher set this task with no helps.", "Tu docente puso esta tarea sin ayudas.")}
     </p>`;
+  const domain = (objective?.domains?.[0] || "writing").toLowerCase();
+  const tier = offered.length >= 3 ? "A" : offered.length >= 1 ? "B" : "C";
+  const engineHint = suggest({ level: levelForTier(tier), domain });
   return html`<div class="pw-helps">
     <p class="fine">
       ${I.T("Helps are closed. If you open one, this work is saved as “with help”. That is fine: it is just kept apart from work on your own.", "Las ayudas están cerradas. Si abres una, este trabajo se guarda como “con ayuda”. Está bien: solo se guarda aparte del trabajo por tu cuenta.")}
     </p>
+    ${engineHint.scaffolds.length ? html`<p class="fine">${I.T(...SUPPORT_NOTE)}</p>` : ""}
     <div class="pw-help-row">
       ${offered.map((id) => html`<button type="button" class="btn small" data-pw-help="${id}" aria-expanded="${Boolean(open[id])}">${I.T(...SUPPORTS[id].title)}</button>`)}
     </div>

@@ -3,6 +3,7 @@
 // by Up/Down buttons (never drag-only). The assign panel shows the exact path the class server will store, its
 // length against the 200-character limit, a copy button, a QR code and, when this device has a class open, a button
 // that adds the ONE assignment through the existing class settings API.
+import { MAX_LEVEL, SUPPORT_NOTE, levelInfo } from "../support-engine/engine.js";
 import { BASE, html, icon, raw } from "../util.js";
 import { OBJECTIVES, SUPPORTS, objectiveById, resolveKey } from "./graph.js";
 import { BUILT_IN_IDS, MAX_STAGES, builtInDef } from "./pathways.js";
@@ -156,6 +157,13 @@ function rulesHTML(I, v) {
       <legend>
         ${I.T("Helps offered on the independent task (all start closed; opening one marks the work “with help”)", "Ayudas que se ofrecen en la tarea independiente (todas empiezan cerradas; abrir una marca el trabajo “con ayuda”)")}
       </legend>
+      <div class="pw-help-row" role="group" aria-label="${I.S("Support preset", "Preajuste de apoyo")}">
+        ${Array.from({ length: MAX_LEVEL }, (_, i) => {
+          const info = levelInfo(i + 1);
+          return html`<button type="button" class="btn small" data-pw-support-level="${info.n}">${I.T(info.en, info.es)}</button>`;
+        })}
+      </div>
+      <p class="fine">${I.T(...SUPPORT_NOTE)}</p>
       ${Object.entries(SUPPORTS).map(([id, s]) => html`<label class="pw-check"><input type="checkbox" data-pw-support="${id}" ${v.draft.supports.includes(id) ? "checked" : ""} /> ${I.T(...s.title)}</label>`)}
     </fieldset>
     <fieldset class="pw-fieldset">

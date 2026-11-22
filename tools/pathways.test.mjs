@@ -833,6 +833,12 @@ test("builder operations: add, reorder by buttons, remove, optional, supports, a
     "plan",
     "spanish",
   ]);
+  assert.deepEqual(B.applySupportLevel(d, 1, "writing").supports, [
+    "frames",
+    "words",
+    "spanish",
+  ]);
+  assert.deepEqual(B.applySupportLevel(d, 6, "writing").supports, []);
   assert.deepEqual(B.setRejected(d, "cite-source", true).rejected, ["cite-source"]);
   assert.deepEqual(
     B.setRejected(B.setRejected(d, "cite-source", true), "cite-source", false).rejected,

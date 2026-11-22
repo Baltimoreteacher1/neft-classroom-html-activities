@@ -7,6 +7,7 @@ import { i18nFor } from "../i18n.js";
 import { announce, toHtml } from "../util.js";
 import {
   addStage,
+  applySupportLevel,
   blankDraft,
   draftFromBuiltIn,
   moveStage,
@@ -120,6 +121,11 @@ export function buildClick(e, ctx, I) {
   if (add) return setDraft(ctx, addStage(draft, add.dataset.pwAdd, data));
   const need = t.closest("[data-pw-need]");
   if (need) return setDraft(ctx, setRejected(draft, need.dataset.pwNeed, need.dataset.reject === "1"));
+  const levelBtn = t.closest("[data-pw-support-level]");
+  if (levelBtn) {
+    const domain = (model.objective?.domains?.[0] || "writing").toLowerCase();
+    return setDraft(ctx, applySupportLevel(draft, Number(levelBtn.dataset.pwSupportLevel), domain));
+  }
   if (t.closest("[data-pw-start-go]")) {
     const id = document.querySelector("[data-pw-start]")?.value || "";
     const next = id ? draftFromBuiltIn(id, band) : blankDraft(draft.objective);

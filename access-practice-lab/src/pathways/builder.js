@@ -4,6 +4,7 @@
 // offer plain Up/Down buttons. Resources come from the skill graph first (linked to the objective), then from the
 // activity bank, the studio task lists and the sitemap, each labelled when it is not linked to the objective.
 // saveToClass adds the ONE assignment through the existing class settings API; nothing else is written anywhere.
+import { suggest } from "../support-engine/engine.js";
 import { createTeacherClient } from "../../../shared/class-platform/client.js";
 import { LIMITS } from "../../../shared/class-platform/contract.js";
 import { DEST_BY_ID, DESTINATIONS } from "../sitemap.js";
@@ -54,6 +55,26 @@ export function toggleSupport(draft, id) {
   if (!SUPPORTS[id]) return draft;
   const next = copy(draft);
   next.supports = next.supports.includes(id) ? next.supports.filter((s) => s !== id) : Object.keys(SUPPORTS).filter((s) => s === id || next.supports.includes(s));
+  return next;
+}
+const ENGINE_TO_PATHWAY_SUPPORT = {
+  "sentence-frames": "frames",
+  "sentence-starters": "frames",
+  "word-bank": "words",
+  "chunked-directions": "plan",
+  "graphic-organizer": "plan",
+  "bilingual-glossary": "spanish",
+};
+/** Apply a support-engine level (1–6) onto the pathway's transfer supports for the objective's domain. */
+export function applySupportLevel(draft, level, domain = "writing") {
+  const res = suggest({ level, domain: String(domain || "writing").toLowerCase() });
+  const mapped = new Set();
+  for (const s of res.scaffolds) {
+    const key = ENGINE_TO_PATHWAY_SUPPORT[s.id];
+    if (key && SUPPORTS[key] && s.showByDefault) mapped.add(key);
+  }
+  const next = copy(draft);
+  next.supports = Object.keys(SUPPORTS).filter((id) => mapped.has(id));
   return next;
 }
 /** Accept (false) or reject (true) one system recommendation rule for this pathway. */

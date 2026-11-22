@@ -1,5 +1,6 @@
 // Journey step runner chrome: header, six-step rail, support controls, help drawer and the "builds on" note.
 // Every control carries a stable data-jr-* key so main.js can restore focus after a redraw.
+import { levelForTier, suggest, SUPPORT_NOTE as ENGINE_SUPPORT_NOTE } from "../support-engine/engine.js";
 import { BASE, TIERS, html, icon } from "../util.js";
 
 export const stepHref = (band, missionId, stepId = "") =>
@@ -89,12 +90,14 @@ export function railHTML({ I, band, missionId, steps, statuses, currentIdx }) {
   </ol>`;
 }
 
-function supportHTML(I, support, showStep) {
+function supportHTML(I, support, showStep, domain = "writing") {
+  const suggested = suggest({ level: levelForTier(support), domain, protectedAssessment: showStep });
   if (showStep)
-    return html`<p class="fine jr-support-fixed">
+    return html`<p class="fine jr-support-fixed" data-jr-protected-blocked="${suggested.blocked.join(",")}">
       ${icon("flag")}
       ${I.T("Show is always on your own. No help is offered while you work.", "Muestra siempre es por tu cuenta. No se ofrece ayuda mientras trabajas.")}
     </p>`;
+  const scaffoldList = suggested.scaffolds.map((s) => I.S(...s.label)).join(" · ");
   return html`<fieldset class="jr-support">
     <legend>${I.T("How much help do you want?", "¿Cuánta ayuda quieres?")}</legend>
     <div class="jr-support-options">
@@ -113,7 +116,8 @@ function supportHTML(I, support, showStep) {
     </div>
     <p class="fine" role="status">
       ${I.T(...SUPPORT_NOTE[support])}
-      ${I.T("This is a help setting, not a WIDA level or score. Changing it keeps all your work.", "Es un ajuste de ayuda, no un nivel ni un puntaje de WIDA. Si lo cambias, no pierdes tu trabajo.")}
+      ${scaffoldList ? html`<br /><strong>${I.T("Suggested for this step:", "Sugerido para este paso:")}</strong> ${scaffoldList}` : ""}
+      <br />${I.T(...ENGINE_SUPPORT_NOTE)}
     </p>
   </fieldset>`;
 }
@@ -151,12 +155,12 @@ export function quickNavHTML({ I, band }) {
   </nav>`;
 }
 
-export function controlsHTML({ I, support, own, stepId, helpOpen }) {
+export function controlsHTML({ I, support, own, stepId, helpOpen, domain }) {
   return html`<section
     class="jr-controls panel"
     aria-label="${I.S("Help and settings", "Ayuda y ajustes")}"
   >
-    ${supportHTML(I, support, stepId === "show")} ${stepId === "show" ? "" : ownHTML(I, own)}
+    ${supportHTML(I, support, stepId === "show", domain)} ${stepId === "show" ? "" : ownHTML(I, own)}
     <div class="jr-links">
       <button
         type="button"

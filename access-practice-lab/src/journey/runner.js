@@ -289,7 +289,7 @@ export async function renderStep(ctx, deps, params) {
     ${quickNavHTML({ I, band })}
     ${headerHTML({ I, band, missionId, mission, step, unit: C.unitOf(missionId), number: C.missionNumber(missionId) })}
     ${goalBlock} ${railHTML(chrome)} ${buildsOnHTML(chrome)}
-    ${showComplete ? "" : controlsHTML({ I, support: St.bandState(state, band).support, own, stepId, helpOpen: shell.helpOpen === true })}
+    ${showComplete ? "" : controlsHTML({ I, support: St.bandState(state, band).support, own, stepId, helpOpen: shell.helpOpen === true, domain: (PRACTICE[stepId] || (pending?.key === "converse" ? "speaking" : "writing")).toLowerCase() })}
     ${!showComplete && shell.helpOpen ? helpHTML({ I, pack, independent: own }) : ""} ${built.body}
   </div>`;
   return { title: `${I.S(...mission.title)} · ${I.S(...step.label)}`, html: out };

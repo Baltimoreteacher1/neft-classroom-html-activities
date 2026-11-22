@@ -2,6 +2,8 @@
 // Nothing here imports another worker's file: `deps` carries the state, ledger and curriculum modules, so the
 // runner can be driven in tests with in-memory fakes.
 
+import { levelForTier, suggest } from "../support-engine/engine.js";
+
 /**
  * Load the journey state, apply each write in order, save once, and return the new state.
  * state.js writers may mutate and/or return the state; only a returned object that looks like a state
@@ -57,10 +59,16 @@ export function makeEnv({
 }) {
   const mission = deps.curriculum.MISSIONS[missionId];
   const key = dataKey(part, run);
+  const supportDomain = (DOMAIN_OF[part.key] || "writing").toLowerCase();
   return {
     I,
     band,
     support,
+    supportSuggestion: suggest({
+      level: levelForTier(support),
+      domain: supportDomain,
+      protectedAssessment: stepId === "show",
+    }),
     independent,
     missionId,
     step: stepId,
