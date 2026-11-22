@@ -808,10 +808,12 @@
 .cc-stop small { font-size: .9rem; line-height: 1.2; overflow-wrap: anywhere; }
 .cc-stop.is-current > span { background: #17324d; color: #fff; }
 .cc-stop.is-done > span { background: #1f7d68; color: #fff; }
-.cc-scene, .cc-decision { padding: clamp(1rem, 3vw, 1.7rem); border: 2px solid #c6d5d5; border-radius: 1.25rem; background: #fff; box-shadow: 0 8px 25px #17324d12; }
-.cc-scene h2, .cc-decision h3 { margin: .25rem 0 1rem; color: #17324d; }
+.cc-scene, .cc-decision, .cc-compose { padding: clamp(1rem, 3vw, 1.7rem); border: 2px solid #c6d5d5; border-radius: 1.25rem; background: #fff; box-shadow: 0 8px 25px #17324d12; }
+.cc-scene h2, .cc-decision h3, .cc-compose h3 { margin: .25rem 0 1rem; color: #17324d; }
 .cc-eyebrow, .cc-step { margin: 0; font-weight: 800; color: #176b67; }
 .cc-eyebrow { display: flex; align-items: center; gap: .5rem; }
+.cc-understood { display: flex; align-items: flex-start; gap: .55rem; margin: 0 0 1rem; padding: .7rem .9rem; border: 1px solid #a7d7d2; border-radius: .75rem; background: #edf8f5; color: #17324d; font-weight: 600; line-height: 1.4; }
+.cc-understood svg { flex: none; margin-top: .15rem; color: #1f7d68; }
 .cc-bubble { position: relative; padding: 1.1rem 1.25rem; border-radius: 1rem 1rem 1rem .25rem; background: #f7f4ec; border: 2px solid #e1d8c2; font-size: clamp(1.125rem, 2vw, 1.4rem); line-height: 1.5; }
 .cc-bubble > p { margin: 0; }
 .cc-translation { margin-top: .75rem; font-size: 1rem; }
@@ -825,7 +827,26 @@
 .cc-choice:disabled { opacity: .6; cursor: default; }
 .cc-choice-num { display: grid; flex: none; place-items: center; width: 1.65rem; height: 1.65rem; border-radius: 50%; background: #17324d; color: #fff; font-size: .85rem; font-weight: 800; }
 .cc-decision .gs-feedback { margin-top: .85rem; }
+.cc-reaction { margin: 1rem 0; padding: .9rem 1.05rem; border-left: 5px solid #17324d; border-radius: .65rem; background: #f4f7f9; color: #17324d; }
+.cc-reaction strong { display: block; margin-bottom: .25rem; font-size: .95rem; color: #176b67; }
+.cc-reaction p { margin: 0; font-size: 1.05rem; line-height: 1.45; }
+.cc-compose > p { margin: 0 0 .85rem; line-height: 1.5; }
+.cc-draft-label { display: block; margin: 1rem 0 .4rem; font-weight: 800; color: #17324d; font-size: 1.05rem; }
+.cc-draft { display: block; width: 100%; min-height: 120px; padding: .85rem 1rem; border: 2px solid #8ea7b0; border-radius: .85rem; background: #fff; color: #17324d; font: inherit; font-size: 1.05rem; line-height: 1.5; resize: vertical; box-sizing: border-box; }
+.cc-draft:focus-visible { border-color: #176b67; outline: 3px solid #bb6b20; outline-offset: 2px; }
+.cc-compose .fine { margin: .45rem 0 0; font-size: 1rem; color: #36576a; }
+.cc-selfcheck { display: grid; gap: .6rem; margin: 1rem 0; }
+.cc-selfcheck > p { margin: 0; color: #17324d; }
+.cc-check { display: flex; align-items: center; gap: .7rem; width: 100%; min-height: 48px; padding: .75rem 1rem; text-align: left; border: 2px solid #8ea7b0; border-radius: .85rem; background: #fff; color: #17324d; font: inherit; font-size: 1rem; font-weight: 600; line-height: 1.4; cursor: pointer; }
+.cc-check:hover { border-color: #176b67; background: #edf8f5; }
+.cc-check:focus-visible { border-color: #176b67; outline: 3px solid #bb6b20; outline-offset: 2px; }
+.cc-check[aria-pressed="true"] { border-color: #1f7d68; background: #e9f6f2; color: #17324d; }
+.cc-check svg { flex: none; color: #176b67; }
+.cc-check[aria-pressed="true"] svg { color: #1f7d68; }
+.cc-compose-feedback { margin: .75rem 0; padding: .75rem 1rem; border-left: 5px solid #bb6b20; border-radius: .5rem; background: #fdf6e9; color: #17324d; font-weight: 700; }
 .cc-outcome { margin: 1rem 0; padding: 1rem; border-left: 5px solid #1f7d68; border-radius: .5rem; background: #edf8f5; }
 .cc-outcome p { margin: .4rem 0; }
-@media (max-width: 600px) { .cc-map { gap: .2rem; padding: .55rem; } .cc-stop small { font-size: .78rem; } .cc-choice { padding: .8rem; } }
+.cc-compose .gs-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+.cc-compose .btn { min-height: 48px; }
+@media (max-width: 600px) { .cc-map { gap: .2rem; padding: .55rem; } .cc-stop small { font-size: .78rem; } .cc-choice, .cc-check { padding: .8rem; } .cc-compose .gs-actions { flex-direction: column; } .cc-compose .gs-actions .btn { width: 100%; justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .cc * { scroll-behavior: auto; transition: none !important; animation: none !important; } }

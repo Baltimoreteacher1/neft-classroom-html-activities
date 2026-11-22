@@ -244,7 +244,7 @@ export const GAMES = [
       "3-5": ["I can ask for clarification, build on an idea, and explain a different view politely.", "Puedo pedir aclaraciones, ampliar una idea y explicar otra opinión con respeto."],
       "6-8": ["I can interpret a partner's point and respond with clarification, evidence, or a respectful challenge.", "Puedo interpretar la idea de un compañero y responder con aclaración, evidencia o una objeción respetuosa."],
     },
-    minutes: 10, difficulty: 2, home: true, art: "strategy", module: "conversation-crossroads", mechanic: "dialogue-branches",
+    minutes: 12, difficulty: 2, home: true, art: "strategy", module: "conversation-crossroads", mechanic: "dialogue-branches",
   },
 ];
 

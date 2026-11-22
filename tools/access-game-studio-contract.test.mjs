@@ -20,6 +20,17 @@ const fakeButton = (selector) => {
   };
   return node;
 };
+const fakeInput = (selector, value) => {
+  const match = selector.match(/\[([^=\]]+)(?:="([^"]*)")?\]/);
+  const attr = match?.[1] || "";
+  const key = attr.replace(/^data-/, "").replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  return {
+    value,
+    dataset: key ? { [key]: match?.[2] ?? "" } : {},
+    hasAttribute: (name) => name === attr,
+    matches: (sel) => sel === selector || (Boolean(attr) && sel === `[${attr}]`),
+  };
+};
 // Game handlers announce results through util.announce (a live region and a toast). Node has no page, so give it an
 // empty one: announcements are dropped, every game rule still runs.
 globalThis.document ??= {
@@ -80,7 +91,11 @@ for (const def of GAMES) {
               true,
               `${def.id} click did not advance`,
             );
-          else if (action.drag) {
+          else if (action.fill) {
+            const [selector, value] = action.fill;
+            assert.equal(typeof mod.input, "function", `${def.id} missing input handler for fill`);
+            mod.input(fakeInput(selector, value), state, env);
+          } else if (action.drag) {
             // The vocabulary module's drag target is the accessible tap-to-place equivalent.
             const [from, to] = action.drag;
             const id = from.match(/data-drag="([^"]+)"/)?.[1];

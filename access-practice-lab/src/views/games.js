@@ -193,7 +193,7 @@ function changed() {
   if (!live) return;
   advance(live);
   persist(live);
-  live.ctx.rerender();
+  return live.ctx.rerender();
 }
 
 export function onClick(e, ctx) {
@@ -267,8 +267,13 @@ export function onClick(e, ctx) {
   if (s.phase === "play" && s.state) {
     const env = live.env;
     if (live.mod.click(t, s.state, env) === true) {
-      changed();
-      if (live.def.id === "conversation-crossroads" && t.closest?.("[data-g-next]")) window.scrollTo({ top: 0 });
+      const check = t.closest?.("[data-g-check]");
+      const wasRevise = Boolean(t.closest?.("[data-g-revise]"));
+      const rendered = changed();
+      if (live.def.id === "conversation-crossroads") {
+        const selector = check ? `[data-g-check="${check.dataset.gCheck}"]` : wasRevise ? "[data-cc-draft]" : ".cc [data-cc-focus], .gs-transfer h1";
+        Promise.resolve(rendered).then(() => document.querySelector(selector)?.focus());
+      }
       return true;
     }
   }
@@ -301,7 +306,11 @@ export function onInput(e) {
     return;
   }
   const s = LIVE.session;
-  if (s.phase === "play" && s.state && LIVE.mod.input?.(t, s.state, LIVE.env) === true) changed();
+  if (s.phase === "play" && s.state) {
+    const result = LIVE.mod.input?.(t, s.state, LIVE.env);
+    if (result === true) changed();
+    else if (result === "save") persist(LIVE);
+  }
 }
 export function onKey(e) {
   if (!LIVE || LIVE.session.phase !== "play" || !LIVE.session.state || !LIVE.mod.key) return;
