@@ -1,11 +1,10 @@
 /**
  * Module 4: Adaptive Speaking Simulator with Measured Lifelines
- * Client-side audio containment: MediaRecorder Blobs stay strictly in browser memory
- * and are revoked on unload/reset. Graceful text/simulated fallback if mic is unavailable.
- * State Machine: IDLE -> ACTIVE -> EVALUATING -> FEEDBACK -> COMPLETE
+ * Publisher-grade: K-2 / 3-5 / 6-8 filter, live recording timer + CSS waveform,
+ * 3-dimension rubric progress bars, Model Exemplar comparison, & Saved Pride Clips.
  */
 
-import { BASE, html } from "../../util.js";
+import { BASE, esc, html } from "../../util.js";
 import { L1_AUDIO_CUES, SPEAKING_PROMPTS, getLanguageMeta } from "../data/platformData.js";
 import { checkFeatureAccess } from "../entitlements/entitlementService.js";
 import { evaluateSpeakingResponse } from "../services/intelligenceAdapter.js";
@@ -18,28 +17,31 @@ export async function render(ctx) {
   const speakingStore = readStorage(STORAGE_KEYS.SPEAKING);
   const l1 = prefs.l1 || "es";
   const l1Meta = getLanguageMeta(l1);
+  const bandFilter = speakingStore.bandFilter || "All";
 
-  const promptItem = SPEAKING_PROMPTS[0];
+  const filteredPrompts =
+    bandFilter === "All" ? SPEAKING_PROMPTS : SPEAKING_PROMPTS.filter((p) => p.band === bandFilter);
+  const promptItem = filteredPrompts[0] || SPEAKING_PROMPTS[0];
+
   const machine = createStateMachine("SpeakingSimulator", {
     promptId: promptItem.id,
     lifelines: [],
     transcript: "",
-    recordingUrl: null,
     evaluation: null,
   });
 
   const clipAccess = checkFeatureAccess("save_clip", (speakingStore.clips || []).length);
 
   return {
-    title: "Adaptive Speaking Simulator — The Language Page",
+    title: "Adaptive Speaking Simulator — ELL Lab",
     html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>
-            <p class="tlp-eyebrow">Practice · Module 4</p>
+            <p class="tlp-eyebrow">Practice · Module 4 · K–8 Oral Rehearsal</p>
             <h1>Adaptive Speaking Simulator</h1>
             <p class="tlp-muted tlp-measure">
-              Rehearse academic speaking with measured scaffold lifelines. Audio stays in your browser memory only and is never uploaded.
+              Rehearse academic speaking across K–8 prompts with measured scaffold lifelines. Audio stays strictly in browser memory and is never uploaded.
             </p>
           </div>
           ${l1 !== "en"
@@ -50,8 +52,24 @@ export async function render(ctx) {
         </header>
 
         <div class="tlp-card">
+          <div class="tlp-actions-row" style="justify-content:space-between;margin-bottom:0.75rem">
+            <div class="tlp-actions-row" role="group" aria-label="Filter prompts by grade band">
+              ${["All", "K-2", "3-5", "6-8"].map(
+                (b) => html`<button
+                  type="button"
+                  class="tlp-tab"
+                  data-sim-band="${b}"
+                  aria-selected="${b === bandFilter ? "true" : "false"}"
+                >
+                  ${b === "All" ? "All K–8" : `Grades ${b}`}
+                </button>`,
+              )}
+            </div>
+            <span class="tlp-muted" style="font-size:0.82rem">${filteredPrompts.length} prompts</span>
+          </div>
+
           <div class="tlp-tabs" role="tablist" aria-label="Select speaking prompt">
-            ${SPEAKING_PROMPTS.map(
+            ${filteredPrompts.map(
               (p, i) => html`<button
                 type="button"
                 class="tlp-tab"
@@ -73,26 +91,18 @@ export async function render(ctx) {
 
           <div class="tlp-actions-row" style="margin-bottom:1rem">
             <span class="tlp-muted" style="font-weight:600">Measured Lifelines:</span>
-            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="starter">
-              Sentence Starter
-            </button>
-            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="wordbank">
-              Word Bank
-            </button>
-            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="replay">
-              🔊 Replay Prompt (0.85×)
-            </button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="starter">Sentence Starter</button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="wordbank">Word Bank</button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" data-lifeline="replay">🔊 Replay Slowly (0.85×)</button>
           </div>
 
           <div id="tlpLifelineBox" class="tlp-pride-element" hidden style="margin-bottom:1rem"></div>
 
           <div class="tlp-actions-row" style="margin-bottom:0.85rem">
-            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRecBtn">
-              🎙️ Start Recording
-            </button>
-            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpSimSampleBtn">
-              Try Sample Response
-            </button>
+            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRecBtn">🎙️ Start Recording</button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpSimSampleBtn">Try Sample Response</button>
+            <span id="tlpWave" class="tlp-waveform" hidden aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <span id="tlpRecTimer" class="tlp-muted tlp-tabular" hidden>00:00</span>
             <span id="tlpRecStatus" class="tlp-muted" role="status">Ready (or type/edit below if mic is unavailable)</span>
           </div>
 
@@ -104,27 +114,48 @@ export async function render(ctx) {
           </label>
 
           <div class="tlp-actions-row">
-            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpSimEvalBtn">
-              Evaluate Response
-            </button>
+            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpSimEvalBtn">Evaluate Response</button>
           </div>
         </div>
 
         <div class="tlp-card" id="tlpSimFeedback" hidden aria-live="polite"></div>
 
+        ${(speakingStore.clips || []).length
+          ? html`<div class="tlp-card">
+              <div class="tlp-actions-row" style="justify-content:space-between;margin-bottom:0.5rem">
+                <p class="tlp-eyebrow" style="margin:0">Saved Pride Clips (${speakingStore.clips.length})</p>
+                <a class="tlp-btn tlp-btn-ghost" style="min-height:32px;padding:0.25rem 0.75rem;font-size:0.8rem" href="${BASE}/family-bridge">Share on Family Bridge →</a>
+              </div>
+              <ul style="padding-left:1.1rem;margin:0">
+                ${speakingStore.clips
+                  .slice(-3)
+                  .reverse()
+                  .map(
+                    (c) => html`<li style="margin-bottom:0.35rem">
+                      <span class="tlp-badge tlp-badge-level-${c.band}">Band ${c.band}</span>
+                      <span class="tlp-badge tlp-badge-accent">${c.lifelineTier}</span>
+                      “${c.transcript.slice(0, 90)}${c.transcript.length > 90 ? "…" : ""}”
+                    </li>`,
+                  )}
+              </ul>
+            </div>`
+          : ""}
+
         ${!clipAccess.allowed ? upgradeCardHTML(clipAccess.reason) : ""}
 
         <p style="margin-top:1.25rem">
-          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to Language Hub</a>
+          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to ELL Lab Hub</a>
         </p>
       </section>
     `,
     mount(root) {
-      let currentPrompt = SPEAKING_PROMPTS[0];
+      let currentPrompt = promptItem;
       let mediaRecorder = null;
       let chunks = [];
       let recognition = null;
       let objectUrl = null;
+      let timerHandle = null;
+      let seconds = 0;
 
       const revokeAudio = () => {
         if (objectUrl) {
@@ -136,9 +167,16 @@ export async function render(ctx) {
 
       const getTranscriptEl = () => root.querySelector("#tlpSimTranscript");
 
+      root.querySelectorAll("[data-sim-band]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          updateStorage(STORAGE_KEYS.SPEAKING, { bandFilter: btn.dataset.simBand });
+          ctx.rerender();
+        });
+      });
+
       root.querySelectorAll("[data-sim-prompt]").forEach((tab) => {
         tab.addEventListener("click", () => {
-          currentPrompt = SPEAKING_PROMPTS.find((p) => p.id === tab.dataset.simPrompt) || SPEAKING_PROMPTS[0];
+          currentPrompt = SPEAKING_PROMPTS.find((p) => p.id === tab.dataset.simPrompt) || promptItem;
           root.querySelectorAll("[data-sim-prompt]").forEach((t) =>
             t.setAttribute("aria-selected", t === tab ? "true" : "false"),
           );
@@ -159,10 +197,10 @@ export async function render(ctx) {
           const box = root.querySelector("#tlpLifelineBox");
           if (kind === "starter") {
             box.hidden = false;
-            box.innerHTML = `<strong>Sentence Starter:</strong> ${currentPrompt.starter}`;
+            box.innerHTML = `<strong>Sentence Starter:</strong> ${esc(currentPrompt.starter)}`;
           } else if (kind === "wordbank") {
             box.hidden = false;
-            box.innerHTML = `<strong>Word Bank:</strong> ${currentPrompt.wordBank.join(" · ")}`;
+            box.innerHTML = `<strong>Word Bank:</strong> ${esc(currentPrompt.wordBank.join(" · "))}`;
           } else if (kind === "replay") {
             if (typeof speechSynthesis !== "undefined") {
               speechSynthesis.cancel();
@@ -202,11 +240,20 @@ export async function render(ctx) {
       const recBtn = root.querySelector("#tlpRecBtn");
       const recStatus = root.querySelector("#tlpRecStatus");
       const recAudio = root.querySelector("#tlpRecAudio");
+      const wave = root.querySelector("#tlpWave");
+      const timerEl = root.querySelector("#tlpRecTimer");
+
+      const stopTimer = () => {
+        if (timerHandle) clearInterval(timerHandle);
+        timerHandle = null;
+        wave.hidden = true;
+      };
 
       recBtn?.addEventListener("click", async () => {
         if (mediaRecorder && mediaRecorder.state === "recording") {
           mediaRecorder.stop();
           if (recognition) try { recognition.stop(); } catch {}
+          stopTimer();
           recBtn.textContent = "🎙️ Start Recording";
           recStatus.textContent = "Recording stopped (stored in browser memory only).";
           return;
@@ -227,6 +274,16 @@ export async function render(ctx) {
           };
           mediaRecorder.start();
           machine.transition(STATES.ACTIVE);
+          seconds = 0;
+          wave.hidden = false;
+          timerEl.hidden = false;
+          timerEl.textContent = "00:00";
+          timerHandle = setInterval(() => {
+            seconds++;
+            const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+            const s = String(seconds % 60).padStart(2, "0");
+            timerEl.textContent = `${m}:${s}`;
+          }, 1000);
           recBtn.textContent = "⏹ Stop Recording";
           recStatus.textContent = "Listening… speak clearly.";
 
@@ -258,23 +315,36 @@ export async function render(ctx) {
         const result = evaluateSpeakingResponse(currentPrompt, transcript, machine.context.lifelines);
         machine.transition(STATES.FEEDBACK, { evaluation: result, transcript });
 
+        const dimCard = (label, val) => `
+          <div class="tlp-pride-element" style="margin-top:0">
+            <div class="tlp-actions-row" style="justify-content:space-between">
+              <strong>${label}</strong>
+              <span class="tlp-tabular">${val} / 6</span>
+            </div>
+            <div class="tlp-dim-bar-track"><div class="tlp-dim-bar-fill" style="width:${(val / 6) * 100}%"></div></div>
+          </div>`;
+
         const fb = root.querySelector("#tlpSimFeedback");
         fb.hidden = false;
         fb.innerHTML = `
           <div class="tlp-actions-row" style="justify-content:space-between;margin-bottom:0.75rem">
             <div>
               <span class="tlp-badge tlp-badge-level-${result.band} tlp-tabular">Practice Band ${result.band} / 6</span>
-              <span class="tlp-badge tlp-badge-accent">${result.lifelineTier}</span>
+              <span class="tlp-badge tlp-badge-accent">${esc(result.lifelineTier)}</span>
             </div>
             <span class="tlp-muted tlp-tabular">${result.wordCount} words</span>
           </div>
-          <p style="margin:0.35rem 0"><strong>What worked:</strong> ${result.praise}</p>
-          <p class="tlp-muted" style="margin:0.35rem 0 0.85rem"><strong>Next step:</strong> ${result.nextStep}</p>
+          <p style="margin:0.35rem 0"><strong>What worked:</strong> ${esc(result.praise)}</p>
+          <p class="tlp-muted" style="margin:0.35rem 0 0.85rem"><strong>Next step:</strong> ${esc(result.nextStep)}</p>
           <div class="tlp-grid-3" style="margin-bottom:1rem">
-            <div class="tlp-pride-element" style="margin-top:0"><strong>Vocabulary</strong><p class="tlp-tabular" style="margin:0.2rem 0 0">${result.dimensions.vocabulary} / 6</p></div>
-            <div class="tlp-pride-element" style="margin-top:0"><strong>Complexity</strong><p class="tlp-tabular" style="margin:0.2rem 0 0">${result.dimensions.complexity} / 6</p></div>
-            <div class="tlp-pride-element" style="margin-top:0"><strong>Completeness</strong><p class="tlp-tabular" style="margin:0.2rem 0 0">${result.dimensions.completeness} / 6</p></div>
+            ${dimCard("Academic Vocabulary", result.dimensions.vocabulary)}
+            ${dimCard("Sentence Complexity", result.dimensions.complexity)}
+            ${dimCard("Completeness", result.dimensions.completeness)}
           </div>
+          <details style="margin-bottom:1rem">
+            <summary style="cursor:pointer;font-weight:600;color:var(--tlp-accent-ink)">Compare with Level 5/6 Model Response</summary>
+            <p class="tlp-pride-element" style="margin-top:0.5rem">${esc(currentPrompt.modelSample)}</p>
+          </details>
           <div class="tlp-actions-row">
             <button type="button" class="tlp-btn tlp-btn-primary" id="tlpSavePrideClipBtn">Save as Pride Clip</button>
             <a class="tlp-btn tlp-btn-ghost" href="${BASE}/family-bridge">Open Family Bridge →</a>

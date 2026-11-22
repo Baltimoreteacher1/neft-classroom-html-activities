@@ -99,6 +99,9 @@ export async function render(ctx) {
           <div class="tlp-pride-element">
             <strong>3. ${labels.dinner}</strong>
             <p style="margin:0.35rem 0 0">${dinnerItem.prompts[langCode] || dinnerItem.prompts.en}</p>
+            <button type="button" class="tlp-btn tlp-btn-ghost no-print" id="tlpDinnerSpeakBtn" style="margin-top:0.6rem;min-height:34px;padding:0.3rem 0.85rem;font-size:0.82rem">
+              🔊 Listen (${langMeta.label})
+            </button>
           </div>
 
           <div class="tlp-pride-footer">
@@ -141,6 +144,15 @@ export async function render(ctx) {
         const u = new SpeechSynthesisUtterance(prideSentence);
         u.lang = "en-US";
         u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+
+      root.querySelector("#tlpDinnerSpeakBtn")?.addEventListener("click", () => {
+        if (typeof speechSynthesis === "undefined") return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(dinnerItem.prompts[langCode] || dinnerItem.prompts.en);
+        u.lang = langMeta.speechLang;
+        u.rate = 0.92;
         speechSynthesis.speak(u);
       });
 

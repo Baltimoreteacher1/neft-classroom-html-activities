@@ -1,8 +1,7 @@
 /**
  * Module 3: Sentence Architect Studio (Interactive Student & Live Teaching Lab)
- * Safe Drag-and-Drop (Mouse + Touch), Snap-to-Target, Persistent Reset,
- * AND full Click-to-Place / Keyboard-Accessible Fallback + Deconstruction Mode.
- * State Machine: IDLE -> ACTIVE -> EVALUATING -> FEEDBACK -> COMPLETE
+ * Publisher-grade: K-2 / 3-5 / 6-8 filter, 8 blocks per kernel (2 tiers per slot),
+ * Drag-and-Drop + Touch + Click-to-Place + Keyboard, Deconstruction Mode, Read-Aloud, & Saved Portfolio.
  */
 
 import { BASE, html } from "../../util.js";
@@ -23,8 +22,13 @@ export async function render(ctx) {
   const saved = readStorage(STORAGE_KEYS.ARCHITECT);
   const l1 = prefs.l1 || "es";
   const l1Meta = getLanguageMeta(l1);
+  const bandFilter = saved.bandFilter || "All";
 
-  const kernelItem = ARCHITECT_KERNELS.find((k) => k.id === saved.lastKernelId) || ARCHITECT_KERNELS[0];
+  const filteredKernels =
+    bandFilter === "All" ? ARCHITECT_KERNELS : ARCHITECT_KERNELS.filter((k) => k.band === bandFilter);
+  const kernelItem =
+    filteredKernels.find((k) => k.id === saved.lastKernelId) || filteredKernels[0] || ARCHITECT_KERNELS[0];
+
   const machine = createStateMachine("SentenceArchitect", {
     kernelId: kernelItem.id,
     placed: {},
@@ -33,7 +37,7 @@ export async function render(ctx) {
   });
 
   const renderInner = (root) => {
-    const k = ARCHITECT_KERNELS.find((x) => x.id === machine.context.kernelId) || ARCHITECT_KERNELS[0];
+    const k = ARCHITECT_KERNELS.find((x) => x.id === machine.context.kernelId) || kernelItem;
     const evalResult = evaluateSentenceArchitecture(k, machine.context.placed);
     const pct = (evalResult.level / 5) * 100;
     const usedIds = new Set(Object.values(machine.context.placed).filter(Boolean).map((b) => b.id));
@@ -69,15 +73,15 @@ export async function render(ctx) {
   };
 
   return {
-    title: "Sentence Architect Studio — The Language Page",
+    title: "Sentence Architect Studio — ELL Lab",
     html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>
-            <p class="tlp-eyebrow">Practice · Module 3</p>
+            <p class="tlp-eyebrow">Practice · Module 3 · K–8 Linguistic Builder</p>
             <h1>Sentence Architect Studio</h1>
             <p class="tlp-muted tlp-measure">
-              Expand a Level 1 kernel sentence by snapping connectors, academic verbs, context phrases, and evidence clauses. Drag-and-drop, tap, or use keyboard navigation.
+              Compare <strong>Developing</strong> vs. <strong>Expanding</strong> linguistic blocks and snap them onto a kernel sentence to see how precision elevates complexity from Level 1 to Level 5.
             </p>
           </div>
           <div class="tlp-actions-row">
@@ -91,16 +95,16 @@ export async function render(ctx) {
         </header>
 
         <div class="tlp-card">
-          <div class="tlp-actions-row" style="justify-content:space-between;margin-bottom:1rem">
-            <div class="tlp-actions-row" role="group" aria-label="Choose Key Language Use">
-              ${ARCHITECT_KERNELS.map(
-                (k) => html`<button
+          <div class="tlp-actions-row" style="justify-content:space-between;margin-bottom:0.75rem">
+            <div class="tlp-actions-row" role="group" aria-label="Filter by grade band">
+              ${["All", "K-2", "3-5", "6-8"].map(
+                (b) => html`<button
                   type="button"
                   class="tlp-tab"
-                  data-kernel-id="${k.id}"
-                  aria-selected="${k.id === kernelItem.id ? "true" : "false"}"
+                  data-arch-band="${b}"
+                  aria-selected="${b === bandFilter ? "true" : "false"}"
                 >
-                  ${k.klu} · ${k.subject}
+                  ${b === "All" ? "All K–8" : `Grades ${b}`}
                 </button>`,
               )}
             </div>
@@ -111,10 +115,23 @@ export async function render(ctx) {
               : ""}
           </div>
 
+          <div class="tlp-actions-row" role="group" aria-label="Choose Key Language Use" style="margin-bottom:1rem">
+            ${filteredKernels.map(
+              (k) => html`<button
+                type="button"
+                class="tlp-btn ${k.id === kernelItem.id ? "tlp-btn-primary" : "tlp-btn-ghost"}"
+                style="min-height:34px;padding:0.35rem 0.85rem;font-size:0.82rem"
+                data-kernel-id="${k.id}"
+              >
+                ${k.subject} · ${k.klu}
+              </button>`,
+            )}
+          </div>
+
           <div class="tlp-actions-row" style="justify-content:space-between;align-items:center">
             <span class="tlp-badge tlp-badge-level-1 tlp-tabular" id="tlpArchLevelBadge">Complexity Level 1 / 5</span>
             <span class="tlp-muted" id="tlpArchExplain" aria-live="polite">
-              Level 1 kernel — snap linguistic blocks below to expand academic precision.
+              Level 1 kernel ("${kernelItem.kernel}") — snap linguistic blocks below to expand academic precision.
             </span>
           </div>
           <div class="tlp-meter-track" aria-hidden="true">
@@ -155,7 +172,7 @@ export async function render(ctx) {
           </div>
 
           <div>
-            <p class="tlp-eyebrow">Linguistic Expansion Blocks (Drag or Tap to Place)</p>
+            <p class="tlp-eyebrow">Linguistic Expansion Blocks (Choose Developing or Expanding for Each Slot)</p>
             <div class="tlp-block-tray" id="tlpBlockTray">
               ${kernelItem.blocks.map(
                 (b) => html`
@@ -167,7 +184,9 @@ export async function render(ctx) {
                     data-block-slot="${b.slot}"
                     aria-pressed="false"
                   >
-                    <small class="tlp-eyebrow" style="display:block;margin:0 0 0.15rem">${b.category}</small>
+                    <small class="tlp-eyebrow" style="display:block;margin:0 0 0.15rem">
+                      ${b.category} <span class="tlp-tier-tag">${b.tier || "Academic"}</span>
+                    </small>
                     ${b.text}
                   </button>
                 `,
@@ -188,20 +207,36 @@ export async function render(ctx) {
           </div>
         </div>
 
+        ${(saved.savedSentences || []).length
+          ? html`<div class="tlp-card">
+              <p class="tlp-eyebrow">Saved Sentence Portfolio (${saved.savedSentences.length})</p>
+              <ul style="padding-left:1.1rem;margin:0.4rem 0 0">
+                ${saved.savedSentences
+                  .slice(-4)
+                  .reverse()
+                  .map(
+                    (s) => html`<li style="margin-bottom:0.35rem">
+                      <span class="tlp-badge tlp-badge-level-${s.level} tlp-tabular">L${s.level}</span> ${s.sentence}
+                    </li>`,
+                  )}
+              </ul>
+            </div>`
+          : ""}
+
         <p style="margin-top:1.25rem">
-          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to Language Hub</a>
+          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to ELL Lab Hub</a>
         </p>
       </section>
     `,
     mount(root) {
       const getCurrentKernel = () =>
-        ARCHITECT_KERNELS.find((x) => x.id === machine.context.kernelId) || ARCHITECT_KERNELS[0];
+        ARCHITECT_KERNELS.find((x) => x.id === machine.context.kernelId) || kernelItem;
 
       const placeBlock = (blockId, targetSlot) => {
         const k = getCurrentKernel();
         const block = k.blocks.find((b) => b.id === blockId);
         if (!block) return false;
-        if (targetSlot && targetSlot !== block.slot) return false; // return-to-origin on invalid drop
+        if (targetSlot && targetSlot !== block.slot) return false;
         machine.transition(STATES.ACTIVE, {
           placed: { ...machine.context.placed, [block.slot]: block },
           selectedBlockId: null,
@@ -211,7 +246,18 @@ export async function render(ctx) {
         return true;
       };
 
-      // Kernel switcher
+      root.querySelectorAll("[data-arch-band]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const band = btn.dataset.archBand;
+          const first = band === "All" ? ARCHITECT_KERNELS[0] : ARCHITECT_KERNELS.find((k) => k.band === band);
+          updateStorage(STORAGE_KEYS.ARCHITECT, {
+            bandFilter: band,
+            ...(first ? { lastKernelId: first.id } : {}),
+          });
+          ctx.rerender();
+        });
+      });
+
       root.querySelectorAll("[data-kernel-id]").forEach((tab) => {
         tab.addEventListener("click", () => {
           updateStorage(STORAGE_KEYS.ARCHITECT, { lastKernelId: tab.dataset.kernelId });
@@ -219,7 +265,6 @@ export async function render(ctx) {
         });
       });
 
-      // Click-to-place & keyboard accessible fallback
       root.querySelectorAll("[data-block-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
           placeBlock(btn.dataset.blockId, btn.dataset.blockSlot);
@@ -299,7 +344,7 @@ export async function render(ctx) {
           completedIds: [...new Set([...(prev.completedIds || []), k.id])],
           savedSentences: [...(prev.savedSentences || []).slice(-19), { id: k.id, sentence: res.sentence, level: res.level }],
         }));
-        root.querySelector("#tlpArchSaveStatus").textContent = `✓ Saved Level ${res.level} sentence on this device.`;
+        root.querySelector("#tlpArchSaveStatus").textContent = `✓ Saved Level ${res.level} sentence to portfolio.`;
       });
     },
   };

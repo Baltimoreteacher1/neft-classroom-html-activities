@@ -1,5 +1,5 @@
 /**
- * Production-ready datasets for The Language Page premium platform modules.
+ * Publisher-grade K-8 multilingual datasets for The Language Page.
  * Zero placeholders, zero PII (first name + last initial aliases only).
  */
 
@@ -18,10 +18,11 @@ export function getLanguageMeta(code) {
   return HOME_LANGUAGES.find((l) => l.code === code) || HOME_LANGUAGES[0];
 }
 
-// ── Module 1: Content-to-Language Bridge Samples ──────────────────────────────
+// ── Module 1: Content-to-Language Bridge Samples (K-2, 3-5, 6-8) ──────────────
 export const BRIDGE_SAMPLES = [
   {
     id: "k2-sci-living",
+    band: "K-2",
     subject: "Science",
     grade: "Grades K–2",
     klu: "Inform",
@@ -30,6 +31,7 @@ export const BRIDGE_SAMPLES = [
   },
   {
     id: "k2-math-shapes",
+    band: "K-2",
     subject: "Math",
     grade: "Grades K–2",
     klu: "Explain",
@@ -38,6 +40,7 @@ export const BRIDGE_SAMPLES = [
   },
   {
     id: "k2-ela-community",
+    band: "K-2",
     subject: "Social Studies",
     grade: "Grades K–2",
     klu: "Inform",
@@ -45,25 +48,37 @@ export const BRIDGE_SAMPLES = [
     text: "A crossing guard holds a bright sign so children can cross the street safely. Every school rule is made to keep students safe and fair, because everyone shares the same space.",
   },
   {
-    id: "sci-g6-ecosystems",
+    id: "g35-sci-water",
+    band: "3-5",
     subject: "Science",
-    grade: "Grade 6",
+    grade: "Grades 3–5",
+    klu: "Explain",
+    title: "The Water Cycle & Evaporation",
+    text: "During the water cycle, liquid water is heated by the sun and changes state into water vapor. Consequently, warm vapor rises into the cool sky where condensation forms clouds, whereas heavy droplets fall back to Earth as precipitation.",
+  },
+  {
+    id: "sci-g6-ecosystems",
+    band: "6-8",
+    subject: "Science",
+    grade: "Grades 6–8",
     klu: "Explain",
     title: "Energy Flow & Decomposers",
     text: "In a forest ecosystem, energy is transferred from producers to consumers through food webs. However, when organisms die, decomposers break down the matter so nutrients can return to the soil. Consequently, if the water table drops during a drought, plant expression of growth slows down, whereas hardy roots conserve moisture.",
   },
   {
     id: "math-g6-ratios",
+    band: "6-8",
     subject: "Math",
-    grade: "Grade 6",
+    grade: "Grades 6–8",
     klu: "Argue",
     title: "Unit Rate & Ratio Tables",
     text: "A baker records the product of flour and water in a ratio table. Although the first batch uses 3 cups of flour for every 2 cups of water, the second batch is scaled up to 12 cups of flour. Determine whether the relationship remains proportional, and justify your expression using the table.",
   },
   {
     id: "ss-g7-civics",
+    band: "6-8",
     subject: "Social Studies",
-    grade: "Grade 7",
+    grade: "Grades 6–8",
     klu: "Inform",
     title: "Checks & Balances in Government",
     text: "Under the Constitution, power is divided among three branches so no single state leader controls the entire system. Whereas the legislative branch drafts bills, the executive branch enforces laws. Furthermore, bills can be vetoed if they conflict with constitutional rights; nevertheless, Congress may override a veto.",
@@ -72,8 +87,8 @@ export const BRIDGE_SAMPLES = [
 
 export const POLYSEMOUS_LEXICON = {
   table: {
-    everyday: "A piece of furniture with a flat top and legs.",
-    academic: "An organized grid of rows and columns showing data or values.",
+    everyday: "A piece of furniture with a flat top and four legs.",
+    academic: "An organized grid of rows and columns showing data or values (or 'water table': underground water level).",
     tip: "Point to a data chart first so learners do not picture a kitchen table.",
   },
   expression: {
@@ -88,8 +103,8 @@ export const POLYSEMOUS_LEXICON = {
   },
   state: {
     everyday: "A region or country, or to say something aloud.",
-    academic: "A condition of matter (solid/liquid/gas) or a political territory/government.",
-    tip: "Clarify whether 'state' means government, condition, or the verb 'to tell'.",
+    academic: "A physical condition of matter (solid, liquid, gas) or a political government.",
+    tip: "Clarify whether 'state' means government, condition of matter, or the verb 'to tell'.",
   },
   matter: {
     everyday: "A topic or problem ('What is the matter?').",
@@ -102,14 +117,9 @@ export const POLYSEMOUS_LEXICON = {
     tip: "Anchor the word to 'authority' in civics or 'exponent' in math.",
   },
   scale: {
-    everyday: "A tool for weighing groceries or fish skin.",
+    everyday: "A tool for weighing groceries, or fish skin.",
     academic: "To multiply or resize proportionally, or the ratio on a map/graph.",
     tip: "Show a zoomed-in vs. zoomed-out diagram to make 'scaled up' concrete.",
-  },
-  cell: {
-    everyday: "A mobile phone or a small room.",
-    academic: "The basic structural unit of all living things, or one box in a spreadsheet/table.",
-    tip: "Pair with a microscope image or grid box depending on the subject.",
   },
   sign: {
     everyday: "To write your name on a paper.",
@@ -137,6 +147,8 @@ export const TIER2_CONNECTORS = {
   furthermore: { function: "Addition", plain: "also / in addition" },
   nevertheless: { function: "Contrast", plain: "even so / still" },
   because: { function: "Cause & Effect", plain: "for the reason that" },
+  first: { function: "Sequence", plain: "at the beginning" },
+  next: { function: "Sequence", plain: "after that" },
   meanwhile: { function: "Sequence / Time", plain: "at the same time" },
 };
 
@@ -152,7 +164,12 @@ export const COGNATE_BANK = {
   system: { es: "sistema", fr: "système", pt: "sistema", uk: "система", ru: "система", ar: "نظام", zh: "系统" },
   evidence: { es: "evidencia", fr: "évidence (preuve)", pt: "evidência", uk: "докази", ru: "доказательства", ar: "دليل", zh: "证据" },
   photosynthesis: { es: "fotosíntesis", fr: "photosynthèse", pt: "fotossíntese", uk: "фотосинтез", ru: "фотосинтез", ar: "التمثيل الضوئي", zh: "光合作用" },
-  moisture: { es: "humedad", fr: "humidité", pt: "umidade", uk: "волога", ru: "влага", ar: "رطوبة", zh: "水分" },
+  evaporation: { es: "evaporación", fr: "évaporation", pt: "evaporação", uk: "випаровування", ru: "испарение", ar: "تبخر", zh: "蒸发" },
+  condensation: { es: "condensación", fr: "condensation", pt: "condensação", uk: "конденсація", ru: "конденсация", ar: "تكاثف", zh: "凝结" },
+  triangle: { es: "triángulo", fr: "triangle", pt: "triângulo", uk: "трикутник", ru: "треугольник", ar: "مثلث", zh: "三角形" },
+  equal: { es: "igual", fr: "égal", pt: "igual", uk: "рівний", ru: "равный", ar: "متساوٍ", zh: "相等的" },
+  plant: { es: "planta", fr: "plante", pt: "planta", uk: "рослина", ru: "растение", ar: "نبات", zh: "植物" },
+  community: { es: "comunidad", fr: "communauté", pt: "comunidade", uk: "спільнота", ru: "сообщество", ar: "مجتمع", zh: "社区" },
   conserve: { es: "conservar", fr: "conserver", pt: "conservar", uk: "зберігати", ru: "сохранять", ar: "يحفظ", zh: "保存" },
 };
 
@@ -167,10 +184,11 @@ export const L1_AUDIO_CUES = {
   en: "Think about cause and effect: what happened first, and what changed as a result?",
 };
 
-// ── Module 3: Sentence Architect Studio ───────────────────────────────────────
+// ── Module 3: Sentence Architect Studio (8 blocks per kernel: 2 per slot!) ────
 export const ARCHITECT_KERNELS = [
   {
     id: "k2-seed-grew",
+    band: "K-2",
     klu: "Inform",
     subject: "K–2 Science",
     kernel: "The seed grew.",
@@ -178,29 +196,19 @@ export const ARCHITECT_KERNELS = [
     action: "grew",
     whyHow: "water and warm sunlight",
     blocks: [
-      { id: "k1", slot: "verb", category: "Action Verb", text: "sprouted tall green leaves", levelBoost: 1 },
-      { id: "k2", slot: "prep", category: "Where Phrase", text: "in the wet soil", levelBoost: 1 },
-      { id: "k3", slot: "connector", category: "Sequence Word", text: "first,", levelBoost: 1 },
-      { id: "k4", slot: "evidence", category: "Why Clause", text: "because it got water and warm sunlight", levelBoost: 2 },
-    ],
-  },
-  {
-    id: "k2-dog-ran",
-    klu: "Narrate",
-    subject: "K–2 Story",
-    kernel: "The dog ran.",
-    whoWhat: "The dog",
-    action: "ran",
-    whyHow: "chasing the red ball",
-    blocks: [
-      { id: "kd1", slot: "verb", category: "Action Verb", text: "bounded across the grass", levelBoost: 1 },
-      { id: "kd2", slot: "prep", category: "Where Phrase", text: "near the sunny park", levelBoost: 1 },
-      { id: "kd3", slot: "connector", category: "Time Word", text: "suddenly,", levelBoost: 1 },
-      { id: "kd4", slot: "evidence", category: "Why Clause", text: "so it could catch the red ball", levelBoost: 2 },
+      { id: "k3a", slot: "connector", category: "Sequence Word", tier: "Developing", text: "first,", levelBoost: 1 },
+      { id: "k3b", slot: "connector", category: "Sequence Word", tier: "Expanding", text: "after three days,", levelBoost: 1 },
+      { id: "k1a", slot: "verb", category: "Action Verb", tier: "Developing", text: "grew green leaves", levelBoost: 1 },
+      { id: "k1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "sprouted tall green stems", levelBoost: 2 },
+      { id: "k2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "in the dirt", levelBoost: 1 },
+      { id: "k2b", slot: "prep", category: "Where Phrase", tier: "Expanding", text: "inside the moist soil", levelBoost: 1 },
+      { id: "k4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "because it got water", levelBoost: 1 },
+      { id: "k4b", slot: "evidence", category: "Why Clause", tier: "Expanding", text: "because its roots absorbed water and sunlight", levelBoost: 2 },
     ],
   },
   {
     id: "k2-math-compare",
+    band: "K-2",
     klu: "Explain",
     subject: "K–2 Math",
     kernel: "The square is different.",
@@ -208,78 +216,103 @@ export const ARCHITECT_KERNELS = [
     action: "is different",
     whyHow: "four equal sides vs. three sides",
     blocks: [
-      { id: "km1", slot: "verb", category: "Compare Verb", text: "has four equal sides", levelBoost: 1 },
-      { id: "km2", slot: "prep", category: "Where Phrase", text: "on our pattern mat", levelBoost: 1 },
-      { id: "km3", slot: "connector", category: "Compare Word", text: "whereas the triangle has three,", levelBoost: 2 },
-      { id: "km4", slot: "evidence", category: "Why Clause", text: "because every corner on a square matches", levelBoost: 1 },
+      { id: "km3a", slot: "connector", category: "Compare Word", tier: "Developing", text: "first,", levelBoost: 1 },
+      { id: "km3b", slot: "connector", category: "Contrast Word", tier: "Expanding", text: "whereas a triangle has three,", levelBoost: 2 },
+      { id: "km1a", slot: "verb", category: "Compare Verb", tier: "Developing", text: "has four sides", levelBoost: 1 },
+      { id: "km1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "contains four equal sides", levelBoost: 2 },
+      { id: "km2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "on the desk", levelBoost: 1 },
+      { id: "km2b", slot: "prep", category: "Context Phrase", tier: "Expanding", text: "on our geometry mat", levelBoost: 1 },
+      { id: "km4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "so all sides match", levelBoost: 1 },
+      { id: "km4b", slot: "evidence", category: "Evidence Clause", tier: "Expanding", text: "because every corner forms a square angle", levelBoost: 2 },
+    ],
+  },
+  {
+    id: "g35-water-cycle",
+    band: "3-5",
+    klu: "Explain",
+    subject: "3–5 Science",
+    kernel: "The water disappeared.",
+    whoWhat: "The water",
+    action: "disappeared",
+    whyHow: "evaporation from sunlight",
+    blocks: [
+      { id: "w3a", slot: "connector", category: "Sequence Connector", tier: "Developing", text: "then,", levelBoost: 1 },
+      { id: "w3b", slot: "connector", category: "Cause Connector", tier: "Expanding", text: "consequently,", levelBoost: 2 },
+      { id: "w1a", slot: "verb", category: "Action Verb", tier: "Developing", text: "turned into gas", levelBoost: 1 },
+      { id: "w1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "evaporated into invisible vapor", levelBoost: 2 },
+      { id: "w2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "from the puddle", levelBoost: 1 },
+      { id: "w2b", slot: "prep", category: "Context Phrase", tier: "Expanding", text: "from the warm sidewalk into the air", levelBoost: 1 },
+      { id: "w4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "because the sun was hot", levelBoost: 1 },
+      { id: "w4b", slot: "evidence", category: "Evidence Clause", tier: "Expanding", text: "because thermal energy heated the liquid droplets", levelBoost: 2 },
     ],
   },
   {
     id: "explain-plant",
+    band: "6-8",
     klu: "Explain",
-    subject: "Science",
+    subject: "6–8 Science",
     kernel: "The plant died.",
     whoWhat: "The plant",
     action: "died",
-    whyHow: "lack of sunlight and water",
+    whyHow: "lack of sunlight and photosynthesis",
     blocks: [
-      { id: "b1", slot: "verb", category: "Academic Verb", text: "withered and stopped growing", levelBoost: 1 },
-      { id: "b2", slot: "prep", category: "Prepositional Phrase", text: "inside the shaded container", levelBoost: 1 },
-      { id: "b3", slot: "connector", category: "Cause/Effect Connector", text: "consequently,", levelBoost: 1 },
-      { id: "b4", slot: "evidence", category: "Evidence Clause", text: "because its leaves could not complete photosynthesis", levelBoost: 2 },
+      { id: "b3a", slot: "connector", category: "Cause Connector", tier: "Developing", text: "as a result,", levelBoost: 1 },
+      { id: "b3b", slot: "connector", category: "Tier 2 Connector", tier: "Expanding", text: "consequently,", levelBoost: 2 },
+      { id: "b1a", slot: "verb", category: "Action Verb", tier: "Developing", text: "stopped growing", levelBoost: 1 },
+      { id: "b1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "withered and ceased cellular growth", levelBoost: 2 },
+      { id: "b2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "in the dark room", levelBoost: 1 },
+      { id: "b2b", slot: "prep", category: "Context Phrase", tier: "Expanding", text: "inside the light-blocked container", levelBoost: 1 },
+      { id: "b4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "because it had no light", levelBoost: 1 },
+      { id: "b4b", slot: "evidence", category: "Evidence Clause", tier: "Expanding", text: "because its leaves could not complete photosynthesis", levelBoost: 2 },
     ],
   },
   {
     id: "argue-ratios",
+    band: "6-8",
     klu: "Argue",
-    subject: "Math",
+    subject: "6–8 Math",
     kernel: "The recipe changed.",
     whoWhat: "The recipe",
     action: "changed",
     whyHow: "unequal scaling of ingredients",
     blocks: [
-      { id: "m1", slot: "verb", category: "Academic Verb", text: "became non-proportional", levelBoost: 1 },
-      { id: "m2", slot: "prep", category: "Prepositional Phrase", text: "in the second batch", levelBoost: 1 },
-      { id: "m3", slot: "connector", category: "Contrast Connector", text: "whereas the first batch kept a 3:2 ratio,", levelBoost: 2 },
-      { id: "m4", slot: "evidence", category: "Evidence Clause", text: "because the flour tripled while the water doubled", levelBoost: 1 },
+      { id: "m3a", slot: "connector", category: "Contrast Word", tier: "Developing", text: "however,", levelBoost: 1 },
+      { id: "m3b", slot: "connector", category: "Contrast Clause", tier: "Expanding", text: "whereas the first batch kept a 3:2 ratio,", levelBoost: 2 },
+      { id: "m1a", slot: "verb", category: "Action Verb", tier: "Developing", text: "did not match", levelBoost: 1 },
+      { id: "m1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "became non-proportional", levelBoost: 2 },
+      { id: "m2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "in batch two", levelBoost: 1 },
+      { id: "m2b", slot: "prep", category: "Context Phrase", tier: "Expanding", text: "across the scaled ratio table", levelBoost: 1 },
+      { id: "m4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "because the numbers differed", levelBoost: 1 },
+      { id: "m4b", slot: "evidence", category: "Evidence Clause", tier: "Expanding", text: "because the flour tripled while the water only doubled", levelBoost: 2 },
     ],
   },
   {
     id: "inform-civics",
+    band: "6-8",
     klu: "Inform",
-    subject: "Social Studies",
+    subject: "6–8 Civics",
     kernel: "Leaders share power.",
     whoWhat: "Leaders",
     action: "share power",
     whyHow: "constitutional checks and balances",
     blocks: [
-      { id: "s1", slot: "verb", category: "Academic Verb", text: "exercise distinct responsibilities", levelBoost: 1 },
-      { id: "s2", slot: "prep", category: "Prepositional Phrase", text: "across three separate branches", levelBoost: 1 },
-      { id: "s3", slot: "connector", category: "Addition Connector", text: "furthermore,", levelBoost: 1 },
-      { id: "s4", slot: "evidence", category: "Evidence Clause", text: "so that no single branch can pass unchecked laws", levelBoost: 2 },
-    ],
-  },
-  {
-    id: "narrate-bridge",
-    klu: "Narrate",
-    subject: "ELA",
-    kernel: "Maya crossed the bridge.",
-    whoWhat: "Maya",
-    action: "crossed the bridge",
-    whyHow: "carrying the field notes before sunset",
-    blocks: [
-      { id: "n1", slot: "verb", category: "Academic Verb", text: "navigated the narrow footbridge", levelBoost: 1 },
-      { id: "n2", slot: "prep", category: "Prepositional Phrase", text: "above the rising river", levelBoost: 1 },
-      { id: "n3", slot: "connector", category: "Sequence Connector", text: "meanwhile,", levelBoost: 1 },
-      { id: "n4", slot: "evidence", category: "Evidence Clause", text: "while clutching her waterproof notebook before dusk", levelBoost: 1 },
+      { id: "s3a", slot: "connector", category: "Addition Word", tier: "Developing", text: "also,", levelBoost: 1 },
+      { id: "s3b", slot: "connector", category: "Tier 2 Connector", tier: "Expanding", text: "furthermore,", levelBoost: 2 },
+      { id: "s1a", slot: "verb", category: "Action Verb", tier: "Developing", text: "divide government jobs", levelBoost: 1 },
+      { id: "s1b", slot: "verb", category: "Academic Verb", tier: "Expanding", text: "exercise distinct constitutional powers", levelBoost: 2 },
+      { id: "s2a", slot: "prep", category: "Where Phrase", tier: "Developing", text: "in three groups", levelBoost: 1 },
+      { id: "s2b", slot: "prep", category: "Context Phrase", tier: "Expanding", text: "across three co-equal branches", levelBoost: 1 },
+      { id: "s4a", slot: "evidence", category: "Why Clause", tier: "Developing", text: "so no one controls everything", levelBoost: 1 },
+      { id: "s4b", slot: "evidence", category: "Evidence Clause", tier: "Expanding", text: "so that no single branch can pass unchecked laws", levelBoost: 2 },
     ],
   },
 ];
 
-// ── Module 4: Adaptive Speaking Simulator ─────────────────────────────────────
+// ── Module 4: Adaptive Speaking Simulator (K-2, 3-5, 6-8) ─────────────────────
 export const SPEAKING_PROMPTS = [
   {
     id: "k2-weather",
+    band: "K-2",
     subject: "K–2 Science",
     klu: "Inform",
     title: "Tell About a Rainy Day",
@@ -289,28 +322,31 @@ export const SPEAKING_PROMPTS = [
     modelSample: "When it rains outside, the soil gets wet. The plants drink the water because it helps them grow.",
   },
   {
-    id: "k2-apples",
-    subject: "K–2 Math",
-    klu: "Explain",
-    title: "Compare Two Baskets",
-    prompt: "One basket has 5 red apples and another basket has 3 green apples. Which basket has more, and how do you know?",
-    starter: "The first basket has more apples because...",
-    wordBank: ["more", "fewer", "compare", "five", "because"],
-    modelSample: "The first basket has more apples because five is greater than three.",
-  },
-  {
     id: "k2-helper",
+    band: "K-2",
     subject: "K–2 Community",
     klu: "Narrate",
     title: "Tell About a School Helper",
-    prompt: "Think about a helper at your school, like a teacher, nurse, or bus driver. Tell what they do and why they help.",
+    prompt: "Think about a helper at your school, like a teacher, nurse, or crossing guard. Tell what they do and why they help.",
     starter: "At my school, the helper...",
-    wordBank: ["helper", "safe", "first", "because", "school"],
+    wordBank: ["helper", "safe", "first", "because", "sign"],
     modelSample: "At my school, the crossing guard holds a bright sign. She helps us cross the street safely because cars must stop.",
   },
   {
+    id: "g35-water",
+    band: "3-5",
+    subject: "3–5 Science",
+    klu: "Explain",
+    title: "Explain Where Puddles Go",
+    prompt: "After a rainstorm, a puddle on the sidewalk disappears on a sunny afternoon. Explain what happened to the water.",
+    starter: "The puddle disappeared because the sun...",
+    wordBank: ["evaporated", "liquid", "vapor", "consequently", "heat"],
+    modelSample: "The puddle disappeared because the sun heated the liquid water. Consequently, it evaporated into water vapor and rose into the air.",
+  },
+  {
     id: "speak-ecosystem",
-    subject: "Science",
+    band: "6-8",
+    subject: "6–8 Science",
     klu: "Explain",
     title: "Explain How Decomposers Help Soil",
     prompt: "Explain what happens to nutrients in a forest when decomposers break down dead leaves. Use at least one cause-and-effect word.",
@@ -320,7 +356,8 @@ export const SPEAKING_PROMPTS = [
   },
   {
     id: "speak-ratio",
-    subject: "Math",
+    band: "6-8",
+    subject: "6–8 Math",
     klu: "Argue",
     title: "Justify a Proportional Relationship",
     prompt: "A smoothie uses 2 cups of berries for 1 cup of yogurt. Your friend uses 6 cups of berries and 2 cups of yogurt. Explain why your friend's mix is not proportional.",
@@ -330,7 +367,8 @@ export const SPEAKING_PROMPTS = [
   },
   {
     id: "speak-civics",
-    subject: "Social Studies",
+    band: "6-8",
+    subject: "6–8 Civics",
     klu: "Inform",
     title: "Describe Why Laws Have Checks",
     prompt: "Describe one reason the Constitution divides power among three branches of government.",
@@ -344,6 +382,7 @@ export const SPEAKING_PROMPTS = [
 export const DEMO_ROSTER = [
   { id: "stu-k1", alias: "Leo T.", grade: "K", l1: "es", listening: 4.3, speaking: 3.7, reading: 4.1, writing: 3.6, threshold: 4.5 },
   { id: "stu-k2", alias: "Nadia B.", grade: "2", l1: "ar", listening: 4.6, speaking: 4.2, reading: 4.3, writing: 3.9, threshold: 4.5 },
+  { id: "stu-35", alias: "Liam C.", grade: "4", l1: "zh", listening: 4.5, speaking: 4.0, reading: 4.4, writing: 4.1, threshold: 4.5 },
   { id: "stu-1", alias: "Maya R.", grade: "6", l1: "es", listening: 4.8, speaking: 3.9, reading: 4.6, writing: 4.1, threshold: 4.5 },
   { id: "stu-2", alias: "Mateo S.", grade: "6", l1: "es", listening: 4.4, speaking: 4.3, reading: 4.2, writing: 3.7, threshold: 4.5 },
   { id: "stu-3", alias: "Amira K.", grade: "7", l1: "ar", listening: 4.9, speaking: 4.6, reading: 4.7, writing: 4.2, threshold: 4.5 },
@@ -380,7 +419,7 @@ export const FAMILY_DINNER_PROMPTS = [
       zh: "问问您的孩子：自然界中有哪一种事物（比如雨水、阳光或土壤）会改变我们家附近植物的生长方式？",
       fr: "Demandez à votre enfant : Quel élément de la nature (comme la pluie, le soleil ou la terre) change la façon dont les plantes poussent près de chez nous ?",
       uk: "Запитайте дитину: що в природі (наприклад, дощ, сонячне світло чи ґрунт) змінює те, як ростуть рослини біля нашого дому?",
-      ru: "Спросите ребёнка: что в природе (например, дождь, солнечный свет или почва) меняет то, как растут растения рядом с нашим домом?",
+      ru: "Спросите ребёнка: что в природе (наприклад, дождь, солнечный свет или почва) меняет то, как растут растения рядом с нашим домом?",
       pt: "Pergunte ao seu filho(a): O que na natureza (como chuva, luz do sol ou solo) muda a forma como as plantas crescem perto de nossa casa?",
     },
   },
@@ -435,7 +474,6 @@ export const RESOURCE_LIBRARY = [
   { id: "radar", pillar: "Evidence & Family", title: "Reclassification Radar", outcome: "Spot K–8 bubble students & build 4-week domain sprints.", grade: "Grades K–8", domain: "Evidence", route: "radar", isNew: true },
   { id: "family-bridge", pillar: "Evidence & Family", title: "Bilingual Family Bridge", outcome: "Share zero-login Pride Cards & dinner prompts in 7 L1s.", grade: "Grades K–8", domain: "Family", route: "family-bridge", isNew: true },
   { id: "pricing", pillar: "Evidence & Family", title: "Plans & School PO Quote", outcome: "Compare Teacher Pro & generate a printable school quote.", grade: "Admin", domain: "Account", route: "pricing", isNew: true },
-  // Legacy ACCESS Practice Lab rooms & studios (K-8)
   { id: "legacy-early", pillar: "Practice", title: "Early Learners Hub (K–2)", outcome: "Picture-first listening, speaking, reading & writing for K–2.", grade: "Grades K–2", domain: "Early K–2", route: "early", isNew: false },
   { id: "legacy-listening", pillar: "Practice", title: "Listening Room", outcome: "Follow classroom directions and catch key details.", grade: "Grades K–8", domain: "Listening", route: "Listening", isNew: false },
   { id: "legacy-reading", pillar: "Practice", title: "Reading Room", outcome: "Read short passages, find evidence & main ideas.", grade: "Grades K–8", domain: "Reading", route: "Reading", isNew: false },

@@ -631,3 +631,84 @@ html, body {
     page-break-inside: avoid;
   }
 }
+
+/* ==========================================================================
+   Publisher-Grade Studio Enhancements
+   ========================================================================== */
+.tlp-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+@media (max-width: 900px) { .tlp-split { grid-template-columns: 1fr; } }
+
+.tlp-inspector {
+  margin-top: 0.9rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--tlp-radius-sm);
+  background: var(--tlp-surface);
+  border: 1px solid var(--tlp-accent);
+  box-shadow: var(--tlp-shadow);
+}
+
+.tlp-mark-btn {
+  cursor: pointer;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  display: inline;
+}
+.tlp-mark-btn:hover { filter: brightness(0.95); }
+
+.tlp-tier-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--tlp-surface-2);
+  color: var(--tlp-ink-2);
+  margin-left: 0.35rem;
+}
+
+.tlp-dim-bar-track {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--tlp-surface-3);
+  overflow: hidden;
+  margin-top: 0.45rem;
+}
+.tlp-dim-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tlp-accent);
+  transition: width var(--tlp-ease);
+}
+
+.tlp-waveform {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+.tlp-waveform span {
+  width: 3px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--tlp-accent);
+  animation: tlp-wave 900ms ease-in-out infinite;
+}
+.tlp-waveform span:nth-child(2) { animation-delay: 150ms; }
+.tlp-waveform span:nth-child(3) { animation-delay: 300ms; }
+.tlp-waveform span:nth-child(4) { animation-delay: 450ms; }
+@keyframes tlp-wave {
+  0%, 100% { height: 6px; opacity: 0.5; }
+  50% { height: 18px; opacity: 1; }
+}
+
+.tlp-score-low { color: var(--tlp-level-1); font-weight: 700; }
+.tlp-score-mid { color: var(--tlp-level-3); font-weight: 600; }
+.tlp-score-high { color: var(--tlp-level-6); font-weight: 700; }

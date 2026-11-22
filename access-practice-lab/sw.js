@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "391695e8e1f2";
+const BUILD_HASH = "3b7a92a02026";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=44371ce02f4f",
   "/access-practice-lab/home.css?v=c635b7e3b1ab",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=7d7f1b25115e",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/premium-platform.css?v=652b20dfdb34",
+  "/access-practice-lab/premium-platform.css?v=205b9f6153fe",
   "/access-practice-lab/src/main.js?v=340d67680ad4",
   "/access-practice-lab/src/brand.js?v=d7982377ff2b",
   "/access-practice-lab/src/keep-in-view.js?v=88f120416985",
@@ -82,7 +82,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
   "/access-practice-lab/src/platform/shellIntegration.js?v=91d5afaa7b1b",
-  "/access-practice-lab/src/platform/data/platformData.js?v=a8751924d54c",
+  "/access-practice-lab/src/platform/data/platformData.js?v=5ff27f019afe",
   "/access-practice-lab/src/platform/entitlements/entitlementService.js?v=1892c4bf921c",
   "/access-practice-lab/src/platform/services/storageService.js?v=f881e777d401",
   "/access-practice-lab/src/platform/services/logger.js?v=87651c076e60",
@@ -780,12 +780,12 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/platform/components/ui.js?v=5b0d34667981",
   "/access-practice-lab/src/platform/services/intelligenceAdapter.js?v=36237b0d9882",
   "/access-practice-lab/src/platform/state/stateMachine.js?v=46388972e21b",
-  "/access-practice-lab/src/platform/views/architect.js?v=24ffed2046d1",
-  "/access-practice-lab/src/platform/views/bridge.js?v=cb87217309e9",
-  "/access-practice-lab/src/platform/views/familyBridge.js?v=e538fe63e339",
+  "/access-practice-lab/src/platform/views/architect.js?v=22cd282987db",
+  "/access-practice-lab/src/platform/views/bridge.js?v=c081beb042f0",
+  "/access-practice-lab/src/platform/views/familyBridge.js?v=536ccaa1cd06",
   "/access-practice-lab/src/platform/views/pricing.js?v=5827f37ae7ad",
-  "/access-practice-lab/src/platform/views/radar.js?v=4198aaf17d60",
-  "/access-practice-lab/src/platform/views/simulator.js?v=acc206af719b",
+  "/access-practice-lab/src/platform/views/radar.js?v=8284142bc02b",
+  "/access-practice-lab/src/platform/views/simulator.js?v=8e95da1659f3",
   "/access-practice-lab/src/postcard-code.js?v=ef2881c1ee81",
   "/access-practice-lab/src/postcards.js?v=dabbcbfda19c",
   "/access-practice-lab/src/predict/models.js?v=5023dce68406",

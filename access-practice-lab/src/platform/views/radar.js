@@ -1,7 +1,7 @@
 /**
  * Module 5: Reclassification Radar & 4-Week Domain Sprints (Teacher Evidence View)
- * Seeds with anonymized demo roster (first name + initial only).
- * Flags Bubble Students within 0.5 of exit threshold (4.5) & highlights bottleneck domain.
+ * Publisher-grade: Grade-band + Bubble filter, color-coded domain cells,
+ * Reset Demo Roster, Add Student (K-8, zero-PII alias), CSV & Printable PDF Report.
  */
 
 import { BASE, esc, html } from "../../util.js";
@@ -11,19 +11,26 @@ import { analyzeStudentRadar, generateDomainSprint } from "../services/intellige
 import { STORAGE_KEYS, readStorage, sanitizeAlias, updateStorage } from "../services/storageService.js";
 import { openDrawer, upgradeCardHTML } from "../components/ui.js";
 
+function scoreClass(val) {
+  const n = Number(val) || 0;
+  if (n < 4.0) return "tlp-score-low";
+  if (n >= 4.5) return "tlp-score-high";
+  return "tlp-score-mid";
+}
+
+function matchesFilter(s, filter) {
+  const g = String(s.grade || "");
+  if (filter === "Bubble") return s.isBubble;
+  if (filter === "K-2") return ["K", "1", "2"].includes(g);
+  if (filter === "3-5") return ["3", "4", "5"].includes(g);
+  if (filter === "6-8") return ["6", "7", "8"].includes(g);
+  return true;
+}
+
 function exportCsv(analyzed) {
   const header = ["Alias", "Grade", "L1", "Listening", "Speaking", "Reading", "Writing", "Average", "Status", "Bottleneck"];
   const rows = analyzed.map((s) => [
-    s.alias,
-    s.grade,
-    s.l1,
-    s.listening,
-    s.speaking,
-    s.reading,
-    s.writing,
-    s.average,
-    s.status,
-    s.bottleneck.label,
+    s.alias, s.grade, s.l1, s.listening, s.speaking, s.reading, s.writing, s.average, s.status, s.bottleneck.label,
   ]);
   const csv = [header, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -39,31 +46,31 @@ export async function render(ctx) {
   const store = readStorage(STORAGE_KEYS.RADAR);
   const rawStudents = Array.isArray(store.students) && store.students.length ? store.students : DEMO_ROSTER;
   const analyzed = rawStudents.map(analyzeStudentRadar);
+  const filter = store.filter || "All";
+  const visible = analyzed.filter((s) => matchesFilter(s, filter));
   const bubbleCount = analyzed.filter((s) => s.isBubble).length;
+  const readyCount = analyzed.filter((s) => s.isReady).length;
 
   const exportAccess = checkFeatureAccess("export_report");
   const addAccess = checkFeatureAccess("roster_add", rawStudents.length);
   const sprintAccess = checkFeatureAccess("unlimited_sprints");
 
   return {
-    title: "Reclassification Radar — The Language Page",
+    title: "Reclassification Radar — ELL Lab",
     html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>
-            <p class="tlp-eyebrow">Evidence & Family · Module 5</p>
+            <p class="tlp-eyebrow">Evidence & Family · Module 5 · K–8 Exit Readiness</p>
             <h1>Reclassification Radar & 4-Week Sprints</h1>
             <p class="tlp-muted tlp-measure">
-              Spot Bubble Students within 0.5 points of exit (4.5), isolate the single bottleneck domain, and generate targeted 4-week micro-practice sprints. Stored locally with anonymized aliases only.
+              Spot Bubble Students within 0.5 points of exit (4.5), isolate each student's single bottleneck domain, and launch targeted 4-week K–8 micro-practice sprints. Stored locally with anonymized aliases only.
             </p>
           </div>
           <div class="tlp-actions-row no-print">
-            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarCsvBtn" ${exportAccess.allowed ? "" : "disabled"}>
-              Export CSV
-            </button>
-            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRadarPrintBtn" ${exportAccess.allowed ? "" : "disabled"}>
-              Print / PDF Report
-            </button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarResetBtn">Reset Demo Roster</button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarCsvBtn" ${exportAccess.allowed ? "" : "disabled"}>Export CSV</button>
+            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRadarPrintBtn" ${exportAccess.allowed ? "" : "disabled"}>Print / PDF Report</button>
           </div>
         </header>
 
@@ -71,20 +78,42 @@ export async function render(ctx) {
 
         <div class="tlp-grid-3" style="margin-bottom:1.25rem">
           <div class="tlp-card">
-            <span class="tlp-eyebrow">Roster Size</span>
-            <p class="tlp-tabular" style="font-size:1.75rem;font-weight:700;margin:0">${analyzed.length}</p>
+            <span class="tlp-eyebrow">Roster (K–8)</span>
+            <p class="tlp-tabular" style="font-size:1.75rem;font-weight:700;margin:0">${analyzed.length} <small class="tlp-muted" style="font-size:0.85rem">(${readyCount} exit ready)</small></p>
           </div>
           <div class="tlp-card">
             <span class="tlp-eyebrow">Bubble Students (≤ 0.5 to Exit)</span>
             <p class="tlp-tabular" style="font-size:1.75rem;font-weight:700;margin:0;color:var(--tlp-accent-ink)">${bubbleCount}</p>
           </div>
           <div class="tlp-card">
-            <span class="tlp-eyebrow">Target Threshold</span>
+            <span class="tlp-eyebrow">Target Exit Threshold</span>
             <p class="tlp-tabular" style="font-size:1.75rem;font-weight:700;margin:0">4.5</p>
           </div>
         </div>
 
         <div class="tlp-card">
+          <div class="tlp-actions-row no-print" style="justify-content:space-between;margin-bottom:0.85rem">
+            <div class="tlp-actions-row" role="group" aria-label="Filter roster">
+              ${[
+                ["All", "All K–8"],
+                ["Bubble", "Bubble Only"],
+                ["K-2", "Grades K–2"],
+                ["3-5", "Grades 3–5"],
+                ["6-8", "Grades 6–8"],
+              ].map(
+                ([id, label]) => html`<button
+                  type="button"
+                  class="tlp-tab"
+                  data-radar-filter="${id}"
+                  aria-selected="${filter === id ? "true" : "false"}"
+                >
+                  ${label}
+                </button>`,
+              )}
+            </div>
+            <span class="tlp-muted" style="font-size:0.82rem">Showing ${visible.length} of ${analyzed.length}</span>
+          </div>
+
           <div class="tlp-table-wrap">
             <table class="tlp-table">
               <thead>
@@ -103,16 +132,16 @@ export async function render(ctx) {
                 </tr>
               </thead>
               <tbody>
-                ${analyzed.map(
+                ${visible.map(
                   (s) => html`
                     <tr>
                       <td><strong>${s.alias}</strong></td>
                       <td class="tlp-tabular">${s.grade}</td>
                       <td>${getLanguageMeta(s.l1).english}</td>
-                      <td class="tlp-tabular">${s.listening}</td>
-                      <td class="tlp-tabular">${s.speaking}</td>
-                      <td class="tlp-tabular">${s.reading}</td>
-                      <td class="tlp-tabular">${s.writing}</td>
+                      <td class="tlp-tabular ${scoreClass(s.listening)}">${s.listening}</td>
+                      <td class="tlp-tabular ${scoreClass(s.speaking)}">${s.speaking}</td>
+                      <td class="tlp-tabular ${scoreClass(s.reading)}">${s.reading}</td>
+                      <td class="tlp-tabular ${scoreClass(s.writing)}">${s.writing}</td>
                       <td class="tlp-tabular"><strong>${s.average}</strong></td>
                       <td>
                         <span class="tlp-badge ${s.isBubble ? "tlp-badge-accent" : s.isReady ? "tlp-badge-level-6" : "tlp-badge-level-2"}">
@@ -164,6 +193,7 @@ export async function render(ctx) {
                     <option value="zh">Mandarin</option>
                     <option value="fr">French</option>
                     <option value="uk">Ukrainian</option>
+                    <option value="ru">Russian</option>
                     <option value="pt">Portuguese</option>
                   </select>
                 </label>
@@ -178,11 +208,23 @@ export async function render(ctx) {
         </div>
 
         <p class="no-print" style="margin-top:1.25rem">
-          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to Language Hub</a>
+          <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to ELL Lab Hub</a>
         </p>
       </section>
     `,
     mount(root) {
+      root.querySelectorAll("[data-radar-filter]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          updateStorage(STORAGE_KEYS.RADAR, { filter: btn.dataset.radarFilter });
+          ctx.rerender();
+        });
+      });
+
+      root.querySelector("#tlpRadarResetBtn")?.addEventListener("click", () => {
+        updateStorage(STORAGE_KEYS.RADAR, { students: null, filter: "All" });
+        ctx.rerender();
+      });
+
       root.querySelector("#tlpRadarCsvBtn")?.addEventListener("click", () => {
         if (exportAccess.allowed) exportCsv(analyzed);
       });
@@ -203,7 +245,7 @@ export async function render(ctx) {
           if (!student) return;
           const sprint = generateDomainSprint(student);
           openDrawer({
-            title: `4-Week ${sprint.bottleneckDomain} Sprint · ${sprint.studentAlias}`,
+            title: `4-Week ${sprint.bottleneckDomain} Sprint · ${sprint.studentAlias} (Gr ${student.grade})`,
             subtitle: `Current ${sprint.bottleneckDomain}: ${sprint.currentScore} → Target ${sprint.targetThreshold}`,
             bodyHtml: sprint.weeks
               .map(
