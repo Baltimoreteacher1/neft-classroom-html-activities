@@ -70,7 +70,7 @@ export async function render(ctx) {
 
   return {
     title: "Sentence Architect Studio — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>

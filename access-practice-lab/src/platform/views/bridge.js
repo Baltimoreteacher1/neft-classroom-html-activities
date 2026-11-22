@@ -65,7 +65,7 @@ export async function render(ctx) {
 
   return {
     title: "Content-to-Language Bridge — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>

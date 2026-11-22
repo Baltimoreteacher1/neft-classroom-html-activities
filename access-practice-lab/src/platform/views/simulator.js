@@ -32,7 +32,7 @@ export async function render(ctx) {
 
   return {
     title: "Adaptive Speaking Simulator — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>

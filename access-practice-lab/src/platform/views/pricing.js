@@ -10,7 +10,7 @@ export async function render(ctx) {
   const { tier } = getEntitlementState();
   return {
     title: "Plans & School Quote — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>

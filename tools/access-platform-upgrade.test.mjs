@@ -130,3 +130,25 @@ test("intelligenceAdapter: Reclassification Radar bubble detection & 4-week spri
   assert.equal(sprint.bottleneckDomain, "Speaking");
   assert.equal(sprint.weeks.length, 4);
 });
+
+test("all 6 platform views return non-empty html from render()", async () => {
+  if (typeof globalThis.location === "undefined") {
+    globalThis.location = { origin: "https://thelanguagepage.com", pathname: "/access-practice-lab/", search: "", href: "https://thelanguagepage.com/access-practice-lab/" };
+  }
+  const { toHtml } = await import("../access-practice-lab/src/util.js");
+  const views = await Promise.all([
+    import("../access-practice-lab/src/platform/views/bridge.js"),
+    import("../access-practice-lab/src/platform/views/architect.js"),
+    import("../access-practice-lab/src/platform/views/simulator.js"),
+    import("../access-practice-lab/src/platform/views/radar.js"),
+    import("../access-practice-lab/src/platform/views/familyBridge.js"),
+    import("../access-practice-lab/src/platform/views/pricing.js"),
+  ]);
+  const fakeCtx = { band: "6-8", route: {}, prefs: {}, rerender: () => {} };
+  for (const v of views) {
+    const out = await v.render(fakeCtx);
+    assert.ok(out.html, "render() must return .html property");
+    const rendered = toHtml(out.html);
+    assert.ok(rendered.includes('class="tlp-page"'), "rendered HTML must include .tlp-page");
+  }
+});

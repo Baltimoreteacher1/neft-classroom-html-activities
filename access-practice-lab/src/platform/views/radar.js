@@ -47,7 +47,7 @@ export async function render(ctx) {
 
   return {
     title: "Reclassification Radar — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero">
           <div>

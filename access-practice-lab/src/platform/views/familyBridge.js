@@ -45,7 +45,7 @@ export async function render(ctx) {
 
   return {
     title: "Bilingual Family Bridge — The Language Page",
-    body: html`
+    html: html`
       <section class="tlp-page">
         <header class="tlp-hero no-print">
           <div>

@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "7a0aa6f452ba";
+const BUILD_HASH = "391695e8e1f2";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=44371ce02f4f",
   "/access-practice-lab/home.css?v=c635b7e3b1ab",
@@ -780,12 +780,12 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/platform/components/ui.js?v=5b0d34667981",
   "/access-practice-lab/src/platform/services/intelligenceAdapter.js?v=36237b0d9882",
   "/access-practice-lab/src/platform/state/stateMachine.js?v=46388972e21b",
-  "/access-practice-lab/src/platform/views/architect.js?v=43f25a46d196",
-  "/access-practice-lab/src/platform/views/bridge.js?v=150b0fdb0011",
-  "/access-practice-lab/src/platform/views/familyBridge.js?v=3d1ec25bba36",
-  "/access-practice-lab/src/platform/views/pricing.js?v=8f12c7f97459",
-  "/access-practice-lab/src/platform/views/radar.js?v=d53181fb93d5",
-  "/access-practice-lab/src/platform/views/simulator.js?v=b8ee62c9dd28",
+  "/access-practice-lab/src/platform/views/architect.js?v=24ffed2046d1",
+  "/access-practice-lab/src/platform/views/bridge.js?v=cb87217309e9",
+  "/access-practice-lab/src/platform/views/familyBridge.js?v=e538fe63e339",
+  "/access-practice-lab/src/platform/views/pricing.js?v=5827f37ae7ad",
+  "/access-practice-lab/src/platform/views/radar.js?v=4198aaf17d60",
+  "/access-practice-lab/src/platform/views/simulator.js?v=acc206af719b",
   "/access-practice-lab/src/postcard-code.js?v=ef2881c1ee81",
   "/access-practice-lab/src/postcards.js?v=dabbcbfda19c",
   "/access-practice-lab/src/predict/models.js?v=5023dce68406",
