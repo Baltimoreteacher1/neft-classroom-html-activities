@@ -1,0 +1,449 @@
+/* Teacher Hub layout and look (access-teacher/hub.css). Loaded after every other hub sheet.
+   One calm system for the whole page: warm paper, hairline borders, a serif voice for headings, one clay accent.
+   Tokens are re-pointed on .th-body only, so student-facing lab pages keep their own palette, and every panel that
+   reads --line / --surface / --brand (command center, evidence, assignment builder …) follows without per-panel rules. */
+
+.th-body {
+  --bg: #faf9f5;
+  --surface: #ffffff;
+  --surface-2: #f3f1ea;
+  --surface-3: #e8e5db;
+  --ink: #141413;
+  --ink-2: #3d3d3a;
+  --ink-3: #5e5d56;
+  --line: #e4e0d4;
+  --line-strong: #cfcab9;
+  --line-control: #8f8a79;
+  --brand: #b5502f;
+  --brand-ink: #9a4224;
+  --brand-deep: #7d3419;
+  --brand-soft: #f7e9e1;
+  --on-brand: #ffffff;
+  --shadow: 0 1px 2px rgb(20 20 19 / 5%);
+  --shadow-card: 0 1px 2px rgb(20 20 19 / 5%), 0 6px 18px -10px rgb(20 20 19 / 14%);
+  --shadow-lift: 0 2px 4px rgb(20 20 19 / 6%), 0 14px 28px -14px rgb(20 20 19 / 20%);
+  --radius: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --th-w: 1080px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.th-wrap {
+  width: min(var(--th-w), 100% - 2rem);
+  margin-inline: auto;
+}
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.th-hero {
+  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(1.25rem, 3vw, 2rem);
+}
+.th-kicker {
+  margin: 0 0 0.5rem;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.th-hero h1 {
+  margin: 0;
+  font: 500 clamp(2.25rem, 1.6rem + 2.6vw, 3.25rem)/1.08 var(--font-display);
+  letter-spacing: -0.02em;
+}
+.th-hero .lead {
+  max-width: 44ch;
+  margin: 0.75rem 0 0;
+  color: var(--ink-2);
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.5;
+}
+.th-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 40rem;
+  margin: 1.5rem 0 0;
+  padding: 0.35rem 0.35rem 0.35rem 1rem;
+  border: 1px solid var(--line-control);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.th-search:focus-within {
+  border-color: var(--brand);
+  outline: 3px solid color-mix(in srgb, var(--brand) 28%, transparent);
+  outline-offset: 1px;
+}
+.th-search .ico {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--ink-3);
+}
+.th-body .th-search input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 1.0625rem;
+}
+.th-hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0.75rem 0 0;
+}
+.th-hero-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--ink-2);
+  font-weight: 700;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.25em;
+}
+.th-hero-links a:hover {
+  color: var(--brand-ink);
+  text-decoration-color: currentColor;
+}
+
+/* ── view tabs ─────────────────────────────────────────────────────────── */
+.th-views {
+  position: sticky;
+  top: var(--th-top, 4.25rem);
+  z-index: 20;
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - 50%);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+.th-views-list {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.th-views-list::-webkit-scrollbar {
+  display: none;
+}
+.th-views-list [role="tab"] {
+  flex: none;
+  min-height: 3rem;
+  padding: 0 1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink-3);
+  font: 700 1rem/1 var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.th-views-list [role="tab"]:hover {
+  color: var(--ink);
+}
+.th-views-list [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--brand);
+  color: var(--ink);
+}
+.th-views-list [role="tab"]:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: 8px;
+}
+
+/* ── panels ────────────────────────────────────────────────────────────── */
+.th-panel {
+  padding: clamp(1.5rem, 3vw, 2.25rem) 0 var(--s-8);
+  scroll-margin-top: 8rem;
+}
+.th-panel:focus {
+  outline: none;
+}
+.th-panel[hidden] {
+  display: none;
+}
+.th-panel > * + * {
+  margin-top: var(--s-4);
+}
+.th-block-head h2 {
+  margin: 0;
+  font: 500 clamp(1.5rem, 1.25rem + 1vw, 2rem)/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.th-block-head h3 {
+  margin: 0;
+  font: 500 1.35rem/1.2 var(--font-display);
+}
+.th-block-head p {
+  max-width: 62ch;
+  margin: 0.35rem 0 0;
+  color: var(--ink-3);
+}
+.th-panel > .th-block-head:first-child {
+  margin-bottom: var(--s-5);
+}
+.th-subhead {
+  margin-top: var(--s-7) !important;
+}
+
+/* sections and tool cards: one hairline card, no shadow, no nested boxes */
+body.th-body .lab-main {
+  width: auto;
+  padding-inline: 0;
+}
+.th-body .th-sec,
+.th-body .th-tool > .panel,
+.th-body #classEvidence > .panel {
+  margin: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: none;
+}
+.th-body #classEvidence,
+.th-body #hub {
+  padding: 0;
+}
+.th-body #hub {
+  display: grid;
+  gap: var(--s-4);
+}
+.th-body #hub > .th-sec {
+  margin: 0;
+}
+.th-body .th-sec h2,
+.th-body .th-sec-head h2 {
+  font: 500 clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem)/1.25 var(--font-display);
+  letter-spacing: -0.005em;
+}
+.th-body .th-tool:empty,
+.th-body #familyTripHost:empty {
+  display: none;
+}
+.th-label-key {
+  color: var(--ink-3);
+}
+.th-label-key summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+.th-label-key .th-legend {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  margin: 0 0 var(--s-3);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+/* ── start view: task chooser ─────────────────────────────────────────── */
+.th-body .tc-shell {
+  gap: var(--s-4);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.th-body .tc-head h2 {
+  font: 500 clamp(1.5rem, 1.25rem + 1vw, 2rem)/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.th-body .tc-action-grid {
+  gap: var(--s-3);
+}
+.th-body .tc-action-card {
+  min-height: 8rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: none;
+  transition:
+    border-color var(--dur-2) ease,
+    box-shadow var(--dur-2) ease,
+    transform var(--dur-2) var(--ease-out);
+}
+.th-body .tc-action-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.th-body .tc-action-card.is-active {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+.th-body .tc-action-ico {
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.th-body .tc-more-tasks > summary {
+  color: var(--ink-2);
+}
+
+/* ── start view: go straight to ───────────────────────────────────────── */
+.th-library {
+  margin-top: var(--s-7);
+}
+.th-lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--s-3);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.th-lib-grid li[hidden] {
+  display: none;
+}
+.th-lib-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-2) ease,
+    box-shadow var(--dur-2) ease;
+}
+.th-lib-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-card);
+}
+.th-lib-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.th-lib-ico {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.th-lib-ico .ico {
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: 0;
+}
+.th-lib-card.is-data .th-lib-ico {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+.th-lib-text {
+  display: grid;
+  gap: 0.15rem;
+}
+.th-lib-text strong {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.th-lib-text span {
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* ── small screens ────────────────────────────────────────────────────── */
+@media (max-width: 559px) {
+  .th-hero .lead {
+    font-size: 1rem;
+  }
+  .th-search button {
+    padding-inline: 0.9rem;
+  }
+  .th-views-list [role="tab"] {
+    padding: 0 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .th-body .tc-action-card,
+  .th-lib-card {
+    transition: none;
+    transform: none !important;
+  }
+}
+@media print {
+  .th-views,
+  .th-hero,
+  .th-search {
+    display: none !important;
+  }
+}
+
+/* ── task chooser controls: grade band and role sit together, right of the heading ── */
+.tc-head-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-3) var(--s-5);
+}
+.tc-role select {
+  min-width: 11.5rem;
+  min-height: 2.75rem;
+}
+
+/* ── buttons: flat clay, no gradient or glow ──────────────────────────── */
+.th-body .btn-primary {
+  border-color: var(--brand);
+  background: var(--brand);
+  box-shadow: none;
+  color: var(--on-brand);
+}
+.th-body .btn-primary:hover {
+  border-color: var(--brand-deep);
+  background: var(--brand-deep);
+}
+
+/* ── header: brand, site links and tools on one row on wide screens ───── */
+@media (min-width: 1100px) {
+  .th-body .lab-top {
+    flex-wrap: nowrap;
+  }
+  .th-body .th-sitenav {
+    flex: 1 1 auto;
+    flex-basis: auto;
+    order: 2;
+    justify-content: center;
+  }
+  .th-body .th-tools {
+    order: 3;
+  }
+}
+
+/* ── phones: the page header scrolls away, the tab bar stays ──────────── */
+@media (max-width: 759px) {
+  .th-body .lab-top {
+    position: static;
+  }
+  .th-body .th-sitenav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .th-body .th-sitenav a {
+    flex: none;
+  }
+}

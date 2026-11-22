@@ -655,17 +655,21 @@ export async function mountCommandCenter(host) {
           <h2 id="tcTitle" lang="${lang}">${say("What would you like to do today?", "¿Qué quieres hacer hoy?")}</h2>
           <p class="fine" lang="${lang}">${say("Pick one. It opens right here.", "Elige una opción. Se abre aquí mismo.")}</p>
         </div>
-        <div class="th-band tc-band">
-          <span class="th-band-label" id="tcBandLabel">Grade band</span>
-          <div class="band-switch" role="group" aria-labelledby="tcBandLabel">
-            ${CONTENT_BANDS.map((b) => html`<button type="button" class="band-btn" data-th-band="${b}" aria-pressed="${String(b === state.band)}" aria-label="${bandLabel(b)}">${BAND_INFO[b]?.short || b}</button>`)}
+        <div class="tc-head-tools">
+          <div class="th-band tc-band">
+            <span class="th-band-label" id="tcBandLabel">Grade band</span>
+            <div class="band-switch" role="group" aria-labelledby="tcBandLabel">
+              ${CONTENT_BANDS.map((b) => html`<button type="button" class="band-btn" data-th-band="${b}" aria-pressed="${String(b === state.band)}" aria-label="${bandLabel(b)}">${BAND_INFO[b]?.short || b}</button>`)}
+            </div>
           </div>
+          ${ACCESS_LAB_FLAGS.teacherRoleEnabled ? html`<div class="th-band tc-role">
+            <label class="th-band-label" for="tcRole" lang="${lang}">${say("I am a…", "Soy…")}</label>
+            <select id="tcRole" data-teacher-role aria-describedby="tcRoleHint" lang="${lang}">${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[lang === "es" ? 1 : 0]}</option>`)}</select>
+            <span id="tcRoleHint" class="visually-hidden" lang="${lang}">${say("Changes the first three cards only.", "Solo cambia el orden de las primeras tres tarjetas.")}</span>
+          </div>` : ""}
         </div>
       </div>
 
-      ${ACCESS_LAB_FLAGS.teacherRoleEnabled ? html`<label for="tcRole" lang="${lang}">${say("I am a…", "Soy…")}</label>
-      <select id="tcRole" data-teacher-role lang="${lang}">${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[lang === "es" ? 1 : 0]}</option>`)}</select>
-      <p class="fine" lang="${lang}">${say("Changes the first three cards only.", "Solo cambia el orden de las primeras tres tarjetas.")}</p>` : ""}
       <div class="tc-action-grid" role="group" aria-label="${say("Teaching tasks", "Tareas docentes")}">
         ${primaryActions.map(
           (a) => html`<button
