@@ -5,7 +5,7 @@ import { cleanSet } from "../vocab-sets/model.js";
 import { readSets, writeSets } from "../vocab-sets/store.js";
 import { safeJson, storage } from "../util.js";
 
-const TEACHER_CLASSES_KEY = "accessPracticeLab:v1:teacherClasses";
+const TEACHER_CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
 
 export function activeTeacherClasses() {
   const list = safeJson(storage.get(TEACHER_CLASSES_KEY), []);
@@ -17,8 +17,9 @@ function clientFor(cls) {
 }
 
 /** Merge local vocab sets with the class's server library (last-write-wins by updatedAt). */
-export async function syncVocabSets(cls) {
-  if (!cls?.code || !cls?.passcode) return { ok: false, error: "no-class" };
+export async function syncVocabSets(cls, api = null) {
+  const client = api || (cls?.code && cls?.passcode ? clientFor(cls) : null);
+  if (!client) return { ok: false, error: "no-class" };
   const local = readSets();
   const payload = local.map((s) => ({
     kind: "vocab_set",
@@ -27,7 +28,7 @@ export async function syncVocabSets(cls) {
     payload: s,
     updatedAt: s.updated || Date.now(),
   }));
-  const res = await clientFor(cls).librarySync(payload, "vocab_set");
+  const res = await client.librarySync(payload, "vocab_set");
   if (!res?.ok) return { ok: false, error: res?.error || "sync-failed" };
 
   const byId = new Map(local.map((s) => [s.id, s]));

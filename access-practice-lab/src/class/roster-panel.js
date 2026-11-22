@@ -18,7 +18,7 @@ import { createJoinCards } from "./join-cards.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 import { drawReviewQueue } from "./review-queue.js";
 import { mountSupportEditor } from "./support-editor.js";
-import { listClassLibrary, syncVocabSets } from "./library-sync.js";
+import { syncVocabSets } from "./library-sync.js";
 import { recordingPlayer, voiceNoteButton } from "./voice-note.js";
 
 const CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
@@ -224,7 +224,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       drawLibrary();
     };
     async function drawLibrary() {
-      const res = await listClassLibrary(current);
+      const res = await api.libraryList();
       const items = res.ok ? res.items : [];
       const counts = items.reduce((acc, it) => ((acc[it.kind] = (acc[it.kind] || 0) + 1), acc), {});
       const syncBtn = el("button", {
@@ -232,7 +232,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         class: "btn small",
         onclick: async () => {
           live.textContent = S("Syncing teacher library…", "Sincronizando biblioteca…");
-          const r = await syncVocabSets(current);
+          const r = await syncVocabSets(current, api);
           live.textContent = r.ok
             ? S(`Synced ${r.count} vocabulary sets.`, `Se sincronizaron ${r.count} conjuntos de vocabulario.`)
             : errorText(S, r.error);
