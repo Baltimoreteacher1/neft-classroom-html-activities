@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "2a48bfd2df93";
+const BUILD_HASH = "7a0aa6f452ba";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=44371ce02f4f",
   "/access-practice-lab/home.css?v=c635b7e3b1ab",
@@ -82,7 +82,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
   "/access-practice-lab/src/platform/shellIntegration.js?v=91d5afaa7b1b",
-  "/access-practice-lab/src/platform/data/platformData.js?v=416236792bf3",
+  "/access-practice-lab/src/platform/data/platformData.js?v=a8751924d54c",
   "/access-practice-lab/src/platform/entitlements/entitlementService.js?v=1892c4bf921c",
   "/access-practice-lab/src/platform/services/storageService.js?v=f881e777d401",
   "/access-practice-lab/src/platform/services/logger.js?v=87651c076e60",
@@ -778,14 +778,14 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/pathways/ui-build.js?v=d4afe8a742f8",
   "/access-practice-lab/src/pathways/ui.js?v=16c6868a7bb5",
   "/access-practice-lab/src/platform/components/ui.js?v=5b0d34667981",
-  "/access-practice-lab/src/platform/services/intelligenceAdapter.js?v=5efa1e97cd11",
+  "/access-practice-lab/src/platform/services/intelligenceAdapter.js?v=36237b0d9882",
   "/access-practice-lab/src/platform/state/stateMachine.js?v=46388972e21b",
-  "/access-practice-lab/src/platform/views/architect.js?v=b0385f10fc9f",
+  "/access-practice-lab/src/platform/views/architect.js?v=43f25a46d196",
   "/access-practice-lab/src/platform/views/bridge.js?v=150b0fdb0011",
   "/access-practice-lab/src/platform/views/familyBridge.js?v=3d1ec25bba36",
   "/access-practice-lab/src/platform/views/pricing.js?v=8f12c7f97459",
   "/access-practice-lab/src/platform/views/radar.js?v=d53181fb93d5",
-  "/access-practice-lab/src/platform/views/simulator.js?v=0a2538d958bf",
+  "/access-practice-lab/src/platform/views/simulator.js?v=b8ee62c9dd28",
   "/access-practice-lab/src/postcard-code.js?v=ef2881c1ee81",
   "/access-practice-lab/src/postcards.js?v=dabbcbfda19c",
   "/access-practice-lab/src/predict/models.js?v=5023dce68406",

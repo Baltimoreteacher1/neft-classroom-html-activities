@@ -369,30 +369,34 @@ export function analyzeStudentRadar(student) {
 
 export function generateDomainSprint(analyzedStudent) {
   const b = analyzedStudent.bottleneck;
+  const g = String(analyzedStudent.grade || "6");
+  const isK2 = g === "K" || g === "1" || g === "2";
+  const q = isK2 ? `?grades=${g === "2" ? "2-3" : g}` : "";
+
   const domainRoutes = {
     Listening: [
-      { week: 1, focus: "Detail & Signal Word Tracking", route: "Listening", cta: "Open Listening Room" },
-      { week: 2, focus: "Content-to-Language Audio Pre-Teach", route: "bridge", cta: "Open Bridge Micro-Lab" },
-      { week: 3, focus: "Multi-Step Classroom Directions", route: "Listening", cta: "Practice Listening" },
-      { week: 4, focus: "Independent Practice Test Check", route: "tests", cta: "Open Practice Tests" },
+      { week: 1, focus: "Detail & Signal Word Tracking", route: `Listening${q}`, cta: "Open Listening Room" },
+      { week: 2, focus: "Content-to-Language Audio Pre-Teach", route: `bridge${q}`, cta: "Open Bridge Micro-Lab" },
+      { week: 3, focus: "Multi-Step Classroom Directions", route: `Listening${q}`, cta: "Practice Listening" },
+      { week: 4, focus: isK2 ? "Early Learners Audio Story Check" : "Independent Practice Test Check", route: isK2 ? `early${q}` : "tests", cta: isK2 ? "Open Early Learners Hub" : "Open Practice Tests" },
     ],
     Speaking: [
-      { week: 1, focus: "Sentence Starters & Word Bank Rehearsal", route: "simulator", cta: "Open Speaking Simulator" },
-      { week: 2, focus: "Cause-and-Effect Oral Framing", route: "architect", cta: "Build Frames in Architect" },
-      { week: 3, focus: "Lightly Scaffolded Oral Explanations", route: "simulator", cta: "Practice with 1 Lifeline" },
-      { week: 4, focus: "Independent Pride Clip Recording", route: "speak", cta: "Open Speaking Studio" },
+      { week: 1, focus: "Sentence Starters & Word Bank Rehearsal", route: `simulator${q}`, cta: "Open Speaking Simulator" },
+      { week: 2, focus: "Cause-and-Effect Oral Framing", route: `architect${q}`, cta: "Build Frames in Architect" },
+      { week: 3, focus: "Lightly Scaffolded Oral Explanations", route: `simulator${q}`, cta: "Practice with 1 Lifeline" },
+      { week: 4, focus: isK2 ? "Picture-First Speaking Practice" : "Independent Pride Clip Recording", route: isK2 ? `Speaking${q}` : "speak", cta: isK2 ? "Open K–2 Speaking Room" : "Open Speaking Studio" },
     ],
     Reading: [
-      { week: 1, focus: "Polysemous & Academic Vocabulary", route: "bridge", cta: "Scan Text in Bridge" },
-      { week: 2, focus: "Finding Textual Evidence", route: "Reading", cta: "Open Reading Room" },
-      { week: 3, focus: "Clause Deconstruction (Who / Action / Why)", route: "architect", cta: "Deconstruct in Architect" },
-      { week: 4, focus: "Independent Reading Check", route: "tests", cta: "Open Practice Tests" },
+      { week: 1, focus: "Polysemous & Academic Vocabulary", route: `bridge${q}`, cta: "Scan Text in Bridge" },
+      { week: 2, focus: "Finding Textual Evidence", route: `Reading${q}`, cta: "Open Reading Room" },
+      { week: 3, focus: "Clause Deconstruction (Who / Action / Why)", route: `architect${q}`, cta: "Deconstruct in Architect" },
+      { week: 4, focus: isK2 ? "Read-Along Picture Stories" : "Independent Reading Check", route: isK2 ? `early${q}` : "tests", cta: isK2 ? "Open Early Learners Hub" : "Open Practice Tests" },
     ],
     Writing: [
-      { week: 1, focus: "Kernel-to-Academic Sentence Expansion", route: "architect", cta: "Open Sentence Architect" },
-      { week: 2, focus: "Tier 2 Connectors (Whereas, Consequently)", route: "architect", cta: "Practice Connectors" },
-      { week: 3, focus: "Pattern Revision & Editing", route: "detective", cta: "Open Error Detective" },
-      { week: 4, focus: "Independent Evidence Paragraph", route: "write", cta: "Open Writing Studio" },
+      { week: 1, focus: "Kernel-to-Academic Sentence Expansion", route: `architect${q}`, cta: "Open Sentence Architect" },
+      { week: 2, focus: "Tier 2 Connectors (Whereas, Consequently)", route: `architect${q}`, cta: "Practice Connectors" },
+      { week: 3, focus: isK2 ? "Guided K–2 Sentence Writing" : "Pattern Revision & Editing", route: isK2 ? `Writing${q}` : "detective", cta: isK2 ? "Open K–2 Writing Room" : "Open Error Detective" },
+      { week: 4, focus: isK2 ? "Picture-Prompt Writing Check" : "Independent Evidence Paragraph", route: isK2 ? `Writing${q}` : "write", cta: isK2 ? "Practice K–2 Writing" : "Open Writing Studio" },
     ],
   };
 

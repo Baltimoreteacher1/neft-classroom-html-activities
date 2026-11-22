@@ -37,6 +37,14 @@ export const BRIDGE_SAMPLES = [
     text: "A square has four equal sides, whereas a triangle has only three sides. Both shapes are flat, however a square has four square corners.",
   },
   {
+    id: "k2-ela-community",
+    subject: "Social Studies",
+    grade: "Grades K–2",
+    klu: "Inform",
+    title: "Community Helpers & Rules",
+    text: "A crossing guard holds a bright sign so children can cross the street safely. Every school rule is made to keep students safe and fair, because everyone shares the same space.",
+  },
+  {
     id: "sci-g6-ecosystems",
     subject: "Science",
     grade: "Grade 6",
@@ -102,6 +110,21 @@ export const POLYSEMOUS_LEXICON = {
     everyday: "A mobile phone or a small room.",
     academic: "The basic structural unit of all living things, or one box in a spreadsheet/table.",
     tip: "Pair with a microscope image or grid box depending on the subject.",
+  },
+  sign: {
+    everyday: "To write your name on a paper.",
+    academic: "A posted symbol or words giving directions, or a + / − symbol in math.",
+    tip: "Show a street stop sign alongside a math plus sign so K–2 learners see both meanings.",
+  },
+  rule: {
+    everyday: "A direction you follow at home or on the playground.",
+    academic: "A shared agreement for safety, or a pattern rule in math (e.g., 'add 2').",
+    tip: "Connect classroom rules to math pattern rules with concrete examples.",
+  },
+  side: {
+    everyday: "Next to someone ('stand by my side').",
+    academic: "One straight line segment that forms part of a 2D shape.",
+    tip: "Trace each edge of a square or triangle with a finger while counting.",
   },
 };
 
@@ -174,6 +197,21 @@ export const ARCHITECT_KERNELS = [
       { id: "kd2", slot: "prep", category: "Where Phrase", text: "near the sunny park", levelBoost: 1 },
       { id: "kd3", slot: "connector", category: "Time Word", text: "suddenly,", levelBoost: 1 },
       { id: "kd4", slot: "evidence", category: "Why Clause", text: "so it could catch the red ball", levelBoost: 2 },
+    ],
+  },
+  {
+    id: "k2-math-compare",
+    klu: "Explain",
+    subject: "K–2 Math",
+    kernel: "The square is different.",
+    whoWhat: "The square",
+    action: "is different",
+    whyHow: "four equal sides vs. three sides",
+    blocks: [
+      { id: "km1", slot: "verb", category: "Compare Verb", text: "has four equal sides", levelBoost: 1 },
+      { id: "km2", slot: "prep", category: "Where Phrase", text: "on our pattern mat", levelBoost: 1 },
+      { id: "km3", slot: "connector", category: "Compare Word", text: "whereas the triangle has three,", levelBoost: 2 },
+      { id: "km4", slot: "evidence", category: "Why Clause", text: "because every corner on a square matches", levelBoost: 1 },
     ],
   },
   {
@@ -261,6 +299,16 @@ export const SPEAKING_PROMPTS = [
     modelSample: "The first basket has more apples because five is greater than three.",
   },
   {
+    id: "k2-helper",
+    subject: "K–2 Community",
+    klu: "Narrate",
+    title: "Tell About a School Helper",
+    prompt: "Think about a helper at your school, like a teacher, nurse, or bus driver. Tell what they do and why they help.",
+    starter: "At my school, the helper...",
+    wordBank: ["helper", "safe", "first", "because", "school"],
+    modelSample: "At my school, the crossing guard holds a bright sign. She helps us cross the street safely because cars must stop.",
+  },
+  {
     id: "speak-ecosystem",
     subject: "Science",
     klu: "Explain",
@@ -306,6 +354,21 @@ export const DEMO_ROSTER = [
 
 // ── Module 6: Bilingual Family Bridge Prompts ─────────────────────────────────
 export const FAMILY_DINNER_PROMPTS = [
+  {
+    id: "dinner-k2-story",
+    topic: "K–2 Picture & Story Talk",
+    growthKey: "described pictures and ideas in full sentences",
+    prompts: {
+      en: "Ask your child: Look at a picture in a book or around our home. What is happening, and what might happen next?",
+      es: "Pregúntele a su hijo/a: Mira un dibujo en un libro o en casa. ¿Qué está pasando y qué podría pasar después?",
+      ar: "اسأل طفلك: انظر إلى صورة في كتاب أو حول منزلنا. ماذا يحدث الآن، وماذا قد يحدث بعد ذلك؟",
+      zh: "问问您的孩子：看看书里或家里的一张图片。图里正在发生什么？接下来可能会发生什么？",
+      fr: "Demandez à votre enfant : Regarde une image dans un livre ou à la maison. Que se passe-t-il et que pourrait-il se passer ensuite ?",
+      uk: "Запитайте дитину: подивися на малюнок у книжці або вдома. Що відбувається і що може статися далі?",
+      ru: "Спросите ребёнка: посмотри на картинку в книге или дома. Что происходит и что может случиться дальше?",
+      pt: "Pergunte ao seu filho(a): Olhe para uma imagem em um livro ou em casa. O que está acontecendo e o que pode acontecer depois?",
+    },
+  },
   {
     id: "dinner-eco",
     topic: "Ecosystems & Change",

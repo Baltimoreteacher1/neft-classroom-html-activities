@@ -64,7 +64,12 @@ export async function render(ctx) {
           </div>
 
           <h2 id="tlpSimTitle" style="margin:0 0 0.4rem;font-size:1.25rem">${promptItem.title}</h2>
-          <p id="tlpSimPrompt" class="tlp-measure" style="margin:0 0 1rem">${promptItem.prompt}</p>
+          <p id="tlpSimPrompt" class="tlp-measure" style="margin:0 0 0.65rem">${promptItem.prompt}</p>
+          <p style="margin:0 0 1rem">
+            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpSimReadPromptBtn" style="min-height:34px;padding:0.3rem 0.85rem;font-size:0.82rem">
+              🔊 Hear Prompt Read Aloud
+            </button>
+          </p>
 
           <div class="tlp-actions-row" style="margin-bottom:1rem">
             <span class="tlp-muted" style="font-weight:600">Measured Lifelines:</span>
@@ -168,6 +173,15 @@ export async function render(ctx) {
             }
           }
         });
+      });
+
+      root.querySelector("#tlpSimReadPromptBtn")?.addEventListener("click", () => {
+        if (typeof speechSynthesis === "undefined") return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(currentPrompt.prompt);
+        u.lang = "en-US";
+        u.rate = 0.92;
+        speechSynthesis.speak(u);
       });
 
       root.querySelector("#tlpSimL1Btn")?.addEventListener("click", () => {

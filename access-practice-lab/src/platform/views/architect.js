@@ -176,9 +176,14 @@ export async function render(ctx) {
           </div>
 
           <div class="tlp-actions-row" style="margin-top:1.25rem;justify-content:space-between">
-            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpArchSaveBtn">
-              Save Built Sentence
-            </button>
+            <div class="tlp-actions-row">
+              <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpArchSpeakBtn">
+                🔊 Hear Sentence
+              </button>
+              <button type="button" class="tlp-btn tlp-btn-primary" id="tlpArchSaveBtn">
+                Save Built Sentence
+              </button>
+            </div>
             <span id="tlpArchSaveStatus" class="tlp-muted" role="status"></span>
           </div>
         </div>
@@ -273,6 +278,15 @@ export async function render(ctx) {
         const u = new SpeechSynthesisUtterance(L1_AUDIO_CUES[l1] || L1_AUDIO_CUES.en);
         u.lang = l1Meta.speechLang;
         u.rate = 0.92;
+        speechSynthesis.speak(u);
+      });
+
+      root.querySelector("#tlpArchSpeakBtn")?.addEventListener("click", () => {
+        if (typeof speechSynthesis === "undefined") return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(root.querySelector("#tlpArchStage")?.textContent || "");
+        u.lang = "en-US";
+        u.rate = 0.88;
         speechSynthesis.speak(u);
       });
 
