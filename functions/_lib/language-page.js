@@ -251,13 +251,15 @@ export function brandLabHtml(html, pathname) {
   const studio = studioFor(pathname);
   if (studio) return studioLabHtml(html, studio, pathname);
   const canonical = `https://${LANGUAGE_PAGE_HOST}${pathname}`;
+  const labTitle =
+    /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.exec(html)?.[1] || "ACCESS Practice Lab";
   return html
     .replace(
-      "<title>ACCESS Practice Lab</title>",
-      `<title>${LAB_BRAND.name} · ACCESS Practice Lab</title>`,
+      /<title>(?:ELL Lab|ACCESS Practice Lab)<\/title>/,
+      `<title>${LAB_BRAND.name} · ${labTitle}</title>`,
     )
     .replace(
-      "<strong>ACCESS Practice Lab</strong><small>EduWonderLab</small>",
+      /<strong>(?:ELL Lab|ACCESS Practice Lab)<\/strong><small>EduWonderLab<\/small>/,
       `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.poweredBy}</small>`,
     )
     .replace(

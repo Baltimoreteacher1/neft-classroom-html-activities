@@ -54,6 +54,36 @@ const SPOKEN_1 = "The river move rocks. It make the land different.";
 const SPOKEN_2 =
   "The river moves rocks downstream because the water pushes them. As a result, the valley becomes wider.";
 
+test("Reality revisions appear as a supported pair in the Language Time Machine", () => {
+  const model = C.collect({
+    reality: {
+      progress: {
+        "3-5:mystery-academy:log": {
+          attempts: [
+            {
+              text: "The notebook is in art.",
+              t: "2026-11-20T12:00:00.000Z",
+              title: "Missing notebook",
+              keyUse: "Explain",
+              supportTier: "C",
+            },
+            {
+              text: "The notebook is on the art rack because the paint was wet.",
+              t: "2026-11-20T12:01:00.000Z",
+              title: "Missing notebook",
+              keyUse: "Explain",
+              supportTier: "B",
+            },
+          ],
+        },
+      },
+    },
+  });
+  assert.equal(model.items.length, 2);
+  assert.equal(model.pairs.length, 1);
+  assert.equal(model.pairs[0].later.stage, "revision");
+});
+
 function seed() {
   for (const k of [
     `${P}:studio`,

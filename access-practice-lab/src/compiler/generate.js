@@ -419,7 +419,7 @@ export function generateMission({ extract, plan, settings = {}, id, source = {} 
         "People act on your recommendation: your explanation matched the evidence, and you showed which evidence supported it.",
         "La gente actúa según tu recomendación: tu explicación coincidió con la evidencia y mostraste qué evidencia la apoyaba.",
       ),
-      when: { all: [{ chose: ["t-decide", "o-source"] }, { support: ["t-decide", 2] }] },
+      when: { all: [{ chose: ["t-decide", "o-source"] }, { support: ["t-decide", settings.worldRule === "cite-one" ? 1 : 2] }] },
     },
     conflict && {
       id: "out-thin",
@@ -500,6 +500,7 @@ export function generateMission({ extract, plan, settings = {}, id, source = {} 
         type: settings.type || "auto",
         topic,
         showSource: Boolean(settings.showSource),
+        worldRule: settings.worldRule === "cite-one" ? "cite-one" : "compare-two",
       },
       supports,
       feedback: { keyUse, minWords: { speak: young ? 12 : 20, write: young ? 20 : 35 } },

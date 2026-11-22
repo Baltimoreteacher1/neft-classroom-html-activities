@@ -52,7 +52,7 @@ export function resourceHubStripHTML(band = "6-8", activePillar = "All") {
                   type="button"
                   class="tlp-tab"
                   data-tlp-pillar="${p}"
-                  aria-selected="${p === activePillar ? "true" : "false"}"
+                  aria-pressed="${p === activePillar ? "true" : "false"}"
                 >
                   ${p}
                 </button>`,

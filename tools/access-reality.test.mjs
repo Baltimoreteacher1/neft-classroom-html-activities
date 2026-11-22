@@ -3,8 +3,10 @@ import test from "node:test";
 import {
   evaluateClarification,
   evaluateCommunication,
+  evaluatePumpExplanation,
   FLAGSHIP_WORLDS,
   matchAdventureInterest,
+  pumpFlow,
   validateCustomMission,
 } from "../access-practice-lab/src/reality-engine.js";
 
@@ -30,6 +32,24 @@ test("FLAGSHIP_WORLDS provides all three required worlds with 3-5 and 6-8 missio
       }
     }
   }
+});
+
+test("partner model follows both physical conditions and checks the shared explanation", () => {
+  assert.equal(pumpFlow({ batteryCharged: true, filterClear: false }), "blocked");
+  assert.equal(pumpFlow({ batteryCharged: false, filterClear: true }), "no-power");
+  assert.equal(pumpFlow({ batteryCharged: true, filterClear: true }), "flowing");
+  assert.equal(evaluatePumpExplanation("The battery is charged.").complete, false);
+  assert.equal(
+    evaluatePumpExplanation(
+      "Although the battery has 90% charge, the filter is clogged with leaves.",
+    ).complete,
+    true,
+  );
+  assert.equal(
+    evaluatePumpExplanation("Aunque la batería tiene carga, el filtro está obstruido por hojas.")
+      .complete,
+    true,
+  );
 });
 
 test("matchAdventureInterest maps free-text student interests to worlds and roles", () => {
@@ -110,10 +130,13 @@ test("validateCustomMission validates teacher-authored reality missions", () => 
     communicatePrompt:
       "Explain to Meteorologist Lin why the wind speed dropped and whether Sensor B is reliable.",
     keywords: "pressure, wind, sensor, because, calibrate",
+    languageRule: "cause",
     consequenceFull:
       "Meteorologist Lin publishes the storm advisory using your barometric explanation!",
   });
   assert.equal(good.valid, true);
   assert.equal(good.mission.worldId, "science-expedition");
+  assert.equal(good.mission.languageRule, "cause");
+  assert.ok(good.mission.requiredConcepts.some((concept) => concept.id === "rule-cause"));
   assert.ok(good.mission.wordBank.includes("pressure"));
 });

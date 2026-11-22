@@ -28,6 +28,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   topic: "",
   contentObjective: "",
   languageObjective: "",
+  worldRule: "compare-two",
   supports: { glossary: true, frames: true, readAloud: true, spanish: true, wordBank: true },
   showSource: false,
 });
@@ -308,6 +309,16 @@ ${source.text}</textarea>
           value="${settings.languageObjective}"
           placeholder="${I.S("Leave empty and the builder suggests one", "Déjelo vacío y el creador sugiere uno")}"
       /></label>
+      <details class="strategy">
+        <summary>${I.T("How evidence changes the outcome", "Cómo la evidencia cambia el resultado")}</summary>
+        <label class="field" for="xbWorldRule">${I.T("Rule for the final decision", "Regla para la decisión final")}
+          <select id="xbWorldRule" data-xb-in="settings.worldRule">
+            ${opt("compare-two", I.T("Compare two supporting clues before the group acts", "Comparar dos pistas de apoyo antes de que actúe el grupo"), settings.worldRule)}
+            ${opt("cite-one", I.T("Cite one supporting clue before the group acts", "Citar una pista de apoyo antes de que actúe el grupo"), settings.worldRule)}
+          </select>
+        </label>
+        <p class="fine">${I.T("This rule applies when the source offers competing explanations.", "Esta regla se aplica cuando la fuente presenta explicaciones diferentes.")}</p>
+      </details>
       <label class="field" for="xbConObj"
         >${I.T("Learning objective (content)", "Objetivo de aprendizaje (contenido)")}
         <input

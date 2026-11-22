@@ -188,6 +188,29 @@ function fromAdventures(adventures) {
   return out;
 }
 
+function fromReality(reality) {
+  const out = [];
+  for (const [key, progress] of Object.entries(obj(reality?.progress))) {
+    const attempts = asArray(progress?.attempts);
+    attempts.forEach((attempt, n) => {
+      if (!clean(attempt?.text) || !isDate(attempt?.t)) return;
+      out.push(item({
+        id: `r:${key}:${n}`,
+        taskId: `reality-${key}`,
+        taskTitle: attempt.title || "Language Reality mission",
+        keyUse: attempt.keyUse || "Explain",
+        domain: "Writing",
+        t: attempt.t,
+        text: attempt.text,
+        supports: { frames: attempt.supportTier !== "C", coach: n > 0 },
+        stage: n > 0 ? "revision" : "first",
+        src: "reality",
+      }));
+    });
+  }
+  return out;
+}
+
 const LOOP_STAGE = { response: "first", revision: "revision", transfer: "transfer" };
 
 function fromLoops(intel) {
@@ -236,6 +259,7 @@ export function collectItems(input = {}) {
     ...fromExhibition(input.exhibition),
     ...fromWarmup(input.warmup),
     ...fromAdventures(input.adventures),
+    ...fromReality(input.reality),
     ...fromLoops(input.intel),
   ].filter((x) => x.id && isDate(x.t) && (x.text || x.audioId));
   // The same words saved for the same task by two features (a studio version and its loop) are one piece of work.
@@ -346,6 +370,7 @@ export function readSources(read) {
     exhibition: obj(read(`${P}:exhibition`)),
     warmup: obj(prefs.warmup),
     adventures: obj(read(`${P}:adventures`)),
+    reality: obj(read(`${P}:realityEngine`)),
     intel: obj(read(`${P}:intel`)),
   };
 }

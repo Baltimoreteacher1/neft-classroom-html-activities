@@ -335,7 +335,11 @@ test("class panel: pick Kindergarten, Listening, assign an audio-first activity;
   const pick = row.querySelector('[aria-label="Activity"]');
   assert.ok(pick.options.length >= 1);
   assert.match(pick.options[0].textContent, /^Kindergarten · Level A · .+ · audio-first$/);
-  [...row.querySelectorAll("button")].find((b) => /Assign/.test(b.textContent)).click();
+  const assignButton = [...document.querySelectorAll("#p button")].find(
+    (b) => b.textContent.trim() === "Assign",
+  );
+  assert.ok(assignButton, "the class panel offers an Assign action");
+  assignButton.click();
   await settle(80);
   const classes = JSON.parse(localStorage.getItem("accessPracticeLabClass:v1:teacher-classes"));
   const info = await (await serverFetch(`/api/class/info?code=${classes[0].code}`)).json();

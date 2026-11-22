@@ -75,6 +75,24 @@ const ASSETS = { art: [...ART_IDS], looks: Object.keys(LOOKS) };
 const compiled = () => compileExperience(sampleInput(), ASSETS);
 const X = extractSource(SAMPLE_TEXT, { title: SAMPLE_TITLE });
 
+test("teacher's evidence rule changes the authored world outcome gate", () => {
+  const base = sampleInput();
+  const two = compileExperience(
+    { ...base, settings: { ...base.settings, worldRule: "compare-two" } },
+    ASSETS,
+  );
+  const one = compileExperience(
+    { ...base, settings: { ...base.settings, worldRule: "cite-one" } },
+    ASSETS,
+  );
+  assert.equal(two.ok, true);
+  assert.equal(one.ok, true);
+  const gate = (result) =>
+    result.def.outcomes.find((o) => o.id === "out-backed")?.when.all[1].support[1];
+  assert.equal(gate(two), 2);
+  assert.equal(gate(one), 1);
+});
+
 test("the sample is an original passage of the required size", () => {
   const words = tokenize(SAMPLE_TEXT).length;
   assert.ok(words >= 250 && words <= 350, `${words} words`);

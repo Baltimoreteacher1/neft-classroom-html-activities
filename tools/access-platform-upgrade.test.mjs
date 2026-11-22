@@ -1,15 +1,10 @@
-import test from "node:test";
 import assert from "node:assert/strict";
-
+import test from "node:test";
 import {
-  SCHEMA_VERSION,
-  STORAGE_KEYS,
-  clearPlatformStorage,
-  readStorage,
-  sanitizeAlias,
-  writeStorage,
-} from "../access-practice-lab/src/platform/services/storageService.js";
-import { createStateMachine, STATES } from "../access-practice-lab/src/platform/state/stateMachine.js";
+  ARCHITECT_KERNELS,
+  BRIDGE_SAMPLES,
+  SPEAKING_PROMPTS,
+} from "../access-practice-lab/src/platform/data/platformData.js";
 import {
   checkFeatureAccess,
   getEntitlementState,
@@ -23,7 +18,18 @@ import {
   generateDomainSprint,
   scanLessonText,
 } from "../access-practice-lab/src/platform/services/intelligenceAdapter.js";
-import { ARCHITECT_KERNELS, BRIDGE_SAMPLES, SPEAKING_PROMPTS } from "../access-practice-lab/src/platform/data/platformData.js";
+import {
+  clearPlatformStorage,
+  readStorage,
+  SCHEMA_VERSION,
+  STORAGE_KEYS,
+  sanitizeAlias,
+  writeStorage,
+} from "../access-practice-lab/src/platform/services/storageService.js";
+import {
+  createStateMachine,
+  STATES,
+} from "../access-practice-lab/src/platform/state/stateMachine.js";
 
 test("storageService: schemaVersion 1, safe fallback, and zero-PII sanitizeAlias", () => {
   clearPlatformStorage();
@@ -133,7 +139,12 @@ test("intelligenceAdapter: Reclassification Radar bubble detection & 4-week spri
 
 test("all 6 platform views return non-empty html from render()", async () => {
   if (typeof globalThis.location === "undefined") {
-    globalThis.location = { origin: "https://thelanguagepage.com", pathname: "/access-practice-lab/", search: "", href: "https://thelanguagepage.com/access-practice-lab/" };
+    globalThis.location = {
+      origin: "https://thelanguagepage.com",
+      pathname: "/access-practice-lab/",
+      search: "",
+      href: "https://thelanguagepage.com/access-practice-lab/",
+    };
   }
   const { toHtml } = await import("../access-practice-lab/src/util.js");
   const views = await Promise.all([

@@ -808,6 +808,21 @@ export function evaluateCommunication(responseText, mission) {
   };
 }
 
+// A small, authored causal model for the same-device partner investigation. It never
+// guesses a student's proficiency: the two observable conditions determine the flow.
+export function pumpFlow({ batteryCharged = true, filterClear = false } = {}) {
+  if (!batteryCharged) return "no-power";
+  return filterClear ? "flowing" : "blocked";
+}
+
+export function evaluatePumpExplanation(responseText) {
+  const text = String(responseText || "").toLowerCase();
+  const hasBattery = /\b(battery|power|charge|90%|bater[ií]a|energ[ií]a|carga)\b/.test(text);
+  const hasFilter = /\b(filter|screen|intake|leaves|clogged|blocked|filtro|hojas|obstruid[oa]|bloquead[oa])\b/.test(text);
+  const hasConnection = /\b(because|although|even though|despite|so|therefore|porque|aunque|entonces|por eso)\b/.test(text);
+  return { hasBattery, hasFilter, hasConnection, complete: hasBattery && hasFilter && hasConnection };
+}
+
 /**
  * Validate a teacher-created Reality Mission schema so teachers can author, preview, save, and share
  * missions without writing code.
@@ -827,6 +842,14 @@ export function validateCustomMission(rawMission = {}) {
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean)
     .slice(0, 8);
+  const languageRule = ["evidence", "cause", "sequence"].includes(rawMission.languageRule)
+    ? rawMission.languageRule
+    : "evidence";
+  const ruleConcepts = {
+    evidence: { id: "rule-evidence", words: ["evidence", "source", "shows", "according to", "data", "evidencia", "fuente", "muestra", "según", "datos"], label: ["a reference to source evidence", "una referencia a la evidencia de la fuente"] },
+    cause: { id: "rule-cause", words: ["because", "caused", "leads to", "as a result", "therefore", "porque", "causa", "por eso"], label: ["a cause-and-effect connection", "una relación de causa y efecto"] },
+    sequence: { id: "rule-sequence", words: ["first", "then", "next", "after", "finally", "primero", "luego", "después", "finalmente"], label: ["an order of events", "un orden de los acontecimientos"] },
+  };
   const consequenceFull = String(
     rawMission.consequenceFull ||
       "Your evidence-based communication convinced the team and unlocked the next stage of the project!",
@@ -846,6 +869,7 @@ export function validateCustomMission(rawMission = {}) {
     custom: true,
     worldId,
     band,
+    languageRule,
     title: [title, title],
     goal: [communicatePrompt, communicatePrompt],
     klu,
@@ -877,11 +901,7 @@ export function validateCustomMission(rawMission = {}) {
         words: keywords,
         label: [`key mission concepts (${keywords.slice(0, 3).join(", ")})`, `conceptos clave de la misión (${keywords.slice(0, 3).join(", ")})`],
       },
-      {
-        id: "connector",
-        words: ["because", "so", "therefore", "however", "although", "whereas", "first", "should"],
-        label: ["a connecting or reasoning word (because, therefore, should, however)", "una palabra conectora o de razonamiento"],
-      },
+      ruleConcepts[languageRule],
     ],
     frames: {
       A: [`I think we should ___ because ${keywords[0] || "the evidence"} shows ___.`],

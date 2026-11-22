@@ -12,8 +12,10 @@ import {
   FLAGSHIP_WORLDS,
   evaluateClarification,
   evaluateCommunication,
+  evaluatePumpExplanation,
   loadRealityState,
   matchAdventureInterest,
+  pumpFlow,
   saveRealityState,
   validateCustomMission,
 } from "../reality-engine.js";
@@ -21,6 +23,20 @@ import { canSpeak, speak } from "../speech.js";
 import { ART, BASE, TIERS, announce, bandLabel, html, icon, raw, storage, wordCount } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
+const MEANING_LENS = Object.freeze({
+  "mystery-academy": [
+    "A clue is something you notice; evidence is a clue you can use to support an explanation. In Spanish, pista names the clue, while evidencia names the support for a claim.",
+    "Una pista es algo que observas; la evidencia es una pista que puedes usar para apoyar una explicación. En inglés, clue nombra la pista y evidence nombra el apoyo de una afirmación.",
+  ],
+  "future-city": [
+    "A claim is a position you can defend with evidence. An opinion can be a preference. Compare afirmación and opinión before telling the council what it should do.",
+    "Una afirmación es una postura que puedes defender con evidencia. Una opinión puede ser una preferencia. Compara claim y opinion antes de decirle al consejo qué debería hacer.",
+  ],
+  "science-expedition": [
+    "A cause explains why a change happened. A pattern shows what happened together, but may not prove the cause. Compare causa and patrón when you explain the data.",
+    "Una causa explica por qué ocurrió un cambio. Un patrón muestra lo que ocurrió junto, pero quizás no demuestre la causa. Compara cause y pattern al explicar los datos.",
+  ],
+});
 const STORY_DEFAULTS = {
   setting: "School Science Greenhouse",
   character: "Leo & Maya (Student Investigators)",
@@ -35,6 +51,7 @@ const STORY_DEFAULTS = {
 
 // Transient UI state for active tab / studio forms
 let activeTab = "worlds"; // "worlds" | "story-builder" | "collab" | "game-maker" | "teacher-builder"
+let lastStudioRoute = "";
 let builderDraft = {
   title: "Green Roof Cooling Proposal",
   worldId: "future-city",
@@ -49,6 +66,7 @@ let builderDraft = {
   communicatePrompt:
     "Argue why the City Council should fund the library green roof using temperature and runoff evidence.",
   keywords: "green roof, 32, 70, because, cooling",
+  languageRule: "evidence",
   consequenceFull:
     "CONSEQUENCE UNLOCKED: The City Council approves the Library Green Roof! Cooling costs drop by 28% and students gain a rooftop botany lab.",
 };
@@ -182,14 +200,18 @@ function renderStoryBuilder(state, band, I) {
 
 function renderCollabStudio(state, band, I) {
   const { T } = I;
-  const col = state.collab || {
+  const col = {
     partnerClaim:
       "Partner A (Mateo's Dispatch): Our solar water pump stopped at noon, even though the battery meter showed 90% charge.",
     myClue:
-      "Partner B (Your Wiring Diagram): The intake filter screen at Creek Bed B is clogged with autumn leaves, blocking water flow.",
+      "Partner B (Your Filter Clue): The intake filter screen at Creek Bed B is clogged with autumn leaves, blocking water flow.",
     jointSynthesis: "",
     completed: false,
+    ...(state.collab || {}),
   };
+  const role = ["a", "b", "share"].includes(col.role) ? col.role : "a";
+  const pumpState = pumpFlow({ batteryCharged: col.batteryCharged !== false, filterClear: col.filterClear === true });
+  const synthesis = evaluatePumpExplanation(col.jointSynthesis);
   return html`<section class="panel reality-substudio" aria-labelledby="collabTitle" data-content>
     <div class="learn-wb-head">
       <div>
@@ -201,18 +223,35 @@ function renderCollabStudio(state, band, I) {
         )}</p>
       </div>
     </div>
+    <div class="learn-chip-row" role="group" aria-label="${T("Choose the current partner's view", "Elige la vista de la pareja actual")}">
+      <button type="button" class="cat-chip ${role === "a" ? "is-active" : ""}" data-collab-role="a" aria-pressed="${String(role === "a")}">${T("Partner A", "Pareja A")}</button>
+      <button type="button" class="cat-chip ${role === "b" ? "is-active" : ""}" data-collab-role="b" aria-pressed="${String(role === "b")}">${T("Partner B", "Pareja B")}</button>
+      <button type="button" class="cat-chip ${role === "share" ? "is-active" : ""}" data-collab-role="share" aria-pressed="${String(role === "share")}">${T("Discuss together", "Conversar juntos")}</button>
+    </div>
+    <p class="fine">${T("Pass the device after each partner reads their clue. Tell your partner what you learned before opening the shared view.", "Pasa el dispositivo después de que cada persona lea su pista. Cuéntale a tu pareja lo que aprendiste antes de abrir la vista compartida.")}</p>
     <div class="learn-steps-grid">
+      ${role !== "b" ? html`
       <div class="learn-step-card">
         <h3>${icon("listening")} ${T("Partner A's Observation", "Observación del Compañero A")}</h3>
         <p lang="en">${col.partnerClaim}</p>
         ${canSpeak() ? html`<button type="button" class="btn small" data-reality-say="${col.partnerClaim}">${icon("play")} ${T("Hear partner dispatch", "Escuchar al compañero")}</button>` : ""}
-      </div>
+      </div>` : ""}
+      ${role !== "a" ? html`
       <div class="learn-step-card">
-        <h3>${icon("search")} ${T("Your Exclusive Diagram Clue (Partner B)", "Tu pista exclusiva del diagrama (Compañero B)")}</h3>
+        <h3>${icon("search")} ${T("Partner B's Filter Clue", "Pista del filtro de la pareja B")}</h3>
         <p lang="en">${col.myClue}</p>
-      </div>
+      </div>` : ""}
     </div>
-    <div class="learn-step-card">
+    <details class="strategy">
+      <summary>${T("Conversation roles and useful moves", "Roles de conversación y recursos útiles")}</summary>
+      <p>${T("Take turns. One partner explains the observation; the other explains the filter clue. Then switch roles and check what you both understand.", "Tomen turnos. Una persona explica la observación y la otra explica la pista del filtro. Después cambien de roles y comprueben lo que ambos entienden.")}</p>
+      <ul class="checks">
+        <li>${T("Ask: What evidence supports that idea?", "Pregunta: ¿Qué evidencia apoya esa idea?")}</li>
+        <li>${T("Clarify: Do you mean the battery or the filter?", "Aclara: ¿Te refieres a la batería o al filtro?")}</li>
+        <li>${T("Summarize: We agree that… because…", "Resume: Estamos de acuerdo en que… porque…")}</li>
+      </ul>
+    </details>
+    ${role === "share" ? html`<div class="learn-step-card">
       <h3>${icon("writing")} ${T("Joint Collaborative Explanation", "Explicación colaborativa conjunta")}</h3>
       <p class="fine">${T(
         "Combine both clues: explain why the pump stopped despite having 90% battery and what the team should clean.",
@@ -227,13 +266,26 @@ function renderCollabStudio(state, band, I) {
         <span class="visually-hidden">${T("Collaborative synthesis", "Síntesis colaborativa")}</span>
         <textarea id="collabInput" rows="3" data-collab-draft ${IGN}>${col.jointSynthesis}</textarea>
       </label>
+      <details class="strategy">
+        <summary>${T("Test the pump model", "Probar el modelo de la bomba")}</summary>
+        <p>${T("Change one condition at a time. The model follows the battery and filter clues.", "Cambia una condición a la vez. El modelo sigue las pistas de la batería y el filtro.")}</p>
+        <label class="field"><span>${T("Battery", "Batería")}</span><select data-collab-model="batteryCharged" ${IGN}>
+          <option value="yes" ${col.batteryCharged !== false ? raw("selected") : ""}>${T("Charged", "Cargada")}</option>
+          <option value="no" ${col.batteryCharged === false ? raw("selected") : ""}>${T("Empty", "Vacía")}</option>
+        </select></label>
+        <label class="field"><span>${T("Intake filter", "Filtro de entrada")}</span><select data-collab-model="filterClear" ${col.filterClear === true ? raw("selected") : ""} ${IGN}>
+          <option value="no" ${col.filterClear !== true ? raw("selected") : ""}>${T("Clogged", "Obstruido")}</option>
+          <option value="yes" ${col.filterClear === true ? raw("selected") : ""}>${T("Clear", "Limpio")}</option>
+        </select></label>
+        <p role="status"><strong>${T("Water flow", "Flujo de agua")}: </strong>${T(...({ "no-power": ["Stopped: no battery power", "Detenido: sin energía de la batería"], blocked: ["Stopped: the filter blocks the water", "Detenido: el filtro bloquea el agua"], flowing: ["Flowing: the battery works and the filter is clear", "Fluyendo: la batería funciona y el filtro está limpio"] }[pumpState]))}</p>
+      </details>
       <div class="row-actions">
         <button type="button" class="btn btn-primary" data-collab-submit>
           ${icon("check")} ${T("Verify Partner Synthesis", "Verificar síntesis en pareja")}
         </button>
       </div>
-      ${col.completed ? html`<p class="feedback is-ok" role="status">${icon("check")} ${T("Collaborative mission verified! You combined Partner A's battery observation with Partner B's filter clue.", "¡Misión colaborativa verificada! Combinaste la observación de batería con la pista del filtro.")}</p>` : ""}
-    </div>
+      ${col.completed ? html`<p class="feedback is-ok" role="status">${icon("check")} ${T("You connected the charged battery, clogged filter, and stopped water flow.", "Conectaste la batería cargada, el filtro obstruido y el flujo de agua detenido.")}</p>` : col.jointSynthesis ? html`<p class="feedback is-hint" role="status">${T("Check your explanation:", "Revisa tu explicación:")} ${!synthesis.hasBattery ? T("Include the battery clue. ", "Incluye la pista de la batería. ") : ""}${!synthesis.hasFilter ? T("Include the filter clue. ", "Incluye la pista del filtro. ") : ""}${!synthesis.hasConnection ? T("Connect the ideas with because or although.", "Conecta las ideas con because o although.") : ""}</p>` : ""}
+    </div>` : ""}
   </section>`;
 }
 
@@ -309,6 +361,8 @@ function renderTeacherMissionBuilder(state, band, I) {
           "Configure a WIDA-aligned Reality Mission with original listening, reading evidence, target keywords, and communicative consequences. Saved missions immediately become playable in the selected world.",
           "Configura una misión alineada con WIDA con audio original, evidencia de lectura, palabras clave y consecuencias comunicativas.",
         )}</p>
+        <p class="fine"><a href="${BASE}/experience-builder">${T("Create and assign a complete investigation from your own text", "Crear y asignar una investigación completa a partir de tu propio texto")}</a></p>
+        <p class="fine"><a href="${BASE}/reality?grades=${band}&studio=collab">${T("Open the same-device partner investigation", "Abrir la investigación en pareja en el mismo dispositivo")}</a></p>
       </div>
     </div>
     <div class="learn-steps-grid">
@@ -369,6 +423,14 @@ function renderTeacherMissionBuilder(state, band, I) {
           <input type="text" data-tb-field="keywords" value="${builderDraft.keywords}" ${IGN} />
         </label>
         <label class="field">
+          <span>${T("Rule that changes the world", "Regla que cambia el mundo")}</span>
+          <select data-tb-field="languageRule" ${IGN}>
+            <option value="evidence" ${builderDraft.languageRule === "evidence" ? raw("selected") : ""}>${T("Cite evidence before the team acts", "Citar evidencia antes de actuar")}</option>
+            <option value="cause" ${builderDraft.languageRule === "cause" ? raw("selected") : ""}>${T("Explain a cause and an effect", "Explicar una causa y un efecto")}</option>
+            <option value="sequence" ${builderDraft.languageRule === "sequence" ? raw("selected") : ""}>${T("Explain the sequence of events", "Explicar la secuencia de eventos")}</option>
+          </select>
+        </label>
+        <label class="field">
           <span>${T("Unlocked Communicative Consequence", "Consecuencia comunicativa desbloqueada")}</span>
           <textarea rows="2" data-tb-field="consequenceFull" ${IGN}>${builderDraft.consequenceFull}</textarea>
         </label>
@@ -390,6 +452,11 @@ function renderTeacherMissionBuilder(state, band, I) {
 }
 
 export async function render(ctx) {
+  const studioRoute = `${globalThis.location?.pathname || ""}:${new URLSearchParams(globalThis.location?.search || "").get("studio") || ""}`;
+  if (studioRoute !== lastStudioRoute) {
+    activeTab = studioRoute.endsWith(":collab") ? "collab" : "worlds";
+    lastStudioRoute = studioRoute;
+  }
   const I = i18nFor(ctx);
   const { T, S } = I;
   const band = ctx.band;
@@ -423,6 +490,8 @@ export async function render(ctx) {
   const tier = state.supportTier || "B";
   const frames = mission.frames?.[tier] || mission.frames?.B || [];
   const totalCompleted = Object.values(state.progress).filter((p) => p?.completed).length;
+  const earlierMission = missionPool.find((candidate) => candidate.id !== mission.id && state.progress[`${band}:${world.id}:${candidate.id}`]?.completed);
+  const earlierWork = earlierMission ? state.progress[`${band}:${world.id}:${earlierMission.id}`] : null;
 
   return {
     title: S("Language Reality Engine", "Motor de Realidad Lingüística"),
@@ -542,6 +611,12 @@ export async function render(ctx) {
             <p class="eyebrow">${domainGlyph(world.domain)} ${mission.eldStandard} · ${T("Key Language Use:", "Uso clave:")} <strong>${mission.klu}</strong></p>
             <h2 id="realityMissionTitle">${T(...mission.title)}</h2>
             <p class="fine"><strong>${T("Mission Goal:", "Meta de la misión:")}</strong> ${T(...mission.goal)}</p>
+            ${earlierWork?.responseDraft ? html`<details class="strategy">
+              <summary>${T("Remember an earlier decision", "Recuerda una decisión anterior")}</summary>
+              <p>${T("Earlier mission", "Misión anterior")}: ${T(...earlierMission.title)}</p>
+              <blockquote>${earlierWork.responseDraft}</blockquote>
+              <p>${T("What new evidence would strengthen or change that explanation today?", "¿Qué evidencia nueva fortalecería o cambiaría esa explicación hoy?")}</p>
+            </details>` : ""}
           </div>
           <div class="learn-chip-row" role="group" aria-label="${S("Choose mission in this world", "Elige misión en este mundo")}">
             ${missionPool.map(
@@ -565,9 +640,9 @@ export async function render(ctx) {
           <span class="cycle-pill ${mProg.completed ? "is-done" : ""}">5 · ${T("Apply & Save", "Aplicar y guardar")}</span>
         </div>
 
-        <aside class="learn-stimulus-box reality-coach-banner" aria-label="${S("Contextual AI Language Coach", "Entrenador contextual de lenguaje")}">
+        <aside class="learn-stimulus-box reality-coach-banner" aria-label="${S("Task Language Coach", "Entrenador de lenguaje de la tarea")}">
           <div class="learn-stimulus-head">
-            <strong>${icon("bulb")} ${T("Contextual Language Coach (Grounded in Task Evidence)", "Entrenador contextual de lenguaje (basado en evidencia)")}</strong>
+            <strong>${icon("bulb")} ${T("Task Language Coach", "Entrenador de lenguaje de la tarea")}</strong>
             <div class="learn-chip-row" role="group" aria-label="${S("Instructional support choice", "Elección de apoyo")}">
               ${["A", "B", "C"].map(
                 (tKey) => html`<button
@@ -657,6 +732,11 @@ export async function render(ctx) {
         <section class="learn-step-card ${mProg.evaluated?.ok ? "is-complete" : ""}" aria-labelledby="realityCommunicateTitle">
           <h3 id="realityCommunicateTitle">${icon("writing")} ${T("4. Communicate & Experience Consequences", "4. Comunica y experimenta las consecuencias")}</h3>
           <p>${T(...mission.communicatePrompt)}</p>
+          <details class="strategy">
+            <summary>${T("Think across languages", "Pensar entre idiomas")}</summary>
+            <p>${T(...MEANING_LENS[world.id])}</p>
+            <p>${T("You may plan privately in any language, then explain your idea in English.", "Puedes planear en privado en cualquier idioma y después explicar tu idea en inglés.")}</p>
+          </details>
 
           ${
             tier !== "C"
@@ -721,9 +801,17 @@ export async function render(ctx) {
                       </li>`,
                     )}
                   </ul>
+                  <p class="fine">${T("This practice check finds key ideas in your response. Recheck the source to decide whether your explanation makes sense.", "Este chequeo de práctica encuentra ideas clave en tu respuesta. Vuelve a revisar la fuente para decidir si tu explicación tiene sentido.")}</p>
                 </div>`
               : ""
           }
+          ${mProg.attempts?.length > 1 ? html`<details class="strategy">
+            <summary>${T("See how your revision changed the world", "Mira cómo tu revisión cambió el mundo")}</summary>
+            <p>${T("Earlier response", "Respuesta anterior")}: ${mProg.attempts.at(-2).text}</p>
+            <p>${T("Earlier consequence", "Consecuencia anterior")}: ${T(...mProg.attempts.at(-2).consequenceText)}</p>
+            <p>${T("Revised response", "Respuesta revisada")}: ${mProg.attempts.at(-1).text}</p>
+            <p>${T("New consequence", "Nueva consecuencia")}: ${T(...mProg.attempts.at(-1).consequenceText)}</p>
+          </details>` : ""}
         </section>
 
         <section class="learn-step-card ${mProg.completed ? "is-complete" : ""}" aria-labelledby="realityTransferTitle">
@@ -746,6 +834,7 @@ export async function render(ctx) {
             <a class="btn" href="${BASE}/growth?grades=${band}">
               ${icon("growth")} ${T("View My Growth Map", "Ver mi Mapa de Crecimiento")}
             </a>
+            ${mProg.attempts?.length > 1 ? html`<a class="btn" href="${BASE}/time-machine?grades=${band}&tab=writing">${icon("growth")} ${T("Compare my revisions", "Comparar mis revisiones")}</a>` : ""}
           </div>
           ${
             mProg.completed
@@ -823,11 +912,15 @@ export function onInput(e, ctx) {
   if (e.target.matches?.("[data-tb-field]")) {
     builderDraft = { ...builderDraft, [e.target.dataset.tbField]: e.target.value };
   }
+  if (e.target.matches?.("[data-collab-model]")) {
+    state.collab = { ...(state.collab || {}), [e.target.dataset.collabModel]: e.target.value === "yes" };
+    saveRealityState(state);
+  }
 }
 
 export function onChange(e, ctx) {
   onInput(e, ctx);
-  if (e.target.matches?.("select[data-sb-field], select[data-tb-field]")) {
+  if (e.target.matches?.("select[data-sb-field], select[data-tb-field], select[data-collab-model]")) {
     ctx.rerender({ keepFocus: true });
   }
 }
@@ -983,10 +1076,15 @@ export function onClick(e, ctx) {
   if (e.target.closest?.("[data-reality-submit]")) {
     const text = document.getElementById("realityResponseInput")?.value || cur.responseDraft || "";
     const ev = evaluateCommunication(text, mission);
+    const attempts = [...(cur.attempts || [])];
+    if (text.trim() && attempts.at(-1)?.text !== text.trim()) {
+      attempts.push({ text: text.trim(), t: new Date().toISOString(), title: mission.title[0], keyUse: mission.klu, supportTier: state.supportTier, outcome: ev.outcome, consequenceText: ev.consequenceText });
+    }
     state.progress[mKey] = {
       ...cur,
       responseDraft: text,
       evaluated: ev,
+      attempts: attempts.slice(-6),
     };
     saveRealityState(state);
     if (ev.words >= 4) {
@@ -1085,6 +1183,13 @@ export function onClick(e, ctx) {
   }
 
   // Collab studio
+  const collabRole = e.target.closest?.("[data-collab-role]");
+  if (collabRole) {
+    state.collab = { ...(state.collab || {}), role: collabRole.dataset.collabRole };
+    saveRealityState(state);
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
   const collabIns = e.target.closest?.("[data-collab-insert]");
   if (collabIns) {
     state.collab = { ...(state.collab || {}), jointSynthesis: collabIns.dataset.collabInsert };
@@ -1094,11 +1199,9 @@ export function onClick(e, ctx) {
   }
   if (e.target.closest?.("[data-collab-submit]")) {
     const val = document.getElementById("collabInput")?.value || state.collab?.jointSynthesis || "";
-    if (wordCount(val) >= 5) {
-      state.collab = { ...(state.collab || {}), jointSynthesis: val, completed: true };
-      saveRealityState(state);
-      ctx.rerender({ keepFocus: true });
-    }
+    state.collab = { ...(state.collab || {}), jointSynthesis: val, completed: evaluatePumpExplanation(val).complete };
+    saveRealityState(state);
+    ctx.rerender({ keepFocus: true });
     return true;
   }
 

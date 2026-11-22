@@ -314,6 +314,9 @@ ok(
 for (const c of ["lc", "vu", "lctl"])
   await page.locator(`input[data-rubric="${c}"][value="building"]`).check();
 await page.locator("[data-finish]").click();
+await page.waitForFunction(() =>
+  document.body.innerText.includes("Saved. This is practice evidence"),
+);
 ok(
   (await bodyText()).includes("Saved. This is practice evidence"),
   "self-review saves as practice evidence",
@@ -365,6 +368,7 @@ ok(wr[1]?.kind === "revision", "second feedback request is recorded as a revisio
 await go(`${BASE}/write/wrt-mulch-cer`);
 const sent = page.locator(".ev-sent").first();
 await sent.click();
+await page.locator(".evidence-notebook li").first().waitFor();
 ok(
   (await page.locator(".evidence-notebook li").count()) === 1 &&
     (await page.locator(".ev-sent.is-picked").count()) === 1 &&
@@ -372,11 +376,15 @@ ok(
   "tapping a source sentence adds it to the evidence notebook and shows it as picked",
 );
 await page.locator(".ev-sent.is-picked").first().click();
+await page.locator(".evidence-notebook li").first().waitFor({ state: "detached" });
 ok((await page.locator(".evidence-notebook li").count()) === 0, "tapping it again removes it");
 
 // independent writing hides supports and is recorded as independent
 await go(`${BASE}/write/wrt-bike-plan-paragraph`);
 await page.getByLabel("On my own").check();
+await page.waitForFunction(
+  () => document.querySelectorAll(".frames, .wordbank, details[data-model]").length === 0,
+);
 ok(
   (await page.locator(".frames, .wordbank, details[data-model]").count()) === 0,
   "independent writing shows no frames, word bank or model",

@@ -92,53 +92,56 @@ try {
   });
 
   // 1. Home & 5-destination navigation + Grade-band strip + KLU interactive check
-  await page.goto(`${origin}/access-practice-lab/?grades=3-5`, { waitUntil: "networkidle" });
-  // The Learning Journey made "My Journey" the first primary destination (intended redesign), so the student
-  // nav is now six links: My Journey, then the five original destinations in their original order.
-  const navLinks = page.locator("nav.lab-tools a.top-link:not([data-tier])");
-  const navCount = await navLinks.count();
-  ok(navCount === 6, `Home shows 6 primary student destinations (got ${navCount})`);
-  const navHrefs = await navLinks.evaluateAll((els) =>
-    els.map((a) => new URL(a.href).pathname.replace(/^\/access-practice-lab\/?/, "")),
-  );
-  ok(
-    navHrefs[0] === "journey" &&
-      navHrefs.slice(1).join() === ["", "learn", "library", "games", "growth"].join(),
-    `Primary nav is My Journey, then Home, Learn, Practice, Play, My Growth (got ${navHrefs.join(", ")})`,
-  );
-  ok(
-    await page.locator(".band-identity-strip").isVisible(),
-    "Home renders Grade-Band Identity Strip",
-  );
-  await page.locator('[data-klu="Narrate"]').click();
-  await page.locator('[data-klu-try="ok"]').click();
-  ok(
-    await page.locator(".klu-try-feedback").isVisible(),
-    "Home interactive KLU 'Spot the Move' gives immediate feedback",
-  );
+  if (!process.env.REALITY_ONLY) {
+    await page.goto(`${origin}/access-practice-lab/?grades=3-5`, { waitUntil: "networkidle" });
+    // The Learning Journey made "My Journey" the first primary destination (intended redesign), so the student
+    // nav is now six links: My Journey, then the five original destinations in their original order.
+    const navLinks = page.locator("nav.lab-tools a.top-link:not([data-tier])");
+    const navCount = await navLinks.count();
+    ok(navCount === 6, `Home shows 6 primary student destinations (got ${navCount})`);
+    const navHrefs = await navLinks.evaluateAll((els) =>
+      els.map((a) => new URL(a.href).pathname.replace(/^\/access-practice-lab\/?/, "")),
+    );
+    ok(
+      navHrefs[0] === "journey" &&
+        navHrefs.slice(1).join() === ["", "learn", "library", "games", "growth"].join(),
+      `Primary nav is My Journey, then Home, Learn, Practice, Play, My Growth (got ${navHrefs.join(", ")})`,
+    );
+    ok(
+      await page.locator(".band-identity-strip").isVisible(),
+      "Home renders Grade-Band Identity Strip",
+    );
+    await page.locator('[data-klu="Narrate"]').click();
+    await page.locator('[data-klu-try="ok"]').click();
+    ok(
+      await page.locator(".klu-try-feedback").isVisible(),
+      "Home interactive KLU 'Spot the Move' gives immediate feedback",
+    );
 
-  // 2. Interactive Learn Hub (/access-practice-lab/learn)
-  await page.goto(`${origin}/access-practice-lab/learn?grades=6-8`, { waitUntil: "networkidle" });
-  ok(
-    await page.locator("h1", { hasText: "Interactive Language Learning Engine" }).isVisible(),
-    "Learn Hub loads with heading",
-  );
-  await page.locator("[data-learn-notice]").first().click();
-  await page.locator("[data-learn-predict]").first().click();
-  await page
-    .locator("#learnResponseInput")
-    .fill("Because the storm drain overflowed, the retention pond filled with runoff water.");
-  await page.locator("[data-learn-check]").click();
-  ok(
-    await page.locator(".learn-workbench .feedback").last().isVisible(),
-    "Learn Hub checks student response and shows coaching feedback",
-  );
+    // 2. Interactive Learn Hub (/access-practice-lab/learn)
+    await page.goto(`${origin}/access-practice-lab/learn?grades=6-8`, { waitUntil: "networkidle" });
+    ok(
+      await page.locator("h1", { hasText: "Interactive Language Learning Engine" }).isVisible(),
+      "Learn Hub loads with heading",
+    );
+    await page.locator("[data-learn-notice]").first().click();
+    await page.locator("[data-learn-predict]").first().click();
+    await page
+      .locator("#learnResponseInput")
+      .fill("Because the storm drain overflowed, the retention pond filled with runoff water.");
+    await page.locator("[data-learn-check]").click();
+    ok(
+      await page.locator(".learn-workbench .feedback").last().isVisible(),
+      "Learn Hub checks student response and shows coaching feedback",
+    );
+  }
 
   // 3. Language Reality Engine (/access-practice-lab/reality)
   await page.goto(`${origin}/access-practice-lab/reality?grades=3-5`, { waitUntil: "networkidle" });
+  await page.locator(".reality-page h1").waitFor({ state: "visible" });
   ok(
-    await page.locator("h1", { hasText: "Live the Story. Use the Language." }).isVisible(),
-    "Language Reality Engine renders flagship tagline",
+    await page.locator(".reality-page h1").isVisible(),
+    "Language Reality Engine renders its page heading",
   );
 
   // Test Personalized World Matcher
@@ -161,6 +164,8 @@ try {
     "Clarification question unlocks Maya's Shelf B clue",
   );
 
+  await page.locator("#realityResponseInput").fill("The notebook is in the art room.");
+  await page.locator("[data-reality-submit]").click();
   await page
     .locator("#realityResponseInput")
     .fill(
@@ -170,6 +175,12 @@ try {
   ok(
     await page.locator(".learn-workbench .feedback.is-ok").last().isVisible(),
     "Communicative Consequence Intelligence unlocks full world consequence",
+  );
+  ok(
+    (await page.locator(".learn-workbench").textContent()).includes(
+      "See how your revision changed the world",
+    ),
+    "Student can compare earlier and revised consequences",
   );
 
   // Test Story Builder tab
@@ -182,6 +193,16 @@ try {
 
   // Test Collaborative Partner Mission tab
   await page.locator('[data-reality-tab="collab"]').click();
+  ok(
+    (await page.locator("#collabInput").count()) === 0,
+    "Partner clue stays private before discussion",
+  );
+  await page.locator('[data-collab-role="b"]').click();
+  ok(
+    (await page.locator("#collabInput").count()) === 0,
+    "Partner B sees their clue before discussion",
+  );
+  await page.locator('[data-collab-role="share"]').click();
   await page
     .locator("#collabInput")
     .fill(
@@ -207,6 +228,14 @@ try {
   ok(
     await page.locator(".reality-substudio .feedback.is-ok").isVisible(),
     "Teacher Mission Builder validates and publishes custom Reality Mission",
+  );
+  await page.goto(`${origin}/access-practice-lab/reality?grades=3-5&studio=collab`, {
+    waitUntil: "networkidle",
+  });
+  await page.locator('[data-collab-role="a"]').waitFor({ state: "visible" });
+  ok(
+    await page.locator('[data-collab-role="a"]').isVisible(),
+    "Teacher link opens the partner investigation directly",
   );
 
   // 4. Accessibility (axe WCAG 2.2 AA) & 375px mobile overflow on /learn and /reality

@@ -6339,7 +6339,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/access-practice-lab/",
-    title: "ACCESS Practice Lab",
+    title: "ELL Lab",
     category: "Practice",
     unit: null,
   },

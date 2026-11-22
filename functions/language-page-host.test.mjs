@@ -215,7 +215,9 @@ const shell = readFileSync(new URL("../access-practice-lab/index.html", import.m
 
 await t("the lab host's HTML names The Language Page, powered by EduWonderLab, with its own canonical", () => {
   const out = brandLabHtml(shell, "/access-practice-lab/path");
-  assert.match(out, /<title>The Language Page · ACCESS Practice Lab<\/title>/);
+  const title = /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.exec(shell)?.[1];
+  assert.ok(title);
+  assert.ok(out.includes(`<title>The Language Page · ${title}</title>`));
   assert.match(out, /<strong>The Language Page<\/strong><small>Powered by EduWonderLab<\/small>/);
   assert.match(out, /<link rel="canonical" href="https:\/\/thelanguagepage\.com\/access-practice-lab\/path" \/>/);
   assert.equal((out.match(/rel="canonical"/g) || []).length, 1);
@@ -223,8 +225,8 @@ await t("the lab host's HTML names The Language Page, powered by EduWonderLab, w
 });
 
 await t("the shell still carries the exact strings the rewrite targets, so a rename cannot silently disable it", () => {
-  assert.ok(shell.includes("<title>ACCESS Practice Lab</title>"));
-  assert.ok(shell.includes("<strong>ACCESS Practice Lab</strong><small>EduWonderLab</small>"));
+  assert.match(shell, /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/);
+  assert.match(shell, /<strong>(ELL Lab|ACCESS Practice Lab)<\/strong><small>EduWonderLab<\/small>/);
   assert.ok(shell.includes("</head>"));
 });
 
