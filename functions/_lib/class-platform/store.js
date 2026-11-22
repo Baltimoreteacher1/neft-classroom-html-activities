@@ -29,6 +29,11 @@ import {
   collabPurgeStatements,
 } from "./book-collab-schema.js";
 import { BOOK_SCHEMA, bookPruneStatements, bookPurgeStatements } from "./book-schema.js";
+import {
+  LIBRARY_SCHEMA,
+  libraryPruneStatements,
+  libraryPurgeStatements,
+} from "./library-schema.js";
 import { SOCIAL_SCHEMA, socialPruneStatements, socialPurgeStatements } from "./social-schema.js";
 
 export const SCHEMA = [
@@ -156,6 +161,7 @@ export async function ensureSchema(db) {
       ...COLLAB_SCHEMA,
       ...EXPERIENCE_SCHEMA,
       ...ASSIGN_STATUS_SCHEMA,
+      ...LIBRARY_SCHEMA,
     ].map((sql) => db.prepare(sql)),
   );
   ready.add(db);
@@ -218,6 +224,7 @@ export function purgeStatements(db, code) {
     ...bookPurgeStatements(db, code),
     ...astatusPurgeStatements(db, code),
     ...collabPurgeStatements(db, code),
+    ...libraryPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_experience WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
@@ -239,6 +246,7 @@ export async function pruneExpired(db, now) {
     ...bookPruneStatements(db, now, gone),
     ...astatusPruneStatements(db, now, gone),
     ...collabPruneStatements(db, now, gone),
+    ...libraryPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_experience WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db

@@ -235,6 +235,12 @@ export function createTeacherClient({
       call(
         `astatus/history?code=${code}&assignmentId=${encodeURIComponent(assignmentId)}&studentId=${studentId}`,
       ),
+    /** Cross-device teacher library (vocab_set, support_config, book_edition, pathway). */
+    libraryList: (kind = "") =>
+      call(`library/list?code=${code}${kind ? `&kind=${encodeURIComponent(kind)}` : ""}`),
+    librarySave: (item) => call("library/save", item),
+    librarySync: (items, kind = "") => call("library/sync", { items, ...(kind ? { kind } : {}) }),
+    libraryDelete: (kind, itemId) => call("library/delete", { kind, itemId }),
     /** Bytes of one recording, fetched with the teacher's own headers (an <audio src> cannot send them). */
     async audioBlob(audioId) {
       try {

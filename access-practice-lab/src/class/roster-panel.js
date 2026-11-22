@@ -18,6 +18,7 @@ import { createJoinCards } from "./join-cards.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 import { drawReviewQueue } from "./review-queue.js";
 import { mountSupportEditor } from "./support-editor.js";
+import { listClassLibrary, syncVocabSets } from "./library-sync.js";
 import { recordingPlayer, voiceNoteButton } from "./voice-note.js";
 
 const CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
@@ -150,6 +151,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       if (!res.ok) coachToggle.checked = !coachToggle.checked;
     };
     const booksBox = el("div");
+    const libraryBox = el("div");
     const header = el(
       "div",
       { class: "cls-card" },
@@ -178,6 +180,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       el("section", { class: "cls-card" }, el("h4", {}, S("Family reports", "Informes para las familias")), familyReportControls(S, () => roster?.students || [])),
       el("section", { class: "cls-card" }, el("h4", {}, S("Assignments", "Tareas")), assignBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Assignment status", "Estado de las tareas")), statusBox),
+      el("section", { class: "cls-card" }, el("h4", {}, S("Teacher library (cross-device)", "Biblioteca del docente (entre dispositivos)")), libraryBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Book Studio writing coach (AI)", "Asesor de escritura de Book Studio (IA)")),
         el("p", { class: "fine" }, S("When on, a student can choose to send the words of one page or sentence to this site's coach, which only asks questions and suggests words. It never writes for them and nothing is kept.", "Si está activado, un estudiante puede enviar las palabras de una página u oración al asesor de este sitio, que solo hace preguntas y sugiere palabras. Nunca escribe por el estudiante y no se guarda nada.")),
         el("label", { for: "ctAiCoach", class: "row-actions" }, coachToggle, S("Allow the writing coach in Book Studio", "Permitir el asesor de escritura en Book Studio"))),
@@ -218,7 +221,32 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       const goal = goalProgress(res.settings?.goal, res.students.map((s) => s.docs?.language?.summary));
       goalLine.textContent = goal ? S(`Class goal: ${goal.value} of ${goal.target} ${goal.label || ""}`, `Meta de la clase: ${goal.value} de ${goal.target} ${goal.label || ""}`) : "";
       drawAssignments();
+      drawLibrary();
     };
+    async function drawLibrary() {
+      const res = await listClassLibrary(current);
+      const items = res.ok ? res.items : [];
+      const counts = items.reduce((acc, it) => ((acc[it.kind] = (acc[it.kind] || 0) + 1), acc), {});
+      const syncBtn = el("button", {
+        type: "button",
+        class: "btn small",
+        onclick: async () => {
+          live.textContent = S("Syncing teacher library…", "Sincronizando biblioteca…");
+          const r = await syncVocabSets(current);
+          live.textContent = r.ok
+            ? S(`Synced ${r.count} vocabulary sets.`, `Se sincronizaron ${r.count} conjuntos de vocabulario.`)
+            : errorText(S, r.error);
+          drawLibrary();
+        },
+      }, S("Sync vocab sets now", "Sincronizar conjuntos ahora"));
+      libraryBox.replaceChildren(
+        el("p", { class: "fine" }, S(
+          `Saved across devices: ${counts.vocab_set || 0} vocab sets · ${counts.support_config || 0} support configs · ${counts.book_edition || 0} Book Studio editions · ${counts.pathway || 0} pathways.`,
+          `Guardado entre dispositivos: ${counts.vocab_set || 0} conjuntos · ${counts.support_config || 0} configuraciones de apoyo · ${counts.book_edition || 0} ediciones de Book Studio · ${counts.pathway || 0} rutas.`,
+        )),
+        el("div", { class: "row-actions" }, syncBtn),
+      );
+    }
     async function saveAssignments(list) {
       const res = await api.settings({ assignments: list });
       live.textContent = res.ok ? S("Assignments saved.", "Tareas guardadas.") : errorText(S, res.error);

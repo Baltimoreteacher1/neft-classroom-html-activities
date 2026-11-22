@@ -3,6 +3,7 @@
 // class. A set can be shared as a link (the whole set rides in the link, so students need no account) or as a file,
 // and printed as cards, a review sheet and an answer key. Sets stay on this device; nothing is sent anywhere.
 // Rules and tests: src/vocab-sets/model.js, tools/vocab-sets.test.mjs. Practice modes: src/vocab-sets/practice.js.
+import { activeTeacherClasses, syncVocabSets } from "../class/library-sync.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
 import { printSheet } from "../print-sheet.js";
@@ -159,6 +160,7 @@ ${edit.text}</textarea>
 function listHTML(I, ctx) {
   const T = I.S;
   const sets = readSets();
+  const classes = activeTeacherClasses();
   const imported = edit.imported ? html`<p class="vs-msg" role="status">${edit.imported}</p>` : "";
   return html`<section class="panel vs-panel" aria-labelledby="vsHead">
       <h1 id="vsHead">${T("Vocabulary sets", "Conjuntos de vocabulario")}</h1>
@@ -174,6 +176,13 @@ function listHTML(I, ctx) {
             data-vs-import
             class="sr-only"
         /></label>
+        ${
+          classes.length
+            ? html`<button type="button" class="btn ghost" data-vs-sync="${classes[0].code}">
+                ${T(`Sync with ${classes[0].title || classes[0].code}`, `Sincronizar con ${classes[0].title || classes[0].code}`)}
+              </button>`
+            : ""
+        }
       </div>
       ${imported}
     </section>
@@ -499,6 +508,20 @@ export async function onClick(e, ctx) {
       return true;
     }
     return false;
+  }
+  const syncBtn = e.target.closest("[data-vs-sync]");
+  if (syncBtn) {
+    const cls = activeTeacherClasses().find((c) => c.code === syncBtn.dataset.vsSync);
+    if (cls) {
+      edit.imported = I.S("Syncing with class…", "Sincronizando con la clase…");
+      await ctx.rerender();
+      const res = await syncVocabSets(cls);
+      edit.imported = res.ok
+        ? I.S(`Synced ${res.count} vocabulary sets with ${cls.title || cls.code}.`, `Se sincronizaron ${res.count} conjuntos con ${cls.title || cls.code}.`)
+        : I.S("Could not sync right now. Sets stay saved on this device.", "No se pudo sincronizar ahora. Los conjuntos siguen guardados en este dispositivo.");
+      await ctx.rerender();
+    }
+    return true;
   }
   const t = e.target.closest("[data-vsa]");
   if (!t) return false;
