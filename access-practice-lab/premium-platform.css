@@ -712,3 +712,166 @@ html, body {
 .tlp-score-low { color: var(--tlp-level-1); font-weight: 700; }
 .tlp-score-mid { color: var(--tlp-level-3); font-weight: 600; }
 .tlp-score-high { color: var(--tlp-level-6); font-weight: 700; }
+||||||| parent of 53f1fbaefa (feat(language-page): integrate SplashLearn, Ellii, and English Media Lab studios)
+/* Integrated Studios: Skill Arcade & Dialogue Studio */
+.tlp-tile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+.tlp-letter-tile {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--tlp-radius-sm);
+  border: 1px solid var(--tlp-border-strong);
+  background: var(--tlp-surface-2);
+  color: var(--tlp-ink);
+  font-weight: 700;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: transform var(--tlp-ease), background var(--tlp-ease), border-color var(--tlp-ease);
+}
+.tlp-letter-tile:hover:not(:disabled) {
+  border-color: var(--tlp-accent);
+  background: var(--tlp-accent-soft);
+  transform: translateY(-1px);
+}
+.tlp-letter-tile:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.tlp-word-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--tlp-radius-sm);
+  border: 2px dashed var(--tlp-border-strong);
+  background: var(--tlp-surface);
+  color: var(--tlp-ink);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.tlp-word-slot.is-filled {
+  border-style: solid;
+  border-color: var(--tlp-accent);
+  background: var(--tlp-accent-soft);
+}
+.tlp-feedback-box {
+  padding: 0.85rem 1rem;
+  border-radius: var(--tlp-radius-sm);
+  border: 1px solid var(--tlp-border-strong);
+  background: var(--tlp-surface-2);
+  color: var(--tlp-ink);
+  margin-top: 0.85rem;
+}
+.tlp-feedback-box.is-ok {
+  border-color: var(--tlp-level-6);
+  background: var(--tlp-level-6-soft);
+}
+.tlp-feedback-box.is-warn {
+  border-color: var(--tlp-level-2);
+  background: var(--tlp-level-2-soft);
+}
+.tlp-trail-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+@media (max-width: 540px) {
+  .tlp-trail-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.tlp-trail-cell {
+  position: relative;
+  min-height: 62px;
+  padding: 0.45rem;
+  border-radius: var(--tlp-radius-sm);
+  border: 1px solid var(--tlp-border-strong);
+  background: var(--tlp-surface-2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.78rem;
+}
+.tlp-trail-cell.is-boost {
+  border-color: var(--tlp-level-4);
+  background: var(--tlp-level-4-soft);
+}
+.tlp-trail-cell.is-finish {
+  border-color: var(--tlp-level-6);
+  background: var(--tlp-level-6-soft);
+  font-weight: 700;
+}
+.tlp-trail-tokens {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.tlp-trail-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--tlp-on-accent);
+  background: var(--tlp-accent);
+}
+.tlp-trail-token.is-p2 {
+  background: var(--tlp-level-1);
+  color: #FFFFFF;
+}
+.tlp-dialogue-turn {
+  padding: 0.75rem 1rem;
+  border-radius: var(--tlp-radius-sm);
+  border: 1px solid var(--tlp-border);
+  background: var(--tlp-surface-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.tlp-dialogue-turn.is-b {
+  border-left: 3px solid var(--tlp-accent);
+  background: var(--tlp-surface);
+}
+.tlp-cloze-blank {
+  display: inline-flex;
+  align-items: center;
+  min-width: 96px;
+  min-height: 36px;
+  padding: 0.15rem 0.6rem;
+  margin: 0 0.2rem;
+  border-radius: 8px;
+  border: 2px dashed var(--tlp-accent);
+  background: var(--tlp-surface-2);
+  color: var(--tlp-ink);
+  font-weight: 700;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.tlp-cloze-blank.is-selected {
+  border-style: solid;
+  background: var(--tlp-accent-soft);
+}
+.tlp-flashcard-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2rem 1.25rem;
+  border-radius: var(--tlp-radius);
+  border: 1px solid var(--tlp-border-strong);
+  background: var(--tlp-surface-2);
+  color: var(--tlp-ink);
+}
+.tlp-flashcard-icon {
+  color: var(--tlp-accent);
+}

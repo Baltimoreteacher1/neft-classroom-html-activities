@@ -15,6 +15,8 @@ export const STORAGE_KEYS = Object.freeze({
   SPEAKING: `${KEY_PREFIX}speaking`,
   RADAR: `${KEY_PREFIX}radar`,
   FAMILY_CARDS: `${KEY_PREFIX}family_cards`,
+  ARCADE: `${KEY_PREFIX}arcade`,
+  DIALOGUE: `${KEY_PREFIX}dialogue`,
 });
 
 const DEFAULT_STATES = {
@@ -56,6 +58,19 @@ const DEFAULT_STATES = {
   [STORAGE_KEYS.FAMILY_CARDS]: () => ({
     schemaVersion: SCHEMA_VERSION,
     cards: [],
+  }),
+  [STORAGE_KEYS.ARCADE]: () => ({
+    schemaVersion: SCHEMA_VERSION,
+    solvedPhonics: [],
+    solvedPairs: [],
+    solvedComp: [],
+    trailWins: 0,
+  }),
+  [STORAGE_KEYS.DIALOGUE]: () => ({
+    schemaVersion: SCHEMA_VERSION,
+    completedDialogues: [],
+    completedCloze: [],
+    reviewedCards: [],
   }),
 };
 
