@@ -51,6 +51,7 @@ const CATEGORIES = [
 let activeCat = "needs";
 let stripText = "";
 let showMats = false;
+let speechRate = 0.92;
 
 export function renderCommunicationBoard(ctx) {
   const I = i18nFor(ctx);
@@ -85,6 +86,7 @@ export function renderCommunicationBoard(ctx) {
       <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem;">
         <input id="cbStrip" type="text" class="is-fib-input" style="flex:1;min-width:220px;" value="${stripText}" placeholder="${I.S("Tap symbols above or type here…", "Toca símbolos arriba o escribe aquí…")}" />
         <button type="button" class="btn btn-primary small" data-cb-play-strip>${icon("volume")} ${I.T("Play Aloud", "Reproducir")}</button>
+        <button type="button" class="btn small" data-cb-rate>${I.T("Speed", "Velocidad")}: ${speechRate === 0.78 ? "0.8x" : "1.0x"}</button>
         <button type="button" class="btn small" data-cb-clear-strip>${I.T("Clear", "Limpiar")}</button>
       </div>
     </div>
@@ -122,8 +124,13 @@ export function onCommunicationBoardClick(e, ctx) {
     const val = document.getElementById("cbStrip")?.value || stripText;
     if (val.trim()) {
       stopSpeech();
-      speak(val.trim(), { rate: 0.92 });
+      speak(val.trim(), { rate: speechRate });
     }
+    return true;
+  }
+  if (t.closest("[data-cb-rate]")) {
+    speechRate = speechRate === 0.78 ? 0.92 : 0.78;
+    ctx.rerender();
     return true;
   }
   if (t.closest("[data-cb-clear-strip]")) {

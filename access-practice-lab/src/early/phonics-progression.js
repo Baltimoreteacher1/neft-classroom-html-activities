@@ -19,6 +19,9 @@ export const PHONICS_LEVELS = [
       { word: "bed", graphemes: ["b", "e", "d"], es: "cama", svg: `<rect x="10" y="30" width="44" height="16" rx="4" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><rect x="14" y="22" width="14" height="8" rx="3" fill="#1fa6a2" stroke="#17324d" stroke-width="2"/><path d="M12 46v6M52 46v6" stroke="#17324d" stroke-width="3" stroke-linecap="round"/>` },
       { word: "pig", graphemes: ["p", "i", "g"], es: "cerdo", svg: `<circle cx="32" cy="34" r="16" fill="#f2765a" opacity="0.35" stroke="#17324d" stroke-width="2.5"/><ellipse cx="32" cy="37" rx="8" ry="6" fill="#f2765a" stroke="#17324d" stroke-width="2"/><circle cx="29" cy="37" r="1.5" fill="#17324d"/><circle cx="35" cy="37" r="1.5" fill="#17324d"/>` },
       { word: "map", graphemes: ["m", "a", "p"], es: "mapa", svg: `<polygon points="10,16 24,12 40,18 54,14 54,48 40,52 24,46 10,50" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><circle cx="36" cy="30" r="4" fill="#f2765a" stroke="#17324d" stroke-width="2"/>` },
+      { word: "dog", graphemes: ["d", "o", "g"], es: "perro", svg: `<ellipse cx="32" cy="36" rx="16" ry="12" fill="#9a4a26" opacity="0.35" stroke="#17324d" stroke-width="2.5"/><circle cx="26" cy="32" r="2.5" fill="#17324d"/><circle cx="38" cy="32" r="2.5" fill="#17324d"/>` },
+      { word: "cup", graphemes: ["c", "u", "p"], es: "taza", svg: `<rect x="18" y="22" width="24" height="28" rx="4" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><path d="M42 28h6a5 5 0 0 1 0 10h-6" fill="none" stroke="#17324d" stroke-width="2.5"/>` },
+      { word: "box", graphemes: ["b", "o", "x"], es: "caja", svg: `<rect x="14" y="20" width="36" height="30" rx="3" fill="#f2c15b" stroke="#17324d" stroke-width="2.5"/><path d="M14 28h36" stroke="#17324d" stroke-width="2"/>` },
     ],
   },
   {
@@ -32,6 +35,9 @@ export const PHONICS_LEVELS = [
       { word: "clap", graphemes: ["c", "l", "a", "p"], es: "aplaudir", svg: `<rect x="18" y="20" width="12" height="26" rx="6" fill="#f2c15b" stroke="#17324d" stroke-width="2.5" transform="rotate(-15 24 33)"/><rect x="34" y="20" width="12" height="26" rx="6" fill="#f2c15b" stroke="#17324d" stroke-width="2.5" transform="rotate(15 40 33)"/>` },
       { word: "flag", graphemes: ["f", "l", "a", "g"], es: "bandera", svg: `<line x1="16" y1="12" x2="16" y2="54" stroke="#17324d" stroke-width="3" stroke-linecap="round"/><rect x="18" y="14" width="32" height="20" rx="2" fill="#1fa6a2" stroke="#17324d" stroke-width="2.5"/>` },
       { word: "drum", graphemes: ["d", "r", "u", "m"], es: "tambor", svg: `<ellipse cx="32" cy="24" rx="18" ry="7" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><path d="M14 24v18c0 4 8 7 18 7s18-3 18-7V24" fill="#f2765a" opacity="0.35" stroke="#17324d" stroke-width="2.5"/>` },
+      { word: "chin", graphemes: ["ch", "i", "n"], es: "barbilla", svg: `<circle cx="32" cy="30" r="16" fill="#f2c15b" opacity="0.4" stroke="#17324d" stroke-width="2.5"/><path d="M26 42q6 5 12 0" fill="none" stroke="#17324d" stroke-width="2.5"/>` },
+      { word: "stop", graphemes: ["s", "t", "o", "p"], es: "alto", svg: `<polygon points="22,12 42,12 52,22 52,42 42,52 22,52 12,42 12,22" fill="#f2765a" stroke="#17324d" stroke-width="2.5"/><text x="32" y="36" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">STOP</text>` },
+      { word: "swim", graphemes: ["s", "w", "i", "m"], es: "nadar", svg: `<path d="M10 38q11-7 22 0t22 0" fill="none" stroke="#075568" stroke-width="3"/><circle cx="32" cy="24" r="6" fill="#f2c15b" stroke="#17324d" stroke-width="2"/>` },
     ],
   },
   {
@@ -45,6 +51,9 @@ export const PHONICS_LEVELS = [
       { word: "rain", graphemes: ["r", "ai", "n"], es: "lluvia", svg: `<path d="M18 32a10 10 0 0 1 18-6 9 9 0 0 1 12 8H18z" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><path d="M22 40l-2 8M32 40l-2 8M42 40l-2 8" stroke="#075568" stroke-width="2.5" stroke-linecap="round"/>` },
       { word: "tree", graphemes: ["t", "r", "ee"], es: "árbol", svg: `<rect x="28" y="38" width="8" height="16" fill="#9a4a26" stroke="#17324d" stroke-width="2"/><circle cx="32" cy="24" r="14" fill="#1fa6a2" stroke="#17324d" stroke-width="2.5"/>` },
       { word: "moon", graphemes: ["m", "oo", "n"], es: "luna", svg: `<path d="M38 14a18 18 0 1 0 12 30 14 14 0 0 1-12-30z" fill="#f2c15b" stroke="#17324d" stroke-width="2.5"/>` },
+      { word: "bike", graphemes: ["b", "i", "k", "e"], es: "bicicleta", svg: `<circle cx="20" cy="40" r="10" fill="none" stroke="#17324d" stroke-width="2.5"/><circle cx="44" cy="40" r="10" fill="none" stroke="#17324d" stroke-width="2.5"/><path d="M20 40l12-14h10l2 14M32 26l-4 14" fill="none" stroke="#1fa6a2" stroke-width="2.5"/>` },
+      { word: "home", graphemes: ["h", "o", "m", "e"], es: "hogar", svg: `<polygon points="14,32 32,14 50,32 50,52 14,52" fill="#eaf4f4" stroke="#17324d" stroke-width="2.5"/><rect x="27" y="38" width="10" height="14" fill="#9a4a26"/>` },
+      { word: "seed", graphemes: ["s", "ee", "d"], es: "semilla", svg: `<ellipse cx="32" cy="36" rx="10" ry="14" fill="#f2c15b" stroke="#17324d" stroke-width="2.5"/><path d="M32 22c0-8 8-10 8-10" fill="none" stroke="#1fa6a2" stroke-width="2.5"/>` },
     ],
   },
 ];
@@ -94,6 +103,11 @@ export function renderProgression(ctx) {
         ${PHONICS_LEVELS.map((l, idx) => html`<button type="button" role="tab" class="btn small ${idx === activeLevel ? "btn-primary" : ""}" aria-selected="${idx === activeLevel}" data-pp-level="${idx}">${I.T(...l.title)}</button>`)}
       </div>
       <p class="fine">${I.T(...lvl.desc)}</p>
+      ${(() => {
+        const lvlDone = lvl.words.filter((w) => doneMap[w.word]).length;
+        const pct = Math.round((lvlDone / lvl.words.length) * 100);
+        return html`<p class="fine" style="margin:.4rem 0 .25rem;"><strong>${lvlDone}/${lvl.words.length}</strong> ${I.T("words built in this level", "palabras construidas en este nivel")} (${pct}%)</p><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>`;
+      })()}
 
       <section class="panel" style="margin-top:1rem;">
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">

@@ -82,13 +82,13 @@ export function echoSelfHTML(ctx, promptId = "default") {
 
     ${compareOpen ? html`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin:.85rem 0;">
       <div class="card" style="background:#f7f4ec;">
-        <p class="eyebrow">Day 1 (Baseline)</p>
+        <p class="eyebrow">Day 1 (Baseline · ${entry.baseline.text.split(/\s+/).filter(Boolean).length} words)</p>
         ${raw(waveSVG(entry.baseline.bars, "#64748b", "Day 1 voice waveform"))}
         <p class="fine">${entry.baseline.text}</p>
         <button type="button" class="btn small no-print" data-es-say="${entry.baseline.text}">${icon("volume")} Hear Day 1</button>
       </div>
       <div class="card" style="background:#eaf4f4;">
-        <p class="eyebrow">Today (Latest)</p>
+        <p class="eyebrow">Today (Latest · ${latest.text.split(/\s+/).filter(Boolean).length} words)</p>
         ${raw(waveSVG(latest.bars, "#1fa6a2", "Today voice waveform"))}
         <p class="fine">${latest.text}</p>
         <button type="button" class="btn small no-print" data-es-say="${latest.text}">${icon("volume")} Hear Today</button>

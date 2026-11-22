@@ -65,13 +65,14 @@ const LABS = [
 ];
 
 let activeLab = "transit";
+let qcFeedback = "";
 
 export function visualAnchorLabsHTML(ctx) {
   const I = i18nFor(ctx);
   const lab = LABS.find((l) => l.id === activeLab) || LABS[0];
   return html`<section class="panel" style="margin:1.25rem 0;border:1.5px solid #17324d;" aria-labelledby="valTitle">
-    <p class="eyebrow">${I.T("Grades 4–8 Newcomer Visual Anchor Labs", "Laboratorios visuales para recién llegados (4–8)")}</p> <!-- ES-REVIEW -->
-    <h2 id="valTitle" style="margin:0 0 .75rem;">${I.T("Real-World Academic Schematics", "Esquemas académicos del mundo real")}</h2> <!-- ES-REVIEW -->
+    <p class="eyebrow">${I.T("Grades 4–8 Newcomer Visual Anchor Labs", "Laboratorios visuales para recién llegados (4–8)")}</p>
+    <h2 id="valTitle" style="margin:0 0 .75rem;">${I.T("Real-World Academic Schematics", "Esquemas académicos del mundo real")}</h2>
     <div class="is-mode-tabs" role="tablist" aria-label="${I.S("Visual Anchor Labs", "Laboratorios visuales")}" style="margin-bottom:1rem;">
       ${LABS.map((l) => html`<button type="button" role="tab" class="btn small ${l.id === activeLab ? "btn-primary" : ""}" aria-selected="${l.id === activeLab}" data-val-tab="${l.id}">${I.T(...l.title)}</button>`)}
     </div>
@@ -81,6 +82,13 @@ export function visualAnchorLabsHTML(ctx) {
     <div style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;">
       ${lab.terms.map((t) => html`<button type="button" class="btn small" data-val-say="${t.en}">${icon("volume")} <strong>${t.en}</strong>${I.mode !== "en" ? ` · ${t.es}` : ""}</button>`)}
     </div>
+    <div class="panel" style="margin-top:1rem;background:var(--bg,#f7f4ec);">
+      <p style="margin:0 0 .4rem;"><strong>${I.T("Quick Check:", "Verificación rápida:")}</strong> ${I.T(`Which term means "${lab.terms[0].es}"?`, `¿Qué término significa "${lab.terms[0].es}"?`)}</p> <!-- ES-REVIEW -->
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        ${lab.terms.map((t, idx) => html`<button type="button" class="btn small" data-val-qc="${idx}">${t.en}</button>`)}
+      </div>
+      ${qcFeedback ? html`<p class="is-item-fb is-ok" role="status">${qcFeedback}</p>` : ""}
+    </div>
   </section>`;
 }
 
@@ -88,6 +96,14 @@ export function onVisualAnchorClick(e, ctx) {
   const tab = e.target.closest("[data-val-tab]");
   if (tab) {
     activeLab = tab.dataset.valTab;
+    qcFeedback = "";
+    ctx.rerender();
+    return true;
+  }
+  const qc = e.target.closest("[data-val-qc]");
+  if (qc) {
+    const idx = Number(qc.dataset.valQc);
+    qcFeedback = idx === 0 ? "Exact match! Nice job decoding the schematic." : "Not quite—tap the audio buttons above and try again.";
     ctx.rerender();
     return true;
   }

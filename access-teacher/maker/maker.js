@@ -7,9 +7,12 @@ import { SURVIVAL_TOPICS } from "/access-practice-lab/src/packs/survival-vocabul
 
 const $ = (id) => document.getElementById(id);
 
+const PRESET_KEY = "accessTeacher:v1:makerPreset";
+
 const state = {
   source: "wordlab",
   band: "3-5",
+  subject: "all",
   template: "wordsearch",
   title: "Academic Vocabulary Practice",
   count: 8,
@@ -44,14 +47,18 @@ function getWordPool() {
         en,
         es,
         clue: `${t.title[0]} (${es})`,
+        example: `We use "${en}" in ${t.title[0].toLowerCase()}.`,
       })),
     );
   }
   const bandMatch = state.band === "6-8" ? "6-8" : "3-5";
-  return WORDS.filter((w) => w.b === bandMatch || w.b === "both").map((w) => ({
+  return WORDS.filter(
+    (w) => (w.b === bandMatch || w.b === "both") && (state.subject === "all" || w.s === state.subject),
+  ).map((w) => ({
     en: w.w,
     es: w.e || w.w,
     clue: state.lang === "es" ? (w.de || w.d) : (w.d || w.de),
+    example: state.lang === "es" ? (w.xe || w.x || "") : (w.x || w.xe || ""),
   }));
 }
 
@@ -226,20 +233,21 @@ function renderTracer(words) {
 }
 
 function renderFlashcards(words) {
-  return `<p>Cut along the dashed lines to make bilingual flashcards, and use the SVO Sentence Frame mat below.</p>
+  return `<p>Cut along the dashed lines and fold in half for double-sided bilingual flashcards, then practice with the SVO Sentence Frame desk mat.</p>
     <div class="mk-cards-grid">${words.map((w) => `
       <div class="mk-card-cut">
         <strong style="font-size:1.15rem;color:#17324d;">${esc(w.en)}</strong>
         <span style="color:#075568;font-weight:600;">${esc(w.es)}</span>
         <small style="color:#24323f;">${esc(w.clue)}</small>
+        ${w.example ? `<small style="color:#475569;font-style:italic;">“${esc(w.example)}”</small>` : ""}
       </div>`).join("")}
     </div>
     <div class="mk-svo-mat">
       <h3 style="margin:0;">SVO Sentence Frame Desk Mat</h3>
       <div class="mk-svo-cols">
-        <div class="mk-svo-col"><strong>Subject (Who/What)</strong><br>The scientist / I / We</div>
-        <div class="mk-svo-col"><strong>Verb (Action)</strong><br>uses / explains / compares</div>
-        <div class="mk-svo-col"><strong>Object / Evidence</strong><br>${esc(words[0]?.en || "evidence")} to show…</div>
+        <div class="mk-svo-col"><strong>Subject (Who / What)</strong><br>The scientist / Our group / I</div>
+        <div class="mk-svo-col"><strong>Verb (Action)</strong><br>observes / compares / explains</div>
+        <div class="mk-svo-col"><strong>Object / Evidence</strong><br>${esc(words[0]?.en || "evidence")} because…</div>
       </div>
     </div>`;
 }
@@ -279,6 +287,13 @@ $("mkSource")?.addEventListener("change", (e) => {
   render();
 });
 $("mkBand")?.addEventListener("change", (e) => { state.band = e.target.value; render(); });
+$("mkSubject")?.addEventListener("change", (e) => { state.subject = e.target.value; render(); });
+$("mkSavePreset")?.addEventListener("click", () => {
+  try {
+    localStorage.setItem(PRESET_KEY, JSON.stringify({ ...state, customText: $("mkCustomText")?.value || "" }));
+    $("mkStatus").textContent = "Preset saved on this device.";
+  } catch {}
+});
 $("mkTemplate")?.addEventListener("change", (e) => { state.template = e.target.value; render(); });
 $("mkSheetTitle")?.addEventListener("input", (e) => { state.title = e.target.value; render(); });
 $("mkCount")?.addEventListener("change", (e) => { state.count = Number(e.target.value) || 8; render(); });
