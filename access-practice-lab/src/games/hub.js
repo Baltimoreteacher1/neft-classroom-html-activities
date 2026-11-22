@@ -8,6 +8,7 @@ import { KLU_ES, SKILL_ES, chips } from "./screens.js";
 import { SUP } from "./engine.js";
 import { summarizeRounds } from "./state.js";
 import { expeditionsTeacherHTML } from "./language-expeditions-assign.js"; // teacher: Expeditions links
+import { getWeakSpots, loadProgression } from "../game-core/ProgressionStore.js";
 
 const pair = (I, p) => I.T(p[0], p[1]);
 const bandQ = (b) => `grades=${b}`;
@@ -35,9 +36,10 @@ const dots = (n, I) => html`<span class="gs-diff" role="img" aria-label="${I.S([
 
 function card(g, I, band, games, q, { why } = {}) {
   const st = statusOf(games, g.id, band);
+  const weakCount = getWeakSpots(g.id, band).length;
   const label = st.live ? I.T("Continue", "Continuar") : st.plays ? I.T("Play again", "Jugar otra vez") : I.T("Play", "Jugar");
   return html`<article class="gs-card" data-game-card="${g.id}">
-    <a class="gs-card-art" href="${playHref(g.id, band, q)}" tabindex="-1" aria-hidden="true">${scene(g.art, band)}${g.flagship ? html`<span class="gs-badge">${I.T("Featured", "Destacado")}</span>` : ""}</a>
+    <a class="gs-card-art" href="${playHref(g.id, band, q)}" tabindex="-1" aria-hidden="true">${scene(g.art, band)}${g.flagship ? html`<span class="gs-badge">${I.T("Featured", "Destacado")}</span>` : ""}${weakCount ? html`<span class="gs-badge is-weak-badge">${I.T(`${weakCount} to review`, `${weakCount} para repasar`)}</span>` : ""}</a>
     <div class="gs-card-body">
       <h3><a href="${playHref(g.id, band, q)}">${pair(I, g.title)}</a></h3>
       <p class="gs-card-tag">${pair(I, g.tag)}</p>

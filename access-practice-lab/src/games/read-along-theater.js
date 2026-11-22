@@ -625,6 +625,7 @@ function moodTask(s, env, play) {
     <ul class="rat-castlist" aria-label="${I.S("Actors", "Actores")}">
       ${cast}
     </ul>
+    <div class="gs-dnd-bar"><button type="button" class="btn small" data-dnd-reset>${I.T("Reset card selection", "Reiniciar tarjeta")}</button></div>
   </div>`;
 }
 function moodFeedback(ps, t, env, play) {

@@ -13,6 +13,8 @@ import { activityHref } from "./room.js";
 import * as scienceLab from "./science-lab.js";
 import { scienceLabCardHTML } from "./science-lab-hub.js";
 import { connectedWorldHTML, connectedWorldsHTML } from "../journey/worlds-portal.js";
+import { SoundEngine } from "../game-core/SoundEngine.js";
+import { recordRoundOutcome, unlockWorldBadge } from "../game-core/ProgressionStore.js";
 
 const PROGRESS_KEY = "accessPracticeLab:v1:world-missions";
 const SCIENCE_LAB = "science-lab";
@@ -455,6 +457,27 @@ async function onWorldClick(e, ctx) {
 
   if (button.hasAttribute("data-world-check")) {
     missionSession.checked = true;
+    try {
+      const worldId = ctx.route?.worldId || ctx.route?.id || "";
+      const missionId = ctx.route?.missionId || "";
+      const world = WORLDS.find((w) => w.id === worldId);
+      const mission = missionsOf(worldId, ctx.band).find((m) => m.baseId === missionId || m.id === missionId);
+      if (mission) {
+        const isCorrect = missionSession.selectedChoice === mission.answer;
+        SoundEngine.unlock();
+        if (isCorrect) SoundEngine.playCorrect(1);
+        else SoundEngine.playError();
+        recordRoundOutcome({
+          gameId: `world:${worldId}`,
+          band: ctx.band,
+          itemId: mission.baseId,
+          skill: world?.domain || "Integrated",
+          ok: isCorrect,
+          first: isCorrect,
+          prompt: mission.title,
+        });
+      }
+    } catch {}
     ctx.rerender();
     return true;
   }
@@ -508,6 +531,11 @@ async function onWorldClick(e, ctx) {
     progress[`${ctx.band}:${key}`] = { completed: true, timestamp: Date.now() };
     saveMissionProgress(progress);
     missionSession.transferDone = true;
+    try {
+      SoundEngine.unlock();
+      SoundEngine.playLevelUp();
+      unlockWorldBadge(`world:${ctx.band}:${key}`);
+    } catch {}
     ctx.rerender();
     return true;
   }

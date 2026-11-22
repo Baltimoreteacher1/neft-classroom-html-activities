@@ -14,6 +14,15 @@ import { GAME, GAMES } from "../games/registry.js";
 import { expeditionsHubClick } from "../games/language-expeditions-assign.js";
 import { doneHTML, frameHTML, startHTML, transferHTML } from "../games/screens.js";
 import { loadGames, saveGames, sessionKey, summarizeRounds } from "../games/state.js";
+import { FSM_STATES, GameFSM, toFSMState } from "../game-core/GameFSM.js";
+import { SoundEngine } from "../game-core/SoundEngine.js";
+import {
+  cycleGameTheme,
+  getWeakSpots,
+  loadProgression,
+  setZenMode,
+  unlockWorldBadge,
+} from "../game-core/ProgressionStore.js";
 
 const contentCache = new Map();
 const loadContent = (id) => {
@@ -84,8 +93,12 @@ function finish(live, { skipped = false } = {}) {
   live.awards = newAwards({ session, history: games.history, have: games.awards, pathwayDone: Boolean(prog?.complete) });
   games.awards = [...new Set([...games.awards, ...live.awards])];
   session.phase = "done";
+  live.fsm?.transition(FSM_STATES.ROUND_SUMMARY);
   persist(live);
   try {
+    SoundEngine.playLevelUp();
+    for (const a of live.awards) unlockWorldBadge(a);
+    unlockWorldBadge(`game:${def.id}:${band}`);
     award(ctx, `game:${id}`, 6, "Language game");
     if (session.transfer.saved) award(ctx, `transfer:game:${id}`, 4, "Used it on my own");
   } catch {}
@@ -96,8 +109,24 @@ function advance(live) {
   const { mod, session } = live;
   if (session.phase === "play" && mod.done(session.state)) {
     const spec = live.content.transfer?.[live.band];
+    live.fsm?.transition(FSM_STATES.ROUND_SUMMARY);
     if (spec) session.phase = "transfer"; else finish(live);
   }
+}
+
+/** Filter a game's state to prioritize or focus on items in the learner's Weak-Spot queue when launching Weak-Spot Replay. */
+function filterWeakSpotsState(state, weakSpots) {
+  if (!state || !Array.isArray(weakSpots) || !weakSpots.length) return state;
+  const ids = new Set(weakSpots.map((w) => w.id));
+  for (const key of ["rounds", "cases", "rows", "puzzles"]) {
+    if (Array.isArray(state[key]) && state[key].length > 1) {
+      const matched = state[key].filter((item) => item && ids.has(String(item.id || "").split(":")[0]));
+      if (matched.length >= 1) {
+        state[key] = matched;
+      }
+    }
+  }
+  return state;
 }
 
 // ── render ───────────────────────────────────────────────────────────────────────────────
@@ -133,9 +162,37 @@ export async function render(ctx) {
   let session = games.sessions[key] || null;
   const wanted = SUP[q.mode] ? q.mode : "";
   if (!LIVE || LIVE.def.id !== id || LIVE.band !== band) {
+    LIVE?.fsm?.teardown();
     // Entering a game: a finished session shows its completion screen only right after finishing; a link opens the start screen.
     if (session?.phase === "done") session = null;
-    LIVE = { ctx, def, band, mod, content, games, session: session || { ...makeSession(def, band, wanted || ctx.prefs.tiers?.[def.skill === "Integrated" ? "Reading" : def.skill] || "A", q.len === "quick" ? "quick" : "full"), phase: "start" }, awards: [], len: q.len === "quick" ? "quick" : "full", started: Boolean(session) };
+    const initialSession = session || {
+      ...makeSession(def, band, wanted || ctx.prefs.tiers?.[def.skill === "Integrated" ? "Reading" : def.skill] || "A", q.len === "quick" ? "quick" : "full"),
+      phase: "start",
+    };
+    const prog = loadProgression();
+    if (typeof document !== "undefined" && document.documentElement) {
+      if (prog.theme === "default") delete document.documentElement.dataset.gameTheme;
+      else document.documentElement.dataset.gameTheme = prog.theme;
+    }
+    const fsm = new GameFSM({
+      gameId: def.id,
+      band,
+      initialState: toFSMState(initialSession.phase),
+      zenMode: prog.zenMode,
+    });
+    LIVE = {
+      ctx,
+      def,
+      band,
+      mod,
+      content,
+      games,
+      session: initialSession,
+      fsm,
+      awards: [],
+      len: q.len === "quick" ? "quick" : "full",
+      started: Boolean(session),
+    };
     if (wanted && LIVE.session.phase === "start") LIVE.session.support = wanted;
   }
   LIVE.ctx = ctx; LIVE.games = games; LIVE.content = content; LIVE.mod = mod;
@@ -145,14 +202,35 @@ export async function render(ctx) {
   live.env = env;
   const title = I.S(def.title[0], def.title[1]);
   if (s.phase === "start") {
+    live.fsm?.transition(FSM_STATES.BRIEFING);
     return { title, html: startHTML({ g: def, I, band, content: { rules: content.rules }, session: s, saved: games.sessions[key], len: live.len }) };
   }
   if (s.phase === "play") {
     if (!s.state) s.state = mod.init(env);
     const stage = mod.view(s.state, env);
-    return { title, html: frameHTML({ g: def, I, band, session: s, content, stage, progress: mod.progress(s.state) }) };
+    const hasFeedback = typeof stage === "string" && stage.includes("gs-feedback");
+    if (hasFeedback) live.fsm?.transition(FSM_STATES.FEEDBACK);
+    else if (!live.fsm?.weakSpotMode) live.fsm?.transition(FSM_STATES.PLAYING);
+    return {
+      title,
+      html: frameHTML({
+        g: def,
+        I,
+        band,
+        session: s,
+        content,
+        stage,
+        progress: mod.progress(s.state),
+        fsmState: live.fsm?.getState(),
+        paused: Boolean(live.fsm?.paused),
+      }),
+    };
   }
-  if (s.phase === "transfer") return { title, html: transferHTML({ g: def, I, band, session: s, spec: content.transfer[band] }) };
+  if (s.phase === "transfer") {
+    live.fsm?.transition(FSM_STATES.ROUND_SUMMARY);
+    return { title, html: transferHTML({ g: def, I, band, session: s, spec: content.transfer[band] }) };
+  }
+  live.fsm?.transition(FSM_STATES.ROUND_SUMMARY);
   const path = parsePath(q.path);
   const recs = recommend(games, band, { n: 2 }).filter((r) => r.game !== id);
   const sug = suggestSupport(s.rounds, s.support);
@@ -166,11 +244,12 @@ export function mount(root, ctx) {
   if (LIVE) LIVE.cleanup = null;
   if (!LIVE || LIVE.session.phase !== "play" || !LIVE.session.state) { window.__ACCESS_GAMES__ = undefined; if (!LIVE) hubMount(root); return; }
   const stage = root.querySelector(".gs-stage");
-  if (stage && LIVE.mod.mount) LIVE.cleanup = LIVE.mod.mount(stage, LIVE.session.state, LIVE.env, () => changed()) || null;
+  if (stage && LIVE.mod.mount && !LIVE.fsm?.paused) LIVE.cleanup = LIVE.mod.mount(stage, LIVE.session.state, LIVE.env, () => changed()) || null;
   if (qaOn()) {
     window.__ACCESS_GAMES__ = {
       plan: (opts = {}) => LIVE.mod.plan(LIVE.session.state, opts || {}, LIVE.env),
       phase: () => LIVE.session.phase,
+      fsmState: () => LIVE.fsm?.getState() || toFSMState(LIVE.session.phase),
       progress: () => LIVE.mod.progress(LIVE.session.state),
       rounds: () => LIVE.session.rounds,
     };
@@ -183,6 +262,7 @@ function hubMount(root) {
 }
 export function unmount() {
   LIVE?.cleanup?.();
+  LIVE?.fsm?.teardown();
   if (LIVE) LIVE.cleanup = null;
   if (typeof window !== "undefined") window.__ACCESS_GAMES__ = undefined;
 }
@@ -220,6 +300,50 @@ export function onClick(e, ctx) {
   const s = live.session;
   const I = i18nFor(ctx);
   if (t.closest("[data-say]") && s.phase === "play" && s.support === "C") live.env.use("audio");
+  const hudBtn = t.closest("[data-g-mute],[data-g-zen],[data-g-pause],[data-g-theme],[data-g-weak-replay]");
+  if (hudBtn) {
+    if (hudBtn.hasAttribute("data-g-mute")) {
+      const muted = SoundEngine.toggleMute();
+      announce(muted ? I.S("Game sound muted.", "Sonido del juego silenciado.") : I.S("Game sound on.", "Sonido del juego activado."));
+      ctx.rerender();
+      return true;
+    }
+    if (hudBtn.hasAttribute("data-g-zen")) {
+      const next = live.fsm ? live.fsm.toggleZenMode() : true;
+      setZenMode(next);
+      announce(next ? I.S("Zen Mode on.", "Modo Zen activado.") : I.S("Zen Mode off.", "Modo Zen desactivado."));
+      ctx.rerender();
+      return true;
+    }
+    if (hudBtn.hasAttribute("data-g-pause")) {
+      const paused = live.fsm ? live.fsm.togglePause() : false;
+      announce(paused ? I.S("Game paused.", "Juego en pausa.") : I.S("Game resumed.", "Juego reanudado."));
+      ctx.rerender();
+      return true;
+    }
+    if (hudBtn.hasAttribute("data-g-theme")) {
+      const prog = cycleGameTheme();
+      SoundEngine.playClick();
+      announce(I.S(`Theme: ${prog.theme}.`, `Tema: ${prog.theme}.`));
+      ctx.rerender();
+      return true;
+    }
+    if (hudBtn.hasAttribute("data-g-weak-replay")) {
+      const prev = s;
+      const weakSpots = getWeakSpots(live.def.id, live.band);
+      live.session = { ...makeSession(live.def, live.band, prev.support, "quick", prev), phase: "play", weakSpotReplay: true };
+      live.env = envFor(live);
+      live.session.state = filterWeakSpotsState(live.mod.init(live.env), weakSpots);
+      live.fsm?.togglePause(false);
+      live.fsm?.transition(FSM_STATES.REPLAY_WEAK_SPOTS, { force: true });
+      SoundEngine.unlock();
+      SoundEngine.playClick();
+      persist(live);
+      ctx.rerender();
+      window.scrollTo({ top: 0 });
+      return true;
+    }
+  }
   const q = t.closest("[data-g-start],[data-g-resume],[data-g-pick],[data-g-len],[data-g-support],[data-g-again],[data-g-transfer-save],[data-g-transfer-skip]");
   if (q) {
     if (q.hasAttribute("data-g-pick") && SUP[q.dataset.gPick]) { s.support = q.dataset.gPick; ctx.rerender(); return true; }
@@ -229,6 +353,10 @@ export function onClick(e, ctx) {
       live.session = { ...makeSession(live.def, live.band, prev.support, live.len, prev), phase: "play" };
       live.env = envFor(live);
       live.session.state = live.mod.init(live.env);
+      live.fsm?.togglePause(false);
+      live.fsm?.transition(FSM_STATES.PLAYING, { force: true });
+      SoundEngine.unlock();
+      SoundEngine.playClick();
       persist(live);
       ctx.rerender();
       window.scrollTo({ top: 0 });
@@ -237,6 +365,9 @@ export function onClick(e, ctx) {
     if (q.hasAttribute("data-g-resume")) {
       const saved = live.games.sessions[sessionKey(live.def.id, live.band)];
       if (saved) { live.session = saved; live.len = saved.len || "full"; }
+      live.fsm?.togglePause(false);
+      live.fsm?.transition(toFSMState(live.session.phase), { force: true });
+      SoundEngine.unlock();
       ctx.rerender();
       window.scrollTo({ top: 0 });
       return true;
@@ -254,6 +385,10 @@ export function onClick(e, ctx) {
       live.session = { ...makeSession(live.def, live.band, support, s.len || "full", s), phase: "play" };
       live.env = envFor(live);
       live.session.state = live.mod.init(live.env);
+      live.fsm?.togglePause(false);
+      live.fsm?.transition(FSM_STATES.PLAYING, { force: true });
+      SoundEngine.unlock();
+      SoundEngine.playClick();
       delete live.games.sessions[sessionKey(live.def.id, live.band)];
       persist(live);
       live.awards = [];

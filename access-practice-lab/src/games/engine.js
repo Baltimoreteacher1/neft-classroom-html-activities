@@ -15,6 +15,8 @@
 //                                        (the QA hook: one correct (or deliberately wrong) step; only reachable with ?qa=1)
 //   validate?(content)                -> string[] of content problems (run by tools/validate-access-game-studio.mjs)
 import { esc, html, icon, raw } from "../util.js";
+import { SoundEngine } from "../game-core/SoundEngine.js";
+import { recordRoundOutcome } from "../game-core/ProgressionStore.js";
 
 export const SUP = {
   A: { key: "A", name: ["Starting", "Comenzando"], audio: "auto", gloss: "show", frames: "full", bank: true, hints: 3, visuals: true, blurb: ["Pictures, audio, Spanish help and sentence frames are on.", "Imágenes, audio, ayuda en español y estructuras de oración están activadas."] },
@@ -65,8 +67,38 @@ export function judge(rs, ok, env, { id, skill, extra } = {}) {
   } else {
     rs.status = rs.tries >= 2 ? "revealed" : "retry";
   }
+  const isFirst = Boolean(ok) && rs.tries === 1 && rs.h === 0;
+  try {
+    SoundEngine.unlock();
+    if (ok) {
+      const outcome = recordRoundOutcome({
+        gameId: env?.def?.id || "",
+        band: env?.band || "6-8",
+        itemId: id,
+        skill: skill || env?.def?.skill || "Integrated",
+        ok: true,
+        first: isFirst,
+        revised: rs.revised,
+      });
+      if (outcome.streak >= 3) SoundEngine.playCombo(outcome.streak);
+      else SoundEngine.playCorrect(outcome.streak || 1);
+    } else {
+      SoundEngine.playError();
+      if (rs.status === "revealed") {
+        recordRoundOutcome({
+          gameId: env?.def?.id || "",
+          band: env?.band || "6-8",
+          itemId: id,
+          skill: skill || env?.def?.skill || "Integrated",
+          ok: false,
+          first: false,
+          revised: false,
+        });
+      }
+    }
+  } catch {}
   if (rs.status !== "retry")
-    env.report({ id, skill, ok: Boolean(ok), first: ok && rs.tries === 1 && rs.h === 0, hints: rs.h, revised: rs.revised, ...extra });
+    env.report({ id, skill, ok: Boolean(ok), first: isFirst, hints: rs.h, revised: rs.revised, ...extra });
   return rs;
 }
 export const settled = (rs) => rs.status === "right" || rs.status === "revealed";
@@ -76,6 +108,10 @@ export function takeHint(rs, env) {
   if (rs.h >= max) return -1;
   rs.h += 1;
   env.use("hint");
+  try {
+    SoundEngine.unlock();
+    SoundEngine.playHint();
+  } catch {}
   return rs.h - 1;
 }
 
@@ -140,7 +176,8 @@ export function choiceList(choices, { name, sel = -1, locked = false, right = -1
 // ── drag and drop (pointer drag + tap-to-place, both keyboard-reachable) ───────────────────
 // Items carry [data-drag="<id>"], targets [data-drop="<id>"]. Tapping an item selects it (aria-pressed);
 // tapping a target places it. Dragging with a pointer does the same. Calls onDrop(itemId, targetId).
-export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-drop]", I }) {
+// Strict containment bounds, return-to-origin on invalid drop, Escape key cancel, and Reset button support.
+export function dnd(root, { onDrop, onReset, itemSel = "[data-drag]", zoneSel = "[data-drop]", I }) {
   let held = null;
   let ghost = null;
   let moved = false;
@@ -170,7 +207,17 @@ export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-dr
       document.body.append(ghost);
       held.item.classList.add("is-lifted");
     }
-    ghost.style.transform = `translate(${e.clientX - held.item.offsetWidth / 2}px, ${e.clientY - 20}px)`;
+    // Strict containment bounds inside viewport and stage container
+    const rect = root.getBoundingClientRect();
+    const w = held.item.offsetWidth || 120;
+    const h = held.item.offsetHeight || 44;
+    const minX = Math.max(4, rect.left - w * 0.25);
+    const maxX = Math.min(window.innerWidth - w - 4, rect.right - w * 0.75);
+    const minY = Math.max(4, rect.top - 16);
+    const maxY = Math.min(window.innerHeight - h - 4, rect.bottom - h * 0.5);
+    const clampedX = Math.max(minX, Math.min(maxX, e.clientX - w / 2));
+    const clampedY = Math.max(minY, Math.min(maxY, e.clientY - 20));
+    ghost.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
     root.querySelectorAll(".is-hot").forEach((n) => n.classList.remove("is-hot"));
     zoneAt(e.clientX, e.clientY)?.classList.add("is-hot");
     e.preventDefault();
@@ -184,7 +231,13 @@ export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-dr
       suppress = true;
       setTimeout(() => { suppress = false; }, 0);
       clear();
-      if (zone) onDrop(id, zone.dataset.drop);
+      if (zone) {
+        onDrop(id, zone.dataset.drop);
+      } else {
+        // Return-to-origin visual cue on invalid drop
+        item.classList.add("is-returned");
+        setTimeout(() => item.classList.remove("is-returned"), 200);
+      }
       return;
     }
     clear();
@@ -192,6 +245,14 @@ export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-dr
   let suppress = false;
   const click = (e) => {
     if (suppress) return;
+    const resetBtn = e.target.closest("[data-dnd-reset]");
+    if (resetBtn && root.contains(resetBtn)) {
+      clear();
+      if (typeof onReset === "function") onReset();
+      const live = document.getElementById("labLive");
+      if (live && I) live.textContent = I.S("Selection reset.", "Selección reiniciada.");
+      return;
+    }
     const item = e.target.closest(itemSel);
     const zone = e.target.closest(zoneSel) || e.target.closest("[data-drop-in]")?.querySelector(zoneSel);
     const picked = root.querySelector(`${itemSel}[aria-pressed="true"]`);
@@ -209,11 +270,21 @@ export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-dr
       onDrop(id, zone.dataset.drop);
     }
   };
+  const keydown = (e) => {
+    if (e.key === "Escape") {
+      const picked = root.querySelector(`${itemSel}[aria-pressed="true"]`);
+      if (picked || held) {
+        clear();
+        picked?.focus();
+      }
+    }
+  };
   root.addEventListener("pointerdown", down);
   window.addEventListener("pointermove", move, { passive: false });
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", clear);
   root.addEventListener("click", click, true);
+  root.addEventListener("keydown", keydown);
   root.querySelectorAll(itemSel).forEach((n) => { n.style.touchAction = "none"; });
   return () => {
     clear();
@@ -222,6 +293,7 @@ export function dnd(root, { onDrop, itemSel = "[data-drag]", zoneSel = "[data-dr
     window.removeEventListener("pointerup", up);
     window.removeEventListener("pointercancel", clear);
     root.removeEventListener("click", click, true);
+    root.removeEventListener("keydown", keydown);
   };
 }
 

@@ -20,6 +20,8 @@ import {
   starsFor,
 } from "../puzzles.js";
 import { BASE, announce, html, icon, safeJson, storage, todayISO } from "../util.js";
+import { SoundEngine } from "../game-core/SoundEngine.js";
+import { recordRoundOutcome } from "../game-core/ProgressionStore.js";
 
 const KEY = "accessPracticeLab:v1:puzzle-den";
 const load = () => normalizePuzzleState(safeJson(storage.get(KEY), {}));
@@ -296,8 +298,26 @@ function checkResult(ctx, p, state, a) {
   if (done) {
     const next = recordSolve(state, p.id, a, todayISO());
     award(ctx, `puzzle:${p.id}`, next.solved[p.id].stars, "Puzzle solved");
+    try {
+      SoundEngine.unlock();
+      SoundEngine.playCorrect(1);
+      recordRoundOutcome({
+        gameId: "puzzle-den",
+        band: ctx.band,
+        itemId: p.id,
+        skill: p.type === "order" ? "Writing" : "Reading",
+        ok: true,
+        first: a.misses === 0 && a.hints === 0,
+        revised: a.misses > 0,
+        prompt: p.title,
+      });
+    } catch {}
     return next;
   }
+  try {
+    SoundEngine.unlock();
+    SoundEngine.playError();
+  } catch {}
   const missText =
     p.type === "grid" && !gridComplete(p, a.picks)
       ? I.S(

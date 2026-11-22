@@ -181,6 +181,7 @@ export function trailHTML(story, L, env, focus) {
         <ul class="sw-tray">
           ${cards}
         </ul>
+        ${!L.placed.every(Boolean) ? html`<div class="gs-dnd-bar"><button type="button" class="btn small" data-dnd-reset>${I.T("Reset card selection", "Reiniciar tarjeta")}</button></div>` : ""}
       </div>
     </div>
     ${fev ? hintHTML(L.trs[focus] || { h: 0, status: "open" }, trailHints(fev, env), env) : ""}

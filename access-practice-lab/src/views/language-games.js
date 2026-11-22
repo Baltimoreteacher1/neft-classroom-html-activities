@@ -34,6 +34,8 @@ import { i18nFor } from "../i18n.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { canDictate, startDictation } from "../stt.js";
 import { BASE, announce, html, safeJson, storage } from "../util.js";
+import { SoundEngine } from "../game-core/SoundEngine.js";
+import { recordRoundOutcome, unlockWorldBadge } from "../game-core/ProgressionStore.js";
 
 const KEY = "accessPracticeLab:v1:flagship";
 const load = () => safeJson(storage.get(KEY), {}) || {};
@@ -130,9 +132,38 @@ function check(ctx, key) {
       document.querySelector(`[data-lg-text="${key}"]`)?.value ?? ui.drafts[key] ?? ss.text ?? "";
   const res = attempt(step, ss, input);
   if (res.level !== "empty") {
+    const entry = ledgerEntry(game, band, chapter, step, ss, res);
     const ledger = loadLedger();
-    appendEntry(ledger, ledgerEntry(game, band, chapter, step, ss, res));
+    appendEntry(ledger, entry);
     saveLedger(ledger);
+    try {
+      SoundEngine.unlock();
+      if (res.ok && res.level === "right") {
+        const outcome = recordRoundOutcome({
+          gameId: `flagship:${game.id}`,
+          band,
+          itemId: `${chapter.id}:${step.id}`,
+          skill: entry.domain || "Integrated",
+          ok: true,
+          first: ss.tries === 0 && !ss.help,
+          revised: ss.tries > 0,
+        });
+        if (outcome.streak >= 3) SoundEngine.playCombo(outcome.streak);
+        else SoundEngine.playCorrect(outcome.streak || 1);
+      } else {
+        SoundEngine.playError();
+        if (res.level === "model") {
+          recordRoundOutcome({
+            gameId: `flagship:${game.id}`,
+            band,
+            itemId: `${chapter.id}:${step.id}`,
+            skill: entry.domain || "Integrated",
+            ok: false,
+            first: false,
+          });
+        }
+      }
+    } catch {}
   }
   if (res.ok) applyFlags(bs, cs, res.sets);
   if (step.type === "sort") ui.sort[key] = {};
@@ -148,8 +179,14 @@ function next(ctx, key) {
   if (!c?.ss.ok) return false;
   const finished = advance(c.bs, c.chapter, c.cs);
   save(c.st);
-  if (finished)
+  if (finished) {
+    try {
+      SoundEngine.unlock();
+      SoundEngine.playLevelUp();
+      unlockWorldBadge(`flagship:${c.game.id}:${c.band}:${c.chapter.id}`);
+    } catch {}
     announce(i18nFor(ctx).S(`${c.chapter.title}: complete.`, `${c.chapter.title}: terminado.`));
+  }
   ctx.rerender();
   requestAnimationFrame(() => {
     const h = document.querySelector("#lgStepH") || document.querySelector("#lgDoneH");
