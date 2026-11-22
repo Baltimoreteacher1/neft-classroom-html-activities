@@ -50,6 +50,7 @@ import { latestModuleResume } from "../home-resume.js";
 import { audienceHTML, continueShortcuts } from "./home-audience.js";
 import { sectionTilesHTML } from "../sitemap-ui.js";
 import { onLanguagePage } from "../brand.js";
+import { resourceHubStripHTML } from "../platform/views/resourceHub.js";
 
 const reviewHref = (item, plan, band, ctx) => {
   const row = plan.find((r) => r.review?.key === item.key);
@@ -327,6 +328,7 @@ export async function render(ctx) {
           : ""
       }
       ${due.length ? reviewPanel : ""}
+      ${resourceHubStripHTML(band, ctx.prefs.tlpPillar || "All")}
       <details class="lph-more-ways" id="more-ways">
         <summary>
           <span>${I.T("More ways to practice", "Más formas de practicar")}</span>
@@ -646,6 +648,12 @@ export function mount(root, ctx) {
 export const unmount = () => joinPrompt?.unmountJoinPrompt();
 
 export function onClick(e, ctx) {
+  const pillarBtn = e.target.closest?.("[data-tlp-pillar]");
+  if (pillarBtn) {
+    ctx.setPrefs({ tlpPillar: pillarBtn.dataset.tlpPillar });
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
   if (heroClick(e, ctx)) return true;
   const grade = e.target.closest?.("[data-grade-pick]");
   if (grade) {

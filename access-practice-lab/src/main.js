@@ -148,6 +148,12 @@ const VIEW_LOADERS = {
   "choice-boards": () => import("./views/choice-boards.js"),
   "talk-table": () => import("./views/talk-table.js"),
   "vocab-sets": () => import("./views/vocab-sets.js"),
+  bridge: () => import("./platform/views/bridge.js"),
+  architect: () => import("./platform/views/architect.js"),
+  simulator: () => import("./platform/views/simulator.js"),
+  radar: () => import("./platform/views/radar.js"),
+  "family-bridge": () => import("./platform/views/familyBridge.js"),
+  pricing: () => import("./platform/views/pricing.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -226,7 +232,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table", "bridge", "architect", "simulator", "radar", "family-bridge", "pricing"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")

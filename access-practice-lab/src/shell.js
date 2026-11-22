@@ -9,6 +9,7 @@ import { installShortcuts } from "./shortcuts.js";
 import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
 import { sectionBarHTML } from "./wayfinding.js";
+import { mountPlatformControls } from "./platform/shellIntegration.js";
 
 let I = i18nFor({ prefs: {}, route: {} });
 let watching = false;
@@ -229,7 +230,7 @@ export function mountShell(ctx) {
   // The wordmark is a name: bilingual mode keeps it short rather than printing both languages.
   text(
     ".lab-wordmark strong",
-    brandName(I.bilingual ? "ACCESS Practice Lab" : T("ACCESS Practice Lab", "Laboratorio ACCESS")),
+    brandName(I.bilingual ? "ELL Lab" : T("ELL Lab", "Laboratorio ELL")),
   );
   if (onLanguagePage()) text(".lab-wordmark small", BRAND.poweredBy);
   // Plain-text swaps need their own language tag when Spanish sits on an English page.
@@ -239,6 +240,7 @@ export function mountShell(ctx) {
     if (node) tagEs ? node.setAttribute("lang", "es") : node.removeAttribute("lang");
   }
   mountLangBanner(ctx);
+  mountPlatformControls(ctx);
   mountSectionBar(ctx);
   const footer = document.querySelector(".lab-footer");
   if (footer) {

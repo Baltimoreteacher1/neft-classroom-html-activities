@@ -11,5 +11,5 @@ export const onLanguagePage = (hostname = location.hostname) => hostname === LAN
 export const brandName = (fallback) => (onLanguagePage() ? BRAND.name : fallback);
 
 /** Title for a page: "<page> · <product>". */
-export const brandTitle = (page, fallback = "ACCESS Practice Lab") =>
+export const brandTitle = (page, fallback = "ELL Lab") =>
   page ? `${page} · ${brandName(fallback)}` : brandName(fallback);
