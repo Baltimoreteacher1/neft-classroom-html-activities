@@ -45,6 +45,13 @@ export const EARLY_VIEWS = new Set([
   "practice-together",
   "family-start",
   "site-guide",
+  // Premium K-8 ELL Lab modules (all include K-2 content):
+  "bridge",
+  "architect",
+  "simulator",
+  "radar",
+  "family-bridge",
+  "pricing",
 ]);
 
 /**

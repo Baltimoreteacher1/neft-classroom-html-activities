@@ -5,6 +5,7 @@
  */
 
 import { BASE, html } from "../../util.js";
+import { isEarlyBand } from "../../bands.js";
 import { RESOURCE_LIBRARY } from "../data/platformData.js";
 import { readStorage, STORAGE_KEYS } from "../services/storageService.js";
 
@@ -12,12 +13,19 @@ export function resourceHubStripHTML(band = "6-8", activePillar = "All") {
   const prefs = readStorage(STORAGE_KEYS.PREFS);
   const role = prefs.role || "teacher";
   const q = band ? `?grades=${band}` : "";
+  const early = isEarlyBand(band);
 
   const visible = RESOURCE_LIBRARY.filter((item) => {
+    if (early && ["legacy-detective", "legacy-tests", "legacy-road"].includes(item.id)) return false;
     if (role === "student") return item.pillar === "Practice";
     if (role === "family") return item.domain === "Family" || item.id === "legacy-passport";
     if (activePillar !== "All" && item.pillar !== activePillar) return false;
     return true;
+  }).map((item) => {
+    if (!early) return item;
+    if (item.id === "legacy-speaking") return { ...item, route: "Speaking" };
+    if (item.id === "legacy-writing") return { ...item, route: "Writing" };
+    return item;
   });
 
   const pillars = ["All", "Prepare", "Practice", "Evidence & Family"];

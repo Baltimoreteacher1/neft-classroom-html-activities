@@ -14,6 +14,7 @@ import { speak, stop as stopSpeech } from "../speech.js";
 import { loadRecord } from "../store.js";
 import { BASE, announce, html, icon, raw, storage } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
+import { resourceHubStripHTML } from "../platform/views/resourceHub.js";
 
 const DOMAIN_ES = {
   Listening: "Escuchar",
@@ -368,6 +369,7 @@ async function homeHTML(ctx, I) {
           </p>
         </div>
       </header>
+      ${resourceHubStripHTML(band, ctx.prefs.tlpPillar || "All")}
 
       <div class="early-lenses" role="group" aria-label="${I.S("Who is exploring?", "¿Quién está explorando?")}">
         <button
@@ -527,6 +529,12 @@ export async function render(ctx) {
 }
 
 export function onClick(e, ctx) {
+  const pillarBtn = e.target.closest?.("[data-tlp-pillar]");
+  if (pillarBtn) {
+    ctx.setPrefs({ tlpPillar: pillarBtn.dataset.tlpPillar });
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
   const I = i18nFor(ctx);
   if (e.target.closest("[data-early-audio]")) {
     const on = !audioFirstOn(ctx.prefs, ctx.band);
