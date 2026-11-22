@@ -231,12 +231,14 @@ export function onClick(e, ctx) {
       live.session.state = live.mod.init(live.env);
       persist(live);
       ctx.rerender();
+      window.scrollTo({ top: 0 });
       return true;
     }
     if (q.hasAttribute("data-g-resume")) {
       const saved = live.games.sessions[sessionKey(live.def.id, live.band)];
       if (saved) { live.session = saved; live.len = saved.len || "full"; }
       ctx.rerender();
+      window.scrollTo({ top: 0 });
       return true;
     }
     if (q.hasAttribute("data-g-support")) {
@@ -264,7 +266,11 @@ export function onClick(e, ctx) {
   }
   if (s.phase === "play" && s.state) {
     const env = live.env;
-    if (live.mod.click(t, s.state, env) === true) { changed(); return true; }
+    if (live.mod.click(t, s.state, env) === true) {
+      changed();
+      if (live.def.id === "conversation-crossroads" && t.closest?.("[data-g-next]")) window.scrollTo({ top: 0 });
+      return true;
+    }
   }
   return false;
 }

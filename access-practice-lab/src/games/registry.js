@@ -1,4 +1,4 @@
-// The 22 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
+// The games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
 // teacher view need to know without loading the game: its language objective, skill, WIDA 2020 Key
 // Language Use, grade-band objectives and which module and content file drive it.
 //
@@ -235,6 +235,17 @@ export const GAMES = [
     module: "language-expeditions",
     mechanic: "four-land-expedition",
   },
+  {
+    id: "conversation-crossroads", n: 23, inspired: "original", flagship: true,
+    skill: "Speaking", skills: ["Speaking", "Reading", "Writing"], klu: ["Explain", "Argue"],
+    title: ["Conversation Crossroads", "Encrucijadas de conversación"],
+    tag: ["Navigate a real group conversation: understand a partner, choose a useful reply, then create your own.", "Participa en una conversación de grupo: comprende a un compañero, elige una respuesta útil y luego crea la tuya."],
+    obj: {
+      "3-5": ["I can ask for clarification, build on an idea, and explain a different view politely.", "Puedo pedir aclaraciones, ampliar una idea y explicar otra opinión con respeto."],
+      "6-8": ["I can interpret a partner's point and respond with clarification, evidence, or a respectful challenge.", "Puedo interpretar la idea de un compañero y responder con aclaración, evidencia o una objeción respetuosa."],
+    },
+    minutes: 10, difficulty: 2, home: true, art: "strategy", module: "conversation-crossroads", mechanic: "dialogue-branches",
+  },
 ];
 
 export const GAME = Object.fromEntries(GAMES.map((g) => [g.id, g]));
@@ -246,6 +257,7 @@ export const PATHWAYS = [
   { id: "sentence-builders", title: ["Sentence builders", "Constructores de oraciones"], blurb: ["Sort the parts, fix the errors, then build whole sentences.", "Clasifica las partes, corrige los errores y construye oraciones completas."], ids: ["grammar-jungle", "sentence-factory", "sentence-strategy"] },
   { id: "story-explorers", title: ["Story explorers", "Exploradores de cuentos"], blurb: ["Hear a story, find the clues, retell it and make your own.", "Escucha un cuento, busca las pistas, vuelve a contarlo y crea el tuyo."], ids: ["read-along-theater", "story-detective", "story-world", "story-creator"] },
   { id: "speak-up", title: ["Speak-up studio", "Estudio para hablar"], blurb: ["Hear the sounds, echo a model and explain out loud.", "Oye los sonidos, haz eco de un modelo y explica en voz alta."], ids: ["sound-word-studio", "fluency-echo", "escape-room"] },
+  { id: "conversation-builders", title: ["Conversation builders", "Constructores de conversación"], blurb: ["Practice a response, support it with evidence, then use it in a new conversation.", "Practica una respuesta, apóyala con evidencia y úsala en otra conversación."], ids: ["fluency-echo", "conversation-crossroads", "evidence-hunt"] },
 ];
 
 /** Achievements that mean something: each names the language behavior it recognizes. */

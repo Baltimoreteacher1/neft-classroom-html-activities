@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "52a4a77cfb25";
+const BUILD_HASH = "e7d9f14e3bbe";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=44371ce02f4f",
   "/access-practice-lab/home.css?v=c635b7e3b1ab",
@@ -110,7 +110,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/class/support.js?v=04d92cc9418d",
   "/access-practice-lab/src/views/road.js?v=364bc7a3da3d",
   "/access-practice-lab/src/views/room.js?v=09eb38b47a58",
-  "/access-practice-lab/src/games/registry.js?v=c964b2ca3bfd",
+  "/access-practice-lab/src/games/registry.js?v=d7f133effc29",
   "/access-practice-lab/src/download/menu.js?v=99151c3f1213",
   "/access-practice-lab/src/road-offline.js?v=1c183707346d",
   "/access-practice-lab/src/offline-pack.js?v=f9e0a4e748c2",
@@ -207,7 +207,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-m.css?v=695b5506eb55",
   "/access-practice-lab/games-n.css?v=9636b7c90c3e",
   "/access-practice-lab/games-o.css?v=d25a329e8a62",
-  "/access-practice-lab/games-p.css?v=fb900f520c8a",
+  "/access-practice-lab/games-p.css?v=ade997ebd95f",
   "/access-practice-lab/labs.css?v=f272eaac386f",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/path.css?v=95e1a443bf59",
@@ -515,6 +515,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/choice-game.js?v=150880a500c5",
   "/access-practice-lab/src/games/connector-climb-view.js?v=9b45d36b5eaf",
   "/access-practice-lab/src/games/connector-climb.js?v=6f16ef02b220",
+  "/access-practice-lab/src/games/conversation-crossroads.js?v=f66d5d18e39d",
   "/access-practice-lab/src/games/direction-dash-art.js?v=e7e30ad7a7dc",
   "/access-practice-lab/src/games/direction-dash.js?v=a055b83b4f98",
   "/access-practice-lab/src/games/early-play.js?v=3cf55536441b",
@@ -944,7 +945,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/family-copilot.js?v=8f93865a8d2b",
   "/access-practice-lab/src/views/family.js?v=40809d9f7f99",
   "/access-practice-lab/src/views/flashcards.js?v=7cf03844a1fe",
-  "/access-practice-lab/src/views/games.js?v=15209da7cacc",
+  "/access-practice-lab/src/views/games.js?v=ef3cb30e94ef",
   "/access-practice-lab/src/views/goals.js?v=3dbce9bf860d",
   "/access-practice-lab/src/views/grammar.js?v=9f367fefb56c",
   "/access-practice-lab/src/views/growth.js?v=0c46e6a4c8a4",
@@ -1145,6 +1146,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/g6-8/Speaking.json",
   "/access-practice-lab/content/g6-8/Writing.json",
   "/access-practice-lab/content/games/connector-climb.json",
+  "/access-practice-lab/content/games/conversation-crossroads.json",
   "/access-practice-lab/content/games/direction-dash.json",
   "/access-practice-lab/content/games/escape-room.json",
   "/access-practice-lab/content/games/evidence-hunt.json",
