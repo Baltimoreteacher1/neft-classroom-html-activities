@@ -186,6 +186,38 @@ export function openComfort(opener = document.activeElement) {
   dialog.querySelector("input:checked")?.focus();
 }
 
+/**
+ * WCAG 2.1.1: a table that scrolls sideways must be reachable from the keyboard. Any wrapper around a <table> that
+ * actually overflows (or a table that scrolls itself) gets tabindex="0" and a name (the caption, else its nearest
+ * heading; a wrapper also gets role="region"), so arrow keys scroll it. Wrappers that fit are left alone. Idempotent; runs after each render and on resize.
+ */
+export function focusableScrollRegions(root = document) {
+  for (const el of root.querySelectorAll("table, :has(> table)")) {
+    const isTable = el.localName === "table"; // assets/mobile-access.css makes bare tables scroll inside themselves
+    const scrolls = /auto|scroll/.test(getComputedStyle(el).overflowX) && el.scrollWidth > el.clientWidth + 1;
+    if (scrolls && !el.hasAttribute("tabindex")) {
+      const name = el.querySelector(":scope > table > caption")?.textContent?.trim()
+        || el.closest("section, figure")?.querySelector("h2, h3, figcaption")?.textContent?.trim()
+        || (I?.S ? I.S("Scrollable table", "Tabla desplazable") : "Scrollable table");
+      el.tabIndex = 0;
+      if (!isTable) el.setAttribute("role", "region"); // a table keeps its own role
+      const named = el.hasAttribute("aria-label") || el.hasAttribute("aria-labelledby") || (isTable && el.querySelector(":scope > caption"));
+      if (!named) el.setAttribute("aria-label", name);
+      el.dataset.scrollRegion = "";
+    } else if (!scrolls && el.hasAttribute("data-scroll-region")) {
+      el.removeAttribute("tabindex");
+      if (!isTable) el.removeAttribute("role");
+      el.removeAttribute("aria-label");
+      el.removeAttribute("data-scroll-region");
+    }
+  }
+}
+let scrollFrame = 0;
+const queueScrollRegions = () => {
+  cancelAnimationFrame(scrollFrame);
+  scrollFrame = requestAnimationFrame(() => focusableScrollRegions());
+};
+
 const typing = (el) => !!el?.closest?.("input, textarea, select, [contenteditable=''], [contenteditable='true']");
 
 /** Called by the shell on every render. Wires the saved choices once, and refreshes the language the panel speaks. */
@@ -196,6 +228,9 @@ export function installComfort(ctx, I18n) {
     installed = true;
     state = loadComfort();
     applyComfort(state);
+    const app = document.getElementById("app");
+    if (app) new MutationObserver(queueScrollRegions).observe(app, { childList: true, subtree: true });
+    addEventListener("resize", queueScrollRegions);
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-comfort-open]");
       if (btn) openComfort(btn);
@@ -208,4 +243,5 @@ export function installComfort(ctx, I18n) {
       }
     });
   }
+  queueScrollRegions(); // the shell calls this after every render, so scroll regions are named on first paint too
 }

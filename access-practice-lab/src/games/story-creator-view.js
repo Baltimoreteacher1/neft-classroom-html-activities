@@ -158,10 +158,10 @@ function strip(s, env, seed) {
 }
 
 function streakChip(s, I) {
-  return html`<p class="scr-streak${s.streak >= 3 ? " is-hot" : ""}">
+  return html`<p class="scr-streak">
     ${icon("sparkle")}<span
-      >${I.T(`Understanding streak: ${s.streak}`, `Racha de comprensión: ${s.streak}`)}</span
-    ><span class="scr-best">${I.T(`Best ${s.best}`, `Mejor ${s.best}`)}</span>
+      >${I.T(`Story steps you worked out: ${s.streak}`, `Pasos de la historia que lograste: ${s.streak}`)}</span
+    >
   </p>`;
 }
 

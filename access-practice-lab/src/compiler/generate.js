@@ -68,8 +68,8 @@ function buildCharacter(extract, plan, c, sceneId) {
       `Hola. Soy ${c.name}. Pregúntame sobre ${aboutEs}.`,
     ),
     fallback: P(
-      `I can't speak to that. I can tell you about ${about}.`,
-      `De eso no puedo hablar. Puedo hablarte de ${aboutEs}.`,
+      `I can't speak to that. Try asking me about ${about}.`,
+      `De eso no puedo hablar. Prueba preguntarme sobre ${aboutEs}.`,
     ),
     topics: c.topics.map((t) => ({
       id: t.id,
@@ -206,8 +206,8 @@ export function generateMission({ extract, plan, settings = {}, id, source = {} 
           explanation: "ex-source",
           sets: { reading: "source" },
           reply: P(
-            "Noted. Now make sure your evidence supports it.",
-            "Anotado. Ahora asegúrate de que tu evidencia lo apoya.",
+            "Choice saved. Now test it: in your notebook, which evidence points toward it, and which points away?",
+            "Elección guardada. Ahora ponla a prueba: en tu cuaderno, ¿qué evidencia apunta hacia ella y cuál se aleja?",
           ),
         },
         {
@@ -216,8 +216,8 @@ export function generateMission({ extract, plan, settings = {}, id, source = {} 
           explanation: "ex-misread",
           sets: { reading: "misread" },
           reply: P(
-            "Noted. Now make sure your evidence supports it.",
-            "Anotado. Ahora asegúrate de que tu evidencia lo apoya.",
+            "Choice saved. Now test it: in your notebook, which evidence points toward it, and which points away?",
+            "Elección guardada. Ahora ponla a prueba: en tu cuaderno, ¿qué evidencia apunta hacia ella y cuál se aleja?",
           ),
         },
       ],

@@ -1,5 +1,5 @@
 // Student newsroom story prompts. 24 for band 3-5, 24 for band 6-8.
-export const NEWS_PROMPTS = [
+const BASE_PROMPTS = [
   // ---------- Band 3-5 ----------
   {
     id: "np-35-01",
@@ -895,6 +895,301 @@ export const NEWS_PROMPTS = [
     pic: "animals",
   },
 ];
+
+
+// Reporter's notes: the facts, numbers and a quote each story packet gives the writer, so the story is built from
+// evidence instead of invented from one sentence. The people are fictional; the notes are written to be used, not copied.
+const NOTES = {
+  "np-35-01": [
+    "Fourth graders in Ms. Ortiz's class planted 12 rows of beans, carrots and sunflowers behind the gym on Tuesday.",
+    "The bed is 8 feet wide. Compost from the cafeteria was mixed into the soil first.",
+    "The class takes turns watering with a can that holds 2 gallons. Sprouts should show in about 10 days.",
+    "Quote: \"I never knew carrots start so small,\" said Dev, a fourth grader who planted the first row.",
+  ],
+  "np-35-02": [
+    "Recycling Week ran Monday to Friday. Students counted 412 bottles and 286 cans.",
+    "Room 14 collected the most: 97 bottles and cans in all.",
+    "A city truck picked up everything Friday and took it to the recycling center on Pine Road.",
+    "Quote: \"We sorted so fast the bins filled by lunch,\" said Lena, who ran the Room 14 sorting table.",
+  ],
+  "np-35-03": [
+    "A blue lunchbox with a dinosaur sticker went missing on Monday morning.",
+    "Mr. Bell, the custodian, found it Thursday inside the band room's drum case.",
+    "The lunchbox belonged to Sam in Room 9. The sandwich was gone, but a note was inside.",
+    "Quote: \"I must have set it down while I carried the snare drum,\" said Sam, laughing.",
+  ],
+  "np-35-04": [
+    "It rained from 7 a.m. until the last bell, about 1.5 inches in all.",
+    "Recess moved to the gym. Classes played charades, board games and a paper-airplane contest.",
+    "The paper airplane that flew farthest went 31 feet. Teacher Mr. Reyes measured it with a tape.",
+    "Quote: \"Indoor recess is loud, but my plane won,\" said Ana, a third grader.",
+  ],
+  "np-35-05": [
+    "Ms. Dana, the bus driver on Route 6, taught the song on Wednesday morning.",
+    "It has four lines. Each one reminds riders to stay seated, keep hands inside, use quiet voices and wait for the stop.",
+    "Twenty-two riders now sing it when the bus turns onto Maple Street.",
+    "Quote: \"A song sticks in your head better than a rule,\" said Ms. Dana.",
+  ],
+  "np-35-06": [
+    "Biscuit is a golden hamster. He is 14 months old and weighs about 5 ounces.",
+    "He sleeps in a cardboard tube during the day and runs on his wheel after lunch.",
+    "Two students are chosen each week to refill his water and clean his cage on Fridays.",
+    "Quote: \"He stuffs seeds in his cheeks until they look like balloons,\" said Marisol, this week's helper.",
+  ],
+  "np-35-07": [
+    "The reading corner opened Monday in the back of the library, in a space of about 10 by 12 feet.",
+    "It has six beanbags, two lamps with soft yellow bulbs and a shelf of 80 new picture books and graphic novels.",
+    "Shoes come off at the rug. Readers may stay for 20 minutes, then the next group comes in.",
+    "Quote: \"It feels like a tent made of books,\" said Omar, the first reader to sit down.",
+  ],
+  "np-35-08": [
+    "Food Day brought 31 dishes from 14 countries, including pupusas, jollof rice and mango sticky rice.",
+    "The tables were set up in the cafeteria on Friday from 11 a.m. to 1 p.m.",
+    "Each dish had a card with its name, its country and one ingredient students could look for.",
+    "Quote: \"My grandmother made this recipe in Ghana,\" said Kofi, pointing to the jollof rice.",
+  ],
+  "np-35-09": [
+    "The choir has 38 singers. They learned \"De Colores\" in English and Spanish over six weeks.",
+    "Rehearsals were Tuesdays and Thursdays at lunch. Singers practiced the Spanish words slowly, one line at a time.",
+    "They performed for families on Thursday evening and sang the last verse in both languages at once.",
+    "Quote: \"The R sound was hard at first. Now I can roll it,\" said Valeria, an alto.",
+  ],
+  "np-35-10": [
+    "Right now, art class meets once a week for 45 minutes.",
+    "Studies in some schools report that students who make art often feel calmer and more confident.",
+    "Art class has taught the grade about shapes, colors and patterns, which connect to math lessons.",
+    "Counterpoint to answer: some students say there is not enough time for reading and math.",
+  ],
+  "np-35-11": [
+    "Recess is now 20 minutes long. Lunch is 25 minutes.",
+    "Students who play outside say they come back to class ready to listen.",
+    "A longer recess would mean a shorter class, so the school must choose what to trade.",
+    "Quote: \"Twenty minutes goes by before we finish the first game,\" said Jun, a fifth grader.",
+  ],
+  "np-35-12": [
+    "The school has 24 laptops shared by 9 classes. Each class gets 30 minutes twice a week.",
+    "Students use computers for typing practice, reading apps and research for reports.",
+    "Too much screen time can tire eyes, so breaks are important.",
+    "Counterpoint to answer: some students say they get distracted by games.",
+  ],
+  "np-35-13": [
+    "Skill 1: stand straight and hold the handles at hip height. The rope should rest behind your heels.",
+    "Skill 2: swing the rope over your head, then hop a little as it passes your feet.",
+    "Tip: pick a rope that reaches your armpits when you stand on its middle.",
+    "Common mistake: jumping too high. Small hops save energy and keep the rhythm.",
+  ],
+  "np-35-14": [
+    "Materials: one bean seed, a clear cup, a paper towel, a little water and a sunny windowsill.",
+    "Step 1: fold the paper towel and slide it inside the cup. Step 2: wet it, then tuck the bean between the towel and the cup.",
+    "Day 3 to 5: a root appears. Day 7 to 10: a green shoot turns toward the light.",
+    "Safety note: keep the cup away from the edge of the window and wash your hands after touching soil.",
+  ],
+  "np-35-15": [
+    "Materials: a small cup, 2 tablespoons of baking soda, 1/4 cup of vinegar, a drop of dish soap and red food coloring.",
+    "Build a cone of clay or paper around the cup so it looks like a mountain.",
+    "Pour in the baking soda and soap first. Add the vinegar last and step back.",
+    "Safety note: do the experiment on a tray, and do not put your face above the cup. The foam is harmless but messy.",
+  ],
+  "np-35-16": [
+    "Mr. Jackson has been the crossing guard at Oak and 3rd Street for nine years.",
+    "He starts at 7:15 a.m. and helps about 150 students cross before the bell.",
+    "He carries a stop sign, a whistle and a bright orange vest, even in the rain.",
+    "Quote: \"I always wait until the cars stop all the way,\" said Mr. Jackson.",
+  ],
+  "np-35-17": [
+    "Ms. Dana drives Route 6 and picks up 42 students at 11 stops.",
+    "Her first stop is at 6:50 a.m. She checks every seat for left-behind backpacks at the end of the route.",
+    "The hardest part of her job is snow. She says she drives slower and leaves 10 minutes early.",
+    "Quote: \"The best part is when a kid says good morning,\" said Ms. Dana.",
+  ],
+  "np-35-18": [
+    "Mr. Bell works from 6 a.m. to 2 p.m. He cleans 24 classrooms and fixes broken chairs.",
+    "He keeps a ring of 63 keys, and he knows which one opens each door.",
+    "Last winter he refilled the ice melt on the front steps three times in one week.",
+    "Quote: \"A clean school helps students feel ready,\" said Mr. Bell.",
+  ],
+  "np-35-19": [
+    "Field Day had six events: the 50-yard dash, sack race, relay, tug-of-war, egg toss and obstacle course.",
+    "The fourth graders won the tug-of-war after pulling for 40 seconds.",
+    "Ruby from Room 12 won the 50-yard dash with a time of 9.2 seconds.",
+    "Quote: \"My legs were tired, but the cheering helped,\" said Ruby.",
+  ],
+  "np-35-20": [
+    "Twenty-six third graders visited the city pool on Wednesday for their first swim lesson.",
+    "Instructor Ms. Kim taught floating, kicking and blowing bubbles in the shallow end.",
+    "By the end of the hour, 18 students could float on their backs for 10 seconds.",
+    "Quote: \"The water felt cold, then it felt like a hug,\" said Theo.",
+  ],
+  "np-35-21": [
+    "The Wildcats beat the Lakeview Lions 3 to 2 on Saturday at Riverside Field.",
+    "Mia scored in the first minute. The Lions tied it before halftime. Noah scored the winner with 4 minutes left.",
+    "It was the team's first win after three losses. About 60 families watched.",
+    "Quote: \"We kept passing even when we were tired,\" said Coach Torres.",
+  ],
+  "np-35-22": [
+    "Pick a book you finished. Write the title and the author so a reader can find it.",
+    "Say what the story is about in two sentences without giving away the ending.",
+    "Give one reason a reader would love it, using a detail you remember, like a character, a scene or a funny line.",
+    "Give a rating from 1 to 5 stars and say who should read it.",
+  ],
+  "np-35-23": [
+    "The trip was Thursday. Two buses took 54 students to the Riverbend Space Museum.",
+    "Highlights: a real moon rock behind glass, a rocket model 20 feet tall and a planetarium show about Mars.",
+    "Lunch was in the museum cafe. The visit lasted three hours.",
+    "One drawback: the planetarium was dark and some students got sleepy.",
+  ],
+  "np-35-24": [
+    "The visitor, Ms. Green, brought a bearded dragon, a rabbit, a hedgehog and two guinea pigs.",
+    "She explained what each animal eats and how to hold it gently. Students washed their hands afterward.",
+    "The program lasted 45 minutes and every student got to pet at least one animal.",
+    "One drawback: the room was crowded, and students in the back could not see the hedgehog.",
+  ],
+  "np-68-01": [
+    "Team Clear Stream (Imani, Luis and Wen) built a filter from a plastic bottle, sand, gravel and activated charcoal.",
+    "Murky pond water entered the filter at 480 NTU (a measure of cloudiness) and left at 35 NTU after two passes.",
+    "The filter does not remove germs. The team said it would need boiling to be safe to drink.",
+    "Quote: \"We tested seven layers before we found the order that worked,\" said Imani, the team's captain.",
+  ],
+  "np-68-02": [
+    "The Willow Path opened Saturday at 9 a.m. It is 1.4 miles long and links Elm Street to the school's east gate.",
+    "The city paid for it with a $210,000 grant. Students voted on the name last spring.",
+    "Before, students who biked had to ride on Route 9, where cars drive up to 45 miles per hour.",
+    "Quote: \"Now my little brother can ride with me,\" said Camila, an eighth grader.",
+  ],
+  "np-68-03": [
+    "Cafeteria compost bins started in September. Students sort food scraps into three labeled bins.",
+    "In the first month the school sent 38 percent less trash to the landfill. By January the drop was 52 percent.",
+    "The scraps go to a farm 8 miles away that returns finished soil each spring.",
+    "Quote: \"The hardest part was convincing people that a banana peel counts,\" said Ms. Alvarez, the sustainability adviser.",
+  ],
+  "np-68-04": [
+    "Almost 4 inches of rain fell between 9 p.m. Sunday and 6 a.m. Monday, according to the weather service.",
+    "The soccer field flooded to a depth of about 8 inches. Buses ran 25 minutes late.",
+    "Assemblies moved to the gym, and outdoor PE became a stretching and trivia day inside.",
+    "Quote: \"We had to plan for 600 students with no outdoor space,\" said Principal Hassan.",
+  ],
+  "np-68-05": [
+    "The Circuit Breakers, a team of eight, scored 312 points in the practice round. The task limit was 340.",
+    "Their robot picked up game pieces, drove the field and stacked them in under two minutes.",
+    "The regional contest is on March 14 at Central High. Teams from 26 schools will compete.",
+    "Quote: \"It failed 40 times before it worked, and that taught us to test,\" said Priya, the team's programmer.",
+  ],
+  "np-68-06": [
+    "Announcements are read in English and Spanish by two students each morning at 8:05.",
+    "The idea came from Mateo and Hana, who noticed that some families could not follow the announcements.",
+    "They practice every Friday and recorded a pronunciation guide for new readers.",
+    "Quote: \"My mom listens at home now,\" said Mateo. \"She understands the whole thing.\"",
+  ],
+  "np-68-07": [
+    "The library closed for five days over winter break and reopened Monday.",
+    "New features: 4 quiet pods with sound-dampening walls, a maker space with a 3D printer and sewing kit and 6 movable shelves.",
+    "The library holds 11,200 books, and 300 new titles were added, many suggested by students in a survey.",
+    "Quote: \"I printed a bracelet in 12 minutes,\" said Chloe, an eighth grader.",
+  ],
+  "np-68-08": [
+    "The Fifth Street Garden sits on a 40-by-60-foot lot next to the school. Neighbors have 14 plots; students share 6.",
+    "Last season it grew 210 pounds of tomatoes, beans and squash, which were donated to the food pantry.",
+    "Mr. Osei, a neighbor, taught students to save seeds and compost leaves.",
+    "Quote: \"Plants don't care how old you are,\" said Mr. Osei, smiling.",
+  ],
+  "np-68-09": [
+    "The mural is 24 feet long and covers the east hallway. Twenty-three art students worked on it for six weeks.",
+    "It shows the school's three neighborhoods, a river and 15 faces drawn from student photos.",
+    "Students used outdoor acrylic paint so the colors will not fade. They sealed it with a clear coat.",
+    "Quote: \"I wanted everyone to find a piece of themselves,\" said Ms. Pham, the art teacher.",
+  ],
+  "np-68-10": [
+    "Sleep researchers recommend 8 to 10 hours a night for teens. Many students at this school wake at 6 a.m.",
+    "A district that moved its start time from 7:30 to 8:30 reported that students' attendance improved.",
+    "A later start can push after-school sports and activities later and change bus schedules.",
+    "Counterpoint to answer: some working parents leave before 8 a.m. and rely on early drop-off.",
+  ],
+  "np-68-11": [
+    "In a school survey of 210 students, 64 percent said they spend more than an hour on homework most nights.",
+    "Some research finds that a little practice helps, but long assignments give smaller benefits.",
+    "Teachers say homework gives them a way to see who understands the day's lesson.",
+    "Counterpoint to answer: students with sports, jobs or family duties have less time at home.",
+  ],
+  "np-68-12": [
+    "A textbook in science weighs about 3 pounds and costs the district roughly $85, according to the school office.",
+    "A tablet costs about $250 and can hold every textbook, but it needs charging and can break.",
+    "Studies suggest that people sometimes remember more from print, but tablets add video and quizzes.",
+    "Counterpoint to answer: not every student has Wi-Fi at home to use a tablet for homework.",
+  ],
+  "np-68-13": [
+    "Materials: 6 sheets of copy paper, tape, a ruler and a stack of coins as weights.",
+    "The bridge must span 8 inches between two books. Folding a sheet into accordion pleats makes it much stronger than a flat sheet.",
+    "Test results: a flat sheet held 2 coins. Pleated, one sheet held 31 coins. Three pleated layers held 86 coins.",
+    "Design rule: put the weight in the center, then add supports at the ends where the paper bends.",
+  ],
+  "np-68-14": [
+    "Plan the date and room first. A cafeteria holds about 120 guests, so invite families by grade.",
+    "Ask each family to bring a dish and a small card with the dish's name, origin and any allergy information.",
+    "Tell guests about common allergens such as nuts and milk. Place a clear label next to each dish.",
+    "Plan the cleanup: borrow 6 trash cans, set up 3 recycling bins and assign two student volunteers to each station.",
+  ],
+  "np-68-15": [
+    "A good warm-up lasts 8 to 10 minutes and raises the heart rate slowly.",
+    "Sequence: 2 minutes of easy jogging, then leg swings, walking lunges and high knees for 30 seconds each.",
+    "Static stretching, like holding a stretch for 30 seconds, works better after the race than before.",
+    "Coach Rivera's rule: warm up the same way before every race so it becomes a habit.",
+  ],
+  "np-68-16": [
+    "Ms. Carter plans lunches for 640 students. Her team begins cooking at 6:30 a.m.",
+    "She must follow federal rules about fruit, vegetables and whole grains, and stay within a budget of about $3 per meal.",
+    "The most popular lunch is chicken tacos. The least popular is lentil soup.",
+    "Quote: \"I taste everything before it goes on the line,\" said Ms. Carter.",
+  ],
+  "np-68-17": [
+    "Mrs. Boyd has worked at the corner of Oak and 3rd for 12 years. About 700 students cross the street each morning.",
+    "The busiest time is 7:40 to 7:55 a.m., when cars, buses and walkers all arrive.",
+    "She has noticed that students who look at their phones are the slowest to cross.",
+    "Quote: \"Look up, look both ways, then go,\" said Mrs. Boyd.",
+  ],
+  "np-68-18": [
+    "Dr. Nia Okafor studies coral reefs. She spends about 80 days a year diving to measure coral growth.",
+    "A healthy reef can hold up to 25 percent of ocean species even though it covers less than 1 percent of the sea floor.",
+    "Warmer water causes coral bleaching. Dr. Okafor's team tests reefs for heat-resistant coral that could be replanted.",
+    "Quote: \"A reef is like a city. When one part fails, the others notice,\" said Dr. Okafor.",
+  ],
+  "np-68-19": [
+    "The Eagles beat the Hawks 54 to 51 on Friday night. They trailed 41 to 30 at the start of the fourth quarter.",
+    "Jaylen scored 14 of his 22 points in the last six minutes, including a three-pointer with 18 seconds left.",
+    "The gym held about 300 fans. It was the Eagles' fifth win in a row.",
+    "Quote: \"We said, one stop at a time,\" said Coach Wilson.",
+  ],
+  "np-68-20": [
+    "At the spring track meet, 142 runners and jumpers competed in 12 events.",
+    "Sofia set a new school record in the 800 meters: 2 minutes, 24.6 seconds. The old record stood since 2016.",
+    "Dante jumped 17 feet, 2 inches in the long jump, another school record.",
+    "Quote: \"I looked at the clock and kept going,\" said Sofia.",
+  ],
+  "np-68-21": [
+    "The cross-country meet was held Saturday despite steady rain and temperatures near 48 degrees.",
+    "The 2-mile course had three puddles deeper than 6 inches. Eighty-four runners from 9 schools finished.",
+    "Eli won the boys' race in 12 minutes, 51 seconds. Maya won the girls' race in 13 minutes, 40 seconds.",
+    "Quote: \"My shoes were heavy, so I just focused on my breathing,\" said Maya.",
+  ],
+  "np-68-22": [
+    "The concert was Thursday at 7 p.m. in the auditorium. About 220 people attended.",
+    "The program included a string quartet, a drum line of 10 players and a 40-voice chorus.",
+    "The strongest moment was the drum line's rhythm in the third song. A weak spot: the sound system made the quartet hard to hear.",
+    "Use specifics: name a song or a section, say what you heard, and give your reason.",
+  ],
+  "np-68-23": [
+    "Choose a novel you finished. Include the title, author and year, if you know it.",
+    "Summarize the plot in three sentences. Do not give away the ending.",
+    "Judge the characters: pick one and explain what makes that character believable or not, using a scene.",
+    "Judge the writing: quote a short line you liked or disliked, and say whether the pace was fast or slow.",
+  ],
+  "np-68-24": [
+    "The talk was Wednesday in the gym. Rescue worker Mr. Cruz showed 40 photos of owls, foxes and sea turtles.",
+    "Mr. Cruz explained that the most common cause of injury is cars, and gave tips for what to do if you find an injured animal: call a rescue, do not feed it.",
+    "The talk lasted 35 minutes, and students asked 11 questions.",
+    "Evaluate: which photos taught you the most? Was anything confusing, hard to see or too long?",
+  ],
+};
+export const NEWS_PROMPTS = BASE_PROMPTS.map((p) => ({ ...p, notes: NOTES[p.id] }));
 
 // ── Pictures: a built-in set of 16 inline SVG scenes (viewBox 0 0 240 160) a story can use. No files are loaded. ──
 export const PICS = {

@@ -17,11 +17,11 @@
 
     <style>
       :root {
-        --primary: #059669; /* Emerald Green for Navigation */
+        --primary: #047857; /* Emerald Green for Navigation */
         --primary-dark: #047857;
         --primary-light: #ecfdf5;
         --teal: #0d9488;
-        --amber: #d97706;
+        --amber: #b45309;
         --amber-light: #fef3c7;
         --navy-deep: #064e3b;
         --navy: #0f172a;
@@ -136,7 +136,7 @@
 
       /* ── Hero Banner ── */
       .hero-card {
-        background: linear-gradient(135deg, #064e3b 0%, #047857 60%, #059669 100%);
+        background: linear-gradient(135deg, #064e3b 0%, #047857 60%, #047857 100%);
         border-radius: var(--radius-card);
         padding: 32px 36px;
         color: #fff;
@@ -266,7 +266,7 @@
         border-radius: 8px;
         border: none;
         background: transparent;
-        color: var(--slate-muted);
+        color: #475569;
         cursor: pointer;
         transition: all 0.2s;
       }
@@ -399,6 +399,21 @@
         color: #991b1b;
       }
 
+
+      .scenario-item { width: 100%; text-align: left; font: inherit; color: inherit; min-height: 44px; }
+      .tier-btn, .speed-btn, .btn { min-height: 44px; }
+      .scenario-item:focus-visible, .tier-btn:focus-visible, .speed-btn:focus-visible, .btn:focus-visible, #mapTitle:focus-visible {
+        outline: 3px solid #0b3b5c; outline-offset: 2px;
+      }
+      .map-node:focus { outline: none; }
+      .map-node:focus-visible rect, .map-node:focus-visible circle { stroke: #0b3b5c; stroke-width: 4px; stroke-dasharray: 6 3; }
+      .map-node.is-start rect, .map-node.is-start circle { stroke-dasharray: 2 3; }
+      .step-list { margin: 8px 0 0 20px; line-height: 1.6; }
+      @media (prefers-reduced-motion: reduce) {
+        .feedback-box { animation: none; }
+        .map-node, .scenario-item, .tier-btn { transition: none; }
+      }
+
       /* ── Transcript Scaffold Toggle ── */
       .transcript-drawer {
         background: var(--bg-canvas);
@@ -462,8 +477,8 @@
             <div class="stat-lbl">Missions Solved</div>
           </div>
           <div class="hero-stat">
-            <div class="stat-val" id="statStreak">0</div>
-            <div class="stat-lbl">Day Streak</div>
+            <div class="stat-val" id="statTier">0 / 4</div>
+            <div class="stat-lbl">This tier</div>
           </div>
         </div>
       </section>
@@ -479,8 +494,8 @@
             </div>
 
             <div class="tier-toggle">
-              <button class="tier-btn" id="btnTierA" onclick="switchTier('A')">Tier A (1.0–2.7)</button>
-              <button class="tier-btn active" id="btnTierB" onclick="switchTier('B')">Tier B (2.7–5.0)</button>
+              <button type="button" class="tier-btn" id="btnTierA" onclick="switchTier('A')" aria-pressed="false">Tier A (1.0–2.7)</button>
+              <button type="button" class="tier-btn active" id="btnTierB" onclick="switchTier('B')" aria-pressed="true">Tier B (2.7–5.0)</button>
             </div>
 
             <p class="card-sub">
@@ -512,18 +527,18 @@
                 ▶️ Play Directions
               </button>
               <div class="speed-btns">
-                <button class="speed-btn" onclick="setSpeed(0.6, this)">🐢 0.6x</button>
-                <button class="speed-btn" onclick="setSpeed(0.8, this)">0.8x</button>
-                <button class="speed-btn active" onclick="setSpeed(1.0, this)">1.0x</button>
+                <button type="button" class="speed-btn" onclick="setSpeed(0.6, this)">🐢 0.6x</button>
+                <button type="button" class="speed-btn" onclick="setSpeed(0.8, this)">0.8x</button>
+                <button type="button" class="speed-btn active" onclick="setSpeed(1.0, this)">1.0x</button>
               </div>
-              <button class="btn btn-secondary" onclick="toggleTranscript()" style="font-size: 0.78rem; padding: 6px 10px;">
+              <button class="btn btn-secondary" onclick="toggleTranscript()" id="btnTranscript" aria-expanded="false" aria-controls="transcriptDrawer" style="font-size: 0.78rem; padding: 6px 10px;">
                 👁️ Text Transcript
               </button>
             </div>
           </div>
 
           <!-- Transcript Drawer (Hidden by default) -->
-          <div class="transcript-drawer" id="transcriptDrawer">
+          <div class="transcript-drawer" id="transcriptDrawer" role="region" aria-label="Audio transcript">
             <strong>Audio Transcript:</strong>
             <p id="transcriptText" style="margin-top: 4px;"></p>
           </div>
@@ -532,9 +547,9 @@
           <div class="card" style="padding: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
               <div>
-                <strong id="mapTitle" style="font-family: var(--font-space); font-size: 1.1rem; color: var(--navy-deep);">School Campus Map</strong>
+                <strong id="mapTitle" tabindex="-1" style="font-family: var(--font-space); font-size: 1.1rem; color: var(--navy-deep);">School Campus Map</strong>
                 <div style="font-size: 0.82rem; color: var(--slate-muted);" id="mapInstructionPrompt">
-                  Click the target building or node described in the audio dispatch.
+                  Listen, then choose the place the directions end at. Use Tab and Enter if you are not using a mouse.
                 </div>
               </div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; background: var(--bg-canvas); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line-muted);">
@@ -551,7 +566,7 @@
             </div>
 
             <!-- Feedback Box -->
-            <div class="feedback-box" id="feedbackBox"></div>
+            <div class="feedback-box" id="feedbackBox" role="status" aria-live="polite"></div>
 
             <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
               <button class="btn btn-primary" id="btnNextMission" onclick="nextMission()" style="display: none;">
@@ -571,17 +586,19 @@
       const MISSIONS = [
         {
           id: "M1",
+          route: ["node_flagpole", "node_library", "node_sciencelab"],
           tier: "B",
           mapType: "campus",
           title: "Campus Flagpole to Science Lab",
-          audioText: "Start at the school flagpole in the central courtyard. Walk two blocks directly east past the library. Turn ninety degrees north, walking parallel to the athletics field until you reach the modern glass building on your immediate left. Identify this facility.",
-          transcript: "Start at the school flagpole in the central courtyard. Walk two blocks directly east past the library. Turn ninety degrees north, walking parallel to the athletics field until you reach the modern glass building on your immediate left. Identify this facility.",
+          audioText: "Start at the school flagpole in the central courtyard. Walk two blocks directly east past the library. Turn ninety degrees north, walking parallel to the athletics field until you reach the modern glass building straight ahead of you. Identify this facility.",
+          transcript: "Start at the school flagpole in the central courtyard. Walk two blocks directly east past the library. Turn ninety degrees north, walking parallel to the athletics field until you reach the modern glass building straight ahead of you. Identify this facility.",
           correctTarget: "node_sciencelab",
-          explanation: "Starting at the Flagpole (center), moving east leads past the Library. Turning 90° north and walking parallel to the field brings you directly to the Science Lab on your left.",
+          explanation: "Starting at the Flagpole (center), moving east leads past the Library. Turning 90° north and walking parallel to the field brings you directly to the Science Lab, straight ahead.",
           startNode: "node_flagpole"
         },
         {
           id: "M2",
+          route: ["node_p_neg4_3", "node_p_4_3", "node_p_4_neg1"],
           tier: "B",
           mapType: "coordinate",
           title: "Coordinate Reflection & Translation",
@@ -593,6 +610,7 @@
         },
         {
           id: "M3",
+          route: ["node_gym", "node_studentcenter"],
           tier: "B",
           mapType: "campus",
           title: "Perpendicular Emergency Route",
@@ -604,6 +622,7 @@
         },
         {
           id: "M4",
+          route: ["node_ranger", "node_river", "node_canopytower"],
           tier: "B",
           mapType: "sanctuary",
           title: "Ecosystem Watershed Survey",
@@ -615,6 +634,7 @@
         },
         {
           id: "M5",
+          route: ["node_entrance", "node_library"],
           tier: "A",
           mapType: "campus",
           title: "Finding the School Library",
@@ -626,6 +646,7 @@
         },
         {
           id: "M6",
+          route: ["node_flagpole", "node_cafeteria"],
           tier: "A",
           mapType: "campus",
           title: "Lunchtime in the Cafeteria",
@@ -637,6 +658,7 @@
         },
         {
           id: "M7",
+          route: ["node_origin", "node_p_3_4"],
           tier: "A",
           mapType: "coordinate",
           title: "Positive Coordinates (3, 4)",
@@ -648,6 +670,7 @@
         },
         {
           id: "M8",
+          route: ["node_ranger", "node_river"],
           tier: "A",
           mapType: "sanctuary",
           title: "The River Rapids",
@@ -659,7 +682,9 @@
         }
       ];
 
+      const MAP_NAMES = { campus: "School campus map", coordinate: "Coordinate grid", sanctuary: "Nature preserve map" };
       let currentTier = "B";
+      let misses = 0;
       let activeMissionIndex = 0;
       let speechRate = 1.0;
       let isAudioPlaying = false;
@@ -669,6 +694,8 @@
         currentTier = tier;
         document.getElementById("btnTierA").classList.toggle("active", tier === "A");
         document.getElementById("btnTierB").classList.toggle("active", tier === "B");
+        document.getElementById("btnTierA").setAttribute("aria-pressed", String(tier === "A"));
+        document.getElementById("btnTierB").setAttribute("aria-pressed", String(tier === "B"));
         document.getElementById("tierBadge").textContent = tier === "A" ? "Tier A (Entering/Emerging)" : "Tier B (Developing/Expanding)";
         renderScenarioList();
         selectMission(0);
@@ -683,13 +710,13 @@
         const listData = getTierMissions();
 
         list.innerHTML = listData.map((m, idx) => `
-          <div class="scenario-item ${idx === activeMissionIndex ? 'active' : ''}" onclick="selectMission(${idx})">
+          <button type="button" class="scenario-item ${idx === activeMissionIndex ? 'active' : ''}" data-mission="${idx}" ${idx === activeMissionIndex ? 'aria-current="true"' : ''}>
             <div class="scenario-name">
               <span>${m.title}</span>
-              ${solvedMissions.has(m.id) ? '<span style="color: var(--primary);">✓</span>' : ''}
+              ${solvedMissions.has(m.id) ? '<span style="color: var(--primary);" aria-hidden="true">✓</span>' : ''}
             </div>
-            <div class="scenario-meta">Map: ${m.mapType.toUpperCase()} · Tier ${m.tier}</div>
-          </div>
+            <div class="scenario-meta">${MAP_NAMES[m.mapType]} · ${solvedMissions.has(m.id) ? "Solved" : "Not solved yet"}</div>
+          </button>
         `).join("");
       }
 
@@ -702,8 +729,10 @@
         document.getElementById("transcriptText").textContent = m.transcript;
         document.getElementById("feedbackBox").style.display = "none";
         document.getElementById("btnNextMission").style.display = "none";
+        misses = 0;
 
         drawMap(m);
+        makeNodesOperable(m);
       }
 
       function setSpeed(rate, el) {
@@ -715,12 +744,17 @@
       function toggleTranscript() {
         const t = document.getElementById("transcriptDrawer");
         t.style.display = t.style.display === "block" ? "none" : "block";
+        document.getElementById("btnTranscript").setAttribute("aria-expanded", String(t.style.display === "block"));
       }
 
       function playCurrentDirection() {
         const m = getTierMissions()[activeMissionIndex];
         if (!m) return;
 
+        if (!("speechSynthesis" in window)) {
+          showFeedback("incorrect", "<strong>Your browser cannot play the audio.</strong> Open the text transcript and read the directions instead.");
+          return;
+        }
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(m.audioText);
         u.rate = speechRate;
@@ -760,7 +794,7 @@
             <!-- Compass Rose -->
             <g transform="translate(730, 70)">
               <circle r="36" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.1))"/>
-              <path d="M 0 -28 L 8 0 L -8 0 Z" fill="#059669"/>
+              <path d="M 0 -28 L 8 0 L -8 0 Z" fill="#047857"/>
               <path d="M 0 28 L 8 0 L -8 0 Z" fill="#94a3b8"/>
               <path d="M 28 0 L 0 8 L 0 -8 Z" fill="#94a3b8"/>
               <path d="M -28 0 L 0 8 L 0 -8 Z" fill="#94a3b8"/>
@@ -787,7 +821,7 @@
 
             <!-- Science Lab (North of Library) -->
             <g class="map-node" id="node_sciencelab" onclick="clickNode('node_sciencelab')">
-              <rect x="520" y="60" width="120" height="90" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+              <rect x="520" y="60" width="120" height="90" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="2"/>
               <text x="580" y="98" text-anchor="middle" font-size="22">🔬</text>
               <text x="580" y="126" text-anchor="middle" font-family="'Outfit'" font-weight="700" font-size="12" fill="#064e3b">Science Lab</text>
             </g>
@@ -919,7 +953,7 @@
 
             <!-- Canopy Tower (Northeast) -->
             <g class="map-node" id="node_canopytower" onclick="clickNode('node_canopytower')">
-              <rect x="520" y="190" width="110" height="80" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="3"/>
+              <rect x="520" y="190" width="110" height="80" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="3"/>
               <text x="575" y="228" text-anchor="middle" font-size="22">🔭</text>
               <text x="575" y="254" text-anchor="middle" font-family="'Outfit'" font-weight="700" font-size="12" fill="#064e3b">Canopy Tower</text>
             </g>
@@ -927,57 +961,102 @@
         }
       }
 
+      // Each map place becomes a real control: focusable, named, and activated with Enter or Space.
+      function nodeLabel(nodeEl) {
+        const texts = [...nodeEl.querySelectorAll("text")].map((t) => t.textContent.trim()).filter((t) => /[A-Za-z0-9]/.test(t));
+        return texts.join(" ").replace(/\s+/g, " ") || nodeEl.id.replace("node_", "").replace(/_/g, " ");
+      }
+      function makeNodesOperable(mission) {
+        document.querySelectorAll("#mapCanvas .map-node").forEach((g) => {
+          const label = nodeLabel(g);
+          g.setAttribute("role", "button");
+          g.setAttribute("tabindex", "0");
+          g.setAttribute("aria-label", g.id === mission.startNode ? `${label} (starting point)` : label);
+          g.removeAttribute("onclick");
+          g.classList.toggle("is-start", g.id === mission.startNode);
+        });
+      }
+      function placeName(nodeId) {
+        const el = document.getElementById(nodeId);
+        return el ? nodeLabel(el) : nodeId;
+      }
+      function steps(text) {
+        return text.split(/(?<=[.!?])\s+/).filter(Boolean);
+      }
+
+      function showFeedback(kind, html) {
+        const box = document.getElementById("feedbackBox");
+        box.style.display = "block";
+        box.className = `feedback-box ${kind}`;
+        box.innerHTML = html;
+      }
+
       function clickNode(nodeId) {
         const m = getTierMissions()[activeMissionIndex];
-        const isCorrect = nodeId === m.correctTarget;
-        const box = document.getElementById("feedbackBox");
-
-        box.style.display = "block";
-
-        if (isCorrect) {
-          box.className = "feedback-box correct";
-          box.innerHTML = `<strong>🎯 Excellent Navigation!</strong> ${m.explanation}`;
+        if (nodeId === m.correctTarget) {
+          showFeedback("correct", `<strong>Yes: ${placeName(nodeId)}.</strong> ${m.explanation}`);
           document.getElementById("btnNextMission").style.display = "inline-flex";
-
           if (!solvedMissions.has(m.id)) {
             solvedMissions.add(m.id);
             awardXP(30);
             renderScenarioList();
             updateStats();
           }
-        } else {
-          box.className = "feedback-box incorrect";
-          box.innerHTML = `<strong>⚠️ Check Your Coordinates!</strong> That is not the described location. Replay the audio dispatch and check the cardinal directions (North is Up).`;
+          return;
         }
+        misses += 1;
+        const name = placeName(nodeId);
+        const onRoute = m.route.includes(nodeId);
+        const start = placeName(m.startNode);
+        let html = onRoute
+          ? `<strong>${name} is on the route, but it is not the end.</strong> Keep following the directions to the last step.`
+          : `<strong>${name} is not on this route.</strong> Begin at ${start} and follow one sentence at a time.`;
+        if (misses >= 2) {
+          html += `<ol class="step-list">${steps(m.transcript).map((t) => `<li>${t}</li>`).join("")}</ol>`;
+        } else {
+          html += " Play the directions again, or open the transcript, and check each direction word (north, east, left, right).";
+        }
+        if (misses >= 3) html += `<p>The route passes through: <strong>${m.route.map(placeName).join(" → ")}</strong>. Which of these is the last stop?</p>`;
+        showFeedback("incorrect", html);
       }
 
       function nextMission() {
         const list = getTierMissions();
         if (activeMissionIndex < list.length - 1) {
           selectMission(activeMissionIndex + 1);
+          document.getElementById("mapTitle").focus();
         } else {
-          alert("🎉 Congratulations! You have completed all spatial navigation missions for this tier!");
+          showFeedback("correct", `<strong>You finished every mission in this tier.</strong> Switch tiers for new directions, or choose any mission to listen again with the transcript closed.`);
+          document.getElementById("btnNextMission").style.display = "none";
         }
       }
+
+      document.addEventListener("click", (e) => {
+        const node = e.target.closest("#mapCanvas .map-node");
+        if (node) return clickNode(node.id);
+        const item = e.target.closest("[data-mission]");
+        if (item) selectMission(Number(item.dataset.mission));
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        const node = e.target.closest && e.target.closest("#mapCanvas .map-node");
+        if (!node) return;
+        e.preventDefault();
+        clickNode(node.id);
+      });
 
       function awardXP(pts) {
         let xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
         xp += pts;
         localStorage.setItem("widaXP", xp);
 
-        let streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
-        if (streak === 0) {
-          streak = 1;
-          localStorage.setItem("widaStreak", streak);
-        }
         updateStats();
       }
 
       function updateStats() {
         const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
-        const streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
         document.getElementById("statSparkXP").textContent = xp.toLocaleString();
-        document.getElementById("statStreak").textContent = streak;
+        document.getElementById("statTier").textContent = `${getTierMissions().filter((m) => solvedMissions.has(m.id)).length} / ${getTierMissions().length}`;
         document.getElementById("statSolved").textContent = `${solvedMissions.size} / ${MISSIONS.length}`;
       }
 

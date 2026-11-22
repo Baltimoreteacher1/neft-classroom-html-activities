@@ -64,7 +64,14 @@ export function listenPlayerHTML(
         <strong>${L.T("Read-aloud is not available in this browser.", "La lectura en voz alta no está disponible en este navegador.")}</strong>
         ${L.T("Ask your teacher to read the listening part to you.", "Pide a tu docente que te lea la parte de escuchar.")}
       </p>
-    </div>`;
+    </div>${
+      test || Number.isFinite(maxPlays)
+        ? ""
+        : html`<details class="transcript" open>
+            <summary>${icon("list")} ${L.T("Read the words instead (this is reading, not listening)", "Lee las palabras (esto es leer, no escuchar)")}</summary>
+            <div class="transcript-body">${asList(segments).map((l) => html`<p>${l}</p>`)}</div>
+          </details>`
+    }`;
   if (limited) {
     const left = Math.max(0, maxPlays - n);
     return html`<div class="listen-player is-limited" data-player="${key}">

@@ -1,0 +1,174 @@
+{
+ "area": "adventures",
+ "branch": "lp-overhaul/adventures",
+ "headCommit": "7cdf55f521",
+ "inventory": [
+  {
+   "id": "wida-access:word-builder",
+   "url": "/wida-access/word-builder/",
+   "program": "WIDA ACCESS prep studios (static sibling site, not official WIDA)",
+   "type": "word-parts activity",
+   "gradeBand": "3-8",
+   "wida": "practice, not official",
+   "objective": "",
+   "contentSource": "wida-access/word-builder/index.html",
+   "template": "single-file HTML page",
+   "feedback": "see action",
+   "a11y": "see action",
+   "mobile": "checked at 390/1280 by the adventures agent (before/after screenshots)",
+   "designIssues": [
+    "rebuilt page; earlier version had unverified word parts"
+   ],
+   "contentIssues": [
+    "word-part data was not checked against meanings"
+   ],
+   "action": "Rebuilt with verified word parts, teaching feedback, retry, saved daily quest. Meaning step still open (see unresolved).",
+   "priority": "P1",
+   "status": "upgraded",
+   "verification": "node --test tools/wida-word-builder.test.mjs; tools/language-sibling-sites.test.mjs (word builder test and axe)"
+  },
+  {
+   "id": "wida-access:directions-trainer",
+   "url": "/wida-access/directions-trainer/",
+   "program": "WIDA ACCESS prep studios (static sibling site, not official WIDA)",
+   "type": "map directions trainer",
+   "gradeBand": "3-8",
+   "wida": "practice, not official",
+   "objective": "",
+   "contentSource": "wida-access/directions-trainer/index.html",
+   "template": "single-file HTML page",
+   "feedback": "see action",
+   "a11y": "see action",
+   "mobile": "checked at 390/1280 by the adventures agent (before/after screenshots)",
+   "designIssues": [
+    "map places were not keyboard operable",
+    "finishing a tier used an alert()"
+   ],
+   "contentIssues": [
+    "wrong answers did not teach"
+   ],
+   "action": "Map places are keyboard buttons, wrong answers explain, tier completion announced in-page instead of alert().",
+   "priority": "P1",
+   "status": "upgraded",
+   "verification": "tools/language-sibling-sites.test.mjs"
+  },
+  {
+   "id": "wida-access:reward-shop",
+   "url": "/wida-access/reward-shop/",
+   "program": "WIDA ACCESS prep studios (static sibling site, not official WIDA)",
+   "type": "reward shop",
+   "gradeBand": "3-8",
+   "wida": "practice, not official",
+   "objective": "",
+   "contentSource": "wida-access/reward-shop/index.html",
+   "template": "single-file HTML page",
+   "feedback": "see action",
+   "a11y": "see action",
+   "mobile": "checked at 390/1280 by the adventures agent (before/after screenshots)",
+   "designIssues": [
+    "locked theme used a dialog"
+   ],
+   "contentIssues": [],
+   "action": "Locked theme explains how much XP is needed inline, no dialog.",
+   "priority": "P1",
+   "status": "upgraded",
+   "verification": "tools/language-sibling-sites.test.mjs"
+  },
+  {
+   "id": "wida-access:skill-pages",
+   "url": "/wida-access/{listening,reading,speaking,writing}/",
+   "program": "WIDA ACCESS prep studios (static sibling site, not official WIDA)",
+   "type": "skill practice pages",
+   "gradeBand": "3-8",
+   "wida": "practice, not official",
+   "objective": "",
+   "contentSource": "wida-access/{listening,reading,speaking,writing}/index.html",
+   "template": "single-file HTML page",
+   "feedback": "see action",
+   "a11y": "see action",
+   "mobile": "checked at 390/1280 by the adventures agent (before/after screenshots)",
+   "designIssues": [
+    "contrast and ARIA defects"
+   ],
+   "contentIssues": [],
+   "action": "Contrast and ARIA fixes.",
+   "priority": "P1",
+   "status": "upgraded",
+   "verification": "axe (wcag2a, wcag2aa, wcag22aa) at 1280 in tools/language-sibling-sites.test.mjs"
+  },
+  {
+   "id": "esol-reading-writing:studios",
+   "url": "/esol-reading-writing/{esolreading,flushbooksummary,twr-math-writing-studio,math-writing}/",
+   "program": "WIDA ACCESS prep studios (static sibling site, not official WIDA)",
+   "type": "reading/writing studios",
+   "gradeBand": "3-8",
+   "wida": "practice, not official",
+   "objective": "",
+   "contentSource": "esol-reading-writing/{esolreading,flushbooksummary,twr-math-writing-studio,math-writing}/index.html",
+   "template": "single-file HTML page",
+   "feedback": "see action",
+   "a11y": "see action",
+   "mobile": "checked at 390/1280 by the adventures agent (before/after screenshots)",
+   "designIssues": [
+    "submit and save gave no inline feedback",
+    "alert() calls"
+   ],
+   "contentIssues": [],
+   "action": "Submit and save give inline status; alert() calls removed (9 removed in the branch diff, 0 added); contrast/ARIA fixes.",
+   "priority": "P1",
+   "status": "upgraded",
+   "verification": "tools/language-sibling-sites.test.mjs"
+  }
+ ],
+ "scoresBefore": {},
+ "scoresAfter": {},
+ "problemsFound": [
+  "Sibling static sites used alert() for feedback (9 removed in the diff against origin/main, none added)",
+  "Directions Trainer map places were not keyboard buttons",
+  "Word Builder word parts were not verified",
+  "Contrast and ARIA defects on wida-access and esol-reading-writing pages"
+ ],
+ "improvements": [
+  "Word Builder (wida-access) rebuilt with verified word parts, teaching feedback, retry and saved daily quest",
+  "Directions Trainer: keyboard map, teaching feedback, in-page tier announcement",
+  "Reward shop locked-theme explanation without a dialog",
+  "Inline submit/save feedback in math-writing studio and book summary",
+  "Contrast and ARIA fixes across wida-access and esol-reading-writing",
+  "Added tools/wida-word-builder.test.mjs and tools/language-sibling-sites.test.mjs (axe over 9 studio pages)"
+ ],
+ "templatesRedesigned": [
+  "wida-access/word-builder"
+ ],
+ "contentRecordsRewritten": 0,
+ "criticalFixed": 0,
+ "unresolved": [
+  "Word Builder meaning step not fixed",
+  "language-adventures/ and language-studio/ are compiled Next.js exports from the separate the-language-page repo and were NOT changed; one arcade label there has a 4.43:1 contrast ratio; the fix belongs in that repo, then a re-sync",
+  "wida-access page meta descriptions say 'Publisher-grade WIDA ACCESS ... prep'; needs review against the never-claim-official rule",
+  "No human editorial review of rewritten content",
+  "Fragment written by the integration agent from the commit and test evidence; the adventures agent never wrote one, so no per-item scores are reported"
+ ],
+ "sharedEdits": [],
+ "tests": [
+  {
+   "cmd": "node --test tools/wida-word-builder.test.mjs tools/language-sibling-sites.test.mjs",
+   "result": "pass on the merged branch (one earlier run under load reported color-contrast x1; 4 reruns of the axe test passed)"
+  }
+ ],
+ "filesChanged": [
+  "wida-access/word-builder/index.html",
+  "wida-access/directions-trainer/index.html",
+  "wida-access/reward-shop/index.html",
+  "wida-access/listening/index.html",
+  "wida-access/reading/index.html",
+  "wida-access/speaking/index.html",
+  "wida-access/writing/index.html",
+  "esol-reading-writing/esolreading/index.html",
+  "esol-reading-writing/flushbooksummary/index.html",
+  "esol-reading-writing/math-writing/index.html",
+  "esol-reading-writing/twr-math-writing-studio/index.html",
+  "tools/wida-word-builder.test.mjs",
+  "tools/language-sibling-sites.test.mjs"
+ ],
+ "screenshots": []
+}

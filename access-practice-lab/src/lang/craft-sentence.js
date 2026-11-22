@@ -207,6 +207,112 @@ const ROLE_NAME = {
   P: bi("punctuation", "puntuación"),
 };
 
+const norm = (text) => String(text).toLowerCase().replace(/\s+/g, " ").trim();
+const END_MARK = /^[.?!]$/;
+const permutations = (list) =>
+  list.length <= 1
+    ? [list]
+    : list.flatMap((x, i) =>
+        permutations([...list.slice(0, i), ...list.slice(i + 1)]).map((rest) => [x, ...rest]),
+      );
+/** A detail group that can move inside its clause: one that starts with a preposition or an adverb ("to school", "quickly"). */
+const PREP =
+  /^(in|on|at|to|from|with|without|after|before|during|under|over|near|behind|beside|across|through|around|inside|outside|into|onto|by|for|of)$/i;
+const first = (tile) => tile.text.split(" ")[0];
+const isAdverb = (tile) => tile.pos === "r" || (!tile.text.includes(" ") && /ly$/i.test(tile.text));
+const movable = (tile) =>
+  tile.role === "M" && (tile.pos === "p" || PREP.test(first(tile)) || isAdverb(tile));
+function groupTiles(parsed) {
+  const out = [];
+  let lastKey = null;
+  for (const t of parsed.tokens) {
+    if (t.role === "C" || t.role === "P") {
+      out.push({ text: t.text, role: t.role, pos: t.pos });
+      lastKey = null;
+      continue;
+    }
+    const key = `${t.clause}:${t.group}:${t.role}`;
+    if (key === lastKey) out[out.length - 1].text += ` ${t.text}`;
+    else out.push({ text: t.text, role: t.role, pos: t.pos });
+    lastKey = key;
+  }
+  return out;
+}
+/** Orders of one clause body: the trailing run of movable details may come in any order, and a lone adverb may precede the verb. */
+function bodyVariants(body) {
+  let end = body.length;
+  while (end > 0 && movable(body[end - 1])) end--;
+  const run = body.slice(end);
+  const head = body.slice(0, end);
+  if (run.length < 1 || run.length > 3) return [body];
+  const out = permutations(run).map((p) => [...head, ...p]);
+  const vi = head.findIndex((t) => t.role === "V");
+  if (vi > 0)
+    for (const adv of run.filter((t) => isAdverb(t) && !/\s/.test(t.text))) {
+      const rest = run.filter((t) => t !== adv);
+      out.push([...head.slice(0, vi), adv, ...head.slice(vi), ...rest]);
+    }
+  return out;
+}
+/** Splits a sentence into clauses around one joiner. Returns null for shapes this does not model. */
+function splitClauses(tiles) {
+  const core = tiles.filter((t, i) => !(i === tiles.length - 1 && END_MARK.test(t.text)));
+  const end = tiles.length > core.length ? [tiles.at(-1)] : [];
+  const isJoin = (t) => t.role === "C";
+  const joins = core.map((t, i) => (isJoin(t) ? i : -1)).filter((i) => i >= 0);
+  return joins.length > 1 ? null : { core, end, joins };
+}
+/**
+ * Equivalent orders of the same sentence: movable details in any order, "A and B" as "B and A" (and/or only),
+ * and "Although A, B" as "B although A". Returns a list of plain sentences (compared ignoring case).
+ */
+export function equivalentSentences(parsed) {
+  const tiles = groupTiles(parsed);
+  const split = splitClauses(tiles);
+  if (!split) return [];
+  const { core, end, joins } = split;
+  const mk = (list) => joinText(list.map((t) => t.text));
+  const texts = new Set();
+  const bodyOf = (list) => list.filter((t) => t.role !== "P");
+  const withComma = (a, conn, b) => [...a, { text: ",", role: "P" }, conn, ...b];
+  if (!joins.length) {
+    for (const b of bodyVariants(core)) texts.add(mk([...b, ...end]));
+    texts.delete(parsed.text);
+    return [...texts];
+  }
+  const at = joins[0];
+  const conn = core[at];
+  const left = core.slice(0, at);
+  const right = core.slice(at + 1);
+  if (conn.pos === "c" && /^(and|or)$/i.test(conn.text)) {
+    const [a, b] = [bodyOf(left), bodyOf(right)];
+    const hadComma = left.at(-1)?.text === ",";
+    for (const x of bodyVariants(a))
+      for (const y of bodyVariants(b)) {
+        const wire = (p, q) => (hadComma ? withComma(p, conn, q) : [...p, conn, ...q]);
+        texts.add(mk([...wire(x, y), ...end]));
+        texts.add(mk([...wire(y, x), ...end]));
+      }
+  } else if (conn.pos === "sc") {
+    // "Although A, B." (connector first) or "B although A." (connector in the middle).
+    const front = at === 0;
+    const sub = front ? bodyOf(right.slice(0, right.findIndex((t) => t.text === ","))) : bodyOf(right);
+    const comma = right.findIndex((t) => t.text === ",");
+    const main = front ? (comma >= 0 ? right.slice(comma + 1) : []) : bodyOf(left);
+    if (front && comma < 0) return [];
+    for (const m of bodyVariants(main))
+      for (const d of bodyVariants(sub)) {
+        texts.add(mk([conn, ...d, { text: ",", role: "P" }, ...m, ...end]));
+        texts.add(mk([...m, conn, ...d, ...end]));
+      }
+  } else {
+    for (const a of bodyVariants(bodyOf(left)))
+      texts.add(mk([...a, ...(left.at(-1)?.text === "," ? [{ text: ",", role: "P" }] : []), conn, ...right, ...end]));
+  }
+  texts.delete(parsed.text);
+  return [...texts];
+}
+
 /**
  * Checks tiles placed in order against a task. `placed` is a list of tile texts.
  * Returns { ok, text, hint } where hint names the kind of part that belongs at the first wrong place,
@@ -216,6 +322,10 @@ export function checkBuild(parsed, tiles, alt, placed) {
   const want = [parsed.text, ...alt];
   const text = joinText(placed);
   if (want.includes(text)) return { ok: true, text, hint: null };
+  // Equivalent valid constructions (details in another order, clauses swapped) are accepted, ignoring case.
+  const mine = norm(text);
+  if (want.some((w) => norm(w) === mine) || equivalentSentences(parsed).some((w) => norm(w) === mine))
+    return { ok: true, text, hint: null, equivalent: true };
   if (placed.length < tiles.length)
     return {
       ok: false,

@@ -77,6 +77,55 @@ text and for control borders). `--ink-3` is the lightest allowed body-adjacent t
 - Empty state: `.empty-state` with an illustration from `pictures/ds/` (`empty.svg`, `complete.svg`).
 - Headings: one `h1` per screen. Eyebrow text is sentence case (`.eyebrow`), never all-caps.
 
+## Activity kit (shared activity chrome)
+
+One set of pieces for every practice surface (rooms, the ACCESS bank player, studios, game shells, books), so a learner meets
+the same directions, feedback and help everywhere. Code: `src/activity-kit.js` (pure markup builders; Node tests import them).
+Styles: the "activity kit" block at the end of `ds.css` (classes start `ak-`). Test: `tools/access-activity-kit.test.mjs`
+(structure, contrast) and `tools/access-activity-kit-e2e.mjs` (browser: axe, 44px, hint reveal, states). Existing `.feedback`,
+`.directions` and `.task-card` keep working; new work and rewrites use the kit.
+
+**Zones** (`zoneHTML(I, zone, inner)`, `data-zone`): each is told apart by shape and a visible text label, never colour alone.
+
+| Zone           | Look                                                  | Use                                                    |
+| -------------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| `instructions` | room tint, thick start bar                            | directions                                             |
+| `context`      | quiet grey, thin bar, small text                      | background a learner may skim                          |
+| `stimulus`     | white paper, full outline, `--measure-reading` lines  | the passage, audio player, picture, data               |
+| `task`         | bold prompt, no box                                   | the question                                           |
+| `response`     | white, thick outline in the room colour               | where the learner answers                              |
+| `hint`         | amber tint, dashed outline                            | help the learner asked for                             |
+| `feedback`     | status bar + icon + words                             | the result                                             |
+
+**Directions card** (`directionsCardHTML`): "You are learning" / "Your job" / "How" / "You did it when", plus a folded "See an
+example". Rows with no content are dropped. Keep each row to one sentence; put the worked example in `example.body`. The Hear
+button speaks `say` (default: the job).
+
+**Feedback panel** (`feedbackPanelHTML`): `status` is `right | partly | notyet | shown`; `why` is required (the function throws
+without it) because feedback must teach: what was right or what to change and which evidence or language feature decides it.
+Optional `evidence` ("Look at ...") and `next` ("Next step ..."). Retry and next buttons go in `actions`. When a page re-renders,
+speak the result with `announceFeedback(I, status, why)` (the persistent `#labLive`); a live region created together with its
+content is often not read. `live: true` adds `role="status"` for panels inserted on their own.
+
+**Hint ladder** (`hintLadderHTML` + `wireHintLadders(root, I)`): Look, Clue, Show me. One rung per press, focus moves to the
+rung, it is announced, and `ak:hint-used` fires with `{ used, total }` so the host can record that help was used. Pass `used`
+to re-open rungs after a re-render. Never put the answer before the last rung.
+
+**Interaction states**: `ACTIVITY_STATES` = start, active, response, feedback, retry, next, complete. `setActivityState(el, state)`
+sets `data-act-state` and fires `ak:state`. Mark content with `data-ak-in="feedback retry"` and CSS shows it only in those states.
+FEEDBACK has two exits: RETRY (try again, hints still available) and NEXT.
+
+**Progress** (`activityProgressHTML`): "Question 2 of 5" with a bar. Where the learner is in the set; never a score, timer or streak.
+
+**Tokens added (additive)**: type `--fs-small --fs-body --fs-prompt --fs-lead --lh-tight --lh-body`; measure `--measure-reading`
+(62ch, directions and passages); `--target-min` (2.75rem, the 44px floor); `--focus-ring`; `--zone-bar --zone-context
+--zone-stimulus --zone-response`. Do not define a token that reads `--room` at `:root`: it freezes the brand colour for every
+domain (read `var(--room)` inside the rule instead).
+
+**Targets and focus**: every header control keeps a 44px target on touch and tablet widths (`registers.css` floor; fine-pointer
+desktop keeps compact pills, which clear WCAG 2.2 SC 2.5.8). A table that scrolls sideways gets `tabindex="0"` and a name from
+`focusableScrollRegions()` (`src/comfort.js`, runs after every render) so arrow keys scroll it.
+
 ## Icons and illustration
 
 - Emoji are allowed anywhere, interface chrome included (Joel, 2026-11-16). The icon sprite is still available: `icon("name")` from `src/util.js` (sprite `pictures/ui-icons.svg`, 24 px grid, 1.8 stroke,

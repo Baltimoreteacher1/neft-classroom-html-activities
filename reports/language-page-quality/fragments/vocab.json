@@ -1,0 +1,344 @@
+{
+  "area": "vocab",
+  "branch": "lp-overhaul/vocab",
+  "headCommit": "b71b500ce8",
+  "inventory": [
+    {
+      "id": "wordlab-explore",
+      "url": "/access-practice-lab/wordlab/explore",
+      "program": "Word Lab",
+      "type": "word cards",
+      "gradeBand": "3-5, 6-8",
+      "wida": "A/B/C support levels, EN/ES",
+      "objective": "Learn a word's meaning, example, what it is not, collocations, relations",
+      "contentSource": "src/content/wordlab-words.js + wordlab-depth.js",
+      "template": "wordCardHTML + deepHTML",
+      "feedback": "n/a (reference)",
+      "a11y": "native details disclosure; axe clean",
+      "mobile": "390 ok",
+      "designIssues": [],
+      "contentIssues": [
+        "22 examples too short or trivial",
+        "circular/incorrect definitions (compare, matter, multiply, tone)",
+        "bisector/mode/solve keyed wrong for Spanish twin"
+      ],
+      "action": "Added Go deeper panel; rewrote records",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "jsdom test + Playwright 390/1280 + axe"
+    },
+    {
+      "id": "wordlab-garden",
+      "url": "/access-practice-lab/wordlab/garden",
+      "program": "Word Lab",
+      "type": "spaced review",
+      "gradeBand": "3-5, 6-8",
+      "wida": "A/B/C",
+      "objective": "Move a word RECOGNIZE>UNDERSTAND>APPLY>TRANSFER",
+      "contentSource": "lang/wordlab-depth.js",
+      "template": "reviewSection",
+      "feedback": "Task-specific teaching feedback; misses keep word in step; help never advances",
+      "a11y": "labels, live regions, 44px, keyboard verified",
+      "mobile": "390 ok",
+      "designIssues": [],
+      "contentIssues": [
+        "only meaning/Spanish/blank questions",
+        "distractors ignored grade band"
+      ],
+      "action": "Four-step path, collocation/relation/sense tasks, sentence check with honest criteria, transfer to other subjects incl. speaking self-report, optional mixed review that never moves the 1/3/7/14 schedule",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/access-wordlab-depth.test.mjs (11) + Playwright keyboard + reload persistence"
+    },
+    {
+      "id": "wordlab-frayer",
+      "url": "/access-practice-lab/wordlab/frayer",
+      "program": "Word Lab",
+      "type": "Frayer card",
+      "gradeBand": "3-5, 6-8",
+      "wida": "A/B/C",
+      "objective": "Define, characteristics, example, non-example",
+      "contentSource": "wordlab-depth.js",
+      "template": "frayer",
+      "feedback": "completion rule unchanged",
+      "a11y": "unchanged",
+      "mobile": "unchanged",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "Shows authored near non-example to compare after the card is complete",
+      "priority": "P2",
+      "status": "upgraded",
+      "verification": "wordlab tests + studios-b e2e"
+    },
+    {
+      "id": "word-builder",
+      "url": "/access-practice-lab/vocabulary",
+      "program": "Word Builder",
+      "type": "morphology",
+      "gradeBand": "3-5, 6-8",
+      "wida": "EN/ES chrome",
+      "objective": "Build words from parts",
+      "contentSource": "src/content/vocabulary-items.js",
+      "template": "vocabulary.js",
+      "feedback": "unchanged",
+      "a11y": "axe clean 390/1280",
+      "mobile": "390 ok",
+      "designIssues": [
+        "60-second Word Sprint with clock, best score and Time is up screen"
+      ],
+      "contentIssues": [
+        "only 12 and 10 items"
+      ],
+      "action": "Replaced the timed sprint with an untimed six-word Word Round (no best score); 18 items per band",
+      "priority": "P0",
+      "status": "upgraded",
+      "verification": "access-word-sprint tests (5), Playwright no clock, axe"
+    },
+    {
+      "id": "vocab-hub",
+      "url": "/vocab-hub/",
+      "program": "Vocab Hub",
+      "type": "hub with match game, quiz, quest",
+      "gradeBand": "6-8 math",
+      "wida": "EN/ES",
+      "objective": "Math vocabulary practice",
+      "contentSource": "vocab-hub/vocab-bank.json (generated)",
+      "template": "app.js",
+      "feedback": "match game: specific",
+      "a11y": "not fully audited",
+      "mobile": "not re-tested",
+      "designIssues": [
+        "running elapsed-time clock in match game",
+        "bare Nice/Try again feedback"
+      ],
+      "contentIssues": [],
+      "action": "Removed clock; specific match and miss feedback",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "node --check, Playwright load, clock element absent; quiz and quest not changed"
+    },
+    {
+      "id": "esol-vocab-scrambler",
+      "url": "/esol-vocab-scrambler/",
+      "program": "Vocab and Sentence Studio",
+      "type": "matching + sentence builder",
+      "gradeBand": "6-8 math",
+      "wida": "EN/ES hints",
+      "objective": "Match terms, order a sentence",
+      "contentSource": "inline CONFIG",
+      "template": "inline",
+      "feedback": "live-region messages after wrong match and wrong order",
+      "a11y": "keyboard/click alternative to drag-only matching; tiles are buttons; contrast fixed",
+      "mobile": "390 ok",
+      "designIssues": [
+        "drag-only matching",
+        "div tiles not focusable",
+        "alert() at end",
+        "contrast 4.34"
+      ],
+      "contentIssues": [
+        "2 rounds"
+      ],
+      "action": "Select-then-place matching, buttons, status region, 4 rounds",
+      "priority": "P0",
+      "status": "upgraded",
+      "verification": "Playwright keyboard match + axe"
+    },
+    {
+      "id": "inline-glossary",
+      "url": "(in-page)",
+      "program": "glossary",
+      "type": "glossary",
+      "gradeBand": "",
+      "wida": "",
+      "objective": "",
+      "contentSource": "src/glossary.js",
+      "template": "",
+      "feedback": "",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "none",
+      "priority": "P3",
+      "status": "unchanged",
+      "verification": "access-glossary.test.mjs passes"
+    }
+  ],
+  "scoresBefore": {
+    "Word Lab garden": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 2,
+      "E": 2,
+      "F": 3,
+      "G": 2,
+      "H": 3,
+      "I": 4,
+      "J": 4,
+      "K": 3
+    },
+    "Word Builder": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 2,
+      "E": 2,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 4,
+      "K": 3
+    },
+    "Scrambler": {
+      "A": 2,
+      "B": 2,
+      "C": 2,
+      "D": 3,
+      "E": 2,
+      "F": 1,
+      "G": 1,
+      "H": 2,
+      "I": 1,
+      "J": 3,
+      "K": 2
+    }
+  },
+  "scoresAfter": {
+    "Word Lab garden": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "Word Builder": {
+      "A": 3,
+      "B": 3,
+      "C": 4,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "Scrambler": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 4,
+      "G": 3,
+      "H": 3,
+      "I": 4,
+      "J": 3,
+      "K": 3
+    }
+  },
+  "problemsFound": [
+    "Word Sprint was a 60 s clock with best score",
+    "Scrambler matching drag-only; tiles not keyboard operable; alert()",
+    "Hub match game ran a visible clock and gave bare feedback",
+    "Word Lab review was only WORD>DEFINITION>MCQ-style",
+    "No non-examples, collocations, relations or second meanings anywhere",
+    "22 short/trivial examples, several definitions inaccurate or circular (compare, matter, multiply, tone), bisector/mode/solve keyed wrongly",
+    "Review distractors ignored the word's grade band",
+    "Word Builder had 12 and 10 items"
+  ],
+  "improvements": [
+    "Depth data for all 755 words (non-example EN/ES, collocations, synonyms/antonyms, second meaning)",
+    "Four-step path computed from saved results",
+    "Collocation, relation and meaning-in-context tasks with duplicate-answer guards",
+    "Sentence task with honest mechanical checks, sentence starters faded by support level",
+    "Transfer task in another subject with speaking self-report",
+    "Optional mixed review kept apart from the 1/3/7/14 schedule",
+    "Quality gate for bank and depth data"
+  ],
+  "templatesRedesigned": [
+    "wordCardHTML Go deeper",
+    "Word Garden review card",
+    "Word Round",
+    "Scrambler matching and sentence builder"
+  ],
+  "contentRecordsRewritten": 36,
+  "criticalFixed": 3,
+  "unresolved": [
+    "vocab-hub quiz and quest (gold/XP, perfect-score bonus) not reworked; vocab-hub axe/mobile not fully audited",
+    "vocab-hub/vocab-bank.json is generated from lessons and was not edited",
+    "Collocation distractor guard is phrase-list based; a distractor could still be acceptable English in rare cases",
+    "Word Builder meaning/apply step after a build not added",
+    "Scrambler sentence still has one accepted order",
+    "inline glossary not changed"
+  ],
+  "sharedEdits": [
+    "access-practice-lab/studio-labs.css: appended .wl-deep, .wl-stage-chip, .wl-use, .wl-crit and related rules",
+    "access-practice-lab/index.html, app-shell, sw.js: regenerated by tools/sync-access-shell.mjs (content hashes and new precache entries); re-run after merging other branches",
+    "access-practice-lab/content/finder-metadata.json: regenerated (base was stale)"
+  ],
+  "tests": [
+    {
+      "cmd": "node tools/access-wordlab-depth.test.mjs",
+      "result": "11 pass"
+    },
+    {
+      "cmd": "node tools/access-wordlab.test.mjs",
+      "result": "15 pass"
+    },
+    {
+      "cmd": "node tools/access-word-sprint.test.mjs",
+      "result": "5 pass (rewritten for the untimed round)"
+    },
+    {
+      "cmd": "node tools/access-word-goal.test.mjs; access-glossary; access-module-cache; access-sw",
+      "result": "all pass"
+    },
+    {
+      "cmd": "node tools/access-studios-b-e2e.mjs",
+      "result": "PASS 85 checks"
+    },
+    {
+      "cmd": "Playwright 390/1280: explore, garden keyboard review, reload, builder, scrambler, axe",
+      "result": "no overflow; axe none on garden/builder; scrambler contrast fixed after run"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/src/content/wordlab-depth.js",
+    "access-practice-lab/src/content/wordlab-words.js",
+    "access-practice-lab/src/content/vocabulary-items.js",
+    "access-practice-lab/src/lang/wordlab.js",
+    "access-practice-lab/src/lang/wordlab-depth.js",
+    "access-practice-lab/src/views/wordlab.js",
+    "access-practice-lab/src/views/wordlab-common.js",
+    "access-practice-lab/src/views/wordlab-play.js",
+    "access-practice-lab/src/views/wordlab-depth.js",
+    "access-practice-lab/src/views/vocabulary.js",
+    "access-practice-lab/src/word-sprint.js",
+    "access-practice-lab/studio-labs.css",
+    "vocab-hub/app.js",
+    "esol-vocab-scrambler/index.html",
+    "tools/access-wordlab-depth.test.mjs",
+    "tools/access-word-sprint.test.mjs"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/vocab/wordlab-explore-390.jpg",
+    "reports/language-page-quality/screenshots/vocab/wordlab-explore-1280.jpg",
+    "reports/language-page-quality/screenshots/vocab/wordlab-garden-review-390.jpg",
+    "reports/language-page-quality/screenshots/vocab/wordlab-garden-review-1280.jpg",
+    "reports/language-page-quality/screenshots/vocab/word-builder-round-390.jpg",
+    "reports/language-page-quality/screenshots/vocab/word-builder-round-1280.jpg",
+    "reports/language-page-quality/screenshots/vocab/scrambler-390.jpg",
+    "reports/language-page-quality/screenshots/vocab/scrambler-1280.jpg"
+  ]
+}

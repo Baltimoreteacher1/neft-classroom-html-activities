@@ -720,7 +720,10 @@ export function onChange(e, ctx) {
   ctx.setPrefs({ practicePlan: { ...ctx.prefs.practicePlan, [key]: e.target.value } });
   const id = e.target.id;
   const open = document.getElementById("planOptions")?.open;
+  const waysOpen = document.getElementById("more-ways")?.open;
   ctx.rerender().then(() => {
+    const ways = document.getElementById("more-ways");
+    if (ways && waysOpen) ways.open = true;
     const disclosure = document.getElementById("planOptions");
     if (disclosure) disclosure.open = open;
     document.getElementById(id)?.focus({ preventScroll: true });

@@ -11,9 +11,9 @@ import { recorderHTML } from "../components.js";
 import { RETELLS } from "../content/voice-lab.js";
 import { modelStudentHTML, playModelStudent } from "../model-student-ui.js";
 import { isRecording, takesFor } from "../recorder.js";
-import { canSpeak, speak } from "../speech.js";
-import { announce, html, icon, raw } from "../util.js";
+import { BASE, announce, html, icon, raw, toHtml } from "../util.js";
 import { latestMeterHTML, loadVoice, saveVoice, voiceCrumbs } from "./voice-common.js";
+import { listenCardHTML, listenClick, stopListening } from "./voice-listen.js";
 
 /** Rehearsal limits per band: planning seconds and the response window (seconds). */
 export const REHEARSAL = {
@@ -26,35 +26,16 @@ let mode = "practice";
 let hidden = false; // read tasks: the learner hid the text before speaking
 let mounted = null; // { renderer, i18n }
 const submitted = new Map(); // task id → the rehearsal response saved on this device (this tab)
+const fullFrames = new Set(); // task ids where the learner asked for the full frames again after a first take
 
 export const findRetell = (id) => RETELLS.find((r) => r.id === id) || null;
 const keyFor = (id) => `voice:retell:${id}`;
 
-function sourceHTML(task, I, spoke) {
+function sourceHTML(task, I, ctx) {
   if (task.mode === "listen")
-    return html`<section class="source listen-card">
-      <h2 class="source-title">${icon("listening")} ${I.T("Listen first", "Escucha primero")}</h2>
-      <div class="listen-player">
-        <button type="button" class="listen-btn" data-retell-play>
-          <span class="listen-icon" aria-hidden="true">${icon("play")}</span
-          ><span class="listen-label">${I.T("Listen", "Escuchar")}</span>
-        </button>
-        <button type="button" class="ghost" data-stop-audio>
-          ${icon("stop")} ${I.T("Stop", "Detener")}
-        </button>
-      </div>
-      <p class="fine">
-        ${I.T("Listen as many times as you need. The words appear after you speak.", "Escucha todas las veces que necesites. Las palabras aparecen después de que hables.")}
-      </p>
-      ${
-        spoke
-          ? html`<details class="studio-disc">
-              <summary>${I.T("Read what you heard", "Lee lo que escuchaste")}</summary>
-              <div class="disc-body" lang="en">${task.turns.map((p) => html`<p>${p}</p>`)}</div>
-            </details>`
-          : ""
-      }
-    </section>`;
+    return html`${task.picture
+      ? html`<figure class="lc-picture"><img src="${BASE}/${task.picture}" alt="${task.alt || ""}" loading="lazy" /></figure>`
+      : ""}${listenCardHTML(I, task, { key: task.id, rate: ctx.prefs?.rate || 0.9, genre: I.T(task.genre, task.genreEs) })}`;
   return html`<section class="source">
     <h2 class="source-title">${icon("reading")} ${I.T("Read first", "Lee primero")}</h2>
     ${
@@ -73,11 +54,28 @@ function sourceHTML(task, I, spoke) {
   </section>`;
 }
 
+function vocabHTML(task, I) {
+  if (!task.vocab?.length) return "";
+  const es = I.spanish || I.bilingual;
+  return html`<section class="panel lc-vocab">
+    <h2><span class="step-badge">1</span> ${I.T("Get ready: key words", "Prepárate: palabras clave")}</h2>
+    <p class="fine">
+      ${I.T("Say each word out loud once. You will want these words when you speak.", "Di cada palabra en voz alta una vez. Las vas a necesitar al hablar.")}
+    </p>
+    <dl class="lc-words" lang="en">
+      ${task.vocab.map(
+        ([word, meaning, spanish]) =>
+          html`<div><dt>${word}</dt><dd>${meaning}${es ? html` <span class="lc-es" lang="es">${spanish}</span>` : ""}</dd></div>`,
+      )}
+    </dl>
+  </section>`;
+}
+
 function plannerHTML(task, I) {
   const notes = plans.get(task.id) || {};
   return html`<section class="panel planner">
     <h2>
-      <span class="step-badge">1</span> ${I.T("Plan your retell", "Planea lo que vas a contar")}
+      <span class="step-badge">2</span> ${I.T("Plan your retell", "Planea lo que vas a contar")}
     </h2>
     <p class="fine">
       ${I.T("Write a few key words, not sentences.", "Escribe algunas palabras clave, no oraciones.")}
@@ -94,15 +92,70 @@ function plannerHTML(task, I) {
   </section>`;
 }
 
+/** Sentence frames that fade: full on the first try, starters only afterwards (the learner can ask for the full set). */
+function framesHTML(task, I, tries) {
+  if (!task.frames) return "";
+  const full = tries === 0 || fullFrames.has(task.id);
+  const list = full ? task.frames.full : task.frames.light;
+  return html`<details class="studio-disc lc-frames" open>
+    <summary>${full ? I.T("Sentence frames: full", "Marcos de oraciones: completos") : I.T("Sentence frames: starters only", "Marcos de oraciones: solo el comienzo")}</summary>
+    <ul class="disc-body" lang="en">${list.map((f) => html`<li class="lc-frame">${f}</li>`)}</ul>
+    ${
+      tries > 0
+        ? html`<p class="fine">
+            ${full
+              ? html`${I.T("Try it with starters only.", "Inténtalo solo con el comienzo.")}
+                  <button type="button" class="ghost small" data-retell-frames="light">${I.T("Use starters only", "Usar solo el comienzo")}</button>`
+              : html`${I.T("The frames got shorter because you have practiced once.", "Los marcos son más cortos porque ya practicaste una vez.")}
+                  <button type="button" class="ghost small" data-retell-frames="full">${I.T("Show full frames", "Mostrar marcos completos")}</button>`}
+          </p>`
+        : ""
+    }
+  </details>`;
+}
+
+const reviewTicks = (id) => loadVoice().reviews?.[id] || [];
+
+/** The first criterion the learner has not ticked, as the single thing to work on in the next take. */
+export function nextFocus(task, ticks = []) {
+  const i = task.criteria.findIndex((_, k) => !ticks[k]);
+  return i < 0 ? null : task.criteria[i];
+}
+
+function reviewHTML(task, I, key) {
+  const ticks = reviewTicks(task.id);
+  const focus = nextFocus(task, ticks);
+  return html`<section class="panel lc-review" id="retell-review">
+    <h2><span class="step-badge">4</span> ${I.T("Review: listen to yourself", "Revisa: escúchate")}</h2>
+    <p class="fine">
+      ${I.T("Play your recording, then tick what you did. Only you can judge this: the lab does not listen to or score your voice.", "Reproduce tu grabación y marca lo que hiciste. Solo tú puedes juzgarlo: el laboratorio no escucha ni califica tu voz.")}
+    </p>
+    <fieldset class="lc-criteria">
+      <legend>${I.T("In my retell, I...", "En mi relato...")}</legend>
+      ${task.criteria.map(
+        (c, i) => html`<label class="lc-crit"><input type="checkbox" data-retell-crit="${i}" ${ticks[i] ? raw("checked") : ""} /> <span lang="en">${c}</span></label>`,
+      )}
+    </fieldset>
+    <p class="lc-improve" data-retell-focus role="status">${focusHTML(focus, I)}</p>
+  </section>`;
+}
+
+function focusHTML(focus, I) {
+  return focus
+    ? html`<b>${I.T("Improve: for your next recording, work on this one thing:", "Mejora: en tu próxima grabación, trabaja solo en esto:")}</b> <span lang="en">${focus}</span>`
+    : html`<b>${I.T("You ticked everything.", "Marcaste todo.")}</b> ${I.T("Try the same retell again without the frames, or compare with the model.", "Prueba el mismo relato sin los marcos o compáralo con el modelo.")}`;
+}
+
 function speakHTML(task, ctx, I) {
   const key = keyFor(task.id);
   const spoke = takesFor(key).length > 0;
   const lim = REHEARSAL[task.band] || REHEARSAL["6-8"];
   return html`<section class="panel" id="retell-say">
       <h2>
-        <span class="step-badge">2</span> ${I.T("Retell it out loud", "Cuéntalo en voz alta")}
+        <span class="step-badge">3</span> ${I.T("Speak: retell it out loud", "Habla: cuéntalo en voz alta")}
       </h2>
       <p class="voice-prompt" lang="en">${task.prompt}</p>
+      ${framesHTML(task, I, takesFor(key).length || (loadVoice().retell?.[task.id] ? 1 : 0))}
       <fieldset class="voice-modes">
         <legend>${I.T("How do you want to speak?", "¿Cómo quieres hablar?")}</legend>
         <label
@@ -140,19 +193,34 @@ function speakHTML(task, ctx, I) {
     </section>
     ${
       spoke || loadVoice().retell?.[task.id]
-        ? html`<section class="panel">
-            <h2>
-              <span class="step-badge">3</span>
-              ${I.T("Compare with a model retell", "Compara con un modelo")}
-            </h2>
-            <p class="fine">
-              ${I.T("Did you include every part of your plan? Listen for the order words the model uses.", "¿Incluiste cada parte de tu plan? Escucha las palabras de orden que usa el modelo.")}
-            </p>
-            ${modelStudentHTML(key, task.model, I)}
-            ${latestMeterHTML(key, task.model, I, ctx.prefs?.rate || 0.9)}
-          </section>`
+        ? html`${reviewHTML(task, I, key)}
+            <section class="panel">
+              <h2>
+                <span class="step-badge">5</span>
+                ${I.T("Compare with a model retell", "Compara con un modelo")}
+              </h2>
+              <p class="fine">
+                ${I.T("Listen for the order words the model uses. Your retell does not have to match it word for word.", "Escucha las palabras de orden que usa el modelo. Tu relato no tiene que ser igual palabra por palabra.")}
+              </p>
+              ${modelStudentHTML(key, task.model, I)}
+              ${latestMeterHTML(key, task.model, I, ctx.prefs?.rate || 0.9)}
+            </section>`
         : ""
     }`;
+}
+
+function stagesHTML(task, I, spoke) {
+  const reviewed = reviewTicks(task.id).some(Boolean);
+  const at = !spoke ? 0 : reviewed ? 3 : 2;
+  const names = [
+    I.T("Prepare", "Prepara"),
+    I.T("Speak", "Habla"),
+    I.T("Review", "Revisa"),
+    I.T("Improve", "Mejora"),
+  ];
+  return html`<ol class="lc-stages" aria-label="${I.S("Your steps", "Tus pasos")}">
+    ${names.map((n, i) => html`<li class="${i < at ? "is-done" : i === at ? "is-now" : ""}" ${i === at ? raw('aria-current="step"') : ""}>${n}</li>`)}
+  </ol>`;
 }
 
 export function retellHTML(ctx, I, id) {
@@ -170,9 +238,10 @@ export function retellHTML(ctx, I, id) {
             ${task.mode === "listen" ? I.T("Listen, then retell", "Escucha y vuelve a contar") : I.T("Read, then retell", "Lee y vuelve a contar")}
           </p>
           <h1 tabindex="-1">${title}</h1>
+          ${stagesHTML(task, I, spoke)}
         </header>
         <div class="studio-cols">
-          <div class="studio-col">${sourceHTML(task, I, spoke)}${plannerHTML(task, I)}</div>
+          <div class="studio-col">${sourceHTML(task, I, ctx)}${vocabHTML(task, I)}${plannerHTML(task, I)}</div>
           <div class="studio-col">${speakHTML(task, ctx, I)}</div>
         </div>
       </article>`,
@@ -190,15 +259,12 @@ export function retellClick(e, ctx, I, id) {
   const task = findRetell(id);
   if (!task) return false;
   const t = e.target;
-  if (t.closest("[data-retell-play]")) {
-    if (canSpeak()) speak(task.turns, { rate: ctx.prefs?.rate || 0.9, persona: "teacher" });
-    else
-      announce(
-        I.S(
-          "Read-aloud is not available. Ask your teacher to read it.",
-          "La lectura en voz alta no está disponible. Pide a tu docente que la lea.",
-        ),
-      );
+  if (listenClick(e, ctx, I, task, { key: task.id })) return true;
+  const frames = t.closest("[data-retell-frames]");
+  if (frames) {
+    if (frames.dataset.retellFrames === "full") fullFrames.add(id);
+    else fullFrames.delete(id);
+    ctx.rerender();
     return true;
   }
   if (t.closest("[data-retell-hide]")) {
@@ -237,7 +303,20 @@ export function retellInput(e, _ctx, _I, id) {
   plans.set(id, notes);
 }
 
-export function retellChange(e, ctx) {
+export function retellChange(e, ctx, I, id) {
+  if (e.target.matches("[data-retell-crit]")) {
+    const task = findRetell(id);
+    if (!task) return;
+    const state = loadVoice();
+    state.reviews ||= {};
+    const ticks = task.criteria.map((_, i) => Boolean(state.reviews[id]?.[i]));
+    ticks[Number(e.target.dataset.retellCrit)] = e.target.checked;
+    state.reviews[id] = ticks;
+    saveVoice(state);
+    const box = document.querySelector("[data-retell-focus]");
+    if (box) box.innerHTML = toHtml(focusHTML(nextFocus(task, ticks), I));
+    return;
+  }
   if (!e.target.matches("[data-retell-mode]")) return;
   mode = e.target.value === "rehearsal" ? "rehearsal" : "practice";
   ctx.rerender();
@@ -272,6 +351,7 @@ export function retellMount(root, ctx, _I, id) {
 }
 
 export function retellUnmount() {
+  stopListening(null);
   mounted?.renderer?.destroy?.();
   mounted?.i18n?.stop?.();
   mounted = null;

@@ -179,6 +179,116 @@ const condText = (def, c) => {
   return ["(unknown condition)", "(condición desconocida)"];
 };
 /** A condition in plain words, [en, es], for the branch inspector. */
+export const MAX_EVIDENCE_WORDS = 80;
+export const MAX_SENTENCE_WORDS = 28;
+export const MAX_PROMPT_WORDS = 45;
+export const MIN_ANSWER_WORDS = 3;
+const wordsOf = (t) => String(t || "").split(/\s+/).filter(Boolean).length;
+const normText = (t) =>
+  String(t || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/**
+ * Quality rules for new content (the same bar the lab's own missions meet). Contradictory or duplicated answer keys
+ * are errors: no learner could finish them fairly. Language-load findings are warnings, the instructor's call: a
+ * long evidence note or prompt is allowed, but it is named so it can be chunked rather than silently shipped.
+ * Nothing here rewrites a definition, so experiences saved before these rules existed keep working unchanged.
+ */
+function qualityChecks(def, add, errors, warnings) {
+  const list = (v) => (Array.isArray(v) ? v : []);
+  for (const e of list(def.evidence)) {
+    const both = list(e.supports).filter((x) => list(e.contradicts).includes(x));
+    if (both.length)
+      add(
+        errors,
+        "contradictory-key",
+        `evidence:${e.id}`,
+        `"${e.title?.[0]}" both supports and contradicts the same explanation, so its answer key cannot be right.`,
+        `"${e.title?.[1]}" apoya y contradice la misma explicación; su clave de respuesta no puede ser correcta.`,
+      );
+    const body = String(e.body?.[0] || "");
+    const longest = Math.max(0, ...splitSentences(body).map((s) => wordsOf(s.text)));
+    if (wordsOf(body) > MAX_EVIDENCE_WORDS || longest > MAX_SENTENCE_WORDS)
+      add(
+        warnings,
+        "dense-evidence",
+        `evidence:${e.id}`,
+        `"${e.title?.[0]}" is long or has a sentence over ${MAX_SENTENCE_WORDS} words. Split it into shorter pieces of evidence so the language does not hide the idea.`,
+        `"${e.title?.[1]}" es largo o tiene una oración de más de ${MAX_SENTENCE_WORDS} palabras. Divídelo en evidencias más cortas para que el lenguaje no oculte la idea.`,
+      );
+  }
+  for (const t of list(def.tasks)) {
+    const seen = new Set();
+    for (const o of list(t.options)) {
+      const key = normText(o.label?.[0]);
+      if (t.type === "decide" && seen.has(key))
+        add(
+          errors,
+          "duplicate-option",
+          `task:${t.id}`,
+          `Two choices in "${t.id}" read the same ("${o.label?.[0]}"), so a learner cannot tell them apart.`,
+          `Dos opciones de "${t.id}" dicen lo mismo ("${o.label?.[1]}"); un estudiante no puede distinguirlas.`,
+        );
+      seen.add(key);
+      if (t.type === "decide" && !o.reply)
+        add(
+          warnings,
+          "no-reply",
+          `task:${t.id}`,
+          `The choice "${o.label?.[0]}" has no reply, so nothing tells the learner what to do next.`,
+          `La opción "${o.label?.[1]}" no tiene respuesta; nada le dice al estudiante qué hacer después.`,
+        );
+    }
+    const pairs = new Set();
+    for (const p of list(t.pairs)) {
+      const k = [...p].sort().join("|");
+      if (pairs.has(k))
+        add(
+          warnings,
+          "duplicate-pair",
+          `task:${t.id}`,
+          `The comparison in "${t.id}" lists the same two pieces of evidence twice.`,
+          `La comparación de "${t.id}" repite el mismo par de evidencias.`,
+        );
+      pairs.add(k);
+    }
+    if (wordsOf(t.prompt?.[0]) > MAX_PROMPT_WORDS)
+      add(
+        warnings,
+        "long-prompt",
+        `task:${t.id}`,
+        `The "${t.id}" prompt is over ${MAX_PROMPT_WORDS} words. Directions work best short: what to do, with what, and what a good answer includes.`,
+        `La consigna "${t.id}" tiene más de ${MAX_PROMPT_WORDS} palabras. Las instrucciones funcionan mejor cortas: qué hacer, con qué y qué incluye una buena respuesta.`,
+      );
+  }
+  for (const c of list(def.characters)) {
+    const asks = new Set();
+    for (const t of list(c.topics)) {
+      const ask = normText(t.ask?.[0]);
+      if (asks.has(ask))
+        add(
+          warnings,
+          "same-question",
+          `character:${c.id}`,
+          `${c.name} has two questions that read the same ("${t.ask?.[0]}").`,
+          `${c.name} tiene dos preguntas que dicen lo mismo ("${t.ask?.[1]}").`,
+        );
+      asks.add(ask);
+      if (wordsOf(t.answer?.[0]) < MIN_ANSWER_WORDS)
+        add(
+          warnings,
+          "thin-answer",
+          `character:${c.id}`,
+          `${c.name}'s answer to "${t.ask?.[0]}" is too short to teach anything.`,
+          `La respuesta de ${c.name} a "${t.ask?.[1]}" es demasiado corta para enseñar algo.`,
+        );
+    }
+  }
+}
+
 export const conditionText = (def, cond) => condText(def, cond);
 
 /** Score, points, grade, timer or proficiency wording (also used by the suggestion rules, suggest-rules.js). */
@@ -407,6 +517,8 @@ export function validateExperience(def, { art = null, looks = null, reach = true
       "No evidence contradicts the misreading, so a learner could never find out it is wrong.",
       "Ninguna evidencia contradice la lectura equivocada; un estudiante nunca podría descubrir que es incorrecta.",
     );
+
+  qualityChecks(def, add, errors, warnings);
 
   // branches: can a scripted learner finish, and which endings does it reach?
   let branches = list(def.outcomes).map((o, i, all) => ({

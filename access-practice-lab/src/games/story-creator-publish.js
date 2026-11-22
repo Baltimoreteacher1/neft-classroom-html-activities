@@ -102,7 +102,7 @@ export function publishView(s, env) {
           ${seed.panels.map((p, i) => html`<li class="scr-shelf-i is-${tierOf(s.panels[i])}">${icon("star")}<span>${T2(I, ROLES[p.role].sticker)}</span><small>${T2(I, TIER[tierOf(s.panels[i])])}</small></li>`)}
         </ul>
         <p class="fine">
-          ${I.T(`Best understanding streak: ${s.best}`, `Mejor racha de comprensión: ${s.best}`)}
+          ${I.T(`Story steps you worked out: ${s.best}`, `Pasos de la historia que lograste: ${s.best}`)}
         </p>
       </div>
     </div>

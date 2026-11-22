@@ -111,7 +111,6 @@ export default {
       hint: -1,
       last: null,
       anim: null,
-      combo: 0,
       fx: null,
     };
   },
@@ -157,7 +156,6 @@ export default {
           extra: { level: s.lv + 1, kind: L.kind },
         });
         s.up = [];
-        s.combo += 1;
         s.anim.glow = a.p;
         s.last = { type: "match", p: a.p };
         if (L.found.length === L.pairs.length) {
@@ -169,7 +167,6 @@ export default {
         L.pairs[a.p].rs.tries += 1;
         L.misses += 1;
         s.peek = true;
-        s.combo = 0;
         s.last = { type: "miss", a: s.up[0], b: s.up[1] };
       }
       return true;

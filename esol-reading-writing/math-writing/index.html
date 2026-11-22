@@ -352,7 +352,9 @@
       function addProblem() {
         const input = document.getElementById("problemInput");
         if (!input.value.trim()) {
-          alert("Please enter a problem");
+          input.setCustomValidity("Type a math word problem first. Example: A baker uses 3/4 cup of flour for one batch. How much flour for 6 batches?");
+          input.reportValidity();
+          input.addEventListener("input", () => input.setCustomValidity(""), { once: true });
           return;
         }
 

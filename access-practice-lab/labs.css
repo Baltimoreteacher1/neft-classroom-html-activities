@@ -2182,3 +2182,88 @@ details.rr-organizer {
 .ev .lab-table td {
   overflow-wrap: anywhere;
 }
+
+/* Reading Room supports: inline word glosses, evidence highlighting, hints and the write-check-revise loop. */
+.rr-gloss {
+  padding: 0 0.1em;
+  border: 0;
+  border-bottom: 2px dotted var(--ink-2, currentColor);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.rr-gloss[aria-expanded="true"] {
+  background: var(--tint, #fff3c4);
+}
+.rr-gloss:focus-visible,
+.rr-find-evidence summary:focus-visible {
+  outline: 3px solid var(--focus, #1d4ed8);
+  outline-offset: 2px;
+}
+.rr-gloss-card {
+  margin: var(--s-2, 0.5rem) 0 0;
+  padding: var(--s-2, 0.5rem) var(--s-3, 0.75rem);
+  border-left: 4px solid var(--ink-2, #555);
+  background: var(--surface, #fff);
+  font-size: 0.95rem;
+}
+.rr-evidence-mark {
+  background: var(--tint, #fff3c4);
+  color: inherit;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0.05em 0.1em;
+  border-bottom: 2px solid var(--ink-2, #8a6d00);
+}
+.rr-paragraph.is-evidence .rr-para-body {
+  border-left: 4px solid var(--ink-2, #8a6d00);
+  padding-left: var(--s-3, 0.75rem);
+}
+.rr-hint,
+.rr-evidence-line,
+.rr-revised {
+  margin: 0;
+}
+.rr-preview {
+  color: var(--ink-2, #555);
+}
+.rr-response-support {
+  display: grid;
+  gap: var(--s-2, 0.5rem);
+}
+.rr-find-evidence {
+  padding: var(--s-2, 0.5rem) var(--s-3, 0.75rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.rr-find-evidence summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.rr-find-evidence fieldset,
+.rr-selfcheck fieldset {
+  margin: 0 0 var(--s-2, 0.5rem);
+  padding: 0;
+  border: 0;
+}
+.rr-evidence-chips {
+  display: grid;
+  gap: var(--s-2, 0.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rr-evidence-chips li {
+  padding: var(--s-2, 0.5rem);
+  border-left: 4px solid var(--ink-2, #8a6d00);
+  background: var(--surface, #fff);
+}
+.rr-first-draft {
+  white-space: pre-wrap;
+  margin: 0;
+}

@@ -449,6 +449,15 @@ const TRANS_NAME = {
  */
 export function checkMove(move, text, task = {}) {
   const t = str(text).trim();
+  if (/_{2,}/.test(t))
+    return {
+      ok: false,
+      got: null,
+      tip: bi(
+        "Your starter still has blanks (___). Replace each one with your own words, then check again.",
+        "Tu inicio todavía tiene espacios en blanco (___). Reemplaza cada uno con tus palabras y revisa de nuevo.",
+      ),
+    };
   if (wc(t) < 4)
     return {
       ok: false,
@@ -473,6 +482,13 @@ export function checkMove(move, text, task = {}) {
         return ok(
           `“${strong[0]}” is a precise verb: it shows how the action happened.`,
           `“${strong[0]}” es un verbo preciso: muestra cómo ocurrió la acción.`,
+        );
+      // The plain word is gone and no other plain verb replaced it. This list is short, so say what is unknown and
+      // let the writer judge, instead of failing a good verb the list has never seen.
+      if (task.weak?.length && !verbHits(t, WEAK_VERBS).length)
+        return ok(
+          "The plain word is gone. I do not know your new verb, so read the sentence aloud: does the verb show how it happened?",
+          "La palabra simple ya no está. No conozco tu verbo nuevo, así que lee la oración en voz alta: ¿el verbo muestra cómo ocurrió?",
         );
       return no(
         "I could not find a precise verb I know. Pick a verb that shows speed, force, or feeling, such as sprinted, gripped, or whispered.",
@@ -618,7 +634,13 @@ export function checkMove(move, text, task = {}) {
       const num = t.match(
         /\b\d[\d,.]*\s?(?:%|inches|feet|miles|meters|minutes|hours|pounds|degrees|years|days|students|people)?|\b(?:two|three|four|five|six|seven|eight|nine|ten|twelve|twenty|hundred|thousand)\b/i,
       );
-      const name = t.slice(1).match(/(?<=[a-z,] )[A-Z][a-z]{2,}/);
+      // A name after the first word, or a first word that is not a common sentence starter ("Mia came in.").
+      const STARTERS =
+        /^(a|an|the|we|he|she|they|it|i|you|our|my|his|her|their|this|that|these|those|many|some|lots|there|one|every|each|all)$/i;
+      const lead = t.match(/^[A-Z][a-z]{2,}/);
+      const name =
+        t.slice(1).match(/(?<=[a-z,] )[A-Z][a-z]{2,}/) ||
+        (lead && !STARTERS.test(lead[0]) ? lead : null);
       if (num)
         return ok(
           `“${num[0].trim()}” is an exact detail. It tells the reader how many or how much.`,

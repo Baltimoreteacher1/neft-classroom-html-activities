@@ -233,8 +233,8 @@ function check(s, c, k, env) {
   const first = c.rs.status === "right" && c.rs.tries === 1;
   const clean = first && c.rs.h === 0 && c.prs.h === 0 && c.fakes === 0;
   c.badge = c.rs.status === "revealed" ? "learner" : clean ? "sharp" : "solid";
-  s.streak = first ? s.streak + 1 : 0;
-  s.best = Math.max(s.best, s.streak);
+  if (first) s.streak += 1; // cumulative: a miss never resets it
+  s.best = s.streak;
 }
 
 // ── views ────────────────────────────────────────────────────────────────────────────────
@@ -264,9 +264,9 @@ function tabsHTML(s, env) {
     <ol class="sd-tabs" aria-label="${I.S("Case files", "Expedientes")}">
       ${s.cases.map(tab)}
     </ol>
-    <p class="sd-streak${s.streak ? " is-hot" : ""}">
+    <p class="sd-streak">
       ${icon("star")}<span
-        >${I.T("Understanding streak", "Racha de comprensión")}: <strong>${s.streak}</strong></span
+        >${I.T("Cases understood on the first try", "Casos entendidos al primer intento")}: <strong>${s.streak}</strong></span
       >
     </p>
   </div>`;
@@ -457,7 +457,7 @@ function closedHTML(s, c, env) {
       >
     </li>`;
   };
-  const best = I.T(`Best understanding streak: ${s.best}`, `Mejor racha de comprensión: ${s.best}`);
+  const best = I.T(`Understood on the first try: ${s.best}`, `Entendido al primer intento: ${s.best}`);
   const recap = last
     ? html`<div class="sd-recap">
         <h3>${icon("medal")}${I.T("Your casebook", "Tu libro de casos")}</h3>

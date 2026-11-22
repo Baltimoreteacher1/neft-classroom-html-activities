@@ -95,8 +95,18 @@ test("every retell renders its source mode, a planner and both ways to speak", a
     const { root, text } = await renderText(ctxFor("es", "retell", r.id, r.band));
     assert.equal(root.querySelectorAll("[data-retell-plan]").length, r.plan.length);
     assert.equal(root.querySelectorAll("[data-retell-mode]").length, 2);
-    if (r.mode === "listen") assert.ok(root.querySelector("[data-retell-play]"));
-    else assert.ok(root.querySelector(".source-text"));
+    if (r.mode === "listen") {
+      // No speechSynthesis here, so the card must show the words instead of a dead play button.
+      assert.ok(
+        root.querySelector("[data-lc-transcript][open]"),
+        `${r.id}: transcript open when audio is unavailable`,
+      );
+      assert.equal(
+        root.querySelectorAll("[data-lc-pick]").length,
+        r.check.reduce((n, q) => n + q.options.length, 0),
+        `${r.id}: every check option is a button`,
+      );
+    } else assert.ok(root.querySelector(".source-text"));
     assert.doesNotMatch(text, COUNTDOWN);
     assert.match(text, /Ensayo como el día de la prueba/);
   }

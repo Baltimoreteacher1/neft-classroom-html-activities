@@ -36,9 +36,9 @@ const attr = (b) => {
 
 function settle(s, rs) {
   if (rs.status === "retry") return;
-  // The streak counts steps the learner worked out (first try or after revising); only a reveal resets it.
-  s.streak = rs.status === "right" ? s.streak + 1 : 0;
-  s.best = Math.max(s.best, s.streak);
+  // Counts steps the learner worked out (first try or after revising). Cumulative: nothing resets it.
+  if (rs.status === "right") s.streak += 1;
+  s.best = s.streak;
 }
 
 export default {

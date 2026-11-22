@@ -58,11 +58,10 @@ function levelState(story, env) {
   };
 }
 
-/** Update the understanding streak after a round settles or misses. */
+/** Count rounds understood on the first try. Cumulative: a miss never resets it. */
 function streak(s, rs) {
   if (rs.status === "right" && rs.tries === 1 && rs.h === 0) s.streak += 1;
-  else if (rs.status !== "right") s.streak = 0;
-  s.best = Math.max(s.best, s.streak);
+  s.best = s.streak;
 }
 function roundsOf(L) {
   return [...Object.values(L.trs), ...L.links.map((l) => l.rs), L.retell.rs];

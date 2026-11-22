@@ -153,14 +153,59 @@ export const storyWords = (draft, fmt) => words(storyText(draft, fmt)).length;
 const SAID = /\b(said|says|explained|announced|reported|shared|added|told|according to)\b/i;
 const LINKS = /\b(first|then|finally|because|so|next|meanwhile|as a result|after|before|since)\b/gi;
 
+const COPY_RUN = 8;
+const NOTE_STOP = new Set(
+  "about after again also because before being between could during every first found from have into like made many more most only other over said says should since some still student students than that their them then there these they this those through under until very were what when where which while with would your".split(
+    " ",
+  ),
+);
+/** The facts of a note: numbers, and longer words that carry its content. A note is "used" when the story holds two of them, or a number. */
+const noteFacts = (note) => {
+  const w = words(note.replace(/^Quote:\s*/i, "")).map((x) => x.toLowerCase().replace(/[^a-z0-9.]/g, "").replace(/\.$/, ""));
+  return [...new Set(w.filter((x) => /\d/.test(x) || (x.length >= 6 && !NOTE_STOP.has(x))))];
+};
+const norm = (s) => words(s).map((x) => x.toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean);
+/** Observations tying the story to the reporter's notes: how many notes it uses, and any word-for-word copying. */
+function noteObservations(text, notes) {
+  const mine = new Set(norm(text));
+  const used = notes.filter((n) => {
+    const facts = noteFacts(n).filter((f) => mine.has(f.replace(/\./g, "")) || mine.has(f));
+    return facts.some((f) => /\d/.test(f)) || facts.length >= 2;
+  });
+  const story = ` ${norm(text).join(" ")} `;
+  const copied = notes.some((n) => {
+    const nw = norm(n);
+    for (let i = 0; i + COPY_RUN <= nw.length; i += 1)
+      if (story.includes(` ${nw.slice(i, i + COPY_RUN).join(" ")} `)) return true;
+    return false;
+  });
+  const out = [
+    {
+      id: "notes",
+      ok: used.length >= Math.min(3, notes.length),
+      en: `Your story uses facts from ${used.length} of ${notes.length} reporter's notes.${used.length >= 3 ? "" : " A strong story builds on at least three: choose the facts that answer who, what, when and where."}`,
+      es: `Tu historia usa datos de ${used.length} de ${notes.length} notas del reportero.${used.length >= 3 ? "" : " Una buena historia usa al menos tres: elige los datos que responden quién, qué, cuándo y dónde."}`,
+    },
+  ];
+  if (copied)
+    out.push({
+      id: "copied",
+      ok: false,
+      en: "A sentence is copied word for word from the notes. Keep the fact and say it in your own words.",
+      es: "Una oración está copiada palabra por palabra de las notas. Conserva el dato y dilo con tus propias palabras.",
+    });
+  return out;
+}
+
 /**
  * Observations about a draft. Each is { id, ok, en, es }: facts about the learner's own text and plan, worded as
  * "you did X" or "you could add X", never as a grade.
  */
-export function observe(draft, plan, fmt) {
+export function observe(draft, plan, fmt, notes = []) {
   const text = storyText(draft, fmt);
   const out = [];
   if (!text) return out;
+  if (notes.length) out.push(...noteObservations(text, notes));
   const lead = sig(draft?.lead);
   const filled = ["who", "what", "when", "where"].filter((k) => words(plan?.[k]).length);
   const shown = filled.filter((k) => sig(plan[k]).some((w) => lead.includes(w)));

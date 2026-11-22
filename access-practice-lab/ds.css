@@ -201,6 +201,23 @@
     "Helvetica Neue", Arial, sans-serif;
   --font-display: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --measure: 66ch;
+
+  /* type scale + rhythm shared by activity surfaces (additive; existing sizes keep working) */
+  --fs-small: 0.9375rem;
+  --fs-body: 1.0625rem;
+  --fs-prompt: 1.1875rem;
+  --fs-lead: 1.3rem;
+  --lh-tight: 1.25;
+  --lh-body: 1.6;
+  --measure-reading: 62ch; /* passages and directions: 55-70 characters a line */
+  --target-min: 2.75rem; /* 44px: the floor for any tap or click target */
+  --focus-ring: 3px solid var(--focus);
+
+  /* activity zones: what a learner is looking at (see "activity kit" below) */
+  --zone-bar: 6px;
+  --zone-context: var(--surface-2);
+  --zone-stimulus: var(--surface);
+  --zone-response: var(--surface);
   color-scheme: light;
 }
 
@@ -422,8 +439,10 @@ a:hover {
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
-  min-height: 2.5rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding: 0.4rem 0.55rem;
   border-radius: 9999px;
   color: var(--ink-2);
@@ -478,7 +497,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   padding: 0.4rem 0.8rem;
   border: 1.5px solid var(--line-control);
   border-radius: 9999px;
@@ -688,12 +707,19 @@ a:hover {
 .footer-links a {
   display: inline-flex;
   align-items: center;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   color: #dbe6f4;
   text-underline-offset: 0.2em;
 }
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-links .footer-link-button:hover {
   color: #fff;
+}
+.footer-links .footer-link-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: #dbe6f4;
 }
 .lab-footer :focus-visible {
   outline-color: #9ec1ff;
@@ -1667,7 +1693,7 @@ h1:focus {
 }
 .lang-btn {
   min-width: 2.75rem;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   padding: 0.25rem 0.6rem;
   border: 0;
   border-radius: 999px;
@@ -2097,3 +2123,318 @@ body[data-lab-band="6-8"] .studio-card {
 .pg-filters label { margin: 0; }
 .pg-root input, .pg-root select, .pg-root textarea { min-height: 2.75rem; max-width: 100%; }
 .pg-root textarea { width: min(100%, 40rem); min-height: 6rem; }
+
+
+/* ── activity kit ──────────────────────────────────────────────────────────
+   Shared chrome for every practice surface (src/activity-kit.js, DESIGN-SYSTEM.md "Activity kit").
+   One job per zone, each told apart by shape and a text label as well as colour:
+     instructions  soft room tint, thick start bar        context   quiet grey, thin bar, smaller text
+     stimulus      white paper, full outline              task      bold prompt, no box
+     response      white, thick outline in the room colour   hint   amber tint, dashed outline
+     feedback      status-coloured bar + icon + words */
+.ak-zone {
+  margin-block: var(--s-4);
+}
+.ak-zone-label {
+  margin: 0 0 var(--s-2);
+  font: 700 var(--fs-small) / var(--lh-tight) var(--font);
+  color: var(--ink-2);
+}
+.ak-zone-instructions {
+  padding: var(--s-3) var(--s-4);
+  border-inline-start: var(--zone-bar) solid var(--room);
+  border-radius: var(--radius-sm);
+  background: var(--room-soft);
+}
+.ak-zone-context {
+  padding: var(--s-3) var(--s-4);
+  border-inline-start: 2px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--zone-context);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}
+.ak-zone-stimulus {
+  padding: var(--s-4);
+  border: 1.5px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--zone-stimulus);
+  box-shadow: var(--edge-light);
+}
+.ak-zone-stimulus > :not(.ak-zone-label) {
+  max-width: var(--measure-reading);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.ak-zone-task > :not(.ak-zone-label) {
+  margin: 0;
+  max-width: var(--measure-reading);
+  font-size: var(--fs-prompt);
+  font-weight: 700;
+  line-height: 1.4;
+}
+.ak-zone-response {
+  padding: var(--s-4);
+  border: 2.5px solid var(--room);
+  border-radius: var(--radius);
+  background: var(--zone-response);
+}
+.ak-zone-hint {
+  padding: var(--s-3) var(--s-4);
+  border: 2px dashed var(--hint);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--ink);
+}
+.ak-zone-feedback {
+  margin-block: var(--s-4);
+}
+
+/* directions card */
+.ak-directions {
+  margin-block: var(--s-4);
+  padding: var(--s-4);
+  border: 1px solid color-mix(in srgb, var(--room) 30%, transparent);
+  border-inline-start: var(--zone-bar) solid var(--room);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+  box-shadow: var(--edge-light);
+}
+.ak-dir-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-3);
+  margin-bottom: var(--s-2);
+}
+.ak-dir-title {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font: 700 var(--fs-body) / var(--lh-tight) var(--font);
+  letter-spacing: 0;
+  color: var(--room-ink);
+}
+.ak-hear {
+  min-height: var(--target-min);
+}
+.ak-dir-grid {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}
+.ak-dir-row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 11rem) minmax(0, 1fr);
+  gap: var(--s-1) var(--s-3);
+  align-items: baseline;
+}
+.ak-dir-row dt {
+  font: 700 var(--fs-small) / 1.4 var(--font);
+  color: var(--room-ink);
+}
+.ak-dir-row dd {
+  margin: 0;
+  max-width: var(--measure-reading);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--ink);
+}
+.ak-dir-do dd {
+  font-size: var(--fs-prompt);
+  font-weight: 700;
+}
+.ak-dir-steps {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+.ak-dir-steps li + li {
+  margin-top: 0.2rem;
+}
+.ak-directions.is-early .ak-dir-row dd {
+  font-size: var(--fs-prompt);
+}
+.ak-example {
+  margin-top: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.ak-example-body {
+  padding: var(--s-2) var(--s-4) var(--s-3);
+  max-width: var(--measure-reading);
+  line-height: 1.5;
+}
+@media (max-width: 560px) {
+  .ak-dir-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* feedback panel: verdict, why, evidence, next step */
+.ak-feedback {
+  margin-block: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid transparent;
+  border-inline-start: var(--zone-bar) solid;
+  border-radius: 14px;
+  box-shadow: var(--edge-light);
+}
+.ak-fb-title {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-1);
+  font: 700 1.15rem / var(--lh-tight) var(--font);
+}
+.ak-feedback p {
+  margin: var(--s-1) 0;
+  max-width: var(--measure-reading);
+  line-height: 1.5;
+}
+.ak-fb-why {
+  font-size: var(--fs-body);
+  color: var(--ink);
+}
+.ak-fb-evidence,
+.ak-fb-next {
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+.ak-fb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+.ak-feedback.is-right {
+  border-color: color-mix(in srgb, var(--right) 35%, transparent);
+  border-inline-start-color: var(--right);
+  background: var(--right-soft);
+}
+.ak-feedback.is-right .ak-fb-title {
+  color: var(--right);
+}
+.ak-feedback.is-partly {
+  border-color: color-mix(in srgb, var(--hint) 35%, transparent);
+  border-inline-start-color: var(--hint);
+  background: var(--hint-soft);
+}
+.ak-feedback.is-partly .ak-fb-title {
+  color: var(--hint);
+}
+.ak-feedback.is-notyet {
+  border-color: color-mix(in srgb, var(--wrong) 30%, transparent);
+  border-inline-start-color: var(--wrong);
+  background: var(--wrong-soft);
+}
+.ak-feedback.is-notyet .ak-fb-title {
+  color: var(--wrong);
+}
+.ak-feedback.is-shown {
+  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+  border-inline-start-color: var(--brand);
+  background: var(--brand-soft);
+}
+.ak-feedback.is-shown .ak-fb-title {
+  color: var(--brand-deep);
+}
+
+/* hint ladder */
+.ak-hints {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+  margin-block: var(--s-3);
+}
+.ak-hint-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ak-hint-list:not(:has(.ak-hint:not([hidden]))) {
+  display: none;
+}
+.ak-hint {
+  padding: var(--s-2) var(--s-3);
+  border: 2px dashed var(--hint);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  max-width: var(--measure-reading);
+  line-height: 1.5;
+}
+.ak-hint:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.ak-hint-tier {
+  font-weight: 700;
+  color: var(--hint);
+}
+.ak-hint-btn {
+  min-height: var(--target-min);
+}
+
+/* progress: where in the set, never a score or a clock */
+.ak-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font: 700 var(--fs-small) / 1.2 var(--font);
+  color: var(--ink-2);
+}
+.ak-progress-bar {
+  flex: 1 1 6rem;
+  max-width: 14rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.ak-progress-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--room);
+  transition: width var(--dur-3) var(--ease-out);
+}
+
+/* interaction states: data-act-state on the activity container, data-ak-in on what belongs to which states.
+   start → active → response → feedback → retry | next → complete */
+[data-act-state="start"] [data-ak-in]:not([data-ak-in~="start"]),
+[data-act-state="active"] [data-ak-in]:not([data-ak-in~="active"]),
+[data-act-state="response"] [data-ak-in]:not([data-ak-in~="response"]),
+[data-act-state="feedback"] [data-ak-in]:not([data-ak-in~="feedback"]),
+[data-act-state="retry"] [data-ak-in]:not([data-ak-in~="retry"]),
+[data-act-state="next"] [data-ak-in]:not([data-ak-in~="next"]),
+[data-act-state="complete"] [data-ak-in]:not([data-ak-in~="complete"]) {
+  display: none;
+}
+[data-act-state="complete"] .ak-zone-response,
+[data-act-state="complete"] .ak-hints {
+  border-style: solid;
+  border-color: var(--line);
+}
+
+@media (forced-colors: active) {
+  .ak-zone,
+  .ak-directions,
+  .ak-feedback,
+  .ak-hint {
+    border: 2px solid CanvasText;
+    forced-color-adjust: auto;
+  }
+  .ak-progress-bar > i {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-progress-bar > i {
+    transition: none;
+  }
+}

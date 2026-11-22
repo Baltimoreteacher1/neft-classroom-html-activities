@@ -158,7 +158,7 @@ function renderPlacement(item, ctx, spec) {
     history.push(prev);
     selected = null;
     say(`${tokenText(tokenId)} placed in ${zoneLabel(zones.find((z) => z.id === zoneId))}.`);
-    draw();
+    draw(nextFocus(zoneId)); // the control that had focus was just rebuilt: keep a keyboard user's place
     commit();
   };
   const unplace = (tokenId) => {
@@ -166,7 +166,7 @@ function renderPlacement(item, ctx, spec) {
     delete placed[tokenId];
     selected = null;
     say(`${tokenText(tokenId)} returned to the list.`);
-    draw();
+    draw(tokenId);
     commit();
   };
   undo.addEventListener("click", () => {
@@ -176,9 +176,11 @@ function renderPlacement(item, ctx, spec) {
     Object.assign(placed, prev);
     selected = null;
     say("Last placement undone.");
-    draw();
+    draw(nextFocus(zones[0].id));
     commit();
   });
+  // After a move the next item to place gets focus; when every item is placed, focus returns to the last place used.
+  const nextFocus = (zoneId) => tokens.find((t) => !(t.id in placed))?.id ?? `zone:${zoneId}`;
   const tokenButton = (t, inZone) => {
     const b = h(doc, "button", { type: "button", class: `acc-token${selected === t.id ? " is-selected" : ""}`, draggable: ctx.readOnly ? undefined : "true", "aria-pressed": String(selected === t.id), disabled: ctx.readOnly, "data-token": t.id, text: t.text });
     if (inZone) b.setAttribute("aria-label", `${t.text}, placed. Press to return it to the list.`);
@@ -215,7 +217,10 @@ function renderPlacement(item, ctx, spec) {
         return drop;
       }),
     );
-    if (focusToken) pool.querySelector(`[data-token="${focusToken}"]`)?.focus();
+    if (focusToken) {
+      const el = focusToken.startsWith("zone:") ? board.querySelector(`[data-zone="${focusToken.slice(5)}"]`) : pool.querySelector(`[data-token="${focusToken}"]`);
+      el?.focus();
+    }
   };
   // Arrow keys move between the items and the places, so a keyboard user never has to Tab through every control.
   root.addEventListener("keydown", (e) => {

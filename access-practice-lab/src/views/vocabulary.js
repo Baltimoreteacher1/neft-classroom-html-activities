@@ -3,15 +3,7 @@ import { BASE, esc, html, icon, raw, safeJson, storage } from "../util.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { VOCABULARY_ITEMS } from "../content/vocabulary-items.js";
 import { clearWeeklyGoal, GOAL_CHOICES, recordWeeklyCorrect, setWeeklyGoal, weeklyProgress } from "../word-goal.js";
-import {
-  advanceSprint,
-  clockText,
-  closeSprint,
-  recordSprintAnswer,
-  sprintStatus,
-  sprintWordId,
-  startSprint,
-} from "../word-sprint.js";
+import { advanceRound, closeRound, recordRoundAnswer, roundStatus, roundWordId, startRound } from "../word-sprint.js";
 
 const KEY = "accessPracticeLab:v1:vocabulary-morphology";
 const day = () => Math.floor(Date.now() / 86400000);
@@ -29,29 +21,11 @@ const taskFor = (items, state) => {
   const idx = Math.max(0, Number(state.cursor || 0)) % pool.length;
   return pool[idx];
 };
-// While a Word Sprint runs, its word is the one on screen; otherwise the normal review order applies.
+// While a Word Round runs, its word is the one on screen; otherwise the normal review order applies.
 const currentItem = (items, state, now) => {
-  if (sprintStatus(state.sprint, now) === "running") return items.find((row) => row.id === sprintWordId(state.sprint));
+  if (roundStatus(state.round) === "running") return items.find((row) => row.id === roundWordId(state.round));
   return taskFor(items, state);
 };
-let sprintTick = null;
-// Redraws only the clock each quarter second and re-renders once when time runs out. Stops when the clock leaves the page.
-function watchSprint(ctx, sprint) {
-  clearInterval(sprintTick);
-  if (sprintStatus(sprint, Date.now()) !== "running") return;
-  sprintTick = setInterval(() => {
-    const clock = document.querySelector("[data-vm-clock]");
-    if (!clock) return clearInterval(sprintTick);
-    const left = sprint.deadline - Date.now();
-    if (left <= 0) {
-      clearInterval(sprintTick);
-      ctx.rerender();
-      return;
-    }
-    clock.textContent = clockText(left);
-  }, 250);
-}
-
 // Chrome strings are localized through I (set at the top of render); words, meanings and contexts stay English.
 let I = makeI18n("en");
 const DOM_ES = { Listening: "Escuchar", Reading: "Leer", Speaking: "Hablar", Writing: "Escribir" };
@@ -87,10 +61,9 @@ export async function render(ctx) {
   const saved = readState();
   const state = saved[band] || {};
   const now = Date.now();
-  const sprint = state.sprint;
-  const sprintRunning = sprintStatus(sprint, now) === "running";
+  const round = state.round;
+  const sprintRunning = roundStatus(round) === "running";
   const item = currentItem(items, state, now);
-  watchSprint(ctx, sprint);
   const weekly = weeklyProgress(state, new Date(now));
   const record = state.items?.[item.id] || {};
   const selected = Array.isArray(record.selected) ? record.selected : [];
@@ -125,7 +98,7 @@ export async function render(ctx) {
           </div>
           <div class="vm-word-art" aria-hidden="true"><span class="vm-tile">${I.S("prefix", "prefijo")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-b">${I.S("root", "raíz")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-c">${I.S("suffix", "sufijo")}</span><span class="vm-art-caption">${I.S("parts → meaning → use", "partes → significado → uso")}</span></div>
         </header>
-        ${sprintBlock(sprint, now, state.sprintBest)}
+        ${roundBlock(round)}
         ${goalBlock(weekly)}
 
         <section class="vm-workbench d-${item.domain.toLowerCase()}" aria-labelledby="vm-title">
@@ -162,32 +135,28 @@ export async function render(ctx) {
   };
 }
 
-function sprintBlock(sprint, now, savedBest) {
-  const status = sprintStatus(sprint, now);
+function roundBlock(round) {
+  const status = roundStatus(round);
   if (status === "running") {
-    return html`<section class="vm-sprint is-running" aria-label="${I.S("Word Sprint in progress", "Sprint de palabras en curso")}">
-      <p class="vm-sprint-line"><span class="vm-sprint-clock" data-vm-clock>${clockText(sprint.deadline - now)}</span> <b>${sprint.correct}</b> ${I.T("correct", "correctas")} · ${I.T(`${sprint.answered} answered`, `${sprint.answered} respondidas`)}</p>
+    return html`<section class="vm-sprint is-running" aria-label="${I.S("Word Round in progress", "Ronda de palabras en curso")}">
+      <p class="vm-sprint-line"><b>${I.T(`Word ${round.index + 1} of ${round.order.length}`, `Palabra ${round.index + 1} de ${round.order.length}`)}</b> · ${I.T("No clock. Take the time you need.", "Sin reloj. Tómate el tiempo que necesites.")}</p>
+      <div class="vm-actions"><button class="btn" type="button" data-vm-round-finish>${I.T("End the round", "Terminar la ronda")}</button></div>
     </section>`;
   }
-  const best = Math.max(savedBest || 0, status === "over" ? sprint.correct : 0);
-  const bestLine = best
-    ? I.T(`Your best on this device: ${best} correct in one sprint.`, `Tu mejor resultado en este dispositivo: ${best} correctas en un sprint.`)
-    : I.T("Your best score stays on this device.", "Tu mejor resultado se queda en este dispositivo.");
-  if (status === "over") {
+  if (status === "done") {
     return html`<section class="vm-sprint is-over" role="status" aria-labelledby="vm-sprint-title">
-      <h2 id="vm-sprint-title">${I.T("Time is up", "Se acabó el tiempo")}</h2>
-      <p>${I.T(`You built ${sprint.correct} of ${sprint.answered} words correctly in 60 seconds.`, `Formaste ${sprint.correct} de ${sprint.answered} palabras correctamente en 60 segundos.`)}</p>
-      <p class="fine">${bestLine}</p>
-      <div class="vm-actions"><button class="btn btn-primary btn-domain" type="button" data-vm-sprint-start>${I.T("Play again", "Jugar otra vez")} ${icon("arrow-right")}</button><button class="btn" type="button" data-vm-sprint-finish>${I.T("Done", "Listo")}</button></div>
+      <h2 id="vm-sprint-title">${I.T("Round finished", "Ronda terminada")}</h2>
+      <p>${I.T(`You built ${round.correct} of ${round.answered} words correctly. Words you missed come back tomorrow.`, `Formaste correctamente ${round.correct} de ${round.answered} palabras. Las palabras que fallaste vuelven mañana.`)}</p>
+      <p class="fine">${I.T("Results stay on this device and are only practice. There is no score to beat.", "Los resultados se quedan en este dispositivo y son solo práctica. No hay puntaje que superar.")}</p>
+      <div class="vm-actions"><button class="btn btn-primary btn-domain" type="button" data-vm-round-start>${I.T("Another round", "Otra ronda")} ${icon("arrow-right")}</button><button class="btn" type="button" data-vm-round-finish>${I.T("Back to the workbench", "Volver al banco de trabajo")}</button></div>
     </section>`;
   }
   return html`<section class="vm-sprint" aria-labelledby="vm-sprint-title">
     <div>
-      <h2 id="vm-sprint-title">${I.T("Word Sprint", "Sprint de palabras")}</h2>
-      <p>${I.T("Build as many words as you can in 60 seconds. One try per word; a miss returns tomorrow. The timer keeps running if you leave this page.", "Forma tantas palabras como puedas en 60 segundos. Una oportunidad por palabra; un error vuelve mañana. El cronómetro sigue si sales de esta página.")}</p>
-      <p class="fine">${bestLine}</p>
+      <h2 id="vm-sprint-title">${I.T("Word Round", "Ronda de palabras")}</h2>
+      <p>${I.T("Build six words in a row, one try each, with feedback after every word. A miss returns tomorrow. There is no clock and no score to beat.", "Forma seis palabras seguidas, un intento por palabra, con comentarios después de cada una. Una palabra fallada vuelve mañana. No hay reloj ni puntaje que superar.")}</p>
     </div>
-    <button class="btn btn-primary btn-domain" type="button" data-vm-sprint-start>${I.T("Start Word Sprint", "Empezar el sprint")} ${icon("arrow-right")}</button>
+    <button class="btn btn-primary btn-domain" type="button" data-vm-round-start>${I.T("Start a Word Round", "Empezar una ronda")} ${icon("arrow-right")}</button>
   </section>`;
 }
 
@@ -236,7 +205,7 @@ export function onClick(event, ctx) {
   let state = saved[band] || { cursor: 0, items: {} };
   state.items ||= {};
   const now = Date.now();
-  const sprintRunning = sprintStatus(state.sprint, now) === "running";
+  const sprintRunning = roundStatus(state.round) === "running";
   const item = currentItem(items, state, now);
   const rec = state.items[item.id] || { selected: [] };
   if (button.hasAttribute("data-vm-part") && !rec.checked) {
@@ -260,7 +229,7 @@ export function onClick(event, ctx) {
     rec.due = day() + (correct ? (rec.streak === 1 ? 3 : 7) : 1);
     state.items[item.id] = rec;
     state.current = item.id;
-    if (sprintRunning) state.sprint = recordSprintAnswer(state.sprint, correct);
+    if (sprintRunning) state.round = recordRoundAnswer(state.round, correct);
     if (correct) state = recordWeeklyCorrect(state, new Date(now));
   } else if (button.hasAttribute("data-vm-next")) {
     // Leave the word ready for its next retrieval, then move on (a miss is offered again right away).
@@ -268,7 +237,7 @@ export function onClick(event, ctx) {
     state.items[item.id] = { ...rec, selected: [], checked: false, correct: false };
     if (sprintRunning) {
       delete state.current;
-      state.sprint = advanceSprint(state.sprint);
+      state.round = advanceRound(state.round);
     } else if (retry) state.current = item.id;
     else {
       delete state.current;
@@ -278,12 +247,12 @@ export function onClick(event, ctx) {
     state = setWeeklyGoal(state, Number(button.dataset.vmGoal), new Date(now));
   } else if (button.hasAttribute("data-vm-goal-change")) {
     state = clearWeeklyGoal(state);
-  } else if (button.hasAttribute("data-vm-sprint-start")) {
-    state = closeSprint(state);
+  } else if (button.hasAttribute("data-vm-round-start")) {
+    state = closeRound(state);
     delete state.current;
-    state.sprint = startSprint(items, now);
-  } else if (button.hasAttribute("data-vm-sprint-finish")) {
-    state = closeSprint(state);
+    state.round = startRound(items, now);
+  } else if (button.hasAttribute("data-vm-round-finish")) {
+    state = closeRound(state);
   } else if (button.hasAttribute("data-vm-hint")) {
     const panel = document.querySelector("[data-vm-hint-panel]");
     const open = button.getAttribute("aria-expanded") !== "true";

@@ -362,3 +362,25 @@ test("teacher evidence gives the response, revision history, supports and a next
   );
   assert.ok(ev.help && ev.hints === 2 && ev.nextStep.en && ev.nextStep.es);
 });
+
+test("a check item must teach: a 'why', distinct options and specific feedback on every wrong option", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { validateMission } = await import("../access-practice-lab/src/quest/engine.js");
+  const dir = "access-practice-lab/content/quest/";
+  const mission = JSON.parse(readFileSync(`${dir}missions/wf-word-forge-35.json`, "utf8"));
+  const world = JSON.parse(readFileSync(`${dir}worlds.json`, "utf8")).worlds.map((w) => w.id);
+  const chars = JSON.parse(readFileSync(`${dir}characters.json`, "utf8")).characters.map(
+    (c) => c.id,
+  );
+  const ctx = { worlds: world, characters: chars };
+  assert.deepEqual(validateMission(mission, ctx), []);
+  const bad = structuredClone(mission);
+  const item = bad.stages.flatMap((s) => s.items).find((i) => i.kind === "check");
+  delete item.why;
+  item.options[1].label = item.options[0].label;
+  item.options.find((o) => o.id !== item.answer).fb = "Look again.";
+  const problems = validateMission(bad, ctx).join("\n");
+  assert.match(problems, /needs a "why"/);
+  assert.match(problems, /different from each other/);
+  assert.match(problems, /must say what to look at/);
+});

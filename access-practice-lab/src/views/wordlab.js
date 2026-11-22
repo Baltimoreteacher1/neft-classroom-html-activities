@@ -9,8 +9,6 @@ import {
   STAGE_COPY,
   dueWords,
   gardenInfo,
-  reviewQuestion,
-  reviewWord,
   searchWords,
   dropWord,
 } from "../lang/wordlab.js";
@@ -41,6 +39,7 @@ import {
 } from "./wordlab-common.js";
 import { build, cognates, detective, families, frayer } from "./wordlab-play.js";
 import { network } from "./wordlab-network.js";
+import { plotStep, reviewChange, reviewClick, reviewInput, reviewSection } from "./wordlab-depth.js";
 import { heroArt } from "./studio-art.js";
 
 const MODES = ["network", ...BASE_MODES];
@@ -277,47 +276,7 @@ function gardenHTML(ctx, I, st) {
     .map((id) => WORDS.find((w) => w.id === id))
     .filter(Boolean);
   const due = dueWords(st);
-  const rev = ui.rev;
-  const word = rev ? WORDS.find((w) => w.id === rev.id) : null;
-  let review = "";
-  if (word) {
-    const q = reviewQuestion(word, WORDS);
-    const level = levelOf(st);
-    const prompt =
-      q.kind === "meaning"
-        ? I.T(`What does “${word.w}” mean?`, `¿Qué significa «${word.w}»?`)
-        : q.kind === "spanish"
-          ? I.T(
-              `Which Spanish word matches “${word.w}”?`,
-              `¿Qué palabra en español corresponde a «${word.w}»?`,
-            )
-          : I.T("Which word fits the blank?", "¿Qué palabra encaja en el espacio?");
-    review = html`<section class="panel wl-task" aria-labelledby="wl-rev-h">
-      <h2 id="wl-rev-h">${prompt}</h2>
-      ${q.kind === "sentence" ? html`<p class="wl-ex">${q.prompt}</p>` : html`<p class="wl-bigword"><b>${word.w}</b> ${speakBtn(I, word.w)}</p>`}
-      ${rev.hint ? html`<p class="wl-hint">${icon("bulb")} ${I.T(`It starts with “${word.w[0]}”. Spanish help: `, `Empieza con «${word.w[0]}». Ayuda en español: `)}<span lang="es">${word.e}</span></p>` : rev.choice == null ? html`<button type="button" class="btn small" data-wl-rhint>${icon("bulb")} ${I.T("Help me remember", "Ayúdame a recordar")}</button>` : ""}
-      <div class="wl-choices" role="group">
-        ${q.opts.map((o, i) => html`<button type="button" class="wl-choice ${rev.choice != null && o.ok ? "is-right" : rev.choice === i ? "is-try" : ""}" data-wl-ranswer="${i}" ${rev.choice != null ? "disabled" : ""}>${o.text}${gloss(I, level, o.es)}</button>`)}
-      </div>
-      ${
-        rev.choice != null
-          ? html`<div
-                class="wl-feedback ${q.opts[rev.choice].ok ? "is-right" : "is-try"}"
-                role="status"
-              >
-                ${icon(q.opts[rev.choice].ok ? "check" : "alert")}
-                ${q.opts[rev.choice].ok ? (rev.hint ? I.T("Right. With help, the word is watered but it does not grow yet.", "Correcto. Con ayuda, la palabra se riega pero todavía no crece.") : I.T("Right, on your own. Your word grows.", "Correcto, por tu cuenta. Tu palabra crece.")) : I.T(`Not this time. “${word.w}”: ${word.d}`, `Esta vez no. «${word.w}»: ${word.de}`)}
-              </div>
-              <div class="wl-actions">
-                <button type="button" class="btn btn-primary" data-wl-rnext>
-                  ${due.length > 1 || !q.opts[rev.choice].ok ? I.T("Next", "Siguiente") : I.T("Back to my garden", "Volver a mi jardín")}
-                  ${icon("arrow-right")}
-                </button>
-              </div>`
-          : ""
-      }
-    </section>`;
-  }
+  const review = reviewSection(ctx, I, st, ui);
   return html`${review}
     <section class="panel" aria-labelledby="wl-g-h">
       <h2 id="wl-g-h">${I.T("My Word Garden", "Mi jardín de palabras")}</h2>
@@ -325,7 +284,8 @@ function gardenHTML(ctx, I, st) {
         ${ids.length ? I.T(`Words grow when you remember them on your own, on days that are spaced out: tomorrow, then after 3, 7 and 14 days. Help is fine, but a word grows only after a review without help. ${due.length} ${due.length === 1 ? "word is" : "words are"} ready.`, `Las palabras crecen cuando las recuerdas por tu cuenta, en días espaciados: mañana y luego a los 3, 7 y 14 días. La ayuda está bien, pero una palabra crece solo después de un repaso sin ayuda. ${due.length} ${due.length === 1 ? "palabra está lista" : "palabras están listas"}.`) : I.T("Your garden is empty. Plant words from Explore Words, the Builder, or any word card.", "Tu jardín está vacío. Planta palabras desde Explorar palabras, el Constructor o cualquier tarjeta.")}
       </p>
       ${ids.length ? html`<p><button type="button" class="btn" data-wl-book>${icon("bookmark")} ${I.T("Make a picture dictionary of my words", "Hacer un diccionario ilustrado con mis palabras")}</button></p>` : ""}
-      ${due.length && !rev ? html`<button type="button" class="btn btn-primary" data-wl-rstart>${icon("growth")} ${I.T(`Water ${due.length} ${due.length === 1 ? "word" : "words"}`, `Regar ${due.length} ${due.length === 1 ? "palabra" : "palabras"}`)}</button>` : ""}
+      ${due.length && !ui.rev ? html`<button type="button" class="btn btn-primary" data-wl-rstart>${icon("growth")} ${I.T(`Water ${due.length} ${due.length === 1 ? "word" : "words"}`, `Regar ${due.length} ${due.length === 1 ? "palabra" : "palabras"}`)}</button>` : ""}
+      ${ids.length && !ui.rev ? html`<button type="button" class="btn" data-wl-mixstart>${icon("growth")} ${I.T("Mixed review of my words (optional)", "Repaso mixto de mis palabras (opcional)")}</button>` : ""}
       <ul class="wl-plots">
         ${ids.map((w) => {
           const info = gardenInfo(st.garden[w.id]);
@@ -336,6 +296,7 @@ function gardenHTML(ctx, I, st) {
             ><small
               >${info.retired ? I.T(nEn, "Lo mostraste por tu cuenta cuatro veces.") : info.due ? I.T("Ready to water", "Lista para regar") : I.T(`Waits ${info.wait} ${info.wait === 1 ? "day" : "days"}`, `Espera ${info.wait} ${info.wait === 1 ? "día" : "días"}`)}</small
             >
+            <small class="wl-step">${plotStep(I, st.garden[w.id])}</small>
             <span class="wl-plot-actions"
               ><a class="btn small" href="${wlHref(`frayer/${w.id}`, ctx.band)}"
                 >${I.T("Frayer", "Frayer")}</a
@@ -446,40 +407,9 @@ export function onClick(e, ctx) {
 }
 
 function gardenClick(e, ctx, I, st) {
-  const t = e.target;
-  const start = t.closest("[data-wl-rstart]");
-  if (start)
-    return ((ui.rev = { id: dueWords(st)[0], hint: false, choice: null }), ctx.rerender(), true);
-  const un = t.closest("[data-wl-uproot]");
+  const un = e.target.closest("[data-wl-uproot]");
   if (un) return (dropWord(st, un.dataset.wlUproot), wlSave(st), ctx.rerender(), true);
-  if (t.closest("[data-wl-rhint]") && ui.rev) return ((ui.rev.hint = true), ctx.rerender(), true);
-  const ans = t.closest("[data-wl-ranswer]");
-  if (ans && ui.rev && ui.rev.choice == null) {
-    const word = WORDS.find((w) => w.id === ui.rev.id);
-    const q = reviewQuestion(word, WORDS);
-    const i = Number(ans.dataset.wlRanswer);
-    ui.rev.choice = i;
-    const ok = q.opts[i].ok;
-    reviewWord(st, word.id, { ok, independent: ok && !ui.rev.hint });
-    st.revs = (st.revs || 0) + 1;
-    if (st.revs % 5 === 0)
-      wlEvidence(
-        st,
-        ctx,
-        `garden-${st.revs / 5}`,
-        { reviews: 5, planted: Object.keys(st.garden).length },
-        ui.rev.hint ? { hint: true } : {},
-        "Inform",
-      );
-    wlSave(st);
-    return (ctx.rerender(), true);
-  }
-  if (t.closest("[data-wl-rnext]")) {
-    const next = dueWords(st).filter((id) => id !== ui.rev?.id)[0];
-    ui.rev = next ? { id: next, hint: false, choice: null } : null;
-    return (ctx.rerender(), true);
-  }
-  return false;
+  return reviewClick(e, ctx, I, st, ui);
 }
 
 export function onChange(e, ctx) {
@@ -496,10 +426,12 @@ export function onChange(e, ctx) {
     renderAfterChange(ctx);
     return;
   }
+  if (current.mode === "garden") reviewChange(e, ctx, ui);
   if (current.mode === "frayer") frayer.change(e, ctx, st, current.id);
   if (current.mode === "network") network.change(e, ctx, st);
 }
 export function onInput(e, ctx) {
+  if (current.mode === "garden") reviewInput(e, ui);
   if (current.mode === "frayer") frayer.input(e, ctx, wlState(), current.id);
   if (current.mode === "network") network.input(e, ctx, wlState());
 }

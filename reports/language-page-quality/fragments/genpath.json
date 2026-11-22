@@ -1,0 +1,281 @@
+{
+  "area": "genpath",
+  "branch": "lp-overhaul/genpath",
+  "headCommit": "624287782d",
+  "inventory": [
+    {
+      "id": "adaptive-missions",
+      "url": "/access-practice-lab/missions/<id>",
+      "program": "ACCESS Practice Lab",
+      "type": "adaptive mission (9 files, 59 questions, 12 evidence tasks)",
+      "gradeBand": "3-5, 6-8",
+      "wida": "Key Language Uses, ELD standards in mission files",
+      "objective": "Evidence-based explain/argue across listen-read-decide-speak-write",
+      "contentSource": "content/missions/*.json",
+      "template": "src/views/missions.js + missions-feedback.js",
+      "feedback": "was: generic coach by distractor type; count-only evidence feedback with unbounded retry. now: names the chosen option, coaches, names wrong evidence statements, reveals supporting statements after 2 retries, explain on every question and evidence task",
+      "a11y": "feedback role=status unchanged; native radios/checkboxes",
+      "mobile": "390px no overflow (browser verified)",
+      "designIssues": [],
+      "contentIssues": [
+        "12 evidence tasks had no explanation of why statements support the idea",
+        "2 question explanations under 60 chars (shade-r-q3, nook-r-q3)"
+      ],
+      "action": "rewrote 14 explanations, rebuilt feedback, tightened validator",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/missions-feedback.test.mjs, tools/missions-feedback-e2e.mjs (390/1280), validate-access-studio"
+    },
+    {
+      "id": "quest-missions",
+      "url": "/access-practice-lab/quest/<id>",
+      "program": "Language Quest",
+      "type": "10 quest missions, 12 check items",
+      "gradeBand": "3-5, 6-8",
+      "wida": "keyUses per mission",
+      "objective": "per mission",
+      "contentSource": "content/quest/missions/*.json",
+      "template": "src/quest/kinds-a.js check",
+      "feedback": "was: every correct answer got the same line. now: item-specific why",
+      "a11y": "unchanged",
+      "mobile": "not re-tested (one text span added)",
+      "designIssues": [],
+      "contentIssues": [
+        "12 check items confirmed right with a generic sentence"
+      ],
+      "action": "authored 12 why lines; validateMission now requires why, distinct options, feedback of 5+ words on wrong options",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/validate-quest.mjs, tools/quest-engine.test.mjs"
+    },
+    {
+      "id": "experience-compiler",
+      "url": "/access-practice-lab/experience-builder",
+      "program": "Teacher Experience Compiler (lp-sim/1)",
+      "type": "generator + validator",
+      "gradeBand": "3-5, 6-8",
+      "wida": "standardsFor() catalog mapping unchanged",
+      "objective": "teacher text to playable simulation",
+      "contentSource": "teacher input",
+      "template": "src/compiler/generate.js, validate.js",
+      "feedback": "decide replies were identical canned 'Noted.' for both options; character fallback robotic",
+      "a11y": "existing hotspot-label and transcript errors unchanged",
+      "mobile": "not re-tested",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "option reply teaches how to test a choice against evidence; fallback suggests what to ask; new validator rules",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/compiler.test.mjs, tools/experience-compat.test.mjs, tools/access-experience.test.mjs"
+    },
+    {
+      "id": "flagship-simulation",
+      "url": "/access-practice-lab/simulations/city-that-stopped-talking",
+      "program": "Simulations",
+      "type": "flagship lp-sim/1 mission",
+      "gradeBand": "6-8",
+      "wida": "n/a",
+      "objective": "n/a",
+      "contentSource": "src/sim/missions",
+      "template": "src/sim/ui*.js",
+      "feedback": "not changed",
+      "a11y": "sim-e2e covers 44px hotspots, no overflow, axe",
+      "mobile": "sim-e2e 375px passes",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "none",
+      "priority": "P3",
+      "status": "unchanged",
+      "verification": "node tools/sim-e2e.mjs passed"
+    },
+    {
+      "id": "worlds-pathways-intel-early-prep",
+      "url": "various",
+      "program": "worlds, pathways, intel, early, prep, lesson-builder",
+      "type": "not audited in depth",
+      "gradeBand": "",
+      "wida": "",
+      "objective": "",
+      "contentSource": "",
+      "template": "",
+      "feedback": "src/early/player.js and src/prep/ui.js still announce bare 'Correct!' / 'Try again' strings in places",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "none",
+      "priority": "P2",
+      "status": "unchanged",
+      "verification": "baseline tests only (pathways, lesson-builder, intel-engine)"
+    }
+  ],
+  "scoresBefore": {
+    "adaptive-missions": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 3,
+      "G": 3,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "quest-missions": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 3,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "experience-compiler": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 2,
+      "H": 3,
+      "I": 4,
+      "J": 3,
+      "K": 4
+    }
+  },
+  "scoresAfter": {
+    "adaptive-missions": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "quest-missions": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "experience-compiler": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 4,
+      "J": 3,
+      "K": 4
+    }
+  },
+  "problemsFound": [
+    "Mission evidence tasks: count-only feedback ('2 statements do not support the idea'), no reveal, learner could retry indefinitely",
+    "Mission question first miss never named the learner's own choice",
+    "12 evidence tasks and 2 question explanations did not teach why",
+    "Quest check items confirmed a correct answer with one generic sentence",
+    "Compiled decide options both replied 'Noted. Now make sure your evidence supports it.'",
+    "Validators accepted blank/duplicate/near-duplicate options, 'all of the above', bare explanations, and contradictory or duplicated compiled answer keys",
+    "Early player and prep UI still use bare Correct / Try again announcements (not changed)"
+  ],
+  "improvements": [
+    "src/views/missions-feedback.js: pure feedback rules (choice echo, distractor coaching, named wrong evidence, reveal after two retries, EN/ES)",
+    "mission validator: question quality (stem, blank, duplicate, near-duplicate, escape options, explanation length) and evidence quality (explain, duplicate pool, boardLabel)",
+    "quest validator: why, distinct options, wrong-option feedback length",
+    "compiler validate.js: contradictory-key and duplicate-option errors; dense-evidence, long-prompt, no-reply, same-question, thin-answer, duplicate-pair warnings (bilingual)",
+    "compiler templates: teaching decide reply, in-role fallback that says what to ask",
+    "frozen pre-upgrade saved experience + half-played save fixture proves no silent migration"
+  ],
+  "templatesRedesigned": [
+    "views/missions feedback",
+    "quest check confirmation",
+    "compiler decide reply and character fallback"
+  ],
+  "contentRecordsRewritten": 26,
+  "criticalFixed": 1,
+  "unresolved": [
+    "src/early and src/prep still announce bare Correct!/Try again in places",
+    "worlds.json, pathways, intel, lesson-builder content not audited beyond baseline tests",
+    "quest check correct answer is index 1 in 7 of 12 items (runtime does not shuffle); not changed",
+    "browser verification covered the garden mission only at 390/1280; quest check why line and compiler output not visually verified",
+    "no WIDA scaffolding changes made"
+  ],
+  "sharedEdits": [
+    "access-practice-lab/sw.js (precache hash for new views/missions-feedback.js, regenerated by tools/sync-access-shell.mjs)"
+  ],
+  "tests": [
+    {
+      "cmd": "node --test tools/missions-feedback.test.mjs",
+      "result": "9 pass"
+    },
+    {
+      "cmd": "node --test tools/experience-compat.test.mjs",
+      "result": "7 pass"
+    },
+    {
+      "cmd": "node --test tools/compiler.test.mjs tools/access-experience.test.mjs",
+      "result": "21 + 20 pass"
+    },
+    {
+      "cmd": "node --test tools/quest-engine.test.mjs; node tools/validate-quest.mjs",
+      "result": "16 pass; PASS"
+    },
+    {
+      "cmd": "node --test tools/sim-engine.test.mjs; node tools/sim-e2e.mjs",
+      "result": "21 pass; all passed"
+    },
+    {
+      "cmd": "node tools/validate-access-studio.mjs",
+      "result": "PASS"
+    },
+    {
+      "cmd": "node tools/missions-feedback-e2e.mjs",
+      "result": "all passed at 390 and 1280"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/src/views/missions.js",
+    "access-practice-lab/src/views/missions-feedback.js",
+    "access-practice-lab/src/quest/engine.js",
+    "access-practice-lab/src/quest/kinds-a.js",
+    "access-practice-lab/src/compiler/generate.js",
+    "access-practice-lab/src/compiler/validate.js",
+    "access-practice-lab/content/missions/*.json (9)",
+    "access-practice-lab/content/quest/missions/*.json (6)",
+    "access-practice-lab/sw.js",
+    "tools/validate-access-studio.mjs",
+    "tools/missions-feedback.test.mjs",
+    "tools/missions-feedback-e2e.mjs",
+    "tools/experience-compat.test.mjs",
+    "tools/fixtures/lp-sim-saved-experience.v1.json",
+    "tools/quest-engine.test.mjs"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/genpath/mission-evidence-retry-390.jpg",
+    "reports/language-page-quality/screenshots/genpath/mission-evidence-retry-1280.jpg",
+    "reports/language-page-quality/screenshots/genpath/mission-evidence-reveal-390.jpg",
+    "reports/language-page-quality/screenshots/genpath/mission-evidence-reveal-1280.jpg"
+  ]
+}

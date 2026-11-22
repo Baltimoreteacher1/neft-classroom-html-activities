@@ -86,6 +86,87 @@ export function checkStages(where, stages) {
   if (stages?.independent && Object.keys(stages.independent).length)
     fail(where, "stages.independent must be empty (independent means no scaffolds)");
 }
+
+const norm = (x) =>
+  String(x || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+const tokens = (x) =>
+  new Set(
+    norm(x)
+      .split(" ")
+      .filter((w) => w.length > 2),
+  );
+/** Share of the smaller token set that the other set contains: 1 means one option is contained in the other. */
+const overlapShare = (a, b) => {
+  const x = tokens(a);
+  const y = tokens(b);
+  if (!x.size || !y.size) return 0;
+  let n = 0;
+  for (const w of x) if (y.has(w)) n += 1;
+  return n / Math.min(x.size, y.size);
+};
+export const MIN_EXPLAIN_CHARS = 60;
+const ESCAPE_OPTION =
+  /\b(?:all|none|both|neither)\s+of\s+the\s+(?:above|these)\b|\bboth\s+[a-d]\s+and\s+[a-d]\b/i;
+const BARE_FEEDBACK =
+  /^(?:correct|right|yes|good|great|nice|well done|try again|incorrect|wrong)[.!\s]*$/i;
+/**
+ * Quality rules a question must meet so the learner can learn from it: a real stem, options that are written
+ * (not blank), distinct and not "all of the above", and an explanation that teaches rather than confirms.
+ * Teacher-created content is not run through this: it only gates the lab's own mission files.
+ */
+export function checkQuestionQuality(where, t) {
+  const options = t.options || [];
+  if (norm(t.q).split(" ").filter(Boolean).length < 4)
+    fail(where, "question needs a real stem (4+ words)");
+  const seen = [];
+  for (const o of options) {
+    if (!norm(o.text)) {
+      fail(where, `option ${o.id} is blank`);
+      continue;
+    }
+    if (ESCAPE_OPTION.test(o.text))
+      fail(where, `option ${o.id} is an "all/none/both" escape option`);
+    for (const prior of seen) {
+      if (norm(prior.text) === norm(o.text))
+        fail(where, `options ${prior.id} and ${o.id} are duplicates`);
+      else if (overlapShare(prior.text, o.text) >= 0.9 && tokens(prior.text).size > 3)
+        fail(where, `options ${prior.id} and ${o.id} are near-duplicates (almost the same words)`);
+    }
+    seen.push(o);
+  }
+  const explain = String(t.explain || "");
+  if (BARE_FEEDBACK.test(explain.trim()) || explain.trim().length < MIN_EXPLAIN_CHARS)
+    fail(
+      where,
+      `explain must teach why the answer fits (at least ${MIN_EXPLAIN_CHARS} characters, not just "Correct")`,
+    );
+  const correct = options.find((o) => o.id === t.answer);
+  if (correct && overlapShare(explain, t.q) >= 0.95 && tokens(explain).size < 8)
+    fail(where, "explain only restates the question");
+}
+/** An evidence-collection task: a pool with real distractors, distinct statements and teaching feedback. */
+export function checkEvidenceQuality(where, t) {
+  const pool = asList(t.pool);
+  const ids = pool.map((e) => e.id);
+  if (new Set(ids).size !== ids.length) fail(where, "duplicate pool statement ids");
+  const texts = pool.map((e) => norm(e.text));
+  if (new Set(texts).size !== texts.length) fail(where, "duplicate pool statements");
+  if (pool.some((e) => !norm(e.text))) fail(where, "blank pool statement");
+  if (pool.every((e) => e.supports))
+    fail(where, "evidence pool needs at least one statement that does not support");
+  if (norm(t.q).split(" ").filter(Boolean).length < 4)
+    fail(where, "evidence task needs a real question");
+  if (!t.boardLabel) fail(where, "evidence task needs a boardLabel");
+  if (String(t.explain || "").trim().length < MIN_EXPLAIN_CHARS)
+    fail(
+      where,
+      `evidence task needs explain: why the supporting statements answer the question (at least ${MIN_EXPLAIN_CHARS} characters)`,
+    );
+}
 export function checkQuestion(where, t, sourceText = "") {
   const ids = (t.options || []).map((o) => o.id);
   if ((t.options || []).length < 3 || (t.options || []).length > 4)
@@ -108,16 +189,7 @@ export function checkQuestion(where, t, sourceText = "") {
     correct.text.length > 1.6 * (lens.reduce((a, b) => a + b, 0) / lens.length)
   )
     fail(where, "correct option is conspicuously the longest");
-  if (
-    /\b(?:always|never|only|none of the above|all of the above)\b/i.test(
-      (t.options || [])
-        .filter((o) => o.id !== t.answer)
-        .map((o) => o.text)
-        .join(" "),
-    ) === false
-  ) {
-    /* absolutes in distractors are allowed but not required */
-  }
+  checkQuestionQuality(where, t);
   void sourceText;
 }
 
@@ -379,6 +451,7 @@ export function sweepMission(file, m, speakIds, writeIds) {
         const from = sources[t.from];
         if (!from) fail(tw, `evidence from unknown source ${t.from}`);
         const body = strings(from).join(" ");
+        checkEvidenceQuality(tw, t);
         if (asList(t.pool).length < 5) fail(tw, "evidence pool ≥5");
         if (asList(t.pool).filter((e) => e.supports).length < 2)
           fail(tw, "evidence pool needs ≥2 supporting statements");
@@ -467,13 +540,15 @@ function selfTest() {
   const mark = () => failures.length;
   let n = mark();
   checkQuestion("t", {
+    q: "Why does the team compare the two soil covers?",
     options: [
-      { id: "a", text: "x" },
-      { id: "b", text: "y", distractor: "opposite" },
-      { id: "c", text: "z", distractor: "partial" },
+      { id: "a", text: "To see which cover keeps more water" },
+      { id: "b", text: "To choose who carries the watering cans", distractor: "true-not-asked" },
+      { id: "c", text: "To prove every plant needs the same water", distractor: "overgeneralized" },
     ],
     answer: "a",
-    explain: "e",
+    explain:
+      "Mateo says the team tested two covers and should compare the numbers before choosing one.",
   });
   if (failures.length !== n)
     throw new Error(`self-test: good question flagged: ${failures.slice(n)}`);
@@ -488,6 +563,59 @@ function selfTest() {
     explain: "",
   });
   if (failures.length - n < 3) throw new Error("self-test: bad question not caught");
+  for (const [label, bad] of [
+    [
+      "duplicate options",
+      {
+        options: [
+          { id: "a", text: "Water is lost" },
+          { id: "b", text: "water is lost!", distractor: "opposite" },
+          { id: "c", text: "Plants grow", distractor: "partial" },
+        ],
+      },
+    ],
+    [
+      "all of the above",
+      {
+        options: [
+          { id: "a", text: "Water is lost" },
+          { id: "b", text: "All of the above", distractor: "opposite" },
+          { id: "c", text: "Plants grow", distractor: "partial" },
+        ],
+      },
+    ],
+    ["bare explanation", { explain: "Correct!" }],
+    ["short stem", { q: "Why?" }],
+  ]) {
+    n = mark();
+    checkQuestion("t", {
+      q: "Why does the team compare the two soil covers?",
+      options: [
+        { id: "a", text: "To see which cover keeps more water" },
+        { id: "b", text: "To choose who carries the watering cans", distractor: "true-not-asked" },
+        {
+          id: "c",
+          text: "To prove every plant needs the same water",
+          distractor: "overgeneralized",
+        },
+      ],
+      answer: "a",
+      explain:
+        "Mateo says the team tested two covers and should compare the numbers before choosing one.",
+      ...bad,
+    });
+    if (failures.length === n) throw new Error(`self-test: ${label} not caught`);
+  }
+  n = mark();
+  checkEvidenceQuality("t", {
+    q: "Which details support the plan?",
+    boardLabel: "Notes",
+    pool: [
+      { id: "a", text: "x", supports: true },
+      { id: "b", text: "x", supports: true },
+    ],
+  });
+  if (failures.length - n < 3) throw new Error("self-test: bad evidence task not caught");
   failures.length = before;
   if (!scoreClaims({ a: "You are at Level 4 now" }).length)
     throw new Error("self-test: score claim not caught");

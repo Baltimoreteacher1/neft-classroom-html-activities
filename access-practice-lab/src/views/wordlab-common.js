@@ -2,6 +2,7 @@
 import { FALSE_FRIENDS, MORPHEMES } from "../content/wordlab-lab.js";
 import { WORDS } from "../content/wordlab-words.js";
 import { collectWord, kindOfWord, wordsForBand } from "../lang/wordlab.js";
+import { depthOf } from "../lang/wordlab-depth.js";
 import { BASE, esc, html, icon, raw } from "../util.js";
 import {
   bandFor,
@@ -75,6 +76,7 @@ export function wordCardHTML(w, I, level, st, band) {
             ${w.n ? html`<p class="wl-warn" role="note">${icon("alert")} ${I.T(w.n, w.ne)}</p>` : ""}`
         : ""
     }
+    ${deepHTML(w, I, level)}
     <div class="wl-actions">
       ${speakBtn(I, w.w, I.S(`Hear ${w.w}`, `Escuchar ${w.w}`))}
       <button
@@ -96,6 +98,37 @@ export function wordCardHTML(w, I, level, st, band) {
       >
     </div>
   </article>`;
+}
+
+/** What the word is NOT, the phrases it travels in, related words and a second meaning. Native <details>, so it works from the keyboard. */
+export function deepHTML(w, I, level) {
+  const d = depthOf(w);
+  const rows = [];
+  if (d.no)
+    rows.push(
+      html`<p><b>${I.T("Not this:", "No es esto:")}</b> ${d.no}${gloss(I, level, d.noe)}</p>`,
+    );
+  if (d.col?.length)
+    rows.push(html`<p><b>${I.T("Goes with:", "Se usa con:")}</b> ${d.col.join(" · ")}</p>`);
+  if (d.syn?.length)
+    rows.push(
+      html`<p>
+        <b>${I.T("Close in meaning:", "Parecida en significado:")}</b> ${d.syn.join(", ")}
+      </p>`,
+    );
+  if (d.ant?.length)
+    rows.push(html`<p><b>${I.T("Opposite:", "Opuesta:")}</b> ${d.ant.join(", ")}</p>`);
+  if (d.mm)
+    rows.push(
+      html`<p>
+        <b>${I.T("Another meaning:", "Otro significado:")}</b> ${d.mm[0]}. <i>${d.mm[1]}</i>
+      </p>`,
+    );
+  if (!rows.length) return "";
+  return html`<details class="wl-deep">
+    <summary>${icon("search")} ${I.T("Go deeper", "Profundizar")}</summary>
+    ${rows}
+  </details>`;
 }
 
 /** Evidence at the end of a round. Counts and ids only; at most one entry per task per day. */

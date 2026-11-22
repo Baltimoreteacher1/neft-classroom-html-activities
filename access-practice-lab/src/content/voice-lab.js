@@ -199,31 +199,283 @@ export const LADDERS = [
   },
 ];
 
-/** Listen-then-speak and read-then-speak retell tasks. `turns` are spoken by read-aloud; `text` is read on screen. */
+/**
+ * Listen-then-speak and read-then-speak retell tasks. Heard sources are `turns` (one narrator) or `parts` (speakers);
+ * the on-screen transcript and the read-aloud come from the same words. Fields the Voice Lab teaches with:
+ *  - `genre` what is being heard/read; `listenFor` the purpose shown before the audio;
+ *  - `check` listening comprehension (kind: main-idea | detail | sequence | inference; `part` = where to listen again);
+ *  - `vocab` [word, meaning, Spanish]; `frames` { full, light }: the sentence frames fade from full to light after take 1;
+ *  - `criteria` what a strong retell does (a self-review list: the lab does not score speech).
+ */
 export const RETELLS = [
   {
     id: "water-filter",
     band: "6-8",
     mode: "listen",
+    genre: "Class report",
+    genreEs: "Informe de clase",
     title: "How a Water Filter Works",
     titleEs: "Cómo funciona un filtro de agua",
     prompt:
       "Retell how the class's water filter works. Say what each layer does, in order, and what the class found.",
+    listenFor: ["the three layers, in order", "what each layer caught", "why clear water may not be safe"],
     turns: [
       "Today we built a water filter in a plastic bottle. We put three layers inside: gravel on top, sand in the middle, and charcoal at the bottom.",
       "When we poured muddy water in, the gravel caught the leaves and small sticks first. Then the sand trapped the tiny bits of dirt. Last, the charcoal took away the bad smell.",
       "The water that came out was much clearer. But remember: clear water is not always safe water. Germs are too small to see, so we would still need to boil it before drinking.",
     ],
+    check: [
+      {
+        kind: "main-idea",
+        part: 0,
+        q: "What is the recording mostly about?",
+        options: [
+          "Why muddy water is safe to drink once it looks clear.",
+          "Where to find gravel, sand and charcoal outdoors.",
+          "How a class built a bottle filter and what it did to muddy water.",
+        ],
+        answer: 2,
+        hint: "Think about the whole recording, from the bottle at the start to the water at the end.",
+        why: "The speaker describes building the filter, what each layer did, and how the water changed.",
+      },
+      {
+        kind: "detail",
+        part: 1,
+        q: "Which layer took away the bad smell?",
+        options: ["The gravel", "The sand", "The charcoal"],
+        answer: 2,
+        hint: "Each layer has its own job in the second part. Listen for the word \"smell\".",
+        why: "The charcoal took away the smell. The gravel caught leaves and sticks, and the sand trapped tiny bits of dirt.",
+      },
+      {
+        kind: "inference",
+        part: 2,
+        q: "Why would the class still boil the water before drinking it?",
+        options: [
+          "Boiling makes muddy water look clearer.",
+          "Clear water can still have germs that are too small to see.",
+          "The charcoal leaves a bad taste in the water.",
+        ],
+        answer: 1,
+        hint: "Listen to the last part. What can the filter not remove?",
+        why: "The speaker says germs are too small to see, so clear water is not always safe water.",
+      },
+    ],
+    vocab: [
+      ["filter", "to take dirt out of water or air", "filtrar: quitar la suciedad del agua o del aire"],
+      ["trap", "to catch something and hold it", "atrapar: sujetar algo para que no pase"],
+      ["charcoal", "a black material that takes away smells", "carbón: material negro que quita los malos olores"],
+      ["germs", "tiny living things that can make people sick", "gérmenes: seres muy pequeños que pueden enfermar"],
+    ],
     plan: ["The layers", "What each layer did", "What the class found"],
+    frames: {
+      full: [
+        "The class built a filter with ___ layers: ___, ___ and ___.",
+        "First, the ___ caught ___. Next, the ___ trapped ___. Last, the ___ took away ___.",
+        "The water was ___, but it was not safe because ___.",
+      ],
+      light: ["The class built ___.", "First, ___. Next, ___. Last, ___.", "The water was ___, but ___."],
+    },
+    criteria: [
+      "I name all three layers in order.",
+      "I say what each layer did.",
+      "I say the water was clearer but not safe, and I say why.",
+      "I use order words such as first, next and last.",
+    ],
     model: {
       name: "Rafael",
-      line: "The class built a water filter with three layers. First, the gravel caught leaves and sticks. Next, the sand trapped tiny bits of dirt. Last, the charcoal took away the smell. The water came out clearer, but it was not safe yet, because germs are too small to see, so you would still have to boil it.",
+      line: "The class built a water filter with three layers. First, the gravel caught leaves and sticks. Next, the sand trapped tiny bits of dirt. Last, the charcoal took away the smell. The water came out clearer, but it was not safe yet, because germs are too small to see and the class would still have to boil it.",
+    },
+  },
+  {
+    id: "assembly-change",
+    band: "6-8",
+    mode: "listen",
+    genre: "School announcement",
+    genreEs: "Anuncio escolar",
+    title: "The Assembly Moves",
+    titleEs: "La asamblea cambia de lugar",
+    prompt:
+      "Your friend was absent and missed the announcement. Tell your friend what changed, why it changed, and what students must do.",
+    listenFor: ["what changed and why", "the new time", "what students must bring"],
+    parts: [
+      {
+        speaker: "Ms. Alvarez",
+        text: "Good afternoon, students. This is Ms. Alvarez with a schedule change for Thursday. Because the gym floor is being repaired, our spring assembly will move from the gym to the auditorium.",
+      },
+      {
+        speaker: "Ms. Alvarez",
+        text: "Classes will walk to the auditorium at ten forty instead of ten fifteen, so first period will be twenty-five minutes longer. Sixth graders will sit on the left side, and seventh and eighth graders will sit on the right.",
+      },
+      {
+        speaker: "Ms. Alvarez",
+        text: "Please bring your student ID, because teachers will use it to take attendance at the door. Anyone who forgets it should stop at the front office before the assembly. Thank you, and have a great afternoon.",
+      },
+    ],
+    check: [
+      {
+        kind: "main-idea",
+        part: 0,
+        q: "What is the announcement mostly about?",
+        options: [
+          "A new rule about student ID cards.",
+          "A plan to repair the auditorium.",
+          "A change to where and when Thursday's assembly happens.",
+        ],
+        answer: 2,
+        hint: "Listen to the first part. What is moving, and where is it moving to?",
+        why: "Ms. Alvarez says the assembly moves from the gym to the auditorium and that the time changes too.",
+      },
+      {
+        kind: "detail",
+        part: 1,
+        q: "When will classes walk to the auditorium?",
+        options: ["At ten fifteen.", "At ten twenty-five.", "At ten forty."],
+        answer: 2,
+        hint: "Two times are in this part. One is the old time and one is the new time. Listen for \"instead of\".",
+        why: "She says ten forty instead of ten fifteen. Ten fifteen was the old time.",
+      },
+      {
+        kind: "inference",
+        part: 2,
+        q: "Why do students need to bring their ID?",
+        options: [
+          "Students use it to choose a seat.",
+          "Teachers will use it to take attendance at the door.",
+          "The front office needs it for the repairs.",
+        ],
+        answer: 1,
+        hint: "Listen for the word \"because\" in the last part.",
+        why: "She says teachers will use the ID to take attendance at the door.",
+      },
+    ],
+    vocab: [
+      ["schedule", "a plan that shows when things happen", "horario: plan que muestra cuándo ocurre cada cosa"],
+      ["assembly", "a meeting for the whole school", "asamblea: reunión de toda la escuela"],
+      ["attendance", "a list of who is present", "asistencia: lista de quién está presente"],
+      ["repair", "to fix something that is broken", "reparar: arreglar algo que está roto"],
+    ],
+    plan: ["What changed", "Why it changed", "What students must do"],
+    frames: {
+      full: [
+        "Ms. Alvarez said that the ___ is moving from ___ to ___.",
+        "It is changing because ___.",
+        "Students should ___ because ___.",
+      ],
+      light: ["The ___ moved ___.", "The reason is ___.", "Students should ___."],
+    },
+    criteria: [
+      "I say what changed and give the new place and time.",
+      "I give the reason for the change.",
+      "I tell my friend what to bring or do.",
+      "I talk to my friend in my own words, not Ms. Alvarez's exact words.",
+    ],
+    model: {
+      name: "Camila",
+      line: "Ms. Alvarez announced a schedule change for Thursday. The spring assembly is moving from the gym to the auditorium because the gym floor is being repaired. Classes will walk over at ten forty, not ten fifteen, so first period will be longer. You need to bring your student ID because teachers will take attendance at the door, and if you forget it, you should go to the front office first.",
+    },
+  },
+  {
+    id: "interview-crosswalk",
+    band: "6-8",
+    mode: "listen",
+    genre: "Interview",
+    genreEs: "Entrevista",
+    title: "Where Does a Crosswalk Go?",
+    titleEs: "¿Dónde va un paso de peatones?",
+    prompt:
+      "A classmate wants a crosswalk near your school. Explain what the city checks before it builds one, then recommend what your classmate should do.",
+    listenFor: ["what the city counts, measures and checks", "the example about the hill", "Ms. Patel's advice"],
+    parts: [
+      { speaker: "Jo", text: "Ms. Patel, how does the city decide where to put a new crosswalk?" },
+      {
+        speaker: "Ms. Patel",
+        text: "We start with data. First, we count how many people cross the street and how many cars pass in one hour. Next, we measure how fast the cars are going, because a fast car needs much more distance to stop.",
+      },
+      { speaker: "Jo", text: "What else do you look at?" },
+      {
+        speaker: "Ms. Patel",
+        text: "We visit the place. Near a school or a bus stop, many people cross at the same spot, so a crosswalk there helps the most. Last, we ask the neighbors. Once, a resident told us that children crossed behind a hill where drivers could not see them. We moved the crosswalk twenty meters, and the problem was solved.",
+      },
+      { speaker: "Jo", text: "What would you tell students who want a crosswalk near our school?" },
+      {
+        speaker: "Ms. Patel",
+        text: "Bring evidence. Count the people who cross, take photos, and write down what you see. A clear count is stronger than saying, \"It feels dangerous.\"",
+      },
+    ],
+    check: [
+      {
+        kind: "detail",
+        part: 1,
+        q: "Why does the city measure how fast the cars are going?",
+        options: [
+          "Slow cars do not need a crosswalk.",
+          "The city counts cars by their speed.",
+          "A fast car needs more distance to stop.",
+        ],
+        answer: 2,
+        hint: "Listen for the word \"because\" in Ms. Patel's first long answer.",
+        why: "She says a fast car needs much more distance to stop, so speed matters for safety.",
+      },
+      {
+        kind: "sequence",
+        part: 3,
+        q: "Which list shows the order Ms. Patel gives for what the city does?",
+        options: [
+          "Ask the neighbors, count people and cars, visit the place.",
+          "Count people and cars, measure speed, visit the place, ask the neighbors.",
+          "Visit the place, ask the neighbors, count people and cars.",
+        ],
+        answer: 1,
+        hint: "She uses the order words first, next and last. Listen to both of her answers.",
+        why: "She starts with counts and speed, then visits the place, and last asks the neighbors.",
+      },
+      {
+        kind: "inference",
+        part: 5,
+        q: "Why does Ms. Patel say a clear count is stronger than \"It feels dangerous\"?",
+        options: [
+          "Students should not tell the city how they feel.",
+          "Numbers give the city evidence it can check.",
+          "Counting takes less time than visiting the place.",
+        ],
+        answer: 1,
+        hint: "Listen to the last part. She says to \"bring evidence\".",
+        why: "A count is evidence the city can check. A feeling, by itself, is hard to check.",
+      },
+    ],
+    vocab: [
+      ["crosswalk", "a marked place where people cross a street", "paso de peatones: lugar marcado para cruzar la calle"],
+      ["data", "facts and numbers you collect to answer a question", "datos: hechos y números que reúnes para responder una pregunta"],
+      ["resident", "a person who lives in a place", "residente: persona que vive en un lugar"],
+      ["evidence", "facts that show an idea is true", "evidencia: hechos que muestran que una idea es verdadera"],
+    ],
+    plan: ["What the city checks", "A real example", "My recommendation"],
+    frames: {
+      full: [
+        "Before it builds a crosswalk, the city counts ___, measures ___ and asks ___.",
+        "For example, ___, so the city ___.",
+        "I recommend that you ___ because ___.",
+      ],
+      light: ["The city checks ___.", "For example, ___.", "I recommend ___ because ___."],
+    },
+    criteria: [
+      "I name what the city counts, measures and asks.",
+      "I use the hill example from the interview.",
+      "I recommend something to my classmate and give a reason.",
+      "I use a transition such as first, next, for example or because.",
+    ],
+    model: {
+      name: "Noor",
+      line: "Before it builds a crosswalk, the city counts how many people and cars use the street and measures how fast the cars go. Next, it visits the place, especially near schools and bus stops, and last, it asks the neighbors. For example, one crosswalk was moved twenty meters because children crossed behind a hill where drivers could not see them. I recommend that you count the people who cross and take photos, because evidence is stronger than a feeling.",
     },
   },
   {
     id: "bridge-triangles",
     band: "6-8",
     mode: "read",
+    genre: "Informational article",
+    genreEs: "Artículo informativo",
     title: "Why Bridges Use Triangles",
     titleEs: "Por qué los puentes usan triángulos",
     prompt: "Retell the main idea of the article and the two reasons it gives.",
@@ -232,34 +484,206 @@ export const RETELLS = [
       "A square can be pushed into a diamond shape when a heavy load presses on one corner. A triangle cannot change its shape unless one of its sides breaks or bends. That is why builders call it a rigid shape.",
       "Triangles also spread the weight. When a train rolls across, each triangle passes the push along its sides to the next triangle, so no single beam carries the whole load.",
     ],
+    vocab: [
+      ["rigid", "does not change shape when it is pushed", "rígido: no cambia de forma cuando lo empujan"],
+      ["load", "the weight that a structure holds", "carga: el peso que sostiene una estructura"],
+      ["beam", "a long, strong bar that holds weight", "viga: barra larga y fuerte que sostiene peso"],
+      ["spread", "to share across a larger area", "repartir: compartir en un área más grande"],
+    ],
     plan: ["Main idea", "Reason 1", "Reason 2"],
+    frames: {
+      full: [
+        "The article explains that engineers use ___ in bridges because ___.",
+        "The first reason is that ___. A square can ___, but a triangle ___.",
+        "The second reason is that ___ so no single ___ carries ___.",
+      ],
+      light: ["Engineers use ___ because ___.", "The first reason is ___.", "The second reason is ___."],
+    },
+    criteria: [
+      "I state the main idea in one sentence.",
+      "I give both reasons from the article.",
+      "I use my own words instead of reading the article's sentences.",
+      "I connect my ideas with words such as because, also or so.",
+    ],
     model: {
       name: "Yasmin",
-      line: "The article explains that bridges use triangles because they are the strongest simple shape. The first reason is that a triangle cannot change its shape unless a side breaks, but a square can be pushed into a diamond. The second reason is that triangles spread the weight from one triangle to the next, so no single beam carries the whole train.",
+      line: "The article explains that bridges use triangles because they are the strongest simple shape. The first reason is that a triangle cannot change its shape unless a side breaks, but a square can be pushed into a diamond. The second reason is that triangles spread the weight, so when a train crosses, the push passes from triangle to triangle and no single beam carries the whole load.",
     },
   },
   {
     id: "bees-flowers",
     band: "3-5",
     mode: "listen",
+    genre: "Science explanation",
+    genreEs: "Explicación de ciencias",
     title: "How Bees Help Flowers",
     titleEs: "Cómo ayudan las abejas a las flores",
     prompt: "Retell how bees help flowers. Tell what happens first, next and last.",
+    picture: "pictures/35t-bee-flower.svg",
+    alt: "A close-up picture of a fuzzy striped bee standing on a big pink flower. Clumps of yellow dust from the flower are stuck to the bee's back legs and body.",
+    listenFor: ["what the bee drinks", "what sticks to its legs", "how the flower gets help"],
     turns: [
       "A bee lands on a flower to drink a sweet juice called nectar.",
       "While the bee drinks, yellow dust called pollen sticks to its fuzzy legs. Then the bee flies to another flower, and some pollen falls off there.",
       "That pollen helps the second flower make seeds. So bees get food, and flowers get help making new plants.",
     ],
+    check: [
+      {
+        kind: "sequence",
+        part: 0,
+        q: "What does the bee do first?",
+        options: [
+          "It carries pollen to a second flower.",
+          "It helps a flower make seeds.",
+          "It lands on a flower to drink nectar.",
+        ],
+        answer: 2,
+        hint: "The first sentence tells you the very first step.",
+        why: "First the bee lands and drinks nectar. Moving the pollen and making seeds come later.",
+      },
+      {
+        kind: "detail",
+        part: 1,
+        q: "What sticks to the bee's legs?",
+        options: ["Nectar", "Pollen", "Seeds"],
+        answer: 1,
+        hint: "Listen for the yellow dust in the second part.",
+        why: "Pollen is the yellow dust that sticks to the bee's fuzzy legs. Nectar is the sweet juice the bee drinks.",
+      },
+      {
+        kind: "main-idea",
+        part: 2,
+        q: "How do bees help flowers?",
+        options: [
+          "They drink all the nectar so the flowers can rest.",
+          "They carry pollen from one flower to another so seeds can grow.",
+          "They plant seeds in the ground.",
+        ],
+        answer: 1,
+        hint: "The last part says what the pollen does for the second flower.",
+        why: "Pollen from the first flower helps the second flower make seeds. Bees get food, and flowers get help.",
+      },
+    ],
+    vocab: [
+      ["nectar", "a sweet juice inside a flower", "néctar: jugo dulce dentro de una flor"],
+      ["pollen", "yellow dust from a flower", "polen: polvo amarillo de una flor"],
+      ["seeds", "small parts that can grow into new plants", "semillas: partes pequeñas que pueden crecer y ser plantas nuevas"],
+    ],
     plan: ["First", "Next", "Last"],
+    frames: {
+      full: [
+        "First, a bee lands on a flower to drink ___.",
+        "Next, ___ sticks to its ___, and the bee flies to ___.",
+        "Last, the pollen helps the flower ___.",
+      ],
+      light: ["First, ___.", "Next, ___.", "Last, ___."],
+    },
+    criteria: [
+      "I tell what happens first, next and last.",
+      "I use the words nectar and pollen.",
+      "I say how both the bee and the flower get something.",
+      "I speak in complete sentences.",
+    ],
     model: {
       name: "Amina",
       line: "First, a bee lands on a flower to drink nectar. Next, pollen sticks to its legs, and it carries the pollen to another flower. Last, the pollen helps that flower make seeds, so new plants can grow.",
     },
   },
   {
+    id: "directions-library",
+    band: "3-5",
+    mode: "listen",
+    genre: "Directions",
+    genreEs: "Indicaciones",
+    title: "How Do I Get to the Library?",
+    titleEs: "¿Cómo llego a la biblioteca?",
+    prompt:
+      "A new student asks you where the library is. Give the directions from the office, in order, and say where the library is at the end.",
+    listenFor: ["each turn, in order", "places you pass", "how Tomás checks he understood"],
+    parts: [
+      { speaker: "Tomás", text: "Excuse me, Ms. Chen. How do I get to the library from the office?" },
+      {
+        speaker: "Ms. Chen",
+        text: "Walk out of the office and turn left. Go straight past the gym and the water fountain.",
+      },
+      {
+        speaker: "Ms. Chen",
+        text: "Then turn right at the art room. The library is the second door on your left, across from the music room.",
+      },
+      {
+        speaker: "Tomás",
+        text: "So I go left, straight past the gym, right at the art room, and the second door on the left. Is that right?",
+      },
+      { speaker: "Ms. Chen", text: "Yes, that is right. Look for the big blue sign on the door." },
+    ],
+    check: [
+      {
+        kind: "sequence",
+        part: 1,
+        q: "What does Tomás do first after he leaves the office?",
+        options: [
+          "He turns right.",
+          "He walks past the art room.",
+          "He turns left.",
+        ],
+        answer: 2,
+        hint: "Ms. Chen gives the first turn in her first answer.",
+        why: "She says to walk out of the office and turn left. The right turn comes later, at the art room.",
+      },
+      {
+        kind: "detail",
+        part: 2,
+        q: "Which room is across from the library?",
+        options: ["The gym", "The music room", "The art room"],
+        answer: 1,
+        hint: "Listen for \"across from\" in Ms. Chen's second answer.",
+        why: "The library is across from the music room. Tomás turns right at the art room, but the art room is not across from the library.",
+      },
+      {
+        kind: "inference",
+        part: 3,
+        q: "Why does Tomás say the directions again?",
+        options: [
+          "Because Ms. Chen forgot them.",
+          "To check that he understood them.",
+          "Because he wants to go to the gym.",
+        ],
+        answer: 1,
+        hint: "He ends with a question: \"Is that right?\"",
+        why: "Saying the directions back is a way to check you understood, and Ms. Chen says yes.",
+      },
+    ],
+    vocab: [
+      ["straight", "going forward without turning", "recto: hacia adelante sin doblar"],
+      ["landmark", "a place you can see that helps you find your way", "punto de referencia: lugar que ves y te ayuda a orientarte"],
+      ["across from", "on the other side, facing it", "frente a: al otro lado, mirándolo"],
+    ],
+    plan: ["Where you start", "Turns and places you pass", "Where the library is"],
+    frames: {
+      full: [
+        "Start at the ___. Turn ___.",
+        "Go straight past the ___ and the ___. Then turn ___ at the ___.",
+        "The library is the ___ door on the ___, across from the ___.",
+      ],
+      light: ["First, ___.", "Next, ___.", "The library is ___."],
+    },
+    criteria: [
+      "I give the turns in the correct order.",
+      "I name at least two places to pass.",
+      "I say left and right correctly.",
+      "I say where the library is at the end.",
+    ],
+    model: {
+      name: "Lucía",
+      line: "Start at the office and turn left. Go straight past the gym and the water fountain. Then turn right at the art room. The library is the second door on the left, across from the music room.",
+    },
+  },
+  {
     id: "compost-bin",
     band: "3-5",
     mode: "read",
+    genre: "Short story",
+    genreEs: "Relato corto",
     title: "The Lunchroom Compost Bin",
     titleEs: "El contenedor de compost del comedor",
     prompt: "Retell what the students did with their food scraps and why.",
@@ -268,7 +692,26 @@ export const RETELLS = [
       "The students set up a compost bin next to the trash cans. Every day after lunch, they put the fruit scraps in the bin and mixed in dry leaves.",
       "After two months, the scraps turned into dark, soft soil. The class used it in the school garden, and their tomato plants grew big and strong.",
     ],
+    vocab: [
+      ["compost", "to let food scraps turn into soil", "compostar: dejar que los restos de comida se conviertan en tierra"],
+      ["scraps", "small pieces of food that are left over", "restos: pedacitos de comida que sobran"],
+      ["soil", "the dirt that plants grow in", "tierra: lo que usan las plantas para crecer"],
+    ],
     plan: ["The problem", "What they did", "What happened"],
+    frames: {
+      full: [
+        "Room 12 noticed that ___.",
+        "They ___ and every day they ___.",
+        "After two months, ___, and the class used it ___.",
+      ],
+      light: ["The problem was ___.", "They ___.", "At the end, ___."],
+    },
+    criteria: [
+      "I tell the problem, what the students did, and what happened.",
+      "I use the words compost, scraps and soil.",
+      "I tell the events in the same order as the story.",
+      "I speak in complete sentences.",
+    ],
     model: {
       name: "Kofi",
       line: "Room 12 saw that the lunchroom threw away a lot of fruit scraps. They made a compost bin and put the scraps and dry leaves in it every day. After two months, the scraps turned into soil, and they used it to help the tomatoes in the garden grow.",

@@ -14,6 +14,7 @@ import {
   frayerStatus,
   hash,
 } from "../lang/wordlab.js";
+import { depthOf } from "../lang/wordlab-depth.js";
 import { announce, html, icon } from "../util.js";
 import { levelOf, renderAfterChange, speakBtn } from "./studio-kit.js";
 import {
@@ -689,6 +690,14 @@ ${rec[k] || ""}</textarea>
       </div>
       ${status.usesWord ? feedback(false, I.T(`Try your definition without the word “${w.w}”.`, `Intenta tu definición sin la palabra «${w.w}».`)) : ""}
       ${status.done ? feedback(true, I.T("Your Frayer card is complete. It is saved on this device.", "Tu tarjeta Frayer está completa. Está guardada en este dispositivo.")) : ""}
+      ${
+        status.done && depthOf(w).no
+          ? html`<p class="wl-ex">
+              <b>${I.T("Compare your non-example:", "Compara tu no ejemplo:")}</b> ${depthOf(w).no}${showEs(I, level) && depthOf(w).noe ? html` <span class="wl-es" lang="es">${depthOf(w).noe}</span>` : ""}
+              ${I.T("Is yours a near miss like this, or too different to teach anything?", "¿El tuyo se parece a este, o es tan distinto que no enseña nada?")}
+            </p>`
+          : ""
+      }
       <div class="wl-actions no-print">
         ${showModel ? "" : html`<button type="button" class="btn" data-wl-frmodel>${icon("bulb")} ${I.T("See a model card", "Ver una tarjeta modelo")}</button>`}
         <button

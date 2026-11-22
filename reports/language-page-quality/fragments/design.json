@@ -1,0 +1,203 @@
+{
+  "area": "design",
+  "branch": "lp-overhaul/design",
+  "headCommit": "9c75fc53fc",
+  "inventory": [
+    {
+      "id": "shell-header-controls",
+      "url": "/access-practice-lab/ (all views)",
+      "program": "ACCESS Practice Lab",
+      "type": "shared chrome",
+      "gradeBand": "3-8",
+      "wida": "n/a",
+      "objective": "navigation, language and comfort controls",
+      "contentSource": "src/shell.js, src/nav.js",
+      "template": "lab-top / lab-tools",
+      "feedback": "n/a",
+      "a11y": "lang-btn, icon buttons, More summary and grade select were 34-38px wide and 34-40px tall at 768/1280",
+      "mobile": "390: lang-btn 38px wide",
+      "designIssues": [
+        "sub-44px touch targets on tablet widths",
+        "footer 'Start everything fresh' 27px tall"
+      ],
+      "contentIssues": [],
+      "action": "44px floor under (pointer: coarse) or <1100px; footer controls 44px",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "browser audit script at 390/768/1280 before and after; axe-sweep; access-comfort-e2e"
+    },
+    {
+      "id": "scroll-regions",
+      "url": "/access-practice-lab/exhibition/teacher, /reading-room/teacher",
+      "program": "ACCESS Practice Lab",
+      "type": "shared chrome",
+      "gradeBand": "teacher",
+      "wida": "n/a",
+      "objective": "data tables",
+      "contentSource": "assets/mobile-access.css makes bare tables scroll",
+      "template": "table",
+      "feedback": "n/a",
+      "a11y": "axe scrollable-region-focusable at 390 (2 screens)",
+      "mobile": "390",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "focusableScrollRegions() in src/comfort.js names and focuses sideways-scrolling tables after every render",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "axe-sweep --width 390 --only teacher: no violations after; 2 violation groups before"
+    },
+    {
+      "id": "activity-kit",
+      "url": "shared component",
+      "program": "all",
+      "type": "shared template",
+      "gradeBand": "3-8",
+      "wida": "supports graduated hint ladder (Look/Clue/Show me)",
+      "objective": "consistent directions, feedback, hints, states",
+      "contentSource": "src/activity-kit.js, ds.css",
+      "template": "zones, directions card, feedback panel, hint ladder, state classes, progress",
+      "feedback": "feedback panel requires a reason (throws otherwise); announceFeedback uses #labLive",
+      "a11y": "axe clean for all four domains at 390/768/1280",
+      "mobile": "no overflow, 44px controls",
+      "designIssues": [
+        "no shared 'success looks like' or example slot in directions",
+        "feedback panels differed per surface"
+      ],
+      "contentIssues": [],
+      "action": "added",
+      "priority": "P2",
+      "status": "upgraded",
+      "verification": "tools/access-activity-kit.test.mjs (8 tests) and tools/access-activity-kit-e2e.mjs (axe, 44px, hint flow, states)"
+    },
+    {
+      "id": "rooms-bank-player",
+      "url": "/access-practice-lab/<Domain>/<Level>/<id>",
+      "program": "ACCESS Practice Lab",
+      "type": "consumer of the kit",
+      "gradeBand": "3-8",
+      "wida": "A/B/C supports exist",
+      "objective": "per activity",
+      "contentSource": "src/views/activity.js (not owned)",
+      "template": "task-card + .feedback",
+      "feedback": "existing .feedback with lead and folded help",
+      "a11y": "axe clean at 1440 and 390 (87 screens)",
+      "mobile": "ok",
+      "designIssues": [
+        "directions lack a success line and example slot"
+      ],
+      "contentIssues": [],
+      "action": "kit available; adoption belongs to the rooms/games agents",
+      "priority": "P2",
+      "status": "unchanged",
+      "verification": "axe sweep, screenshots before/after"
+    }
+  ],
+  "scoresBefore": {
+    "shared chrome": {
+      "A": 4,
+      "B": 0,
+      "C": 3,
+      "D": 3,
+      "E": 0,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 4,
+      "K": 3
+    }
+  },
+  "scoresAfter": {
+    "shared chrome": {
+      "A": 4,
+      "B": 0,
+      "C": 4,
+      "D": 3,
+      "E": 0,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    }
+  },
+  "problemsFound": [
+    "Header controls (EN/ES/EN+ES, search/read/voice/comfort icon buttons, More, grade select) 34-40px at 768 and 1280; footer start-fresh button 27px tall",
+    "Two teacher tables scroll sideways at 390 with no keyboard access (axe scrollable-region-focusable); assets/mobile-access.css turns every table into a scroller",
+    "No shared directions card with a success line or example; feedback, hint and progress markup differs per surface",
+    "Dynamic role=status panels created together with their content are often not announced; the page already has #labLive",
+    "Tokens measured clean: every status and domain pair is >= 4.5:1 (computed); axe at 1440 had no violations before the work",
+    "Not fixed, not mine: lesson-frame.css .lf-arc-n at 12-12.8px; validate:access-lab stops at a stale content/finder-metadata.json before it reaches any design check"
+  ],
+  "improvements": [
+    "44px touch-target floor for header, footer and top links on touch and tablet widths",
+    "focusableScrollRegions(): sideways-scrolling tables get tabindex 0 and a name",
+    "src/activity-kit.js: zoneHTML, directionsCardHTML, feedbackPanelHTML (+announceFeedback), hintLadderHTML (+wireHintLadders), setActivityState, activityProgressHTML",
+    "ds.css activity kit block and additive tokens (--fs-*, --lh-*, --measure-reading, --target-min, --focus-ring, --zone-*)",
+    "DESIGN-SYSTEM.md: Activity kit section"
+  ],
+  "templatesRedesigned": [
+    "activity kit (new)",
+    "shell header target sizes"
+  ],
+  "contentRecordsRewritten": 0,
+  "criticalFixed": 2,
+  "unresolved": [
+    "Rooms, games and studios still render their own feedback/directions; the kit is available for those agents to adopt (src/views/activity.js and src/task-steps.js are not in the design area)",
+    "lesson-frame.css arc labels under 13px (not owned)",
+    "validate:access-lab fails at its first step on a stale content/finder-metadata.json (content is not in this area; not regenerated)",
+    "Inline sentence targets (.reading-sentence, 31px) left as is: inline-in-text exception"
+  ],
+  "sharedEdits": [
+    "access-practice-lab/registers.css: appended one touch-target floor block (header controls)",
+    "access-practice-lab/index.html, sw.js, app-shell: sync-access-shell restamped hashes and precaches src/activity-kit.js (regenerate after merge)"
+  ],
+  "tests": [
+    {
+      "cmd": "node --test tools/access-activity-kit.test.mjs",
+      "result": "8/8 pass"
+    },
+    {
+      "cmd": "node tools/access-activity-kit-e2e.mjs",
+      "result": "all checks passed (axe, 44px, hint ladder, states at 390/768/1280, 4 domains)"
+    },
+    {
+      "cmd": "node --test tools/access-sw.test.mjs tools/access-design-system.test.mjs tools/access-css-balance.test.mjs",
+      "result": "pass"
+    },
+    {
+      "cmd": "node tools/access-comfort-e2e.mjs",
+      "result": "all checks passed"
+    },
+    {
+      "cmd": "node tools/access-axe-sweep.mjs --width 390 (87 screens)",
+      "result": "see final summary; teacher screens clean after the fix"
+    },
+    {
+      "cmd": "npm run validate:access-lab",
+      "result": "FAIL at first step: finder-metadata.json is stale (content, pre-existing, not in this area)"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/ds.css",
+    "access-practice-lab/registers.css",
+    "access-practice-lab/src/comfort.js",
+    "access-practice-lab/src/activity-kit.js",
+    "access-practice-lab/DESIGN-SYSTEM.md",
+    "access-practice-lab/index.html",
+    "access-practice-lab/sw.js",
+    "access-practice-lab/app-shell",
+    "tools/access-activity-kit.test.mjs",
+    "tools/access-activity-kit-e2e.mjs"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/design/before-activity-390.jpg",
+    "reports/language-page-quality/screenshots/design/before-activity-1280.jpg",
+    "reports/language-page-quality/screenshots/design/after-activity-390.jpg",
+    "reports/language-page-quality/screenshots/design/after-activity-1280.jpg",
+    "reports/language-page-quality/screenshots/design/kit-390.jpg",
+    "reports/language-page-quality/screenshots/design/kit-768.jpg",
+    "reports/language-page-quality/screenshots/design/kit-1280.jpg"
+  ]
+}

@@ -15,36 +15,10 @@ import { speak, speakDialogue, stop as stopSpeech } from "../speech.js";
 import { chooserHeroHTML, disclosure, sourceHTML, stageName, trackDisclosures } from "../studio-ui.js";
 import { ART, BASE, announce, html, icon, raw } from "../util.js";
 import { i18nFor, makeI18n } from "../i18n.js";
+import { evidenceFeedback, questionFeedback } from "./missions-feedback.js";
 
 const IGN = raw("data-nsr-ignore");
 let I = makeI18n("en");
-// Coaching after a first miss, as [English, Español]. Stored as a plain string in the learner's mission record.
-const COACH = {
-  unsupported: [
-    "That idea is not stated in the source. Find the sentence that supports an answer.",
-    "Esa idea no aparece en la fuente. Busca la oración que apoya una respuesta.",
-  ],
-  opposite: [
-    "That is the opposite of what the source says. Reread for the direction of the change.",
-    "Eso es lo contrario de lo que dice la fuente. Vuelve a leer para ver en qué dirección cambia.",
-  ],
-  "true-not-asked": [
-    "That might be true, but it does not answer this question. Check the question word again.",
-    "Eso podría ser cierto, pero no responde esta pregunta. Revisa otra vez la palabra de la pregunta.",
-  ],
-  overgeneralized: [
-    "That goes further than the source. Watch for words like all, always, never.",
-    "Eso va más allá de la fuente. Ten cuidado con palabras como todo, siempre, nunca.",
-  ],
-  "detail-trap": [
-    "That detail is in the source, but it is not what the question asks about.",
-    "Ese detalle está en la fuente, pero no es sobre lo que se pregunta.",
-  ],
-  partial: [
-    "That is only part of the answer. What else does the source say?",
-    "Eso es solo una parte de la respuesta. ¿Qué más dice la fuente?",
-  ],
-};
 const SKILL_ES = { Listening: "Escuchar", Reading: "Leer", Decision: "Decidir", Speaking: "Hablar", Writing: "Escribir" };
 const skillT = (skill) => I.T(skill, SKILL_ES[skill]);
 const PROGRESS_ES = { Complete: "Completa", "In progress": "En progreso" };
@@ -143,7 +117,7 @@ function evidenceHTML(t, ms) {
     <p class="fine">${I.T("Choose every statement that supports the idea. Statements you choose correctly go on your evidence board.", "Elige todas las afirmaciones que apoyan la idea. Las que elijas correctamente van a tu tablero de evidencia.")}</p>
     <div class="choices">${t.pool.map((e) => html`<label class="choice choice-card is-check ${a.done && e.supports ? "is-right" : picked.has(e.id) ? "is-on" : ""}"><input type="checkbox" value="${e.id}" data-ev="${t.id}" ${picked.has(e.id) ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span class="choice-letter" aria-hidden="true">${icon("check")}</span><span>${e.text}</span></label>`)}</div>
     ${!a.done ? html`<button type="button" class="btn btn-primary btn-check" data-check-ev="${t.id}" ${picked.size ? "" : raw("disabled")}>${I.T("Check my evidence", "Comprobar mi evidencia")}</button>` : ""}
-    ${feedbackBox(a.done ? "right" : "hint", a.msg, a.done ? I.T("On your evidence board", "En tu tablero de evidencia") : I.T("Not yet", "Todavía no"))}
+    ${feedbackBox(a.revealed ? "shown" : a.done ? "right" : "hint", a.msg, a.revealed ? I.T("Here are the supporting statements", "Aquí están las afirmaciones de apoyo") : a.done ? I.T("On your evidence board", "En tu tablero de evidencia") : I.T("Not yet", "Todavía no"))}
   </fieldset>`;
 }
 
@@ -445,25 +419,15 @@ export function onClick(e, ctx) {
     const task = phase.tasks.find((x) => x.id === q.dataset.checkQ);
     const a = (ms.answers[task.id] ||= {});
     a.tries = (a.tries || 0) + 1;
-    const ok = a.pick === task.answer;
+    const fb = questionFeedback(task, a.pick, a.tries, I);
+    const ok = fb.ok;
     a.last = a.pick;
     if (a.tries === 1) {
       a.firstTry = ok;
       if (!ok) a.firstWrong = task.options.find((o) => o.id === a.pick)?.distractor || null;
     }
-    if (ok) {
-      a.done = true;
-      a.msg = task.explain;
-    } else if (a.tries >= 2) {
-      a.done = true;
-      {
-        const right = task.options.find((o) => o.id === task.answer).text;
-        a.msg = I.S(`The answer is “${right}”. ${task.explain}`, `La respuesta es “${right}”. ${task.explain}`);
-      }
-    } else
-      a.msg =
-        (COACH[task.options.find((o) => o.id === a.pick)?.distractor] ? I.S(...COACH[task.options.find((o) => o.id === a.pick).distractor]) : "") ||
-        I.S("Not yet. Reread the source and try again.", "Todavía no. Vuelve a leer la fuente e inténtalo de nuevo.");
+    a.done = fb.done;
+    a.msg = fb.msg;
     if (
       a.done &&
       visibleTasks(phase, M.ledger.entries).filter((x) => x.kind === "question").every((x) => ms.answers[x.id]?.done) &&
@@ -480,24 +444,15 @@ export function onClick(e, ctx) {
   if (ev) {
     const task = phase.tasks.find((x) => x.id === ev.dataset.checkEv);
     const a = (ms.answers[task.id] ||= {});
-    const want = new Set(task.pool.filter((x) => x.supports).map((x) => x.id));
-    const got = new Set(a.picks || []);
-    const wrong = [...got].filter((id) => !want.has(id));
-    const missed = [...want].filter((id) => !got.has(id));
     a.tries = (a.tries || 0) + 1;
-    if (!wrong.length && !missed.length) {
-      a.done = true;
-      a.msg = I.S("Those statements support the idea. They are on your evidence board.", "Esas afirmaciones apoyan la idea. Están en tu tablero de evidencia.");
-      for (const id of want) {
-        const e = task.pool.find((x) => x.id === id);
-        if (!ms.board.some((b) => b.id === `${task.id}:${id}`))
-          ms.board.push({ id: `${task.id}:${id}`, label: task.boardLabel, text: e.text });
-      }
-    } else
-      a.msg = I.S(
-        `${wrong.length ? `${wrong.length} statement${wrong.length === 1 ? " does" : "s do"} not support the idea — check that each one answers the question.` : ""} ${missed.length ? `You missed ${missed.length} supporting statement${missed.length === 1 ? "" : "s"}.` : ""}`.trim(),
-        `${wrong.length ? `${wrong.length} ${wrong.length === 1 ? "afirmación no apoya" : "afirmaciones no apoyan"} la idea — revisa que cada una responda la pregunta.` : ""} ${missed.length ? `${missed.length === 1 ? "Te faltó 1 afirmación de apoyo" : `Te faltaron ${missed.length} afirmaciones de apoyo`}.` : ""}`.trim(),
-      );
+    const fb = evidenceFeedback(task, a.picks, a.tries, I);
+    a.done = fb.done;
+    a.revealed = fb.revealed;
+    a.msg = fb.msg;
+    if (fb.done)
+      for (const e of task.pool.filter((x) => x.supports))
+        if (!ms.board.some((b) => b.id === `${task.id}:${e.id}`))
+          ms.board.push({ id: `${task.id}:${e.id}`, label: task.boardLabel, text: e.text });
     save();
     ctx.rerender();
     return true;

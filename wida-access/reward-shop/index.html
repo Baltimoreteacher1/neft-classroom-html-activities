@@ -17,8 +17,8 @@
 
     <style>
       :root {
-        --primary: #f59e0b; /* Amber / Gold for Reward Shop */
-        --primary-dark: #d97706;
+        --primary: #b45309; /* Amber / Gold for Reward Shop */
+        --primary-dark: #92400e;
         --primary-light: #fef3c7;
         --teal: #0d9488;
         --purple: #7c3aed;
@@ -349,9 +349,17 @@
         align-items: flex-start;
       }
       .trophy-card.locked {
-        opacity: 0.55;
         background: #f8fafc;
+        border-style: dashed;
       }
+      .trophy-card.locked .trophy-icon { filter: grayscale(1); opacity: 0.7; }
+      .trophy-card.locked .trophy-title { color: #334155; }
+      .theme-card { width: 100%; text-align: left; font: inherit; color: inherit; background: #fff; }
+      .theme-card:focus-visible, .btn:focus-visible { outline: 3px solid #0b3b5c; outline-offset: 2px; }
+      .btn { min-height: 44px; }
+      .shop-status { margin: 0 0 12px; padding: 10px 14px; border-radius: 8px; background: #fef3c7; border: 1px solid #fcd34d; color: #78350f; font-size: 0.92rem; }
+      .shop-status[hidden] { display: none; }
+      @media (prefers-reduced-motion: reduce) { .theme-card, .buddy-card, .btn { transition: none; } }
       .trophy-icon {
         font-size: 2rem;
         min-width: 44px;
@@ -444,6 +452,7 @@
           Unlock high-contrast, energizing, or nighttime color palettes for your WIDA ACCESS preparation sessions.
         </p>
 
+        <p id="shopStatus" class="shop-status" role="status" aria-live="polite" hidden></p>
         <div class="theme-grid" id="themeGrid">
           <!-- Populated via JS -->
         </div>
@@ -584,16 +593,16 @@
           const isActive = t.id === activeTheme;
           const isUnlocked = t.cost === 0 || xp >= t.cost;
           return `
-            <div class="theme-card ${isActive ? 'active' : ''}" onclick="selectTheme('${t.id}', ${t.cost})">
+            <button type="button" class="theme-card ${isActive ? 'active' : ''}" onclick="selectTheme('${t.id}', ${t.cost})" aria-pressed="${isActive}" ${isUnlocked ? '' : 'aria-describedby="shopStatus"'}>
               <div class="theme-swatch" style="background: ${t.gradient};"></div>
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <strong style="font-size: 0.88rem;">${t.name}</strong>
                 ${isActive ? '<span style="color: var(--primary-dark); font-weight: 700; font-size: 0.75rem;">Active</span>' : ''}
               </div>
               <div style="font-size: 0.75rem; color: var(--slate-muted); margin-top: 4px;">
-                ${t.cost === 0 ? 'Unlocked (Free)' : (isUnlocked ? 'Unlocked' : `Requires ${t.cost} XP`)}
+                ${t.cost === 0 ? 'Unlocked (Free)' : (isUnlocked ? 'Unlocked' : `Locked: needs ${t.cost} XP`)}
               </div>
-            </div>
+            </button>
           `;
         }).join("");
       }
@@ -601,9 +610,12 @@
       function selectTheme(id, cost) {
         const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
         if (cost > 0 && xp < cost) {
-          alert(`⚠️ This theme requires ${cost} SPARK XP. You currently have ${xp} XP. Keep practicing to unlock!`);
+          const st = document.getElementById("shopStatus");
+          st.hidden = false;
+          st.textContent = `This theme needs ${cost} SPARK XP and you have ${xp}. You earn XP in the Listening, Reading, Speaking, Writing and Word Builder studios: ${cost - xp} more to go.`;
           return;
         }
+        document.getElementById("shopStatus").hidden = true;
         activeTheme = id;
         localStorage.setItem("widaTheme", id);
         renderThemes();

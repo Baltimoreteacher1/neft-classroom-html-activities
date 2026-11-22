@@ -17,12 +17,12 @@
 
     <style>
       :root {
-        --primary: #0284c7; /* Sky / Cyan Blue for Word Builder */
-        --primary-dark: #0369a1;
+        --primary: #0369a1; /* Sky / Cyan Blue for Word Builder */
+        --primary-dark: #075985;
         --primary-light: #f0f9ff;
         --teal: #0d9488;
         --teal-light: #f0fdfa;
-        --amber: #d97706;
+        --amber: #b45309;
         --amber-light: #fef3c7;
         --purple: #7c3aed;
         --purple-light: #f5f3ff;
@@ -501,6 +501,33 @@
         background: var(--bg-canvas);
       }
 
+
+      /* ── Teaching feedback, focus and touch targets (a11y pass) ── */
+      .m-tile, .cloze-opt-btn, .btn { min-height: 44px; }
+      .m-tile:focus-visible, .cloze-opt-btn:focus-visible, .btn:focus-visible, .cloze-text:focus-visible {
+        outline: 3px solid #0b3b5c; outline-offset: 2px;
+      }
+      .forge-status { margin: 12px 0; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line-muted); font-size: 0.92rem; line-height: 1.5; }
+      .forge-status[hidden] { display: none; }
+      .forge-status.ok { background: var(--green-light); border-color: #86efac; color: #14532d; }
+      .forge-status.retry { background: var(--amber-light); border-color: #fcd34d; color: #78350f; }
+      .forge-status.info { background: var(--primary-light); border-color: #bae6fd; color: #0c4a6e; }
+      .cloze-feedback { margin-top: 14px; font-size: 0.92rem; line-height: 1.5; }
+      .cloze-feedback:empty { display: none; }
+      .cloze-feedback.ok { color: #14532d; }
+      .cloze-feedback.retry { color: #78350f; }
+      .opt-pos { font-weight: 500; color: var(--slate-muted); }
+      .cloze-opt-btn.wrong .opt-pos, .cloze-opt-btn.correct .opt-pos { color: inherit; }
+      .res-parts { font-family: var(--font-space); font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+      .vault-parts { font-size: 0.78rem; color: var(--slate-muted); }
+      .vault-empty { text-align: center; padding: 24px 10px; color: var(--slate-muted); font-size: 0.85rem; }
+      .pos-badge.small { font-size: 0.68rem; margin-left: 6px; }
+      .slot-value { overflow-wrap: anywhere; }
+      @media (prefers-reduced-motion: reduce) {
+        .m-tile, .btn, .cloze-opt-btn, .vault-card { transition: none; }
+        .m-tile:hover, .btn-primary:hover { transform: none; }
+      }
+
       @media (max-width: 992px) {
         .layout-grid {
           grid-template-columns: 1fr;
@@ -544,7 +571,7 @@
         </div>
         <h1 class="hero-title">WIDA Academic Word Builder Quest</h1>
         <p class="hero-desc">
-          Master the building blocks of academic English. Forge high-impact nouns, verbs, and adjectives by combining Latin and Greek roots with academic prefixes and suffixes across science, mathematics, and social studies.
+          Learn how academic words are built. Combine roots, prefixes and endings to make nouns, adjectives and verbs from science, mathics, and social studies.
         </p>
 
         <div class="hero-stats-row">
@@ -557,12 +584,12 @@
             <div class="stat-lbl">Words in Vault</div>
           </div>
           <div class="hero-stat">
-            <div class="stat-val" id="valClozeDone">0 / 6</div>
-            <div class="stat-lbl">Syntax Quests</div>
+            <div class="stat-val" id="valClozeDone">0 / 8</div>
+            <div class="stat-lbl">Sentences solved</div>
           </div>
           <div class="hero-stat">
-            <div class="stat-val" id="valStreak">0</div>
-            <div class="stat-lbl">Day Streak</div>
+            <div class="stat-val" id="valRoots">0</div>
+            <div class="stat-lbl">Roots explored</div>
           </div>
         </div>
       </section>
@@ -575,12 +602,12 @@
           <div class="card">
             <div class="card-title">
               <span>⚡ The Morphology Forge</span>
-              <button class="btn btn-secondary" onclick="resetAnvil()" style="font-size: 0.78rem;">
+              <button type="button" class="btn btn-secondary" data-action="reset">
                 🔄 Reset Tiles
               </button>
             </div>
             <p class="card-sub">
-              Select one Prefix (optional), one Base Root, and one Suffix to synthesize an authentic academic word.
+              Pick a prefix (optional), a root and an ending. Press <strong>Build word</strong> to see if they make a real academic word. Not every combination works: if one does not, the message tells you why.
             </p>
 
             <div class="forge-anvil">
@@ -602,8 +629,8 @@
               </div>
 
               <div style="display: flex; justify-content: center; gap: 12px;">
-                <button class="btn btn-primary btn-pill" onclick="forgeWord()" style="font-size: 1rem; padding: 10px 24px; box-shadow: 0 4px 14px rgba(2,132,199,0.4);">
-                  ⚡ Forge Academic Word (+25 XP)
+                <button type="button" class="btn btn-primary btn-pill" data-action="build" style="font-size: 1rem; padding: 10px 24px; box-shadow: 0 4px 14px rgba(2,132,199,0.4);">
+                  ⚡ Build word
                 </button>
               </div>
             </div>
@@ -611,109 +638,78 @@
             <!-- Prefix Bank -->
             <div class="bank-section">
               <div class="bank-title">
-                <span>1. Select Prefix (Meaning modifier)</span>
+                <span id="prefixDeckTitle">1. Prefix: changes the meaning</span>
                 <span style="font-weight: normal; color: var(--slate-muted);">Optional</span>
               </div>
-              <div class="tiles-deck" id="prefixDeck">
-                <button class="m-tile selected" onclick="pickPrefix('', this)">[None]</button>
-                <button class="m-tile" onclick="pickPrefix('un-', this)">un- (not)</button>
-                <button class="m-tile" onclick="pickPrefix('re-', this)">re- (again)</button>
-                <button class="m-tile" onclick="pickPrefix('in-', this)">in- (into/not)</button>
-                <button class="m-tile" onclick="pickPrefix('inter-', this)">inter- (between)</button>
-                <button class="m-tile" onclick="pickPrefix('trans-', this)">trans- (across)</button>
-                <button class="m-tile" onclick="pickPrefix('dis-', this)">dis- (apart/away)</button>
-                <button class="m-tile" onclick="pickPrefix('sub-', this)">sub- (under)</button>
-              </div>
+              <div class="tiles-deck" id="prefixDeck" role="group" aria-labelledby="prefixDeckTitle"></div>
             </div>
 
             <!-- Root Bank -->
             <div class="bank-section">
               <div class="bank-title">
-                <span>2. Select Base Root (Core semantic meaning)</span>
+                <span id="rootDeckTitle">2. Root: the core meaning</span>
                 <span style="color: var(--primary);">Required</span>
               </div>
-              <div class="tiles-deck" id="rootDeck">
-                <button class="m-tile selected" onclick="pickRoot('evapor', this)">evapor (vapor/steam)</button>
-                <button class="m-tile" onclick="pickRoot('predict', this)">predict (declare/foretell)</button>
-                <button class="m-tile" onclick="pickRoot('conclud', this)">conclud (close/finish)</button>
-                <button class="m-tile" onclick="pickRoot('depend', this)">depend (hang upon/rely)</button>
-                <button class="m-tile" onclick="pickRoot('sustain', this)">sustain (hold up/endure)</button>
-                <button class="m-tile" onclick="pickRoot('differ', this)">differ (bear apart/vary)</button>
-                <button class="m-tile" onclick="pickRoot('equat', this)">equat (make equal)</button>
-                <button class="m-tile" onclick="pickRoot('vari', this)">vari (changeable)</button>
-                <button class="m-tile" onclick="pickRoot('connect', this)">connect (join together)</button>
-                <button class="m-tile" onclick="pickRoot('struct', this)">struct (build/pile)</button>
-                <button class="m-tile" onclick="pickRoot('migrat', this)">migrat (move/travel)</button>
-                <button class="m-tile" onclick="pickRoot('absorb', this)">absorb (swallow up)</button>
-              </div>
+              <div class="tiles-deck" id="rootDeck" role="group" aria-labelledby="rootDeckTitle"></div>
             </div>
 
             <!-- Suffix Bank -->
             <div class="bank-section">
               <div class="bank-title">
-                <span>3. Select Suffix (Determines Part of Speech)</span>
+                <span id="suffixDeckTitle">3. Ending: changes the part of speech</span>
                 <span style="color: var(--primary);">Required</span>
               </div>
-              <div class="tiles-deck" id="suffixDeck">
-                <button class="m-tile selected" onclick="pickSuffix('-ation', this)">-ation / -tion (Noun)</button>
-                <button class="m-tile" onclick="pickSuffix('-ment', this)">-ment (Noun)</button>
-                <button class="m-tile" onclick="pickSuffix('-able', this)">-able / -ible (Adjective)</button>
-                <button class="m-tile" onclick="pickSuffix('-ity', this)">-ity (Noun state)</button>
-                <button class="m-tile" onclick="pickSuffix('-ic', this)">-ic / -ical (Adjective)</button>
-                <button class="m-tile" onclick="pickSuffix('-ly', this)">-ly (Adverb)</button>
-                <button class="m-tile" onclick="pickSuffix('-ate', this)">-ate (Verb action)</button>
-                <button class="m-tile" onclick="pickSuffix('-ous', this)">-ous (Adjective)</button>
-              </div>
+              <div class="tiles-deck" id="suffixDeck" role="group" aria-labelledby="suffixDeckTitle"></div>
             </div>
 
+            <div id="forgeStatus" class="forge-status info" role="status" aria-live="polite" hidden></div>
+
             <!-- Forge Result Display -->
-            <div class="word-result-card" id="wordResultCard">
+            <div class="word-result-card" id="wordResultCard" aria-label="Word you built">
               <div class="word-head">
                 <div class="word-term">
                   <span id="resWordName">evaporation</span>
                   <span class="pos-badge noun" id="resWordPos">Noun</span>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <button class="btn btn-secondary" onclick="speakResultWord(1.0)" title="Pronounce at normal speed">
+                  <button type="button" class="btn btn-secondary" data-action="say">
                     🔊 Pronounce
                   </button>
-                  <button class="btn btn-secondary" onclick="speakResultWord(0.6)" title="Pronounce slowly for clarity">
-                    🐢 Slow (0.6x)
+                  <button type="button" class="btn btn-secondary" data-action="say-slow">
+                    🐢 Slow
                   </button>
                 </div>
               </div>
 
               <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
-                <span class="cognate-chip" id="resCognateSpanish">🇪🇸 Spanish: evaporación</span>
-                <span class="cognate-chip" id="resCognateFrench">🇫🇷 French: évaporation</span>
-                <span class="cognate-chip" id="resCognateArabic">🇸🇦 Arabic: تبخر (tabakhkhur)</span>
+                <span class="cognate-chip" id="resCognateSpanish"></span>
+                <span class="cognate-chip" id="resCognateFrench"></span>
+                <span class="cognate-chip" id="resCognateArabic"></span>
               </div>
 
+              <p class="res-parts" id="resParts"></p>
               <p style="font-size: 0.95rem; color: #1e293b; line-height: 1.5;" id="resDefinition">
-                The physical process by which water changes from a liquid into an invisible gas (water vapor) when thermal heat energy is added.
               </p>
 
               <div class="word-context">
-                <strong>Academic Context Sentence:</strong>
-                <p style="margin-top: 4px;" id="resSentence">
-                  "During summer droughts, radiant solar energy causes rapid <em>evaporation</em> from surface reservoirs, decreasing local water tables."
-                </p>
+                <strong>Example sentence:</strong>
+                <p style="margin-top: 4px;" id="resSentence"></p>
               </div>
             </div>
           </div>
 
-          <!-- Academic Syntax Cloze Quest -->
+          <!-- Sentence Fit: Choose the Word Form -->
           <div class="card">
             <div class="card-title">
-              <span>🧩 Academic Syntax Cloze Quest</span>
-              <span class="pos-badge verb" id="clozeScoreBadge">Question 1 of 6</span>
+              <span>🧩 Sentence Fit: Choose the Word Form</span>
+              <span class="pos-badge verb" id="clozeScoreBadge">Sentence 1 of 8</span>
             </div>
             <p class="card-sub">
-              Test your syntactic intuition: insert the forged academic word that grammatically fits the discourse context.
+              Read the sentence and choose the word form that fits the blank. Each choice shows its part of speech. If you miss, use the clue and try once more.
             </p>
 
             <div class="cloze-box">
-              <div class="cloze-text" id="clozePrompt">
+              <div class="cloze-text" id="clozePrompt" tabindex="-1">
                 Because the tectonic plates collided with intense pressure, geologists observed significant crustal
                 <span class="cloze-drop" id="clozeSlot">________</span>
                 along the fault line, eventually forming mountain ranges.
@@ -723,12 +719,12 @@
                 <!-- Injected via JS -->
               </div>
 
-              <div id="clozeFeedback" style="margin-top: 14px; font-size: 0.88rem; display: none;"></div>
+              <div id="clozeFeedback" class="cloze-feedback" role="status" aria-live="polite"></div>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
-              <button class="btn btn-primary" id="btnNextCloze" onclick="nextCloze()" style="display: none;">
-                Next Syntax Quest &rarr;
+              <button type="button" class="btn btn-primary" id="btnNextCloze" data-action="next-cloze" style="display: none;">
+                Next sentence &rarr;
               </button>
             </div>
           </div>
@@ -739,17 +735,18 @@
           <!-- Daily Quest Goals -->
           <div class="card">
             <div class="card-title">
-              <span>🎯 Daily Morphologist Quest</span>
+              <span>🎯 Today's Word Quest</span>
               <span style="font-size: 0.8rem; color: var(--amber); font-weight: 700;">+100 XP Bonus</span>
             </div>
             <p class="card-sub">
-              Complete today's academic word forging objectives.
+              Three small goals for today. Each word and sentence counts once, and your progress is saved on this device.
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.86rem;">
+              <p id="questDone" class="forge-status ok" role="status" hidden><strong>Quest complete.</strong> You earned the +100 XP bonus today.</p>
               <div>
                 <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
-                  <span>Forge 3 Academic Nouns</span>
+                  <span>Build 3 different nouns</span>
                   <span id="questNounCount">0 / 3</span>
                 </div>
                 <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
@@ -759,7 +756,7 @@
 
               <div>
                 <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
-                  <span>Forge 2 Academic Adjectives</span>
+                  <span>Build 2 different adjectives</span>
                   <span id="questAdjCount">0 / 2</span>
                 </div>
                 <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
@@ -769,7 +766,7 @@
 
               <div>
                 <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
-                  <span>Solve 2 Syntax Clozes</span>
+                  <span>Solve 2 sentences</span>
                   <span id="questClozeCount">0 / 2</span>
                 </div>
                 <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
@@ -782,17 +779,15 @@
           <!-- Academic Lexicon Vault -->
           <div class="card">
             <div class="card-title">
-              <span>📚 Personal Lexicon Vault</span>
+              <span>📚 My Word Vault</span>
               <span class="pos-badge noun" id="vaultCountBadge">0 Words</span>
             </div>
             <p class="card-sub">
-              Your catalog of discovered academic vocabulary. Click any word to hear its pronunciation.
+              Every word you build is saved here with its parts. Press Hear to listen to a word.
             </p>
 
             <div class="vault-list" id="vaultList">
-              <div style="text-align: center; padding: 24px 10px; color: var(--slate-muted); font-size: 0.85rem;">
-                No words forged yet. Forge your first word on the left!
-              </div>
+              <div class="vault-empty">No words yet. Build your first word on the left.</div>
             </div>
           </div>
         </aside>
@@ -801,520 +796,342 @@
 
     <script>
       // ══════════════════════════════════════════════════════════
-      // MORPHOLOGY DICTIONARY & GAME STATE
+      // WORD BUILDER — one source of truth: TILES, WORDS and CLOZE_DECK.
+      // Every WORDS entry is prefix + root + suffix. tools/wida-word-builder.test.mjs checks each one.
       // ══════════════════════════════════════════════════════════
 
-      const VALID_WORDS = {
-        "evaporation": {
-          term: "evaporation",
-          pos: "noun",
-          prefix: "",
-          root: "evapor",
-          suffix: "-ation",
-          def: "The transformation of liquid water into atmospheric water vapor through thermal energy absorption.",
-          spanish: "evaporación",
-          french: "évaporation",
-          arabic: "تبخر",
-          sentence: "During the heat of midsummer, solar radiation accelerates water evaporation from lakes."
-        },
-        "evaporate": {
-          term: "evaporate",
-          pos: "verb",
-          prefix: "",
-          root: "evapor",
-          suffix: "-ate",
-          def: "To change or convert from a liquid state into vapor.",
-          spanish: "evaporar",
-          french: "évaporer",
-          arabic: "يتبخر",
-          sentence: "If left under direct sunlight, puddle water will quickly evaporate."
-        },
-        "prediction": {
-          term: "prediction",
-          pos: "noun",
-          prefix: "",
-          root: "predict",
-          suffix: "-ation",
-          def: "A reasoned statement or hypothesis estimating what will happen in an experiment or future event.",
-          spanish: "predicción",
-          french: "prédiction",
-          arabic: "تنبؤ",
-          sentence: "Scientists developed an accurate weather prediction using radar barometric measurements."
-        },
-        "predictable": {
-          term: "predictable",
-          pos: "adjective",
-          prefix: "",
-          root: "predict",
-          suffix: "-able",
-          def: "Able to be foretold, expected, or anticipated based on observed patterns.",
-          spanish: "predecible",
-          french: "prévisible",
-          arabic: "قابل للتنبؤ",
-          sentence: "The cyclic orbit of the planets produces highly predictable seasonal weather."
-        },
-        "unpredictable": {
-          term: "unpredictable",
-          pos: "adjective",
-          prefix: "un-",
-          root: "predict",
-          suffix: "-able",
-          def: "Not able to be anticipated; irregular and varying in behavior or outcome.",
-          spanish: "impredecible",
-          french: "imprévisible",
-          arabic: "غير متوقع",
-          sentence: "Sudden volcanic seismic disturbances can cause unpredictable oceanic tsunami waves."
-        },
-        "conclusion": {
-          term: "conclusion",
-          pos: "noun",
-          prefix: "",
-          root: "conclud",
-          suffix: "-ation",
-          def: "A judgment or final synthesis reached by evaluating reasoning and empirical evidence.",
-          spanish: "conclusión",
-          french: "conclusion",
-          arabic: "استنتاج",
-          sentence: "Based on three repeated laboratory trials, the researchers supported their final conclusion."
-        },
-        "conclusive": {
-          term: "conclusive",
-          pos: "adjective",
-          prefix: "",
-          root: "conclud",
-          suffix: "-ic",
-          def: "Serving to settle an issue or establish evidence beyond reasonable doubt.",
-          spanish: "concluyente",
-          french: "concluant",
-          arabic: "حاسم",
-          sentence: "The microscopic cell sample provided conclusive evidence of bacterial infection."
-        },
-        "sustainable": {
-          term: "sustainable",
-          pos: "adjective",
-          prefix: "",
-          root: "sustain",
-          suffix: "-able",
-          def: "Able to be maintained at a certain rate or level without depleting natural resources.",
-          spanish: "sostenible",
-          french: "durable",
-          arabic: "مستدام",
-          sentence: "Solar and wind infrastructure offer sustainable energy solutions for modern cities."
-        },
-        "sustainability": {
-          term: "sustainability",
-          pos: "noun",
-          prefix: "",
-          root: "sustain",
-          suffix: "-ity",
-          def: "The quality of not being harmful to the environment or depleting natural resources.",
-          spanish: "sostenibilidad",
-          french: "durabilité",
-          arabic: "استدامة",
-          sentence: "Urban environmental engineers focus on long-term agricultural sustainability."
-        },
-        "equation": {
-          term: "equation",
-          pos: "noun",
-          prefix: "",
-          root: "equat",
-          suffix: "-ation",
-          def: "A mathematical statement asserting that two expressions are equivalent in value.",
-          spanish: "ecuación",
-          french: "équation",
-          arabic: "معادلة",
-          sentence: "Students solved the two-step linear equation to determine the missing variable."
-        },
-        "variable": {
-          term: "variable",
-          pos: "noun",
-          prefix: "",
-          root: "vari",
-          suffix: "-able",
-          def: "An element, feature, or factor that is liable to vary or change within an experiment.",
-          spanish: "variable",
-          french: "variable",
-          arabic: "متغير",
-          sentence: "In this biology experiment, ambient water temperature was the manipulated independent variable."
-        },
-        "variation": {
-          term: "variation",
-          pos: "noun",
-          prefix: "",
-          root: "vari",
-          suffix: "-ation",
-          def: "A difference or change in condition, level, amount, or genetic trait.",
-          spanish: "variación",
-          french: "variation",
-          arabic: "تباين",
-          sentence: "Genetic variation within a species enhances survival when climates change."
-        },
-        "dependent": {
-          term: "dependent",
-          pos: "adjective",
-          prefix: "",
-          root: "depend",
-          suffix: "-able",
-          def: "Relying on or determined by something else.",
-          spanish: "dependiente",
-          french: "dépendant",
-          arabic: "تابع",
-          sentence: "Photosynthesis rates are directly dependent upon the intensity of available sunlight."
-        },
-        "differentiation": {
-          term: "differentiation",
-          pos: "noun",
-          prefix: "",
-          root: "differ",
-          suffix: "-ation",
-          def: "The action or process of distinguishing between two or more things or developing specialized traits.",
-          spanish: "diferenciación",
-          french: "différenciation",
-          arabic: "تمايز",
-          sentence: "Cellular differentiation enables simple stem cells to develop into specialized tissues."
-        },
-        "interconnected": {
-          term: "interconnected",
-          pos: "adjective",
-          prefix: "inter-",
-          root: "connect",
-          suffix: "-able",
-          def: "Having all constituent parts linked or related together as an integrated system.",
-          spanish: "interconectado",
-          french: "interconnecté",
-          arabic: "مترابط",
-          sentence: "The marine food web consists of deeply interconnected trophic relationships."
-        },
-        "substructure": {
-          term: "substructure",
-          pos: "noun",
-          prefix: "sub-",
-          root: "struct",
-          suffix: "-ation",
-          def: "An underlying or supporting framework or foundation.",
-          spanish: "subestructura",
-          french: "infrastructure",
-          arabic: "بنية تحتية",
-          sentence: "Civil engineers inspected the reinforced steel substructure of the suspension bridge."
-        },
-        "migration": {
-          term: "migration",
-          pos: "noun",
-          prefix: "",
-          root: "migrat",
-          suffix: "-ation",
-          def: "Seasonal movement of animals or populations from one geographical region to another.",
-          spanish: "migración",
-          french: "migration",
-          arabic: "هجرة",
-          sentence: "Monarch butterflies undertake a multi-generational continental migration southward."
-        },
-        "absorption": {
-          term: "absorption",
-          pos: "noun",
-          prefix: "",
-          root: "absorb",
-          suffix: "-ation",
-          def: "The process by which one substance takes in or assimilates another substance or energy.",
-          spanish: "absorción",
-          french: "absorption",
-          arabic: "امتصاص",
-          sentence: "Dark surfaces exhibit higher heat absorption compared to reflective white glaciers."
-        }
-      };
-
-      // Cloze syntax challenges
-      const CLOZE_DECK = [
-        {
-          id: 1,
-          prompt: "Because the tectonic plates collided with intense pressure, geologists observed significant crustal ________ along the fault line, eventually forming mountain ranges.",
-          correct: "deformation",
-          options: ["deformation (Noun)", "deformable (Adjective)", "deform (Verb)"],
-          correctWord: "deformation (Noun)",
-          explanation: "The adjective 'crustal' modifies a noun. Here, 'deformation' is the correct noun naming the geological process."
-        },
-        {
-          id: 2,
-          prompt: "In order to safeguard clean drinking water for future generations, the municipal council enacted ________ resource conservation policies.",
-          correct: "sustainable",
-          options: ["sustainable (Adjective)", "sustainability (Noun)", "sustain (Verb)"],
-          correctWord: "sustainable (Adjective)",
-          explanation: "'Policies' is a noun; therefore, it requires an adjective ('sustainable') to describe what kind of policies were enacted."
-        },
-        {
-          id: 3,
-          prompt: "When ambient temperatures plummet below freezing, moisture in the clouds undergoes rapid ________ into crystalline snow.",
-          correct: "condensation",
-          options: ["condense (Verb)", "condensation (Noun)", "condensable (Adjective)"],
-          correctWord: "condensation (Noun)",
-          explanation: "Following the adjective 'rapid', we require a noun to serve as the direct object of the verb 'undergoes'."
-        },
-        {
-          id: 4,
-          prompt: "The laboratory experiment yielded results that were consistent across four separate trials, making the scientific conclusions highly ________.",
-          correct: "predictable",
-          options: ["prediction (Noun)", "predictable (Adjective)", "predictably (Adverb)"],
-          correctWord: "predictable (Adjective)",
-          explanation: "Following the linking verb phrase 'making the conclusions highly...', an adjective ('predictable') is required as an objective complement."
-        },
-        {
-          id: 5,
-          prompt: "In algebra, if two expressions have identical quantities on both sides of the equal sign, they form an authentic ________.",
-          correct: "equation",
-          options: ["equation (Noun)", "equate (Verb)", "equatable (Adjective)"],
-          correctWord: "equation (Noun)",
-          explanation: "The article 'an' and adjective 'authentic' introduce a singular noun: 'equation'."
-        },
-        {
-          id: 6,
-          prompt: "Biologists observed that the organism's unique traits were deeply ________ upon the specific mineral content of its ecosystem.",
-          correct: "dependent",
-          options: ["dependent (Adjective)", "dependence (Noun)", "dependently (Adverb)"],
-          correctWord: "dependent (Adjective)",
-          explanation: "The predicate adjective 'dependent' pairs with the preposition 'upon' following the linking verb 'were'."
-        }
+      const PREFIXES = [
+        { v: "", label: "[None]" },
+        { v: "un-", label: "un- (not)" },
+        { v: "re-", label: "re- (again)" },
+        { v: "in-", label: "in- (not / into)" },
+        { v: "inter-", label: "inter- (between)" },
+        { v: "dis-", label: "dis- (apart, opposite)" },
+        { v: "sub-", label: "sub- (under)" }
+      ];
+      const ROOTS = [
+        { v: "evapor", label: "evapor (vapor, steam)" },
+        { v: "predict", label: "predict (say before)" },
+        { v: "conclud", label: "conclud (close, finish)" },
+        { v: "depend", label: "depend (hang from, rely)" },
+        { v: "sustain", label: "sustain (hold up)" },
+        { v: "differ", label: "differ (carry apart)" },
+        { v: "equat", label: "equat (make equal)" },
+        { v: "vari", label: "vari (change, different)" },
+        { v: "connect", label: "connect (join together)" },
+        { v: "struct", label: "struct (build)" },
+        { v: "migrat", label: "migrat (move, travel)" },
+        { v: "absorb", label: "absorb (soak up)" }
+      ];
+      const SUFFIXES = [
+        { v: "-ation", label: "-ation / -tion (noun: action or result)" },
+        { v: "-ence", label: "-ence (noun: state or quality)" },
+        { v: "-ure", label: "-ure (noun: process or result)" },
+        { v: "-able", label: "-able (adjective: can be done)" },
+        { v: "-ent", label: "-ent (adjective: having this quality)" },
+        { v: "-ive", label: "-ive (adjective: tends to do)" },
+        { v: "-ous", label: "-ous (adjective: full of)" },
+        { v: "-ate", label: "-ate (verb: to make or do)" }
       ];
 
-      // Current Selection State
-      let selectedPrefix = "";
-      let selectedRoot = "evapor";
-      let selectedSuffix = "-ation";
+      // parts: how the spelling really changes when the pieces join. es / fr / ar are cognates or translations.
+      const WORDS = [
+        { term: "evaporation", pos: "noun", prefix: "", root: "evapor", suffix: "-ation", parts: "evapor + -ation", def: "Liquid water turning into a gas, usually because of heat.", es: "evaporación", fr: "évaporation", ar: "تبخر", sentence: "On a hot day, evaporation dries the puddles on the soccer field in an hour." },
+        { term: "evaporate", pos: "verb", prefix: "", root: "evapor", suffix: "-ate", parts: "evapor + -ate", def: "To change from a liquid into a gas.", es: "evaporar", fr: "évaporer", ar: "يتبخر", sentence: "If you leave a cup of salt water in the sun, the water will evaporate and leave the salt." },
+        { term: "evaporative", pos: "adjective", prefix: "", root: "evapor", suffix: "-ive", parts: "evapor + -ive", def: "Working by evaporation.", es: "evaporativo", sentence: "A desert cooler is an evaporative cooler: water evaporates and the air feels cooler." },
+        { term: "prediction", pos: "noun", prefix: "", root: "predict", suffix: "-ation", parts: "predict + -ion (the root already ends in t)", def: "A statement about what you think will happen, based on evidence.", es: "predicción", fr: "prédiction", ar: "تنبؤ", sentence: "Her prediction was that the plant near the window would grow faster." },
+        { term: "predictable", pos: "adjective", prefix: "", root: "predict", suffix: "-able", parts: "predict + -able", def: "Easy to know ahead of time because it follows a pattern.", es: "predecible", fr: "prévisible", ar: "قابل للتنبؤ", sentence: "Sunrise is predictable: it happens every morning at a time we can calculate." },
+        { term: "unpredictable", pos: "adjective", prefix: "un-", root: "predict", suffix: "-able", parts: "un- + predict + -able", def: "Not possible to know ahead of time.", es: "impredecible", fr: "imprévisible", ar: "غير متوقع", sentence: "Mountain weather is unpredictable, so hikers pack a rain jacket even on sunny mornings." },
+        { term: "predictive", pos: "adjective", prefix: "", root: "predict", suffix: "-ive", parts: "predict + -ive", def: "Helping to tell what will probably happen.", es: "predictivo", sentence: "Meteorologists use predictive models to warn towns before a storm." },
+        { term: "conclusion", pos: "noun", prefix: "", root: "conclud", suffix: "-ation", parts: "conclude + -ion (the final d changes to s)", def: "A decision you reach after thinking about the evidence.", es: "conclusión", fr: "conclusion", ar: "استنتاج", sentence: "After three trials, the class wrote one conclusion about which paper towel was strongest." },
+        { term: "conclusive", pos: "adjective", prefix: "", root: "conclud", suffix: "-ive", parts: "conclude + -ive (the final d changes to s)", def: "Strong enough to settle a question.", es: "concluyente", fr: "concluant", ar: "حاسم", sentence: "The fingerprints were conclusive evidence, so the detective closed the case." },
+        { term: "inconclusive", pos: "adjective", prefix: "in-", root: "conclud", suffix: "-ive", parts: "in- + conclude + -ive", def: "Not strong enough to settle a question.", es: "no concluyente", sentence: "One test is inconclusive, so we repeat the experiment before we decide." },
+        { term: "dependable", pos: "adjective", prefix: "", root: "depend", suffix: "-able", parts: "depend + -able", def: "Always there when you need it; you can trust it.", es: "confiable", sentence: "A dependable teammate arrives on time and finishes the group task." },
+        { term: "dependent", pos: "adjective", prefix: "", root: "depend", suffix: "-ent", parts: "depend + -ent", def: "Needing something else in order to live or work.", es: "dependiente", fr: "dépendant", ar: "تابع", sentence: "Baby birds are dependent on their parents for food." },
+        { term: "independent", pos: "adjective", prefix: "in-", root: "depend", suffix: "-ent", parts: "in- + depend + -ent", def: "Able to act or work without help from others.", es: "independiente", sentence: "By eighth grade, many students feel ready to be independent travelers on the city bus." },
+        { term: "dependence", pos: "noun", prefix: "", root: "depend", suffix: "-ence", parts: "depend + -ence", def: "The state of needing someone or something.", es: "dependencia", sentence: "Our town's dependence on one river is a reason to protect it." },
+        { term: "independence", pos: "noun", prefix: "in-", root: "depend", suffix: "-ence", parts: "in- + depend + -ence", def: "Freedom from control by others.", es: "independencia", sentence: "Many countries celebrate a national day of independence with parades and speeches." },
+        { term: "sustainable", pos: "adjective", prefix: "", root: "sustain", suffix: "-able", parts: "sustain + -able", def: "Able to continue for a long time without using up resources.", es: "sostenible", fr: "durable", ar: "مستدام", sentence: "The school garden is sustainable because it uses rainwater and compost." },
+        { term: "difference", pos: "noun", prefix: "", root: "differ", suffix: "-ence", parts: "differ + -ence", def: "A way that two things are not the same.", es: "diferencia", sentence: "The graph shows a big difference between summer and winter temperatures." },
+        { term: "different", pos: "adjective", prefix: "", root: "differ", suffix: "-ent", parts: "differ + -ent", def: "Not the same as another thing.", es: "diferente", sentence: "Each group chose a different way to show the data." },
+        { term: "equation", pos: "noun", prefix: "", root: "equat", suffix: "-ation", parts: "equate + -ion (the final e drops)", def: "A math sentence that says two amounts are equal.", es: "ecuación", fr: "équation", ar: "معادلة", sentence: "Mia wrote an equation to find how many bus tickets the club could buy." },
+        { term: "variable", pos: "adjective", prefix: "", root: "vari", suffix: "-able", parts: "vari + -able", def: "Likely to change; not always the same.", es: "variable", fr: "variable", ar: "متغير", sentence: "The weather in April is variable: sunny at noon and rainy by dinner." },
+        { term: "variation", pos: "noun", prefix: "", root: "vari", suffix: "-ation", parts: "vari + -ation", def: "A small change or difference from what is usual.", es: "variación", fr: "variation", ar: "تباين", sentence: "There is a lot of variation in the height of sunflowers in our garden." },
+        { term: "various", pos: "adjective", prefix: "", root: "vari", suffix: "-ous", parts: "vari + -ous", def: "Of several different kinds.", es: "varios", sentence: "The library has various books about space, from comics to science magazines." },
+        { term: "migration", pos: "noun", prefix: "", root: "migrat", suffix: "-ation", parts: "migrate + -ion (the final e drops)", def: "The movement of animals or people from one place to another.", es: "migración", fr: "migration", ar: "هجرة", sentence: "Monarch butterflies make a long migration from Canada to Mexico every autumn." },
+        { term: "absorption", pos: "noun", prefix: "", root: "absorb", suffix: "-ation", parts: "absorb + -tion (b changes to p)", def: "Soaking up liquid, light or heat.", es: "absorción", fr: "absorption", ar: "امتصاص", sentence: "Dark roofs have more heat absorption than white roofs." },
+        { term: "absorbent", pos: "adjective", prefix: "", root: "absorb", suffix: "-ent", parts: "absorb + -ent", def: "Able to soak up liquid.", es: "absorbente", sentence: "A sponge is more absorbent than a plastic plate." },
+        { term: "connection", pos: "noun", prefix: "", root: "connect", suffix: "-ation", parts: "connect + -ion", def: "A link between two things or ideas.", es: "conexión", sentence: "The writer shows a connection between the two characters." },
+        { term: "disconnection", pos: "noun", prefix: "dis-", root: "connect", suffix: "-ation", parts: "dis- + connect + -ion", def: "A break in a link between things.", es: "desconexión", sentence: "A disconnection in the wires made the lights go out." },
+        { term: "interconnection", pos: "noun", prefix: "inter-", root: "connect", suffix: "-ation", parts: "inter- + connect + -ion", def: "A link that goes both ways between several things.", es: "interconexión", sentence: "The interconnection of roads, bridges and trains moves people across the city." },
+        { term: "connective", pos: "adjective", prefix: "", root: "connect", suffix: "-ive", parts: "connect + -ive", def: "Joining things together.", es: "conectivo", sentence: "Words like because and however are connective words in an essay." },
+        { term: "structure", pos: "noun", prefix: "", root: "struct", suffix: "-ure", parts: "struct + -ure", def: "The way the parts of something are arranged or built.", es: "estructura", sentence: "The structure of a bridge decides how much weight it can hold." },
+        { term: "substructure", pos: "noun", prefix: "sub-", root: "struct", suffix: "-ure", parts: "sub- + struct + -ure", def: "The part underneath that holds up a building or bridge.", es: "subestructura", sentence: "Engineers checked the steel substructure before opening the bridge." },
+        { term: "reconnection", pos: "noun", prefix: "re-", root: "connect", suffix: "-ation", parts: "re- + connect + -ion", def: "A link made again after it was broken.", es: "reconexión", sentence: "After the storm, the reconnection of the power lines took two days." },
+        { term: "instruction", pos: "noun", prefix: "in-", root: "struct", suffix: "-ation", parts: "in- + struct + -ion", def: "Words that tell you how to do something.", es: "instrucción", sentence: "The first instruction on the science sheet was to measure the water." },
+        { term: "instructive", pos: "adjective", prefix: "in-", root: "struct", suffix: "-ive", parts: "in- + struct + -ive", def: "Teaching you something useful.", es: "instructivo", sentence: "The museum video was instructive: it showed how a volcano builds an island." }
+      ];
+
+      // need: the part of speech the blank needs. why: the grammar clue in the sentence.
+      const CLOZE_DECK = [
+        { id: 1, before: "Engineers studied how the sun's heat causes the ", after: " of water from the lake.", need: "noun", why: "The word the comes before the blank and of comes after it, so the blank needs a noun.", options: [["evaporate", "verb"], ["evaporation", "noun"], ["evaporative", "adjective"]], answer: "evaporation" },
+        { id: 2, before: "The class ran the test four times and got the same result, so the outcome was highly ", after: ".", need: "adjective", why: "After was highly, the blank describes the outcome, so it needs an adjective.", options: [["predictable", "adjective"], ["prediction", "noun"], ["predict", "verb"]], answer: "predictable" },
+        { id: 3, before: "Plants need sunlight, so they are ", after: " on light to make food.", need: "adjective", why: "After are, the blank describes the plants and the phrase on light follows, so it needs the adjective dependent.", options: [["dependence", "noun"], ["depend", "verb"], ["dependent", "adjective"]], answer: "dependent" },
+        { id: 4, before: "Our class built a ", after: " garden that uses rainwater and compost instead of chemicals.", need: "adjective", why: "The blank comes between a and the noun garden, so it needs an adjective that describes the garden.", options: [["sustain", "verb"], ["sustainable", "adjective"], ["sustainability", "noun"]], answer: "sustainable" },
+        { id: 5, before: "The two graphs show a big ", after: " between summer and winter temperatures.", need: "noun", why: "The words a big come before the blank, and between comes after it. A noun fits here: a big difference.", options: [["difference", "noun"], ["differ", "verb"], ["different", "adjective"]], answer: "difference" },
+        { id: 6, before: "Scientists ", after: " that the storm will reach the coast by Friday.", need: "verb", why: "The blank follows the subject Scientists and comes before that, so it needs a verb.", options: [["prediction", "noun"], ["predictable", "adjective"], ["predict", "verb"]], answer: "predict" },
+        { id: 7, before: "A paper towel is more ", after: " than a plastic sheet, so it soaks up spills quickly.", need: "adjective", why: "The words more and than frame the blank, so it needs an adjective that can be compared.", options: [["absorption", "noun"], ["absorbent", "adjective"], ["absorb", "verb"]], answer: "absorbent" },
+        { id: 8, before: "The fingerprints were ", after: " evidence, so the detective closed the case.", need: "adjective", why: "The blank comes before the noun evidence and describes it, so it needs an adjective.", options: [["conclusive", "adjective"], ["conclusion", "noun"], ["conclude", "verb"]], answer: "conclusive" }
+      ];
+
+      const QUEST_GOALS = { nouns: 3, adjs: 2, clozes: 2 };
+      const BONUS_XP = 100;
+      const KEYS = { xp: "widaXP", vault: "widaVaultWords", quest: "widaWordBuilderQuest" };
+
+      let selected = { prefix: "", root: "evapor", suffix: "-ation" };
       let currentClozeIdx = 0;
-
-      // Stats
+      let clozeTries = 0;
+      let clozeDone = new Set();
       let forgedWordsSet = new Set();
-      let questNouns = 0;
-      let questAdjs = 0;
-      let questClozes = 0;
+      let quest = null; // set by loadQuest() once the page has loaded
 
-      function pickPrefix(pfx, el) {
-        selectedPrefix = pfx;
-        document.querySelectorAll("#prefixDeck .m-tile").forEach(b => b.classList.remove("selected"));
-        el.classList.add("selected");
-        document.getElementById("valSlotPrefix").textContent = pfx || "[None]";
-        document.getElementById("slotPrefix").classList.toggle("filled", !!pfx);
+      const $ = (id) => document.getElementById(id);
+      const today = () => new Date().toISOString().slice(0, 10);
+      function freshQuest() { return { day: today(), nouns: [], adjs: [], clozes: [], bonus: false }; }
+      function store(key, fallback) { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch (e) { return fallback; } }
+      function save(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked: the page still works */ } }
+      const wordFor = (p, r, s) => WORDS.find((w) => w.prefix === p && w.root === r && w.suffix === s) || null;
+
+      // ── Tiles ──
+      function renderDeck(deckId, list, kind) {
+        $(deckId).innerHTML = list.map((t) =>
+          `<button type="button" class="m-tile" data-kind="${kind}" data-value="${t.v}" aria-pressed="false">${t.label}</button>`).join("");
       }
-
-      function pickRoot(rt, el) {
-        selectedRoot = rt;
-        document.querySelectorAll("#rootDeck .m-tile").forEach(b => b.classList.remove("selected"));
-        el.classList.add("selected");
-        document.getElementById("valSlotRoot").textContent = rt;
-        document.getElementById("slotRoot").classList.add("filled");
-      }
-
-      function pickSuffix(sfx, el) {
-        selectedSuffix = sfx;
-        document.querySelectorAll("#suffixDeck .m-tile").forEach(b => b.classList.remove("selected"));
-        el.classList.add("selected");
-        document.getElementById("valSlotSuffix").textContent = sfx;
-        document.getElementById("slotSuffix").classList.add("filled");
-      }
-
-      function resetAnvil() {
-        pickPrefix("", document.querySelector("#prefixDeck .m-tile"));
-        pickRoot("evapor", document.querySelector("#rootDeck .m-tile"));
-        pickSuffix("-ation", document.querySelector("#suffixDeck .m-tile"));
-      }
-
-      function forgeWord() {
-        // Find matching word
-        let match = null;
-        for (const k in VALID_WORDS) {
-          const w = VALID_WORDS[k];
-          if (w.prefix === selectedPrefix && w.root === selectedRoot && w.suffix === selectedSuffix) {
-            match = w;
-            break;
-          }
+      function syncTiles() {
+        for (const kind of ["prefix", "root", "suffix"]) {
+          document.querySelectorAll(`#${kind}Deck .m-tile`).forEach((b) => {
+            const on = b.dataset.value === selected[kind];
+            b.classList.toggle("selected", on);
+            b.setAttribute("aria-pressed", String(on));
+          });
         }
+        $("valSlotPrefix").textContent = selected.prefix || "[None]";
+        $("valSlotRoot").textContent = selected.root;
+        $("valSlotSuffix").textContent = selected.suffix;
+        $("slotPrefix").classList.toggle("filled", !!selected.prefix);
+      }
+      function pick(kind, value) { selected[kind] = value; syncTiles(); }
+      function resetAnvil() { selected = { prefix: "", root: "evapor", suffix: "-ation" }; syncTiles(); setForgeStatus("Tiles reset. Pick a prefix (optional), a root and an ending, then press Build word.", "info"); }
 
+      function setForgeStatus(html, tone) {
+        const el = $("forgeStatus");
+        el.className = `forge-status ${tone || "info"}`;
+        el.innerHTML = html;
+        el.hidden = !html;
+      }
+
+      // Teaching feedback for a combination that is not in WORDS.
+      function explainMiss(p, r, s) {
+        const rootLabel = ROOTS.find((x) => x.v === r).label;
+        const sameRootSuffix = WORDS.filter((w) => w.root === r && w.suffix === s);
+        if (sameRootSuffix.length) {
+          const opts = sameRootSuffix.map((w) => `<strong>${w.term}</strong> (${w.parts})`).join(" or ");
+          return `<strong>Almost.</strong> The root <em>${r}</em> and the ending <em>${s}</em> do work together, but the prefix <em>${p || "[None]"}</em> does not make a word here. Try: ${opts}.`;
+        }
+        const rootWords = WORDS.filter((w) => w.root === r);
+        const endings = [...new Set(rootWords.map((w) => w.suffix))].join(", ");
+        const sType = SUFFIXES.find((x) => x.v === s).label.replace(/^[^(]*/, "").replace(/[()]/g, "");
+        return `<strong>Not a word yet.</strong> The root <em>${r}</em> (${rootLabel.replace(/^[^(]*\(|\)$/g, "")}) does not take <em>${s}</em>${sType ? ` (${sType.trim()})` : ""}. Roots only join endings that fit their meaning. Words with <em>${r}</em> use: <strong>${endings}</strong>. Change the ending and build again.`;
+      }
+
+      function buildWord() {
+        const match = wordFor(selected.prefix, selected.root, selected.suffix);
         if (!match) {
-          // Check if root + suffix exists without prefix
-          alert(`⚠️ Not quite an academic combination! Try adjusting your suffix or prefix for root "${selectedRoot}".\n\nHint: Roots like 'evapor' combine with '-ation' (Noun) or '-ate' (Verb).`);
+          $("wordResultCard").style.display = "none";
+          setForgeStatus(explainMiss(selected.prefix, selected.root, selected.suffix), "retry");
           return;
         }
-
-        // Show Word Card
-        const card = document.getElementById("wordResultCard");
+        const card = $("wordResultCard");
         card.style.display = "block";
-        document.getElementById("resWordName").textContent = match.term;
-        const posEl = document.getElementById("resWordPos");
-        posEl.textContent = match.pos.toUpperCase();
+        $("resWordName").textContent = match.term;
+        const posEl = $("resWordPos");
+        posEl.textContent = match.pos;
         posEl.className = `pos-badge ${match.pos}`;
-
-        document.getElementById("resCognateSpanish").textContent = `🇪🇸 Spanish: ${match.spanish}`;
-        document.getElementById("resCognateFrench").textContent = `🇫🇷 French: ${match.french}`;
-        document.getElementById("resCognateArabic").textContent = `🇸🇦 Arabic: ${match.arabic}`;
-        document.getElementById("resDefinition").textContent = match.def;
-        document.getElementById("resSentence").innerHTML = `"${match.sentence}"`;
-
-        // Pronounce automatically
-        speakResultWord(1.0);
-
-        // Add to vault
-        if (!forgedWordsSet.has(match.term)) {
-          forgedWordsSet.add(match.term);
-          saveVault();
-
-          // Award XP
-          awardXP(25);
-
-          // Update quest
-          if (match.pos === "noun" && questNouns < 3) questNouns++;
-          if (match.pos === "adjective" && questAdjs < 2) questAdjs++;
-          updateQuestUI();
+        $("resParts").textContent = `${match.parts} → ${match.term}`;
+        for (const [id, label, val, lang] of [["resCognateSpanish", "Spanish", match.es, "es"], ["resCognateFrench", "French", match.fr, "fr"], ["resCognateArabic", "Arabic", match.ar, "ar"]]) {
+          const chip = $(id);
+          chip.hidden = !val;
+          chip.innerHTML = val ? `${label}: <span lang="${lang}">${val}</span>` : "";
         }
+        $("resDefinition").textContent = match.def;
+        $("resSentence").textContent = `"${match.sentence}"`;
 
+        const isNew = !forgedWordsSet.has(match.term);
+        setForgeStatus(`<strong>Built: ${match.term}</strong> (${match.pos}). The ending <em>${match.suffix}</em> ${isNew ? "made a new word for your vault." : "gives the same word you already saved."}`, "ok");
+        if (isNew) {
+          forgedWordsSet.add(match.term);
+          save(KEYS.vault, JSON.stringify([...forgedWordsSet]));
+          awardXP(25);
+        }
+        if (match.pos === "noun" && !quest.nouns.includes(match.term)) quest.nouns.push(match.term);
+        if (match.pos === "adjective" && !quest.adjs.includes(match.term)) quest.adjs.push(match.term);
+        updateQuestUI();
         renderVault();
+        renderStats();
       }
 
-      function speakResultWord(rate = 1.0) {
-        const word = document.getElementById("resWordName").textContent;
-        if (!word) return;
+      function speak(word, rate) {
+        if (!word || !("speechSynthesis" in window)) { setForgeStatus("Your browser cannot read words aloud. Say the word to a partner instead.", "info"); return; }
         const u = new SpeechSynthesisUtterance(word);
         u.rate = rate;
         u.lang = "en-US";
+        window.speechSynthesis.cancel();
         window.speechSynthesis.speak(u);
       }
 
       function awardXP(pts) {
-        let xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
-        xp += pts;
-        localStorage.setItem("widaXP", xp);
-        document.getElementById("valSparkXP").textContent = xp.toLocaleString();
-
-        let streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
-        if (streak === 0) {
-          streak = 1;
-          localStorage.setItem("widaStreak", streak);
-        }
-        document.getElementById("valStreak").textContent = streak;
+        const xp = parseInt(store(KEYS.xp, "0"), 10) || 0;
+        save(KEYS.xp, String(xp + pts));
+        renderStats();
       }
 
+      // ── Daily quest: counts distinct words and clozes for today, saved so a reload keeps the progress. ──
+      function loadQuest() {
+        quest = freshQuest();
+        try {
+          const q = JSON.parse(store(KEYS.quest, "null"));
+          if (q && q.day === today()) quest = { ...freshQuest(), ...q };
+        } catch (e) { quest = freshQuest(); }
+      }
       function updateQuestUI() {
-        document.getElementById("questNounCount").textContent = `${questNouns} / 3`;
-        document.getElementById("questNounBar").style.width = `${(questNouns / 3) * 100}%`;
-
-        document.getElementById("questAdjCount").textContent = `${questAdjs} / 2`;
-        document.getElementById("questAdjBar").style.width = `${(questAdjs / 2) * 100}%`;
-
-        document.getElementById("questClozeCount").textContent = `${questClozes} / 2`;
-        document.getElementById("questClozeBar").style.width = `${(questClozes / 2) * 100}%`;
-
-        if (questNouns >= 3 && questAdjs >= 2 && questClozes >= 2) {
-          awardXP(100);
-          alert("🎉 Daily Morphologist Quest Complete! You earned +100 Bonus SPARK XP!");
+        const rows = [["Noun", quest.nouns.length, QUEST_GOALS.nouns], ["Adj", quest.adjs.length, QUEST_GOALS.adjs], ["Cloze", quest.clozes.length, QUEST_GOALS.clozes]];
+        for (const [key, n, goal] of rows) {
+          const shown = Math.min(n, goal);
+          $(`quest${key}Count`).textContent = `${shown} / ${goal}`;
+          $(`quest${key}Bar`).style.width = `${(shown / goal) * 100}%`;
         }
+        const complete = quest.nouns.length >= QUEST_GOALS.nouns && quest.adjs.length >= QUEST_GOALS.adjs && quest.clozes.length >= QUEST_GOALS.clozes;
+        if (complete && !quest.bonus) {
+          quest.bonus = true;
+          awardXP(BONUS_XP);
+          $("questDone").hidden = false;
+        }
+        $("questDone").hidden = !quest.bonus;
+        save(KEYS.quest, JSON.stringify(quest));
+      }
+
+      function renderStats() {
+        $("valSparkXP").textContent = (parseInt(store(KEYS.xp, "0"), 10) || 0).toLocaleString();
+        $("valWordsForged").textContent = forgedWordsSet.size;
+        $("valClozeDone").textContent = `${clozeDone.size} / ${CLOZE_DECK.length}`;
+        $("valRoots").textContent = new Set([...forgedWordsSet].map((t) => (WORDS.find((w) => w.term === t) || {}).root).filter(Boolean)).size;
       }
 
       function renderVault() {
-        const list = document.getElementById("vaultList");
-        const words = Array.from(forgedWordsSet);
-        document.getElementById("valWordsForged").textContent = words.length;
-        document.getElementById("vaultCountBadge").textContent = `${words.length} Words`;
-
-        if (words.length === 0) {
-          list.innerHTML = `<div style="text-align: center; padding: 24px 10px; color: var(--slate-muted); font-size: 0.85rem;">No words forged yet. Forge your first word on the left!</div>`;
+        const list = $("vaultList");
+        const words = [...forgedWordsSet];
+        $("vaultCountBadge").textContent = `${words.length} ${words.length === 1 ? "word" : "words"}`;
+        if (!words.length) {
+          list.innerHTML = `<div class="vault-empty">No words yet. Build your first word on the left.</div>`;
           return;
         }
-
-        list.innerHTML = words.map(term => {
-          const w = VALID_WORDS[term] || { pos: "noun" };
-          return `
-            <div class="vault-card">
-              <div>
-                <strong>${term}</strong>
-                <span class="pos-badge ${w.pos}" style="font-size: 0.68rem; margin-left: 6px;">${w.pos}</span>
-              </div>
-              <button class="btn btn-secondary" onclick="speakVaultWord('${term}')" style="font-size: 0.72rem; padding: 4px 8px;">
-                🔊 Play
-              </button>
-            </div>
-          `;
+        list.innerHTML = words.map((term) => {
+          const w = WORDS.find((x) => x.term === term);
+          return `<div class="vault-card"><div><strong>${term}</strong>${w ? ` <span class="pos-badge ${w.pos} small">${w.pos}</span><div class="vault-parts">${w.parts}</div>` : ""}</div>` +
+            `<button type="button" class="btn btn-secondary" data-speak="${term}" aria-label="Hear the word ${term}">🔊 Hear</button></div>`;
         }).join("");
       }
 
-      function speakVaultWord(term) {
-        const u = new SpeechSynthesisUtterance(term);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
-      }
-
-      function saveVault() {
-        localStorage.setItem("widaVaultWords", JSON.stringify(Array.from(forgedWordsSet)));
-      }
-
-      function loadVault() {
-        try {
-          const arr = JSON.parse(localStorage.getItem("widaVaultWords") || "[]");
-          forgedWordsSet = new Set(arr);
-        } catch (e) {
-          forgedWordsSet = new Set();
-        }
-      }
-
-      // ── Cloze Quest Functions ──
+      // ── Cloze ──
       function renderCloze() {
         const item = CLOZE_DECK[currentClozeIdx];
-        document.getElementById("clozeScoreBadge").textContent = `Question ${currentClozeIdx + 1} of ${CLOZE_DECK.length}`;
-        document.getElementById("clozePrompt").innerHTML = item.prompt.replace("________", `<span class="cloze-drop" id="clozeSlot">________</span>`);
-        document.getElementById("clozeFeedback").style.display = "none";
-        document.getElementById("btnNextCloze").style.display = "none";
-
-        const opts = document.getElementById("clozeOptions");
-        opts.innerHTML = item.options.map(opt => `
-          <button class="cloze-opt-btn" onclick="checkCloze('${opt.replace(/'/g, "\\'")}', this)">
-            ${opt}
-          </button>
-        `).join("");
+        clozeTries = 0;
+        $("clozeScoreBadge").textContent = `Sentence ${currentClozeIdx + 1} of ${CLOZE_DECK.length}`;
+        $("clozePrompt").innerHTML = `${item.before}<span class="cloze-drop" id="clozeSlot" aria-label="blank">________</span>${item.after}`;
+        const fb = $("clozeFeedback");
+        fb.textContent = "";
+        fb.className = "cloze-feedback";
+        $("btnNextCloze").style.display = "none";
+        $("clozeOptions").innerHTML = item.options.map(([w, pos]) =>
+          `<button type="button" class="cloze-opt-btn" data-word="${w}">${w} <span class="opt-pos">(${pos})</span></button>`).join("");
       }
 
-      function checkCloze(chosen, btn) {
+      function checkCloze(btn) {
         const item = CLOZE_DECK[currentClozeIdx];
-        const isRight = chosen === item.correctWord;
-
-        document.querySelectorAll("#clozeOptions .cloze-opt-btn").forEach(b => b.disabled = true);
-
-        const slot = document.getElementById("clozeSlot");
-        slot.textContent = chosen.split(" ")[0];
-
-        const fb = document.getElementById("clozeFeedback");
-        fb.style.display = "block";
-
-        if (isRight) {
+        const chosen = btn.dataset.word;
+        const pos = item.options.find(([w]) => w === chosen)[1];
+        const fb = $("clozeFeedback");
+        const lockAll = () => document.querySelectorAll("#clozeOptions .cloze-opt-btn").forEach((b) => (b.disabled = true));
+        if (chosen === item.answer) {
+          lockAll();
           btn.classList.add("correct");
-          fb.style.color = "var(--green)";
-          fb.innerHTML = `<strong>✓ Correct!</strong> ${item.explanation}`;
-          awardXP(20);
-          if (questClozes < 2) {
-            questClozes++;
+          $("clozeSlot").textContent = chosen;
+          fb.className = "cloze-feedback ok";
+          fb.innerHTML = `<strong>Yes: ${chosen}.</strong> ${item.why}`;
+          if (!clozeDone.has(item.id)) {
+            clozeDone.add(item.id);
+            awardXP(20);
+            if (!quest.clozes.includes(item.id)) quest.clozes.push(item.id);
             updateQuestUI();
           }
-        } else {
-          btn.classList.add("wrong");
-          fb.style.color = "#dc2626";
-          fb.innerHTML = `<strong>Not quite.</strong> ${item.explanation}`;
+          finishCloze();
+          return;
         }
-
-        document.getElementById("btnNextCloze").style.display = "inline-flex";
-        document.getElementById("valClozeDone").textContent = `${currentClozeIdx + 1} / ${CLOZE_DECK.length}`;
+        clozeTries += 1;
+        btn.classList.add("wrong");
+        btn.disabled = true;
+        if (clozeTries < 2) {
+          fb.className = "cloze-feedback retry";
+          fb.innerHTML = `<strong>Not yet.</strong> <em>${chosen}</em> is a ${pos}, but this blank needs a ${item.need}. Look at the words just before and after the blank, then choose again.`;
+          return;
+        }
+        lockAll();
+        document.querySelector(`#clozeOptions [data-word="${item.answer}"]`).classList.add("correct");
+        $("clozeSlot").textContent = item.answer;
+        fb.className = "cloze-feedback retry";
+        fb.innerHTML = `<strong>The answer is ${item.answer}.</strong> ${item.why} This one is not counted yet: you can see it again later.`;
+        finishCloze();
       }
-
+      function finishCloze() {
+        $("btnNextCloze").style.display = "inline-flex";
+        $("btnNextCloze").textContent = currentClozeIdx === CLOZE_DECK.length - 1 ? "Start again ↺" : "Next sentence →";
+        renderStats();
+      }
       function nextCloze() {
         currentClozeIdx = (currentClozeIdx + 1) % CLOZE_DECK.length;
         renderCloze();
+        $("clozePrompt").focus();
       }
 
-      // Initial boot
+      // ── Wiring ──
+      document.addEventListener("click", (e) => {
+        const tile = e.target.closest(".m-tile");
+        if (tile) return pick(tile.dataset.kind, tile.dataset.value);
+        const opt = e.target.closest(".cloze-opt-btn");
+        if (opt && !opt.disabled) return checkCloze(opt);
+        const sp = e.target.closest("[data-speak]");
+        if (sp) return speak(sp.dataset.speak, 0.9);
+        const act = e.target.closest("[data-action]");
+        if (!act) return;
+        const a = act.dataset.action;
+        if (a === "build") buildWord();
+        else if (a === "reset") resetAnvil();
+        else if (a === "say") speak($("resWordName").textContent, 1.0);
+        else if (a === "say-slow") speak($("resWordName").textContent, 0.6);
+        else if (a === "next-cloze") nextCloze();
+      });
+
       window.addEventListener("DOMContentLoaded", () => {
-        loadVault();
+        renderDeck("prefixDeck", PREFIXES, "prefix");
+        renderDeck("rootDeck", ROOTS, "root");
+        renderDeck("suffixDeck", SUFFIXES, "suffix");
+        try { forgedWordsSet = new Set(JSON.parse(store(KEYS.vault, "[]"))); } catch (e) { forgedWordsSet = new Set(); }
+        loadQuest();
+        syncTiles();
         renderVault();
         renderCloze();
-
-        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
-        document.getElementById("valSparkXP").textContent = xp.toLocaleString();
-        const streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
-        document.getElementById("valStreak").textContent = streak;
+        updateQuestUI();
+        renderStats();
       });
     </script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

@@ -1392,7 +1392,9 @@
           grid-template-columns: 1fr;
         }
       }
-    </style>
+    .vocab-card .frame { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #f1f5f9; font-style: italic; }
+    .vocab-card .frame[hidden] { display: none; }
+  </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
@@ -2242,13 +2244,14 @@
                   margin-top: 12px;
                 "
               >
-                <button class="btn primary" onclick="saveFinal()">
+                <button type="button" class="btn primary" onclick="saveFinal()">
                   Save Response
                 </button>
-                <button class="btn" onclick="loadStarter()">
+                <button type="button" class="btn" onclick="loadStarter()">
                   Use Sentence Starter
                 </button>
               </div>
+              <p id="finalStatus" role="status" aria-live="polite" hidden style="margin-top:10px;padding:10px 14px;border-radius:8px;background:#fef3c7;color:#78350f;border:1px solid #fcd34d;"></p>
             </div>
             <div>
               <div class="rubric">
@@ -2910,12 +2913,18 @@
             "The novel teaches environmental responsibility by showing __________.",
         },
       ];
+      function toggleFrame(btn) {
+        const frame = btn.nextElementSibling;
+        frame.hidden = !frame.hidden;
+        btn.setAttribute("aria-expanded", String(!frame.hidden));
+        btn.textContent = frame.hidden ? "Use it" : "Hide frame";
+      }
       function renderVocab() {
         const grid = document.getElementById("vocabGrid");
         grid.innerHTML = vocab
           .map(
             (v, i) =>
-              `<div class="vocab-card"><div class="icon">${v.icon}</div><h4>${v.word}</h4><p>${v.def}</p><button class="mini-btn" onclick="alert('${v.frame.replace(/'/g, "\\'")}')">Use it</button></div>`,
+              `<div class="vocab-card"><div class="icon">${v.icon}</div><h4>${v.word}</h4><p>${v.def}</p><button type="button" class="mini-btn" aria-expanded="false" onclick="toggleFrame(this)">Use it</button><p class="frame" hidden>${v.frame}</p></div>`,
           )
           .join("");
       }
@@ -3135,11 +3144,12 @@
         const txt = document.getElementById("finalResponse").value.trim();
         localStorage.setItem("flushFinalResponse", txt);
         if (txt.length > 80) complete("final");
-        alert(
+        const st = document.getElementById("finalStatus");
+        st.hidden = false;
+        st.textContent =
           txt.length > 80
-            ? "Saved. Strong final response length."
-            : "Saved. Add more detail: include two events and a theme.",
-        );
+            ? "Saved. Your response has enough detail to count. Check that it names two events and the theme."
+            : "Saved. It is still short: add two events from the book and say what theme they show.";
       }
       function loadStarter() {
         document.getElementById("finalResponse").value =

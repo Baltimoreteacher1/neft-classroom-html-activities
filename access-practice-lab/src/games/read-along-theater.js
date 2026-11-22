@@ -55,11 +55,6 @@ const roundsOf = (ps) => (ps.kind === "mood" ? Object.values(ps.rs) : [ps.rs]);
 const pageDone = (ps) => roundsOf(ps).every(settled);
 const pageStars = (ps) => (pageDone(ps) ? Math.min(...roundsOf(ps).map(starsOf)) : 0);
 const allRounds = (s) => [...s.pages.flatMap(roundsOf), s.call.rs];
-function streak(s) {
-  let n = 0;
-  for (const rs of allRounds(s).filter(settled)) n = starsOf(rs) === 3 ? n + 1 : 0;
-  return n;
-}
 const AWARD = {
   3: [
     "Spotlight",
@@ -400,13 +395,11 @@ function playbill(s, env, play) {
     I.S("Page 3", "Página 3"),
     I.S("Curtain call", "Despedida"),
   ];
-  const run = streak(s);
   return html`<header class="rat-bill">
     <p class="rat-bill-t">${icon("star")}<span>${T(I, play.title)}</span></p>
     <ol class="rat-stickers" aria-label="${I.S("Playbill stickers", "Calcomanías del programa")}">
       ${scores.map((n, i) => html`<li class="rat-sticker is-s${n}${i === Math.min(s.page, 3) && !s.bowed ? " is-now" : ""}"><span class="rat-sticker-n" aria-hidden="true">${i < 3 ? i + 1 : icon("star")}</span><span class="visually-hidden">${names[i]}: ${n ? I.S(`${AWARD[n][0]} sticker`, `calcomanía de ${AWARD[n][1]}`) : I.S("not yet", "todavía no")}</span></li>`)}
     </ol>
-    ${run >= 2 ? html`<p class="rat-streak">${icon("sparkle")}${I.T(`Spotlight streak: ${run}`, `Racha de reflector: ${run}`)}</p>` : ""}
   </header>`;
 }
 

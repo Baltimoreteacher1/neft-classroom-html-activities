@@ -202,6 +202,34 @@ export function checkSet(set, file) {
       E(`${item.id}: unsupported scoring or level claim in student-visible text`);
     if (TIMER.test(visible)) E(`${item.id}: timer or speed language`);
     if (m.facts && !Array.isArray(m.facts)) E(`${item.id}: meta.facts must be a list`);
+    // feedback that teaches: no bare verdicts, and every wrong-answer note says why in a full sentence
+    if (
+      item.explanation &&
+      /^(correct|right|good|yes|great|try again|wrong|no)[.! ]*$/i.test(item.explanation.trim())
+    )
+      E(`${item.id}: explanation is a bare verdict`);
+    for (const [oid, note] of Object.entries(item.distractors || {}))
+      if (wc(note) < 8)
+        E(`${item.id}: the note for wrong choice ${oid} is too short to teach (${wc(note)} words)`);
+    // fair presentation: an ordering task must not arrive already solved; a multiple-select key must not be "all of them"
+    if (
+      item.type === "ordering" &&
+      item.ordering.items.map((x) => x.id).join() === item.ordering.answer.join()
+    )
+      E(`${item.id}: ordering items are presented already in the correct order`);
+    if (item.type === "multiple-select" && item.answer.length === item.options.length)
+      E(`${item.id}: every option is correct, so there is nothing to decide`);
+    if (item.type === "dropdown")
+      for (const [k, b] of Object.entries(item.dropdown.blanks)) {
+        if (new Set(b.options.map((o) => o.toLowerCase())).size !== b.options.length)
+          E(`${item.id}: blank ${k} has duplicate options`);
+        const before = item.dropdown.template.slice(0, item.dropdown.template.indexOf(`{${k}}`));
+        const vowel = b.options.map((o) => /^[aeiou]/i.test(o));
+        if (/\b(a|an)\s*$/i.test(before) && new Set(vowel).size > 1)
+          E(
+            `${item.id}: blank ${k} follows "a/an" but options differ in initial sound, so the article gives the answer away`,
+          );
+      }
   }
   // answer positions
   const pos = items

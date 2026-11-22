@@ -135,8 +135,8 @@ export function message(s, env, { plain = false } = {}) {
   if (t === "match") {
     const w = L.pairs[s.last.p].word.en;
     return T(
-      `Match! “${w}” found its partner.${s.combo > 1 ? ` That is ${s.combo} in a row!` : ""}`,
-      `¡Pareja! “${w}” encontró su compañera.${s.combo > 1 ? ` ¡Llevas ${s.combo} seguidas!` : ""}`,
+      `Match! “${w}” found its partner.`,
+      `¡Pareja! “${w}” encontró su compañera.`,
     );
   }
   if (t === "miss") {
@@ -282,7 +282,6 @@ export function view(s, env) {
     <li>${I.T("Moves", "Jugadas")} <strong>${L.moves}</strong></li>
     <li>${I.T("First-try pairs", "Parejas al primer intento")} <strong>${firstTry}</strong></li>
     <li>${I.T("Hints", "Pistas")} <strong>${L.hints}</strong></li>
-    ${s.combo > 1 ? html`<li class="mm-combo">${icon("sparkle")}${I.T(`${s.combo} in a row`, `${s.combo} seguidas`)}</li>` : ""}
   </ul>`;
   if (s.phase === "cleared") {
     const more = s.lv + 1 < s.levels.length;

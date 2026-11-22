@@ -100,8 +100,10 @@ const brokenImages = () =>
   );
 
 try {
-  // Home
+  // Home. Bare "/" opens the grade chooser (2026-11-17 redesign); the dashboard is what a grade-scoped visit shows.
   await go("/");
+  ok((await page.locator("[data-grade-pick]").count()) > 0, "bare home opens the grade chooser");
+  await go("/?grades=3-5");
   ok((await page.locator(".room-tile").count()) === 4, "home shows four skill rooms");
   await page.click('[data-grade-pick="4-5"]');
   await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
@@ -146,6 +148,7 @@ try {
     "start today's mission action stays within two desktop screens of the top",
   );
   // Guided sessions retain preferences and draft work across navigation/reload.
+  await page.locator("#more-ways > summary").click();
   await page.locator("#planOptions summary").click();
   await page.selectOption("#planFocus", "Writing");
   await page.selectOption("#planLevel", "B");
@@ -169,6 +172,7 @@ try {
   );
   await page.reload({ waitUntil: "networkidle" });
   ok((await page.inputValue("#planFocus")) === "Writing", "planner preferences survive reload");
+  await page.locator("#more-ways > summary").click();
   await page.locator("#planOptions summary").click();
   await page.locator(".session-list a").first().click();
   await page.waitForSelector("[data-note]");
@@ -670,10 +674,15 @@ try {
     "camera stream starts only after the learner taps Use camera",
   );
   await page.click("[data-postcard-capture]");
-  ok(
-    await page.locator("[data-postcard-capture]").isHidden(),
-    "capturing a frame stops the camera stream",
-  );
+  // The click is dispatched asynchronously; wait for the hidden state rather than sampling it once.
+  const captureStopped = await page
+    .locator("[data-postcard-capture]")
+    .waitFor({ state: "hidden", timeout: 5000 })
+    .then(
+      () => true,
+      () => false,
+    );
+  ok(captureStopped, "capturing a frame stops the camera stream");
   await page.fill("[data-postcard-alt]", "A test camera picture of an object.");
   await page.click("[data-postcard-save]");
   await page.waitForFunction(() =>

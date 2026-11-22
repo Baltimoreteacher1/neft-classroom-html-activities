@@ -737,3 +737,25 @@ body[data-lab-view="home"] .lph.lph-choose .lph-shortcuts {
     hyphens: none;
   }
 }
+
+/* Touch-target floor for the header controls (design system, 2026-11-20). The compact register above is right
+   for a mouse; on touch and tablet widths every header control keeps a 44px target. Fine-pointer desktop keeps
+   the compact pills (they still clear WCAG 2.2 SC 2.5.8, 24px). */
+@media (pointer: coarse), (max-width: 1099px) {
+  html .lab-top .lab-tools > .lang-switch .lang-btn,
+  html .lang-banner .lang-btn {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+  html .lab-top .lab-tools > :is(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn),
+  html .lab-top .lab-tools > .lab-utilities > summary {
+    min-width: 2.75rem !important;
+    min-height: 2.75rem;
+  }
+  html .lab-top .lab-tools > .grade-select {
+    min-height: 2.75rem;
+  }
+  html .lab-top .lab-tools > .grade-select select {
+    min-height: 2.5rem;
+  }
+}

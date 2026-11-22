@@ -1,0 +1,402 @@
+{
+  "area": "writing",
+  "branch": "lp-overhaul/writing",
+  "headCommit": "9abb7b0bda",
+  "inventory": [
+    {
+      "id": "sentences-build",
+      "url": "/access-practice-lab/sentences",
+      "program": "ACCESS Practice Lab",
+      "type": "Sentence Lab build/combine/expand (202 tasks)",
+      "gradeBand": "3-5,6-8",
+      "wida": "Levels 1-3 word tiles, 3+ phrase tiles",
+      "objective": "Build sentences from parts; combine and expand",
+      "contentSource": "src/content/craft-sentences*.js",
+      "template": "tile builder",
+      "feedback": "part-of-speech hint at first wrong place, never the word",
+      "a11y": "keyboard move buttons exist (non-drag)",
+      "mobile": "375px e2e pass",
+      "designIssues": [],
+      "contentIssues": [
+        "only 5 of 316 tasks had alternates, so valid reorderings were rejected"
+      ],
+      "action": "checkBuild now accepts equivalent constructions (movable details, and/or clause swap, because/although front or back with comma rule)",
+      "priority": "P0",
+      "status": "upgraded",
+      "verification": "tools/access-writing-checkers.test.mjs; access-craft-studios.test.mjs; access-craft-studios-e2e.mjs"
+    },
+    {
+      "id": "scaffold-language-upgrade",
+      "url": "/access-practice-lab/scaffold/language-upgrade",
+      "program": "ACCESS Practice Lab",
+      "type": "Language Upgrade Lab revise",
+      "gradeBand": "3-5,6-8",
+      "wida": "supports panel levels",
+      "objective": "Revise a vague sentence: detail, precise word, connector",
+      "contentSource": "src/content/scaffold-items.js",
+      "template": "scaffold tool",
+      "feedback": "rule checks; now cites the item's own question",
+      "a11y": "existing",
+      "mobile": "not re-run",
+      "designIssues": [],
+      "contentIssues": [
+        "detail passed on word count alone; repeated words or a dangling connector could pass"
+      ],
+      "action": "checkUpgrade requires new distinct content words and a connector with ideas on both sides",
+      "priority": "P0",
+      "status": "upgraded",
+      "verification": "access-writing-checkers.test.mjs padding/repetition cases"
+    },
+    {
+      "id": "mentor-try-it",
+      "url": "/access-practice-lab/mentor/try/<move>",
+      "program": "ACCESS Practice Lab",
+      "type": "Mentor Text writer's-move try-it (16 tasks x 2 bands)",
+      "gradeBand": "3-5,6-8",
+      "wida": "levels A/B/C fading (frame prefilled at A, shown at B, none at C)",
+      "objective": "Apply one writer's move in a sentence",
+      "contentSource": "src/content/craft-mentor.js TRY_ROWS",
+      "template": "mentor try view",
+      "feedback": "pattern check, honest 'cannot tell if it is good', retry text, model after 2 misses at A/B",
+      "a11y": "axe 0 violations 390/1280",
+      "mobile": "390 and 1280 verified",
+      "designIssues": [],
+      "contentIssues": [
+        "empty box with a one-line prompt",
+        "no audience/purpose",
+        "models for prec 'Mia came...' failed own check",
+        "hard-coded index 1 in onInput"
+      ],
+      "action": "rewrote all 32 tasks with audience, given sentence or frame, success criteria; fixed checks",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "browser: draft persists across reload, keyboard check, axe; unit tests"
+    },
+    {
+      "id": "newsroom",
+      "url": "/access-practice-lab/newsroom/<id>",
+      "program": "ACCESS Practice Lab",
+      "type": "Newsroom 5W1H plan-draft-read",
+      "gradeBand": "3-5,6-8",
+      "wida": "levels A/B/C frames",
+      "objective": "Write a news story from evidence",
+      "contentSource": "src/content/newsroom.js (48 prompts)",
+      "template": "newsroom view",
+      "feedback": "rule-based observations; now facts-used and copy detection",
+      "a11y": "axe 0 violations 390/1280",
+      "mobile": "390 and 1280 verified",
+      "designIssues": [],
+      "contentIssues": [
+        "one-sentence 'imagine' seeds; writer invented every fact"
+      ],
+      "action": "added reporter's notes (4 specifics + quote/counterpoint) to all 48 prompts; observe() reports notes used and word-for-word copying",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "access-newsroom.test.mjs; new tests; browser notes visible"
+    },
+    {
+      "id": "detective",
+      "url": "/access-practice-lab/detective/<pattern>",
+      "program": "ACCESS Practice Lab",
+      "type": "Error Detective fix + transfer",
+      "gradeBand": "3-5,6-8",
+      "wida": "existing",
+      "objective": "Fix and use a grammar pattern",
+      "contentSource": "content/detective/patterns.json",
+      "template": "detective view",
+      "feedback": "checkRevision already accepts any valid fix with meaning kept",
+      "a11y": "not re-run",
+      "mobile": "not re-run",
+      "designIssues": [],
+      "contentIssues": [
+        "transfer success message implied the rule was used correctly when only absence of errors was checked"
+      ],
+      "action": "transfer self-check steps and honest message",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "source review; not browser-run"
+    },
+    {
+      "id": "writing-studio",
+      "url": "/access-practice-lab/write",
+      "program": "ACCESS Practice Lab",
+      "type": "Writing Growth Studio (22 tasks)",
+      "gradeBand": "3-5,6-8",
+      "wida": "stage picker supported/independent",
+      "objective": "Source-based writing",
+      "contentSource": "content/studio/writing.json",
+      "template": "studio write view",
+      "feedback": "analysis-based, no scores, first draft kept",
+      "a11y": "existing",
+      "mobile": "not re-run",
+      "designIssues": [],
+      "contentIssues": [
+        "only 6 tasks for 3-5"
+      ],
+      "action": "audited, already has scenario, sources, organizer, criteria, revision prompts",
+      "priority": "P2",
+      "status": "unchanged",
+      "verification": "twr-writing, access-writing-transfer tests pass"
+    },
+    {
+      "id": "arena",
+      "url": "/access-practice-lab/arena",
+      "program": "ACCESS Practice Lab",
+      "type": "Argument Arena",
+      "gradeBand": "3-5,6-8",
+      "wida": "levels A/B/C",
+      "objective": "Argue with evidence cards",
+      "contentSource": "src/content/craft-arena.js",
+      "template": "arena view",
+      "feedback": "side check, source naming, copy detection",
+      "a11y": "e2e axe pass",
+      "mobile": "375px e2e pass",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "audited",
+      "priority": "P3",
+      "status": "unchanged",
+      "verification": "access-craft-studios-e2e.mjs"
+    },
+    {
+      "id": "twr",
+      "url": "/access-practice-lab/twr",
+      "program": "ACCESS Practice Lab",
+      "type": "TWR sentence strategies (132 sets, selection items only)",
+      "gradeBand": "K-8",
+      "wida": "n/a",
+      "objective": "Combining, expanding, because-but-so",
+      "contentSource": "content/twr/**",
+      "template": "src/twr player (not owned)",
+      "feedback": "why text per item",
+      "a11y": "not re-run",
+      "mobile": "not re-run",
+      "designIssues": [],
+      "contentIssues": [
+        "no generative writing item kind"
+      ],
+      "action": "not changed: needs a new item kind in src/twr (outside owned paths)",
+      "priority": "P1",
+      "status": "blocked",
+      "verification": "twr-content, twr-writing tests pass"
+    }
+  ],
+  "scoresBefore": {
+    "sentence-build": {
+      "A": 3,
+      "B": 4,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "language-upgrade": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "mentor-try-it": {
+      "A": 3,
+      "B": 2,
+      "C": 2,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "newsroom": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 4,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "detective-transfer": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    }
+  },
+  "scoresAfter": {
+    "sentence-build": {
+      "A": 3,
+      "B": 4,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 4,
+      "G": 4,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "language-upgrade": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3,
+      "E": 4,
+      "F": 3,
+      "G": 4,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    },
+    "mentor-try-it": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 3,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "newsroom": {
+      "A": 3,
+      "B": 4,
+      "C": 3,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 3,
+      "I": 4,
+      "J": 4,
+      "K": 3
+    },
+    "detective-transfer": {
+      "A": 3,
+      "B": 3,
+      "C": 4,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 3,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    }
+  },
+  "problemsFound": [
+    "Sentence Lab rejected valid reorderings (5 of 316 tasks had alternates)",
+    "Language Upgrade detail check passed on length/repetition",
+    "Mentor try-it: empty box, no audience, no criteria, a model that failed its own check, hard-coded task index",
+    "Newsroom: facts invented from one-sentence seed",
+    "Detective transfer success wording implied correct use",
+    "Verb check failed good verbs outside a short list",
+    "Starter blanks (___) could pass checks"
+  ],
+  "improvements": [
+    "equivalentSentences() in craft-sentence.js: movable details, and/or swap, subordinate clause front/back",
+    "checkUpgrade: new distinct content words, connector needs ideas each side, item-specific hint feedback",
+    "32 mentor try-it tasks rewritten with audience/purpose, given sentence or frame, success criteria, retry and model-after-misses guidance",
+    "48 newsroom reporter's-note packets; observe() reports notes used and copying",
+    "checkMove: blank-guard, honest acceptance of unseen verbs, names at sentence start",
+    "detective transfer self-check"
+  ],
+  "templatesRedesigned": [
+    "mentor try-it view",
+    "newsroom plan/draft notes panel"
+  ],
+  "contentRecordsRewritten": 80,
+  "criticalFixed": 3,
+  "unresolved": [
+    "TWR has no generative writing item (needs src/twr item kind; outside owned paths)",
+    "Only 6 grade 3-5 Writing Studio tasks",
+    "Scaffold Language Upgrade has 8 items",
+    "Newsroom notes are English-only (practice content)",
+    "Dev-server only: 'web-vitals' bare import console error in the static e2e server, not caused by this change",
+    "key-warmup.js and arena not changed",
+    "Full pre-commit gate escalated to npm run test and was slow due to a shared QA lock",
+    "Pre-commit gate failures NOT caused by this branch: validate:access-lab (finder-metadata.json stale, also stale on base 92326323a0) and test (data/test-reads.json stale for tools/skip-honesty.test.mjs reading engine/core files). Not touched."
+  ],
+  "sharedEdits": [
+    "access-practice-lab/index.html, app-shell, sw.js: regenerated by tools/sync-access-shell.mjs (content-hash module versions + precache build hash) because mentor/newsroom/craft modules changed; no new files added to the precache"
+  ],
+  "tests": [
+    {
+      "cmd": "node --test tools/access-writing-checkers.test.mjs",
+      "result": "15 pass"
+    },
+    {
+      "cmd": "node --test tools/access-craft-studios.test.mjs tools/access-newsroom.test.mjs",
+      "result": "pass"
+    },
+    {
+      "cmd": "node tools/twr-content.test.mjs; node tools/twr-writing.test.mjs; node tools/access-writing-transfer.test.mjs",
+      "result": "pass"
+    },
+    {
+      "cmd": "node tools/access-craft-studios-e2e.mjs",
+      "result": "all checks passed"
+    },
+    {
+      "cmd": "playwright script: mentor try + newsroom at 390/1280",
+      "result": "reload persistence, keyboard check, axe 0 violations, no overflow; only console error was web-vitals bare import of the static server"
+    },
+    {
+      "cmd": "node tools/access-module-cache.test.mjs; node tools/access-sw.test.mjs",
+      "result": "pass after node tools/sync-access-shell.mjs"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/src/lang/craft-sentence.js",
+    "access-practice-lab/src/lang/scaffold-check.js",
+    "access-practice-lab/src/lang/craft.js",
+    "access-practice-lab/src/lang/newsroom.js",
+    "access-practice-lab/src/content/craft-mentor.js",
+    "access-practice-lab/src/content/newsroom.js",
+    "access-practice-lab/src/views/mentor.js",
+    "access-practice-lab/src/views/newsroom.js",
+    "access-practice-lab/src/views/detective.js",
+    "tools/access-writing-checkers.test.mjs",
+    "access-practice-lab/index.html",
+    "access-practice-lab/app-shell",
+    "access-practice-lab/sw.js",
+    "reports/language-page-quality/fragments/writing.json"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/writing/mentor-try-390.jpg",
+    "reports/language-page-quality/screenshots/writing/mentor-try-1280.jpg",
+    "reports/language-page-quality/screenshots/writing/newsroom-notes-390.jpg",
+    "reports/language-page-quality/screenshots/writing/newsroom-notes-1280.jpg"
+  ]
+}

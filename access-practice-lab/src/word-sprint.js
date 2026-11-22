@@ -1,66 +1,49 @@
-// Word Sprint: a 60-second round over one band's Word Builder items, one attempt per word.
-// Pure state logic only; the Word Builder view draws it. Results are practice counts on this device,
-// not a proficiency or fluency score.
-export const SPRINT_SECONDS = 60;
+// Word Round: a short, untimed round over one band's Word Builder items, one attempt per word, in a fixed order for the day.
+// (This file kept its name so offline precache lists and import maps stay valid; it replaced the 60-second Word Sprint,
+// whose clock, best score and "time is up" screen put pressure on a vocabulary task.) Pure state logic only; the Word Builder
+// view draws it. Results are practice counts on this device, not a proficiency or fluency score, and there is no best score.
+export const ROUND_SIZE = 6;
 
 const clampCount = (value) => (Number.isInteger(value) && value > 0 ? value : 0);
 
-// Fisher–Yates over a copy, so the caller's array is never reordered.
-function shuffled(ids, random) {
-  const out = [...ids];
-  for (let i = out.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
+function hash(text) {
+  let h = 2166136261;
+  for (const ch of String(text)) h = Math.imul(h ^ ch.codePointAt(0), 16777619) >>> 0;
+  return h;
 }
 
-export function startSprint(items, now, random = Math.random) {
+/** A round of up to ROUND_SIZE words. The order is a hash of the id and the day, so nothing in it is random and nothing is timed. */
+export function startRound(items, now) {
+  const day = Math.floor(now / 86400000);
+  const order = items
+    .map((item) => item.id)
+    .sort((a, b) => hash(`${a}:${day}`) - hash(`${b}:${day}`) || a.localeCompare(b))
+    .slice(0, ROUND_SIZE);
+  return { startedAt: now, order, index: 0, answered: 0, correct: 0, checked: false };
+}
+
+export function roundStatus(round) {
+  if (!round) return "none";
+  return clampCount(round.index) >= round.order.length ? "done" : "running";
+}
+
+export const roundWordId = (round) => round.order[round.index];
+
+export function recordRoundAnswer(round, correct) {
   return {
-    startedAt: now,
-    deadline: now + SPRINT_SECONDS * 1000,
-    order: shuffled(
-      items.map((item) => item.id),
-      random,
-    ),
-    index: 0,
-    answered: 0,
-    correct: 0,
-    checked: false,
-  };
-}
-
-export function sprintStatus(sprint, now) {
-  if (!sprint) return "none";
-  return now >= sprint.deadline ? "over" : "running";
-}
-
-// The word on screen during a running sprint. The order wraps so a fast learner never runs out of words.
-export function sprintWordId(sprint) {
-  return sprint.order[sprint.index % sprint.order.length];
-}
-
-export function recordSprintAnswer(sprint, correct) {
-  return {
-    ...sprint,
-    answered: clampCount(sprint.answered) + 1,
-    correct: clampCount(sprint.correct) + (correct ? 1 : 0),
+    ...round,
+    answered: clampCount(round.answered) + 1,
+    correct: clampCount(round.correct) + (correct ? 1 : 0),
     checked: true,
   };
 }
 
-export function advanceSprint(sprint) {
-  return { ...sprint, index: clampCount(sprint.index) + 1, checked: false };
+export function advanceRound(round) {
+  return { ...round, index: clampCount(round.index) + 1, checked: false };
 }
 
-// Ends a sprint and keeps the best correct count for this band. Returns the next saved band state.
-export function closeSprint(bandState) {
-  const { sprint, ...rest } = bandState;
-  if (!sprint) return rest;
-  return { ...rest, sprintBest: Math.max(clampCount(rest.sprintBest), clampCount(sprint.correct)) };
-}
-
-export function clockText(msLeft) {
-  const seconds = Math.max(0, Math.ceil(msLeft / 1000));
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+/** Ends a round and drops it, along with any old Word Sprint clock still saved on this device. Returns the next saved band state. */
+export function closeRound(bandState) {
+  const { round, sprint, sprintBest, ...rest } = bandState;
+  return rest;
 }

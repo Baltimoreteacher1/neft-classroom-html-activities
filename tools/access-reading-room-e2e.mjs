@@ -63,8 +63,8 @@ try {
   });
   await page.goto(`http://localhost:${server.address().port}/access-practice-lab/reading-room`);
   await page.getByRole("heading", { name: "Reading Room" }).waitFor();
-  await page.getByRole("heading", { name: "The Night the Library Stayed Open" }).waitFor();
-  await page.getByLabel("Search texts").fill("seed travels");
+  await page.locator(".rr-book").first().waitFor();
+  await page.getByLabel("Search texts").fill("Surviving a Tide");
   await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 1);
   await page.getByLabel("Search texts").fill("");
   await page.waitForFunction(
@@ -103,11 +103,13 @@ try {
     lessonCount,
   );
   console.log("PASS shelf and filter");
+  await page.getByLabel("Search texts").fill("Blue Chalk");
+  await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 1);
   await page
     .getByRole("link", { name: /Open lesson/ })
     .first()
     .click();
-  await page.getByRole("heading", { name: "The Night the Library Stayed Open" }).waitFor();
+  await page.getByRole("heading", { name: "Who Took the Blue Chalk?" }).waitFor();
   console.log("PASS reader open");
   await page.getByRole("button", { name: "Learn" }).click();
   await page.getByRole("heading", { name: "Model the reading move" }).waitFor();
@@ -119,9 +121,21 @@ try {
   await page.getByRole("button", { name: "Save reading place" }).first().click();
   await page.getByLabel("Your note for paragraph 1").fill("This is my evidence note.");
   await page.getByRole("button", { name: /Bookmark/ }).click();
-  const radio = page.locator("input[type=radio]").first();
-  await radio.check();
-  await page.getByRole("button", { name: "Check answer" }).click();
+  // The key's position is shuffled per question, so pick the key by its text, never by slot.
+  const lessonDoc = JSON.parse(
+    readFileSync("access-practice-lab/content/reading-room/lessons.json", "utf8"),
+  );
+  const firstChoice = lessonDoc.lessons
+    .find((x) => x.id === "rr1-night-library")
+    .activities.find((x) => x.type === "choice");
+  await page
+    .locator("label.rr-option", {
+      hasText: firstChoice.choices.find((c) => c.id === firstChoice.answerId).text,
+    })
+    .first()
+    .locator("input")
+    .check();
+  await page.getByRole("button", { name: "Check answer" }).first().click();
   await page.getByRole("status").filter({ hasText: "supported" }).waitFor();
   await page.getByRole("button", { name: "Practice", exact: true }).click();
   await page.locator(".rr-vocab summary").first().click();
@@ -170,7 +184,13 @@ try {
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/rr45-park-cools-block`,
   );
   await page.getByRole("table").waitFor();
-  assert.equal(await page.getByRole("table").getByRole("row").count(), 3);
+  const tableLesson = JSON.parse(
+    readFileSync("access-practice-lab/content/reading-room/lessons.json", "utf8"),
+  ).lessons.find((x) => x.id === "rr45-park-cools-block");
+  assert.equal(
+    await page.getByRole("table").getByRole("row").count(),
+    tableLesson.table.rows.length + 1,
+  );
   assert.equal(await page.getByRole("button", { name: "Read passage aloud" }).count(), 1);
   await page.goto(
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/teacher`,
@@ -192,7 +212,7 @@ try {
   const csvDownload = await downloadPromise;
   const csvText = readFileSync(await csvDownload.path(), "utf8");
   assert.match(csvText, /\"lesson_id\",\"title\",\"completed_on_device\"/);
-  assert.match(csvText, /The Night the Library Stayed Open/);
+  assert.match(csvText, /Who Took the Blue Chalk?/);
   await page.goto(
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/workshop?cluster=6-8`,
   );

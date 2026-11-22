@@ -60,10 +60,14 @@
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        color: #64748b;
+        color: #475569;
         transition: all 0.2s ease;
         padding: 8px;
       }
+      button.vocab-item, button.target-slot, button.word-tile { font: inherit; width: auto; text-align: inherit; min-height: 44px; }
+      button.vocab-item, button.target-slot { width: 100%; }
+      .vocab-item.selected { outline: 3px solid var(--teal-dark); outline-offset: 1px; }
+      .vocab-item:focus-visible, .target-slot:focus-visible, .word-tile:focus-visible, .audio-btn:focus-visible, .button-link:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
       .target-slot.dragover {
         background: #e2e8f0;
         border-color: var(--teal);
@@ -159,9 +163,9 @@
         <div class="panel-card">
           <h2 style="font-size: 1.3rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span>📐 Term &amp; Diagram Matching</span>
-            <span style="font-size: 0.85rem; background: var(--teal-dark); color: white; padding: 4px 10px; border-radius: 999px;" id="vocab-score">Score: 0 / 4</span>
+            <span style="font-size: 0.85rem; background: var(--teal-dark); color: white; padding: 4px 10px; border-radius: 999px;" id="vocab-score" role="status">Matched 0 of 4</span>
           </h2>
-          <p class="card-copy" style="margin-bottom: 16px;">Drag each math term on the left and drop it into its matching definition slot on the right.</p>
+          <p class="card-copy" style="margin-bottom: 16px;">Choose a math term on the left, then choose the meaning that fits it on the right. You can also drag a term onto its meaning.</p>
 
           <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px;">
             <div class="vocab-list" id="draggable-terms-container">
@@ -179,7 +183,7 @@
             <span>✍️ Sentence Builder</span>
             <button class="audio-btn" onclick="Controller.speakSentence()" title="Listen to Sentence">🔊</button>
           </h2>
-          <p class="card-copy" style="margin-bottom: 16px;">Rearrange the color-coded grammar blocks below to construct a correct mathematical explanation.</p>
+          <p class="card-copy" style="margin-bottom: 16px;">Choose the color-coded blocks in order to build a sentence that explains the idea. Choose a block in your sentence to take it back out.</p>
 
           <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
             <!-- Active sentence constructor slot -->
@@ -202,6 +206,7 @@
         </div>
       </div>
 
+      <p id="studio-status" class="card-copy" role="status" aria-live="polite" style="min-height: 1.6em; margin: 16px 0 0; text-align: center; font-weight: 600;"></p>
       <div style="text-align: center; margin-top: 16px;">
         <button class="button-link" onclick="Controller.nextRound()" id="next-btn" style="display: none;">Next Round &rarr;</button>
       </div>
@@ -257,6 +262,48 @@
               hintEn: "Sentence starter: The coordinate gives...",
               hintEs: "Oración inicial: La coordenada da la posición..."
             }
+          },
+          {
+            vocab: [
+              { term: "Ratio", def: "A comparison of two quantities, such as 3 red marbles for every 5 blue.", es: "Una razón compara dos cantidades.", id: "r1" },
+              { term: "Rate", def: "A ratio that compares two different units, such as miles per hour.", es: "Una tasa compara dos unidades distintas.", id: "r2" },
+              { term: "Unit rate", def: "A rate that tells how much there is for exactly one unit.", es: "Una tasa unitaria dice cuánto hay por una sola unidad.", id: "r3" },
+              { term: "Proportion", def: "A statement that two ratios are equal.", es: "Una proporción dice que dos razones son iguales.", id: "r4" }
+            ],
+            sentence: {
+              scrambled: [
+                { text: "A proportion", pos: "noun" },
+                { text: "shows", pos: "verb" },
+                { text: "that two ratios", pos: "noun" },
+                { text: "are", pos: "verb" },
+                { text: "equal", pos: "adj" },
+                { text: "to each other", pos: "other" }
+              ],
+              correct: "A proportion shows that two ratios are equal to each other",
+              hintEn: "Sentence starter: A proportion shows...",
+              hintEs: "Oración inicial: Una proporción muestra..."
+            }
+          },
+          {
+            vocab: [
+              { term: "Mean", def: "The value you get by adding all the data and dividing by how many values there are.", es: "La media se halla sumando los datos y dividiendo entre la cantidad de valores.", id: "m1" },
+              { term: "Median", def: "The middle value when the data are listed in order.", es: "La mediana es el valor del centro cuando los datos están en orden.", id: "m2" },
+              { term: "Mode", def: "The value that appears most often in a data set.", es: "La moda es el valor que aparece más veces.", id: "m3" },
+              { term: "Range", def: "The difference between the greatest and the least value in a data set.", es: "El rango es la diferencia entre el valor mayor y el menor.", id: "m4" }
+            ],
+            sentence: {
+              scrambled: [
+                { text: "The median", pos: "noun" },
+                { text: "is", pos: "verb" },
+                { text: "the middle value", pos: "noun" },
+                { text: "when", pos: "other" },
+                { text: "the data", pos: "noun" },
+                { text: "are in order", pos: "other" }
+              ],
+              correct: "The median is the middle value when the data are in order",
+              hintEn: "Sentence starter: The median is...",
+              hintEs: "Oración inicial: La mediana es..."
+            }
           }
         ],
         validateConfig() {
@@ -297,7 +344,8 @@
         checkSentenceCorrect() {
           const round = CONFIG.rounds[this.state.currentRound];
           const playerText = this.state.sentenceOrder.join(" ");
-          return playerText === round.sentence.correct;
+          const norm = (s) => s.toLowerCase().replace(/[.!?]+$/, "").replace(/\s+/g, " ").trim();
+          return norm(playerText) === norm(round.sentence.correct);
         }
       };
 
@@ -381,6 +429,8 @@
 
           UI.updateScoreDisplay();
           document.getElementById("next-btn").style.display = "none";
+          Controller.selectedTermId = null;
+          UI.say("");
         },
 
         handleDragStart(e, termId) {
@@ -393,20 +443,48 @@
           e.preventDefault();
           const termId = this.draggedElementId || e.dataTransfer.getData("text/plain");
           this.draggedElementId = null;
+          this.attemptMatch(termId, targetId);
+        },
 
+        selectTerm(termId) {
+          this.selectedTermId = this.selectedTermId === termId ? null : termId;
+          document.querySelectorAll(".vocab-item").forEach(el => {
+            const on = el.id === `drag-${this.selectedTermId}`;
+            el.classList.toggle("selected", on);
+            el.setAttribute("aria-pressed", String(on));
+          });
+          const round = CONFIG.rounds[Repository.state.currentRound];
+          const item = round.vocab.find(v => v.id === this.selectedTermId);
+          UI.say(item ? `Selected: ${item.term}. Now choose the meaning that fits it.` : "Selection cleared.");
+        },
+
+        chooseSlot(targetId) {
+          if (!this.selectedTermId) {
+            UI.say("First choose a math term on the left, then choose its meaning.");
+            return;
+          }
+          const termId = this.selectedTermId;
+          this.attemptMatch(termId, targetId);
+        },
+
+        attemptMatch(termId, targetId) {
           const round = CONFIG.rounds[Repository.state.currentRound];
           const matchedItem = round.vocab.find(v => v.id === termId);
           
           if (matchedItem && matchedItem.id === targetId) {
             Repository.state.vocabScores[termId] = true;
             Service.playSynthSound(440, "sine", 0.1); // Quick high tone
+            this.selectedTermId = null;
             UI.markSlotCorrect(targetId, matchedItem.term);
             UI.updateScoreDisplay();
+            UI.say(`Matched: ${matchedItem.term}. ${matchedItem.es || ""}`);
             Repository.log(`Correct match: ${matchedItem.term}`);
             this.checkRoundComplete();
           } else {
             Service.playSynthSound(180, "triangle", 0.25); // Low error tone
             Repository.log(`Incorrect match tried for slot: ${targetId}`);
+            const tried = round.vocab.find(v => v.id === termId);
+            UI.say(`${tried ? tried.term : "That term"} does not fit that meaning. Reread the meaning and ask: what does this word name or measure? Then choose again.`);
           }
         },
 
@@ -431,7 +509,10 @@
             Service.playSuccess();
             UI.markSentenceCorrect();
             Repository.log("Sentence built correctly.");
+            UI.say("That sentence works. Read it aloud once, then use the speaker button to hear it.");
             this.checkRoundComplete();
+          } else if (Repository.state.sentenceOrder.length === CONFIG.rounds[Repository.state.currentRound].sentence.scrambled.length) {
+            UI.say("All the blocks are used, but the sentence does not make sense yet. Start with the thing being described (the subject), then the action, then the details. Choose a block in your sentence to move it.");
           }
         },
 
@@ -444,9 +525,10 @@
             Repository.log("Round completed successfully.");
             if (Repository.state.currentRound < CONFIG.rounds.length - 1) {
               document.getElementById("next-btn").style.display = "inline-block";
+              UI.say("Round complete. Choose Next Round when you are ready.");
             } else {
               Repository.log("All rounds completed!");
-              alert("Congratulations! You completed all language lessons!");
+              UI.say("You finished every round. Pick one sentence and say it to a partner in your own words.");
             }
           }
         },
@@ -481,11 +563,14 @@
           const container = document.getElementById("draggable-terms-container");
           container.innerHTML = "";
           items.forEach(item => {
-            const div = document.createElement("div");
+            const div = document.createElement("button");
+            div.type = "button";
             div.className = "vocab-item";
             div.id = `drag-${item.id}`;
             div.draggable = true;
-            div.innerHTML = `<span>${item.term}</span> <span>☰</span>`;
+            div.setAttribute("aria-pressed", "false");
+            div.innerHTML = `<span>${item.term}</span> <span aria-hidden="true">☰</span>`;
+            div.onclick = () => Controller.selectTerm(item.id);
             div.ondragstart = (e) => Controller.handleDragStart(e, item.id);
             container.appendChild(div);
           });
@@ -495,10 +580,12 @@
           const container = document.getElementById("definition-slots-container");
           container.innerHTML = "";
           items.forEach(item => {
-            const slot = document.createElement("div");
+            const slot = document.createElement("button");
+            slot.type = "button";
             slot.className = "target-slot";
             slot.id = `slot-${item.id}`;
             slot.innerText = item.def;
+            slot.onclick = () => Controller.chooseSlot(item.id);
             
             slot.ondragover = (e) => {
               e.preventDefault();
@@ -516,6 +603,7 @@
         markSlotCorrect(id, termText) {
           const slot = document.getElementById(`slot-${id}`);
           slot.className = "target-slot correct";
+          slot.disabled = true;
           slot.innerHTML = `<strong>${termText}</strong>: ${slot.innerText}`;
           
           // Hide draggable term card
@@ -527,7 +615,8 @@
           const pool = document.getElementById("scramble-pool");
           pool.innerHTML = "";
           words.forEach(w => {
-            const tile = document.createElement("div");
+            const tile = document.createElement("button");
+            tile.type = "button";
             tile.className = `word-tile ${w.pos}`;
             tile.id = `pool-word-${w.text.replace(/\s+/g, "-")}`;
             tile.innerText = w.text;
@@ -543,8 +632,10 @@
         moveWordToTarget(wordText, pos) {
           const target = document.getElementById("scramble-target");
           
-          const tile = document.createElement("div");
+          const tile = document.createElement("button");
+          tile.type = "button";
           tile.className = `word-tile ${pos}`;
+          tile.setAttribute("aria-label", `${wordText} (remove from sentence)`);
           tile.id = `target-word-${wordText.replace(/\s+/g, "-")}`;
           tile.innerText = wordText;
           tile.onclick = () => Controller.handleWordClick(wordText, pos, true);
@@ -579,10 +670,14 @@
           `;
         },
 
+        say(message) {
+          document.getElementById("studio-status").textContent = message;
+        },
+
         updateScoreDisplay() {
           const round = CONFIG.rounds[Repository.state.currentRound];
           const matched = Object.values(Repository.state.vocabScores).filter(Boolean).length;
-          document.getElementById("vocab-score").innerText = `Score: ${matched} / ${round.vocab.length}`;
+          document.getElementById("vocab-score").innerText = `Matched ${matched} of ${round.vocab.length}`;
         }
       };
 

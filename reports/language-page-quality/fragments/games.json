@@ -1,0 +1,358 @@
+{
+  "area": "games",
+  "branch": "lp-overhaul/games",
+  "headCommit": "b19492fb7a",
+  "inventory": [
+    {
+      "id": "acc-bank-engine",
+      "url": "/access-practice-lab/assess/<set id>",
+      "program": "ACCESS-style practice bank (modeled on, not official)",
+      "type": "multiple-choice, multiple-select, dropdown, ordering, matching, drag-drop, listening-response, constructed, speaking",
+      "gradeBand": "3-5, 6-8",
+      "wida": "practice bands early/building/strong; meta.wida ids",
+      "objective": "per item (meta.functions)",
+      "contentSource": "content/bank/*.json (40 sets, 320 items)",
+      "template": "src/acc/engine/renderers.js + session.js",
+      "feedback": "formative: check, per-choice distractor note, 3 support tiers, fresh attempt; summative: end review",
+      "a11y": "keyboard paths for ordering (Up/Down, Alt+Arrows) and matching/sorting (select then place); focus loss after a placement fixed",
+      "mobile": "no horizontal scroll at 390; verified",
+      "designIssues": [
+        "focus dropped to <body> after placing a token in matching/sorting (keyboard users lost their place)"
+      ],
+      "contentIssues": [
+        "15 wrong-choice notes of 4-7 words ('Nobody mentions a race.') too thin to teach"
+      ],
+      "action": "fixed focus management; rewrote 15 notes; extended bank validator",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "validate-access-bank (0 errors, 320 items), access-acc-bank/engine/feedback tests, access-acc-bank-e2e, new access-acc-keyboard-e2e at 390 and 1280"
+    },
+    {
+      "id": "sentence-strategy",
+      "url": "/access-practice-lab/games/sentence-strategy",
+      "program": "Language Game Studio",
+      "type": "strategy-grid choice rounds",
+      "gradeBand": "3-5, 6-8",
+      "wida": "Explain/Argue KLU",
+      "objective": "build and edit claim/evidence/reasoning sentences",
+      "contentSource": "content/games/sentence-strategy.json",
+      "template": "src/games/sentence-strategy.js",
+      "feedback": "hint then explanation naming why each distractor fails",
+      "a11y": "unchanged; playthrough by keyboard verified",
+      "mobile": "verified 390/1280",
+      "designIssues": [],
+      "contentIssues": [
+        "key was the longest option in 16 of 18 rounds and distractors were one-line strawmen ('Water is wet and clear.')"
+      ],
+      "action": "rewrote distractors in 16 rounds (EN+ES), equalised length, made each wrong choice a real misconception (fact vs opinion, no reason, new point instead of closing); explanations rewritten",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "item test, validate-access-game-studio (choice balance), access-game-studio-contract, access-games-keyboard-e2e"
+    },
+    {
+      "id": "escape-room",
+      "url": "/access-practice-lab/games/escape-room",
+      "program": "Language Game Studio",
+      "type": "locked-room choices",
+      "gradeBand": "3-5, 6-8",
+      "wida": "all KLU",
+      "objective": "mixed",
+      "contentSource": "content/games/escape-room.json",
+      "template": "src/games/escape-room.js",
+      "feedback": "hint/explain",
+      "a11y": "unchanged",
+      "mobile": "verified",
+      "designIssues": [],
+      "contentIssues": [
+        "long-key distractors, vague 'stuff' distractors"
+      ],
+      "action": "6 rounds rewritten",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "item test, studio playthrough, keyboard e2e"
+    },
+    {
+      "id": "language-expeditions",
+      "url": "/access-practice-lab/games/language-expeditions",
+      "program": "Language Game Studio",
+      "type": "dialogue turns and read-choice acts",
+      "gradeBand": "3-5, 6-8",
+      "wida": "Narrate/Inform/Explain/Argue",
+      "objective": "choose the reply that fits the question",
+      "contentSource": "content/games/language-expeditions.json",
+      "template": "src/games/language-expeditions*.js",
+      "feedback": "hint/explain",
+      "a11y": "unchanged",
+      "mobile": "not re-driven",
+      "designIssues": [],
+      "contentIssues": [
+        "dialogue distractors were absurd non-sequiturs ('Data is a long word.') so listening was optional"
+      ],
+      "action": "11 dialogue turns + 1 read act rewritten; wrong replies now fail on tense, wrong question type, wrong perspective or a contradiction of what was heard (EN+ES)",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "item test, studio playthrough"
+    },
+    {
+      "id": "word-jeopardy,sentence-factory,language-arcade",
+      "url": "/access-practice-lab/games/<id>",
+      "program": "Language Game Studio",
+      "type": "quiz board / assembly / maze gates",
+      "gradeBand": "3-5, 6-8",
+      "wida": "Inform/Explain",
+      "objective": "vocabulary and sentence choice",
+      "contentSource": "content/games/*.json",
+      "template": "src/games/*.js",
+      "feedback": "hint/explain",
+      "a11y": "unchanged",
+      "mobile": "verified (word-jeopardy, sentence-factory)",
+      "designIssues": [
+        "word-jeopardy gave +50 for three no-hint answers in a row (penalised using hints, streak reset)"
+      ],
+      "contentIssues": [
+        "short, odd-one-out distractors"
+      ],
+      "action": "distractors rewritten (5 rounds + final); jeopardy streak bonus and streak chip removed",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "item test, validate-game-rules, studio playthrough, keyboard e2e"
+    },
+    {
+      "id": "grammar-jungle,story-detective,story-world,story-creator,read-along-theater,match-mania",
+      "url": "/access-practice-lab/games/<id>",
+      "program": "Language Game Studio",
+      "type": "mixed",
+      "gradeBand": "3-5, 6-8",
+      "wida": "mixed",
+      "objective": "mixed",
+      "contentSource": "content/games/*.json",
+      "template": "src/games/*.js",
+      "feedback": "unchanged",
+      "a11y": "unchanged",
+      "mobile": "verified (grammar-jungle, story-detective, match-mania)",
+      "designIssues": [
+        "reset-on-miss streak/combo counters ('N in a row', 'Understanding streak', 'Spotlight streak') are a punitive mechanic"
+      ],
+      "contentIssues": [],
+      "action": "counters are now cumulative first-try / worked-out tallies that a miss never resets; 'in a row' and combo chips removed",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "access-games-keyboard-e2e asserts no streak language; studio playthrough; access-games-e2e"
+    },
+    {
+      "id": "other 11 games (vocab-quest, sound-word-studio, fluency-echo, word-search-adventure, word-bingo, spelling-expedition, mystery-word, connector-climb, direction-dash, evidence-hunt, ...)",
+      "url": "/access-practice-lab/games/<id>",
+      "program": "Language Game Studio",
+      "type": "various",
+      "gradeBand": "3-5, 6-8",
+      "wida": "various",
+      "objective": "various",
+      "contentSource": "content/games/*.json",
+      "template": "src/games/*.js",
+      "feedback": "hint then explanation; word-bingo reveals after two misses",
+      "a11y": "studio playthrough passes",
+      "mobile": "word-bingo verified 390/1280",
+      "designIssues": [],
+      "contentIssues": [
+        "choice rounds audited by item test: no duplicate options, keys in range, hints do not leak keys; word-bingo content judged sound"
+      ],
+      "action": "audited, no change",
+      "priority": "P3",
+      "status": "unchanged",
+      "verification": "item test + studio playthrough 22 games x 2 bands x 3 modes"
+    }
+  ],
+  "scoresBefore": {
+    "acc-bank-engine": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 3,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 3,
+      "J": 4,
+      "K": 4
+    },
+    "sentence-strategy": {
+      "A": 3,
+      "B": 3,
+      "C": 4,
+      "D": 3,
+      "E": 2,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 3,
+      "K": 4
+    },
+    "language-expeditions dialogue": {
+      "A": 3,
+      "B": 3,
+      "C": 4,
+      "D": 3,
+      "E": 2,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 3,
+      "K": 4
+    },
+    "streak games": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 3,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 3,
+      "K": 3
+    }
+  },
+  "scoresAfter": {
+    "acc-bank-engine": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 3,
+      "E": 4,
+      "F": 4,
+      "G": 5,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "sentence-strategy": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 3,
+      "E": 4,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "language-expeditions dialogue": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 3,
+      "E": 4,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "streak games": {
+      "A": 3,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    }
+  },
+  "problemsFound": [
+    "Matching/sorting renderer dropped focus to <body> after every placement (keyboard users lost their place)",
+    "sentence-strategy: key was the longest option in 16/18 rounds; distractors were strawmen",
+    "language-expeditions dialogue and escape-room: absurd or vague distractors, key much longer than options",
+    "reset-on-miss streaks/combos in 7 games; word-jeopardy paid +50 only for no-hint streaks (penalises scaffolds)",
+    "15 bank distractor notes of 4-7 words too thin to teach",
+    "bank validator had no check for bare-verdict explanations, short notes, pre-solved ordering, all-correct multi-select, a/an cues",
+    "10 remaining key-much-longer warnings (escape-room 6-8 x2, expeditions x2, read-along retell slots x6) left as warnings"
+  ],
+  "improvements": [
+    "renderers.js: placement keeps focus on the next item (or last zone) after place/undo; verified keyboard-only",
+    "new tools/access-lab-game-items.test.mjs audits all 162 game choice rounds (answerable key, no duplicate options, hint does not leak key, no bare verdict, explanation not a hint repeat)",
+    "validate-access-bank.mjs extended over all 320 items",
+    "new keyboard-only e2e for bank (all reading response types) and for 8 games at 390 and 1280",
+    "26 game choice rounds + 11 dialogue turns rewritten bilingually"
+  ],
+  "templatesRedesigned": [
+    "acc placement renderer (matching/sorting) focus management",
+    "word-jeopardy scoring (streak bonus removed)",
+    "streak/combo counters in 7 game templates replaced by cumulative tallies"
+  ],
+  "contentRecordsRewritten": 42,
+  "criticalFixed": 2,
+  "unresolved": [
+    "pre-commit gate fails on base-stale access-practice-lab/content/finder-metadata.json and data/test-reads.json manifest (not caused by this branch); not regenerated here to avoid cross-branch conflicts",
+    "10 'key much longer' warnings remain (retell slots, 6-8 escape-room, two expedition turns)",
+    "dead CSS .mm-combo remains in games-h.css",
+    "games not re-driven in browser beyond 8 keyboard playthroughs and the 22-game studio playthrough; no before screenshots captured",
+    "bank item prose (stems/passages) judged sound on automated checks only; no human review"
+  ],
+  "sharedEdits": [
+    "access-practice-lab/sw.js, index.html, app-shell: regenerated by tools/sync-access-shell.mjs (build hash/version stamps only)",
+    "tools/validate-access-bank.mjs extended"
+  ],
+  "tests": [
+    {
+      "cmd": "node --test tools/access-lab-game-items.test.mjs",
+      "result": "3 pass"
+    },
+    {
+      "cmd": "node tools/validate-access-bank.mjs; access-acc-bank-index --check; access-acc-bank-parallel --check",
+      "result": "0 errors, index current"
+    },
+    {
+      "cmd": "node tools/access-acc-{engine,bank,feedback}.test.mjs",
+      "result": "20 / 27 / 5 pass"
+    },
+    {
+      "cmd": "node tools/validate-game-rules.mjs; validate-access-games; validate-access-game-studio; access-game-studio-contract.test",
+      "result": "all pass (583 game files clean)"
+    },
+    {
+      "cmd": "node tools/access-acc-bank-e2e.mjs; access-games-e2e.mjs",
+      "result": "pass"
+    },
+    {
+      "cmd": "node tools/access-acc-keyboard-e2e.mjs (390 + 1280)",
+      "result": "pass; failed before the renderer focus fix"
+    },
+    {
+      "cmd": "node tools/access-games-keyboard-e2e.mjs (8 games x 390 + 1280)",
+      "result": "pass; failed before match-mania combo removal"
+    },
+    {
+      "cmd": "git commit pre-commit qa:fast",
+      "result": "FAIL on base-stale finder-metadata.json and test-reads manifest (pre-existing); --no-verify not used"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/src/acc/engine/renderers.js",
+    "access-practice-lab/src/games/{word-jeopardy,word-jeopardy-view,grammar-jungle,story-detective,story-world,story-creator,story-creator-view,story-creator-publish,read-along-theater,match-mania,match-mania-view}.js",
+    "access-practice-lab/content/games/{sentence-strategy,escape-room,language-expeditions,language-arcade,sentence-factory,word-jeopardy}.json",
+    "access-practice-lab/content/bank/ (8 sets, distractor notes)",
+    "tools/access-lab-game-items.test.mjs",
+    "tools/access-acc-keyboard-e2e.mjs",
+    "tools/access-games-keyboard-e2e.mjs",
+    "tools/validate-access-bank.mjs",
+    "access-practice-lab/{sw.js,index.html,app-shell}"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/games/sentence-strategy-390.jpg",
+    "reports/language-page-quality/screenshots/games/sentence-strategy-1280.jpg",
+    "reports/language-page-quality/screenshots/games/bank-matching-390.jpg",
+    "reports/language-page-quality/screenshots/games/bank-matching-1280.jpg"
+  ]
+}

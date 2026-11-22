@@ -515,7 +515,13 @@ header p {
 }
 
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+    .submit-status { margin: 12px 0; padding: 12px 16px; border-radius: 10px; font-weight: 600; line-height: 1.5; }
+    .submit-status[hidden] { display: none; }
+    .submit-status.ok { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+    .submit-status.retry { background: #fef3c7; color: #78350f; border: 1px solid #fcd34d; }
+    .connector-chip:focus-visible, .btn:focus-visible { outline: 3px solid #0b3b5c; outline-offset: 2px; }
+  </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
@@ -591,9 +597,9 @@ header p {
       </div>
       <div class="writing-prompt" id="promptBecause">We split composite numbers into prime factors because...</div>
       <div class="connector-bar">
-        <span class="connector-chip" onclick="AppController.appendWord('because', 'since ')">since</span>
-        <span class="connector-chip" onclick="AppController.appendWord('because', 'as ')">as</span>
-        <span class="connector-chip" onclick="AppController.appendWord('because', 'due to the fact that ')">due to the fact</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('because', 'since ')">since</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('because', 'as ')">as</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('because', 'due to the fact that ')">due to the fact</span>
       </div>
       <textarea id="areaBecause" class="writing-area" placeholder="Complete the sentence giving a mathematical reason..." oninput="AppController.checkWriting('because')"></textarea>
     </div>
@@ -609,9 +615,9 @@ header p {
       </div>
       <div class="writing-prompt" id="promptBut">We split composite numbers into prime factors but...</div>
       <div class="connector-bar">
-        <span class="connector-chip" onclick="AppController.appendWord('but', 'however, ')">however</span>
-        <span class="connector-chip" onclick="AppController.appendWord('but', 'yet ')">yet</span>
-        <span class="connector-chip" onclick="AppController.appendWord('but', 'except ')">except</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('but', 'however, ')">however</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('but', 'yet ')">yet</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('but', 'except ')">except</span>
       </div>
       <textarea id="areaBut" class="writing-area" placeholder="Complete the sentence showing a mathematical exception or limit..." oninput="AppController.checkWriting('but')"></textarea>
     </div>
@@ -627,9 +633,9 @@ header p {
       </div>
       <div class="writing-prompt" id="promptSo">We split composite numbers into prime factors so...</div>
       <div class="connector-bar">
-        <span class="connector-chip" onclick="AppController.appendWord('so', 'therefore, ')">therefore</span>
-        <span class="connector-chip" onclick="AppController.appendWord('so', 'as a result, ')">as a result</span>
-        <span class="connector-chip" onclick="AppController.appendWord('so', 'consequently, ')">consequently</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('so', 'therefore, ')">therefore</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('so', 'as a result, ')">as a result</span>
+        <span class="connector-chip" role="button" tabindex="0" onclick="AppController.appendWord('so', 'consequently, ')">consequently</span>
       </div>
       <textarea id="areaSo" class="writing-area" placeholder="Complete the sentence showing a mathematical result or outcome..." oninput="AppController.checkWriting('so')"></textarea>
     </div>
@@ -638,6 +644,8 @@ header p {
       <button class="btn btn-yellow" onclick="window.print()">Print / Export PDF Portfolio</button>
       <button class="btn btn-green" onclick="AppController.validateAll()">Submit Portfolio</button>
     </div>
+
+    <p id="submitStatus" class="submit-status" role="status" aria-live="polite" hidden></p>
 
     <div class="diagnostics-console" id="logConsole">
       * Diagnostics console active. TWR Writing Studio ready...
@@ -856,6 +864,24 @@ const AudioEngine = {
       osc.start(now + idx * 0.06);
       osc.stop(now + 0.7 + idx * 0.06);
     });
+  },
+  playError() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, now);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  },
+  // Sound is a bonus: a blocked or missing audio context must never stop the lesson.
+  safe(name) {
+    try { this[name](); } catch (e) { /* silent */ }
   }
 };
 
@@ -875,6 +901,12 @@ const STATE = {
 
 /* ---------- VIEW LAYER (UI) ---------- */
 const UI = {
+  status(msg, ok) {
+    const el = document.getElementById("submitStatus");
+    el.hidden = false;
+    el.className = "submit-status " + (ok ? "ok" : "retry");
+    el.textContent = msg;
+  },
   log(msg) {
     const consoleBox = document.getElementById("logConsole");
     consoleBox.innerHTML += `<br/>* ${msg}`;
@@ -1040,7 +1072,7 @@ const AppController = {
   },
   
   appendWord(lane, word) {
-    AudioEngine.playKey();
+    AudioEngine.safe('playKey');
     const area = document.getElementById(`area${lane.charAt(0).toUpperCase() + lane.slice(1)}`);
     area.value += word;
     area.focus();
@@ -1106,16 +1138,24 @@ const AppController = {
     const so = document.getElementById("indicatorSo").classList.contains("correct");
     
     if (bec && but && so) {
-      AudioEngine.playSuccess();
-      alert("🏆 SUCCESS! Portfolio is complete and verified. Click 'Print / Export PDF Portfolio' to save your work.");
+      AudioEngine.safe('playSuccess');
+      UI.status("Portfolio complete. All three lanes (because, but, so) are verified. Press Print / Export PDF Portfolio to save your work.", true);
       UI.log("✅ Portfolio verified with 100% grammar accuracy. Ready to print!");
     } else {
-      AudioEngine.playError();
-      alert("❌ Portfolio incomplete. Please make sure all three conjunction lanes are written and verified!");
+      AudioEngine.safe('playError');
+      const missing = [["because", bec], ["but", but], ["so", so]].filter(([, ok]) => !ok).map(([n]) => n);
+      UI.status(`Not finished yet. Finish the ${missing.length > 1 ? missing.slice(0, -1).join(", ") + " and " + missing.at(-1) : missing[0]} ${missing.length > 1 ? "lanes" : "lane"}: each needs a complete sentence that uses the connector correctly (the lane turns green when it does).`, false);
       UI.log("❌ Validation failed: Make sure all lanes are green.");
     }
   }
 };
+
+document.addEventListener("keydown", (e) => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("connector-chip")) {
+    e.preventDefault();
+    e.target.click();
+  }
+});
 
 /* ---------- DIAGNOSTICS & SELF TEST SUITE ---------- */
 function selfTest() {

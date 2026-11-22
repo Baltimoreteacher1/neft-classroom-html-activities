@@ -401,6 +401,10 @@ export function validateMission(m, { worlds = [], characters = [] } = {}) {
       if (it.kind === "check") {
         need(it.options?.length >= 3 && it.options.some((o) => o.id === it.answer), `${it.id}: check needs 3+ options and a valid answer`);
         for (const o of it.options || []) need(o.id === it.answer || o.fb, `${it.id}: wrong option ${o.id} needs feedback`);
+        need(typeof it.why === "string" && it.why.trim().length >= 40, `${it.id}: check needs a "why" (40+ characters) that says what makes the answer right`);
+        const labels = (it.options || []).map((o) => norm(o.label));
+        need(new Set(labels).size === labels.length && labels.every(Boolean), `${it.id}: check options must be written and different from each other`);
+        for (const o of it.options || []) if (o.id !== it.answer) need(wordCount(o.fb) >= 5, `${it.id}: feedback for wrong option ${o.id} must say what to look at (5+ words)`);
       }
       if (it.kind === "timeline") need(it.events?.length >= 4 && it.events.every((e) => e.why && Number.isInteger(e.order)), `${it.id}: timeline needs 4+ events with order and why`);
       if (it.kind === "route") need(walkRoute(it.grid, it.solution).reached, `${it.id}: the author solution does not reach the goal`);

@@ -48,9 +48,6 @@ function scoreboard(s, I) {
           ${s.fx && s.fx.teams.includes(t) && s.fx.delta + s.fx.bonus !== 0 ? html`<span class="wj-pop${s.fx.delta + s.fx.bonus < 0 ? " is-down" : ""}" aria-hidden="true">${signed(s.fx.delta + s.fx.bonus)}</span>` : ""}
         </div>`,
     )}
-    <p class="wj-streak${s.streaks[s.turn] >= 2 ? " is-hot" : ""}">
-      ${icon("star")}${I.T(`Streak ${s.streaks[s.turn]}`, `Racha ${s.streaks[s.turn]}`)}
-    </p>
   </div>`;
 }
 
@@ -146,15 +143,13 @@ function feedback(q, env, { base, wagered }) {
   const rs = q.rs;
   const ans = q.choices[q.answer];
   const pts = q.pts ?? 0;
-  const bonus =
-    q.pts !== null && rs.status === "right" && rs.tries === 1 && rs.h === 0 && pts > base;
   return feedbackHTML(rs, {
     I,
     right:
       rs.status === "right"
         ? I.T(
-            `${signed(pts)} points${rs.tries > 1 ? " (half points for a revised answer)" : ""}.${bonus ? " Streak bonus +50!" : ""}`,
-            `${signed(pts)} puntos${rs.tries > 1 ? " (la mitad por una respuesta revisada)" : ""}.${bonus ? " ¡Bono de racha +50!" : ""}`,
+            `${signed(pts)} points${rs.tries > 1 ? " (half points for a revised answer)" : ""}.`,
+            `${signed(pts)} puntos${rs.tries > 1 ? " (la mitad por una respuesta revisada)" : ""}.`,
           )
         : "",
     retry: I.T(

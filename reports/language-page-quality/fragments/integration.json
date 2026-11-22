@@ -1,0 +1,75 @@
+{
+ "area": "integration",
+ "branch": "feat/language-page-activity-overhaul-20261120",
+ "headCommit": "c1ac7d688c + integration fixes (see section O)",
+ "inventory": [],
+ "scoresBefore": {},
+ "scoresAfter": {},
+ "problemsFound": [
+  "tools/access-lab-e2e.mjs was stale against the 2026-11-17 home redesign (bare / opens the grade chooser; plan options live inside the collapsed #more-ways); it failed on the merged branch and the home code it exercises is unchanged by this branch",
+  "Real bug (present on origin/main): changing a Today's mission planner select re-rendered the home and collapsed #more-ways, hiding the controls and dropping focus"
+ ],
+ "improvements": [
+  "home.js onChange now restores the open state of #more-ways as well as #planOptions",
+  "access-lab-e2e updated to the new home flow with every assertion kept, plus one new assertion that bare / opens the grade chooser",
+  "Biome format/lint fixes on 11 branch test files; page-global references inside page.evaluate carry a reasoned biome-ignore"
+ ],
+ "templatesRedesigned": [],
+ "contentRecordsRewritten": 0,
+ "criticalFixed": 0,
+ "unresolved": [
+  "One run of tools/language-sibling-sites.test.mjs under heavy machine load reported color-contrast x1; four reruns of that axe test passed; the page and node were not captured, so cause is unconfirmed (animation timing is suspected, not proven)",
+  "No post-overhaul crawler run (crawl-after.json) was produced; before/after crawl comparison is not available"
+ ],
+ "sharedEdits": [
+  "access-practice-lab/src/views/home.js",
+  "access-practice-lab/index.html, app-shell, sw.js (regenerated)"
+ ],
+ "tests": [
+  {
+   "cmd": "npm run build",
+   "result": "pass (exit 0)"
+  },
+  {
+   "cmd": "node tools/access-lab-e2e.mjs",
+   "result": "pass, 114 checks (after the stale-test and home.js fixes; failed before)"
+  },
+  {
+   "cmd": "node tools/access-studio-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-activity-kit-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-voice-listen-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-reading-room-loop-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-acc-keyboard-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-games-keyboard-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/missions-feedback-e2e.mjs",
+   "result": "pass"
+  },
+  {
+   "cmd": "node tools/access-axe-sweep.mjs",
+   "result": "pass: 87 screens at 1440px, no axe violations"
+  }
+ ],
+ "filesChanged": [
+  "access-practice-lab/src/views/home.js",
+  "tools/access-lab-e2e.mjs"
+ ],
+ "screenshots": []
+}

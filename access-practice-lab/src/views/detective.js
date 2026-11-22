@@ -223,7 +223,11 @@ function transferHTML(p) {
     <p class="fine">${t.context}</p>
     <p class="transfer-prompt">${t.prompt}</p>
     <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")}</span><textarea id="det-transfer" rows="5" data-transfer ${IGN}>${D.answer ?? ""}</textarea></label>
-    <p class="fine">${I.T(`At least ${t.minWords} words. We check for "${p.name}" only — nothing else.`, `Al menos ${t.minWords} palabras. Solo revisamos "${p.name}", nada más.`)}</p>
+    <ol class="fine det-selfcheck">
+      <li>${I.T(`Write at least ${t.minWords} words.`, `Escribe al menos ${t.minWords} palabras.`)}</li>
+      <li>${I.T(`Find one place where you used the rule. Point to it and say why it is correct: ${p.lesson.check}`, `Encuentra un lugar donde usaste la regla. Señálalo y di por qué es correcto: ${p.lesson.check}`)}</li>
+      <li>${I.T(`The check looks for "${p.name}" mistakes only. It cannot see your ideas or tell if you used the rule where it was needed, so step 2 is yours to do.`, `La revisión busca solo errores de "${p.name}". No puede ver tus ideas ni saber si usaste la regla donde hacía falta, así que el paso 2 es tuyo.`)}</li>
+    </ol>
     <button type="button" class="btn btn-primary" data-check-transfer>${icon("check")} ${I.T("Check my writing", "Revisar mi escritura")}</button>
     ${
       D.result
@@ -412,7 +416,10 @@ export function onClick(e, ctx) {
       msg = M(`“${has[0].text}” still shows the pattern. ${D.pattern.lesson.check}`, `“${has[0].text}” todavía muestra el patrón. ${D.pattern.lesson.check}`);
     else {
       ok = true;
-      msg = M(`No “${D.pattern.name}” errors found in your ${a.words} words.`, `No se encontraron errores de “${D.pattern.name}” en tus ${a.words} palabras.`);
+      msg = M(
+        `No “${D.pattern.name}” mistakes found in your ${a.words} words. Now do your own check: find one place where you used the rule and read it aloud.`,
+        `No se encontraron errores de “${D.pattern.name}” en tus ${a.words} palabras. Ahora haz tu propia revisión: encuentra un lugar donde usaste la regla y léelo en voz alta.`,
+      );
     }
     D.result = { ok, msg };
     const st = detectiveState(D.studio, D.id);

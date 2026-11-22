@@ -18,6 +18,7 @@ import {
 } from "../lang/providers.js";
 import { describeSpeech, summarizeEnvelope } from "../lang/audio.js";
 import { transcriptFit } from "../lang/speech-feedback.js";
+import { listenCardHTML, listenClick } from "./voice-listen.js";
 import { whatISaidHTML } from "../speech-feedback-ui.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { emptyReview, reviewComplete } from "../lang/rubrics.js";
@@ -31,7 +32,7 @@ import {
 } from "../lang/studio.js";
 import * as audioStore from "../audio-store.js";
 import { canRecord, isRecording, takesFor } from "../recorder.js";
-import { canSpeak, speak, speakDialogue, stop as stopSpeech } from "../speech.js";
+import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { waveformSVG } from "../waveform.js";
 import { lengthMeterHTML, playModelStudent } from "../model-student-ui.js";
 import { autoDictationReady, cancelDictation, dictating, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
@@ -193,19 +194,7 @@ function stimulusHTML(task) {
   const st = task.stimulus;
   if (!st || st.kind === "none") return "";
   if (st.kind === "audio")
-    return html`<section class="source listen-card">
-      <h3 class="source-title">${icon("listening")} ${I.T("Listen first", "Escucha primero")}</h3>
-      <div class="listen-player">
-        <button type="button" class="listen-btn" data-play-stimulus>
-          <span class="listen-icon" aria-hidden="true">${icon("play")}</span
-          ><span class="listen-label">${I.T("Listen", "Escuchar")}</span>
-        </button>
-        <button type="button" class="ghost" data-stop-audio>${icon("stop")} ${I.T("Stop", "Detener")}</button>
-        <p class="listen-meta fine">
-          ${I.T("Listen as many times as you need. The words are not shown until after you speak.", "Escucha todas las veces que necesites. Las palabras no se muestran hasta que hables.")}
-        </p>
-      </div>
-    </section>`;
+    return listenCardHTML(I, st, { key: `studio:${task.id}`, genre: I.T("Recording", "Grabación"), headingLevel: 3 });
   if (st.kind === "chart") return html`<section class="source">${chartHTML(st.chart)}</section>`;
   if (st.kind === "table") return html`<section class="source">${tableHTML(st.table)}</section>`;
   if (st.kind === "text")
@@ -635,6 +624,7 @@ const stageSupports = () => ({
   frames: S.stage === "guided",
   bank: S.stage !== "independent",
   model: Boolean(S.state.used.model),
+  transcript: Boolean(S.state.used.transcript),
   coach: S.takeIndex > 0,
 });
 
@@ -1072,12 +1062,19 @@ export async function onClick(e, ctx) {
     analyze(ctx);
     return true;
   }
-  if (t.closest("[data-play-stimulus]")) {
-    const turns = S.task.stimulus.turns.map((u) => `${u.speaker}: ${u.text}`);
-    canSpeak()
-      ? speakDialogue(turns, { rate: ctx.prefs.rate })
-      : announce(I.S("Read-aloud is not available. Ask your teacher to read it.", "La lectura en voz alta no está disponible. Pide a tu docente que lo lea."));
-    return true;
+  if (S.task.stimulus?.kind === "audio") {
+    const heard = { ...S.task.stimulus, parts: S.task.stimulus.turns };
+    const key = `studio:${S.task.id}`;
+    if (
+      listenClick(e, ctx, I, heard, {
+        key,
+        onTranscript: () => {
+          S.state.used.transcript = true;
+          save();
+        },
+      })
+    )
+      return true;
   }
   if (t.closest("[data-play-model]")) {
     S.state.used.model = true;

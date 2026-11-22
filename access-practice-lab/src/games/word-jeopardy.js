@@ -1,7 +1,7 @@
 // Word Jeopardy: a clue board. Categories across the top, point values down each column. The learner (solo, or two
 // pass-and-play teams on one device) picks a tile; it flips open to a clue read by the host (Pip in 3-5, Juno in 6-8)
 // with 3-4 answers. The engine's miss -> hint -> second try -> reveal loop decides the points: full value on the first
-// try, half on the second, none after a reveal. Three first-try answers in a row without a hint add a streak bonus.
+// try, half on the second, none after a reveal.
 // One tile (picked by env.rng, never the lowest row) is a hidden Daily Double: the learner sets confidence points
 // before seeing the clue. The Final Clue adds a confidence wager and a "because..." reason pick. No clock anywhere:
 // points reward understanding, never speed. All state is plain JSON, so a reload resumes the same board.
@@ -85,7 +85,6 @@ export default {
       cats,
       teams: 1,
       scores: [0, 0],
-      streaks: [0, 0],
       turn: 0,
       phase: "board",
       open: null,
@@ -172,7 +171,6 @@ export default {
       const rs = this.current(s)?.rs;
       if (!rs || settled(rs)) return false;
       takeHint(rs, env);
-      s.streaks[s.turn] = 0;
       return true;
     }
     if (d.gChoice !== undefined && (s.phase === "clue" || s.phase === "final"))
@@ -222,20 +220,13 @@ export default {
       skill: fin ? "integrated" : cat.skill,
       extra: { points: delta, wager: wagered ? base : undefined },
     });
-    if (q.rs.status === "retry") {
-      s.streaks[t] = 0;
-      return true;
-    }
-    let bonus = 0;
+    if (q.rs.status === "retry") return true;
     if (!fin) {
-      const clean = q.rs.status === "right" && q.rs.tries === 1 && q.rs.h === 0;
-      s.streaks[t] = clean ? s.streaks[t] + 1 : 0;
-      if (clean && s.streaks[t] >= 3) bonus = 50;
       q.team = t;
       s.played += 1;
     }
-    q.pts = delta + bonus;
-    bank(s, fin ? teamList(s) : [t], delta, bonus);
+    q.pts = delta;
+    bank(s, fin ? teamList(s) : [t], delta);
     return true;
   },
 

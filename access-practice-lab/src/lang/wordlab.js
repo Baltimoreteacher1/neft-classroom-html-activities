@@ -224,12 +224,13 @@ export const dueWords = (state, now = Date.now()) =>
   );
 
 /** One review result. A review with help (hints open) is `independent: false`, so it resets the step like a miss. */
-export function reviewWord(state, id, { ok, independent }, now = Date.now()) {
+export function reviewWord(state, id, { ok, independent, kind }, now = Date.now()) {
   const rec = collectWord(state, id, now);
   rec.ev.push({
     t: new Date(now).toISOString(),
     ok: Boolean(ok),
     independent: Boolean(independent),
+    ...(kind ? { kind } : {}),
   });
   if (rec.ev.length > 40) rec.ev.splice(0, rec.ev.length - 40);
   return gardenInfo(rec, now);

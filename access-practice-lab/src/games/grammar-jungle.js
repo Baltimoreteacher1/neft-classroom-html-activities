@@ -54,8 +54,8 @@ function decide(r, ok, s, env) {
   if (!settled(r.rs)) return;
   r.step = "done";
   if (r.rs.status === "right") s.fx = r.id;
-  s.streak = firstTry(r) ? s.streak + 1 : 0;
-  s.best = Math.max(s.best, s.streak);
+  if (firstTry(r)) s.streak += 1; // cumulative first-try count: a miss never resets it
+  s.best = s.streak;
 }
 
 function trailHTML(s, I) {
@@ -253,7 +253,7 @@ export default {
         ${trailHTML(s, I)}
         <p class="gj-tally">
           <span aria-hidden="true">${s.band === "6-8" ? "⭐" : "🍌"}</span>
-          ${I.T(`${stars} fixed on the first try`, `${stars} corregidas al primer intento`)}${s.streak > 1 ? html` · <span class="gj-streak">${I.T(`${s.streak} in a row!`, `¡${s.streak} seguidas!`)}</span>` : ""}
+          ${I.T(`${stars} fixed on the first try`, `${stars} corregidas al primer intento`)}
         </p>
       </div>
       ${s.i === 0 && story && r.step === "tag" && !r.rs.tries ? html`<p class="gj-story">${icon("sparkle")}${I.T(story.en, story.es)}</p>` : ""}

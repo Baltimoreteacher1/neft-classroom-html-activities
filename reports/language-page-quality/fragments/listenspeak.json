@@ -1,0 +1,311 @@
+{
+  "area": "listenspeak",
+  "branch": "lp-overhaul/listenspeak",
+  "headCommit": "466840297b",
+  "inventory": [
+    {
+      "id": "voice-retell-listen",
+      "url": "/voice/retell/<id>",
+      "program": "ACCESS Practice Lab",
+      "type": "listen-then-retell",
+      "gradeBand": "3-5, 6-8",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Listen for purpose, check understanding, then retell with fading frames and self-review",
+      "contentSource": "src/content/voice-lab.js RETELLS",
+      "template": "views/voice-retell.js + views/voice-listen.js",
+      "feedback": "Wrong pick gives a hint and a Replay-part button; second wrong pick reveals the answer with the reason. Review is a self-tick list; the lab never scores speech.",
+      "a11y": "Transcript with honest note; aria-live status; aria-disabled buttons; 44px targets; axe clean",
+      "mobile": "390 and 1280 no overflow",
+      "designIssues": [
+        "single Listen button, no speed or part replay",
+        "transcript hidden until after speaking",
+        "no purpose, vocabulary prep, success criteria or second-attempt guidance"
+      ],
+      "contentIssues": [
+        "retell sources were single-narrator; no comprehension check"
+      ],
+      "action": "Rebuilt as Prepare/Speak/Review/Improve with a shared listening card; 3 new authentic listening tasks (announcement, interview, directions dialogue)",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/access-voice-listen.test.mjs + tools/access-voice-listen-e2e.mjs (Chromium 1280/390, stubbed speechSynthesis, keyboard, mic denied, axe 2.2 AA, console)"
+    },
+    {
+      "id": "speak-audio-stimulus",
+      "url": "/speak/<task>",
+      "program": "ACCESS Practice Lab",
+      "type": "speaking studio listening source",
+      "gradeBand": "3-5, 6-8",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Listen to a recording, then retell, discuss or compare",
+      "contentSource": "content/studio/speaking.json (9 audio tasks)",
+      "template": "views/speak.js + views/voice-listen.js",
+      "feedback": "as above",
+      "a11y": "as above",
+      "mobile": "as above",
+      "designIssues": [
+        "single Listen button; some speaker labels read aloud as text; no speed or part replay"
+      ],
+      "contentIssues": [
+        "no comprehension check before speaking"
+      ],
+      "action": "Same listening card; listenFor and 2 check questions on all 9 audio tasks; opening the transcript is recorded as a support so the ledger shows supported, not independent",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "tools/access-voice-listen.test.mjs + tools/access-voice-listen-e2e.mjs (Chromium 1280/390, stubbed speechSynthesis, keyboard, mic denied, axe 2.2 AA, console)"
+    },
+    {
+      "id": "listening-bank-g68-A",
+      "url": "/learn (grades 6-8 Listening level A)",
+      "program": "ACCESS Practice Lab",
+      "type": "listening multiple choice",
+      "gradeBand": "6-8",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Follow directions and listen for detail",
+      "contentSource": "content/g6-8/Listening.json",
+      "template": "shared activity player",
+      "feedback": "existing distractorFeedback kept and aligned to the new scripts",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [],
+      "contentIssues": [
+        "11-15 word isolated sentences",
+        "exit-ticket prompt asked 'first step' that a fuller script would contradict"
+      ],
+      "action": "Rewrote 4 isolated-sentence scripts into short spoken announcements and directions; fixed an ambiguous prompt in exit-ticket",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "validate-access-lab, validate-access-bank, access-lab-index --check, access-listening-strategy test"
+    },
+    {
+      "id": "listening-player-fallback",
+      "url": "shared listenPlayerHTML",
+      "program": "ACCESS Practice Lab",
+      "type": "listening player",
+      "gradeBand": "all",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Alternative when read-aloud is unavailable",
+      "contentSource": "src/components.js",
+      "template": "listenPlayerHTML",
+      "feedback": "",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [
+        "only 'ask your teacher'"
+      ],
+      "contentIssues": [],
+      "action": "Practice mode shows the script with a note that this is reading, not listening; not shown under test conditions",
+      "priority": "P1",
+      "status": "upgraded",
+      "verification": "access-acc-audio and access-listening-strategy tests; node unit test without window"
+    },
+    {
+      "id": "voice-ladder-sounds-shadow-read",
+      "url": "/voice/ladder|sounds|shadow|read|keys",
+      "program": "ACCESS Practice Lab",
+      "type": "speaking ladders, minimal pairs, shadowing, oral reading",
+      "gradeBand": "3-5, 6-8",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Picture talk, sound discrimination, shadowing",
+      "contentSource": "src/content/voice-lab.js",
+      "template": "voice-ladder/sounds/shadow/read",
+      "feedback": "",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "Audited, not changed (model student, frames, Spanish tips, honest length meter already present)",
+      "priority": "P3",
+      "status": "unchanged",
+      "verification": "code read; access-lab-voice and access-lab-voice-views tests pass"
+    },
+    {
+      "id": "language-city-scenarios",
+      "url": "/city, /scenarios",
+      "program": "ACCESS Practice Lab",
+      "type": "mission and scenario sets",
+      "gradeBand": "3-5, 6-8",
+      "wida": "WIDA-aligned supports (modeled on, not official)",
+      "objective": "Read, listen, respond, repair",
+      "contentSource": "src/content/city*.js, scenarios.js",
+      "template": "views/city*.js, scenarios.js",
+      "feedback": "",
+      "a11y": "",
+      "mobile": "",
+      "designIssues": [],
+      "contentIssues": [],
+      "action": "Not audited in this pass",
+      "priority": "P3",
+      "status": "untestable",
+      "verification": "access-language-city and access-scenarios tests pass; no browser review of these pages"
+    }
+  ],
+  "scoresBefore": {
+    "voice-retell-listen": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 2,
+      "E": 2,
+      "F": 2,
+      "G": 2,
+      "H": 2,
+      "I": 2,
+      "J": 3,
+      "K": 3
+    },
+    "speak-audio-stimulus": {
+      "A": 3,
+      "B": 4,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 3,
+      "H": 4,
+      "I": 3,
+      "J": 4,
+      "K": 3
+    },
+    "listening-bank-g68-A": {
+      "A": 3,
+      "B": 2,
+      "C": 3,
+      "D": 2,
+      "E": 2,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 3,
+      "J": 3,
+      "K": 3
+    }
+  },
+  "scoresAfter": {
+    "voice-retell-listen": {
+      "A": 4,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "speak-audio-stimulus": {
+      "A": 4,
+      "B": 4,
+      "C": 4,
+      "D": 4,
+      "E": 4,
+      "F": 4,
+      "G": 4,
+      "H": 4,
+      "I": 4,
+      "J": 4,
+      "K": 4
+    },
+    "listening-bank-g68-A": {
+      "A": 3,
+      "B": 4,
+      "C": 3,
+      "D": 3,
+      "E": 3,
+      "F": 3,
+      "G": 4,
+      "H": 4,
+      "I": 3,
+      "J": 4,
+      "K": 3
+    }
+  },
+  "problemsFound": [
+    "Listening card had one Listen button: no speed, no part replay, no purpose, no comprehension check",
+    "Transcript hidden until after speaking; no path for learners who cannot hear (studio, retells, practice player without speechSynthesis)",
+    "Retells lacked vocabulary prep, fading frames, success criteria, review and a focused second attempt",
+    "Several 6-8 level-A listening items were 11-15 word isolated sentences",
+    "Studio audio relied on a regex speaker parse; some labels were read aloud as text"
+  ],
+  "improvements": [
+    "voice-listen.js: shared listening card (purpose, play, part replay, slower speed, on-demand transcript, main-idea/detail/sequence/inference checks with hint then reveal)",
+    "Retell page: Prepare/Speak/Review/Improve, key words with Spanish gloss, frames fade after take 1, self-review ticks saved on device, one-thing focus",
+    "3 new listening retells (announcement, two-speaker interview, directions dialogue); picture on bees task",
+    "9 studio audio tasks gained listenFor and 2 checks; transcript open recorded as a support",
+    "4 g6-8 listening scripts rewritten"
+  ],
+  "templatesRedesigned": [
+    "voice-listen card",
+    "voice-retell page",
+    "speak.js audio stimulus"
+  ],
+  "contentRecordsRewritten": 20,
+  "criticalFixed": 2,
+  "unresolved": [
+    "Real speechSynthesis playback verified by hand in headed Chromium on macOS (per-sentence utterances start and end, spoken text equals transcript); Windows, Android, iOS voices and Linux without voices NOT tested; quality varies by device voice. Automated e2e uses a stubbed speechSynthesis that records the spoken text",
+    "Most of the ~230 listening-bank scripts (K-5, 6-8 levels B and C) were not reviewed; 3-5 level A still has several 10-16 word picture-supported items",
+    "Language City and Scenarios not audited or browser-checked",
+    "Check questions only on retells and studio audio tasks, not sound-bridge, shadowing or ladders",
+    "Passages and questions are English by design; chrome is EN/ES",
+    "web-vitals console error is a static-server artifact, filtered in the e2e",
+    "access-acc-bank-index.mjs and generate-access-finder-metadata.mjs --check could not run in this worktree (module resolution error), not caused by this change",
+    "This fragment and the screenshots live under reports/, which is gitignored; a hook refused git add -f, so they are not committed"
+  ],
+  "sharedEdits": [
+    "src/components.js: listenPlayerHTML unavailable branch shows the script (practice mode only)",
+    "index.html, app-shell, sw.js regenerated by tools/sync-access-shell.mjs (voice-listen.js precached; hashes will conflict across branches, re-run the tool after merging)",
+    "content/index.json and alignment-index.json regenerated by tools/access-lab-index.mjs"
+  ],
+  "tests": [
+    {
+      "cmd": "node tools/access-voice-listen.test.mjs",
+      "result": "6 pass"
+    },
+    {
+      "cmd": "node tools/access-voice-listen-e2e.mjs",
+      "result": "PASS (1280 and 390, keyboard, mic denied, axe, console)"
+    },
+    {
+      "cmd": "node tools/access-lab-voice-views.test.mjs",
+      "result": "10 pass"
+    },
+    {
+      "cmd": "node tools/access-lab-voice.test.mjs",
+      "result": "17 pass"
+    },
+    {
+      "cmd": "access-scenarios, access-language-city, access-acc-audio, access-listening-strategy, speaking-task-packs tests",
+      "result": "all pass"
+    },
+    {
+      "cmd": "node tools/access-studio-e2e.mjs",
+      "result": "PASS"
+    },
+    {
+      "cmd": "validate-access-lab, validate-access-bank, validate-access-studio, validate-access-quality, access-sw.test",
+      "result": "PASS"
+    }
+  ],
+  "filesChanged": [
+    "access-practice-lab/src/views/voice-listen.js (new)",
+    "access-practice-lab/src/views/voice-retell.js",
+    "access-practice-lab/src/views/speak.js",
+    "access-practice-lab/src/content/voice-lab.js",
+    "access-practice-lab/content/studio/speaking.json",
+    "access-practice-lab/content/g6-8/Listening.json",
+    "access-practice-lab/src/components.js",
+    "access-practice-lab/voice.css",
+    "tools/access-voice-listen.test.mjs (new)",
+    "tools/access-voice-listen-e2e.mjs (new)",
+    "tools/access-lab-voice-views.test.mjs"
+  ],
+  "screenshots": [
+    "reports/language-page-quality/screenshots/listenspeak/before-retell-1280.jpg",
+    "reports/language-page-quality/screenshots/listenspeak/before-speak-1280.jpg",
+    "reports/language-page-quality/screenshots/listenspeak/after-retell-1280.jpg",
+    "reports/language-page-quality/screenshots/listenspeak/after-retell-390.jpg",
+    "reports/language-page-quality/screenshots/listenspeak/after-speak-1280.jpg",
+    "reports/language-page-quality/screenshots/listenspeak/after-speak-390.jpg"
+  ]
+}

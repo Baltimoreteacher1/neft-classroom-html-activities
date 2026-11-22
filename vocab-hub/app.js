@@ -526,7 +526,6 @@
     view.innerHTML = "";
     var bar = el("div", "scorebar");
     bar.innerHTML =
-      '<span>⏱ <span id="mg-time">0s</span></span>' +
       '<span>✓ <span id="mg-score">0</span>/<span id="mg-total">0</span></span>' +
       '<span class="feedback" id="mg-fb"></span>';
     view.appendChild(bar);
@@ -557,21 +556,15 @@
   }
 
   function newMatchRound() {
-    clearInterval(mg.timer);
     var grid = document.getElementById("mg-grid");
     if (!grid) return;
     var picks = shuffle(state.items).slice(0, 5);
     mg.pairs = picks;
     mg.matched = 0;
     mg.selectedLeft = null;
-    mg.start = Date.now();
     document.getElementById("mg-score").textContent = "0";
     document.getElementById("mg-total").textContent = String(picks.length);
     document.getElementById("mg-fb").textContent = "";
-    mg.timer = setInterval(function () {
-      var t = document.getElementById("mg-time");
-      if (t) t.textContent = Math.round((Date.now() - mg.start) / 1000) + "s";
-    }, 250);
 
     grid.innerHTML = "";
     var leftCol = el("div", "match-col");
@@ -648,17 +641,26 @@
       }
       mg.matched++;
       document.getElementById("mg-score").textContent = String(mg.matched);
-      flash("mg-fb", pick(["Nice!", "¡Bien!", "Correct!", "Great!"]), true);
+      var hit = mg.pairs[id];
+      flash(
+        "mg-fb",
+        hit ? "Matched: " + hit.term + (hit.termEs ? " / " + hit.termEs : "") : "Matched",
+        true,
+      );
       mg.selectedLeft = null;
       if (mg.matched === mg.pairs.length) {
-        clearInterval(mg.timer);
-        var secs = Math.round((Date.now() - mg.start) / 1000);
         awardStar(2);
-        celebrate("All matched in " + secs + "s! · ¡Todo emparejado!");
+        celebrate("All matched. Say one word aloud in your own sentence. · ¡Todo emparejado! Di una palabra en una oración propia.");
       }
     } else {
       btn.classList.add("wrong");
-      flash("mg-fb", "Try again · Inténtalo otra vez", false);
+      flash(
+        "mg-fb",
+        mg.mode === "img"
+          ? "Not that one. Look at the picture again and find the word that names it. · Ese no. Mira la imagen otra vez."
+          : "Not a match. Reread the meaning, then find the word it describes. · No coincide. Vuelve a leer el significado.",
+        false,
+      );
       window.setTimeout(function () {
         btn.classList.remove("wrong");
       }, 350);
@@ -1501,7 +1503,6 @@
       t.setAttribute("aria-pressed", on ? "true" : "false");
     });
     document.removeEventListener("keydown", fcKeys);
-    clearInterval(mg.timer);
     if (mode === "browse") renderBrowse();
     else if (mode === "flashcards") renderFlashcards();
     else if (mode === "match") renderMatch();

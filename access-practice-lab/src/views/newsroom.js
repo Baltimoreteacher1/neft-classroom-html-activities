@@ -201,11 +201,24 @@ function stepNav(I, band, id, step) {
   </nav>`;
 }
 
+/** The story packet: facts to build the story from, so the plan answers 5W1H from evidence instead of invention. */
+function notesHTML(I, p, open = true) {
+  if (!p.notes?.length) return "";
+  return html`<details class="wl-details nr-notes" ${open ? raw("open") : ""}>
+    <summary>${icon("list")} ${I.T("Reporter's notes", "Notas del reportero")}</summary>
+    <p class="fine">${I.T("These are your facts. Use at least three, and say them in your own words. The people in this packet are made up for practice.", "Estos son tus datos. Usa al menos tres y dilos con tus propias palabras. Las personas de este paquete son inventadas para practicar.")}</p>
+    <ul lang="en">
+      ${p.notes.map((n) => html`<li>${n}</li>`)}
+    </ul>
+  </details>`;
+}
+
 function planHTML(I, st, p, s, level) {
   const fmt = s.fmt || "article";
   return html`<section class="panel" aria-labelledby="nr-plan-h">
     <h2 id="nr-plan-h">${I.T("Plan your story with 5W1H", "Planea tu historia con 5W1H")}</h2>
     <p>${I.T(p.seed, p.seedEs)}</p>
+    ${notesHTML(I, p)}
     <p class="nr-ask">
       <b>${I.T("Questions a reporter would ask:", "Preguntas que haría un reportero:")}</b>
     </p>
@@ -254,10 +267,11 @@ function framesFor(I, level, part, ui) {
 
 function draftHTML(I, st, p, s, level) {
   const fmt = s.fmt || "article";
-  const obs = observe(s.draft, s.w5, fmt);
+  const obs = observe(s.draft, s.w5, fmt, p.notes || []);
   const wc = storyWords(s.draft, fmt);
   return html`<section class="panel" aria-labelledby="nr-draft-h">
     <h2 id="nr-draft-h">${I.T("Draft your story", "Redacta tu historia")}</h2>
+    ${notesHTML(I, p, false)}
     <details class="wl-details" ${level === "C" ? "" : "open"}>
       <summary>${icon("list")} ${I.T("My plan", "Mi plan")}</summary>
       <ul>
@@ -494,7 +508,7 @@ export function onChange(e, ctx) {
   if (planCount(s.w5) >= 5) evidence(st, ctx, `${p.id}|plan`, "Writing", m);
   const wc = storyWords(s.draft, s.fmt);
   if (current.step === "draft" && wc >= 30) {
-    const obs = observe(s.draft, s.w5, s.fmt || "article");
+    const obs = observe(s.draft, s.w5, s.fmt || "article", p.notes || []);
     evidence(
       st,
       ctx,

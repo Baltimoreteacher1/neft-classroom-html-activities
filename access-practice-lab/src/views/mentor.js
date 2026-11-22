@@ -5,6 +5,7 @@ import { setComponentsI18n } from "../components.js";
 import {
   GENRES,
   MOVES,
+  MOVE_CRITERIA,
   TEXTS,
   TRY,
   findMove,
@@ -380,6 +381,9 @@ function tryHTML(ctx, I, move) {
   const saved = state.mentor.tries[task.id] || {};
   const res = ui.result && ui.result.id === task.id ? ui.result.res : null;
   const examples = state.mentor.toolbox.filter((x) => x.move === move.id).slice(-2);
+  // A saved draft wins (even an empty one the writer cleared). Otherwise revise tasks start from the given sentence and
+  // full-help writers start from the frame.
+  const draftText = "text" in saved ? saved.text : task.base || (level === "A" ? task.start || "" : "");
   return html`${craftCrumbs(I, "mentor", ctx.band, I.S(`Try: ${move.name}`, `Probar: ${move.es}`))}
     <article class="cs-page cs-mentor">
       <header class="act-head">
@@ -397,10 +401,19 @@ function tryHTML(ctx, I, move) {
         </h2>
         ${level !== "C" && examples.length ? html`<p class="fine">${I.T("From your toolbox:", "De tu caja de herramientas:")} ${examples.map((x) => html`<q lang="en">${x.text}</q> `)}</p>` : ""}
         <p class="cs-prompt" lang="en">${task.prompt}</p>
+        <p class="fine cs-why"><strong>${I.T("Who is reading and why", "Quién lee y para qué")}:</strong> <span lang="en">${task.why}</span></p>
+        <div class="cs-criteria" role="group" aria-label="${I.S("Success looks like", "El éxito se ve así")}">
+          <p class="fine"><strong>${I.T("Success looks like", "El éxito se ve así")}:</strong></p>
+          <ul class="cs-list">
+            ${MOVE_CRITERIA[move.id].map(([en, es]) => html`<li>${I.T(en, es)}</li>`)}
+          </ul>
+        </div>
+        ${task.base ? html`<p class="fine">${I.T("The sentence is already in the box. Change it; do not retype it.", "La oración ya está en el cuadro. Cámbiala; no la vuelvas a escribir.")}</p>` : ""}
+        ${level === "B" && task.start ? html`<p class="fine">${I.T("Starter (optional)", "Inicio (opcional)")}: <span lang="en">${task.start}</span></p>` : ""}
         <label class="cs-field"
           ><span>${I.S("My sentence", "Mi oración")}</span
           ><textarea data-mt-field rows="3" lang="en" spellcheck="false" autocomplete="off">
-${saved.text || ""}</textarea>
+${draftText}</textarea>
         </label>
         <p class="row-actions no-print">
           <button type="button" class="btn btn-primary" data-mt-check="${task.id}">
@@ -410,6 +423,8 @@ ${saved.text || ""}</textarea>
         </p>
         <div role="status" aria-live="polite" class="cs-feedback">
           ${res ? html`<p class="${res.ok ? "cs-win" : "cs-next"}">${icon(res.ok ? "check" : "arrow-right")} ${I.TO(res.ok ? res.got : res.tip)}</p>` : ""}
+          ${res && !res.ok ? html`<p class="fine">${I.T("Revise your sentence in the box and check again. Your draft is saved on this device.", "Revisa tu oración en el cuadro y vuelve a revisar. Tu borrador se guarda en este dispositivo.")}${level !== "C" && (saved.checks || 0) >= 2 && ui.model !== task.id ? ` ${I.S("Still stuck? Use Show a model.", "¿Sigues atascado? Usa Mostrar un modelo.")}` : ""}</p>` : ""}
+          ${res?.ok ? html`<p class="fine">${I.T("Read it aloud. Does it do the job for the reader named above? That part is your call.", "Léela en voz alta. ¿Cumple su función para el lector indicado arriba? Eso lo decides tú.")}</p>` : ""}
           ${ui.model === task.id ? html`<p class="cs-model" lang="en"><strong>${I.T("A model", "Un modelo")}:</strong> ${task.model}</p>` : ""}
         </div>
         <p class="fine">
@@ -614,7 +629,8 @@ export function onClick(e, ctx) {
 
 export function onInput(e) {
   if (!current || current.kind !== "try" || !e.target?.matches?.("[data-mt-field]")) return;
-  const task = TRY[current.id][lastCtx?.band]?.[Math.min(ui.tryIndex?.[current.id] || 0, 1)];
+  const list = TRY[current.id][lastCtx?.band] || [];
+  const task = list[Math.min(ui.tryIndex?.[current.id] || 0, list.length - 1)];
   if (!task) return;
   const state = loadCraft();
   state.mentor.tries[task.id] = { ...(state.mentor.tries[task.id] || {}), text: e.target.value };

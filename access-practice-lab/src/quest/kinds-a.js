@@ -258,7 +258,7 @@ export const check = {
         : ""}
       <fieldset class="q-mc"><legend class="visually-hidden">${item.prompt}</legend>${item.options.map((o) => html`<label class="q-mc-opt ${st.sel === o.id ? "is-on" : ""} ${fb[o.id] ? "is-look" : ""}"><input type="radio" name="mc-${item.id}" value="${o.id}" data-q-act="check-opt" ${st.sel === o.id ? html`checked` : ""} ${st.done ? html`disabled` : ""}/> <span>${o.label}</span>${fb[o.id] ? html`<small class="q-fb is-look">${fb[o.id]}</small>` : ""}</label>`)}</fieldset>
       ${st.done
-        ? html`<p class="q-fb is-ok" role="status">${icon("check")} ${T(env, "Yes. That matches the evidence.", "Sí. Eso coincide con la evidencia.")}</p>`
+        ? html`<p class="q-fb is-ok" role="status">${icon("check")} ${T(env, "Yes. That matches the evidence.", "Sí. Eso coincide con la evidencia.")}${item.why ? html` ${item.why}` : ""}</p>`
         : html`<button type="button" class="btn btn-primary" data-q-act="check-answer" ${st.sel ? "" : html`disabled`}>${T(env, "Check", "Revisar")}</button>`}`;
     return itemShell(env, item, body, itemDone(item, st), { title: T(env, "Check your understanding", "Comprueba lo que entendiste") });
   },

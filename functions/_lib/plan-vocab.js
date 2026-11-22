@@ -5582,6 +5582,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-teacher/maker/",
+    title: "Language Sheet & Card Maker — ACCESS Teacher Hub",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-teacher/predictive/",
     title: "WIDA Data Intelligence Studio — Teacher Hub",
     category: "Tool",
