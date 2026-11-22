@@ -68,7 +68,7 @@ try {
   await page.selectOption('[name="profile"]', { label: "Demo Alias" });
   await page.locator("[data-instruction-suggest]").click();
   await page.locator("[data-instruction-results] [data-strategy-accept]").first().click();
-  await page.getByText("teacher-selected", { exact: false }).waitFor();
+  await page.getByText("teacher-selected", { exact: false }).first().waitFor();
   await page.goto(`${base}/access-practice-lab/program/objectives`);
   await page.locator('[name="content"]').fill("how plants use sunlight");
   await page.locator('[name="target"]').fill("because / so");

@@ -953,7 +953,7 @@ const COVERAGE = [
   // The class platform (docs/class-platform.md): its endpoint tests run the real
   // Function over node:sqlite; the migration is pinned to SCHEMA by that test.
   [
-    /^(functions\/(api\/class\/|_lib\/class-platform\/|_lib\/model-call\.js$)|shared\/class-platform\/|migrations\/0011_class_platform\.sql$|migrations\/0016_class_assign_status\.sql$|docs\/class-platform\.md$)/,
+    /^(functions\/(api\/(class|owner)\/|_lib\/class-platform\/|_lib\/model-call\.js$)|shared\/class-platform\/|migrations\/0011_class_platform\.sql$|migrations\/0016_class_assign_status\.sql$|migrations\/0017_teacher_library\.sql$|docs\/class-platform\.md$)/,
     ["test"],
   ],
   [

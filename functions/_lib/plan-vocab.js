@@ -6194,6 +6194,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/teacher-tools/owner-dashboard/",
+    title: "Owner Dashboard",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/teacher-tools/parent-contact-log/",
     title: "Parent Contact Log",
     category: "Tool",
