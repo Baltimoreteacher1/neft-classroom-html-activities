@@ -1,0 +1,66 @@
+/* arcade-od.css — owned by the od game (Syntax Odyssey: Skyline Runner). Scoped under .ax-od. */
+.ax-od { display: flex; flex-direction: column; background: #0f1b3d; color: #fff; }
+.ax-od-view { position: relative; background: #4f9fe8; }
+.ax-od-canvas { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 64vh; touch-action: manipulation; background: #9ad0ff; }
+.ax-od-canvas:focus-visible { outline: 3px solid #ffd36b; outline-offset: -3px; }
+@media (max-width: 640px) { .ax-od-canvas { aspect-ratio: 4 / 3; max-height: 52vh; } }
+
+/* cards over the world: chapter picker, fall prompt, level complete */
+.ax-od-layer { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: .75rem; overflow: auto; background: rgba(15, 27, 61, .5); }
+.ax-od-layer.is-open { display: flex; }
+.ax-od-card { width: min(100%, 560px); max-height: 100%; overflow: auto; padding: 1.1rem 1.25rem; border-radius: 14px; background: #faf9f6; color: #161614; box-shadow: 0 12px 36px rgba(0, 0, 0, .35); font-family: var(--ax-read-font); }
+.ax-od-card h2 { margin: 0 0 .4rem; font: 800 1.3em var(--ax-ui); }
+.ax-od-card h2:focus { outline: none; }
+.ax-od-card p { margin: .35rem 0; line-height: 1.45; }
+.ax-od-pick { width: min(100%, 760px); }
+.ax-od-chaps { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin: .7rem 0; }
+@media (max-width: 640px) { .ax-od-chaps { grid-template-columns: 1fr; } }
+.ax-od-chap { display: flex; flex-direction: column; gap: .15rem; min-height: 88px; padding: .7rem .8rem; text-align: left; font: inherit; color: #fff; border: 3px solid transparent; border-radius: 12px; cursor: pointer; }
+.ax-od-chap-1 { background: linear-gradient(160deg, #1f6fc4, #5fa8e8 70%, #e6b84a); }
+.ax-od-chap-2 { background: linear-gradient(160deg, #15803d, #2fb59b 70%, #f4c542); }
+.ax-od-chap-3 { background: linear-gradient(160deg, #0f2a66, #1f6fc4 65%, #ee8a52); }
+.ax-od-chap.is-rec { border-color: #e2a72e; box-shadow: 0 0 0 2px #fff inset; }
+.ax-od-chap:focus-visible { outline: 3px solid #161614; outline-offset: 2px; }
+.ax-od-chap-name { font: 800 1.05em var(--ax-ui); }
+.ax-od-chap-meta { font-size: .85em; opacity: .95; }
+.ax-od-chap-go { margin-top: auto; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.ax-od-opt { display: flex; align-items: center; gap: .55rem; min-height: var(--ax-tap); font-weight: 600; }
+.ax-od-opt input[type="checkbox"] { width: 24px; height: 24px; }
+.ax-od-opt select { min-height: var(--ax-tap); font: inherit; border-radius: 8px; border: 2px solid #161614; padding: 0 .5rem; }
+.ax-od-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .8rem; }
+
+/* controls under the world */
+.ax-od-panel { display: grid; gap: .6rem; padding: .7rem .8rem .8rem; background: #17294f; }
+.ax-od-pad { display: flex; gap: .6rem; }
+.ax-od-hold { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem; flex: 1 1 0; min-width: 72px; min-height: 60px; padding: .3rem .5rem; font: 700 .8em var(--ax-ui); color: #fff; background: rgba(255, 255, 255, .14); border: 2px solid rgba(255, 255, 255, .55); border-radius: 14px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ax-od-hold-jump { background: #1f4fd8; border-color: #fff; flex-grow: 1.4; }
+.ax-od-hold:active { transform: translateY(1px) scale(.98); background: rgba(255, 255, 255, .3); }
+.ax-od-hold-jump:active { background: #1a43b8; }
+.ax-od-hold:focus-visible, .ax-od-tools .ax-btn:focus-visible { outline: 3px solid #ffd36b; outline-offset: 2px; }
+.ax-od-ico { width: 1.6em; height: 1.6em; }
+.ax-od-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.ax-od-tools .ax-btn { min-height: 48px; }
+.ax-od-tools .ax-btn[aria-pressed="true"] { background: #ffd36b; border-color: #ffd36b; color: #161614; }
+.ax-od-tools .ax-btn-quiet { color: #fff; }
+.ax-od-tools .ax-kbd { color: inherit; }
+.ax-od-tools [hidden], .ax-od-card [hidden] { display: none; }
+.ax-od-where { min-height: 1.4em; margin: 0; color: #e8eefb; font-size: .92em; }
+.ax-od-keys { margin: 0; color: #b9c6e6; }
+@media (min-width: 900px) {
+  .ax-od-panel { grid-template-columns: auto 1fr; align-items: center; }
+  .ax-od-where, .ax-od-keys { grid-column: 1 / -1; }
+  .ax-od-hold { min-width: 92px; flex: none; }
+}
+@media (pointer: coarse) { .ax-od-hold { min-height: 68px; } }
+
+/* results summary */
+.ax-od-sum ul { list-style: none; margin: .4rem 0; padding: 0; }
+.ax-od-sum li { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 0; border-bottom: 1px solid var(--ax-line); }
+@media (prefers-reduced-motion: reduce) { .ax-od-hold:active { transform: none; } }
+.ax-reduce .ax-od-hold:active { transform: none; }
+
+/* the Games hub's Arcade worlds card (rendered outside .ax-od) */
+.gs-arcade { margin-block: 1.5rem; }
+.gs-arcade .gs-grid.gs-grid-3 { grid-template-columns: repeat(auto-fill, minmax(280px, 360px)); }
+.gs-arcade-art { aspect-ratio: 16 / 9; overflow: hidden; }
+.gs-arcade-art svg { display: block; width: 100%; height: 100%; }

@@ -193,6 +193,24 @@ export function purchase(state, itemId, txId, { gameId = "" } = {}) {
   };
 }
 
+/**
+ * Spend Shards on something a game defines (a tower, a repair). Validated and idempotent by txId; the
+ * balance never goes negative and `spent` is tracked. Upgrades from the shop use purchase() instead.
+ */
+export function spend(state, cost, txId) {
+  if (txId && state.tx.includes(txId)) return { ok: true, state, duplicate: true };
+  const c = int(cost);
+  if (c < 1) return { ok: false, state, reason: "range" };
+  if (state.shards < c) return { ok: false, state, reason: "short" };
+  return { ok: true, state: spend0(state, { shards: state.shards - c, spent: state.spent + c }, txId) };
+}
+/** Give Shards back (selling a tower). Never more than was spent. */
+export function refund(state, amount, txId) {
+  if (txId && state.tx.includes(txId)) return { ok: true, state, duplicate: true };
+  const a = Math.min(int(amount), state.spent);
+  return { ok: true, state: spend0(state, { shards: state.shards + a, spent: state.spent - a }, txId), amount: a };
+}
+
 /** Use one stocked item (a shield absorbing a miss, a freeze, a decoder). */
 export function consume(state, itemId, txId) {
   if (txId && state.tx.includes(txId)) return { ok: true, state, duplicate: true };

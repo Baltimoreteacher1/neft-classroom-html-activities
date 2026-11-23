@@ -17,6 +17,7 @@ import { hubHTML, hubHref } from "../games/hub.js";
 import { bandRows } from "../content.js";
 import { bandOk, nextInPath, newAwards, parsePath, pathwayProgress, recommend, suggestSupport } from "../games/plan.js";
 import { GAME, GAMES } from "../games/registry.js";
+import { isArcade } from "../arcade/games.js";
 import { expeditionsHubClick } from "../games/language-expeditions-assign.js";
 import { doneHTML, frameHTML, startHTML, transferHTML } from "../games/screens.js";
 import { loadGames, saveGames, sessionKey, summarizeRounds } from "../games/state.js";
@@ -48,6 +49,7 @@ const loadModule = (name) => {
 // The router calls handlers synchronously, so what render prepared lives here.
 let LIVE = null;
 let HUB = null;
+let ARC = null; // the flagship canvas games (src/arcade/host.js), loaded only when one is opened
 
 const query = () => Object.fromEntries(new URLSearchParams(location.search));
 const qaOn = () => query().qa === "1";
@@ -167,6 +169,12 @@ export async function render(ctx) {
   const band = ctx.band;
   const id = ctx.route.id;
   const q = query();
+  if (id && isArcade(id)) {
+    LIVE = null;
+    ARC = await import("../arcade/host.js");
+    return ARC.arcadeShell(I, id);
+  }
+  ARC = null;
   if (!id) {
     if (!GAMES.some((g) => bandOk(g, band))) {
       HUB = { ctx };
@@ -272,6 +280,7 @@ export async function render(ctx) {
 }
 
 export function mount(root, ctx) {
+  if (ARC && isArcade(ctx.route.id)) { ARC.mountArcade(root, ctx, ctx.route.id); return; }
   LIVE?.cleanup?.();
   if (LIVE) LIVE.cleanup = null;
   if (!LIVE || LIVE.session.phase !== "play" || !LIVE.session.state) { window.__ACCESS_GAMES__ = undefined; if (!LIVE) hubMount(root); return; }
@@ -301,6 +310,7 @@ let micWatch = null;
 const stopMicWatch = () => { micWatch?.(); micWatch = null; };
 
 export function unmount() {
+  if (ARC) { ARC.unmountArcade(); ARC = null; }
   stopMicWatch();
   LIVE?.cleanup?.();
   LIVE?.fsm?.teardown();

@@ -9,6 +9,7 @@ import { SUP } from "./engine.js";
 import { summarizeRounds } from "./state.js";
 import { expeditionsTeacherHTML } from "./language-expeditions-assign.js"; // teacher: Expeditions links
 import { getWeakSpots, loadProgression } from "../game-core/ProgressionStore.js";
+import { arcadeHubHTML } from "../arcade/hub-card.js"; // the flagship canvas games
 
 const pair = (I, p) => I.T(p[0], p[1]);
 const bandQ = (b) => `grades=${b}`;
@@ -121,6 +122,7 @@ export function hubHTML(ctx, I, games, query, band, { focus = [] } = {}) {
     </header>
     ${assignedBanner(I, band, q, games)}
     ${live.length ? html`<section class="gs-resume panel" aria-labelledby="gs-resume-h"><h2 id="gs-resume-h">${I.T("Pick up where you left off", "Continúa donde lo dejaste")}</h2><ul>${live.slice(0, 3).map((s) => html`<li><a class="btn" href="${playHref(s.game, band, q)}">${icon("replay")}${pair(I, GAME[s.game].title)}</a></li>`)}</ul></section>` : ""}
+    ${arcadeHubHTML(I, band)}
     <section class="gs-next" aria-labelledby="gs-next-h"><h2 id="gs-next-h">${I.T("Recommended for you", "Recomendado para ti")}</h2>
       <p class="fine">${I.T("Chosen from the games you have played. It is a suggestion, not a test result.", "Elegido a partir de los juegos que has jugado. Es una sugerencia, no un resultado de prueba.")}</p>
       <div class="gs-grid gs-grid-3">${recs.map((r) => card(GAME[r.game], I, band, games, q, { why: r.why }))}</div></section>

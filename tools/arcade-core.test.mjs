@@ -5,23 +5,82 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
-  ECONOMY_CONFIG, award, awardRecovery, cleanEconomy, consume, emptyEconomy, emptyStreak, maxStake, matrixMultiplier,
-  purchase, rewardFor, settleStake, shopCatalog, simulateEarnings, stake, streakAfter, streakMultiplier,
+  cleanAdaptive,
+  emptyAdaptive,
+  layersAllowed,
+  pickNext,
+  playProfile,
+  record,
+  targetLevel,
+} from "../access-practice-lab/src/game-core/Adaptive.js";
+import {
+  award,
+  awardRecovery,
+  cleanEconomy,
+  consume,
+  ECONOMY_CONFIG,
+  emptyEconomy,
+  emptyStreak,
+  matrixMultiplier,
+  maxStake,
+  purchase,
+  refund,
+  rewardFor,
+  settleStake,
+  shopCatalog,
+  simulateEarnings,
+  spend,
+  stake,
+  streakAfter,
+  streakMultiplier,
 } from "../access-practice-lab/src/game-core/Economy.js";
-import { WIDA_LEVELS, groupOfLevel, levelProfile, supportOfLevel } from "../access-practice-lab/src/game-core/WidaLevels.js";
-import { BANDS, evaluate, eliminable, forLevel, loadPromptPool, scaffoldView, validatePrompt } from "../access-practice-lab/src/game-core/Prompts.js";
-import { cleanAdaptive, emptyAdaptive, layersAllowed, pickNext, playProfile, record, targetLevel } from "../access-practice-lab/src/game-core/Adaptive.js";
 import { classify, summarize, toCsv } from "../access-practice-lab/src/game-core/Evidence.js";
-import { ArcadeSession, GameClock, StateMachine, STATES, makeRng } from "../access-practice-lab/src/game-core/Session.js";
+import {
+  BANDS,
+  eliminable,
+  evaluate,
+  forLevel,
+  loadPromptPool,
+  scaffoldView,
+  validatePrompt,
+} from "../access-practice-lab/src/game-core/Prompts.js";
+import {
+  ArcadeSession,
+  GameClock,
+  makeRng,
+  STATES,
+  StateMachine,
+} from "../access-practice-lab/src/game-core/Session.js";
+import {
+  groupOfLevel,
+  levelProfile,
+  supportOfLevel,
+  WIDA_LEVELS,
+} from "../access-practice-lab/src/game-core/WidaLevels.js";
 
-const fetchJson = async (p) => JSON.parse(readFileSync(new URL(`../access-practice-lab/content/${p}`, import.meta.url), "utf8"));
+const fetchJson = async (p) =>
+  JSON.parse(readFileSync(new URL(`../access-practice-lab/content/${p}`, import.meta.url), "utf8"));
 const pools = {};
-for (const band of BANDS) pools[band] = (await loadPromptPool({ band, fetchJson, cache: false })).prompts;
+for (const band of BANDS)
+  pools[band] = (await loadPromptPool({ band, fetchJson, cache: false })).prompts;
 
 // ── WIDA ────────────────────────────────────────────────────────────────────────────────────
 test("six WIDA levels group into three practice groups with real level names", () => {
-  assert.deepEqual(WIDA_LEVELS.map((l) => l.en), ["Entering", "Emerging", "Developing", "Expanding", "Bridging", "Reaching"]);
-  assert.deepEqual([1, 2, 3, 4, 5, 6].map((n) => groupOfLevel(n).id), ["scaffolded", "scaffolded", "developing-independence", "developing-independence", "advanced", "advanced"]);
+  assert.deepEqual(
+    WIDA_LEVELS.map((l) => l.en),
+    ["Entering", "Emerging", "Developing", "Expanding", "Bridging", "Reaching"],
+  );
+  assert.deepEqual(
+    [1, 2, 3, 4, 5, 6].map((n) => groupOfLevel(n).id),
+    [
+      "scaffolded",
+      "scaffolded",
+      "developing-independence",
+      "developing-independence",
+      "advanced",
+      "advanced",
+    ],
+  );
   assert.deepEqual([1, 3, 5].map(supportOfLevel), ["A", "B", "C"]);
 });
 
@@ -34,7 +93,18 @@ test("level changes support, never rigor", () => {
 
 // ── economy ─────────────────────────────────────────────────────────────────────────────────
 test("streak multipliers match the published table", () => {
-  const t = [[1, 1], [2, 1], [3, 1.5], [4, 1.5], [5, 2], [7, 2], [8, 3], [11, 3], [12, 5], [40, 5]];
+  const t = [
+    [1, 1],
+    [2, 1],
+    [3, 1.5],
+    [4, 1.5],
+    [5, 2],
+    [7, 2],
+    [8, 3],
+    [11, 3],
+    [12, 5],
+    [40, 5],
+  ];
   for (const [s, m] of t) assert.equal(streakMultiplier(s), m, `streak ${s}`);
 });
 
@@ -42,13 +112,33 @@ test("rewards are bounded: per-answer cap, soft run cap, never negative, pace bo
   let e = emptyEconomy();
   const high = rewardFor(e, { difficulty: 5, streak: 30, independent: true });
   assert.ok(high <= ECONOMY_CONFIG.questionCap);
-  const timed = rewardFor(e, { difficulty: 3, streak: 1, independent: true, timed: true, paced: 1 });
-  const untimed = rewardFor(e, { difficulty: 3, streak: 1, independent: true, timed: false, paced: 1 });
+  const timed = rewardFor(e, {
+    difficulty: 3,
+    streak: 1,
+    independent: true,
+    timed: true,
+    paced: 1,
+  });
+  const untimed = rewardFor(e, {
+    difficulty: 3,
+    streak: 1,
+    independent: true,
+    timed: false,
+    paced: 1,
+  });
   assert.ok(timed > untimed);
-  assert.ok(timed - untimed <= Math.round(ECONOMY_CONFIG.baseReward[3] * ECONOMY_CONFIG.paceBonusMax));
-  assert.ok(untimed > rewardFor(e, { difficulty: 3, streak: 1, independent: false }), "independence pays in untimed modes");
+  assert.ok(
+    timed - untimed <= Math.round(ECONOMY_CONFIG.baseReward[3] * ECONOMY_CONFIG.paceBonusMax),
+  );
+  assert.ok(
+    untimed > rewardFor(e, { difficulty: 3, streak: 1, independent: false }),
+    "independence pays in untimed modes",
+  );
   e = { ...e, earned: ECONOMY_CONFIG.runSoftCap };
-  assert.ok(rewardFor(e, { difficulty: 3, streak: 1 }) <= Math.ceil(rewardFor(emptyEconomy(), { difficulty: 3, streak: 1 }) * 0.3));
+  assert.ok(
+    rewardFor(e, { difficulty: 3, streak: 1 }) <=
+      Math.ceil(rewardFor(emptyEconomy(), { difficulty: 3, streak: 1 }) * 0.3),
+  );
 });
 
 test("a long perfect run cannot inflate without bound", () => {
@@ -68,15 +158,25 @@ test("purchases validate, cap, never go negative, and are idempotent", () => {
   assert.equal(dup.state.shards, r1.state.shards, "same transaction id charges once");
   assert.equal(purchase(r1.state, "freeze", "t2").reason, "short");
   assert.equal(purchase(e, "nonsense", "t3").reason, "unknown");
-  assert.equal(purchase(e, "grapple", "t4", { gameId: "arena-blitz" }).reason, "unknown", "grapple is Syntax Odyssey only");
+  assert.equal(
+    purchase(e, "grapple", "t4", { gameId: "arena-blitz" }).reason,
+    "unknown",
+    "grapple is Syntax Odyssey only",
+  );
   assert.ok(purchase(e, "grapple", "t5", { gameId: "syntax-odyssey" }).ok);
   let m = { ...emptyEconomy(), shards: 99999 };
-  for (let i = 0; i < 8; i += 1) { const p = purchase(m, "matrix", `m${i}`); if (p.ok) m = p.state; }
+  for (let i = 0; i < 8; i += 1) {
+    const p = purchase(m, "matrix", `m${i}`);
+    if (p.ok) m = p.state;
+  }
   assert.equal(m.matrix, 5);
   assert.equal(purchase(m, "matrix", "mx").reason, "max");
   assert.equal(matrixMultiplier(m), 2);
   let s = { ...emptyEconomy(), shards: 99999 };
-  for (let i = 0; i < 6; i += 1) { const p = purchase(s, "shield", `s${i}`); if (p.ok) s = p.state; }
+  for (let i = 0; i < 6; i += 1) {
+    const p = purchase(s, "shield", `s${i}`);
+    if (p.ok) s = p.state;
+  }
   assert.equal(s.stock.shield, ECONOMY_CONFIG.items.shield.max);
 });
 
@@ -84,7 +184,9 @@ test("shop catalog reports why an upgrade cannot be bought", () => {
   const rows = shopCatalog({ ...emptyEconomy(), shards: 10 }, { gameId: "arena-blitz" });
   assert.ok(rows.every((r) => r.reason === "short"));
   assert.ok(!rows.some((r) => r.id === "grapple"));
-  assert.ok(shopCatalog(emptyEconomy(), { gameId: "syntax-odyssey" }).some((r) => r.id === "grapple"));
+  assert.ok(
+    shopCatalog(emptyEconomy(), { gameId: "syntax-odyssey" }).some((r) => r.id === "grapple"),
+  );
 });
 
 test("recovery pays 50% (free revise) or 75% (Recovery Pulse) of the full payout", () => {
@@ -94,7 +196,23 @@ test("recovery pays 50% (free revise) or 75% (Recovery Pulse) of the full payout
   const p = awardRecovery(e, { difficulty: 3, streak: 1, pulse: true }, "b").pay;
   assert.equal(r, Math.round(full * 0.5));
   assert.equal(p, Math.round(full * 0.75));
-  assert.equal(awardRecovery(award(e, { difficulty: 3 }, "x").state, { difficulty: 3 }, "x").pay, 0, "a repeated tx pays nothing");
+  assert.equal(
+    awardRecovery(award(e, { difficulty: 3 }, "x").state, { difficulty: 3 }, "x").pay,
+    0,
+    "a repeated tx pays nothing",
+  );
+});
+
+test("game-defined spending: validated, idempotent, refund capped at what was spent", () => {
+  const e = { ...emptyEconomy(), shards: 100 };
+  assert.equal(spend(e, 0, "a").reason, "range");
+  assert.equal(spend(e, 101, "b").reason, "short");
+  const s1 = spend(e, 40, "c");
+  assert.equal(s1.state.shards, 60);
+  assert.equal(spend(s1.state, 40, "c").state.shards, 60, "repeat tx charges once");
+  const r = refund(s1.state, 999, "d");
+  assert.equal(r.state.shards, 100);
+  assert.equal(r.state.spent, 0);
 });
 
 test("risk stake is at most half of held Shards and settles without negatives", () => {
@@ -130,19 +248,28 @@ test("every band loads a pool of valid canonical prompts with no dropped sources
 });
 
 test("listening prompts carry audio text; production prompts carry a rule", () => {
-  for (const p of pools["6-8"].filter((x) => x.domain === "Listening")) assert.ok(p.stimulus.audio, p.id);
-  for (const p of pools["6-8"].filter((x) => x.format === "construct")) assert.ok(p.evaluationRule.criteria.length);
+  for (const p of pools["6-8"].filter((x) => x.domain === "Listening"))
+    assert.ok(p.stimulus.audio, p.id);
+  for (const p of pools["6-8"].filter((x) => x.format === "construct"))
+    assert.ok(p.evaluationRule.criteria.length);
 });
 
 test("evaluation: choice, multi, order, construct", () => {
-  const choice = pools["6-8"].find((p) => p.format === "choice" && Object.keys(p.distractorFeedback).length);
+  const choice = pools["6-8"].find(
+    (p) => p.format === "choice" && Object.keys(p.distractorFeedback).length,
+  );
   assert.ok(evaluate(choice, choice.correctAnswer).correct);
-  const wrong = choice.answerOptions.find((o) => o.id !== choice.correctAnswer && choice.distractorFeedback[o.id]);
+  const wrong = choice.answerOptions.find(
+    (o) => o.id !== choice.correctAnswer && choice.distractorFeedback[o.id],
+  );
   const ev = evaluate(choice, wrong.id);
   assert.ok(!ev.correct);
   assert.equal(ev.misconception.note, choice.distractorFeedback[wrong.id]);
   const multi = pools["6-8"].find((p) => p.format === "multi");
-  assert.ok(evaluate(multi, [...multi.correctAnswer].reverse()).correct, "order of picks does not matter");
+  assert.ok(
+    evaluate(multi, [...multi.correctAnswer].reverse()).correct,
+    "order of picks does not matter",
+  );
   assert.ok(!evaluate(multi, multi.correctAnswer.slice(0, 1)).correct);
   const order = pools["6-8"].find((p) => p.format === "order");
   assert.ok(evaluate(order, order.correctAnswer).correct);
@@ -181,7 +308,14 @@ test("independent success raises the target; misses lower it and queue a transfe
   const rng = makeRng(3);
   for (let i = 0; i < 6; i += 1) {
     const c = pickNext(pool, st, { profile, rng });
-    st = record(st, { ...c.prompt, analyticsMetadata: { ...c.prompt.analyticsMetadata, skillFamily: "vocabulary" } }, "independent");
+    st = record(
+      st,
+      {
+        ...c.prompt,
+        analyticsMetadata: { ...c.prompt.analyticsMetadata, skillFamily: "vocabulary" },
+      },
+      "independent",
+    );
   }
   assert.ok(targetLevel(profile, st) > 3);
   let low = emptyAdaptive();
@@ -210,7 +344,11 @@ test("grade focus prefers tagged items but never starves the pool; selection is 
   const b = pickNext(pool, emptyAdaptive(), { profile: f6, rng: makeRng(11) });
   assert.equal(a.prompt.id, b.prompt.id);
   assert.ok(!a.prompt.grades.length || a.prompt.grades.includes("6"));
-  assert.equal(playProfile({ band: "3-5", gradeFocus: "7" }).gradeFocus, "", "focus applies to 6-8 only");
+  assert.equal(
+    playProfile({ band: "3-5", gradeFocus: "7" }).gradeFocus,
+    "",
+    "focus applies to 6-8 only",
+  );
   const tiny = [pool[0]];
   assert.ok(pickNext(tiny, emptyAdaptive(), { profile: f6 }));
 });
@@ -221,7 +359,10 @@ test("every band and level has prompts to adapt to", () => {
       const n = forLevel(pools[band], level).length;
       assert.ok(n >= 0);
     }
-    assert.ok([1, 2, 3, 4, 5, 6].some((l) => forLevel(pools[band], l).length > 0), band);
+    assert.ok(
+      [1, 2, 3, 4, 5, 6].some((l) => forLevel(pools[band], l).length > 0),
+      band,
+    );
   }
 });
 
@@ -238,13 +379,33 @@ test("scaffold layers fade with independence but the first layer stays", () => {
 // ── evidence ────────────────────────────────────────────────────────────────────────────────
 test("outcomes distinguish independent, revised, scaffolded and revealed", () => {
   assert.equal(classify({ firstCorrect: true, finalCorrect: true }), "independent");
-  assert.equal(classify({ firstCorrect: true, finalCorrect: true, scaffolds: ["hint"] }), "scaffolded");
+  assert.equal(
+    classify({ firstCorrect: true, finalCorrect: true, scaffolds: ["hint"] }),
+    "scaffolded",
+  );
   assert.equal(classify({ firstCorrect: false, finalCorrect: true }), "revised");
   assert.equal(classify({ firstCorrect: false, finalCorrect: false, revealed: true }), "revealed");
 });
 
 test("CSV export is formula-safe and carries no score fields", () => {
-  const rec = { id: "x", sourceId: "x", game: "arena-blitz", mode: "classic", band: "6-8", level: 3, domain: "Reading", family: "vocabulary", skill: "=HYPERLINK(1)", format: "choice", outcome: "independent", firstCorrect: true, attempts: 1, scaffolds: [], misconception: "", at: "2026-11-23" };
+  const rec = {
+    id: "x",
+    sourceId: "x",
+    game: "arena-blitz",
+    mode: "classic",
+    band: "6-8",
+    level: 3,
+    domain: "Reading",
+    family: "vocabulary",
+    skill: "=HYPERLINK(1)",
+    format: "choice",
+    outcome: "independent",
+    firstCorrect: true,
+    attempts: 1,
+    scaffolds: [],
+    misconception: "",
+    at: "2026-11-23",
+  };
   const csv = toCsv([rec]);
   assert.ok(csv.includes("'=HYPERLINK"));
   assert.ok(!/shard|score|ms\b/i.test(csv.split("\n")[0]));
@@ -288,16 +449,31 @@ test("clock: holds stop it, freeze skips 10s, big deltas are capped, untimed nev
 });
 
 const startSession = (over = {}) => {
-  const s = new ArcadeSession({ gameId: "arena-blitz", pool: pools["6-8"].filter((p) => p.format !== "construct"), band: "6-8", level: 3, seed: 42, ...over });
+  const s = new ArcadeSession({
+    gameId: "arena-blitz",
+    pool: pools["6-8"].filter((p) => p.format !== "construct"),
+    band: "6-8",
+    level: 3,
+    seed: 42,
+    ...over,
+  });
   s.ready();
   s.begin();
   return s;
 };
-const answerRight = (s, q) => s.submit(q.id, q.prompt.format === "multi" || q.prompt.format === "order" ? q.prompt.correctAnswer : q.prompt.correctAnswer);
+const answerRight = (s, q) =>
+  s.submit(
+    q.id,
+    q.prompt.format === "multi" || q.prompt.format === "order"
+      ? q.prompt.correctAnswer
+      : q.prompt.correctAnswer,
+  );
 const wrongFor = (q) => {
   const p = q.prompt;
-  if (p.format === "choice") return p.answerOptions.find((o) => o.id !== String(p.correctAnswer)).id;
-  if (p.format === "multi") return [p.answerOptions.find((o) => !p.correctAnswer.includes(o.id)).id];
+  if (p.format === "choice")
+    return p.answerOptions.find((o) => o.id !== String(p.correctAnswer)).id;
+  if (p.format === "multi")
+    return [p.answerOptions.find((o) => !p.correctAnswer.includes(o.id)).id];
   return [...p.correctAnswer].reverse();
 };
 
@@ -320,9 +496,15 @@ test("session: a miss gives targeted recovery, a second try, then the answer; ev
   assert.ok(!miss.correct);
   assert.equal(s.state, "RECOVERY");
   assert.ok(miss.recoveryHint !== undefined);
-  const again = s.submit(q.id, q.prompt.format === "choice" ? q.prompt.correctAnswer : q.prompt.correctAnswer);
+  const again = s.submit(
+    q.id,
+    q.prompt.format === "choice" ? q.prompt.correctAnswer : q.prompt.correctAnswer,
+  );
   assert.ok(again.correct);
-  assert.ok(again.pay > 0 && again.pay <= rewardFor(emptyEconomy(), { difficulty: q.prompt.difficulty, streak: 1 }));
+  assert.ok(
+    again.pay > 0 &&
+      again.pay <= rewardFor(emptyEconomy(), { difficulty: q.prompt.difficulty, streak: 1 }),
+  );
   assert.equal(s.records[0].outcome, "revised");
   assert.equal(s.records[0].firstCorrect, false, "the second try never becomes a first attempt");
   s.next();
@@ -458,7 +640,9 @@ test("session: snapshot restores the same run, same next question and a mid-ques
   q = a.ask();
   a.scaffold(q.id);
   const snap = JSON.parse(JSON.stringify(a.serialize()));
-  const b = ArcadeSession.restore(snap, { pool: pools["6-8"].filter((p) => p.format !== "construct") });
+  const b = ArcadeSession.restore(snap, {
+    pool: pools["6-8"].filter((p) => p.format !== "construct"),
+  });
   assert.ok(b);
   assert.equal(b.state, "QUESTION_ACTIVE");
   assert.equal(b.publicTicket().id, a.publicTicket().id);
@@ -485,10 +669,33 @@ test("session: finish -> save -> replay keeps adaptive state and resets the run"
   s.next();
   assert.ok(s.finish());
   let saved = null;
-  assert.ok(s.save((r) => { saved = r; }));
+  assert.ok(
+    s.save((r) => {
+      saved = r;
+    }),
+  );
   assert.equal(saved.evidence.attempted, 1);
   assert.ok(s.replay());
   assert.equal(s.economy.shards, 0);
   assert.equal(s.records.length, 0);
   assert.ok(s.begin());
+});
+
+test("session: game-defined spend, world credits are capped, and staking stays within half", () => {
+  const s = startSession();
+  s.economy = { ...s.economy, shards: 100 };
+  assert.ok(s.canSpend(40));
+  assert.ok(s.spendShards(40).ok);
+  assert.equal(s.economy.shards, 60);
+  assert.equal(s.spendShards(500).reason, "short");
+  assert.ok(s.refundShards(10).ok);
+  assert.equal(s.economy.shards, 70);
+  let got = 0;
+  for (let i = 0; i < 40; i += 1) got += s.creditShards(10, `w${i}`);
+  assert.ok(got <= 30 + Math.round(0 * 0.15) + 1, `world pickups capped, got ${got}`);
+  const st = s.stakeShards(1000);
+  assert.equal(st.reason, "range");
+  const ok = s.stakeShards(Math.floor(s.economy.shards / 2));
+  assert.ok(ok.ok);
+  assert.ok(s.settleStake(ok.staked, true) > 0);
 });

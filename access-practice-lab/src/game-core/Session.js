@@ -17,7 +17,11 @@ import {
   emptyStreak,
   isOverdrive,
   purchase,
+  refund,
+  settleStake,
   shopCatalog,
+  spend,
+  stake,
   streakAfter,
   streakTier,
 } from "./Economy.js";
@@ -442,6 +446,14 @@ export class ArcadeSession {
     return { layer, hidden: [...t.hidden] };
   }
 
+  /** Record help that is not a scaffold layer (opening the transcript while speech works). */
+  noteScaffold(ticketId, kind) {
+    const t = this.ticket;
+    if (!t || t.id !== ticketId || t.scaffolds.includes(kind)) return false;
+    t.scaffolds.push(kind);
+    return true;
+  }
+
   /** Context Decoder upgrade: a prompt-tied clue and up to two wrong options removed. */
   useDecoder(ticketId) {
     const t = this.ticket;
@@ -710,6 +722,78 @@ export class ArcadeSession {
     this.fsm.back();
     this.bus.emit("shop", { open: false });
     return true;
+  }
+  /**
+   * World pickups (Syntax Odyssey shards): small, capped credits that are NOT academic evidence. A run may hold at most
+   * 30 + 15% of its academic earnings in pickups, so wandering cannot out-earn answering.
+   */
+  creditShards(n, txId) {
+    const academic = Math.max(0, this.economy.earned - (this.worldCredited || 0));
+    const cap = 30 + Math.round(academic * 0.15);
+    const room = Math.max(0, cap - (this.worldCredited || 0));
+    const give = Math.min(Math.max(0, Math.round(n)), room);
+    if (!give || (txId && this.economy.tx.includes(txId))) return 0;
+    this.worldCredited = (this.worldCredited || 0) + give;
+    this.economy = {
+      ...this.economy,
+      shards: this.economy.shards + give,
+      earned: this.economy.earned + give,
+      tx: txId ? [...this.economy.tx, txId].slice(-ECONOMY_CONFIG.txKeep) : this.economy.tx,
+    };
+    this.bus.emit("spend", { cost: -give });
+    return give;
+  }
+  /** A game's starting grant (Lexicon Tower Defense): Shards for the purse only. Not earned, not evidence; idempotent by txId. */
+  grantShards(n, txId) {
+    const give = Math.min(500, Math.max(0, Math.round(Number(n) || 0)));
+    if (!give || !txId || this.economy.tx.includes(txId)) return 0;
+    this.economy = {
+      ...this.economy,
+      shards: this.economy.shards + give,
+      tx: [...this.economy.tx, txId].slice(-ECONOMY_CONFIG.txKeep),
+    };
+    this.bus.emit("spend", { cost: -give });
+    return give;
+  }
+  /** Arena Blitz risk round: commit up to half of the Shards held (never more, never negative). */
+  stakeShards(n, txId = `${this.runId}:stake:${this.seq}:${this.economy.tx.length}`) {
+    const r = stake(this.economy, n, txId);
+    if (r.ok) this.economy = r.state;
+    return r;
+  }
+  settleStake(
+    staked,
+    won,
+    difficulty = 3,
+    txId = `${this.runId}:settle:${this.seq}:${this.economy.tx.length}`,
+  ) {
+    const r = settleStake(this.economy, staked, won, { difficulty }, txId);
+    this.economy = r.state;
+    this.bus.emit("spend", { cost: -r.pay });
+    return r.pay;
+  }
+  canSpend(cost) {
+    return this.economy.shards >= cost && cost >= 1;
+  }
+  /** A game-defined purchase (a tower, a repair): validated, idempotent by txId, never negative. */
+  spendShards(cost, txId = `${this.runId}:spend:${this.economy.spent}:${this.economy.tx.length}`) {
+    const r = spend(this.economy, cost, txId);
+    if (r.ok && !r.duplicate) {
+      this.economy = r.state;
+      this.bus.emit("spend", { cost });
+    }
+    return r;
+  }
+  refundShards(
+    amount,
+    txId = `${this.runId}:refund:${this.economy.spent}:${this.economy.tx.length}`,
+  ) {
+    const r = refund(this.economy, amount, txId);
+    if (r.ok && !r.duplicate) {
+      this.economy = r.state;
+      this.bus.emit("spend", { cost: -r.amount });
+    }
+    return r;
   }
   catalog() {
     return shopCatalog(this.economy, { gameId: this.gameId });

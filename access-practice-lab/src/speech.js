@@ -158,6 +158,7 @@ export function speak(
     lang = "en-US",
     rate = defaults.rate || 0.9,
     pitch = 1.0,
+    volume = 1,
     voiceURI = "",
     persona = "narrator",
     onSegment,
@@ -192,6 +193,7 @@ export function speak(
       if (voice) u.voice = voice;
       u.rate = rate;
       u.pitch = pitch;
+      u.volume = Math.min(1, Math.max(0, Number(volume)));
 
       onSegment?.(i, text);
 
