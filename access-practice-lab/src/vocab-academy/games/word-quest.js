@@ -3,6 +3,7 @@
 // finished by recognising a word alone. Retry and hints are always free. The run is saved between visits.
 import { available, buildQuestion, newMc } from "./questions.js";
 import { themedOrder } from "./data.js";
+import { glide, mem, motionOK, rectOf } from "./stage-a.js";
 import {
   choicesHTML,
   hintButton,
@@ -74,6 +75,28 @@ export function nodePosition(i, n) {
   return { x: Math.round(x * 10) / 10, y };
 }
 export const regionUnlocked = (s, i) => i === 0 || s.regions[i - 1].cleared;
+/** One small painted scene per region theme (woods, creek, meadow, hills, shore, pass, summit, harbor). Decoration only. */
+const SCENES = [
+  '<path d="M8 40 L20 12 L32 40Z M26 40 L38 6 L50 40Z M44 40 L54 18 L64 40Z"/>',
+  '<path d="M4 18 q8 -8 16 0 t16 0 t16 0 t16 0 M4 30 q8 -8 16 0 t16 0 t16 0 t16 0 M4 42 q8 -8 16 0 t16 0 t16 0 t16 0" class="vga-stroke"/>',
+  '<circle cx="14" cy="22" r="6"/><circle cx="34" cy="14" r="6"/><circle cx="54" cy="24" r="6"/><path d="M14 28v14M34 20v22M54 30v12" class="vga-stroke"/>',
+  '<path d="M0 42 Q16 8 34 42Z M26 42 Q46 4 68 42Z"/>',
+  '<path d="M4 34 q8 -7 16 0 t16 0 t16 0 t16 0 V44 H4Z"/><path d="M40 28 a14 14 0 0 1 24 0Z M52 28V12" class="vga-stroke"/>',
+  '<path d="M26 8 h16 l-3 8 h-10Z M28 16 h12 v22 h-12Z M24 40 h20 v4 h-20Z"/><path d="M34 22v10" class="vga-stroke vga-glow-line"/>',
+  '<path d="M2 44 L26 10 L40 30 L50 20 L66 44Z"/><path d="M26 10 V0 l12 4 l-12 4" class="vga-stroke"/>',
+  '<path d="M10 34 h46 l-8 10 h-30Z M33 6 V34 M33 8 L52 28 H33Z"/><path d="M2 46 q8 -6 16 0 t16 0 t16 0 t16 0" class="vga-stroke"/>',
+];
+const sceneSvg = (k) =>
+  `<svg viewBox="0 0 68 48" focusable="false" aria-hidden="true">${SCENES[k % SCENES.length]}</svg>`;
+const travellerSvg =
+  '<svg viewBox="0 0 34 44" focusable="false" aria-hidden="true"><circle cx="17" cy="9" r="7" class="vga-t-head"/><path d="M6 42 V26 q0 -9 11 -9 t11 9 V42Z" class="vga-t-body"/><path d="M26 20 V4 l-8 4 l8 4" class="vga-t-flag"/></svg>';
+
+/** Index of the region the traveller stands at: the first one not yet cleared (the last one when all are). */
+export const travellerAt = (s) => {
+  const k = s.regions.findIndex((r) => !r.cleared);
+  return k < 0 ? s.regions.length - 1 : k;
+};
+
 const STEP_LABEL = [
   ["Challenge 1 of 2: what the word means", "Reto 1 de 2: qué significa la palabra"],
   ["Challenge 2 of 2: use it in context", "Reto 2 de 2: úsala en contexto"],
@@ -83,14 +106,20 @@ function mapView(s, env) {
   const I = env.I;
   const n = s.regions.length;
   const pts = s.regions.map((r) => nodePosition(r.i, n));
-  const path = pts
-    .map((p, k) => `${k ? "L" : "M"}${(p.x * 6).toFixed(0)} ${(p.y * 2.6).toFixed(0)}`)
+  const toXY = (p) => `${(p.x * 6).toFixed(0)} ${(p.y * 2.6).toFixed(0)}`;
+  const path = pts.map((p, k) => `${k ? "L" : "M"}${toXY(p)}`).join(" ");
+  const here = travellerAt(s);
+  const walked = pts
+    .slice(0, here + 1)
+    .map((p, k) => `${k ? "L" : "M"}${toXY(p)}`)
     .join(" ");
   const art = `<svg class="vag-map-art" viewBox="0 0 600 260" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <rect width="600" height="260" class="vag-map-sky"/>
+    <path d="M30 52 q14 -16 30 -4 q12 -12 30 0 q16 0 14 12 H22 q-6 -4 8 -8Z M330 34 q14 -14 30 -3 q14 -10 28 2 q14 2 10 12 H322 q-4 -6 8 -11Z" class="vga-cloud"/>
     <path d="M0 200 Q90 150 180 190 T360 180 T600 170 V260 H0Z" class="vag-map-hill"/>
     <path d="M0 232 Q140 205 300 228 T600 214 V260 H0Z" class="vag-map-hill2"/>
-    <path d="${path}" class="vag-map-path"/>
+    <path d="${path}" class="vag-map-path" vector-effect="non-scaling-stroke"/>
+    <path d="${walked}" class="vga-walked" vector-effect="non-scaling-stroke"/>
     <circle cx="540" cy="36" r="16" class="vag-map-sun"/>
     <path d="M60 110 l10 -26 l10 26z M82 116 l9 -22 l9 22z" class="vag-map-tree"/>
     <path d="M470 120 q10 -14 20 0 q10 -14 20 0" class="vag-map-wave"/></svg>`;
@@ -112,7 +141,9 @@ function mapView(s, env) {
       class="vag-node"
       style="left:${p.x}%;top:${p.y}%"
       data-state="${r.cleared ? "cleared" : open ? "open" : "locked"}"
+      data-scene="${k % SCENES.length}"
     >
+      <span class="vga-scene" aria-hidden="true">${raw(sceneSvg(k))}</span>
       <button
         type="button"
         class="vag-node-btn"
@@ -127,10 +158,24 @@ function mapView(s, env) {
           >${r.cleared ? icon("check") : open ? r.glyph : icon("lock")}</span
         >
       </button>
+      ${k === here ? html`<span class="vga-trav-inline" aria-hidden="true">${raw(travellerSvg)}</span>` : ""}
       <span class="vag-node-label" aria-hidden="true">${k + 1}. ${I.T(...REGIONS[k])}</span>
     </li>`;
   });
   const left = s.regions.filter((r) => !r.cleared).length;
+  const cards = s.regions
+    .filter((r) => r.cleared)
+    .map((r) => {
+      const w = env.pool.byId.get(r.wordId);
+      if (!w) return "";
+      return html`<li class="vga-postcard" data-region-card="${r.i}" data-scene="${r.i % SCENES.length}">
+        <span class="vga-stamp-corner" aria-hidden="true">${raw(sceneSvg(r.i))}</span>
+        <span class="vga-pc-place">${I.T(...REGIONS[r.i])}</span>
+        <strong class="vga-pc-word" lang="en">${w.hw}</strong>
+        <span class="vga-pc-def">${w.def}</span>
+        ${env.gloss(w)}
+      </li>`;
+    });
   return html`<p class="vag-prompt">
       ${I.T("Choose the next open region. Clear its two challenges to light the way forward.", "Elige la siguiente región abierta. Supera sus dos retos para abrir el camino.")}
     </p>
@@ -139,8 +184,18 @@ function mapView(s, env) {
       <ol class="vag-map-nodes" data-rove data-cols="0">
         ${nodes}
       </ol>
+      <span class="vga-traveller" aria-hidden="true" data-at="${here}" style="left:${pts[here].x}%;top:${pts[here].y}%">${raw(travellerSvg)}</span>
     </div>
-    <p class="vag-fine">${I.T(`${left} regions left.`, `Quedan ${left} regiones.`)}</p>`;
+    <p class="vga-where">${icon("pin")}<span>${left ? I.T(`Your traveller is at ${REGIONS[here][0]}.`, `Tu viajero está en ${REGIONS[here][1]}.`) : I.T("Your traveller reached the end of the map.", "Tu viajero llegó al final del mapa.")}</span></p>
+    <p class="vag-fine">${I.T(`${left} regions left.`, `Quedan ${left} regiones.`)}</p>
+    ${
+      cards.length
+        ? html`<section class="vga-postcards" aria-label="${I.S("Postcards from your trip", "Postales de tu viaje")}">
+            <h3 class="vga-pc-h">${icon("star")}${I.T("Postcards from your trip", "Postales de tu viaje")}</h3>
+            <ul class="vga-pc-list">${cards}</ul>
+          </section>`
+        : ""
+    }`;
 }
 function regionView(s, env) {
   const I = env.I;
@@ -148,7 +203,11 @@ function regionView(s, env) {
   const q = r.qs[Math.min(r.step, 1)];
   const mc = r.mcs[Math.min(r.step, 1)];
   const last = r.step === 1;
-  return html`<div class="vag-qcard" data-type="${q.type}">
+  return html`<div class="vag-qcard vga-region" data-type="${q.type}" data-scene="${s.open % SCENES.length}">
+    <div class="vga-region-band" aria-hidden="true">
+      <span class="vga-scene">${raw(sceneSvg(s.open))}</span>
+      <span class="vga-lights"><i class="${r.step >= 0 ? "is-on" : ""}"></i><i class="${r.step >= 1 ? "is-on" : ""}"></i></span>
+    </div>
     <p class="vag-qtype">
       <strong>${I.T(...REGIONS[s.open])}</strong> · ${I.T(...STEP_LABEL[r.step])}
     </p>
@@ -235,6 +294,35 @@ const spec = {
     }
     const idx = Math.min(r.step, 1);
     return mcAct(el, r.qs[idx], r.mcs[idx], env, { kind: r.qs[idx].type });
+  },
+  /** Decoration only: the traveller walks to the next region, and a new postcard drops onto the pile. */
+  after(body, s, env) {
+    if (s.open >= 0 || !body.querySelector(".vga-traveller")) return;
+    const m = mem(env);
+    const at = travellerAt(s);
+    const t = body.querySelector(".vga-traveller");
+    if (typeof m.at === "number" && m.at !== at && motionOK()) {
+      const from = nodePosition(m.at, s.regions.length);
+      const to = nodePosition(at, s.regions.length);
+      t.style.transition = "none";
+      t.style.left = `${from.x}%`;
+      t.style.top = `${from.y}%`;
+      void t.offsetWidth;
+      t.style.transition = "";
+      t.style.left = `${to.x}%`;
+      t.style.top = `${to.y}%`;
+      t.classList.add("is-walking");
+      t.addEventListener("transitionend", () => t.classList.remove("is-walking"), { once: true });
+    }
+    m.at = at;
+    const cleared = s.regions.filter((r) => r.cleared).length;
+    if (typeof m.cleared === "number" && cleared > m.cleared && motionOK()) {
+      const card = body.querySelector(".vga-postcard:last-child");
+      card?.classList.add("is-new");
+      const node = body.querySelector(`.vag-node[data-state="cleared"]:nth-child(${cleared}) .vag-node-btn`);
+      glide(env.I.S("Postcard", "Postal"), rectOf(node), rectOf(card), { ms: 640, tone: "card" });
+    }
+    m.cleared = cleared;
   },
   extra: (s) => ({
     regionsCleared: s.regions.filter((r) => r.cleared).length,

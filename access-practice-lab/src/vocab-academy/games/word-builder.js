@@ -16,6 +16,8 @@ import {
   mountGame,
 } from "./kit.js";
 import { newMc } from "./questions.js";
+import { mem, playOnce, rose } from "./stage-a.js";
+import { cue } from "./fx.js";
 import { clean, norm, uniq } from "./text.js";
 
 export const TITLE = ["Word Builder", "Constructor de palabras"];
@@ -27,6 +29,14 @@ const SLOT_NAME = {
   suffix: ["End part", "Parte final"],
 };
 const MAX_TRAY = 7;
+/** What each kind of part is called on its tile. Shape, colour and this word all say it, so colour is never the only cue. */
+const ROLE_NAME = {
+  prefix: ["Prefix", "Prefijo"],
+  compound: ["Word", "Palabra"],
+  base: ["Base", "Base"],
+  suffix: ["Suffix", "Sufijo"],
+};
+const roleOf = (type) => (ROLE_NAME[type] ? type : "base");
 
 const partLabel = (p) => (p.meaning ? `${p.form} (${p.meaning})` : p.form);
 const eq = (parts) => parts.map(partLabel).join(" + ");
@@ -150,25 +160,28 @@ const clueFor = (rec) =>
 function slotsView(r, env, interactive) {
   const I = env.I;
   const chipOf = (k) => r.rec.parts.find((p) => p.k === k) || r.tray.find((t) => t.k === k);
-  return html`<ol class="vag-slots" aria-label="${I.S("Word slots", "Espacios de la palabra")}">
+  const joined = r.slots.length > 0 && r.slots.every(Boolean);
+  return html`<ol class="vag-slots ${joined ? "is-joined" : ""}" aria-label="${I.S("Word slots", "Espacios de la palabra")}">
     ${r.rec.parts.map((p, i) => {
       const k = r.slots[i];
       const chip = k ? chipOf(k) : null;
       const name = I.S(...SLOT_NAME[p.type]);
+      const role = roleOf(p.type);
       return html`<li class="vag-slot-wrap">
         ${
           interactive
             ? html`<button
                 type="button"
                 class="vag-slot ${chip ? "is-full" : ""}"
+                data-role="${role}"
                 data-slot="${i}"
                 data-fk="slot-${i}"
                 aria-label="${name}: ${chip ? `${chip.form}. ${I.S("Press to take it out.", "Presiona para quitarla.")}` : I.S("empty", "vacío")}"
               >
-                ${chip ? chip.form : html`<span class="vag-slot-hint">${name}</span>`}
+                ${chip ? html`<span class="vga-tile-f">${chip.form}</span><span class="vga-tile-r" aria-hidden="true">${I.T(...ROLE_NAME[role])}</span>` : html`<span class="vag-slot-hint">${name}</span>`}
               </button>`
-            : html`<span class="vag-slot is-full"
-                ><span class="vag-sr">${name}: </span>${chip ? chip.form : ""}</span
+            : html`<span class="vag-slot is-full" data-role="${role}"
+                ><span class="vag-sr">${name}: </span><span class="vga-tile-f">${chip ? chip.form : ""}</span><span class="vga-tile-r" aria-hidden="true">${I.T(...ROLE_NAME[role])}</span></span
               >`
         }
         ${i < r.rec.parts.length - 1 ? html`<span class="vag-plus" aria-hidden="true">+</span>` : ""}
@@ -205,6 +218,7 @@ function buildView(r, env) {
                 <button
                   type="button"
                   class="vag-chip ${placed ? "is-placed" : ""} ${r.assist === t.k ? "is-assist" : ""}"
+                  data-role="${roleOf(t.type)}"
                   data-chip="${t.k}"
                   data-fk="chip-${t.k}"
                   data-rv
@@ -214,6 +228,7 @@ function buildView(r, env) {
                   <span class="vag-chip-f"
                     >${r.assist === t.k ? icon("star") : placed ? icon("check") : ""}${t.form}</span
                   >
+                  <span class="vga-tile-r" aria-hidden="true">${I.T(...ROLE_NAME[roleOf(t.type)])}</span>
                   ${showMeaning && t.meaning ? html`<span class="vag-chip-m">${t.meaning}</span>` : ""}
                 </button>
               </li>`;
@@ -256,6 +271,11 @@ function revealView(r, env) {
   const I = env.I;
   const rec = r.rec;
   return html`<div class="vag-reveal">
+    <div class="vga-machine" aria-hidden="true">
+      <span class="vga-m-in">${rec.parts.map((p) => html`<span class="vga-m-part" data-role="${roleOf(p.type)}">${p.form}<small>${I.T(...ROLE_NAME[roleOf(p.type)])}</small></span>`)}</span>
+      <span class="vga-m-box"><i class="vga-gear vga-gear-a"></i><i class="vga-gear vga-gear-b"></i><b>${I.T("Word machine", "Máquina de palabras")}</b></span>
+      <span class="vga-m-out"><strong>${rec.word}</strong></span>
+    </div>
     <p class="vag-built">
       <span class="vag-sr">${I.S("The word you built:", "La palabra que construiste:")} </span
       ><strong>${rec.word}</strong>
@@ -462,6 +482,28 @@ const spec = {
       return true;
     }
     return false;
+  },
+  /** Decoration only: tiles snap into their slots, the finished word closes up, and the word machine runs once. */
+  after(body, s, env) {
+    const r = s.rounds[s.i];
+    if (!r) return;
+    const m = mem(env);
+    const slots = r.slots.map((k) => k || "");
+    if (m.round === s.i && Array.isArray(m.slots)) {
+      slots.forEach((k, j) => {
+        if (k && k !== m.slots[j]) playOnce(body.querySelector(`.vag-slot[data-slot="${j}"]`), "is-snapping");
+      });
+    }
+    const full = slots.length > 0 && slots.every(Boolean);
+    if (m.round === s.i && full && !m.full) {
+      playOnce(body.querySelector(".vag-slots"), "is-joining");
+      cue("step");
+    }
+    m.round = s.i;
+    m.slots = slots;
+    m.full = full;
+    const done = r.mode === "predict" ? r.mc.done : r.done;
+    if (rose(env, `done-${s.i}`, done)) body.querySelector(".vga-machine")?.classList.add("is-run");
   },
   extra: (s) => ({ words: s.rounds.map((r) => r.rec.word) }),
 };

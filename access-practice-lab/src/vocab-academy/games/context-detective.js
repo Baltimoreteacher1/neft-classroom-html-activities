@@ -14,6 +14,7 @@ import {
 } from "./kit.js";
 import { locateInPassage, passageSentences, sensesOf } from "./data.js";
 import { buildQuestion, newMc } from "./questions.js";
+import { mem, playOnce, rose } from "./stage-a.js";
 import { findForm, formsOf, isContent, norm, tokenize } from "./text.js";
 
 export const TITLE = ["Context Detective", "Detective del contexto"];
@@ -204,6 +205,46 @@ function caseText(c, s, env) {
   </p>`;
 }
 
+/** The evidence board: the case text with an overlay the strings are drawn on (see drawStrings). Decoration only. */
+const evidence = (c, s, env) =>
+  html`<div class="vga-evidence">${caseText(c, s, env)}<svg class="vga-strings" aria-hidden="true" focusable="false"></svg></div>`;
+
+const pinnedCount = (c, I) => {
+  const n = c.phase === "clue" ? c.sel.length : c.good.length;
+  return html`<p class="vga-pinned">${icon("pin")}<span>${I.T("Clues pinned", "Pistas clavadas")}: <strong>${n}</strong></span></p>`;
+};
+
+const fileTab = (s, I) =>
+  html`<span class="vga-tab" aria-hidden="true">${I.T("Case file", "Expediente")} ${String(s.i + 1).padStart(2, "0")}</span>`;
+
+/** Draw a string from each pinned clue to the mystery word. The strings are a picture of what is already said in words. */
+export function drawStrings(body) {
+  const board = body.querySelector(".vga-evidence");
+  const svg = board?.querySelector(".vga-strings");
+  if (!svg) return;
+  const box = board.getBoundingClientRect();
+  const target = board.querySelector(".vag-target");
+  svg.setAttribute("viewBox", `0 0 ${Math.round(box.width)} ${Math.round(box.height)}`);
+  svg.replaceChildren();
+  if (!target) return;
+  const t = target.getBoundingClientRect();
+  const tx = t.left + t.width / 2 - box.left;
+  const ty = t.top - box.top + 2;
+  const toks = [...board.querySelectorAll(".vag-tok.is-on, .vag-tok.is-good")];
+  toks.forEach((tok, i) => {
+    const r = tok.getBoundingClientRect();
+    const x = r.left + r.width / 2 - box.left;
+    const y = r.top - box.top + 2;
+    const lift = 16 + (i % 3) * 6;
+    const d = `M${x.toFixed(1)} ${y.toFixed(1)} Q${((x + tx) / 2).toFixed(1)} ${(Math.min(y, ty) - lift).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)}`;
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    path.setAttribute("class", "vga-string");
+    path.style.setProperty("--i", String(i));
+    svg.append(path);
+  });
+}
+
 const spec = {
   id: "context-detective",
   title: TITLE,
@@ -261,12 +302,12 @@ const spec = {
               I,
             )
           : "";
-      return html`<div class="vag-qcard vag-case">
-        ${head}
+      return html`<div class="vag-qcard vag-case vga-board" data-phase="clue">
+        ${fileTab(s, I)}${head}
         <p class="vag-q">
           ${I.T(`Which words help you work out what “${word.hw}” means? Tap them.`, `¿Qué palabras te ayudan a entender qué significa “${word.hw}”? Tócalas.`)}
         </p>
-        ${caseText(c, s, env)} ${env.speakBtn(c.text, "")}
+        ${evidence(c, s, env)} ${pinnedCount(c, I)} ${env.speakBtn(c.text, "")}
         <div class="vag-actions">
           <button
             type="button"
@@ -299,10 +340,12 @@ const spec = {
           I,
         )
       : "";
-    return html`<div class="vag-qcard vag-case">
-      ${head}
+    return html`<div class="vag-qcard vag-case vga-board" data-phase="sense" data-solved="${c.mc.done}">
+      ${fileTab(s, I)}${head}
       <p class="vag-q">${q.stem}</p>
-      ${caseText(c, s, env)} ${found} ${choicesHTML(q, c.mc, env)}
+      ${evidence(c, s, env)} ${c.good.length ? pinnedCount(c, I) : ""} ${found}
+      ${c.mc.done ? html`<span class="vga-stamp" aria-hidden="true"><b>${I.T("Case solved", "Caso resuelto")}</b><i lang="en">${word.hw}</i></span>` : ""}
+      ${choicesHTML(q, c.mc, env)}
       <div class="vag-actions">
         ${hintButton(c.mc, env)}${c.mc.done ? html`<button type="button" class="btn btn-primary" data-next-case data-fk="next" data-autofocus>${s.i + 1 >= s.cases.length ? I.T("Close the files", "Cerrar los casos") : I.T("Next case", "Siguiente caso")}${icon("arrow-right")}</button>` : ""}
       </div>
@@ -375,6 +418,24 @@ const spec = {
       return true;
     }
     return mcAct(el, c.q, c.mc, env, { kind: "sense" });
+  },
+  after(body, s, env) {
+    if (!s.cases[s.i]) return;
+    drawStrings(body);
+    const m = mem(env);
+    if (!m.onResize) {
+      m.onResize = () => {
+        const b = document.querySelector(".vag[data-game='context-detective'] .vag-body");
+        if (b) drawStrings(b);
+      };
+      window.addEventListener("resize", m.onResize);
+    }
+    const c = s.cases[s.i];
+    if (rose(env, `solved-${s.i}`, c.mc.done)) playOnce(body.querySelector(".vga-stamp"), "is-stamping");
+  },
+  destroy(env) {
+    const m = mem(env);
+    if (m.onResize) window.removeEventListener("resize", m.onResize);
   },
   extra: (s) => ({ cases: s.cases.length }),
 };

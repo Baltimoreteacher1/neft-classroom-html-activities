@@ -1,0 +1,1047 @@
+/* Vocabulary Academy — signature looks for Word Quest, Context Detective, Word Builder, Meaning Match and Word Sort.
+   Loaded after vocab-academy-games.css and vocab-academy-premium.css. Decoration only: every state is also said in words
+   and icons, nothing is timed, nothing is taken away on a miss, and reduced motion turns the movement off. Tokens only.
+   No purple. */
+
+/* ── shared: the picture of a move (a card gliding to its place) ──────────────────────────────────────────────── */
+.vga-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  border: 2px solid var(--va-ink-2);
+  color: var(--va-ink);
+  font: 700 1rem/1.2 var(--font, system-ui);
+  box-shadow: 0 6px 14px rgb(20 33 43 / 0.28);
+  white-space: nowrap;
+  text-align: center;
+}
+.vga-ghost-trophy {
+  background: var(--va-warn-soft);
+  border-color: var(--va-warn);
+}
+.vga-ghost-card {
+  background: var(--va-brand-soft);
+  border-color: var(--va-brand);
+}
+.vga-ghost-miss {
+  background: var(--va-miss-soft);
+  border-color: var(--va-miss);
+}
+
+/* ═══ WORD QUEST: a painted map, a traveller who walks, a postcard for every region ═════════════════════════════ */
+.vag[data-game="word-quest"] .vag-map {
+  background: linear-gradient(180deg, #cfe6ee 0%, #e9f3f0 55%, #f3ecd6 100%);
+  box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.55);
+}
+.vag[data-game="word-quest"] .vag-map-sky {
+  fill: transparent;
+}
+.vga-cloud {
+  fill: #fff;
+  opacity: 0.85;
+}
+.vag[data-game="word-quest"] .vag-map-path {
+  stroke: #8d6e3f;
+  stroke-width: 6;
+  opacity: 0.8;
+}
+.vga-walked {
+  fill: none;
+  stroke: var(--va-ok);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 1 11;
+  filter: drop-shadow(0 0 3px rgb(242 193 91 / 0.9));
+}
+
+/* the painted patch each region sits on */
+.vga-scene {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  inline-size: 5.6rem;
+  block-size: 4.1rem;
+  transform: translate(-50%, -64%);
+  pointer-events: none;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  color: var(--va-brand);
+  opacity: 0.75;
+}
+.vga-scene svg {
+  inline-size: 100%;
+  block-size: 100%;
+  fill: currentColor;
+  overflow: visible;
+}
+.vga-scene .vga-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vag-node[data-state="locked"] .vga-scene {
+  color: var(--va-ink-2);
+  opacity: 0.3;
+}
+.vag-node[data-state="cleared"] .vga-scene {
+  color: var(--va-ok);
+  opacity: 1;
+  filter: drop-shadow(0 0 7px rgb(242 193 91 / 0.95));
+}
+.vag-node[data-state="cleared"] .vag-node-btn {
+  box-shadow:
+    0 0 0 4px rgb(242 193 91 / 0.6),
+    0 0 16px rgb(242 193 91 / 0.8);
+}
+.vag-node-btn {
+  position: relative;
+  z-index: 1;
+}
+.vag-node-label {
+  position: relative;
+  z-index: 1;
+}
+.vag-node[data-state="open"] .vag-node-btn {
+  box-shadow: 0 0 0 4px rgb(31 166 162 / 0.28);
+}
+
+/* the traveller */
+.vga-traveller,
+.vga-trav-inline {
+  pointer-events: none;
+  inline-size: 1.7rem;
+  block-size: 2.2rem;
+}
+.vga-traveller {
+  position: absolute;
+  z-index: 3;
+  margin: -4.2rem 0 0 -0.85rem;
+  transition:
+    left 1s ease-in-out,
+    top 1s ease-in-out;
+  filter: drop-shadow(0 2px 2px rgb(20 33 43 / 0.35));
+}
+.vga-trav-inline {
+  display: none;
+}
+.vga-traveller svg,
+.vga-trav-inline svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+.vga-t-head {
+  fill: #f2c15b;
+  stroke: #17324d;
+  stroke-width: 2;
+}
+.vga-t-body {
+  fill: #17324d;
+}
+.vga-t-flag {
+  fill: var(--va-accent);
+  stroke: var(--va-accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.vga-traveller.is-walking svg {
+  animation: vga-bob 0.33s ease-in-out 3;
+}
+@keyframes vga-bob {
+  50% {
+    transform: translateY(-6px) rotate(4deg);
+  }
+}
+.vga-where {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+}
+
+/* postcards */
+.vga-postcards {
+  margin-block-start: 0.9rem;
+}
+.vga-pc-h {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.05em;
+}
+.vga-pc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+}
+.vga-postcard {
+  position: relative;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.7rem 4.3rem 0.7rem 0.8rem;
+  min-block-size: 6.5rem;
+  background: #fffdf6;
+  border: 2px solid var(--va-ink-2);
+  border-radius: 6px;
+  box-shadow: 2px 3px 0 var(--va-line);
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 1.55rem,
+    rgb(15 93 115 / 0.08) 1.55rem calc(1.55rem + 1px)
+  );
+}
+.vga-postcard:nth-child(even) {
+  transform: rotate(0.8deg);
+}
+.vga-postcard:nth-child(odd) {
+  transform: rotate(-0.6deg);
+}
+.vga-stamp-corner {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  inline-size: 3.4rem;
+  block-size: 3rem;
+  padding: 0.25rem;
+  display: grid;
+  color: var(--va-ok);
+  background: var(--va-ok-soft);
+  border: 2px dashed var(--va-ok);
+  border-radius: 3px;
+}
+.vga-stamp-corner svg {
+  inline-size: 100%;
+  block-size: 100%;
+  fill: currentColor;
+}
+.vga-stamp-corner .vga-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.vga-pc-place {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--va-ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.vga-pc-word {
+  font-size: 1.2em;
+}
+.vga-pc-def {
+  font-size: 0.9em;
+}
+.vga-postcard .vag-es {
+  font-size: 0.85em;
+}
+
+/* the band at the top of a region's questions */
+.vga-region-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-block-size: 3.2rem;
+  padding: 0.2rem 0.8rem;
+  margin: -0.2rem 0 0.4rem;
+  border-radius: var(--va-radius-sm);
+  background: linear-gradient(90deg, #cfe6ee, #f3ecd6);
+  overflow: hidden;
+}
+.vga-region-band .vga-scene {
+  position: static;
+  transform: none;
+  inline-size: 4.4rem;
+  block-size: 2.8rem;
+  opacity: 1;
+}
+.vga-lights {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+.vga-lights i {
+  inline-size: 1.1rem;
+  block-size: 1.1rem;
+  border-radius: 50%;
+  border: 3px solid var(--va-ink-2);
+  background: var(--va-card);
+}
+.vga-lights i.is-on {
+  background: #f2c15b;
+  border-color: var(--va-warn);
+  box-shadow: 0 0 10px rgb(242 193 91 / 0.9);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vga-postcard.is-new {
+    animation: vga-postcard-in 0.7s 0.55s cubic-bezier(0.2, 1.2, 0.4, 1) backwards;
+  }
+  @keyframes vga-postcard-in {
+    from {
+      opacity: 0;
+      transform: translateY(-18px) rotate(-8deg) scale(0.8);
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .vag[data-game="word-quest"] .vag-map {
+    background-image: none;
+  }
+  .vga-traveller,
+  .vga-walked {
+    display: none;
+  }
+  .vag-node {
+    position: relative;
+    justify-items: center;
+  }
+  .vga-scene {
+    inline-size: 4.2rem;
+    block-size: 3rem;
+  }
+  .vga-trav-inline {
+    display: block;
+    position: absolute;
+    inset-block-start: -1.6rem;
+    inset-inline-end: -0.2rem;
+    inline-size: 1.3rem;
+    block-size: 1.7rem;
+    z-index: 3;
+    filter: drop-shadow(0 2px 2px rgb(20 33 43 / 0.35));
+  }
+}
+
+/* ═══ CONTEXT DETECTIVE: an evidence board ═════════════════════════════════════════════════════════════════════ */
+.vga-board {
+  position: relative;
+  margin-block-start: 1.6rem;
+  background-color: #e8dfc8;
+  background-image: radial-gradient(rgb(20 33 43 / 0.09) 1px, transparent 1.4px);
+  background-size: 12px 12px;
+  border: 6px solid #6b5a3a;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.35);
+}
+.vga-tab {
+  position: absolute;
+  inset-block-start: -2.15rem;
+  inset-inline-start: 1rem;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--va-ink);
+  background: #f3d58a;
+  border: 3px solid #6b5a3a;
+  border-block-end: 0;
+  border-radius: 8px 8px 0 0;
+}
+.vga-evidence {
+  position: relative;
+  isolation: isolate;
+}
+.vga-evidence .vag-casetext {
+  position: relative;
+  background: #fffdf6;
+  border: 1px solid #cdbf9a;
+  box-shadow: 2px 4px 0 rgb(20 33 43 / 0.16);
+  transform: rotate(-0.3deg);
+  margin-block-start: 0.4rem;
+}
+.vga-evidence .vag-casetext::before,
+.vga-evidence .vag-casetext::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -0.45rem;
+  inline-size: 0.85rem;
+  block-size: 0.85rem;
+  border-radius: 50%;
+  background: var(--va-miss);
+  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.25);
+}
+.vga-evidence .vag-casetext::before {
+  inset-inline-start: 0.8rem;
+}
+.vga-evidence .vag-casetext::after {
+  inset-inline-end: 0.8rem;
+}
+.vga-board .vag-tok.is-on,
+.vga-board .vag-tok.is-good {
+  position: relative;
+  background: #fff2a8;
+  color: var(--va-ink);
+  border: 2px solid #b79b2a;
+  border-radius: 3px;
+  box-shadow: 2px 3px 0 rgb(20 33 43 / 0.2);
+  transform: rotate(-1.2deg);
+}
+.vga-board .vag-tok.is-on:nth-of-type(even),
+.vga-board .vag-tok.is-good:nth-of-type(even) {
+  transform: rotate(1.1deg);
+}
+.vga-board .vag-tok.is-on::after,
+.vga-board .vag-tok.is-good::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -0.3rem;
+  inset-inline-start: 50%;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  margin-inline-start: -0.3rem;
+  border-radius: 50%;
+  background: var(--va-miss);
+  box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.3);
+}
+/* the magnifier on "Show me a clue" (the star and the words say it too) */
+.vga-board .vag-tok.is-assist {
+  position: relative;
+  outline: none;
+  background: var(--va-warn-soft);
+}
+.vga-board .vag-tok.is-assist::before {
+  content: "";
+  position: absolute;
+  inset: -0.55rem -0.5rem;
+  border: 3px solid var(--va-warn);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.25);
+  box-shadow: 0 0 10px rgb(242 193 91 / 0.9);
+  pointer-events: none;
+}
+.vga-board .vag-tok.is-assist::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -0.85rem;
+  inset-block-end: -0.95rem;
+  inline-size: 0.9rem;
+  block-size: 0.28rem;
+  background: var(--va-warn);
+  border-radius: 3px;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.vga-board .vag-target {
+  background: #f7d98a;
+  box-shadow: 0 0 0 3px rgb(138 90 0 / 0.35);
+}
+.vga-strings {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+.vga-string {
+  fill: none;
+  stroke: var(--va-miss);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 5 0;
+}
+.vga-pinned {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+  font-weight: 700;
+}
+.vga-stamp {
+  position: absolute;
+  inset-block-start: 0.7rem;
+  inset-inline-end: 0.9rem;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  padding: 0.15rem 0.7rem;
+  color: var(--va-ok);
+  background: rgb(255 255 255 / 0.78);
+  border: 4px double var(--va-ok);
+  border-radius: 6px;
+  transform: rotate(-9deg);
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+}
+.vga-stamp b {
+  font-size: 1.05rem;
+}
+.vga-stamp i {
+  font-style: normal;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vga-string {
+    stroke-dasharray: 600;
+    animation: vga-draw 0.55s calc(var(--i, 0) * 70ms) ease-out backwards;
+  }
+  @keyframes vga-draw {
+    from {
+      stroke-dashoffset: 600;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .vga-stamp.is-stamping {
+    animation: vga-stamp 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) backwards;
+  }
+  @keyframes vga-stamp {
+    from {
+      opacity: 0;
+      transform: rotate(-9deg) scale(2.2);
+    }
+  }
+  .vga-board .vag-tok.is-assist::before {
+    animation: vga-lens 1.4s ease-in-out 2;
+  }
+  @keyframes vga-lens {
+    50% {
+      transform: scale(1.12);
+    }
+  }
+}
+
+/* ═══ WORD BUILDER: snap-together tiles, colour-coded by role and always labelled ═══════════════════════════════ */
+.vag-slot[data-role],
+.vag-chip[data-role],
+.vga-m-part[data-role] {
+  --role: var(--va-brand);
+  --role-soft: var(--va-brand-soft);
+}
+[data-role="prefix"] {
+  --role: #9a4f1f;
+  --role-soft: #f9e9dc;
+}
+[data-role="base"] {
+  --role: #0f5d73;
+  --role-soft: #e3f0f4;
+}
+[data-role="suffix"] {
+  --role: #1f6f4a;
+  --role-soft: #e4f3ea;
+}
+[data-role="compound"] {
+  --role: #8a5a00;
+  --role-soft: #fbf0d6;
+}
+.vga-tile-f {
+  font-weight: 800;
+}
+.vga-tile-r {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--role, var(--va-ink-2));
+}
+.vag-slots {
+  gap: 0.9rem 0.6rem;
+}
+.vag-slot[data-role] {
+  position: relative;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-block-size: calc(var(--vag-t) * 1.6);
+  border-color: var(--role);
+  border-block-start-width: 8px;
+  background: var(--va-paper);
+  z-index: 1;
+}
+.vag-slot[data-role].is-full {
+  background: var(--role-soft);
+  box-shadow: 0 3px 0 var(--role);
+}
+.vag-slot[data-role] .vag-slot-hint {
+  font-weight: 700;
+  color: var(--role);
+}
+.vag-slot-wrap:not(:last-child) .vag-slot.is-full::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -0.62rem;
+  inset-block-start: 50%;
+  inline-size: 0.95rem;
+  block-size: 0.95rem;
+  margin-block-start: -0.35rem;
+  border-radius: 50%;
+  background: var(--role-soft);
+  border: 3px solid var(--role);
+  z-index: 3;
+}
+.vag-slots.is-joined {
+  gap: 0;
+}
+.vag-slots.is-joined .vag-slot-wrap {
+  gap: 0;
+}
+.vag-slots.is-joined .vag-plus {
+  display: none;
+}
+.vag-slots.is-joined .vag-slot {
+  border-radius: 0;
+  min-inline-size: 4.5rem;
+  border-inline-start-width: 0;
+}
+.vag-slots.is-joined .vag-slot-wrap:first-child .vag-slot {
+  border-start-start-radius: var(--va-radius-sm);
+  border-end-start-radius: var(--va-radius-sm);
+  border-inline-start-width: 3px;
+}
+.vag-slots.is-joined .vag-slot-wrap:last-child .vag-slot {
+  border-start-end-radius: var(--va-radius-sm);
+  border-end-end-radius: var(--va-radius-sm);
+}
+.vag-chip[data-role] {
+  background: var(--va-card);
+  border-color: var(--role);
+  border-block-start-width: 7px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.05rem;
+}
+.vag-chip[data-role][aria-pressed="true"] {
+  background: var(--role-soft);
+  border-width: 2px;
+  border-block-start-width: 7px;
+  border-color: var(--role);
+}
+.vag-chip[data-role] .vag-chip-f {
+  font-weight: 800;
+}
+
+/* the word machine */
+.vga-machine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 0.9rem;
+  padding: 0.7rem;
+  margin: 0 0 0.6rem;
+  background: #fff;
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+}
+.vga-m-in {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+.vga-m-part {
+  display: grid;
+  justify-items: center;
+  padding: 0.3rem 0.7rem;
+  font-weight: 800;
+  background: var(--role-soft);
+  border: 2px solid var(--role);
+  border-block-start-width: 6px;
+  border-radius: 6px;
+}
+.vga-m-part small {
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--role);
+}
+.vga-m-box {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding: 0.5rem 1.4rem;
+  min-inline-size: 7rem;
+  color: #fff;
+  background: #17324d;
+  border-radius: 10px;
+  border-block-end: 5px solid var(--va-accent);
+}
+.vga-m-box b {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.vga-gear {
+  position: absolute;
+  inline-size: 1.4rem;
+  block-size: 1.4rem;
+  border: 4px dotted #f2c15b;
+  border-radius: 50%;
+  inset-block-start: -0.55rem;
+}
+.vga-gear-a {
+  inset-inline-start: 0.4rem;
+}
+.vga-gear-b {
+  inset-inline-end: 0.4rem;
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.vga-m-in::after,
+.vga-m-box::after {
+  content: "→";
+  font-weight: 800;
+  margin-inline-start: 0.5rem;
+  color: var(--va-ink-2);
+}
+.vga-m-box::after {
+  position: absolute;
+  inset-inline-end: -1.3rem;
+  inset-block-start: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+}
+.vga-m-out {
+  padding: 0.35rem 1rem;
+  margin-inline-start: 0.7rem;
+  font-size: 1.35rem;
+  background: var(--va-warn-soft);
+  border: 3px solid var(--va-warn);
+  border-radius: 8px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vag-slot.is-snapping {
+    animation: vga-snap 0.38s cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  @keyframes vga-snap {
+    from {
+      transform: translateY(-16px) scale(1.14);
+      opacity: 0.5;
+    }
+  }
+  .vag-slots.is-joining .vag-slot {
+    animation: vga-join 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  @keyframes vga-join {
+    from {
+      transform: translateX(var(--vga-gap, 0.7rem)) scale(1.04);
+    }
+    60% {
+      transform: scale(0.97);
+    }
+  }
+  .vga-machine.is-run .vga-m-part {
+    animation: vga-feed 0.5s calc(var(--k, 0) * 120ms) ease-out backwards;
+  }
+  .vga-machine.is-run .vga-m-part:nth-child(2) {
+    --k: 1;
+  }
+  .vga-machine.is-run .vga-m-part:nth-child(3) {
+    --k: 2;
+  }
+  @keyframes vga-feed {
+    from {
+      opacity: 0;
+      transform: translateX(-26px);
+    }
+  }
+  .vga-machine.is-run .vga-gear {
+    animation: vga-spin 1.2s linear 2;
+  }
+  @keyframes vga-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .vga-machine.is-run .vga-m-box {
+    animation: vga-shake 0.18s 0.6s 4;
+  }
+  @keyframes vga-shake {
+    50% {
+      transform: translateX(2px) rotate(0.6deg);
+    }
+  }
+  .vga-machine.is-run .vga-m-out {
+    animation: vga-print 0.6s 1.35s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+  }
+  @keyframes vga-print {
+    from {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.7);
+    }
+  }
+}
+@media (max-width: 520px) {
+  .vga-m-in::after,
+  .vga-m-box::after {
+    display: none;
+  }
+  .vga-machine {
+    flex-direction: column;
+  }
+  .vga-m-out {
+    margin: 0;
+  }
+}
+
+/* ═══ MEANING MATCH: dealt cards, a real flip, a trophy rail ═══════════════════════════════════════════════════ */
+.vag[data-game="meaning-match"] .vag-grid {
+  perspective: 900px;
+}
+.vag-card .vag-card-back {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: calc(var(--vag-t) * 1.6);
+  border-radius: 4px;
+  border: 2px solid rgb(255 255 255 / 0.55);
+  background: repeating-linear-gradient(45deg, rgb(255 255 255 / 0.14) 0 7px, transparent 7px 14px);
+  font-size: 1.5em;
+}
+.vag-card {
+  box-shadow: 0 3px 0 rgb(20 33 43 / 0.22);
+}
+.vag-card.is-up {
+  box-shadow: 0 3px 0 rgb(20 33 43 / 0.14);
+}
+.vag-card.is-matched {
+  box-shadow:
+    0 0 0 3px rgb(242 193 91 / 0.55),
+    0 3px 0 rgb(20 33 43 / 0.14);
+}
+.vga-rail-wrap {
+  margin: 0 0 0.7rem;
+}
+.vga-rail-t {
+  margin: 0 0 0.3rem;
+  font-size: 0.9em;
+}
+.vga-rail {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  border-block-end: 6px solid var(--va-accent);
+  border-radius: 0 0 4px 4px;
+}
+.vga-trophy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-block-size: 2.4rem;
+  padding: 0.1rem 0.75rem 0.1rem 0.45rem;
+  font-weight: 700;
+  color: var(--va-ink);
+  background: var(--va-warn-soft);
+  border: 2px solid var(--va-warn);
+  border-radius: 99px;
+}
+.vga-trophy svg {
+  inline-size: 1.4rem;
+  block-size: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vga-trophy.is-empty {
+  min-inline-size: 3.6rem;
+  justify-content: center;
+  padding-inline: 0.45rem;
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--va-ink-2);
+  color: var(--va-ink-2);
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vag-grid.is-dealing .vag-card {
+    animation: vga-deal 0.6s calc(var(--i, 0) * 80ms) cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+  }
+  @keyframes vga-deal {
+    from {
+      opacity: 0;
+      transform: translate(var(--dx, 0), var(--dy, -30px)) rotate(-14deg) scale(0.45);
+    }
+  }
+  .vag-card.is-flipping {
+    animation: vga-flip 0.4s ease-out;
+  }
+  .vag-card.is-flipping-back {
+    animation: vga-flip-back 0.4s ease-out;
+  }
+  @keyframes vga-flip {
+    from {
+      transform: rotateY(88deg);
+    }
+  }
+  @keyframes vga-flip-back {
+    from {
+      transform: rotateY(-88deg);
+    }
+  }
+  .vga-trophy.is-arriving {
+    animation: vga-arrive 0.45s 0.58s cubic-bezier(0.2, 1.5, 0.4, 1) backwards;
+  }
+  @keyframes vga-arrive {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+  }
+}
+
+/* ═══ WORD SORT: crates with lids and label plates ═════════════════════════════════════════════════════════════ */
+.vag[data-game="word-sort"] .vag-bins {
+  padding-block-start: 0.7rem;
+}
+.vag[data-game="word-sort"] .vag-bin {
+  position: relative;
+  margin-block-start: 0.5rem;
+  padding-block-start: 1.5rem;
+  border: 3px solid #6b5a3a;
+  border-radius: 6px 6px var(--va-radius-sm) var(--va-radius-sm);
+  background-color: #f6efdc;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 2.2rem,
+    rgb(107 90 58 / 0.16) 2.2rem calc(2.2rem + 2px)
+  );
+}
+.vga-lid {
+  position: absolute;
+  inset-block-start: -0.6rem;
+  inset-inline: -6px;
+  block-size: 1.1rem;
+  background: #8d6e3f;
+  border: 3px solid #6b5a3a;
+  border-radius: 6px;
+  transform-origin: 0 100%;
+  transition: transform 0.25s ease-out;
+}
+.vag-bin[data-open="true"] .vga-lid {
+  transform: rotate(-9deg) translateY(-3px);
+}
+.vga-label {
+  display: inline-block;
+  padding: 0.15rem 0.7rem;
+  font-weight: 800;
+  background: var(--va-card);
+  border: 2px solid #6b5a3a;
+  border-radius: 4px;
+  box-shadow: 1px 2px 0 rgb(20 33 43 / 0.18);
+}
+.vag-bin-list li.is-landing {
+  visibility: hidden;
+}
+.vag[data-game="word-sort"] .vag-sortcard {
+  box-shadow: 0 2px 0 rgb(20 33 43 / 0.2);
+}
+.vag[data-game="word-sort"] .vag-sortcard.is-sel {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgb(20 33 43 / 0.25);
+}
+.vag-sortcard.is-away {
+  opacity: 0.25;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vag-bin-list li.is-settling {
+    animation: vga-settle 0.4s cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  @keyframes vga-settle {
+    from {
+      transform: translateY(-8px) scaleY(1.12);
+    }
+    60% {
+      transform: translateY(1px) scaleY(0.92);
+    }
+  }
+  .vag-bin.is-thunk {
+    animation: vga-thunk 0.3s ease-out;
+  }
+  @keyframes vga-thunk {
+    40% {
+      transform: translateY(2px);
+    }
+  }
+  .vag-sortcard.is-snapback {
+    animation: vga-snapback 0.4s ease-out;
+  }
+  @keyframes vga-snapback {
+    20% {
+      transform: translateX(-4px);
+    }
+    50% {
+      transform: translateX(3px);
+    }
+    80% {
+      transform: translateX(-1px);
+    }
+  }
+}
+
+/* ── reduced motion, forced colours and print ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .vga-traveller {
+    transition: none;
+  }
+  .vga-lid {
+    transition: none;
+  }
+  .vga-ghost {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .vga-scene,
+  .vga-cloud,
+  .vga-strings,
+  .vga-stamp,
+  .vga-lid {
+    forced-color-adjust: auto;
+  }
+  .vag-slot[data-role],
+  .vag-chip[data-role] {
+    border-color: ButtonText;
+  }
+  .vga-board .vag-tok.is-on,
+  .vga-board .vag-tok.is-good {
+    border-color: Highlight;
+  }
+}
+@media print {
+  .vga-ghost,
+  .vga-strings,
+  .vga-traveller {
+    display: none;
+  }
+}
+
+/* long words never push a card past the screen */
+.vag-card {
+  min-inline-size: 0;
+}
+.vag-card-word,
+.vag-card-text {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+@media (max-width: 520px) {
+  .vag-card-word {
+    font-size: 0.95em;
+  }
+}

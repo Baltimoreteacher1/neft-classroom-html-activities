@@ -15,6 +15,7 @@ import {
 } from "./kit.js";
 import { newMc } from "./questions.js";
 import { norm, uniq } from "./text.js";
+import { glide, mem, motionOK, playOnce, rectOf } from "./stage-a.js";
 
 export const TITLE = ["Word Sort Challenge", "Reto de clasificar palabras"];
 const LETTERS = ["A", "B", "C"];
@@ -204,11 +205,12 @@ const spec = {
       const placed = s.cards.filter((x) => s.placed[x.id] === ci);
       const anchor = c.anchor ? env.pool.byId.get(c.anchor) : null;
       const title = showLabels ? c.label : `${I.S("Group", "Grupo")} ${LETTERS[ci]}`;
-      return html`<div class="vag-bin" data-bin="${ci}">
-        <h3 class="vag-bin-h">${title}</h3>
+      return html`<div class="vag-bin" data-bin="${ci}" data-open="${sel ? "true" : "false"}" data-count="${placed.length}">
+        <span class="vga-lid" aria-hidden="true"></span>
+        <h3 class="vag-bin-h"><span class="vga-label">${title}</span></h3>
         ${anchor ? html`<p class="vag-bin-anchor">${icon("pin")}<span class="vag-chip-w">${anchor.hw}</span></p>` : ""}
         <ul class="vag-bin-list">
-          ${placed.map((x) => html`<li><span class="vag-chip-w">${icon("check")}${x.label}</span></li>`)}
+          ${placed.map((x) => html`<li data-placed="${x.id}"><span class="vag-chip-w">${icon("check")}${x.label}</span></li>`)}
         </ul>
         <button
           type="button"
@@ -292,12 +294,14 @@ const spec = {
         env.say(env.I.S("Choose a card first.", "Elige una carta primero."));
         return false;
       }
+      grab(env, s.sel);
       return doPlace(s, env, s.sel, Number(pl.dataset.place));
     }
     return false;
   },
   after(body, s, env) {
     if (s.phase !== "sort") return;
+    flight(body, s, env);
     for (const c of body.querySelectorAll("[data-card]"))
       c.addEventListener("dragstart", (e) => e.dataTransfer?.setData("text/plain", c.dataset.card));
     for (const b of body.querySelectorAll("[data-bin]")) {
@@ -305,8 +309,10 @@ const spec = {
       b.addEventListener("drop", (e) => {
         e.preventDefault();
         const id = e.dataTransfer?.getData("text/plain");
-        if (id && s.cards.some((x) => x.id === id))
+        if (id && s.cards.some((x) => x.id === id)) {
+          grab(env, id);
           env.act(doPlace(s, env, id, Number(b.dataset.bin)));
+        }
       });
     }
   },
@@ -315,9 +321,55 @@ const spec = {
   },
 };
 
+/** Remember where a card is before it is placed, so the move can be drawn. Decoration only. */
+function grab(env, cardId) {
+  const root = document.querySelector(".vag[data-game='word-sort']");
+  const el = root?.querySelector(`[data-card="${CSS.escape(cardId)}"]`);
+  mem(env).flight = { id: cardId, from: rectOf(el), text: el?.textContent?.trim() || "" };
+}
+
+/** Draw the last placement: a right card glides into its bin and settles; a wrong one goes part way and snaps back. */
+function flight(body, s, env) {
+  const m = mem(env);
+  const f = m.flight;
+  m.flight = null;
+  if (!f || !f.from || !motionOK()) return;
+  const ci = s.placed[f.id];
+  if (ci != null) {
+    const li = body.querySelector(`[data-placed="${CSS.escape(f.id)}"]`);
+    const bin = body.querySelector(`[data-bin="${ci}"]`);
+    if (!li) return;
+    li.classList.add("is-landing");
+    glide(f.text, f.from, rectOf(li), {
+      ms: 560,
+      tone: "card",
+      done: () => {
+        li.classList.remove("is-landing");
+        playOnce(li, "is-settling");
+        playOnce(bin, "is-thunk");
+      },
+    });
+    return;
+  }
+  const card = body.querySelector(`[data-card="${CSS.escape(f.id)}"]`);
+  const target = body.querySelector(`[data-bin="${f.ci}"]`);
+  if (!card || !target) return;
+  card.classList.add("is-away");
+  glide(f.text, f.from, rectOf(target), {
+    back: true,
+    ms: 620,
+    tone: "miss",
+    done: () => {
+      card.classList.remove("is-away");
+      playOnce(card, "is-snapback");
+    },
+  });
+}
+
 function doPlace(s, env, cardId, ci) {
   const r = placeCard(s, cardId, ci);
   if (!r) return false;
+  if (mem(env).flight) mem(env).flight.ci = ci;
   env.report({ wordId: r.card.wordId, dim: "mean", ok: r.ok, firstTry: r.first, kind: "sort" });
   s.last = { ok: r.ok, wordId: r.card.wordId };
   if (r.ok) {

@@ -3,8 +3,12 @@
 // Flip two cards. A match stays up; a miss stays face-up until you choose your next card (no clock).
 // "Show me a pair" points at one pair and is recorded as a support, never as a miss.
 import { choiceCount } from "./data.js";
-import { html, icon, mountGame } from "./kit.js";
+import { html, icon, mountGame, raw } from "./kit.js";
 import { maskForm } from "./text.js";
+import { glide, mem, motionOK, playOnce, rectOf } from "./stage-a.js";
+
+const TROPHY =
+  '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 3h10v5a5 5 0 0 1-10 0Z M7 5H3v2a4 4 0 0 0 4 4 M17 5h4v2a4 4 0 0 1-4 4 M12 13v4 M8 21h8 M9 17h6v4H9Z"/></svg>';
 
 export const TITLE = ["Meaning Match", "Une el significado"];
 
@@ -162,6 +166,9 @@ const spec = {
       return html`<button
         type="button"
         class="vag-card ${faceUp ? "is-up" : ""} ${matched ? "is-matched" : ""} ${assist ? "is-assist" : ""}"
+        style="--i:${n - 1}"
+        data-pair="${c.pair}"
+        data-side="${c.side}"
         data-card="${c.cid}"
         data-fk="card-${c.cid}"
         data-rv
@@ -173,10 +180,22 @@ const spec = {
         ${faceUp ? html`${matched ? html`<span class="vag-card-mark">${icon("check")}</span>` : ""}${assist ? html`<span class="vag-card-mark">${icon("star")}${I.T("Pair", "Pareja")}</span>` : ""}${face}` : html`<span class="vag-card-back" aria-hidden="true">${assist ? icon("star") : n}</span>`}
       </button>`;
     };
+    const pairs = L.cards.length / 2;
+    const rail = Array.from({ length: pairs }, (_, k) => {
+      const id = L.matched[k];
+      const w = id ? env.pool.byId.get(id) : null;
+      return w
+        ? html`<li class="vga-trophy" data-trophy="${id}">${raw(TROPHY)}<span lang="en">${w.hw}</span></li>`
+        : html`<li class="vga-trophy is-empty" aria-hidden="true">${raw(TROPHY)}</li>`;
+    });
     return html`<p class="vag-level">
         <strong>${I.T("Level", "Nivel")} ${s.li + 1} ${I.T("of", "de")} ${s.levels.length}:</strong>
         ${I.T(...meta.label)}
       </p>
+      <div class="vga-rail-wrap">
+        <p class="vga-rail-t">${I.T("Trophy rail", "Estante de trofeos")}: <strong>${L.matched.length}</strong> ${I.T("of", "de")} ${pairs}</p>
+        <ul class="vga-rail" aria-label="${I.S("Pairs found so far", "Parejas encontradas hasta ahora")}">${rail}</ul>
+      </div>
       <div
         class="vag-grid"
         data-rove
@@ -221,6 +240,48 @@ const spec = {
             </p>`
           : ""
       }`;
+  },
+
+  /** Decoration only: the cards are dealt out, a turned card flips, and a matched pair flies to the trophy rail. */
+  after(body, s, env) {
+    const L = s.levels[s.li];
+    if (!L) return;
+    const m = mem(env);
+    const up = new Set(L.cards.filter((c) => L.open.includes(c.cid) || L.matched.includes(c.pair)).map((c) => c.cid));
+    const done = new Set(L.matched);
+    const grid = body.querySelector(".vag-grid");
+    if (m.li !== s.li) {
+      if (grid && motionOK()) {
+        const g = grid.getBoundingClientRect();
+        for (const card of grid.querySelectorAll(".vag-card")) {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--dx", `${Math.round(g.left + g.width / 2 - (r.left + r.width / 2))}px`);
+          card.style.setProperty("--dy", `${Math.round(g.top - r.top - 24)}px`);
+        }
+        grid.classList.add("is-dealing");
+        grid.addEventListener("animationend", (e) => {
+          if (e.target === grid.lastElementChild) grid.classList.remove("is-dealing");
+        });
+      }
+    } else {
+      for (const card of body.querySelectorAll(".vag-card")) {
+        const id = card.dataset.card;
+        if (up.has(id) && !m.up.has(id)) playOnce(card, "is-flipping");
+        else if (!up.has(id) && m.up.has(id)) playOnce(card, "is-flipping-back");
+      }
+      for (const id of done) {
+        if (m.done.has(id)) continue;
+        const trophy = body.querySelector(`[data-trophy="${CSS.escape(id)}"]`);
+        const from = body.querySelector(`.vag-card[data-pair="${CSS.escape(id)}"][data-side="word"]`);
+        if (trophy && motionOK()) {
+          trophy.classList.add("is-arriving");
+          glide(env.pool.byId.get(id)?.hw || "", rectOf(from), rectOf(trophy), { ms: 620, tone: "trophy" });
+        }
+      }
+    }
+    m.li = s.li;
+    m.up = up;
+    m.done = done;
   },
 
   click(el, s, env) {

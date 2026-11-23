@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "1ffda7c5f791";
+const BUILD_HASH = "2fc7846b05e4";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=51d27c263c0f",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -1132,25 +1132,26 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/vocab-academy/educator/ui-assign.js?v=ee1c2ef52db9",
   "/access-practice-lab/src/vocab-academy/educator/ui-results.js?v=ac66a50b30c9",
   "/access-practice-lab/src/vocab-academy/educator/ui-supports.js?v=9f95df3889eb",
-  "/access-practice-lab/src/vocab-academy/games/context-detective.js?v=c7a04be4ad94",
+  "/access-practice-lab/src/vocab-academy/games/context-detective.js?v=52f5d8e1a8b5",
   "/access-practice-lab/src/vocab-academy/games/data.js?v=0f3c2ae53c9c",
   "/access-practice-lab/src/vocab-academy/games/fx.js?v=d14c2689bfd4",
   "/access-practice-lab/src/vocab-academy/games/index.js?v=32baf5ab606d",
   "/access-practice-lab/src/vocab-academy/games/kit.js?v=df8d30af08bb",
-  "/access-practice-lab/src/vocab-academy/games/meaning-match.js?v=864ad5a5457f",
+  "/access-practice-lab/src/vocab-academy/games/meaning-match.js?v=9698631c2a4e",
   "/access-practice-lab/src/vocab-academy/games/morph-records.js?v=191e01dba388",
   "/access-practice-lab/src/vocab-academy/games/questions.js?v=827755f7ae17",
   "/access-practice-lab/src/vocab-academy/games/reading-mystery.js?v=35a5a36473d2",
   "/access-practice-lab/src/vocab-academy/games/sentence-lab.js?v=49db85009025",
+  "/access-practice-lab/src/vocab-academy/games/stage-a.js?v=8d6f0bea4f33",
   "/access-practice-lab/src/vocab-academy/games/text.js?v=24a8ae0b217c",
   "/access-practice-lab/src/vocab-academy/games/vocab-arena.js?v=0679ae69579d",
-  "/access-practice-lab/src/vocab-academy/games/word-builder.js?v=a370a923eac9",
+  "/access-practice-lab/src/vocab-academy/games/word-builder.js?v=b383dfe51ae6",
   "/access-practice-lab/src/vocab-academy/games/word-connections.js?v=f823ed6655b7",
   "/access-practice-lab/src/vocab-academy/games/word-mastery.js?v=7f9b04626a47",
-  "/access-practice-lab/src/vocab-academy/games/word-quest.js?v=56e1ba6a2215",
-  "/access-practice-lab/src/vocab-academy/games/word-sort.js?v=decf6c403660",
+  "/access-practice-lab/src/vocab-academy/games/word-quest.js?v=7a53502f1bf1",
+  "/access-practice-lab/src/vocab-academy/games/word-sort.js?v=93017919b3a3",
   "/access-practice-lab/src/vocab-academy/garden.js?v=12fd905cace9",
-  "/access-practice-lab/src/vocab-academy/index.js?v=ad44c210caa2",
+  "/access-practice-lab/src/vocab-academy/index.js?v=e95883f87af1",
   "/access-practice-lab/src/vocab-academy/integrations/family-project.js?v=563e2cea9f1a",
   "/access-practice-lab/src/vocab-academy/integrations/family-view.js?v=b6af9648d4ba",
   "/access-practice-lab/src/vocab-academy/integrations/offline.js?v=d1ac6142b88d",
