@@ -2,6 +2,7 @@
 // The grade's focus and the year's arc (from grade.json), then its units in order. A unit is a group of lessons (data.js
 // groupLessons); each lesson teaches its own ten words, so a unit builds a set of 30 to 40. Every lesson card shows a
 // CSS-built cover, its words and this learner's progress; a lesson that is not published is shown as planned, never ready.
+import { EXTRAS } from "../unit/extras.js";
 import { html } from "../../util.js";
 import { LESSONS, PLAN, bandOfGrade } from "../contract.js";
 import { getGradeOverview, groupLessons, lessonHref, unitHref, vaHref } from "../data.js";
@@ -77,6 +78,7 @@ function unitSection(I, g, gr, progress) {
           ? html`<p class="va-actions">
               <a class="btn btn-primary va-btn" href="${unitHref(g, gr.u)}">${I.T("Open the unit", "Abrir la unidad")}</a>
               <a class="btn va-btn" href="${unitHref(g, gr.u, "crossword")}">${I.T("Crossword", "Crucigrama")}</a>
+              ${EXTRAS.map((x) => html`<a class="btn va-btn" href="${unitHref(g, gr.u, x.id)}">${I.T(...x.short)}</a>`)}
               <a class="btn va-btn" href="${unitHref(g, gr.u, "test")}">${I.T("Unit test", "Prueba de la unidad")}</a>
             </p>`
           : ""

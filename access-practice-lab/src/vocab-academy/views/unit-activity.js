@@ -29,14 +29,10 @@ import { recordResult } from "../model.js";
 import { crumbs, gradeName, gradeNameS, notPublishedPanel, rootCrumb } from "../ui.js";
 import { buildCrossword, cellsOf, checkCrossword, pickWords } from "../unit/crossword.js";
 import { buildUnitTest } from "../unit/test.js";
+import { extraOf } from "../unit/extras.js";
+import { workOf } from "../unit/work.js";
 
 let S = null; // { kind, gid, puzzle|items, merged, lessons, g, u }
-
-const workOf = (progress, gid) => {
-  progress.unitWork =
-    progress.unitWork && typeof progress.unitWork === "object" ? progress.unitWork : {};
-  return (progress.unitWork[gid] ||= {});
-};
 
 // ── crossword ───────────────────────────────────────────────────────────────────────────────────────────────────
 function crosswordHTML(I, puzzle, cw, early) {
@@ -230,10 +226,13 @@ export async function render(ctx, va) {
   const { grade: g, u, activity } = va.params;
   await ensureLessonCss(BASE);
   const found = await getUnitGroup(g, u);
+  const extra = extraOf(activity);
   const label =
     activity === "crossword"
       ? I.S("Crossword", "Crucigrama")
-      : I.S("Unit test", "Prueba de la unidad");
+      : extra
+        ? I.S(...extra.title)
+        : I.S("Unit test", "Prueba de la unidad");
   const trail = [
     rootCrumb(I),
     [I.S("Grade Levels", "Niveles por grado"), vaHref("grades")],
@@ -266,9 +265,19 @@ export async function render(ctx, va) {
         ${found.unit.first}–${found.unit.last}
       </p>
       <h1 id="vaTitle" tabindex="-1">
-        ${activity === "crossword" ? I.T("Unit crossword", "Crucigrama de la unidad") : I.T("Unit test", "Prueba de la unidad")}
+        ${activity === "crossword" ? I.T("Unit crossword", "Crucigrama de la unidad") : extra ? I.T(...extra.title) : I.T("Unit test", "Prueba de la unidad")}
       </h1>
     </header>`;
+
+  if (extra) {
+    S = { kind: "extra", extra, gid, merged, lessons: found.lessons, g, u };
+    return {
+      title: `${I.S(...extra.title)} · ${I.S("Unit", "Unidad")} ${u}`,
+      html: html`${head}
+        <p class="va-lead">${I.T(...extra.lead)}</p>
+        <div data-extra-host class="va-extra va-extra-${extra.id}"></div>`,
+    };
+  }
 
   if (activity === "crossword") {
     const picks = pickWords(
@@ -385,9 +394,22 @@ function finishCrossword(va) {
 }
 
 let off = null;
+let extraHandle = null;
+
+/** An extra activity (unit/extras.js) is loaded when its page opens and gets the host element, the lab context and the view. */
+async function startExtra(el, ctx, va) {
+  const host = el.querySelector?.("[data-extra-host]");
+  const job = S;
+  if (!host || !job || job.kind !== "extra") return;
+  const mod = await job.extra.load();
+  if (S !== job || !host.isConnected) return;
+  extraHandle = await mod.start(host, ctx, va, job);
+}
+
 export function mount(el, ctx, va) {
   root = el;
   dir = "across";
+  if (S?.kind === "extra") startExtra(el, ctx, va);
   const submit = (e) => onSubmit(e, ctx, va);
   const focus = (e) => onFocus(e);
   el.addEventListener("submit", submit);
@@ -399,6 +421,8 @@ export function mount(el, ctx, va) {
 }
 
 export function unmount() {
+  extraHandle?.destroy?.();
+  extraHandle = null;
   clearTimeout(saveTimer);
   off?.();
   off = null;

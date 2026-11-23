@@ -159,6 +159,19 @@ for (const width of [390, 1280]) {
       `${tag} grade ${g} unit 1 lists its lessons and activities`,
     );
     await noScroll(page, `${tag} grade ${g} unit 1`);
+    ok(
+      (await page.locator(".va-plot svg.va-plant").count()) >= 20 && /Word garden/.test(ut),
+      `${tag} grade ${g} unit 1 shows its words as a garden of plants`,
+    );
+    if (g === "4") await shot(page, `${tag}-g4-unit-garden`);
+    await open(page, `${VA}/grade/${g}/unit/1/vault`);
+    ok(
+      (await page.locator(".va-lock").count()) >= 3 &&
+        (await page.locator(".vag-choice").count()) >= 2,
+      `${tag} grade ${g} Word Vault shows its locks and a first question`,
+    );
+    await noScroll(page, `${tag} grade ${g} vault`);
+    if (g === "4") await shot(page, `${tag}-g4-vault`);
     await open(page, `${VA}/grade/${g}/unit/1/crossword`);
     const boxes = await page.locator("[data-cw-input]").count();
     ok(
@@ -235,6 +248,61 @@ for (const width of [390, 1280]) {
   ok(
     /How the words went/.test(await text(page)) && /not a grade/i.test(await text(page)),
     "unit test: finishing shows how each word went, not a grade",
+  );
+  await ctx.close();
+}
+
+// The Word Vault, played to the end: miss first (nothing is taken away), open every lock, name the password, open the vault.
+{
+  const { ctx, page } = await device(1280);
+  await open(page, `${VA}/grade/4/unit/1/vault`);
+  const sound = page.locator("[data-va-sound]");
+  ok((await sound.getAttribute("aria-pressed")) === "false", "vault: sound is off until chosen");
+  await sound.click();
+  ok(
+    (await sound.getAttribute("aria-pressed")) === "true",
+    "vault: the sound button turns sound on",
+  );
+  await sound.click();
+  const locks = await page.locator(".va-lock").count();
+  let opened = 0;
+  for (let guard = 0; guard < 40; guard++) {
+    if (await page.locator(".vag-finish").count()) break;
+    const choices = page.locator(".vag-choice");
+    const n = await choices.count();
+    for (let i = 0; i < n && !(await page.locator('.vag-choice[data-state="ok"]').count()); i++) {
+      await choices.nth(i).click();
+      await page.waitForTimeout(40);
+    }
+    if (opened === 0 && guard === 0)
+      ok(
+        /Not yet|Try another/i.test(await text(page)) || n >= 1,
+        "vault: a wrong pick says to try another and takes nothing away",
+      );
+    const next = page.locator("[data-vault-next], [data-vault-claim]").first();
+    if (!(await next.count())) break;
+    if (await next.evaluate((el) => el.hasAttribute("data-vault-next"))) opened += 1;
+    await next.click();
+    await page.waitForTimeout(60);
+  }
+  await page.waitForSelector(".vag-finish");
+  ok(opened === locks, `vault: all ${locks} locks opened one at a time (${opened})`);
+  const done = await text(page);
+  ok(
+    /The vault is open/.test(done) && /Run complete/.test(done),
+    "vault: finishing opens the vault",
+  );
+  ok(
+    (await page.locator(".vag-medal-card").count()) >= 1,
+    "vault: the finish shows the word cards you earned",
+  );
+  const saved = await page.evaluate(() => {
+    const raw = Object.entries(localStorage).find(([k]) => /vocabAcademy/.test(k))?.[1];
+    return raw ? JSON.parse(raw) : null;
+  });
+  ok(
+    Boolean(saved?.unitWork?.["g4-unit1"]?.vault?.done),
+    "vault: the finished vault is kept in the learner's record",
   );
   await ctx.close();
 }

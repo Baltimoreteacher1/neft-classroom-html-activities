@@ -34,13 +34,13 @@ const CORE_STYLES = ["vocab-academy-tokens.css", "vocab-academy-core.css"];
 const VIEW_STYLES = {
   word: ["vocab-academy-activities.css"], // art.js pictures (vaa-*) are styled there
   grade: ["vocab-academy-units.css"],
-  "lesson-home": ["vocab-academy-units.css"],
-  unit: ["vocab-academy-units.css"],
-  "unit-activity": ["vocab-academy-units.css", "vocab-academy-activities.css"],
+  "lesson-home": ["vocab-academy-units.css", "vocab-academy-premium.css"],
+  unit: ["vocab-academy-units.css", "vocab-academy-premium.css"],
+  "unit-activity": ["vocab-academy-units.css", "vocab-academy-activities.css", "vocab-academy-games.css", "vocab-academy-premium.css"],
   lesson: ["vocab-academy-activities.css"],
   practice: ["vocab-academy-activities.css"],
   review: ["vocab-academy-activities.css"],
-  games: ["vocab-academy-games.css"],
+  games: ["vocab-academy-games.css", "vocab-academy-premium.css"],
   "word-study": ["vocab-academy-wordstudy.css"],
   teacher: ["vocab-academy-educator.css"],
   custom: ["vocab-academy-educator.css"],

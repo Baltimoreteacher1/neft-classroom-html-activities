@@ -1,0 +1,536 @@
+/* Vocabulary Academy — the premium layer: a stage and accent for each game, feedback that feels alive, first-try gems,
+   collectible word cards, the Word Garden and the Word Vault. Decoration only: every state is also said in words and an
+   icon, nothing is timed, nothing is taken away on a miss, and reduced motion turns the movement off. Tokens only. No purple. */
+
+/* ── a stage for each game ───────────────────────────────────────────────────────────────────────────────────── */
+.vag {
+  --vag-accent: var(--va-brand);
+  --vag-glyph: "★";
+}
+.vag[data-game="word-quest"] {
+  --vag-accent: #0f5d73;
+  --vag-glyph: "🧭";
+}
+.vag[data-game="context-detective"] {
+  --vag-accent: #8a5a00;
+  --vag-glyph: "🔍";
+}
+.vag[data-game="word-builder"] {
+  --vag-accent: #b5602a;
+  --vag-glyph: "🧱";
+}
+.vag[data-game="meaning-match"] {
+  --vag-accent: #1f6f4a;
+  --vag-glyph: "🃏";
+}
+.vag[data-game="word-sort"] {
+  --vag-accent: #1d4e89;
+  --vag-glyph: "🗂";
+}
+.vag[data-game="vocab-arena"] {
+  --vag-accent: #9c3b2e;
+  --vag-glyph: "🏟";
+}
+.vag[data-game="sentence-lab"] {
+  --vag-accent: #0b6b63;
+  --vag-glyph: "🧪";
+}
+.vag[data-game="word-connections"] {
+  --vag-accent: #2a6f97;
+  --vag-glyph: "🕸";
+}
+.vag[data-game="reading-mystery"] {
+  --vag-accent: #6b4a1e;
+  --vag-glyph: "📖";
+}
+.vag[data-game="word-mastery"] {
+  --vag-accent: #14532d;
+  --vag-glyph: "🏆";
+}
+.vag-head {
+  position: relative;
+  padding-block-end: 0.6rem;
+  border-block-end: 3px solid var(--vag-accent);
+}
+.vag-title::before {
+  content: var(--vag-glyph) / "";
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.2rem;
+  block-size: 2.2rem;
+  margin-inline-end: 0.55rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vag-accent) 14%, var(--va-card));
+  border: 2px solid var(--vag-accent);
+  font-size: 0.8em;
+  vertical-align: middle;
+}
+.vag-prog-bar span {
+  background: var(--vag-accent);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.vag-sound[aria-pressed="true"] {
+  border-color: var(--vag-accent);
+  background: color-mix(in srgb, var(--vag-accent) 12%, var(--va-card));
+}
+
+/* ── first-try gems ──────────────────────────────────────────────────────────────────────────────────────────── */
+.vag-prog {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+}
+.vag-gem-row {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.vag-gem {
+  inline-size: 14px;
+  block-size: 14px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: var(--va-line);
+}
+.vag-gem.is-on {
+  background: var(--vag-accent);
+  animation: vag-gem-in 0.4s ease-out;
+}
+@keyframes vag-gem-in {
+  0% {
+    transform: scale(0.2) rotate(-40deg);
+  }
+  70% {
+    transform: scale(1.35) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* ── answer feedback: a pop and a sparkle for right, a soft nudge for not yet ───────────────────────────────── */
+.vag-choice {
+  position: relative;
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.vag-choice:not([aria-disabled="true"]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--vag-accent) 35%, transparent);
+}
+.vag-choice:not([aria-disabled="true"]):active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.vag-pop {
+  animation: vag-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes vag-pop {
+  0% {
+    transform: scale(0.96);
+  }
+  45% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.vag-nudge {
+  animation: vag-nudge 0.32s ease-in-out;
+}
+@keyframes vag-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-4px);
+  }
+  65% {
+    transform: translateX(3px);
+  }
+}
+.vag-burst {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 1.4rem;
+  inline-size: 0;
+  block-size: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.vag-burst-big {
+  inset-inline-start: 1.4rem;
+  inset-inline-end: auto;
+}
+.vag-burst i {
+  position: absolute;
+  inline-size: 7px;
+  block-size: 7px;
+  margin: -3px;
+  border-radius: 2px;
+  background: var(--vag-accent);
+  opacity: 0;
+  transform: rotate(var(--a)) translateY(0);
+  animation: vag-spark 0.7s ease-out forwards;
+}
+.vag-burst i:nth-child(3n) {
+  background: #d9a21b;
+}
+.vag-burst i:nth-child(3n + 1) {
+  background: var(--va-accent);
+}
+@keyframes vag-spark {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scale(0.3);
+  }
+}
+.vag-fin-h {
+  position: relative;
+}
+
+/* ── finish: cheer, gems and the word cards you earned ───────────────────────────────────────────────────────── */
+.vag-cheer {
+  margin: 0;
+  font-weight: 600;
+  color: var(--vag-accent);
+}
+.vag-fin-gems .vag-gem {
+  inline-size: 18px;
+  block-size: 18px;
+}
+.vag-medals h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05em;
+}
+.vag-medal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.7rem;
+}
+.vag-medal-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 0.8rem 0.6rem;
+  text-align: center;
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+  animation: vag-card-in 0.5s ease-out backwards;
+}
+.vag-medal-card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.vag-medal-card:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.vag-medal-card:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.vag-medal-card:nth-child(n + 5) {
+  animation-delay: 0.24s;
+}
+@keyframes vag-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.vag-medal {
+  display: grid;
+  place-items: center;
+  inline-size: 2.4rem;
+  block-size: 2.4rem;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+}
+.vag-medal-card[data-medal="gold"] {
+  border-color: #b98a12;
+}
+.vag-medal-card[data-medal="gold"] .vag-medal {
+  background: #9a7208;
+}
+.vag-medal-card[data-medal="gold"] .vag-medal::before {
+  content: "★";
+}
+.vag-medal-card[data-medal="silver"] {
+  border-color: #6f7d88;
+}
+.vag-medal-card[data-medal="silver"] .vag-medal {
+  background: #55626c;
+}
+.vag-medal-card[data-medal="silver"] .vag-medal::before {
+  content: "◆";
+}
+.vag-medal-card[data-medal="bronze"] {
+  border-color: #a05c32;
+}
+.vag-medal-card[data-medal="bronze"] .vag-medal {
+  background: #8a4a24;
+}
+.vag-medal-card[data-medal="bronze"] .vag-medal::before {
+  content: "●";
+}
+.vag-medal-t {
+  font-size: 0.82em;
+  color: var(--va-ink-2);
+}
+
+/* ── Word Garden: every word is a plant that grows as it is learned ──────────────────────────────────────────── */
+.va-garden {
+  list-style: none;
+  margin: var(--va-gap) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+.va-garden-lane {
+  margin: 0.4rem 0 0;
+  font-size: 1em;
+}
+.va-plot {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  min-block-size: 9.5rem;
+  padding: 0.6rem 0.4rem 0.7rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--va-ink);
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius);
+  background: linear-gradient(to bottom, var(--va-card) 62%, #e8dcc3 62%);
+}
+.va-plot:hover,
+.va-plot:focus-visible {
+  border-color: var(--va-brand);
+}
+.va-plot[data-stage="secure"] {
+  border-color: #14532d;
+}
+.va-plot[data-stage="review-needed"] {
+  border-color: var(--va-miss);
+  border-style: dashed;
+}
+.va-plant {
+  inline-size: 3.8rem;
+  block-size: 4.6rem;
+  overflow: visible;
+}
+.va-plant .stem {
+  stroke: #2f7a4f;
+  stroke-width: 4;
+  stroke-linecap: round;
+  fill: none;
+}
+.va-plant .leaf {
+  fill: #4c9b68;
+}
+.va-plant .seed {
+  fill: #8a5a2b;
+}
+.va-plant .petal {
+  fill: #e6a82c;
+}
+.va-plant .heart {
+  fill: #b5602a;
+}
+.va-plant .fruit {
+  fill: #c2452d;
+}
+.va-plant .trunk {
+  fill: #7a4f2a;
+}
+.va-plant .crown {
+  fill: #2f7a4f;
+}
+.va-plot[data-stage="review-needed"] .va-plant {
+  transform-origin: 50% 100%;
+  transform: rotate(-9deg);
+}
+.va-plot[data-stage="review-needed"] .leaf {
+  fill: #a58c4a;
+}
+.va-plot[data-stage="secure"] .va-plant,
+.va-plot[data-stage="applying"] .va-plant {
+  animation: va-sway 4.5s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+@keyframes va-sway {
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+.va-plot-word {
+  font-weight: 700;
+  font-size: 1.02em;
+}
+.va-plot-state {
+  font-size: 0.8em;
+  color: var(--va-ink-2);
+}
+.va-garden-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9em;
+}
+
+/* ── Word Vault: a locked room whose locks open with the unit's words ───────────────────────────────────────── */
+.va-vault {
+  display: grid;
+  gap: var(--va-gap);
+}
+.va-vault-door {
+  display: grid;
+  gap: 0.6rem;
+  padding: clamp(0.9rem, 2.5vw, 1.4rem);
+  border: 3px solid var(--va-ink);
+  border-radius: var(--va-radius);
+  background: linear-gradient(160deg, #e9eef1, #d6dee3);
+}
+.va-vault-locks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.va-lock {
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: 50%;
+  border: 3px solid var(--va-ink-2);
+  background: var(--va-card);
+  font-size: 1.3rem;
+}
+.va-lock[data-state="open"] {
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+  animation: vag-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.va-lock[data-state="now"] {
+  border-color: var(--va-brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--va-brand) 25%, transparent);
+}
+.va-vault-pass {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.va-vault-slot {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.4rem;
+  block-size: 2.9rem;
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  font-family: var(--va-head-font);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--va-ink);
+}
+.va-vault-slot[data-on="true"] {
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+  animation: vag-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.va-vault-clue {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+.va-vault-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.va-vault-tile {
+  min-inline-size: var(--va-target);
+  min-block-size: var(--va-target);
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--va-ink);
+  background: var(--va-card);
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  cursor: pointer;
+}
+.va-vault-tile:hover {
+  border-color: var(--va-brand);
+}
+.va-vault-tile[aria-disabled="true"] {
+  opacity: 0.6;
+  text-decoration: line-through;
+  cursor: default;
+}
+.va-vault-treasure {
+  padding: 1rem;
+  border: 3px solid #b98a12;
+  border-radius: var(--va-radius);
+  background: #fbf0d6;
+}
+
+@media (forced-colors: active) {
+  .vag-gem.is-on {
+    background: Highlight;
+  }
+  .vag-gem {
+    background: GrayText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vag-pop,
+  .vag-nudge,
+  .vag-gem.is-on,
+  .vag-medal-card,
+  .va-plant,
+  .va-vault-slot,
+  .va-lock {
+    animation: none !important;
+  }
+  .vag-choice {
+    transition: none;
+  }
+}
+@media print {
+  .vag-burst,
+  .vag-sound {
+    display: none;
+  }
+}

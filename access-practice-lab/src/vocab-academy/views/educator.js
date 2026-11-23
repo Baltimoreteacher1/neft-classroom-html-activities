@@ -4,6 +4,7 @@
 //
 // URL state: ?grade=6 · ?grade=6&unit=3 · &tab=browse|supports|assign|results · ?assign=<unitId> (Core's unit page links here)
 // · ?custom=<cu id> (a unit from the Teacher Library). The controls themselves live in ../educator/ui-*.js.
+import { EXTRAS } from "../unit/extras.js";
 import { html } from "../../util.js";
 import { DISCLAIMER, LESSONS, PRINT_KINDS, SHIPPED_GRADES, sectionTitle } from "../contract.js";
 import { getGradeOverview, getUnit, groupLessons, lessonHref, parseUnitId, unitHref, vaHref } from "../data.js";
@@ -107,6 +108,7 @@ function unitGrid(I, overview, q) {
         <p class="vat-actions">
           <a class="btn va-btn" href="${unitHref(g, gr.u)}">${I.T("Unit page", "Página de la unidad")}</a>
           <a class="btn va-btn" href="${unitHref(g, gr.u, "crossword")}">${I.T("Unit crossword", "Crucigrama de la unidad")}</a>
+          ${EXTRAS.map((x) => html`<a class="btn va-btn" href="${unitHref(g, gr.u, x.id)}">${I.T(...x.title)}</a>`)}
           <a class="btn va-btn" href="${unitHref(g, gr.u, "test")}">${I.T("Unit test", "Prueba de la unidad")}</a>
         </p>
         <ul class="vat-units">

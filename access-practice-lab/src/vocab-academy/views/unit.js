@@ -14,6 +14,8 @@ import {
   vaHref,
   wordHref,
 } from "../data.js";
+import { EXTRAS } from "../unit/extras.js";
+import { gardenHTML, gardenKeyHTML, stageCounts } from "../garden.js";
 import { unitStatus, wordEntry, wordState } from "../model.js";
 import {
   STRAND,
@@ -23,7 +25,6 @@ import {
   notPublishedPanel,
   progressMeter,
   rootCrumb,
-  stateBadge,
   unitCover,
 } from "../ui.js";
 
@@ -109,27 +110,22 @@ export async function render(ctx, va) {
   const q = (extra) =>
     `?grade=${encodeURIComponent(g)}&unit=${encodeURIComponent(gid)}${extra || ""}`;
 
+  const stateOf = (id) => (id ? wordEntry(progress, id).state : "new");
+  const counts = stageCounts(ids.map(stateOf));
   const wall = html`<section class="va-card va-card-wide" aria-labelledby="vaWallH">
-    <h2 id="vaWallH">${I.T("Word wall", "Muro de palabras")}</h2>
+    <h2 id="vaWallH">${I.T("Word garden", "Jardín de palabras")}</h2>
     <p class="fine">
-      ${I.T(`All ${ids.length} words this unit builds, lesson by lesson.`, `Las ${ids.length} palabras que construye esta unidad, lección por lección.`)}
+      ${I.T(`Every one of the ${ids.length} words this unit builds is a plant. Practise a word and watch it grow.`, `Cada una de las ${ids.length} palabras de esta unidad es una planta. Practica una palabra y mírala crecer.`)}
     </p>
+    ${gardenKeyHTML(I, counts)}
     ${unit.lessons.map(
       (r) =>
-        html`<h3 class="va-wall-h">${I.T("Lesson", "Lección")} ${r.n}: ${r.title}</h3>
-          <ul class="va-chips">
-            ${r.words.map((w, i) => {
-              const id = r.wordIds[i];
-              const state = id ? wordEntry(progress, id).state : "new";
-              return id
-                ? html`<li>
-                    <a class="va-chip" href="${wordHref(id)}" data-state="${state}"
-                      ><span class="va-chip-word" lang="en">${w.hw}</span>${stateBadge(I, state)}</a
-                    >
-                  </li>`
-                : html`<li class="va-chip va-chip-static" lang="en">${w.hw}</li>`;
-            })}
-          </ul>`,
+        html`<h3 class="va-wall-h va-garden-lane">${I.T("Lesson", "Lección")} ${r.n}: ${r.title}</h3>
+          ${gardenHTML(
+            I,
+            r.words.map((w, i) => ({ id: r.wordIds[i], hw: w.hw, state: stateOf(r.wordIds[i]) })),
+            wordHref,
+          )}`,
     )}
   </section>`;
 
@@ -149,6 +145,15 @@ export async function render(ctx, va) {
               "Lee cada significado y escribe la palabra.",
             ),
             cw?.done ? I.T("Solved", "Resuelto") : cw?.fill ? I.T("In progress", "En curso") : "",
+          )}
+          ${EXTRAS.map((x) =>
+            activityCard(
+              unitHref(g, u, x.id),
+              x.icon,
+              I.T(...x.title),
+              I.T(...x.blurb),
+              work[x.id]?.done ? I.T(...x.doneLabel) : "",
+            ),
           )}
           ${activityCard(
             unitHref(g, u, "test"),

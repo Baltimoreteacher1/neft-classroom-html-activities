@@ -103,6 +103,12 @@ Known limit: a few review and assessment-key packets still end on a nearly empty
   (`integrations/offline.js`). Unit files are deliberately not pre-cached.
 - **Sitemap, early-reader gate, backup/import:** `sitemap.js`, `early/gate.js` and `store.js` know the Academy.
 
+## Premium layer (games, garden, vault)
+
+- **Game feel** (`games/fx.js`, wired in `games/kit.js`, styled by `vocab-academy-premium.css`): every game gets a themed stage, a pop and sparkle on a right answer, a soft nudge on "not yet", first-try gems, an optional quiet sound set (off until the learner turns it on, kept in `localStorage` under `va-games-sound`), and word cards with gold, silver or bronze medals on the finish screen. Decoration only: words and icons carry every state, nothing is timed, a miss takes nothing away, and reduced motion turns movement off.
+- **Word Garden** (`garden.js`, on the unit page): each unit word is a plant drawn from its DERIVED state (seed, sprout, sapling, flower, tree with fruit; a drooping plant means review). Never a separate score.
+- **Word Vault** (`unit/vault.js`, route `/grade/G/unit/U/vault`, assignable as `unit:vault`): a locked room built on the games kit. Each lock is a question about a different unit word; each open lock reveals more of a password word; the last step names the password from its meaning. Results go through `model.recordResult`; the run is kept in `progress.unitWork[<gK-unitN>].vault`.
+
 ## Commands
 
 | Command                                     | Purpose                                                                                                 |

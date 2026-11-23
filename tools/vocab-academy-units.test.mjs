@@ -18,6 +18,7 @@ const ENGINE = ["les", "sons"].join(""); // the lesson-player engine folder, not
 const { findMeaningItem } = await import(new URL(`${ENGINE}/items.js`, LAB));
 const { rngFor } = await import(new URL("rng.js", LAB));
 const assign = await import(new URL("educator/assign.js", LAB));
+const { EXTRA_IDS } = await import(new URL("unit/extras.js", LAB));
 
 const CONTENT = new URL("access-practice-lab/content/vocab-academy/", ROOT);
 const grades = {};
@@ -96,9 +97,9 @@ test("assignments: a lesson, a section and a unit each round-trip through their 
   const stops = assign.unitStops({ grade: "4", u: 2, first: 5, last: 8 });
   assert.deepEqual(
     stops.map((s) => s.activity),
-    ["", "crossword", "test"],
+    ["", "crossword", ...EXTRA_IDS, "test"],
   );
-  assert.equal(new Set(stops.map((s) => s.id)).size, 3);
+  assert.equal(new Set(stops.map((s) => s.id)).size, 3 + EXTRA_IDS.length);
   for (const s of stops) assert.ok(assign.isVocabAcademyAssignment({ path: s.path }), s.path);
   // a unit cannot be differentiated by word subset: it has no word list of its own
   assert.equal(assign.differentiate({ path: stops[0].path, title: "x" }, { variant: {} }), null);

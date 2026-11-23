@@ -9,6 +9,7 @@ import { rngFor } from "../rng.js";
 import { langMode, makeI18n } from "../../i18n.js";
 import { esc, html, icon, raw, toHtml } from "../../util.js";
 import { normalize, seedFor } from "./data.js";
+import { CHEER, MEDAL_LABEL, burst, cheerKey, cue, gemCount, medalFor, setSound, soundOn } from "./fx.js";
 import { mcHint, mcPick } from "./questions.js";
 
 export { esc, html, icon, raw, toHtml };
@@ -89,6 +90,7 @@ export function mountGame(root, opts, spec) {
   let howStep = 0;
   let alive = true;
   let art = null;
+  let fxArm = false;
   const log = [];
   const used = new Set();
   const uid = `vag${++UID}`;
@@ -249,6 +251,8 @@ export function mountGame(root, opts, spec) {
     if (spec.persist) persist(null);
     summary = finishSummary();
     render();
+    burst(root.querySelector(".vag-fin-h"), { big: true });
+    cue("done");
     env.say(I.S("Run complete.", "Ronda completa."));
     try {
       opts.onDone?.(summary);
@@ -272,15 +276,26 @@ export function mountGame(root, opts, spec) {
     root.querySelector("[data-autofocus]")?.focus();
   }
 
+  const soundLabel = () => I.S(soundOn() ? "Sound on" : "Sound off", soundOn() ? "Sonido activado" : "Sonido apagado");
+  function gemsHTML() {
+    const { gems, of } = gemCount(log);
+    if (!of) return "";
+    const label = I.S(`${gems} first-try answers so far`, `${gems} respuestas al primer intento hasta ahora`);
+    const shown = Math.min(of, 12);
+    const first = log.filter((e) => typeof e.ok === "boolean").slice(-shown);
+    return `<span class="vag-gem-row" role="img" aria-label="${esc(label)}">${first.map((e) => `<i class="vag-gem${e.ok && e.firstTry ? " is-on" : ""}"></i>`).join("")}</span>`;
+  }
+
   // ── markup ────────────────────────────────────────────────────────────────────────────
   const shell =
     () => `<section class="vag" data-va-band="${esc(pool.band)}" data-game="${esc(spec.id)}" ${sup.chunked ? 'data-chunked="1"' : ""} aria-labelledby="${uid}-t">
     <header class="vag-head"><h2 id="${uid}-t" class="vag-title">${T(...spec.title)}</h2>
       <div class="vag-tools"><button type="button" class="btn small vag-how-btn" data-va-how aria-expanded="false" aria-controls="${uid}-how">${toHtml(icon("help"))}${T(...COPY.how)}</button>
+      <button type="button" class="btn small vag-sound" data-va-sound aria-pressed="${soundOn()}">${toHtml(icon("volume"))}<span data-sound-label>${soundLabel()}</span></button>
       <button type="button" class="btn small" data-va-restart>${toHtml(icon("retry"))}${T(...COPY.restart)}</button></div></header>
     <div class="vag-how" id="${uid}-how" hidden></div>
     <p class="vag-note" data-note hidden></p>
-    <div class="vag-prog" hidden><span class="vag-prog-t"></span><span class="vag-prog-bar" aria-hidden="true"><span></span></span></div>
+    <div class="vag-prog" hidden><span class="vag-prog-t"></span><span class="vag-prog-bar" aria-hidden="true"><span></span></span><span class="vag-gems" data-gems></span></div>
     <div class="vag-body"></div>
     <p class="vag-status" role="status" aria-live="polite"></p></section>`;
 
@@ -307,9 +322,22 @@ export function mountGame(root, opts, spec) {
       rows.length
         ? `<section class="vag-fin-col"><h3>${toHtml(icon(ic))}${T(...label)}</h3><ul>${rows.map((w) => `<li><strong>${esc(w.hw)}</strong></li>`).join("")}</ul></section>`
         : "";
+    const cards = s.words
+      .map((w) => ({ w, m: medalFor(w) }))
+      .filter((x) => x.m)
+      .map(
+        ({ w, m }) =>
+          `<li class="vag-medal-card" data-medal="${m}"><span class="vag-medal" aria-hidden="true"></span><strong lang="en">${esc(w.hw)}</strong><span class="vag-medal-t">${esc(I.S(...MEDAL_LABEL[m]))}</span></li>`,
+      )
+      .join("");
+    const cheer = CHEER[cheerKey(s)];
+    const { gems, of } = gemCount(log);
     const extra = spec.finishExtra ? toHtml(spec.finishExtra(state, env, s)) : "";
     return `<div class="vag-finish"><h3 class="vag-fin-h" tabindex="-1" data-autofocus>${toHtml(icon("star"))}${T(...COPY.done)}</h3>
       <p>${I.S(`You answered ${s.correct} of ${s.judged} checks right, ${s.firstTry} on the first try.`, `Acertaste ${s.correct} de ${s.judged} comprobaciones, ${s.firstTry} al primer intento.`)}</p>
+      ${cheer[0] ? `<p class="vag-cheer">${T(...cheer)}</p>` : ""}
+      ${of ? `<div class="vag-fin-gems">${gemsHTML()}</div>` : ""}
+      ${cards ? `<section class="vag-medals" aria-label="${esc(I.S("Word cards you earned", "Tarjetas de palabras que ganaste"))}"><h3>${toHtml(icon("star"))}${T("Word cards you earned", "Tarjetas de palabras que ganaste")}</h3><ul class="vag-medal-list">${cards}</ul></section>` : ""}
       ${extra}
       <div class="vag-fin-cols">${wordList(good, "check", COPY.quickly)}${wordList(more, "retry", COPY.practice)}</div>
       <p><button type="button" class="btn btn-primary btn-big" data-va-again>${toHtml(icon("replay"))}${T(...COPY.again)}</button></p></div>`;
@@ -322,6 +350,9 @@ export function mountGame(root, opts, spec) {
     const active = document.activeElement;
     const inBody = active && body.contains(active);
     const fk = inBody ? active.closest("[data-fk]")?.dataset.fk : "";
+    const prevStates = fxArm
+      ? new Map([...body.querySelectorAll(".vag-choice[data-fk]")].map((e) => [e.dataset.fk, e.dataset.state || ""]))
+      : null;
     if (finished) body.innerHTML = finishHTML();
     else body.innerHTML = toHtml(spec.view(state, env));
     const prog = root.querySelector(".vag-prog");
@@ -337,6 +368,24 @@ export function mountGame(root, opts, spec) {
           `${Math.round((100 * p.done) / p.total)}%`;
       }
     } else if (prog) prog.hidden = true;
+    const gemEl = root.querySelector("[data-gems]");
+    if (gemEl) gemEl.innerHTML = finished ? "" : gemsHTML();
+    if (prevStates) {
+      fxArm = false;
+      for (const el of body.querySelectorAll(".vag-choice[data-fk]")) {
+        const was = prevStates.get(el.dataset.fk) || "";
+        const now = el.dataset.state || "";
+        if (now === was) continue;
+        if (now === "ok") {
+          el.classList.add("vag-pop");
+          burst(el);
+          cue("ok");
+        } else if (now === "no") {
+          el.classList.add("vag-nudge");
+          cue("retry");
+        }
+      }
+    }
     const noteEl = root.querySelector("[data-note]");
     if (noteEl) {
       const text = [handle.note, resumed ? I.S(...COPY.resumed) : ""].filter(Boolean).join(" ");
@@ -414,6 +463,16 @@ export function mountGame(root, opts, spec) {
       root.querySelector("[data-va-howstep]:not([disabled])")?.focus();
       return;
     }
+    const snd = t.closest("[data-va-sound]");
+    if (snd) {
+      const on = setSound(!soundOn());
+      snd.setAttribute("aria-pressed", String(on));
+      const lab = snd.querySelector("[data-sound-label]");
+      if (lab) lab.textContent = soundLabel();
+      if (on) cue("step");
+      env.say(soundLabel());
+      return;
+    }
     if (t.closest("[data-va-restart]") || t.closest("[data-va-again]")) return restart();
     const sp = t.closest("[data-speak]");
     if (sp) {
@@ -425,6 +484,7 @@ export function mountGame(root, opts, spec) {
       return;
     }
     if (finished || !state) return;
+    fxArm = true;
     act(await spec.click(t, state, env, ev));
   }
 

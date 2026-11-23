@@ -10,6 +10,7 @@
 // `grades` keeps the student's "Assigned practice" list naming the right grade band (assignmentBand reads it).
 // `sup/sf/son/soff/w` are a supports override and/or a smaller word set (supports.js encodeVariant): the grade-level
 // objective is the same unit, so a differentiated version changes ACCESS and amount, never the grade.
+import { EXTRAS } from "../unit/extras.js";
 import { LIMITS } from "../../../../shared/class-platform/contract.js";
 import { ID_OK, assignmentBand, toAssignment } from "../../class/assign.js";
 import { LESSONS, VA_ROUTE, labBandOfGrade, sectionTitle } from "../contract.js";
@@ -55,7 +56,7 @@ export function assignmentPath({ grade, n, lesson = "", set = null, variant = nu
   return `${vaHref("grade", grade, "lesson", seg, lesson ? String(lesson).toLowerCase() : "")}?grades=${labBandOfGrade(grade)}${vq ? `&${vq}` : ""}`;
 }
 
-/** App-relative path to a whole unit (a group of lessons) or one of its activities: "", "crossword" or "test". */
+/** App-relative path to a whole unit (a group of lessons) or one of its activities: "", "crossword", "vault" or "test". */
 export function unitAssignmentPath({ grade, u, activity = "" }) {
   return `${vaHref("grade", grade, "unit", Number(u), activity)}?grades=${labBandOfGrade(grade)}`;
 }
@@ -147,7 +148,7 @@ export function assignableStops({ unit, variant = null, groupLabel = "" }) {
   ];
 }
 
-/** Assignable rows for one unit (a group of lessons): the unit page, its crossword and its unit test. */
+/** Assignable rows for one unit (a group of lessons): the unit page, its crossword, its Word Vault and its unit test. */
 export function unitStops({ grade, u, first, last }) {
   const g = String(grade);
   const span = `Lessons ${first}-${last}`;
@@ -162,7 +163,12 @@ export function unitStops({ grade, u, first, last }) {
     u,
     activity,
   });
-  return [row("", ""), row("crossword", " · Crossword"), row("test", " · Unit test")];
+  return [
+    row("", ""),
+    row("crossword", " · Crossword"),
+    ...EXTRAS.map((x) => row(x.id, ` · ${x.title[0]}`)),
+    row("test", " · Unit test"),
+  ];
 }
 
 /** A follow-up practice row for chosen word ids (SPEC §10: vocabulary-academy/practice?set=<ids>). */

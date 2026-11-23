@@ -5,7 +5,7 @@
 //   ["grades"]                           grades
 //   ["grade", G]                         grade                 { grade }
 //   ["grade", G, "unit", U]              unit                  { grade, u }            a group of lessons
-//   ["grade", G, "unit", U, activity]    unit-activity         { grade, u, activity }  crossword | test
+//   ["grade", G, "unit", U, activity]    unit-activity         { grade, u, activity }  crossword | test | vault
 //   ["grade", G, "lesson", N]            lesson-home           { grade, n }            ten words (N or cu_<slug>)
 //   ["grade", G, "lesson", N, a-h]       lesson                { grade, n, letter }    the word list, an exercise, the review
 //   ["word", id]                         word                  { wordId }
@@ -14,6 +14,7 @@
 //   ["teacher"] / ["teacher", "custom"]  teacher / custom      (teacher-only)
 //   ["present", G, N]                    present               { grade, n }
 //   ["print", G, N, kind]                print                 { grade, n, kind }   (teacher + assessment-key are teacher-only)
+import { EXTRA_IDS } from "./unit/extras.js";
 import { LESSONS, PRINT_KINDS } from "./contract.js";
 import { normGrade, wordIdFromSegment } from "./data.js";
 
@@ -45,7 +46,7 @@ export const TEACHER_PRINT_KINDS = new Set(["teacher", "assessment-key"]);
 export const CHROMELESS_VIEWS = new Set(["print", "present"]);
 
 const LETTERS = new Set(LESSONS.map((l) => l.id));
-export const UNIT_ACTIVITIES = ["crossword", "test"];
+export const UNIT_ACTIVITIES = ["crossword", "test", ...EXTRA_IDS];
 /** A lesson path segment: a number, or a custom unit's "cu_<slug>" (dots travel as underscores) → number | "cu.<slug>" | 0. */
 const unitNumber = (s) => {
   const seg = String(s ?? "");

@@ -2,6 +2,7 @@
 // assignment flow (class-access.assignToClass → POST /api/class/settings, rows built with src/class/assign.js
 // toAssignment). A differentiated version is the SAME unit with a different supports override and/or fewer words:
 // the grade-level objective never changes.
+import { extraOf } from "../unit/extras.js";
 import { html } from "../../util.js";
 import { SUPPORT_KEYS, sectionTitle } from "../contract.js";
 import { lessonsPerUnit, unitOfLesson } from "../data.js";
@@ -164,6 +165,8 @@ const stopLabel = (I, s) => {
   if (s.lesson.startsWith("unit:"))
     return s.activity === "crossword"
       ? I.S(`Unit ${s.u} crossword (every word of lessons ${s.title.match(/Lessons (\d+-\d+)/)?.[1]})`, `Crucigrama de la unidad ${s.u} (todas las palabras de las lecciones ${s.title.match(/Lessons (\d+-\d+)/)?.[1]})`)
+      : extraOf(s.activity)
+        ? I.S(`Unit ${s.u} ${extraOf(s.activity).assign[0]}`, `Unidad ${s.u}: ${extraOf(s.activity).assign[1]}`)
       : s.activity === "test"
         ? I.S(`Unit ${s.u} test`, `Prueba de la unidad ${s.u}`)
         : I.S(`The whole of unit ${s.u} (its lessons, crossword, test and games)`, `Toda la unidad ${s.u} (lecciones, crucigrama, prueba y juegos)`);
