@@ -1,0 +1,295 @@
+/* Vocabulary Academy — the Word Galaxy: a night-sky star map that grows as pairs of words are connected. Line STYLE (solid,
+   dashed, dotted, double) says which connection it is, so colour is never the only clue. Decoration only; nothing is timed and
+   reduced motion turns the glow off. Navy / teal / amber / off-white. No purple. */
+.va-gal {
+  display: grid;
+  gap: var(--va-gap);
+  min-width: 0;
+}
+.va-gal > * {
+  min-width: 0;
+}
+@media (min-width: 62rem) {
+  .va-gal {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* the pair of stars being compared */
+.va-gal-pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+.va-gal-card {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  color: #f7f4ec;
+  background: #17324d;
+  border: 2px solid #f2c15b;
+  border-radius: var(--va-radius);
+}
+.va-gal-card[data-unit="false"] {
+  border-color: #7fe0dc;
+  border-style: dashed;
+}
+.va-gal-card .vag-es,
+.va-gal-card .vag-listen {
+  color: #f7f4ec;
+}
+.va-gal-card .vag-listen {
+  background: transparent;
+  border-color: #f7f4ec;
+}
+.va-gal-word {
+  margin: 0;
+  font-family: var(--va-head-font);
+  font-size: clamp(1.15rem, 3.6vw, 1.6rem);
+  overflow-wrap: anywhere;
+}
+.va-gal-mark {
+  color: #f2c15b;
+}
+.va-gal-card[data-unit="false"] .va-gal-mark {
+  color: #7fe0dc;
+}
+.va-gal-between {
+  align-self: center;
+  font-size: 1.4rem;
+  color: var(--va-brand);
+}
+.va-gal-pic {
+  display: grid;
+  place-items: center;
+  min-height: 3rem;
+}
+.va-gal-choices .vag-choice {
+  flex-wrap: wrap;
+}
+.va-gal-choices .va-gal-swatch {
+  margin-inline-start: auto;
+  flex: none;
+}
+
+/* line swatches (answer buttons and legend) share the map's line styles */
+.va-gal-swatch {
+  inline-size: 44px;
+  block-size: 14px;
+}
+.va-gal-swatch-none {
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+}
+.va-gal-swatch .va-gal-link[data-rel] {
+  stroke: #17324d;
+  filter: none;
+}
+
+/* the star map */
+.va-gal-mapbox {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: clamp(0.7rem, 2vw, 1.1rem);
+  background: var(--va-card);
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius);
+}
+.va-gal-h,
+.va-gal-h2 {
+  margin: 0;
+  font-family: var(--va-head-font);
+}
+.va-gal-h2 {
+  font-size: 1.05em;
+}
+.va-gal-fig {
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.va-gal-svg {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 38rem;
+  block-size: auto;
+  margin-inline: auto;
+}
+.va-gal-sky {
+  fill: #17324d;
+}
+.va-gal-dust {
+  fill: #f7f4ec;
+  opacity: 0.45;
+}
+.va-gal-link {
+  fill: none;
+  stroke: #7fe0dc;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px #7fe0dc);
+}
+.va-gal-link[data-rel="ant"] {
+  stroke: #f2c15b;
+  stroke-dasharray: 9 7;
+  filter: drop-shadow(0 0 3px #f2c15b);
+}
+.va-gal-link[data-rel="morph"] {
+  stroke: #f7f4ec;
+  stroke-dasharray: 1 6;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 3px #f7f4ec);
+}
+.va-gal-link[data-rel="group"] {
+  stroke: #9fd0f5;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 3px #9fd0f5);
+}
+.va-gal-link.is-new {
+  animation: va-gal-glow 0.9s ease-out;
+}
+.va-gal-shape {
+  fill: #f2c15b;
+  stroke: #f7f4ec;
+  stroke-width: 1;
+}
+.va-gal-star[data-unit="false"] .va-gal-shape {
+  fill: #7fe0dc;
+}
+.va-gal-star[data-linked="false"] .va-gal-shape {
+  fill: none;
+  stroke: #f2c15b;
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+.va-gal-star[data-linked="true"] .va-gal-shape {
+  filter: drop-shadow(0 0 4px #f2c15b);
+}
+.va-gal-name {
+  font-size: 15px;
+  fill: #f7f4ec;
+  stroke: #17324d;
+  stroke-width: 4px;
+  paint-order: stroke;
+  font-weight: 600;
+}
+.va-gal-cname {
+  font-size: 13px;
+  fill: #f2c15b;
+  stroke: #17324d;
+  stroke-width: 4px;
+  paint-order: stroke;
+  font-weight: 700;
+}
+.va-gal-cap {
+  margin: 0;
+  font-size: 0.95em;
+  color: var(--va-ink-2);
+}
+@keyframes va-gal-glow {
+  from {
+    opacity: 0;
+    stroke-width: 8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* legend */
+.va-gal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.92em;
+}
+.va-gal-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.va-gal-key-star {
+  color: #8a5a00;
+}
+.va-gal-key-dot {
+  color: #0f5d73;
+}
+
+/* text alternative */
+.va-gal-alt summary {
+  min-block-size: var(--va-target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.va-gal-conns,
+.va-gal-lone-list {
+  margin: 0.4rem 0 0;
+  padding-inline-start: 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.va-gal-final {
+  display: grid;
+  gap: var(--va-gap);
+  text-align: start;
+}
+.va-gal-lone {
+  display: grid;
+  gap: 0.4rem;
+}
+
+@media (max-width: 30rem) {
+  .va-gal-pair {
+    gap: 0.3rem;
+  }
+  .va-gal-between {
+    font-size: 1rem;
+  }
+}
+@media (forced-colors: active) {
+  .va-gal-sky {
+    fill: Canvas;
+  }
+  .va-gal-link,
+  .va-gal-swatch .va-gal-link[data-rel] {
+    stroke: CanvasText;
+    filter: none;
+  }
+  .va-gal-shape {
+    fill: CanvasText;
+    stroke: CanvasText;
+  }
+  .va-gal-name,
+  .va-gal-cname {
+    fill: CanvasText;
+    stroke: Canvas;
+  }
+  .va-gal-card {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .va-gal-link.is-new {
+    animation: none;
+  }
+}
+@media print {
+  .va-gal-link {
+    filter: none;
+  }
+}

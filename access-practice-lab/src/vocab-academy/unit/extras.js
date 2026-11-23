@@ -65,6 +65,26 @@ export const EXTRAS = [
     doneLabel: ["Restored", "Restaurado"],
     load: () => import("./story.js"),
   },
+  {
+    id: "galaxy",
+    icon: "🌌",
+    title: ["Word Galaxy", "Galaxia de palabras"],
+    short: ["Word Galaxy", "Galaxia"],
+    blurb: [
+      "Connect the unit's words as stars: same meaning, opposites, word parts and groups.",
+      "Conecta las palabras de la unidad como estrellas: mismo significado, opuestos, partes de palabras y grupos.",
+    ],
+    lead: [
+      "Two stars at a time: decide how the words are connected. Each right answer draws a glowing line and your galaxy grows.",
+      "Dos estrellas a la vez: decide cómo se relacionan las palabras. Cada respuesta correcta traza una línea brillante y tu galaxia crece.",
+    ],
+    assign: [
+      "Word Galaxy (connect the unit's words as stars)",
+      "Galaxia de palabras (conecta las palabras de la unidad como estrellas)",
+    ],
+    doneLabel: ["Mapped", "Trazada"],
+    load: () => import("./galaxy.js"),
+  },
 ];
 export const EXTRA_IDS = EXTRAS.map((e) => e.id);
 export const extraOf = (id) => EXTRAS.find((e) => e.id === id) || null;
