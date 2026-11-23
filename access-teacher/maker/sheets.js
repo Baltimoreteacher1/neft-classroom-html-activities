@@ -430,7 +430,7 @@ function flashcards(words, s) {
   const per = cols * rows;
   const duplex = s.cardMode === "duplex";
   const icon = (w) => (w.icon ? `<span class="mk-card-ic" aria-hidden="true">${esc(w.icon)}</span>` : "");
-  const extra = (w) => `<small class="mk-c-def">${esc(w.clue)}</small>${w.example ? `<small class="mk-c-ex">“${esc(w.example)}”</small>` : ""}`;
+  const extra = (w) => w.pic ? "" : `<small class="mk-c-def">${esc(w.clue)}</small>${w.example ? `<small class="mk-c-ex">“${esc(w.example)}”</small>` : ""}`;
   const single = (w) => `<div class="mk-card">${icon(w)}<strong class="mk-c-en">${esc(w.en)}</strong><span class="mk-c-es">${esc(w.es)}</span>${extra(w)}</div>`;
   const front = (w) => `<div class="mk-card is-front">${icon(w)}<strong class="mk-c-en">${esc(w.en)}</strong></div>`;
   const back = (w) => `<div class="mk-card"><span class="mk-c-es">${esc(w.es)}</span>${extra(w)}</div>`;

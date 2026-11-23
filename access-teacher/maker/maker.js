@@ -5,6 +5,7 @@
 
 import { WORDS } from "/access-practice-lab/src/content/wordlab-words.js";
 import { SURVIVAL_TOPICS } from "/access-practice-lab/src/packs/survival-vocabulary.js";
+import { DECKS, SIGHT_WORDS } from "/access-practice-lab/src/content/early.js";
 import { TEMPLATES, buildSheet, esc, seededRng, shuffle } from "/access-teacher/maker/sheets.js";
 
 const $ = (id) => document.getElementById(id);
@@ -37,6 +38,8 @@ const BAND_LABEL = {
   "3-5": "Grades 3–5",
   "6-8": "Grades 6–8",
 };
+const PRIMARY = ["K", "1", "2-3"];
+const SOURCES = ["wordlab", "early", "survival", "custom"];
 const PAPER = { letter: "8.5in 11in", a4: "210mm 297mm" };
 const SAMPLE_CUSTOM = `evidence | evidencia | facts that support an idea
 compare | comparar | find how two things are alike
@@ -78,6 +81,32 @@ const dedupe = (list) => {
   });
 };
 
+/** K–2 words: picture decks (with Spanish and a picture) or sight words (with a sentence). */
+function earlyPool() {
+  if (state.topic === "sight") {
+    const list = SIGHT_WORDS[PRIMARY.includes(state.band) ? state.band : "2-3"] || [];
+    return dedupe(
+      list.map(([en, sentEn, sentEs]) => ({
+        en,
+        es: "",
+        clue: state.lang === "es" ? sentEs : sentEn,
+        example: sentEn,
+      })),
+    );
+  }
+  return dedupe(
+    DECKS.filter((d) => state.topic === "all" || d.id === state.topic).flatMap((d) =>
+      d.cards.map(([en, es, icon]) => ({
+        en,
+        es,
+        icon,
+        clue: `${icon} ${d.title[0]}`,
+        pic: true,
+      })),
+    ),
+  );
+}
+
 function getWordPool() {
   if (state.source === "custom") return dedupe(parseCustom($("mkCustomText")?.value).words);
   if (state.source === "survival") {
@@ -93,6 +122,7 @@ function getWordPool() {
       ),
     );
   }
+  if (state.source === "early") return earlyPool();
   const bandMatch = state.band === "6-8" ? "6-8" : "3-5";
   return dedupe(
     WORDS.filter(
@@ -107,8 +137,18 @@ function getWordPool() {
   );
 }
 
+/** Sight words include "a" and "to"; puzzles need longer words, so pick only from words that fit. */
+const LETTERS = { wordsearch: [2, 14], crossword: [3, 13] };
+const fits = (w) => {
+  const [lo, hi] = LETTERS[state.template] || [1, 99];
+  const n = w.en.replace(/[^\p{L}]/gu, "").length;
+  return n >= lo && n <= hi;
+};
+
 function pickWords(pool) {
-  const usable = pool.filter((w) => !excluded.has(w.en.toLowerCase()));
+  const usable = pool.filter(
+    (w) => !excluded.has(w.en.toLowerCase()) && (state.source !== "early" || fits(w)),
+  );
   if (state.source === "custom" && usable.length <= state.count) return usable;
   return shuffle(usable, seededRng(state.seed * 7919 + state.count)).slice(0, state.count);
 }
@@ -150,7 +190,7 @@ function render() {
   lastSheet = { words, sheet, pool };
   const root = $("mkPreview");
   root.dataset.paper = state.paper;
-  root.classList.toggle("is-primary", ["K", "1", "2-3"].includes(state.band));
+  root.classList.toggle("is-primary", PRIMARY.includes(state.band));
   root.classList.toggle("is-bw", state.bw);
   root.innerHTML = framePages(sheet);
   $("mkPageStyle").textContent = `@page { size: ${PAPER[state.paper]}; margin: 0; }`;
@@ -205,6 +245,11 @@ const maxFor = () => TEMPLATES.find((t) => t.id === state.template).max;
 
 function defaultTitle() {
   if (state.source === "custom") return "Vocabulary Practice";
+  if (state.source === "early") {
+    if (state.topic === "sight") return "Sight Words";
+    const d = DECKS.find((x) => x.id === state.topic);
+    return d ? `Picture Words: ${d.title[0]}` : "Picture Words";
+  }
   if (state.source === "survival") {
     const t = SURVIVAL_TOPICS.find((x) => x.id === state.topic);
     return t ? `${t.title[0]} Words` : "Survival Vocabulary Practice";
@@ -221,7 +266,26 @@ function buildCountOptions() {
   $("mkCount").value = String(state.count);
 }
 
+function buildTopicOptions() {
+  const opt = (v, t) => `<option value="${v}">${esc(t)}</option>`;
+  const list =
+    state.source === "early"
+      ? [
+          opt("all", "All picture words"),
+          ...DECKS.map((d) => opt(d.id, d.title[0])),
+          opt("sight", "Sight words (no pictures)"),
+        ]
+      : [opt("all", "All topics"), ...SURVIVAL_TOPICS.map((t) => opt(t.id, t.title[0]))];
+  const html = list.join("");
+  if ($("mkTopic").dataset.src !== state.source) {
+    $("mkTopic").innerHTML = html;
+    $("mkTopic").dataset.src = state.source;
+  }
+  if (![...$("mkTopic").options].some((o) => o.value === state.topic)) state.topic = "all";
+}
+
 function syncControls() {
+  buildTopicOptions();
   if (!state.titleTouched) state.title = defaultTitle();
   document
     .querySelectorAll("input[type=radio][data-k]")
@@ -246,14 +310,14 @@ function syncControls() {
   $("mkCustomWrap").hidden = state.source !== "custom";
   document
     .querySelectorAll("[data-only-src]")
-    .forEach((el) => (el.hidden = el.dataset.onlySrc !== state.source));
+    .forEach((el) => (el.hidden = !el.dataset.onlySrc.split(" ").includes(state.source)));
   document
     .querySelectorAll("[data-only-tpl]")
     .forEach((el) => (el.hidden = !el.dataset.onlyTpl.split(" ").includes(state.template)));
   document
     .querySelectorAll("[data-not-tpl]")
     .forEach((el) => (el.hidden = el.dataset.notTpl.split(" ").includes(state.template)));
-  $("mkBandNote").hidden = !(state.source === "wordlab" && ["K", "1", "2-3"].includes(state.band));
+  $("mkBandNote").hidden = !(state.source === "wordlab" && PRIMARY.includes(state.band));
   const c = parseCustom($("mkCustomText").value);
   $("mkCustomInfo").textContent =
     `${c.words.length} word${c.words.length === 1 ? "" : "s"} ready${c.missing ? ` · ${c.missing} line(s) have no Spanish yet` : ""}.`;
@@ -268,7 +332,19 @@ function save() {
   } catch {}
 }
 
+/** Word Lab starts at grade 3, so a K–2 band moves to K–2 words (and back); other sources are left alone. */
+function followBand(patch) {
+  if (!("band" in patch) && patch.template !== "tracer") return patch;
+  const primary = PRIMARY.includes(patch.band ?? state.band);
+  const src = patch.source ?? state.source;
+  if (primary && src === "wordlab") return { ...patch, source: "early", topic: "all" };
+  if (!primary && src === "early") return { ...patch, source: "wordlab", topic: "all" };
+  return patch;
+}
+
 function change(patch, { reset = false } = {}) {
+  patch = followBand(patch);
+  if (patch.source && patch.source !== state.source) reset = true;
   Object.assign(state, patch);
   if (reset) excluded = new Set();
   syncControls();
@@ -283,6 +359,7 @@ function bind() {
       const v = k === "cardsPerPage" ? Number(r.value) : r.value;
       if (k === "source") {
         const patch = { source: v };
+        patch.topic = "all";
         if (v === "custom")
           patch.count = Math.min(
             maxFor(),
@@ -305,7 +382,7 @@ function bind() {
     $(id).addEventListener("change", (e) =>
       change({ [key]: num ? Number(e.target.value) : e.target.value }, { reset }),
     );
-  sel("mkBand", "band");
+  $("mkBand").addEventListener("change", (e) => change({ band: e.target.value }, { reset: true }));
   sel("mkSubject", "subject");
   sel("mkTopic", "topic");
   sel("mkCount", "count", true, false);
@@ -378,8 +455,6 @@ function launchInteractive() {
 }
 
 function init() {
-  $("mkTopic").innerHTML =
-    `<option value="all">All topics</option>${SURVIVAL_TOPICS.map((t) => `<option value="${t.id}">${esc(t.title[0])}</option>`).join("")}`;
   $("mkCustomText").value = SAMPLE_CUSTOM;
   try {
     const saved = JSON.parse(localStorage.getItem(PRESET_KEY) || "null");
@@ -392,7 +467,7 @@ function init() {
   // Deep links: ?template=flashcards&source=survival&topic=school&band=1&lang=both&count=10&title=…
   const q = new URLSearchParams(location.search);
   if (TEMPLATES.some((t) => t.id === q.get("template"))) state.template = q.get("template");
-  if (["wordlab", "survival", "custom"].includes(q.get("source"))) state.source = q.get("source");
+  if (SOURCES.includes(q.get("source"))) state.source = q.get("source");
   if (q.get("topic")) state.topic = q.get("topic");
   if (Object.hasOwn(BAND_LABEL, q.get("band"))) state.band = q.get("band");
   if (["en", "es", "both"].includes(q.get("lang"))) state.lang = q.get("lang");
@@ -400,6 +475,8 @@ function init() {
   if (q.get("title"))
     Object.assign(state, { title: q.get("title").slice(0, 80), titleTouched: true });
   if (!Object.hasOwn(BAND_LABEL, state.band)) state.band = DEFAULTS.band;
+  if (!SOURCES.includes(state.source)) state.source = DEFAULTS.source;
+  if (!q.get("source")) Object.assign(state, followBand({ band: state.band }));
   bind();
   syncControls();
   render();
