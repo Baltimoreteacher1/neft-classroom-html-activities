@@ -257,7 +257,11 @@ export function familyTourElsewhere(url) {
  * The HTML the lab host serves names The Language Page for crawlers and link previews, not only after
  * JavaScript runs: the shell is one file shared with eduwonderlab.com, so the rename happens on the way out.
  */
-export const LAB_BRAND = { name: "The Language Page", poweredBy: "Powered by EduWonderLab" };
+export const LAB_BRAND = {
+  name: "The Language Page",
+  poweredBy: "Powered by EduWonderLab",
+  descriptor: "K–8 Multilingual Curriculum & Assessment Studio",
+};
 
 export function brandLabHtml(html, pathname) {
   const studio = studioFor(pathname);
@@ -272,7 +276,7 @@ export function brandLabHtml(html, pathname) {
     )
     .replace(
       /<strong>(?:ELL Lab|ACCESS Practice Lab)<\/strong><small>EduWonderLab<\/small>/,
-      `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.poweredBy}</small>`,
+      `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.descriptor}</small>`,
     )
     .replace(
       "</head>",

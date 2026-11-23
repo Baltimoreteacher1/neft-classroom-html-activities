@@ -31,13 +31,7 @@
   padding: var(--s-5) var(--s-4) var(--s-5);
   border: 1px solid color-mix(in srgb, var(--jr-unit) 20%, var(--line));
   border-radius: var(--r-xl);
-  background:
-    radial-gradient(
-      70% 50% at 100% 0%,
-      color-mix(in srgb, var(--jr-unit) 9%, transparent),
-      transparent 70%
-    ),
-    var(--grain), color-mix(in srgb, var(--jr-soft) 55%, var(--surface));
+  background: color-mix(in srgb, var(--jr-soft) 55%, var(--surface));
   box-shadow: var(--edge-light), var(--shadow);
   scroll-margin-top: 5rem;
 }
@@ -137,7 +131,7 @@
   align-content: start;
   padding: var(--s-4);
   border: 1px solid var(--line);
-  border-top: 4px solid var(--jr-unit);
+  border-top: 3px solid var(--jr-unit);
   border-radius: var(--jr-radius);
   background: var(--grain), var(--jr-card);
   box-shadow: var(--edge-light), var(--shadow);
@@ -161,11 +155,10 @@
   height: 2.5rem;
   border-radius: 50%;
   background: var(--jr-unit);
-  color: #fff;
+  color: var(--on-brand);
   font: 600 1.35rem/1 var(--font-display);
   box-shadow:
-    0 0 0 3px var(--surface),
-    0 0 0 4.5px color-mix(in srgb, var(--jr-unit) 50%, transparent);
+    0 0 0 3px var(--surface), var(--shadow-card);
 }
 .jr-page[data-band="3-5"] .jr-num {
   width: 3rem;
@@ -182,7 +175,7 @@
   height: 1.4rem;
   padding: 0.2rem;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
 }
 .jr-kick {
   margin: 0.15rem 0 0;
@@ -246,7 +239,7 @@
 .jr-mark.is-evidence a {
   padding: 0.1rem 0.6rem;
   border: 1.5px solid color-mix(in srgb, var(--jr-unit) 55%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--jr-soft);
 }
 
@@ -257,15 +250,8 @@
   gap: var(--s-4);
   padding: clamp(1.25rem, 3.2vw, 2.5rem);
   border-radius: var(--r-xl);
-  color: #fff;
-  background:
-    radial-gradient(
-      60% 90% at 100% 0%,
-      color-mix(in srgb, var(--jr-glow) 28%, transparent),
-      transparent 70%
-    ),
-    var(--grain),
-    linear-gradient(150deg, var(--jr-unit), color-mix(in srgb, var(--jr-unit) 52%, var(--mi-950)));
+  color: var(--on-brand);
+  background: var(--jr-unit);
   box-shadow: var(--shadow-float), var(--edge-light-dark);
 }
 .jr-ov-copy {
@@ -280,7 +266,7 @@
 .jr-ov-hero .jr-status strong,
 .jr-ov-hero .jr-status .ico,
 .jr-ov-hero .fine {
-  color: #fff;
+  color: var(--on-brand);
 }
 .jr-ov-hero .lead {
   margin: 0;
@@ -299,7 +285,7 @@
   max-width: 56ch;
   margin: 0;
   padding: var(--s-3) var(--s-4);
-  border-inline-start: 4px solid var(--jr-glow);
+  border: 1px solid var(--jr-glow);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   background: rgb(255 255 255 / 12%);
   font-family: var(--font-display);
@@ -319,21 +305,21 @@
 }
 .jr-ov-hero .jr-env {
   background: rgb(255 255 255 / 16%);
-  color: #fff;
+  color: var(--on-brand);
 }
 .jr-ov-hero .eyebrow .jr-klu {
-  color: #fff;
+  color: var(--on-brand);
 }
 .jr-ov-hero .jr-cta {
   margin-top: var(--s-2);
 }
 .jr-ov-hero .jr-cta .btn-primary {
-  background: linear-gradient(180deg, var(--ivory), #efe6da);
+  background: var(--surface-2);
   border-color: transparent;
   color: var(--mi-950);
 }
 .jr-ov-hero :focus-visible {
-  outline-color: #fff;
+  outline-color: var(--surface);
   box-shadow: 0 0 0 6px rgb(8 14 37 / 85%);
 }
 .jr-ov-art {
@@ -388,7 +374,7 @@
 .jr-step.is-done-supported .jr-step-n,
 .jr-step.is-done-independent .jr-step-n {
   background: var(--jr-unit);
-  color: #fff;
+  color: var(--on-brand);
 }
 .jr-step-body {
   display: grid;
@@ -448,7 +434,7 @@
 .jr-chip {
   padding: 0.3rem 0.8rem;
   border: 1.5px solid color-mix(in srgb, var(--jr-unit) 40%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--jr-soft);
   color: var(--jr-ink);
   font-weight: 700;
@@ -463,7 +449,7 @@
   gap: 0.4rem;
   justify-self: start;
   padding: 0.15rem 0.7rem 0.15rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--room-soft);
   color: var(--room-ink);
   font-weight: 700;
@@ -560,7 +546,7 @@
     border: 2px solid rgb(255 255 255 / 40%);
     border-radius: 50%;
     background: rgb(255 255 255 / 12%);
-    color: #fff;
+    color: var(--on-brand);
   }
   .jr-ov-art .jr-env-glyph {
     width: 3.75rem;

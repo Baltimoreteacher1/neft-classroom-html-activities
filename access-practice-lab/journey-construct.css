@@ -86,7 +86,7 @@
   min-height: 2.25rem;
   padding: 0.15rem 0.85rem 0.15rem 0.2rem;
   border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-2);
   font-weight: 700;
@@ -118,11 +118,11 @@
 }
 .cn-steps li.is-here .cn-step-n {
   background: var(--room);
-  color: #fff;
+  color: var(--on-brand);
 }
 .cn-steps li.is-done .cn-step-n {
   background: var(--right);
-  color: #fff;
+  color: var(--on-brand);
 }
 .cn-phases li {
   position: relative;
@@ -205,39 +205,31 @@
   padding: 0.3rem 1rem;
   border: 1.5px solid var(--tag, var(--line-strong));
   border-radius: calc(var(--cn-radius) * 0.7);
-  background: linear-gradient(180deg, var(--surface), var(--tag-soft, var(--surface-2)));
+  background: var(--surface);
   color: var(--ink);
   font: 700 1rem/1.2 var(--font);
   text-align: start;
   cursor: pointer;
   box-shadow:
-    var(--edge-light),
-    0 2px 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent),
-    0 8px 14px -10px rgb(8 14 37 / 45%);
+    var(--edge-light), var(--shadow-card);
   transition:
     transform var(--dur-1) var(--ease-press),
     box-shadow var(--dur-2) var(--ease-out),
     background-color var(--dur-2) var(--ease-out);
 }
 .cn-chip:hover {
-  transform: translateY(-1px);
   box-shadow:
-    var(--edge-light),
-    0 3px 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent),
-    0 12px 18px -10px rgb(8 14 37 / 45%);
+    var(--edge-light), var(--shadow-card);
 }
 .cn-chip:active {
-  transform: translateY(2px);
   box-shadow:
-    var(--edge-light),
-    0 0 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent);
+    var(--edge-light), var(--shadow-card);
 }
 .cn-chip[aria-pressed="true"] {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
-  transform: translateY(2px);
-  box-shadow: inset 0 2px 6px rgb(0 0 0 / 35%);
+  color: var(--on-brand);
+  box-shadow: none;
 }
 .cn-chip[disabled] {
   opacity: 0.55;
@@ -252,7 +244,7 @@
   height: 1.7rem;
   border-radius: 50%;
   background: var(--tag);
-  color: #fff;
+  color: var(--on-brand);
   font-size: 0.85rem;
 }
 .cn-pair {
@@ -305,11 +297,11 @@
 .cn-tile {
   padding: 0.1rem 0.5rem;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-2);
   font-size: 0.95rem;
-  box-shadow: 0 1px 0 var(--line-strong);
+  box-shadow: var(--shadow-card);
 }
 .cn-tile.is-new {
   border-color: var(--room);
@@ -351,7 +343,7 @@
 }
 .cn-frames li {
   padding: var(--s-2) var(--s-3);
-  border-inline-start: 4px solid var(--writing);
+  border: 1px solid var(--writing);
   background: var(--writing-soft);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
@@ -440,13 +432,13 @@
   flex: none;
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: 50%;
 }
 .cn-needs li.is-met .cn-mark {
   border-color: var(--right);
   background: var(--right);
-  color: #fff;
+  color: var(--on-brand);
 }
 .cn-mark .ico {
   width: 0.9rem;
@@ -460,7 +452,7 @@
 }
 .cn-quote {
   padding: 0 0.4rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   border: 1px solid var(--line-strong);
   font-weight: 700;
@@ -504,7 +496,7 @@ mark.cn-clause {
   position: relative;
   padding: 0.05em 0.3em;
   border-bottom: 3px solid var(--tag);
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   background: var(--tag-soft);
   color: var(--ink);
   animation: cn-settle var(--dur-3) var(--ease-press);
@@ -523,7 +515,7 @@ mark.cn-pron {
   position: relative;
   padding: 0.05em 0.35em;
   border-bottom: 3px solid var(--tag);
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   background: var(--tag-soft);
   color: var(--ink);
   font-weight: 700;
@@ -579,8 +571,7 @@ mark.cn-pron {
   border-radius: var(--radius-sm);
   background: var(--surface);
   box-shadow:
-    var(--edge-light),
-    0 4px 0 color-mix(in srgb, var(--tag) 30%, transparent);
+    var(--edge-light), var(--shadow-card);
 }
 .cn-arrow-cause {
   --tag: var(--cause);
@@ -601,7 +592,7 @@ mark.cn-pron {
 }
 .cn-arrow-word {
   padding: 0 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   border: 1.5px solid var(--line-strong);
   font-weight: 700;
@@ -639,7 +630,7 @@ mark.cn-pron {
 }
 .cn-note {
   padding: var(--s-2) var(--s-3);
-  border-inline-start: 4px solid var(--cause);
+  border: 1px solid var(--cause);
   background: var(--cause-soft);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
@@ -676,7 +667,7 @@ mark.cn-pron {
   min-width: 4.5rem;
   padding: 0 0.5rem;
   border-bottom: 3px solid var(--line-strong);
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   background: var(--surface-2);
   text-align: center;
   font-weight: 700;
@@ -776,7 +767,7 @@ mark.cn-pron {
   min-height: 3.5rem;
   padding: 0 var(--s-3);
   border: 2px solid var(--mi-300);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--ivory);
   color: var(--ink);
   font: 700 1.2rem/1 var(--font);
@@ -823,7 +814,7 @@ mark.cn-pron {
   height: 2rem;
   border-radius: 50%;
   background: var(--room);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 700;
 }
 .cn-unit-t {
@@ -839,17 +830,15 @@ mark.cn-pron {
   width: var(--cn-hot);
   height: var(--cn-hot);
   border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
   box-shadow:
-    var(--edge-light),
-    0 2px 0 var(--line-strong);
+    var(--edge-light), var(--shadow-card);
   transition: transform var(--dur-1) var(--ease-press);
 }
 .cn-btn-ico:active {
-  transform: translateY(2px);
   box-shadow: none;
 }
 .cn-btn-ico[disabled] {

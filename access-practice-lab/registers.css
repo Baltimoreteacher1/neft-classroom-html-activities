@@ -2,7 +2,7 @@
    One design system (ds.css tokens), three deliberate registers set by src/register.js on body[data-lab-register]:
    - student (default): the immersive Living Language Studio atmosphere, unchanged here.
    - teacher: calm professional workspace — flat paper, hairline structure, no grain, restrained colour.
-   - family: warm and simple — ivory paper, large calm actions, generous line height.
+   - family: warm and simple — large calm actions, generous line height; same paper and tokens as the rest.
    Never redefine tokens in a screen sheet; registers only re-point tokens and flatten decoration. */
 
 /* ── header: two calm rows on tablets and desktops ─────────────────────── */
@@ -51,7 +51,7 @@
   .lab-tools > .grade-select {
     margin-inline-start: 0.5rem !important;
     min-height: 2.35rem;
-    border-width: 1.5px;
+    border-width: 1px;
   }
   .lab-tools > .grade-select select {
     min-height: 2.1rem;
@@ -91,7 +91,7 @@
     justify-content: flex-start;
     color: var(--ink-2);
     font-size: 0.875rem !important;
-    font-weight: 700;
+    font-weight: 600;
     transform: none !important;
   }
   .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) > span {
@@ -111,12 +111,36 @@
     left: 0.7rem;
     right: 0.7rem;
     bottom: 0;
-    height: 3px;
-    border-radius: 3px 3px 0 0;
+    height: 2px;
+    border-radius: 0;
   }
   /* six places, one calm row: the audience doors read as a publisher's section links */
   .lab-top .lab-tools > .top-link.top-aud {
     font-size: 0.9375rem !important;
+  }
+}
+/* Wide screens: the editorial bar is one 64px row, wordmark left, five places and the tools right. */
+@media (min-width: 1360px) {
+  .lab-top {
+    min-height: 4rem;
+    padding-block: 0;
+    gap: 0 0.25rem;
+  }
+  .lab-top::after {
+    display: none;
+  }
+  .lab-brand {
+    flex: 0 0 auto;
+    margin-inline-end: auto;
+  }
+  .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) {
+    order: 1 !important;
+  }
+  .lab-tools > :is(.grade-select, .lang-switch, .lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn, .lab-utilities, .mode-flag) {
+    order: 2 !important;
+  }
+  .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn)[aria-current="page"]::after {
+    bottom: 0.2rem;
   }
 }
 @media (min-width: 720px) and (max-width: 1099px) {
@@ -272,7 +296,7 @@
     gap: 0.3rem;
     padding: 0.3rem 0.35rem !important;
     border: 1px solid var(--line) !important;
-    border-radius: 12px !important;
+    border-radius: var(--radius-sm) !important;
     background: var(--surface) !important;
     color: var(--ink);
     font-size: 0.85rem !important;
@@ -371,25 +395,21 @@
 
 /* ── teacher register: calm, flat, efficient ───────────────────────────── */
 body[data-lab-register="teacher"] {
-  --bg: #f5f5f2;
-  --shadow: 0 1px 2px rgb(16 26 59 / 7%);
-  --shadow-lift: 0 2px 6px rgb(16 26 59 / 9%);
-  --shadow-float: 0 8px 24px rgb(16 26 59 / 12%);
-  background: var(--bg);
+  background: var(--bg-canvas);
 }
 body[data-lab-register="teacher"] .lab-top {
-  background: #fff;
+  background: var(--bg-surface);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
 }
 body[data-lab-register="teacher"] main :is(.panel, .card, .ls-hero, .lb-hero) {
   background-image: none;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 body[data-lab-register="teacher"] .ls-hero {
-  background: #fff;
-  border-color: var(--line);
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
 }
 body[data-lab-register="teacher"] main h1 {
   letter-spacing: -0.02em;
@@ -401,12 +421,9 @@ body[data-lab-register="teacher"] main :is(.btn, .ghost, .card):hover {
   transform: none;
 }
 
-/* ── family register: warm and simple ──────────────────────────────────── */
+/* ── family register: warm and simple (larger actions, roomier lines; same paper and tokens) ── */
 body[data-lab-register="family"] {
-  --bg: #fbf6ec;
-  --surface-2: #f6eedf;
-  background:
-    radial-gradient(900px 420px at 15% -80px, rgb(245 214 168 / 38%), transparent 70%), var(--bg);
+  background: var(--bg-canvas);
 }
 body[data-lab-register="family"] main {
   line-height: 1.6;
@@ -423,21 +440,21 @@ body[data-lab-register="family"] main :is(.btn, .btn-primary, .btn-secondary) {
   }
 }
 
-/* ── palette accents (Deep Harbor: navy ground, teal interaction, gold highlight, terracotta maker) ── */
+/* ── palette accents (Editorial Academic: navy brand, teal interaction, ochre marker, terracotta maker) ── */
 .top-link[aria-current="page"]::after {
   background: var(--teal);
 }
 .lang-banner {
-  background: var(--surface-2);
-  box-shadow: inset 4px 0 0 var(--teal);
+  background: var(--bg-subtle);
+  box-shadow: none;
 }
 .eyebrow {
   color: var(--teal);
 }
 .btn-primary:hover,
 .btn-primary:focus-visible {
-  background: #0b4f5e;
-  border-color: #0b4f5e;
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
 }
 .top-access-prep.is-featured .ico {
   color: var(--accent);
@@ -449,44 +466,33 @@ body[data-lab-register="family"] main :is(.btn, .btn-primary, .btn-secondary) {
   background: var(--teal);
 }
 
-/* ── home first screen: the Deep Harbor stage ─────────────────────────────
-   The front door is the strongest expression of the identity: a deep navy stage with a teal tide and a
-   gold sunrise, ivory display type, and light cards (video, today's mission) floating on it. */
+/* ── home first screen ────────────────────────────────────────────────────
+   A flat editorial panel: --bg-subtle with a hairline border, slate ink, and plain cards (video, today's mission)
+   sitting on it. No gradient stage, no glow. */
 body[data-lab-view="home"] .lph {
   position: relative;
   overflow: hidden;
-  border: 0;
-  background:
-    radial-gradient(700px 360px at 88% -10%, rgb(226 167 46 / 32%), transparent 70%),
-    radial-gradient(820px 420px at 0% 110%, rgb(15 118 110 / 55%), transparent 70%),
-    linear-gradient(160deg, #0b2339 0%, #123a5c 58%, #0f4c5c 100%);
-  color: #f3efe6;
-  box-shadow: var(--shadow-float);
-}
-body[data-lab-view="home"] .lph::before {
-  content: "";
-  position: absolute;
-  inset: auto -10% -1px;
-  height: 46%;
-  pointer-events: none;
-  background: repeating-radial-gradient(ellipse at 50% 140%, rgb(255 255 255 / 0%) 0 22px, rgb(156 200 198 / 9%) 23px 24px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  box-shadow: none;
 }
 body[data-lab-view="home"] .lph > * {
   position: relative;
 }
 body[data-lab-view="home"] .lph :is(.lph-title, .lph-intro > .lph-label) {
-  color: #fffaf0;
+  color: var(--text-primary);
 }
 body[data-lab-view="home"] .lph-lead {
-  color: #d2e2e4;
+  color: var(--text-secondary);
 }
-/* The grade picker's labels and notes sit straight on the navy stage (ink-2 there measured 1.3:1). */
 body[data-lab-view="home"] .lph .lph-setting :is(.lph-label, .grade-focus-label, .grade-focus-counts, .grade-focus-note) {
-  color: #d2e2e4;
+  color: var(--text-secondary);
 }
 body[data-lab-view="home"] .lph :is(.lph-continue, .lph-front) {
-  border: 0;
-  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
 }
 
 /* The shared mobile sheet (/assets/mobile-access.css) sets the deprecated `word-break: break-word` on body, which
@@ -635,14 +641,14 @@ html body {
   }
 }
 
-/* The sticky "More" button sits over the scrolling header strip: a solid backing (the header's own ivory) to its
+/* The sticky "More" button sits over the scrolling header strip: a solid backing (the header's own surface) to its
    right and a soft fade to its left keep the links behind it from peeking out ("…te" of Site Guide). */
 @media (max-width: 860px) {
   .lab-tools > .lab-utilities {
-    background: #fffcf5;
+    background: var(--bg-surface);
     box-shadow:
-      -14px 0 12px -6px #fffcf5,
-      16px 0 0 0 #fffcf5;
+      -14px 0 12px -6px var(--bg-surface),
+      16px 0 0 0 var(--bg-surface);
   }
 }
 

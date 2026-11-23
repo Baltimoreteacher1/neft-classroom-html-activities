@@ -258,6 +258,7 @@ test("the receiver asks its opener and accepts only the partner origin's data", 
 test("the server and the app spell the product name the same way", () => {
   assert.equal(BRAND.name, LAB_BRAND.name);
   assert.equal(BRAND.poweredBy, LAB_BRAND.poweredBy);
+  assert.equal(BRAND.descriptor, LAB_BRAND.descriptor);
   globalThis.location = { hostname: "thelanguagepage.com" };
   assert.equal(brandTitle("My Language Path"), "My Language Path · The Language Page");
   globalThis.location = { hostname: "eduwonderlab.com" };

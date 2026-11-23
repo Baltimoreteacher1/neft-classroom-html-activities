@@ -5,8 +5,8 @@
 .adv-world,
 .adv-run {
   --adv-accent: var(--brand);
-  --adv-soft: var(--brand-soft, #e9edf8);
-  --adv-ink: var(--brand-ink, #123a5c);
+  --adv-soft: var(--brand-soft, var(--brand-soft));
+  --adv-ink: var(--brand-ink, var(--ink));
   display: flex;
   flex-direction: column;
   gap: var(--s-5, 1.5rem);
@@ -23,7 +23,7 @@
   margin: 0;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border-radius: var(--r-lg, 16px);
+  border-radius: var(--r-lg);
   background: var(--adv-soft);
 }
 .adv-stage-bg {
@@ -80,8 +80,8 @@
   height: 100%;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--adv-accent) 22%, var(--line));
-  border-top: 6px solid var(--adv-accent);
-  border-radius: var(--r-lg, 16px);
+  border-top: 3px solid var(--adv-accent);
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   color: var(--ink);
@@ -92,7 +92,6 @@
 }
 a.adv-card:hover,
 a.adv-card:focus-visible {
-  transform: translateY(-3px);
   box-shadow: var(--shadow-lift);
 }
 .adv-card-body {
@@ -137,7 +136,7 @@ a.adv-card:focus-visible {
   place-items: center;
   aspect-ratio: 16 / 9;
   font-size: 3.2rem;
-  background: var(--surface-3, #eef1f7);
+  background: var(--surface-3, var(--brand-soft));
   filter: grayscale(0.4);
 }
 
@@ -146,7 +145,7 @@ a.adv-card:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   overflow: hidden;
-  border-radius: var(--r-xl, 22px);
+  border-radius: var(--r-xl);
   background: var(--adv-soft);
   box-shadow: var(--shadow);
 }
@@ -196,7 +195,7 @@ a.adv-card:focus-visible {
   gap: 1rem;
   padding: 1rem 1.15rem;
   border: 1px solid var(--line);
-  border-radius: var(--r-lg, 16px);
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   color: var(--ink);
@@ -223,11 +222,11 @@ a.adv-node-card:focus-visible {
 }
 .adv-node.is-done .adv-node-n {
   background: var(--adv-accent);
-  color: #fff;
+  color: var(--on-brand);
 }
 .adv-node.is-going .adv-node-n,
 .adv-node.is-available .adv-node-n {
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--adv-accent) 22%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--adv-accent) 22%, transparent);
 }
 .adv-node.is-locked .adv-node-card {
   background: var(--surface-2);
@@ -269,8 +268,8 @@ a.adv-node-card:focus-visible {
 }
 .adv-log-item {
   padding: 1rem;
-  border-left: 5px solid var(--adv-accent);
-  border-radius: var(--radius, 10px);
+  border: 1px solid var(--adv-accent);
+  border-radius: var(--radius);
   background: var(--adv-soft);
 }
 .adv-log-head {
@@ -325,8 +324,8 @@ a.adv-node-card:focus-visible {
   gap: 0.4rem;
   min-height: var(--target, 48px);
   padding: 1rem;
-  border: 2px solid var(--line-control);
-  border-radius: var(--r-lg, 16px);
+  border: 1px solid var(--line-control);
+  border-radius: var(--r-lg);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -376,7 +375,7 @@ a.adv-node-card:focus-visible {
   position: relative;
   padding: 1.25rem 1.4rem;
   border: 2px solid color-mix(in srgb, var(--adv-accent) 40%, var(--line));
-  border-radius: var(--r-xl, 22px);
+  border-radius: var(--r-xl);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
@@ -398,15 +397,15 @@ a.adv-node-card:focus-visible {
   max-width: var(--measure, 46rem);
   padding: clamp(1.25rem, 3vw, 2.25rem);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg, 16px);
-  background: var(--ivory, #fffaf0);
+  border-radius: var(--r-lg);
+  background: var(--ivory, var(--surface));
   box-shadow: var(--shadow);
 }
 .adv-paper-art {
   float: right;
   width: min(36%, 12rem);
   margin: 0 0 0.75rem 1rem;
-  border-radius: var(--radius, 10px);
+  border-radius: var(--radius);
 }
 .adv-passage {
   font-size: 1.15rem;
@@ -428,8 +427,8 @@ a.adv-node-card:focus-visible {
 .adv-gloss-card:has(p) {
   clear: both;
   padding: 0.75rem 1rem;
-  border-left: 5px solid var(--adv-accent);
-  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--adv-accent);
+  border-radius: var(--radius-sm);
   background: var(--adv-soft);
 }
 .adv-gloss-card p {
@@ -441,7 +440,7 @@ a.adv-node-card:focus-visible {
 .adv-check-card {
   max-width: 44rem;
   padding: clamp(1.25rem, 3vw, 2rem);
-  border-radius: var(--r-xl, 22px);
+  border-radius: var(--r-xl);
   background: var(--adv-soft);
 }
 .adv-transcript {
@@ -477,7 +476,7 @@ a.adv-node-card:focus-visible {
   gap: 0.5rem;
   padding: 0.9rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius, 10px);
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
@@ -505,7 +504,7 @@ a.adv-node-card:focus-visible {
   top: 5rem;
   padding: 1rem;
   border: 2px dashed color-mix(in srgb, var(--adv-accent) 50%, var(--line));
-  border-radius: var(--r-lg, 16px);
+  border-radius: var(--r-lg);
   background: var(--adv-soft);
 }
 .adv-board h3 {
@@ -547,8 +546,8 @@ a.adv-node-card:focus-visible {
   gap: 0.85rem;
   min-height: var(--target, 48px);
   padding: 0.85rem 1rem;
-  border: 2px solid var(--line-control);
-  border-radius: var(--r-lg, 16px);
+  border: 1px solid var(--line-control);
+  border-radius: var(--r-lg);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -603,7 +602,7 @@ a.adv-node-card:focus-visible {
   gap: 0.75rem;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius, 10px);
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
@@ -619,7 +618,7 @@ a.adv-node-card:focus-visible {
   height: 2rem;
   border-radius: 50%;
   background: var(--adv-accent);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 800;
 }
 .adv-order-text {
@@ -643,7 +642,7 @@ a.adv-node-card:focus-visible {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-4, 1rem);
   padding: 1rem;
-  border-radius: var(--r-lg, 16px);
+  border-radius: var(--r-lg);
   background: var(--adv-soft);
 }
 .adv-supports h3 {
@@ -675,7 +674,7 @@ a.adv-node-card:focus-visible {
 .adv-model {
   max-width: 48rem;
   padding: 0.75rem 1rem;
-  border-radius: var(--radius, 10px);
+  border-radius: var(--radius);
   background: var(--surface-2);
 }
 
@@ -690,7 +689,7 @@ a.adv-node-card:focus-visible {
   align-items: center;
   gap: 1rem;
   padding: 1.25rem;
-  border-radius: var(--r-xl, 22px);
+  border-radius: var(--r-xl);
   background: var(--adv-soft);
 }
 .adv-done-head h2 {
@@ -707,9 +706,9 @@ a.adv-node-card:focus-visible {
   max-width: 48rem;
   padding: clamp(1.25rem, 3vw, 2rem);
   border: 1px solid var(--line);
-  border-top: 6px solid var(--adv-accent);
-  border-radius: var(--r-lg, 16px);
-  background: var(--ivory, #fffaf0);
+  border-top: 3px solid var(--adv-accent);
+  border-radius: var(--r-lg);
+  background: var(--ivory, var(--surface));
   box-shadow: var(--shadow);
 }
 .adv-artifact-text {
@@ -777,24 +776,24 @@ a.adv-node-card:focus-visible {
   }
 }
 /* Museum field desk: disclosures expose the authored clues without implying correctness. */
-.museum-inspection { margin-block: 1.25rem; overflow: hidden; border: 1px solid #b5bfb4; border-radius: 20px; background: #f8f3e7; color: #193e48; }
-.museum-gallery-art { background: #e7d6b5; }
+.museum-inspection { margin-block: 1.25rem; overflow: hidden; border: 1px solid var(--border-control); border-radius: var(--radius-md); background: var(--hint-soft); color: var(--teal); }
+.museum-gallery-art { background: var(--hint-soft); }
 .museum-gallery-art > svg { display: block; width: 100%; height: auto; max-height: 22rem; }
-.museum-inspection-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.25rem; padding: 1rem 1.25rem; border-top: 1px solid #b5bfb4; }
+.museum-inspection-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.25rem; padding: 1rem 1.25rem; border-top: 1px solid var(--border-control); }
 .museum-inspection-head strong { display: inline-flex; align-items: center; gap: .5rem; }
 .museum-inspection-head span { font-size: 1rem; }
 .museum-evidence-markers { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0 1.25rem 1.25rem; margin: 0; }
-.museum-evidence-markers li { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .65rem; border: 1px solid #b5bfb4; border-radius: 7px; font-size: .9375rem; background: #fffdf7; }
-.museum-evidence-markers li.is-collected { background: #deeee2; border-color: #17695d; font-weight: 700; }
+.museum-evidence-markers li { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .65rem; border: 1px solid var(--border-control); border-radius: var(--radius-sm); font-size: .9375rem; background: var(--surface-2); }
+.museum-evidence-markers li.is-collected { background: var(--right-soft); border-color: var(--teal); font-weight: 700; }
 .museum-evidence-markers svg { width: 1.2rem; height: 1.2rem; }
 @media (max-width:600px) { .museum-gallery-art > svg { min-height: 10rem; object-fit: cover; } }
 
 .museum-gallery-art img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
 
 .museum-gallery-art { position: relative; }
-.museum-case-hotspot { position: absolute; left: 48%; top: 65%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: .4rem; padding: .7rem 1rem; min-height: 48px; border: 2px solid #f1d797; border-radius: 999px; background: #17324d; color: #fff8e8; text-decoration: none; box-shadow: 0 3px 14px #10263b66; font-weight: 700; }
-.museum-case-hotspot:hover { background: #245f62; color: #fff8e8; }
-.museum-case-hotspot:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.museum-case-hotspot { position: absolute; left: 48%; top: 65%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: .4rem; padding: .7rem 1rem; min-height: 48px; border: 2px solid var(--accent); border-radius: var(--radius-sm); background: var(--brand); color: var(--hint-soft); text-decoration: none; box-shadow: var(--shadow-card); font-weight: 700; }
+.museum-case-hotspot:hover { background: var(--teal); color: var(--hint-soft); }
+.museum-case-hotspot:focus-visible { outline: 3px solid var(--surface); outline-offset: 4px; }
 #museum-evidence { scroll-margin-top: 12rem; }
 @media(max-width: 500px) { .museum-case-hotspot { font-size: .875rem; padding: .55rem .75rem; gap: .3rem; white-space: nowrap; } }
 .museum-case-hotspot svg { width: 1.2rem; height: 1.2rem; min-height: 0; max-height: none; flex: none; }

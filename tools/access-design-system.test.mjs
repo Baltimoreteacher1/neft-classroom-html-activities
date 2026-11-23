@@ -80,10 +80,15 @@ const ratio = (a, b) => {
   const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 };
-const token = (name) => {
-  const m = read(join(LAB, "ds.css")).match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`));
-  assert.ok(m, `${name} must be a hex token in ds.css`);
-  return m[1];
+// A token is a hex value or an alias (`--ink: var(--text-primary)`) that resolves to one in ds.css.
+const token = (name, seen = new Set()) => {
+  assert.ok(!seen.has(name), `${name} aliases itself`);
+  seen.add(name);
+  const m = read(join(LAB, "ds.css")).match(
+    new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6}|var\\((--[a-z0-9-]+)\\))`),
+  );
+  assert.ok(m, `${name} must be a hex token or an alias of one in ds.css`);
+  return m[2] ? token(m[2], seen) : m[1];
 };
 
 test("domain palette: white text on each fill and ink on white/tint meet WCAG AA (4.5:1)", () => {

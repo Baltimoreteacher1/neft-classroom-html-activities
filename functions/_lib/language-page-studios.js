@@ -57,7 +57,7 @@ function chromeHtml(studio) {
 function themeHtml(studio) {
   const [main, dark, soft] = SKILL_COLOURS[studio.skill] || SKILL_COLOURS.brand;
   return `<link rel="stylesheet" href="${LAB_BASE}/studio-chrome.css" />
-<style id="lp-studio-theme">:root{--primary:${main};--primary-dark:${dark};--primary-light:${soft};--navy-deep:${dark};--lp-skill:${main};--font-outfit:"Atkinson Hyperlegible",system-ui,sans-serif;--font-space:"Fraunces",Georgia,serif}</style>`;
+<style id="lp-studio-theme">:root{--primary:${main};--primary-dark:${dark};--primary-light:${soft};--navy-deep:${dark};--lp-skill:${main};--font-outfit:"Inter",system-ui,sans-serif;--font-space:"Plus Jakarta Sans","Inter",system-ui,sans-serif}</style>`;
 }
 
 /** Re-dress one studio page for the lab host. `studio` is an entry of access-practice-lab/src/studios.js. */

@@ -3,7 +3,7 @@
    as a colored left edge AND a text label (never color alone). Climber moves are instant under
    prefers-reduced-motion. */
 .gs-connector-climb {
-  --cc-ink: #17324d;
+  --cc-ink: var(--ink);
   --cc-cause: #c94f3b;
   --cc-result: #b07a12;
   --cc-contrast: #126e6c;
@@ -20,10 +20,10 @@
 .gs-connector-climb .cc-cliff {
   position: sticky;
   top: 0.75rem;
-  border-radius: var(--gs-r, 18px);
+  border-radius: var(--gs-r, var(--radius-md));
   overflow: hidden;
-  border: var(--gs-line, 2px solid #17324d);
-  background: #d6ecf8;
+  border: var(--gs-line, 2px solid var(--brand));
+  background: var(--teal-soft);
 }
 .gs-connector-climb .cc-cliff-svg {
   display: block;
@@ -51,7 +51,7 @@
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #126e6c;
+  color: var(--teal);
 }
 .gs-connector-climb .cc-step {
   margin: 0;
@@ -63,9 +63,9 @@
   gap: 0.5rem;
   justify-items: start;
   padding: 0.85rem 1rem;
-  border-radius: var(--gs-r, 18px);
-  background: #fffdf6;
-  border: var(--gs-line, 2px solid #17324d);
+  border-radius: var(--gs-r, var(--radius-md));
+  background: var(--surface);
+  border: var(--gs-line, 2px solid var(--brand));
 }
 .gs-connector-climb .cc-clauses {
   margin: 0;
@@ -78,15 +78,15 @@
   display: inline-block;
   min-width: 4.5rem;
   padding: 0 0.45rem;
-  border-bottom: 3px dashed #d99a22;
-  background: #fff7df;
+  border-bottom: 3px dashed var(--accent);
+  background: var(--surface-2);
   border-radius: 4px;
   text-align: center;
   font-weight: 800;
 }
 .gs-connector-climb .cc-gap.is-filled {
   border-bottom-style: solid;
-  background: #fdf0c9;
+  background: var(--hint-soft);
 }
 .gs-connector-climb .cc-rack {
   display: flex;
@@ -102,9 +102,9 @@
   gap: 0.4rem;
   align-content: start;
   padding: 0.55rem;
-  border-radius: 12px;
-  background: #fbf4e2;
-  border-top: 5px solid var(--cc-c, #6d7e90);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border-top: 3px solid var(--cc-c, var(--border-control));
 }
 .gs-connector-climb .cc-group-h {
   margin: 0;
@@ -122,7 +122,7 @@
 .gs-connector-climb .cc-card {
   min-width: 7.5rem;
   font-weight: 800;
-  border-left: 6px solid var(--cc-c, var(--line-strong, #9aa9b8));
+  border: 1px solid var(--cc-c, var(--line-strong, var(--border-control)));
 }
 .gs-connector-climb .cc-gloss {
   font-size: 0.9rem;
@@ -161,9 +161,9 @@
   gap: 0.4rem;
   justify-items: start;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
-  background: #e5f5f1;
-  border: 2px dashed #1fa6a2;
+  border-radius: var(--radius-md);
+  background: var(--teal-soft);
+  border: 2px dashed var(--teal);
 }
 .gs-connector-climb .cc-say p {
   margin: 0;
@@ -183,9 +183,9 @@
 .gs-connector-climb .cc-slot {
   min-height: 3rem;
   padding: 0.35rem;
-  border-radius: 10px;
-  border: 2px dashed #9aa9b8;
-  background: #fff;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-control);
+  background: var(--surface);
   line-height: 1.5;
 }
 .gs-connector-climb .cc-slot.is-filled {
@@ -193,7 +193,7 @@
   border-color: var(--cc-ink);
 }
 .gs-connector-climb .cc-slot-empty {
-  color: #6d7e90;
+  color: var(--ink-3);
   font-style: italic;
 }
 .gs-connector-climb .cc-placed {
@@ -208,9 +208,9 @@
   overflow-wrap: anywhere;
 }
 .gs-connector-climb .cc-placed:focus-visible {
-  outline: 3px solid #f2c15b;
+  outline: 3px solid var(--status-warning-border);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 .gs-connector-climb .cc-bank {
   display: grid;
@@ -225,10 +225,10 @@
 .gs-connector-climb .cc-mark {
   padding: 0 0.2rem;
   border-radius: 4px;
-  background: #fdf0c9;
+  background: var(--hint-soft);
   color: inherit;
   font-weight: 800;
-  box-shadow: inset 0 -3px 0 var(--cc-c, #d99a22);
+  box-shadow: inset 0 -3px 0 var(--cc-c, var(--accent));
 }
 .gs-connector-climb .cc-guide {
   justify-self: start;

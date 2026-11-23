@@ -139,15 +139,7 @@ test("navigation: six audience places on top, every former top-row door in More,
     new JSDOM(`<nav>${toHtml(navHTML({ band, route }, I))}</nav>`).window.document;
   const doc = render("6-8", { view: "wordlab" });
   const top = [...doc.querySelectorAll("nav > a")].map((a) => a.textContent.trim());
-  assert.deepEqual(top, [
-    "Home",
-    "Teachers",
-    "BCPSS Teachers",
-    "Students",
-    "Families",
-    "Find Resources",
-    "Help",
-  ]);
+  assert.deepEqual(top, ["Teachers", "Students", "Families", "Find Resources", "Help"]);
   assert.equal(doc.querySelectorAll('nav > a[aria-current="page"]').length, 1);
   assert.match(doc.querySelector('nav > a[aria-current="page"]').textContent, /Students/);
   const hrefOf = (label) =>
@@ -155,7 +147,6 @@ test("navigation: six audience places on top, every former top-row door in More,
       .find((a) => a.textContent.trim() === label)
       .getAttribute("href");
   assert.equal(hrefOf("Teachers"), "/access-teacher/");
-  assert.equal(hrefOf("BCPSS Teachers"), "/bcpss-teachers");
   assert.equal(hrefOf("Students"), "/access-practice-lab/students?grades=6-8");
   assert.equal(hrefOf("Families"), "/access-practice-lab/family-start");
   assert.equal(hrefOf("Find Resources"), "/access-practice-lab/search?grades=6-8");
@@ -172,6 +163,7 @@ test("navigation: six audience places on top, every former top-row door in More,
     "My Progress",
     "Create a Book",
     "Site Guide",
+    "BCPSS Teachers",
   ])
     assert.ok(go.includes(door), `More keeps ${door}`);
   // K–3: the same six places; the early home, activity finder and Passport are in More.

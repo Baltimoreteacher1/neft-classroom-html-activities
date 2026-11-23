@@ -677,7 +677,6 @@ test("bare home never pre-picks a grade; choosing one opens that grade's home", 
 
 test("home links are bare: breadcrumbs and the header Home never carry ?grades=", async () => {
   const { crumbsHTML } = await import("../access-practice-lab/src/components.js");
-  const { primaryLinks } = await import("../access-practice-lab/src/nav.js");
   const trail = dom(
     crumbsHTML([
       ["Lab", "/access-practice-lab/?grades=6-8"],
@@ -685,9 +684,10 @@ test("home links are bare: breadcrumbs and the header Home never carry ?grades="
     ]),
   );
   assert.equal(trail.querySelector("a").getAttribute("href"), "/access-practice-lab/");
-  assert.equal(
-    primaryLinks("6-8", (en) => en).find((l) => l.id === "home").href,
-    "/access-practice-lab/",
+  // The header Home is the wordmark link, static in index.html and never carrying ?grades=.
+  assert.match(
+    read("access-practice-lab/index.html"),
+    /<a class="lab-brand" href="\/access-practice-lab\/"/,
   );
 });
 

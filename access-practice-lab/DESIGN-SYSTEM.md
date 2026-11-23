@@ -22,54 +22,42 @@ rules (no invented proficiency, supports never contaminate independent results, 
 `ds.css` loads before the screen sheets. Never redefine a token or a shared component inside a screen sheet;
 add a variant class instead. If you need a new shared token or component, add it to `ds.css`.
 
-## Identity — The Living Language Studio
+## Identity
 
-Editorial, dimensional, academic. Display type is Fraunces (headings `h1`, `h2`, big numerals); everything else is
-Atkinson Hyperlegible (chosen for legibility for multilingual learners). Both are self-hosted under `/assets/fonts/`.
+Editorial Academic: warm paper, deep slate ink, restrained accents, flat crisp cards. Type is self-hosted
+(`/assets/fonts/`, bundle `inter-jetbrains-mono-plus-jakarta-sans-source-serif-4-lp`): **Plus Jakarta Sans** 600/700 for
+headings and wordmarks, **Inter** 400-600 for UI and body (`font-feature-settings: "cv02","cv03","cv04","cv11"`),
+**Source Serif 4** only for reading passages and literary prompts (`.passage`, `blockquote`, line-height 1.75),
+**JetBrains Mono** for WIDA codes, ELP levels and score readouts. Scores, levels and timers use tabular numerals.
+Body is 16px / 1.6; instructional text and passages never exceed 68ch.
 
-Six material families (tokens on `:root` in `ds.css`) are art-direction anchors, not gradients to spray around:
-
-| Material         | Tokens                         | Used for                                                               |
-| ---------------- | ------------------------------ | ---------------------------------------------------------------------- |
-| Midnight Indigo  | `--mi-950 … --mi-300`          | brand atmosphere, the home hero, Language World bands, primary buttons |
-| Ivory & Pearl    | `--ivory --pearl --pearl-blue` | reading surfaces, paper, preview cards                                 |
-| Ocean Glass      | `--ocean-900/600/200`          | Listening · The Sound Studio                                           |
-| Rose & Garnet    | `--rose-900/600/200`           | Speaking · The Expression Studio                                       |
-| Burnished Copper | `--copper-900/500/200`         | Writing · The Composition Studio                                       |
-| Sage & Jade      | `--sage-900/500/200`           | growth, revision, feedback, the support choice                         |
-
-Depth comes from layered light, not decoration: `--shadow / --shadow-lift / --shadow-float` (indigo-tinted, multi-layer),
-`--edge-light` (a lit top edge on raised material) and `--grain` (fine paper texture). Glass never sits under body text.
-
-The four language domains each own a colour and are always paired with an icon and a word:
-
-| Domain    | Studio                 | Class         | Fill (white text on it) | Ink (text on white) | Glow (on midnight)    |
-| --------- | ---------------------- | ------------- | ----------------------- | ------------------- | --------------------- |
-| Listening | The Sound Studio       | `d-listening` | `--listening` #075568   | `--listening-ink`   | `--room-glow` #91e2d6 |
-| Reading   | The Reading Atelier    | `d-reading`   | `--reading` #2e4a94     | `--reading-ink`     | #d5dceb               |
-| Speaking  | The Expression Studio  | `d-speaking`  | `--speaking` #8a3a5c    | `--speaking-ink`    | #dba3b9               |
-| Writing   | The Composition Studio | `d-writing`   | `--writing` #9a4a26     | `--writing-ink`     | #f5d6a8               |
-
-Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`, `--room-glow`. Colour is never the
-only signal. Primary actions use midnight `--brand`; `--ink` is text. The content JSON `color` of each domain must
-equal its token (`tools/access-design-system.test.mjs`).
-
-**Grade bands** (`body[data-lab-band]`): Grades 3–5 get warmer paper, rounder material and 52px targets (`--target`);
-Grades 6–8 get cooler editorial paper, tighter radii and denser type. Same brand, visibly different register.
-
-**Learning vs assessment**: practice tests (`data-lab-view="test"`) and the simulator (`"assess"`) drop the atmosphere —
-plain paper, no grain, flat elevation — and the top bar shows a "Focused practice mode" label.
+The four language domains each own a colour and are always paired with an icon and a word (listening teal-ocean,
+reading indigo, speaking garnet, writing copper). Put the domain class (`d-listening` ...) on a container and use
+`--room`, `--room-ink`, `--room-soft`. Colour is never the only signal.
 
 ## Tokens (see `:root` in `ds.css`)
 
-Surfaces `--bg --surface --surface-2 --surface-3`; lines `--line --line-strong`; text `--ink --ink-2 --ink-3`;
-feedback `--right --wrong --hint` with `-soft` tints; radii `--radius-sm --radius --r-lg --r-xl`; shadows
-`--shadow --shadow-lift --shadow-float`; spacing `--s-1 … --s-8`. Text must keep 4.5:1 contrast (3:1 for large
-text and for control borders). `--ink-3` is the lightest allowed body-adjacent text on white.
+Semantic names first, legacy aliases kept so screen sheets inherit the theme:
+
+- Surfaces `--bg-canvas #faf9f6`, `--bg-surface #fff`, `--bg-subtle #f2efe9`, `--bg-interactive-hover #eae5dc`
+  (aliases `--bg --surface --surface-2 --surface-3`).
+- Ink `--text-primary #182230`, `--text-secondary #475467`, `--text-tertiary #586377` (aliases `--ink --ink-2 --ink-3`).
+  Tertiary is 0.2 darker than the original spec (#667085) so it holds 4.5:1 on `--bg-subtle` and the hover surface too.
+- Brand `--brand-primary #1e3a5f` (Oxford navy; alias `--brand`), `--brand-primary-hover`, `--brand-accent #0f766e`
+  (teal, alias `--teal`), `--brand-gold #b45309` (alias `--accent`; markers and badges, never a large fill).
+- Status `--status-{success,warning,error}-{bg,text,border}` (aliases `--right --hint --wrong` and `-soft`).
+- Lines `--border-subtle #e4e0d8` (alias `--line`), `--border-strong #cbd5e1` (alias `--line-strong`),
+  `--border-control #7c8799` for form-control edges (3:1 against white, WCAG 1.4.11; the spec's `--border-strong` is
+  1.5:1 and is only for cards and dividers).
+- Geometry `--radius-sm 6px` (badges, inputs, buttons), `--radius-md 10px` (cards), `--radius-lg 14px` (modals, heroes);
+  legacy `--r-xs --radius --r-lg --r-xl` map onto these. No pills except tiny status tags and progress tracks.
+- Depth `--shadow-card` (flat default), `--shadow-elevated` (modals and dropdowns only).
+- Spacing `--s-1 ... --s-8` on an 8px rhythm; cards have at least 24px padding on desktop.
+- Text must keep 4.5:1 contrast (3:1 for large text and control borders).
 
 ## Components (reuse; do not restyle per page)
 
-- Buttons: `.btn`, `.btn-primary`, `.btn-secondary`, `.ghost`, `.small`, `.btn-big`. 48 px minimum height.
+- Buttons: `.btn`, `.btn-primary` (navy fill, white text), `.btn-secondary` (white, 1px border), `.ghost` (quiet), `.small`, `.btn-big`. 44 px minimum height, 6px radius.
 - Panel/card: `.panel`, `.card`. Disclosure: plain `<details><summary>` (chevron is automatic).
 - Chips: `.chip`, `.cat-chip` (`aria-pressed`). Segmented grade switch: `.band-switch`. Progress: `.bar > i` (`width:%`), `ringHTML()`.
 - Callout on a domain: background `--room-soft`, border `color-mix(in srgb, var(--room) 28%, transparent)`.
@@ -148,7 +136,7 @@ desktop keeps compact pills, which clear WCAG 2.2 SC 2.5.8). A table that scroll
 
 ## Layout
 
-Page container is `.lab-main` (1200 px). Use CSS grid with `minmax(0, …)` columns; collapse deliberately at 980, 860,
+Page container is `.lab-main` (80rem = max-w-7xl, 24-32 px side padding). Use CSS grid with `minmax(0, …)` columns; collapse deliberately at 980, 860,
 640 and 560 px (do not just stack). No horizontal scroll at 320 px. Tap targets 44 px minimum. Sticky elements must
 leave room for the 68 px top bar. Respect `prefers-reduced-motion` (ds.css already disables motion globally).
 

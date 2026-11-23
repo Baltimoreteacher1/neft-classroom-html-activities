@@ -7,14 +7,14 @@
 
 /* room colours for the two studios that are not a language domain */
 .d-missions {
-  --room: #1e3a8a;
-  --room-ink: #1e3a8a;
-  --room-soft: #e8edfb;
+  --room: var(--brand);
+  --room-ink: var(--brand-ink);
+  --room-soft: var(--brand-soft);
 }
 .d-detective {
-  --room: #a43d30;
-  --room-ink: #a43d30;
-  --room-soft: #fce9e4;
+  --room: var(--accent);
+  --room-ink: var(--accent);
+  --room-soft: var(--status-warning-bg);
 }
 
 /* ── small shared pieces ───────────────────────────────────────────────── */
@@ -23,7 +23,7 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.1rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   color: var(--ink-2);
   font-size: 0.875rem;
@@ -38,7 +38,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.2rem 0.8rem 0.2rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--room-soft);
   color: var(--room-ink);
   font-size: 0.9rem;
@@ -57,7 +57,7 @@
   height: 1.75rem;
   border-radius: 50%;
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
   font: 700 0.9rem var(--font);
 }
 h3 .step-badge {
@@ -88,8 +88,8 @@ h3 .step-badge {
   align-items: center;
   gap: 0.45rem;
   padding: 0.25rem 0.85rem 0.25rem 0.3rem;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--ink);
   font-weight: 700;
   font-size: 0.9375rem;
@@ -172,13 +172,12 @@ h3 .step-badge {
 }
 .task-group .task-card,
 .mission-card {
-  --room-ink: color-mix(in srgb, var(--room) 88%, #000);
+  --room-ink: color-mix(in srgb, var(--room) 88%, var(--ink));
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
   padding: 1.1rem 1.25rem 1.15rem;
   border: 1px solid var(--line);
-  border-top: 5px solid var(--room);
   border-radius: var(--r-lg);
   background: var(--surface);
   color: var(--ink);
@@ -274,7 +273,7 @@ h3 .step-badge {
 .task-levels span {
   padding: 0 0.6rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   color: var(--ink-2);
   font-size: 0.8125rem;
   font-weight: 700;
@@ -285,7 +284,7 @@ h3 .step-badge {
 }
 .mission-card {
   gap: 0.5rem;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--room) 7%, #fff), #fff 9rem);
+  background: var(--surface);
 }
 .mc-emoji,
 .mh-emoji {
@@ -295,8 +294,8 @@ h3 .step-badge {
   width: 3.2rem;
   height: 3.2rem;
   border: 2px solid var(--ink);
-  border-radius: 16px;
-  background: #fff;
+  border-radius: var(--radius-md);
+  background: var(--surface);
   font-size: 1.7rem;
   line-height: 1;
 }
@@ -357,7 +356,7 @@ h3 .step-badge {
   margin: 0;
   padding: var(--s-3) var(--s-4);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
 }
 
 /* ── task page header ──────────────────────────────────────────────────── */
@@ -376,7 +375,7 @@ h3 .step-badge {
 }
 .purpose-badge.is-independent .mode-pill {
   background: var(--ink);
-  color: #fff;
+  color: var(--surface);
 }
 .task-brief {
   display: grid;
@@ -390,7 +389,7 @@ h3 .step-badge {
   gap: 0.3rem;
   padding: 0.9rem 1.1rem;
   border: 1px solid color-mix(in srgb, var(--room) 25%, transparent);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--room-soft);
 }
 .task-brief p {
@@ -406,7 +405,7 @@ h3 .step-badge {
   font-weight: 700;
 }
 .brief-task {
-  background: #fff;
+  background: var(--surface);
   border-width: 2px;
 }
 .brief-task p {
@@ -417,7 +416,7 @@ h3 .step-badge {
 .brief-task .ghost {
   margin-top: 0.25rem;
   border: 1.5px solid color-mix(in srgb, var(--room) 45%, transparent);
-  background: #fff;
+  background: var(--surface);
   color: var(--room-ink);
 }
 .path-add {
@@ -493,7 +492,7 @@ h3 .step-badge {
 .mission-steps .is-current .step-n {
   border-color: var(--room);
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--room) 18%, transparent);
 }
 .studio-steps .is-current,
@@ -594,7 +593,7 @@ h3 .step-badge {
   align-items: center;
   padding: 0.75rem 2.5rem 0.75rem 0.8rem;
   border: 2px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   cursor: pointer;
   transition:
@@ -646,7 +645,7 @@ h3 .step-badge {
 .stage-opt.is-on .stage-ico,
 .stage-opt:has(input:checked) .stage-ico {
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
 }
 .stage-opt.is-on::after,
 .stage-opt:has(input:checked)::after {
@@ -732,7 +731,7 @@ h3 .step-badge {
   gap: 0;
   overflow: hidden;
   border: 1.5px solid var(--line-strong);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .paper:focus-within {
@@ -759,13 +758,7 @@ h3 .step-badge {
   border: 0;
   border-radius: 0;
   background-color: var(--surface);
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(1.95rem - 1px),
-    var(--line) calc(1.95rem - 1px),
-    var(--line) 1.95rem
-  );
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.95rem - 1px), var(--line) calc(1.95rem - 1px), var(--line) 1.95rem);
   background-attachment: local;
   background-position: 0 0.6rem;
   font-size: 1.1875rem;
@@ -860,7 +853,7 @@ h3 .step-badge {
   margin: 0 0 var(--s-4);
   padding: var(--s-3) var(--s-4) var(--s-4);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .panel .source {
@@ -908,7 +901,7 @@ h3 .step-badge {
 .ev-sent.is-picked {
   border-color: transparent;
   background: var(--right-soft);
-  box-shadow: inset 0 -2px 0 var(--right);
+  box-shadow: none;
 }
 .ev-sent.is-picked::before {
   content: "";
@@ -924,7 +917,7 @@ h3 .step-badge {
 .evidence-notebook {
   margin-top: var(--s-3);
   padding: var(--s-3) var(--s-4);
-  border: 1px solid #e6cf9a;
+  border: 1px solid var(--status-warning-border);
   border-radius: 14px;
   background: var(--hint-soft);
 }
@@ -948,7 +941,7 @@ h3 .step-badge {
   gap: var(--s-2);
   padding: 0.4rem 0.4rem 0.4rem 0.8rem;
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface);
 }
 .mini-chart {
   margin: 0.25rem 0 0;
@@ -1015,7 +1008,7 @@ h3 .step-badge {
 .board-chips li {
   padding: 0.5rem 0.8rem;
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
 }
 .board-label {
   display: block;
@@ -1048,7 +1041,7 @@ h3 .step-badge {
   padding: 0.6rem 0.9rem;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   font-size: 0.975rem;
 }
@@ -1061,7 +1054,7 @@ h3 .step-badge {
   background: var(--wrong-soft);
 }
 .rec-state.is-off {
-  border-color: #f0b4ad;
+  border-color: var(--border-strong);
   background: var(--wrong-soft);
 }
 .rec-state.is-off .ico {
@@ -1086,7 +1079,7 @@ h3 .step-badge {
   max-width: 22.5rem;
   height: 3.5rem;
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface);
   color: var(--wrong);
 }
 .rec-quiet,
@@ -1106,18 +1099,18 @@ h3 .step-badge {
 }
 .rec-quiet,
 .note-todo {
-  border: 1px solid #e6cf9a;
+  border: 1px solid var(--status-warning-border);
   background: var(--hint-soft);
   color: var(--hint);
 }
 .rec-error:not(:empty) {
-  border: 1.5px solid #f0b4ad;
+  border: 1.5px solid var(--status-error-border);
   background: var(--wrong-soft);
   color: var(--wrong);
 }
 .rec-countdown:not(:empty) {
   border: 1.5px solid var(--room);
-  background: #fff;
+  background: var(--surface);
   color: var(--room-ink);
   font-size: 1.4rem;
 }
@@ -1168,7 +1161,7 @@ h3 .step-badge {
   padding: var(--s-3);
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--surface-soft, #f6f8fa);
+  background: var(--surface-soft, var(--bg-canvas));
 }
 .spk-next-focus legend {
   padding-inline: 0.35rem;
@@ -1182,7 +1175,7 @@ h3 .step-badge {
   padding: 0.75rem;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
 }
 .spk-focus-option input {
@@ -1243,7 +1236,6 @@ h3 .step-badge {
   margin: var(--s-3) 0;
   padding: var(--s-5);
   border: 1px solid color-mix(in srgb, var(--room) 25%, var(--line));
-  border-left: 6px solid var(--room);
   border-radius: var(--r-lg);
   background: var(--surface);
 }
@@ -1307,7 +1299,7 @@ h3 .step-badge {
   padding: var(--s-3) var(--s-4) var(--s-3) 3.2rem;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
   counter-increment: move;
 }
 .coach-moves > li::before {
@@ -1321,7 +1313,7 @@ h3 .step-badge {
   height: 1.7rem;
   border-radius: 50%;
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
   font-weight: 700;
   font-size: 0.875rem;
 }
@@ -1332,7 +1324,7 @@ h3 .step-badge {
   font-weight: 700;
 }
 .frame {
-  border-left: 4px solid var(--hint);
+  border-left: 3px solid var(--hint);
   border-radius: 8px;
   background: var(--hint-soft);
 }
@@ -1346,14 +1338,13 @@ h3 .step-badge {
   overflow-wrap: anywhere;
 }
 .evidence-text {
-  background: #fff;
+  background: var(--surface);
   font-size: 1.1rem;
   line-height: 1.75;
 }
 .revision-coach-card.card {
   margin-top: var(--s-3);
   border: 1px solid var(--line);
-  border-left: 6px solid var(--right);
   background: var(--surface);
 }
 .revision-coach-card h4 {
@@ -1369,7 +1360,7 @@ h3 .step-badge {
 .revise-prompts {
   margin: var(--s-3) 0;
   padding: var(--s-3) var(--s-4);
-  border: 1px solid #e6cf9a;
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   background: var(--hint-soft);
 }
@@ -1401,7 +1392,7 @@ h3 .step-badge {
 .rubric-row {
   margin: 0 0 var(--s-3);
   padding: var(--s-3) var(--s-4) var(--s-4);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-2);
 }
 .rubric-row h4 {
@@ -1428,7 +1419,7 @@ h3 .step-badge {
   padding: 0.75rem 0.9rem;
   border: 2px solid var(--line);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
 }
 .rubric-opt:hover {
@@ -1484,7 +1475,7 @@ h3 .step-badge {
   gap: var(--s-4);
   margin: 0 0 var(--s-4);
   padding: var(--s-5);
-  border-top: 5px solid var(--room);
+  border-top: 1px solid var(--border-strong);
 }
 .entry-head {
   display: flex;
@@ -1510,7 +1501,7 @@ h3 .step-badge {
   min-height: 44px;
   padding: 0 1rem;
   border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1556,8 +1547,8 @@ h3 .step-badge {
 /* ── missions ──────────────────────────────────────────────────────────── */
 .mission-studio,
 .mission-card {
-  --room-ink: color-mix(in srgb, var(--room) 88%, #000);
-  --room-soft: color-mix(in srgb, var(--room) 9%, #fff);
+  --room-ink: color-mix(in srgb, var(--room) 88%, var(--ink));
+  --room-soft: color-mix(in srgb, var(--room) 9%, var(--surface));
 }
 .mission-hero {
   display: grid;
@@ -1573,9 +1564,9 @@ h3 .step-badge {
 .mh-emoji {
   width: 5rem;
   height: 5rem;
-  border-radius: 24px;
+  border-radius: var(--radius-md);
   font-size: 2.6rem;
-  box-shadow: 4px 4px 0 var(--room);
+  box-shadow: var(--shadow-card);
 }
 .mission-hero h1 {
   margin: 0 0 var(--s-2);
@@ -1597,7 +1588,7 @@ h3 .step-badge {
   margin: 0;
   padding: 0.7rem 1rem;
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
 }
 .mh-goal .ico {
   margin-top: 0.2rem;
@@ -1693,17 +1684,17 @@ h3 .step-badge {
 .choice.is-check:has(input:checked) .choice-letter {
   border-color: var(--room);
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
 }
 .choice.is-right .choice-letter {
   border-color: var(--right);
   background: var(--right);
-  color: #fff;
+  color: var(--surface);
 }
 .choice.is-wrong .choice-letter {
   border-color: var(--wrong);
   background: var(--wrong);
-  color: #fff;
+  color: var(--surface);
 }
 .choice input:disabled ~ span {
   cursor: default;
@@ -1713,7 +1704,7 @@ h3 .step-badge {
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--s-4);
   padding: var(--s-4) var(--s-5);
-  border-left: 6px solid var(--room);
+  border-left: 1px solid var(--border-strong);
 }
 .st-ico {
   display: grid;
@@ -1749,7 +1740,7 @@ h3 .step-badge {
   top: 5.25rem;
   margin: 0;
   background: var(--hint-soft);
-  border: 1px solid #e6cf9a;
+  border: 1px solid var(--border-subtle);
 }
 .evidence-board h3 {
   display: flex;
@@ -1761,7 +1752,7 @@ h3 .step-badge {
   display: grid;
   gap: var(--s-5);
   padding: clamp(1.1rem, 3vw, 2rem);
-  border-top: 6px solid var(--room);
+  border-top: 1px solid var(--border-strong);
 }
 .case-head h2 {
   margin: var(--s-2) 0;
@@ -1776,7 +1767,7 @@ h3 .step-badge {
   gap: 0.4rem;
   padding: 0.25rem 0.9rem 0.25rem 0.6rem;
   border: 2px solid var(--right);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   color: var(--right);
   font-weight: 700;
 }
@@ -1802,7 +1793,7 @@ h3 .step-badge {
   display: grid;
   gap: 0.15rem;
   padding: 0.7rem 1rem;
-  border-left: 4px solid var(--room);
+  border-left: 1px solid var(--border-strong);
   border-radius: 0 12px 12px 0;
   background: var(--surface-2);
 }
@@ -1828,7 +1819,7 @@ h3 .step-badge {
 .rule-text {
   margin: 0 0 var(--s-3);
   padding: var(--s-3) var(--s-4);
-  border-left: 5px solid var(--room);
+  border-left: 3px solid var(--room);
   border-radius: 0 14px 14px 0;
   background: var(--room-soft);
   font-size: 1.2rem;
@@ -1881,8 +1872,8 @@ h3 .step-badge {
 .specimen {
   padding: var(--s-3) var(--s-4);
   border: 1px solid var(--line);
-  border-left: 5px solid var(--wrong);
-  background: #fff;
+  border-left: 3px solid var(--wrong);
+  background: var(--surface);
   font-size: 1.35rem;
 }
 .transfer-prompt {
@@ -2041,9 +2032,9 @@ h3 .step-badge {
 .mission-hero.is-compact .mh-emoji {
   width: 3.4rem;
   height: 3.4rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   font-size: 1.8rem;
-  box-shadow: 3px 3px 0 var(--room);
+  box-shadow: var(--shadow-card);
 }
 .mission-hero.is-compact h1 {
   margin: 0;
@@ -2054,7 +2045,7 @@ h3 .step-badge {
 }
 .mh-brief {
   margin: var(--s-2) 0 0;
-  background: #fff;
+  background: var(--surface);
 }
 .mh-brief .mh-goal {
   padding: 0;
@@ -2205,7 +2196,7 @@ h3 .step-badge {
   min-block-size: 7rem;
   padding: 1rem;
   border-radius: 12px;
-  background: var(--acc-surface-2, #f1ede6) center / cover no-repeat;
+  background: var(--acc-surface-2, var(--bg-subtle)) center / cover no-repeat;
 }
 .avatar-figure .ico {
   inline-size: 3rem;
@@ -2215,7 +2206,7 @@ h3 .step-badge {
   margin: 0;
   padding: 0.25rem 0.625rem;
   border-radius: 8px;
-  background: var(--acc-surface, #fff);
+  background: var(--acc-surface, var(--surface));
   font-weight: 600;
 }
 .avatar-grid {
@@ -2232,15 +2223,26 @@ h3 .step-badge {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--acc-surface, #fff);
+  background: var(--acc-surface, var(--surface));
   text-align: start;
   cursor: pointer;
 }
 .avatar-choice[aria-pressed="true"] {
   border-width: 3px;
-  border-color: var(--acc-teal-ink, #136d6a);
+  border-color: var(--acc-teal-ink, var(--teal));
 }
 .avatar-choice.is-locked {
   cursor: not-allowed;
   opacity: 0.75;
+}
+
+/* Stimulus pane: serif, calm reading surface. Task and response controls stay in the sans UI face. */
+.source-text, .source-text p, .transcript, .transcript p {
+  font-family: var(--font-serif);
+  line-height: 1.75;
+}
+.transcript {
+  background: var(--surface);
+  border-color: var(--border-subtle);
+  color: var(--ink);
 }

@@ -1,28 +1,13 @@
 /* Student Hub (/students, src/views/students.js) and the "You finished!" session end (src/views/session-done.js).
-   Calm paper look shared with the Teacher Hub: warm off-white, hairline borders, a serif voice for headings, one clay
-   accent. Tokens are re-pointed on .stu-page only (and the page background through :has), so every other lab page keeps
-   its own palette. Skill colours stay as small accents. */
+   Calm editorial look shared with the Teacher Hub: warm paper, hairline borders, slate ink, one navy accent. The page
+   inherits every colour token from ds.css; only the skill accents are named here. */
 
-body:has(.stu-page) { background: #faf9f5; }
+body:has(.stu-page) { background: var(--bg-canvas); }
 .stu-page {
-  --bg: #faf9f5;
-  --surface: #ffffff;
-  --surface-2: #f3f1ea;
-  --ink: #141413;
-  --ink-2: #3d3d3a;
-  --ink-3: #5e5d56;
-  --line: #e4e0d4;
-  --line-strong: #cfcab9;
-  --line-control: #8f8a79;
-  --brand: #b5502f;
-  --brand-ink: #9a4224;
-  --brand-deep: #7d3419;
-  --brand-soft: #f7e9e1;
-  --on-brand: #ffffff;
-  --stu-listening: #075568;
-  --stu-reading: #2e4a94;
-  --stu-speaking: #8a3a5c;
-  --stu-writing: #9a4a26;
+  --stu-listening: var(--listening);
+  --stu-reading: var(--reading);
+  --stu-speaking: var(--speaking);
+  --stu-writing: var(--writing);
   display: grid;
   gap: var(--s-6);
   max-width: 46rem;
@@ -70,7 +55,7 @@ body:has(.stu-page) { background: #faf9f5; }
 .stu-now-text { display: grid; gap: 0.15rem; min-width: 0; }
 .stu-now-text strong { font: 500 clamp(1.4rem, 1.2rem + 1vw, 1.8rem)/1.15 var(--font-display); }
 .stu-now-text span { font-size: 1.05rem; opacity: 0.95; overflow-wrap: anywhere; }
-.stu-now-go { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgb(255 255 255 / 20%); }
+.stu-now-go { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: color-mix(in srgb, var(--on-brand) 20%, transparent); }
 .stu-quick { justify-self: start; min-height: 3rem; border-color: var(--line-strong); background: var(--surface); color: var(--ink); }
 .stu-quick:hover { border-color: var(--brand); }
 

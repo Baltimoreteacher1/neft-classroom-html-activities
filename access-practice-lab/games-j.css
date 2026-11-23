@@ -5,10 +5,10 @@
 .dd-board {
   display: grid;
   gap: 0.85rem;
-  --dd-ink: #17324d;
-  --dd-gold: #f2c15b;
+  --dd-ink: var(--ink);
+  --dd-gold: var(--status-warning-border);
   --dd-wood: #b9814a;
-  --dd-teal: #126e6c;
+  --dd-teal: var(--teal);
 }
 .dd-call {
   display: grid;
@@ -16,17 +16,14 @@
   gap: 0.75rem;
   align-items: start;
 }
-.dd-guide {
-  filter: drop-shadow(0 3px 4px rgb(20 38 61 / 25%));
-}
 .dd-bubble {
   display: grid;
   gap: 0.55rem;
   min-width: 0;
   padding: 0.8rem 1rem;
-  border-radius: var(--gs-r, 18px);
-  background: #fffdf6;
-  border: var(--gs-line, 2px solid #17324d);
+  border-radius: var(--gs-r, var(--radius-md));
+  background: var(--surface);
+  border: var(--gs-line, 2px solid var(--brand));
 }
 .dd-head {
   margin: 0;
@@ -40,14 +37,14 @@
 .dd-head:focus-visible {
   outline: 3px solid var(--dd-gold);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 .dd-kind {
   display: inline-block;
   padding: 0.1rem 0.55rem;
-  border-radius: 999px;
-  background: #fde1d8;
-  color: #8a2f1f;
+  border-radius: var(--radius-sm);
+  background: var(--wrong-soft);
+  color: var(--wrong);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -88,8 +85,8 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.6rem 0.3rem 0.35rem;
-  border-radius: 12px;
-  background: #f6e9cc;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
   font-weight: 700;
   color: var(--dd-ink);
 }
@@ -106,8 +103,8 @@
   display: grid;
   gap: 0.4rem;
   padding: 0.6rem;
-  border-radius: 20px;
-  background: #fbf4e2;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
   border: 2px solid var(--dd-ink);
 }
 .dd-row {
@@ -137,17 +134,17 @@
   border-radius: 0 0 4px 4px;
 }
 .dd-scene-lab .dd-row:last-child .dd-cells {
-  border-bottom-color: #6d7e90;
+  border-bottom-color: var(--border-control);
 }
 .dd-scene-class .dd-scene {
-  background: #e6f6f4;
+  background: var(--teal-soft);
 }
 .dd-whiteboard {
   margin: 0 0 0.2rem;
   padding: 0.35rem;
-  border-radius: 8px;
-  background: #fff;
-  border: 3px solid #6d7e90;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
   text-align: center;
   font-weight: 800;
   font-size: 0.85rem;
@@ -162,18 +159,18 @@
   width: 100%;
   min-height: 4.6rem;
   padding: 0.3rem 0.2rem;
-  border-radius: 12px;
-  border: 2px dashed #9aa9b8;
-  background: #fffdf8;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-control);
+  background: var(--surface);
   color: var(--dd-ink);
   font: inherit;
   cursor: pointer;
   touch-action: manipulation;
 }
 .dd-scene-class .dd-cell {
-  background: #fff;
+  background: var(--surface);
   border-style: solid;
-  border-color: #bfd6d4;
+  border-color: var(--teal);
 }
 .dd-cell:hover:not(:disabled) {
   border-color: var(--dd-teal);
@@ -189,11 +186,11 @@
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
-  background: #c9d4de;
+  background: var(--brand-soft);
 }
 .dd-cell.has-obj {
   border: 2px solid var(--dd-ink);
-  background: #fff;
+  background: var(--surface);
 }
 .dd-obj-art {
   width: 2.6rem;
@@ -211,31 +208,29 @@
 .dd-name-es {
   font-size: 0.7rem;
   line-height: 1.1;
-  color: #0e5a2b;
+  color: var(--right);
   text-align: center;
   overflow-wrap: anywhere;
 }
 .dd-cell.is-held {
-  transform: translateY(-4px);
   box-shadow:
-    0 0 0 4px var(--dd-gold),
-    0 8px 14px rgb(20 38 61 / 22%);
+    0 0 0 4px var(--dd-gold), var(--shadow-card);
   background: repeating-linear-gradient(45deg, #fff, #fff 6px, #fff6dc 6px, #fff6dc 12px);
 }
 .dd-cell.is-right {
   border-color: var(--dd-teal);
-  background: #e5f5f1;
-  box-shadow: 0 0 0 3px #bfe9e6;
+  background: var(--teal-soft);
+  box-shadow: 0 0 0 3px var(--teal-soft);
 }
 .dd-cell.is-reveal {
-  border: 3px dashed #c94f3b;
-  background: #fff0e8;
+  border: 3px dashed var(--coral);
+  background: var(--surface-2);
 }
 .dd-note {
   margin: 0;
   min-height: 1.4em;
   font-weight: 700;
-  color: #385267;
+  color: var(--ink);
 }
 .dd-actions {
   display: flex;

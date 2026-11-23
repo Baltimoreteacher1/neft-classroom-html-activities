@@ -4,22 +4,22 @@
    Every meaning that colour carries is also carried by a text label, a border or a fill pattern. */
 
 .vap-doc {
-  --vap-sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --vap-display: "Fraunces", Georgia, "Iowan Old Style", serif;
-  --vap-ink: #14212b;
-  --vap-ink2: #3b4a56;
-  --vap-brand: #0f5d73;
-  --vap-tint: #edf2f4;
-  --vap-tint2: #dde7eb;
-  --vap-rule: #8a97a1;
-  --vap-hair: #c9d1d6;
+  --vap-sans: var(--font);
+  --vap-display: var(--font-display);
+  --vap-ink: var(--ink);
+  --vap-ink2: var(--ink-2);
+  --vap-brand: var(--brand);
+  --vap-tint: var(--bg-subtle);
+  --vap-tint2: var(--bg-interactive-hover);
+  --vap-rule: var(--border-control);
+  --vap-hair: var(--border-strong);
   --vap-fs: 12pt;
   --vap-lh: 1.5;
   --vap-gap: 0.16in;
   --vap-write: 0.36in;
   --vap-h1: 30pt;
   --vap-h2: 21pt;
-  --vap-radius: 7pt;
+  --vap-radius: var(--radius-sm);
   font-family: var(--vap-sans);
   font-size: var(--vap-fs);
   line-height: var(--vap-lh);
@@ -102,9 +102,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 1rem;
-  background: var(--va-card, #fff);
-  border-bottom: 1px solid var(--va-line, #d9d3c5);
-  font-family: var(--font, system-ui, sans-serif);
+  background: var(--va-card);
+  border-bottom: 1px solid var(--va-line);
+  font-family: var(--font);
 }
 .vap-toolbar h1 {
   margin: 0;
@@ -113,7 +113,7 @@
 .vap-toolbar p {
   margin: 0.1rem 0 0;
   font-size: 0.9rem;
-  color: var(--va-ink-2, #3b4a56);
+  color: var(--va-ink-2);
 }
 .vap-toolbar-row {
   display: flex;
@@ -127,10 +127,10 @@
   display: inline-flex;
   align-items: center;
   padding: 0 0.9rem;
-  border: 2px solid var(--va-brand, #0f5d73);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--va-brand, #0f5d73);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
   font: inherit;
   font-weight: 700;
   text-decoration: none;
@@ -139,25 +139,25 @@
 .vap-toolbar a[aria-current="page"],
 .vap-toolbar button.is-primary,
 .vap-toolbar button[aria-pressed="true"] {
-  background: var(--va-brand, #0f5d73);
-  color: #fff;
+  background: var(--va-brand);
+  color: var(--on-brand);
 }
 .vap-toolbar a:focus-visible,
 .vap-toolbar button:focus-visible {
-  outline: 3px solid var(--va-focus, #0b57d0);
+  outline: 2px solid var(--va-focus);
   outline-offset: 2px;
 }
 .vap-notice {
   max-width: 40rem;
   margin: 2rem auto;
   padding: 1.25rem;
-  border: 2px solid var(--va-line, #d9d3c5);
-  border-radius: 12px;
-  background: var(--va-card, #fff);
+  border: 1px solid var(--va-line);
+  border-radius: var(--radius-md);
+  background: var(--va-card);
 }
 .vap-screenwrap {
   padding: 1.25rem 0 3rem;
-  background: #e9ecee;
+  background: var(--bg-subtle);
   overflow-x: auto;
 }
 .vap-screenwrap .vap-doc {
@@ -166,10 +166,10 @@
 }
 @media screen {
   .vap-doc .vap-sheet {
-    background: #fff;
+    background: var(--surface);
     margin: 0 -0.5in 0.4in;
     padding: 0.55in 0.5in;
-    box-shadow: 0 1px 6px rgba(20, 33, 43, 0.25);
+    box-shadow: var(--shadow-elevated);
     min-height: 9in;
   }
   .vap-toolbar-note {
@@ -203,9 +203,9 @@
 .vap-tab {
   display: inline-block;
   padding: 1pt 8pt;
-  border-radius: 99pt;
+  border-radius: var(--radius-sm);
   background: var(--vap-ink);
-  color: #fff;
+  color: var(--on-brand);
   font-size: 11pt;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -269,7 +269,7 @@
   display: inline-block;
   padding: 0 5pt;
   border: 1.2pt solid var(--vap-ink);
-  border-radius: 3pt;
+  border-radius: var(--radius-sm);
   font-size: 11pt;
   font-weight: 700;
   line-height: 1.4;
@@ -351,7 +351,7 @@
   height: 0.19in;
   margin-top: 0.04in;
   border: 1.8pt solid var(--vap-ink);
-  border-radius: 3pt;
+  border-radius: var(--radius-sm);
 }
 .vap-doc[data-band="early"] .vap-checkbox {
   width: 0.28in;
@@ -369,7 +369,7 @@
   align-items: baseline;
   padding: 3pt 10pt;
   border: 1.5pt solid var(--vap-ink);
-  border-radius: 99pt;
+  border-radius: var(--radius-sm);
   background: var(--vap-tint);
 }
 .vap-chips strong {
@@ -391,7 +391,7 @@
   padding: 0.1in 0.14in 0.12in;
   border: 1.5pt solid var(--vap-ink);
   border-radius: var(--vap-radius);
-  background: #fff;
+  background: var(--surface);
 }
 .vap-card-head {
   display: flex;
@@ -457,7 +457,7 @@
   padding: 4pt;
   border: 1.5pt solid var(--vap-ink);
   border-radius: var(--vap-radius);
-  background: #fff;
+  background: var(--surface);
   text-align: center;
   break-inside: avoid;
 }
@@ -523,7 +523,7 @@
   height: 0.34in;
   border-radius: 50%;
   background: var(--vap-ink);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 700;
 }
 .vap-steps h3 {
@@ -570,7 +570,7 @@
 }
 .vap-term.is-result {
   background: var(--vap-ink);
-  color: #fff;
+  color: var(--on-brand);
 }
 .vap-op {
   font-size: 18pt;
@@ -601,8 +601,8 @@
 .vap-bank li {
   padding: 0 7pt;
   border: 1pt solid var(--vap-ink);
-  border-radius: 99pt;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   font-weight: 700;
 }
 .vap-bankline {
@@ -630,7 +630,7 @@
   margin-top: 1pt;
   border-radius: 50%;
   background: var(--vap-ink);
-  color: #fff;
+  color: var(--on-brand);
   font-size: 11.5pt;
   font-weight: 700;
 }
@@ -716,7 +716,7 @@
   height: 0.27in;
   border: 1.8pt solid var(--vap-ink);
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
   font-size: 11pt;
   font-weight: 700;
   line-height: 1;
@@ -728,7 +728,7 @@
 }
 .vap-bubble.is-right {
   background: var(--vap-ink);
-  color: #fff;
+  color: var(--on-brand);
 }
 .vap-choice-text {
   padding-top: 1pt;
@@ -753,8 +753,8 @@ li.is-right .vap-choice-text,
   padding: 5pt 9pt;
   border: 1.2pt solid var(--vap-ink);
   border-left-width: 5pt;
-  border-radius: 3pt;
-  background: #f1f1ec;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
   font-size: 11.5pt;
   line-height: 1.4;
   break-inside: avoid;
@@ -1010,7 +1010,7 @@ li.is-right .vap-choice-text,
   padding: 0.14in 0.2in 0.16in 0.1in;
   border-top: 3pt solid var(--vap-ink);
   border-bottom: 1pt solid var(--vap-rule);
-  background: #fff;
+  background: var(--surface);
 }
 .vap-passage header {
   margin-bottom: 0.1in;
@@ -1134,7 +1134,7 @@ li.is-right .vap-choice-text,
   margin-left: 6pt;
   padding: 0 9pt;
   border: 2pt solid var(--vap-ink);
-  border-radius: 99pt;
+  border-radius: var(--radius-sm);
   font-family: var(--vap-sans);
   font-size: 0.55em;
   vertical-align: 0.25em;
@@ -1201,7 +1201,7 @@ li.is-right .vap-choice-text,
 @media print {
   html,
   body {
-    background: #fff !important;
+    background: var(--surface) !important;
   }
   .no-print,
   .vap-toolbar,
@@ -1223,11 +1223,11 @@ li.is-right .vap-choice-text,
     padding: 0 !important;
     margin: 0 !important;
     max-width: none !important;
-    background: #fff !important;
+    background: var(--surface) !important;
   }
   .vap-screenwrap {
     padding: 0;
-    background: #fff;
+    background: var(--surface);
     overflow: visible;
   }
   .vap-doc,

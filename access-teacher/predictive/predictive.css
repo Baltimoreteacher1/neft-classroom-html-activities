@@ -2,15 +2,15 @@
    No purple or violet. Targets are at least 44px; nothing may overflow at 390px. */
 :root {
   color-scheme: light;
-  --pi-validated: #0f5132;
-  --pi-validated-bg: #d8f0e2;
-  --pi-experimental: #7a4a00;
-  --pi-experimental-bg: #fdecc8;
-  --pi-insufficient: #3a4566;
-  --pi-insufficient-bg: #e8ebf2;
-  --pi-hypothetical: #8a2c0d;
-  --pi-hypothetical-bg: #fde3d6;
-  --pi-band: rgb(11 110 105 / 22%);
+  --pi-validated: var(--status-success-text);
+  --pi-validated-bg: var(--status-success-bg);
+  --pi-experimental: var(--status-warning-text);
+  --pi-experimental-bg: var(--status-warning-bg);
+  --pi-insufficient: var(--text-secondary);
+  --pi-insufficient-bg: var(--bg-subtle);
+  --pi-hypothetical: var(--status-error-text);
+  --pi-hypothetical-bg: var(--status-error-bg);
+  --pi-band: color-mix(in srgb, var(--teal) 22%, transparent);
 }
 .pi-body {
   background: var(--bg);
@@ -26,7 +26,7 @@
   z-index: 10;
   background: var(--surface);
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 .pi-main {
   padding-bottom: 4rem;
@@ -39,7 +39,7 @@
   gap: 0.5rem;
 }
 .pi-main :focus-visible {
-  outline: 3px solid var(--focus, #1d4ed8);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 .pi-controls {
@@ -60,15 +60,15 @@
   color: var(--on-brand);
 }
 .pi-banner {
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   background: var(--surface);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 0.85rem 1rem;
   margin: 0 0 1rem;
 }
 .pi-banner.is-demo {
-  border-color: #9a5b00;
-  background: #fff4dc;
+  border-color: var(--status-warning-border);
+  background: var(--status-warning-bg);
 }
 .pi-banner.is-warn {
   border-color: var(--pi-hypothetical);
@@ -85,8 +85,8 @@
 .pi-tabs [role="tab"] {
   min-height: 44px;
   padding: 0.45rem 0.9rem;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   font: 700 0.95rem/1.2 var(--font);
@@ -96,7 +96,7 @@
   min-width: 0;
 }
 .pi-panel:focus-visible {
-  outline: 3px solid var(--focus, #1d4ed8);
+  outline: 2px solid var(--focus);
 }
 .pi-h {
   display: flex;
@@ -149,8 +149,8 @@ details.pi-tip > :not(summary) {
 .pi-tip-body {
   max-width: min(36rem, 100%);
   background: var(--surface);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.8rem;
   margin: 0.25rem 0 0.5rem;
   color: var(--ink);
@@ -158,7 +158,7 @@ details.pi-tip > :not(summary) {
 .pi-chip {
   display: inline-block;
   padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -209,9 +209,9 @@ details.pi-tip > :not(summary) {
 .pi-ask input {
   min-height: 44px;
   padding: 0.45rem 0.6rem;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--ink);
   font: inherit;
   max-width: 100%;
@@ -238,8 +238,8 @@ details.pi-tip > :not(summary) {
   margin: 0.5rem 0 1rem;
 }
 .pi-fieldset {
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   margin: 0.75rem 0;
   padding: 0.5rem 0.9rem;
   min-width: 0;
@@ -297,8 +297,8 @@ details.pi-tip > :not(summary) {
 }
 .pi-card {
   background: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   padding: 0.9rem 1rem;
   margin: 0 0 1rem;
   min-width: 0;
@@ -323,58 +323,58 @@ details.pi-tip > :not(summary) {
   max-width: 320px;
 }
 .pi-grid {
-  stroke: #d9d2c6;
+  stroke: var(--border-subtle);
   stroke-width: 1;
 }
 .pi-axis {
   font: 12px/1 var(--font);
-  fill: #3a4566;
+  fill: var(--text-secondary);
 }
 .pi-reset {
-  stroke: #8a2c0d;
+  stroke: var(--status-error-text);
   stroke-width: 2;
   stroke-dasharray: 6 4;
 }
 .pi-reset-label {
-  fill: #8a2c0d;
+  fill: var(--status-error-text);
   font-weight: 700;
 }
 .pi-target {
-  stroke: #9a5b00;
+  stroke: var(--accent);
   stroke-width: 2;
   stroke-dasharray: 2 4;
 }
 .pi-baseline {
-  stroke: #59637f;
+  stroke: var(--text-tertiary);
   stroke-width: 1.5;
   stroke-dasharray: 8 6;
 }
 .pi-band {
   fill: var(--pi-band);
-  stroke: #0b6e69;
+  stroke: var(--teal);
 }
 .pi-forecast-line {
-  stroke: #0b6e69;
+  stroke: var(--teal);
   stroke-width: 2;
   stroke-dasharray: 5 4;
 }
 .pi-forecast-dot {
-  fill: #fff;
-  stroke: #0b6e69;
+  fill: var(--surface);
+  stroke: var(--teal);
   stroke-width: 3;
 }
 .pi-marker {
-  fill: #9a5b00;
+  fill: var(--accent);
 }
 .pi-bar {
-  fill: #59637f;
+  fill: var(--text-tertiary);
 }
 .pi-bar-alt {
-  fill: #0b6e69;
+  fill: var(--teal);
 }
 .pi-cal-dot {
-  fill: rgb(11 110 105 / 70%);
-  stroke: #0b6e69;
+  fill: color-mix(in srgb, var(--teal) 70%, transparent);
+  stroke: var(--teal);
 }
 .pi-details summary {
   min-height: 44px;
@@ -419,11 +419,11 @@ details.pi-tip > :not(summary) {
 }
 .pi-note {
   background: var(--surface-2);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.8rem;
 }
 .pi-error {
-  color: #8a1c1c;
+  color: var(--status-error-text);
   font-weight: 700;
 }
 .pi-reasons {
@@ -468,8 +468,8 @@ body[data-view="quick"] .pi-adv {
   flex-direction: column;
   gap: 0.15rem;
   padding: 0.85rem 1rem;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   background: var(--surface);
   min-width: 0;
 }
@@ -486,9 +486,9 @@ body[data-view="quick"] .pi-adv {
   font-size: 0.9rem;
 }
 .pi-explain {
-  border-inline-start: 4px solid var(--pi-insufficient);
+  border-inline-start: 3px solid var(--pi-insufficient);
   background: var(--surface);
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
   padding: 0.75rem 1rem;
 }
 .pi-explain p {
@@ -510,8 +510,8 @@ body[data-view="quick"] .pi-adv {
   margin: 0;
 }
 .pi-card {
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   background: var(--surface);
   padding: 0.85rem 1rem;
   min-width: 0;
@@ -564,7 +564,7 @@ body[data-view="quick"] .pi-adv {
 .pi-kind {
   display: block;
   padding: 0.5rem 0.85rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1.5px dashed currentColor;
   margin: 0 0 0.75rem;
 }
@@ -642,8 +642,8 @@ body[data-view="quick"] .pi-adv {
   gap: 0 1rem;
 }
 .pi-finding {
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   background: var(--surface);
   padding: 1rem;
 }
@@ -668,8 +668,8 @@ body[data-view="quick"] .pi-adv {
   margin-top: 0.5rem;
 }
 .pi-wizard {
-  border: 1.5px solid var(--line-strong);
-  border-radius: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
   background: var(--surface);
   padding: 1rem;
 }
@@ -704,15 +704,15 @@ body[data-view="quick"] .pi-adv {
   border: 0;
   padding: 0;
   min-height: 44px;
-  color: var(--link, #0b5cad);
+  color: var(--link);
   text-decoration: underline;
   font: inherit;
   cursor: pointer;
 }
 .pi-report {
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
-  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
   padding: 1.25rem;
 }
 .pi-report-conf {
@@ -751,10 +751,10 @@ body[data-view="quick"] .pi-adv {
   margin: 1rem 0 0;
   max-width: 40rem;
   margin-inline-start: auto;
-  border: 2px solid var(--brand, #0b6e69);
-  border-radius: 14px;
-  background: var(--surface, #fff);
-  box-shadow: 0 6px 20px rgb(17 26 59 / 18%);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-elevated);
   padding: 0.85rem 1rem;
 }
 .pi-tour p {
@@ -770,11 +770,11 @@ body[data-view="quick"] .pi-adv {
 
 /* ══ Studio redesign: app layout, cards and visual components ══════════════════════════════ */
 .pi-body {
-  --pi-card: #ffffff;
-  --pi-soft: #f3f6f9;
-  --pi-shadow: 0 1px 2px rgb(15 23 42 / 6%), 0 4px 14px rgb(15 23 42 / 6%);
-  --pi-radius: 16px;
-  background: #f5f6f8;
+  --pi-card: var(--surface);
+  --pi-soft: var(--bg-subtle);
+  --pi-shadow: var(--shadow-card);
+  --pi-radius: var(--radius-md);
+  background: var(--bg-canvas);
 }
 .pi-main {
   max-width: 1320px;
@@ -800,14 +800,13 @@ body[data-view="quick"] .pi-adv {
   gap: 0.75rem 1.25rem;
   margin: 0.75rem 0 1rem;
   padding: 0.6rem 0.75rem;
-  background: rgb(245 246 248 / 94%);
-  backdrop-filter: blur(6px);
-  border-radius: 14px;
+  background: var(--bg-canvas);
+  border-radius: var(--radius-md);
 }
 .pi-modes {
   background: var(--pi-card);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   padding: 4px;
   gap: 2px;
 }
@@ -815,7 +814,7 @@ body[data-view="quick"] .pi-adv {
   min-height: 40px;
   padding: 0 1.1rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink);
   font: 700 0.95rem var(--font);
@@ -828,7 +827,7 @@ body[data-view="quick"] .pi-adv {
 .pi-mode:focus-visible,
 .pi-chipbtn:focus-visible,
 .pi-welcome-card:focus-visible {
-  outline: 3px solid var(--focus, #1d4ed8);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 .pi-tech {
@@ -880,13 +879,13 @@ body[data-view="quick"] .pi-adv {
   min-height: 46px;
   padding: 0.5rem 0.85rem;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: transparent;
   text-align: start;
   font-size: 1rem;
 }
 .pi-side .pi-tabs [role="tab"]:not([aria-selected="true"]):hover {
-  background: #e8edf3;
+  background: var(--bg-subtle);
 }
 .pi-side .pi-tabs [aria-selected="true"] {
   background: var(--brand);
@@ -899,13 +898,13 @@ body[data-view="quick"] .pi-adv {
   min-width: 0;
 }
 .pi-banner {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 0.7rem 1rem;
   border: 0;
-  background: #e7eef7;
+  background: var(--brand-soft);
 }
 .pi-banner.is-demo {
-  background: #fff4dc;
+  background: var(--status-warning-bg);
   border: 0;
 }
 .pi-card,
@@ -917,7 +916,7 @@ body[data-view="quick"] .pi-adv {
 .pi-finding,
 .pi-wizard {
   background: var(--pi-card);
-  border: 1px solid #e3e8ef;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--pi-radius);
   box-shadow: var(--pi-shadow);
 }
@@ -928,19 +927,18 @@ body[data-view="quick"] .pi-adv {
   margin: 0 0 0.5rem;
 }
 .pi-explain {
-  border-inline-start: 4px solid var(--brand);
 }
 .pi-subnav {
   display: inline-flex;
   background: var(--pi-card);
-  border: 1px solid #e3e8ef;
-  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   padding: 4px;
   gap: 2px;
 }
 .pi-subnav .btn {
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: transparent;
   min-height: 40px;
 }
@@ -962,8 +960,8 @@ body[data-view="quick"] .pi-adv {
   flex: none;
   min-height: 46px;
   padding: 0.3rem 0.8rem 0.3rem 0.35rem;
-  border: 1.5px solid #dbe2ea;
-  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--pi-card);
   color: var(--ink);
   font: 700 0.95rem var(--font);
@@ -971,7 +969,7 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-chipbtn.is-on {
   border-color: var(--brand);
-  background: #eaf3f3;
+  background: var(--teal-soft);
 }
 .pi-avatar {
   display: grid;
@@ -979,8 +977,8 @@ body[data-view="quick"] .pi-adv {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #1e293b;
-  color: #fff;
+  background: var(--text-primary);
+  color: var(--on-brand);
   font-size: 0.85rem;
 }
 .pi-chipbtn.is-on .pi-avatar {
@@ -988,7 +986,7 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-chiplv {
   padding: 0.05rem 0.45rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--pi-soft);
   font-size: 0.85rem;
 }
@@ -1019,18 +1017,18 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-gauge-track {
   fill: none;
-  stroke: #e5eaf0;
+  stroke: var(--border-subtle);
   stroke-width: 16;
   stroke-linecap: round;
 }
 .pi-gauge-fill {
   fill: none;
-  stroke: var(--brand, #0b6e69);
+  stroke: var(--brand);
   stroke-width: 16;
   stroke-linecap: round;
 }
 .pi-gauge-num {
-  font: 800 34px var(--font);
+  font: 800 34px var(--font-display);
   fill: var(--ink);
 }
 .pi-gauge-name {
@@ -1044,7 +1042,7 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-dtile {
   padding: 0.9rem 1rem;
-  border-top: 5px solid var(--dc);
+  border-top: 3px solid var(--dc);
 }
 .pi-dtile-name {
   margin: 0;
@@ -1060,7 +1058,7 @@ body[data-view="quick"] .pi-adv {
 .pi-meter {
   height: 10px;
   border-radius: 999px;
-  background: #edf1f5;
+  background: var(--bg-subtle);
   overflow: hidden;
 }
 .pi-meter span {
@@ -1087,10 +1085,10 @@ body[data-view="quick"] .pi-adv {
   font-size: 0.95rem;
 }
 .pi-delta.is-up {
-  color: #166534;
+  color: var(--status-success-text);
 }
 .pi-delta.is-down {
-  color: #b45309;
+  color: var(--accent);
 }
 .pi-insights {
   display: grid;
@@ -1114,13 +1112,12 @@ body[data-view="quick"] .pi-adv {
   font-weight: 800;
 }
 .pi-insight.is-strength {
-  border-inline-start: 5px solid #15803d;
+  border-inline-start: 3px solid var(--status-success-text);
 }
 .pi-insight.is-focus {
-  border-inline-start: 5px solid #c2410c;
+  border-inline-start: 3px solid var(--status-warning-text);
 }
 .pi-insight.is-next {
-  border-inline-start: 5px solid var(--brand);
 }
 .pi-composites {
   display: grid;
@@ -1131,7 +1128,7 @@ body[data-view="quick"] .pi-adv {
   display: flex;
   flex-direction: column;
   padding: 0.6rem 0.9rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
 }
 .pi-comp strong {
@@ -1158,10 +1155,10 @@ body[data-view="quick"] .pi-adv {
   font: 800 14px var(--font);
 }
 .pi-heat-empty {
-  fill: #f1f4f7;
+  fill: var(--bg-subtle);
 }
 .pi-indep-track {
-  fill: #edf1f5;
+  fill: var(--bg-subtle);
 }
 .pi-chart {
   width: 100%;
@@ -1190,8 +1187,8 @@ body[data-view="quick"] .pi-adv {
   flex-direction: column;
   gap: 0.35rem;
   padding: 1.1rem;
-  border: 1.5px solid #dbe2ea;
-  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
   color: var(--ink);
   text-align: start;
@@ -1225,9 +1222,9 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-kidcard {
   padding: 1rem;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 2px solid var(--dc);
-  background: #fff;
+  background: var(--surface);
 }
 .pi-kidcard h3 {
   margin: 0;
@@ -1253,8 +1250,8 @@ body[data-view="quick"] .pi-adv {
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 8px;
-  background: #f3f5f8;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
   font-size: 0.95rem;
 }
 .pi-ladder li.is-done {
@@ -1262,7 +1259,7 @@ body[data-view="quick"] .pi-adv {
 }
 .pi-ladder li.is-here {
   background: var(--lc);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 800;
 }
 .pi-ladder-n {
@@ -1271,8 +1268,8 @@ body[data-view="quick"] .pi-adv {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50%;
-  background: rgb(255 255 255 / 70%);
-  color: #1e293b;
+  background: var(--surface);
+  color: var(--text-primary);
   font-weight: 800;
 }
 .pi-ladder-you {
@@ -1282,8 +1279,8 @@ body[data-view="quick"] .pi-adv {
 .pi-kidgoal {
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 14px;
-  background: #fff8e6;
+  border-radius: var(--radius-md);
+  background: var(--status-warning-bg);
 }
 @media (max-width: 1000px) {
   .pi-layout {
@@ -1302,7 +1299,7 @@ body[data-view="quick"] .pi-adv {
   .pi-side .pi-tabs [role="tab"] {
     width: auto;
     flex: none;
-    border: 1px solid #e3e8ef;
+    border: 1px solid var(--border-subtle);
   }
   .pi-side .pi-tabs [role="tab"]:not([aria-selected="true"]) {
     background: var(--pi-card);
@@ -1328,7 +1325,7 @@ body[data-view="quick"] .pi-adv {
   .pi-subnav {
     display: flex;
     flex-wrap: wrap;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
   }
 }
 @media print {
@@ -1344,7 +1341,7 @@ body[data-view="quick"] .pi-adv {
 }
 
 .pi-range-fill {
-  fill: var(--brand, #0b6e69);
+  fill: var(--brand);
 }
 .pi-rangebar {
   max-width: 640px;
@@ -1364,7 +1361,7 @@ body[data-view="quick"] .pi-adv {
   display: grid;
   gap: 0.1rem;
   padding: 0.6rem 0.8rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
 }
 .pi-ol strong {
@@ -1381,8 +1378,8 @@ body[data-view="quick"] .pi-adv {
   color: var(--pi-validated);
 }
 .pi-ol.is-math {
-  background: #fff4dc;
-  color: #6b4200;
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text);
 }
 .pi-goalpick {
   display: flex;
@@ -1421,7 +1418,7 @@ body[data-view="quick"] .pi-adv {
 .pi-playlist {
   margin-top: 0.6rem;
   padding-top: 0.5rem;
-  border-top: 1px solid #e3e8ef;
+  border-top: 1px solid var(--border-subtle);
 }
 .pi-toolgrid {
   display: grid;
@@ -1434,7 +1431,7 @@ body[data-view="quick"] .pi-adv {
   gap: 0.3rem;
   min-height: 44px;
   padding: 1rem 1.1rem;
-  border: 1px solid #e3e8ef;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--pi-radius);
   background: var(--pi-card);
   box-shadow: var(--pi-shadow);
@@ -1447,7 +1444,7 @@ body[data-view="quick"] .pi-adv {
   border-color: var(--brand);
 }
 .pi-tool:focus-visible {
-  outline: 3px solid var(--focus, #1d4ed8);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 .pi-tool strong {
@@ -1464,7 +1461,7 @@ body[data-view="quick"] .pi-adv {
   gap: 0.8rem;
   align-items: flex-start;
   padding: 0.6rem 0.8rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
 }
 .pi-level-row p {
@@ -1493,7 +1490,7 @@ body[data-view="quick"] .pi-adv {
   gap: 0.5rem;
   align-items: flex-end;
   min-height: 2.6rem;
-  border-bottom: 1px solid #94a3b8;
+  border-bottom: 1px solid var(--border-strong);
 }
 .pi-timeline {
   display: grid;
@@ -1507,11 +1504,11 @@ body[data-view="quick"] .pi-adv {
   margin: 0.4rem 0;
 }
 .pi-range-alt {
-  fill: #9fd3cf;
+  fill: var(--teal-soft);
 }
 .pi-range-now {
-  fill: #1e293b;
-  stroke: #fff;
+  fill: var(--text-primary);
+  stroke: var(--surface);
   stroke-width: 2;
 }
 .pi-ranges {
@@ -1526,11 +1523,10 @@ body[data-view="quick"] .pi-adv {
 .pi-liveline {
   margin: 0.6rem 0 0;
   padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
 }
 .pi-new {
-  border-inline-start: 5px solid var(--brand);
 }
 .pi-new ul {
   margin: 0.25rem 0 0.6rem;
@@ -1542,7 +1538,7 @@ body[data-view="quick"] .pi-adv {
 .pi-bulk-page + .pi-bulk-page {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px dashed #cbd5e1;
+  border-top: 1px dashed var(--border-strong);
 }
 @media print {
   .pi-bulk-page {
@@ -1565,7 +1561,7 @@ body[data-view="quick"] .pi-adv {
   margin: 0;
 }
 .pi-gl-attn {
-  border-inline-start: 5px solid var(--pi-experimental);
+  border-inline-start: 3px solid var(--pi-experimental);
 }
 .pi-gl-attn-list,
 .pi-gl-steps-list {
@@ -1583,7 +1579,6 @@ body[data-view="quick"] .pi-adv {
   text-align: start;
 }
 .pi-gl-steps {
-  border-inline-start: 5px solid var(--brand);
 }
 .pi-gl-steps-list p {
   margin: 0 0 0.35rem;
@@ -1609,8 +1604,8 @@ body[data-view="quick"] .pi-adv {
   max-width: 100%;
   max-height: 70vh;
   overflow: auto;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .pi-gl-table {
@@ -1647,7 +1642,7 @@ body[data-view="quick"] .pi-adv {
   text-align: start;
 }
 .pi-gl-sort:hover {
-  background: var(--brand-soft, #e0eef0);
+  background: var(--brand-soft);
 }
 th[aria-sort="ascending"] .pi-gl-sort,
 th[aria-sort="descending"] .pi-gl-sort {
@@ -1683,7 +1678,7 @@ th[aria-sort="descending"] .pi-gl-sort {
   min-width: 4.6rem;
 }
 .pi-gl-lv.is-empty {
-  background: repeating-linear-gradient(135deg, var(--surface), var(--surface) 4px, var(--surface-2, #f1ece2) 4px, var(--surface-2, #f1ece2) 8px);
+  background: repeating-linear-gradient(135deg, var(--surface), var(--surface) 4px, var(--surface-2) 4px, var(--surface-2) 8px); /* hatch = no data: a non-colour cue, kept */
 }
 .pi-gl-num {
   font-weight: 800;
@@ -1766,14 +1761,14 @@ body.pi-print-drawer .pi-print-sheet {
   max-height: 100dvh;
   padding: 0;
   border: 0;
-  border-inline-start: 1.5px solid var(--line-strong);
+  border-inline-start: 1px solid var(--line-strong);
   background: var(--surface);
   color: var(--ink);
-  box-shadow: -12px 0 32px rgb(13 28 46 / 18%);
+  box-shadow: var(--shadow-elevated);
   overflow-y: auto;
 }
 .pi-drawer::backdrop {
-  background: rgb(13 28 46 / 40%);
+  background: color-mix(in srgb, var(--text-primary) 40%, transparent);
 }
 .pi-dr-panel {
   padding: 1rem 1.1rem 2rem;
@@ -1821,16 +1816,16 @@ body.pi-print-drawer .pi-print-sheet {
   align-items: center;
   gap: 0.5rem;
   padding: 0.3rem 0.5rem;
-  border-inline-start: 4px solid var(--dc);
-  border-radius: 8px;
-  background: var(--surface-2, #f6f1e7);
+  border-inline-start: 3px solid var(--dc);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
 }
 .pi-dr-dom-name {
   font-weight: 700;
 }
 .pi-dr-lv {
   padding: 0.25rem 0.6rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 800;
   white-space: nowrap;
 }
@@ -1939,7 +1934,7 @@ body.pi-print-drawer .pi-print-sheet {
 }
 .pi-sechead-lead {
   margin: 0.2rem 0 0;
-  color: var(--muted, #475569);
+  color: var(--muted);
 }
 .pi-sechead-actions {
   display: flex;
@@ -1948,10 +1943,9 @@ body.pi-print-drawer .pi-print-sheet {
 }
 .pi-myplan {
   padding: 0.85rem 1rem;
-  border-radius: var(--pi-radius, 16px);
-  background: var(--pi-card, #fff);
-  border: 1.5px solid var(--line-strong, #cbd5e1);
-  border-inline-start: 5px solid var(--brand);
+  border-radius: var(--pi-radius);
+  background: var(--pi-card);
+  border: 1px solid var(--line-strong);
 }
 .pi-myplan-head {
   display: flex;
@@ -1983,7 +1977,7 @@ body.pi-print-drawer .pi-print-sheet {
   justify-content: space-between;
   gap: 0.25rem 0.75rem;
   padding: 0.35rem 0;
-  border-top: 1px solid var(--line, #e2e8f0);
+  border-top: 1px solid var(--line);
 }
 .pi-myplan-what {
   display: grid;
@@ -2034,12 +2028,12 @@ body.pi-print-drawer .pi-print-sheet {
   min-height: 44px;
 }
 .pi-fcard .btn.is-done {
-  background: var(--pi-soft, #f3f6f9);
-  color: var(--ink, #0f172a);
-  border: 1.5px solid var(--pi-validated, #15803d);
+  background: var(--pi-soft);
+  color: var(--ink);
+  border: 1px solid var(--pi-validated);
 }
 .pi-fdetail[open] {
-  border-top: 1px solid var(--line, #e2e8f0);
+  border-top: 1px solid var(--line);
 }
 .pi-fdetail textarea {
   width: 100%;
@@ -2072,15 +2066,15 @@ body.pi-print-drawer .pi-print-sheet {
   justify-items: center;
   gap: 0.4rem;
   padding: 2rem 1.25rem;
-  border: 2px dashed var(--line-strong, #94a3b8);
-  border-radius: var(--pi-radius, 16px);
-  background: var(--pi-soft, #f3f6f9);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--pi-radius);
+  background: var(--pi-soft);
   text-align: center;
   transition: border-color 0.15s, background-color 0.15s;
 }
 .pi-drop.is-over {
   border-color: var(--brand);
-  background: #e8f1f8;
+  background: var(--brand-soft);
 }
 .pi-drop-ico {
   font-size: 2rem;
@@ -2092,7 +2086,7 @@ body.pi-print-drawer .pi-print-sheet {
 }
 .pi-drop-sub {
   max-width: 34rem;
-  color: var(--muted, #475569);
+  color: var(--muted);
 }
 .pi-drop-input {
   position: absolute;
@@ -2115,14 +2109,13 @@ body.pi-print-drawer .pi-print-sheet {
 .pi-or {
   margin: 0;
   font-weight: 700;
-  color: var(--muted, #475569);
+  color: var(--muted);
 }
 .pi-found {
   padding: 0.85rem 1rem;
-  border-radius: 12px;
-  background: var(--pi-card, #fff);
-  border: 1.5px solid var(--line-strong, #cbd5e1);
-  border-inline-start: 5px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--pi-card);
+  border: 1px solid var(--line-strong);
 }
 .pi-found h4 {
   margin: 0 0 0.35rem;
@@ -2144,7 +2137,7 @@ body.pi-print-drawer .pi-print-sheet {
 .pi-onboard-main .pi-drop {
   height: 100%;
   align-content: center;
-  background: var(--pi-card, #fff);
+  background: var(--pi-card);
 }
 .pi-onboard-side {
   display: grid;
@@ -2156,7 +2149,7 @@ body.pi-print-drawer .pi-print-sheet {
   align-items: center;
   gap: 0.35rem;
   margin: 1rem 0 0;
-  color: var(--muted, #475569);
+  color: var(--muted);
 }
 .pi-onboard-foot a {
   min-height: 44px;
@@ -2230,7 +2223,7 @@ body.pi-print-drawer .pi-print-sheet {
   font-size: 1.15rem;
   padding: 0.5rem 0.9rem;
   border: 2px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
 }
@@ -2253,7 +2246,7 @@ body.pi-print-drawer .pi-print-sheet {
   min-height: 44px;
   padding: 0.35rem 0.85rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -2274,8 +2267,7 @@ body.pi-print-drawer .pi-print-sheet {
   gap: 0.4rem;
   margin: 0 0 0.75rem;
   padding: 0.6rem 0.85rem;
-  border-inline-start: 5px solid var(--brand);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--pi-soft);
 }
 .pi-ask-count {
@@ -2352,8 +2344,7 @@ body.pi-print-drawer .pi-print-sheet {
   gap: 1rem;
 }
 .pi-analysis-note {
-  border-inline-start: 5px solid var(--brand);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface-2);
   padding: 0.85rem 1rem;
 }
@@ -2387,7 +2378,7 @@ body.pi-print-drawer .pi-print-sheet {
   gap: 0.25rem;
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   padding: 0.75rem;
 }

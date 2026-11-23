@@ -1,32 +1,26 @@
 /* The Language Page: shared finishing layer over the existing Harbor design system.
-   Preserve domain colors and accessibility tokens. No remote font or image requests. */
-:root {
-  --premium-sage: #e5eee4;
-  --premium-paper: #fffdf7;
-  --premium-rule: #c5d2c5;
-  --premium-depth: 0 3px 8px rgb(13 28 46 / 3%), 0 16px 36px rgb(13 28 46 / 6%);
-}
-.lab-main :is(.panel, .card) { box-shadow: var(--premium-depth); }
+   Uses the ds.css tokens; preserves domain colors and accessibility tokens. No remote font or image requests. */
+.lab-main :is(.panel, .card) { box-shadow: var(--shadow-card); }
 .lab-main :is(h1, h2, h3) { text-wrap: balance; }
 .lab-main :is(.lead, .fine) { text-wrap: pretty; }
-.lab-main :is(button, .btn, summary):focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
-.lab-main .btn { transition: background-color 160ms, border-color 160ms, box-shadow 160ms; }
+.lab-main :is(button, .btn, summary):focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.lab-main .btn { transition: background-color 150ms, border-color 150ms, box-shadow 150ms; }
 /* Family illustrations are part of the page, never behind instructional text. */
-.prog-hero.fam-hero.d-writing.is-tint { background: var(--premium-sage); border-color: var(--premium-rule); overflow: hidden; }
+.prog-hero.fam-hero.d-writing.is-tint { background: var(--bg-subtle); border-color: var(--border-subtle); overflow: hidden; }
 .fam-hero .prog-hero-copy { min-width: 0; }
 .fam-hero .prog-hero-art { align-self: stretch; display: grid; align-items: center; }
 .fam-hero .prog-hero-art img { width: 100%; height: auto; max-height: 430px; object-fit: contain; }
 .fam-primary-doors { gap: 1rem; margin-block: 2rem; }
-.fam-door-card { background: var(--premium-paper); box-shadow: none; border-color: var(--premium-rule); padding: 1.5rem; }
-.fam-door-card:hover { border-color: #527a65; box-shadow: var(--premium-depth); }
+.fam-door-card { background: var(--bg-surface); box-shadow: none; border-color: var(--border-subtle); padding: 1.5rem; }
+.fam-door-card:hover { border-color: var(--brand-accent); box-shadow: var(--shadow-card); }
 .fam-door-card strong { font: 600 clamp(1.18rem, 1rem + .5vw, 1.5rem)/1.2 var(--font-display); }
-.fam-door-ico { background: #e2eddf; color: #264e48; }
+.fam-door-ico { background: var(--teal-soft); color: var(--brand-accent); }
 .fam-skill-cards { gap: 1.25rem; }
-.fam-skill-cards > li { overflow: hidden; background: var(--premium-paper); box-shadow: var(--premium-depth); }
+.fam-skill-cards > li { overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-card); }
 .fam-skill-cards > li > div { padding: 1.5rem; }
-.fam-skill-cards > li img { background: #edf2e7; }
+.fam-skill-cards > li img { background: var(--bg-subtle); }
 .fam-skill-cards h3 { font: 600 1.5rem/1.25 var(--font-display); }
-.fam-subnav { border-radius: 18px; background: #fffdf7; }
+.fam-subnav { border-radius: var(--radius-lg); background: var(--bg-surface); }
 @media (max-width: 580px) {
   .fam-door-card { padding: 1.15rem; }
   .fam-hero .prog-hero-art img { max-height: 280px; }

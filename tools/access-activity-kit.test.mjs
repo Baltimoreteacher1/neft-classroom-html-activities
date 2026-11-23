@@ -24,7 +24,13 @@ const IBI = makeI18n("bi");
 const str = (v) => toHtml(v).replace(/\s+/g, " ").replace(/\s+>/g, ">").replace(/> </g, "><");
 
 const rootBlock = css.slice(css.indexOf(":root {"), css.indexOf(".d-listening"));
-const tok = (name) => rootBlock.match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`))?.[1];
+// A token is a hex value or an alias (`--right: var(--status-success-text)`) that resolves to one.
+const tok = (name, seen = new Set()) => {
+  if (seen.has(name)) return undefined;
+  seen.add(name);
+  const m = rootBlock.match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6}|var\\((--[a-z0-9-]+)\\))`));
+  return m?.[2] ? tok(m[2], seen) : m?.[1];
+};
 const lum = (hex) => {
   const c = [1, 3, 5]
     .map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255)
@@ -83,7 +89,7 @@ test("activity tokens are defined once and the target floor is 44px", () => {
   ])
     assert.equal((css.match(new RegExp(`^\\s*${t}:`, "gm")) || []).length, 1, `${t} defined once`);
   assert.match(css, /--target-min:\s*2\.75rem/);
-  assert.match(css, /--fs-body:\s*1\.0625rem/);
+  assert.match(css, /--fs-body:\s*1rem/); // the editorial theme sets body text at 16px
   // a custom property that reads --room at :root would freeze the brand colour for every domain
   assert.ok(
     !/--zone-[a-z]+:\s*var\(--room/.test(rootBlock),

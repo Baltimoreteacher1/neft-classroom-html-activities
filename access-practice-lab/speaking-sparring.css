@@ -1,13 +1,13 @@
 :root {
-  --spar-bg: #0b1329;
-  --spar-card: #152243;
-  --spar-border: #233566;
-  --spar-accent: #38bdf8;
-  --accent-success: #10b981;
-  --spar-warning: #f59e0b;
-  --spar-danger: #ef4444;
-  --spar-text: #f8fafc;
-  --spar-muted: #94a3b8;
+  --spar-bg: var(--surface);
+  --spar-card: var(--bg-subtle);
+  --spar-border: var(--border-subtle);
+  --spar-accent: var(--teal);
+  --accent-success: var(--right);
+  --spar-warning: var(--accent);
+  --spar-danger: var(--wrong);
+  --spar-text: var(--ink);
+  --spar-muted: var(--text-secondary);
 }
 
 #speaking-sparring-app {
@@ -19,8 +19,8 @@
   padding: 24px;
   border-radius: 12px;
   border: 1px solid var(--spar-border);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: var(--shadow-card);
+  font-family: var(--font);
   box-sizing: border-box;
 }
 
@@ -42,7 +42,7 @@
   margin: 0 0 4px 0;
   font-size: 20px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--ink);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -83,19 +83,19 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border: 1px solid #0284c7;
+  background: color-mix(in srgb, var(--teal) 15%, transparent);
+  color: var(--teal);
+  border: 1px solid var(--brand);
 }
 
 .scenario-prompt {
   font-size: 15px;
   line-height: 1.5;
-  color: #f1f5f9;
+  color: var(--ink);
 }
 
 .svg-diagram-container {
-  background: #090e1a;
+  background: var(--surface);
   border: 1px solid var(--spar-border);
   border-radius: 8px;
   padding: 12px;
@@ -105,7 +105,7 @@
 }
 
 .simulated-peer-box {
-  background: #111a33;
+  background: var(--bg-subtle);
   border: 1px solid var(--spar-border);
   border-radius: 8px;
   padding: 14px;
@@ -118,30 +118,18 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: white;
+  color: var(--surface);
   flex-shrink: 0;
-  border: 2px solid #60a5fa;
-  animation: peer-idle 3s infinite ease-in-out;
+  border: 2px solid var(--border-strong);
 }
 
 .peer-avatar.speaking {
-  animation: peer-speak 0.6s infinite alternate ease-in-out;
-  border-color: #34d399;
-}
-
-@keyframes peer-speak {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(52, 211, 153, 0); }
-  100% { transform: scale(1.08); box-shadow: 0 0 12px rgba(52, 211, 153, 0.6); }
-}
-
-@keyframes peer-idle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  border-color: var(--teal);
 }
 
 .peer-speech-bubble {
@@ -151,7 +139,7 @@
 .peer-speech-bubble strong {
   display: block;
   font-size: 13px;
-  color: #38bdf8;
+  color: var(--teal);
   margin-bottom: 4px;
 }
 
@@ -159,7 +147,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.4;
-  color: #e2e8f0;
+  color: var(--ink);
 }
 
 /* 3-Beat Pacing Ribbon */
@@ -178,16 +166,16 @@
   grid-template-columns: 10fr 15fr 20fr;
   gap: 8px;
   position: relative;
-  background: #090e1a;
+  background: var(--surface);
   padding: 8px;
   border-radius: 8px;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border-subtle);
 }
 
 .ribbon-beat {
   padding: 12px 14px;
   border-radius: 6px;
-  background: #111a33;
+  background: var(--bg-subtle);
   border: 2px solid transparent;
   transition: all 0.3s ease;
   position: relative;
@@ -195,13 +183,13 @@
 }
 
 .ribbon-beat.active {
-  border-color: #38bdf8;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-card);
 }
 
 .ribbon-beat.milestone-hit {
   border-color: var(--accent-success);
-  box-shadow: 0 0 8px var(--accent-success);
+  box-shadow: var(--shadow-card);
 }
 
 .ribbon-beat-header {
@@ -215,25 +203,25 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .beat-time {
   font-size: 11px;
-  color: #64748b;
-  font-family: monospace;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
 }
 
 .beat-name {
   font-size: 13px;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--ink);
   margin-bottom: 2px;
 }
 
 .beat-target {
   font-size: 11px;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.3;
 }
 
@@ -242,7 +230,7 @@
   bottom: 0;
   left: 0;
   height: 4px;
-  background: #38bdf8;
+  background: var(--teal);
   width: 0%;
   transition: width 0.2s linear;
 }
@@ -265,8 +253,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #dc2626;
-  color: white;
+  background: var(--wrong);
+  color: var(--surface);
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
@@ -278,23 +266,17 @@
 }
 
 .btn-record:hover {
-  background: #ef4444;
+  background: var(--wrong);
 }
 
 .btn-record.recording {
-  background: #10b981;
-  animation: pulse-rec 1.2s infinite alternate ease-in-out;
-}
-
-@keyframes pulse-rec {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
-  100% { transform: scale(1.02); box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
+  background: var(--teal);
 }
 
 .btn-playback {
-  background: #1e293b;
-  border: 1px solid #475569;
-  color: #f8fafc;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  color: var(--ink);
   border-radius: 8px;
   padding: 12px 20px;
   font-size: 14px;
@@ -304,7 +286,7 @@
 }
 
 .btn-playback:hover:not(:disabled) {
-  background: #334155;
+  background: var(--bg-interactive-hover);
 }
 
 .btn-playback:disabled {
@@ -313,8 +295,8 @@
 }
 
 .voice-receipt-card {
-  background: #090e1a;
-  border: 1px solid #1e293b;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -326,7 +308,7 @@
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-secondary);
   letter-spacing: 0.05em;
   display: flex;
   justify-content: space-between;
@@ -335,9 +317,9 @@
 .waveform-svg {
   width: 100%;
   height: 70px;
-  background: #050811;
+  background: var(--surface);
   border-radius: 6px;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border-subtle);
 }
 
 .detected-markers-list {
@@ -349,28 +331,34 @@
 
 .marker-pill {
   font-size: 11px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid #059669;
+  background: color-mix(in srgb, var(--right) 15%, transparent);
+  color: var(--teal);
+  border: 1px solid var(--status-success-text);
   padding: 3px 8px;
   border-radius: 4px;
 }
 
 .pause-warning-pill {
   font-size: 11px;
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid #b91c1c;
+  background: color-mix(in srgb, var(--wrong) 15%, transparent);
+  color: var(--wrong);
+  border: 1px solid var(--status-error-text);
   padding: 3px 8px;
   border-radius: 4px;
 }
 
 .fallback-guided-box {
-  background: #1e293b;
-  border-left: 4px solid #f59e0b;
+  background: var(--bg-subtle);
+  border-left: 1px solid var(--border-strong);
   padding: 12px 16px;
   border-radius: 6px;
   font-size: 13px;
-  color: #f1f5f9;
+  color: var(--ink);
   margin-top: 8px;
+}
+
+/* Stimulus pane: serif, calm reading surface. Task and response controls stay in the sans UI face. */
+.scenario-prompt, .peer-speech-bubble p {
+  font-family: var(--font-serif);
+  line-height: 1.75;
 }

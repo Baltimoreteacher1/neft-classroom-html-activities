@@ -43,7 +43,7 @@
 .ex-hero-copy {
   max-width: 38rem;
   padding: clamp(1.5rem, 4vw, 3rem);
-  color: #e6e9f4;
+  color: var(--brand-soft);
 }
 .ex-hero .ex-eyebrow {
   color: var(--copper-200);
@@ -62,15 +62,15 @@
 }
 .ex-summary {
   max-width: 50ch;
-  color: #d5dceb;
+  color: var(--brand-soft);
 }
 .ex-hero .btn-primary {
-  background: linear-gradient(180deg, var(--ivory), #efe6da);
+  background: var(--surface-2);
   border-color: transparent;
   color: var(--mi-950);
 }
 .ex-hero .btn-primary:hover {
-  background: linear-gradient(180deg, #fff, var(--copper-200));
+  background: var(--surface);
   color: var(--mi-950);
 }
 .ex-ghost-light {
@@ -80,7 +80,7 @@
 }
 .ex-ghost-light:hover {
   background: rgb(255 255 255 / 10%);
-  color: #fff;
+  color: var(--on-brand);
 }
 .ex-hero :focus-visible:not([tabindex="-1"]) {
   outline-color: var(--ivory);
@@ -125,15 +125,15 @@
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--room);
-  color: #fff;
+  color: var(--on-brand);
   box-shadow: var(--edge-light-dark);
 }
 .ex-pill {
   display: inline-flex;
   padding: 0.1rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--room-soft);
   color: var(--room-ink);
   font-size: 0.875rem;
@@ -166,7 +166,7 @@
   min-height: 3.5rem;
   padding: 0.55rem 0.8rem;
   border: 1.5px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
@@ -190,7 +190,7 @@
 }
 .ex-path-step.is-done .ex-path-n {
   background: var(--room);
-  color: #fff;
+  color: var(--on-brand);
 }
 .ex-path-step.is-current a {
   border-color: var(--room);
@@ -229,7 +229,7 @@
   min-height: var(--target);
   padding: 0.5rem 0.7rem;
   border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   font: 400 0.9rem/1.3 var(--font);
@@ -268,7 +268,7 @@
   display: inline-block;
   margin-inline-start: 0.4rem;
   padding: 0.1rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--room-soft);
   color: var(--room-ink);
   font: 700 1rem/1.6 var(--font);
@@ -339,7 +339,7 @@
   min-width: 1.8rem;
   height: 1.8rem;
   margin-inline-end: 0.4rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--room-soft);
   color: var(--room-ink);
   font-size: 0.9rem;
@@ -358,8 +358,8 @@
   min-height: 3rem;
   padding: 0.55rem 0.85rem;
   border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
-  background: #fff;
+  border-radius: var(--radius-md);
+  background: var(--surface);
   color: var(--ink);
   font: 400 1.0625rem/1.4 var(--font);
   text-align: start;
@@ -375,10 +375,6 @@
 .ex-option:hover:not([disabled]),
 .ex-sent-pick:hover:not([disabled]) {
   border-color: var(--room);
-}
-.ex-option:active:not([disabled]),
-.ex-sent-pick:active:not([disabled]) {
-  transform: scale(0.99);
 }
 .ex-option[disabled],
 .ex-sent-pick[disabled] {
@@ -425,11 +421,8 @@
 .ex-sound {
   padding: clamp(1.1rem, 2.4vw, 1.75rem);
   border-radius: var(--r-lg);
-  color: #e9f6f3;
-  background:
-    radial-gradient(70% 90% at 10% 0%, rgb(21 150 154 / 45%), transparent 60%),
-    repeating-linear-gradient(0deg, rgb(145 226 214 / 6%) 0 1px, transparent 1px 22px),
-    linear-gradient(155deg, #0b4b5b, #062c38 65%);
+  color: var(--teal-soft);
+  background: var(--listening);
   box-shadow: var(--shadow-lift), var(--edge-light-dark);
 }
 .ex-sound .ex-kicker {
@@ -454,7 +447,7 @@
 .ex-map li {
   padding: 0.55rem 0.7rem;
   border: 1.5px dashed var(--line-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.95rem;
 }
@@ -473,13 +466,11 @@
 .ex-page {
   position: relative;
   padding: clamp(1.5rem, 3.6vw, 3rem) clamp(1.25rem, 4vw, 3.5rem);
-  border: 1px solid #e6dfd3;
-  border-radius: 6px 6px 6px 24px;
-  background: var(--grain), linear-gradient(180deg, var(--ivory), #f6f1e8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm) var(--radius-sm) var(--radius-sm) var(--radius-md);
+  background: var(--grain), var(--surface-2);
   box-shadow:
-    0 1px 0 #fff inset,
-    0 30px 50px -30px rgb(29 43 88 / 35%),
-    10px 10px 0 -4px #ece6dc;
+    var(--shadow-card);
 }
 .ex-page-kicker {
   margin: 0 0 var(--s-2);
@@ -520,7 +511,7 @@ body[data-lab-band="3-5"] .ex-page-text {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 .ex-layers li {
@@ -528,13 +519,13 @@ body[data-lab-band="3-5"] .ex-page-text {
   font-size: 0.95rem;
 }
 .ex-layers li:nth-child(1) {
-  background: #c9c0b2;
+  background: var(--border-strong);
 }
 .ex-layers li:nth-child(2) {
-  background: #e3cfa9;
+  background: var(--accent);
 }
 .ex-layers li:nth-child(3) {
-  background: #f1e4c8;
+  background: var(--hint-soft);
 }
 .ex-layers li:nth-child(4) {
   background: var(--listening-soft);
@@ -544,10 +535,8 @@ body[data-lab-band="3-5"] .ex-page-text {
 .ex-voice {
   padding: clamp(1.25rem, 2.6vw, 2rem);
   border-radius: var(--r-lg);
-  color: #f8eef2;
-  background:
-    radial-gradient(70% 90% at 90% 0%, rgb(219 163 185 / 35%), transparent 60%), var(--grain),
-    linear-gradient(160deg, #6f2c4a, var(--rose-900) 75%);
+  color: var(--brand-soft);
+  background: var(--speaking);
   box-shadow: var(--shadow-lift), var(--edge-light-dark);
 }
 .ex-voice .ex-kicker {
@@ -619,9 +608,9 @@ body[data-lab-band="3-5"] .ex-page-text {
 /* Writing · copper manuscript */
 .ex-manuscript {
   padding: clamp(1.25rem, 2.6vw, 2rem);
-  border: 1px solid #e7d2b6;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--r-lg);
-  background: var(--grain), linear-gradient(180deg, #fcf5ea, #f4e5d1);
+  background: var(--surface-2);
 }
 .ex-manuscript .ex-kicker {
   color: var(--writing-ink);
@@ -643,8 +632,8 @@ body[data-lab-band="3-5"] .ex-page-text {
   width: 100%;
   min-height: 16rem;
   padding: 0.9rem 1rem 0.9rem 3rem;
-  border: 1.5px solid #dcc6a8;
-  border-radius: 10px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-md);
   background:
     linear-gradient(
       90deg,
@@ -707,7 +696,7 @@ body[data-lab-band="3-5"] .ex-page-text {
   display: flex;
   gap: 0.5rem;
   padding: var(--s-3) var(--s-4);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--sage-200);
   color: var(--sage-900);
   font-weight: 700;
@@ -789,7 +778,7 @@ body[data-lab-band="3-5"] .ex-page-text {
 }
 .ex-frames li {
   padding: 0.45rem 0.7rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--room-soft);
   font-family: var(--font-display);
 }

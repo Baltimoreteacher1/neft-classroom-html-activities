@@ -4,75 +4,43 @@
    ========================================================================== */
 
 :root {
-  --tlp-bg: #FAF9F6;
-  --tlp-surface: #FFFFFF;
-  --tlp-surface-2: #F1F5F9;
-  --tlp-surface-3: #E2E8F0;
-  --tlp-border: rgba(15, 23, 42, 0.08);
-  --tlp-border-strong: rgba(15, 23, 42, 0.16);
-  --tlp-ink: #0F172A;
-  --tlp-ink-2: #475569;
-  --tlp-ink-3: #64748B;
+  /* One palette: every --tlp-* value points at a ds.css token. */
+  --tlp-bg: var(--bg-canvas);
+  --tlp-surface: var(--bg-surface);
+  --tlp-surface-2: var(--bg-subtle);
+  --tlp-surface-3: var(--bg-interactive-hover);
+  --tlp-border: var(--border-subtle);
+  --tlp-border-strong: var(--border-strong);
+  --tlp-ink: var(--text-primary);
+  --tlp-ink-2: var(--text-secondary);
+  --tlp-ink-3: var(--text-tertiary);
 
-  --tlp-accent: #2563EB;
-  --tlp-accent-ink: #1D4ED8;
-  --tlp-accent-soft: rgba(37, 99, 235, 0.10);
-  --tlp-on-accent: #FFFFFF;
+  --tlp-accent: var(--brand-primary);
+  --tlp-accent-ink: var(--brand-primary);
+  --tlp-accent-soft: var(--brand-soft);
+  --tlp-on-accent: var(--on-brand);
 
-  /* Colorblind-safe, WCAG-AA verified proficiency ramp (Levels 1-6) */
-  --tlp-level-1: #9A3412;
-  --tlp-level-1-soft: rgba(154, 52, 18, 0.10);
-  --tlp-level-2: #B45309;
-  --tlp-level-2-soft: rgba(180, 83, 9, 0.10);
-  --tlp-level-3: #0369A1;
-  --tlp-level-3-soft: rgba(3, 105, 161, 0.10);
-  --tlp-level-4: #0F766E;
-  --tlp-level-4-soft: rgba(15, 118, 110, 0.10);
-  --tlp-level-5: #1D4ED8;
-  --tlp-level-5-soft: rgba(29, 78, 216, 0.10);
-  --tlp-level-6: #15803D;
-  --tlp-level-6-soft: rgba(21, 128, 61, 0.10);
+  /* Proficiency ramp (Levels 1-6): ochre and terracotta through teal to navy and green */
+  --tlp-level-1: var(--coral);
+  --tlp-level-1-soft: color-mix(in srgb, var(--tlp-level-1) 10%, transparent);
+  --tlp-level-2: var(--brand-gold);
+  --tlp-level-2-soft: color-mix(in srgb, var(--tlp-level-2) 10%, transparent);
+  --tlp-level-3: var(--reading-ink);
+  --tlp-level-3-soft: color-mix(in srgb, var(--tlp-level-3) 10%, transparent);
+  --tlp-level-4: var(--brand-accent);
+  --tlp-level-4-soft: color-mix(in srgb, var(--tlp-level-4) 10%, transparent);
+  --tlp-level-5: var(--brand-primary);
+  --tlp-level-5-soft: color-mix(in srgb, var(--tlp-level-5) 10%, transparent);
+  --tlp-level-6: var(--status-success-text);
+  --tlp-level-6-soft: color-mix(in srgb, var(--tlp-level-6) 10%, transparent);
 
-  --tlp-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.08);
-  --tlp-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06), 0 20px 44px -16px rgba(15, 23, 42, 0.14);
-  --tlp-radius: 14px;
-  --tlp-radius-sm: 10px;
-  --tlp-ease: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-  --tlp-font-ui: "Plus Jakarta Sans", "Inter", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
-  --tlp-font-serif: "Fraunces", Georgia, serif;
-
-  /* Harmonize legacy ds.css tokens */
-  --bg: var(--tlp-bg);
-  --surface: var(--tlp-surface);
-  --surface-2: var(--tlp-surface-2);
-  --surface-3: var(--tlp-surface-3);
-  --ink: var(--tlp-ink);
-  --ink-2: var(--tlp-ink-2);
-  --ink-3: var(--tlp-ink-3);
-  --line: var(--tlp-border-strong);
-  --brand: var(--tlp-accent);
-  --brand-ink: var(--tlp-accent-ink);
-  --brand-soft: var(--tlp-accent-soft);
-}
-
-[data-tlp-theme="dark"] .panel,
-[data-tlp-theme="dark"] .card,
-[data-tlp-theme="dark"] .story-hero,
-[data-tlp-theme="dark"] .pass-cosmetics,
-[data-tlp-theme="dark"] .lph-more-ways,
-[data-tlp-theme="dark"] .lph-dashboard,
-[data-tlp-theme="dark"] .room-card,
-[data-tlp-theme="dark"] .studio-card,
-[data-tlp-theme="dark"] .ll-hero,
-[data-tlp-theme="dark"] .ll-next,
-[data-tlp-theme="dark"] .ll-studios,
-[data-tlp-theme="dark"] .ll-library,
-[data-tlp-theme="dark"] .lab-footer,
-[data-tlp-theme="dark"] .section-bar,
-[data-tlp-theme="dark"] .window-card {
-  background: var(--tlp-surface) !important;
-  color: var(--tlp-ink) !important;
-  border-color: var(--tlp-border-strong) !important;
+  --tlp-shadow: var(--shadow-card);
+  --tlp-shadow-lg: var(--shadow-elevated);
+  --tlp-radius: var(--radius-md);
+  --tlp-radius-sm: var(--radius-sm);
+  --tlp-ease: 150ms ease-out;
+  --tlp-font-ui: var(--font);
+  --tlp-font-serif: var(--font-display);
 }
 
 [data-tlp-theme="dark"] {
@@ -153,14 +121,6 @@ html, body {
   margin: 0 0 0.35rem;
 }
 
-/* Sticky Translucent Header */
-.lab-top {
-  background: color-mix(in srgb, var(--tlp-surface) 84%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--tlp-border);
-}
-
 /* Global Platform Control Bar (Role Switcher + L1 + Theme) */
 .tlp-control-bar {
   display: flex;
@@ -179,7 +139,7 @@ html, body {
   flex-wrap: wrap;
   max-width: 100%;
   padding: 3px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--tlp-surface-2);
   border: 1px solid var(--tlp-border);
   gap: 2px;
@@ -191,14 +151,14 @@ html, body {
   color: var(--tlp-ink-2);
   font: 600 0.82rem/1 var(--tlp-font-ui);
   padding: 0.45rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color var(--tlp-ease), color var(--tlp-ease), box-shadow var(--tlp-ease);
+  transition: background-color var(--tlp-ease), color var(--tlp-ease);
 }
 .tlp-role-pill[aria-pressed="true"] {
   background: var(--tlp-surface);
   color: var(--tlp-ink);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.10);
+  box-shadow: var(--shadow-card);
 }
 
 .tlp-control-right {
@@ -212,7 +172,7 @@ html, body {
   border: 1px solid var(--tlp-border-strong);
   background: var(--tlp-surface);
   color: var(--tlp-ink);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   padding: 0.35rem 0.75rem;
   font: 600 0.82rem/1.2 var(--tlp-font-ui);
 }
@@ -224,7 +184,7 @@ html, body {
   gap: 0.35rem;
   min-height: 34px;
   padding: 0.35rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--tlp-border-strong);
   background: var(--tlp-surface);
   color: var(--tlp-ink);
@@ -291,18 +251,18 @@ html, body {
   gap: 0.45rem;
   min-height: 42px;
   padding: 0.6rem 1.15rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   font: 600 0.9rem/1.1 var(--tlp-font-ui);
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--tlp-ease), background-color var(--tlp-ease), border-color var(--tlp-ease);
+  transition: background-color var(--tlp-ease), border-color var(--tlp-ease);
 }
 .tlp-btn-primary {
   background: var(--tlp-accent);
   color: var(--tlp-on-accent);
 }
-.tlp-btn-primary:hover { filter: brightness(1.06); }
+.tlp-btn-primary:hover { background: var(--brand-primary-hover); }
 .tlp-btn-ghost {
   background: var(--tlp-surface);
   color: var(--tlp-ink);
@@ -316,7 +276,7 @@ html, body {
   align-items: center;
   gap: 0.3rem;
   padding: 0.22rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font: 700 0.74rem/1.2 var(--tlp-font-ui);
   letter-spacing: 0.02em;
 }
@@ -345,7 +305,7 @@ html, body {
   color: var(--tlp-ink-2);
   font: 600 0.88rem/1.2 var(--tlp-font-ui);
   padding: 0.5rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 .tlp-tab[aria-pressed="true"] {
@@ -377,20 +337,20 @@ html, body {
   font-size: 1.03rem;
 }
 .tlp-mark-poly {
-  background: rgba(217, 119, 6, 0.16);
-  border-bottom: 2px solid #D97706;
+  background: color-mix(in srgb, var(--brand-gold) 16%, transparent);
+  border-bottom: 2px solid var(--brand-gold);
   padding: 0.05rem 0.2rem;
   border-radius: 4px;
 }
 .tlp-mark-conn {
-  background: rgba(37, 99, 235, 0.14);
+  background: color-mix(in srgb, var(--tlp-accent) 14%, transparent);
   border-bottom: 2px solid var(--tlp-accent);
   padding: 0.05rem 0.2rem;
   border-radius: 4px;
 }
 .tlp-mark-cog {
-  background: rgba(15, 118, 110, 0.14);
-  border-bottom: 2px dotted #0F766E;
+  background: color-mix(in srgb, var(--brand-accent) 14%, transparent);
+  border-bottom: 2px dotted var(--brand-accent);
   padding: 0.05rem 0.2rem;
   border-radius: 4px;
   cursor: help;
@@ -406,11 +366,10 @@ html, body {
   font-weight: 600;
   line-height: 1.55;
   margin-bottom: 1rem;
-  transition: border-color var(--tlp-ease), box-shadow var(--tlp-ease);
+  transition: border-color var(--tlp-ease);
 }
 .tlp-sentence-stage.is-leveled {
   border-color: var(--tlp-accent);
-  box-shadow: 0 0 0 3px var(--tlp-accent-soft);
 }
 .tlp-meter-track {
   height: 10px;
@@ -484,9 +443,9 @@ html, body {
   background: var(--tlp-surface);
   border: 1px solid var(--tlp-border);
   box-shadow: var(--tlp-shadow);
-  transition: border-color var(--tlp-ease), transform var(--tlp-ease);
+  transition: border-color var(--tlp-ease);
 }
-.tlp-resource-card:hover { border-color: var(--tlp-accent); transform: translateY(-1px); }
+.tlp-resource-card:hover { border-color: var(--tlp-accent); }
 
 /* Reclassification Radar Table */
 .tlp-table-wrap { overflow-x: auto; }
@@ -513,9 +472,9 @@ html, body {
   margin: 0 auto;
   background: var(--tlp-surface);
   border: 1px solid var(--tlp-border-strong);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: clamp(1.25rem, 3vw, 2rem);
-  box-shadow: var(--tlp-shadow-lg);
+  box-shadow: var(--tlp-shadow);
 }
 .tlp-pride-element {
   padding: 1rem 1.1rem;
@@ -539,8 +498,7 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 900;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--text-primary) 45%, transparent);
   display: flex;
 }
 .tlp-drawer-backdrop { justify-content: flex-end; }
@@ -563,7 +521,7 @@ html, body {
   background: var(--tlp-surface);
   color: var(--tlp-ink);
   border: 1px solid var(--tlp-border-strong);
-  border-radius: var(--tlp-radius);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--tlp-shadow-lg);
 }
@@ -610,11 +568,11 @@ html, body {
 
 /* Print Stylesheets (Family Card, Reclassification Report) */
 @media print {
-  body { background: #FFFFFF !important; color: #0F172A !important; }
+  body { background: var(--bg-surface) !important; color: var(--text-primary) !important; }
   .no-print, .lab-top, .tlp-control-bar, .lab-footer, .tlp-debug-dock { display: none !important; }
   .tlp-card, .tlp-pride-card {
     box-shadow: none !important;
-    border: 1px solid #CBD5E1 !important;
+    border: 1px solid var(--border-strong) !important;
     page-break-inside: avoid;
   }
 }
@@ -655,7 +613,7 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.1rem 0.45rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--tlp-surface-2);
   color: var(--tlp-ink-2);
   margin-left: 0.35rem;
@@ -699,7 +657,6 @@ html, body {
 .tlp-score-low { color: var(--tlp-level-1); font-weight: 700; }
 .tlp-score-mid { color: var(--tlp-level-3); font-weight: 600; }
 .tlp-score-high { color: var(--tlp-level-6); font-weight: 700; }
-||||||| parent of 53f1fbaefa (feat(language-page): integrate SplashLearn, Ellii, and English Media Lab studios)
 /* Integrated Studios: Skill Arcade & Dialogue Studio */
 .tlp-tile-row {
   display: flex;
@@ -718,12 +675,11 @@ html, body {
   font-weight: 700;
   font-size: 1.15rem;
   cursor: pointer;
-  transition: transform var(--tlp-ease), background var(--tlp-ease), border-color var(--tlp-ease);
+  transition: background var(--tlp-ease), border-color var(--tlp-ease);
 }
 .tlp-letter-tile:hover:not(:disabled) {
   border-color: var(--tlp-accent);
   background: var(--tlp-accent-soft);
-  transform: translateY(-1px);
 }
 .tlp-letter-tile:disabled {
   opacity: 0.45;
@@ -812,7 +768,7 @@ html, body {
 }
 .tlp-trail-token.is-p2 {
   background: var(--tlp-level-1);
-  color: #FFFFFF;
+  color: var(--on-brand);
 }
 .tlp-dialogue-turn {
   padding: 0.75rem 1rem;
@@ -835,7 +791,7 @@ html, body {
   min-height: 36px;
   padding: 0.15rem 0.6rem;
   margin: 0 0.2rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 2px dashed var(--tlp-accent);
   background: var(--tlp-surface-2);
   color: var(--tlp-ink);

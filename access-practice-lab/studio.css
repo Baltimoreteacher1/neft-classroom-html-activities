@@ -12,7 +12,6 @@
   padding: 1rem;
   min-height: 44px;
   border: 1.5px solid var(--line);
-  border-left: 6px solid var(--room, var(--brand));
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
@@ -28,9 +27,9 @@
   gap: .55rem;
   padding: 1.25rem;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  background: linear-gradient(160deg, #fff, color-mix(in srgb, var(--room) 5%, #fff));
-  transition: transform .2s ease, box-shadow .2s ease;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  transition: box-shadow .2s ease;
 }
 .studio-card strong { font-size: 1.12rem; letter-spacing: -.01em; }
 .studio-card > span:nth-child(3) { max-width: 28ch; color: var(--ink-2); font-size: .95rem; }
@@ -45,7 +44,7 @@
 }
 .studio-icon svg { width: 2rem; height: 2rem; }
 .studio-card .studio-arrow { position: absolute; right: 1.2rem; top: 1.2rem; color: var(--room); font-size: 1.3rem; }
-.studio-card:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgb(15 44 59 / 12%); }
+.studio-card:hover { box-shadow: var(--shadow-card); }
 .studio-card:hover,.task-card:hover,.next-step:hover{
   border-color: var(--room, var(--brand));
 }
@@ -69,7 +68,7 @@
 .dim-chip {
   display: inline-block;
   padding: 0.05rem 0.5rem;
-  border-radius: 99px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--line);
   color: var(--ink-2);
@@ -97,24 +96,24 @@
   white-space: pre-wrap;
 }
 mark.hl {
-  background: #d8f0e6;
+  background: var(--teal-soft);
   color: inherit;
   border-radius: 3px;
   padding: 0 0.1em;
 }
 mark.hl-error {
-  background: #fde3df;
-  text-decoration: underline wavy #b3261e;
+  background: var(--status-error-bg);
+  text-decoration: underline wavy var(--wrong);
   text-underline-offset: 3px;
 }
 ins {
-  background: #d8f0e6;
+  background: var(--teal-soft);
   text-decoration: underline;
   border-radius: 3px;
   padding: 0 0.1em;
 }
 del {
-  background: #fde3df;
+  background: var(--bg-subtle);
   border-radius: 3px;
   padding: 0 0.1em;
 }
@@ -198,7 +197,7 @@ del {
 
 /* form fields: >= 3:1 border contrast (WCAG 1.4.11) and a visible focus ring */
 .field input[type="text"],.field textarea,.field select{
-  border-color: #767676;
+  border-color: var(--border-control);
 }
 .field input:focus-visible,.field textarea:focus-visible,.field select:focus-visible{
   outline: 3px solid var(--focus);
@@ -260,7 +259,7 @@ del {
 }
 .comp-card {
   padding: 0.75rem 1rem;
-  border-left: 6px solid var(--brand);
+  border-left: 1px solid var(--border-strong);
   border-radius: var(--radius);
   background: var(--brand-soft);
 }
@@ -351,7 +350,7 @@ del {
   min-height: 44px;
   padding: 0.4rem 0.9rem;
   border: 1.5px solid var(--brand);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -369,7 +368,7 @@ del {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-card);
 }
 .gloss-card h2 {
   margin: 0 0 0.25rem;
@@ -425,4 +424,10 @@ del {
 }
 .sf-key mark {
   margin-right: 0.5rem;
+}
+
+/* Stimulus pane: serif, calm reading surface. Task and response controls stay in the sans UI face. */
+.evidence-text {
+  font-family: var(--font-serif);
+  line-height: 1.75;
 }

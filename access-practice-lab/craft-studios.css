@@ -1,13 +1,13 @@
 /* Craft studios: Argument Arena (/arena), Mentor Text Explorer (/mentor), Sentence Lab (/sentences).
    Layout and the studios' own color families only. Tokens, buttons, panels and chips come from ds.css. */
 .cs-page {
-  --cs-s: #3d4f9f;
-  --cs-v: #8a3a5c;
-  --cs-o: #1f6b55;
-  --cs-m: #9a4a26;
-  --cs-c: #075568;
-  --cs-r: #5b4a8a;
-  --cs-p: #55606e;
+  --cs-s: var(--brand);
+  --cs-v: var(--speaking);
+  --cs-o: var(--right);
+  --cs-m: var(--writing);
+  --cs-c: var(--teal);
+  --cs-r: var(--mi-600);
+  --cs-p: var(--text-secondary);
   display: grid;
   gap: var(--s-5, 1.25rem);
 }
@@ -20,13 +20,13 @@
   max-width: 480px;
 }
 .cs-art .bg {
-  fill: color-mix(in srgb, var(--room, var(--brand)) 10%, var(--surface, #fff));
+  fill: color-mix(in srgb, var(--room, var(--brand)) 10%, var(--surface));
 }
 .cs-art .pod {
   fill: var(--speaking);
 }
 .cs-art .pod.p2 {
-  fill: var(--writing, #9a4a26);
+  fill: var(--writing);
 }
 .cs-art .pt {
   fill: none;
@@ -36,15 +36,15 @@
   stroke-linejoin: round;
 }
 .cs-art .bub {
-  fill: var(--surface, #fff);
-  stroke: var(--line-strong, #8a93a6);
+  fill: var(--surface);
+  stroke: var(--line-strong);
   stroke-width: 3;
 }
 .cs-art .ln {
-  fill: var(--line-strong, #8a93a6);
+  fill: var(--line-strong);
 }
 .cs-art .head {
-  fill: var(--ink-2, #394152);
+  fill: var(--ink-2);
 }
 .cs-art .star {
   fill: #e0a82e;
@@ -52,8 +52,8 @@
   stroke-width: 3;
 }
 .cs-art .page {
-  fill: var(--surface, #fff);
-  stroke: var(--line-strong, #8a93a6);
+  fill: var(--surface);
+  stroke: var(--line-strong);
   stroke-width: 3;
 }
 .cs-art .hl.h1 {
@@ -67,11 +67,11 @@
 }
 .cs-art .lens {
   fill: rgb(255 255 255 / 0.5);
-  stroke: var(--reading, #2e4a94);
+  stroke: var(--reading);
   stroke-width: 8;
 }
 .cs-art .grip {
-  stroke: var(--reading, #2e4a94);
+  stroke: var(--reading);
   stroke-width: 10;
   stroke-linecap: round;
 }
@@ -81,25 +81,25 @@
   stroke-width: 2;
 }
 .cs-art .belt {
-  fill: var(--ink-2, #394152);
+  fill: var(--ink-2);
 }
 .cs-art .gear circle:first-child {
-  fill: var(--writing, #9a4a26);
+  fill: var(--writing);
 }
 .cs-art .gear.g2 circle:first-child {
   fill: var(--speaking);
 }
 .cs-art .gear .hub {
-  fill: var(--surface, #fff);
+  fill: var(--surface);
 }
 .cs-art .box {
-  fill: var(--surface, #fff);
-  stroke: var(--line-strong, #8a93a6);
+  fill: var(--surface);
+  stroke: var(--line-strong);
   stroke-width: 3;
 }
 .cs-art .slot {
   fill: none;
-  stroke: var(--line-strong, #8a93a6);
+  stroke: var(--line-strong);
   stroke-width: 3;
   stroke-dasharray: 6 5;
 }
@@ -120,7 +120,7 @@
 }
 .cs-art .arrow {
   fill: none;
-  stroke: var(--ink-2, #394152);
+  stroke: var(--ink-2);
   stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -129,7 +129,7 @@
 /* support level picker */
 .cs-levels {
   border: 1px solid var(--line);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: var(--s-3, 0.75rem) var(--s-4, 1rem);
   background: var(--surface);
 }
@@ -164,7 +164,7 @@
   gap: 0.4rem;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   counter-increment: cs;
 }
@@ -178,13 +178,13 @@
   height: 10px;
   min-width: 120px;
   border-radius: 99px;
-  background: var(--surface-3, #e6e9f0);
+  background: var(--surface-3);
   overflow: hidden;
 }
 .cs-bar i {
   display: block;
   height: 100%;
-  background: var(--right, #1f6b55);
+  background: var(--right);
 }
 .cs-toolbox-cta .cs-bar {
   max-width: 320px;
@@ -206,7 +206,7 @@
   min-height: 44px;
   padding: 0.4rem 0.8rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   font: inherit;
   color: var(--ink);
@@ -214,11 +214,11 @@
 }
 .cs-step.is-current {
   background: var(--brand);
-  color: #fff;
+  color: var(--surface);
   border-color: var(--brand);
 }
 .cs-step.is-past {
-  border-color: var(--right, #1f6b55);
+  border-color: var(--right);
 }
 .cs-step-n {
   font-weight: 700;
@@ -233,7 +233,7 @@
 }
 .cs-ev {
   border: 1px solid var(--line);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 0.85rem 1rem;
   background: var(--surface);
   display: grid;
@@ -265,11 +265,11 @@
 }
 .cs-slot {
   border: 2px dashed var(--line-strong);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 0.75rem 1rem;
   display: grid;
   gap: 0.5rem;
-  background: color-mix(in srgb, var(--speaking) 4%, var(--surface, #fff));
+  background: color-mix(in srgb, var(--speaking) 4%, var(--surface));
 }
 .cs-slot.is-filled {
   border-style: solid;
@@ -281,12 +281,12 @@
 .cs-quote {
   margin: 0;
   padding: 0.6rem 0.9rem;
-  border-left: 4px solid var(--speaking);
-  background: var(--surface-2, #f3f5f9);
+  border-left: 3px solid var(--speaking);
+  background: var(--surface-2);
   border-radius: 0 8px 8px 0;
 }
 .cs-objection {
-  border-left-color: var(--writing, #9a4a26);
+  border-left-color: var(--writing);
 }
 .cs-field {
   display: grid;
@@ -305,7 +305,7 @@
   resize: vertical;
 }
 .cs-frame {
-  background: var(--room-soft, #f3f5f9);
+  background: var(--room-soft);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   display: grid;
@@ -328,7 +328,7 @@
   color: var(--ink-2);
 }
 .cs-question {
-  font-family: var(--font-display, inherit);
+  font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 600;
 }
@@ -345,17 +345,17 @@
   align-items: flex-start;
 }
 .cs-checks .is-ok svg {
-  color: var(--right, #1f6b55);
+  color: var(--right);
 }
 .cs-win {
-  background: color-mix(in srgb, var(--right, #1f6b55) 12%, var(--surface, #fff));
-  border: 1px solid var(--right, #1f6b55);
+  background: color-mix(in srgb, var(--right) 12%, var(--surface));
+  border: 1px solid var(--right);
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
 }
 .cs-next {
-  background: color-mix(in srgb, var(--hint, #9a6a00) 12%, var(--surface, #fff));
-  border: 1px solid var(--hint, #9a6a00);
+  background: color-mix(in srgb, var(--hint) 12%, var(--surface));
+  border: 1px solid var(--hint);
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
 }
@@ -411,8 +411,8 @@
   border: 2px solid var(--ink);
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  background: #fff;
-  color: #111;
+  background: var(--surface);
+  color: var(--ink);
   display: grid;
   gap: 0.4rem;
 }
@@ -422,7 +422,7 @@
 .cs-lines i {
   display: block;
   height: 1.8rem;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--ink);
 }
 .cs-print-only {
   display: none;
@@ -436,7 +436,7 @@
   align-items: start;
 }
 .cs-paper {
-  background: var(--ivory, #fbf8ef);
+  background: var(--ivory);
   font-size: 1.15rem;
   line-height: 2;
 }
@@ -449,8 +449,8 @@
   padding: 0.1rem 0.3rem;
   border-radius: 6px;
   border: 0;
-  background: color-mix(in srgb, var(--mv, #888) 22%, #fff);
-  border-bottom: 3px solid var(--mv, #888);
+  background: color-mix(in srgb, var(--mv, var(--text-tertiary)) 22%, var(--surface));
+  border-bottom: 3px solid var(--mv, var(--border-control));
   cursor: pointer;
 }
 mark.cs-mv {
@@ -464,7 +464,7 @@ button.cs-mv {
   outline-offset: 1px;
 }
 .cs-mv.is-found {
-  box-shadow: inset 0 0 0 2px var(--mv, #888);
+  box-shadow: inset 0 0 0 2px var(--mv, var(--border-control));
 }
 .cs-mvname {
   font-size: 0.72em;
@@ -484,7 +484,7 @@ button.cs-mv {
   text-align: left;
 }
 .cs-text-c .cs-sent.is-open {
-  background: var(--room-soft, #eef1f9);
+  background: var(--room-soft);
   outline: 2px solid var(--brand);
 }
 .cs-margin {
@@ -494,7 +494,7 @@ button.cs-mv {
   gap: 0.75rem;
 }
 .cs-note-card {
-  border-left: 6px solid var(--mv, #888);
+  border-left: 6px solid var(--mv, var(--border-control));
   padding: 0.5rem 0.9rem;
   background: var(--surface);
   border-radius: 0 10px 10px 0;
@@ -513,7 +513,7 @@ button.cs-mv {
   gap: 0.9rem;
 }
 .cs-move {
-  border-top: 6px solid var(--mv, #888);
+  border-top: 6px solid var(--mv, var(--border-control));
 }
 .cs-collected {
   margin: 0;
@@ -525,33 +525,33 @@ button.cs-mv {
   font-size: 1.1rem;
 }
 .cs-model {
-  background: var(--room-soft, #eef1f9);
+  background: var(--room-soft);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
 }
 .mv-verb {
-  --mv: #c0392b;
+  --mv: var(--wrong);
 }
 .mv-sense {
-  --mv: #1f7a6d;
+  --mv: var(--teal);
 }
 .mv-hook {
-  --mv: #b7791f;
+  --mv: var(--accent);
 }
 .mv-trans {
-  --mv: #2e4a94;
+  --mv: var(--reading);
 }
 .mv-evid {
-  --mv: #6b4a9a;
+  --mv: var(--mi-600);
 }
 .mv-coh {
-  --mv: #8a3a5c;
+  --mv: var(--speaking);
 }
 .mv-comp {
-  --mv: #2f7a2f;
+  --mv: var(--right);
 }
 .mv-prec {
-  --mv: #9a4a26;
+  --mv: var(--writing);
 }
 
 /* Sentence Lab */
@@ -572,7 +572,7 @@ button.cs-mv {
   gap: 0.5rem;
   padding: 0.6rem;
   border-radius: 12px;
-  background: var(--surface-2, #f3f5f9);
+  background: var(--surface-2);
   min-height: 64px;
 }
 .cs-placed {
@@ -649,33 +649,33 @@ button.cs-mv {
   --c: var(--cs-p);
 }
 .p-n {
-  --c: #3d4f9f;
+  --c: var(--brand);
 }
 .p-v {
-  --c: #a3274f;
+  --c: var(--speaking);
 }
 .p-a {
-  --c: #1f6b55;
+  --c: var(--right);
 }
 .p-r {
-  --c: #9a4a26;
+  --c: var(--writing);
 }
 .p-d {
-  --c: #55606e;
+  --c: var(--text-secondary);
 }
 .p-p {
-  --c: #075568;
+  --c: var(--teal);
 }
 .p-q {
-  --c: #5b4a8a;
+  --c: var(--mi-600);
 }
 .p-c {
-  --c: #7a5a00;
+  --c: var(--accent);
 }
 .cs-tile[class*="t-"]:not(.t-plain),
 .cs-sw {
   border-color: var(--c);
-  background: color-mix(in srgb, var(--c) 14%, #fff);
+  background: color-mix(in srgb, var(--c) 14%, var(--surface));
 }
 .cs-tile.t-P {
   min-width: 36px;
@@ -718,10 +718,10 @@ button.cs-mv {
 }
 .cs-m-clause {
   flex: 1 1 220px;
-  border: 2px solid var(--ink-2, #394152);
+  border: 2px solid var(--ink-2);
   border-radius: 12px;
   padding: 0.5rem 0.6rem;
-  background: var(--surface-2, #f3f5f9);
+  background: var(--surface-2);
 }
 .cs-m-clause.is-dep {
   border-style: dashed;
@@ -765,13 +765,13 @@ button.cs-mv {
   font-weight: 700;
 }
 .cs-m-fill i {
-  color: var(--ink-3, #5a6577);
+  color: var(--ink-3);
 }
 .cs-m-join {
   align-self: center;
   padding: 0.3rem 0.6rem;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--cs-c) 14%, #fff);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--cs-c) 14%, var(--surface));
   border: 2px solid var(--cs-c);
   display: inline-flex;
   gap: 0.35rem;
@@ -795,12 +795,12 @@ button.cs-mv {
   cursor: pointer;
 }
 .cs-word.is-err {
-  border-color: var(--right, #1f6b55);
-  background: color-mix(in srgb, var(--right, #1f6b55) 14%, #fff);
+  border-color: var(--right);
+  background: color-mix(in srgb, var(--right) 14%, var(--surface));
 }
 .cs-word.is-wrong,
 .cs-opt.is-wrong {
-  border-color: var(--hint, #9a6a00);
+  border-color: var(--hint);
 }
 .cs-opts {
   display: grid;
@@ -812,8 +812,8 @@ button.cs-mv {
   font-size: 1.05rem;
 }
 .cs-opt.is-right {
-  border-color: var(--right, #1f6b55);
-  background: color-mix(in srgb, var(--right, #1f6b55) 14%, #fff);
+  border-color: var(--right);
+  background: color-mix(in srgb, var(--right) 14%, var(--surface));
 }
 .cs-wrong-s {
   font-size: 1.15rem;
@@ -903,4 +903,10 @@ button.cs-mv {
     display: grid;
     border-color: #000;
   }
+}
+
+/* Stimulus pane: serif, calm reading surface. Task and response controls stay in the sans UI face. */
+.cs-quote, .cs-text, .cs-model {
+  font-family: var(--font-serif);
+  line-height: 1.75;
 }

@@ -21,7 +21,7 @@
 
 .reader-kicker {
   margin: 0 0 0.25rem;
-  color: var(--reading-ink, #2a4386);
+  color: var(--reading-ink);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -75,8 +75,8 @@
 }
 
 .reader-tab.active {
-  border-bottom-color: var(--reading-ink, #2a4386);
-  color: var(--reading-ink, #2a4386);
+  border-bottom-color: var(--reading-ink);
+  color: var(--reading-ink);
   background: var(--surface-2);
   font-weight: 700;
 }
@@ -88,7 +88,7 @@
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.35rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--line);
   color: var(--ink);
   font-size: 0.75rem;
@@ -97,7 +97,7 @@
 
 .badge-due {
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 /* Toolbar */
@@ -108,7 +108,7 @@
   gap: 0.75rem var(--s-4);
   padding: var(--s-3) var(--s-4);
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -140,14 +140,14 @@
 }
 
 @keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 40, 29, 0.4); }
-  50% { box-shadow: 0 0 0 6px rgba(168, 40, 29, 0); }
+  0%, 100% { box-shadow: var(--shadow-card); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--wrong) 0%, transparent); }
 }
 
 .chip {
   padding: 0.3rem 0.65rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 0.85rem;
@@ -157,7 +157,7 @@
 .chip.active-chip {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 700;
 }
 
@@ -166,7 +166,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.35rem 0.65rem;
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface-2);
   font-size: 0.85rem;
@@ -176,12 +176,12 @@
 }
 
 .toggle-pill input {
-  accent-color: var(--reading-ink, #2a4386);
+  accent-color: var(--reading-ink);
 }
 
 .toggle-pill.active-toggle {
-  border-color: var(--reading-ink, #2a4386);
-  background: var(--reading-soft, #eceef8);
+  border-color: var(--reading-ink);
+  background: var(--reading-soft);
 }
 
 /* Sample Bar */
@@ -202,7 +202,7 @@
 .sample-chip {
   padding: 0.3rem 0.8rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-2);
   font-size: 0.85rem;
@@ -216,9 +216,9 @@
 }
 
 .sample-chip.current-sample {
-  border-color: var(--reading-ink, #2a4386);
-  background: var(--reading-soft, #eceef8);
-  color: var(--reading-ink, #2a4386);
+  border-color: var(--reading-ink);
+  background: var(--reading-soft);
+  color: var(--reading-ink);
   font-weight: 700;
 }
 
@@ -229,7 +229,7 @@
   gap: var(--s-3);
   padding: var(--s-4);
   background: var(--surface-2);
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
 }
 
@@ -256,7 +256,7 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   min-height: 20rem;
-  font-family: var(--font);
+  font-family: var(--font-serif);
   font-size: calc(1.35rem * var(--lab-scale, 1));
   line-height: 2.1;
   color: var(--ink);
@@ -280,8 +280,8 @@
 
 .has-spotlight .reader-sentence.is-focused-sentence {
   opacity: 1;
-  background-color: rgb(46 74 148 / 9%);
-  box-shadow: 0 0 0 3px rgb(46 74 148 / 9%);
+  background-color: color-mix(in srgb, var(--reading) 9%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--reading) 9%, transparent);
 }
 
 /* Words */
@@ -304,28 +304,28 @@
 }
 
 .reader-word:hover {
-  background: var(--reading-soft, #eceef8);
-  color: var(--reading-ink, #2a4386);
-  outline: 1px dashed var(--reading-ink, #2a4386);
+  background: var(--reading-soft);
+  color: var(--reading-ink);
+  outline: 1px dashed var(--reading-ink);
 }
 
 .reader-word.is-spoken-word {
-  background: #fde047 !important;
-  color: #111a3b !important;
+  background: var(--status-warning-border) !important;
+  color: var(--brand) !important;
   font-weight: 700;
-  box-shadow: 0 0 0 2px #eab308;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 /* Dictation states */
 .reader-word.spoken-read {
-  background: var(--right-soft, #e7f1ea);
-  color: var(--right, #276152);
+  background: var(--right-soft);
+  color: var(--right);
   border-bottom: 2px solid var(--right);
 }
 
 .reader-word.spoken-retry {
-  background: var(--hint-soft, #fbf0e0);
-  color: var(--hint, #7f4314);
+  background: var(--hint-soft);
+  color: var(--hint);
   border-bottom: 2px dashed var(--hint);
 }
 
@@ -333,7 +333,7 @@
 .has-chunks .chunk-divider {
   display: inline-block;
   margin: 0 0.45em;
-  color: var(--reading-ink, #2a4386);
+  color: var(--reading-ink);
   font-weight: 700;
   opacity: 0.65;
 }
@@ -347,7 +347,7 @@
   padding: var(--s-3) var(--s-4);
   border-radius: var(--radius);
   background: var(--surface-2);
-  border-left: 5px solid var(--right);
+  border-left: 1px solid var(--right);
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
@@ -382,8 +382,7 @@
   display: grid;
   place-items: center;
   padding: var(--s-4);
-  background: rgb(8 14 37 / 50%);
-  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--brand) 50%, transparent);
 }
 
 .word-inspector-card {
@@ -506,7 +505,7 @@
   padding: var(--s-5);
   border-radius: var(--radius);
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   box-shadow: var(--shadow);
 }
 
@@ -546,7 +545,7 @@
 .flashcard-box-tag {
   display: inline-block;
   padding: 0.2rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--line);
   font-size: 0.75rem;
   font-weight: 700;
@@ -626,7 +625,7 @@
   font-weight: 700;
   padding: 0.2rem 0.5rem;
   background: var(--surface-2);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--ink-3);
 }
 
@@ -663,7 +662,7 @@
   padding: var(--s-4);
   border-radius: var(--radius);
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
@@ -673,7 +672,7 @@
 .stat-num {
   font-family: var(--font-display);
   font-size: 2.4rem;
-  color: var(--reading-ink, #2a4386);
+  color: var(--reading-ink);
   font-weight: 700;
   line-height: 1;
 }

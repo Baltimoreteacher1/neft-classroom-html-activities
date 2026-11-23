@@ -4,7 +4,7 @@
    stop under prefers-reduced-motion. No violet, purple or magenta. */
 
 .wb {
-  --wb-base: #17324d;
+  --wb-base: var(--brand);
   --wb-describe: #0f6a62;
   --wb-who: #2e4a94;
   --wb-what: #7a4108;
@@ -31,8 +31,8 @@
   min-height: 2.75rem;
   padding: 0 0.85rem;
   border: 2px solid var(--line-strong);
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--ink-2);
   font-weight: 700;
 }
@@ -43,7 +43,7 @@
 .wb-step.is-now {
   border-color: var(--wb-base);
   background: var(--wb-base);
-  color: #fff;
+  color: var(--surface);
 }
 .wb-step-n {
   display: inline-grid;
@@ -59,7 +59,7 @@
   padding: 0.85rem 1rem;
   border: 2px solid var(--wb-base);
   border-radius: var(--radius-sm);
-  background: #fffdf6;
+  background: var(--bg-canvas);
 }
 .wb-sentence-l {
   margin: 0 0 0.25rem;
@@ -131,7 +131,7 @@
   padding: 0.6rem 0.75rem;
   border: 2px solid var(--line-strong);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--surface);
 }
 .wb-group-l {
   margin: 0;
@@ -154,9 +154,9 @@
   font: inherit;
   font-size: 1.0625rem;
   color: var(--ink);
-  background: #fff;
+  background: var(--surface);
   border: 2px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -165,7 +165,6 @@
 }
 .wb-chip:hover:not(:disabled) {
   border-color: var(--wb-base);
-  transform: translateY(-1px);
 }
 .wb-chip.is-on {
   background: var(--brand-soft);
@@ -260,7 +259,7 @@
 .wb-note {
   margin: 0;
   padding: 0.6rem 0.85rem;
-  border-left: 6px solid var(--hint);
+  border-left: 1px solid var(--status-warning-border);
   border-radius: var(--radius-sm);
   background: var(--hint-soft);
   color: var(--hint);

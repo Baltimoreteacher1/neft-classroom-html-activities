@@ -1,21 +1,9 @@
 /* Sheet & Card Maker (access-teacher/maker/maker.css)
-   Part 1: the calm workspace (same warm-paper, hairline, serif, one-clay-accent system as the Teacher Hub).
+   Part 1: the calm workspace (same warm-paper, hairline, one-navy-accent system as the Teacher Hub).
    Part 2: the paper pages. Preview and print use the same rules, so the page you see is the page that prints. */
 
 .mk-body {
-  --bg: #faf9f5;
-  --surface: #fff;
-  --surface-2: #f3f1ea;
-  --ink: #141413;
-  --ink-2: #3d3d3a;
-  --ink-3: #5e5d56;
-  --line: #e4e0d4;
-  --line-strong: #cfcab9;
-  --line-control: #8f8a79;
-  --brand: #b5502f;
-  --brand-ink: #9a4224;
-  --brand-soft: #f7e9e1;
-  --focus: 3px solid #b5502f;
+  --focus: 2px solid var(--brand-primary);
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
@@ -29,9 +17,9 @@
   top: -4rem;
   z-index: 50;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-brand);
   padding: 0.6rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 .mk-skip:focus {
   top: 0.5rem;
@@ -83,7 +71,7 @@
   min-height: 44px;
   padding: 0 1rem;
   border: 1px solid var(--line-control);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
@@ -98,7 +86,7 @@
 .mk-primary {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 .mk-primary:hover:not(:disabled) {
   background: var(--brand-ink);
@@ -128,7 +116,7 @@
   min-height: 44px;
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--line-control);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink);
   font: 400 1rem var(--font);
@@ -197,7 +185,7 @@ textarea.mk-input {
   overflow: auto;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   padding: 0.25rem 1.1rem 1.25rem;
 }
 .mk-step {
@@ -255,7 +243,7 @@ textarea.mk-input {
   align-items: center;
   padding: 0.65rem 0.7rem;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   cursor: pointer;
   min-height: 56px;
@@ -310,7 +298,7 @@ textarea.mk-input {
   display: flex;
   margin-top: 0.8rem;
   border: 1px solid var(--line-control);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--surface);
 }
@@ -343,7 +331,7 @@ textarea.mk-input {
 }
 .mk-seg label:has(input:checked) span {
   background: var(--brand-soft);
-  color: var(--brand-deep, #7d3419);
+  color: var(--brand-deep);
   box-shadow: inset 0 -3px 0 var(--brand);
 }
 .mk-seg label:has(input:focus-visible) {
@@ -375,7 +363,7 @@ textarea.mk-input {
   gap: 0.15rem;
   padding: 0 0.15rem 0 0.65rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--bg);
   font-size: 0.88rem;
   min-height: 44px;
@@ -411,10 +399,9 @@ textarea.mk-input {
   flex-wrap: wrap;
   margin-bottom: 1rem;
   padding: 0.55rem 0.7rem 0.55rem 1.1rem;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  backdrop-filter: blur(6px);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
 }
 .mk-summary {
   margin: 0;
@@ -432,17 +419,16 @@ textarea.mk-input {
   min-width: 0;
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   padding: 1rem 0.75rem 0.5rem;
 }
 .mk-warn {
   margin: 0 0 0.9rem;
   padding: 0.65rem 0.9rem;
-  border: 1px solid #c79a2e;
-  border-left-width: 4px;
-  background: #fdf4dc;
-  border-radius: 10px;
-  color: #4b3a08;
+  border: 1px solid var(--status-warning-border);
+  background: var(--status-warning-bg);
+  border-radius: var(--radius-sm);
+  color: var(--status-warning-text);
   font-size: 0.9rem;
 }
 .mk-printtip {
@@ -462,7 +448,7 @@ textarea.mk-input {
     grid-template-columns: 1fr 1fr;
     margin-bottom: 0.9rem;
     border: 1px solid var(--line-control);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     background: var(--surface);
     position: sticky;
@@ -482,7 +468,7 @@ textarea.mk-input {
   }
   .mk-tabs [aria-selected="true"] {
     background: var(--brand-soft);
-    color: #7d3419;
+    color: var(--brand-deep);
     box-shadow: inset 0 -3px 0 var(--brand);
   }
   .mk-shell {
@@ -548,10 +534,8 @@ textarea.mk-input {
 .pg-frame {
   width: calc(var(--pw) * var(--s));
   height: calc(var(--ph) * var(--s));
-  box-shadow:
-    0 1px 2px rgb(20 20 19 / 8%),
-    0 8px 24px -12px rgb(20 20 19 / 28%);
-  background: #fff;
+  box-shadow: var(--shadow-card);
+  background: var(--surface);
 }
 .pg {
   width: var(--pw);
@@ -560,8 +544,8 @@ textarea.mk-input {
   position: relative;
   overflow: hidden;
   padding: 0.55in var(--mx) 0.8in;
-  background: #fff;
-  color: #1c1c1a;
+  background: var(--surface);
+  color: var(--ink);
   font: 400 11pt/1.4 var(--font);
   transform: scale(var(--s));
   transform-origin: top left;
@@ -581,38 +565,38 @@ textarea.mk-input {
   min-height: 0;
   overflow: hidden;
 }
-.pg-head { display: grid; grid-template-columns: 1fr auto; align-items: end; column-gap: 0.4in; row-gap: 0.04in; padding-bottom: 0.12in; margin-bottom: 0.2in; border-bottom: 1.5pt solid #1c1c1a; }
+.pg-head { display: grid; grid-template-columns: 1fr auto; align-items: end; column-gap: 0.4in; row-gap: 0.04in; padding-bottom: 0.12in; margin-bottom: 0.2in; border-bottom: 1.5pt solid var(--ink); }
 .pg-head h2 { grid-column: 1 / -1; }
 .pg-head > p, .pg-head > div p { align-self: end; }
 .pg-head h2 {
   margin: 0;
   font: 600 22pt/1.1 var(--font-display);
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .pg-head h2 span {
   font: 400 11pt var(--font);
-  color: #3d3d3a;
+  color: var(--ink-2);
 }
 .pg-head p {
   margin: 0.05in 0 0;
   font-size: 10pt;
-  color: #3d3d3a;
+  color: var(--ink-2);
 }
 .pg-head.is-key {
-  border-bottom-color: #9a4224;
+  border-bottom-color: var(--brand);
 }
 .pg-head.is-key h2 {
-  color: #7d3419;
+  color: var(--brand-deep);
 }
 .mk-name-line {
   font-size: 11pt;
   white-space: nowrap;
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-name-line i {
   display: inline-block;
   width: 2.3in;
-  border-bottom: 1pt solid #1c1c1a;
+  border-bottom: 1pt solid var(--ink);
   vertical-align: baseline;
 }
 .mk-name-line i.short {
@@ -626,26 +610,26 @@ textarea.mk-input {
   display: flex;
   justify-content: space-between;
   font-size: 8.5pt;
-  color: #5e5d56;
+  color: var(--ink-3);
 }
 .mk-instr {
   margin: 0 0 0.14in;
   font-size: 11.5pt;
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-sub {
   margin: 0.18in 0 0.08in;
   font: 600 12pt var(--font);
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-es {
   font-style: normal;
-  color: #7d3419;
+  color: var(--brand-deep);
 }
 .mk-empty {
   padding: 0.5in 0;
   text-align: center;
-  color: #5e5d56;
+  color: var(--ink-3);
 }
 .mk-keyline {
   font-size: 13pt;
@@ -660,7 +644,7 @@ textarea.mk-input {
   width: max-content;
   margin: 0.1in auto 0;
   padding: 0.06in;
-  border: 1.5pt solid #1c1c1a;
+  border: 1.5pt solid var(--ink);
 }
 .mk-ws-cell {
   width: var(--cell);
@@ -668,7 +652,7 @@ textarea.mk-input {
   display: grid;
   place-items: center;
   font: 700 calc(var(--cell) * 0.52) var(--font);
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-ws-cell.is-key {
   background: #f2c15b;
@@ -693,7 +677,7 @@ textarea.mk-input {
   flex: none;
   width: 0.13in;
   height: 0.13in;
-  border: 1pt solid #1c1c1a;
+  border: 1pt solid var(--ink);
   border-radius: 2px;
   transform: translateY(0.015in);
 }
@@ -712,12 +696,12 @@ textarea.mk-input {
 }
 .mk-cw-cell {
   position: relative;
-  border: 1.2pt solid #1c1c1a;
+  border: 1.2pt solid var(--ink);
   margin: -0.6pt;
   display: grid;
   place-items: center;
   font: 700 calc(var(--cell) * 0.55) var(--font);
-  background: #fff;
+  background: var(--surface);
 }
 .mk-cw-cell i {
   position: absolute;
@@ -725,7 +709,7 @@ textarea.mk-input {
   left: 0.03in;
   font: 700 7pt/1 var(--font);
   font-style: normal;
-  color: #7d3419;
+  color: var(--brand-deep);
 }
 .mk-two {
   display: grid;
@@ -744,7 +728,7 @@ textarea.mk-input {
   break-inside: avoid;
 }
 .mk-len {
-  color: #5e5d56;
+  color: var(--ink-3);
   font-size: 9pt;
 }
 
@@ -759,7 +743,7 @@ textarea.mk-input {
   grid-template-columns: 2.1in 0.2in 1fr 0.2in 3.4in;
   align-items: center;
   min-height: 0.64in;
-  border-bottom: 0.5pt solid #d6d2c4;
+  border-bottom: 0.5pt solid var(--border-subtle);
 }
 .mk-mL {
   font-size: 13pt;
@@ -773,7 +757,7 @@ textarea.mk-input {
 .mk-dot {
   width: 0.15in;
   height: 0.15in;
-  border: 1.4pt solid #1c1c1a;
+  border: 1.4pt solid var(--ink);
   border-radius: 50%;
   justify-self: center;
 }
@@ -789,8 +773,8 @@ textarea.mk-input {
   align-items: center;
   gap: 0.12in;
   padding: 0.1in 0.12in;
-  border: 0.75pt solid #cfcab9;
-  border-radius: 8px;
+  border: 0.75pt solid var(--border-strong);
+  border-radius: var(--radius-sm);
   min-height: 0.78in;
 }
 .mk-snum {
@@ -800,13 +784,13 @@ textarea.mk-input {
   font: 700 17pt var(--font);
   letter-spacing: 0.14em;
   line-height: 1.2;
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-sword small {
   display: block;
   font: 400 9.5pt/1.25 var(--font);
   letter-spacing: 0;
-  color: #3d3d3a;
+  color: var(--ink-2);
   margin-top: 0.03in;
 }
 .mk-boxes {
@@ -818,7 +802,7 @@ textarea.mk-input {
 .mk-box {
   width: 0.27in;
   height: 0.33in;
-  border: 1.2pt solid #1c1c1a;
+  border: 1.2pt solid var(--ink);
   border-radius: 3px;
   display: grid;
   place-items: center;
@@ -853,7 +837,7 @@ textarea.mk-input {
 .mk-cut-note {
   margin: 0 0 0.08in;
   font-size: 9.5pt;
-  color: #3d3d3a;
+  color: var(--ink-2);
   text-align: center;
 }
 .mk-cards {
@@ -862,12 +846,12 @@ textarea.mk-input {
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-template-rows: repeat(var(--rows), 1fr);
-  border-top: 1pt dashed #6b6b64;
-  border-left: 1pt dashed #6b6b64;
+  border-top: 1pt dashed var(--ink-3);
+  border-left: 1pt dashed var(--ink-3);
 }
 .mk-card {
-  border-right: 1pt dashed #6b6b64;
-  border-bottom: 1pt dashed #6b6b64;
+  border-right: 1pt dashed var(--ink-3);
+  border-bottom: 1pt dashed var(--ink-3);
   padding: 0.14in 0.16in;
   display: flex;
   flex-direction: column;
@@ -884,12 +868,12 @@ textarea.mk-input {
 }
 .mk-c-en {
   font: 600 20pt/1.1 var(--font-display);
-  color: #1c1c1a;
+  color: var(--ink);
   overflow-wrap: anywhere;
 }
 .mk-c-es {
   font: 700 14pt/1.15 var(--font);
-  color: #7d3419;
+  color: var(--brand-deep);
   overflow-wrap: anywhere;
 }
 .mk-card.is-front .mk-c-en {
@@ -898,13 +882,13 @@ textarea.mk-input {
 .mk-c-def {
   font-size: 9.5pt;
   line-height: 1.3;
-  color: #1c1c1a;
+  color: var(--ink);
 }
 .mk-c-ex {
   font-size: 9pt;
   line-height: 1.3;
   font-style: italic;
-  color: #3d3d3a;
+  color: var(--ink-2);
 }
 .mk-cards[style*="--cols:3"] .mk-c-en {
   font-size: 16pt;
@@ -932,19 +916,19 @@ textarea.mk-input {
   flex-direction: column;
   gap: 0.05in;
   padding: 0.14in;
-  border: 1.5pt solid #1c1c1a;
-  border-radius: 10px;
+  border: 1.5pt solid var(--ink);
+  border-radius: var(--radius-md);
   min-height: 3.4in;
   font-size: 10.5pt;
 }
 .mk-svo-col span {
-  color: #3d3d3a;
+  color: var(--ink-2);
   margin-bottom: 0.1in;
 }
 .mk-svo-col i,
 .mk-write i {
   display: block;
-  border-bottom: 0.75pt solid #8f8a79;
+  border-bottom: 0.75pt solid var(--border-control);
   height: 0.42in;
 }
 .mk-strip {
@@ -956,8 +940,8 @@ textarea.mk-input {
 .mk-strip span {
   text-align: center;
   padding: 0.14in 0.05in;
-  border: 1.5pt solid #1c1c1a;
-  border-radius: 8px;
+  border: 1.5pt solid var(--ink);
+  border-radius: var(--radius-sm);
   font-weight: 700;
 }
 .mk-write {
@@ -979,7 +963,7 @@ textarea.mk-input {
   }
   html,
   body.mk-body {
-    background: #fff !important;
+    background: var(--surface) !important;
     margin: 0;
     padding: 0;
   }

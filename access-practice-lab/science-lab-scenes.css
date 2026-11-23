@@ -36,25 +36,20 @@
   width: 2.9rem;
   height: 2.9rem;
   padding: 0;
-  border: 3px solid #fff;
+  border: 3px solid var(--surface);
   border-radius: 50%;
   background: var(--mi-800);
-  color: #fff;
+  color: var(--surface);
   font-weight: 700;
   font-size: 1.1rem;
-  box-shadow: 0 3px 10px rgb(18 28 63 / 35%);
+  box-shadow: var(--shadow-card);
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: transform var(--dur-1, 120ms) var(--ease-press, ease-out);
 }
-.slx-spot:hover {
-  transform: translate(-50%, -50%) scale(1.08);
-}
 .slx-spot.is-on {
   background: var(--copper-900);
-  box-shadow:
-    0 0 0 4px var(--copper-200),
-    0 3px 10px rgb(18 28 63 / 35%);
+  box-shadow: 0 0 0 4px var(--copper-200), var(--shadow-card);
 }
 .slx-spot:focus-visible {
   outline: 3px solid var(--mi-950);
@@ -112,7 +107,7 @@
   max-width: 100%;
   padding: 0.15rem 0.2rem 0.15rem 0.85rem;
   border: 1.5px solid var(--sage-900);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--sage-200);
   color: var(--sage-900);
   font-weight: 700;
@@ -138,7 +133,7 @@
   cursor: pointer;
 }
 .slx-chip-x:hover {
-  background: rgb(255 255 255 / 60%);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
 }
 
 /* ── instruction lines, extra info ───────────────────────────────────────── */
@@ -209,9 +204,9 @@
 }
 .slx-trial {
   padding: 0 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--mi-800);
-  color: #fff;
+  color: var(--surface);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -393,16 +388,16 @@
 }
 
 /* An instrument-like viewport. Selected inspection points remain visibly named. */
-.slx-figure { padding: clamp(.65rem, 1.5vw, 1.1rem); border: 1px solid #b9c9bc; border-radius: 22px; background: #f8faf2; box-shadow: 0 12px 30px #254a3512; }
-.slx-hero-svg { border-width: 1px; border-color: #9aafa2; border-radius: 14px; box-shadow: none; }
+.slx-figure { padding: clamp(.65rem, 1.5vw, 1.1rem); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg-canvas); box-shadow: var(--shadow-card); }
+.slx-hero-svg { border-width: 1px; border-color: var(--border-control); border-radius: 14px; box-shadow: none; }
 .slx-stage { isolation: isolate; }
-.slx-spot { background: #204e48; box-shadow: 0 2px 0 #14362f, 0 4px 15px #183d322b; }
-.slx-spot.is-on { background: #7d431d; box-shadow: 0 0 0 5px #f4dca2, 0 4px 12px #183d3230; z-index: 2; }
-.slx-spot-label { position: absolute; top: calc(100% + .5rem); left: 50%; transform: translateX(-50%); width: max-content; max-width: 12rem; padding: .4rem .6rem; border-radius: 7px; background: #183f3a; color: #fffdf5; font-size: .9rem; font-weight: 700; line-height: 1.35; white-space: normal; pointer-events: none; opacity: 0; }
+.slx-spot { background: var(--teal); box-shadow: var(--shadow-card); }
+.slx-spot.is-on { background: var(--accent); box-shadow: 0 0 0 5px var(--border-subtle), var(--shadow-card); z-index: 2; }
+.slx-spot-label { position: absolute; top: calc(100% + .5rem); left: 50%; transform: translateX(-50%); width: max-content; max-width: 12rem; padding: .4rem .6rem; border-radius: 7px; background: var(--teal); color: var(--surface); font-size: .9rem; font-weight: 700; line-height: 1.35; white-space: normal; pointer-events: none; opacity: 0; }
 .slx-spot:is(:hover,:focus-visible,.is-on) .slx-spot-label { opacity: 1; }
 .slx-cap { padding: .5rem .25rem 0; font-size: 1rem; line-height: 1.6; }
-.slx-obs { border: 1px solid #a6bfa9; border-left: 5px solid #356854; background: #eef5e8; padding: 1.25rem; }
-.slx-setup { border-color: #b7c7b7; background: #fffef6; }
-.slx-run-art { border-radius: 14px; overflow: hidden; background: #f3f4e8; }
-@media (max-width: 540px) { .slx-spot-label { max-width: 8rem; font-size: .8rem; } .slx-figure { padding: .55rem; border-radius: 16px; } }
+.slx-obs { border: 1px solid var(--border-strong); background: var(--teal-soft); padding: 1.25rem; }
+.slx-setup { border-color: var(--border-strong); background: var(--bg-canvas); }
+.slx-run-art { border-radius: 14px; overflow: hidden; background: var(--bg-subtle); }
+@media (max-width: 540px) { .slx-spot-label { max-width: 8rem; font-size: .8rem; } .slx-figure { padding: .55rem; border-radius: var(--radius-md); } }
 @media print { .slx-spot-label { display: none; } .slx-figure { box-shadow: none; } }

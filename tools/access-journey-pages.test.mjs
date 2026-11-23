@@ -416,11 +416,9 @@ test("navigation: the journey and adult tools stay in the menu; the journey coun
   const links = primaryLinks("6-8", T);
   assert.deepEqual(
     links.map((link) => link.id),
-    ["home", "teachers", "students", "families", "find", "help"],
+    ["teachers", "students", "families", "find", "help"],
   );
-  assert.equal(links[0].icon, "home");
-  // Home is bare: it opens the grade chooser instead of re-picking the last grade.
-  assert.equal(links[0].href, "/access-practice-lab/");
+  assert.equal(links[0].icon, "teacher");
   const I = makeI18n("en", "en");
   const nav = dom(navHTML({ band: "6-8", route: { view: "journey" } }, I));
   const current = nav.querySelector('a[aria-current="page"]');
@@ -436,8 +434,9 @@ test("navigation: the journey and adult tools stay in the menu; the journey coun
       menu.some(([t]) => t === door),
       `More keeps ${door}`,
     );
+  // Home is the wordmark, so the home route marks no top-row link as current.
   const home = dom(navHTML({ band: "6-8", route: { view: "home" } }, I));
-  assert.match(home.querySelector('a[aria-current="page"]').textContent, /Home/);
+  assert.equal(home.querySelector('a[aria-current="page"]'), null);
   const main = await read("src/main.js");
   assert.doesNotMatch(main, /import \* as journeyView/);
   assert.match(main, /journey: \(\) => import\("\.\/views\/journey\.js"\)/);

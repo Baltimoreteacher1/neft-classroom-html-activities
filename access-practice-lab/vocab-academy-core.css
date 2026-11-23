@@ -32,7 +32,7 @@
   max-width: var(--va-measure);
 }
 .va :where(a, button, summary, input, select, textarea):focus-visible {
-  outline: 3px solid var(--va-focus);
+  outline: 2px solid var(--va-focus);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -42,9 +42,9 @@
 .va-hero {
   margin: 0 0 var(--va-gap);
   padding: var(--va-pad);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--va-line);
   border-radius: var(--va-radius);
-  background: linear-gradient(135deg, var(--va-brand-soft) 0%, var(--va-paper) 70%);
+  background: var(--va-card);
 }
 .va-lead {
   font-size: 1.12em;
@@ -61,7 +61,6 @@
 }
 .va-note {
   padding: 0.7rem 1rem;
-  border-inline-start: 4px solid var(--va-brand);
   background: var(--va-brand-soft);
   border-radius: var(--va-radius-sm);
   margin: 0.8rem 0;
@@ -98,8 +97,8 @@
   align-items: center;
   min-height: 1.7rem;
   padding: 0.1rem 0.7rem;
-  border: 1.5px solid var(--va-ink-2);
-  border-radius: 999px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
   font-size: 0.82em;
   font-weight: 700;
   background: var(--va-card);
@@ -121,10 +120,10 @@
 .va-card,
 .va-panel {
   background: var(--va-card);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--va-line);
   border-radius: var(--va-radius);
   padding: var(--va-pad);
-  box-shadow: -4px 4px 0 0 var(--surface-3, #d8d7d2);
+  box-shadow: var(--shadow-card);
   min-width: 0;
 }
 .va-panel {
@@ -205,7 +204,7 @@ section.va-card-wide:not(.va-grid > *) {
 }
 .va-grade-btn[aria-pressed="true"] {
   background: var(--va-brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 .va-grade-btn-n {
   font-size: 1.5em;
@@ -296,8 +295,8 @@ section.va-card-wide:not(.va-grid > *) {
   width: 8rem;
   max-width: 100%;
   height: 0.9rem;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
   background: var(--va-card);
   overflow: hidden;
 }
@@ -342,9 +341,9 @@ section.va-card-wide:not(.va-grid > *) {
   gap: 0.6rem;
   padding: var(--va-pad);
   background: var(--va-card);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--va-line);
   border-radius: var(--va-radius);
-  box-shadow: -4px 4px 0 0 var(--surface-3, #d8d7d2);
+  box-shadow: var(--shadow-card);
 }
 .va-grade-link,
 .va-unit-link {
@@ -375,7 +374,7 @@ section.va-card-wide:not(.va-grid > *) {
   height: 3.6rem;
   border-radius: 50%;
   background: var(--va-brand);
-  color: #fff;
+  color: var(--on-brand);
   font-family: var(--va-head-font);
   font-weight: 700;
   font-size: 1.7rem;
@@ -434,16 +433,16 @@ section.va-card-wide:not(.va-grid > *) {
   --c: var(--brand);
 }
 .va-cover[data-tone="2"] {
-  --c: var(--writing-ink, #884326);
+  --c: var(--writing-ink);
 }
 .va-cover[data-tone="3"] {
-  --c: var(--sage-900, #264e48);
+  --c: var(--sage-900);
 }
 .va-cover[data-tone="4"] {
-  --c: var(--reading, #2e4a94);
+  --c: var(--reading);
 }
 .va-cover[data-tone="5"] {
-  --c: var(--listening, #075568);
+  --c: var(--listening);
 }
 .va-cover i {
   position: absolute;
@@ -558,9 +557,8 @@ section.va-card-wide:not(.va-grid > *) {
   font-family: var(--va-head-font);
   font-size: 1.9rem;
   line-height: 1;
-  color: #fff;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 35%);
-}
+  color: var(--on-brand);
+  }
 
 /* ── unit page ─────────────────────────────────────────────────────────── */
 .va-unit-hero {
@@ -581,7 +579,7 @@ section.va-card-wide:not(.va-grid > *) {
   align-items: center;
   padding: 0.7rem 1rem;
   margin: 0 0 var(--va-gap);
-  border: 1.5px dashed var(--ink);
+  border: 1px dashed var(--border-strong);
   border-radius: var(--va-radius);
   background: var(--va-warn-soft);
 }
@@ -597,7 +595,7 @@ section.va-card-wide:not(.va-grid > *) {
   align-items: center;
   gap: 0.9rem;
   padding: 0.6rem 0.8rem;
-  border: 1.5px solid var(--va-line);
+  border: 1px solid var(--va-line);
   border-radius: var(--va-radius-sm);
   background: var(--va-card);
 }
@@ -620,7 +618,7 @@ section.va-card-wide:not(.va-grid > *) {
   height: 2.6rem;
   border-radius: 50%;
   background: var(--va-brand);
-  color: #fff;
+  color: var(--on-brand);
   font-weight: 700;
   font-family: var(--va-head-font);
 }
@@ -655,8 +653,8 @@ section.va-card-wide:not(.va-grid > *) {
   gap: 0.2rem 0.6rem;
   min-height: var(--va-target);
   padding: 0.35rem 0.9rem;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
   background: var(--va-card);
   color: var(--va-ink);
   text-decoration: none;
@@ -723,7 +721,7 @@ a.va-chip:hover {
   min-width: 9rem;
   min-height: 9rem;
   padding: 0.6rem 1rem;
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--va-line);
   border-radius: var(--va-radius);
   background: var(--va-card);
   font-size: 3.6rem;
@@ -752,7 +750,6 @@ a.va-chip:hover {
 }
 .va-examples li {
   padding: 0.6rem 0.9rem;
-  border-inline-start: 4px solid var(--va-brand);
   background: var(--va-brand-soft);
   border-radius: var(--va-radius-sm);
 }
@@ -761,7 +758,7 @@ a.va-chip:hover {
   margin: 0.9rem 0 0;
   padding: 0.6rem 0.9rem;
   border-radius: var(--va-radius-sm);
-  border: 1.5px dashed var(--va-ink-2);
+  border: 1px dashed var(--border-strong);
 }
 .va-parts {
   list-style: none;
@@ -776,7 +773,7 @@ a.va-chip:hover {
   padding: 0.1rem 0.6rem;
   border-radius: 6px;
   background: var(--va-warn-soft);
-  border: 1.5px solid var(--va-warn);
+  border: 1px solid var(--va-warn);
   color: var(--va-ink);
 }
 .va-apps dt {
@@ -789,13 +786,12 @@ a.va-chip:hover {
 .va-sentence {
   margin: 0.6rem 0 1rem;
   padding: 0.8rem 1rem;
-  border-inline-start: 5px solid var(--va-brand);
   background: var(--va-paper);
   font-size: 1.1em;
 }
 .va-feedback {
   padding: 0.7rem 1rem;
-  border: 1.5px solid var(--va-ink-2);
+  border: 1px solid var(--border-control);
   border-radius: var(--va-radius-sm);
   background: var(--va-paper);
 }
@@ -857,7 +853,7 @@ a.va-chip:hover {
 }
 
 /* ── grade bands ───────────────────────────────────────────────────────── */
-/* Early (K–2): big, friendly, round. */
+/* Early (K–2): larger type and targets. */
 [data-va-band="early"] .va {
   font-weight: 500;
 }
@@ -867,8 +863,7 @@ a.va-chip:hover {
 }
 [data-va-band="early"] .va-hero,
 .va[data-va-band="early"] .va-hero {
-  background: linear-gradient(135deg, var(--accent) -40%, var(--va-paper) 55%);
-  border-width: 2px;
+  background: var(--va-card);
 }
 [data-va-band="early"] .va-card,
 [data-va-band="early"] .va-panel,
@@ -878,8 +873,7 @@ a.va-chip:hover {
 .va[data-va-band="early"] .va-panel,
 .va[data-va-band="early"] .va-grade-card,
 .va[data-va-band="early"] .va-unit-card {
-  border-width: 2px;
-  box-shadow: 0 6px 0 0 var(--surface-3, #d8d7d2);
+  box-shadow: var(--shadow-card);
 }
 .va[data-va-band="early"] .btn {
   font-size: 1.1em;
@@ -913,9 +907,7 @@ a.va-chip:hover {
 
 /* Upper elementary (3–5): illustrated and clear. */
 .va[data-va-band="upper-elem"] .va-hero {
-  background:
-    radial-gradient(circle at 92% 12%, var(--accent) 0 3.2rem, transparent 3.25rem),
-    linear-gradient(135deg, var(--va-brand-soft) 0%, var(--va-paper) 70%);
+  background: var(--va-card);
 }
 .va[data-va-band="upper-elem"] .va-cover {
   width: 6rem;
@@ -924,7 +916,6 @@ a.va-chip:hover {
 /* Middle (6–8): polished, age-respectful; quieter shapes and tighter rhythm. */
 .va[data-va-band="middle"] .va-hero {
   background: var(--va-card);
-  border-inline-start: 8px solid var(--va-brand);
 }
 .va[data-va-band="middle"] .va-card,
 .va[data-va-band="middle"] .va-panel,
@@ -932,7 +923,6 @@ a.va-chip:hover {
 .va[data-va-band="middle"] .va-unit-card {
   box-shadow: none;
   border-color: var(--va-line);
-  border-width: 1.5px;
 }
 .va[data-va-band="middle"] .va-grade-mark {
   border-radius: var(--va-radius);
@@ -942,7 +932,7 @@ a.va-chip:hover {
 }
 .va[data-va-band="middle"] .va-chip,
 .va[data-va-band="middle"] .btn {
-  border-width: 1.5px;
+  border-width: 1px;
 }
 
 /* ── small screens ─────────────────────────────────────────────────────── */

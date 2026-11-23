@@ -2,7 +2,7 @@
 import { BRAND, brandName, onLanguagePage } from "./brand.js";
 import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { comfortButtonHTML, installComfort } from "./comfort.js";
-import { footerHTML, navHTML } from "./nav.js";
+import { currentTop, footerHTML, navHTML } from "./nav.js";
 import { installReadPage, readPageButtonHTML } from "./read-page.js";
 import { installVoice, voiceButtonHTML } from "./voice.js";
 import { installShortcuts } from "./shortcuts.js";
@@ -232,7 +232,10 @@ export function mountShell(ctx) {
     ".lab-wordmark strong",
     brandName(I.bilingual ? "ELL Lab" : T("ELL Lab", "Laboratorio ELL")),
   );
-  if (onLanguagePage()) text(".lab-wordmark small", BRAND.poweredBy);
+  if (onLanguagePage()) text(".lab-wordmark small", BRAND.descriptor);
+  // The wordmark is the Home link: mark it as the current page on the home route.
+  const brandLink = document.querySelector(".lab-brand");
+  if (brandLink) currentTop(ctx.route) === "home" ? brandLink.setAttribute("aria-current", "page") : brandLink.removeAttribute("aria-current");
   // Plain-text swaps need their own language tag when Spanish sits on an English page.
   const tagEs = I.spanish && I.pageLang !== "es";
   for (const selector of [".skip-link", ".lab-wordmark strong"]) {

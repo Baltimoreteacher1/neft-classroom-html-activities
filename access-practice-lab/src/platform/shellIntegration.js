@@ -122,7 +122,7 @@ export function mountPlatformControls(ctx) {
         </select>
       </label>
       <button type="button" class="tlp-icon-btn" id="tlpThemeToggle" aria-label="Toggle color theme">
-        ${theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+        ${theme === "dark" ? "Dark" : "Light"}
       </button>
     </div>
   `);

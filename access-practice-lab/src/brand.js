@@ -3,7 +3,11 @@
 // (functions/_lib/language-page.js, for crawlers and link previews); this keeps the running app saying the same
 // thing after it renders. tools/access-brand.test.mjs fails if the two spellings drift.
 export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
-export const BRAND = { name: "The Language Page", poweredBy: "Powered by EduWonderLab" };
+export const BRAND = {
+  name: "The Language Page",
+  poweredBy: "Powered by EduWonderLab",
+  descriptor: "K–8 Multilingual Curriculum & Assessment Studio",
+};
 
 export const onLanguagePage = (hostname = location.hostname) => hostname === LANGUAGE_PAGE_HOST;
 

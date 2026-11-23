@@ -227,7 +227,7 @@ await t("the lab host's HTML names The Language Page, powered by EduWonderLab, w
   const title = /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.exec(shell)?.[1];
   assert.ok(title);
   assert.ok(out.includes(`<title>The Language Page · ${title}</title>`));
-  assert.match(out, /<strong>The Language Page<\/strong><small>Powered by EduWonderLab<\/small>/);
+  assert.match(out, /<strong>The Language Page<\/strong><small>K–8 Multilingual Curriculum & Assessment Studio<\/small>/);
   assert.match(out, /<link rel="canonical" href="https:\/\/thelanguagepage\.com\/access-practice-lab\/path" \/>/);
   assert.equal((out.match(/rel="canonical"/g) || []).length, 1);
   assert.equal(out.length > shell.length, true);

@@ -72,8 +72,8 @@
   gap: 0.45rem;
   padding: 0.4rem 1rem 0.4rem 0.8rem;
   border: 2px solid var(--ink);
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   font: 700 0.8em var(--font);
 }
 .classroom-hero-mark li + li {
@@ -124,9 +124,9 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.25rem 0.9rem 0.25rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--room);
-  color: #fff;
+  color: var(--surface);
   font: 700 0.75em var(--font);
 }
 .classroom-domain .ico {
@@ -152,7 +152,7 @@
 .classroom-meta span {
   padding: 0.2rem 0.8rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-2);
   font-size: 0.875rem;
@@ -171,7 +171,6 @@
   min-width: 0;
   padding: clamp(1.1rem, 2.4vw, 1.75rem);
   border: 2px solid color-mix(in srgb, var(--room) 30%, var(--line-strong));
-  border-top: 6px solid var(--room);
   border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -190,7 +189,7 @@
   height: 2.6rem;
   border-radius: 50%;
   background: var(--ink);
-  color: #fff;
+  color: var(--surface);
   font: 650 1.05rem var(--font-display);
 }
 .classroom-step h3 {
@@ -230,7 +229,7 @@
   height: 3rem;
   border: 2px solid var(--ink);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
   color: var(--room-ink);
 }
 .classroom-audio .btn {
@@ -279,7 +278,7 @@
 .classroom-source.is-marked {
   border: 3px solid var(--room);
   background: var(--room-soft);
-  box-shadow: inset 8px 0 0 var(--room);
+  box-shadow: none;
 }
 .classroom-source.is-marked .classroom-source-number {
   color: var(--room-ink);
@@ -317,7 +316,7 @@
   width: 2.4rem;
   border-radius: 12px;
   background: var(--ink);
-  color: #fff;
+  color: var(--surface);
   font: 650 0.9em var(--font-display);
 }
 .classroom-sentence-text {
@@ -380,7 +379,7 @@
 .classroom-scaffold {
   margin-top: var(--s-4);
   padding: var(--s-3) var(--s-4);
-  border-left: 6px solid var(--room);
+  border-left: 1px solid var(--border-strong);
   border-radius: 6px var(--radius-sm) var(--radius-sm) 6px;
   background: var(--room-soft);
 }
@@ -402,8 +401,8 @@
 .classroom-vocab span {
   padding: 0.2rem 0.8rem;
   border: 2px solid var(--ink);
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   font: 700 0.8em var(--font);
 }
 
@@ -442,18 +441,18 @@
 .classroom-question {
   border-color: var(--ink) !important;
   background: var(--ink) !important;
-  color: #fff;
+  color: var(--surface);
 }
 .classroom-question .eyebrow {
-  color: #cfe0fd;
+  color: var(--surface);
 }
 .classroom-question h3 {
   margin: var(--s-2) 0 var(--s-3);
-  color: #fff;
+  color: var(--surface);
   font: 600 1.45em/1.35 var(--font-display);
 }
 .classroom-question .btn {
-  border-color: #fff;
+  border-color: var(--surface);
 }
 .classroom-model {
   border-color: var(--room) !important;
@@ -621,4 +620,10 @@
   .classroom-footer {
     font-size: 9pt;
   }
+}
+
+/* Stimulus pane: serif, calm reading surface. Task and response controls stay in the sans UI face. */
+.classroom-sentence-text, .classroom-model p {
+  font-family: var(--font-serif);
+  line-height: 1.75;
 }

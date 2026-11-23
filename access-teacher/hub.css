@@ -1,30 +1,8 @@
 /* Teacher Hub layout and look (access-teacher/hub.css). Loaded after every other hub sheet.
-   One calm system for the whole page: warm paper, hairline borders, a serif voice for headings, one clay accent.
-   Tokens are re-pointed on .th-body only, so student-facing lab pages keep their own palette, and every panel that
-   reads --line / --surface / --brand (command center, evidence, assignment builder …) follows without per-panel rules. */
+   One calm system for the whole page: warm paper, hairline borders, a display voice for headings, one navy accent.
+   Colour, radius and shadow tokens come from ds.css (Editorial Academic); only the page width is set here. */
 
 .th-body {
-  --bg: #faf9f5;
-  --surface: #ffffff;
-  --surface-2: #f3f1ea;
-  --surface-3: #e8e5db;
-  --ink: #141413;
-  --ink-2: #3d3d3a;
-  --ink-3: #5e5d56;
-  --line: #e4e0d4;
-  --line-strong: #cfcab9;
-  --line-control: #8f8a79;
-  --brand: #b5502f;
-  --brand-ink: #9a4224;
-  --brand-deep: #7d3419;
-  --brand-soft: #f7e9e1;
-  --on-brand: #ffffff;
-  --shadow: 0 1px 2px rgb(20 20 19 / 5%);
-  --shadow-card: 0 1px 2px rgb(20 20 19 / 5%), 0 6px 18px -10px rgb(20 20 19 / 14%);
-  --shadow-lift: 0 2px 4px rgb(20 20 19 / 6%), 0 14px 28px -14px rgb(20 20 19 / 20%);
-  --radius: 12px;
-  --r-lg: 16px;
-  --r-xl: 20px;
   --th-w: 1080px;
   background: var(--bg);
   color: var(--ink);
@@ -66,7 +44,7 @@
   margin: 1.5rem 0 0;
   padding: 0.35rem 0.35rem 0.35rem 1rem;
   border: 1px solid var(--line-control);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 .th-search:focus-within {
@@ -130,8 +108,7 @@
   margin-inline: calc(50% - 50vw);
   padding-inline: calc(50vw - 50%);
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 94%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--bg);
 }
 .th-views-list {
   display: flex;
@@ -164,9 +141,9 @@
   color: var(--ink);
 }
 .th-views-list [role="tab"]:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: -3px;
-  border-radius: 8px;
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── panels ────────────────────────────────────────────────────────────── */
@@ -215,7 +192,7 @@ body.th-body .lab-main {
   margin: 0;
   padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: none;
 }
@@ -252,7 +229,7 @@ body.th-body .lab-main {
 .th-label-key .th-legend {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   margin: 0 0 var(--s-3);
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-md);
   background: var(--surface);
 }
 
@@ -276,16 +253,14 @@ body.th-body .lab-main {
   min-height: 8rem;
   padding: 1.25rem;
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: none;
   transition:
-    border-color var(--dur-2) ease,
-    box-shadow var(--dur-2) ease,
-    transform var(--dur-2) var(--ease-out);
+    border-color var(--dur-1) ease,
+    box-shadow var(--dur-1) ease;
 }
 .th-body .tc-action-card:hover {
-  transform: translateY(-1px);
   border-color: var(--line-strong);
   background: var(--surface);
   box-shadow: var(--shadow-card);
@@ -297,7 +272,7 @@ body.th-body .lab-main {
 }
 .th-body .tc-action-ico {
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface-2);
   color: var(--ink);
 }
@@ -332,8 +307,8 @@ body.th-body .lab-main {
   color: var(--ink);
   text-decoration: none;
   transition:
-    border-color var(--dur-2) ease,
-    box-shadow var(--dur-2) ease;
+    border-color var(--dur-1) ease,
+    box-shadow var(--dur-1) ease;
 }
 .th-lib-card:hover {
   border-color: var(--line-strong);
@@ -349,7 +324,7 @@ body.th-body .lab-main {
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface-2);
   color: var(--ink);
 }
@@ -415,7 +390,7 @@ body.th-body .lab-main {
   min-height: 2.75rem;
 }
 
-/* ── buttons: flat clay, no gradient or glow ──────────────────────────── */
+/* ── buttons: flat navy, no gradient or glow ──────────────────────────── */
 .th-body .btn-primary {
   border-color: var(--brand);
   background: var(--brand);
