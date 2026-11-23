@@ -1,0 +1,278 @@
+/* BCPSS District Trends Insights Dashboard — quiet-luxury editorial Swiss-Modernist */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-ef295152.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/assets/fonts/fraunces-175f6e93.woff2) format("woff2");
+}
+
+:root {
+  --ink: #161614;
+  --ink-2: #3a3a36;
+  --ink-3: #575650;
+  --bg: #edece8;
+  --surface: #ffffff;
+  --surface-2: #e5e3dd;
+  --ocean-900: #075568;
+  --ocean-200: #d9f0ec;
+  --sage-900: #264e48;
+  --sage-200: #d0e3cd;
+  --copper-900: #884326;
+  --copper-200: #f5d6a8;
+  --rose-900: #4a1f35;
+  --rose-200: #f7e6ed;
+  --focus: #0f766e;
+  --font: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -100px;
+  z-index: 1000;
+  padding: 0.65rem 1.1rem;
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.skip-link:focus {
+  top: 0.75rem;
+  outline: 3px solid var(--focus);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.in-header {
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--ink);
+}
+.in-header-inner {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 1.35rem;
+}
+.in-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  margin-bottom: 0.65rem;
+}
+.in-breadcrumb a {
+  color: var(--ocean-900);
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+.in-breadcrumb a:hover {
+  text-decoration: underline;
+}
+.in-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.in-header h1 {
+  margin: 0;
+  font: 600 clamp(1.55rem, 1.2rem + 1.4vw, 2.2rem) / 1.1 var(--font-display);
+}
+.in-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+.in-ferpa-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid var(--sage-900);
+  border-radius: 999px;
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+
+.in-main {
+  flex: 1;
+  width: 100%;
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 1.4rem 1.25rem 3rem;
+}
+
+.in-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.in-kpi {
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  box-shadow: -4px 4px 0 0 var(--ocean-200), -4px 4px 0 1.5px var(--ink);
+}
+.in-kpi-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+.in-kpi-value {
+  margin: 0.25rem 0 0;
+  font: 700 1.9rem/1.1 var(--font-display);
+  color: var(--ocean-900);
+}
+
+.in-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.in-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 1.15rem 1.25rem;
+  box-shadow: -4px 4px 0 0 var(--surface-2), -4px 4px 0 1.5px var(--ink);
+}
+.in-panel h2 {
+  margin: 0 0 0.85rem;
+  font: 600 1.18rem/1.2 var(--font-display);
+}
+.in-bars {
+  display: grid;
+  gap: 0.7rem;
+}
+.in-bar-row {
+  display: grid;
+  gap: 0.25rem;
+}
+.in-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+}
+.in-bar-meta strong {
+  color: var(--ink);
+}
+.in-bar-count {
+  color: var(--ink-2);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.in-bar-track {
+  height: 0.7rem;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.in-bar-fill {
+  height: 100%;
+  background: var(--ocean-900);
+  border-radius: 999px;
+  min-width: 4px;
+}
+.in-bar-fill.is-sage {
+  background: var(--sage-900);
+}
+.in-bar-fill.is-copper {
+  background: var(--copper-900);
+}
+.in-bar-fill.is-rose {
+  background: var(--rose-900);
+}
+
+.in-status {
+  padding: 1.15rem 1.25rem;
+  border: 1.5px dashed var(--ink-3);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.in-error {
+  border-style: solid;
+  border-color: var(--rose-900);
+  background: var(--rose-200);
+  color: var(--rose-900);
+}
+
+.in-footer {
+  margin-top: auto;
+  background: var(--surface);
+  border-top: 1.5px solid var(--ink);
+  padding: 1rem 1.25rem;
+  font-size: 0.88rem;
+  color: var(--ink-2);
+  text-align: center;
+}
+.in-footer p {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .in-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .in-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .in-kpi-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

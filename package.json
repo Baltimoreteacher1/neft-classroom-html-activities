@@ -488,7 +488,8 @@
     "test:live-rooms": "node --test tools/live-rooms.test.mjs",
     "test:speaking-enterprise": "node --test tools/speaking-enterprise.test.mjs",
     "e2e:access-integration": "node tools/access-integration-e2e.mjs",
-    "test:lesson-pack": "node --test tools/lesson-pack.test.mjs"
+    "test:lesson-pack": "node --test tools/lesson-pack.test.mjs",
+    "validate:bcpss": "node db/verify_bcpss.mjs --local && node functions/language-page-host.test.mjs && node functions/api-contract.test.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -500,6 +501,7 @@
     "vitest": "^4.1.12"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.1",
     "@resvg/resvg-js": "^2.6.2",
     "docx": "^9.7.1",
     "jsdom": "^30.0.1",

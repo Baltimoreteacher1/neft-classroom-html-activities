@@ -5600,6 +5600,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/",
+    title: "BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/insights/",
+    title: "District Trends — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/blood-on-the-river/",
     title: "Blood on the River",
     category: "Tool",
@@ -6345,7 +6357,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/access-practice-lab/",
-    title: "ELL Lab",
+    title: "ACCESS Practice Lab",
     category: "Practice",
     unit: null,
   },

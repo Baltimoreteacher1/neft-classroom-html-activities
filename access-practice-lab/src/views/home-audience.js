@@ -51,6 +51,16 @@ export const AUDIENCE_DOORS = Object.freeze([
     href: () => `${BASE}/family-start`,
     art: { src: `${ART}/35-speaking-family-dinner.svg`, w: 640, h: 400 },
   },
+  {
+    id: "bcpss",
+    title: ["BCPSS Teachers", "Docentes de BCPSS"],
+    text: [
+      "K–8 Wit & Wisdom, Reveal Math, SABES & IQWST language bridges.",
+      "Puentes de lenguaje K–8 para BCPSS.",
+    ],
+    href: () => "/bcpss-teachers",
+    art: { src: `${ART}/68-classroom-lesson.svg`, w: 640, h: 400 },
+  },
 ]);
 
 /**

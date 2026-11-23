@@ -51,6 +51,7 @@ export function primaryLinks(band, T) {
   return [
     { id: "home", icon: "home", label: T("Home", "Inicio"), href: `${BASE}/` },
     { id: "teachers", icon: "teacher", label: T("Teachers", "Docentes"), href: "/access-teacher/" },
+    { id: "bcpss", icon: "classroom", label: T("BCPSS Teachers", "Docentes de BCPSS"), href: "/bcpss-teachers" },
     { id: "students", icon: "reading", label: T("Students", "Estudiantes"), href: `${BASE}/students${q}` },
     { id: "families", icon: "families", label: T("Families", "Familias"), href: `${BASE}/family-start` },
     { id: "find", icon: "search", label: T("Find Resources", "Buscar recursos"), href: `${BASE}/search${q}` },

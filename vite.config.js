@@ -71,9 +71,10 @@ function copyStandaloneHtml() {
     // _lib/teacher-session.js) on the public site and counted them against the 20,000-file
     // limit. Nothing references /functions/.
     "functions",
-    // D1 migration schemas (/migrations/0001_student_progress.sql served 200) and TypeScript declarations
-    // are developer files; no page references them.
+    // D1 migration schemas (/migrations/0001_student_progress.sql served 200), Neon DB
+    // schemas/seed scripts (/db/*), and TypeScript declarations are developer files; no page references them.
     "migrations",
+    "db",
     "types",
     // Cloudflare Worker projects deployed with `wrangler deploy`, like workers/ above. Their source
     // (/lti-worker/src/worker.js, the Canvas LTI launch) was publicly served; no page references them.

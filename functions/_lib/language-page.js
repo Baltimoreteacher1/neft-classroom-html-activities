@@ -45,9 +45,16 @@ const LAB_PREFIXES = [
   // The class platform (functions/api/class, docs/class-platform.md): class sync, live quiz and voice notes
   // must answer on the lab's own origin, because lab progress lives in that origin's storage.
   "/api/class/",
+  // BCPSS Teachers Curriculum-to-Language Hub, Family Cards, and public/private APIs.
+  "/bcpss-teachers/",
+  "/api/bcpss/",
+  "/family/bcpss/",
+  "/api/public/",
 ];
 const LAB_EXACT = new Set([
   LAB_BASE,
+  "/bcpss-teachers",
+  "/family/bcpss",
   "/family-app/home-link.js",
   "/api/signal",
   "/api/signal/",
@@ -139,6 +146,9 @@ export const SITEMAP_PATHS = [
   // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio
   // gradebook under /wida-access/ are not on this host.
   ...STUDIOS.map((s) => studioPath(s.slug)),
+  // BCPSS Teachers Curriculum-to-Language Hub.
+  "/bcpss-teachers",
+  "/bcpss-teachers/insights",
 ];
 
 /**

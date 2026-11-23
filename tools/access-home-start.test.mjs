@@ -310,12 +310,13 @@ test("audience doors: Teacher, Student, Family and search; a role door never ope
         const doors = [...doc.querySelectorAll(".lpa-doors .lpa-door")];
         assert.deepEqual(
           doors.map((a) => a.querySelector("strong").textContent.trim()),
-          ["I’m a Teacher", "I’m a Student", "I’m a Family Member"],
+          ["I’m a Teacher", "I’m a Student", "I’m a Family Member", "BCPSS Teachers"],
         );
         const href = (id) => doc.querySelector(`[data-audience-door="${id}"]`).getAttribute("href");
         assert.equal(href("teacher"), "/access-teacher/");
         assert.match(href("student"), /^\/access-practice-lab\/students(\?grades=6-8)?$/);
         assert.equal(href("family"), "/access-practice-lab/family-start");
+        assert.equal(href("bcpss"), "/bcpss-teachers");
         assert.match(href("search"), /^\/access-practice-lab\/search/);
         for (const a of doc.querySelectorAll(".lpa a"))
           assert.doesNotMatch(a.getAttribute("href"), /tour/, "no audience door opens a tour");

@@ -180,7 +180,14 @@ await t("robots.txt and sitemap.xml are generated for the lab host and name only
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   assert.equal(locs.length, SITEMAP_PATHS.length);
   assert.ok(
-    locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/") || l.startsWith("https://thelanguagepage.com/studios/") || STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`)),
+    locs.every(
+      (l) =>
+        l.startsWith("https://thelanguagepage.com/access-practice-lab/") ||
+        l.startsWith("https://thelanguagepage.com/studios/") ||
+        l === "https://thelanguagepage.com/bcpss-teachers" ||
+        l === "https://thelanguagepage.com/bcpss-teachers/insights" ||
+        STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`),
+    ),
   );
   assert.ok(!locs.some((l) => l === "https://thelanguagepage.com/wida-access/"));
   assert.ok(locs.includes("https://thelanguagepage.com/access-practice-lab/portfolio"));
@@ -311,6 +318,33 @@ await t("the Family Tour is thelanguagepage.com only: other hosts are sent to th
   assert.equal(old.res.headers.get("location"), "https://thelanguagepage.com/access-practice-lab/family-tour/");
   const other = await answer("https://eduwonderlab.com/access-family-tour/");
   assert.equal(other.fell, true, "eduwonderlab.com keeps its own Family Expedition page");
+});
+
+await t("the BCPSS Teachers Hub, shared plan routes, family cards, insights, and APIs are served on the lab host", async () => {
+  for (const path of [
+    "/bcpss-teachers",
+    "/bcpss-teachers/",
+    "/bcpss-teachers/plan/abc123",
+    "/bcpss-teachers/insights",
+    "/family/bcpss",
+    "/family/bcpss/g6-math-u2?lang=es",
+    "/api/bcpss/units?grade=6&subject=Math",
+    "/api/bcpss/deconstruct",
+    "/api/bcpss/telemetry",
+    "/api/bcpss/insights",
+    "/api/public/bcpss-bridge?grade=6&subject=Math&unit=2",
+  ]) {
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+  }
+  assert.ok(SITEMAP_PATHS.includes("/bcpss-teachers"));
+  assert.ok(SITEMAP_PATHS.includes("/bcpss-teachers/insights"));
+  for (const path of ["/bcpss-teachers/plan/abc123", "/bcpss-teachers/insights", "/family/bcpss/g6-math-u2?lang=es"]) {
+    const open = await answer(`https://thelanguagepage.com${path}`, {
+      SITE_PASSWORD: "x",
+    });
+    assert.ok(open.fell, `${path} is served without a password on the lab host`);
+    assert.notEqual(open.res.status, 401);
+  }
 });
 
 console.log(`language-page-host: ${passed} checks passed.`);

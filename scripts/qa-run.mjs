@@ -856,6 +856,12 @@ const COVERAGE = [
     /^(tools\/validate-small-group-investigations\.mjs|data\/small-group-investigations\/[^/]+\.json)$/,
     ["test", "validate:small-group-investigations", "validate:js-syntax"],
   ],
+  // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
+  // modular K–8 seed data, and Cloudflare Pages Functions.
+  [
+    /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
+    ["validate:bcpss", "validate:static", "validate:js-syntax", "validate:save-resume", "typecheck", "check"],
+  ],
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.
   [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],

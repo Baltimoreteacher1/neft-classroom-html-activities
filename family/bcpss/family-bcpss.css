@@ -1,0 +1,238 @@
+/* Bilingual Family Bridge — mobile-first, zero-login, RTL-ready editorial design */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-ef295152.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/assets/fonts/fraunces-175f6e93.woff2) format("woff2");
+}
+
+:root {
+  --ink: #161614;
+  --ink-2: #3a3a36;
+  --ink-3: #575650;
+  --bg: #edece8;
+  --surface: #ffffff;
+  --surface-2: #e5e3dd;
+  --ocean-900: #075568;
+  --ocean-200: #d9f0ec;
+  --sage-900: #264e48;
+  --sage-200: #d0e3cd;
+  --copper-900: #884326;
+  --copper-200: #f5d6a8;
+  --focus: #0f766e;
+  --font: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  top: -100px;
+  z-index: 1000;
+  padding: 0.65rem 1.1rem;
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.skip-link:focus {
+  top: 0.75rem;
+  outline: 3px solid var(--focus);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.fb-header {
+  background: var(--surface);
+  border-bottom: 1.5px solid var(--ink);
+}
+.fb-header-inner {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0.9rem 1.1rem 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+.fb-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 2.75rem;
+}
+.fb-lang-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.fb-lang-btn {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.95rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 0.94rem var(--font);
+  cursor: pointer;
+}
+.fb-lang-btn[aria-pressed="true"] {
+  background: var(--sage-900);
+  border-color: var(--sage-900);
+  color: var(--surface);
+}
+
+.fb-main {
+  flex: 1;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.35rem 1.1rem 2.75rem;
+}
+
+.fb-card {
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  padding: 1.35rem 1.25rem;
+  box-shadow: -5px 5px 0 0 var(--sage-200), -5px 5px 0 1.5px var(--ink);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fb-kicker {
+  display: inline-block;
+  padding: 0.18rem 0.65rem;
+  border-radius: 999px;
+  background: var(--ocean-200);
+  color: var(--ocean-900);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid var(--ocean-900);
+}
+.fb-card h1 {
+  margin: 0.5rem 0 0.4rem;
+  font: 600 clamp(1.45rem, 1.15rem + 1.2vw, 2rem) / 1.15 var(--font-display);
+}
+.fb-summary {
+  margin: 0;
+  font-size: 1.06rem;
+  color: var(--ink-2);
+}
+
+.fb-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-2);
+}
+.fb-section h2 {
+  margin: 0 0 0.65rem;
+  font: 600 1.18rem/1.25 var(--font-display);
+  color: var(--sage-900);
+}
+.fb-question-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+}
+.fb-question-list li {
+  padding: 0.8rem 1rem;
+  border-inline-start: 4px solid var(--ocean-900);
+  background: #f4f9f8;
+  border-radius: 6px;
+  font-size: 1.03rem;
+}
+
+.fb-word-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.65rem;
+}
+.fb-word-card {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--surface-2);
+  border-inline-start: 4px solid var(--copper-900);
+  border-radius: 6px;
+  background: #fdf9f4;
+}
+.fb-word-en {
+  font-weight: 700;
+  font-size: 1.02rem;
+  display: block;
+}
+.fb-word-tr {
+  color: var(--ink-2);
+  font-size: 0.94rem;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.fb-status {
+  padding: 1.1rem;
+  border: 1.5px dashed var(--ink-3);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.fb-error {
+  border-style: solid;
+  border-color: var(--copper-900);
+  background: var(--copper-200);
+  color: var(--ink);
+}
+
+.fb-footer {
+  margin-top: auto;
+  background: var(--surface);
+  border-top: 1.5px solid var(--ink);
+  padding: 1rem 1.1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.fb-footer p {
+  margin: 0;
+}

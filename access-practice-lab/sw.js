@@ -11,17 +11,17 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "6ece2eed2022";
+const BUILD_HASH = "fcf6fd496f95";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=4a538ab2ee60",
   "/access-practice-lab/home.css?v=c635b7e3b1ab",
-  "/access-practice-lab/home-start.css?v=b67209915248",
+  "/access-practice-lab/home-start.css?v=7197b96a324e",
   "/access-practice-lab/progress.css?v=64a5018aa34c",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=7d7f1b25115e",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=bdab4af71158",
+  "/access-practice-lab/src/main.js?v=9b015d22f1ab",
   "/access-practice-lab/src/brand.js?v=d7982377ff2b",
   "/access-practice-lab/src/keep-in-view.js?v=88f120416985",
   "/access-practice-lab/src/components.js?v=d7e0108d194e",
@@ -72,7 +72,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/shell.js?v=b6d91b9b8139",
   "/access-practice-lab/src/comfort.js?v=842f96cedb52",
-  "/access-practice-lab/src/nav.js?v=ff487f19d076",
+  "/access-practice-lab/src/nav.js?v=2b9be860bfe0",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
   "/access-practice-lab/src/register.js?v=5d63cd086005",
   "/access-practice-lab/src/family-tour-host.js?v=5c22b1e07260",
@@ -129,9 +129,10 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/content/guided-units.js?v=2bfbc01578e1",
   "/access-practice-lab/src/acc/storage/access-db.js?v=da7c395d5c8e",
   "/access-practice-lab/src/home-resume.js?v=10ef580543da",
-  "/access-practice-lab/src/views/home-audience.js?v=e601a3878bcf",
+  "/access-practice-lab/src/views/home-audience.js?v=19e4f0c3f0c5",
   "/access-practice-lab/src/sitemap-ui.js?v=08f6b58fb6f1",
   "/access-practice-lab/src/platform/views/resourceHub.js?v=38a9cc68cc99",
+  "/access-practice-lab/src/bcpss-hydrate.js?v=43115a4571a3",
   "/shared/class-platform/contract.js",
 ];
 const PRECACHE_MORE = [

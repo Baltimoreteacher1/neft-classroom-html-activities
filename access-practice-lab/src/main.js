@@ -36,6 +36,7 @@ import * as homeView from "./views/home.js";
 import { registerFor } from "./register.js";
 import { familyTourHost } from "./family-tour-host.js";
 import { sessionHref, startSession } from "./engagement.js";
+import { maybeHydrateBcpssLab } from "./bcpss-hydrate.js";
 
 installCalmFocus(); // a click redraws a panel; it should not also move the page (src/keep-in-view.js)
 
@@ -516,6 +517,7 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   mountShell(ctx);
   mountReturnBar(ctx);
   view.mount?.(root, ctx);
+  void maybeHydrateBcpssLab(root);
   applyFolds(root);
   if (fk) {
     const target = root.querySelector(fk)
