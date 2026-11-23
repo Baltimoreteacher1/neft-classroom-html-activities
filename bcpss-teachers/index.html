@@ -137,16 +137,37 @@
 
       <!-- Step 3 Unit Workspace -->
       <section id="workspaceSection" class="bh-workspace" aria-labelledby="workspaceTitle">
+        <div id="projectionExitBar" class="bh-projection-bar" hidden>
+          <div class="bh-projection-bar-copy">
+            <span class="bh-projection-pill">Classroom Projection Mode</span>
+            <span class="bh-projection-hint">High-contrast board view · Press Esc to exit</span>
+          </div>
+          <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" id="exitProjectionBtn">
+            Exit Projection Mode
+          </button>
+        </div>
+
         <div class="bh-workspace-head">
           <div class="bh-workspace-intro">
             <p class="bh-eyebrow"><span class="bh-step-tag">Step 3</span> Unit Language Workspace</p>
+            <div id="workspacePublisherMasthead" class="bh-publisher-masthead" aria-label="Publisher and instructional protocol" hidden></div>
             <h2 id="workspaceTitle">Select a unit above to explore language bridges</h2>
             <p id="workspaceMeta" class="bh-workspace-meta"></p>
             <p id="workspaceSummary" class="bh-workspace-summary" hidden></p>
             <div id="workspaceEssentialQ" class="bh-essential-question" hidden></div>
             <div id="workspaceStandards" class="bh-standards-row" aria-label="Core curriculum standards" hidden></div>
           </div>
-          <div id="workspaceHeaderActions" class="bh-workspace-actions" hidden></div>
+          <div id="workspaceHeaderActions" class="bh-workspace-actions" hidden>
+            <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" id="projectionModeBtn" aria-pressed="false" disabled>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+              <span>Project to Board</span>
+            </button>
+            <span id="workspaceExternalLabSlot"></span>
+          </div>
         </div>
 
         <!-- Unified Complete Unit Resource Pack Export Bar -->
@@ -168,6 +189,18 @@
             data-tab="connections"
           >
             Language Connections
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-studio"
+            class="bh-tab"
+            aria-selected="false"
+            aria-controls="panel-studio"
+            data-tab="studio"
+            tabindex="-1"
+          >
+            Interactive Studio
           </button>
           <button
             type="button"
@@ -212,7 +245,12 @@
           <div class="bh-loading" role="status">Loading language bridge…</div>
         </div>
 
-        <!-- Tab 2: Ready-to-Use Activities -->
+        <!-- Tab 2: Interactive Language Studio -->
+        <div id="panel-studio" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-studio" hidden>
+          <div class="bh-loading" role="status">Loading interactive language studio…</div>
+        </div>
+
+        <!-- Tab 3: Ready-to-Use Activities -->
         <div id="panel-activities" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-activities" hidden>
           <div class="bh-loading" role="status">Loading classroom activities…</div>
         </div>
@@ -258,9 +296,7 @@
                 <div class="bh-field bh-field-inline">
                   <label for="l1Select">Student Home Language (L1)</label>
                   <select id="l1Select" name="l1">
-                    <option value="Spanish" selected>Spanish</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="French / Haitian Creole">French / Haitian Creole</option>
+                    <option value="Spanish" selected>Spanish (Español)</option>
                   </select>
                 </div>
 

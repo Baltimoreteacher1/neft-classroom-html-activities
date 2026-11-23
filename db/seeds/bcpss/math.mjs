@@ -1,5 +1,4 @@
 // 54 authentic BCPSS Math units (6 Reveal Math units per grade K-8).
-// Grade 6 units include live EduWonderLab external_content_lab_url links.
 
 import { buildUnitsAndConnections } from "./_builder.mjs";
 
@@ -401,8 +400,6 @@ const MATH_SPECS = [
     blueprint_id: "argue-justify-solution",
     unit_example_frame: "I decomposed the [polygon/net] into [shapes] and summed their areas because [geometric justification].",
     cross_subject_bridge_note: "Connects spatial decomposition with Grade 6 IQWST Earth Science landform surface changes.",
-    external_content_lab_url: "https://eduwonderlab.com/curriculum/",
-    external_content_lab_label: "Open Grade 6 Reveal Math Geometry & Area Hub on EduWonderLab",
     vocab: [v("decompose", 3, "descomponer", "break a complex polygon into triangles and rectangles"), v("surface area", 3, "área de superficie", "total area of all faces of a 3D figure"), v("net", 3, null, "a 2D pattern that folds into a 3D solid"), v("polygon", 3, "polígono", "a closed 2D figure with straight edges")],
   },
   {
@@ -413,8 +410,6 @@ const MATH_SPECS = [
     blueprint_id: "explain-proportional-reasoning",
     unit_example_frame: "For every [a] [unit A], there are [b] [unit B]; scaling both quantities by [factor] gives an equivalent ratio of [c] to [d].",
     cross_subject_bridge_note: "Directly transfers multiplicative rate language to Grade 6 IQWST Earth Science (How Does Water Shape Our World?) erosion/water-flow rates and Ancient Civilizations trade exchanges.",
-    external_content_lab_url: "https://eduwonderlab.com/curriculum/learning-labs/",
-    external_content_lab_label: "Launch Ratios, Rates & Unit Rate Learning Labs on EduWonderLab",
     vocab: [v("ratio", 3, "razón", "a multiplicative comparison of two quantities"), v("unit rate", 3, "tasa unitaria", "how much of one quantity corresponds to 1 unit of another"), v("equivalent ratio", 3, "razón equivalente", "ratios expressing the same relationship after scaling"), v("tape diagram", 3, "diagrama de cinta", "visual bar model showing relative ratio parts")],
   },
   {
@@ -425,8 +420,6 @@ const MATH_SPECS = [
     blueprint_id: "explain-process-system",
     unit_example_frame: "To divide [dividend] by [divisor], I found how many groups of [divisor] fit inside [dividend], yielding [quotient].",
     cross_subject_bridge_note: "Shares step-by-step procedural precision with Grade 6 IQWST Light & Sight ray models.",
-    external_content_lab_url: "https://eduwonderlab.com/math/fluency-lab/",
-    external_content_lab_label: "Practice Multi-Digit & Fraction Fluency in EduWonderLab Math Fluency Lab",
     vocab: [v("reciprocal", 3, "recíproco", "two numbers whose product is 1"), v("quotient", 3, "cociente", "the result of dividing one quantity by another"), v("algorithm", 3, "algoritmo", "a systematic step-by-step calculation process"), v("factor", 3, "factor", "a number that divides another evenly")],
   },
   {
@@ -437,8 +430,6 @@ const MATH_SPECS = [
     blueprint_id: "inform-compare-contrast",
     unit_example_frame: "Although [negative number A] has a greater absolute value than [negative number B], it is less because it lies farther left on the number line.",
     cross_subject_bridge_note: "Directly pairs with Grade 6 IQWST Water/Elevation models and Ancient Civilizations river-valley comparison frames.",
-    external_content_lab_url: "https://eduwonderlab.com/curriculum/",
-    external_content_lab_label: "Explore Grade 6 Integers & 4-Quadrant Coordinate Activities on EduWonderLab",
     vocab: [v("integer", 3, "entero", "any positive or negative whole number and zero"), v("absolute value", 3, "valor absoluto", "a number's distance from 0 on the number line"), v("quadrant", 3, "cuadrante", "one of the four regions of the coordinate plane"), v("opposite", 2, "opuesto", "two numbers the same distance from 0 in opposite directions")],
   },
   {
@@ -449,8 +440,6 @@ const MATH_SPECS = [
     blueprint_id: "argue-justify-solution",
     unit_example_frame: "To keep the equation balanced, I applied the inverse operation [op] to both sides, verifying that [variable] = [value] makes it true.",
     cross_subject_bridge_note: "Strengthens logical verification alongside Grade 6 Wit & Wisdom (Courage in Crisis) and Science arguments.",
-    external_content_lab_url: "https://eduwonderlab.com/curriculum/learning-labs/",
-    external_content_lab_label: "Open Expressions, Balance Scale & Equations Labs on EduWonderLab",
     vocab: [v("variable", 3, "variable", "a letter representing an unknown or changing quantity"), v("coefficient", 3, "coeficiente", "the number multiplied by a variable"), v("equivalent expression", 3, "expresión equivalente", "expressions yielding the same value for every input"), v("inequality", 3, "desigualdad", "a statement comparing unequal quantities with <, >, ≤, or ≥")],
   },
   {
@@ -461,8 +450,6 @@ const MATH_SPECS = [
     blueprint_id: "argue-claim-evidence",
     unit_example_frame: "Because the distribution has an outlier/skew, the [median/mean] and [IQR/MAD] best summarize the data since [evidence].",
     cross_subject_bridge_note: "Directly aligns with Grade 6 IQWST Ecology population graphs and Grade 6 Wit & Wisdom evidence claims.",
-    external_content_lab_url: "https://eduwonderlab.com/curriculum/",
-    external_content_lab_label: "Launch Grade 6 Statistics & Data Distribution Labs on EduWonderLab",
     vocab: [v("distribution", 3, "distribución", "how data values are spread across a graph"), v("median", 3, "mediana", "the middle value of an ordered data set"), v("outlier", 3, null, "an extreme data value far from the rest"), v("variability", 3, "variabilidad", "how spread out the data values are")],
   },
 

@@ -1,4 +1,5 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
+import { renderInteractiveStudio } from "./interactive-labs.js";
 import { renderQrSvg } from "./qr-svg.js";
 
 const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
@@ -8,12 +9,10 @@ const WIDA_TIERS = [
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
   { key: "5_6", label: "Levels 5–6", short: "Bridging / Reaching" },
 ];
-const VALID_TABS = ["connections", "activities", "family", "deconstruct"];
+const VALID_TABS = ["connections", "studio", "activities", "family", "deconstruct"];
 const FAMILY_LANGS = [
   { code: "en", label: "English", rtl: false },
   { code: "es", label: "Español", rtl: false },
-  { code: "ar", label: "العربية", rtl: true },
-  { code: "fr", label: "Français / Kreyòl", rtl: false },
 ];
 
 const SAMPLE_PASSAGES = {
@@ -33,6 +32,9 @@ const state = {
   pinnedPlan: null,
   deconstructResult: null,
   familyLang: "en",
+  projectionMode: false,
+  diveSelectedChunk: 0,
+  diveRevealAll: false,
 };
 
 // Anonymous, FERPA-safe telemetry (zero PII; fire-and-forget)
@@ -201,6 +203,20 @@ function normalizeVocab(raw) {
     .filter((v) => v?.word);
 }
 
+function isExcludedNonSpanishL1(label) {
+  const lower = String(label || "").toLowerCase();
+  return (
+    lower.includes("arabic") ||
+    lower === "ar" ||
+    lower.includes("french") ||
+    lower.includes("creole") ||
+    lower.includes("kreyol") ||
+    lower.includes("kreyòl") ||
+    lower === "fr" ||
+    lower === "fr_ht"
+  );
+}
+
 function normalizeL1Watchouts(raw) {
   const parsed = safeParseJson(raw, {});
   if (Array.isArray(parsed)) {
@@ -208,7 +224,7 @@ function normalizeL1Watchouts(raw) {
       .map((item) => {
         if (typeof item === "string" && item.trim()) {
           return {
-            language: "Multilingual Learners",
+            language: "Spanish–English Bridge",
             frictionPoint: "",
             quickFix: "",
             note: item.trim(),
@@ -216,8 +232,9 @@ function normalizeL1Watchouts(raw) {
         }
         if (!item || typeof item !== "object") return null;
         const language = String(
-          item.l1_group || item.language || item.l1 || "Home Language",
+          item.l1_group || item.language || item.l1 || "Spanish–English Bridge",
         ).trim();
+        if (isExcludedNonSpanishL1(language)) return null;
         const frictionPoint = String(item.friction_point || "").trim();
         const quickFix = String(item.quick_fix || "").trim();
         const note = String(item.watchout || item.note || item.guidance || "").trim();
@@ -227,22 +244,20 @@ function normalizeL1Watchouts(raw) {
   }
   if (parsed && typeof parsed === "object") {
     const labelMap = {
-      spanish: "Spanish",
-      es: "Spanish",
-      arabic: "Arabic",
-      ar: "Arabic",
-      french_creole: "French / Haitian Creole",
-      french: "French / Haitian Creole",
-      haitian_creole: "French / Haitian Creole",
-      fr_ht: "French / Haitian Creole",
+      spanish: "Spanish (Español)",
+      es: "Spanish (Español)",
+      english: "Spanish–English Bridge",
+      spanish_english: "Spanish–English Bridge",
     };
     return Object.entries(parsed)
-      .filter(([, v]) => Boolean(v))
+      .filter(([k, v]) => Boolean(v) && !isExcludedNonSpanishL1(k))
       .map(([k, v]) => {
         const language = labelMap[k.toLowerCase()] || k;
         if (v && typeof v === "object") {
+          const resolvedLang = String(v.l1_group || language).trim();
+          if (isExcludedNonSpanishL1(resolvedLang)) return null;
           return {
-            language: String(v.l1_group || language).trim(),
+            language: resolvedLang,
             frictionPoint: String(v.friction_point || "").trim(),
             quickFix: String(v.quick_fix || "").trim(),
             note: String(v.watchout || v.note || v.tip || "").trim(),
@@ -255,12 +270,12 @@ function normalizeL1Watchouts(raw) {
           note: typeof v === "string" ? v.trim() : "",
         };
       })
-      .filter((i) => i.frictionPoint || i.quickFix || i.note);
+      .filter((i) => i && (i.frictionPoint || i.quickFix || i.note));
   }
   if (typeof raw === "string" && raw.trim()) {
     return [
       {
-        language: "Multilingual Learners",
+        language: "Spanish–English Bridge",
         frictionPoint: "",
         quickFix: "",
         note: raw.trim(),
@@ -268,6 +283,119 @@ function normalizeL1Watchouts(raw) {
     ];
   }
   return [];
+}
+
+function normalizePublisherMeta(unit) {
+  const raw = safeParseJson(unit?.publisher_meta, null);
+  if (raw && typeof raw === "object") {
+    return {
+      publisher_imprint: String(raw.publisher_imprint || "").trim(),
+      grade_band: String(raw.grade_band || "").trim(),
+      signature_protocol: String(raw.signature_protocol || "").trim(),
+    };
+  }
+  return {
+    publisher_imprint: "",
+    grade_band: "",
+    signature_protocol: "",
+  };
+}
+
+function normalizeColorToken(token) {
+  const t = String(token || "").toLowerCase().trim();
+  if (t === "connector" || t === "concept" || t === "evidence" || t === "precision") return t;
+  if (t.includes("connect") || t.includes("link") || t.includes("transition")) return "connector";
+  if (t.includes("evid") || t.includes("reason") || t.includes("proof")) return "evidence";
+  if (t.includes("precis") || t.includes("quant") || t.includes("detail")) return "precision";
+  return "concept";
+}
+
+function normalizeLanguageDive(conn) {
+  const raw = safeParseJson(conn?.mentor_sentence_unpacking, null);
+  if (!raw || typeof raw !== "object") return null;
+  const mentorSentence = String(raw.mentor_sentence || "").trim();
+  const chunks = Array.isArray(raw.chunks)
+    ? raw.chunks
+        .map((c) => {
+          if (!c || typeof c !== "object") return null;
+          const text = String(c.text || "").trim();
+          if (!text) return null;
+          return {
+            text,
+            role: String(c.role || "Syntactic Chunk").trim(),
+            color_token: normalizeColorToken(c.color_token),
+            student_question: String(c.student_question || "").trim(),
+          };
+        })
+        .filter(Boolean)
+    : [];
+  if (!mentorSentence && !chunks.length) return null;
+  return {
+    mentor_sentence: mentorSentence || chunks.map((c) => c.text).join(" "),
+    chunks,
+  };
+}
+
+function normalizeLessonArc(conn) {
+  const raw = safeParseJson(conn?.lesson_arc, []);
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((step) => {
+      if (!step || typeof step !== "object") return null;
+      const phase = String(step.phase || "").trim();
+      if (!phase) return null;
+      return {
+        phase,
+        minutes: step.minutes != null ? String(step.minutes).trim() : "",
+        focus: String(step.focus || "").trim(),
+        teacher_move: String(step.teacher_move || "").trim(),
+        student_move: String(step.student_move || "").trim(),
+      };
+    })
+    .filter(Boolean);
+}
+
+function normalizeMisconception(conn) {
+  const raw = safeParseJson(conn?.common_language_misconception, null);
+  if (!raw || typeof raw !== "object") return null;
+  const misconception_pattern = String(raw.misconception_pattern || "").trim();
+  const teacher_redirect = String(raw.teacher_redirect || "").trim();
+  if (!misconception_pattern && !teacher_redirect) return null;
+  return { misconception_pattern, teacher_redirect };
+}
+
+function setProjectionMode(enabled) {
+  state.projectionMode = Boolean(enabled);
+  document.body.classList.toggle("is-projection-mode", state.projectionMode);
+  const btn = $("#projectionModeBtn");
+  if (btn) {
+    btn.setAttribute("aria-pressed", state.projectionMode ? "true" : "false");
+    const span = btn.querySelector("span");
+    if (span) span.textContent = state.projectionMode ? "Exit Projection Mode" : "Project to Board";
+  }
+  const bar = $("#projectionExitBar");
+  if (bar) {
+    bar.hidden = !state.projectionMode;
+  }
+  announce(
+    state.projectionMode
+      ? "Classroom Projection Mode enabled. High-contrast smartboard view active."
+      : "Exited Classroom Projection Mode.",
+  );
+}
+
+function applyWidaTier(next) {
+  if (!next || next === state.wida || !WIDA_TIERS.some((t) => t.key === next)) return;
+  state.wida = next;
+  syncUrl();
+  renderResourceExportBar();
+  renderConnectionsTab();
+  renderStudioTab();
+  renderActivitiesTab();
+  renderFamilyTab();
+  renderPrintKit();
+  trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
+  announce(`Switched to WIDA ${widaLabel(state.wida)} scaffolds.`);
 }
 
 function syncUrl() {
@@ -367,6 +495,8 @@ async function loadUnits(preferredUnitId = "") {
 
 async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
   state.unitId = unitId;
+  state.diveSelectedChunk = 0;
+  state.diveRevealAll = false;
   renderUnitStrip();
   syncUrl();
   if (skipFetchIfLoaded && state.detail?.unit?.id === unitId) {
@@ -374,6 +504,7 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
     return;
   }
   $("#panel-connections").innerHTML = `<div class="bh-loading" role="status">Loading unit language bridge…</div>`;
+  $("#panel-studio").innerHTML = `<div class="bh-loading" role="status">Loading interactive language studio…</div>`;
   $("#panel-activities").innerHTML = `<div class="bh-loading" role="status">Loading ready-to-use activities…</div>`;
   try {
     const detail = await fetchJson(`/api/bcpss/units/${encodeURIComponent(unitId)}`);
@@ -382,6 +513,7 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
   } catch (err) {
     const errHtml = `<div class="bh-error" role="alert">Unable to load unit details: ${esc(err.message)}</div>`;
     $("#panel-connections").innerHTML = errHtml;
+    $("#panel-studio").innerHTML = errHtml;
     $("#panel-activities").innerHTML = errHtml;
   }
 }
@@ -571,6 +703,11 @@ function renderResourceExportBar() {
 function renderEmptyWorkspace() {
   $("#workspaceTitle").textContent = "No unit selected";
   $("#workspaceMeta").textContent = "";
+  const mastheadEl = $("#workspacePublisherMasthead");
+  if (mastheadEl) {
+    mastheadEl.hidden = true;
+    mastheadEl.innerHTML = "";
+  }
   const summaryEl = $("#workspaceSummary");
   if (summaryEl) {
     summaryEl.hidden = true;
@@ -589,12 +726,16 @@ function renderEmptyWorkspace() {
   const headerActions = $("#workspaceHeaderActions");
   if (headerActions) {
     headerActions.hidden = true;
-    headerActions.innerHTML = "";
   }
+  const projBtn = $("#projectionModeBtn");
+  if (projBtn) projBtn.disabled = true;
+  const extSlot = $("#workspaceExternalLabSlot");
+  if (extSlot) extSlot.innerHTML = "";
   renderResourceExportBar();
   $("#printKitBtn").disabled = true;
   $("#sharePlanBtn").disabled = true;
   $("#panel-connections").innerHTML = `<div class="bh-empty">Choose a grade and content area above to load a unit.</div>`;
+  $("#panel-studio").innerHTML = `<div class="bh-empty">Choose a grade and content area above to launch the Interactive Language Studio.</div>`;
   $("#panel-activities").innerHTML = `<div class="bh-empty">Choose a grade and content area above to view classroom activities.</div>`;
   $("#panel-family").innerHTML = `<div class="bh-empty">Choose a grade and content area above to view the family bridge card.</div>`;
 }
@@ -608,6 +749,30 @@ function renderWorkspace() {
   const u = detail.unit;
   $("#workspaceTitle").textContent = `Unit ${u.unit_number}: ${u.unit_title}`;
   $("#workspaceMeta").textContent = `${gradeLabel(u.grade)} · ${u.curriculum_name || curriculumFor(u.grade, u.subject)}${u.primary_klu ? ` · WIDA KLU: ${u.primary_klu}` : ""}`;
+
+  const mastheadEl = $("#workspacePublisherMasthead");
+  if (mastheadEl) {
+    const pub = normalizePublisherMeta(u);
+    const imprint = pub.publisher_imprint || u.curriculum_name || curriculumFor(u.grade, u.subject);
+    const badges = [
+      imprint
+        ? `<span class="bh-pub-badge bh-pub-imprint">${esc(imprint)}</span>`
+        : "",
+      pub.grade_band
+        ? `<span class="bh-pub-badge bh-pub-band">${esc(pub.grade_band)}</span>`
+        : "",
+      pub.signature_protocol
+        ? `<span class="bh-pub-badge bh-pub-protocol">Protocol: ${esc(pub.signature_protocol)}</span>`
+        : "",
+    ].filter(Boolean);
+    if (badges.length) {
+      mastheadEl.hidden = false;
+      mastheadEl.innerHTML = badges.join("");
+    } else {
+      mastheadEl.hidden = true;
+      mastheadEl.innerHTML = "";
+    }
+  }
 
   const summaryEl = $("#workspaceSummary");
   if (summaryEl) {
@@ -652,10 +817,17 @@ function renderWorkspace() {
   }
 
   const headerActions = $("#workspaceHeaderActions");
+  const projBtn = $("#projectionModeBtn");
+  const extSlot = $("#workspaceExternalLabSlot");
   if (headerActions) {
+    headerActions.hidden = false;
+  }
+  if (projBtn) {
+    projBtn.disabled = false;
+  }
+  if (extSlot) {
     if (u.external_content_lab_url) {
-      headerActions.hidden = false;
-      headerActions.innerHTML = `
+      extSlot.innerHTML = `
         <a
           class="bh-btn bh-btn-secondary bh-btn-sm"
           href="${esc(u.external_content_lab_url)}"
@@ -667,8 +839,7 @@ function renderWorkspace() {
         </a>
       `;
     } else {
-      headerActions.hidden = true;
-      headerActions.innerHTML = "";
+      extSlot.innerHTML = "";
     }
   }
 
@@ -677,9 +848,202 @@ function renderWorkspace() {
   $("#sharePlanBtn").disabled = false;
 
   renderConnectionsTab();
+  renderStudioTab();
   renderActivitiesTab();
   renderFamilyTab();
   renderPrintKit();
+}
+
+function renderStudioTab() {
+  const panel = $("#panel-studio");
+  if (!panel) return;
+  const detail = state.detail;
+  const unit = detail?.unit || null;
+  const conn = detail?.connections?.[0] || null;
+  renderInteractiveStudio(panel, {
+    unit,
+    connection: conn,
+    blueprint: conn?.blueprint || {},
+    wida: state.wida,
+    onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
+    onWidaChange: (nextTier) => applyWidaTier(nextTier),
+  });
+}
+
+function renderLanguageDiveSection(dive) {
+  if (!dive) return "";
+  const chunks = dive.chunks || [];
+  const selectedIdx =
+    chunks.length > 0 ? Math.min(Math.max(0, state.diveSelectedChunk), chunks.length - 1) : -1;
+  const activeChunk = selectedIdx >= 0 ? chunks[selectedIdx] : null;
+
+  return `
+    <section class="bh-dive-card" aria-label="Interactive Mentor Sentence Language Dive">
+      <div class="bh-dive-head">
+        <div>
+          <span class="bh-dive-kicker">Interactive Language Dive · Mentor Sentence Unpacking</span>
+          <h4>Deconstruct the Target Academic Sentence</h4>
+        </div>
+        <div class="bh-dive-actions">
+          <button
+            type="button"
+            class="bh-btn bh-btn-secondary bh-btn-sm"
+            data-dive-read="${esc(dive.mentor_sentence)}"
+          >
+            🔊 Read Sentence
+          </button>
+          ${
+            chunks.length
+              ? `<button
+                  type="button"
+                  class="bh-btn bh-btn-ghost bh-btn-sm"
+                  data-dive-reveal-all
+                  aria-pressed="${state.diveRevealAll ? "true" : "false"}"
+                >
+                  ${state.diveRevealAll ? "Single-Chunk Focus" : "Reveal All Chunks"}
+                </button>`
+              : ""
+          }
+        </div>
+      </div>
+
+      <div class="bh-dive-legend" aria-label="Syntactic chunk color key">
+        <span class="bh-dive-key"><span class="bh-dive-dot is-connector" aria-hidden="true"></span> Connector</span>
+        <span class="bh-dive-key"><span class="bh-dive-dot is-concept" aria-hidden="true"></span> Concept</span>
+        <span class="bh-dive-key"><span class="bh-dive-dot is-evidence" aria-hidden="true"></span> Evidence</span>
+        <span class="bh-dive-key"><span class="bh-dive-dot is-precision" aria-hidden="true"></span> Precision</span>
+      </div>
+
+      ${
+        chunks.length
+          ? `<div class="bh-dive-chunks" role="group" aria-label="Clickable mentor sentence chunks">
+              ${chunks
+                .map((chunk, idx) => {
+                  const isActive = state.diveRevealAll || idx === selectedIdx;
+                  return `
+                    <button
+                      type="button"
+                      class="bh-dive-chunk is-${esc(chunk.color_token)}"
+                      data-dive-chunk="${idx}"
+                      aria-pressed="${isActive ? "true" : "false"}"
+                    >
+                      <span class="bh-dive-chunk-text">${esc(chunk.text)}</span>
+                      <span class="bh-dive-chunk-role">${esc(chunk.role)}</span>
+                    </button>
+                  `;
+                })
+                .join("")}
+            </div>`
+          : `<p class="bh-dive-fallback-sentence">“${esc(dive.mentor_sentence)}”</p>`
+      }
+
+      ${
+        chunks.length && !state.diveRevealAll && activeChunk
+          ? `<div class="bh-dive-inspector is-${esc(activeChunk.color_token)}" aria-live="polite">
+              <div class="bh-dive-inspector-top">
+                <span class="bh-dive-role-pill is-${esc(activeChunk.color_token)}">${esc(activeChunk.role)}</span>
+                <span class="bh-dive-selected-quote">“${esc(activeChunk.text)}”</span>
+              </div>
+              ${
+                activeChunk.student_question
+                  ? `<p class="bh-dive-question"><strong>Guiding Student Question:</strong> ${esc(activeChunk.student_question)}</p>`
+                  : ""
+              }
+            </div>`
+          : ""
+      }
+
+      ${
+        chunks.length && state.diveRevealAll
+          ? `<div class="bh-dive-all-grid" aria-live="polite">
+              ${chunks
+                .map(
+                  (chunk, idx) => `
+                    <article class="bh-dive-all-item is-${esc(chunk.color_token)}">
+                      <div class="bh-dive-inspector-top">
+                        <span class="bh-dive-role-pill is-${esc(chunk.color_token)}">${idx + 1}. ${esc(chunk.role)}</span>
+                      </div>
+                      <p class="bh-dive-all-quote">“${esc(chunk.text)}”</p>
+                      ${
+                        chunk.student_question
+                          ? `<p class="bh-dive-question"><strong>Ask Students:</strong> ${esc(chunk.student_question)}</p>`
+                          : ""
+                      }
+                    </article>
+                  `,
+                )
+                .join("")}
+            </div>`
+          : ""
+      }
+    </section>
+  `;
+}
+
+function renderLessonArcSection(lessonArc, misconception) {
+  if (!lessonArc.length && !misconception) return "";
+  return `
+    <section class="bh-arc-section" aria-label="4-Phase Language-Embedded Lesson Arc">
+      <div class="bh-arc-head">
+        <div>
+          <span class="bh-dive-kicker">Publisher Lesson Pacing · Language-Embedded Arc</span>
+          <h4>4-Phase Instructional Flow</h4>
+        </div>
+      </div>
+
+      ${
+        lessonArc.length
+          ? `<div class="bh-arc-rail">
+              ${lessonArc
+                .map(
+                  (step, idx) => `
+                    <article class="bh-arc-step">
+                      <div class="bh-arc-step-top">
+                        <span class="bh-arc-num">${idx + 1}</span>
+                        <strong class="bh-arc-phase">${esc(step.phase)}</strong>
+                        ${step.minutes ? `<span class="bh-arc-min">${esc(step.minutes)} min</span>` : ""}
+                      </div>
+                      ${step.focus ? `<p class="bh-arc-focus">${esc(step.focus)}</p>` : ""}
+                      ${
+                        step.teacher_move
+                          ? `<div class="bh-arc-move">
+                              <span class="bh-arc-move-label is-teacher">Teacher Move</span>
+                              <p>${esc(step.teacher_move)}</p>
+                            </div>`
+                          : ""
+                      }
+                      ${
+                        step.student_move
+                          ? `<div class="bh-arc-move">
+                              <span class="bh-arc-move-label is-student">Student Move</span>
+                              <p>${esc(step.student_move)}</p>
+                            </div>`
+                          : ""
+                      }
+                    </article>
+                  `,
+                )
+                .join("")}
+            </div>`
+          : ""
+      }
+
+      ${
+        misconception
+          ? `<div class="bh-misconception-box" role="note" aria-label="Common Language Misconception and Teacher Redirect">
+              <div class="bh-misconception-col is-pattern">
+                <span class="bh-misconception-tag">Common Language Misconception</span>
+                <p>${esc(misconception.misconception_pattern)}</p>
+              </div>
+              <div class="bh-misconception-col is-redirect">
+                <span class="bh-misconception-tag">High-Leverage Teacher Redirect</span>
+                <p>${esc(misconception.teacher_redirect)}</p>
+              </div>
+            </div>`
+          : ""
+      }
+    </section>
+  `;
 }
 
 function renderConnectionsTab() {
@@ -695,6 +1059,9 @@ function renderConnectionsTab() {
   const vocab = normalizeVocab(conn.tier2_tier3_vocab);
   const l1List = normalizeL1Watchouts(conn.l1_watchouts);
   const transfers = Array.isArray(detail.cross_subject_transfers) ? detail.cross_subject_transfers : [];
+  const languageDive = normalizeLanguageDive(conn);
+  const lessonArc = normalizeLessonArc(conn);
+  const misconception = normalizeMisconception(conn);
 
   panel.innerHTML = `
     <div class="bh-conn-grid">
@@ -754,6 +1121,10 @@ function renderConnectionsTab() {
         }
       </article>
 
+      ${renderLanguageDiveSection(languageDive)}
+
+      ${renderLessonArcSection(lessonArc, misconception)}
+
       <div class="bh-two-col">
         <section class="bh-subpanel" aria-label="Tier 2 and Tier 3 Vocabulary">
           <h4>Tier 2 &amp; Tier 3 Vocabulary + Cognates</h4>
@@ -779,8 +1150,8 @@ function renderConnectionsTab() {
           }
         </section>
 
-        <section class="bh-subpanel" aria-label="Home Language L1 Watchouts">
-          <h4>L1 Watchouts (Spanish · Arabic · French/Haitian Creole)</h4>
+        <section class="bh-subpanel" aria-label="Spanish-English L1 Watchouts">
+          <h4>L1 Watchouts (Spanish–English Bridge)</h4>
           ${
             l1List.length
               ? `<div class="bh-l1-list">
@@ -1386,21 +1757,47 @@ function bindEvents() {
     setActiveTab(VALID_TABS[next], { focusTab: true });
   });
 
-  // Connections panel delegation (WIDA toggle + Vocab lookup + Cross-subject transfer cards)
+  // Connections panel delegation (WIDA toggle + Language Dive + Vocab lookup + Cross-subject transfer cards)
   $("#panel-connections").addEventListener("click", async (e) => {
     const widaBtn = e.target.closest("[data-wida-tier]");
     if (widaBtn) {
-      const next = widaBtn.dataset.widaTier;
-      if (next && next !== state.wida) {
-        state.wida = next;
-        syncUrl();
-        renderResourceExportBar();
+      applyWidaTier(widaBtn.dataset.widaTier);
+      return;
+    }
+
+    const diveChunkBtn = e.target.closest("[data-dive-chunk]");
+    if (diveChunkBtn) {
+      const idx = Number(diveChunkBtn.dataset.diveChunk);
+      if (!Number.isNaN(idx)) {
+        state.diveSelectedChunk = idx;
+        state.diveRevealAll = false;
         renderConnectionsTab();
-        renderActivitiesTab();
-        renderFamilyTab();
-        renderPrintKit();
-        trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
-        announce(`Switched to WIDA ${widaLabel(state.wida)} scaffolds.`);
+      }
+      return;
+    }
+
+    if (e.target.closest("[data-dive-reveal-all]")) {
+      state.diveRevealAll = !state.diveRevealAll;
+      renderConnectionsTab();
+      return;
+    }
+
+    const diveReadBtn = e.target.closest("[data-dive-read]");
+    if (diveReadBtn) {
+      const sentence = diveReadBtn.dataset.diveRead || "";
+      if (sentence && "speechSynthesis" in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(sentence);
+          utter.lang = "en-US";
+          utter.rate = 0.92;
+          window.speechSynthesis.speak(utter);
+          announce("Reading mentor sentence aloud.");
+        } catch {
+          announce("Read Aloud is unavailable in this browser.");
+        }
+      } else {
+        announce("Read Aloud is not supported in this browser.");
       }
       return;
     }
@@ -1428,6 +1825,22 @@ function bindEvents() {
       $("#subjectSelect").value = state.subject;
       await loadUnits(targetUnit);
       $("#workspaceSection").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    }
+  });
+
+  // Classroom Projection Mode toggle + Exit button + Escape key
+  $("#projectionModeBtn")?.addEventListener("click", () => {
+    setProjectionMode(!state.projectionMode);
+    if (state.projectionMode) {
+      trackTelemetry(state.unitId, state.wida, "projection_mode");
+    }
+  });
+  $("#exitProjectionBtn")?.addEventListener("click", () => {
+    setProjectionMode(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && state.projectionMode && !$("#shareDialog")?.open) {
+      setProjectionMode(false);
     }
   });
 

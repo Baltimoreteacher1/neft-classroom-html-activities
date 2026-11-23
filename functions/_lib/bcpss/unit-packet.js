@@ -133,21 +133,18 @@ function defaultQuickFixForLanguage(language) {
   if (lower.includes("spanish")) {
     return "Anchor English prepositions and cognates visually on the board, and pair oral rehearsal with the target frame before writing.";
   }
-  if (lower.includes("arabic")) {
-    return "Trace left-to-right visual directionality on models and cue explicit present-tense linking verbs (is/are) during partner talk.";
-  }
-  if (lower.includes("french") || lower.includes("creole") || lower.includes("haitian")) {
-    return "Highlight shared academic cognates first, then color-code English verb endings and prepositions inside the unit frame.";
-  }
   return "Pre-teach the target connector with a visual cue and have students rehearse the frame aloud with a partner before writing.";
 }
+
+const EXCLUDED_L1_PATTERN = /\b(arabic|french|français|haitian|creole|krey[oò]l)\b/i;
 
 function normalizeL1Watchouts(rawList) {
   if (!Array.isArray(rawList)) return [];
   return rawList
     .map((item) => {
       if (!item || typeof item !== "object") return null;
-      const language = String(item.l1_group || item.language || "Multilingual Learners").trim();
+      const language = String(item.l1_group || item.language || "Spanish-English").trim();
+      if (EXCLUDED_L1_PATTERN.test(language)) return null;
       if (item.friction_point || item.quick_fix) {
         return {
           language,
@@ -299,49 +296,225 @@ function normalizeFamilyCards(familyCard, unit, primary, vocab) {
         `Pregunta en casa: "¿Puedes enseñarme un ejemplo de ${unit?.unit_title || "esta unidad"} en español o en inglés?"`,
       keyWords: Array.isArray(tj.es?.key_words) ? tj.es.key_words : esWords,
     },
-    {
-      code: "AR",
-      label: "العربية",
-      dir: "rtl",
-      title:
-        tj.ar?.title ||
-        `الصف ${unit?.grade ?? ""} · ${unit?.subject ?? ""}: ${unit?.unit_title ?? ""}`,
-      summary:
-        tj.ar?.summary ||
-        familyCard?.ar_summary ||
-        `في الوحدة ${unit?.unit_number ?? ""} (${unit?.unit_title ?? ""})، يتدرب الطلاب على مهارات اللغة الأكاديمية (${klu}) مع مفاهيم الوحدة الأساسية.`,
-      question:
-        tj.ar?.dinner_question ||
-        dtp.ar ||
-        `سؤال في المنزل: "هل يمكنك أن تشرح لي مثالاً واحداً من وحدة ${unit?.unit_title || "هذه الوحدة"} بلغتنا أو بالإنجليزية؟"`,
-      keyWords: Array.isArray(tj.ar?.key_words) ? tj.ar.key_words : defaultWords,
-    },
-    {
-      code: "FR / HT",
-      label: "Français / Kreyòl",
-      dir: "ltr",
-      title:
-        tj.fr?.title ||
-        tj.fr_ht?.title ||
-        `${unit?.grade ?? ""}e année · ${unit?.subject ?? ""} : ${unit?.unit_title ?? ""}`,
-      summary:
-        tj.fr?.summary ||
-        tj.fr_ht?.summary ||
-        familyCard?.fr_ht_summary ||
-        `Dans l'unité ${unit?.unit_number ?? ""} (${unit?.unit_title ?? ""}), les élèves pratiquent le langage académique (${klu}) tout en explorant les notions clés.`,
-      question:
-        tj.fr?.dinner_question ||
-        tj.fr_ht?.dinner_question ||
-        dtp.fr_ht ||
-        dtp.fr ||
-        `Demandez à la maison : « Peux-tu m'expliquer un exemple de ${unit?.unit_title || "cette unité"} en français, en créole ou en anglais ? »`,
-      keyWords: Array.isArray(tj.fr?.key_words)
-        ? tj.fr.key_words
-        : Array.isArray(tj.fr_ht?.key_words)
-          ? tj.fr_ht.key_words
-          : defaultWords,
-    },
   ];
+}
+
+function maybeJson(val) {
+  if (typeof val !== "string") return val;
+  const trimmed = val.trim();
+  if (
+    (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+    (trimmed.startsWith("[") && trimmed.endsWith("]"))
+  ) {
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return val;
+    }
+  }
+  return val;
+}
+
+const CHUNK_TONES = {
+  teal: { bg: "#e8f1f2", fg: "#075568", border: "#94b8c2", docxFill: "E8F1F2", docxText: "075568" },
+  blue: { bg: "#dbeafe", fg: "#1e3a8a", border: "#93c5fd", docxFill: "DBEAFE", docxText: "1E3A8A" },
+  amber: {
+    bg: "#fef3c7",
+    fg: "#92400e",
+    border: "#fcd34d",
+    docxFill: "FEF3C7",
+    docxText: "92400E",
+  },
+  emerald: {
+    bg: "#d1fae5",
+    fg: "#065f46",
+    border: "#6ee7b7",
+    docxFill: "D1FAE5",
+    docxText: "065F46",
+  },
+  coral: {
+    bg: "#ffedd5",
+    fg: "#9a3412",
+    border: "#fdba74",
+    docxFill: "FFEDD5",
+    docxText: "9A3412",
+  },
+  slate: {
+    bg: "#f1f5f9",
+    fg: "#334155",
+    border: "#cbd5e1",
+    docxFill: "F1F5F9",
+    docxText: "334155",
+  },
+};
+
+const CHUNK_TONE_CYCLE = [
+  CHUNK_TONES.teal,
+  CHUNK_TONES.blue,
+  CHUNK_TONES.amber,
+  CHUNK_TONES.emerald,
+  CHUNK_TONES.coral,
+  CHUNK_TONES.slate,
+];
+
+function resolveChunkTone(colorToken, index = 0) {
+  const key = String(colorToken || "")
+    .trim()
+    .toLowerCase();
+  if (key.includes("teal") || key.includes("cyan")) return CHUNK_TONES.teal;
+  if (key.includes("blue") || key.includes("navy") || key.includes("indigo")) {
+    return CHUNK_TONES.blue;
+  }
+  if (key.includes("amber") || key.includes("gold") || key.includes("yellow")) {
+    return CHUNK_TONES.amber;
+  }
+  if (key.includes("green") || key.includes("emerald") || key.includes("mint")) {
+    return CHUNK_TONES.emerald;
+  }
+  if (
+    key.includes("coral") ||
+    key.includes("orange") ||
+    key.includes("rose") ||
+    key.includes("red")
+  ) {
+    return CHUNK_TONES.coral;
+  }
+  if (key.includes("slate") || key.includes("gray") || key.includes("grey")) {
+    return CHUNK_TONES.slate;
+  }
+  return CHUNK_TONE_CYCLE[index % CHUNK_TONE_CYCLE.length];
+}
+
+function formatMinutesLabel(minutes) {
+  if (minutes === null || minutes === undefined || minutes === "") return "";
+  if (typeof minutes === "number" && Number.isFinite(minutes)) return `${minutes} min`;
+  const str = String(minutes).trim();
+  if (!str) return "";
+  return /\bmin/i.test(str) ? str : `${str} min`;
+}
+
+function formatClozeHtml(sentence) {
+  const escaped = escapeHtml(sentence || "");
+  return escaped.replace(
+    /(?:_{3,}|\[blank\]|\{\{blank\}\})/gi,
+    '<span class="cloze-blank"></span>',
+  );
+}
+
+function formatClozeDocx(sentence) {
+  return String(sentence || "").replace(/(?:_{3,}|\[blank\]|\{\{blank\}\})/gi, "________________");
+}
+
+function normalizePublisherMeta(raw, unit) {
+  const pm = maybeJson(raw);
+  const obj = pm && typeof pm === "object" && !Array.isArray(pm) ? pm : {};
+  const fallbackImprint = [
+    unit?.curriculum_name,
+    unit?.subject,
+    unit?.grade ? `Grade ${unit.grade}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  return {
+    publisherImprint:
+      String(obj.publisher_imprint || "").trim() || fallbackImprint || "BCPSS Core Curriculum",
+    gradeBand: String(obj.grade_band || "").trim() || (unit?.grade ? `Grade ${unit.grade}` : ""),
+    signatureProtocol: String(obj.signature_protocol || "").trim(),
+  };
+}
+
+function normalizeMentorSentenceUnpacking(raw) {
+  const parsed = maybeJson(raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  const mentorSentence = String(parsed.mentor_sentence || "").trim();
+  const chunks = Array.isArray(parsed.chunks)
+    ? parsed.chunks
+        .filter((c) => c && typeof c === "object" && (c.text || c.role || c.student_question))
+        .map((c, idx) => ({
+          text: String(c.text || "").trim(),
+          role: String(c.role || "").trim(),
+          colorToken: String(c.color_token || "").trim(),
+          studentQuestion: String(c.student_question || "").trim(),
+          tone: resolveChunkTone(c.color_token, idx),
+        }))
+    : [];
+  if (!mentorSentence && !chunks.length) return null;
+  return { mentorSentence, chunks };
+}
+
+function normalizeLessonArc(raw) {
+  const parsed = maybeJson(raw);
+  if (!Array.isArray(parsed)) return [];
+  return parsed
+    .filter(
+      (step) => step && typeof step === "object" && (step.phase || step.focus || step.teacher_move),
+    )
+    .map((step, idx) => ({
+      phase: String(step.phase || `Phase ${idx + 1}`).trim(),
+      minutesLabel: formatMinutesLabel(step.minutes),
+      focus: String(step.focus || "").trim(),
+      teacherMove: String(step.teacher_move || "").trim(),
+      studentMove: String(step.student_move || "").trim(),
+    }));
+}
+
+function normalizeClozeItems(raw) {
+  const parsed = maybeJson(raw);
+  if (!Array.isArray(parsed)) return { items: [], wordBank: [] };
+  const items = parsed
+    .filter((item) => item && typeof item === "object" && item.sentence_with_blank)
+    .map((item) => ({
+      sentenceWithBlank: String(item.sentence_with_blank || "").trim(),
+      answer: String(item.answer || "").trim(),
+      hint: String(item.hint || "").trim(),
+    }));
+  const seen = new Set();
+  const wordBank = [];
+  for (const item of items) {
+    const key = item.answer.toLowerCase();
+    if (item.answer && !seen.has(key)) {
+      seen.add(key);
+      wordBank.push(item.answer);
+    }
+  }
+  wordBank.sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+  return { items, wordBank };
+}
+
+function normalizePartnerTalk(raw) {
+  const parsed = maybeJson(raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  const protocolName = String(parsed.protocol_name || "").trim();
+  const roleATitle = String(parsed.role_a_title || "Partner A").trim();
+  const roleAPrompt = String(parsed.role_a_prompt || "").trim();
+  const roleBTitle = String(parsed.role_b_title || "Partner B").trim();
+  const roleBPrompt = String(parsed.role_b_prompt || "").trim();
+  const talkMoves = Array.isArray(parsed.talk_moves)
+    ? parsed.talk_moves
+        .filter((tm) => tm && typeof tm === "object" && (tm.label || tm.stem))
+        .map((tm) => ({
+          label: String(tm.label || "Talk Move").trim(),
+          stem: String(tm.stem || "").trim(),
+        }))
+    : [];
+  if (!protocolName && !roleAPrompt && !roleBPrompt && !talkMoves.length) return null;
+  return {
+    protocolName: protocolName || "Structured Partner Talk",
+    roleATitle,
+    roleAPrompt,
+    roleBTitle,
+    roleBPrompt,
+    talkMoves,
+  };
+}
+
+function normalizeMisconception(raw) {
+  const parsed = maybeJson(raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+  const misconceptionPattern = String(parsed.misconception_pattern || "").trim();
+  const teacherRedirect = String(parsed.teacher_redirect || "").trim();
+  if (!misconceptionPattern && !teacherRedirect) return null;
+  return { misconceptionPattern, teacherRedirect };
 }
 
 function extractPacketData(detail, wida = "3_4") {
@@ -364,6 +537,12 @@ function extractPacketData(detail, wida = "3_4") {
     : [];
   const exitTicket = normalizeExitTicket(primary.language_exit_ticket_json, unit, primary, vocab);
   const familyCards = normalizeFamilyCards(detail?.family_card, unit, primary, vocab);
+  const publisherMeta = normalizePublisherMeta(unit.publisher_meta, unit);
+  const mentorDive = normalizeMentorSentenceUnpacking(primary.mentor_sentence_unpacking);
+  const lessonArc = normalizeLessonArc(primary.lesson_arc);
+  const cloze = normalizeClozeItems(primary.interactive_cloze_items);
+  const partnerTalk = normalizePartnerTalk(primary.partner_talk_protocol);
+  const misconception = normalizeMisconception(primary.common_language_misconception);
 
   const widaCards = WIDA_TIERS.map((tier) => {
     const raw = scaffolds[tier.scaffoldKey] || scaffolds[tier.key] || {};
@@ -392,6 +571,12 @@ function extractPacketData(detail, wida = "3_4") {
     familyCards,
     widaCards,
     activeScaffold,
+    publisherMeta,
+    mentorDive,
+    lessonArc,
+    cloze,
+    partnerTalk,
+    misconception,
   };
 }
 
@@ -414,10 +599,179 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
     widaCards,
     activeTier,
     activeScaffold,
+    publisherMeta,
+    mentorDive,
+    lessonArc,
+    cloze,
+    partnerTalk,
+    misconception,
   } = data;
 
   const headerBadge = `BCPSS Grade ${unit.grade ?? ""} · ${unit.subject ?? ""} · ${unit.curriculum_name ?? ""} · Unit ${unit.unit_number ?? ""}`;
-  const docTitle = `${headerBadge} — ${unit.unit_title ?? "Classroom Language Packet"}`;
+  const runningImprint = publisherMeta.publisherImprint || headerBadge;
+  const docTitle = `${runningImprint} · Unit ${unit.unit_number ?? ""} — ${unit.unit_title ?? "Classroom Language Packet"}`;
+
+  const hasLessonDesignPage = Boolean(mentorDive || lessonArc.length || misconception);
+  const hasStudentPracticePage = Boolean(cloze.items.length || partnerTalk);
+  let pageCursor = 1;
+  const pageBrief = pageCursor++;
+  const pageLessonDesign = hasLessonDesignPage ? pageCursor++ : 0;
+  const pageScaffolds = pageCursor++;
+  const pageActivities = pageCursor++;
+  const pageStudentPractice = hasStudentPracticePage ? pageCursor++ : 0;
+  const pageDeskStrips = pageCursor++;
+  const pageFamily = pageCursor++;
+  const totalPages = pageCursor - 1;
+
+  const signatureProtocolHtml = publisherMeta.signatureProtocol
+    ? `<span class="protocol-badge">${escapeHtml(publisherMeta.signatureProtocol)}</span>`
+    : "";
+
+  const mentorDiveHtml = mentorDive
+    ? `<div class="mentor-dive-box">
+        <div class="mentor-dive-head">
+          <span class="mentor-kicker">Mentor Sentence Language Dive</span>
+          <span class="klu-mini">${escapeHtml(primary.wida_klu || "Explain")}</span>
+        </div>
+        ${
+          mentorDive.mentorSentence
+            ? `<div class="mentor-quote">“${escapeHtml(mentorDive.mentorSentence)}”</div>`
+            : ""
+        }
+        ${
+          mentorDive.chunks.length
+            ? `<table style="margin-bottom: 0;">
+                <thead>
+                  <tr>
+                    <th style="width: 28%;">Syntactic Chunk</th>
+                    <th style="width: 24%;">Language Role</th>
+                    <th>Guiding Student Question</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${mentorDive.chunks
+                    .map(
+                      (c) => `<tr>
+                        <td><span class="chunk-pill" style="background:${c.tone.bg};color:${c.tone.fg};border-color:${c.tone.border};">${escapeHtml(c.text)}</span></td>
+                        <td class="chunk-role">${escapeHtml(c.role)}</td>
+                        <td>${escapeHtml(c.studentQuestion)}</td>
+                      </tr>`,
+                    )
+                    .join("")}
+                </tbody>
+              </table>`
+            : ""
+        }
+      </div>`
+    : "";
+
+  const lessonArcHtml = lessonArc.length
+    ? `<h2 class="section-title">4-Phase Language-Embedded Lesson Arc</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 19%;">Phase &amp; Time</th>
+            <th style="width: 23%;">Instructional Focus</th>
+            <th style="width: 29%;">Teacher Move</th>
+            <th style="width: 29%;">Student Move</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${lessonArc
+            .map(
+              (step) => `<tr>
+                <td>
+                  <div class="phase-name">${escapeHtml(step.phase)}</div>
+                  ${step.minutesLabel ? `<span class="phase-time">${escapeHtml(step.minutesLabel)}</span>` : ""}
+                </td>
+                <td class="phase-focus">${escapeHtml(step.focus)}</td>
+                <td>${escapeHtml(step.teacherMove)}</td>
+                <td>${escapeHtml(step.studentMove)}</td>
+              </tr>`,
+            )
+            .join("")}
+        </tbody>
+      </table>`
+    : "";
+
+  const misconceptionHtml = misconception
+    ? `<div class="misconception-box">
+        <div class="misconception-title">Common Language Misconception &amp; Quick Redirect</div>
+        ${
+          misconception.misconceptionPattern
+            ? `<p class="misconception-row"><strong>Watch For:</strong> ${escapeHtml(misconception.misconceptionPattern)}</p>`
+            : ""
+        }
+        ${
+          misconception.teacherRedirect
+            ? `<p class="misconception-row" style="margin-bottom: 0;"><strong>Teacher Redirect:</strong> ${escapeHtml(misconception.teacherRedirect)}</p>`
+            : ""
+        }
+      </div>`
+    : "";
+
+  const clozeHtml = cloze.items.length
+    ? `<div class="cloze-section">
+        <h2 class="section-title" style="margin-top: 0;">Context Cloze Practice — Academic Language in Use</h2>
+        <p class="student-directions">Choose the best term from the Word Bank to complete each sentence accurately. Re-read your completed sentence aloud with a partner to check that it makes sense.</p>
+        ${
+          cloze.wordBank.length
+            ? `<div class="cloze-bank-box">
+                <div class="micro-label">Word Bank</div>
+                <div class="bank-chips">
+                  ${cloze.wordBank.map((w) => `<span class="word-chip">${escapeHtml(w)}</span>`).join("")}
+                </div>
+              </div>`
+            : ""
+        }
+        <ol class="cloze-list">
+          ${cloze.items
+            .map(
+              (item) => `<li>
+                <div class="cloze-sentence">${formatClozeHtml(item.sentenceWithBlank)}</div>
+                ${item.hint ? `<div class="cloze-hint">Hint: ${escapeHtml(item.hint)}</div>` : ""}
+              </li>`,
+            )
+            .join("")}
+        </ol>
+      </div>`
+    : "";
+
+  const partnerTalkHtml = partnerTalk
+    ? `<div class="partner-card">
+        <div class="partner-head">
+          <h2 class="partner-title">${escapeHtml(partnerTalk.protocolName)}</h2>
+          <span class="klu-mini">Partner Talk Protocol</span>
+        </div>
+        <div class="partner-grid">
+          <div class="role-box">
+            <div class="role-badge">Role A · ${escapeHtml(partnerTalk.roleATitle)}</div>
+            <p class="role-prompt">${escapeHtml(partnerTalk.roleAPrompt)}</p>
+          </div>
+          <div class="role-box">
+            <div class="role-badge role-b">Role B · ${escapeHtml(partnerTalk.roleBTitle)}</div>
+            <p class="role-prompt">${escapeHtml(partnerTalk.roleBPrompt)}</p>
+          </div>
+        </div>
+        ${
+          partnerTalk.talkMoves.length
+            ? `<div class="talk-moves-wrap">
+                <div class="micro-label">Academic Talk Moves</div>
+                <div class="talk-moves-grid">
+                  ${partnerTalk.talkMoves
+                    .map(
+                      (tm) => `<div class="talk-move-chip">
+                        <span class="talk-move-label">${escapeHtml(tm.label)}</span>
+                        <span class="talk-move-stem">“${escapeHtml(tm.stem)}”</span>
+                      </div>`,
+                    )
+                    .join("")}
+                </div>
+              </div>`
+            : ""
+        }
+      </div>`
+    : "";
 
   const standardsHtml = standards.length
     ? `<div class="pill-row">${standards
@@ -572,7 +926,7 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
         <h3 class="family-title">${escapeHtml(fc.title)}</h3>
         <p class="family-summary">${escapeHtml(fc.summary)}</p>
         <div class="family-question">
-          <div class="family-q-label">${fc.code === "ES" ? "Pregunta para conversar en casa" : fc.code === "AR" ? "سؤال للنقاش في المنزل" : fc.code === "FR / HT" ? "Question à discuter à la maison" : "Dinner-Table Question"}</div>
+          <div class="family-q-label">${fc.code === "ES" ? "Pregunta para conversar en casa" : "Dinner-Table Question"}</div>
           <p>${escapeHtml(fc.question)}</p>
         </div>
         ${
@@ -1322,6 +1676,275 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       font-weight: 600;
     }
 
+    .masthead-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5pt;
+      margin-bottom: 6pt;
+    }
+
+    .masthead-badges .hero-badge {
+      margin-bottom: 0;
+    }
+
+    .protocol-badge {
+      display: inline-block;
+      background: #e8f1f2;
+      color: #075568;
+      border: 0.9pt solid #0e7490;
+      font-size: 7.8pt;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      padding: 2.8pt 7.5pt;
+      border-radius: 3pt;
+    }
+
+    .mentor-dive-box {
+      border: 1.1pt solid #075568;
+      border-radius: 5pt;
+      padding: 8.5pt 10pt;
+      background: #ffffff;
+      margin-bottom: 10pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .mentor-dive-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5pt;
+    }
+
+    .mentor-kicker {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 11pt;
+      font-weight: 700;
+      color: #075568;
+    }
+
+    .mentor-quote {
+      background: #f4f9fa;
+      border-left: 3pt solid #0e7490;
+      padding: 6.5pt 9pt;
+      margin-bottom: 7pt;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 10.2pt;
+      font-weight: 600;
+      color: #0f172a;
+      border-radius: 0 3.5pt 3.5pt 0;
+    }
+
+    .chunk-pill {
+      display: inline-block;
+      border: 0.75pt solid #94b8c2;
+      border-radius: 3pt;
+      padding: 2pt 5.5pt;
+      font-weight: 700;
+      font-size: 8.3pt;
+      line-height: 1.3;
+    }
+
+    .chunk-role {
+      font-weight: 700;
+      color: #075568;
+    }
+
+    .phase-name {
+      font-weight: 700;
+      color: #075568;
+      margin-bottom: 2pt;
+    }
+
+    .phase-time {
+      display: inline-block;
+      background: #e8f1f2;
+      color: #0e7490;
+      border-radius: 999px;
+      padding: 1pt 5.5pt;
+      font-size: 7.3pt;
+      font-weight: 700;
+    }
+
+    .phase-focus {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .misconception-box {
+      background: #fffbeb;
+      border: 0.9pt solid #f59e0b;
+      border-left: 3.5pt solid #b45309;
+      border-radius: 4pt;
+      padding: 7.5pt 10pt;
+      margin-top: 8pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .misconception-title {
+      font-size: 8.4pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #92400e;
+      margin-bottom: 4pt;
+    }
+
+    .misconception-row {
+      font-size: 8.7pt;
+      color: #1e293b;
+      margin-bottom: 4pt;
+    }
+
+    .student-sheet-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12pt;
+      border: 0.9pt solid #94a3b8;
+      background: #f8fafc;
+      border-radius: 4pt;
+      padding: 6.5pt 9pt;
+      margin-bottom: 10pt;
+      font-size: 8.6pt;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .student-directions {
+      font-size: 8.6pt;
+      color: #334155;
+      margin-bottom: 7pt;
+    }
+
+    .cloze-bank-box {
+      background: #f4f9fa;
+      border: 1pt dashed #0e7490;
+      border-radius: 4pt;
+      padding: 6.5pt 9pt;
+      margin-bottom: 9pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .cloze-list {
+      margin: 0 0 11pt 0;
+      padding-left: 16pt;
+      font-size: 9.2pt;
+    }
+
+    .cloze-list li {
+      margin-bottom: 8.5pt;
+      line-height: 1.65;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .cloze-blank {
+      display: inline-block;
+      min-width: 96pt;
+      border-bottom: 1.1pt solid #0f172a;
+      margin: 0 3pt;
+      vertical-align: baseline;
+    }
+
+    .cloze-hint {
+      font-size: 7.9pt;
+      color: #475569;
+      font-style: italic;
+      margin-top: 1.5pt;
+      line-height: 1.3;
+    }
+
+    .partner-card {
+      border: 1.2pt solid #075568;
+      border-radius: 5pt;
+      padding: 9pt 10pt;
+      background: #f4f9fa;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .partner-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8pt;
+      margin-bottom: 7pt;
+    }
+
+    .partner-title {
+      font-size: 11pt;
+      color: #075568;
+    }
+
+    .partner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8pt;
+      margin-bottom: 8pt;
+    }
+
+    .role-box {
+      background: #ffffff;
+      border: 0.8pt solid #94b8c2;
+      border-radius: 4pt;
+      padding: 7pt 8.5pt;
+    }
+
+    .role-badge {
+      display: inline-block;
+      background: #075568;
+      color: #ffffff;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 1.5pt 6pt;
+      border-radius: 3pt;
+      margin-bottom: 4.5pt;
+    }
+
+    .role-badge.role-b {
+      background: #0e7490;
+    }
+
+    .role-prompt {
+      font-size: 8.7pt;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .talk-moves-wrap {
+      background: #ffffff;
+      border: 0.75pt solid #cbd5e1;
+      border-radius: 4pt;
+      padding: 6.5pt 8.5pt;
+    }
+
+    .talk-moves-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5pt 10pt;
+    }
+
+    .talk-move-chip {
+      font-size: 8.3pt;
+      line-height: 1.35;
+    }
+
+    .talk-move-label {
+      font-weight: 700;
+      color: #075568;
+      margin-right: 4pt;
+    }
+
+    .talk-move-stem {
+      color: #1e293b;
+      font-style: italic;
+    }
+
     .muted {
       color: #64748b;
       font-style: italic;
@@ -1343,14 +1966,17 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
 </head>
 <body>
   <main class="packet-shell">
-    <!-- PAGE 1: Unit Language Brief & Classroom Anchor Chart -->
+    <!-- PAGE ${pageBrief}: Unit Language Brief & Classroom Anchor Chart -->
     <section>
       <div class="page-header">
-        <span class="page-kicker">BCPSS Curriculum-to-Language Hub · Classroom Resource Packet</span>
-        <span class="page-num">Page 1 of 5 · Unit Language Brief</span>
+        <span class="page-kicker">${escapeHtml(runningImprint)} · BCPSS Classroom Resource Packet</span>
+        <span class="page-num">Page ${pageBrief} of ${totalPages} · Unit Language Brief</span>
       </div>
 
-      <div class="hero-badge">${escapeHtml(headerBadge)}</div>
+      <div class="masthead-badges">
+        <span class="hero-badge">${escapeHtml(headerBadge)}</span>
+        ${signatureProtocolHtml}
+      </div>
       <h1 class="unit-title">${escapeHtml(unit.unit_title || "Unit Language Brief")}</h1>
       <p class="unit-summary">${escapeHtml(unit.unit_summary || "")}</p>
       ${essentialQuestionHtml}
@@ -1390,17 +2016,32 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       </div>
     </section>
 
-    <!-- PAGE 2: Differentiated WIDA Scaffolds & L1 Watchouts -->
+    ${
+      hasLessonDesignPage
+        ? `<!-- PAGE ${pageLessonDesign}: Mentor Sentence Dive, Lesson Arc & Misconception Redirect -->
     <section class="page-break">
       <div class="page-header">
-        <span class="page-kicker">${escapeHtml(headerBadge)} · ${escapeHtml(unit.unit_title || "")}</span>
-        <span class="page-num">Page 2 of 5 · WIDA Scaffolds &amp; L1 Watchouts</span>
+        <span class="page-kicker">${escapeHtml(runningImprint)} · ${escapeHtml(unit.unit_title || "")}</span>
+        <span class="page-num">Page ${pageLessonDesign} of ${totalPages} · Language Dive &amp; Lesson Arc</span>
+      </div>
+      ${mentorDiveHtml}
+      ${lessonArcHtml}
+      ${misconceptionHtml}
+    </section>`
+        : ""
+    }
+
+    <!-- PAGE ${pageScaffolds}: Differentiated WIDA Scaffolds & L1 Watchouts -->
+    <section class="page-break">
+      <div class="page-header">
+        <span class="page-kicker">${escapeHtml(runningImprint)} · ${escapeHtml(unit.unit_title || "")}</span>
+        <span class="page-num">Page ${pageScaffolds} of ${totalPages} · WIDA Scaffolds &amp; L1 Watchouts</span>
       </div>
 
       <h2 class="section-title" style="margin-top: 0;">Differentiated WIDA Scaffolds (Active Selection: ${escapeHtml(activeTier.label)})</h2>
       ${widaCardsHtml}
 
-      <h2 class="section-title">L1 Linguistic Watchouts &amp; Quick Fixes</h2>
+      <h2 class="section-title">Spanish–English L1 Linguistic Watchouts &amp; Quick Fixes</h2>
       <table>
         <thead>
           <tr>
@@ -1415,11 +2056,11 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       </table>
     </section>
 
-    <!-- PAGE 3: 3-Day Pre-Teaching Micro-Activities & 3-Minute Exit Ticket -->
+    <!-- PAGE ${pageActivities}: 3-Day Pre-Teaching Micro-Activities & 3-Minute Exit Ticket -->
     <section class="page-break">
       <div class="page-header">
-        <span class="page-kicker">${escapeHtml(headerBadge)} · ${escapeHtml(unit.unit_title || "")}</span>
-        <span class="page-num">Page 3 of 5 · Micro-Activities &amp; Exit Ticket</span>
+        <span class="page-kicker">${escapeHtml(runningImprint)} · ${escapeHtml(unit.unit_title || "")}</span>
+        <span class="page-num">Page ${pageActivities} of ${totalPages} · Micro-Activities &amp; Exit Ticket</span>
       </div>
 
       <h2 class="section-title" style="margin-top: 0;">3-Day Pre-Teaching Micro-Activities</h2>
@@ -1448,23 +2089,42 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       </div>
     </section>
 
-    <!-- PAGE 4: Cuttable Student Desk Strips -->
+    ${
+      hasStudentPracticePage
+        ? `<!-- PAGE ${pageStudentPractice}: Student-Ready Context Cloze & Partner Talk Card -->
     <section class="page-break">
       <div class="page-header">
-        <span class="page-kicker">${escapeHtml(headerBadge)} · Cuttable Student Desk Strips</span>
-        <span class="page-num">Page 4 of 5 · ${escapeHtml(activeTier.label)} (4× Strips)</span>
+        <span class="page-kicker">${escapeHtml(runningImprint)} · Student Practice Sheet</span>
+        <span class="page-num">Page ${pageStudentPractice} of ${totalPages} · Cloze &amp; Partner Talk</span>
+      </div>
+      <div class="student-sheet-bar">
+        <span>Name: ____________________________________</span>
+        <span>Date: _________________</span>
+        <span>Period: _______</span>
+      </div>
+      ${clozeHtml}
+      ${partnerTalkHtml}
+    </section>`
+        : ""
+    }
+
+    <!-- PAGE ${pageDeskStrips}: Cuttable Student Desk Strips -->
+    <section class="page-break">
+      <div class="page-header">
+        <span class="page-kicker">${escapeHtml(runningImprint)} · Cuttable Student Desk Strips</span>
+        <span class="page-num">Page ${pageDeskStrips} of ${totalPages} · ${escapeHtml(activeTier.label)} (4× Strips)</span>
       </div>
       ${deskStripsHtml}
     </section>
 
-    <!-- PAGE 5: Bilingual Family Home-Connection Card -->
+    <!-- PAGE ${pageFamily}: Bilingual Family Home-Connection Card -->
     <section class="page-break">
       <div class="page-header">
-        <span class="page-kicker">${escapeHtml(headerBadge)} · Family Home-Connection Card</span>
-        <span class="page-num">Page 5 of 5 · EN / ES / AR / FR</span>
+        <span class="page-kicker">${escapeHtml(runningImprint)} · Family Home-Connection Card</span>
+        <span class="page-num">Page ${pageFamily} of ${totalPages} · English / Español</span>
       </div>
       <p class="unit-summary" style="font-size: 8.8pt; color: #475569; margin-bottom: 9pt;">
-        Share or send home so families can talk about <strong>${escapeHtml(unit.unit_title || "this unit")}</strong> in their home language. Strong home-language conversations accelerate English academic transfer.
+        Share or send home so families can talk about <strong>${escapeHtml(unit.unit_title || "this unit")}</strong> in English or Spanish. Strong home-language conversations accelerate English academic transfer.
       </p>
       <div class="family-grid">
         ${familyCardsHtml}
@@ -1704,17 +2364,26 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     widaCards,
     activeTier,
     activeScaffold,
+    publisherMeta,
+    mentorDive,
+    lessonArc,
+    cloze,
+    partnerTalk,
+    misconception,
   } = data;
 
   const parts = [];
 
   // 1. Title & Unit Metadata Table
+  const topKickerParts = [publisherMeta.publisherImprint, `UNIT ${unit.unit_number ?? ""}`].filter(
+    Boolean,
+  );
+  if (publisherMeta.signatureProtocol) {
+    topKickerParts.push(publisherMeta.signatureProtocol);
+  }
   parts.push(
     wParagraph(
-      wRun(
-        `BCPSS GRADE ${unit.grade ?? ""} · ${String(unit.subject ?? "").toUpperCase()} · ${String(unit.curriculum_name ?? "").toUpperCase()} · UNIT ${unit.unit_number ?? ""}`,
-        { bold: true, color: "0E7490", size: 17 },
-      ),
+      wRun(topKickerParts.join("  ·  ").toUpperCase(), { bold: true, color: "0E7490", size: 17 }),
       { spaceBefore: 0, spaceAfter: 60 },
     ),
   );
@@ -1735,6 +2404,34 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
   }
 
   const metaRows = [
+    [
+      {
+        xml: wParagraph(wRun("Publisher Imprint", { bold: true, color: "075568", size: 18 }), {
+          spaceAfter: 0,
+        }),
+        fill: "F4F9FA",
+      },
+      publisherMeta.publisherImprint,
+    ],
+  ];
+  if (publisherMeta.signatureProtocol) {
+    metaRows.push([
+      {
+        xml: wParagraph(wRun("Signature Protocol", { bold: true, color: "075568", size: 18 }), {
+          spaceAfter: 0,
+        }),
+        fill: "E8F1F2",
+      },
+      {
+        xml: wParagraph(
+          wRun(publisherMeta.signatureProtocol, { bold: true, color: "075568", size: 19 }),
+          { spaceAfter: 0 },
+        ),
+        fill: "F4F9FA",
+      },
+    ]);
+  }
+  metaRows.push(
     [
       {
         xml: wParagraph(wRun("Grade & Subject", { bold: true, color: "075568", size: 18 }), {
@@ -1794,7 +2491,7 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
       },
       primary.cross_subject_bridge_note || "",
     ],
-  ];
+  );
   if (transfers.length) {
     metaRows.push([
       {
@@ -1828,6 +2525,119 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
       [2000, 968, 4900, 2500],
     ),
   );
+
+  // 2b. Mentor Sentence Language Dive & 4-Phase Lesson Arc (when present)
+  if (mentorDive || lessonArc.length || misconception) {
+    let brokeLessonPage = false;
+    if (mentorDive) {
+      parts.push(
+        wParagraph("Mentor Sentence Language Dive", {
+          style: "Heading1",
+          pageBreakBefore: true,
+        }),
+      );
+      brokeLessonPage = true;
+      if (mentorDive.mentorSentence) {
+        parts.push(
+          wParagraph(
+            [
+              wRun("Mentor Sentence: ", { bold: true, color: "075568" }),
+              wRun(`“${mentorDive.mentorSentence}”`, { bold: true, font: "Georgia", size: 21 }),
+            ],
+            { borderLeft: "0E7490", shading: "F4F9FA", spaceAfter: 100 },
+          ),
+        );
+      }
+      if (mentorDive.chunks.length) {
+        parts.push(
+          wTable(
+            ["Chunk", "Syntactic Role", "Guiding Question"],
+            mentorDive.chunks.map((c) => [
+              {
+                xml: wParagraph(wRun(c.text, { bold: true, color: c.tone.docxText, size: 19 }), {
+                  spaceAfter: 0,
+                }),
+                fill: c.tone.docxFill,
+              },
+              {
+                xml: wParagraph(wRun(c.role, { bold: true, color: "075568", size: 18 }), {
+                  spaceAfter: 0,
+                }),
+              },
+              c.studentQuestion,
+            ]),
+            [2668, 2500, 5200],
+          ),
+        );
+      }
+    }
+
+    if (lessonArc.length) {
+      parts.push(
+        wParagraph("4-Phase Language-Embedded Lesson Arc", {
+          style: "Heading1",
+          pageBreakBefore: !brokeLessonPage,
+        }),
+      );
+      brokeLessonPage = true;
+      parts.push(
+        wTable(
+          ["Phase & Time", "Instructional Focus", "Teacher Move", "Student Move"],
+          lessonArc.map((step) => [
+            {
+              xml: [
+                wParagraph(wRun(step.phase, { bold: true, color: "075568", size: 19 }), {
+                  spaceAfter: step.minutesLabel ? 20 : 0,
+                }),
+                ...(step.minutesLabel
+                  ? [
+                      wParagraph(
+                        wRun(step.minutesLabel, { bold: true, color: "0E7490", size: 17 }),
+                        {
+                          spaceAfter: 0,
+                        },
+                      ),
+                    ]
+                  : []),
+              ],
+              fill: "F4F9FA",
+            },
+            {
+              xml: wParagraph(wRun(step.focus, { bold: true, size: 18 }), { spaceAfter: 0 }),
+            },
+            step.teacherMove,
+            step.studentMove,
+          ]),
+          [1868, 2400, 3050, 3050],
+        ),
+      );
+    }
+
+    if (misconception) {
+      parts.push(
+        wParagraph("Common Language Misconception & Quick Redirect", {
+          style: "Heading2",
+          pageBreakBefore: !brokeLessonPage,
+        }),
+      );
+      const miscRuns = [];
+      if (misconception.misconceptionPattern) {
+        miscRuns.push(wRun("Watch For: ", { bold: true, color: "92400E" }));
+        miscRuns.push(wRun(`${misconception.misconceptionPattern}   `));
+      }
+      if (misconception.teacherRedirect) {
+        miscRuns.push(wRun("Teacher Redirect: ", { bold: true, color: "075568" }));
+        miscRuns.push(wRun(misconception.teacherRedirect));
+      }
+      parts.push(
+        wParagraph(miscRuns, {
+          borderLeft: "B45309",
+          shading: "FFFBEB",
+          spaceAfter: 120,
+        }),
+      );
+    }
+  }
 
   // 3. Differentiated WIDA Sentence Frames & Word Banks
   parts.push(
@@ -1867,8 +2677,10 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     }
   }
 
-  // 4. L1 Watchouts Table
-  parts.push(wParagraph("L1 Watchouts & 1-Sentence Quick Fixes", { style: "Heading1" }));
+  // 4. L1 Watchouts Table (Spanish-English only)
+  parts.push(
+    wParagraph("Spanish–English L1 Watchouts & 1-Sentence Quick Fixes", { style: "Heading1" }),
+  );
   const l1Rows = l1Watchouts.length
     ? l1Watchouts.map((row) => [
         {
@@ -1961,6 +2773,107 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     ),
   );
 
+  // 6b. Student Practice Sheet: Context Cloze & Partner Talk (when present)
+  if (cloze.items.length || partnerTalk) {
+    parts.push(
+      wParagraph("Student Practice Sheet — Context Cloze & Partner Talk", {
+        style: "Heading1",
+        pageBreakBefore: true,
+      }),
+    );
+    parts.push(
+      wParagraph(
+        wRun("Name: _____________________________     Date: _______________     Period: _______", {
+          bold: true,
+          color: "334155",
+          size: 19,
+        }),
+        { shading: "F8FAFC", boxBorder: "CBD5E1", spaceAfter: 120 },
+      ),
+    );
+
+    if (cloze.items.length) {
+      parts.push(wParagraph("Context Cloze Practice", { style: "Heading2" }));
+      parts.push(
+        wParagraph(
+          "Choose the best word from the Word Bank to complete each sentence. Re-read your completed sentence aloud with a partner.",
+          { runOpts: { italic: true, color: "475569", size: 19 }, spaceAfter: 80 },
+        ),
+      );
+      if (cloze.wordBank.length) {
+        parts.push(
+          wParagraph(
+            [
+              wRun("Word Bank:  ", { bold: true, color: "075568", size: 19 }),
+              wRun(cloze.wordBank.join("   ·   "), { bold: true, size: 19 }),
+            ],
+            { shading: "E8F1F2", boxBorder: "0E7490", spaceAfter: 120 },
+          ),
+        );
+      }
+      cloze.items.forEach((item, idx) => {
+        parts.push(
+          wParagraph(
+            [
+              wRun(`${idx + 1}. `, { bold: true, color: "075568", size: 20 }),
+              wRun(formatClozeDocx(item.sentenceWithBlank), { size: 20 }),
+            ],
+            { spaceAfter: item.hint ? 25 : 100 },
+          ),
+        );
+        if (item.hint) {
+          parts.push(
+            wParagraph(wRun(`Hint: ${item.hint}`, { italic: true, color: "475569", size: 18 }), {
+              indentLeft: 320,
+              spaceAfter: 90,
+            }),
+          );
+        }
+      });
+    }
+
+    if (partnerTalk) {
+      parts.push(
+        wParagraph(`Partner Talk Protocol — ${partnerTalk.protocolName}`, { style: "Heading2" }),
+      );
+      parts.push(
+        wTable(
+          [`Role A · ${partnerTalk.roleATitle}`, `Role B · ${partnerTalk.roleBTitle}`],
+          [[partnerTalk.roleAPrompt || "—", partnerTalk.roleBPrompt || "—"]],
+          [5184, 5184],
+        ),
+      );
+      if (partnerTalk.talkMoves.length) {
+        parts.push(
+          wParagraph("Academic Talk Moves", {
+            runOpts: { bold: true, color: "075568", size: 19 },
+            spaceBefore: 100,
+            spaceAfter: 40,
+          }),
+        );
+        parts.push(
+          wTable(
+            ["Talk Move", "Sentence Stem"],
+            partnerTalk.talkMoves.map((tm) => [
+              {
+                xml: wParagraph(wRun(tm.label, { bold: true, color: "075568", size: 18 }), {
+                  spaceAfter: 0,
+                }),
+                fill: "F4F9FA",
+              },
+              {
+                xml: wParagraph(wRun(`“${tm.stem}”`, { italic: true, size: 19 }), {
+                  spaceAfter: 0,
+                }),
+              },
+            ]),
+            [2668, 7700],
+          ),
+        );
+      }
+    }
+  }
+
   // 7. Cuttable Student Desk Strips (4x identical strips for active WIDA tier)
   parts.push(
     wParagraph(`Cuttable Student Desk Strips — ${activeTier.label} (4× Identical Strips)`, {
@@ -2007,50 +2920,48 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     );
   }
 
-  // 8. Bilingual Family Home-Connection Summary (EN, ES, AR, FR)
+  // 8. Bilingual Family Home-Connection Summary (English & Español side-by-side)
   parts.push(
-    wParagraph("Bilingual Family Home-Connection Card (EN / ES / AR / FR)", {
+    wParagraph("Bilingual Family Home-Connection Card (English / Español)", {
       style: "Heading1",
       pageBreakBefore: true,
     }),
   );
-  for (const fc of familyCards) {
-    const isRtl = fc.dir === "rtl";
-    parts.push(
-      wParagraph(`${fc.code} — ${fc.label}: ${fc.title}`, {
-        style: "Heading2",
-        rtl: isRtl,
-        align: isRtl ? "right" : "left",
-      }),
-    );
-    parts.push(
-      wParagraph(wRun(fc.summary, { rtl: isRtl }), {
-        rtl: isRtl,
-        align: isRtl ? "right" : "left",
-        spaceAfter: 60,
-      }),
-    );
-    parts.push(
-      wParagraph(wRun(fc.question, { bold: true, color: "075568", rtl: isRtl }), {
-        rtl: isRtl,
-        align: isRtl ? "right" : "left",
-        shading: "F4F9FA",
-        spaceAfter: 60,
-      }),
-    );
+  parts.push(
+    wParagraph(
+      `Share or send home so families can talk about "${unit.unit_title || "this unit"}" in English or Spanish. Strong home-language conversations accelerate English academic transfer.`,
+      { runOpts: { italic: true, color: "475569", size: 19 }, spaceAfter: 100 },
+    ),
+  );
+  const familyCells = familyCards.slice(0, 2).map((fc) => {
+    const qLabel = fc.code === "ES" ? "Pregunta para conversar en casa:" : "Dinner-Table Question:";
+    const cellParas = [
+      wParagraph(wRun(fc.title, { bold: true, color: "075568", size: 20 }), { spaceAfter: 60 }),
+      wParagraph(wRun(fc.summary, { size: 19 }), { spaceAfter: 80 }),
+      wParagraph(
+        [
+          wRun(`${qLabel} `, { bold: true, color: "075568", size: 18 }),
+          wRun(fc.question, { size: 18 }),
+        ],
+        { shading: "F4F9FA", borderLeft: "0E7490", spaceAfter: 80 },
+      ),
+    ];
     if (fc.keyWords.length) {
-      parts.push(
-        wParagraph(
-          wRun(fc.keyWords.join(" · "), { italic: true, color: "475569", size: 18, rtl: isRtl }),
-          {
-            rtl: isRtl,
-            align: isRtl ? "right" : "left",
-            spaceAfter: 140,
-          },
-        ),
+      cellParas.push(
+        wParagraph(wRun(fc.keyWords.join(" · "), { italic: true, color: "475569", size: 18 }), {
+          spaceAfter: 0,
+        }),
       );
     }
-  }
+    return { xml: cellParas };
+  });
+  parts.push(
+    wTable(
+      familyCards.slice(0, 2).map((fc) => `${fc.code} — ${fc.label}`),
+      [familyCells],
+      [5184, 5184],
+    ),
+  );
 
   const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">

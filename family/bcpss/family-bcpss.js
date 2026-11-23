@@ -15,20 +15,6 @@ const LANGS = {
     wordsHeading: "Palabras clave de la unidad",
     tip: "Consejo: Haga estas preguntas en el idioma en que su familia se sienta más cómoda.",
   },
-  ar: {
-    dir: "rtl",
-    kickerPrefix: "ما نتعلمه في المدرسة",
-    questionsHeading: "أسئلة للنقاش العائلي في المنزل",
-    wordsHeading: "كلمات أساسية للممارسة",
-    tip: "نصيحة: اطرحوا هذه الأسئلة باللغة التي تشعر عائلتكم بالراحة في التحدث بها.",
-  },
-  fr: {
-    dir: "ltr",
-    kickerPrefix: "Ce que nous apprenons / Sa n ap aprann",
-    questionsHeading: "Questions pour discuter à la maison",
-    wordsHeading: "Mots clés de l'unité",
-    tip: "Conseil : Posez ces questions dans la langue que votre famille parle le plus confortablement.",
-  },
 };
 
 const state = {

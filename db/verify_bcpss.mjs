@@ -65,10 +65,10 @@ function verifyLocal() {
   check(bySubject.Science === 36, `Science units: ${bySubject.Science} (expected 36)`);
   check(bySubject["Social Studies"] === 36, `Social Studies units: ${bySubject["Social Studies"]} (expected 36)`);
 
-  // Verify Grade 6 Math gold-standard EduWonderLab URLs + g6-math-u2 Ratios & Rates
+  // Verify Grade 6 Math has no external eduwonderlab.com links + g6-math-u2 Ratios & Rates
   const g6Math = BCPSS_UNITS.filter((u) => u.grade === "6" && u.subject === "Math");
-  const g6MathWithUrl = g6Math.filter((u) => u.external_content_lab_url?.startsWith("https://eduwonderlab.com"));
-  check(g6MathWithUrl.length === 6, `Grade 6 Math units with eduwonderlab.com URLs: ${g6MathWithUrl.length}/6`);
+  const g6MathWithUrl = g6Math.filter((u) => u.external_content_lab_url?.includes("eduwonderlab.com"));
+  check(g6MathWithUrl.length === 0, `Grade 6 Math units with eduwonderlab.com URLs: ${g6MathWithUrl.length}/6 (expected 0)`);
   const g6MathU2 = BCPSS_UNITS.find((u) => u.id === "g6-math-u2");
   check(
     g6MathU2 && /ratio/i.test(g6MathU2.unit_title),
@@ -80,14 +80,33 @@ function verifyLocal() {
   const bpIds = new Set(LANGUAGE_BLUEPRINTS.map((b) => b.id));
   const connByUnit = new Map();
   let missingEssentialQuestions = 0;
+  let invalidPublisherMeta = 0;
   let invalidBlueprintRefs = 0;
   let invalidVocabEntries = 0;
   let invalidL1Watchouts = 0;
   let invalidExitTickets = 0;
+  let invalidMentorSentences = 0;
+  let invalidLessonArcs = 0;
+  let invalidClozeItems = 0;
+  let invalidPartnerTalks = 0;
+  let invalidMisconceptions = 0;
+
+  const validGradeBands = new Set(["K–2", "3–5", "6–8"]);
+  const validColorTokens = new Set(["connector", "concept", "evidence", "precision"]);
 
   for (const u of BCPSS_UNITS) {
     if (typeof u.essential_question !== "string" || !u.essential_question.trim()) {
       missingEssentialQuestions++;
+    }
+    const pm = u.publisher_meta;
+    if (
+      typeof pm?.publisher_imprint !== "string" ||
+      !pm.publisher_imprint.trim() ||
+      !validGradeBands.has(pm?.grade_band) ||
+      typeof pm?.signature_protocol !== "string" ||
+      !pm.signature_protocol.trim()
+    ) {
+      invalidPublisherMeta++;
     }
   }
 
@@ -96,6 +115,7 @@ function verifyLocal() {
     if (!bpIds.has(c.blueprint_id)) invalidBlueprintRefs++;
 
     const vocab = Array.isArray(c.tier2_tier3_vocab) ? c.tier2_tier3_vocab : [];
+    const vocabTermSet = new Set(vocab.map((v) => v?.term));
     if (vocab.length === 0) invalidVocabEntries++;
     for (const v of vocab) {
       if (
@@ -110,7 +130,7 @@ function verifyLocal() {
     }
 
     const watchouts = Array.isArray(c.l1_watchouts) ? c.l1_watchouts : [];
-    if (watchouts.length < 3) invalidL1Watchouts++;
+    if (watchouts.length < 1) invalidL1Watchouts++;
     for (const w of watchouts) {
       if (
         typeof w?.l1_group !== "string" ||
@@ -147,11 +167,116 @@ function verifyLocal() {
     ) {
       invalidExitTickets++;
     }
+
+    const ms = c.mentor_sentence_unpacking;
+    const chunks = Array.isArray(ms?.chunks) ? ms.chunks : [];
+    const validChunks =
+      chunks.length >= 3 &&
+      chunks.every(
+        (ch) =>
+          typeof ch?.text === "string" &&
+          ch.text.trim().length > 0 &&
+          typeof ch?.role === "string" &&
+          ch.role.trim().length > 0 &&
+          validColorTokens.has(ch?.color_token) &&
+          typeof ch?.student_question === "string" &&
+          ch.student_question.trim().length > 0,
+      );
+    const reconstructed = chunks.map((ch) => ch.text).join(" ");
+    if (
+      typeof ms?.mentor_sentence !== "string" ||
+      !ms.mentor_sentence.trim() ||
+      /\[[^\]]+\]/.test(ms.mentor_sentence) ||
+      !validChunks ||
+      reconstructed !== ms.mentor_sentence
+    ) {
+      invalidMentorSentences++;
+    }
+
+    const arc = Array.isArray(c.lesson_arc) ? c.lesson_arc : [];
+    const validArc =
+      arc.length === 4 &&
+      arc.every(
+        (p) =>
+          typeof p?.phase === "string" &&
+          p.phase.trim().length > 0 &&
+          typeof p?.minutes === "number" &&
+          p.minutes > 0 &&
+          typeof p?.focus === "string" &&
+          p.focus.trim().length > 0 &&
+          typeof p?.teacher_move === "string" &&
+          p.teacher_move.trim().length > 0 &&
+          typeof p?.student_move === "string" &&
+          p.student_move.trim().length > 0,
+      );
+    if (!validArc) {
+      invalidLessonArcs++;
+    }
+
+    const cloze = Array.isArray(c.interactive_cloze_items) ? c.interactive_cloze_items : [];
+    const validCloze =
+      cloze.length >= 3 &&
+      cloze.every(
+        (item) =>
+          typeof item?.sentence_with_blank === "string" &&
+          item.sentence_with_blank.includes("_____") &&
+          typeof item?.answer === "string" &&
+          vocabTermSet.has(item.answer) &&
+          typeof item?.hint === "string" &&
+          item.hint.trim().length > 0 &&
+          Array.isArray(item?.distractor_pool) &&
+          item.distractor_pool.length >= 2 &&
+          !item.distractor_pool.includes(item.answer),
+      );
+    if (!validCloze) {
+      invalidClozeItems++;
+    }
+
+    const pt = c.partner_talk_protocol;
+    const validMoves =
+      Array.isArray(pt?.talk_moves) &&
+      pt.talk_moves.length === 4 &&
+      pt.talk_moves.every(
+        (m) =>
+          typeof m?.label === "string" &&
+          m.label.trim().length > 0 &&
+          typeof m?.stem === "string" &&
+          m.stem.trim().length > 0,
+      );
+    if (
+      typeof pt?.protocol_name !== "string" ||
+      !pt.protocol_name.trim() ||
+      typeof pt?.role_a_title !== "string" ||
+      !pt.role_a_title.trim() ||
+      typeof pt?.role_a_prompt !== "string" ||
+      !pt.role_a_prompt.trim() ||
+      typeof pt?.role_b_title !== "string" ||
+      !pt.role_b_title.trim() ||
+      typeof pt?.role_b_prompt !== "string" ||
+      !pt.role_b_prompt.trim() ||
+      !validMoves
+    ) {
+      invalidPartnerTalks++;
+    }
+
+    const cm = c.common_language_misconception;
+    if (
+      typeof cm?.misconception_pattern !== "string" ||
+      !cm.misconception_pattern.trim() ||
+      typeof cm?.teacher_redirect !== "string" ||
+      !cm.teacher_redirect.trim()
+    ) {
+      invalidMisconceptions++;
+    }
   }
   const unitsMissingConn = BCPSS_UNITS.filter((u) => !connByUnit.has(u.id)).length;
   check(
     missingEssentialQuestions === 0,
     `Units missing essential_question: ${missingEssentialQuestions} (expected 0)`,
+  );
+  check(
+    invalidPublisherMeta === 0,
+    `Units with invalid publisher_meta: ${invalidPublisherMeta} (expected 0)`,
   );
   check(unitsMissingConn === 0, `Units missing connections: ${unitsMissingConn} (expected 0)`);
   check(invalidBlueprintRefs === 0, `Invalid blueprint_id references: ${invalidBlueprintRefs} (expected 0)`);
@@ -161,11 +286,31 @@ function verifyLocal() {
   );
   check(
     invalidL1Watchouts === 0,
-    `Invalid l1_watchouts entries (l1_group/friction_point/quick_fix): ${invalidL1Watchouts} (expected 0)`,
+    `Invalid l1_watchouts entries (Spanish-English >= 1): ${invalidL1Watchouts} (expected 0)`,
   );
   check(
     invalidExitTickets === 0,
     `Invalid language_exit_ticket_json records (prompt/look_fors>=3/quick_rubric): ${invalidExitTickets} (expected 0)`,
+  );
+  check(
+    invalidMentorSentences === 0,
+    `Invalid mentor_sentence_unpacking records (chunks>=3, clean reconstruction): ${invalidMentorSentences} (expected 0)`,
+  );
+  check(
+    invalidLessonArcs === 0,
+    `Invalid lesson_arc records (4 phases): ${invalidLessonArcs} (expected 0)`,
+  );
+  check(
+    invalidClozeItems === 0,
+    `Invalid interactive_cloze_items records (>=3 items with exact vocab answers): ${invalidClozeItems} (expected 0)`,
+  );
+  check(
+    invalidPartnerTalks === 0,
+    `Invalid partner_talk_protocol records (roles + 4 talk_moves): ${invalidPartnerTalks} (expected 0)`,
+  );
+  check(
+    invalidMisconceptions === 0,
+    `Invalid common_language_misconception records: ${invalidMisconceptions} (expected 0)`,
   );
 
   // 4. Activities === 486 (zero units with < 3 activities)
@@ -177,19 +322,19 @@ function verifyLocal() {
   const unitsUnder3Acts = BCPSS_UNITS.filter((u) => (actsByUnit.get(u.id) || 0) < 3).length;
   check(unitsUnder3Acts === 0, `Units with < 3 activities: ${unitsUnder3Acts} (expected 0)`);
 
-  // 5. Family cards === 162 with all 4 languages (en, es, ar, fr)
+  // 5. Family cards === 162 with Spanish & English (en, es)
   check(FAMILY_CARDS.length === 162, `FAMILY_CARDS count is ${FAMILY_CARDS.length} (expected 162)`);
   let incompleteCards = 0;
   for (const f of FAMILY_CARDS) {
     const t = f.translations_json || {};
-    for (const lang of ["en", "es", "ar", "fr"]) {
+    for (const lang of ["en", "es"]) {
       if (!t[lang]?.title || !t[lang]?.summary || !t[lang]?.dinner_question || !Array.isArray(t[lang]?.key_words)) {
         incompleteCards++;
         break;
       }
     }
   }
-  check(incompleteCards === 0, `Incomplete EN/ES/AR/FR family cards: ${incompleteCards} (expected 0)`);
+  check(incompleteCards === 0, `Incomplete EN/ES family cards: ${incompleteCards} (expected 0)`);
 
   // 6. Cross-subject blueprint sharing across EVERY grade K-8
   const unitById = new Map(BCPSS_UNITS.map((u) => [u.id, u]));

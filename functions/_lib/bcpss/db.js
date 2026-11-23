@@ -14,6 +14,9 @@ const UNIT_ACTIVITIES = seed.UNIT_ACTIVITIES || [];
 const UNIT_CONNECTIONS = seed.UNIT_CONNECTIONS || [];
 const FAMILY_CARDS = seed.FAMILY_CARDS || [];
 
+const SEED_UNIT_BY_ID = new Map(BCPSS_UNITS.map((u) => [u.id, u]));
+const SEED_CONN_BY_UNIT_ID = new Map(UNIT_CONNECTIONS.map((c) => [c.unit_id, c]));
+
 export const GRADES = seed.GRADES || [];
 export const SUBJECTS = seed.SUBJECTS || [];
 export const TELEMETRY_EVENT_TYPES = [
@@ -89,7 +92,8 @@ function normalizeBlueprint(row) {
 
 function normalizeUnit(row) {
   if (!row) return null;
-  const seedUnit = !row.essential_question ? BCPSS_UNITS.find((u) => u.id === row.id) : null;
+  const seedUnit =
+    !row.essential_question || !row.publisher_meta ? SEED_UNIT_BY_ID.get(row.id) || null : null;
   return {
     id: row.id,
     grade: String(row.grade),
@@ -102,10 +106,12 @@ function normalizeUnit(row) {
     core_standards: maybeParseJson(row.core_standards),
     external_content_lab_url: row.external_content_lab_url ?? null,
     external_content_lab_label: row.external_content_lab_label ?? null,
+    publisher_meta: maybeParseJson(row.publisher_meta ?? seedUnit?.publisher_meta ?? null),
   };
 }
 
 function normalizeConnection(row) {
+  const seedConn = SEED_CONN_BY_UNIT_ID.get(row.unit_id) || null;
   return {
     id: row.id,
     unit_id: row.unit_id,
@@ -119,6 +125,19 @@ function normalizeConnection(row) {
     l1_watchouts: maybeParseJson(row.l1_watchouts),
     tier2_tier3_vocab: maybeParseJson(row.tier2_tier3_vocab),
     language_exit_ticket_json: maybeParseJson(row.language_exit_ticket_json ?? null),
+    mentor_sentence_unpacking: maybeParseJson(
+      row.mentor_sentence_unpacking ?? seedConn?.mentor_sentence_unpacking ?? null,
+    ),
+    lesson_arc: maybeParseJson(row.lesson_arc ?? seedConn?.lesson_arc ?? null),
+    interactive_cloze_items: maybeParseJson(
+      row.interactive_cloze_items ?? seedConn?.interactive_cloze_items ?? null,
+    ),
+    partner_talk_protocol: maybeParseJson(
+      row.partner_talk_protocol ?? seedConn?.partner_talk_protocol ?? null,
+    ),
+    common_language_misconception: maybeParseJson(
+      row.common_language_misconception ?? seedConn?.common_language_misconception ?? null,
+    ),
   };
 }
 
