@@ -1063,7 +1063,7 @@ function renderStepper(activities, activeIndex) {
         ← Previous Day
       </button>
 
-      <div class="av-stepper-pills" role="list" aria-label="Activities in this unit">
+      <div class="av-stepper-pills" role="group" aria-label="Activities in this unit">
         ${activities
           .map((act, idx) => {
             const label = String(act.day_label || `Day ${act.activity_order || idx + 1}`).trim();

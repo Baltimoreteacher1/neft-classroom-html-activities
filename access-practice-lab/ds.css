@@ -1843,9 +1843,9 @@ h1:focus {
   box-shadow: var(--edge-light-dark);
 }
 .lang-switch-large .lang-btn {
-  min-height: 2.75rem;
-  padding: 0.4rem 1.1rem;
-  font-size: 1rem;
+  min-block-size: var(--target-min);
+  padding: 0.3rem 0.9rem;
+  font-size: 0.9375rem;
 }
 .lab-tools .lang-switch {
   margin-inline: 0.2rem;
@@ -1866,22 +1866,25 @@ html.lab-lang-pending .lang-banner[hidden] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem 1rem;
-  padding: 0.7rem max(1rem, 3vw);
-  background: var(--brand-soft);
-  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  padding: 0.2rem clamp(1rem, 2.4vw, 2rem);
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.9375rem;
 }
 .lang-banner-text {
   margin: 0;
   color: var(--ink);
+  font-size: 0.9375rem;
 }
 .lang-banner-skip {
-  min-height: 2.75rem;
-  padding: 0.3rem 0.8rem;
+  min-block-size: var(--target-min);
+  padding: 0.25rem 0.65rem;
   border: 0;
   background: transparent;
   color: var(--brand-deep);
-  font: 700 0.9375rem var(--font);
+  font: 700 0.875rem var(--font);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -2555,5 +2558,290 @@ select {
 @media (prefers-reduced-motion: reduce) {
   .ak-progress-bar > i {
     transition: none;
+  }
+}
+
+/* ── Editorial Learning Studio shared primitives ───────────────────────────
+   Canonical cross-platform primitives shared by ACCESS Practice Lab,
+   Teacher Hub, and BCPSS Teacher Studio (see DESIGN-SYSTEM.md). */
+
+/* Native modal dialog scroll-containment */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Fluid text controls: min-block-size instead of fixed height */
+:is(
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="url"],
+  select
+).lp-control,
+.lp-control {
+  min-block-size: var(--target-min);
+  max-inline-size: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font: 400 var(--fs-body) / 1.4 var(--font);
+}
+
+/* Accessible single-row scrollable tabs (3px underline indicator, never color alone) */
+.lp-tabs,
+[role="tablist"].lp-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border-subtle);
+  -webkit-overflow-scrolling: touch;
+}
+.lp-tabs::-webkit-scrollbar {
+  display: none;
+}
+.lp-tabs [role="tab"] {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-block-size: var(--target-min);
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: 600 var(--fs-small) / 1.2 var(--font);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--dur-1) ease,
+    background-color var(--dur-1) ease;
+}
+.lp-tabs [role="tab"]:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+.lp-tabs [role="tab"][aria-selected="true"] {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+.lp-tabs [role="tab"][aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.5rem;
+  inset-block-end: 0;
+  block-size: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--brand-primary);
+}
+.lp-tabs [role="tab"]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* Progressive disclosure panel (<details class="lp-disclosure">) */
+.lp-disclosure {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+.lp-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-block-size: var(--target-min);
+  padding: 0.75rem 1.15rem;
+  color: var(--text-primary);
+  font: 700 var(--fs-body) / 1.35 var(--font-display);
+  list-style: none;
+  cursor: pointer;
+}
+.lp-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.lp-disclosure > summary::after {
+  content: "";
+  flex: none;
+  inline-size: 0.55rem;
+  block-size: 0.55rem;
+  border-inline-end: 2px solid var(--text-secondary);
+  border-block-end: 2px solid var(--text-secondary);
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.lp-disclosure[open] > summary {
+  border-bottom: 1px solid var(--border-subtle);
+}
+.lp-disclosure[open] > summary::after {
+  transform: rotate(225deg) translateY(-1px);
+}
+.lp-disclosure > summary:hover {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+}
+.lp-disclosure[open] > summary:hover {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.lp-disclosure-body {
+  padding: var(--s-4) 1.15rem;
+}
+
+/* Empty state */
+.lp-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  padding: var(--s-6) var(--s-5);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  text-align: center;
+  color: var(--text-secondary);
+}
+.lp-empty-state h2,
+.lp-empty-state h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+.lp-empty-state p {
+  margin: 0;
+  max-inline-size: 46ch;
+}
+
+/* Loading skeleton */
+.lp-skeleton {
+  display: block;
+  min-block-size: 1rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--bg-interactive-hover) 50%,
+    var(--bg-subtle) 75%
+  );
+  background-size: 200% 100%;
+  animation: lp-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes lp-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Feedback panel */
+.lp-feedback-panel {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border-strong);
+  border-inline-start: var(--zone-bar) solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+.lp-feedback-panel.is-right {
+  border-color: var(--status-success-border);
+  border-inline-start-color: var(--status-success-text);
+  background: var(--status-success-bg);
+}
+.lp-feedback-panel.is-partly {
+  border-color: var(--status-warning-border);
+  border-inline-start-color: var(--status-warning-text);
+  background: var(--status-warning-bg);
+}
+.lp-feedback-panel.is-notyet {
+  border-color: var(--status-error-border);
+  border-inline-start-color: var(--status-error-text);
+  background: var(--status-error-bg);
+}
+.lp-feedback-panel.is-shown {
+  border-color: var(--border-strong);
+  border-inline-start-color: var(--brand-primary);
+  background: var(--brand-soft);
+}
+
+/* Step progress bar */
+.lp-step-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lp-step-bar > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-tertiary);
+  font: 600 var(--fs-small) / 1.25 var(--font);
+  font-variant-numeric: tabular-nums;
+}
+.lp-step-bar > li .lp-step-num {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.lp-step-bar > li.is-current {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+.lp-step-bar > li.is-current .lp-step-num {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  color: var(--on-brand);
+}
+.lp-step-bar > li.is-done {
+  color: var(--status-success-text);
+}
+.lp-step-bar > li.is-done .lp-step-num {
+  border-color: var(--status-success-text);
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+}
+
+@media (forced-colors: active) {
+  .lp-tabs [role="tab"][aria-selected="true"]::after {
+    background: Highlight;
+  }
+  .lp-disclosure,
+  .lp-empty-state,
+  .lp-feedback-panel {
+    border: 2px solid CanvasText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-tabs [role="tab"],
+  .lp-disclosure > summary::after {
+    transition: none;
+  }
+  .lp-skeleton {
+    animation: none;
+    background: var(--bg-subtle);
   }
 }

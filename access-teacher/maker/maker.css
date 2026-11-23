@@ -2,11 +2,18 @@
    Part 1: the calm workspace (same warm-paper, hairline, one-navy-accent system as the Teacher Hub).
    Part 2: the paper pages. Preview and print use the same rules, so the page you see is the page that prints. */
 
+.mk-body,
+.mk-body *,
+.mk-body *::before,
+.mk-body *::after {
+  box-sizing: border-box;
+}
 .mk-body {
   --focus: 2px solid var(--brand-primary);
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
+  overflow-x: clip;
 }
 
 .mk-body [hidden] { display: none !important; }
@@ -39,6 +46,9 @@
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1.1rem;
+}
+.mk-top > div {
+  min-width: 0;
 }
 .mk-back {
   min-height: 44px;
@@ -113,7 +123,8 @@
 
 .mk-input {
   width: 100%;
-  min-height: 44px;
+  max-width: 100%;
+  min-block-size: 44px;
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--line-control);
   border-radius: var(--radius-md);
@@ -122,13 +133,14 @@
   font: 400 1rem var(--font);
 }
 textarea.mk-input {
-  min-height: 0;
+  min-block-size: 0;
   line-height: 1.45;
   resize: vertical;
   font-family: var(--font);
 }
 .mk-field {
   display: grid;
+  min-width: 0;
   gap: 0.3rem;
   margin-top: 0.85rem;
   font-size: 0.9rem;
@@ -230,17 +242,18 @@ textarea.mk-input {
 
 .mk-tiles {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
   margin-top: 0.8rem;
 }
 .mk-tile {
   position: relative;
   display: grid;
-  grid-template-columns: 2rem 1fr;
+  grid-template-columns: 2rem minmax(0, 1fr);
   grid-template-rows: auto auto;
   column-gap: 0.55rem;
   align-items: center;
+  min-width: 0;
   padding: 0.65rem 0.7rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
@@ -506,12 +519,43 @@ textarea.mk-input {
     flex: 1;
   }
 }
+@media (max-width: 480px) {
+  .mk-seg {
+    flex-wrap: wrap;
+  }
+  .mk-seg label {
+    flex: 1 1 6.5rem;
+    min-width: 0;
+  }
+  .mk-seg label + label {
+    border-left: 0;
+    box-shadow: inset 1px 0 0 var(--line-strong);
+  }
+}
 @media (max-width: 420px) {
+  .mk-main {
+    width: min(1320px, 100% - 1rem);
+  }
+  .mk-panel {
+    padding: 0.25rem 0.75rem 1.25rem;
+  }
   .mk-tiles {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .mk-row2 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mk-words li {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .mk-bar {
+    padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
+  }
+  .mk-bar-actions .mk-btn {
+    min-width: 0;
+    padding: 0 0.65rem;
+    font-size: 0.875rem;
   }
 }
 

@@ -68,7 +68,8 @@ function renderDiagnosticsDock() {
   });
 }
 
-const STUDENT_VIEWS = new Set(["students", "early", "session-done"]);
+// Home already presents the four Audience Doors right below the header; student views stay one calm column.
+const CHROME_QUIET_VIEWS = new Set(["home", "students", "early", "session-done"]);
 
 export function mountPlatformControls(ctx) {
   if (typeof document === "undefined") return;
@@ -81,9 +82,7 @@ export function mountPlatformControls(ctx) {
   let bar = document.getElementById("tlpControlBar");
   const header = document.querySelector(".lab-top");
   if (!header) return;
-  // Students never see the workspace-role switcher (Teacher / Student / Family View), the home-language picker for
-  // adults or the Plans link: their pages stay one calm column.
-  if (STUDENT_VIEWS.has(ctx?.route?.view)) {
+  if (CHROME_QUIET_VIEWS.has(ctx?.route?.view)) {
     bar?.remove();
     document.getElementById("tlpStudioSubnav")?.remove();
     return;

@@ -24,12 +24,16 @@ add a variant class instead. If you need a new shared token or component, add it
 
 ## Identity
 
-Editorial Academic: warm paper, deep slate ink, restrained accents, flat crisp cards. Type is self-hosted
-(`/assets/fonts/`, bundle `inter-jetbrains-mono-plus-jakarta-sans-source-serif-4-lp`): **Plus Jakarta Sans** 600/700 for
-headings and wordmarks, **Inter** 400-600 for UI and body (`font-feature-settings: "cv02","cv03","cv04","cv11"`),
-**Source Serif 4** only for reading passages and literary prompts (`.passage`, `blockquote`, line-height 1.75),
-**JetBrains Mono** for WIDA codes, ELP levels and score readouts. Scores, levels and timers use tabular numerals.
-Body is 16px / 1.6; instructional text and passages never exceed 68ch.
+Editorial Academic / Editorial Learning Studio: warm paper (`#faf9f6`), deep slate ink (`#182230`), restrained accents (Oxford navy `#1e3a5f`, deep teal `#0f766e`, ochre gold `#b45309`), and flat crisp cards.
+
+**Single canonical typography system (platform-wide, including Teacher Hub and BCPSS Teacher Studio):**
+Type is self-hosted (`/assets/fonts/`, bundle `inter-jetbrains-mono-plus-jakarta-sans-source-serif-4-lp`):
+- **Plus Jakarta Sans** (600/700) — headings (`h1`–`h4`, `text-wrap: balance`) and wordmarks (`--font-display`).
+- **Inter** (400–600) — UI chrome, controls, and body copy (`font-feature-settings: "cv02","cv03","cv04","cv11"`, `text-wrap: pretty` on `p`, `--font`).
+- **Source Serif 4** (400/600, italic) — reading passages, literary prompts, and blockquotes only (`.passage`, `blockquote`, line-height 1.75, `--font-serif`).
+- **JetBrains Mono** (400/500) — WIDA codes, ELP levels, standards codes, and score readouts (`--font-mono`).
+
+Scores, levels, counts, and timers use `font-variant-numeric: tabular-nums`. Body is 16px / 1.6; instructional text and passages never exceed `68ch`.
 
 The four language domains each own a colour and are always paired with an icon and a word (listening teal-ocean,
 reading indigo, speaking garnet, writing copper). Put the domain class (`d-listening` ...) on a container and use
@@ -57,12 +61,17 @@ Semantic names first, legacy aliases kept so screen sheets inherit the theme:
 
 ## Components (reuse; do not restyle per page)
 
-- Buttons: `.btn`, `.btn-primary` (navy fill, white text), `.btn-secondary` (white, 1px border), `.ghost` (quiet), `.small`, `.btn-big`. 44 px minimum height, 6px radius.
-- Panel/card: `.panel`, `.card`. Disclosure: plain `<details><summary>` (chevron is automatic).
+- Buttons: `.btn`, `.btn-primary` (navy fill, white text), `.btn-secondary` (white, 1px border), `.ghost` (quiet), `.small`, `.btn-big`. 44 px minimum height (`min-block-size: var(--target-min)`), 6px radius.
+- Text controls: `.lp-control` (uses `min-block-size: var(--target-min)` rather than fixed `height`, with `--border-control` 3:1+ edge contrast).
+- Panel/card: `.panel`, `.card`.
+- Disclosures: plain `<details><summary>` or `.lp-disclosure` (progressive disclosure panel with 44px summary row, rotating chevron, and `.lp-disclosure-body`).
+- Tabs: `.lp-tabs` (`role="tablist"`): single-row horizontal scroll on narrow screens, 44px targets, and a 3px `::after` bottom border on `[aria-selected="true"]` (never color alone).
+- Step bar: `.lp-step-bar` (`ol.lp-step-bar > li` with `.lp-step-num` and `.is-current` / `.is-done` states).
+- Feedback: `.feedback.is-right | .is-hint | .is-shown` or `.lp-feedback-panel` (`.is-right | .is-partly | .is-notyet | .is-shown`).
+- Empty state & loading: `.empty-state` / `.lp-empty-state` (with `pictures/ds/empty.svg` or `complete.svg`) and `.lp-skeleton` (shimmer disabled under `prefers-reduced-motion: reduce`).
+- Native modals: `dialog:modal` and `dialog::backdrop` enforce `overscroll-behavior: contain` (and `overflow: hidden` on backdrop) so background pages never scroll-bleed.
 - Chips: `.chip`, `.cat-chip` (`aria-pressed`). Segmented grade switch: `.band-switch`. Progress: `.bar > i` (`width:%`), `ringHTML()`.
 - Callout on a domain: background `--room-soft`, border `color-mix(in srgb, var(--room) 28%, transparent)`.
-- Feedback: `.feedback.is-right | .is-hint | .is-shown` with an icon in `.fb-title`.
-- Empty state: `.empty-state` with an illustration from `pictures/ds/` (`empty.svg`, `complete.svg`).
 - Headings: one `h1` per screen. Eyebrow text is sentence case (`.eyebrow`), never all-caps.
 
 ## Activity kit (shared activity chrome)

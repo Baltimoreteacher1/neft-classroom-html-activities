@@ -441,24 +441,40 @@ function liveWorkbenchHTML(I, band, duoSets = [], extSets = []) {
 
 /** The skill builders: short guided sets that teach one test move each (src/prep/). */
 function skillBuildersHTML(I, band, duoSets = [], extSets = []) {
+  const featured = PREP_SKILL_LIST.filter((s) => s.slug === "daily-drill" || s.slug === "extempore-speak");
+  const secondary = PREP_SKILL_LIST.filter((s) => s.slug !== "daily-drill" && s.slug !== "extempore-speak");
+  const cardHTML = (s, isFeatured = false) => html`<li class="prep-builder-card ${isFeatured ? "is-featured" : ""}">
+    <a href="${BASE}/access-prep/${s.slug}?grades=${band}">
+      <span class="prep-builder-ico">${icon(s.icon)}</span>
+      <span class="prep-builder-domain">${I.T(s.domainLabel[0], s.domainLabel[1])}</span>
+      <span class="prep-builder-title">${I.T(s.title, s.titleEs)}</span>
+      <span class="prep-builder-blurb">${I.T(s.blurb[0], s.blurb[1])}</span>
+      <span class="prep-builder-go">${I.T("Start", "Empezar")} ${icon("arrow-right")}</span>
+    </a>
+  </li>`;
+
   return html`${audienceStripHTML(I, band)}
   ${liveWorkbenchHTML(I, band, duoSets, extSets)}
   <section class="prep-builders" aria-labelledby="prepBuildersH">
     <h2 id="prepBuildersH">${I.T("Skill builders & interactive labs", "Constructores de destrezas y laboratorios interactivos")}</h2>
     <p class="prep-builders-lede">${I.T("Short, guided practice for the moves ACCESS tasks reward — including our Micro-Drills and Speaking Lab. Untimed, with help at every step.", "Práctica corta y guiada para las destrezas que premian las tareas de ACCESS, incluyendo nuestros Microejercicios y el Laboratorio oral. Sin tiempo y con ayuda en cada paso.")}</p>
     <ul class="prep-builder-cards">
-      ${PREP_SKILL_LIST.map(
-        (s) => html`<li class="prep-builder-card ${s.slug === "daily-drill" || s.slug === "extempore-speak" ? "is-featured" : ""}">
-          <a href="${BASE}/access-prep/${s.slug}?grades=${band}">
-            <span class="prep-builder-ico">${icon(s.icon)}</span>
-            <span class="prep-builder-domain">${I.T(s.domainLabel[0], s.domainLabel[1])}</span>
-            <span class="prep-builder-title">${I.T(s.title, s.titleEs)}</span>
-            <span class="prep-builder-blurb">${I.T(s.blurb[0], s.blurb[1])}</span>
-            <span class="prep-builder-go">${I.T("Start", "Empezar")} ${icon("arrow-right")}</span>
-          </a>
-        </li>`,
-      )}
+      ${featured.map((s) => cardHTML(s, true))}
     </ul>
+    ${
+      secondary.length
+        ? html`<details class="lp-disclosure prep-builders-more" style="margin-top:1rem;">
+            <summary>
+              ${I.T(`More skill builders (${secondary.length})`, `Más constructores de destrezas (${secondary.length})`)}
+            </summary>
+            <div class="lp-disclosure-body">
+              <ul class="prep-builder-cards">
+                ${secondary.map((s) => cardHTML(s, false))}
+              </ul>
+            </div>
+          </details>`
+        : ""
+    }
   </section>`;
 }
 
@@ -641,14 +657,14 @@ export async function render(ctx) {
         </section>
 
         <!-- Controls: Domain Filters & Quick Search -->
-        <section class="prep-filter-bar" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; padding:1rem; background:#ffffff; border:1px solid #e2ddd3; border-radius:16px;">
-          <!-- Domain Buttons -->
-          <div class="prep-domain-filters" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+        <section class="prep-filter-bar" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; padding:1rem; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+          <!-- Domain Tabs -->
+          <div class="prep-domain-filters lp-tabs" role="tablist" aria-label="${I.S("Filter by language domain", "Filtrar por dominio lingüístico")}" style="border-bottom:0;">
             <button
               type="button"
-              class="btn btn-sm ${currentDomainFilter === "all" ? "btn-primary" : "btn-ghost"}"
+              role="tab"
+              aria-selected="${String(currentDomainFilter === "all")}"
               data-prep-domain="all"
-              style="border-radius:999px; font-weight:700;"
             >
               ${I.T("All Domains", "Todos")} (${totalActivitiesInBand})
             </button>
@@ -656,13 +672,13 @@ export async function render(ctx) {
               (d) => html`
                 <button
                   type="button"
-                  class="btn btn-sm ${currentDomainFilter === d ? "btn-primary" : "btn-ghost"}"
+                  role="tab"
+                  aria-selected="${String(currentDomainFilter === d)}"
                   data-prep-domain="${d}"
-                  style="border-radius:999px; font-weight:700;"
                 >
                   ${icon(DOMAIN_ICONS[d] || "sparkle")}
                   <span>${I.T(DOMAIN_META[d]?.name || d, DOMAIN_META[d]?.es || d)}</span>
-                  <span style="opacity:0.75; font-size:0.75rem; margin-left:0.25rem;">(${domainCount(d)})</span>
+                  <span style="color:var(--text-tertiary); font-size:0.8125rem;">(${domainCount(d)})</span>
                 </button>
               `,
             )}
@@ -675,7 +691,7 @@ export async function render(ctx) {
                 type="button"
                 class="btn btn-sm ${currentTierFilter === "all" ? "btn-outline is-active" : "btn-ghost"}"
                 data-prep-tier="all"
-                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+                style="border-radius:var(--radius-sm); font-size:0.8rem; font-weight:700;"
               >
                 ${I.T("All Tiers", "Todos los niveles")}
               </button>
@@ -683,7 +699,7 @@ export async function render(ctx) {
                 type="button"
                 class="btn btn-sm ${currentTierFilter === "A" ? "btn-outline is-active" : "btn-ghost"}"
                 data-prep-tier="A"
-                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+                style="border-radius:var(--radius-sm); font-size:0.8rem; font-weight:700;"
               >
                 Tier A
               </button>
@@ -691,32 +707,34 @@ export async function render(ctx) {
                 type="button"
                 class="btn btn-sm ${currentTierFilter === "BC" ? "btn-outline is-active" : "btn-ghost"}"
                 data-prep-tier="BC"
-                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+                style="border-radius:var(--radius-sm); font-size:0.8rem; font-weight:700;"
               >
                 Tier B/C
               </button>
             </div>
 
-            <div style="min-width:220px; max-width:320px; flex-grow:1;">
+            <div style="min-width:min(100%, 220px); max-width:320px; flex-grow:1;">
               <input
                 type="search"
                 id="prepSearchInput"
+                class="lp-control"
                 placeholder="${I.T("Search skills or titles…", "Buscar destrezas o títulos…")}"
                 value="${searchQuery}"
-                style="width:100%; padding:0.5rem 0.85rem; border:1px solid #cbd5e1; border-radius:10px; font-size:0.9rem;"
+                style="width:100%;"
               />
             </div>
           </div>
         </section>
 
-        <!-- Domains Display -->
-        <div class="prep-domains-container" style="display:flex; flex-direction:column; gap:2.5rem;">
+        <!-- Domains Display (Progressive Disclosure) -->
+        <div class="prep-domains-container" style="display:flex; flex-direction:column; gap:1rem;">
           ${availableDomains
             .filter((d) => currentDomainFilter === "all" || currentDomainFilter === d)
             .map((d) => {
               const listA = filterList(activitiesByDomain[d]?.A || []);
               const listBC = filterList(activitiesByDomain[d]?.BC || []);
               const total = listA.length + listBC.length;
+              const isOpen = currentDomainFilter !== "all" || Boolean(searchQuery.trim());
 
               const domainName = DOMAIN_META[d]?.name || d;
               const domainNameEs = DOMAIN_META[d]?.es || d;
@@ -724,54 +742,49 @@ export async function render(ctx) {
               const domainDescEs = DOMAIN_DESCRIPTIONS[d]?.[1] || "";
 
               return html`
-                <section class="prep-domain-block" id="prep-domain-${d}" data-fold="${currentDomainFilter !== "all" || searchQuery.trim() ? "open" : ""}" data-domain="${d}" style="background:#ffffff; border:1px solid #e2ddd3; border-radius:20px; padding:1.75rem; box-shadow:0 2px 12px rgba(0,0,0,0.03);">
-                  <!-- Domain Header -->
-                  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #f1ece1;">
-                    <div style="display:flex; align-items:center; gap:0.85rem;">
-                      <div style="width:48px; height:48px; border-radius:14px; background:#142d47; color:#f8d58c; display:flex; align-items:center; justify-content:center; font-size:1.35rem;">
+                <details class="lp-disclosure prep-domain-block" id="prep-domain-${d}" data-domain="${d}" ${isOpen ? raw("open") : ""}>
+                  <summary>
+                    <div style="display:flex; align-items:center; gap:0.85rem; min-width:0;">
+                      <span style="width:40px; height:40px; border-radius:var(--radius-md); background:var(--brand-primary); color:#f8d58c; display:inline-flex; align-items:center; justify-content:center; flex:none;">
                         ${icon(DOMAIN_ICONS[d] || "sparkle")}
-                      </div>
-                      <div>
-                        <div style="display:flex; align-items:baseline; gap:0.5rem;">
-                          <h3 style="font-size:1.6rem; font-weight:800; color:#142d47; margin:0;">
-                            ${I.T(domainName, domainNameEs)}
-                          </h3>
-                          <span style="font-size:0.9rem; font-weight:700; color:#64748b;">
-                            (${total} ${I.T("activities", "actividades")})
-                          </span>
-                        </div>
-                        <p style="margin:0.25rem 0 0; font-size:0.92rem; color:#544d43;">
-                          ${I.T(domainDescEn, domainDescEs)}
-                        </p>
-                      </div>
+                      </span>
+                      <span style="min-width:0;">
+                        <span style="display:flex; align-items:baseline; gap:0.5rem; flex-wrap:wrap;">
+                          <strong style="font-size:1.25rem; color:var(--text-primary);">${I.T(domainName, domainNameEs)}</strong>
+                          <span style="font-size:0.875rem; font-weight:600; color:var(--text-tertiary);">(${total} ${I.T("activities", "actividades")})</span>
+                        </span>
+                        <span class="fine" style="display:block; font-weight:400; margin-top:0.15rem;">${I.T(domainDescEn, domainDescEs)}</span>
+                      </span>
                     </div>
-
+                  </summary>
+                  <div class="lp-disclosure-body">
                     ${d !== "Model-Test" ? html`
-                      <a class="btn btn-sm btn-outline" href="${BASE}/${d}?grades=${activeMeta.defaultPicker}">
-                        <span>${I.T(`Open ${domainName} Room`, `Abrir sala de ${domainNameEs}`)}</span>
-                        ${icon("arrow-right")}
-                      </a>
+                      <p style="margin:0 0 1.25rem;">
+                        <a class="btn btn-sm btn-outline" href="${BASE}/${d}?grades=${activeMeta.defaultPicker}">
+                          <span>${I.T(`Open ${domainName} Room`, `Abrir sala de ${domainNameEs}`)}</span>
+                          ${icon("arrow-right")}
+                        </a>
+                      </p>
                     ` : ""}
-                  </div>
 
                   ${total === 0 ? html`
-                    <div style="text-align:center; padding:2rem 1rem; color:#64748b;">
+                    <div class="lp-empty-state">
                       <p>${I.T("No activities match your current search or filter.", "No hay actividades que coincidan con la búsqueda o filtro.")}</p>
                     </div>
                   ` : html`
-                    <!-- Tier A Activities (All of them) -->
+                    <!-- Tier A Activities -->
                     ${listA.length > 0 ? html`
-                      <div class="prep-tier-group" style="margin-bottom:2rem;">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #e2e8f0;">
-                          <div style="display:flex; align-items:center; gap:0.6rem;">
-                            <span class="prep-tier-badge tier-a" style="background:#dbeafe; color:#1e40af; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.82rem;">
+                      <div class="prep-tier-group" style="margin-bottom:1.75rem;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid var(--border-subtle);">
+                          <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                            <span class="prep-tier-badge tier-a" style="background:var(--brand-soft); color:var(--brand-primary); font-weight:700; padding:0.25rem 0.65rem; border-radius:var(--radius-sm); font-size:0.82rem;">
                               Tier A · Entering / Emerging
                             </span>
-                            <span style="font-size:0.85rem; color:#64748b;">
+                            <span style="font-size:0.85rem; color:var(--text-tertiary);">
                               ${I.T("Visual choices, audio models, and sentence frames", "Opciones visuales, modelos de audio y estructuras de oración")}
                             </span>
                           </div>
-                          <span style="font-size:0.82rem; font-weight:700; color:#1e40af;">
+                          <span style="font-size:0.82rem; font-weight:700; color:var(--brand-primary);">
                             ${listA.length} ${I.T("tasks", "tareas")}
                           </span>
                         </div>
@@ -780,19 +793,19 @@ export async function render(ctx) {
                       </div>
                     ` : ""}
 
-                    <!-- Tier B/C Activities (All of them) -->
+                    <!-- Tier B/C Activities -->
                     ${listBC.length > 0 ? html`
                       <div class="prep-tier-group">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #e2e8f0;">
-                          <div style="display:flex; align-items:center; gap:0.6rem;">
-                            <span class="prep-tier-badge tier-bc" style="background:#fef3c7; color:#92400e; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.82rem;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid var(--border-subtle);">
+                          <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                            <span class="prep-tier-badge tier-bc" style="background:var(--status-warning-bg); color:var(--status-warning-text); font-weight:700; padding:0.25rem 0.65rem; border-radius:var(--radius-sm); font-size:0.82rem;">
                               Tier B/C · Developing / Expanding / Bridging
                             </span>
-                            <span style="font-size:0.85rem; color:#64748b;">
+                            <span style="font-size:0.85rem; color:var(--text-tertiary);">
                               ${I.T("Complex texts, multi-step explanations, and paragraph synthesis", "Textos complejos, explicaciones de varios pasos y síntesis de párrafos")}
                             </span>
                           </div>
-                          <span style="font-size:0.82rem; font-weight:700; color:#92400e;">
+                          <span style="font-size:0.82rem; font-weight:700; color:var(--status-warning-text);">
                             ${listBC.length} ${I.T("tasks", "tareas")}
                           </span>
                         </div>
@@ -801,37 +814,33 @@ export async function render(ctx) {
                       </div>
                     ` : ""}
                   `}
-                </section>
+                  </div>
+                </details>
               `;
             })}
         </div>
 
         <!-- Classroom Practice Studios Spotlight -->
-        <section class="prep-studios-section" id="prep-studios" data-fold style="margin-top:3rem; background:#f4efe6; border-radius:20px; padding:2rem; border:1px solid #e5dfd3;">
-          <div style="margin-bottom:1.25rem;">
-            <h3 style="font-size:1.4rem; font-weight:800; color:#142d47; margin:0 0 0.5rem;">
-              ${I.T("Integrated WIDA Practice Studios", "Estudios integrados de práctica WIDA")}
-            </h3>
-            <p style="margin:0; font-size:0.95rem; color:#544d43;">
-              ${I.T(
-                "Specialized, projector-ready studios designed for whole-group instruction, targeted small-group intervention, and independent fluency.",
-                "Estudios especializados listos para proyector, diseñados para instrucción grupal, intervención focalizada y fluidez independiente.",
-              )}
-            </p>
-          </div>
-
-          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1rem;">
+        <details class="lp-disclosure prep-studios-section" id="prep-studios" style="margin-top:2rem;">
+          <summary>
+            <span>
+              <strong style="display:block; font-size:1.2rem;">${I.T("Integrated WIDA Practice Studios", "Estudios integrados de práctica WIDA")} (${STUDIOS.length})</strong>
+              <span class="fine" style="font-weight:400;">${I.T("Projector-ready studios for whole-group instruction, small-group intervention, and fluency.", "Estudios listos para proyector para instrucción grupal, intervención focalizada y fluidez.")}</span>
+            </span>
+          </summary>
+          <div class="lp-disclosure-body">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap:1rem;">
             ${STUDIOS.map(
               (s) => html`
-                <div style="background:#ffffff; border-radius:14px; padding:1.25rem; border:1px solid #e2ddd3; display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
+                <div style="background:var(--bg-surface); border-radius:var(--radius-md); padding:1.25rem; border:1px solid var(--border-subtle); display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
                   <div>
-                    <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#0b7a68; letter-spacing:0.06em;">
+                    <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--brand-accent); letter-spacing:0.06em;">
                       ${icon(DOMAIN_ICONS[s.skill] || "sparkle")} ${s.skill}
                     </span>
-                    <h4 style="font-size:1.1rem; font-weight:800; color:#142d47; margin:0.35rem 0 0.4rem;">
+                    <h4 style="font-size:1.1rem; font-weight:800; color:var(--brand-primary); margin:0.35rem 0 0.4rem;">
                       ${I.T(s.title, s.titleEs)}
                     </h4>
-                    <p style="font-size:0.85rem; color:#544d43; margin:0; line-height:1.4;">
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin:0; line-height:1.4;">
                       ${I.T(s.blurb, s.blurbEs)}
                     </p>
                   </div>
@@ -842,7 +851,8 @@ export async function render(ctx) {
               `,
             )}
           </div>
-        </section>
+          </div>
+        </details>
       </div>
     `,
   };

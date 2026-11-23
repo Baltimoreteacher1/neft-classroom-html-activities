@@ -59,7 +59,7 @@ export const AUDIENCE_DOORS = Object.freeze([
       "Puentes de lenguaje K–8 para BCPSS.",
     ],
     href: () => "/bcpss-teachers",
-    art: { src: `${ART}/68-classroom-lesson.svg`, w: 640, h: 400 },
+    art: { src: `${ART}/ds/bcpss-bridge.svg`, w: 640, h: 400 },
   },
 ]);
 

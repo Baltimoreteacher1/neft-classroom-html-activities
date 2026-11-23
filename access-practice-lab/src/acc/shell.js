@@ -47,18 +47,24 @@ export function footerHTML(lang = "en") {
 export function mountAccShell(doc = document) {
   const body = doc.body;
   const section = body?.dataset.accSection;
-  if (!section || !routeById(section) || doc.getElementById("accEco")) return false;
+  if (!section || !routeById(section) || doc.getElementById("accEco") || doc.getElementById("accFooter")) return false;
   const lang = (doc.documentElement.lang || "en").slice(0, 2);
-  const eco = doc.createElement("div");
-  eco.id = "accEco";
-  eco.className = "acc-eco no-print";
-  eco.innerHTML = ecoBarHTML(section, lang);
-  const crumbs = doc.createElement("div");
-  crumbs.className = "acc-crumbs-bar no-print";
-  crumbs.innerHTML = crumbsHTML(section, lang);
-  const skip = body.querySelector("a[class*='skip']");
-  if (skip) skip.after(eco, crumbs);
-  else body.prepend(eco, crumbs);
+  // Pages that ship the unified Editorial Academic <header class="lab-top"> (e.g. Teacher Hub)
+  // already carry full site navigation; avoid stacking a redundant dark eco bar and crumb bar above it.
+  const hasUnifiedHeader = Boolean(body.querySelector("header.lab-top"));
+  let eco = null;
+  if (!hasUnifiedHeader) {
+    eco = doc.createElement("div");
+    eco.id = "accEco";
+    eco.className = "acc-eco no-print";
+    eco.innerHTML = ecoBarHTML(section, lang);
+    const crumbs = doc.createElement("div");
+    crumbs.className = "acc-crumbs-bar no-print";
+    crumbs.innerHTML = crumbsHTML(section, lang);
+    const skip = body.querySelector("a[class*='skip']");
+    if (skip) skip.after(eco, crumbs);
+    else body.prepend(eco, crumbs);
+  }
   // A div with a region role, not <header>/<footer>: the standalone pages style those tags globally and
   // already own the banner and contentinfo landmarks.
   const foot = doc.createElement("div");
@@ -69,7 +75,7 @@ export function mountAccShell(doc = document) {
   foot.innerHTML = footerHTML(lang);
   body.append(foot);
   // Center the current link inside the nav row only; scrollIntoView would also move the window.
-  const row = eco.querySelector("nav");
+  const row = eco?.querySelector("nav");
   const link = row?.querySelector("[aria-current]");
   if (link && row.scrollWidth > row.clientWidth) {
     const r = row.getBoundingClientRect();

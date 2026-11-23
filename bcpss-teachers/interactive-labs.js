@@ -13,9 +13,11 @@ const WIDA_TIERS = [
 ];
 
 const STUDIO_LABS = [
-  { key: "architect", label: "1. Sentence Architect", short: "Build academic sentences" },
-  { key: "vocab", label: "2. Vocabulary & Cloze", short: "Flashcards & context cloze" },
-  { key: "discourse", label: "3. Oral Discourse", short: "Partner talk & rehearsal" },
+  { key: "architect", label: "1. Academic Language Lab", short: "Build & test sentences" },
+  { key: "explorer", label: "2. Visual Concept Explorer", short: "Interactive subject model" },
+  { key: "discourse", label: "3. Discourse Studio", short: "Partner exchange & talk" },
+  { key: "detective", label: "4. Misconception Detective", short: "Spot & revise error" },
+  { key: "quest", label: "5. Learning Quest", short: "Evidence-gated challenge" },
 ];
 
 const COMMON_ACADEMIC_CONNECTORS = [
@@ -490,6 +492,16 @@ export function renderInteractiveStudio(
         mediaRecorder: null,
         mediaStream: null,
         audioUrl: "",
+        explorerScale: 2,
+        explorerLens: 0,
+        detectiveChoice: "",
+        detectiveRevision: "",
+        detectiveFeedback: "",
+        questStep: 1,
+        questVocabPick: "",
+        questReasonPick: "",
+        questFinalText: "",
+        questFeedback: "",
       };
 
   containerStateMap.set(container, studioState);
@@ -552,7 +564,7 @@ export function renderInteractiveStudio(
           ).join("")}
         </div>
 
-        <!-- Lab 1: Sentence Architect Studio -->
+        <!-- Lab 1: Academic Language Laboratory -->
         <section
           id="studio-panel-architect"
           class="studio-panel"
@@ -563,18 +575,18 @@ export function renderInteractiveStudio(
           ${renderArchitectLab()}
         </section>
 
-        <!-- Lab 2: Vocabulary & Cloze Mastery Lab -->
+        <!-- Lab 2: Visual Concept Explorer -->
         <section
-          id="studio-panel-vocab"
+          id="studio-panel-explorer"
           class="studio-panel"
           role="tabpanel"
-          aria-labelledby="studio-tab-vocab"
-          ${activeLab === "vocab" ? "" : "hidden"}
+          aria-labelledby="studio-tab-explorer"
+          ${activeLab === "explorer" ? "" : "hidden"}
         >
-          ${renderVocabLab()}
+          ${renderExplorerLab()}
         </section>
 
-        <!-- Lab 3: Oral Discourse & Partner Talk Studio -->
+        <!-- Lab 3: Discourse Studio -->
         <section
           id="studio-panel-discourse"
           class="studio-panel"
@@ -583,6 +595,28 @@ export function renderInteractiveStudio(
           ${activeLab === "discourse" ? "" : "hidden"}
         >
           ${renderDiscourseLab()}
+        </section>
+
+        <!-- Lab 4: Misconception Detective -->
+        <section
+          id="studio-panel-detective"
+          class="studio-panel"
+          role="tabpanel"
+          aria-labelledby="studio-tab-detective"
+          ${activeLab === "detective" ? "" : "hidden"}
+        >
+          ${renderDetectiveLab()}
+        </section>
+
+        <!-- Lab 5: Interactive Learning Quest -->
+        <section
+          id="studio-panel-quest"
+          class="studio-panel"
+          role="tabpanel"
+          aria-labelledby="studio-tab-quest"
+          ${activeLab === "quest" ? "" : "hidden"}
+        >
+          ${renderQuestLab()}
         </section>
       </div>
     `;
@@ -1040,6 +1074,289 @@ export function renderInteractiveStudio(
     `;
   }
 
+  function renderExplorerLab() {
+    const subj = String(unit.subject || "ELA").toLowerCase();
+    const scale = Number(studioState.explorerScale) || 2;
+    const lens = Number(studioState.explorerLens) || 0;
+    const keyTerms = vocab.slice(0, 3).map((v) => v.word);
+
+    if (subj.includes("math")) {
+      const a = 3 * scale;
+      const b = 2 * scale;
+      return `
+        <div class="studio-explorer-grid">
+          <div class="studio-card">
+            <div class="studio-card-head">
+              <h4>Visual Concept Explorer · Math Interactive Model</h4>
+              <span class="bh-muted">${esc(unit.unit_title)} · Scale quantities and describe the invariant relationship</span>
+            </div>
+            <div class="studio-explorer-controls">
+              <label for="explorerScaleRange"><strong>Scale Factor:</strong> <span class="wida-code">${scale}x</span></label>
+              <input id="explorerScaleRange" type="range" min="1" max="5" step="1" value="${scale}" data-explorer-scale />
+              <span class="bh-standard-chip">Part A = ${a}</span>
+              <span class="bh-standard-chip">Part B = ${b}</span>
+              <span class="bh-standard-chip">Ratio = ${a} : ${b} (equivalent to 3 : 2)</span>
+            </div>
+            <div class="vs-svg-frame" style="margin-top:0.75rem">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 140" width="460" height="140" role="img" style="background:#ffffff">
+                <title>Interactive Math ratio tape diagram scaled by ${scale}</title>
+                <rect x="0" y="0" width="460" height="140" fill="#ffffff"/>
+                <text x="16" y="24" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="12" font-weight="700" fill="#1e3a5f">SCALED RATIO MODEL (${scale}x) · ${esc(unit.unit_title)}</text>
+                <text x="16" y="58" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#475467">Qty A (${a})</text>
+                <rect x="96" y="40" width="90" height="28" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
+                <rect x="192" y="40" width="90" height="28" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
+                <rect x="288" y="40" width="90" height="28" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
+                <text x="141" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">${scale}</text>
+                <text x="237" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">${scale}</text>
+                <text x="333" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">${scale}</text>
+                <text x="16" y="102" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#475467">Qty B (${b})</text>
+                <rect x="96" y="84" width="90" height="28" rx="4" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
+                <rect x="192" y="84" width="90" height="28" rx="4" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
+                <text x="141" y="102" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#0f766e">${scale}</text>
+                <text x="237" y="102" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#0f766e">${scale}</text>
+                <text x="415" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#b45309">${a}:${b}</text>
+              </svg>
+            </div>
+            <p class="bh-muted" style="margin:0.75rem 0 0"><strong>Language Prompt (${esc(tierInfo.label)}):</strong> "When both quantities are multiplied by ${scale}, the ratio ${a} to ${b} stays equivalent to 3 to 2 because each unit part represents ${scale}."</p>
+          </div>
+        </div>
+      `;
+    }
+
+    const lenses = subj.includes("science")
+      ? [
+          { label: "1. Input / Cause", title: "System Input", desc: `Identify the energy, matter, or change entering the ${unit.unit_title} system.` },
+          { label: "2. Mechanism / Process", title: "Causal Interaction", desc: `Use key terms (${keyTerms.join(", ") || "system vocabulary"}) to explain what happens inside the system.` },
+          { label: "3. Observable Effect", title: "Evidence & Outcome", desc: "Describe the measurable result observed in the investigation and link it back to the cause." },
+        ]
+      : subj.includes("social")
+        ? [
+            { label: "1. Historical Context", title: "Before & Conditions", desc: `Examine what conditions shaped ${unit.unit_title} before the turning point.` },
+            { label: "2. Multiple Perspectives", title: "Who Spoke & Why", desc: `Compare how different groups experienced ${unit.unit_title} using primary sources.` },
+            { label: "3. Continuity & Change", title: "Lasting Impact", desc: "Explain what changed and what stayed the same over time with source evidence." },
+          ]
+        : [
+            { label: "1. Text Evidence", title: "Exact Quote or Detail", desc: `Locate specific words from the ${unit.unit_title} text that anchor your thinking.` },
+            { label: "2. Author Craft", title: "Structure & Word Choice", desc: `Notice how key terms (${keyTerms.join(", ") || "unit vocabulary"}) signal tone or structure.` },
+            { label: "3. Academic Claim", title: "Supported Inference", desc: "Connect the quote to a complete claim using a WIDA connector." },
+          ];
+    const activeLens = lenses[lens] || lenses[0];
+
+    return `
+      <div class="studio-explorer-grid">
+        <div class="studio-card">
+          <div class="studio-card-head">
+            <h4>Visual Concept Explorer · ${esc(unit.subject)} Interactive Model</h4>
+            <span class="bh-muted">Toggle each lens to examine how ${esc(unit.unit_title)} builds academic meaning</span>
+          </div>
+          <div class="studio-explorer-controls" role="group" aria-label="Concept model lenses">
+            ${lenses
+              .map(
+                (item, idx) => `
+                  <button type="button" class="vs-pill" data-explorer-lens="${idx}" aria-pressed="${idx === lens}">
+                    ${esc(item.label)}
+                  </button>
+                `,
+              )
+              .join("")}
+          </div>
+          <div class="vs-svg-frame" style="margin-top:0.75rem">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 120" width="460" height="120" role="img" style="background:#ffffff">
+              <title>${esc(unit.subject)} interactive concept model — ${esc(activeLens.title)}</title>
+              <rect x="0" y="0" width="460" height="120" fill="#ffffff"/>
+              ${lenses
+                .map((item, idx) => {
+                  const x = 16 + idx * 148;
+                  const active = idx === lens;
+                  return `
+                    <rect x="${x}" y="28" width="132" height="64" rx="8" fill="${active ? "#1e3a5f" : "#f2efe9"}" stroke="${active ? "#1e3a5f" : "#cbd5e1"}" stroke-width="1.5"/>
+                    <text x="${x + 66}" y="55" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="${active ? "#ffffff" : "#182230"}">${esc(item.title)}</text>
+                    <text x="${x + 66}" y="73" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="${active ? "#e8eef6" : "#475467"}">Stage ${idx + 1}</text>
+                  `;
+                })
+                .join("")}
+            </svg>
+          </div>
+          <div class="cs-item-card" style="margin-top:0.75rem">
+            <strong>${esc(activeLens.label)} — ${esc(activeLens.title)}</strong>
+            <p style="margin:0">${esc(activeLens.desc)}</p>
+            <p class="bh-muted" style="margin:0"><strong>Target Frame:</strong> ${esc(connection?.unit_example_frame || frames[0] || "Connect your claim to evidence.")}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderDetectiveLab() {
+    const rawMisc = safeParseJson(connection?.common_language_misconception, null);
+    const pattern =
+      (rawMisc && typeof rawMisc === "object" ? rawMisc.misconception_pattern : "") ||
+      `Students state an answer for ${unit.unit_title} without connecting key terms or explaining why.`;
+    const redirect =
+      (rawMisc && typeof rawMisc === "object" ? rawMisc.teacher_redirect : "") ||
+      "Prompt students to name the exact relationship using a WIDA connector and unit vocabulary.";
+    const keyWord = vocab[0]?.word || unit.subject;
+
+    const options = [
+      {
+        id: "thinking",
+        label: "It misses the academic relationship or leaves out why the evidence supports the idea.",
+        correct: true,
+      },
+      {
+        id: "spelling",
+        label: "The only issue is minor capitalization or punctuation.",
+        correct: false,
+      },
+      {
+        id: "length",
+        label: "It is completely correct and needs no academic language revision.",
+        correct: false,
+      },
+    ];
+
+    return `
+      <div class="studio-detective-grid">
+        <div class="studio-card">
+          <div class="studio-card-head">
+            <h4>Misconception Detective · Analyze &amp; Revise Student Thinking</h4>
+            <span class="bh-muted">Grounded in this unit's verified common language misconception</span>
+          </div>
+          <div class="studio-sample-error">
+            <strong>Sample Student Response to Inspect:</strong> “It just changes because that is what happened in ${esc(unit.unit_title)}.”
+          </div>
+          <p class="bh-muted" style="margin:0.65rem 0 0"><strong>Verified Misconception Pattern:</strong> ${esc(pattern)}</p>
+
+          <div style="margin-top:0.85rem;display:grid;gap:0.5rem">
+            <strong>Step 1 · Identify the thinking or language error:</strong>
+            ${options
+              .map(
+                (opt) => `
+                  <button type="button" class="vs-match-btn ${studioState.detectiveChoice === opt.id ? "is-selected" : ""}" data-detective-choice="${opt.id}">
+                    ${esc(opt.label)}
+                  </button>
+                `,
+              )
+              .join("")}
+          </div>
+
+          ${
+            studioState.detectiveChoice
+              ? `<div class="vs-feedback ${studioState.detectiveChoice === "thinking" ? "is-good" : "is-warn"}" role="status" style="margin-top:0.65rem">
+                  ${
+                    studioState.detectiveChoice === "thinking"
+                      ? `Spot on! Teacher redirect: ${esc(redirect)}`
+                      : "Look deeper at the reasoning — what academic relationship or evidence is missing?"
+                  }
+                </div>`
+              : ""
+          }
+
+          <div style="margin-top:0.85rem;display:grid;gap:0.5rem">
+            <label for="detectiveRevisionInput"><strong>Step 2 · Rewrite a stronger response using "${esc(keyWord)}" and a connector (because / therefore / shows that):</strong></label>
+            <textarea id="detectiveRevisionInput" class="bh-seq-input" rows="3" placeholder="Write the revised academic response here…">${esc(studioState.detectiveRevision)}</textarea>
+            <div>
+              <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-detective-check>Check Revision</button>
+            </div>
+            ${studioState.detectiveFeedback ? `<div class="vs-feedback ${studioState.detectiveFeedback.startsWith("Great") ? "is-good" : "is-warn"}" role="status">${esc(studioState.detectiveFeedback)}</div>` : ""}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderQuestLab() {
+    const step = studioState.questStep || 1;
+    const targetVocab = vocab[0] || { word: unit.subject, definition: `Key idea in ${unit.unit_title}` };
+    const distractors = vocab.slice(1, 3).map((v) => v.word);
+    const vocabChoices = [targetVocab.word, ...distractors];
+    if (vocabChoices.length < 3) vocabChoices.push("Unrelated detail", "Personal opinion");
+
+    return `
+      <div class="studio-quest-grid">
+        <div class="studio-card">
+          <div class="studio-card-head">
+            <h4>Interactive Learning Quest · Evidence-Gated 3-Step Challenge</h4>
+            <span class="bh-muted">Complete each checkpoint to unlock the final ${esc(bp.wida_klu || "Academic")} transfer task</span>
+          </div>
+
+          <div class="studio-quest-steps">
+            <div class="studio-quest-step-pill ${step === 1 ? "is-active" : step > 1 ? "is-done" : ""}">
+              Step 1 · Vocabulary Gate ${step > 1 ? "✓" : ""}
+            </div>
+            <div class="studio-quest-step-pill ${step === 2 ? "is-active" : step > 2 ? "is-done" : ""}">
+              Step 2 · Concept Reasoning ${step > 2 ? "✓" : ""}
+            </div>
+            <div class="studio-quest-step-pill ${step === 3 ? "is-active" : step > 3 ? "is-done" : ""}">
+              Step 3 · Academic Explanation ${step > 3 ? "✓" : ""}
+            </div>
+          </div>
+
+          ${
+            step === 1
+              ? `
+                <div class="cs-item-card" style="margin-top:0.85rem">
+                  <strong>Checkpoint 1 · Match the Key Term</strong>
+                  <p style="margin:0">Which term matches this meaning: <em>“${esc(targetVocab.definition || unit.essential_question || unit.unit_title)}”</em>?</p>
+                  <div class="vs-mode-tabs">
+                    ${vocabChoices
+                      .map(
+                        (choice) => `
+                          <button type="button" class="vs-pill" data-quest-vocab="${esc(choice)}" aria-pressed="${studioState.questVocabPick === choice}">
+                            ${esc(choice)}
+                          </button>
+                        `,
+                      )
+                      .join("")}
+                  </div>
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            step === 2
+              ? `
+                <div class="cs-item-card" style="margin-top:0.85rem">
+                  <strong>Checkpoint 2 · Choose the Strongest Evidence Move</strong>
+                  <p style="margin:0">To ${esc(bp.wida_klu || "Explain")} in ${esc(unit.unit_title)}, which move makes an explanation strongest?</p>
+                  <div style="display:grid;gap:0.45rem">
+                    <button type="button" class="vs-match-btn" data-quest-reason="strong">
+                      Connect "${esc(targetVocab.word)}" to specific lesson evidence using a connector like "because" or "therefore".
+                    </button>
+                    <button type="button" class="vs-match-btn" data-quest-reason="weak">
+                      Write one word without explaining how the evidence connects to the question.
+                    </button>
+                  </div>
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            step >= 3
+              ? `
+                <div class="cs-item-card" style="margin-top:0.85rem">
+                  <strong>Checkpoint 3 · Final Academic Explanation (${esc(bp.wida_klu || "Explain")})</strong>
+                  <p style="margin:0">${esc(unit.essential_question || `Explain a key concept from ${unit.unit_title}.`)}</p>
+                  <p class="bh-muted" style="margin:0"><strong>Frame (${esc(tierInfo.label)}):</strong> ${esc(frames[0] || connection?.unit_example_frame || "Because ___, we can conclude ___.")}</p>
+                  <label for="questFinalInput" class="visually-hidden">Final Quest explanation</label>
+                  <textarea id="questFinalInput" class="bh-seq-input" rows="3" placeholder="Write your complete explanation using ${esc(targetVocab.word)}…">${esc(studioState.questFinalText)}</textarea>
+                  <div class="cs-action-bar">
+                    <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-quest-submit>Complete Quest</button>
+                    <button type="button" class="bh-btn bh-btn-ghost bh-btn-sm" data-quest-reset>Restart Quest</button>
+                  </div>
+                </div>
+              `
+              : ""
+          }
+
+          ${studioState.questFeedback ? `<div class="vs-feedback ${studioState.questFeedback.includes("Unlocked") || studioState.questFeedback.includes("Quest Complete") ? "is-good" : "is-warn"}" role="status" style="margin-top:0.75rem">${esc(studioState.questFeedback)}</div>` : ""}
+        </div>
+      </div>
+    `;
+  }
+
   function insertIntoComposer(snippet, { isFrame = false } = {}) {
     const composer = container.querySelector("#studioComposer");
     if (!composer) return;
@@ -1169,6 +1486,13 @@ export function renderInteractiveStudio(
           const wc = e.target.value.trim() ? e.target.value.trim().split(/\s+/).length : 0;
           countEl.textContent = `${wc} word${wc === 1 ? "" : "s"}`;
         }
+      } else if (e.target.id === "explorerScaleRange") {
+        active.studioState.explorerScale = Number(e.target.value) || 2;
+        active.render();
+      } else if (e.target.id === "detectiveRevisionInput") {
+        active.studioState.detectiveRevision = e.target.value;
+      } else if (e.target.id === "questFinalInput") {
+        active.studioState.questFinalText = e.target.value;
       }
     });
 
@@ -1340,6 +1664,84 @@ export function renderInteractiveStudio(
         stopRecorderResources(active.studioState);
         active.studioState.recorderStatus = "idle";
         active.studioState.recorderMessage = "";
+        active.render();
+        return;
+      }
+
+      const lensBtn = e.target.closest("[data-explorer-lens]");
+      if (lensBtn) {
+        active.studioState.explorerLens = Number(lensBtn.dataset.explorerLens) || 0;
+        active.render();
+        return;
+      }
+
+      const detBtn = e.target.closest("[data-detective-choice]");
+      if (detBtn) {
+        active.studioState.detectiveChoice = detBtn.dataset.detectiveChoice;
+        active.render();
+        return;
+      }
+
+      if (e.target.closest("[data-detective-check]")) {
+        const rev = (active.studioState.detectiveRevision || "").trim();
+        const hasConn = /\b(because|therefore|shows that|since|however|as a result|so)\b/i.test(rev);
+        if (rev.split(/\s+/).length >= 6 && hasConn) {
+          active.studioState.detectiveFeedback = "Great revision! You replaced vague wording with an academic connector and clear reasoning.";
+        } else {
+          active.studioState.detectiveFeedback = "Try adding a connector (because, therefore, shows that) and at least 6 words to make the reasoning explicit.";
+        }
+        active.onTelemetry?.("lab_launch");
+        active.render();
+        return;
+      }
+
+      const qVocab = e.target.closest("[data-quest-vocab]");
+      if (qVocab) {
+        const pick = qVocab.dataset.questVocab;
+        active.studioState.questVocabPick = pick;
+        const target = active.vocab[0]?.word || unit.subject;
+        if (pick.toLowerCase() === target.toLowerCase()) {
+          active.studioState.questStep = 2;
+          active.studioState.questFeedback = `Unlocked Checkpoint 2! "${target}" is the exact academic term.`;
+        } else {
+          active.studioState.questFeedback = `Not quite — re-read the definition and try another term.`;
+        }
+        active.render();
+        return;
+      }
+
+      const qReason = e.target.closest("[data-quest-reason]");
+      if (qReason) {
+        active.studioState.questReasonPick = qReason.dataset.questReason;
+        if (qReason.dataset.questReason === "strong") {
+          active.studioState.questStep = 3;
+          active.studioState.questFeedback = "Unlocked Checkpoint 3! Now write your complete academic explanation.";
+        } else {
+          active.studioState.questFeedback = "A single word doesn't show your reasoning. Choose the move that connects evidence with a connector.";
+        }
+        active.render();
+        return;
+      }
+
+      if (e.target.closest("[data-quest-submit]")) {
+        const txt = (active.studioState.questFinalText || "").trim();
+        if (txt.split(/\s+/).length >= 6) {
+          active.studioState.questStep = 4;
+          active.studioState.questFeedback = "Quest Complete! You verified vocabulary, selected an evidence move, and authored an academic explanation.";
+          active.onTelemetry?.("lab_launch");
+        } else {
+          active.studioState.questFeedback = "Write at least 6 words connecting the unit concept and evidence to complete the quest.";
+        }
+        active.render();
+        return;
+      }
+
+      if (e.target.closest("[data-quest-reset]")) {
+        active.studioState.questStep = 1;
+        active.studioState.questVocabPick = "";
+        active.studioState.questReasonPick = "";
+        active.studioState.questFinalText = "";
+        active.studioState.questFeedback = "";
         active.render();
       }
     });
