@@ -3,7 +3,7 @@
 // they never claim to know whether the meaning is right. Finished sentences are handed to onWork() so a teacher
 // can read them. Typing is never lost: the draft is kept while you switch screens.
 import { clueStems } from "./context-detective.js";
-import { fbHTML, html, icon, mountGame } from "./kit.js";
+import { esc, fbHTML, html, icon, mountGame, raw } from "./kit.js";
 import { clean, findForm, isContent, maskForm, norm, tokenize, wordsIn } from "./text.js";
 
 export const TITLE = ["Sentence Lab", "Laboratorio de oraciones"];
@@ -112,6 +112,25 @@ export function buildLab(pool, rng, { count } = {}) {
   }));
 }
 
+/** The sentence split around the target word, for the workbench read-back. Pure: { before, form, after } (form is "" when absent). */
+export function readbackParts(text, word) {
+  const t = String(text ?? "");
+  const hit = findForm(t, word);
+  if (!hit) return { before: t, form: "", after: "" };
+  return {
+    before: t.slice(0, hit.index),
+    form: t.slice(hit.index, hit.index + hit.length),
+    after: t.slice(hit.index + hit.length),
+  };
+}
+/** The read-back line as markup: the sentence with the target word marked. Plain words stay plain; the mark is also a bold. */
+export function readbackHTML(text, word) {
+  const p = readbackParts(text, word);
+  if (!p.form) return esc(p.before);
+  return `${esc(p.before)}<mark class="va-hit">${esc(p.form)}</mark>${esc(p.after)}`;
+}
+const canSpeak = () => typeof globalThis.speechSynthesis !== "undefined";
+
 const startOfFrame = (frame) =>
   clean(String(frame).split("___")[0]) + (String(frame).startsWith("___") ? "" : " ");
 
@@ -193,7 +212,13 @@ const spec = {
     const res = item.last;
     const model = item.shownModel ? maskForm(word.ex || "", word) : null;
     const passed = item.phase === "revise";
-    return html`<div class="vag-qcard vag-lab">
+    const used = Boolean(findForm(item.text, word));
+    const rules = res?.checks.filter((c) => c.required) || [];
+    const met = rules.filter((c) => c.ok).length;
+    const state = !res ? "idle" : res.passed ? "pass" : "work";
+    const snap = env.snapTile || "";
+    env.snapTile = "";
+    return html`<div class="vag-qcard vag-lab va-bench" data-state="${state}">
       <p class="vag-qtype">
         <strong>${I.T("Word", "Palabra")} ${s.i + 1} ${I.T("of", "de")} ${s.items.length}</strong> ·
         ${passed ? I.T("Revise", "Revisa") : I.T("Write", "Escribe")}
@@ -201,6 +226,20 @@ const spec = {
       </p>
       <p class="vag-q">${item.prompt}</p>
       ${env.speakBtn(item.prompt, "")}
+      <div class="va-bench-top">
+        <p class="va-slot" data-slot data-word="${word.hw}" data-used="${used}">
+          <span class="va-slot-l">${I.T("Today's word", "La palabra de hoy")}</span>
+          <strong class="va-slot-w" lang="en">${word.hw}</strong>
+          <span class="va-slot-s"><span class="va-slot-on">${icon("check")}${I.T("It is in your sentence", "Está en tu oración")}</span><span class="va-slot-off">${icon("pin")}${I.T("Waiting for your sentence", "Esperando tu oración")}</span></span>
+        </p>
+        ${
+          rules.length
+            ? html`<p class="va-gauge" role="img" aria-label="${I.S(`${met} of ${rules.length} rules met`, `${met} de ${rules.length} reglas cumplidas`)}">
+                ${rules.map((c) => html`<i class="va-gauge-seg" data-ok="${c.ok}"></i>`)}<span class="va-gauge-t">${met}/${rules.length}</span>
+              </p>`
+            : ""
+        }
+      </div>
       ${env.sup.rehearsal || env.band === "early" ? html`<p class="vag-fine">${icon("speaking")}${I.T("Say your sentence out loud first, then write it.", "Di tu oración en voz alta primero y luego escríbela.")}</p>` : ""}
       ${env.sup.glossaryEs && word.es?.gloss ? html`<p class="vag-fine" lang="es">${word.hw}: ${word.es.gloss}</p>` : ""}
       <p class="vag-fine">${I.T("Meaning", "Significado")}: ${word.def}</p>
@@ -217,6 +256,11 @@ const spec = {
         spellcheck="true"
       >
 ${item.text}</textarea>
+      <div class="va-readback-wrap">
+        <p class="va-readback-l">${icon("speaking")}${I.T("Your sentence, read back", "Tu oración, leída de nuevo")}</p>
+        <p class="va-readback" data-readback data-snap="${snap ? "1" : ""}">${raw(readbackHTML(item.text, word))}</p>
+        ${canSpeak() ? html`<button type="button" class="vag-listen va-readaloud" data-speak="${clean(item.text)}" data-readaloud aria-label="${I.S("Read my sentence aloud", "Leer mi oración en voz alta")}">${icon("volume")}<span>${I.T("Read it aloud", "Leer en voz alta")}</span></button>` : ""}
+      </div>
       <div class="vag-actions">
         <button type="button" class="btn btn-primary" data-check data-fk="check">
           ${icon("check")}${passed ? I.T("Check my revision", "Revisar mi revisión") : I.T("Check my sentence", "Revisar mi oración")}
@@ -228,8 +272,8 @@ ${item.text}</textarea>
       ${item.frame && (env.sup.frames || env.sup.starters) ? html`<p class="vag-fine">${I.T("Starter", "Inicio")}: <em>${item.frame}</em></p>` : ""}
       ${
         bank.length
-          ? html`<ul class="vag-bank" aria-label="${I.S("Word bank", "Banco de palabras")}">
-              ${bank.map((b, n) => html`<li><button type="button" class="vag-chip" data-bank="${b}" data-fk="bank-${n}">${b}</button></li>`)}
+          ? html`<p class="va-tray-l">${icon("pin")}${I.T("Word tiles: tap one and it snaps onto the end of your sentence.", "Fichas de palabras: toca una y se pega al final de tu oración.")}</p><ul class="vag-bank va-tray" aria-label="${I.S("Word bank", "Banco de palabras")}">
+              ${bank.map((b, n) => html`<li><button type="button" class="vag-chip va-tile" data-bank="${b}" data-fk="bank-${n}">${b}</button></li>`)}
             </ul>`
           : ""
       }
@@ -271,10 +315,33 @@ ${item.text}</textarea>
     if (bank) {
       item.text = `${clean(item.text)}${item.text ? " " : ""}${bank.dataset.bank} `;
       env.use("wordBank");
+      env.snapTile = bank.dataset.bank;
       return true;
     }
     if (el.closest("[data-keep]")) return finishWord(s, env, word, item);
     return false;
+  },
+  /** Live workbench: as the learner types, the read-back, the word slot and the read-aloud text follow the box. Display only. */
+  after(body, s, env) {
+    const box = body.querySelector("[data-text]");
+    if (!box || box.dataset.vaLive) return;
+    box.dataset.vaLive = "1";
+    const word = env.pool.byId.get(s.items[s.i]?.wordId);
+    if (!word) return;
+    box.addEventListener("input", () => {
+      const back = body.querySelector("[data-readback]");
+      if (back) {
+        back.innerHTML = readbackHTML(box.value, word);
+        back.dataset.snap = "";
+      }
+      const read = body.querySelector("[data-readaloud]");
+      if (read) read.dataset.speak = clean(box.value);
+      const slot = body.querySelector("[data-slot]");
+      if (slot) {
+        const used = Boolean(findForm(box.value, word));
+        slot.dataset.used = String(used);
+      }
+    });
   },
   extra: (s) => ({
     sentences: s.items

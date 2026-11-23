@@ -28,6 +28,25 @@ export { arenaScore };
 
 const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
+/** The variety wheel: one pie segment per question type in this run. A segment fills when that type has been answered right.
+ *  Decoration for the chips below it (which carry the words); drawn from the run's own log, so it is never a separate score. */
+export function wheelSegments(types, met) {
+  const n = Math.max(1, types.length);
+  const R = 46;
+  const point = (turn) => {
+    const a = (turn * 2 * Math.PI) - Math.PI / 2;
+    return [(50 + R * Math.cos(a)).toFixed(2), (50 + R * Math.sin(a)).toFixed(2)];
+  };
+  return types.map((type, i) => {
+    const gap = n > 1 ? 0.008 : 0;
+    const [x1, y1] = point(i / n + gap);
+    const [x2, y2] = point((i + 1) / n - gap);
+    const large = 1 / n > 0.5 ? 1 : 0;
+    const d = n === 1 ? `M50 4 A46 46 0 1 1 49.99 4 Z` : `M50 50 L${x1} ${y1} A${R} ${R} 0 ${large} 1 ${x2} ${y2} Z`;
+    return { type, met: met.has(type), d };
+  });
+}
+
 const spec = {
   id: "vocab-arena",
   title: TITLE,
@@ -69,10 +88,26 @@ const spec = {
     const met = new Set(s.log.filter((e) => e.ok).map((e) => e.type));
     const types = [...new Set(s.qs.map((x) => x.type))];
     const review = q && env.pool.review.some((w) => w.id === q.wordId);
-    const hud = html`<div class="vag-hud">
-      <p class="vag-score" aria-label="${I.S("Points", "Puntos")}">
-        <strong>${score.points}</strong> ${I.T("points", "puntos")}
-      </p>
+    const segs = wheelSegments(types, met);
+    const fresh = q && !met.has(q.type);
+    const hud = html`<div class="vag-hud va-arena-board">
+      <div class="va-scorebox">
+        <p class="vag-score va-points" aria-label="${I.S("Points", "Puntos")}">
+          <strong>${score.points}</strong> <span>${I.T("points", "puntos")}</span>
+        </p>
+        <p class="va-board-line">
+          ${icon("check")}${I.T("Right answers", "Respuestas correctas")}: <strong>${score.answered}</strong>
+          <span class="va-board-sep" aria-hidden="true">·</span>
+          ${icon("star")}${I.T("Kinds tried", "Tipos probados")}: <strong>${score.kinds} ${I.T("of", "de")} ${types.length}</strong>
+        </p>
+      </div>
+      <div class="va-wheel-wrap">
+        <svg class="va-wheel" viewBox="0 0 100 100" role="img" aria-label="${I.S(`Variety wheel: ${score.kinds} of ${types.length} kinds of question answered right`, `Rueda de variedad: ${score.kinds} de ${types.length} tipos de pregunta acertados`)}">
+          ${segs.map((g, k) => html`<path class="va-seg" d="${g.d}" data-met="${g.met}" data-seg="${k}"></path>`)}
+          <circle class="va-hub" cx="50" cy="50" r="15"></circle>
+          <text class="va-hub-t" x="50" y="55" text-anchor="middle">${score.kinds}/${types.length}</text>
+        </svg>
+      </div>
       <p class="vag-variety">
         ${types.map((t) => html`<span class="vag-chip" data-met="${met.has(t)}">${met.has(t) ? icon("check") : icon("star")}${I.T(...QTYPES[t].label)}</span>`)}
       </p>
@@ -101,9 +136,9 @@ const spec = {
           </p>
         </div>`;
     return html`${hud}
-      <div class="vag-qcard" data-type="${q.type}">
+      <div class="vag-qcard va-arena-card" data-type="${q.type}">
         <p class="vag-qtype">
-          ${I.T(...QTYPES[q.type].label)}${review ? html` <span class="vag-badge">${icon("replay")}${I.T("Review word", "Palabra de repaso")}</span>` : ""}
+          ${I.T(...QTYPES[q.type].label)}${fresh ? html` <span class="vag-badge va-fresh">${icon("star")}${I.T(`New kind: +${ARENA_POINTS.variety} for variety`, `Tipo nuevo: +${ARENA_POINTS.variety} por variedad`)}</span>` : ""}${review ? html` <span class="vag-badge">${icon("replay")}${I.T("Review word", "Palabra de repaso")}</span>` : ""}
         </p>
         ${stemHTML(q, env)}${choicesHTML(q, s.mc, env)}
         <div class="vag-actions">

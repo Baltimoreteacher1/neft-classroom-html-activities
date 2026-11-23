@@ -3,7 +3,7 @@
 // shows it in use, a word from its family, or a word in the same relation group. A pair that does connect, but
 // not in the way you named, gets a near-miss note. No answer is printed on a wrong try.
 import { groupOf, groupsFor } from "./data.js";
-import { fbHTML, html, icon, mountGame } from "./kit.js";
+import { fbHTML, html, icon, mountGame, raw } from "./kit.js";
 import { clean, maskForm, norm } from "./text.js";
 
 export const TITLE = ["Word Connections", "Conexiones entre palabras"];
@@ -102,6 +102,99 @@ const linkText = (I, id) => {
 };
 export const nodeById = (web, id) => web.nodes.find((n) => n.id === id);
 
+// ── the web drawing (view layer only; decoration for the cards and the "Your web" list, which carry every word) ──────────
+/** How each kind of link is drawn: a stroke pattern (in path-length units) AND a marker shape, so it never relies on colour. */
+export const LINK_SHAPES = {
+  means: { shape: "circle", dash: "", width: 3 },
+  similar: { shape: "square", dash: "9 5", width: 3 },
+  opposite: { shape: "diamond", dash: "9 3 1.5 3", width: 3 },
+  use: { shape: "triangle", dash: "0.1 4.6", width: 3.6 },
+  family: { shape: "star", dash: "0.1 2.6", width: 5 },
+  group: { shape: "hexagon", dash: "3 2.6", width: 3 },
+};
+const star = (r1 = 7, r2 = 3) =>
+  `M${Array.from({ length: 10 }, (_, i) => {
+    const r = i % 2 ? r2 : r1;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    return `${(r * Math.cos(a)).toFixed(2)} ${(r * Math.sin(a)).toFixed(2)}`;
+  }).join("L")}Z`;
+export const MARKER_PATH = {
+  circle: "M-5 0a5 5 0 1 0 10 0a5 5 0 1 0-10 0Z",
+  square: "M-4.5-4.5h9v9h-9Z",
+  diamond: "M0-6.5L6.5 0 0 6.5-6.5 0Z",
+  triangle: "M0-6.5L6.5 5H-6.5Z",
+  star: star(),
+  hexagon: "M-3.2-5.5h6.4L6.5 0 3.2 5.5h-6.4L-6.5 0Z",
+};
+const W = 340;
+const H = 300;
+/** Positions for every card: each anchor word on an inner ring, the cards that belong to it fanned out on an outer ring. Pure. */
+export function webLayout(nodes) {
+  const anchors = nodes.filter((n) => n.id.startsWith("w:"));
+  const pos = {};
+  const m = Math.max(1, anchors.length);
+  anchors.forEach((a, i) => {
+    const th = (2 * Math.PI * i) / m - Math.PI / 2;
+    pos[a.id] = [W / 2 + 58 * Math.cos(th), H / 2 + 50 * Math.sin(th)];
+    const kids = nodes.filter((n) => n.owner === a.owner && n.id !== a.id);
+    const span = Math.min((2 * Math.PI) / m, 0.5 * kids.length + 0.4);
+    kids.forEach((k, j) => {
+      const t2 = th + (kids.length === 1 ? 0 : (j / (kids.length - 1) - 0.5) * span);
+      pos[k.id] = [W / 2 + 142 * Math.cos(t2), H / 2 + 118 * Math.sin(t2)];
+    });
+  });
+  for (const n of nodes) if (!pos[n.id]) pos[n.id] = [W / 2, H / 2];
+  return pos;
+}
+/** A curved edge between two points (bowed toward the centre) and the point halfway along it. Pure. */
+export function edgeGeometry(a, b) {
+  const mx = (a[0] + b[0]) / 2;
+  const my = (a[1] + b[1]) / 2;
+  const cx = mx + (W / 2 - mx) * 0.3;
+  const cy = my + (H / 2 - my) * 0.3;
+  return {
+    d: `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`,
+    mid: [0.25 * a[0] + 0.5 * cx + 0.25 * b[0], 0.25 * a[1] + 0.5 * cy + 0.25 * b[1]],
+  };
+}
+const nodeShape = (n) =>
+  n.id.startsWith("w:")
+    ? { tag: "circle", attrs: 'r="17"' }
+    : n.kind === "meaning"
+      ? { tag: "rect", attrs: 'x="-13" y="-13" width="26" height="26" rx="6"' }
+      : n.kind === "sentence"
+        ? { tag: "path", attrs: 'd="M0-16L16 0 0 16-16 0Z"' }
+        : { tag: "circle", attrs: 'r="12"' };
+
+/** The web as an inline SVG (aria-hidden: the list below it says the same in words). `fresh` is the edge to draw in. */
+export function webSVG(s, env, { fresh = -1 } = {}) {
+  const pos = webLayout(s.nodes);
+  const linked = new Set(s.made.flatMap((m) => [m.a, m.b]));
+  const masks = [];
+  const edges = s.made.map((l, k) => {
+    const g = edgeGeometry(pos[l.a], pos[l.b]);
+    const spec2 = LINK_SHAPES[l.type];
+    const id = `${env.uid}-m${k}`;
+    const isNew = k === fresh;
+    masks.push(
+      `<mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><path d="${g.d}" pathLength="100" class="va-mask-stroke${isNew ? " is-new" : ""}" fill="none" stroke="#fff" stroke-width="9"/></mask>`,
+    );
+    return `<g class="va-edge-g${isNew ? " is-new" : ""}" data-type="${l.type}"><path class="va-web-edge" data-shape="${spec2.shape}" data-type="${l.type}" d="${g.d}" pathLength="100" fill="none" stroke-width="${spec2.width}" stroke-linecap="round"${spec2.dash ? ` stroke-dasharray="${spec2.dash}"` : ""} mask="url(#${id})"/><path class="va-marker" d="${MARKER_PATH[spec2.shape]}" transform="translate(${g.mid[0].toFixed(1)} ${g.mid[1].toFixed(1)})"/></g>`;
+  });
+  const nodes = s.nodes.map((n, i) => {
+    const [x, y] = pos[n.id];
+    const sh = nodeShape(n);
+    const on = s.sel.includes(n.id);
+    return `<g class="va-node" data-kind="${n.kind}" data-anchor="${n.id.startsWith("w:")}" data-sel="${on}" data-linked="${linked.has(n.id)}" data-assist="${s.assist === n.id}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><${sh.tag} class="va-node-ring" ${sh.attrs}/><${sh.tag} class="va-node-body" ${sh.attrs}/><text class="va-node-n" y="5" text-anchor="middle">${i + 1}</text></g>`;
+  });
+  return `<svg class="va-web-svg" viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false"><defs>${masks.join("")}</defs>${edges.join("")}${nodes.join("")}</svg>`;
+}
+/** A tiny sample of one link style (used in the legend and the list), so the style can be matched by shape and pattern. */
+export function linkSample(type) {
+  const sp = LINK_SHAPES[type];
+  return `<svg class="va-sample" data-type="${type}" viewBox="0 0 56 16" width="56" height="16" aria-hidden="true" focusable="false"><path class="va-sample-line" d="M2 8H38" pathLength="100" fill="none" stroke-width="${sp.width}" stroke-linecap="round"${sp.dash ? ` stroke-dasharray="${sp.dash}"` : ""}/><path class="va-marker" d="${MARKER_PATH[sp.shape]}" transform="translate(47 8)"/></svg>`;
+}
+
 const spec = {
   id: "word-connections",
   title: TITLE,
@@ -160,7 +253,7 @@ const spec = {
           aria-pressed="${on}"
         >
           <span class="vag-node-tag"
-            >${n.kind === "word" ? I.T("Word", "Palabra") : n.kind === "meaning" ? I.T("Meaning", "Significado") : I.T("Sentence", "Oración")}</span
+            ><span class="va-nodenum" aria-hidden="true">${s.nodes.indexOf(n) + 1}</span>${n.kind === "word" ? I.T("Word", "Palabra") : n.kind === "meaning" ? I.T("Meaning", "Significado") : I.T("Sentence", "Oración")}</span
           >
           <span
             >${s.assist === n.id ? icon("star") : on ? icon("check") : linked ? icon("pin") : ""}${n.text}${s.assist === n.id ? html`<span class="vag-sr"> (${I.S("this card still has a link", "esta tarjeta aún tiene un vínculo")})</span>` : ""}${linked ? html`<span class="vag-sr"> (${I.S("already linked", "ya conectada")})</span>` : ""}</span
@@ -169,7 +262,20 @@ const spec = {
       </li>`;
     };
     const m = s.msg;
-    return html`<p class="vag-prompt">
+    const fresh = env.fresh ?? -1;
+    env.fresh = undefined;
+    return html`<div class="va-conn">
+      <div class="va-conn-map">
+        <div class="va-web-card" data-made="${s.made.length}">
+          ${raw(webSVG(s, env, { fresh }))}
+          <p class="va-web-cap">${icon("worlds")}${I.T(`${s.made.length} of ${s.need} links drawn`, `${s.made.length} de ${s.need} vínculos dibujados`)}</p>
+        </div>
+        <ul class="va-legend" aria-label="${I.S("How each link is drawn", "Cómo se dibuja cada vínculo")}">
+          ${LINKS.map((l) => html`<li>${raw(linkSample(l.id))}<span>${I.T(l.en, l.es)}</span></li>`)}
+        </ul>
+      </div>
+      <div class="va-conn-play">
+      <p class="vag-prompt">
         ${I.T(`Make ${s.need} real links. You have made ${s.made.length}.`, `Haz ${s.need} vínculos reales. Llevas ${s.made.length}.`)}
       </p>
       <ul class="vag-nodes" data-rove data-cols="0" aria-label="${I.S("Cards", "Tarjetas")}">
@@ -189,7 +295,7 @@ const spec = {
                 ${I.T("How are these two cards connected?", "¿Cómo se conectan estas dos tarjetas?")}
               </p>
               <div class="vag-linkbtns">
-                ${LINKS.map((l, k) => html`<button type="button" class="btn vag-linkbtn" data-link="${l.id}" data-n="${k + 1}" data-fk="link-${l.id}"><span class="vag-n" aria-hidden="true">${k + 1}</span>${I.T(l.en, l.es)}</button>`)}
+                ${LINKS.map((l, k) => html`<button type="button" class="btn vag-linkbtn" data-link="${l.id}" data-n="${k + 1}" data-fk="link-${l.id}"><span class="vag-n" aria-hidden="true">${k + 1}</span>${raw(linkSample(l.id))}${I.T(l.en, l.es)}</button>`)}
               </div>
             </div>`
           : html`<p class="vag-fine">
@@ -208,11 +314,13 @@ const spec = {
           ? html`<section class="vag-web">
               <h3>${icon("worlds")}${I.T("Your web", "Tu red")}</h3>
               <ul>
-                ${s.made.map((l) => html`<li><strong>${txt(l.a)}</strong> ${linkText(I, l.type)} <strong>${txt(l.b)}</strong></li>`)}
+                ${s.made.map((l) => html`<li><strong>${txt(l.a)}</strong> ${raw(linkSample(l.type))}${linkText(I, l.type)} <strong>${txt(l.b)}</strong></li>`)}
               </ul>
             </section>`
           : ""
-      }`;
+      }
+      </div>
+    </div>`;
   },
 
   click(el, s, env) {
@@ -255,6 +363,7 @@ const spec = {
       }
       if (j.kind === "ok") {
         s.made.push({ a, b, type: link.dataset.link });
+        env.fresh = s.made.length - 1;
         s.msg = {
           kind: "ok",
           text:
@@ -302,6 +411,13 @@ const spec = {
     return false;
   },
   extra: (s) => ({ links: s.made.length }),
+  finishExtra: (s, env) => html`<section class="va-web-final">
+    <h3>${icon("worlds")}${env.I.T("Your finished web", "Tu red terminada")}</h3>
+    <div class="va-web-card">${raw(webSVG(s, env))}</div>
+    <ul class="vag-web-list">
+      ${s.made.map((l) => html`<li><strong>${nodeById(s, l.a)?.text}</strong> ${raw(linkSample(l.type))}${linkText(env.I, l.type)} <strong>${nodeById(s, l.b)?.text}</strong></li>`)}
+    </ul>
+  </section>`,
 };
 
 export default {

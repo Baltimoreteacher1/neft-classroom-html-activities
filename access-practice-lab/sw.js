@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "2fc7846b05e4";
+const BUILD_HASH = "ebd7bd48e725";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=51d27c263c0f",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -1140,18 +1140,18 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/vocab-academy/games/meaning-match.js?v=9698631c2a4e",
   "/access-practice-lab/src/vocab-academy/games/morph-records.js?v=191e01dba388",
   "/access-practice-lab/src/vocab-academy/games/questions.js?v=827755f7ae17",
-  "/access-practice-lab/src/vocab-academy/games/reading-mystery.js?v=35a5a36473d2",
-  "/access-practice-lab/src/vocab-academy/games/sentence-lab.js?v=49db85009025",
+  "/access-practice-lab/src/vocab-academy/games/reading-mystery.js?v=a026465d3efd",
+  "/access-practice-lab/src/vocab-academy/games/sentence-lab.js?v=f62e8e353e34",
   "/access-practice-lab/src/vocab-academy/games/stage-a.js?v=8d6f0bea4f33",
   "/access-practice-lab/src/vocab-academy/games/text.js?v=24a8ae0b217c",
-  "/access-practice-lab/src/vocab-academy/games/vocab-arena.js?v=0679ae69579d",
+  "/access-practice-lab/src/vocab-academy/games/vocab-arena.js?v=66fe0907f4cf",
   "/access-practice-lab/src/vocab-academy/games/word-builder.js?v=b383dfe51ae6",
-  "/access-practice-lab/src/vocab-academy/games/word-connections.js?v=f823ed6655b7",
-  "/access-practice-lab/src/vocab-academy/games/word-mastery.js?v=7f9b04626a47",
+  "/access-practice-lab/src/vocab-academy/games/word-connections.js?v=f8c8ed949d22",
+  "/access-practice-lab/src/vocab-academy/games/word-mastery.js?v=eb3cdc3e2da3",
   "/access-practice-lab/src/vocab-academy/games/word-quest.js?v=7a53502f1bf1",
   "/access-practice-lab/src/vocab-academy/games/word-sort.js?v=93017919b3a3",
   "/access-practice-lab/src/vocab-academy/garden.js?v=12fd905cace9",
-  "/access-practice-lab/src/vocab-academy/index.js?v=e95883f87af1",
+  "/access-practice-lab/src/vocab-academy/index.js?v=0b7d3c0707d6",
   "/access-practice-lab/src/vocab-academy/integrations/family-project.js?v=563e2cea9f1a",
   "/access-practice-lab/src/vocab-academy/integrations/family-view.js?v=b6af9648d4ba",
   "/access-practice-lab/src/vocab-academy/integrations/offline.js?v=d1ac6142b88d",

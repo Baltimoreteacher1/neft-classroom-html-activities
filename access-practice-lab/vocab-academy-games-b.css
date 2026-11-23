@@ -1,0 +1,1102 @@
+/* Vocabulary Academy — signature looks for five games: Vocab Arena (stadium scoreboard + variety wheel), Sentence Lab
+   (workbench with a glowing word slot, snap tiles and a live read-back), Word Connections (an animated web whose links differ
+   by shape and stroke pattern), Reading Mystery (book page, torn-paper evidence strips, marker highlight, case-closed stamp)
+   and Word Mastery (a mastery ladder and a trophy case). Loaded after vocab-academy-premium.css.
+   Decoration only: every state is also said in words and an icon, nothing is timed, nothing is taken away on a miss, and
+   reduced motion turns the movement off. Tokens plus the games' own accents. No purple. */
+
+/* ══ shared bits ══════════════════════════════════════════════════════════════════════════════════════════════ */
+.vag[data-game="vocab-arena"],
+.vag[data-game="sentence-lab"],
+.vag[data-game="word-connections"],
+.vag[data-game="reading-mystery"],
+.vag[data-game="word-mastery"] {
+  --vgb-navy: #17324d;
+  --vgb-amber: #f2c15b;
+  --vgb-teal: #1fa6a2;
+  --vgb-paper: #fffaf0;
+}
+
+/* ══ VOCAB ARENA — the stadium ═══════════════════════════════════════════════════════════════════════════════ */
+.va-arena-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "score wheel"
+    "chips chips"
+    "btns btns"
+    "elapsed elapsed";
+  gap: 0.6rem 1rem;
+  align-items: center;
+  padding: clamp(0.8rem, 2.4vw, 1.2rem);
+  border-radius: var(--va-radius);
+  color: #f4f1e8;
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgba(242, 193, 91, 0.28), transparent 60%),
+    linear-gradient(180deg, #1c3b56 0%, #12283d 100%);
+  border: 3px solid var(--vgb-amber);
+  box-shadow:
+    inset 0 0 0 3px #12283d,
+    0 6px 0 rgba(18, 40, 61, 0.25);
+}
+.va-scorebox {
+  grid-area: score;
+  display: grid;
+  gap: 0.3rem;
+}
+.va-points {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+}
+.va-points strong {
+  font-size: clamp(2.6rem, 9vw, 3.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--vgb-amber);
+  padding: 0.05em 0.3em;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(242, 193, 91, 0.35);
+  letter-spacing: 0.04em;
+}
+.va-points span {
+  font-size: 1.05em;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.va-board-line {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.6rem;
+  font-size: 0.95em;
+}
+.va-board-line .ico {
+  inline-size: 1.05em;
+  block-size: 1.05em;
+  margin-inline-end: 0.2rem;
+  vertical-align: -0.15em;
+}
+.va-board-sep {
+  opacity: 0.6;
+}
+.va-wheel-wrap {
+  grid-area: wheel;
+}
+.va-wheel {
+  display: block;
+  inline-size: clamp(92px, 24vw, 128px);
+  block-size: auto;
+  overflow: visible;
+}
+.va-seg {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1.2;
+  transition: fill 0.5s ease;
+}
+.va-seg[data-met="true"] {
+  fill: var(--vgb-amber);
+  stroke: #fff6da;
+  animation: va-seg-in 0.6s cubic-bezier(0.2, 1.3, 0.4, 1);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.va-hub {
+  fill: #12283d;
+  stroke: var(--vgb-amber);
+  stroke-width: 2;
+}
+.va-hub-t {
+  fill: #fff6da;
+  font-size: 11px;
+  font-weight: 700;
+}
+@keyframes va-seg-in {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.va-arena-board .vag-variety {
+  grid-area: chips;
+}
+.va-arena-board .vag-chip[data-met] {
+  color: #f4f1e8;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+.va-arena-board .vag-chip[data-met="true"] {
+  color: #12283d;
+  background: var(--vgb-amber);
+  border-color: #fff6da;
+  font-weight: 700;
+}
+.va-arena-board .vag-hud-btns {
+  grid-area: btns;
+  margin-inline-start: 0 !important;
+}
+.va-arena-board .vag-elapsed-wrap {
+  grid-area: elapsed;
+}
+.va-arena-card {
+  position: relative;
+  border: 2px solid var(--va-line);
+  border-block-start: 10px solid var(--vag-accent);
+}
+.va-arena-card::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -10px;
+  inset-inline: 0;
+  block-size: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.35) 0 14px,
+    transparent 14px 28px
+  );
+  pointer-events: none;
+}
+.va-fresh {
+  background: #fff3cf;
+  border-color: var(--vgb-amber);
+  font-weight: 700;
+}
+.va-fresh .ico {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: 0.25rem;
+}
+
+/* ══ SENTENCE LAB — the workbench ════════════════════════════════════════════════════════════════════════════ */
+.va-bench {
+  position: relative;
+  border-block-start: 10px solid #0b6b63;
+  background:
+    linear-gradient(#0b6b63 0 0) 0 0 / 100% 0 no-repeat,
+    var(--vgb-paper);
+}
+.va-bench::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -10px;
+  inset-inline: 0;
+  block-size: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.28) 0 6px,
+    transparent 6px 14px
+  );
+  pointer-events: none;
+}
+.va-bench-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.6rem 1rem;
+}
+.va-slot {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto;
+  gap: 0.1rem;
+  min-inline-size: 12rem;
+  padding: 0.55rem 1rem;
+  border: 3px dashed #0b6b63;
+  border-radius: var(--va-radius);
+  background: #e8f6f3;
+  position: relative;
+}
+.va-slot-l {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--va-ink-2);
+}
+.va-slot-w {
+  font-size: 1.5em;
+  line-height: 1.15;
+  color: var(--vgb-navy);
+}
+.va-slot-s {
+  font-size: 0.9em;
+}
+.va-slot-s .ico {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.12em;
+}
+.va-slot-on {
+  display: none;
+}
+.va-slot[data-used="true"] {
+  border-style: solid;
+  border-color: var(--va-ok);
+  background: #dff3e7;
+  animation: va-glow 2.4s ease-in-out infinite;
+}
+.va-slot[data-used="true"] .va-slot-on {
+  display: inline;
+}
+.va-slot[data-used="true"] .va-slot-off {
+  display: none;
+}
+@keyframes va-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(31, 166, 162, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(31, 166, 162, 0.22);
+  }
+}
+.va-gauge {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: center;
+}
+.va-gauge-seg {
+  display: block;
+  inline-size: 26px;
+  block-size: 14px;
+  border-radius: 4px;
+  background: var(--va-line);
+  border: 2px solid var(--va-ink-2);
+}
+.va-gauge-seg[data-ok="true"] {
+  background: var(--va-ok);
+  border-color: var(--va-ok);
+}
+.va-gauge-t {
+  margin-inline-start: 0.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.va-readback-wrap {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--va-radius-sm);
+  background: #0f3d3a;
+  color: #eafaf6;
+  border: 2px solid #0b6b63;
+}
+.va-readback-l {
+  margin: 0;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b8e7df;
+}
+.va-readback-l .ico {
+  inline-size: 1.1em;
+  block-size: 1.1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.2em;
+}
+.va-readback {
+  margin: 0;
+  min-block-size: 1.6em;
+  font-size: 1.15em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.va-readback:empty::before {
+  content: "…";
+  opacity: 0.6;
+}
+.va-hit {
+  padding: 0.05em 0.3em;
+  border-radius: 5px;
+  background: var(--vgb-amber);
+  color: #12283d;
+  font-weight: 700;
+}
+.va-readback[data-snap="1"] {
+  animation: va-snap 0.35s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+@keyframes va-snap {
+  0% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.va-readaloud {
+  justify-self: start;
+  min-block-size: 44px;
+  color: #12283d;
+  background: #eafaf6;
+  border-color: #b8e7df;
+}
+.va-tray-l {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--va-ink-2);
+}
+.va-tray-l .ico {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.12em;
+}
+.va-tile {
+  min-block-size: 44px;
+  padding-inline: 0.9rem;
+  border-radius: 8px;
+  border: 2px solid #0b6b63;
+  background: #fff;
+  box-shadow: 0 4px 0 #0b6b63;
+  font-weight: 700;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+.va-tile:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0b6b63;
+}
+.va-bench[data-state="pass"] .va-gauge-seg[data-ok="true"] {
+  animation: va-glow 2.4s ease-in-out infinite;
+}
+
+/* ══ WORD CONNECTIONS — the web ══════════════════════════════════════════════════════════════════════════════ */
+.va-conn {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .va-conn {
+    grid-template-columns: minmax(300px, 5fr) minmax(0, 6fr);
+  }
+  .va-conn-map {
+    position: sticky;
+    inset-block-start: 0.5rem;
+  }
+}
+.va-conn-map,
+.va-conn-play {
+  display: grid;
+  gap: 0.75rem;
+  min-inline-size: 0;
+}
+.va-web-card {
+  position: relative;
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(23, 50, 77, 0.16) 1.2px, transparent 1.4px) 0 0 / 18px
+      18px,
+    #f4f8fa;
+  padding: 0.4rem;
+}
+.va-web-svg {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  max-block-size: 24rem;
+  overflow: visible;
+}
+.va-web-cap {
+  margin: 0.2rem 0 0.1rem;
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--va-ink-2);
+}
+.va-web-cap .ico {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.12em;
+}
+/* link colours: only a second cue. The stroke pattern and the marker shape name the link. */
+.va-edge-g[data-type="means"],
+.va-sample[data-type="means"] {
+  --lt: #0f5d73;
+}
+.va-edge-g[data-type="similar"],
+.va-sample[data-type="similar"] {
+  --lt: #1f6f4a;
+}
+.va-edge-g[data-type="opposite"],
+.va-sample[data-type="opposite"] {
+  --lt: #9c3b2e;
+}
+.va-edge-g[data-type="use"],
+.va-sample[data-type="use"] {
+  --lt: #8a5a00;
+}
+.va-edge-g[data-type="family"],
+.va-sample[data-type="family"] {
+  --lt: #b5602a;
+}
+.va-edge-g[data-type="group"],
+.va-sample[data-type="group"] {
+  --lt: #17324d;
+}
+.va-web-edge,
+.va-sample-line {
+  stroke: var(--lt, var(--va-ink));
+}
+.va-marker {
+  fill: var(--lt, var(--va-ink));
+  stroke: #fff;
+  stroke-width: 1.4;
+  paint-order: stroke;
+}
+.va-sample {
+  flex: none;
+  inline-size: 56px;
+  block-size: 16px;
+  vertical-align: middle;
+  margin-inline: 0.3rem;
+}
+.va-mask-stroke.is-new {
+  stroke-dasharray: 100;
+  animation: va-draw 0.9s ease-out both;
+}
+@keyframes va-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.va-edge-g.is-new .va-marker {
+  animation: va-marker-in 0.4s 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes va-marker-in {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+.va-node-body {
+  fill: #fff;
+  stroke: var(--vgb-navy);
+  stroke-width: 2.4;
+}
+.va-node[data-anchor="true"] .va-node-body {
+  fill: var(--vgb-navy);
+}
+.va-node[data-kind="meaning"] .va-node-body {
+  fill: #fff3cf;
+}
+.va-node[data-kind="sentence"] .va-node-body {
+  fill: #dff3f1;
+}
+.va-node[data-linked="true"] .va-node-body {
+  stroke: var(--va-ok);
+  stroke-width: 3.4;
+}
+.va-node-n {
+  font-size: 13px;
+  font-weight: 800;
+  fill: var(--vgb-navy);
+  pointer-events: none;
+}
+.va-node[data-anchor="true"] .va-node-n {
+  fill: #fff;
+}
+.va-node-ring {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.va-node[data-sel="true"] .va-node-ring {
+  stroke: var(--vgb-amber);
+  stroke-width: 5;
+  animation: va-pulse 1.5s ease-in-out infinite;
+}
+.va-node[data-assist="true"] .va-node-ring {
+  stroke: var(--vgb-teal);
+  stroke-width: 5;
+  stroke-dasharray: 5 4;
+  animation: va-pulse 1.5s ease-in-out infinite;
+}
+.va-node[data-linked="true"] .va-node-body {
+  animation: va-breathe 4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes va-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.28);
+    opacity: 0.55;
+  }
+}
+@keyframes va-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+.va-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 0.2rem 0.6rem;
+  font-size: 0.88em;
+}
+.va-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.va-nodenum {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 1.4em;
+  block-size: 1.4em;
+  margin-inline-end: 0.35rem;
+  border-radius: 50%;
+  background: var(--vgb-navy);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.va-web-final {
+  display: grid;
+  gap: 0.6rem;
+}
+.va-web-final h3 {
+  margin: 0;
+}
+.vag-linkbtn .va-sample {
+  margin-inline: 0.2rem 0.4rem;
+}
+.vag-web li .va-sample,
+.vag-web-list li .va-sample {
+  vertical-align: -0.2em;
+}
+
+/* ══ READING MYSTERY — the case file ═════════════════════════════════════════════════════════════════════════ */
+.va-case-file {
+  background:
+    linear-gradient(#e9dcc0 0 0) 0 0 / 100% 10px no-repeat,
+    var(--va-card);
+  border-block-start: 10px solid #6b4a1e;
+}
+.va-pins {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+}
+.va-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.7rem;
+  border: 2px solid var(--va-line);
+  border-radius: 99px;
+  background: var(--va-paper);
+  font-size: 0.9em;
+}
+.va-pin .ico {
+  inline-size: 1.05em;
+  block-size: 1.05em;
+}
+.va-pin[data-done="true"] {
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+  font-weight: 700;
+}
+.va-pin[data-now="true"] {
+  border-color: #6b4a1e;
+  background: #fff3cf;
+  font-weight: 700;
+}
+.va-book {
+  position: relative;
+  max-block-size: 13.5rem;
+  overflow: auto;
+  padding: 0.8rem 1rem 0.8rem 2.6rem;
+  background:
+    linear-gradient(90deg, transparent 2.1rem, #d9867a 2.1rem 2.2rem, transparent 2.2rem),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 1.67rem,
+      rgba(15, 93, 115, 0.18) 1.67rem 1.72rem
+    ),
+    #fffdf6;
+  border: 1px solid #d8cdb0;
+  border-radius: 4px 12px 12px 4px;
+  box-shadow:
+    inset 8px 0 10px -8px rgba(80, 60, 20, 0.35),
+    0 4px 0 #e4d8ba;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 1.02em;
+  line-height: 1.67rem;
+}
+.va-book:focus-visible {
+  outline: 3px solid var(--va-focus);
+  outline-offset: 2px;
+}
+.va-book p {
+  margin: 0 0 0.2rem;
+}
+.va-book-t {
+  font-family: var(--va-head-font);
+  font-weight: 700;
+  color: #6b4a1e;
+}
+.va-book-t .ico {
+  inline-size: 1.1em;
+  block-size: 1.1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.2em;
+}
+.va-hl {
+  color: inherit;
+  background: linear-gradient(transparent 52%, #ffd966 52%) no-repeat left / 0% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  animation: va-mark 0.9s ease-out 0.15s forwards;
+  font-weight: 700;
+}
+@keyframes va-mark {
+  to {
+    background-size: 100% 100%;
+  }
+}
+.va-keyw {
+  color: inherit;
+  background: #ffd966;
+  border-radius: 3px;
+  padding: 0 0.2em;
+  font-weight: 800;
+}
+.va-evidence-pin {
+  position: relative;
+  padding: 0.9rem 1rem 0.7rem;
+  background: var(--vgb-paper);
+  border: 1px solid #d8cdb0;
+  transform: rotate(-0.4deg);
+  box-shadow: 0 3px 0 rgba(107, 74, 30, 0.18);
+}
+.va-evidence-pin::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -9px;
+  inset-inline-start: 1.2rem;
+  inline-size: 3.6rem;
+  block-size: 18px;
+  background: rgba(242, 193, 91, 0.7);
+  transform: rotate(-3deg);
+}
+.va-evidence-l {
+  margin: 0 0 0.2rem;
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6b4a1e;
+}
+.va-evidence-l .ico {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: 0.3rem;
+  vertical-align: -0.12em;
+}
+.va-evidence-t {
+  margin: 0;
+  font-family: Georgia, "Iowan Old Style", serif;
+  line-height: 1.5;
+}
+/* the clue cards of step 1 are strips of paper with a torn edge */
+.va-strips .vag-choices {
+  gap: 0.9rem;
+}
+.va-strips .vag-choice {
+  --strip: var(--vgb-paper);
+  position: relative;
+  background: var(--strip);
+  border: 1px solid #cdbf9c;
+  border-radius: 2px 2px 0 0;
+  margin-block-end: 6px;
+  font-family: Georgia, "Iowan Old Style", serif;
+}
+.va-strips .vag-choice::after {
+  content: "";
+  position: absolute;
+  inset-inline: -1px;
+  inset-block-end: -7px;
+  block-size: 7px;
+  background:
+    linear-gradient(135deg, var(--strip) 50%, transparent 50%) 0 0 / 10px 7px,
+    linear-gradient(225deg, var(--strip) 50%, transparent 50%) 5px 0 / 10px 7px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 #cdbf9c);
+}
+.va-strips .vag-choice[data-state="ok"] {
+  --strip: var(--va-ok-soft);
+  border: 3px solid var(--va-ok);
+}
+.va-strips .vag-choice[data-state="no"] {
+  --strip: var(--va-miss-soft);
+}
+.va-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.35rem 1rem;
+  border: 4px double #9c3b2e;
+  border-radius: 6px;
+  color: #9c3b2e;
+  font-weight: 900;
+  font-size: 1.5em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-5deg);
+  background: rgba(255, 255, 255, 0.55);
+  animation: va-stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.va-stamp .ico {
+  inline-size: 1.2em;
+  block-size: 1.2em;
+}
+.va-stamp-small {
+  font-size: 0.95em;
+  padding: 0.15rem 0.7rem;
+}
+@keyframes va-stamp-in {
+  0% {
+    transform: rotate(-5deg) scale(2.2);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(-5deg) scale(0.94);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-5deg) scale(1);
+  }
+}
+.va-closed {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: start;
+}
+.va-closed h3 {
+  margin: 0.3rem 0 0;
+}
+.va-files {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  inline-size: 100%;
+}
+.va-file {
+  padding: 0.6rem 0.9rem;
+  background: var(--vgb-paper);
+  border: 1px solid #d8cdb0;
+  border-inline-start: 6px solid #6b4a1e;
+  border-radius: 4px;
+}
+.va-file p {
+  margin: 0 0 0.25rem;
+}
+
+/* ══ WORD MASTERY — the ladder and the trophy case ═══════════════════════════════════════════════════════════ */
+.va-mastery {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .va-mastery {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+  .va-ladder {
+    position: sticky;
+    inset-block-start: 0.5rem;
+  }
+}
+.va-ladder {
+  padding: 0.8rem 0.9rem;
+  border: 2px solid #14532d;
+  border-radius: var(--va-radius);
+  background: #f1f8f2;
+  display: grid;
+  gap: 0.6rem;
+}
+.va-ladder-h {
+  margin: 0;
+  font-weight: 700;
+  color: #14532d;
+}
+.va-ladder-h .ico {
+  inline-size: 1.2em;
+  block-size: 1.2em;
+  margin-inline-end: 0.35rem;
+  vertical-align: -0.22em;
+}
+.va-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  block-size: 3.4rem;
+}
+.va-step {
+  flex: 1;
+  display: grid;
+  place-items: start center;
+  padding-block-start: 0.15rem;
+  border-radius: 6px 6px 0 0;
+  background: #cfe6d5;
+  border: 2px solid #14532d;
+  border-block-end: 0;
+  font-weight: 800;
+  color: #14532d;
+}
+.va-step[data-level="0"] {
+  block-size: 28%;
+}
+.va-step[data-level="1"] {
+  block-size: 46%;
+}
+.va-step[data-level="2"] {
+  block-size: 64%;
+}
+.va-step[data-level="3"] {
+  block-size: 82%;
+}
+.va-step[data-level="4"] {
+  block-size: 100%;
+  background: var(--vgb-amber);
+}
+.va-steps-key {
+  margin: 0;
+}
+.va-rungs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.va-rung {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.2rem 0.6rem;
+  padding: 0.4rem 0.6rem;
+  min-block-size: 44px;
+  border: 2px solid #b9d6c0;
+  border-radius: var(--va-radius-sm);
+  background: #fff;
+}
+.va-rung[data-now="true"] {
+  border-color: #14532d;
+  border-inline-start-width: 8px;
+}
+.va-rung[data-seen="true"] {
+  background: #e4f3ea;
+}
+.va-rung-w {
+  overflow-wrap: anywhere;
+}
+.va-rung-p {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9em;
+}
+.va-rung-p .ico {
+  inline-size: 1.05em;
+  block-size: 1.05em;
+}
+.va-pips {
+  display: inline-flex;
+  gap: 3px;
+}
+.va-pips i {
+  display: block;
+  inline-size: 9px;
+  block-size: 9px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: transparent;
+  border: 2px solid #14532d;
+}
+.va-pips i[data-on="true"] {
+  background: #14532d;
+}
+.va-rung[data-level="4"] .va-pips i[data-on="true"] {
+  background: var(--vgb-amber);
+  border-color: #8a5a00;
+}
+.va-trophy {
+  position: relative;
+  padding: 1rem;
+  border-radius: var(--va-radius);
+  background: radial-gradient(70% 60% at 50% 0%, rgba(242, 193, 91, 0.3), transparent 70%), #fbf6e6;
+  border: 2px solid #d8bf7a;
+}
+.va-trophy-h {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 1.25em;
+  font-weight: 800;
+  color: #6b4a1e;
+  text-align: center;
+}
+.va-trophy-h .ico {
+  inline-size: 1.2em;
+  block-size: 1.2em;
+  margin-inline-end: 0.4rem;
+  vertical-align: -0.25em;
+}
+.va-shelf {
+  padding: 0.7rem 0.8rem 0.9rem;
+  border-radius: var(--va-radius-sm);
+  background: #fff;
+  border: 1px solid #d8cdb0;
+  border-block-end: 8px solid #6b4a1e;
+}
+.va-plaques {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.va-plaque {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  background: #fff9e8;
+  border: 1px solid #e3d29b;
+}
+.va-plaque .vag-state {
+  grid-column: 2;
+  margin: 0;
+}
+.va-cup {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  inline-size: 2.4rem;
+  block-size: 2.4rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #14532d;
+  color: #14532d;
+}
+.va-shelf[data-shelf="secure"] .va-cup {
+  background: var(--vgb-amber);
+  border-color: #8a5a00;
+  color: #5a3a00;
+  animation: va-shimmer 4s ease-in-out infinite;
+}
+.va-shelf[data-shelf="review"] .va-cup {
+  border-color: #9c3b2e;
+  color: #9c3b2e;
+}
+.va-cup .ico {
+  inline-size: 1.3rem;
+  block-size: 1.3rem;
+}
+@keyframes va-shimmer {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(242, 193, 91, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(242, 193, 91, 0.35);
+  }
+}
+
+/* ══ small screens ═══════════════════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 520px) {
+  .va-arena-board {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .va-slot {
+    inline-size: 100%;
+  }
+  .va-gauge-seg {
+    inline-size: 20px;
+  }
+  .va-book {
+    max-block-size: 11rem;
+    padding-inline-start: 2.2rem;
+  }
+  .va-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .va-stamp {
+    font-size: 1.2em;
+  }
+}
+
+/* ══ motion off ══════════════════════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .va-seg,
+  .va-seg[data-met="true"],
+  .va-slot[data-used="true"],
+  .va-bench[data-state="pass"] .va-gauge-seg,
+  .va-readback[data-snap="1"],
+  .va-mask-stroke.is-new,
+  .va-edge-g.is-new .va-marker,
+  .va-node[data-sel="true"] .va-node-ring,
+  .va-node[data-assist="true"] .va-node-ring,
+  .va-node[data-linked="true"] .va-node-body,
+  .va-hl,
+  .va-stamp,
+  .va-shelf[data-shelf="secure"] .va-cup,
+  .va-tile {
+    animation: none !important;
+    transition: none !important;
+  }
+  .va-hl {
+    background-size: 100% 100%;
+  }
+  .va-mask-stroke.is-new {
+    stroke-dasharray: none;
+  }
+}

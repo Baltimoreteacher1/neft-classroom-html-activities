@@ -8,16 +8,18 @@ import { normalize, passageSentences, seedFor } from "./data.js";
 import {
   choicesHTML,
   hintButton,
+  esc,
   html,
   icon,
   mcAct,
   mcFeedback,
   mountGame,
+  raw,
   stemHTML,
 } from "./kit.js";
 import { buildQuestion, newMc } from "./questions.js";
 import { rngFor } from "../rng.js";
-import { clean, findForm, isContent, norm, tokenize } from "./text.js";
+import { clean, findForm, isContent, norm, sentencesOf, tokenize } from "./text.js";
 
 export const TITLE = ["Reading Mystery", "Misterio de lectura"];
 const stemOf = (t) =>
@@ -123,6 +125,25 @@ const STEP = [
   ["Step 3 of 3: solve the case", "Paso 3 de 3: resuelve el caso"],
 ];
 
+/** The story as book-page paragraphs. The clue sentence is marked ONLY once the learner has found it (never before). Pure markup. */
+export function bookPage(paras, clueText, found) {
+  const key = norm(clueText || "");
+  return (paras || [])
+    .map((para) => {
+      const inner = sentencesOf(para)
+        .map((t) => (found && norm(t) === key ? `<mark class="va-hl" data-found="1">${esc(t)}</mark>` : esc(t)))
+        .join(" ");
+      return `<p>${inner}</p>`;
+    })
+    .join("");
+}
+/** A clue sentence with the key word marked. */
+export function clueStrip(text, word) {
+  const hit = word ? findForm(text, word) : null;
+  if (!hit) return esc(text);
+  return `${esc(text.slice(0, hit.index))}<mark class="va-keyw">${esc(text.slice(hit.index, hit.index + hit.length))}</mark>${esc(text.slice(hit.index + hit.length))}`;
+}
+
 const spec = {
   id: "reading-mystery",
   title: TITLE,
@@ -160,18 +181,47 @@ const spec = {
     const q = c.steps[k];
     const mc = c.mcs[k];
     const last = k === 2;
-    return html`<div class="vag-qcard vag-mystery">
+    const clueText = c.steps[1].sentence;
+    const found = c.mcs[0].done;
+    const paras = env.pool.passage?.paras || [];
+    const keyWord = env.pool.byId.get(c.keyId);
+    const solved = last && mc.done;
+    const marks = [
+      [I.T("Find the clue", "Encuentra la pista"), c.mcs[0].done, k === 0],
+      [I.T("Read the key word", "Lee la palabra clave"), c.mcs[1].done, k === 1],
+      [I.T("Solve the case", "Resuelve el caso"), c.mcs[2].done, k === 2],
+    ];
+    return html`<div class="vag-qcard vag-mystery va-case-file" data-step="${k}">
       <p class="vag-qtype">
         <strong>${I.T("Case", "Caso")} ${s.i + 1} ${I.T("of", "de")} ${s.cases.length}</strong> ·
         ${I.T(...STEP[k])}
         ${env.pool.passage?.title ? html`<span class="vag-badge">${icon("reading")}${env.pool.passage.title}</span>` : ""}
       </p>
+      <ol class="va-pins" aria-label="${I.S("Case progress", "Progreso del caso")}">
+        ${marks.map(([label, done, now]) => html`<li class="va-pin" data-done="${done}" data-now="${now && !done}">${done ? icon("check") : now ? icon("detective") : icon("pin")}<span>${label}</span></li>`)}
+      </ol>
       <p class="vag-case-q">
         ${icon("detective")}<span
           ><span class="vag-sr">${I.S("The case question: ", "La pregunta del caso: ")}</span
           ><strong>${c.question}</strong></span
         >
       </p>
+      ${
+        paras.length
+          ? html`<div class="va-book" role="region" tabindex="0" aria-label="${I.S("The story", "La lectura")}">
+              <p class="va-book-t">${icon("reading")}${env.pool.passage?.title || I.T("The story", "La lectura")}</p>
+              ${raw(bookPage(paras, clueText, found))}
+            </div>`
+          : ""
+      }
+      ${
+        k >= 1
+          ? html`<div class="va-evidence va-evidence-pin" data-found="true">
+              <p class="va-evidence-l">${icon("pin")}${I.T("Evidence", "Evidencia")}</p>
+              <p class="va-evidence-t">${raw(clueStrip(clueText, keyWord))}</p>
+            </div>`
+          : ""
+      }
       ${stemHTML(q, env)}
       ${
         k === 0
@@ -180,9 +230,10 @@ const spec = {
             </ul>`
           : ""
       }
-      ${choicesHTML(q, mc, env)}
+      <div class="${k === 0 ? "va-evidence va-strips" : "va-answers"}">${choicesHTML(q, mc, env)}</div>
       <div class="vag-actions">
         ${hintButton(mc, env)}
+        ${solved ? html`<span class="va-stamp va-stamp-small" role="img" aria-label="${I.S("Case solved", "Caso resuelto")}">${I.T("Case solved", "Caso resuelto")}</span>` : ""}
         ${mc.done ? html`<button type="button" class="btn btn-primary" data-next data-fk="next" data-autofocus>${last ? (s.i + 1 >= s.cases.length ? I.T("Close the case", "Cerrar el caso") : I.T("Next case", "Siguiente caso")) : I.T("Next step", "Siguiente paso")}${icon("arrow-right")}</button>` : ""}
       </div>
       ${mcFeedback(q, mc, env)}
@@ -210,6 +261,13 @@ const spec = {
     return false;
   },
   extra: (s) => ({ cases: s.cases.length }),
+  finishExtra: (s, env) => html`<section class="va-closed">
+    <p class="va-stamp" role="img" aria-label="${env.I.S("Case closed", "Caso cerrado")}">${icon("check")}<span>${env.I.T("Case closed", "Caso cerrado")}</span></p>
+    <h3>${icon("detective")}${env.I.T("Your case files", "Tus expedientes")}</h3>
+    <ol class="va-files">
+      ${s.cases.map((c) => html`<li class="va-file"><p class="va-file-q"><strong>${c.question}</strong></p><p class="va-evidence-t">${raw(clueStrip(c.steps[1].sentence, env.pool.byId.get(c.keyId)))}</p></li>`)}
+    </ol>
+  </section>`,
 };
 
 /** True when this pool's passage can support at least one mystery case. */

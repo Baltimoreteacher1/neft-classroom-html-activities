@@ -118,6 +118,26 @@ export function masteryOutcome(picks, log, entryOf) {
   return out;
 }
 
+/** The ladder: new, learning, developing, applying, secure. Review-needed sits on the learning rung with its own label. */
+export const LADDER = ["new", "learning", "developing", "applying", "secure"];
+export const levelOf = (state) => (state === "review-needed" ? 1 : Math.max(0, LADDER.indexOf(state || "new")));
+/** One row per word of this run: its stored level BEFORE today and how it went today. Pure, from the engine's own picks and log. */
+export function ladderRows(picks, log, entryOf) {
+  return picks.map((p, n) => {
+    const state = entryOf?.(p.id)?.state || "new";
+    const mine = (log || []).filter((e) => e.wordId === p.id);
+    return {
+      id: p.id,
+      n: n + 1,
+      state,
+      level: levelOf(state),
+      right: Math.min(2, mine.filter((e) => e.ok).length),
+      missed: mine.some((e) => !e.ok),
+      seen: mine.some((e) => e.ok),
+    };
+  });
+}
+
 const REASON_LABEL = {
   due: ["Due for review", "Toca repasar"],
   weak: ["Needs another look", "Necesita otra mirada"],
@@ -165,7 +185,9 @@ const spec = {
   view(s, env) {
     const I = env.I;
     const q = s.qs[s.i];
-    return html`<div class="vag-qcard" data-type="${q.type}">
+    const rows = ladderRows(s.picks, env.log, env.opts.entryOf);
+    const cur = rows.find((r) => r.id === q.wordId);
+    const card = html`<div class="vag-qcard" data-type="${q.type}">
       <p class="vag-qtype">
         ${I.T(...QTYPES[q.type].label)}
         <span class="vag-badge"
@@ -177,6 +199,23 @@ const spec = {
         ${hintButton(s.mc, env)}${s.mc.done ? html`<button type="button" class="btn btn-primary" data-next data-fk="next" data-autofocus>${I.T("Next question", "Siguiente pregunta")}${icon("arrow-right")}</button>` : ""}
       </div>
       ${mcFeedback(q, s.mc, env)}
+    </div>`;
+    return html`<div class="va-mastery">
+      ${card}
+      <aside class="va-ladder" aria-label="${I.S("Your mastery ladder for this run", "Tu escalera de dominio en esta ronda")}">
+        <p class="va-ladder-h">${icon("medal")}${I.T("Your mastery ladder", "Tu escalera de dominio")}</p>
+        <ol class="va-steps" aria-hidden="true">${LADDER.map((_, n) => html`<li class="va-step" data-level="${n}"><span>${n + 1}</span></li>`)}</ol>
+        <p class="vag-fine va-steps-key">${LADDER.map((k, n) => html`${n + 1} ${I.T(...STATE_LABEL[k])}${n < LADDER.length - 1 ? " · " : ""}`)}</p>
+        <ul class="va-rungs">
+          ${rows.map(
+            (r) => html`<li class="va-rung" data-level="${r.level}" data-now="${r.id === cur?.id}" data-seen="${r.seen}">
+              <span class="va-pips" role="img" aria-label="${I.S(`Level ${r.level + 1} of 5: ${STATE_LABEL[r.state === "review-needed" ? "review-needed" : LADDER[r.level]][0]}`, `Nivel ${r.level + 1} de 5: ${STATE_LABEL[r.state === "review-needed" ? "review-needed" : LADDER[r.level]][1]}`)}">${LADDER.map((_, n) => html`<i data-on="${n <= r.level}"></i>`)}</span>
+              <span class="va-rung-w">${r.seen ? html`<strong lang="en">${env.pool.byId.get(r.id)?.hw}</strong>` : html`${I.T("Word", "Palabra")} ${r.n}`}</span>
+              <span class="va-rung-p">${r.right >= 2 ? icon("check") : r.right === 1 ? icon("star") : icon("pin")}<span class="vag-sr">${I.S(`${r.right} of 2 right today`, `${r.right} de 2 correctas hoy`)}</span><span aria-hidden="true">${r.right}/2</span></span>
+            </li>`,
+          )}
+        </ul>
+      </aside>
     </div>`;
   },
 
@@ -221,34 +260,23 @@ const spec = {
   finishExtra(s, env) {
     const I = env.I;
     const o = masteryOutcome(s.picks, env.log, env.opts.entryOf);
-    const row = (x) => {
-      const w = env.pool.byId.get(x.id);
-      const label =
-        x.state && STATE_LABEL[x.state]
-          ? I.S(...STATE_LABEL[x.state])
-          : I.S("Not set yet", "Sin definir");
-      return html`<li>
-        <strong>${w.hw}</strong>
-        <span class="vag-state"
-          >${label}${x.missed ? ` · ${I.S("missed today", "fallada hoy")}` : ""}</span
-        >
-      </li>`;
-    };
-    const col = (rows, ic, title, tip) =>
-      html`<section class="vag-fin-col">
+    const shelf = (kind, rows, ic, title, tip) => html`<section class="vag-fin-col va-shelf" data-shelf="${kind}">
         <h3>${icon(ic)}${title}</h3>
         ${
           rows.length
-            ? html`<ul>
-                ${rows.map(row)}
-              </ul>`
+            ? html`<ul class="va-plaques">${rows.map((x) => {
+                const w = env.pool.byId.get(x.id);
+                const lv = levelOf(x.state);
+                return html`<li class="va-plaque" data-level="${lv}"><span class="va-cup" aria-hidden="true">${icon(kind === "secure" ? "medal" : kind === "review" ? "retry" : "check")}</span><strong lang="en">${w.hw}</strong><span class="vag-state">${x.state && STATE_LABEL[x.state] ? I.S(...STATE_LABEL[x.state]) : I.S("Not set yet", "Sin definir")}${x.missed ? ` · ${I.S("missed today", "fallada hoy")}` : ""}</span></li>`;
+              })}</ul>`
             : html`<p class="vag-fine">${I.T("None this time.", "Ninguna esta vez.")}</p>`
         }${tip ? html`<p class="vag-fine">${tip}</p>` : ""}
       </section>`;
-    return html`<div class="vag-fin-cols vag-mastery-sum">
-      ${col(o.secure, "medal", I.T("Secure", "Segura"), "")}
-      ${col(o.strong, "check", I.T("Strong today, not Secure yet", "Bien hoy, aún no segura"), I.T("A word becomes Secure after you remember it again after a break of a week or more, in more than one way.", "Una palabra queda segura cuando la recuerdas otra vez tras una semana o más, de más de una manera."))}
-      ${col(o.review, "retry", I.T("Needs review", "Necesita repaso"), I.T("These come back in your review plan.", "Estas vuelven en tu plan de repaso."))}
+    return html`<div class="vag-fin-cols vag-mastery-sum va-trophy">
+      <p class="va-trophy-h">${icon("medal")}${I.T("Your trophy case", "Tu vitrina de trofeos")}</p>
+      ${shelf("secure", o.secure, "medal", I.T("Secure", "Segura"), "")}
+      ${shelf("strong", o.strong, "check", I.T("Strong today, not Secure yet", "Bien hoy, aún no segura"), I.T("A word becomes Secure after you remember it again after a break of a week or more, in more than one way.", "Una palabra queda segura cuando la recuerdas otra vez tras una semana o más, de más de una manera."))}
+      ${shelf("review", o.review, "retry", I.T("Needs review", "Necesita repaso"), I.T("These come back in your review plan.", "Estas vuelven en tu plan de repaso."))}
     </div>`;
   },
 };
