@@ -10,57 +10,242 @@ function isEarlyPrimary(grade) {
   return grade === "K" || grade === "1" || grade === "2" || grade === "3";
 }
 
-function buildDefaultL1Watchouts(spec) {
-  const { grade, subject, blueprint_id, vocab = [], unit_title } = spec;
+function getGradeBand(grade) {
+  if (grade === "K" || grade === "1" || grade === "2") return "K-2";
+  if (grade === "3" || grade === "4" || grade === "5") return "3-5";
+  return "6-8";
+}
+
+function formatStudentDef(rawDef, term, unitTitle) {
+  const cleaned = String(rawDef || "").trim();
+  if (!cleaned) {
+    return `Key academic term used in "${unitTitle}" (${term}).`;
+  }
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  return /[.!?]$/.test(capitalized) ? capitalized : `${capitalized}.`;
+}
+
+function normalizeVocabList(vocab = [], unitTitle = "") {
+  return vocab.map((item) => {
+    const term = String(item?.term || "").trim();
+    const tier = Number(item?.tier) === 3 ? 3 : 2;
+    const studentFriendlyDef = formatStudentDef(
+      item?.student_friendly_def || item?.kid_def,
+      term,
+      unitTitle,
+    );
+    const cognateEs = item?.cognate_es ? String(item.cognate_es).trim() : null;
+    const cognateHint = item?.cognate_hint
+      ? String(item.cognate_hint).trim()
+      : cognateEs
+        ? `Spanish cognate: ${cognateEs}`
+        : null;
+
+    return {
+      term,
+      tier,
+      student_friendly_def: studentFriendlyDef,
+      cognate_hint: cognateHint,
+      kid_def: studentFriendlyDef,
+      cognate_es: cognateEs,
+    };
+  });
+}
+
+function buildDefaultEssentialQuestion(spec, normalizedVocab) {
+  if (spec.essential_question && String(spec.essential_question).trim()) {
+    return String(spec.essential_question).trim();
+  }
+  const title = String(spec.unit_title || "").trim();
+  if (title.endsWith("?")) {
+    return title;
+  }
+  const band = getGradeBand(String(spec.grade));
+  const firstTerm = normalizedVocab[0]?.term || "key concepts";
+  const secondTerm = normalizedVocab[1]?.term || "evidence";
+
+  if (spec.subject === "Math") {
+    if (band === "K-2") {
+      return `How can we use ${firstTerm} and visual models to solve problems in ${title}?`;
+    }
+    if (band === "3-5") {
+      return `How do ${firstTerm} and ${secondTerm} help us represent and justify solutions in ${title}?`;
+    }
+    return `How can we use ${firstTerm}, ${secondTerm}, and mathematical models to reason about ${title}?`;
+  }
+
+  if (spec.subject === "Science") {
+    if (band === "K-2") {
+      return `What can we observe in ${title}, and how does ${firstTerm} help explain what happens?`;
+    }
+    if (band === "3-5") {
+      return `How do observations and models of ${firstTerm} explain patterns in ${title}?`;
+    }
+    return `How do evidence and scientific models of ${firstTerm} and ${secondTerm} explain ${title}?`;
+  }
+
+  if (spec.subject === "Social Studies") {
+    if (band === "K-2") {
+      return `How do ${firstTerm} and ${secondTerm} help people live and work together in ${title}?`;
+    }
+    if (band === "3-5") {
+      return `How did ${firstTerm} and ${secondTerm} shape communities and decisions in ${title}?`;
+    }
+    return `How did ${firstTerm}, ${secondTerm}, and historical choices shape societies in ${title}?`;
+  }
+
+  // ELA
+  if (band === "K-2") {
+    return `What can we learn from texts about ${title}, and how can we share our ideas clearly?`;
+  }
+  if (band === "3-5") {
+    return `How do authors use details, ${firstTerm}, and ${secondTerm} to deepen our understanding of ${title}?`;
+  }
+  return `How do texts and perspectives on ${title} reveal ideas about ${firstTerm} and ${secondTerm}?`;
+}
+
+function buildDefaultL1Watchouts(spec, normalizedVocab) {
+  const { grade, subject, blueprint_id, unit_title } = spec;
   const bp = BLUEPRINT_BY_ID.get(blueprint_id);
   const klu = bp?.wida_klu || "Explain";
-  const firstTerm = vocab[0]?.term || unit_title;
-  const secondTerm = vocab[1]?.term || firstTerm;
-  const cognateExample = vocab.find((v) => v.cognate_es)?.cognate_es;
-  const fundationsNote =
-    subject === "ELA" && isEarlyPrimary(grade)
-      ? " Fundations tie-in: explicitly tap out English short-vowel contrasts (/a/ vs. /u/, /i/ vs. /e/) and consonant digraphs (sh, ch, th, wh) when decoding unit words."
-      : "";
+  const firstTerm = normalizedVocab[0]?.term || unit_title;
+  const secondTerm = normalizedVocab[1]?.term || firstTerm;
+  const cognateEntry = normalizedVocab.find((v) => v.cognate_es);
+  const cognateLabel = cognateEntry
+    ? `"${cognateEntry.term}" / "${cognateEntry.cognate_es}"`
+    : `terms like "${firstTerm}"`;
+  const isK3Ela = subject === "ELA" && isEarlyPrimary(String(grade));
 
-  const spanishWatchout =
-    subject === "Math"
-      ? `Leverage Spanish cognates (${cognateExample ? `"${cognateExample}"` : `terms like "${firstTerm}"`}), but watch false friends and prepositions: English "by/per/for every" maps to "por/para", and Spanish decimals/commas differ in notation.`
-      : subject === "Science"
-        ? `Bridge Latin-root science cognates (${cognateExample ? `"${cognateExample}"` : `"${firstTerm}"`}); coach students on English subject pronouns ("It moves..." rather than omitting "it") and passive/causal connectors in ${klu} sentences.`
-        : `Highlight Spanish cognates (${cognateExample ? `"${cognateExample}"` : `"${firstTerm}"`}) while explicitly modeling English auxiliary verbs ("did/does") and adjective-before-noun word order in "${unit_title}".${fundationsNote}`;
+  let spanishFriction;
+  let spanishFix;
+  if (subject === "Math") {
+    spanishFriction = `English rate and comparison prepositions ("by", "per", "for every") collapse into "por/para", and Spanish decimal/comma conventions differ when expressing "${firstTerm}" and "${secondTerm}".`;
+    spanishFix = `Anchor Spanish cognates (${cognateLabel}), color-code English prepositions on the model, and orally rehearse the ${klu} frame before solving.`;
+  } else if (subject === "Science") {
+    spanishFriction = `Spanish often omits dummy subject pronouns ("it") and uses reflexive verbs where English ${klu} science sentences require explicit subjects and causal connectors around "${firstTerm}".`;
+    spanishFix = `Bridge Latin-root cognates (${cognateLabel}) and prompt students to underline the explicit subject ("It / The ${firstTerm}") before writing their ${klu} response.`;
+  } else if (isK3Ela) {
+    spanishFriction = `Spanish uses five pure vowels and noun-before-adjective order, creating friction with English short-vowel contrasts (/a/ vs. /u/, /i/ vs. /e/), consonant digraphs (sh, ch, th, wh), and auxiliary "do/did" in "${unit_title}".`;
+    spanishFix = `Connect Spanish cognates (${cognateLabel}), tap out Fundations short vowels and digraphs on "${firstTerm}", and choral-read the ${klu} frame before partner talk.`;
+  } else {
+    spanishFriction = `Spanish places adjectives after nouns and omits English auxiliary "do/did" in questions, which can disrupt complex ${klu} clauses when analyzing "${firstTerm}" and "${secondTerm}" in "${unit_title}".`;
+    spanishFix = `Spotlight Spanish cognates (${cognateLabel}) on a word wall and model English subject–verb–connector order directly inside the unit frame.`;
+  }
 
-  const arabicWatchout =
-    subject === "Math" || subject === "Science"
-      ? `Arabic reads right-to-left while English equations, number lines, and cause-effect arrows track left-to-right; explicitly trace directionality and present-tense copula ("is/are") when defining "${firstTerm}" and "${secondTerm}".`
-      : `Arabic omits the present-tense "to be" verb and uses different article/consonant-cluster patterns; provide oral rehearsal for "is/are/was" and consonant blends when discussing "${unit_title}".${fundationsNote}`;
+  let arabicFriction;
+  let arabicFix;
+  if (subject === "Math" || subject === "Science") {
+    arabicFriction = `Arabic reads right-to-left and omits the present-tense "to be" verb ("is/are"), creating friction when tracking left-to-right equations, number lines, or cause–effect arrows for "${firstTerm}" and "${secondTerm}".`;
+    arabicFix = `Trace left-to-right arrows physically on diagrams or models and embed bolded "is/are" copula stems inside the ${klu} frame during oral rehearsal.`;
+  } else if (isK3Ela) {
+    arabicFriction = `Arabic omits present-tense "is/are", tracks right-to-left, and lacks English /p/ vs. /b/ and multi-consonant blends needed during Fundations decoding in "${unit_title}".`;
+    arabicFix = `Use left-to-right finger tracking, practice /p/–/b/ pairs and Fundations consonant blends aloud on "${firstTerm}", and keep "is/are/was" visible in the ${klu} frame.`;
+  } else {
+    arabicFriction = `Arabic omits present-tense "to be" ("is/are") and uses different article ("al-") and relative-clause patterns, which can blur ${klu} links when discussing "${firstTerm}" in "${unit_title}".`;
+    arabicFix = `Run a brief oral rehearsal round with explicit "is/are/was" verbs and highlight English articles ("a/an/the") beside "${firstTerm}" and "${secondTerm}".`;
+  }
 
-  const frenchCreoleWatchout =
-    subject === "Math" || subject === "Science"
-      ? `French and Haitian Creole share strong academic cognates with English ("${firstTerm}", "${secondTerm}"), but watch Haitian Creole tense markers (te/ap/pral) vs. English -ed/-s inflections and English prepositions ("per", "across", "into").`
-      : `Draw on French/Haitian Creole cognates for "${firstTerm}" while explicitly scaffolding English past-tense -ed endings, third-person -s, and possessive "'s" (French/Creole uses "de/pou" structures).${fundationsNote}`;
+  let frenchCreoleFriction;
+  let frenchCreoleFix;
+  if (subject === "Math" || subject === "Science") {
+    frenchCreoleFriction = `Haitian Creole marks tense with pre-verbal particles ("te/ap/pral") rather than English "-ed/-s" endings, and English directional prepositions ("per", "across", "into") differ when explaining "${firstTerm}" and "${secondTerm}".`;
+    frenchCreoleFix = `Leverage shared French/Creole cognates ("${firstTerm}", "${secondTerm}"), pair prepositions with gestures on the visual model, and check verb endings in the ${klu} frame.`;
+  } else if (isK3Ela) {
+    frenchCreoleFriction = `French and Haitian Creole do not use English "'s" possessives or "-ed" past endings, and silent final consonants in French can interfere with Fundations decoding of "${firstTerm}" in "${unit_title}".`;
+    frenchCreoleFix = `Activate French/Creole cognates for "${firstTerm}", tap every final consonant sound in Fundations routines, and model "'s" and "-ed" aloud in the ${klu} frame.`;
+  } else {
+    frenchCreoleFriction = `French and Haitian Creole form possessives with "de/pou" and mark tense differently from English "-ed" and third-person "-s", which often surfaces in academic ${klu} writing about "${unit_title}".`;
+    frenchCreoleFix = `Draw on French/Creole cognates for "${firstTerm}" and "${secondTerm}", then run a 60-second partner check specifically for "-ed", "-s", and "'s" endings.`;
+  }
 
   return [
-    { language: "Spanish", watchout: spanishWatchout },
-    { language: "Arabic", watchout: arabicWatchout },
-    { language: "French / Haitian Creole", watchout: frenchCreoleWatchout },
+    {
+      l1_group: "Spanish",
+      friction_point: spanishFriction,
+      quick_fix: spanishFix,
+    },
+    {
+      l1_group: "Arabic",
+      friction_point: arabicFriction,
+      quick_fix: arabicFix,
+    },
+    {
+      l1_group: "French / Haitian Creole",
+      friction_point: frenchCreoleFriction,
+      quick_fix: frenchCreoleFix,
+    },
   ];
 }
 
-function buildDefaultExitTicket(spec) {
+function getSubjectEvidenceSource(subject) {
+  if (subject === "Math") return "worked model, diagram, or calculation";
+  if (subject === "Science") return "investigation data, model, or observation";
+  if (subject === "Social Studies") return "map, timeline, or primary source";
+  return "text detail or quotation";
+}
+
+function buildDefaultExitTicket(spec, normalizedVocab) {
   const bp = BLUEPRINT_BY_ID.get(spec.blueprint_id);
   const klu = bp?.wida_klu || "Explain";
-  const requiredVocab = (spec.vocab || []).slice(0, 3).map((v) => v.term);
+  const moveName = bp?.move_name || klu;
+  const band = getGradeBand(String(spec.grade));
+  const requiredVocab = normalizedVocab.slice(0, 3).map((v) => v.term);
+  const vocabInline = requiredVocab.join(", ");
+  const evidenceSource = getSubjectEvidenceSource(spec.subject);
+
+  let prompt;
+  let lookFors;
+  let quickRubric;
+
+  if (band === "K-2") {
+    prompt = `Draw or point to a ${evidenceSource} from "${spec.unit_title}", then orally share (or dictate/write) 1–2 sentences using the ${moveName} frame and key words (${vocabInline}).`;
+    lookFors = [
+      `Uses the target ${klu} frame orally, via dictation, or in writing with a clear connector.`,
+      `Includes at least 1–2 unit terms (${vocabInline}) matched to a drawing, label, or model.`,
+      `Points to a specific ${evidenceSource} from "${spec.unit_title}" to support the idea.`,
+    ];
+    quickRubric = {
+      emerging:
+        "Points to a drawing or model and uses 1 unit term with a WIDA 1–2 oral starter or teacher dictation.",
+      developing: `Completes the target frame orally or in writing with 2 unit terms and a clear ${klu} connector.`,
+      proficient: `Shares or writes 2 connected sentences using precise Tier 2/3 vocabulary and a specific ${evidenceSource}.`,
+    };
+  } else if (band === "3-5") {
+    prompt = `Write a structured paragraph (2–3 sentences) about "${spec.unit_title}" using the ${moveName} frame, at least two unit terms (${vocabInline}), and a specific ${evidenceSource}.`;
+    lookFors = [
+      `Connects ideas accurately using the target ${klu} syntax pattern.`,
+      `Integrates at least two Tier 2/Tier 3 terms (${vocabInline}) in context.`,
+      `Cites a concrete ${evidenceSource} from "${spec.unit_title}".`,
+    ];
+    quickRubric = {
+      emerging:
+        "Uses 1 unit term with a provided WIDA 1–2 starter or labeled visual/model.",
+      developing: `Completes the target frame with 2 unit terms and a clear ${klu} connector.`,
+      proficient: `Produces a cohesive 2–3 sentence academic paragraph using precise Tier 2/3 vocabulary and ${evidenceSource} evidence.`,
+    };
+  } else {
+    prompt = `Compose an academic justification (2–4 sentences) for "${spec.unit_title}" using the ${moveName} frame, at least two unit terms (${vocabInline}), and cited ${evidenceSource}.`;
+    lookFors = [
+      `Constructs a complex ${klu} clause using precise academic connectors.`,
+      `Applies at least two Tier 2/Tier 3 terms (${vocabInline}) accurately to justify reasoning.`,
+      `Cites and warrants specific ${evidenceSource} from "${spec.unit_title}".`,
+    ];
+    quickRubric = {
+      emerging:
+        "Uses 1 unit term with a provided WIDA 1–2 starter or labeled visual/model.",
+      developing: `Completes the target frame with 2 unit terms, a clear ${klu} connector, and 1 piece of evidence.`,
+      proficient: `Produces 2–4 connected academic sentences justifying thinking with precise Tier 2/3 vocabulary and warranted ${evidenceSource}.`,
+    };
+  }
+
   return {
     wida_klu: klu,
     blueprint_id: spec.blueprint_id,
-    prompt: `In 2–3 sentences about "${spec.unit_title}", use the ${bp?.move_name || klu} frame and include at least two unit terms (${requiredVocab.join(", ")}).`,
+    prompt,
     target_frame: spec.unit_example_frame,
     required_vocab: requiredVocab,
-    success_criteria: [
-      `Uses the target ${klu} connector accurately in context.`,
-      `Integrates at least two Tier 2/Tier 3 terms (${requiredVocab.join(", ")}).`,
-      `Cites a specific detail, model, or example from "${spec.unit_title}".`,
-    ],
+    look_fors: lookFors,
+    quick_rubric: quickRubric,
   };
 }
 
@@ -78,6 +263,9 @@ export function buildUnitsAndConnections(specs) {
       throw new Error(`Unknown blueprint_id "${spec.blueprint_id}" on unit "${spec.id}"`);
     }
 
+    const normalizedVocab = normalizeVocabList(spec.vocab, spec.unit_title);
+    const essentialQuestion = buildDefaultEssentialQuestion(spec, normalizedVocab);
+
     units.push({
       id: spec.id,
       grade: String(spec.grade),
@@ -86,6 +274,7 @@ export function buildUnitsAndConnections(specs) {
       unit_number: Number(spec.unit_number),
       unit_title: spec.unit_title,
       unit_summary: spec.unit_summary,
+      essential_question: essentialQuestion,
       core_standards: spec.core_standards,
       external_content_lab_url: spec.external_content_lab_url ?? null,
       external_content_lab_label: spec.external_content_lab_label ?? null,
@@ -97,9 +286,10 @@ export function buildUnitsAndConnections(specs) {
       blueprint_id: spec.blueprint_id,
       unit_example_frame: spec.unit_example_frame,
       cross_subject_bridge_note: spec.cross_subject_bridge_note,
-      l1_watchouts: spec.l1_watchouts || buildDefaultL1Watchouts(spec),
-      tier2_tier3_vocab: spec.vocab,
-      language_exit_ticket_json: spec.exit_ticket || buildDefaultExitTicket(spec),
+      l1_watchouts: spec.l1_watchouts || buildDefaultL1Watchouts(spec, normalizedVocab),
+      tier2_tier3_vocab: normalizedVocab,
+      language_exit_ticket_json:
+        spec.exit_ticket || buildDefaultExitTicket(spec, normalizedVocab),
     });
   }
 

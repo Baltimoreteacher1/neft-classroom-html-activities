@@ -150,31 +150,80 @@ function extractScaffoldForTier(scaffoldsRaw, tierKey) {
   return { frames, wordBank, teacherMove };
 }
 
+function buildExportUrl(unitId, format, wida, extraQuery = "") {
+  const base = `/api/bcpss/export/${encodeURIComponent(unitId)}?format=${encodeURIComponent(format)}&wida=${encodeURIComponent(wida || "3_4")}`;
+  return extraQuery ? `${base}&${extraQuery}` : base;
+}
+
+function parseStandardsList(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw.map((s) => String(s || "").trim()).filter(Boolean);
+  }
+  return String(raw)
+    .split(/[,;|]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 function normalizeVocab(raw) {
   const parsed = safeParseJson(raw, []);
   if (!Array.isArray(parsed)) return [];
   return parsed
     .map((item) => {
-      if (typeof item === "string") return { word: item, tier: "Tier 2", hint: "" };
+      if (typeof item === "string") {
+        return { word: item, tier: "Tier 2", definition: "", cognate: "", hint: "" };
+      }
       if (!item || typeof item !== "object") return null;
+      const definition = String(
+        item.student_friendly_def || item.kid_def || item.definition || item.note || "",
+      ).trim();
+      const cognateRaw =
+        item.cognate_hint ||
+        (item.cognate_es ? `Spanish cognate: ${item.cognate_es}` : "") ||
+        item.cognate ||
+        item.es_cognate ||
+        "";
+      const cognate = String(cognateRaw).trim();
+      const hint = [definition, cognate].filter(Boolean).join(" · ");
       return {
         word: item.word || item.term || "",
-        tier: item.tier ? (String(item.tier).toLowerCase().startsWith("tier") ? String(item.tier) : `Tier ${item.tier}`) : "Tier 2",
-        hint: item.cognate_hint || item.cognate || item.es_cognate || item.definition || item.note || "",
+        tier: item.tier
+          ? String(item.tier).toLowerCase().startsWith("tier")
+            ? String(item.tier)
+            : `Tier ${item.tier}`
+          : "Tier 2",
+        definition,
+        cognate,
+        hint,
       };
     })
-    .filter((v) => v && v.word);
+    .filter((v) => v?.word);
 }
 
 function normalizeL1Watchouts(raw) {
   const parsed = safeParseJson(raw, {});
   if (Array.isArray(parsed)) {
     return parsed
-      .map((item) => ({
-        language: item.language || item.l1 || "Home Language",
-        note: item.note || item.watchout || item.guidance || "",
-      }))
-      .filter((i) => i.note);
+      .map((item) => {
+        if (typeof item === "string" && item.trim()) {
+          return {
+            language: "Multilingual Learners",
+            frictionPoint: "",
+            quickFix: "",
+            note: item.trim(),
+          };
+        }
+        if (!item || typeof item !== "object") return null;
+        const language = String(
+          item.l1_group || item.language || item.l1 || "Home Language",
+        ).trim();
+        const frictionPoint = String(item.friction_point || "").trim();
+        const quickFix = String(item.quick_fix || "").trim();
+        const note = String(item.watchout || item.note || item.guidance || "").trim();
+        return { language, frictionPoint, quickFix, note };
+      })
+      .filter((i) => i && (i.frictionPoint || i.quickFix || i.note));
   }
   if (parsed && typeof parsed === "object") {
     const labelMap = {
@@ -189,13 +238,34 @@ function normalizeL1Watchouts(raw) {
     };
     return Object.entries(parsed)
       .filter(([, v]) => Boolean(v))
-      .map(([k, v]) => ({
-        language: labelMap[k.toLowerCase()] || k,
-        note: typeof v === "string" ? v : v.note || v.tip || JSON.stringify(v),
-      }));
+      .map(([k, v]) => {
+        const language = labelMap[k.toLowerCase()] || k;
+        if (v && typeof v === "object") {
+          return {
+            language: String(v.l1_group || language).trim(),
+            frictionPoint: String(v.friction_point || "").trim(),
+            quickFix: String(v.quick_fix || "").trim(),
+            note: String(v.watchout || v.note || v.tip || "").trim(),
+          };
+        }
+        return {
+          language,
+          frictionPoint: "",
+          quickFix: "",
+          note: typeof v === "string" ? v.trim() : "",
+        };
+      })
+      .filter((i) => i.frictionPoint || i.quickFix || i.note);
   }
   if (typeof raw === "string" && raw.trim()) {
-    return [{ language: "Multilingual Learners", note: raw.trim() }];
+    return [
+      {
+        language: "Multilingual Learners",
+        frictionPoint: "",
+        quickFix: "",
+        note: raw.trim(),
+      },
+    ];
   }
   return [];
 }
@@ -393,6 +463,7 @@ function renderUnitStrip() {
   strip.innerHTML = state.units
     .map((u) => {
       const active = u.id === state.unitId;
+      const summary = String(u.unit_summary || "").trim();
       return `
         <button
           type="button"
@@ -405,21 +476,122 @@ function renderUnitStrip() {
             ${u.primary_klu ? `<span class="bh-klu-pill ${kluClass(u.primary_klu)}">${esc(u.primary_klu)}</span>` : ""}
           </div>
           <div class="bh-unit-title">${esc(u.unit_title)}</div>
-          <div class="bh-unit-curric">${esc(u.curriculum_name || curriculumFor(u.grade, u.subject))}</div>
+          ${
+            summary
+              ? `<p class="bh-unit-summary">${esc(summary)}</p>`
+              : `<div class="bh-unit-curric">${esc(u.curriculum_name || curriculumFor(u.grade, u.subject))}</div>`
+          }
+          <div class="bh-unit-footer" aria-label="Includes 3 activities and HTML, PDF, DOCX downloads">
+            <span class="bh-unit-footer-count">3 Activities</span>
+            <span class="bh-unit-footer-sep" aria-hidden="true">·</span>
+            <span class="fmt-pill fmt-pill-html">HTML</span>
+            <span class="fmt-pill fmt-pill-pdf">PDF</span>
+            <span class="fmt-pill fmt-pill-docx">DOCX</span>
+          </div>
         </button>
       `;
     })
     .join("");
 }
 
+function renderResourceExportBar() {
+  const bar = $("#resourceExportBar");
+  const u = state.detail?.unit;
+  if (!bar) return;
+  if (!u) {
+    bar.hidden = true;
+    bar.innerHTML = "";
+    return;
+  }
+  const viewHtmlUrl = buildExportUrl(u.id, "html", state.wida);
+  const pdfUrl = buildExportUrl(u.id, "pdf", state.wida);
+  const docxUrl = buildExportUrl(u.id, "docx", state.wida);
+  const downloadHtmlUrl = buildExportUrl(u.id, "html", state.wida, "download=1");
+
+  bar.hidden = false;
+  bar.innerHTML = `
+    <div class="resource-export-head">
+      <div class="resource-export-copy">
+        <span class="resource-export-kicker">Complete Unit Resource Pack</span>
+        <span class="resource-export-sub">
+          Unit ${esc(u.unit_number)} · Tailored to <strong>WIDA ${esc(widaLabel(state.wida))}</strong>
+        </span>
+      </div>
+      <div class="resource-export-badges" aria-hidden="true">
+        <span class="fmt-pill fmt-pill-html">HTML</span>
+        <span class="fmt-pill fmt-pill-pdf">PDF</span>
+        <span class="fmt-pill fmt-pill-docx">DOCX</span>
+      </div>
+    </div>
+    <div class="resource-export-actions">
+      <a
+        class="bh-btn bh-btn-primary bh-btn-sm"
+        href="${esc(viewHtmlUrl)}"
+        target="_blank"
+        rel="noopener"
+        data-export-download="html-view"
+      >
+        <span>View HTML Packet ↗</span>
+      </a>
+      <a
+        class="bh-btn bh-btn-secondary bh-btn-sm"
+        href="${esc(pdfUrl)}"
+        download
+        data-export-download="pdf"
+      >
+        <span>Download PDF</span>
+      </a>
+      <a
+        class="bh-btn bh-btn-secondary bh-btn-sm"
+        href="${esc(docxUrl)}"
+        download
+        data-export-download="docx"
+      >
+        <span>Download Word (.docx)</span>
+      </a>
+      <a
+        class="bh-btn bh-btn-ghost bh-btn-sm"
+        href="${esc(downloadHtmlUrl)}"
+        download
+        data-export-download="html"
+      >
+        <span>Download HTML</span>
+      </a>
+      <button
+        type="button"
+        class="bh-btn bh-btn-ghost bh-btn-sm"
+        data-quick-print-kit
+      >
+        <span>Quick Print Kit</span>
+      </button>
+    </div>
+  `;
+}
+
 function renderEmptyWorkspace() {
   $("#workspaceTitle").textContent = "No unit selected";
   $("#workspaceMeta").textContent = "";
+  const summaryEl = $("#workspaceSummary");
+  if (summaryEl) {
+    summaryEl.hidden = true;
+    summaryEl.textContent = "";
+  }
+  const eqEl = $("#workspaceEssentialQ");
+  if (eqEl) {
+    eqEl.hidden = true;
+    eqEl.innerHTML = "";
+  }
+  const stdEl = $("#workspaceStandards");
+  if (stdEl) {
+    stdEl.hidden = true;
+    stdEl.innerHTML = "";
+  }
   const headerActions = $("#workspaceHeaderActions");
   if (headerActions) {
     headerActions.hidden = true;
     headerActions.innerHTML = "";
   }
+  renderResourceExportBar();
   $("#printKitBtn").disabled = true;
   $("#sharePlanBtn").disabled = true;
   $("#panel-connections").innerHTML = `<div class="bh-empty">Choose a grade and content area above to load a unit.</div>`;
@@ -435,8 +607,50 @@ function renderWorkspace() {
   }
   const u = detail.unit;
   $("#workspaceTitle").textContent = `Unit ${u.unit_number}: ${u.unit_title}`;
-  const standards = u.core_standards ? ` · Standards: ${u.core_standards}` : "";
-  $("#workspaceMeta").textContent = `${gradeLabel(u.grade)} · ${u.curriculum_name || curriculumFor(u.grade, u.subject)}${standards}`;
+  $("#workspaceMeta").textContent = `${gradeLabel(u.grade)} · ${u.curriculum_name || curriculumFor(u.grade, u.subject)}${u.primary_klu ? ` · WIDA KLU: ${u.primary_klu}` : ""}`;
+
+  const summaryEl = $("#workspaceSummary");
+  if (summaryEl) {
+    const summaryText = String(u.unit_summary || "").trim();
+    if (summaryText) {
+      summaryEl.hidden = false;
+      summaryEl.textContent = summaryText;
+    } else {
+      summaryEl.hidden = true;
+      summaryEl.textContent = "";
+    }
+  }
+
+  const eqEl = $("#workspaceEssentialQ");
+  if (eqEl) {
+    const eqText = String(u.essential_question || "").trim();
+    if (eqText) {
+      eqEl.hidden = false;
+      eqEl.innerHTML = `
+        <span class="bh-eq-label">Essential Question</span>
+        <p class="bh-eq-text">${esc(eqText)}</p>
+      `;
+    } else {
+      eqEl.hidden = true;
+      eqEl.innerHTML = "";
+    }
+  }
+
+  const stdEl = $("#workspaceStandards");
+  if (stdEl) {
+    const standardsList = parseStandardsList(u.core_standards);
+    if (standardsList.length) {
+      stdEl.hidden = false;
+      stdEl.innerHTML = `
+        <span class="bh-standards-label">Core Standards</span>
+        ${standardsList.map((code) => `<span class="bh-standard-chip">${esc(code)}</span>`).join("")}
+      `;
+    } else {
+      stdEl.hidden = true;
+      stdEl.innerHTML = "";
+    }
+  }
+
   const headerActions = $("#workspaceHeaderActions");
   if (headerActions) {
     if (u.external_content_lab_url) {
@@ -457,6 +671,8 @@ function renderWorkspace() {
       headerActions.innerHTML = "";
     }
   }
+
+  renderResourceExportBar();
   $("#printKitBtn").disabled = false;
   $("#sharePlanBtn").disabled = false;
 
@@ -552,7 +768,8 @@ function renderConnectionsTab() {
                             <span class="bh-vocab-word">${esc(v.word)}</span>
                             <span class="bh-tier-badge">${esc(v.tier)}</span>
                           </div>
-                          ${v.hint ? `<p class="bh-vocab-hint">${esc(v.hint)}</p>` : ""}
+                          ${v.definition ? `<p class="bh-vocab-def">${esc(v.definition)}</p>` : ""}
+                          ${v.cognate ? `<p class="bh-vocab-cognate">${esc(v.cognate)}</p>` : ""}
                         </div>
                       `,
                     )
@@ -568,14 +785,30 @@ function renderConnectionsTab() {
             l1List.length
               ? `<div class="bh-l1-list">
                   ${l1List
-                    .map(
-                      (item) => `
+                    .map((item) => {
+                      const hasStructured = Boolean(item.frictionPoint || item.quickFix);
+                      return `
                         <div class="bh-l1-item">
-                          <strong>${esc(item.language)}</strong>
-                          <p>${esc(item.note)}</p>
+                          <strong class="bh-l1-lang">${esc(item.language)}</strong>
+                          ${
+                            hasStructured
+                              ? `<div class="bh-l1-details">
+                                  ${
+                                    item.frictionPoint
+                                      ? `<p class="bh-l1-detail"><span class="bh-l1-tag bh-l1-tag-friction">Friction Point</span> ${esc(item.frictionPoint)}</p>`
+                                      : ""
+                                  }
+                                  ${
+                                    item.quickFix
+                                      ? `<p class="bh-l1-detail"><span class="bh-l1-tag bh-l1-tag-fix">Quick Fix</span> ${esc(item.quickFix)}</p>`
+                                      : ""
+                                  }
+                                </div>`
+                              : `<p>${esc(item.note)}</p>`
+                          }
                         </div>
-                      `,
-                    )
+                      `;
+                    })
                     .join("")}
                 </div>`
               : `<p class="bh-muted">No L1 watchouts recorded for this unit.</p>`
@@ -673,8 +906,15 @@ function renderActivitiesTab() {
     `
     : `<div class="bh-empty">Classroom activities for this unit are scheduled in the next release. Use the Language Connections tab to view WIDA frames, vocabulary, and cross-subject bridges.</div>`;
 
+  const lookForsRaw = exitTicket?.look_fors || exitTicket?.success_criteria;
+  const lookFors = Array.isArray(lookForsRaw)
+    ? lookForsRaw.filter(Boolean)
+    : typeof lookForsRaw === "string" && lookForsRaw.trim()
+      ? [lookForsRaw.trim()]
+      : [];
+
   const exitTicketHtml =
-    exitTicket && (exitTicket.prompt || exitTicket.quick_rubric)
+    exitTicket && (exitTicket.prompt || exitTicket.quick_rubric || lookFors.length)
       ? `
         <details class="bh-exit-ticket">
           <summary>
@@ -691,10 +931,10 @@ function renderActivitiesTab() {
                 : ""
             }
             ${
-              Array.isArray(exitTicket.look_fors) && exitTicket.look_fors.length
+              lookFors.length
                 ? `<div class="bh-activity-block">
                     <strong>Language Look-Fors</strong>
-                    <ul class="bh-frame-list">${exitTicket.look_fors.map((lf) => `<li>${esc(lf)}</li>`).join("")}</ul>
+                    <ul class="bh-frame-list">${lookFors.map((lf) => `<li>${esc(lf)}</li>`).join("")}</ul>
                   </div>`
                 : ""
             }
@@ -702,19 +942,23 @@ function renderActivitiesTab() {
               exitTicket.quick_rubric
                 ? `<div class="bh-activity-block">
                     <strong>Quick Formative Rubric</strong>
-                    <div class="bh-rubric-grid">
-                      <div class="bh-rubric-col is-emerging">
-                        <strong>Emerging</strong>
-                        <p style="margin:0">${esc(exitTicket.quick_rubric.emerging || "")}</p>
-                      </div>
-                      <div class="bh-rubric-col is-developing">
-                        <strong>Developing</strong>
-                        <p style="margin:0">${esc(exitTicket.quick_rubric.developing || "")}</p>
-                      </div>
-                      <div class="bh-rubric-col is-proficient">
-                        <strong>Proficient</strong>
-                        <p style="margin:0">${esc(exitTicket.quick_rubric.proficient || "")}</p>
-                      </div>
+                    <div class="bh-rubric-table-wrap">
+                      <table class="bh-rubric-table">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="is-emerging">Emerging (L1–2)</th>
+                            <th scope="col" class="is-developing">Developing (L3–4)</th>
+                            <th scope="col" class="is-proficient">Proficient (L5–6)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td data-label="Emerging (L1–2)">${esc(exitTicket.quick_rubric.emerging || "Uses single words, visuals, or teacher-modeled stems.")}</td>
+                            <td data-label="Developing (L3–4)">${esc(exitTicket.quick_rubric.developing || "Connects unit ideas using provided sentence frames and key vocabulary.")}</td>
+                            <td data-label="Proficient (L5–6)">${esc(exitTicket.quick_rubric.proficient || "Produces cohesive academic explanations independently with precise unit terms.")}</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>`
                 : ""
@@ -773,6 +1017,7 @@ function renderFamilyTab() {
   const card = normalizeFamilyBridge(detail, langMeta.code);
   const familyUrl = `https://thelanguagepage.com/family/bcpss/${encodeURIComponent(unit.id)}`;
   const localFamilyHref = `/family/bcpss/${encodeURIComponent(unit.id)}?lang=${encodeURIComponent(langMeta.code)}`;
+  const pdfPacketUrl = buildExportUrl(unit.id, "pdf", state.wida);
   const qrSvg = renderQrSvg(familyUrl, { sizePx: 168, label: `QR code for ${familyUrl}` });
 
   panel.innerHTML = `
@@ -837,7 +1082,10 @@ function renderFamilyTab() {
           <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-copy-family-link="${esc(familyUrl)}">
             Copy Family Link
           </button>
-          <a class="bh-btn bh-btn-secondary bh-btn-sm" href="${esc(localFamilyHref)}" target="_blank" rel="noopener">
+          <a class="bh-btn bh-btn-secondary bh-btn-sm" href="${esc(pdfPacketUrl)}" download data-export-download="pdf">
+            Download Printable Packet (PDF)
+          </a>
+          <a class="bh-btn bh-btn-ghost bh-btn-sm" href="${esc(localFamilyHref)}" target="_blank" rel="noopener">
             Open Family Page ↗
           </a>
         </div>
@@ -1146,8 +1394,10 @@ function bindEvents() {
       if (next && next !== state.wida) {
         state.wida = next;
         syncUrl();
+        renderResourceExportBar();
         renderConnectionsTab();
         renderActivitiesTab();
+        renderFamilyTab();
         renderPrintKit();
         trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
         announce(`Switched to WIDA ${widaLabel(state.wida)} scaffolds.`);
@@ -1178,6 +1428,29 @@ function bindEvents() {
       $("#subjectSelect").value = state.subject;
       await loadUnits(targetUnit);
       $("#workspaceSection").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    }
+  });
+
+  $("#panel-connections").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const vocabCard = e.target.closest("[data-vocab-word]");
+    if (!vocabCard) return;
+    e.preventDefault();
+    const word = vocabCard.dataset.vocabWord;
+    trackTelemetry(state.unitId, state.wida, "vocab_lookup");
+    copyToClipboard(word);
+  });
+
+  // Resource Export Bar telemetry + Quick Print Kit trigger
+  $("#resourceExportBar")?.addEventListener("click", (e) => {
+    if (e.target.closest("[data-export-download]")) {
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      return;
+    }
+    if (e.target.closest("[data-quick-print-kit]")) {
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      renderPrintKit();
+      window.print();
     }
   });
 
@@ -1225,13 +1498,19 @@ function bindEvents() {
       const u = state.detail.unit;
       const exitTicket = safeParseJson(state.detail.connections?.[0]?.language_exit_ticket_json, null);
       if (!exitTicket) return;
+      const rawLookFors = exitTicket.look_fors || exitTicket.success_criteria;
+      const lookForsList = Array.isArray(rawLookFors)
+        ? rawLookFors.filter(Boolean)
+        : typeof rawLookFors === "string" && rawLookFors.trim()
+          ? [rawLookFors.trim()]
+          : [];
       const lines = [
         `3-Minute Language Exit Ticket — Unit ${u.unit_number}: ${u.unit_title}`,
         "",
         `Prompt:\n${exitTicket.prompt || ""}`,
         "",
-        ...(Array.isArray(exitTicket.look_fors) && exitTicket.look_fors.length
-          ? ["Look-Fors:", ...exitTicket.look_fors.map((lf) => `• ${lf}`), ""]
+        ...(lookForsList.length
+          ? ["Look-Fors:", ...lookForsList.map((lf) => `• ${lf}`), ""]
           : []),
         ...(exitTicket.quick_rubric
           ? [
@@ -1264,8 +1543,12 @@ function bindEvents() {
     copyToClipboard(text, copyBtn, "Copied!");
   });
 
-  // Family Bridge panel delegation (Language preview toggle + Copy Family Link)
+  // Family Bridge panel delegation (Language preview toggle + Copy Family Link + PDF Download)
   $("#panel-family").addEventListener("click", (e) => {
+    if (e.target.closest("[data-export-download]")) {
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      return;
+    }
     const langBtn = e.target.closest("[data-family-lang]");
     if (langBtn) {
       const code = langBtn.dataset.familyLang;

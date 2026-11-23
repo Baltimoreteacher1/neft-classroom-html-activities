@@ -309,9 +309,9 @@ const SCIENCE_SPECS = [
     unit_title: "How Does Water Shape Our World?",
     unit_summary: "Students investigate the water cycle, rock weathering, erosion, and deposition in IQWST Earth Science to explain how water carves valleys and reshapes landscapes.",
     core_standards: ["MS-ESS2-1", "MS-ESS2-2", "MS-ESS2-4"],
-    blueprint_id: "explain-cause-effect",
-    unit_example_frame: "As moving water erodes [rock/sediment] along [slope], it leads to [deposition/landform change] downstream.",
-    cross_subject_bridge_note: "Bridges Grade 6 Ancient Civilizations (Nile, Tigris-Euphrates river silt & agriculture) and Grade 6 Reveal Math area/volume rates.",
+    blueprint_id: "explain-proportional-reasoning",
+    unit_example_frame: "For every increase in [slope/water volume], the rate of [erosion/sediment transport] scales proportionally, reshaping [landform] downstream.",
+    cross_subject_bridge_note: "Directly transfers proportional rate reasoning with Grade 6 Reveal Math (Ratios & Rates) and connects to Grade 6 Ancient Civilizations river-valley silt deposition.",
     vocab: [v("weathering", 3, null, "breaking rock into smaller pieces over time"), v("erosion", 3, "erosión", "carrying weathered sediment to a new location"), v("deposition", 3, "deposición", "dropping sediment when water slows down"), v("elevation", 3, "elevación", "height of land above sea level")],
   },
 

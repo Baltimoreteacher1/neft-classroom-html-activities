@@ -412,7 +412,7 @@ const MATH_SPECS = [
     core_standards: ["6.RP.A.1", "6.RP.A.2", "6.RP.A.3"],
     blueprint_id: "explain-proportional-reasoning",
     unit_example_frame: "For every [a] [unit A], there are [b] [unit B]; scaling both quantities by [factor] gives an equivalent ratio of [c] to [d].",
-    cross_subject_bridge_note: "Directly transfers multiplicative rate language to Grade 6 IQWST Ecology population ratios and Ancient Civilizations trade exchanges.",
+    cross_subject_bridge_note: "Directly transfers multiplicative rate language to Grade 6 IQWST Earth Science (How Does Water Shape Our World?) erosion/water-flow rates and Ancient Civilizations trade exchanges.",
     external_content_lab_url: "https://eduwonderlab.com/curriculum/learning-labs/",
     external_content_lab_label: "Launch Ratios, Rates & Unit Rate Learning Labs on EduWonderLab",
     vocab: [v("ratio", 3, "razón", "a multiplicative comparison of two quantities"), v("unit rate", 3, "tasa unitaria", "how much of one quantity corresponds to 1 unit of another"), v("equivalent ratio", 3, "razón equivalente", "ratios expressing the same relationship after scaling"), v("tape diagram", 3, "diagrama de cinta", "visual bar model showing relative ratio parts")],

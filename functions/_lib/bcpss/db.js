@@ -89,6 +89,7 @@ function normalizeBlueprint(row) {
 
 function normalizeUnit(row) {
   if (!row) return null;
+  const seedUnit = !row.essential_question ? BCPSS_UNITS.find((u) => u.id === row.id) : null;
   return {
     id: row.id,
     grade: String(row.grade),
@@ -97,6 +98,7 @@ function normalizeUnit(row) {
     unit_number: Number(row.unit_number),
     unit_title: row.unit_title,
     unit_summary: row.unit_summary,
+    essential_question: row.essential_question ?? seedUnit?.essential_question ?? null,
     core_standards: maybeParseJson(row.core_standards),
     external_content_lab_url: row.external_content_lab_url ?? null,
     external_content_lab_label: row.external_content_lab_label ?? null,

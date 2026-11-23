@@ -310,9 +310,9 @@ const SOCIAL_STUDIES_SPECS = [
     unit_title: "Classical Mediterranean: Ancient Greece & Rome",
     unit_summary: "Students evaluate Athenian democracy, Roman republican institutions, and citizenship limits using primary sources to build historical arguments.",
     core_standards: ["D2.Civ.3.6-8", "D2.His.16.6-8"],
-    blueprint_id: "argue-claim-evidence",
-    unit_example_frame: "According to [primary source], [Athens/Rome] expanded or limited citizenship by [cited evidence].",
-    cross_subject_bridge_note: "Transfers directly to Grade 6 Wit & Wisdom (Courage in Crisis) and Grade 6 IQWST Ecology evidence claims.",
+    blueprint_id: "argue-justify-solution",
+    unit_example_frame: "To evaluate how [Athens/Rome] governed citizenship, I examined [primary source] and justified that [civic system] was more effective because [historical criterion].",
+    cross_subject_bridge_note: "Transfers structured solution-justification moves directly with Grade 6 Reveal Math (Area & Algebraic Equations) while reinforcing Grade 6 Wit & Wisdom (Courage in Crisis) evidence debates.",
     vocab: [v("democracy", 3, "democracia", "government in which citizens hold voting power"), v("republic", 3, "república", "government where citizens elect representatives"), v("citizenship", 3, "ciudadanía", "legal membership with rights and duties"), v("primary source", 3, "fuente primaria", "firsthand historical document or artifact")],
   },
 
