@@ -223,6 +223,9 @@ ok((await page.locator(".task-card").count()) >= 18, "speaking chooser lists the
 
 await go(`${BASE}/speak/spk-seedlings-retell`);
 await page.getByLabel("On my own").check();
+await page.waitForFunction(
+  () => !document.querySelector(".frames, .wordbank, details[data-model]"),
+);
 ok(
   (await page.locator(".frames, .wordbank, details[data-model]").count()) === 0,
   "independent speaking shows no frames, word bank or model",
@@ -680,6 +683,7 @@ ok(
 await page.locator(".next-phase").click();
 await page.locator('a[href*="write/garden-write-plan"]').click();
 await page.getByLabel("With frames and words").check();
+await page.locator(".frames").waitFor();
 const gardenDraft =
   "Dear Principal, I recommend putting dry leaves on two sunny beds first. The leaves tray had 78 mL of water left, while the uncovered tray had 54 mL. Mulch shades soil and slows evaporation, so more water may stay near the roots. The team can check the soil on Wednesday and record whether the covered beds are still damp.";
 await page.locator("[data-draft]").fill(gardenDraft);
@@ -689,6 +693,7 @@ await page
   .locator("[data-reflection]")
   .fill("I added a test number and explained why mulch can help.");
 await page.locator("[data-finish]").click();
+await page.locator(".saved-note").waitFor();
 await go(`${BASE}/missions/saving-the-school-garden?phase=write&grades=3-5`);
 ok(
   (await page.locator(".next-phase").count()) === 1 &&
@@ -731,6 +736,7 @@ await page
   .locator("[data-reflection]")
   .fill("I compared both trays and explained what this test cannot show.");
 await page.locator("[data-finish]").click();
+await page.locator(".saved-note").waitFor();
 await go(`${BASE}/missions/saving-the-school-garden?phase=transfer&grades=3-5`);
 ok(
   (await page.locator(".mission-phase .studio-task .mode-pill.is-done").count()) === 1,
@@ -810,7 +816,7 @@ ok(
   "passport can produce share codes with synthetic literacy evidence",
 );
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
-await page.locator("#task-review > summary").click();
+await page.locator("#tab-review").click();
 await openHubSections(page);
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");
@@ -967,7 +973,7 @@ await page.evaluate(() => {
 });
 await page.reload({ waitUntil: "networkidle" });
 // A reload starts the hub folded again (fold state lives only for the tab), so open it as a teacher does.
-await page.locator("#task-review > summary").click();
+await page.locator("#tab-review").click();
 await openHubSections(page);
 await page.locator('[data-tab="blueprint"]').click();
 await page.locator("[data-align-reset]").click();
@@ -1321,7 +1327,7 @@ const teacherCtx = await browser.newContext({ viewport: { width: 1200, height: 9
 const tPage = await teacherCtx.newPage();
 tPage.on("pageerror", (e) => !noise.test(e.message) && problems.push(`pageerror: ${e.message}`));
 await tPage.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
-await tPage.locator("#task-review > summary").click();
+await tPage.locator("#tab-review").click();
 await openHubSections(tPage);
 await tPage.waitForSelector('[data-tab="plans"]');
 await tPage.locator('[data-tab="plans"]').click();
@@ -1453,7 +1459,7 @@ await go(`${BASE}/vocabulary`);
 await axeCheck("vocabulary word builder");
 await capture("vocabulary-desktop.png");
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
-await page.locator("#task-review > summary").click();
+await page.locator("#tab-review").click();
 await openHubSections(page);
 await page.waitForSelector("#classEvidence td.t-title");
 await axeCheck("teacher dashboard");

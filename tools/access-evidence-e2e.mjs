@@ -252,10 +252,15 @@ ok(
 
 // ── Reading log ───────────────────────────────────────────────────────────────
 await go(`${BASE}/reading-room`);
+await page.locator(".rr-tools-disclosure > summary").click();
 await page.locator("[data-rr-log-title]").fill("Charlotte's Web");
 await page.locator("[data-rr-log-minutes]").fill("20");
 await page.locator("[data-rr-log-note]").fill("Wilbur is brave");
 await page.locator("[data-rr-log-add]").click();
+await page.locator(".rr-log-list li").first().waitFor({ state: "attached" });
+if (!(await page.locator(".rr-tools-disclosure").evaluate((el) => el.open))) {
+  await page.locator(".rr-tools-disclosure > summary").click();
+}
 await page.waitForSelector(".rr-log-list li");
 ok(
   (await page.locator(".rr-log-sum").innerText()).includes("1 text"),
@@ -316,6 +321,7 @@ const [code] = await page.evaluate(async () => {
   return [m.encodeShare(bundle)];
 });
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await page.locator("#tab-review").click();
 await openHubSections(page);
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");

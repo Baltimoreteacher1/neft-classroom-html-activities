@@ -78,6 +78,8 @@ export function hrefProblem(href, facts, content) {
     "/language-adventures/",
     "/language-studio/",
     "/graphic-novels/",
+    "/bcpss-teachers",
+    "/bcpss-teachers/",
   ];
   if (external.includes(path)) return null;
   if (!path.startsWith(`${BASE}/`)) return "not under the lab";

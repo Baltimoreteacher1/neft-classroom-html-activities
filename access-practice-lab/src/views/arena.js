@@ -2,6 +2,7 @@
 // claim-evidence-reasoning argument (drag a card, or tap to place it), rehearse the speaking turn with the lab's
 // recorder, answer a counterargument, rate with a rubric, and print an argument card.
 // Practice on this device: checks look for words and patterns and never judge meaning. Recordings stay in the tab.
+import { onRoundtableClick, onRoundtableInput, roundtableHTML } from "./roundtable.js";
 import { recorderHTML, setComponentsI18n } from "../components.js";
 import { FRAMES, findTopic, topicsFor } from "../content/craft-arena.js";
 import { i18nFor } from "../i18n.js";
@@ -479,7 +480,7 @@ export async function render(ctx) {
   const id = ctx.route.id || "";
   const topic = id ? findTopic(id) : null;
   current = topic ? { id } : null;
-  if (!id) return { title: I.S("Argument Arena", "Arena de argumentos"), html: html`${hubHTML(ctx, I)}${(await import("./roundtable.js")).roundtableHTML(ctx)}` };
+  if (!id) return { title: I.S("Argument Arena", "Arena de argumentos"), html: html`${hubHTML(ctx, I)}${roundtableHTML(ctx)}` };
   if (!topic || topic.band !== ctx.band)
     return {
       title: I.S("Not found", "No se encontró"),
@@ -542,8 +543,7 @@ function logArgument(ctx, topic, t, level) {
   });
 }
 
-export async function onClick(e, ctx) {
-  const { onRoundtableClick } = await import("./roundtable.js");
+export function onClick(e, ctx) {
   if (onRoundtableClick(e, ctx)) return true;
   if (levelClick(e, ctx)) return true;
   if (!current) return false;
@@ -660,7 +660,7 @@ export async function onClick(e, ctx) {
 }
 
 export function onInput(e) {
-  import("./roundtable.js").then((m) => m.onRoundtableInput(e));
+  onRoundtableInput(e);
   const f = e.target?.dataset?.arField;
   if (!f || !current) return;
   edit(current.id, (t) => {

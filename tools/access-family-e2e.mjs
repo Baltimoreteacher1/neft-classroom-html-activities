@@ -160,8 +160,8 @@ try {
     // The audience navigation (2026-11-17) keeps the same six places in every language.
     const topLinks = await page.locator("nav.lab-tools a.top-aud").allInnerTexts();
     ok(
-      ["Inicio", "Docentes", "Estudiantes", "Familias", "Buscar recursos", "Ayuda"].every(
-        (label, index) => topLinks[index]?.includes(label),
+      ["Docentes", "Estudiantes", "Familias", "Buscar recursos", "Ayuda"].every((label, index) =>
+        topLinks[index]?.includes(label),
       ),
       `L: header nav is Spanish (${topLinks.map((t) => t.trim()).join(" | ")})`,
     );
@@ -276,6 +276,7 @@ try {
     await page.locator('[data-fam-grade="3-5"]').click();
     await page.locator('[data-fam-who-pick="together"]').click();
     await page.locator('[data-fam-minutes="5"]').click();
+    await page.getByText("Todo listo").waitFor();
     ok((await page.text()).includes("Todo listo"), "A: setup finishes in Spanish");
     const fam = ((await page.prefs()) || {}).family || {};
     ok(
@@ -434,6 +435,7 @@ try {
       "D: Save & Continue Later page (Spanish)",
     );
     await page.locator("[data-fam-switch]").click();
+    await page.getByText("Primero copie").first().waitFor();
     ok(
       (await page.text()).includes("Primero copie"),
       "D: switching is refused before a backup exists",
@@ -835,7 +837,7 @@ try {
   {
     const page = await newPage({ width: 1280 });
     await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
-    await page.locator("#task-plan > summary").click();
+    await page.locator("#tab-plan").click();
     await openHubSections(page);
     await page.waitForSelector("#familyTrip");
     const tripToggle = page.locator("#familyTrip .fold-toggle");
@@ -852,9 +854,7 @@ try {
       (await page.locator('a[href*="language-passport-teacher-key.pdf"]').count()) === 1,
       "Teacher Hub: teacher key is linked inside the gated hub",
     );
-    if (!(await page.locator("#task-find").evaluate((el) => el.open))) {
-      await page.locator("#task-find > summary").click();
-    }
+    await page.locator("#tab-resources").click();
     const contentToggle = page.locator("#accContent .fold-toggle");
     if ((await contentToggle.getAttribute("aria-expanded")) !== "true") await contentToggle.click();
     await page.locator("[data-f=domain]").selectOption("Reading");
@@ -868,6 +868,7 @@ try {
       "Teacher Hub: activity filter reset preserves trip assignment choices",
     );
     await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.locator("#tab-plan").click();
     await page.locator("[data-trip-copy]").click();
     await page.waitForFunction(() =>
       /copied|unavailable/i.test(document.querySelector("[data-trip-status]")?.textContent || ""),
@@ -958,6 +959,7 @@ try {
           );
           await page.go(`${BASE}/family/trip?grades=3-5`);
           await page.locator(`[data-trip-begin="${skill}"]`).click();
+          await page.getByText(mode === "en" ? "Stop 1 of 6" : "Parada 1 de 6").waitFor();
           const stopText = await page.text();
           ok(
             stopText.includes(mode === "en" ? "Stop 1 of 6" : "Parada 1 de 6"),
@@ -1070,6 +1072,7 @@ try {
     });
     ok(visible, "K: a focused button shows a focus ring (2px or more)");
     await page.keyboard.press("Enter");
+    await page.getByText("Paso 3").waitFor();
     ok((await page.text()).includes("Paso 3"), "K: Enter on a grade choice advances to step 3");
     await page.keyboard.press("Escape");
     clean(page, "journey K");

@@ -82,8 +82,8 @@ let page = await open("/");
 // No door opens a tour: the Teacher door opens the Teacher Hub, the Family door the family start page, and the
 // Teacher start page (/start, in More) offers the tour among other choices.
 ok(
-  (await page.locator(".lpa-doors .lpa-door").count()) === 3,
-  "home shows the three audience doors",
+  (await page.locator(".lpa-doors .lpa-door").count()) === 4,
+  "home shows the four audience doors",
 );
 ok(
   (await page.locator(".lpa-door.is-teacher").innerText()).includes("Teacher"),

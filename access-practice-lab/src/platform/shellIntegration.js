@@ -91,6 +91,8 @@ export function mountPlatformControls(ctx) {
     bar = document.createElement("div");
     bar.id = "tlpControlBar";
     bar.className = "tlp-control-bar no-print";
+    bar.setAttribute("role", "region");
+    bar.setAttribute("aria-label", "Workspace controls");
     header.after(bar);
   }
 

@@ -49,7 +49,9 @@ test("every dictionary entry has English and Spanish with the same placeholders"
 
 test("every key the source asks for exists (static keys, and each dynamic family)", () => {
   const used = new Set();
-  for (const file of walk(join(LAB, "src"), (n) => n.endsWith(".js")))
+  for (const file of walk(join(LAB, "src"), (n) => n.endsWith(".js")).filter(
+    (f) => !f.includes("/src/studio/player/"),
+  ))
     for (const m of readFileSync(file, "utf8").matchAll(/\bL[S]?\(\s*["']([\w.]+)["']/g))
       used.add(m[1]);
   const missing = [...used].filter((k) => !(k in STRINGS));

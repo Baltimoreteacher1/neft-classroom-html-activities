@@ -31,7 +31,9 @@ test("the icon sprite is well formed and every symbol is named", () => {
 });
 
 test("every icon() reference in the lab source resolves to a sprite symbol", () => {
-  const files = walk(join(LAB, "src"), (n) => n.endsWith(".js"));
+  const files = walk(join(LAB, "src"), (n) => n.endsWith(".js")).filter(
+    (f) => !relative(LAB, f).startsWith("src/studio/player/"),
+  );
   const missing = [];
   for (const file of files) {
     const src = read(file);

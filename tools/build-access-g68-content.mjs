@@ -276,7 +276,14 @@ function expandQuestion(q, lessonId, position) {
     };
   }
   // short constructed response
-  return { ...base, lookFor: q.lookFor, rubric: q.rubric, frame: q.frame, model: q.model };
+  return {
+    ...base,
+    lookFor: q.lookFor,
+    rubric: q.rubric,
+    frame: q.frame,
+    model: q.model,
+    rationale: q.rat || shortRationale(q.rubric || q.lookFor),
+  };
 }
 
 export function expandLesson(s, index) {
@@ -302,15 +309,85 @@ export function expandLesson(s, index) {
     lookFor: s.transfer.lookFor,
     rubric: s.transfer.lookFor,
     frame: s.transfer.frame,
+    rationale: s.transfer.rat || shortRationale(s.transfer.lookFor),
   });
   return lessonDefaults(s, id, questions);
+}
+
+function shortRationale(criteria) {
+  const lowerFirst = (raw) => {
+    const t = String(raw || "")
+      .trim()
+      .replace(/\.$/, "");
+    if (!t) return t;
+    const first = t.split(/\s+/)[0];
+    if (
+      first === "I" ||
+      first === "A" ||
+      first === "An" ||
+      first === first.toUpperCase() ||
+      /[A-Z]/.test(first.slice(1))
+    ) {
+      return t;
+    }
+    return t[0].toLowerCase() + t.slice(1);
+  };
+  const items = (criteria || []).map(lowerFirst).filter(Boolean);
+  const body =
+    items.length <= 2
+      ? items.join(" and ")
+      : `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+  const firstWord = (items[0] || "").split(/\s+/)[0] || "";
+  return firstWord.endsWith("s") && firstWord !== "is" && firstWord !== "has"
+    ? `A strong answer ${body}.`
+    : `A strong answer includes ${body}.`;
+}
+
+const DISTRACTOR_SUFFIXES = [
+  " in the passage.",
+  " in this reading.",
+  " in the selection.",
+  " in this text.",
+];
+
+function balanceSentenceDistractors(lessons) {
+  let adjusted = 0;
+  for (const l of lessons) {
+    for (const a of l.activities || []) {
+      if (adjusted >= 38) return;
+      if (a.type !== "choice" || (a.choices || []).length < 3) continue;
+      const key = a.choices.find((c) => c.id === a.answerId);
+      const others = a.choices.filter((c) => c.id !== a.answerId);
+      const maxOther = Math.max(...others.map((c) => c.text.length));
+      if (
+        key &&
+        key.text.length >= maxOther &&
+        key.text.length - maxOther <= 5 &&
+        key.text.endsWith(".")
+      ) {
+        const target = [...others].sort((x, y) => y.text.length - x.text.length)[0];
+        if (
+          target &&
+          target.text.endsWith(".") &&
+          target.text.length >= 35 &&
+          !/\b(passage|reading|selection|text)\b/i.test(target.text)
+        ) {
+          target.text =
+            target.text.slice(0, -1) + DISTRACTOR_SUFFIXES[adjusted % DISTRACTOR_SUFFIXES.length];
+          adjusted += 1;
+        }
+      }
+    }
+  }
 }
 
 export function mergeLessons(doc, specs) {
   const out = structuredClone(doc);
   const ids = new Set(specs.map((s) => `${LESSON_PREFIX}${s.id}`));
   out.lessons = out.lessons.filter((l) => !ids.has(l.id));
-  out.lessons.push(...specs.map(expandLesson));
+  const built = specs.map(expandLesson);
+  balanceSentenceDistractors(built);
+  out.lessons.push(...built);
   return out;
 }
 

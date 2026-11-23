@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "3d7afd5d4d2e";
+const BUILD_HASH = "641ae959b445";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=355e4699cf30",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -98,7 +98,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/voice.js?v=d2bd8c269ad1",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
-  "/access-practice-lab/src/platform/shellIntegration.js?v=29c8d0524d1c",
+  "/access-practice-lab/src/platform/shellIntegration.js?v=51bcc380f1f8",
   "/access-practice-lab/src/platform/data/platformData.js?v=94df05f5994a",
   "/access-practice-lab/src/platform/services/logger.js?v=87651c076e60",
   "/access-practice-lab/src/platform/services/storageService.js?v=95b09eaffc0c",
@@ -226,7 +226,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-n.css?v=db27ad1c3565",
   "/access-practice-lab/games-o.css?v=691e951814e4",
   "/access-practice-lab/games-p.css?v=b26757f16218",
-  "/access-practice-lab/labs.css?v=0102db1b6068",
+  "/access-practice-lab/labs.css?v=e08a0b15cf26",
   "/access-practice-lab/acc-engine.css?v=bda948876b23",
   "/access-practice-lab/path.css?v=22804acf290e",
   "/access-practice-lab/scaffold.css?v=7f2c0c1998df",
@@ -251,7 +251,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/language-games.css?v=2625edcd8271",
   "/access-practice-lab/book-collab.css?v=ed2f261eb9eb",
   "/access-practice-lab/wayfinding.css?v=ade1e023ae16",
-  "/access-practice-lab/arcade.css?v=add7cfd209f8",
+  "/access-practice-lab/arcade.css?v=b911b396b309",
   "/access-practice-lab/arcade-od.css?v=980fb9bb387b",
   "/access-practice-lab/play-arcade.css?v=5943ef9f85d1",
   "/access-practice-lab/registers.css?v=9e3328108cb4",
@@ -1054,7 +1054,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/activity.js?v=b0397f547847",
   "/access-practice-lab/src/views/adventures-scenes.js?v=a1139ece4816",
   "/access-practice-lab/src/views/adventures.js?v=7c662fdb2955",
-  "/access-practice-lab/src/views/arena.js?v=b5270192ea77",
+  "/access-practice-lab/src/views/arena.js?v=3c53fc5f00ed",
   "/access-practice-lab/src/views/assess.js?v=48bf2625256a",
   "/access-practice-lab/src/views/avatar-panel.js?v=87a27ec13523",
   "/access-practice-lab/src/views/benchmark-panel.js?v=8bfd0af2c77e",

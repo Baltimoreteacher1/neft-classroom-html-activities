@@ -398,9 +398,9 @@ test("Argument Arena: choose a side, tap to place two cards, check, and the argu
   const topic = arenaData.findTopic("phones");
   const ctx = ctxFor("arena", "en", topic.id, "", "6-8");
   let out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector('[data-ar-step="claim"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="claim"]'));
   out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector('[data-ar-side="y"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-side="y"]'));
   out = await draw("arena", ctx);
   const type = (name, value) => {
     const el = out.root.querySelector(`[data-ar-field="${name}"]`);
@@ -408,17 +408,25 @@ test("Argument Arena: choose a side, tap to place two cards, check, and the argu
     arena.onInput({ target: el });
   };
   type("claim", "I believe students should keep phones in lockers during school.");
-  click("arena", ctx, out.root.querySelector('[data-ar-step="build"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="build"]'));
   out = await draw("arena", ctx);
   const yes = topic.cards.filter((c) => c.side === "y");
-  click("arena", ctx, out.root.querySelector(`[data-ar-place="${yes[0].id}"][data-slot="0"]`));
+  await click(
+    "arena",
+    ctx,
+    out.root.querySelector(`[data-ar-place="${yes[0].id}"][data-slot="0"]`),
+  );
   out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector(`[data-ar-place="${yes[1].id}"][data-slot="1"]`));
+  await click(
+    "arena",
+    ctx,
+    out.root.querySelector(`[data-ar-place="${yes[1].id}"][data-slot="1"]`),
+  );
   out = await draw("arena", ctx);
   type("note0", "According to a teacher, discussions grew longer once phones were put away.");
   type("note1", "Research says a phone in sight makes it harder to focus on a task.");
   type("reason", "This matters because students learn more when they can focus on each other.");
-  click("arena", ctx, out.root.querySelector("[data-ar-check-arg]"));
+  await click("arena", ctx, out.root.querySelector("[data-ar-check-arg]"));
   out = await draw("arena", ctx);
   assert.ok(out.root.querySelector(".cs-win"), "a complete argument gets the win message");
   const entry = loadLedger().entries.find((e) => e.src === "arena");
@@ -426,15 +434,15 @@ test("Argument Arena: choose a side, tap to place two cards, check, and the argu
   assert.equal(entry.stage, "supported", "level A is supported work");
   assert.ok(entry.m.words > 20, "the argument text was analyzed");
   // Move to counter, respond, and finish.
-  click("arena", ctx, out.root.querySelector('[data-ar-step="counter"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="counter"]'));
   out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector('[data-ar-counter-type="agree"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-counter-type="agree"]'));
   out = await draw("arena", ctx);
   type("counter", "You make a good point, but families can still reach the office.");
-  click("arena", ctx, out.root.querySelector("[data-ar-check-counter]"));
+  await click("arena", ctx, out.root.querySelector("[data-ar-check-counter]"));
   out = await draw("arena", ctx);
   assert.ok(out.root.querySelector(".cs-win"));
-  click("arena", ctx, out.root.querySelector('[data-ar-step="card"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="card"]'));
   out = await draw("arena", ctx);
   assert.ok(out.root.querySelector(".arena-card"), "the printable card exists");
   assert.match(out.root.querySelector(".arena-card").textContent, /phones in lockers/);
@@ -452,17 +460,17 @@ test("Argument Arena: a card on the other side is flagged, and level C hides eve
   const topic = arenaData.findTopic("phones");
   const ctx = ctxFor("arena", "en", topic.id, "", "6-8");
   let out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector('[data-ar-step="claim"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="claim"]'));
   out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector('[data-ar-side="y"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-side="y"]'));
   out = await draw("arena", ctx);
   assert.equal(out.root.querySelectorAll(".cs-frame").length, 0, "no frames at level C");
-  click("arena", ctx, out.root.querySelector('[data-ar-step="build"]'));
+  await click("arena", ctx, out.root.querySelector('[data-ar-step="build"]'));
   out = await draw("arena", ctx);
   const no = topic.cards.find((c) => c.side === "n");
-  click("arena", ctx, out.root.querySelector(`[data-ar-place="${no.id}"][data-slot="0"]`));
+  await click("arena", ctx, out.root.querySelector(`[data-ar-place="${no.id}"][data-slot="0"]`));
   out = await draw("arena", ctx);
-  click("arena", ctx, out.root.querySelector("[data-ar-check-arg]"));
+  await click("arena", ctx, out.root.querySelector("[data-ar-check-arg]"));
   out = await draw("arena", ctx);
   assert.match(
     out.root.querySelector(".cs-feedback").textContent,
