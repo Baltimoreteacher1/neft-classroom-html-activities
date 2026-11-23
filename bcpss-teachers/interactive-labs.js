@@ -402,6 +402,20 @@ function stopRecorderResources(studioState) {
   }
 }
 
+/** The API returns blueprint fields flat on each connection (no nested `blueprint`). */
+function blueprintOf(conn) {
+  if (!conn) return {};
+  if (conn.blueprint && typeof conn.blueprint === "object" && conn.blueprint.scaffolds_json) return conn.blueprint;
+  return {
+    ...(conn.blueprint || {}),
+    id: conn.blueprint_id,
+    wida_klu: conn.wida_klu,
+    move_name: conn.move_name,
+    syntax_pattern: conn.syntax_pattern,
+    scaffolds_json: conn.scaffolds_json,
+  };
+}
+
 export function renderInteractiveStudio(
   container,
   { unit, connection, blueprint, wida = "3_4", onTelemetry, onWidaChange } = {},
@@ -427,7 +441,7 @@ export function renderInteractiveStudio(
     return;
   }
 
-  const bp = blueprint || connection.blueprint || {};
+  const bp = blueprint?.scaffolds_json ? blueprint : blueprintOf(connection);
   const scaffold = extractScaffoldForTier(bp.scaffolds_json, wida);
   const vocab = normalizeVocab(connection.tier2_tier3_vocab);
   const clozeItems = normalizeClozeItems(connection.interactive_cloze_items, vocab, connection);

@@ -75,6 +75,20 @@ const state = {
   },
 };
 
+/** The API returns blueprint fields flat on each connection (no nested `blueprint`). */
+function blueprintOf(conn) {
+  if (!conn) return {};
+  if (conn.blueprint && typeof conn.blueprint === "object" && conn.blueprint.scaffolds_json) return conn.blueprint;
+  return {
+    ...(conn.blueprint || {}),
+    id: conn.blueprint_id,
+    wida_klu: conn.wida_klu,
+    move_name: conn.move_name,
+    syntax_pattern: conn.syntax_pattern,
+    scaffolds_json: conn.scaffolds_json,
+  };
+}
+
 function $(sel, root = document) {
   return root.querySelector(sel);
 }
@@ -1100,7 +1114,7 @@ function drawActivityPage() {
   }
 
   const conn = detail.connections?.[0] || {};
-  const bp = conn.blueprint || {};
+  const bp = blueprintOf(conn);
   const activities = Array.isArray(detail.activities) ? detail.activities : [];
   const { activity, index: activeIndex } = getSelectedActivity(activities);
 
@@ -1160,15 +1174,36 @@ function drawActivityPage() {
     const clozeItems = normalizeClozeItems(conn.interactive_cloze_items, vocab);
     workspaceHtml = renderVocabWorkspace({ vocab, clozeItems });
   } else if (kind === "speaking") {
-    const partnerTalk = normalizePartnerTalk(conn.partner_talk_json, unit, conn, activity);
+    const partnerTalk = normalizePartnerTalk(conn.partner_talk_protocol, unit, conn, activity);
     workspaceHtml = renderSpeakingWorkspace({ partnerTalk, frameStarters });
   } else {
     workspaceHtml = renderWritingWorkspace({ frameStarters, wordChips });
   }
 
   document.title = `${activity.title} · ${gradeLabel(unit.grade)} ${unit.curriculum_name || unit.subject} — EduWonderLab`;
+  document.body.dataset.mode = state.mode;
+  document.body.dataset.wida = state.wida;
+
+  const tierTargets = safeParseJson(activity.differentiated_targets, null);
+  const tierTarget = String(
+    (tierTargets && typeof tierTargets === "object" && (tierTargets[`level_${state.wida}`] || tierTargets[state.wida])) || "",
+  ).trim();
+  const isTeacher = state.mode === "teacher";
+  const modeBanner = `
+    <div class="av-mode-banner ${isTeacher ? "is-teacher" : "is-student"} no-print" role="status">
+      <strong>${isTeacher ? "Teacher View" : "Student View"}</strong>
+      <span>${
+        isTeacher
+          ? `Facilitation guide first, then a preview of exactly what students see at ${esc(widaLabel(state.wida))}.`
+          : `Showing the ${esc(widaLabel(state.wida))} version of this activity.`
+      }</span>
+    </div>`;
+  const teacherPanelHtml = renderTeacherPanel({ unit, conn, activity, bp });
 
   main.innerHTML = `
+    ${modeBanner}
+    ${isTeacher ? teacherPanelHtml : ""}
+    ${isTeacher ? `<p class="av-preview-label no-print">Student preview · ${esc(widaLabel(state.wida))}</p>` : ""}
     <article class="av-card" aria-label="Unit Activity">
       <div class="av-print-student-header print-only">
         <span>Name: __________________________________</span>
@@ -1198,6 +1233,11 @@ function drawActivityPage() {
           </button>
         </div>
         <p class="av-prompt-text">${esc(studentPrompt)}</p>
+        ${
+          tierTarget
+            ? `<div class="av-tier-target" data-tier="${esc(state.wida)}"><span class="av-tier-target-label">At your support level · ${esc(widaLabel(state.wida))}</span><p>${esc(tierTarget)}</p></div>`
+            : ""
+        }
         <p id="avPromptAudioStatus" class="av-audio-status no-print" role="status" hidden></p>
       </section>
 
@@ -1218,7 +1258,6 @@ function drawActivityPage() {
       ${workspaceHtml}
     </article>
 
-    ${renderTeacherPanel({ unit, conn, activity, bp })}
   `;
 
   renderStepper(activities, activeIndex);

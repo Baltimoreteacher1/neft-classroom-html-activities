@@ -455,6 +455,20 @@ function setProjectionMode(enabled) {
   );
 }
 
+/** The API returns blueprint fields flat on each connection (no nested `blueprint`). */
+function blueprintOf(conn) {
+  if (!conn) return {};
+  if (conn.blueprint && typeof conn.blueprint === "object" && conn.blueprint.scaffolds_json) return conn.blueprint;
+  return {
+    ...(conn.blueprint || {}),
+    id: conn.blueprint_id,
+    wida_klu: conn.wida_klu,
+    move_name: conn.move_name,
+    syntax_pattern: conn.syntax_pattern,
+    scaffolds_json: conn.scaffolds_json,
+  };
+}
+
 function applyWidaTier(next) {
   if (!next || next === state.wida || !WIDA_TIERS.some((t) => t.key === next)) return;
   state.wida = next;
@@ -1136,7 +1150,7 @@ function renderStudioTab() {
   renderInteractiveStudio(panel, {
     unit,
     connection: conn,
-    blueprint: conn?.blueprint || {},
+    blueprint: blueprintOf(conn),
     wida: state.wida,
     onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
     onWidaChange: (nextTier) => applyWidaTier(nextTier),
@@ -1327,7 +1341,7 @@ function renderConnectionsTab() {
     panel.innerHTML = `<div class="bh-empty">No WIDA language bridge connections recorded for this unit yet.</div>`;
     return;
   }
-  const bp = conn.blueprint || {};
+  const bp = blueprintOf(conn);
   const scaffold = extractScaffoldForTier(bp.scaffolds_json, state.wida);
   const vocab = normalizeVocab(conn.tier2_tier3_vocab);
   const l1List = normalizeL1Watchouts(conn.l1_watchouts);
@@ -1649,7 +1663,7 @@ function formatActivityForSlides(unit, act, idx) {
 }
 
 function formatPlaylistForCopy(unit, conn, acts) {
-  const scaffold = extractScaffoldForTier(conn?.blueprint?.scaffolds_json, state.wida);
+  const scaffold = extractScaffoldForTier(blueprintOf(conn).scaffolds_json, state.wida);
   const count = acts.length || 5;
   return [
     `BCPSS ${count}-Day Pre-Teaching Playlist — ${gradeLabel(unit.grade)} ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)}`,
@@ -2139,7 +2153,7 @@ function renderPrintKit() {
   if (!kit || !detail?.unit) return;
   const u = detail.unit;
   const conn = detail.connections?.[0] || {};
-  const bp = conn.blueprint || {};
+  const bp = blueprintOf(conn);
   const scaffold = extractScaffoldForTier(bp.scaffolds_json, state.wida);
   const vocab = normalizeVocab(conn.tier2_tier3_vocab);
   const transfers = Array.isArray(detail.cross_subject_transfers) ? detail.cross_subject_transfers : [];

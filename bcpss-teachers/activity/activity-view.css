@@ -1288,3 +1288,27 @@ html.is-high-contrast .av-card {
     height: 1.1rem;
   }
 }
+
+/* Mode banner, tier target, and teacher-first preview */
+.av-mode-banner {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: baseline;
+  margin: 0 0 1rem; padding: 0.65rem 1rem; border: 1.5px solid #161614;
+  border-left-width: 8px; border-radius: 6px; background: #eaf5f3; color: #161614;
+}
+.av-mode-banner.is-teacher { border-left-color: #4a1f35; background: #f6ecf1; }
+.av-mode-banner.is-student { border-left-color: #075568; }
+.av-mode-banner strong { font-size: 1.05rem; }
+.av-preview-label {
+  margin: 1.4rem 0 0.5rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; font-size: 0.8rem; color: #3a3a36;
+}
+body[data-mode="teacher"] .av-card { border-style: dashed; }
+.av-tier-target {
+  margin-top: 0.9rem; padding: 0.7rem 0.9rem; border-radius: 6px;
+  background: #fff; border: 1.5px solid #075568;
+}
+.av-tier-target[data-tier="1_2"] { border-color: #884326; }
+.av-tier-target[data-tier="5_6"] { border-color: #264e48; }
+.av-tier-target-label { display: block; font-weight: 700; font-size: 0.82rem; margin-bottom: 0.25rem; }
+.av-tier-target p { margin: 0; }
+@media print { .av-mode-banner, .av-preview-label { display: none !important; } }

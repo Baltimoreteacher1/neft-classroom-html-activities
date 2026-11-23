@@ -64,6 +64,20 @@ function normalizeVocab(raw) {
     .filter((v) => v && v.word);
 }
 
+/** The API returns blueprint fields flat on each connection (no nested `blueprint`). */
+function blueprintOf(conn) {
+  if (!conn) return {};
+  if (conn.blueprint && typeof conn.blueprint === "object" && conn.blueprint.scaffolds_json) return conn.blueprint;
+  return {
+    ...(conn.blueprint || {}),
+    id: conn.blueprint_id,
+    wida_klu: conn.wida_klu,
+    move_name: conn.move_name,
+    syntax_pattern: conn.syntax_pattern,
+    scaffolds_json: conn.scaffolds_json,
+  };
+}
+
 function ensureStyles() {
   if (document.getElementById("bcpss-hydrate-styles")) return;
   const style = document.createElement("style");
@@ -379,7 +393,7 @@ export async function maybeHydrateBcpssLab(rootEl) {
 
   const u = detail.unit;
   const conn = detail.connections?.[0] || {};
-  const bp = conn.blueprint || {};
+  const bp = blueprintOf(conn);
   const activities = Array.isArray(detail.activities) ? detail.activities : [];
   const selectedActivity =
     activities.find((a) => String(a.id) === String(activityId)) || activities[0] || null;
