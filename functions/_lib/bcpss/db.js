@@ -7,6 +7,7 @@
 import { neon } from "@neondatabase/serverless";
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
+import { buildEsolPack } from "./esol-pack.js";
 
 const BCPSS_UNITS = seed.BCPSS_UNITS || [];
 const LANGUAGE_BLUEPRINTS = seed.LANGUAGE_BLUEPRINTS || [];
@@ -18,6 +19,9 @@ const SEED_UNIT_BY_ID = new Map(BCPSS_UNITS.map((u) => [u.id, u]));
 const SEED_CONN_BY_UNIT_ID = new Map(UNIT_CONNECTIONS.map((c) => [c.unit_id, c]));
 const SEED_ACT_BY_ID = new Map(UNIT_ACTIVITIES.map((a) => [a.id, a]));
 
+const ESOL_CATALOG = { units: BCPSS_UNITS, connections: UNIT_CONNECTIONS };
+const READING_BY_UNIT = new Map((seed.UNIT_READINGS || []).map((r) => [r.unit_id, r]));
+
 export const GRADES = seed.GRADES || [];
 export const SUBJECTS = seed.SUBJECTS || [];
 export const TELEMETRY_EVENT_TYPES = [
@@ -25,6 +29,7 @@ export const TELEMETRY_EVENT_TYPES = [
   "vocab_lookup",
   "activity_copy",
   "lab_launch",
+  "esol_routine",
 ];
 
 const memoryPlans = new Map();
@@ -408,7 +413,7 @@ export async function getFamilyCard(env, unitId) {
 // 3. getUnitDetail(env, unitId)
 // ---------------------------------------------------------------------------
 
-export async function getUnitDetail(env, unitId) {
+async function getUnitDetailBase(env, unitId) {
   const sql = getNeonClient(env);
 
   if (sql) {
@@ -594,6 +599,20 @@ export async function getUnitDetail(env, unitId) {
       family_card,
     },
   };
+}
+
+// Every unit detail (hub, shared plans, exports) carries the generated ESOL Power Pack and its vocabulary reading.
+export async function getUnitDetail(env, unitId) {
+  const result = await getUnitDetailBase(env, unitId);
+  if (result.detail) {
+    const esol_pack = buildEsolPack({
+      unit: result.detail.unit,
+      connection: result.detail.connections?.[0],
+      catalog: ESOL_CATALOG,
+    });
+    result.detail = { ...result.detail, esol_pack, reading: READING_BY_UNIT.get(unitId) || null };
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------

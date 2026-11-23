@@ -1,6 +1,8 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
+import { renderEsolPack } from "./esol-pack.js";
 import { renderInteractiveStudio } from "./interactive-labs.js";
 import { keepView } from "./keep-view.js";
+import { renderVocabReader } from "./vocab-reader.js";
 import { renderQrSvg } from "./qr-svg.js";
 
 const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
@@ -13,7 +15,7 @@ const WIDA_TIERS = [
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
   { key: "5_6", label: "Levels 5–6", short: "Bridging / Reaching" },
 ];
-const VALID_TABS = ["connections", "studio", "activities", "family", "deconstruct"];
+const VALID_TABS = ["connections", "studio", "esol", "reading", "activities", "family", "deconstruct"];
 const FAMILY_LANGS = [
   { code: "en", label: "English", rtl: false },
   { code: "es", label: "Español", rtl: false },
@@ -457,11 +459,13 @@ function applyWidaTier(next) {
   if (!next || next === state.wida || !WIDA_TIERS.some((t) => t.key === next)) return;
   state.wida = next;
   syncUrl();
-  // Four panels redraw at once; keep the reader exactly where they were.
+  // Panels redraw at once; keep the reader exactly where they were.
   keepView($("#mainContent"), () => {
     renderResourceExportBar();
     renderConnectionsTab();
     renderStudioTab();
+    renderEsolTab();
+    renderReadingTab();
     renderActivitiesTab();
     if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
       renderActivityPreviewModal();
@@ -1084,12 +1088,43 @@ function renderWorkspace() {
 
   renderConnectionsTab();
   renderStudioTab();
+  renderEsolTab();
+  renderReadingTab();
   renderActivitiesTab();
   if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
     renderActivityPreviewModal();
   }
   renderFamilyTab();
   renderPrintKit();
+}
+
+function renderReadingTab() {
+  const conn = state.detail?.connections?.[0];
+  const rawVocab = safeParseJson(conn?.tier2_tier3_vocab, []);
+  const vocab = (Array.isArray(rawVocab) ? rawVocab : [])
+    .map((v) => ({
+      term: String(v?.term || v?.word || "").trim(),
+      def: String(v?.student_friendly_def || v?.kid_def || "").trim(),
+      cognate: String(v?.cognate_es || "").trim(),
+    }))
+    .filter((v) => v.term);
+  renderVocabReader($("#panel-reading"), {
+    unit: state.detail?.unit || null,
+    reading: state.detail?.reading || null,
+    vocab,
+    frame: conn?.unit_example_frame || "",
+    wida: state.wida,
+    onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
+  });
+}
+
+function renderEsolTab() {
+  renderEsolPack($("#panel-esol"), {
+    unit: state.detail?.unit || null,
+    pack: state.detail?.esol_pack || null,
+    wida: state.wida,
+    onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
+  });
 }
 
 function renderStudioTab() {

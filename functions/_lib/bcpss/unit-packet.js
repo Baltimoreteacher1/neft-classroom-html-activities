@@ -7,6 +7,7 @@
  */
 
 import { zipStore } from "../../../assets/lib/zip-store.js";
+import { renderEsolPacketPage } from "./esol-packet-html.js";
 
 const WIDA_TIERS = [
   {
@@ -620,6 +621,8 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
   const pageActivities = pageCursor++;
   const pageStudentPractice = hasStudentPracticePage ? pageCursor++ : 0;
   const pageDeskStrips = pageCursor++;
+  const hasEsolPage = Boolean(detail?.esol_pack);
+  const pageEsol = hasEsolPage ? pageCursor++ : 0;
   const pageFamily = pageCursor++;
   const totalPages = pageCursor - 1;
 
@@ -2182,6 +2185,8 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       </div>
       ${deskStripsHtml}
     </section>
+
+    ${hasEsolPage ? renderEsolPacketPage({ pack: detail.esol_pack, unit, wida, esc: escapeHtml, pageNum: pageEsol, totalPages, runningImprint }) : ""}
 
     <!-- PAGE ${pageFamily}: Bilingual Family Home-Connection Card -->
     <section class="page-break">

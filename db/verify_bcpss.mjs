@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 // Verification gate for the BCPSS Curriculum-to-Language Ecosystem.
 // Usage:
 //   node db/verify_bcpss.mjs --local   (verifies canonical local seed modules)
@@ -434,6 +437,10 @@ async function verifyNeon() {
 async function main() {
   const localOnly = process.argv.includes("--local");
   verifyLocal();
+  const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  for (const rel of ["functions/_lib/bcpss/esol-pack.test.mjs", "functions/_lib/bcpss/readings.test.mjs"]) {
+    execFileSync(process.execPath, [resolve(rootDir, rel)], { stdio: "inherit" });
+  }
   if (!localOnly && process.env.DATABASE_URL) {
     await verifyNeon();
   }

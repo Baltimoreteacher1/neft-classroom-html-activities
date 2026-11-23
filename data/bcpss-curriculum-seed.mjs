@@ -8,6 +8,7 @@ export {
   SUBJECTS,
 } from "../db/seeds/bcpss/blueprints.mjs";
 
+import { UNIT_READINGS } from "../db/seeds/bcpss/readings/index.mjs";
 import { ELA_ACTIVITIES } from "../db/seeds/bcpss/activities/ela_activities.mjs";
 import { MATH_ACTIVITIES } from "../db/seeds/bcpss/activities/math_activities.mjs";
 import { SCIENCE_ACTIVITIES } from "../db/seeds/bcpss/activities/science_activities.mjs";
@@ -42,4 +43,4 @@ export const UNIT_ACTIVITIES = [
   ...SOCIAL_STUDIES_ACTIVITIES,
 ];
 
-export { FAMILY_CARDS };
+export { FAMILY_CARDS, UNIT_READINGS };
