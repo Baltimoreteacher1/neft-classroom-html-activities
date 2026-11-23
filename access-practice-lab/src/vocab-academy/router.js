@@ -31,6 +31,7 @@ export const SUBVIEW_LOADERS = {
   practice: () => import("./views/practice.js"),
   review: () => import("./views/review.js"),
   games: () => import("./views/games.js"),
+  read: () => import("./views/read.js"),
   "word-study": () => import("./views/word-study.js"),
   teacher: () => import("./views/educator.js"),
   custom: () => import("./views/custom.js"),
@@ -88,6 +89,7 @@ export function resolve(path = []) {
   }
   if (a === "word" && b && !c) return some("word", { wordId: wordIdFromSegment(b) });
   if (a === "games" && !c) return some("games", { gameId: b || "" });
+  if (a === "read" && !c) return some("read", { readingId: b || "" });
   if (a === "teacher" && !b) return some("teacher", {}, true);
   if (a === "teacher" && b === "custom" && !c) return some("custom", {}, true);
   if (a === "present") {

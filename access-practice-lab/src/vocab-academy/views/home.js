@@ -320,6 +320,9 @@ export async function render(ctx, va) {
         <a class="btn va-btn" href="${vaHref("grades")}"
           >${I.T("Grade levels", "Niveles por grado")}</a
         >
+        <a class="btn va-btn" href="${vaHref("read")}"
+          >${I.T("Reading Library", "Biblioteca de lecturas")}</a
+        >
         <a class="btn va-btn" href="${vaHref("practice")}"
           >${I.T("Games & practice", "Juegos y práctica")}</a
         >

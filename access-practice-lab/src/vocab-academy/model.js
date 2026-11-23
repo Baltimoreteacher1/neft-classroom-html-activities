@@ -8,6 +8,7 @@
 //   word had not been seen for 7+ days (delayed retrieval). A word's state is DERIVED from this, never stored.
 // The mutating functions (recordResult, markSeen, setUnitStage, recordAssessment, set*) change the progress object they
 // are given and return it, so callers may ignore the return value or reassign it.
+import { cleanReadingMap, mergeReadingMaps } from "./reading/marks.js";
 import { DIMS, GRADES, HEAVY_SUPPORTS, LESSONS, REVIEW_PER_DAY, STATES } from "./contract.js";
 import {
   INTERVAL_DAYS,
@@ -482,6 +483,8 @@ export function cleanProgress(raw) {
       : { day: "", words: [] };
   out.lastActive = iso(raw.lastActive) || undefined;
   if (out.lastActive === undefined) delete out.lastActive;
+  // The interactive reader's saved marks, notes and retells (reading/marks.js): bounded and cleaned like everything else.
+  if (raw.reading !== undefined) out.reading = cleanReadingMap(raw.reading);
   return out;
 }
 
@@ -499,7 +502,7 @@ export function mergeProgress(localRaw, incomingRaw) {
     if (
       isObj(incoming[k]) &&
       isObj(local[k]) &&
-      !["words", "units", "last", "prefs", "daily"].includes(k)
+      !["words", "units", "last", "prefs", "daily", "reading"].includes(k)
     )
       out[k] = { ...incoming[k], ...local[k] };
   const useLocalSetup = Boolean(local.grade);
@@ -557,6 +560,7 @@ export function mergeProgress(localRaw, incomingRaw) {
       : local.last || incoming.last;
   out.prefs = { ...incoming.prefs, ...local.prefs };
   out.daily = later(local.daily.day, incoming.daily.day) ? incoming.daily : local.daily;
+  if (local.reading || incoming.reading) out.reading = mergeReadingMaps(local.reading, incoming.reading);
   const active = [local.lastActive, incoming.lastActive].filter(Boolean).sort().pop();
   if (active) out.lastActive = active;
   return out;

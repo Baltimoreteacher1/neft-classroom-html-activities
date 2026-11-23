@@ -19,6 +19,7 @@ let doFetch = (url) => fetch(url, { credentials: "same-origin" });
 let indexPromise = null;
 const gradeCache = new Map();
 const unitCache = new Map();
+const readingCache = new Map();
 
 /** Test hook: swap the fetch implementation and clear every cache. */
 export function configureData({ fetchImpl } = {}) {
@@ -29,6 +30,7 @@ export function resetDataCache() {
   indexPromise = null;
   gradeCache.clear();
   unitCache.clear();
+  readingCache.clear();
 }
 
 async function fetchJson(url) {
@@ -153,6 +155,26 @@ export async function getUnit(unitId) {
     );
   }
   return unitCache.get(unitId);
+}
+
+/**
+ * A lesson's companion reading file (content/vocab-academy/g<G>/readings/u<NN>.json, spec docs/vocab-academy/readings-spec.md):
+ * the parsed file, or null when it does not exist yet (most lessons until the content lands) or is malformed. Fetched once
+ * and cached. A 404 is expected and silent.
+ */
+export function getReading(g, n) {
+  const grade = normGrade(g);
+  const num = Number(n);
+  if (!grade || !Number.isInteger(num) || num < 1) return Promise.resolve(null);
+  const key = `${grade}:${num}`;
+  if (!readingCache.has(key))
+    readingCache.set(
+      key,
+      fetchJson(`${CONTENT_BASE}/g${grade}/readings/u${String(num).padStart(2, "0")}.json`).then((json) =>
+        isObject(json) && isObject(json.reading) && Array.isArray(json.reading.paras) && json.reading.paras.length ? json : null,
+      ),
+    );
+  return readingCache.get(key);
 }
 
 /** Published unit summaries of a grade, from the index: [{ id, n, title, theme, strand, file, wordIds, words }]. */
