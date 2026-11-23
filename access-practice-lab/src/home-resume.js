@@ -2,6 +2,7 @@
 // Each learning system keeps its own serializer and backup contract; this module only reads known keys and
 // returns a direct route to the owning system.
 import { BASE, safeJson, storage } from "./util.js";
+import { vocabAcademyResume } from "./vocab-academy/integrations/home.js";
 
 const KEYS = Object.freeze({
   sor: "accessPracticeLab:v1:sor",
@@ -72,6 +73,9 @@ export function latestModuleResume({ band = "6-8", studio = {}, index = {}, read
     if (lessonBand && lessonBand !== band && !(band === "3-5" && lessonBand === "2-3")) continue;
     add("vocabulary", id, state.updatedAt || state.startedAt, `vocab-curriculum/${encodeURIComponent(id)}`);
   }
+
+  const academy = vocabAcademyResume(read);
+  if (academy) add("vocab-academy", academy.id, academy.at, academy.path);
 
   const subjectReading = readJson(read, KEYS.subjectReading);
   for (const [id, state] of Object.entries(subjectReading.readings || {})) {

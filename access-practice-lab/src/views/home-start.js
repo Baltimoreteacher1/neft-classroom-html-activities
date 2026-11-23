@@ -99,8 +99,8 @@ export function continueTarget(I, { band, resume, openMission, journey, recent, 
       target: {
         kind: "resume",
         title: I.T(
-          ({ phonics: "Continue your decoding lesson", vocabulary: "Continue your vocabulary lesson", "subject-reading": "Continue your reading investigation", "reading-room": "Continue your reading", writing: "Continue your writing", speaking: "Continue your speaking practice" })[moduleResume.system] || "Continue learning",
-          ({ phonics: "Continúa tu lección de decodificación", vocabulary: "Continúa tu lección de vocabulario", "subject-reading": "Continúa tu investigación de lectura", "reading-room": "Continúa tu lectura", writing: "Continúa tu escritura", speaking: "Continúa tu práctica oral" })[moduleResume.system] || "Continúa aprendiendo",
+          ({ phonics: "Continue your decoding lesson", vocabulary: "Continue your vocabulary lesson", "vocab-academy": "Continue your vocabulary words", "subject-reading": "Continue your reading investigation", "reading-room": "Continue your reading", writing: "Continue your writing", speaking: "Continue your speaking practice" })[moduleResume.system] || "Continue learning",
+          ({ phonics: "Continúa tu lección de decodificación", vocabulary: "Continúa tu lección de vocabulario", "vocab-academy": "Continúa con tus palabras de vocabulario", "subject-reading": "Continúa tu investigación de lectura", "reading-room": "Continúa tu lectura", writing: "Continúa tu escritura", speaking: "Continúa tu práctica oral" })[moduleResume.system] || "Continúa aprendiendo",
         ),
         why: I.T("Your place is saved on this device.", "Tu lugar está guardado en este dispositivo."),
         cta: I.T("Continue", "Continuar"),

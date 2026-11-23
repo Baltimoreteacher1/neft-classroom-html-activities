@@ -226,7 +226,11 @@ test("teacher: lists books and participants, read-only blocks edits server-side,
   assert.equal(list.json.enabled, true);
   assert.equal(list.json.books[0].title, "Our Trip");
   assert.equal(list.json.books[0].ownerAlias, "Ana");
-  assert.deepEqual(list.json.books[0].members.map((m) => [m.alias, m.role]), [["Ana", "owner"], ["Ben", "editor"]]);
+  // Members join within the same millisecond, so their list order is not part of the contract: compare as a set.
+  assert.deepEqual(
+    list.json.books[0].members.map((m) => [m.alias, m.role]).sort((x, y) => x[0].localeCompare(y[0])),
+    [["Ana", "owner"], ["Ben", "editor"]],
+  );
 
   const lock = await post(w, "books/lock", teacher, { code, bookId, locked: true });
   assert.equal(lock.status, 200);

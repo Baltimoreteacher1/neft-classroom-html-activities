@@ -1,0 +1,63 @@
+/* Vocabulary Academy — design tokens. LEAD-OWNED: every vocab-academy-*.css uses these and ds.css tokens; none redefines them.
+   Brand foundation is the lab's (ds.css): ocean/copper/ivory, Atkinson Hyperlegible. No purple. Light theme. */
+:root {
+  --va-ink: var(--ink, #14212b);
+  --va-ink-2: var(--ink-2, #3b4a56);
+  --va-paper: var(--ivory, #fbf8f1);
+  --va-card: var(--surface, #fff);
+  --va-line: var(--line, #d9d3c5);
+  --va-brand: var(--brand, #0f5d73);
+  --va-brand-soft: var(--brand-soft, #e3f0f4);
+  --va-accent: var(--copper-500, #b5602a);
+  --va-ok: #1f6f4a;
+  --va-ok-soft: #e4f3ea;
+  --va-warn: #8a5a00;
+  --va-warn-soft: #fbf0d6;
+  --va-miss: #9c3b2e;
+  --va-miss-soft: #f9e6e2;
+  --va-focus: var(--focus, #0b57d0);
+  --va-radius: 14px;
+  --va-radius-sm: 8px;
+  --va-gap: clamp(0.75rem, 2vw, 1.25rem);
+  --va-measure: 68ch;
+  --va-target: 44px;
+  /* word-state hues (always paired with a text label and an icon shape, never colour alone) */
+  --va-s-new: #6b7782;
+  --va-s-learning: #0f5d73;
+  --va-s-developing: #8a5a00;
+  --va-s-applying: #1f6f4a;
+  --va-s-secure: #14532d;
+  --va-s-review: #9c3b2e;
+  /* grade-band type scale; JS sets data-va-band="early|upper-elem|middle|high" on the app root */
+  --va-text: 1.0625rem;
+  --va-head-font: var(--font-display, var(--font, system-ui));
+}
+[data-va-band="early"] {
+  --va-text: 1.375rem;
+  --va-radius: 22px;
+  --va-target: 56px;
+}
+[data-va-band="upper-elem"] {
+  --va-text: 1.1875rem;
+  --va-radius: 18px;
+  --va-target: 48px;
+}
+[data-va-band="middle"] {
+  --va-text: 1.0625rem;
+  --va-radius: 12px;
+}
+[data-va-band="high"] {
+  --va-text: 1rem;
+  --va-radius: 6px;
+  --va-head-font: Georgia, "Iowan Old Style", "Times New Roman", serif;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-va-band] *,
+  [data-va-band] *::before,
+  [data-va-band] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

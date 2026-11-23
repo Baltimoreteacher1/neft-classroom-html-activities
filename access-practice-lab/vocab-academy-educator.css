@@ -1,0 +1,572 @@
+/* Vocabulary Academy — teacher dashboard, custom unit builder and presentation mode. Owner: Teacher agent.
+   Tokens only (vocab-academy-tokens.css + ds.css). No new brand colours. 44px targets, visible focus, reduced motion. */
+@import url("vocab-academy-activities.css"); /* art.js pictures (vaa-*) shown in presentation mode */
+
+.vat {
+  display: grid;
+  gap: var(--va-gap);
+  max-inline-size: 78rem;
+  margin-inline: auto;
+  color: var(--va-ink);
+}
+.vat-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.vat-panel {
+  background: var(--va-card);
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  display: grid;
+  gap: 0.75rem;
+  min-inline-size: 0;
+}
+.vat-panel h2,
+.vat-panel h3 {
+  margin: 0;
+  font-family: var(--va-head-font);
+}
+.vat-panel h3 {
+  font-size: 1.1rem;
+  margin-block-start: 0.5rem;
+}
+.vat-note,
+.vat-sample {
+  background: var(--va-brand-soft);
+  border-inline-start: 4px solid var(--va-brand);
+  border-radius: var(--va-radius-sm);
+  padding: 0.75rem 1rem;
+  margin: 0;
+}
+.vat-sample {
+  background: var(--va-warn-soft);
+  border-color: var(--va-warn);
+}
+.vat-empty {
+  background: var(--va-paper);
+  border: 1px dashed var(--va-line);
+  border-radius: var(--va-radius-sm);
+  padding: 0.75rem 1rem;
+}
+.vat-alert {
+  background: var(--va-miss-soft);
+  border: 2px solid var(--va-miss);
+  border-radius: var(--va-radius-sm);
+  padding: 0.75rem 1rem;
+}
+.vat-alert:focus-visible,
+.vat :focus-visible,
+.vat-present :focus-visible {
+  outline: 3px solid var(--va-focus);
+  outline-offset: 2px;
+}
+
+/* controls */
+.vat input[type="text"],
+.vat input[type="search"],
+.vat input[type="number"],
+.vat input[type="date"],
+.vat select,
+.vat textarea {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-block-size: var(--va-target);
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: var(--va-ink);
+  background: var(--va-card);
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+}
+.vat input[aria-invalid="true"],
+.vat select[aria-invalid="true"],
+.vat textarea[aria-invalid="true"] {
+  border-color: var(--va-miss);
+}
+.vat input[type="range"] {
+  inline-size: min(100%, 24rem);
+  min-block-size: var(--va-target);
+}
+.vat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+.vat-row > label {
+  font-weight: 600;
+}
+.vat-row > select,
+.vat-row > input[type="text"],
+.vat-row > input[type="search"],
+.vat-row > input[type="date"],
+.vat-row > input[type="number"] {
+  inline-size: auto;
+  min-inline-size: min(100%, 14rem);
+}
+.vat-field {
+  display: grid;
+  gap: 0.25rem;
+}
+.vat-field > label {
+  font-weight: 600;
+}
+.vat-grid2 {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.vat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.vat .btn,
+.vat-present .btn,
+.vat-actions .btn {
+  min-block-size: var(--va-target);
+  min-inline-size: var(--va-target);
+}
+.vat-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-block-size: var(--va-target);
+}
+.vat-check input {
+  inline-size: max(1.5rem, 24px);
+  block-size: max(1.5rem, 24px);
+  flex: none;
+}
+.vat fieldset {
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  padding: 0.75rem 1rem;
+  min-inline-size: 0;
+  margin: 0;
+}
+.vat legend {
+  font-weight: 700;
+  padding-inline: 0.25rem;
+}
+.vat-checks,
+.vat-list,
+.vat-words,
+.vat-seq,
+.vat-hits,
+.vat-wcards {
+  list-style-position: outside;
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+.vat-checks,
+.vat-words,
+.vat-hits,
+.vat-wcards {
+  list-style: none;
+  padding-inline-start: 0;
+}
+.vat-checks {
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.vat-hits li,
+.vat-list li {
+  margin-block: 0.35rem;
+}
+.vat-seq li {
+  margin-block: 0.25rem;
+}
+.vat-seq a,
+.vat-list a,
+.vat-note a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--va-target);
+}
+.vat .va-btn-quiet:hover,
+.vat .va-btn-quiet:focus-visible {
+  background: var(--va-brand-soft);
+  color: var(--va-ink);
+}
+
+/* status + errors (text and icon-shaped prefix, never colour alone) */
+.vat-status {
+  margin: 0;
+  min-block-size: 1.5rem;
+}
+.vat-status[data-tone="ok"]::before {
+  content: "✓ ";
+  color: var(--va-ok);
+  font-weight: 700;
+}
+.vat-status[data-tone="warn"]::before {
+  content: "! ";
+  color: var(--va-warn);
+  font-weight: 700;
+}
+.vat-errs {
+  margin: 0;
+  padding-inline-start: 0;
+  list-style: none;
+}
+.vat-errs li {
+  font-size: 0.95rem;
+}
+.vat-errs li[data-tone="bad"] {
+  color: var(--va-miss);
+}
+.vat-errs li[data-tone="bad"]::before {
+  content: "✗ ";
+  font-weight: 700;
+}
+.vat-errs li[data-tone="warn"] {
+  color: var(--va-warn);
+}
+.vat-errs li[data-tone="warn"]::before {
+  content: "! ";
+  font-weight: 700;
+}
+
+/* navigation */
+.vat-grades ul,
+.vat-tabs ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vat-tab {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--va-target);
+  padding-inline: 1rem;
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+.vat-tab[aria-current="page"] {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+  box-shadow: inset 0 -4px 0 var(--va-brand);
+}
+
+/* units */
+.vat-units {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vat-unit {
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  padding: 0.75rem 1rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+.vat-unit h3 {
+  margin: 0;
+}
+.vat-word details {
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  padding: 0.5rem 0.75rem;
+  margin-block: 0.35rem;
+}
+.vat-word summary,
+.vat-details summary {
+  cursor: pointer;
+  min-block-size: var(--va-target);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.vat-teacher-note {
+  background: var(--va-warn-soft);
+  border-radius: var(--va-radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+/* tables */
+.vat-table-wrap {
+  overflow-x: auto;
+}
+.vat-table {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+.vat-table th,
+.vat-table td {
+  border: 1px solid var(--va-line);
+  padding: 0.4rem 0.6rem;
+  text-align: start;
+  vertical-align: middle;
+}
+.vat-table thead th {
+  background: var(--va-brand-soft);
+}
+.vat-resolved-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.vat-resolved {
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+.vat-resolved h4 {
+  margin: 0;
+}
+.vat-resolved ul {
+  margin: 0.25rem 0 0;
+  padding-inline-start: 1.1rem;
+}
+.vat-drafts blockquote {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-inline-start: 4px solid var(--va-brand);
+  background: var(--va-paper);
+  white-space: pre-wrap;
+}
+
+/* custom builder */
+.vat-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.vat-seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-block-size: var(--va-target);
+  padding-inline: 0.75rem;
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+}
+.vat-seg-opt:has(input:checked) {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+}
+.vat-wcards {
+  display: grid;
+  gap: 0.75rem;
+}
+.vat-wcard fieldset {
+  display: grid;
+  gap: 0.6rem;
+}
+.vat-printlist {
+  display: none;
+}
+
+/* presentation mode */
+body.vat-presenting {
+  overflow: hidden;
+}
+.vat-present {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
+  background: var(--va-paper);
+  color: var(--va-ink);
+  overflow: auto;
+}
+.vat-p-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-block-end: 1px solid var(--va-line);
+  background: var(--va-card);
+}
+.vat-p-count {
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: auto;
+}
+.vat-p-progress {
+  inline-size: min(100%, 12rem);
+}
+.vat-p-stage {
+  padding: clamp(1rem, 3vw, 3rem);
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  min-block-size: 0;
+}
+.vat-p-stage:focus {
+  outline: none;
+}
+.vat-p-word {
+  display: grid;
+  gap: clamp(1rem, 3vw, 3rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+  inline-size: 100%;
+}
+.vat-p-pic {
+  font-size: clamp(2rem, 8vw, 7rem);
+  display: grid;
+  place-items: center;
+}
+.vat-p-pic .vaa-pic {
+  max-inline-size: 100%;
+}
+.va .vat-p-hw,
+.vat-p-hw {
+  font-family: var(--va-head-font);
+  font-size: clamp(3rem, 10vw, 8rem);
+  line-height: 1.05;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.vat-p-meta {
+  font-size: clamp(1.1rem, 2.4vw, 2rem);
+  color: var(--va-ink-2);
+  margin: 0.25rem 0 1rem;
+}
+.vat-p-def {
+  font-size: clamp(1.6rem, 4.4vw, 3.4rem);
+  line-height: 1.25;
+  margin: 0 0 1rem;
+}
+.vat-p-ex {
+  font-size: clamp(1.3rem, 3.4vw, 2.6rem);
+  line-height: 1.3;
+  font-style: italic;
+  color: var(--va-ink-2);
+  margin: 0 0 0.75rem;
+}
+.vat-p-say,
+.vat-p-talk {
+  font-size: clamp(1.2rem, 2.8vw, 2.2rem);
+  margin: 0.5rem 0;
+}
+.vat-p-talk {
+  background: var(--va-brand-soft);
+  border-radius: var(--va-radius);
+  padding: 0.75rem 1.25rem;
+}
+.va .vat-p-title h1,
+.va .vat-p-wall h1 {
+  font-family: var(--va-head-font);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  margin: 0 0 1rem;
+  line-height: 1.05;
+}
+.vat-p-eyebrow {
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  color: var(--va-ink-2);
+  margin: 0;
+}
+.vat-p-obj {
+  font-size: clamp(1.3rem, 3vw, 2.4rem);
+  line-height: 1.35;
+  max-inline-size: 40ch;
+}
+.vat-p-hint {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--va-ink-2);
+}
+.vat-p-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+}
+.vat-p-grid li {
+  background: var(--va-card);
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius);
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+.vat-p-notes {
+  position: fixed;
+  inset-block: 3.5rem 0;
+  inset-inline-end: 0;
+  inline-size: min(26rem, 100%);
+  overflow: auto;
+  padding: 1rem 1.25rem;
+  background: var(--va-warn-soft);
+  border-inline-start: 4px solid var(--va-warn);
+  box-shadow: 0 0 0 1px var(--va-line);
+  z-index: 2;
+}
+.vat-p-notes[hidden] {
+  display: none;
+}
+.vat-p-missing {
+  margin: 2rem auto;
+  max-inline-size: 40rem;
+}
+
+@media (max-width: 40rem) {
+  .vat-p-word {
+    grid-template-columns: 1fr;
+  }
+  .vat-p-notes {
+    inset-block-start: auto;
+    max-block-size: 50vh;
+    inline-size: 100%;
+  }
+  .vat-row > select,
+  .vat-row > input {
+    inline-size: 100%;
+  }
+}
+
+@media print {
+  body.vat-printing-list * {
+    visibility: hidden;
+  }
+  body.vat-printing-list .vat-printlist,
+  body.vat-printing-list .vat-printlist * {
+    visibility: visible;
+  }
+  body.vat-printing-list .vat-printlist {
+    display: block;
+    position: absolute;
+    inset: 0 auto auto 0;
+    inline-size: 100%;
+    font-size: 12pt;
+    color: CanvasText;
+    background: Canvas;
+  }
+  .vat-printlist li {
+    break-inside: avoid;
+    margin-block: 0.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vat *,
+  .vat-present * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -200,6 +200,16 @@
       "file": "tools/goals-sheet.test.mjs",
       "targets": "tmpdir",
       "reason": "Writes the single-student and class-set goals DOCX only inside mkdtempSync(join(tmpdir(), 'goaldocx-')) to unzip and inspect the parts; no repository file is written."
+    },
+    {
+      "file": "tools/vocab-academy-content.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Copies the reference unit and synthetic grade files into mkdtempSync(tmpdir()/va-content-*) and runs the validator against that throwaway root with --root; it never writes under access-practice-lab/content/vocab-academy."
+    },
+    {
+      "file": "tools/book-render-regression.test.mjs",
+      "targets": "golden-file-on-explicit-update-only",
+      "reason": "Writes its golden fingerprint file only when run with the explicit --update flag (a deliberate re-pin the author explains in the commit); a normal or CI run only reads it and compares, so no repository data changes."
     }
   ]
 }

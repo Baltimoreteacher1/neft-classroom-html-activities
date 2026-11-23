@@ -52,6 +52,8 @@ export const EARLY_VIEWS = new Set([
   "radar",
   "family-bridge",
   "pricing",
+  // Vocabulary Academy covers Kindergarten to Grade 8 with its own band-aware type, targets and read-aloud (src/vocab-academy).
+  "vocab-academy",
 ]);
 
 /**

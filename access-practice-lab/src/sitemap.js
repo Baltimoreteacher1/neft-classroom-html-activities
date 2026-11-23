@@ -714,6 +714,22 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "vocabulary-academy",
+    section: "practice",
+    skill: "Words",
+    kind: "practice",
+    for: STF,
+    top: true,
+    href: "vocabulary-academy",
+    icon: "words",
+    match: [["vocab-academy"]],
+    title: P("Vocabulary Academy", "Academia de Vocabulario"),
+    text: P(
+      "Kindergarten to Grade 8: short units with eight lessons, word cards, games and spaced review.",
+      "De Kínder a 8.º grado: unidades breves con ocho lecciones, tarjetas de palabras, juegos y repaso espaciado.",
+    ),
+  },
+  {
     id: "vocabulary",
     section: "practice",
     skill: "Words",

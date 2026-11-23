@@ -72,6 +72,7 @@ export function weekHTML(I, week, { rowById, activityHref }) {
               <span class="lb-step-min">${WEEK_MINUTES.exit}′</span>
               ${I.T("Exit ticket:", "Boleto de salida:")} <span lang="en">${day.exit}</span>
             </li>
+            ${(day.va || []).map((v) => html`<li class="lb-day-va"><a href="${v.href}" target="_blank" rel="noopener">${v.title}</a></li>`)}
             ${day.talk ? html`<li class="lb-day-home">${icon("families")} <span lang="en">${day.talk.q[0]}</span> <span class="fine" lang="es">${day.talk.q[1]}</span></li>` : ""}
           </ul>
         </li>`;
@@ -124,6 +125,7 @@ export function weekPrintHTML(week, { rowById, activityHref, origin }) {
           </li>
           <li>Choice time (${WEEK_MINUTES.choice} min): ${day.choice}</li>
           <li>Exit ticket (${WEEK_MINUTES.exit} min): ${day.exit}</li>
+          ${(day.va || []).map((v) => html`<li>${v.title} — ${origin}${v.href}</li>`)}
           ${day.talk ? html`<li>Home question: ${day.talk.q[0]} / <span lang="es">${day.talk.q[1]}</span></li>` : ""}
         </ul>
       </section>`;

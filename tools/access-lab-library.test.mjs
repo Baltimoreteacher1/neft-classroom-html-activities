@@ -91,7 +91,7 @@ test("learning area discovery links only to reviewed destinations available for 
   const grade6to8 = learningAreaCards("6-8");
   assert.deepEqual(
     grade3to5.map((card) => card.learningArea),
-    ["reading", "reading", "phonics", "vocabulary", "content-reading"],
+    ["reading", "reading", "phonics", "vocabulary", "vocabulary", "content-reading"],
   );
   assert.equal(
     grade6to8.some((card) => card.learningArea === "content-reading"),

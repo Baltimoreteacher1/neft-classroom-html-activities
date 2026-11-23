@@ -117,6 +117,7 @@ const VIEW_LOADERS = {
   "science-of-reading": () => import("./views/science-of-reading.js"),
   "subject-reading": () => import("./subject-reading/index.js"),
   "vocab-curriculum": () => import("./vocab-curriculum/view.js"),
+  "vocab-academy": () => import("./vocab-academy/index.js"),
   "language-studios": () => import("./views/language-studios.js"),
   "access-prep": () => import("./views/access-prep.js"),
   twr: () => import("./views/twr.js"),
@@ -236,6 +237,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "subject-reading", id: b || "" };
   if (a === "vocab-curriculum")
     return { ...r, view: "vocab-curriculum", id: b || "", lessonId: c || "" };
+  // Vocabulary Academy: /vocabulary-academy[/…]; src/vocab-academy/router.js does the sub-routing from `path`.
+  if (a === "vocabulary-academy")
+    return { ...r, view: "vocab-academy", path: parts.slice(1), q: Object.fromEntries(q) };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
   if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table", "bridge", "architect", "simulator", "radar", "family-bridge", "pricing", "skill-arcade", "dialogue-studio"].includes(a)) {

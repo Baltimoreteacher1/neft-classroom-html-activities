@@ -1,0 +1,299 @@
+/* Vocabulary Academy — units and lessons: the grade page's unit groups, the lesson's Word List, the unit page and the
+   unit activities (crossword, unit test). Uses vocab-academy-tokens.css only. No purple. 44px+ targets. */
+
+/* ── grade page: units ─────────────────────────────────────────────────────────────────────────────────────── */
+.va-ugroup {
+  margin-block: var(--va-gap) calc(var(--va-gap) * 2);
+  padding-block-start: var(--va-gap);
+  border-block-start: 3px solid var(--va-brand);
+}
+.va-ugroup-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--va-gap);
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-block-end: var(--va-gap);
+}
+.va-ugroup-head h3 {
+  margin: 0.1rem 0;
+  font-family: var(--va-head-font);
+  font-size: 1.6em;
+}
+.va-ugroup-head h3 a {
+  color: var(--va-ink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.va-ugroup-head .va-actions {
+  margin: 0;
+}
+
+/* ── lesson page: the Word List, laid out like a dictionary page ─────────────────────────────────────────────── */
+.va-wordlist > h2 {
+  font-family: var(--va-head-font);
+}
+.va-wl {
+  list-style: none;
+  margin: var(--va-gap) 0 0;
+  padding: 0;
+  columns: 2 26rem;
+  column-gap: calc(var(--va-gap) * 2);
+  column-rule: 1px solid var(--va-line);
+}
+.va-wl-entry {
+  break-inside: avoid;
+  padding-block: 0.85rem;
+  border-block-end: 1px solid var(--va-line);
+}
+.va-wl-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+}
+.va-wl-n {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  border-radius: 50%;
+  background: var(--va-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9em;
+}
+.va-wl-hw {
+  margin: 0;
+  font-family: var(--va-head-font);
+  font-size: 1.35em;
+}
+.va-wl-hw a {
+  color: var(--va-ink);
+}
+.va-wl-pron {
+  color: var(--va-ink-2);
+}
+.va-wl-pos {
+  color: var(--va-accent);
+}
+.va-btn.va-wl-say {
+  min-inline-size: var(--va-target);
+  min-block-size: var(--va-target);
+  padding: 0;
+  border-radius: 50%;
+}
+.va-wl-def {
+  margin: 0.45rem 0 0.25rem;
+  font-weight: 600;
+}
+.va-wl-ex {
+  margin: 0.2rem 0;
+  padding-inline-start: 0.8rem;
+  border-inline-start: 3px solid var(--va-brand-soft);
+  color: var(--va-ink-2);
+}
+.va-wl-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.35rem 0 0;
+}
+.va-wl-cog {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--va-ok-soft);
+  color: var(--va-ok);
+  font-size: 0.85em;
+}
+
+/* the lettered section badges: W (word list), A–F (exercises), R (review) */
+.va-lessons .va-lesson-letter {
+  font-family: var(--va-head-font);
+}
+
+/* ── unit page ─────────────────────────────────────────────────────────────────────────────────────────────── */
+.va-act-grid {
+  list-style: none;
+  margin: var(--va-gap) 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--va-gap);
+}
+.va-act-card a {
+  display: grid;
+  gap: 0.35rem;
+  block-size: 100%;
+  min-block-size: 8.5rem;
+  padding: 1.1rem;
+  border: 2px solid var(--va-line);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+  color: var(--va-ink);
+  text-decoration: none;
+}
+.va-act-card a:hover,
+.va-act-card a:focus-visible {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+}
+.va-act-card strong {
+  font-size: 1.15em;
+}
+.va-act-icon {
+  font-size: 1.8em;
+  line-height: 1;
+  color: var(--va-brand);
+}
+.va-act-status {
+  justify-self: start;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--va-ok-soft);
+  color: var(--va-ok);
+  font-weight: 600;
+  font-size: 0.9em;
+}
+.va-wall-h {
+  margin: var(--va-gap) 0 0.4rem;
+  font-size: 1em;
+}
+
+/* ── crossword ─────────────────────────────────────────────────────────────────────────────────────────────── */
+.va-cw {
+  display: grid;
+  gap: var(--va-gap);
+}
+.va-cw-board-wrap {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  padding-block-end: 0.25rem;
+}
+.va-cw-board {
+  --cw-size: clamp(1.9rem, 6.2vw, 2.75rem);
+  display: grid;
+  grid-template-columns: repeat(var(--cw-cols), var(--cw-size));
+  grid-auto-rows: var(--cw-size);
+  inline-size: max-content;
+  margin-inline: auto;
+  border: 2px solid var(--va-ink);
+  background: var(--va-ink);
+  gap: 1px;
+}
+.va-cw-block {
+  background: var(--va-ink);
+}
+.va-cw-cell {
+  position: relative;
+  background: #fff;
+}
+.va-cw-cell.is-word {
+  background: var(--va-brand-soft);
+}
+.va-cw-cell.is-active {
+  background: #fde9b8;
+}
+.va-cw-num {
+  position: absolute;
+  inset-block-start: 1px;
+  inset-inline-start: 2px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--va-ink);
+  pointer-events: none;
+}
+.va-cw-cell input {
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0.35rem 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--va-ink);
+  font: 700 1.05rem/1 var(--font, system-ui);
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: var(--va-brand);
+}
+.va-cw-cell input:focus {
+  outline: 3px solid var(--va-focus);
+  outline-offset: -3px;
+}
+.va-cw-cell input.is-wrong {
+  background: var(--va-miss-soft);
+  color: var(--va-miss);
+  text-decoration: line-through;
+}
+.va-cw-current {
+  min-block-size: 1.5em;
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+}
+.va-cw-tools {
+  justify-content: center;
+}
+.va-cw-status {
+  min-block-size: 1.4em;
+  margin: 0;
+  text-align: center;
+}
+.va-cw-clues {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--va-gap);
+}
+.va-cw-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.va-cw-clue {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--va-target);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.va-cw-clue:hover,
+.va-cw-clue.is-active {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+}
+.va-cw-bank {
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--va-line);
+  border-radius: var(--va-radius);
+}
+.va-cw-bank h3 {
+  margin-block-start: 0;
+}
+.va-cw-solved h2 {
+  color: var(--va-ok);
+}
+
+/* ── unit test ─────────────────────────────────────────────────────────────────────────────────────────────── */
+.va-utest .val-assess-list {
+  max-inline-size: var(--va-measure);
+}
+.va-ut-missed {
+  display: grid;
+  gap: 0.5rem;
+  padding-inline-start: 1.2rem;
+}
+
+@media print {
+  .va-cw-tools,
+  .va-wl-say {
+    display: none;
+  }
+}

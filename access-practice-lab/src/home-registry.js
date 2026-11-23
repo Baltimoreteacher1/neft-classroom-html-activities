@@ -458,6 +458,19 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "vocabulary-academy",
+    group: "explore",
+    featured: true,
+    learningArea: "vocabulary",
+    href: "vocabulary-academy",
+    icon: "words",
+    title: ["Vocabulary Academy", "Academia de Vocabulario"],
+    text: [
+      "Learn words a few minutes at a time, from kindergarten to grade 8.",
+      "Aprende palabras unos minutos a la vez, desde kínder hasta 8.º grado.",
+    ],
+  },
+  {
     id: "subject-reading",
     group: "explore",
     learningArea: "content-reading",
@@ -846,6 +859,17 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "vocabulary-academy-teacher",
+    group: "teach",
+    href: "vocabulary-academy/teacher",
+    icon: "words",
+    title: ["Vocabulary Academy for teachers", "Academia de Vocabulario para docentes"],
+    text: [
+      "Choose a unit, assign it, and turn its words into worksheets, books and plans.",
+      "Elige una unidad, asígnala y convierte sus palabras en hojas, libros y planes.",
+    ],
+  },
+  {
     id: "voice-lab",
     group: "explore",
     featured: true,
@@ -1021,6 +1045,17 @@ export const HOME_CARDS = [
     text: [
       "See how the lab works, step by step.",
       "Mira cómo funciona el laboratorio, paso a paso.",
+    ],
+  },
+  {
+    id: "vocabulary-academy-family",
+    group: "family",
+    href: "vocabulary-academy/family",
+    icon: "words",
+    title: ["Words to talk about at home", "Palabras para conversar en casa"],
+    text: [
+      "This unit's words, how they sound, and a few things to talk about together.",
+      "Las palabras de esta unidad, cómo suenan y algo para conversar juntos.",
     ],
   },
   {

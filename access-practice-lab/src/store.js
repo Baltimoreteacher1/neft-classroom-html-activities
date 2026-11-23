@@ -12,6 +12,7 @@ import { mergeGames, validGames } from "./games/state.js";
 import { mergeLab } from "./lab/store.js";
 import { mergeJourney, validJourney } from "./journey/state.js";
 import { cleanProgress as cleanVocabularyProgress } from "./vocab-curriculum/model.js";
+import { cleanProgress as cleanAcademyProgress, mergeProgress as mergeAcademyProgress } from "./vocab-academy/model.js";
 import { safeJson, storage, todayISO } from "./util.js";
 
 export const PREFIX = "accessPracticeLab:v1";
@@ -253,7 +254,7 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|tlp_lab_v2|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|vocabAcademy|tlp_lab_v2|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
@@ -278,6 +279,19 @@ export function importProgressData(data) {
       }
       const serialized = JSON.stringify(merged);
       if (serialized !== current) writes.push([key, serialized]);
+      continue;
+    }
+    if (suffix === "vocabAcademy") {
+      // Vocabulary Academy (src/vocab-academy/model.js): per word the more recently updated record wins, lessons done on
+      // either device stay done, and unknown keys on this device are kept. Importing the same backup twice changes nothing.
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || incoming.v !== 1 || !isObject(incoming.words))
+        throw new Error("That backup has an invalid Vocabulary Academy record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      if (current !== null && !isObject(local)) continue;
+      const merged = mergeAcademyProgress(local, incoming);
+      const canonical = (v) => JSON.stringify(v, (_, x) => (isObject(x) ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => (a < b ? -1 : 1))) : x));
+      if (local === null || canonical(merged) !== canonical(cleanAcademyProgress(local))) writes.push([key, JSON.stringify(merged)]);
       continue;
     }
     if (suffix === "ledger" || suffix === "studio" || suffix === "games" || suffix === "journey" || suffix === "readingRoom") {

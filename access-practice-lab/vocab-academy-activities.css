@@ -1,0 +1,160 @@
+/* Vocabulary Academy — activity runner, items, pictures and word card. Tokens only (vocab-academy-tokens.css, ds.css); no purple.
+   Feedback is always an icon plus words; colour only reinforces it. Targets follow --va-target (44px, larger for K-2). */
+.vaa-root { color: var(--va-ink); font-size: var(--va-text, 1.0625rem); line-height: 1.5; max-width: var(--va-measure, 68ch); }
+.vaa-root *, .vaa-card * { box-sizing: border-box; }
+.vaa-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.vaa-runner :focus-visible, .vaa-card :focus-visible { outline: 3px solid var(--va-focus); outline-offset: 2px; }
+
+/* progress */
+.vaa-progress { margin-block-end: 0.75rem; }
+.vaa-count-line { margin: 0 0 0.25rem; font-weight: 700; color: var(--va-ink-2); }
+.vaa-bar { height: 10px; border-radius: 999px; background: var(--va-brand-soft); border: 1px solid var(--va-brand); overflow: hidden; }
+.vaa-bar span { display: block; height: 100%; width: 0; background: var(--va-brand); transition: width 0.25s ease; }
+
+/* item */
+.vaa-item { background: var(--va-card); border: 2px solid var(--va-line); border-radius: var(--va-radius); padding: var(--va-gap); }
+.vaa-prompt { margin: 0 0 0.75rem; font-size: 1.125em; font-weight: 700; font-family: var(--va-head-font); }
+.vaa-prompt:focus { outline: none; }
+.vaa-stem-row { display: flex; gap: 0.75rem; align-items: flex-start; flex-wrap: wrap; }
+.vaa-stem { margin: 0 0 0.75rem; flex: 1 1 16rem; white-space: pre-line; font-size: 1.05em; }
+.vaa-hl { background: var(--va-warn-soft); color: inherit; padding: 0 0.2em; border-radius: 4px; border-bottom: 2px solid var(--va-warn); }
+.vaa-blank { display: inline-block; min-width: 4.5em; border-bottom: 3px solid var(--va-ink); margin-inline: 0.15em; vertical-align: baseline; }
+.vaa-gloss { margin: 0 0 0.75rem; color: var(--va-ink-2); }
+.vaa-item-pic { margin-block-end: 0.75rem; }
+.vaa-lead { display: block; margin: 0.75rem 0 0.35rem; font-weight: 700; color: var(--va-ink-2); font-size: 0.95em; }
+.vaa-note { margin: 0.5rem 0; color: var(--va-ink-2); font-size: 0.95em; }
+.vaa-passage { border: 1px solid var(--va-line); border-radius: var(--va-radius-sm); padding: 0.5rem 0.75rem; margin-block-end: 0.75rem; background: var(--va-paper); }
+.vaa-passage summary, .vaa-passage-title { font-weight: 700; cursor: pointer; margin: 0 0 0.35rem; min-height: var(--va-target); display: flex; align-items: center; }
+.vaa-passage-body p, .vaa-listen-text p { margin: 0 0 0.6rem; }
+
+/* choices: native radios inside big labels */
+.vaa-choices, .vaa-rowset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 0.5rem; }
+.vaa-choice-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.vaa-choice { flex: 1; display: flex; gap: 0.75rem; align-items: center; min-height: var(--va-target); padding: 0.55rem 0.85rem; border: 2px solid var(--va-line); border-radius: var(--va-radius-sm); background: var(--va-card); cursor: pointer; position: relative; flex-wrap: wrap; }
+.vaa-choice:hover { border-color: var(--va-brand); }
+.vaa-choice input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.vaa-choice:has(input:focus-visible), .vaa-pill:has(input:focus-visible) { outline: 3px solid var(--va-focus); outline-offset: 2px; }
+.vaa-letter { flex: none; display: inline-grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: 50%; border: 2px solid var(--va-ink-2); font-weight: 700; font-size: 0.9em; background: var(--va-card); }
+.vaa-choice-body { flex: 1 1 8rem; white-space: pre-line; }
+.vaa-sel { border-color: var(--va-brand); background: var(--va-brand-soft); }
+.vaa-sel .vaa-letter { background: var(--va-brand); color: #fff; border-color: var(--va-brand); }
+.vaa-right { border-color: var(--va-ok) !important; background: var(--va-ok-soft) !important; }
+.vaa-wrong { border-color: var(--va-miss) !important; background: var(--va-miss-soft) !important; }
+.vaa-mark { font-weight: 700; font-size: 0.9em; display: inline-flex; gap: 0.3em; align-items: center; }
+.vaa-mark-ok { color: var(--va-ok); }
+.vaa-mark-no { color: var(--va-miss); }
+.vaa-choices-early { gap: 0.85rem; }
+.vaa-choices-early .vaa-choice { padding: 0.9rem 1.1rem; font-size: 1.1em; }
+.vaa-choices-pics { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+.vaa-choices-pics .vaa-choice-row { display: block; }
+.vaa-choices-pics .vaa-choice { height: 100%; justify-content: center; }
+.vaa-choices-pics .vaa-choice-body { flex: 0 1 auto; }
+
+/* say / listen buttons */
+.vaa-say { display: inline-flex; align-items: center; gap: 0.4em; min-height: var(--va-target); min-width: var(--va-target); padding: 0.3rem 0.8rem; border: 2px solid var(--va-brand); border-radius: 999px; background: var(--va-card); color: var(--va-brand); font: inherit; font-weight: 700; cursor: pointer; }
+.vaa-say:hover { background: var(--va-brand-soft); }
+.vaa-say-lg { font-size: 1.15em; padding: 0.55rem 1.2rem; }
+.vaa-say-sm .vaa-say-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.vaa-listen-box { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-block-end: 0.75rem; }
+.vaa-listen-text { flex-basis: 100%; margin: 0; }
+.vaa-collapsed { display: none; }
+.vaa-nospeech .vaa-collapsed { display: block; }
+.vaa-nospeech .vaa-textbtn[data-vaa-showtext] { display: none; }
+
+/* buttons */
+.vaa-btn, .vaa-tile, .vaa-textbtn { font: inherit; cursor: pointer; min-height: var(--va-target); border-radius: var(--va-radius-sm); }
+.vaa-btn { padding: 0.5rem 1.15rem; border: 2px solid var(--va-brand); background: var(--va-card); color: var(--va-brand); font-weight: 700; }
+.vaa-btn:hover { background: var(--va-brand-soft); }
+.vaa-primary { background: var(--va-brand); color: #fff; }
+.vaa-primary:hover { background: var(--va-ink); }
+.vaa-btn:disabled, .vaa-tile:disabled, .vaa-textbtn:disabled { opacity: 0.55; cursor: not-allowed; }
+.vaa-textbtn { padding: 0.25rem 0.7rem; border: 0; background: transparent; color: var(--va-brand); text-decoration: underline; font-weight: 600; min-width: 24px; }
+.vaa-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-block-start: 0.85rem; }
+.vaa-tile { padding: 0.45rem 0.95rem; border: 2px solid var(--va-ink-2); background: var(--va-card); color: var(--va-ink); font-weight: 600; }
+.vaa-tile:hover { border-color: var(--va-brand); background: var(--va-brand-soft); }
+.vaa-tiles, .vaa-built, .vaa-frames, .vaa-meanings, .vaa-rows { list-style: none; margin: 0; padding: 0; }
+.vaa-tiles { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.vaa-built { display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: var(--va-target); padding: 0.4rem; border: 2px dashed var(--va-line); border-radius: var(--va-radius-sm); }
+.vaa-slot { display: inline-grid; place-items: center; min-width: var(--va-target); min-height: var(--va-target); border: 2px dashed var(--va-line); border-radius: var(--va-radius-sm); color: var(--va-ink-2); }
+.vaa-tile-placed { background: var(--va-brand-soft); border-color: var(--va-brand); }
+.vaa-ends { display: flex; gap: 0.5rem; margin: 0 0 0.35rem; font-weight: 700; color: var(--va-ink-2); }
+.vaa-tools { margin: 0.4rem 0 0; }
+
+/* sort / match rows */
+.vaa-rows { display: grid; gap: 0.6rem; }
+.vaa-row { border: 2px solid var(--va-line); border-radius: var(--va-radius-sm); padding: 0.5rem 0.75rem; }
+.vaa-row-word { font-weight: 700; padding: 0; display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.vaa-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 0.4rem; }
+.vaa-pill { position: relative; display: inline-flex; align-items: center; min-height: var(--va-target); padding: 0.35rem 0.9rem; border: 2px solid var(--va-line); border-radius: 999px; cursor: pointer; background: var(--va-card); }
+.vaa-pill input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.vaa-meanings { display: grid; gap: 0.35rem; margin-block-end: 0.75rem; }
+.vaa-meanings li { display: flex; gap: 0.6rem; align-items: center; }
+
+/* typing and writing */
+.vaa-input, .vaa-textarea { width: 100%; font: inherit; padding: 0.6rem 0.8rem; border: 2px solid var(--va-ink-2); border-radius: var(--va-radius-sm); background: var(--va-card); color: var(--va-ink); min-height: var(--va-target); }
+.vaa-textarea { resize: vertical; }
+.vaa-count { margin: 0.25rem 0 0; color: var(--va-ink-2); font-size: 0.9em; }
+.vaa-directions { margin: 0 0 0.6rem; padding-inline-start: 1.3rem; color: var(--va-ink-2); }
+.vaa-support { margin-block: 0.6rem; padding: 0.5rem 0.75rem; background: var(--va-paper); border-radius: var(--va-radius-sm); border: 1px solid var(--va-line); }
+.vaa-support .vaa-lead { margin-block-start: 0; }
+.vaa-frames li { margin-block: 0.25rem; }
+.vaa-organizer { display: grid; gap: 0.25rem; }
+.vaa-organizer textarea { width: 100%; font: inherit; padding: 0.4rem; border: 1px solid var(--va-line); border-radius: var(--va-radius-sm); }
+.vaa-model summary { cursor: pointer; font-weight: 700; min-height: var(--va-target); display: flex; align-items: center; }
+
+/* speaking */
+.vaa-rec { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-block: 0.5rem; }
+.vaa-recstate { color: var(--va-ink-2); font-size: 0.95em; flex-basis: 100%; }
+.vaa-takes { display: grid; gap: 0.4rem; flex-basis: 100%; }
+.vaa-take { margin: 0; } .vaa-take audio { width: 100%; max-width: 24rem; }
+.vaa-checklist { border: 0; padding: 0; margin: 0.6rem 0 0; }
+.vaa-check { display: flex; gap: 0.6rem; align-items: flex-start; min-height: 32px; padding: 0.25rem 0; cursor: pointer; }
+.vaa-check input { width: 1.4rem; height: 1.4rem; margin-block-start: 0.15rem; flex: none; accent-color: var(--va-brand); }
+
+/* feedback */
+.vaa-feedback:empty { display: none; }
+.vaa-fb { list-style: none; margin: 0.85rem 0 0; padding: 0; display: grid; gap: 0.4rem; }
+.vaa-fb-line { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.55rem 0.8rem; border-radius: var(--va-radius-sm); border: 2px solid var(--va-line); background: var(--va-paper); }
+.vaa-fb-icon { flex: none; font-weight: 800; width: 1.4em; text-align: center; }
+.vaa-fb-ok { border-color: var(--va-ok); background: var(--va-ok-soft); } .vaa-fb-ok .vaa-fb-icon { color: var(--va-ok); }
+.vaa-fb-no { border-color: var(--va-miss); background: var(--va-miss-soft); } .vaa-fb-no .vaa-fb-icon { color: var(--va-miss); }
+.vaa-fb-info .vaa-fb-icon { color: var(--va-brand); }
+.vaa-summary { background: var(--va-card); border: 2px solid var(--va-line); border-radius: var(--va-radius); padding: var(--va-gap); }
+.vaa-summary:focus { outline: 3px solid var(--va-focus); }
+.vaa-empty { padding: 1rem; border: 2px dashed var(--va-line); border-radius: var(--va-radius-sm); }
+
+/* early band: oral-first, big targets */
+.vaa-early .vaa-prompt { font-size: 1.3em; }
+.vaa-early .vaa-btn { font-size: 1.1em; padding: 0.7rem 1.5rem; }
+
+/* pictures */
+.vaa-pic { margin: 0; display: grid; place-items: center; border-radius: var(--va-radius); background: var(--va-brand-soft); border: 2px solid var(--va-line); padding: 0.5rem; }
+.vaa-pic-sm { width: 5rem; min-height: 4rem; } .vaa-pic-md { width: min(100%, 12rem); min-height: 7rem; } .vaa-pic-lg { width: min(100%, 17rem); min-height: 10rem; }
+.vaa-glyphs { display: flex; align-items: center; justify-content: center; gap: 0.35em; line-height: 1; }
+.vaa-pic-sm .vaa-glyphs { font-size: 1.8rem; } .vaa-pic-md .vaa-glyphs { font-size: 3rem; } .vaa-pic-lg .vaa-glyphs { font-size: 4.6rem; }
+.vaa-g1 .vaa-glyph-1 { font-size: 1.25em; }
+.vaa-g2 .vaa-glyph-2 { transform: translateY(0.15em) scale(0.85); }
+.vaa-g3 { } .vaa-g3 .vaa-glyph-2 { transform: translateY(-0.2em) scale(1.1); } .vaa-g3 .vaa-glyph-3 { transform: translateY(0.15em) scale(0.8); }
+.vaa-pic figcaption { margin-block-start: 0.35rem; font-size: 0.8rem; color: var(--va-ink-2); text-align: center; }
+.vaa-pic-none { background: var(--va-paper); text-align: center; color: var(--va-ink-2); font-size: 0.9rem; }
+.vaa-pic-none-hw { margin: 0; font-weight: 700; font-size: 1.1rem; color: var(--va-ink); }
+.vaa-pic-none p:last-child { margin: 0.25rem 0 0; }
+.vaa-pic-diagram { padding: 0.25rem; background: var(--va-card); }
+.vaa-pic-diagram.vaa-pic-sm { width: 10rem; } .vaa-pic-diagram.vaa-pic-md { width: min(100%, 21rem); } .vaa-pic-diagram.vaa-pic-lg { width: min(100%, 26rem); }
+.vaa-diagram-svg { width: 100%; height: auto; }
+.vaa-d-text { font: 600 12.5px var(--font, system-ui); fill: var(--va-ink); } .vaa-d-strong { font-weight: 800; font-size: 13.5px; } .vaa-d-small { font-size: 11px; fill: var(--va-ink-2); font-weight: 600; } .vaa-d-mark { font-size: 16px; font-weight: 800; }
+.vaa-d-node, .vaa-d-panel { fill: var(--va-card); stroke: var(--va-ink-2); stroke-width: 1.5; } .vaa-d-hot { fill: var(--va-brand-soft); stroke: var(--va-brand); stroke-width: 2.5; }
+.vaa-d-alt { fill: var(--va-warn-soft); stroke: var(--va-warn); }
+.vaa-d-line { stroke: var(--va-ink-2); stroke-width: 1.8; fill: none; } .vaa-d-arrow { fill: var(--va-ink-2); }
+.vaa-d-bar { fill: var(--va-brand-soft); stroke: var(--va-brand); stroke-width: 1.5; } .vaa-d-dot { fill: var(--va-brand); stroke: var(--va-card); stroke-width: 2; } .vaa-d-soft { fill: var(--va-accent); }
+
+/* word card */
+.vaa-card { background: var(--va-card); border: 2px solid var(--va-line); border-radius: var(--va-radius); padding: var(--va-gap); display: grid; gap: 0.5rem; max-width: 40rem; }
+.vaa-card p { margin: 0; }
+.vaa-card-hw { margin: 0; font: 800 1.6em/1.1 var(--va-head-font); }
+.vaa-card-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; color: var(--va-ink-2); }
+.vaa-pron { font-weight: 700; color: var(--va-ink); } .vaa-pos { font-style: italic; }
+.vaa-card-early .vaa-card-hw { font-size: 2.2em; }
+
+@media (max-width: 480px) { .vaa-choice { padding-inline: 0.65rem; } .vaa-btn { flex: 1 1 auto; } .vaa-pic-lg { width: 100%; } }
+@media (forced-colors: active) { .vaa-choice, .vaa-pill, .vaa-tile, .vaa-btn { border: 2px solid ButtonText; } .vaa-sel { outline: 3px solid Highlight; } .vaa-bar span { background: Highlight; } }

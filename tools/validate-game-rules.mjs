@@ -39,6 +39,7 @@ const REVIEW_FILE = join(ROOT, "data/game-rules-review.json");
 
 /** Student game surfaces. Directories are scanned for .html/.js (one level). */
 const GAME_DIRS = [
+  "access-practice-lab/src/vocab-academy/games",
   "algebra-balance-scale",
   "math/games/u1-decimal-dash",
   "math/games/u1-factor-frenzy",

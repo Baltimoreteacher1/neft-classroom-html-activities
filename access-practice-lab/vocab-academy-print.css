@@ -1,0 +1,1245 @@
+/* Vocabulary Academy: printable pages (owner: Print). US Letter, 0.75in margins, black-and-white safe.
+   The @page rules (running header and footer) are injected by the view / PDF generator (print/render.js pageCss) and
+   are deliberately NOT here: a stylesheet outlives the route and would put this header on every later print.
+   Every meaning that colour carries is also carried by a text label, a border or a fill pattern. */
+
+.vap-doc {
+  --vap-sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --vap-display: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --vap-ink: #14212b;
+  --vap-ink2: #3b4a56;
+  --vap-brand: #0f5d73;
+  --vap-tint: #edf2f4;
+  --vap-tint2: #dde7eb;
+  --vap-rule: #8a97a1;
+  --vap-hair: #c9d1d6;
+  --vap-fs: 12pt;
+  --vap-lh: 1.5;
+  --vap-gap: 0.16in;
+  --vap-write: 0.36in;
+  --vap-h1: 30pt;
+  --vap-h2: 21pt;
+  --vap-radius: 7pt;
+  font-family: var(--vap-sans);
+  font-size: var(--vap-fs);
+  line-height: var(--vap-lh);
+  color: var(--vap-ink);
+  width: 7in;
+  margin-inline: auto;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  hyphens: manual;
+  orphans: 3;
+  widows: 3;
+}
+.vap-doc[data-band="early"] {
+  --vap-fs: 15pt;
+  --vap-lh: 1.55;
+  --vap-gap: 0.22in;
+  --vap-write: 0.62in;
+  --vap-h1: 42pt;
+  --vap-h2: 28pt;
+  --vap-radius: 14pt;
+}
+.vap-doc[data-band="upper-elem"] {
+  --vap-fs: 12.5pt;
+  --vap-lh: 1.55;
+  --vap-write: 0.42in;
+  --vap-h1: 34pt;
+  --vap-h2: 23pt;
+  --vap-radius: 10pt;
+}
+.vap-doc[data-band="middle"] {
+  --vap-write: 0.34in;
+  --vap-radius: 4pt;
+}
+.vap-doc *,
+.vap-doc *::before,
+.vap-doc *::after {
+  box-sizing: border-box;
+}
+.vap-doc p,
+.vap-doc ul,
+.vap-doc ol {
+  margin: 0;
+}
+.vap-doc ul,
+.vap-doc ol {
+  padding: 0;
+  list-style: none;
+}
+.vap-doc h1,
+.vap-doc h2,
+.vap-doc h3,
+.vap-doc h4 {
+  margin: 0;
+  line-height: 1.15;
+  break-after: avoid;
+  break-inside: avoid;
+}
+.vap-doc b,
+.vap-doc strong {
+  font-weight: 700;
+}
+.vap-doc small {
+  font-size: 11pt;
+}
+.vap-tw {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5pt;
+  text-underline-offset: 2.5pt;
+}
+
+/* ---- screen only: toolbar and paper preview ---- */
+.vap-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  background: var(--va-card, #fff);
+  border-bottom: 1px solid var(--va-line, #d9d3c5);
+  font-family: var(--font, system-ui, sans-serif);
+}
+.vap-toolbar h1 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.vap-toolbar p {
+  margin: 0.1rem 0 0;
+  font-size: 0.9rem;
+  color: var(--va-ink-2, #3b4a56);
+}
+.vap-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.vap-toolbar a,
+.vap-toolbar button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.9rem;
+  border: 2px solid var(--va-brand, #0f5d73);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--va-brand, #0f5d73);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.vap-toolbar a[aria-current="page"],
+.vap-toolbar button.is-primary,
+.vap-toolbar button[aria-pressed="true"] {
+  background: var(--va-brand, #0f5d73);
+  color: #fff;
+}
+.vap-toolbar a:focus-visible,
+.vap-toolbar button:focus-visible {
+  outline: 3px solid var(--va-focus, #0b57d0);
+  outline-offset: 2px;
+}
+.vap-notice {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 1.25rem;
+  border: 2px solid var(--va-line, #d9d3c5);
+  border-radius: 12px;
+  background: var(--va-card, #fff);
+}
+.vap-screenwrap {
+  padding: 1.25rem 0 3rem;
+  background: #e9ecee;
+  overflow-x: auto;
+}
+.vap-screenwrap .vap-doc {
+  padding-inline: 0.5in;
+  width: 8in;
+}
+@media screen {
+  .vap-doc .vap-sheet {
+    background: #fff;
+    margin: 0 -0.5in 0.4in;
+    padding: 0.55in 0.5in;
+    box-shadow: 0 1px 6px rgba(20, 33, 43, 0.25);
+    min-height: 9in;
+  }
+  .vap-toolbar-note {
+    font-size: 0.85rem;
+  }
+}
+
+/* ---- sheets ---- */
+.vap-sheet {
+  break-before: page;
+  display: block;
+}
+.vap-doc > .vap-sheet:first-child {
+  break-before: auto;
+}
+.vap-sheet > * + * {
+  margin-top: var(--vap-gap);
+}
+
+.vap-eyebrow {
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vap-ink2);
+}
+.vap-title {
+  padding-bottom: 0.1in;
+  border-bottom: 2.5pt solid var(--vap-ink);
+}
+.vap-tab {
+  display: inline-block;
+  padding: 1pt 8pt;
+  border-radius: 99pt;
+  background: var(--vap-ink);
+  color: #fff;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.vap-title h2 {
+  margin-top: 0.07in;
+  font-family: var(--vap-display);
+  font-size: var(--vap-h2);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.vap-lead,
+.vap-lead-para {
+  margin-top: 0.05in;
+  color: var(--vap-ink2);
+}
+.vap-lead-para {
+  font-size: calc(var(--vap-fs) * 1.1);
+  line-height: 1.5;
+}
+.vap-sub {
+  margin-top: 0.05in;
+}
+.vap-sub h3 {
+  display: flex;
+  gap: 8pt;
+  align-items: center;
+  font-size: calc(var(--vap-fs) * 1.25);
+  font-weight: 700;
+}
+.vap-letter {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45em;
+  height: 1.45em;
+  border: 2pt solid var(--vap-ink);
+  border-radius: 50%;
+  font-size: 0.85em;
+}
+.vap-letter:empty {
+  display: none;
+}
+.vap-sub .vap-lead {
+  margin-top: 0.03in;
+}
+.vap-block {
+  margin-top: calc(var(--vap-gap) * 1.2);
+  break-inside: avoid; /* a lettered task (heading, directions, writing lines) never splits across pages */
+}
+.vap-sub {
+  break-after: avoid;
+}
+.vap-block > * + * {
+  margin-top: 0.1in;
+}
+.vap-block h3:not(.vap-sub h3) {
+  font-size: calc(var(--vap-fs) * 1.1);
+}
+.vap-chip {
+  display: inline-block;
+  padding: 0 5pt;
+  border: 1.2pt solid var(--vap-ink);
+  border-radius: 3pt;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1.4;
+  vertical-align: 1pt;
+}
+.vap-fine {
+  font-size: 11pt;
+  color: var(--vap-ink2);
+}
+.vap-pos {
+  font-size: 11pt;
+  font-style: italic;
+  color: var(--vap-ink2);
+}
+.vap-pron {
+  font-size: 12pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--vap-brand);
+}
+.vap-belongs {
+  margin-top: 0.3in;
+  font-size: calc(var(--vap-fs) * 1.1);
+}
+.vap-fillin {
+  display: inline-block;
+  min-width: 3.2in;
+  height: 1em;
+  border-bottom: 1.5pt solid var(--vap-ink);
+  vertical-align: baseline;
+}
+.vap-fillin.is-short {
+  min-width: 1.3in;
+}
+
+/* ---- cover ---- */
+.vap-cover-head {
+  padding: 0.25in 0 0.2in;
+  border-top: 7pt solid var(--vap-ink);
+  border-bottom: 1pt solid var(--vap-rule);
+}
+.vap-cover-head.is-compact {
+  padding-top: 0.1in;
+}
+.vap-cover-head h1 {
+  margin-top: 0.12in;
+  font-family: var(--vap-display);
+  font-size: var(--vap-h1);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+.vap-theme {
+  margin-top: 0.1in;
+  font-size: calc(var(--vap-fs) * 1.1);
+  color: var(--vap-ink2);
+}
+.vap-mosaic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.15in;
+  justify-items: center;
+}
+.vap-objectives h2,
+.vap-glance h2 {
+  margin-bottom: 0.08in;
+  font-size: calc(var(--vap-fs) * 1.55);
+  font-family: var(--vap-display);
+}
+.vap-checklist li {
+  display: flex;
+  gap: 9pt;
+  align-items: flex-start;
+  padding: 3pt 0;
+  break-inside: avoid;
+}
+.vap-checkbox {
+  flex: none;
+  width: 0.19in;
+  height: 0.19in;
+  margin-top: 0.04in;
+  border: 1.8pt solid var(--vap-ink);
+  border-radius: 3pt;
+}
+.vap-doc[data-band="early"] .vap-checkbox {
+  width: 0.28in;
+  height: 0.28in;
+  border-width: 2.2pt;
+}
+.vap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.09in;
+}
+.vap-chips li {
+  display: flex;
+  gap: 7pt;
+  align-items: baseline;
+  padding: 3pt 10pt;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: 99pt;
+  background: var(--vap-tint);
+}
+.vap-chips strong {
+  font-size: calc(var(--vap-fs) * 1.1);
+}
+
+/* ---- word cards ---- */
+.vap-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.14in;
+}
+.vap-doc[data-band="early"] .vap-cards {
+  grid-template-columns: 1fr;
+  gap: 0.15in;
+}
+.vap-card {
+  break-inside: avoid;
+  padding: 0.1in 0.14in 0.12in;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+  background: #fff;
+}
+.vap-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2pt 10pt;
+  align-items: baseline;
+  padding-bottom: 4pt;
+  border-bottom: 1pt solid var(--vap-hair);
+}
+.vap-card-head h3 {
+  font-family: var(--vap-display);
+  font-size: calc(var(--vap-fs) * 1.7);
+  font-weight: 700;
+}
+.vap-card-meta {
+  display: flex;
+  gap: 8pt;
+  align-items: baseline;
+}
+.vap-card-main {
+  display: flex;
+  gap: 0.12in;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 5pt;
+}
+.vap-card-text > * + * {
+  margin-top: 4pt;
+}
+.vap-card .vap-def {
+  font-weight: 700;
+}
+.vap-card .vap-rel {
+  font-size: 11pt;
+  color: var(--vap-ink2);
+}
+.vap-es {
+  padding-top: 3pt;
+  border-top: 1pt dotted var(--vap-rule);
+}
+.vap-sense {
+  font-size: 11.5pt;
+}
+.vap-doc[data-band="early"] .vap-card {
+  padding: 0.14in 0.2in 0.16in;
+  border-width: 2.2pt;
+}
+.vap-doc[data-band="early"] .vap-card-head h3 {
+  font-size: 30pt;
+}
+.vap-doc[data-band="early"] .vap-card .vap-def {
+  font-size: 16pt;
+}
+
+/* ---- pictures: emoji scene tiles and diagrams ---- */
+.vap-scene {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 4pt;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+  background: #fff;
+  text-align: center;
+  break-inside: avoid;
+}
+.vap-scene.is-md {
+  width: 0.95in;
+  min-height: 0.8in;
+}
+.vap-scene.is-lg {
+  width: 1.55in;
+  min-height: 1.15in;
+}
+.vap-scene.is-xl {
+  width: 2in;
+  min-height: 1.6in;
+}
+.vap-glyphs {
+  font-size: 28pt;
+  line-height: 1.1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+.vap-scene.is-lg .vap-glyphs {
+  font-size: 40pt;
+}
+.vap-scene.is-xl .vap-glyphs {
+  font-size: 56pt;
+}
+.vap-scene figcaption {
+  margin-top: 3pt;
+  font-size: 11pt;
+  line-height: 1.25;
+  color: var(--vap-ink2);
+}
+.vap-scene .vap-tile-letter {
+  font-size: 14pt;
+  font-weight: 700;
+  color: var(--vap-ink);
+}
+.vap-diagram {
+  width: 100%;
+  height: auto;
+  color: var(--vap-ink);
+}
+
+/* ---- worked example ---- */
+.vap-steps {
+  counter-reset: none;
+}
+.vap-steps > li {
+  display: grid;
+  grid-template-columns: 0.42in 1fr;
+  gap: 0.1in;
+  padding: 0.09in 0;
+  border-bottom: 1pt solid var(--vap-hair);
+  break-inside: avoid;
+}
+.vap-steps > li:last-child {
+  border-bottom: 0;
+}
+.vap-stepno {
+  display: inline-grid;
+  place-items: center;
+  width: 0.34in;
+  height: 0.34in;
+  border-radius: 50%;
+  background: var(--vap-ink);
+  color: #fff;
+  font-weight: 700;
+}
+.vap-steps h3 {
+  margin-bottom: 3pt;
+  font-size: calc(var(--vap-fs) * 1.1);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.vap-big {
+  font-family: var(--vap-display);
+  font-size: calc(var(--vap-fs) * 1.9);
+}
+.vap-see {
+  display: flex;
+  gap: 0.14in;
+  align-items: center;
+}
+.vap-uses li {
+  padding: 1pt 0;
+}
+.vap-frame {
+  font-weight: 700;
+  font-style: italic;
+}
+.vap-equation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6pt;
+  align-items: center;
+  margin: 3pt 0;
+}
+.vap-term {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4pt 10pt;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+  background: var(--vap-tint);
+}
+.vap-term small {
+  font-size: 11pt;
+  color: var(--vap-ink2);
+}
+.vap-term.is-result {
+  background: var(--vap-ink);
+  color: #fff;
+}
+.vap-op {
+  font-size: 18pt;
+  font-weight: 700;
+}
+.vap-note {
+  font-size: 11.5pt;
+  color: var(--vap-ink2);
+}
+
+/* ---- exercises ---- */
+.vap-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5pt 8pt;
+  align-items: center;
+  padding: 6pt 10pt;
+  border: 1.5pt dashed var(--vap-ink);
+  border-radius: var(--vap-radius);
+  background: var(--vap-tint);
+  break-inside: avoid;
+}
+.vap-bank ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt 8pt;
+}
+.vap-bank li {
+  padding: 0 7pt;
+  border: 1pt solid var(--vap-ink);
+  border-radius: 99pt;
+  background: #fff;
+  font-weight: 700;
+}
+.vap-bankline {
+  font-size: 11.5pt;
+}
+.vap-qs {
+  display: block;
+}
+.vap-qs > li,
+.vap-q {
+  display: grid;
+  grid-template-columns: 0.36in 1fr;
+  gap: 0.09in;
+  padding: 0.07in 0;
+  break-inside: avoid;
+}
+.vap-qs > li + li {
+  border-top: 1pt solid var(--vap-hair);
+}
+.vap-n {
+  display: inline-grid;
+  place-items: center;
+  width: 0.3in;
+  height: 0.3in;
+  margin-top: 1pt;
+  border-radius: 50%;
+  background: var(--vap-ink);
+  color: #fff;
+  font-size: 11.5pt;
+  font-weight: 700;
+}
+.vap-doc[data-band="early"] .vap-qs > li,
+.vap-doc[data-band="early"] .vap-q {
+  grid-template-columns: 0.5in 1fr;
+}
+.vap-doc[data-band="early"] .vap-n {
+  width: 0.4in;
+  height: 0.4in;
+  font-size: 15pt;
+}
+.vap-q > div > * + * {
+  margin-top: 5pt;
+}
+.vap-qexample {
+  padding: 6pt 10pt;
+  border-left: 4pt solid var(--vap-ink);
+  background: var(--vap-tint);
+  break-inside: avoid;
+}
+.vap-qexample .vap-verdict {
+  display: flex;
+  margin-top: 3pt;
+}
+.vap-why {
+  display: block;
+  margin-top: 3pt;
+  font-size: 11.5pt;
+}
+.vap-fill {
+  padding: 0 4pt;
+  border-bottom: 1.5pt solid var(--vap-ink);
+  font-weight: 700;
+  font-style: italic;
+}
+.vap-blank {
+  display: inline-block;
+  min-width: 1.15in;
+  height: 1em;
+  margin-inline: 2pt;
+  border-bottom: 1.5pt solid var(--vap-ink);
+  vertical-align: baseline;
+}
+.vap-wordtag {
+  letter-spacing: 0.02em;
+}
+.vap-readme {
+  display: flex;
+  gap: 5pt;
+  align-items: center;
+  font-size: 12pt;
+  font-style: italic;
+  color: var(--vap-ink2);
+}
+.vap-speaker {
+  width: 0.22in;
+  height: 0.22in;
+  flex: none;
+}
+
+/* ---- choices and bubbles ---- */
+.vap-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4pt 0.2in;
+}
+.vap-doc[data-band="early"] .vap-choices {
+  grid-template-columns: 1fr;
+  gap: 6pt;
+}
+.vap-choices li {
+  display: flex;
+  gap: 7pt;
+  align-items: flex-start;
+  break-inside: avoid;
+}
+.vap-bubble {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 0.27in;
+  height: 0.27in;
+  border: 1.8pt solid var(--vap-ink);
+  border-radius: 50%;
+  background: #fff;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1;
+}
+.vap-doc[data-band="early"] .vap-bubble {
+  width: 0.38in;
+  height: 0.38in;
+  font-size: 14pt;
+}
+.vap-bubble.is-right {
+  background: var(--vap-ink);
+  color: #fff;
+}
+.vap-choice-text {
+  padding-top: 1pt;
+}
+li.is-right .vap-choice-text,
+.is-right {
+  font-weight: 700;
+}
+.vap-verdict {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt 10pt;
+  align-items: center;
+}
+.vap-verdict > span:not(.vap-bubble) {
+  margin-right: 8pt;
+}
+
+/* ---- teacher annotations: text label + rule, so it reads in black and white ---- */
+.vap-key {
+  margin-top: 5pt;
+  padding: 5pt 9pt;
+  border: 1.2pt solid var(--vap-ink);
+  border-left-width: 5pt;
+  border-radius: 3pt;
+  background: #f1f1ec;
+  font-size: 11.5pt;
+  line-height: 1.4;
+  break-inside: avoid;
+}
+.vap-key-label::after {
+  content: ":";
+}
+.vap-check-mark {
+  font-weight: 700;
+}
+.vap-fill-list {
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ---- writing space ---- */
+.vap-lines,
+.vap-box-lines {
+  display: flex;
+  flex-direction: column;
+}
+.vap-line {
+  display: block;
+  height: var(--vap-write);
+  border-bottom: 1.2pt solid var(--vap-rule);
+}
+.vap-lines.is-guide .vap-line {
+  position: relative;
+  border-top: 1pt solid var(--vap-hair);
+  border-bottom: 1.8pt solid var(--vap-ink2);
+}
+.vap-lines.is-guide .vap-line::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  border-top: 1pt dashed var(--vap-rule);
+}
+.vap-box-lines {
+  padding: 0.04in 0.14in 0;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+}
+.vap-box-lines .vap-line:last-child {
+  border-bottom: 0;
+}
+.vap-lines {
+  margin-top: 0.04in;
+}
+.vap-lines .vap-line.is-short {
+  display: inline-block;
+}
+.vap-draw {
+  height: 1.5in;
+  padding: 5pt 9pt;
+  border: 1.8pt dashed var(--vap-ink);
+  border-radius: var(--vap-radius);
+}
+.vap-doc[data-band="early"] .vap-draw {
+  height: 2in;
+}
+.vap-draw-label {
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vap-ink2);
+}
+.vap-respond > * + * {
+  margin-top: 0.1in;
+}
+.vap-starter,
+.vap-support {
+  padding: 5pt 10pt;
+  border-left: 4pt solid var(--vap-ink);
+  background: var(--vap-tint);
+  font-size: 12pt;
+  break-inside: avoid;
+}
+.vap-support ul {
+  padding-left: 1em;
+  list-style: disc;
+}
+.vap-given {
+  padding: 5pt 10pt;
+  border: 1.2pt solid var(--vap-rule);
+  border-radius: var(--vap-radius);
+}
+.vap-given li {
+  padding: 1pt 0;
+  font-weight: 700;
+}
+.vap-prompt {
+  font-size: calc(var(--vap-fs) * 1.1);
+  font-weight: 700;
+}
+.vap-planner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.1in;
+}
+.vap-plan-box {
+  min-height: 0.85in;
+  padding: 5pt 9pt;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+  break-inside: avoid;
+}
+.vap-skill {
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vap-ink2);
+}
+
+/* ---- relationships: sort bins, ladders, matching ---- */
+.vap-bins {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.12in;
+}
+.vap-bins[data-count="3"],
+.vap-bins[data-count="5"],
+.vap-bins[data-count="6"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+.vap-bin {
+  padding: 5pt 9pt 6pt;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: var(--vap-radius);
+  break-inside: avoid;
+}
+.vap-bin h4 {
+  padding-bottom: 3pt;
+  border-bottom: 1pt solid var(--vap-hair);
+  font-size: 12pt;
+}
+.vap-ladder {
+  display: grid;
+  gap: 5pt;
+}
+.vap-ladder li {
+  display: flex;
+  gap: 8pt;
+  align-items: flex-end;
+  margin-left: calc(var(--step) * 0.28in);
+  break-inside: avoid;
+}
+.vap-ladder .vap-stepno {
+  flex: none;
+}
+.vap-ladder .vap-line {
+  flex: 1;
+  height: 0.3in;
+}
+.vap-ladder .vap-fill {
+  flex: 1;
+}
+.vap-match {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 0.25in;
+  align-items: start;
+}
+.vap-match-words li,
+.vap-match-defs li {
+  display: flex;
+  gap: 8pt;
+  align-items: baseline;
+  padding: 4pt 0;
+  border-bottom: 1pt solid var(--vap-hair);
+  break-inside: avoid;
+}
+.vap-match-words .vap-n {
+  align-self: center;
+}
+.vap-match-words .vap-line.is-short {
+  flex: 1;
+  display: block;
+  height: 0.28in;
+  min-width: 0.6in;
+}
+.vap-match-defs li {
+  align-items: flex-start;
+}
+.vap-match-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.1in;
+}
+.vap-match:not(.is-defs) {
+  grid-template-columns: 1fr 1.5fr;
+}
+
+/* ---- tables ---- */
+.vap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12pt;
+}
+.vap-table caption {
+  margin-bottom: 4pt;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--vap-ink2);
+}
+.vap-table th,
+.vap-table td {
+  padding: 5pt 8pt;
+  border-bottom: 1pt solid var(--vap-hair);
+  text-align: left;
+  vertical-align: top;
+}
+.vap-table thead th {
+  border-bottom: 2pt solid var(--vap-ink);
+  background: var(--vap-tint);
+  font-size: 11.5pt;
+}
+.vap-table tr {
+  break-inside: avoid;
+}
+.vap-table td small,
+.vap-table th small {
+  display: block;
+  font-weight: 400;
+  color: var(--vap-ink2);
+}
+.vap-table.is-grid td {
+  height: 0.5in;
+  border: 1pt solid var(--vap-rule);
+}
+.vap-table.is-grid .vap-cell-write {
+  min-width: 1.8in;
+}
+.vap-table.is-rate td {
+  text-align: center;
+}
+.vap-table.is-rate th:not(:first-child) {
+  text-align: center;
+}
+.vap-table.is-key td:last-child {
+  font-size: 11.5pt;
+}
+.vap-table.is-words th[scope="row"] {
+  width: 1.5in;
+}
+
+/* ---- reading passage ---- */
+.vap-passage {
+  padding: 0.14in 0.2in 0.16in 0.1in;
+  border-top: 3pt solid var(--vap-ink);
+  border-bottom: 1pt solid var(--vap-rule);
+  background: #fff;
+}
+.vap-passage header {
+  margin-bottom: 0.1in;
+}
+.vap-genre {
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vap-ink2);
+}
+.vap-passage h3 {
+  font-family: var(--vap-display);
+  font-size: calc(var(--vap-fs) * 1.7);
+}
+.vap-passage-text {
+  position: relative;
+  font-size: calc(var(--vap-fs) * 1.04);
+  line-height: 1.75;
+}
+.vap-passage-text > p {
+  position: relative;
+  padding-left: 0.1in;
+}
+.vap-passage-text > p + p {
+  margin-top: 0.08in;
+}
+.vap-passage[data-numbering="paragraph"] .vap-passage-text > p,
+.vap-passage[data-numbering="line"] .vap-passage-text > p {
+  padding-left: 0.45in;
+}
+.vap-pn {
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  display: inline-grid;
+  place-items: center;
+  width: 0.28in;
+  height: 0.28in;
+  border: 1.5pt solid var(--vap-ink);
+  border-radius: 50%;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1;
+}
+.vap-ln {
+  position: absolute;
+  left: 0;
+  width: 0.34in;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1.75;
+  text-align: right;
+  color: var(--vap-ink2);
+}
+.vap-doc[data-band="early"] .vap-passage-text {
+  font-size: calc(var(--vap-fs) * 1.2);
+  line-height: 2;
+}
+.vap-doc[data-band="early"] .vap-passage {
+  border-top-width: 5pt;
+  background: var(--vap-tint);
+}
+
+/* ---- word list, fold cards ---- */
+.vap-foldcards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1pt dashed var(--vap-ink);
+}
+.vap-foldcard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 1.45in;
+  border: 1pt dashed var(--vap-ink);
+  break-inside: avoid;
+}
+.vap-fc-front,
+.vap-fc-back {
+  display: flex;
+  flex-direction: column;
+  gap: 2pt;
+  align-items: center;
+  justify-content: center;
+  padding: 5pt 7pt;
+  text-align: center;
+}
+.vap-fc-front {
+  border-right: 1pt dashed var(--vap-rule);
+}
+.vap-fc-front h3 {
+  font-family: var(--vap-display);
+  font-size: calc(var(--vap-fs) * 1.6);
+}
+.vap-fc-back {
+  align-items: flex-start;
+  font-size: 11.5pt;
+  line-height: 1.3;
+  text-align: left;
+}
+.vap-fc-back .vap-def {
+  font-weight: 700;
+}
+.vap-foldcard .vap-scene {
+  border: 0;
+  min-height: 0;
+}
+
+/* ---- assessment ---- */
+.vap-assess-head {
+  padding-bottom: 0.12in;
+  border-bottom: 2.5pt solid var(--vap-ink);
+}
+.vap-assess-head h2 {
+  margin-top: 0.07in;
+  font-family: var(--vap-display);
+  font-size: var(--vap-h2);
+}
+.vap-formtag {
+  display: inline-block;
+  margin-left: 6pt;
+  padding: 0 9pt;
+  border: 2pt solid var(--vap-ink);
+  border-radius: 99pt;
+  font-family: var(--vap-sans);
+  font-size: 0.55em;
+  vertical-align: 0.25em;
+}
+.vap-name-big {
+  margin-top: 0.14in;
+  font-size: calc(var(--vap-fs) * 1.1);
+  line-height: 2;
+}
+.vap-name-big .vap-fillin {
+  min-width: 2.9in;
+}
+.vap-name-big .vap-fillin.is-short {
+  min-width: 1.4in;
+}
+.vap-keyhead {
+  margin-top: 0.1in;
+  font-family: var(--vap-display);
+  font-size: calc(var(--vap-fs) * 1.7);
+}
+.vap-bullets {
+  padding-left: 1.1em;
+  list-style: disc;
+}
+.vap-bullets li {
+  padding: 1.5pt 0;
+  break-inside: avoid;
+}
+.vap-steps-plain {
+  padding-left: 1.4em;
+  list-style: decimal;
+}
+.vap-steps-plain li {
+  padding: 1.5pt 0;
+}
+
+/* ---- bands: editorial restraint for 6-8 ---- */
+.vap-doc[data-band="middle"] .vap-tab {
+  background: transparent;
+  color: var(--vap-ink);
+  border: 1.2pt solid var(--vap-ink);
+}
+.vap-doc[data-band="middle"] .vap-title {
+  border-bottom-width: 1.2pt;
+}
+.vap-doc[data-band="middle"] .vap-n,
+.vap-doc[data-band="middle"] .vap-stepno {
+  background: transparent;
+  color: var(--vap-ink);
+  border: 1.5pt solid var(--vap-ink);
+}
+.vap-doc[data-band="middle"] .vap-cover-head {
+  border-top-width: 3pt;
+}
+.vap-doc[data-band="middle"] .vap-card {
+  border-width: 1pt;
+}
+.vap-doc[data-band="middle"] .vap-title h2,
+.vap-doc[data-band="middle"] .vap-cover-head h1 {
+  font-weight: 600;
+}
+
+/* ---- print ---- */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .no-print,
+  .vap-toolbar,
+  .vap-notice-screen,
+  .skip-link,
+  .lab-top,
+  .lab-footer,
+  .toast,
+  .lang-banner,
+  #labToast,
+  #labLive,
+  #labLangBanner,
+  #labStorageWarning,
+  #labNet {
+    display: none !important;
+  }
+  body:has(.vap-doc) .lab-main,
+  body:has(.vap-doc) #app {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    background: #fff !important;
+  }
+  .vap-screenwrap {
+    padding: 0;
+    background: #fff;
+    overflow: visible;
+  }
+  .vap-doc,
+  .vap-screenwrap .vap-doc {
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+  .vap-doc .vap-sheet {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    min-height: 0;
+  }
+}
