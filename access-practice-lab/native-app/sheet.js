@@ -4,6 +4,7 @@ import { MODES, readMode, setMode } from "./lab-language.js";
 import { normLang, t } from "./strings.js";
 
 export const PRIVACY_PATH = "/access-practice-lab/privacy";
+export const SUPPORT_PATH = "/access-practice-lab/support/";
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const GEAR_SVG =
   '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -57,6 +58,7 @@ export function mountSettings({ doc = document, native, onLanguage }) {
   const netNote = el(doc, "p", { class: "nla-note", role: "status" });
   const version = el(doc, "p", { class: "nla-fine" });
   const privacy = label(el(doc, "a", { class: "nla-link", href: PRIVACY_PATH }), "privacy.link");
+  const support = label(el(doc, "a", { class: "nla-link", href: SUPPORT_PATH }), "support.link");
 
   const section = (id, key, ...body) => {
     const heading = label(el(doc, "h3", { id }), key);
@@ -72,7 +74,7 @@ export function mountSettings({ doc = document, native, onLanguage }) {
         el(doc, "label", { class: "nla-opt", for: "nla-reminder" }, reminder, label(el(doc, "span"), "reminder.toggle")),
         reminderStatus),
       section("nla-h-share", "share.section", shareButton, shareStatus),
-      section("nla-h-help", "help.section", p("help.about"), p("help.contact"), privacy),
+      section("nla-h-help", "help.section", p("help.about"), p("help.contact"), support, privacy),
       section("nla-h-off", "offline.section", p("offline.intro"),
         el(doc, "ul", { class: "nla-list" },
           label(el(doc, "li"), "offline.works"), label(el(doc, "li"), "offline.online")),

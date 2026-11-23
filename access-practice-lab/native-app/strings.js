@@ -30,10 +30,11 @@ export const STRINGS = {
     "share.unsupported": "Sharing is not available on this device.",
     "help.section": "Help and privacy",
     "help.about":
-      "The Language Page has English practice for grades 3–8: listening, reading, speaking and writing, in English and Spanish. It is practice, not an official test.",
+      "The Language Page has English practice from kindergarten to grade 8: listening, reading, speaking and writing, in English and Spanish. It is practice, not an official test.",
     "help.contact":
-      "Questions? Ask your child's teacher. This app has no accounts and no support email address.",
+      "Questions or problems? Email neftjd@gmail.com. This app has no accounts. Please do not send a child's full name or school.",
     "privacy.link": "Privacy policy",
+    "support.link": "Contact and help",
     "offline.section": "What works without internet",
     "offline.intro": "Practice pages work without internet after you have opened the app once online.",
     "offline.works": "Works offline: practice pages and your saved progress on this phone.",
@@ -69,10 +70,11 @@ export const STRINGS = {
     "share.unsupported": "Compartir no está disponible en este dispositivo.",
     "help.section": "Ayuda y privacidad",
     "help.about":
-      "The Language Page ofrece práctica de inglés para los grados 3–8: escuchar, leer, hablar y escribir, en inglés y en español. Es práctica, no un examen oficial.",
+      "The Language Page ofrece práctica de inglés desde kínder hasta 8.º grado: escuchar, leer, hablar y escribir, en inglés y en español. Es práctica, no un examen oficial.",
     "help.contact":
-      "¿Preguntas? Pregunta al maestro o a la maestra de tu hijo o hija. Esta app no tiene cuentas ni un correo de ayuda.",
+      "¿Preguntas o problemas? Escribe a neftjd@gmail.com. Esta app no tiene cuentas. Por favor, no envíes el nombre completo de un niño o niña ni su escuela.",
     "privacy.link": "Política de privacidad",
+    "support.link": "Contacto y ayuda",
     "offline.section": "Qué funciona sin internet",
     "offline.intro": "Las páginas de práctica funcionan sin internet después de abrir la app una vez con conexión.",
     "offline.works":
