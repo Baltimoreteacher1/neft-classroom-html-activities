@@ -11,7 +11,7 @@ import { normalizeActivity } from "../core/schema.js";
 import { renderFinish } from "./finish.js";
 import { mountFlow } from "./flow.js";
 import { mountGame } from "./game.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { applyLook } from "./look.js";
 import { createSession } from "./session.js";
 import { createSpeaker } from "./speech.js";
@@ -134,7 +134,7 @@ export function mountPlayer(root, input, opts = {}) {
       }
       controls.append(group);
     }
-    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, icon("moon", 18), ctx.msg("calm"));
+    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, glyph("moon", 18), ctx.msg("calm"));
     calm.addEventListener("click", () => {
       ctx.state.calm = !ctx.state.calm;
       applyCalm();
@@ -145,7 +145,7 @@ export function mountPlayer(root, input, opts = {}) {
     controls.append(calm);
     if (activity.kind === "game") {
       const list = ctx.state.mode === "list";
-      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, icon(list ? "play" : "list", 18), ctx.msg(list ? "gameMode" : "listMode"));
+      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, glyph(list ? "play" : "list", 18), ctx.msg(list ? "gameMode" : "listMode"));
       mode.addEventListener("click", () => {
         ctx.state.mode = list ? "game" : "list";
         ctx.state.finished = false;

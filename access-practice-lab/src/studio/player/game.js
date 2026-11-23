@@ -1,7 +1,7 @@
 // The game frame: pause / resume and the choice of mechanic from activity.template. The mechanics only consume
 // questions through the same widgets and check.js as every other kind. No timers, no scores that rank.
 
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { mountMatch } from "./game-match.js";
 import { mountPuzzle } from "./game-puzzle.js";
 import { mountQuest } from "./game-quest.js";
@@ -18,9 +18,9 @@ export function mountGame(stage, ctx, { onFinish }) {
     h("h2", { tabindex: "-1" }, ctx.t("paused")),
     h("p", null, ctx.t("pausedBody")),
   );
-  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("play", 18), ctx.msg("resume"));
+  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, glyph("play", 18), ctx.msg("resume"));
   pausedCard.append(resume);
-  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, icon("pause", 18), ctx.msg("pause"));
+  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, glyph("pause", 18), ctx.msg("pause"));
   const frame = h(
     "div",
     { class: `sp-game sp-game-${ctx.activity.template}` },

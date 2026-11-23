@@ -3,7 +3,7 @@
 
 import { safeImageSrc } from "../core/schema.js";
 import { hearButton } from "./hear.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { h, nid, paragraphs, plainText, rich, rt } from "./util.js";
 
 /** Passage text cut into short readable parts of about two sentences. */
@@ -25,7 +25,7 @@ export function chunksOf(text) {
 function textBlock(b, ctx) {
   if (b.role === "heading") return rt("h3", "sp-heading", b.text);
   const box = h("div", { class: `sp-text sp-text-${b.role}` });
-  if (b.role === "directions") box.append(h("span", { class: "sp-tag" }, icon("flag", 16), ctx.t("directions")));
+  if (b.role === "directions") box.append(h("span", { class: "sp-tag" }, glyph("flag", 16), ctx.t("directions")));
   for (const p of paragraphs(b.text)) box.append(rt("p", "", p));
   if (ctx.supports.readAloud) box.append(hearButton(ctx, b.text, ctx.t("hearThis")));
   return box;

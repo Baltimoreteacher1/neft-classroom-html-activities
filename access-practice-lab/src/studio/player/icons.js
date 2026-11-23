@@ -25,7 +25,7 @@ const PATHS = {
 };
 
 /** @param {keyof PATHS} name */
-export function icon(name, size = 20) {
+export function glyph(name, size = 20) {
   return sv(
     "svg",
     {

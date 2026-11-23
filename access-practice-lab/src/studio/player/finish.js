@@ -1,7 +1,7 @@
 // The finish screen: what the student did, in words. No score, no rank, no comparison with anyone.
 
 import { questionsOf } from "../core/schema.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { h, plainText, rt } from "./util.js";
 
 const WAYS = {
@@ -30,21 +30,21 @@ export function renderFinish(stage, ctx, { onAgain, onBack, reported }) {
   const summary = h("ul", { class: "sp-finish-sum" });
   for (const way of ["first", "revised", "review", "shown"]) {
     if (!count(way)) continue;
-    summary.append(h("li", null, icon(WAYS[way].icon, 18), h("span", null, ctx.t(`${WAYS[way].key}Count`, { n: count(way) }))));
+    summary.append(h("li", null, glyph(WAYS[way].icon, 18), h("span", null, ctx.t(`${WAYS[way].key}Count`, { n: count(way) }))));
   }
-  if (hints) summary.append(h("li", null, icon("bulb", 18), h("span", null, ctx.t("hintsUsed", { n: hints }))));
+  if (hints) summary.append(h("li", null, glyph("bulb", 18), h("span", null, ctx.t("hintsUsed", { n: hints }))));
   const list = h("ol", { class: "sp-finish-list" });
   rows.forEach(({ q, rec, way }) => {
     const li = h(
       "li",
       { class: `sp-finish-item way-${way}` },
       rt("span", "sp-finish-q", q.prompt),
-      h("span", { class: "sp-finish-way" }, icon(WAYS[way].icon, 16), ctx.t(WAYS[way].key), rec.hints ? ` · ${ctx.t("hintsN", { n: rec.hints })}` : ""),
+      h("span", { class: "sp-finish-way" }, glyph(WAYS[way].icon, 16), ctx.t(WAYS[way].key), rec.hints ? ` · ${ctx.t("hintsN", { n: rec.hints })}` : ""),
     );
     li.querySelector(".sp-finish-q").setAttribute("title", plainText(q.prompt));
     list.append(li);
   });
-  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("undo", 18), ctx.msg("tryAgain"));
+  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, glyph("undo", 18), ctx.msg("tryAgain"));
   again.addEventListener("click", onAgain);
   const actions = h("div", { class: "sp-actions" }, again);
   if (onBack) {

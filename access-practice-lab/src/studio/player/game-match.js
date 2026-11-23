@@ -5,7 +5,7 @@
 import { checkResponse } from "../core/check.js";
 import { renderBlocks } from "./blocks.js";
 import { buildSteps } from "./flow.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { mountQuestion } from "./question.js";
 import { h, plainText, repaint, rich, rt, seeded, shuffled } from "./util.js";
 
@@ -79,7 +79,7 @@ export function mountMatch(area, ctx, { onFinish }) {
     const lane = h("div", { class: "sp-lane", role: "group", "aria-label": ctx.t("matchBank") });
     const docks = h("ul", { class: "sp-docks" });
     const say = h("p", { class: "sp-say", role: "status", "aria-live": "polite" }, ctx.t("matchStart"));
-    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, icon("bulb", 18), ctx.msg("hint"));
+    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, glyph("bulb", 18), ctx.msg("hint"));
     const head = h(
       "div",
       { class: "sp-round-head" },
@@ -112,7 +112,7 @@ export function mountMatch(area, ctx, { onFinish }) {
       for (const p of q.pairs) {
         const done = Boolean(placed[p.id]);
         const body = done
-          ? h("div", { class: "sp-dock is-filled" }, icon("check", 18), rt("span", "sp-dock-left", p.left), h("span", { class: "sp-dock-eq", "aria-hidden": "true" }, "="), rt("span", "sp-dock-right", p.right))
+          ? h("div", { class: "sp-dock is-filled" }, glyph("check", 18), rt("span", "sp-dock-left", p.left), h("span", { class: "sp-dock-eq", "aria-hidden": "true" }, "="), rt("span", "sp-dock-right", p.right))
           : h("button", { type: "button", class: "sp-dock", "data-key": `d:${p.id}`, "aria-label": `${plainText(p.left)}: ${ctx.t("slotEmpty")}` }, rt("span", "sp-dock-left", p.left), h("span", { class: "sp-slot-hint" }, picked ? ctx.t("placeHere") : ctx.t("slotEmpty")));
         if (!done) body.addEventListener("click", () => tryPlace(p));
         docks.append(h("li", null, body));
@@ -144,10 +144,10 @@ export function mountMatch(area, ctx, { onFinish }) {
       ctx.session.finish(q);
       lane.replaceChildren();
       const last = st.round === rounds.length - 1;
-      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
+      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), glyph("arrow", 18));
       go.addEventListener("click", next);
       root.append(
-        h("div", { class: "sp-feedback is-right" }, h("p", { class: "sp-fb-title" }, icon("star", 18), ctx.t("roundDone")), q.explanation ? rt("p", "sp-explain", q.explanation) : null),
+        h("div", { class: "sp-feedback is-right" }, h("p", { class: "sp-fb-title" }, glyph("star", 18), ctx.t("roundDone")), q.explanation ? rt("p", "sp-explain", q.explanation) : null),
         h("div", { class: "sp-next-row" }, go),
       );
       hint.hidden = true;

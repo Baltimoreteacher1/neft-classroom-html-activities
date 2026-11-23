@@ -842,7 +842,7 @@ const PATHS = {
 };
 
 /** @param {keyof PATHS} name */
-function icon(name, size = 20) {
+function glyph(name, size = 20) {
   return sv(
     "svg",
     {
@@ -891,21 +891,21 @@ function renderFinish(stage, ctx, { onAgain, onBack, reported }) {
   const summary = h("ul", { class: "sp-finish-sum" });
   for (const way of ["first", "revised", "review", "shown"]) {
     if (!count(way)) continue;
-    summary.append(h("li", null, icon(WAYS[way].icon, 18), h("span", null, ctx.t(`${WAYS[way].key}Count`, { n: count(way) }))));
+    summary.append(h("li", null, glyph(WAYS[way].icon, 18), h("span", null, ctx.t(`${WAYS[way].key}Count`, { n: count(way) }))));
   }
-  if (hints) summary.append(h("li", null, icon("bulb", 18), h("span", null, ctx.t("hintsUsed", { n: hints }))));
+  if (hints) summary.append(h("li", null, glyph("bulb", 18), h("span", null, ctx.t("hintsUsed", { n: hints }))));
   const list = h("ol", { class: "sp-finish-list" });
   rows.forEach(({ q, rec, way }) => {
     const li = h(
       "li",
       { class: `sp-finish-item way-${way}` },
       rt("span", "sp-finish-q", q.prompt),
-      h("span", { class: "sp-finish-way" }, icon(WAYS[way].icon, 16), ctx.t(WAYS[way].key), rec.hints ? ` · ${ctx.t("hintsN", { n: rec.hints })}` : ""),
+      h("span", { class: "sp-finish-way" }, glyph(WAYS[way].icon, 16), ctx.t(WAYS[way].key), rec.hints ? ` · ${ctx.t("hintsN", { n: rec.hints })}` : ""),
     );
     li.querySelector(".sp-finish-q").setAttribute("title", plainText(q.prompt));
     list.append(li);
   });
-  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("undo", 18), ctx.msg("tryAgain"));
+  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, glyph("undo", 18), ctx.msg("tryAgain"));
   again.addEventListener("click", onAgain);
   const actions = h("div", { class: "sp-actions" }, again);
   if (onBack) {
@@ -937,7 +937,7 @@ function hearButton(ctx, text, label) {
   const btn = h(
     "button",
     { type: "button", class: "sp-btn sp-btn-quiet sp-hear", "aria-pressed": "false", "aria-label": label },
-    icon("speaker", 18),
+    glyph("speaker", 18),
     h("span", null, ctx.t("hear")),
   );
   const done = () => btn.setAttribute("aria-pressed", "false");
@@ -976,7 +976,7 @@ function chunksOf(text) {
 function textBlock(b, ctx) {
   if (b.role === "heading") return rt("h3", "sp-heading", b.text);
   const box = h("div", { class: `sp-text sp-text-${b.role}` });
-  if (b.role === "directions") box.append(h("span", { class: "sp-tag" }, icon("flag", 16), ctx.t("directions")));
+  if (b.role === "directions") box.append(h("span", { class: "sp-tag" }, glyph("flag", 16), ctx.t("directions")));
   for (const p of paragraphs(b.text)) box.append(rt("p", "", p));
   if (ctx.supports.readAloud) box.append(hearButton(ctx, b.text, ctx.t("hearThis")));
   return box;
@@ -1422,7 +1422,7 @@ function mark(node, kind, ctx, append = node) {
   const k = MARK_KINDS[kind];
   node.dataset.mark = kind;
   node.classList.add(`is-${kind}`);
-  append.append(h("span", { class: `sp-mark ${k.cls}` }, icon(k.icon, 14), h("span", { class: "sp-mark-text" }, ctx.t(k.key))));
+  append.append(h("span", { class: `sp-mark ${k.cls}` }, glyph(k.icon, 14), h("span", { class: "sp-mark-text" }, ctx.t(k.key))));
 }
 
 /** Remove every mark inside root. */
@@ -1735,8 +1735,8 @@ function buildOrder(q, ctx) {
           move(id, e.key === "ArrowUp" ? -1 : 1);
         }
       });
-      const up = h("button", { type: "button", class: "sp-move", "data-key": `up:${id}`, "aria-label": ctx.t("moveUp", { item: plainText(it.text) }) }, icon("up"));
-      const down = h("button", { type: "button", class: "sp-move", "data-key": `down:${id}`, "aria-label": ctx.t("moveDown", { item: plainText(it.text) }) }, icon("down"));
+      const up = h("button", { type: "button", class: "sp-move", "data-key": `up:${id}`, "aria-label": ctx.t("moveUp", { item: plainText(it.text) }) }, glyph("up"));
+      const down = h("button", { type: "button", class: "sp-move", "data-key": `down:${id}`, "aria-label": ctx.t("moveDown", { item: plainText(it.text) }) }, glyph("down"));
       up.disabled = i === 0;
       down.disabled = i === order.length - 1;
       up.addEventListener("click", () => move(id, -1));
@@ -1768,7 +1768,7 @@ function buildSentence(q, ctx) {
   let seq = [];
   const bank = h("div", { class: "sp-bank", role: "group", "aria-label": ctx.t("wordBank") });
   const line = h("div", { class: "sp-sentence", role: "group", "aria-label": ctx.t("yourSentence") });
-  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("undo", 16), ctx.msg("startOver"));
+  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, glyph("undo", 16), ctx.msg("startOver"));
   const root = h("div", { class: "sp-build" }, line, bank, clear);
 
   function paint() {
@@ -2081,7 +2081,7 @@ function buildPlot(q, ctx) {
     for (const [k, b] of cells) b.setAttribute("aria-pressed", String(pts.some((p) => `${p.x},${p.y}` === k)));
     listEl.replaceChildren(
       ...pts.map((p) => {
-        const rm = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small", "aria-label": ctx.t("removePoint", { p: `${p.x}, ${p.y}` }) }, icon("cross", 14));
+        const rm = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small", "aria-label": ctx.t("removePoint", { p: `${p.x}, ${p.y}` }) }, glyph("cross", 14));
         rm.addEventListener("click", () => toggle(p));
         return h("li", null, `(${p.x}, ${p.y})`, rm);
       }),
@@ -2389,9 +2389,9 @@ function mountQuestion(host, q, ctx, opts = {}) {
   const feedback = h("div", { class: "sp-feedback", role: "status", "aria-live": "polite", "aria-atomic": "true" });
   const hintsBox = h("div", { class: "sp-hints", "aria-live": "polite" });
   const checkBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-check-btn" }, ctx.msg("check"));
-  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, icon("bulb", 18), h("span", null, ctx.msg("hint")));
+  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, glyph("bulb", 18), h("span", null, ctx.msg("hint")));
   const showBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: true }, ctx.msg("showAnswer"));
-  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.msg(opts.last ? "finish" : "next"), icon("arrow", 18));
+  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.msg(opts.last ? "finish" : "next"), glyph("arrow", 18));
   const prompt = rt("h2", "sp-prompt", q.prompt, { id: promptId, tabindex: "-1" });
   const top = h("div", { class: "sp-q-top" });
   if (opts.total > 1) top.append(h("span", { class: "sp-q-n" }, ctx.t("progress", { n: opts.index + 1, total: opts.total })));
@@ -2421,7 +2421,7 @@ function mountQuestion(host, q, ctx, opts = {}) {
   const say = (title, body, cls) => {
     feedback.className = `sp-feedback ${cls}`;
     feedback.replaceChildren(
-      h("p", { class: "sp-fb-title" }, icon(cls.includes("right") ? "check" : cls.includes("shown") ? "star" : "bulb", 18), title),
+      h("p", { class: "sp-fb-title" }, glyph(cls.includes("right") ? "check" : cls.includes("shown") ? "star" : "bulb", 18), title),
       ...body,
     );
     ctx.announce(feedback.textContent);
@@ -2724,7 +2724,7 @@ function mountMatch(area, ctx, { onFinish }) {
     const lane = h("div", { class: "sp-lane", role: "group", "aria-label": ctx.t("matchBank") });
     const docks = h("ul", { class: "sp-docks" });
     const say = h("p", { class: "sp-say", role: "status", "aria-live": "polite" }, ctx.t("matchStart"));
-    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, icon("bulb", 18), ctx.msg("hint"));
+    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, glyph("bulb", 18), ctx.msg("hint"));
     const head = h(
       "div",
       { class: "sp-round-head" },
@@ -2757,7 +2757,7 @@ function mountMatch(area, ctx, { onFinish }) {
       for (const p of q.pairs) {
         const done = Boolean(placed[p.id]);
         const body = done
-          ? h("div", { class: "sp-dock is-filled" }, icon("check", 18), rt("span", "sp-dock-left", p.left), h("span", { class: "sp-dock-eq", "aria-hidden": "true" }, "="), rt("span", "sp-dock-right", p.right))
+          ? h("div", { class: "sp-dock is-filled" }, glyph("check", 18), rt("span", "sp-dock-left", p.left), h("span", { class: "sp-dock-eq", "aria-hidden": "true" }, "="), rt("span", "sp-dock-right", p.right))
           : h("button", { type: "button", class: "sp-dock", "data-key": `d:${p.id}`, "aria-label": `${plainText(p.left)}: ${ctx.t("slotEmpty")}` }, rt("span", "sp-dock-left", p.left), h("span", { class: "sp-slot-hint" }, picked ? ctx.t("placeHere") : ctx.t("slotEmpty")));
         if (!done) body.addEventListener("click", () => tryPlace(p));
         docks.append(h("li", null, body));
@@ -2789,10 +2789,10 @@ function mountMatch(area, ctx, { onFinish }) {
       ctx.session.finish(q);
       lane.replaceChildren();
       const last = st.round === rounds.length - 1;
-      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
+      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), glyph("arrow", 18));
       go.addEventListener("click", next);
       root.append(
-        h("div", { class: "sp-feedback is-right" }, h("p", { class: "sp-fb-title" }, icon("star", 18), ctx.t("roundDone")), q.explanation ? rt("p", "sp-explain", q.explanation) : null),
+        h("div", { class: "sp-feedback is-right" }, h("p", { class: "sp-fb-title" }, glyph("star", 18), ctx.t("roundDone")), q.explanation ? rt("p", "sp-explain", q.explanation) : null),
         h("div", { class: "sp-next-row" }, go),
       );
       hint.hidden = true;
@@ -2947,7 +2947,7 @@ function mountPuzzle(area, ctx, { onFinish }) {
       });
       tray.append(b);
     }
-    const auto = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("puzzle", 18), ctx.msg("placeForMe"));
+    const auto = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, glyph("puzzle", 18), ctx.msg("placeForMe"));
     auto.addEventListener("click", () => {
       if (st.held < 0) st.held = bin[0];
       place(st.cellOf[st.held], true);
@@ -2965,7 +2965,7 @@ function mountPuzzle(area, ctx, { onFinish }) {
   function victory() {
     const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("finish"));
     done.addEventListener("click", onFinish);
-    const title = h("h2", { class: "sp-round-title", tabindex: "-1" }, icon("star", 22), ctx.t("pictureDone"));
+    const title = h("h2", { class: "sp-round-title", tabindex: "-1" }, glyph("star", 22), ctx.t("pictureDone"));
     panel.append(title, h("p", null, ctx.t("pictureDoneBody")), done);
     board.classList.add("is-complete");
     talk(ctx.t("pictureDone"));
@@ -3013,10 +3013,10 @@ function mountQuest(area, ctx, { onFinish }) {
       const node = h(
         "li",
         { class: `sp-node is-${state}${camp ? " is-camp" : ""}`, "aria-current": state === "here" ? "step" : null },
-        h("span", { class: "sp-node-dot", "aria-hidden": "true" }, state === "done" ? icon("check", 18) : camp ? icon("flag", 18) : String(i + 1)),
+        h("span", { class: "sp-node-dot", "aria-hidden": "true" }, state === "done" ? glyph("check", 18) : camp ? glyph("flag", 18) : String(i + 1)),
         h("span", { class: "sp-node-word" }, ctx.t("missionN", { n: i + 1 }), h("span", { class: "sp-sr" }, ", "), h("small", null, ctx.t(wordFor[state]))),
       );
-      if (state === "here") node.prepend(h("span", { class: "sp-hero", "aria-hidden": "true" }, icon("home", 16)));
+      if (state === "here") node.prepend(h("span", { class: "sp-hero", "aria-hidden": "true" }, glyph("home", 16)));
       path.append(node);
     });
   }
@@ -3047,12 +3047,12 @@ function mountQuest(area, ctx, { onFinish }) {
     st.camp = i;
     paintPath();
     const recap = steps.slice(Math.max(0, i - CAMP_EVERY + 1), i + 1).filter((s) => s.question.explanation);
-    const next = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("keepGoing"), icon("arrow", 18));
+    const next = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("keepGoing"), glyph("arrow", 18));
     next.addEventListener("click", () => {
       st.camp = -1;
       mission(st.at);
     });
-    const title = h("h2", { class: "sp-camp-title", tabindex: "-1" }, icon("flag", 22), ctx.t("campTitle"));
+    const title = h("h2", { class: "sp-camp-title", tabindex: "-1" }, glyph("flag", 22), ctx.t("campTitle"));
     stageEl.replaceChildren(
       h(
         "section",
@@ -3072,12 +3072,12 @@ function mountQuest(area, ctx, { onFinish }) {
     const redo = missed();
     const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("finish"));
     done.addEventListener("click", onFinish);
-    const title = h("h2", { class: "sp-camp-title", tabindex: "-1" }, icon("star", 22), ctx.t("questComplete"));
+    const title = h("h2", { class: "sp-camp-title", tabindex: "-1" }, glyph("star", 22), ctx.t("questComplete"));
     const section = h("section", { class: "sp-camp" }, title, h("p", null, ctx.t(redo.length ? "questRetryBody" : "questWinBody")));
     if (redo.length) {
       const list = h("ul", { class: "sp-retry" });
       for (const i of redo) {
-        const b = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("undo", 16), ctx.t("retryMission", { n: i + 1 }));
+        const b = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, glyph("undo", 16), ctx.t("retryMission", { n: i + 1 }));
         b.addEventListener("click", () => mission(i, { retrying: true }));
         list.append(h("li", null, b));
       }
@@ -3138,12 +3138,12 @@ function mountStrategy(area, ctx, { onFinish }) {
 
   function paintGarden() {
     const plants = h("span", { class: "sp-plants", role: "img", "aria-label": ctx.t("plantsLabel", { n: st.plants, max: MAX_PLANTS }) });
-    for (let i = 0; i < MAX_PLANTS; i++) plants.append(h("span", { class: `sp-plant${i < st.plants ? " is-alive" : ""}`, "aria-hidden": "true" }, icon("leaf", 22)));
+    for (let i = 0; i < MAX_PLANTS; i++) plants.append(h("span", { class: `sp-plant${i < st.plants ? " is-alive" : ""}`, "aria-hidden": "true" }, glyph("leaf", 22)));
     const levels = BUILDINGS.map((b) =>
-      h("li", { class: "sp-stat" }, icon(b.icon, 16), h("span", null, `${ctx.t(b.name)}: ${ctx.t("levelOf", { n: st.levels[b.id], max: MAX_LEVEL })}`)),
+      h("li", { class: "sp-stat" }, glyph(b.icon, 16), h("span", null, `${ctx.t(b.name)}: ${ctx.t("levelOf", { n: st.levels[b.id], max: MAX_LEVEL })}`)),
     );
     garden.replaceChildren(
-      h("div", { class: "sp-garden-top" }, h("span", { class: "sp-q-n" }, ctx.t("roundN", { n: st.round + 1, total: steps.length })), h("span", { class: "sp-energy" }, icon("star", 16), ctx.t("energyN", { n: st.energy }))),
+      h("div", { class: "sp-garden-top" }, h("span", { class: "sp-q-n" }, ctx.t("roundN", { n: st.round + 1, total: steps.length })), h("span", { class: "sp-energy" }, glyph("star", 16), ctx.t("energyN", { n: st.energy }))),
       plants,
       h("ul", { class: "sp-stats" }, ...levels),
     );
@@ -3208,7 +3208,7 @@ function mountStrategy(area, ctx, { onFinish }) {
         h(
           "li",
           { class: "sp-building" },
-          h("h3", null, icon(b.icon, 20), ctx.t(b.name)),
+          h("h3", null, glyph(b.icon, 20), ctx.t(b.name)),
           h("p", null, ctx.t(b.effect)),
           h("p", { class: "sp-note-small" }, ctx.t("levelOf", { n: level, max: MAX_LEVEL })),
           btn,
@@ -3216,14 +3216,14 @@ function mountStrategy(area, ctx, { onFinish }) {
         ),
       );
     }
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("letStormCome"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("letStormCome"), glyph("arrow", 18));
     go.addEventListener("click", () => {
       st.phase = "storm";
       st.storm = resolveStorm();
       render();
     });
     const title = h("h2", { class: "sp-round-title", tabindex: "-1" }, ctx.t("planTitle"));
-    panel.append(title, h("p", { class: "sp-forecast" }, icon("flag", 18), ctx.t("forecast", { n: strength })), h("p", null, ctx.t("planHelp", { n: st.energy })), list, h("div", { class: "sp-next-row" }, go));
+    panel.append(title, h("p", { class: "sp-forecast" }, glyph("flag", 18), ctx.t("forecast", { n: strength })), h("p", null, ctx.t("planHelp", { n: st.energy })), list, h("div", { class: "sp-next-row" }, go));
     return title;
   }
 
@@ -3255,7 +3255,7 @@ function mountStrategy(area, ctx, { onFinish }) {
     paintGarden();
     const r = st.storm;
     const last = st.round >= steps.length - 1;
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), glyph("arrow", 18));
     go.addEventListener("click", () => {
       if (last) return onFinish();
       st.round += 1;
@@ -3294,9 +3294,9 @@ function mountGame(stage, ctx, { onFinish }) {
     h("h2", { tabindex: "-1" }, ctx.t("paused")),
     h("p", null, ctx.t("pausedBody")),
   );
-  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("play", 18), ctx.msg("resume"));
+  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, glyph("play", 18), ctx.msg("resume"));
   pausedCard.append(resume);
-  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, icon("pause", 18), ctx.msg("pause"));
+  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, glyph("pause", 18), ctx.msg("pause"));
   const frame = h(
     "div",
     { class: `sp-game sp-game-${ctx.activity.template}` },
@@ -4134,7 +4134,7 @@ function mountPlayer(root, input, opts = {}) {
       }
       controls.append(group);
     }
-    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, icon("moon", 18), ctx.msg("calm"));
+    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, glyph("moon", 18), ctx.msg("calm"));
     calm.addEventListener("click", () => {
       ctx.state.calm = !ctx.state.calm;
       applyCalm();
@@ -4145,7 +4145,7 @@ function mountPlayer(root, input, opts = {}) {
     controls.append(calm);
     if (activity.kind === "game") {
       const list = ctx.state.mode === "list";
-      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, icon(list ? "play" : "list", 18), ctx.msg(list ? "gameMode" : "listMode"));
+      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, glyph(list ? "play" : "list", 18), ctx.msg(list ? "gameMode" : "listMode"));
       mode.addEventListener("click", () => {
         ctx.state.mode = list ? "game" : "list";
         ctx.state.finished = false;

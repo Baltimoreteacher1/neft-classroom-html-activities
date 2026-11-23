@@ -2,7 +2,7 @@
 // "pick it up, then choose where it goes" or by plain buttons; nothing needs dragging.
 
 import { clearMarks, mark } from "./marks.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { h, plainText, repaint, rich, rt, seeded, shuffled } from "./util.js";
 
 /** A card button: pick up / put down. */
@@ -198,8 +198,8 @@ export function buildOrder(q, ctx) {
           move(id, e.key === "ArrowUp" ? -1 : 1);
         }
       });
-      const up = h("button", { type: "button", class: "sp-move", "data-key": `up:${id}`, "aria-label": ctx.t("moveUp", { item: plainText(it.text) }) }, icon("up"));
-      const down = h("button", { type: "button", class: "sp-move", "data-key": `down:${id}`, "aria-label": ctx.t("moveDown", { item: plainText(it.text) }) }, icon("down"));
+      const up = h("button", { type: "button", class: "sp-move", "data-key": `up:${id}`, "aria-label": ctx.t("moveUp", { item: plainText(it.text) }) }, glyph("up"));
+      const down = h("button", { type: "button", class: "sp-move", "data-key": `down:${id}`, "aria-label": ctx.t("moveDown", { item: plainText(it.text) }) }, glyph("down"));
       up.disabled = i === 0;
       down.disabled = i === order.length - 1;
       up.addEventListener("click", () => move(id, -1));
@@ -231,7 +231,7 @@ export function buildSentence(q, ctx) {
   let seq = [];
   const bank = h("div", { class: "sp-bank", role: "group", "aria-label": ctx.t("wordBank") });
   const line = h("div", { class: "sp-sentence", role: "group", "aria-label": ctx.t("yourSentence") });
-  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("undo", 16), ctx.msg("startOver"));
+  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, glyph("undo", 16), ctx.msg("startOver"));
   const root = h("div", { class: "sp-build" }, line, bank, clear);
 
   function paint() {

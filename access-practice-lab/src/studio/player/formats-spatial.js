@@ -5,7 +5,7 @@ import { parseMarked } from "../core/check.js";
 import { parseNumber, ratIsInt, ratToNumber, ratToString } from "../core/math.js";
 import { safeImageSrc } from "../core/schema.js";
 import { clearMarks, mark } from "./marks.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { clamp, h, nid, plainText, rich, roving, sv } from "./util.js";
 
 const WORD = /([^\s.,;:!?()"“”]+)/;
@@ -266,7 +266,7 @@ export function buildPlot(q, ctx) {
     for (const [k, b] of cells) b.setAttribute("aria-pressed", String(pts.some((p) => `${p.x},${p.y}` === k)));
     listEl.replaceChildren(
       ...pts.map((p) => {
-        const rm = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small", "aria-label": ctx.t("removePoint", { p: `${p.x}, ${p.y}` }) }, icon("cross", 14));
+        const rm = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small", "aria-label": ctx.t("removePoint", { p: `${p.x}, ${p.y}` }) }, glyph("cross", 14));
         rm.addEventListener("click", () => toggle(p));
         return h("li", null, `(${p.x}, ${p.y})`, rm);
       }),

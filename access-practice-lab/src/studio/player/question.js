@@ -5,7 +5,7 @@ import { answerText, checkResponse } from "../core/check.js";
 import { safeImageSrc } from "../core/schema.js";
 import { buildWidget } from "./formats.js";
 import { hearButton } from "./hear.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { h, nid, rich, rt } from "./util.js";
 
 /** The question as one speakable string: prompt plus what the student must read to answer. */
@@ -36,9 +36,9 @@ export function mountQuestion(host, q, ctx, opts = {}) {
   const feedback = h("div", { class: "sp-feedback", role: "status", "aria-live": "polite", "aria-atomic": "true" });
   const hintsBox = h("div", { class: "sp-hints", "aria-live": "polite" });
   const checkBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-check-btn" }, ctx.msg("check"));
-  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, icon("bulb", 18), h("span", null, ctx.msg("hint")));
+  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, glyph("bulb", 18), h("span", null, ctx.msg("hint")));
   const showBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: true }, ctx.msg("showAnswer"));
-  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.msg(opts.last ? "finish" : "next"), icon("arrow", 18));
+  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.msg(opts.last ? "finish" : "next"), glyph("arrow", 18));
   const prompt = rt("h2", "sp-prompt", q.prompt, { id: promptId, tabindex: "-1" });
   const top = h("div", { class: "sp-q-top" });
   if (opts.total > 1) top.append(h("span", { class: "sp-q-n" }, ctx.t("progress", { n: opts.index + 1, total: opts.total })));
@@ -68,7 +68,7 @@ export function mountQuestion(host, q, ctx, opts = {}) {
   const say = (title, body, cls) => {
     feedback.className = `sp-feedback ${cls}`;
     feedback.replaceChildren(
-      h("p", { class: "sp-fb-title" }, icon(cls.includes("right") ? "check" : cls.includes("shown") ? "star" : "bulb", 18), title),
+      h("p", { class: "sp-fb-title" }, glyph(cls.includes("right") ? "check" : cls.includes("shown") ? "star" : "bulb", 18), title),
       ...body,
     );
     ctx.announce(feedback.textContent);

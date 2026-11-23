@@ -4,7 +4,7 @@
 
 import { renderBlocks } from "./blocks.js";
 import { buildSteps } from "./flow.js";
-import { icon } from "./icons.js";
+import { glyph } from "./icons.js";
 import { mountQuestion } from "./question.js";
 import { h } from "./util.js";
 
@@ -40,12 +40,12 @@ export function mountStrategy(area, ctx, { onFinish }) {
 
   function paintGarden() {
     const plants = h("span", { class: "sp-plants", role: "img", "aria-label": ctx.t("plantsLabel", { n: st.plants, max: MAX_PLANTS }) });
-    for (let i = 0; i < MAX_PLANTS; i++) plants.append(h("span", { class: `sp-plant${i < st.plants ? " is-alive" : ""}`, "aria-hidden": "true" }, icon("leaf", 22)));
+    for (let i = 0; i < MAX_PLANTS; i++) plants.append(h("span", { class: `sp-plant${i < st.plants ? " is-alive" : ""}`, "aria-hidden": "true" }, glyph("leaf", 22)));
     const levels = BUILDINGS.map((b) =>
-      h("li", { class: "sp-stat" }, icon(b.icon, 16), h("span", null, `${ctx.t(b.name)}: ${ctx.t("levelOf", { n: st.levels[b.id], max: MAX_LEVEL })}`)),
+      h("li", { class: "sp-stat" }, glyph(b.icon, 16), h("span", null, `${ctx.t(b.name)}: ${ctx.t("levelOf", { n: st.levels[b.id], max: MAX_LEVEL })}`)),
     );
     garden.replaceChildren(
-      h("div", { class: "sp-garden-top" }, h("span", { class: "sp-q-n" }, ctx.t("roundN", { n: st.round + 1, total: steps.length })), h("span", { class: "sp-energy" }, icon("star", 16), ctx.t("energyN", { n: st.energy }))),
+      h("div", { class: "sp-garden-top" }, h("span", { class: "sp-q-n" }, ctx.t("roundN", { n: st.round + 1, total: steps.length })), h("span", { class: "sp-energy" }, glyph("star", 16), ctx.t("energyN", { n: st.energy }))),
       plants,
       h("ul", { class: "sp-stats" }, ...levels),
     );
@@ -110,7 +110,7 @@ export function mountStrategy(area, ctx, { onFinish }) {
         h(
           "li",
           { class: "sp-building" },
-          h("h3", null, icon(b.icon, 20), ctx.t(b.name)),
+          h("h3", null, glyph(b.icon, 20), ctx.t(b.name)),
           h("p", null, ctx.t(b.effect)),
           h("p", { class: "sp-note-small" }, ctx.t("levelOf", { n: level, max: MAX_LEVEL })),
           btn,
@@ -118,14 +118,14 @@ export function mountStrategy(area, ctx, { onFinish }) {
         ),
       );
     }
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("letStormCome"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("letStormCome"), glyph("arrow", 18));
     go.addEventListener("click", () => {
       st.phase = "storm";
       st.storm = resolveStorm();
       render();
     });
     const title = h("h2", { class: "sp-round-title", tabindex: "-1" }, ctx.t("planTitle"));
-    panel.append(title, h("p", { class: "sp-forecast" }, icon("flag", 18), ctx.t("forecast", { n: strength })), h("p", null, ctx.t("planHelp", { n: st.energy })), list, h("div", { class: "sp-next-row" }, go));
+    panel.append(title, h("p", { class: "sp-forecast" }, glyph("flag", 18), ctx.t("forecast", { n: strength })), h("p", null, ctx.t("planHelp", { n: st.energy })), list, h("div", { class: "sp-next-row" }, go));
     return title;
   }
 
@@ -157,7 +157,7 @@ export function mountStrategy(area, ctx, { onFinish }) {
     paintGarden();
     const r = st.storm;
     const last = st.round >= steps.length - 1;
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), glyph("arrow", 18));
     go.addEventListener("click", () => {
       if (last) return onFinish();
       st.round += 1;
