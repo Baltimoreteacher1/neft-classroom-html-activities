@@ -1,5 +1,6 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
 import { renderInteractiveStudio } from "./interactive-labs.js";
+import { keepView } from "./keep-view.js";
 import { renderQrSvg } from "./qr-svg.js";
 
 const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
@@ -24,8 +25,9 @@ const SAMPLE_PASSAGES = {
 };
 
 const state = {
-  grade: "6",
-  subject: "Math",
+  // Blank until the teacher chooses: the hub never assumes a grade or content area.
+  grade: "",
+  subject: "",
   unitId: "",
   wida: "3_4",
   tab: "connections",
@@ -161,6 +163,7 @@ function buildActivityUrl(unitId, activityId, wida, mode = "student", { absolute
 }
 
 function curriculumFor(grade, subject) {
+  if (!grade) return "";
   const isK3 = ["K", "1", "2", "3"].includes(String(grade));
   const is45 = ["4", "5"].includes(String(grade));
   if (subject === "ELA") return isK3 ? "Wit & Wisdom + Fundations" : "Wit & Wisdom";
@@ -171,6 +174,7 @@ function curriculumFor(grade, subject) {
 }
 
 function gradeLabel(grade) {
+  if (!grade) return "";
   return String(grade) === "K" ? "Kindergarten (K)" : `Grade ${grade}`;
 }
 
@@ -453,15 +457,18 @@ function applyWidaTier(next) {
   if (!next || next === state.wida || !WIDA_TIERS.some((t) => t.key === next)) return;
   state.wida = next;
   syncUrl();
-  renderResourceExportBar();
-  renderConnectionsTab();
-  renderStudioTab();
-  renderActivitiesTab();
-  if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
-    renderActivityPreviewModal();
-  }
-  renderFamilyTab();
-  renderPrintKit();
+  // Four panels redraw at once; keep the reader exactly where they were.
+  keepView($("#mainContent"), () => {
+    renderResourceExportBar();
+    renderConnectionsTab();
+    renderStudioTab();
+    renderActivitiesTab();
+    if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
+      renderActivityPreviewModal();
+    }
+    renderFamilyTab();
+    renderPrintKit();
+  });
   trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
   announce(`Switched to WIDA ${widaLabel(state.wida)} scaffolds.`);
 }
@@ -470,8 +477,10 @@ function syncUrl() {
   if (state.planMode) return;
   const url = new URL(window.location.href);
   url.pathname = "/bcpss-teachers";
-  url.searchParams.set("grade", state.grade);
-  url.searchParams.set("subject", state.subject);
+  for (const key of ["grade", "subject"]) {
+    if (state[key]) url.searchParams.set(key, state[key]);
+    else url.searchParams.delete(key);
+  }
   if (state.unitId) url.searchParams.set("unitId", state.unitId);
   else url.searchParams.delete("unitId");
   url.searchParams.set("wida", state.wida);
@@ -487,7 +496,9 @@ function updateSubjectLabels() {
   if (select) {
     for (const opt of select.options) {
       const subj = opt.value;
-      opt.textContent = `${subj} (${curriculumFor(state.grade, subj)})`;
+      if (!subj) continue;
+      const curriculum = curriculumFor(state.grade, subj);
+      opt.textContent = curriculum ? `${subj} (${curriculum})` : subj;
     }
     select.value = state.subject;
   }
@@ -503,13 +514,15 @@ function updateSubjectLabels() {
     btn.setAttribute("aria-pressed", isActive ? "true" : "false");
     const subEl = btn.querySelector("[data-subject-sub]");
     if (subEl) {
-      subEl.textContent = curriculumFor(state.grade, subj);
+      subEl.textContent = curriculumFor(state.grade, subj) || DEFAULT_SUBJECT_SUB[subj] || "";
     }
   }
 
   const badge = $("#curriculumBadge");
   if (badge) {
-    badge.textContent = `${curriculumFor(state.grade, state.subject)} · ${gradeLabel(state.grade)}`;
+    badge.textContent = hasSelection()
+      ? `${curriculumFor(state.grade, state.subject)} · ${gradeLabel(state.grade)}`
+      : "Choose a grade and content area";
   }
 }
 
@@ -604,6 +617,10 @@ async function fetchJson(url, options) {
 
 async function loadUnits(preferredUnitId = "") {
   const strip = $("#unitStrip");
+  if (!hasSelection()) {
+    showSelectionPrompt();
+    return;
+  }
   strip.innerHTML = `<div class="bh-loading" role="status">Loading ${esc(gradeLabel(state.grade))} ${esc(state.subject)} units…</div>`;
   try {
     const data = await fetchJson(
@@ -874,6 +891,48 @@ function renderResourceExportBar() {
       </button>
     </div>
   `;
+}
+
+const hasSelection = () => Boolean(state.grade && state.subject);
+
+// Shown under the subject pills before a grade is chosen (the curriculum name depends on the grade).
+const DEFAULT_SUBJECT_SUB = {
+  ELA: "Wit & Wisdom",
+  Math: "Reveal Math",
+  Science: "SABES · IQWST",
+  "Social Studies": "Studies Weekly · BCPSS",
+};
+
+/** Copy a vocabulary term and say so on the card itself (the card used to react to nothing you could see). */
+async function copyVocabWord(card) {
+  trackTelemetry(state.unitId, state.wida, "vocab_lookup");
+  if (!(await copyToClipboard(card.dataset.vocabWord))) return;
+  if (card.querySelector(".bh-copied-chip")) return;
+  const chip = document.createElement("span");
+  chip.className = "bh-copied-chip";
+  chip.textContent = "Copied";
+  card.appendChild(chip);
+  setTimeout(() => chip.remove(), 1400);
+}
+
+function selectionAnnouncement() {
+  if (hasSelection()) return `Selected ${gradeLabel(state.grade)} ${state.subject}.`;
+  return state.grade
+    ? `Selected ${gradeLabel(state.grade)}. Now choose a content area.`
+    : `Selected ${state.subject}. Now choose a grade.`;
+}
+
+/** Nothing is loaded until a grade and a content area are both chosen. */
+function showSelectionPrompt() {
+  state.units = [];
+  state.unitId = "";
+  state.detail = null;
+  const need = [state.grade ? "" : "a grade", state.subject ? "" : "a content area"].filter(Boolean).join(" and ");
+  $("#unitStrip").innerHTML = `<div class="bh-empty">Choose ${need} above to see its units.</div>`;
+  const countEl = $("#unitsCount");
+  if (countEl) countEl.textContent = "";
+  syncUrl();
+  renderEmptyWorkspace();
 }
 
 function renderEmptyWorkspace() {
@@ -2313,7 +2372,7 @@ function selectGrade(nextGrade) {
   resetUnitFilters();
   updateSubjectLabels();
   loadUnits();
-  announce(`Selected ${gradeLabel(state.grade)} ${state.subject}.`);
+  announce(selectionAnnouncement());
 }
 
 function selectSubject(nextSubject) {
@@ -2325,7 +2384,7 @@ function selectSubject(nextSubject) {
   resetUnitFilters();
   updateSubjectLabels();
   loadUnits();
-  announce(`Selected ${gradeLabel(state.grade)} ${state.subject}.`);
+  announce(selectionAnnouncement());
 }
 
 function bindEvents() {
@@ -2360,10 +2419,10 @@ function bindEvents() {
 
   // Hidden backward-compatible selects
   $("#gradeSelect")?.addEventListener("change", (e) => {
-    selectGrade(e.target.value);
+    if (e.target.value) selectGrade(e.target.value);
   });
   $("#subjectSelect")?.addEventListener("change", (e) => {
-    selectSubject(e.target.value);
+    if (e.target.value) selectSubject(e.target.value);
   });
 
   // Unit Search & WIDA KLU Filter Strip
@@ -2448,14 +2507,14 @@ function bindEvents() {
       if (!Number.isNaN(idx)) {
         state.diveSelectedChunk = idx;
         state.diveRevealAll = false;
-        renderConnectionsTab();
+        keepView($("#panel-connections"), renderConnectionsTab);
       }
       return;
     }
 
     if (e.target.closest("[data-dive-reveal-all]")) {
       state.diveRevealAll = !state.diveRevealAll;
-      renderConnectionsTab();
+      keepView($("#panel-connections"), renderConnectionsTab);
       return;
     }
 
@@ -2481,9 +2540,7 @@ function bindEvents() {
 
     const vocabCard = e.target.closest("[data-vocab-word]");
     if (vocabCard) {
-      const word = vocabCard.dataset.vocabWord;
-      trackTelemetry(state.unitId, state.wida, "vocab_lookup");
-      copyToClipboard(word);
+      copyVocabWord(vocabCard);
       return;
     }
 
@@ -2530,9 +2587,7 @@ function bindEvents() {
     const vocabCard = e.target.closest("[data-vocab-word]");
     if (!vocabCard) return;
     e.preventDefault();
-    const word = vocabCard.dataset.vocabWord;
-    trackTelemetry(state.unitId, state.wida, "vocab_lookup");
-    copyToClipboard(word);
+    copyVocabWord(vocabCard);
   });
 
   // Resource Export Bar telemetry + Quick Print Kit trigger
@@ -2848,7 +2903,8 @@ async function init() {
   $("#subjectSelect").value = state.subject;
   setActiveTab(state.tab);
 
-  await loadUnits(qUnitId);
+  if (hasSelection()) await loadUnits(qUnitId);
+  else showSelectionPrompt();
 }
 
 init();

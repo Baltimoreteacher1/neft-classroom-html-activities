@@ -1,7 +1,7 @@
 // BCPSS Dedicated Activity Runner / Viewer
 // Distraction-free, WCAG 2.1 AA student & teacher runner for 3- and 5-activity units.
 
-const DEFAULT_UNIT_ID = "g6-math-u2";
+import { keepView } from "../keep-view.js";
 
 const WIDA_TIERS = [
   { key: "1_2", label: "Levels 1–2", short: "Entering / Emerging" },
@@ -52,7 +52,7 @@ const DEFAULT_TALK_MOVES = [
 const unitCache = new Map();
 
 const state = {
-  unitId: DEFAULT_UNIT_ID,
+  unitId: "",
   activityId: "",
   wida: "3_4",
   mode: "student",
@@ -145,12 +145,12 @@ function applyComfortPrefs() {
 
 function readUrlState() {
   const params = new URLSearchParams(window.location.search);
-  const unit = (params.get("unit") || params.get("unitId") || DEFAULT_UNIT_ID).trim();
+  const unit = (params.get("unit") || params.get("unitId") || "").trim();
   const activity = (params.get("activity") || "").trim();
   const widaRaw = (params.get("wida") || "3_4").trim();
   const modeRaw = (params.get("mode") || "student").trim().toLowerCase();
 
-  state.unitId = unit || DEFAULT_UNIT_ID;
+  state.unitId = unit;
   state.activityId = activity;
   state.wida = WIDA_TIERS.some((t) => t.key === widaRaw) ? widaRaw : "3_4";
   state.mode = modeRaw === "teacher" ? "teacher" : "student";
@@ -158,7 +158,7 @@ function readUrlState() {
 
 function syncUrl(replace = false) {
   const url = new URL(window.location.href);
-  url.searchParams.set("unit", state.unitId);
+  if (state.unitId) url.searchParams.set("unit", state.unitId);
   if (state.activityId) url.searchParams.set("activity", state.activityId);
   else url.searchParams.delete("activity");
   url.searchParams.set("wida", state.wida);
@@ -1081,7 +1081,12 @@ function renderStepper(activities, activeIndex) {
   `;
 }
 
+// Flashcard, cloze, mode and level clicks redraw the page in place; keepView holds the reader's place.
 function renderActivityPage() {
+  keepView($("#activityMain"), drawActivityPage);
+}
+
+function drawActivityPage() {
   const main = $("#activityMain");
   const detail = state.detail;
   const unit = detail?.unit;
@@ -1479,6 +1484,14 @@ async function loadAndRender() {
   const main = $("#activityMain");
   main.innerHTML = `<div class="av-loading" role="status">Loading unit activity…</div>`;
   syncTopBarControls();
+
+  // No unit in the link: never guess one. Send the teacher back to choose a grade and content area.
+  if (!state.unitId) {
+    state.detail = null;
+    main.innerHTML = `<div class="av-error" role="status">Choose a unit first. <a href="/bcpss-teachers">Open the BCPSS Teachers hub</a>, pick a grade and content area, then open an activity.</div>`;
+    renderStepper([], -1);
+    return;
+  }
 
   try {
     state.detail = await fetchUnitDetail(state.unitId);

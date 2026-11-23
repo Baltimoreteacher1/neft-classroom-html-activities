@@ -186,6 +186,8 @@ await t("robots.txt and sitemap.xml are generated for the lab host and name only
         l.startsWith("https://thelanguagepage.com/studios/") ||
         l === "https://thelanguagepage.com/bcpss-teachers" ||
         l === "https://thelanguagepage.com/bcpss-teachers/insights" ||
+        l === "https://thelanguagepage.com/bcpss-teachers/pathways" ||
+        l === "https://thelanguagepage.com/family/bcpss" ||
         STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`),
     ),
   );
@@ -326,9 +328,12 @@ await t("the BCPSS Teachers Hub, shared plan routes, family cards, insights, and
     "/bcpss-teachers/",
     "/bcpss-teachers/plan/abc123",
     "/bcpss-teachers/insights",
+    "/bcpss-teachers/pathways",
     "/family/bcpss",
     "/family/bcpss/g6-math-u2?lang=es",
     "/api/bcpss/units?grade=6&subject=Math",
+    "/api/bcpss/pathways?grade=6",
+    "/api/bcpss/family-guide/g6-math-u2",
     "/api/bcpss/deconstruct",
     "/api/bcpss/telemetry",
     "/api/bcpss/insights",
@@ -338,6 +343,8 @@ await t("the BCPSS Teachers Hub, shared plan routes, family cards, insights, and
   }
   assert.ok(SITEMAP_PATHS.includes("/bcpss-teachers"));
   assert.ok(SITEMAP_PATHS.includes("/bcpss-teachers/insights"));
+  assert.ok(SITEMAP_PATHS.includes("/bcpss-teachers/pathways"));
+  assert.ok(SITEMAP_PATHS.includes("/family/bcpss"));
   for (const path of ["/bcpss-teachers/plan/abc123", "/bcpss-teachers/insights", "/family/bcpss/g6-math-u2?lang=es"]) {
     const open = await answer(`https://thelanguagepage.com${path}`, {
       SITE_PASSWORD: "x",

@@ -4,6 +4,8 @@
 //   2. Vocabulary & Cloze Mastery Lab
 //   3. Oral Discourse & Partner Talk Studio
 
+import { keepView } from "./keep-view.js";
+
 const WIDA_TIERS = [
   { key: "1_2", label: "Levels 1–2", short: "Entering / Emerging" },
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
@@ -478,7 +480,12 @@ export function renderInteractiveStudio(
 
   containerStateMap.set(container, studioState);
 
+  // Every lab click redraws the whole studio; keepView holds scroll position and keyboard focus.
   function render() {
+    keepView(container, drawStudio);
+  }
+
+  function drawStudio() {
     const activeLab = studioState.activeLab;
 
     container.innerHTML = `
@@ -1235,7 +1242,7 @@ export function renderInteractiveStudio(
         active.studioState.sentenceText = "";
         active.studioState.lastCheck = null;
         active.render();
-        container.querySelector("#studioComposer")?.focus();
+        container.querySelector("#studioComposer")?.focus({ preventScroll: true });
         return;
       }
 
@@ -1340,7 +1347,7 @@ export function renderInteractiveStudio(
         if (e.key === "End") next = keys.length - 1;
         active.studioState.activeLab = keys[next];
         active.render();
-        container.querySelector(`#studio-tab-${keys[next]}`)?.focus();
+        container.querySelector(`#studio-tab-${keys[next]}`)?.focus({ preventScroll: true });
         return;
       }
 
@@ -1353,7 +1360,7 @@ export function renderInteractiveStudio(
         if (active.studioState.flippedCards.has(idx)) active.studioState.flippedCards.delete(idx);
         else active.studioState.flippedCards.add(idx);
         active.render();
-        container.querySelector(`[data-flashcard-idx="${idx}"]`)?.focus();
+        container.querySelector(`[data-flashcard-idx="${idx}"]`)?.focus({ preventScroll: true });
       }
     });
   }

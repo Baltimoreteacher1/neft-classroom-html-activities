@@ -149,6 +149,8 @@ export const SITEMAP_PATHS = [
   // BCPSS Teachers Curriculum-to-Language Hub.
   "/bcpss-teachers",
   "/bcpss-teachers/insights",
+  "/bcpss-teachers/pathways",
+  "/family/bcpss",
 ];
 
 /**
