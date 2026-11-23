@@ -30,6 +30,7 @@ export const SUBVIEW_LOADERS = {
   lesson: () => import("./views/lesson.js"),
   practice: () => import("./views/practice.js"),
   review: () => import("./views/review.js"),
+  album: () => import("./views/album.js"),
   games: () => import("./views/games.js"),
   read: () => import("./views/read.js"),
   "word-study": () => import("./views/word-study.js"),
@@ -65,6 +66,7 @@ export function resolve(path = []) {
     "word-study": "word-study",
     practice: "practice",
     review: "review",
+    album: "album",
     family: "family",
   };
   if (single[a] && !b) return some(single[a]);

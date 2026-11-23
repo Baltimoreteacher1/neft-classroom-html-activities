@@ -141,6 +141,9 @@ export async function render(ctx, va) {
                   ${I.T("Make this my grade", "Hacer de este mi grado")}
                 </button>`
           }
+          <a class="btn va-btn" href="${vaHref("album")}?grade=${encodeURIComponent(g)}"
+            >${I.T("Word Album", "Álbum de palabras")}</a
+          >
           <a class="btn va-btn" href="${vaHref("grades")}"
             >${I.T("All grades", "Todos los grados")}</a
           >

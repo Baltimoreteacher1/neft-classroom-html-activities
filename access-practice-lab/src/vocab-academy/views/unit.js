@@ -218,6 +218,11 @@ export async function render(ctx, va) {
         <p class="fine">
           ${I.T(`${lessonsDone} of ${unit.lessons.length} lessons finished · ${learned(progress, ids)} of ${words} words learned`, `${lessonsDone} de ${unit.lessons.length} lecciones terminadas · ${learned(progress, ids)} de ${words} palabras aprendidas`)}
         </p>
+        <p class="va-actions">
+          <a class="btn va-btn" href="${vaHref("album")}?grade=${encodeURIComponent(g)}&unit=${u}"
+            >${I.T("See this unit's Word Album cards", "Ver las tarjetas del Álbum de esta unidad")}</a
+          >
+        </p>
         ${
           va.teacher
             ? html`<p class="va-actions">

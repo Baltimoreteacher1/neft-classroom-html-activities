@@ -329,6 +329,9 @@ export async function render(ctx, va) {
         <a class="btn va-btn" href="${vaHref("word-study")}"
           >${I.T("Word Study Lab", "Laboratorio de palabras")}</a
         >
+        <a class="btn va-btn" href="${vaHref("album")}"
+          >${I.T("Word Album", "Álbum de palabras")}</a
+        >
         <a class="btn va-btn" href="${vaHref("review")}"
           >${I.T("Review & Assess", "Repaso y evaluación")}</a
         >

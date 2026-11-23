@@ -1,0 +1,468 @@
+/* Vocabulary Academy — Word Album (/vocabulary-academy/album). Uses vocab-academy-tokens.css; no purple.
+   A card's state is always said in words and an icon as well as in its frame (common/uncommon/rare/legendary/visit/locked). */
+.alb {
+  --alb-common: var(--va-brand, #0f5d73);
+  --alb-uncommon: var(--va-accent, #b5602a);
+  --alb-rare: #8a5a00;
+  --alb-legend: #14532d;
+  --alb-visit: #9c3b2e;
+  --alb-locked: #6b7782;
+  display: block;
+}
+.alb-total {
+  margin: 0.4rem 0 0;
+  font-size: 1.15em;
+}
+.alb-sub {
+  display: inline-block;
+  margin-inline-start: 0.5rem;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--va-ink-2);
+}
+.alb-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* today's missions */
+.alb-missions {
+  margin-block: var(--va-gap);
+  padding: var(--va-pad, 1rem);
+  border: 1px solid var(--va-ink);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+}
+.alb-missions h2 {
+  margin-top: 0;
+}
+.alb-mission-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.alb-mission {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-paper);
+}
+.alb-mission[data-done="true"] {
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+}
+.alb-check {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border: 2px solid var(--va-ink-2);
+  border-radius: 50%;
+  font-weight: 800;
+  background: var(--va-card);
+  color: var(--va-ok);
+}
+.alb-mission[data-done="true"] .alb-check {
+  border-color: var(--va-ok);
+}
+.alb-mission-body {
+  display: grid;
+  gap: 0.1rem;
+  min-inline-size: 0;
+}
+.alb-mission-text {
+  font-weight: 700;
+}
+.alb-mission-state {
+  font-size: 0.85em;
+  color: var(--va-ink-2);
+}
+.alb-mission-go {
+  min-block-size: var(--va-target);
+  min-inline-size: var(--va-target);
+}
+@media (max-width: 30rem) {
+  .alb-mission {
+    grid-template-columns: auto 1fr;
+  }
+  .alb-mission-go {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* legend, filters, status */
+.alb-legend {
+  margin-block: var(--va-gap);
+}
+.alb-legend summary {
+  min-block-size: var(--va-target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.alb-legend ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+}
+.alb-legend li {
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--va-radius-sm);
+  border: 3px solid var(--alb-locked);
+  background: var(--va-card);
+}
+.alb-legend li[data-rarity="common"] {
+  border-color: var(--alb-common);
+}
+.alb-legend li[data-rarity="uncommon"] {
+  border-color: var(--alb-uncommon);
+}
+.alb-legend li[data-rarity="rare"] {
+  border: 5px double var(--alb-rare);
+}
+.alb-legend li[data-rarity="legendary"] {
+  border-color: var(--alb-legend);
+  box-shadow: inset 0 0 0 2px var(--va-ok-soft);
+}
+.alb-legend li[data-rarity="visit"] {
+  border: 3px dashed var(--alb-visit);
+}
+.alb-legend li[data-rarity="locked"] {
+  border-style: dashed;
+}
+.alb-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: end;
+  margin-block: var(--va-gap);
+}
+.alb-filters label {
+  display: grid;
+  gap: 0.2rem;
+  font-weight: 700;
+  font-size: 0.92em;
+}
+.alb-filters select,
+.alb-filters input {
+  min-block-size: var(--va-target);
+  min-inline-size: min(100%, 11rem);
+  padding: 0.35rem 0.6rem;
+  font: inherit;
+  border: 1.5px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+}
+.alb-status,
+.alb-unit-chip {
+  margin: 0.25rem 0 var(--va-gap);
+  font-weight: 600;
+  min-block-size: 1.4em;
+}
+
+/* grade / unit / lesson groups */
+.alb-grade {
+  margin-block: calc(var(--va-gap) * 1.5);
+}
+.alb-grade > h3 {
+  margin: 0 0 0.5rem;
+  padding-block-end: 0.35rem;
+  border-block-end: 3px solid var(--va-brand);
+}
+.alb-unit {
+  margin-block: var(--va-gap);
+}
+.alb-unit > h4 {
+  margin: 0 0 0.5rem;
+}
+.alb-lesson {
+  margin-block: 0.9rem 1.4rem;
+  padding: 0.75rem;
+  border: 1.5px solid var(--va-line);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+}
+.alb-lesson[data-complete="true"] {
+  border-color: var(--va-ok);
+}
+.alb-lesson-head h4 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05em;
+}
+.alb-lesson-title {
+  font-weight: 500;
+  color: var(--va-ink-2);
+}
+.alb-lesson-meter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin: 0 0 0.75rem;
+}
+.alb-count {
+  font-weight: 700;
+}
+.alb-empty {
+  margin: 0;
+  color: var(--va-ink-2);
+}
+
+/* the card grid */
+.alb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+}
+.alb-item {
+  min-inline-size: 0;
+  perspective: 900px;
+}
+.alb-card {
+  position: relative;
+  display: grid;
+  min-block-size: 14.5rem;
+  block-size: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s ease;
+}
+.alb-card[data-flipped="true"] {
+  transform: rotateY(180deg);
+}
+.alb-face {
+  grid-area: 1 / 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.55rem 0.7rem;
+  border: 3px solid var(--alb-locked);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+  color: var(--va-ink);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-decoration: none;
+}
+.alb-back {
+  transform: rotateY(180deg);
+  align-items: stretch;
+  text-align: start;
+  gap: 0.45rem;
+  overflow: auto;
+  font-size: 0.92em;
+}
+.alb-back p {
+  margin: 0;
+}
+.alb-back-hw {
+  font-family: var(--va-head-font);
+  font-weight: 800;
+  font-size: 1.2em;
+}
+.alb-back .alb-back-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-block-start: auto;
+}
+.alb-back .btn,
+.alb-back .vaa-say {
+  min-block-size: var(--va-target);
+  min-inline-size: var(--va-target);
+}
+.alb-more {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--va-target);
+  color: var(--va-brand);
+  font-weight: 700;
+}
+.alb-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.alb-tag .va-shape {
+  inline-size: 1.1rem;
+  block-size: 1.1rem;
+  flex: none;
+}
+.alb-pic {
+  display: block;
+  inline-size: 100%;
+  max-block-size: 6.5rem;
+  overflow: hidden;
+}
+.alb-pic .vaa-pic {
+  margin: 0;
+}
+.alb-hw {
+  font-family: var(--va-head-font);
+  font-weight: 800;
+  font-size: 1.25rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.alb-pos {
+  font-size: 0.82rem;
+  color: var(--va-ink-2);
+}
+.alb-flip {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+  border-radius: calc(var(--va-radius) - 2px);
+  background: transparent;
+  cursor: pointer;
+}
+.alb-flip:focus-visible,
+.alb-locked:focus-visible {
+  outline: 3px solid var(--va-focus);
+  outline-offset: 2px;
+}
+.alb-ribbon {
+  align-self: stretch;
+  margin-inline: -0.55rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: var(--va-miss-soft);
+  color: var(--alb-visit);
+  border-block: 2px dashed var(--alb-visit);
+}
+
+/* frames */
+.alb-card[data-rarity="common"] .alb-face {
+  border-color: var(--alb-common);
+}
+.alb-card[data-rarity="common"] .alb-tag {
+  color: var(--alb-common);
+}
+.alb-card[data-rarity="uncommon"] .alb-face {
+  border-color: var(--alb-uncommon);
+  box-shadow:
+    inset 0 0 0 3px var(--va-card),
+    inset 0 0 0 5px var(--alb-uncommon);
+}
+.alb-card[data-rarity="uncommon"] .alb-tag {
+  color: #8f4a1f;
+}
+.alb-card[data-rarity="rare"] .alb-face {
+  border: 6px double var(--alb-rare);
+  background: var(--va-warn-soft);
+}
+.alb-card[data-rarity="rare"] .alb-tag {
+  color: var(--alb-rare);
+}
+.alb-card[data-rarity="legendary"] .alb-face {
+  border-color: var(--alb-legend);
+  background: var(--va-ok-soft);
+  box-shadow:
+    inset 0 0 0 3px var(--va-card),
+    inset 0 0 0 6px var(--alb-legend);
+}
+.alb-card[data-rarity="legendary"] .alb-tag {
+  color: var(--alb-legend);
+}
+.alb-card[data-rarity="legendary"] .alb-front::before,
+.alb-card[data-rarity="legendary"] .alb-front::after {
+  content: "★";
+  position: absolute;
+  inset-block-start: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--alb-legend);
+}
+.alb-card[data-rarity="legendary"] .alb-front::before {
+  inset-inline-start: 0.55rem;
+}
+.alb-card[data-rarity="legendary"] .alb-front::after {
+  inset-inline-end: 0.55rem;
+}
+.alb-card[data-rarity="visit"] .alb-face {
+  border: 3px dashed var(--alb-visit);
+}
+.alb-card[data-rarity="visit"] .alb-tag {
+  color: var(--alb-visit);
+}
+.alb-card-locked {
+  transform: none;
+}
+.alb-locked {
+  justify-content: center;
+  border-style: dashed;
+  background: repeating-linear-gradient(135deg, var(--va-paper) 0 10px, var(--va-card) 10px 20px);
+  color: var(--va-ink-2);
+}
+.alb-card-locked .alb-tag {
+  color: var(--va-ink-2);
+}
+.alb-silhouette {
+  display: grid;
+  place-items: center;
+  inline-size: 4.5rem;
+  block-size: 4.5rem;
+  border-radius: 50%;
+  background: var(--va-ink-2);
+  color: var(--va-card);
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+.alb-hint {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* reduced motion: no turning, the two faces simply swap */
+@media (prefers-reduced-motion: reduce) {
+  .alb-card {
+    transition: none;
+  }
+  .alb-card[data-flipped="true"] {
+    transform: none;
+  }
+  .alb-face {
+    backface-visibility: visible;
+  }
+  .alb-back {
+    transform: none;
+  }
+  .alb-card[data-flipped="false"] .alb-back,
+  .alb-card[data-flipped="true"] .alb-front {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .alb-face {
+    border-color: CanvasText;
+  }
+}
