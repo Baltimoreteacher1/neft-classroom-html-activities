@@ -251,7 +251,7 @@ export function buildPlot(q, ctx) {
   });
   const listEl = h("ul", { class: "sp-pointlist", "aria-label": ctx.t("plotPoints") });
   const typed = h("input", { type: "text", class: "sp-input", id: nid("pt"), autocomplete: "off", spellcheck: "false", placeholder: "2, 3" });
-  const addBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.L("addPoint"));
+  const addBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.msg("addPoint"));
   const api = {};
 
   function toggle(p) {

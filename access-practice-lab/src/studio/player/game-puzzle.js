@@ -81,7 +81,7 @@ export function mountPuzzle(area, ctx, { onFinish }) {
       });
       tray.append(b);
     }
-    const auto = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("puzzle", 18), ctx.L("placeForMe"));
+    const auto = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("puzzle", 18), ctx.msg("placeForMe"));
     auto.addEventListener("click", () => {
       if (st.held < 0) st.held = bin[0];
       place(st.cellOf[st.held], true);
@@ -97,7 +97,7 @@ export function mountPuzzle(area, ctx, { onFinish }) {
   }
 
   function victory() {
-    const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L("finish"));
+    const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("finish"));
     done.addEventListener("click", onFinish);
     const title = h("h2", { class: "sp-round-title", tabindex: "-1" }, icon("star", 22), ctx.t("pictureDone"));
     panel.append(title, h("p", null, ctx.t("pictureDoneBody")), done);

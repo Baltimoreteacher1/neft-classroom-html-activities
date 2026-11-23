@@ -118,7 +118,7 @@ export function mountStrategy(area, ctx, { onFinish }) {
         ),
       );
     }
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L("letStormCome"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("letStormCome"), icon("arrow", 18));
     go.addEventListener("click", () => {
       st.phase = "storm";
       st.storm = resolveStorm();
@@ -157,7 +157,7 @@ export function mountStrategy(area, ctx, { onFinish }) {
     paintGarden();
     const r = st.storm;
     const last = st.round >= steps.length - 1;
-    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L(last ? "finish" : "nextRound"), icon("arrow", 18));
+    const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
     go.addEventListener("click", () => {
       if (last) return onFinish();
       st.round += 1;

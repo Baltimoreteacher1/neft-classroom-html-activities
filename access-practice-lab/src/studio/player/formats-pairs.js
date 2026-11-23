@@ -231,7 +231,7 @@ export function buildSentence(q, ctx) {
   let seq = [];
   const bank = h("div", { class: "sp-bank", role: "group", "aria-label": ctx.t("wordBank") });
   const line = h("div", { class: "sp-sentence", role: "group", "aria-label": ctx.t("yourSentence") });
-  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("undo", 16), ctx.L("startOver"));
+  const clear = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, icon("undo", 16), ctx.msg("startOver"));
   const root = h("div", { class: "sp-build" }, line, bank, clear);
 
   function paint() {

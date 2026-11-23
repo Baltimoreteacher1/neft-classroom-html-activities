@@ -70,6 +70,8 @@ export function hrefProblem(href, facts, content) {
   const external = [
     "/access-teacher/",
     "/access-teacher/predictive/",
+    "/bcpss-teachers",
+    "/bcpss-teachers/",
     "/access-expedition/",
     "/access-family-expedition/",
     "/access-family-tour/",

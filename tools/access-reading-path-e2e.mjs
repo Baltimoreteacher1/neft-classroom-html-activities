@@ -337,20 +337,25 @@ try {
     "newcomer pack axe",
   );
   await page.locator("[data-pack-match-start]").click();
+  await page.locator("[data-pack-match]").first().waitFor();
   assert.equal(await page.locator("[data-pack-match]").count(), 12);
   assert.equal(
     await page.locator(".lp-newcomer-pack [data-timer], .lp-newcomer-pack time").count(),
     0,
   );
   await page.locator("[data-pack-bingo]").click();
+  await page.locator(".lp-pack-bingo > div").first().waitFor();
   assert.equal(await page.locator(".lp-pack-bingo > div").count(), 25);
   await page.evaluate(() => {
     window.print = () => {};
   });
   await page.locator("[data-pack-print-bingo]").click();
+  await page.locator("#sheetPrint .lp-pack-bingo > div").first().waitFor({ state: "attached" });
   assert.equal(await page.locator("#sheetPrint .lp-pack-bingo > div").count(), 25);
   await page.locator('[data-pack-print="cards"]').click();
+  await page.locator("#sheetPrint .lp-pack-six").first().waitFor({ state: "attached" });
   assert.equal(await page.locator("#sheetPrint .lp-pack-six").count(), 24);
+  await page.locator("#sheetPrint .lp-pack-six li").first().waitFor({ state: "attached" });
   assert.equal(await page.locator("#sheetPrint .lp-pack-six li").count(), 144);
   console.log(
     "PASS survival pack: bilingual words, untimed picture match, bingo, and exact 6-up print pages",

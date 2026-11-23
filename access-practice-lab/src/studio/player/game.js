@@ -18,9 +18,9 @@ export function mountGame(stage, ctx, { onFinish }) {
     h("h2", { tabindex: "-1" }, ctx.t("paused")),
     h("p", null, ctx.t("pausedBody")),
   );
-  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("play", 18), ctx.L("resume"));
+  const resume = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("play", 18), ctx.msg("resume"));
   pausedCard.append(resume);
-  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, icon("pause", 18), ctx.L("pause"));
+  const pause = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": "false" }, icon("pause", 18), ctx.msg("pause"));
   const frame = h(
     "div",
     { class: `sp-game sp-game-${ctx.activity.template}` },

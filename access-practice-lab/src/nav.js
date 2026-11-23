@@ -118,6 +118,7 @@ function menuGroups(band, T) {
           link("classroom", T("Live class quiz", "Cuestionario de clase en vivo"), "class/quiz"),
           link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
           link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
+          link("teacher", T("Activity Studio", "Estudio de actividades"), "activity-studio"),
         ],
       },
     ];
@@ -229,6 +230,7 @@ export function footerHTML(ctx, I) {
         ["/access-teacher/", T("Teacher Hub", "Centro docente")],
         ["/bcpss-teachers", T("BCPSS Teachers", "Docentes de BCPSS")],
         [`${BASE}/launch-studio${q}`, T("Launch Studio", "Estudio de lanzamiento")],
+        [`${BASE}/activity-studio${q}`, T("Activity Studio", "Estudio de actividades")],
         [`${BASE}/site-guide${q}`, T("Site Guide", "Guía del sitio")],
       ])}
     </div>

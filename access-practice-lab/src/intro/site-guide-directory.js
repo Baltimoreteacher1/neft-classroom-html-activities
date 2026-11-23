@@ -31,6 +31,7 @@ export const DIRECTORY = [
       dest("teacher-tour"),
       dest("library"),
       dest("launch"),
+      dest("activity-studio"),
       dest("classroom"),
       dest("teacher-hub"),
       dest("wida-data-studio"),

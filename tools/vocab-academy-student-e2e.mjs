@@ -312,11 +312,20 @@ for (const width of [390, 1280]) {
   const { ctx, page } = await device(1280);
   await open(page, `${VA}/read?grade=4`);
   ok(/Reading Library/.test(await text(page)), "read: library renders for grade 4");
-  ok((await page.locator(".var-lib-link").count()) >= 2, "read: library lists lesson passages and companion reading");
+  ok(
+    (await page.locator(".var-lib-link").count()) >= 2,
+    "read: library lists lesson passages and companion reading",
+  );
   await open(page, `${VA}/read/g4-u01-r1`);
-  ok((await page.locator(".var").count()) === 1, "read: companion reading g4-u01-r1 mounts the interactive reader");
+  ok(
+    (await page.locator(".var").count()) === 1,
+    "read: companion reading g4-u01-r1 mounts the interactive reader",
+  );
   await open(page, `${VA}/grade/4/lesson/1/f`);
-  ok((await page.locator(".var").count()) === 1, "read: Exercise E (section f) mounts the interactive reader");
+  ok(
+    (await page.locator(".var").count()) === 1,
+    "read: Exercise E (section f) mounts the interactive reader",
+  );
   await ctx.close();
 }
 

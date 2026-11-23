@@ -3,13 +3,13 @@
 
 const PRESETS = {
   classic: {
-    "--sp-bg": "#f4f1e8",
+    "--sp-bg": "#faf9f6",
     "--sp-surface": "#ffffff",
-    "--sp-surface-2": "#f0ede3",
-    "--sp-ink": "#14233a",
-    "--sp-ink-2": "#454b69",
+    "--sp-surface-2": "#f2efe9",
+    "--sp-ink": "#182230",
+    "--sp-ink-2": "#475467",
     "--sp-line": "#c9c4b4",
-    "--sp-accent": "#1e4d8c",
+    "--sp-accent": "#1e3a5f",
     "--sp-right": "#14683a",
     "--sp-right-soft": "#e3f3e8",
     "--sp-wrong": "#9a2b2b",
@@ -17,8 +17,8 @@ const PRESETS = {
     "--sp-hint": "#6f4500",
     "--sp-hint-soft": "#fff2d1",
     "--sp-radius": "14px",
-    "--sp-font": '"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif',
-    "--sp-display": '"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif',
+    "--sp-font": '"Inter","Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif',
+    "--sp-display": '"Plus Jakarta Sans","Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif',
   },
   playful: {
     "--sp-bg": "#fff3dc",
@@ -72,7 +72,7 @@ const PRESETS = {
     "--sp-hint-soft": "#4a3a0e",
     "--sp-radius": "16px",
     "--sp-font": '"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif',
-    "--sp-display": '"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif',
+    "--sp-display": '"Plus Jakarta Sans","Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif',
   },
 };
 

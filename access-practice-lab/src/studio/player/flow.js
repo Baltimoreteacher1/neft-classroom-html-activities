@@ -66,7 +66,7 @@ export function mountFlow(stage, ctx, { start = 0, onFinish } = {}) {
         onNext: advance,
       });
     } else {
-      const btn = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L(last ? "finish" : "next"));
+      const btn = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "next"));
       btn.addEventListener("click", advance);
       host.append(h("div", { class: "sp-next-row" }, btn));
     }
@@ -79,8 +79,8 @@ export function mountFlow(stage, ctx, { start = 0, onFinish } = {}) {
 
   function paintNav() {
     if (!ctx.editMode) return;
-    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet", disabled: at === 0 }, ctx.L("back"));
-    const next = h("button", { type: "button", class: "sp-btn sp-btn-quiet", disabled: at === steps.length - 1 }, ctx.L("next"));
+    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet", disabled: at === 0 }, ctx.msg("back"));
+    const next = h("button", { type: "button", class: "sp-btn sp-btn-quiet", disabled: at === steps.length - 1 }, ctx.msg("next"));
     back.addEventListener("click", () => show(at - 1));
     next.addEventListener("click", () => show(at + 1));
     nav.replaceChildren(back, h("span", { class: "sp-progress-text" }, `${at + 1} / ${steps.length}`), next);

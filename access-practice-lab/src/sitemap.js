@@ -1554,9 +1554,10 @@ export const DESTINATIONS = Object.freeze([
     skill: "Mixed",
     kind: "tool",
     for: T_,
+    top: true,
     href: "activity-studio",
     icon: "teacher",
-    match: [["activity-studio"], ["do"]],
+    match: [["activity-studio"]],
     title: P("Activity Studio", "Estudio de actividades"),
     text: P(
       "Make an interactive activity, worksheet, learning game or quick check from your lesson, then preview and share it.",

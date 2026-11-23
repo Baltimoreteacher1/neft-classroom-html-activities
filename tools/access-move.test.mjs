@@ -262,8 +262,8 @@ test("the server and the app spell the product name the same way", () => {
   globalThis.location = { hostname: "thelanguagepage.com" };
   assert.equal(brandTitle("My Language Path"), "My Language Path · The Language Page");
   globalThis.location = { hostname: "eduwonderlab.com" };
-  assert.equal(brandTitle("My Language Path"), "My Language Path · ACCESS Practice Lab");
-  assert.equal(brandTitle(""), "ACCESS Practice Lab");
+  assert.equal(brandTitle("My Language Path"), "My Language Path · ELL Lab");
+  assert.equal(brandTitle(""), "ELL Lab");
   const worker = readFileSync(
     new URL("../functions/_lib/language-page.js", import.meta.url),
     "utf8",

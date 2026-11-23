@@ -348,6 +348,11 @@ test("the album page renders locked silhouettes, framed cards and bilingual text
   const withGloss = await render("en", { glossaryEs: true });
   assert.match(withGloss, /Español:/);
   const lockedTags = en.match(/<a\s[^>]*alb-locked[^>]*>/g) || [];
-  assert.equal(lockedTags.length, row.wordIds.length - 5, "every unmet word of the lesson is a locked card");
-  for (const a of lockedTags) assert.doesNotMatch(a, /va\./, "a locked card never carries its word id");
+  assert.equal(
+    lockedTags.length,
+    row.wordIds.length - 5,
+    "every unmet word of the lesson is a locked card",
+  );
+  for (const a of lockedTags)
+    assert.doesNotMatch(a, /va\./, "a locked card never carries its word id");
 });

@@ -35,10 +35,10 @@ export function mountQuestion(host, q, ctx, opts = {}) {
   const promptId = nid("prompt");
   const feedback = h("div", { class: "sp-feedback", role: "status", "aria-live": "polite", "aria-atomic": "true" });
   const hintsBox = h("div", { class: "sp-hints", "aria-live": "polite" });
-  const checkBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-check-btn" }, ctx.L("check"));
-  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, icon("bulb", 18), h("span", null, ctx.L("hint")));
-  const showBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: true }, ctx.L("showAnswer"));
-  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.L(opts.last ? "finish" : "next"), icon("arrow", 18));
+  const checkBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-check-btn" }, ctx.msg("check"));
+  const hintBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-hint-btn" }, icon("bulb", 18), h("span", null, ctx.msg("hint")));
+  const showBtn = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: true }, ctx.msg("showAnswer"));
+  const nextBtn = h("button", { type: "button", class: "sp-btn sp-btn-primary sp-next", hidden: true }, ctx.msg(opts.last ? "finish" : "next"), icon("arrow", 18));
   const prompt = rt("h2", "sp-prompt", q.prompt, { id: promptId, tabindex: "-1" });
   const top = h("div", { class: "sp-q-top" });
   if (opts.total > 1) top.append(h("span", { class: "sp-q-n" }, ctx.t("progress", { n: opts.index + 1, total: opts.total })));
@@ -140,7 +140,7 @@ export function mountQuestion(host, q, ctx, opts = {}) {
     if (q.misconception) lines.push(h("p", { class: "sp-watch" }, h("strong", null, ctx.t("watchOut")), " ", rich(h("span"), q.misconception)));
     lines.push(h("p", { class: "sp-note-small" }, ctx.t("reviseHelp")));
     say(res.status === "partial" ? ctx.t("partly") : ctx.t("notYet"), lines, "is-hint");
-    checkBtn.replaceChildren(ctx.L("checkAgain"));
+    checkBtn.replaceChildren(ctx.msg("checkAgain"));
     if (wrongTries >= 2) showBtn.hidden = false;
     widget.focus();
   }
@@ -163,7 +163,7 @@ export function mountQuestion(host, q, ctx, opts = {}) {
     ctx.session.hint(q);
     const box = h("div", { class: `sp-hint sp-hint-${rung.kind}` }, h("strong", null, rung.kind === "frame" ? ctx.t("frameLabel") : ctx.t("hintLabel")), " ", rich(h("span"), rung.text));
     if (rung.kind === "frame" && widget.insert) {
-      const use = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small" }, ctx.L("useFrame"));
+      const use = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-small" }, ctx.msg("useFrame"));
       use.addEventListener("click", () => widget.insert(rung.text));
       box.append(use);
     }
@@ -171,7 +171,7 @@ export function mountQuestion(host, q, ctx, opts = {}) {
     if (used >= rungs.length) {
       hintBtn.hidden = true;
       checkBtn.focus();
-    } else hintBtn.querySelector("span").replaceChildren(ctx.L("frameLabel"));
+    } else hintBtn.querySelector("span").replaceChildren(ctx.msg("frameLabel"));
   }
 
   hintBtn.hidden = rungs.length === 0;

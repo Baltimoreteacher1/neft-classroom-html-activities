@@ -81,7 +81,7 @@ export function mountPlayer(root, input, opts = {}) {
     lang: canSpanish ? wantsLang : "en",
     state: { step: 0, game: {}, mode: "game", finished: false, calm: prefs.calm ?? prefersReducedMotion() },
     t: (key, vars) => translators[ctx.lang === "es" ? "es" : "en"].t(key, vars),
-    L(key, vars) {
+    msg(key, vars) {
       const en = translators.en.t(key, vars);
       const es = translators.es.t(key, vars);
       if (ctx.lang === "en") return document.createTextNode(en);
@@ -134,7 +134,7 @@ export function mountPlayer(root, input, opts = {}) {
       }
       controls.append(group);
     }
-    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, icon("moon", 18), ctx.L("calm"));
+    const calm = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-pressed": String(ctx.state.calm) }, icon("moon", 18), ctx.msg("calm"));
     calm.addEventListener("click", () => {
       ctx.state.calm = !ctx.state.calm;
       applyCalm();
@@ -145,7 +145,7 @@ export function mountPlayer(root, input, opts = {}) {
     controls.append(calm);
     if (activity.kind === "game") {
       const list = ctx.state.mode === "list";
-      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, icon(list ? "play" : "list", 18), ctx.L(list ? "gameMode" : "listMode"));
+      const mode = h("button", { type: "button", class: "sp-btn sp-btn-quiet sp-mode" }, icon(list ? "play" : "list", 18), ctx.msg(list ? "gameMode" : "listMode"));
       mode.addEventListener("click", () => {
         ctx.state.mode = list ? "game" : "list";
         ctx.state.finished = false;

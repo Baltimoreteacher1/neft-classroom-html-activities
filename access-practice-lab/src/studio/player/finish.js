@@ -44,11 +44,11 @@ export function renderFinish(stage, ctx, { onAgain, onBack, reported }) {
     li.querySelector(".sp-finish-q").setAttribute("title", plainText(q.prompt));
     list.append(li);
   });
-  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("undo", 18), ctx.L("tryAgain"));
+  const again = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, icon("undo", 18), ctx.msg("tryAgain"));
   again.addEventListener("click", onAgain);
   const actions = h("div", { class: "sp-actions" }, again);
   if (onBack) {
-    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.L("backToGame"));
+    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.msg("backToGame"));
     back.addEventListener("click", onBack);
     actions.prepend(back);
   }

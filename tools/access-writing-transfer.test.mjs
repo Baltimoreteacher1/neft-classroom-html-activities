@@ -59,6 +59,10 @@ try {
   await link.waitFor();
   assert.equal(await link.count(), 1);
   await link.click();
+  await page
+    .getByText(/fresh context to show what you can do on your own/i)
+    .first()
+    .waitFor();
   assert.match(
     await page.locator("body").innerText(),
     /fresh context to show what you can do on your own/i,
@@ -69,6 +73,12 @@ try {
       "The canal changed towns because boats could carry goods to new markets. The source shows that trade reached more places.",
     );
   await page.locator("[data-feedback]").click();
+  await page
+    .waitForFunction((task) => {
+      const ledger = JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger") || "null");
+      return ledger?.entries?.some((entry) => entry.task === task && entry.kind === "transfer");
+    }, other.id)
+    .catch(() => {});
   const ledger = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger")),
   );

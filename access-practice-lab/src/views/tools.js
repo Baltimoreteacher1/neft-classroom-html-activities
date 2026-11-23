@@ -239,6 +239,7 @@ ${state.typed}</textarea>`,
               </ul>
               <div class="row-actions">
                 <a class="btn ghost small" href="${BASE}/launch-studio">${I.T("Open Teacher Launch Studio", "Abrir el Estudio de lanzamiento para docentes")} ${icon("arrow-right")}</a>
+                <a class="btn ghost small" href="${BASE}/activity-studio">${I.T("Open Activity Studio", "Abrir el Estudio de actividades")} ${icon("arrow-right")}</a>
                 <a class="btn ghost small" href="${BASE}/classroom">${I.T("Open Whole-Class Studio", "Abrir el Estudio para toda la clase")} ${icon("arrow-right")}</a>
                 <a class="btn ghost small" href="/access-teacher/">${I.T("Open Full Teacher Dashboard", "Abrir el panel docente completo")} ${icon("arrow-right")}</a>
                 <a class="btn ghost small" href="${BASE}/passport?portfolio=1">${I.T("View Student Practice Portfolios", "Ver portafolios de práctica de los estudiantes")} ${icon("arrow-right")}</a>

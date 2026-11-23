@@ -43,9 +43,9 @@ function passageBlock(b, ctx) {
   } else {
     let at = 0;
     const status = h("span", { class: "sp-chunk-n", "aria-live": "polite" });
-    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.L("back"));
-    const next = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.L("nextPart"));
-    const all = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.L("showAll"));
+    const back = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.msg("back"));
+    const next = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.msg("nextPart"));
+    const all = h("button", { type: "button", class: "sp-btn sp-btn-quiet" }, ctx.msg("showAll"));
     const paint = (showAll) => {
       body.replaceChildren();
       const shown = showAll ? parts : parts.slice(0, at + 1);
@@ -150,7 +150,7 @@ function organizerBlock(b, ctx) {
 function audioBlock(b, ctx) {
   const box = h("div", { class: "sp-audio" });
   const text = h("p", { class: "sp-audio-text", hidden: true }, b.say);
-  const show = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-expanded": "false" }, ctx.L("showText"));
+  const show = h("button", { type: "button", class: "sp-btn sp-btn-quiet", "aria-expanded": "false" }, ctx.msg("showText"));
   show.addEventListener("click", () => {
     text.hidden = !text.hidden;
     show.setAttribute("aria-expanded", String(!text.hidden));

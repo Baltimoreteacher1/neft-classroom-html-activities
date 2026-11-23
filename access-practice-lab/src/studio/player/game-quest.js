@@ -74,7 +74,7 @@ export function mountQuest(area, ctx, { onFinish }) {
     st.camp = i;
     paintPath();
     const recap = steps.slice(Math.max(0, i - CAMP_EVERY + 1), i + 1).filter((s) => s.question.explanation);
-    const next = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L("keepGoing"), icon("arrow", 18));
+    const next = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("keepGoing"), icon("arrow", 18));
     next.addEventListener("click", () => {
       st.camp = -1;
       mission(st.at);
@@ -97,7 +97,7 @@ export function mountQuest(area, ctx, { onFinish }) {
     st.at = steps.length;
     paintPath();
     const redo = missed();
-    const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L("finish"));
+    const done = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg("finish"));
     done.addEventListener("click", onFinish);
     const title = h("h2", { class: "sp-camp-title", tabindex: "-1" }, icon("star", 22), ctx.t("questComplete"));
     const section = h("section", { class: "sp-camp" }, title, h("p", null, ctx.t(redo.length ? "questRetryBody" : "questWinBody")));

@@ -79,7 +79,7 @@ export function mountMatch(area, ctx, { onFinish }) {
     const lane = h("div", { class: "sp-lane", role: "group", "aria-label": ctx.t("matchBank") });
     const docks = h("ul", { class: "sp-docks" });
     const say = h("p", { class: "sp-say", role: "status", "aria-live": "polite" }, ctx.t("matchStart"));
-    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, icon("bulb", 18), ctx.L("hint"));
+    const hint = h("button", { type: "button", class: "sp-btn sp-btn-quiet", hidden: !(ctx.supports.hints && q.hint) }, icon("bulb", 18), ctx.msg("hint"));
     const head = h(
       "div",
       { class: "sp-round-head" },
@@ -144,7 +144,7 @@ export function mountMatch(area, ctx, { onFinish }) {
       ctx.session.finish(q);
       lane.replaceChildren();
       const last = st.round === rounds.length - 1;
-      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.L(last ? "finish" : "nextRound"), icon("arrow", 18));
+      const go = h("button", { type: "button", class: "sp-btn sp-btn-primary" }, ctx.msg(last ? "finish" : "nextRound"), icon("arrow", 18));
       go.addEventListener("click", next);
       root.append(
         h("div", { class: "sp-feedback is-right" }, h("p", { class: "sp-fb-title" }, icon("star", 18), ctx.t("roundDone")), q.explanation ? rt("p", "sp-explain", q.explanation) : null),
