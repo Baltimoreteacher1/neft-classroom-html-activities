@@ -88,6 +88,16 @@ await t("/access-prep redirects to the lab's Access Prep hub, keeping queries", 
   assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/access-prep?grades=6-8");
 });
 
+await t("Activity Studio addresses redirect into the lab: /activity-studio and a shared /do/<id> link", () => {
+  const studio = at("https://thelanguagepage.com/activity-studio/mine");
+  assert.equal(studio.kind, "redirect");
+  assert.equal(studio.location, "https://thelanguagepage.com/access-practice-lab/activity-studio/mine");
+  const link = at("https://thelanguagepage.com/do/s0a1b2c3d4e?x=1");
+  assert.equal(link.location, "https://thelanguagepage.com/access-practice-lab/do/s0a1b2c3d4e?x=1");
+  // Other unknown paths still leave for eduwonderlab.com, so only the studio's own addresses are claimed.
+  assert.equal(at("https://thelanguagepage.com/do/../etc").status, 308);
+});
+
 await t("/twr and its sets redirect into the lab, keeping queries", () => {
   const hub = at("https://thelanguagepage.com/twr?grades=2-3");
   assert.equal(hub.status, 302);

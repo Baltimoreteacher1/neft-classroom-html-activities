@@ -19,6 +19,11 @@
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
 import {
+  ACTIVITY_SCHEMA,
+  activityPruneStatements,
+  activityPurgeStatements,
+} from "./activity-schema.js";
+import {
   ASSIGN_STATUS_SCHEMA,
   astatusPruneStatements,
   astatusPurgeStatements,
@@ -162,6 +167,7 @@ export async function ensureSchema(db) {
       ...EXPERIENCE_SCHEMA,
       ...ASSIGN_STATUS_SCHEMA,
       ...LIBRARY_SCHEMA,
+      ...ACTIVITY_SCHEMA,
     ].map((sql) => db.prepare(sql)),
   );
   ready.add(db);
@@ -225,6 +231,7 @@ export function purgeStatements(db, code) {
     ...astatusPurgeStatements(db, code),
     ...collabPurgeStatements(db, code),
     ...libraryPurgeStatements(db, code),
+    ...activityPurgeStatements(db, code),
     db.prepare(`DELETE FROM class_platform_experience WHERE code = ?`).bind(code),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
     db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
@@ -247,6 +254,7 @@ export async function pruneExpired(db, now) {
     ...astatusPruneStatements(db, now, gone),
     ...collabPruneStatements(db, now, gone),
     ...libraryPruneStatements(db, now, gone),
+    ...activityPruneStatements(db, now, gone),
     db.prepare(`DELETE FROM class_platform_experience WHERE code IN (${gone})`).bind(now),
     db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${oldRooms})`).bind(now, now),
     db

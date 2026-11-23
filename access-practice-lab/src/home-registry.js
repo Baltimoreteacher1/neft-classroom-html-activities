@@ -705,6 +705,18 @@ export const HOME_CARDS = [
     text: ["Class evidence, rubrics and review.", "Evidencia de la clase, rúbricas y revisión."],
   },
   {
+    id: "activity-studio",
+    group: "teach",
+    featured: true,
+    href: "activity-studio",
+    icon: "teacher",
+    title: ["Activity Studio", "Estudio de actividades"],
+    text: [
+      "Make an interactive activity, worksheet, game or quick check from your lesson. Preview it, edit it and share it.",
+      "Cree una actividad interactiva, hoja de trabajo, juego o revisión rápida a partir de su lección. Véala, edítela y compártala.",
+    ],
+  },
+  {
     id: "experience-builder",
     group: "teach",
     featured: true,

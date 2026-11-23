@@ -1,0 +1,609 @@
+/* Question format widgets: options, cards and slots, typing, spatial answers. */
+
+/* ── options (choice, multi, error, hotspot list) ─────────────────────── */
+.sp-options {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.sp-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 2px solid var(--sp-edge);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+}
+.sp-option:hover {
+  background: var(--sp-surface-2);
+}
+.sp-check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.sp-letter {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--sp-edge);
+  border-radius: 50%;
+  background: var(--sp-surface-2);
+  font-weight: 800;
+}
+.sp-option:has(input[type="checkbox"]) .sp-letter {
+  border-radius: 9px;
+}
+.sp-letter-line {
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+}
+.sp-option:has(input:checked) {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent-soft);
+  box-shadow: 0 0 0 1px var(--sp-accent);
+}
+.sp-option:has(input:checked) .sp-letter {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent);
+  color: var(--sp-on-accent);
+}
+.sp-option:has(input:focus-visible) {
+  outline: 3px solid var(--sp-focus);
+  outline-offset: 2px;
+}
+.sp-option:has(input:disabled) {
+  cursor: default;
+}
+.sp-opt-text {
+  overflow-wrap: anywhere;
+}
+.sp-error .sp-options + .sp-subhead {
+  margin-top: 20px;
+}
+
+/* ── cards, banks, slots (match / sort / build / blank bank) ──────────── */
+.sp-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px;
+  border: 2px dashed var(--sp-line);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface-2);
+}
+.sp-card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid var(--sp-edge);
+  border-radius: calc(var(--sp-radius) - 2px);
+  background: var(--sp-surface);
+  color: var(--sp-ink);
+  font: 600 1rem/1.35 var(--sp-font);
+  text-align: start;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--sp-line);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+}
+.sp-card:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 var(--sp-line);
+}
+.sp-card[aria-pressed="true"] {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent);
+  color: var(--sp-on-accent);
+  transform: translateY(-3px);
+}
+.sp-card[aria-pressed="true"]::before {
+  content: "✓";
+  font-weight: 900;
+}
+.sp-card:disabled {
+  cursor: default;
+  transform: none;
+}
+.sp-rows,
+.sp-chips,
+.sp-order,
+.sp-pointlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-rows {
+  display: grid;
+  gap: 10px;
+}
+.sp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 10px;
+  align-items: center;
+}
+.sp-row-left {
+  font-weight: 700;
+}
+.sp-slot,
+.sp-drop,
+.sp-dock {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 14px;
+  border: 2px dashed var(--sp-edge);
+  border-radius: calc(var(--sp-radius) - 2px);
+  background: var(--sp-surface-2);
+  color: var(--sp-ink);
+  font: 600 1rem/1.35 var(--sp-font);
+  text-align: start;
+  cursor: pointer;
+}
+.sp-slot.is-filled {
+  border-style: solid;
+  background: var(--sp-surface);
+}
+.sp-slot:hover:not(:disabled),
+.sp-drop:hover:not(:disabled) {
+  background: var(--sp-accent-soft);
+  border-color: var(--sp-accent);
+}
+.sp-slot-hint {
+  color: var(--sp-ink-2);
+  font-weight: 600;
+}
+.sp-buckets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+.sp-bucket {
+  padding: 12px;
+  border: 2px solid var(--sp-edge);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+}
+.sp-bucket-title {
+  margin: 0 0 8px;
+  font: 800 1.1rem/1.3 var(--sp-display);
+}
+.sp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sp-chip.is-right,
+.sp-chips li.is-right {
+  background: var(--sp-right-soft);
+}
+.sp-order {
+  display: grid;
+  gap: 10px;
+}
+.sp-order-item {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 2px solid var(--sp-edge);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+}
+.sp-order-n {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sp-accent);
+  color: var(--sp-on-accent);
+  font-weight: 800;
+}
+.sp-grip {
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--sp-ink);
+  font: 600 1rem/1.35 var(--sp-font);
+  text-align: start;
+  cursor: pointer;
+}
+.sp-move-pair {
+  display: inline-flex;
+  gap: 6px;
+}
+.sp-move {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--sp-edge);
+  border-radius: 12px;
+  background: var(--sp-surface-2);
+  color: var(--sp-ink);
+  cursor: pointer;
+}
+.sp-move:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.sp-sentence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 64px;
+  padding: 10px;
+  border: 2px dashed var(--sp-edge);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+}
+
+/* ── typing ───────────────────────────────────────────────────────────── */
+.sp-input,
+.sp-blank {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 2px solid var(--sp-edge);
+  border-radius: 10px;
+  background: var(--sp-surface);
+  color: var(--sp-ink);
+  font: 1.05rem/1.4 var(--sp-font);
+}
+.sp-input {
+  width: 100%;
+  max-width: 100%;
+}
+.sp-area {
+  resize: vertical;
+}
+.sp-number {
+  max-width: 260px;
+}
+.sp-number-row,
+.sp-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sp-unit {
+  font-weight: 700;
+}
+.sp-count {
+  display: block;
+  margin-top: 4px;
+  color: var(--sp-ink-2);
+}
+.sp-cloze {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  line-height: 2.7;
+}
+.sp-blank-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 4px;
+}
+.sp-blank {
+  width: 9.5ch;
+  min-width: 80px;
+  text-align: center;
+}
+[aria-invalid="true"] {
+  border-style: dashed !important;
+  border-color: var(--sp-hint) !important;
+}
+.sp-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.sp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--sp-edge);
+  border-radius: var(--sp-radius);
+  overflow: hidden;
+  background: var(--sp-surface);
+}
+.sp-table caption {
+  padding: 8px;
+  font-weight: 700;
+  text-align: start;
+}
+.sp-table th,
+.sp-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sp-line);
+  text-align: start;
+}
+.sp-table th {
+  background: var(--sp-surface-2);
+}
+.sp-cell {
+  min-width: 70px;
+}
+
+/* ── identify, hotspot, number line, plot ─────────────────────────────── */
+.sp-identify {
+  margin: 8px 0;
+  font-size: 1.2rem;
+  line-height: 2.4;
+}
+.sp-word {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 2px;
+  padding: 0 10px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--sp-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.sp-word:hover:not(:disabled) {
+  border-color: var(--sp-edge);
+  background: var(--sp-surface-2);
+}
+.sp-word[aria-pressed="true"] {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent-soft);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+}
+.sp-hotbox {
+  position: relative;
+  display: inline-block;
+  min-width: min(100%, 320px);
+  min-height: 160px;
+  max-width: 100%;
+  margin: 8px 0;
+}
+.sp-region {
+  position: absolute;
+  min-width: 44px;
+  min-height: 44px;
+  border: 3px dashed var(--sp-accent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--sp-surface) 12%, transparent);
+  cursor: pointer;
+}
+.sp-region:hover {
+  background: color-mix(in srgb, var(--sp-accent) 25%, transparent);
+}
+.sp-region[aria-pressed="true"] {
+  border-style: solid;
+  background: color-mix(in srgb, var(--sp-accent) 35%, transparent);
+}
+.sp-alt {
+  margin-top: 10px;
+}
+.sp-alt summary {
+  min-height: 44px;
+  padding: 10px 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sp-nl {
+  padding: 30px 22px 62px;
+}
+.sp-nl-track {
+  position: relative;
+  height: 6px;
+  border-radius: 6px;
+  background: var(--sp-ink-2);
+}
+.sp-tick {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 44px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  color: var(--sp-ink);
+  cursor: pointer;
+}
+.sp-tick::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  background: var(--sp-ink-2);
+  border-radius: 2px;
+}
+.sp-tick[aria-checked="true"]::before {
+  height: 34px;
+  background: var(--sp-accent);
+}
+.sp-tick[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--sp-accent);
+  border: 3px solid var(--sp-surface);
+  box-shadow: 0 0 0 2px var(--sp-accent);
+}
+.sp-tick-label {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sp-plotbox {
+  position: relative;
+  width: min(100%, 440px);
+  margin: 10px auto;
+  aspect-ratio: 1;
+}
+.sp-plot-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  box-shadow: inset 0 0 0 2px var(--sp-edge);
+}
+.sp-grid {
+  stroke: var(--sp-line);
+  stroke-width: 0.3;
+}
+.sp-axis {
+  stroke: var(--sp-ink-2);
+  stroke-width: 0.8;
+}
+.sp-axis-n {
+  fill: var(--sp-ink-2);
+  font: 700 3.6px var(--sp-font);
+}
+.sp-plot-cells {
+  position: absolute;
+  left: 12%;
+  top: 4%;
+  width: 84%;
+  height: 84%;
+}
+.sp-pt {
+  position: absolute;
+  width: max(26px, calc(100% / var(--n)));
+  aspect-ratio: 1;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.sp-pt::before {
+  content: "";
+  position: absolute;
+  inset: 40%;
+  border-radius: 50%;
+  background: var(--sp-ink-2);
+  opacity: 0.3;
+}
+.sp-pt:hover::before {
+  opacity: 0.7;
+}
+.sp-pt[aria-pressed="true"]::before {
+  inset: 22%;
+  opacity: 1;
+  background: var(--sp-accent);
+  border: 3px solid var(--sp-surface);
+  box-shadow: 0 0 0 2px var(--sp-accent);
+}
+.sp-pointlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sp-pointlist li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 2px 12px;
+  border: 2px solid var(--sp-accent);
+  border-radius: 999px;
+  background: var(--sp-accent-soft);
+  font-weight: 700;
+}
+.sp-organizer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+}
+.sp-org-cell {
+  position: relative;
+  padding: 12px;
+  border: 2px solid var(--sp-edge);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+}
+.sp-org-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.sp-org-n {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: var(--sp-ink-2);
+  font-weight: 800;
+}
+
+/* ── small screens ────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .sp-root {
+    padding: 12px 16px 40px;
+  }
+  .sp-header,
+  .sp-q,
+  .sp-finish,
+  .sp-camp {
+    padding: 16px;
+  }
+  .sp-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .sp-check-btn {
+    margin-inline-start: 0;
+    flex: 1 1 100%;
+  }
+  .sp-nl {
+    padding-inline: 16px;
+  }
+  .sp-order-item {
+    grid-template-columns: 30px 1fr;
+  }
+  .sp-move-pair {
+    grid-column: 2;
+    justify-self: end;
+  }
+}

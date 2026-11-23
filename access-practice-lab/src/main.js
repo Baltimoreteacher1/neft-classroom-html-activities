@@ -148,6 +148,8 @@ const VIEW_LOADERS = {
   // Part 2 (docs/part2-integration-map.md): simulations, the experience compiler, the time machine, pathways.
   simulations: () => import("./views/simulations.js"),
   "experience-builder": () => import("./views/experience-builder.js"),
+  "activity-studio": () => import("./views/activity-studio.js"),
+  do: () => import("./views/do-activity.js"),
   "time-machine": () => import("./views/time-machine.js"),
   pathways: () => import("./views/pathways.js"),
   "choice-boards": () => import("./views/choice-boards.js"),
@@ -215,6 +217,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   }
   if (a === "language-games") return { ...r, view: a, id: b || "", chapter: c || "" };
   // /simulations/<mission>[/<part>], /experience-builder[/<id>], /time-machine[/<tab>], /pathways/<id>[/<stage>]
+  // /activity-studio[/new|/mine|/sample|/<id>] (the teacher studio) and /do/<id> (a published student activity).
+  if (a === "activity-studio" || a === "do")
+    return { ...r, view: a, id: b || "", sub: c || "", q: Object.fromEntries(q) };
   if (["simulations", "experience-builder", "time-machine", "pathways"].includes(a))
     return { ...r, view: a, id: b || "", sub: c || "", tab: q.get("tab") || "", q: Object.fromEntries(q) };
   if (a === "language-studios")

@@ -47,6 +47,7 @@ import {
   validateDocUpload,
   validateSettings,
 } from "../../../shared/class-platform/contract.js";
+import { handleActivities } from "../../_lib/class-platform/activities.js";
 import { handleAi } from "../../_lib/class-platform/ai.js";
 import { handleAssignStatus } from "../../_lib/class-platform/assign-status.js";
 import { astatusStudentStatements } from "../../_lib/class-platform/assign-status-schema.js";
@@ -571,6 +572,7 @@ export const onRequest = handler({
     if (seg === "books") return handleBooks(ctx, parts[1] || "");
     if (seg === "experience") return handleExperiences(ctx, parts[1] || "");
     if (seg === "library") return handleLibrary(ctx, parts[1] || "");
+    if (seg === "activity") return handleActivities(ctx, parts[1] || "");
     const route = routes[`${method} ${seg}`];
     return route ? route(ctx) : fail("not-found", 404);
   },

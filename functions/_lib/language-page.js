@@ -228,6 +228,17 @@ export function languagePageRoute(url) {
       status: 302,
       location: `${url.origin}${LAB_BASE}${url.pathname.replace(/\/$/, "")}${url.search}`,
     };
+  // Activity Studio: a teacher's short address and the student links they share (/do/<id>) live inside the lab.
+  if (
+    url.pathname === "/activity-studio" ||
+    url.pathname.startsWith("/activity-studio/") ||
+    /^\/do\/[a-z0-9]+\/?$/.test(url.pathname)
+  )
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}${url.pathname.replace(/\/$/, "")}${url.search}`,
+    };
   if (url.pathname.startsWith("/access-prep/"))
     return {
       kind: "redirect",

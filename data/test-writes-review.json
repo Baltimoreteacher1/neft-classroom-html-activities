@@ -210,6 +210,26 @@
       "file": "tools/book-render-regression.test.mjs",
       "targets": "golden-file-on-explicit-update-only",
       "reason": "Writes its golden fingerprint file only when run with the explicit --update flag (a deliberate re-pin the author explains in the commit); a normal or CI run only reads it and compares, so no repository data changes."
+    },
+    {
+      "file": "tools/studio-docx.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes the generated .docx, the LibreOffice profile and the converted PDF/PNG pages only inside mkdtempSync(join(tmpdir(), 'studio-docx-')); no repository file is written."
+    },
+    {
+      "file": "tools/studio-export.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes each exported activity page only inside mkdtempSync(join(tmpdir(), 'studio-export-')) so Chromium can open it by file URL; no repository file is written."
+    },
+    {
+      "file": "tools/studio-player.test.mjs",
+      "targets": "tmpdir",
+      "reason": "The bundler test copies the player source into mkdtempSync(join(tmpdir(), 'sp-bundle-')) and redirects the build with STUDIO_PLAYER_SRC and STUDIO_PLAYER_OUT, then edits only that copy; it reads the real access-practice-lab/player/studio-player.js and never writes it."
+    },
+    {
+      "file": "tools/studio-print.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes rendered worksheet PDFs inside mkdtempSync(join(tmpdir(), 'studio-print-')) and one pid-named scratch HTML file in tmpdir(); no repository file is written."
     }
   ]
 }

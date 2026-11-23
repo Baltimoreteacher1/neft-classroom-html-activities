@@ -1549,6 +1549,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "activity-studio",
+    section: "teach",
+    skill: "Mixed",
+    kind: "tool",
+    for: T_,
+    href: "activity-studio",
+    icon: "teacher",
+    match: [["activity-studio"], ["do"]],
+    title: P("Activity Studio", "Estudio de actividades"),
+    text: P(
+      "Make an interactive activity, worksheet, learning game or quick check from your lesson, then preview and share it.",
+      "Cree una actividad interactiva, hoja de trabajo, juego de aprendizaje o revisión rápida a partir de su lección, y luego véala y compártala.",
+    ),
+  },
+  {
     id: "experience-builder",
     section: "teach",
     skill: "Mixed",
