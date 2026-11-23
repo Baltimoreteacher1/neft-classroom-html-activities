@@ -6,10 +6,9 @@
 
 import { BASE, esc, html } from "../../util.js";
 import { DEMO_ROSTER, getLanguageMeta } from "../data/platformData.js";
-import { checkFeatureAccess } from "../entitlements/entitlementService.js";
 import { analyzeStudentRadar, generateDomainSprint } from "../services/intelligenceAdapter.js";
 import { STORAGE_KEYS, readStorage, sanitizeAlias, updateStorage } from "../services/storageService.js";
-import { openDrawer, upgradeCardHTML } from "../components/ui.js";
+import { openDrawer } from "../components/ui.js";
 
 function scoreClass(val) {
   const n = Number(val) || 0;
@@ -51,10 +50,6 @@ export async function render(ctx) {
   const bubbleCount = analyzed.filter((s) => s.isBubble).length;
   const readyCount = analyzed.filter((s) => s.isReady).length;
 
-  const exportAccess = checkFeatureAccess("export_report");
-  const addAccess = checkFeatureAccess("roster_add", rawStudents.length);
-  const sprintAccess = checkFeatureAccess("unlimited_sprints");
-
   return {
     title: "Reclassification Radar — ELL Lab",
     html: html`
@@ -69,12 +64,11 @@ export async function render(ctx) {
           </div>
           <div class="tlp-actions-row no-print">
             <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarResetBtn">Reset Demo Roster</button>
-            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarCsvBtn" ${exportAccess.allowed ? "" : "disabled"}>Export CSV</button>
-            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRadarPrintBtn" ${exportAccess.allowed ? "" : "disabled"}>Print / PDF Report</button>
+            <button type="button" class="tlp-btn tlp-btn-ghost" id="tlpRadarCsvBtn">Export CSV</button>
+            <button type="button" class="tlp-btn tlp-btn-primary" id="tlpRadarPrintBtn">Print / PDF Report</button>
           </div>
         </header>
 
-        ${!exportAccess.allowed ? upgradeCardHTML(exportAccess.reason) : ""}
 
         <div class="tlp-grid-3" style="margin-bottom:1.25rem">
           <div class="tlp-card">
@@ -164,9 +158,7 @@ export async function render(ctx) {
 
         <div class="tlp-card no-print">
           <h2 style="margin:0 0 0.75rem;font-size:1.15rem">Add Student (Anonymized Alias Only)</h2>
-          ${!addAccess.allowed
-            ? upgradeCardHTML(addAccess.reason)
-            : html`<form id="tlpAddStudentForm" class="tlp-grid-3">
+          ${html`<form id="tlpAddStudentForm" class="tlp-grid-3">
                 <label class="tlp-field">
                   <span>First Name + Initial</span>
                   <input type="text" name="alias" required placeholder="e.g., Elena V." />
@@ -226,21 +218,14 @@ export async function render(ctx) {
       });
 
       root.querySelector("#tlpRadarCsvBtn")?.addEventListener("click", () => {
-        if (exportAccess.allowed) exportCsv(analyzed);
+        exportCsv(analyzed);
       });
       root.querySelector("#tlpRadarPrintBtn")?.addEventListener("click", () => {
-        if (exportAccess.allowed) window.print();
+        window.print();
       });
 
       root.querySelectorAll("[data-sprint-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          if (!sprintAccess.allowed) {
-            openDrawer({
-              title: "4-Week Domain Sprints",
-              bodyHtml: `<p>${esc(sprintAccess.reason)}</p><a class="tlp-btn tlp-btn-primary" href="${BASE}/pricing">View Plans</a>`,
-            });
-            return;
-          }
           const student = analyzed.find((s) => s.id === btn.dataset.sprintId);
           if (!student) return;
           const sprint = generateDomainSprint(student);

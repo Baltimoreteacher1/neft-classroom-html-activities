@@ -6,11 +6,6 @@ import {
   SPEAKING_PROMPTS,
 } from "../access-practice-lab/src/platform/data/platformData.js";
 import {
-  checkFeatureAccess,
-  getEntitlementState,
-  setEntitlementTier,
-} from "../access-practice-lab/src/platform/entitlements/entitlementService.js";
-import {
   analyzeL1Transfer,
   analyzeStudentRadar,
   evaluateSentenceArchitecture,
@@ -57,18 +52,6 @@ test("stateMachine: deterministic lifecycle IDLE -> ACTIVE -> EVALUATING -> FEED
   assert.equal(sm.transition(STATES.COMPLETE), true);
   sm.reset();
   assert.equal(sm.state, STATES.IDLE);
-});
-
-test("entitlementService: tier switching and Free Starter gating", () => {
-  setEntitlementTier("free");
-  assert.equal(getEntitlementState().tier, "free");
-  assert.equal(checkFeatureAccess("export_report").allowed, false);
-  assert.equal(checkFeatureAccess("roster_add", 3).allowed, false);
-  assert.equal(checkFeatureAccess("roster_add", 2).allowed, true);
-
-  setEntitlementTier("pro");
-  assert.equal(getEntitlementState().tier, "pro");
-  assert.equal(checkFeatureAccess("export_report").allowed, true);
 });
 
 test("intelligenceAdapter: Content-to-Language Bridge scanner & L1 transfer", () => {
@@ -153,7 +136,6 @@ test("all 6 platform views return non-empty html from render()", async () => {
     import("../access-practice-lab/src/platform/views/simulator.js"),
     import("../access-practice-lab/src/platform/views/radar.js"),
     import("../access-practice-lab/src/platform/views/familyBridge.js"),
-    import("../access-practice-lab/src/platform/views/pricing.js"),
   ]);
   const fakeCtx = { band: "6-8", route: {}, prefs: {}, rerender: () => {} };
   for (const v of views) {

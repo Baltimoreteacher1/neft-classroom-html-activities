@@ -6,11 +6,10 @@
 
 import { BASE, esc, html, raw } from "../../util.js";
 import { BRIDGE_SAMPLES, getLanguageMeta } from "../data/platformData.js";
-import { checkFeatureAccess } from "../entitlements/entitlementService.js";
 import { analyzeL1Transfer, scanLessonText } from "../services/intelligenceAdapter.js";
 import { STORAGE_KEYS, readStorage, updateStorage } from "../services/storageService.js";
 import { createStateMachine, STATES } from "../state/stateMachine.js";
-import { openDrawer, upgradeCardHTML } from "../components/ui.js";
+import { openDrawer } from "../components/ui.js";
 
 function highlightPassageHTML(text, scan, layers, showCognates) {
   let out = esc(text);
@@ -64,7 +63,6 @@ export async function render(ctx) {
   const currentText = machine.context.text;
   const scan = scanLessonText(currentText, l1);
   machine.transition(STATES.FEEDBACK);
-  const customAccess = checkFeatureAccess("custom_bridge");
 
   return {
     title: "Content-to-Language Bridge — ELL Lab",
@@ -122,8 +120,6 @@ export async function render(ctx) {
             <span>Lesson Text or Word Problem</span>
             <textarea id="tlpBridgeInput" rows="4">${currentText}</textarea>
           </label>
-
-          ${!customAccess.allowed ? upgradeCardHTML(customAccess.reason) : ""}
 
           <div class="tlp-actions-row" style="justify-content:space-between">
             <div class="tlp-actions-row">
@@ -267,7 +263,6 @@ export async function render(ctx) {
       root.querySelector("#tlpBridgeScanBtn")?.addEventListener("click", () => {
         const text = input.value.trim();
         if (!text) return;
-        if (!customAccess.allowed && !BRIDGE_SAMPLES.some((s) => s.text === text)) return;
         updateStorage(STORAGE_KEYS.BRIDGE, { customText: text });
         ctx.rerender();
       });

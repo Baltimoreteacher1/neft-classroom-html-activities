@@ -33,18 +33,15 @@ access-practice-lab/
 │       │   └── logger.js                       # Structured diagnostics logger (silent unless ?debug=1 or Ctrl+Shift+D)
 │       ├── state/
 │       │   └── stateMachine.js                 # Deterministic IDLE -> ACTIVE -> EVALUATING -> FEEDBACK -> COMPLETE machine
-│       ├── entitlements/
-│       │   └── entitlementService.js           # Tiers: free | pro | district (defaults to pro preview; debug-toggleable)
 │       ├── components/
-│       │   └── ui.js                           # Accessible primitives: Drawers, Tabs, Modals, Badges, Upgrade Card, PO Quote Modal, QR SVG
+│       │   └── ui.js                           # Accessible primitives: Drawers, Tabs, Modals, Badges, QR SVG
 │       └── views/
 │           ├── resourceHub.js                  # Role-scoped hub + filterable Resource Library Strip (legacy + new)
 │           ├── bridge.js                       # Module 1: Content-to-Language Bridge
 │           ├── architect.js                    # Module 3: Sentence Architect Studio (DnD + Touch + Click + Keyboard)
 │           ├── simulator.js                    # Module 4: Adaptive Speaking Simulator with Measured Lifelines
 │           ├── radar.js                        # Module 5: Reclassification Radar & 4-Week Domain Sprints
-│           ├── familyBridge.js                 # Module 6: Zero-Login Bilingual Family Bridge (RTL Arabic, 3 elements, Print)
-│           └── pricing.js                      # Subscription Comparison & Formal School Quote / PO Generator
+│           └── familyBridge.js                 # Module 6: Zero-Login Bilingual Family Bridge (RTL Arabic, 3 elements, Print)
 ```
 
 ---

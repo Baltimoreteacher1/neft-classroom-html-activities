@@ -6,7 +6,6 @@
 
 import { BASE, html, toHtml } from "../util.js";
 import { HOME_LANGUAGES } from "./data/platformData.js";
-import { getEntitlementState, setEntitlementTier } from "./entitlements/entitlementService.js";
 import { getLogEvents, isDebugEnabled, subscribeLogs } from "./services/logger.js";
 import { STORAGE_KEYS, readStorage, updateStorage } from "./services/storageService.js";
 
@@ -40,7 +39,6 @@ function renderDiagnosticsDock() {
     dock.setAttribute("aria-label", "Platform Diagnostics");
     document.body.appendChild(dock);
   }
-  const { tier } = getEntitlementState();
   const events = getLogEvents().slice(-8).reverse();
   const navTiming = typeof performance !== "undefined" && performance.now ? `${Math.round(performance.now())}ms` : "n/a";
 
@@ -50,16 +48,8 @@ function renderDiagnosticsDock() {
       <button type="button" class="tlp-icon-btn" style="min-height:24px;padding:0 0.5rem" id="tlpDebugClose">✕</button>
     </div>
     <div style="margin-bottom:0.5rem">
-      <span>Tier: <strong>${tier}</strong></span> ·
       <span>Adapter: <strong>deterministic-local</strong></span> ·
       <span class="tlp-tabular">Uptime: ${navTiming}</span>
-    </div>
-    <div class="tlp-actions-row" style="margin-bottom:0.65rem">
-      ${["free", "pro", "district"]
-        .map(
-          (t) => `<button type="button" class="tlp-btn tlp-btn-ghost" style="min-height:28px;padding:0.2rem 0.65rem;font-size:0.75rem" data-debug-tier="${t}" ${t === tier ? "disabled" : ""}>${t}</button>`,
-        )
-        .join("")}
     </div>
     <div style="border-top:1px solid var(--tlp-border);padding-top:0.45rem;max-height:180px;overflow-y:auto">
       ${events.length
@@ -75,13 +65,6 @@ function renderDiagnosticsDock() {
   dock.querySelector("#tlpDebugClose")?.addEventListener("click", () => {
     debugOpen = false;
     dock.remove();
-  });
-  dock.querySelectorAll("[data-debug-tier]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      setEntitlementTier(btn.dataset.debugTier);
-      renderDiagnosticsDock();
-      window.dispatchEvent(new CustomEvent("tlp:rerender"));
-    });
   });
 }
 
@@ -141,11 +124,10 @@ export function mountPlatformControls(ctx) {
       <button type="button" class="tlp-icon-btn" id="tlpThemeToggle" aria-label="Toggle color theme">
         ${theme === "dark" ? "🌙 Dark" : "☀️ Light"}
       </button>
-      <a class="tlp-icon-btn tlp-teacher-only" href="${BASE}/pricing" style="text-decoration:none">Plans</a>
     </div>
   `);
 
-  const studioViews = new Set(["bridge", "architect", "simulator", "radar", "family-bridge", "pricing"]);
+  const studioViews = new Set(["bridge", "architect", "simulator", "radar", "family-bridge"]);
   const currentView = ctx?.route?.view || "";
   let subnav = document.getElementById("tlpStudioSubnav");
   if (studioViews.has(currentView)) {

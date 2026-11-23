@@ -6,11 +6,9 @@
 
 import { BASE, esc, html } from "../../util.js";
 import { L1_AUDIO_CUES, SPEAKING_PROMPTS, getLanguageMeta } from "../data/platformData.js";
-import { checkFeatureAccess } from "../entitlements/entitlementService.js";
 import { evaluateSpeakingResponse } from "../services/intelligenceAdapter.js";
 import { STORAGE_KEYS, readStorage, sanitizeAlias, updateStorage } from "../services/storageService.js";
 import { createStateMachine, STATES } from "../state/stateMachine.js";
-import { upgradeCardHTML } from "../components/ui.js";
 
 export async function render(ctx) {
   const prefs = readStorage(STORAGE_KEYS.PREFS);
@@ -29,8 +27,6 @@ export async function render(ctx) {
     transcript: "",
     evaluation: null,
   });
-
-  const clipAccess = checkFeatureAccess("save_clip", (speakingStore.clips || []).length);
 
   return {
     title: "Adaptive Speaking Simulator — ELL Lab",
@@ -140,8 +136,6 @@ export async function render(ctx) {
               </ul>
             </div>`
           : ""}
-
-        ${!clipAccess.allowed ? upgradeCardHTML(clipAccess.reason) : ""}
 
         <p style="margin-top:1.25rem">
           <a class="tlp-btn tlp-btn-ghost" href="${BASE}/">← Back to ELL Lab Hub</a>
@@ -353,12 +347,6 @@ export async function render(ctx) {
         `;
 
         fb.querySelector("#tlpSavePrideClipBtn")?.addEventListener("click", () => {
-          const currentClips = readStorage(STORAGE_KEYS.SPEAKING).clips || [];
-          const access = checkFeatureAccess("save_clip", currentClips.length);
-          if (!access.allowed) {
-            fb.querySelector("#tlpClipStatus").textContent = access.reason;
-            return;
-          }
           machine.transition(STATES.COMPLETE);
           updateStorage(STORAGE_KEYS.SPEAKING, (prev) => ({
             ...prev,
