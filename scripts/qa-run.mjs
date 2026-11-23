@@ -458,10 +458,11 @@ const COVERAGE = [
   // then sweeps all grade.json + unit files; the tools' own tests run in `test`. Content, docs and tools cannot affect
   // the lab's other content contract, so they stay off `validate:access-lab`; the app code and styles can, so they add it.
   [
-    /^(access-practice-lab\/content\/vocab-academy\/|docs\/vocab-academy\/|tools\/(validate-vocab-academy|validate-vocab-academy-print|build-vocab-academy-index|generate-vocab-academy-pdfs|vocab-academy-[a-z-]+\.test|vocab-academy-[a-z-]+-e2e|vocab-academy-editorial-sample)\.mjs$|tools\/lib\/vocab-academy-[a-z-]+\.mjs$)/,
+    /^(access-practice-lab\/content\/vocab-academy\/|docs\/vocab-academy\/|tools\/(validate-vocab-academy|validate-vocab-academy-print|validate-vocab-academy-readings|build-vocab-academy-index|generate-vocab-academy-pdfs|vocab-academy-[a-z-]+\.test|vocab-academy-[a-z-]+-e2e|vocab-academy-editorial-sample)\.mjs$|tools\/lib\/vocab-academy-[a-z-]+\.mjs$)/,
     [
       "validate:vocab-academy",
       "validate:vocab-academy-print",
+      "validate:vocab-academy-readings",
       "test",
       "validate:js-syntax",
       "check",
@@ -472,6 +473,7 @@ const COVERAGE = [
     [
       "validate:vocab-academy",
       "validate:vocab-academy-print",
+      "validate:vocab-academy-readings",
       "validate:access-lab",
       "test",
       "validate:js-syntax",
