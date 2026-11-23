@@ -45,6 +45,26 @@ export const EXTRAS = [
     doneLabel: ["Spelled", "Deletreada"],
     load: () => import("./spell.js"),
   },
+  {
+    id: "story",
+    icon: "📖",
+    title: ["Story Restore", "Restaurar el cuento"],
+    short: ["Story Restore", "Cuento"],
+    blurb: [
+      "The pages of a story have gone blank. Put the unit's words back and watch each page come alive.",
+      "Las páginas de un cuento se quedaron en blanco. Pon de nuevo las palabras de la unidad y mira cómo cada página cobra vida.",
+    ],
+    lead: [
+      "Words are missing from this story. Tap a word in the bank, then the blank where it fits. When a page is restored it comes alive.",
+      "Faltan palabras en este cuento. Toca una palabra del banco y luego el espacio donde encaja. Cuando una página se restaura, cobra vida.",
+    ],
+    assign: [
+      "Story Restore (put the unit's words back into a story)",
+      "Restaurar el cuento (devolver las palabras de la unidad a un cuento)",
+    ],
+    doneLabel: ["Restored", "Restaurado"],
+    load: () => import("./story.js"),
+  },
 ];
 export const EXTRA_IDS = EXTRAS.map((e) => e.id);
 export const extraOf = (id) => EXTRAS.find((e) => e.id === id) || null;

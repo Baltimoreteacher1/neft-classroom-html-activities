@@ -1,0 +1,421 @@
+/* Vocabulary Academy — Story Restore: a story whose pages have gone blank. A word bank, blanks you tap to fill, a page that
+   comes alive when it is restored (the paragraph fades in, a small scene of glyphs, tap-a-word meanings) and a retell box.
+   Decoration only: every state is also said in words and an icon, nothing is timed, nothing is taken away on a miss, and
+   reduced motion turns the movement off. Tokens only. No purple. */
+
+.vag[data-game="story-restore"] {
+  --vag-accent: #0b6b63;
+  --vag-glyph: "📖";
+}
+.va-st-wrap {
+  display: grid;
+  gap: var(--va-gap);
+}
+
+/* ── the lesson picker ───────────────────────────────────────────────────────────────────────────────────────── */
+.va-st-picker {
+  display: grid;
+  gap: 0.5rem;
+}
+.va-st-picker-h {
+  margin: 0;
+}
+.va-st-picks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.va-st-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: var(--va-target);
+  min-block-size: var(--va-target);
+  padding: 0.35rem 0.9rem 0.35rem 0.45rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--va-ink);
+  background: var(--va-card);
+  border: 2px solid var(--va-ink-2);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.va-st-pick:hover {
+  border-color: var(--va-brand);
+}
+.va-st-pick[aria-pressed="true"] {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--va-brand) 22%, transparent);
+}
+.va-st-pick-n {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  border-radius: 50%;
+  background: var(--va-ink);
+  color: #fff;
+  font-size: 0.9rem;
+}
+.va-st-pick-m {
+  color: var(--va-ok);
+  font-weight: 800;
+}
+
+/* ── the page ───────────────────────────────────────────────────────────────────────────────────────────────── */
+.va-st-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.va-st-title {
+  margin: 0;
+  font-family: var(--va-head-font);
+  font-size: 1.15rem;
+}
+.va-st-dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.va-st-dot {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: 50%;
+  border: 2px solid var(--va-ink-2);
+  background: var(--va-card);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.va-st-dot[data-state="now"] {
+  border-color: var(--va-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--va-brand) 25%, transparent);
+}
+.va-st-dot[data-state="done"] {
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+  color: var(--va-ok);
+}
+.va-st-page {
+  display: grid;
+  gap: 0.7rem;
+  padding: clamp(0.9rem, 2.5vw, 1.5rem);
+  border: 3px solid var(--va-ink-2);
+  border-radius: var(--va-radius);
+  background: #fdfaf2;
+  background-image: repeating-linear-gradient(
+    transparent 0 2.4rem,
+    rgb(23 50 77 / 6%) 2.4rem calc(2.4rem + 1px)
+  );
+}
+.va-st-page[data-alive="false"] {
+  border-style: dashed;
+}
+.va-st-page.is-alive {
+  border-color: var(--va-ok);
+  background-color: #f6fbf4;
+  background-image: none;
+}
+.va-st-scene {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.5rem;
+  border-radius: var(--va-radius-sm);
+  background: linear-gradient(180deg, #e3f3f1, #fbf0d6);
+  font-size: 2.2rem;
+  line-height: 1.2;
+}
+.va-st-scene span {
+  display: inline-block;
+}
+.va-st-text {
+  display: grid;
+  gap: 0.8rem;
+}
+.va-st-para {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 2.4rem;
+  color: var(--va-ink);
+}
+.va-st-page.is-alive .va-st-para {
+  animation: va-st-fade 0.7s ease both;
+}
+.va-st-page.is-alive .va-st-scene span {
+  animation: va-st-rise 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.va-st-page.is-alive .va-st-scene span:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.va-st-page.is-alive .va-st-scene span:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.va-st-page.is-alive .va-st-scene span:nth-child(n + 4) {
+  animation-delay: 0.24s;
+}
+@keyframes va-st-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes va-st-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* blanks and restored words, inside the running text */
+.va-st-blank,
+.va-st-word,
+.va-st-filled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--va-target);
+  padding: 0 0.6rem;
+  margin-inline: 0.1rem;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+  border-radius: var(--va-radius-sm);
+}
+.va-st-blank {
+  min-inline-size: 5.5rem;
+  color: var(--va-ink-2);
+  background: var(--va-card);
+  border: 2px dashed var(--va-ink-2);
+  cursor: pointer;
+}
+.va-st-blank:hover {
+  border-color: var(--va-brand);
+}
+.va-st-blank[data-state="sel"] {
+  border-style: solid;
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--va-brand) 25%, transparent);
+}
+.va-st-blank[data-state="no"] {
+  border-style: solid;
+  border-color: var(--va-warn, #8a5a00);
+  background: #fbf0d6;
+  animation: vag-nudge 0.4s ease;
+}
+.va-st-filled {
+  color: var(--va-ok);
+  background: var(--va-ok-soft);
+  border: 2px solid var(--va-ok);
+}
+.va-st-word {
+  color: #14532d;
+  background: #dcf0e2;
+  border: 2px solid #2f7d4f;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.va-st-word:hover,
+.va-st-word[aria-expanded="true"] {
+  background: #c5e8d1;
+  border-color: #14532d;
+}
+
+/* the meaning card that opens under the text */
+.va-st-meaning {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid #2f7d4f;
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  animation: va-st-fade 0.3s ease both;
+}
+.va-st-meaning p {
+  margin: 0;
+}
+.va-st-meaning-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+}
+.va-st-pos {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--va-ink-2);
+}
+.va-st-ex {
+  font-style: italic;
+  color: var(--va-ink-2);
+}
+.va-st-meaning-act {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.va-st-listen {
+  display: flex;
+}
+
+/* the word bank */
+.va-st-h {
+  margin: 0.2rem 0 0;
+  font-family: var(--va-head-font);
+  font-size: 1.05rem;
+}
+.va-st-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.va-st-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: var(--va-target);
+  min-block-size: var(--va-target);
+  padding: 0.35rem 0.9rem 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--va-ink);
+  background: var(--va-card);
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  cursor: pointer;
+}
+.va-st-chip:hover {
+  border-color: var(--va-brand);
+}
+.va-st-chip[data-state="sel"] {
+  border-color: var(--va-brand);
+  background: var(--va-brand-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--va-brand) 25%, transparent);
+}
+.va-st-chip[data-state="used"] {
+  opacity: 0.55;
+  text-decoration: line-through;
+  cursor: default;
+}
+.va-st-chip-pic {
+  display: inline-grid;
+  place-items: center;
+  font-size: 1.6rem;
+}
+.va-st-chip-pic .vag-pic {
+  display: inline-grid;
+}
+
+/* retell */
+.va-st-retell-card {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius);
+  background: var(--va-card);
+}
+.va-st-retell-card .vag-fine,
+.va-st-retell-card p {
+  margin: 0;
+}
+.va-st-frame {
+  padding: 0.5rem 0.75rem;
+  border-inline-start: 4px solid var(--va-brand);
+  background: var(--va-brand-soft);
+}
+.va-st-retell-l {
+  font-weight: 700;
+}
+.va-st-retell {
+  inline-size: 100%;
+  min-block-size: 5.5rem;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--va-ink);
+  background: #fff;
+  border: 2px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  resize: vertical;
+}
+.va-st-fin {
+  padding: 1rem;
+  border: 3px solid #b98a12;
+  border-radius: var(--va-radius);
+  background: #fbf0d6;
+}
+
+/* the early grades: bigger type, fewer words per line */
+.vag[data-va-band="early"] .va-st-para {
+  font-size: 1.45rem;
+  line-height: 2.9rem;
+}
+.vag[data-va-band="early"] .va-st-chip {
+  font-size: 1.3rem;
+}
+
+@media (forced-colors: active) {
+  .va-st-blank,
+  .va-st-word,
+  .va-st-chip,
+  .va-st-filled,
+  .va-st-pick {
+    border-color: ButtonText;
+  }
+  .va-st-blank[data-state="sel"],
+  .va-st-chip[data-state="sel"],
+  .va-st-pick[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .va-st-page.is-alive .va-st-para,
+  .va-st-page.is-alive .va-st-scene span,
+  .va-st-meaning,
+  .va-st-blank[data-state="no"] {
+    animation: none !important;
+  }
+}
+@media (max-width: 480px) {
+  .va-st-para {
+    font-size: 1.1rem;
+  }
+  .va-st-blank {
+    min-inline-size: 4.5rem;
+  }
+}
+@media print {
+  .va-st-bank,
+  .va-st-retell-card {
+    display: none;
+  }
+}

@@ -36,7 +36,7 @@ const VIEW_STYLES = {
   grade: ["vocab-academy-units.css"],
   "lesson-home": ["vocab-academy-units.css", "vocab-academy-premium.css"],
   unit: ["vocab-academy-units.css", "vocab-academy-premium.css"],
-  "unit-activity": ["vocab-academy-units.css", "vocab-academy-activities.css", "vocab-academy-games.css", "vocab-academy-premium.css", "vocab-academy-spell.css"],
+  "unit-activity": ["vocab-academy-units.css", "vocab-academy-activities.css", "vocab-academy-games.css", "vocab-academy-premium.css", "vocab-academy-spell.css", "vocab-academy-story.css"],
   lesson: ["vocab-academy-activities.css", "vocab-academy-reading.css"],
   read: ["vocab-academy-activities.css", "vocab-academy-reading.css"],
   practice: ["vocab-academy-activities.css"],

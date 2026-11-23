@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "5fc1d1c7bb21";
+const BUILD_HASH = "62d997d38dd8";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=51d27c263c0f",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -1149,7 +1149,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/vocab-academy/games/word-quest.js?v=56e1ba6a2215",
   "/access-practice-lab/src/vocab-academy/games/word-sort.js?v=decf6c403660",
   "/access-practice-lab/src/vocab-academy/garden.js?v=12fd905cace9",
-  "/access-practice-lab/src/vocab-academy/index.js?v=244033952efe",
+  "/access-practice-lab/src/vocab-academy/index.js?v=47304df5bdb6",
   "/access-practice-lab/src/vocab-academy/integrations/family-project.js?v=563e2cea9f1a",
   "/access-practice-lab/src/vocab-academy/integrations/family-view.js?v=b6af9648d4ba",
   "/access-practice-lab/src/vocab-academy/integrations/offline.js?v=d1ac6142b88d",
@@ -1197,8 +1197,9 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/vocab-academy/supports.js?v=6a5621a7124b",
   "/access-practice-lab/src/vocab-academy/ui.js?v=cd78adad47a6",
   "/access-practice-lab/src/vocab-academy/unit/crossword.js?v=3355658029d8",
-  "/access-practice-lab/src/vocab-academy/unit/extras.js?v=ee50a7eb2ac7",
+  "/access-practice-lab/src/vocab-academy/unit/extras.js?v=48268699e16d",
   "/access-practice-lab/src/vocab-academy/unit/spell.js?v=d3d5cbcfa589",
+  "/access-practice-lab/src/vocab-academy/unit/story.js?v=0c988a161cfb",
   "/access-practice-lab/src/vocab-academy/unit/test.js?v=9d2e66f5368c",
   "/access-practice-lab/src/vocab-academy/unit/vault.js?v=63e1e91fc61b",
   "/access-practice-lab/src/vocab-academy/unit/work.js?v=4bbc0a142cd9",
