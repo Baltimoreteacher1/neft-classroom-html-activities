@@ -48,49 +48,43 @@ const destHref = (id, band) => {
     : `${BASE}/${d.href}${d.href.includes("?") ? "&" : "?"}grades=${band}`;
 };
 
-/** The big doors, each into a place that already exists. Pictures are the lab's own spot art. */
+/** The ways in, each into a place that already exists. */
 export const doors = (band) =>
   [
     {
       id: "play",
-      art: "ds/studio-mission",
+      icon: "play",
       href: sectionHref("play", band),
       name: ["Play a game", "Jugar un juego"],
-      line: [
-        "Language games and worlds. No timers.",
-        "Juegos y mundos de lenguaje. Sin cronómetro.",
-      ],
+      line: ["Word games and worlds.", "Juegos de palabras y mundos."],
     },
     {
       id: "practice",
-      art: "ds/hero",
+      icon: "reading",
       href: sectionHref("practice", band),
       name: ["Practice English", "Practicar inglés"],
-      line: ["Listen, read, speak and write.", "Escucha, lee, habla y escribe."],
+      line: ["All the practice rooms.", "Todas las salas de práctica."],
     },
     {
       id: "story",
-      art: "worlds/storyworks",
+      icon: "library",
       href: destHref("reading-path", band),
       name: ["Explore a story", "Explorar un cuento"],
-      line: [
-        "Read picture stories and talk about them.",
-        "Lee cuentos con dibujos y habla de ellos.",
-      ],
+      line: ["Read a picture story.", "Lee un cuento con dibujos."],
     },
     {
       id: "book",
-      art: "ds/band-68-studio",
+      icon: "writing",
       href: destHref("book-studio", band),
       name: ["Create a book", "Crear un libro"],
-      line: ["Write and draw your own book.", "Escribe y dibuja tu propio libro."],
+      line: ["Write and draw your own.", "Escribe y dibuja el tuyo."],
     },
     {
       id: "progress",
-      art: "ds/progress-passport",
+      icon: "passport",
       href: sectionHref("progress", band),
       name: ["My progress", "Mi progreso"],
-      line: ["Your Passport, stamps and journey.", "Tu pasaporte, sellos y recorrido."],
+      line: ["Your Passport and stamps.", "Tu pasaporte y tus sellos."],
     },
   ].filter((d) => d.href && (d.id !== "story" || ACCESS_LAB_FLAGS.readingPathEnabled));
 
@@ -156,18 +150,11 @@ function pickerHTML(I, chosen) {
 function doorHTML(I, d, extra = "") {
   return html`<li class="stu-door is-${d.id}">
     <a href="${d.href}" data-student-door="${d.id}">
-      <img
-        src="${BASE}/pictures/${d.art}.svg"
-        width="320"
-        height="200"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
+      <span class="stu-door-ico" aria-hidden="true">${icon(d.icon || "arrow-right")}</span>
       <span class="stu-door-text"
         ><strong>${I.T(...d.name)}</strong><span>${extra || I.T(...d.line)}</span></span
       >
-      <span class="stu-go" aria-hidden="true">${icon("arrow-right")}</span>
+      <span class="stu-go" aria-hidden="true">${icon("chevron-right")}</span>
     </a>
   </li>`;
 }
@@ -204,7 +191,15 @@ const chip = (href, on, label, attrs = "") =>
     >${label}</a
   >`;
 
-/** Smart start: skill, then help, then Start. Each choice is a link so the URL holds the state. */
+const SKILL_LINE = {
+  Listening: ["Hear and understand", "Escucha y entiende"],
+  Speaking: ["Say it out loud", "Dilo en voz alta"],
+  Reading: ["Read and think", "Lee y piensa"],
+  Writing: ["Write your ideas", "Escribe tus ideas"],
+  mix: ["All four skills", "Las cuatro destrezas"],
+};
+
+/** Skill, then help, then Start. Each choice is a link so the URL holds the state. */
 function smartHTML(I, { pick, band, skill, support, pool }) {
   const skillName = (d) =>
     d === "mix" ? I.T("Surprise me", "Sorpréndeme") : I.T(DOMAIN_META[d].name, DOMAIN_META[d].es);
@@ -221,23 +216,19 @@ function smartHTML(I, { pick, band, skill, support, pool }) {
           `Quick practice · ${DOMAIN_META[skill].name}`,
           `Práctica rápida · ${DOMAIN_META[skill].es}`,
         );
-  return html`<section class="stu-smart panel" id="stuSmart" aria-labelledby="stuSmartTitle">
-    <h2 id="stuSmartTitle">${I.T("Build my practice", "Arma mi práctica")}</h2>
+  return html`<section class="stu-smart" id="stuSmart" aria-labelledby="stuSmartTitle">
+    <h2 id="stuSmartTitle">${I.T("Practice a skill", "Practica una destreza")}</h2>
     <div class="stu-q" role="group" aria-labelledby="stuQ1">
-      <p class="stu-q-label" id="stuQ1">
-        <span class="stu-num" aria-hidden="true">1</span
-        >${I.T("What would you like to practice?", "¿Qué te gustaría practicar?")}
-      </p>
-      <div class="stu-chips">
-        ${skills.map((d) => chip(hubUrl(pick, band, { skill: d, ...(support ? { support } : {}) }), d === skill, html`${skillIcon(d)} ${skillName(d)}`, `data-student-skill="${d}"`))}
+      <p class="stu-q-label" id="stuQ1">${I.T("Pick one.", "Elige una.")}</p>
+      <div class="stu-skills">
+        ${skills.map((d) => html`<a class="stu-skill is-${d}" href="${hubUrl(pick, band, { skill: d, ...(support ? { support } : {}) })}" aria-current="${d === skill ? "true" : "false"}" data-student-skill="${d}"><span class="stu-skill-ico" aria-hidden="true">${skillIcon(d)}</span><strong>${skillName(d)}</strong><span class="stu-skill-line">${I.T(...SKILL_LINE[d])}</span></a>`)}
       </div>
     </div>
     ${
       skill
         ? html`<div class="stu-q" role="group" aria-labelledby="stuQ2">
             <p class="stu-q-label" id="stuQ2">
-              <span class="stu-num" aria-hidden="true">2</span
-              >${I.T("More help, or more on your own?", "¿Más ayuda o más por tu cuenta?")}
+              ${I.T("More help, or more on your own?", "¿Más ayuda o más por tu cuenta?")}
             </p>
             <div class="stu-chips">
               ${pool.levels.map((l) => chip(hubUrl(pick, band, { skill, support: l }), l === support, html`<strong>${I.T(...SUPPORT_LABEL[l])}</strong><span>${I.T(TIERS[l].name, TIERS[l].es)}</span>`, `data-student-support="${l}"`))}
@@ -249,8 +240,7 @@ function smartHTML(I, { pick, band, skill, support, pool }) {
       set.length
         ? html`<div class="stu-q stu-ready">
             <p class="stu-q-label">
-              <span class="stu-num" aria-hidden="true">3</span
-              >${I.T(`Ready: ${set.length} short activities`, `Listo: ${set.length} actividades cortas`)}
+              ${I.T(`Ready: ${set.length} short activities`, `Listo: ${set.length} actividades cortas`)}
             </p>
             <a
               class="btn btn-primary btn-big stu-start"
@@ -279,13 +269,12 @@ export async function render(ctx) {
     : fromUrl || (ctx.prefs.gradePick ? currentPick(ctx.band, ctx.prefs.gradePick, ctx.bands) : "");
   if (fromUrl && fromUrl !== ctx.prefs.gradePick) ctx.setPrefs({ gradePick: fromUrl });
   const band = pick ? resolvePick(pick, ctx.bands).band : "";
-  const head = html`<header class="stu-head stu-illustrated"><div class="stu-head-copy">
-    <p class="eyebrow">${icon("sparkle")} ${I.T("For students", "Para estudiantes")}</p>
+  const head = html`<header class="stu-head">
     <h1 id="stuTitle" tabindex="-1">
       ${I.T("What do you want to do today?", "¿Qué quieres hacer hoy?")}
     </h1>
-    <p class="lead">${I.T("Choose your grade, then pick one way to learn. You can change your choice anytime.", "Elige tu grado y después una forma de aprender. Puedes cambiar de opción cuando quieras.")}</p>
-  </div><img class="stu-landscape" src="${BASE}/pictures/premium/learning-landscape.svg" alt="" width="840" height="360" decoding="async" /></header>`;
+    ${band ? "" : html`<p class="lead">${I.T("Choose your grade to begin. You can change it anytime.", "Elige tu grado para empezar. Puedes cambiarlo cuando quieras.")}</p>`}
+  </header>`;
   const title = I.S(
     "Students: what do you want to do today?",
     "Estudiantes: ¿qué quieres hacer hoy?",
@@ -317,34 +306,41 @@ export async function render(ctx) {
     title,
     html: html`<article class="stu-page" aria-labelledby="stuTitle">
       ${head}
-      <div class="stu-bar">
-        <p class="stu-grade-now">
-          ${I.T(gradeName[0], gradeName[1])} ·
-          <a href="${BASE}/students?pick=choose&grades=${band}"
-            >${I.T("Change grade", "Cambiar grado")}</a
-          >
-        </p>
-        ${quick.length ? html`<a class="btn btn-primary btn-big stu-quick" ${jumpSetAttrs(band, quick, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))} data-student-quick>${icon("play")} ${I.T("Start practicing", "Empezar a practicar")}</a>` : ""}
-      </div>
+      <p class="stu-grade-now">
+        ${I.T(gradeName[0], gradeName[1])} ·
+        <a href="${BASE}/students?pick=choose&grades=${band}">${I.T("Change grade", "Cambiar grado")}</a>
+      </p>
+      ${
+        resume
+          ? html`<section class="stu-now" aria-label="${I.S("Start here", "Empieza aquí")}">
+              <a class="stu-now-main" href="${resume.href}" data-student-door="continue">
+                <span class="stu-now-text"><strong>${I.T("Continue where I left off", "Seguir donde lo dejé")}</strong><span>${resume.title}</span></span>
+                <span class="stu-now-go" aria-hidden="true">${icon("arrow-right")}</span>
+              </a>
+              ${quick.length ? html`<a class="btn stu-quick" ${jumpSetAttrs(band, quick, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))} data-student-quick>${icon("play")} ${I.T("Start something new", "Empezar algo nuevo")}</a>` : ""}
+            </section>`
+          : quick.length
+            ? html`<section class="stu-now" aria-label="${I.S("Start here", "Empieza aquí")}">
+                <a class="stu-now-main" ${jumpSetAttrs(band, quick, I.S("Quick practice · all four skills", "Práctica rápida · las cuatro destrezas"))} data-student-quick>
+                  <span class="stu-now-text"><strong>${I.T("Start practicing", "Empezar a practicar")}</strong><span>${I.T("5 short activities. All four skills.", "5 actividades cortas. Las cuatro destrezas.")}</span></span>
+                  <span class="stu-now-go" aria-hidden="true">${icon("play")}</span>
+                </a>
+              </section>`
+            : ""
+      }
       ${lastItem ? transferHTML(I, lastItem.domain, lastItem.activity.title) : ""}
       ${pool.rows.length ? smartHTML(I, { pick, band, skill, support, pool }) : ""}
       <section class="stu-library" aria-labelledby="stuLibraryTitle">
-        <div class="stu-section-head">
-          <div>
-            <p class="eyebrow">${I.T("Your learning library", "Tu biblioteca de aprendizaje")}</p>
-            <h2 id="stuLibraryTitle">${I.T("Pick a place to start", "Elige por dónde empezar")}</h2>
-          </div>
-          <a class="stu-all" href="${BASE}/search?for=student&grades=${band}">${I.T("Find all activities", "Buscar todas las actividades")} ${icon("arrow-right")}</a>
-        </div>
+        <h2 id="stuLibraryTitle">${I.T("More ways to learn", "Más formas de aprender")}</h2>
         <ul class="stu-doors" role="list">
-          ${resume ? doorHTML(I, { id: "continue", art: "ds/progress-growth", href: resume.href, name: ["Continue where I left off", "Seguir donde lo dejé"] }, resume.title) : ""}
           ${doors(band).map((d) => doorHTML(I, d))}
         </ul>
+        <a class="stu-all" href="${BASE}/search?for=student&grades=${band}">${I.T("Find all activities", "Buscar todas las actividades")} ${icon("arrow-right")}</a>
       </section>
-      <section class="stu-more" aria-labelledby="stuMoreTitle">
-        <h2 id="stuMoreTitle">${I.T("Explore more of The Language Page", "Explora más de The Language Page")}</h2>
-        <ul class="stu-more-links" role="list">${MORE_PLACES.map((place) => html`<li><a href="${place.href}" data-student-place="${place.id}"><strong>${I.T(...place.name)}</strong><span>${I.T(...place.line)}</span>${icon("arrow-right")}</a></li>`)}</ul>
-      </section>
+      <details class="stu-more">
+        <summary id="stuMoreTitle">${I.T("Explore more of The Language Page", "Explora más de The Language Page")}</summary>
+        <ul class="stu-more-links" role="list">${MORE_PLACES.map((place) => html`<li><a href="${place.href}" data-student-place="${place.id}"><strong>${I.T(...place.name)}</strong><span>${I.T(...place.line)}</span></a></li>`)}</ul>
+      </details>
     </article>`,
   };
 }
