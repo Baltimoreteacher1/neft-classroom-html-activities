@@ -1,0 +1,661 @@
+/* Styles for the Lesson, Unit, Language Lens, Remix and Evidence views. Tokens come from /access-practice-lab/ds.css. */
+.st-ll {
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: var(--s-4);
+}
+.st-ll *,
+.st-ll *::before,
+.st-ll *::after {
+  box-sizing: border-box;
+}
+.st-ll h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  line-height: 1.2;
+  margin: 0 0 var(--s-2);
+  color: var(--brand);
+}
+.st-ll-h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin: 0 0 var(--s-3);
+  color: var(--brand);
+}
+.st-ll h3 {
+  font-size: 1.05rem;
+  margin: var(--s-4) 0 var(--s-2);
+}
+.st-ll h4 {
+  font-size: 0.95rem;
+  margin: 0 0 var(--s-2);
+}
+.st-ll p {
+  margin: 0 0 var(--s-3);
+}
+.st-ll-muted {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+.st-ll-link {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.st-ll-crumbs {
+  font-size: 0.9rem;
+  margin-bottom: var(--s-3);
+}
+.st-ll-crumbs a {
+  color: var(--brand);
+}
+
+/* controls */
+.st-ll-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  text-decoration: none;
+}
+.st-ll-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.st-ll-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.st-ll-btn[aria-pressed="true"] {
+  background: var(--teal-soft);
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 1px var(--teal);
+}
+.st-ll-btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+.st-ll-btn-primary:hover:not(:disabled) {
+  background: var(--brand-deep);
+}
+.st-ll-btn-small {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.9rem;
+}
+.st-ll a:focus-visible,
+.st-ll button:focus-visible,
+.st-ll input:focus-visible,
+.st-ll select:focus-visible,
+.st-ll textarea:focus-visible,
+.st-ll summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.st-ll-input,
+.st-ll select,
+.st-ll input[type="text"],
+.st-ll input[type="number"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+textarea.st-ll-input {
+  resize: vertical;
+  min-height: 5rem;
+}
+.st-ll label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--s-1);
+}
+.st-ll-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  min-height: 44px;
+  font-weight: 500;
+  padding: var(--s-1) 0;
+}
+.st-ll-check input {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.15rem;
+  accent-color: var(--teal);
+  flex: none;
+}
+.st-ll-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-3);
+}
+
+/* cards and chips */
+.st-ll-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--s-4);
+  margin-bottom: var(--s-4);
+  box-shadow: var(--shadow-card);
+}
+.st-ll-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.st-ll-chip[data-d="Listening"] {
+  background: var(--listening-soft);
+  color: var(--listening-ink);
+}
+.st-ll-chip[data-d="Speaking"] {
+  background: var(--speaking-soft);
+  color: var(--speaking-ink);
+}
+.st-ll-chip[data-d="Reading"] {
+  background: var(--reading-soft);
+  color: var(--reading-ink);
+}
+.st-ll-chip[data-d="Writing"] {
+  background: var(--writing-soft);
+  color: var(--writing-ink);
+}
+.st-ll-chip-review {
+  background: var(--hint-soft);
+  color: var(--hint);
+  border-color: var(--status-warning-border);
+}
+.st-ll-chip-ok {
+  background: var(--right-soft);
+  color: var(--right);
+  border-color: var(--status-success-border);
+}
+.st-ll-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-2) 0 var(--s-3);
+}
+.st-ll-list {
+  margin: 0 0 var(--s-3);
+  padding-left: 1.25rem;
+}
+.st-ll-list li {
+  margin-bottom: var(--s-1);
+}
+.st-ll-kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s-1) var(--s-4);
+  margin: 0 0 var(--s-3);
+}
+.st-ll-kv dt {
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.st-ll-kv dd {
+  margin: 0;
+}
+.st-ll-notice {
+  border: 1px solid var(--status-warning-border);
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text);
+  border-radius: var(--radius-sm);
+  padding: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.st-ll-banner {
+  background: var(--brand-soft);
+  border-left: 6px solid var(--brand);
+  border-radius: var(--radius-sm);
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.st-ll-banner p {
+  margin: 0 0 var(--s-1);
+}
+
+/* lesson layout */
+.st-ll-body {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+.st-ll-rail {
+  position: sticky;
+  top: var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--s-3);
+}
+.st-ll-rail ol,
+.st-ll-rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+.st-ll-rail h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  margin: var(--s-3) 0 var(--s-1);
+}
+.st-ll-rail h2:first-child {
+  margin-top: 0;
+}
+.st-ll-railbtn {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  border-color: transparent;
+  background: transparent;
+  font-weight: 500;
+}
+.st-ll-railbtn[aria-current="step"],
+.st-ll-railbtn[aria-current="page"] {
+  background: var(--teal-soft);
+  border-color: var(--teal);
+  font-weight: 700;
+}
+.st-ll-railnum {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 0.8rem;
+  flex: none;
+}
+.st-ll-actions {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
+}
+.st-ll-actions .st-ll-btn {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
+}
+.st-ll-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-4);
+}
+.st-ll-pane h2.st-ll-h2 {
+  font-size: 1.35rem;
+}
+.st-ll-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+.st-ll-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-3);
+  background: var(--surface);
+}
+.st-ll-item > p:first-child {
+  font-weight: 600;
+}
+.st-ll-teacher {
+  border-left: 6px solid var(--accent);
+  background: var(--hint-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--s-3) var(--s-4);
+  margin: var(--s-3) 0;
+}
+.st-ll-drawer {
+  margin-top: var(--s-4);
+}
+.st-ll-drawer summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.st-ll-reslist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+.st-ll-three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.st-ll-three > section {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--s-3);
+  background: var(--surface);
+}
+.st-ll-visual svg,
+.st-ll-figure svg {
+  max-width: 100%;
+  height: auto;
+}
+.st-ll-visual-alt {
+  border: 1px dashed var(--line-control);
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+}
+
+/* vocabulary cards and wall */
+.st-ll-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--s-3);
+}
+.st-ll-vcard {
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  padding: var(--s-4);
+  background: var(--surface);
+  break-inside: avoid;
+}
+.st-ll-vcard .st-ll-word {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--brand);
+  line-height: 1.15;
+  margin: 0 0 var(--s-2);
+}
+.st-ll-vcard p {
+  margin: 0 0 var(--s-2);
+}
+.st-ll-vcard[data-tier="3"] {
+  border-color: var(--teal);
+}
+.st-ll-vcard[data-tier="2"] {
+  border-color: var(--accent);
+}
+
+/* scaffold slider */
+.st-ll-slider {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.st-ll-target {
+  position: sticky;
+  top: 0;
+  background: var(--brand-soft);
+  border-left: 6px solid var(--brand);
+  border-radius: var(--radius-sm);
+  padding: var(--s-2) var(--s-4);
+  margin-bottom: var(--s-4);
+  z-index: 1;
+}
+.st-ll-target p {
+  margin: 0;
+}
+.st-ll-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-4);
+}
+.st-ll-sl-rows {
+  display: grid;
+  gap: var(--s-3);
+}
+.st-ll-sl-row {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) 8.5rem;
+  gap: var(--s-3);
+  align-items: center;
+  border-left: 6px solid var(--dom, var(--brand));
+  padding: var(--s-1) 0 var(--s-1) var(--s-3);
+}
+.st-ll-sl-row label {
+  margin: 0;
+  color: var(--dom, var(--brand));
+}
+.st-ll-range {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  accent-color: var(--dom, var(--brand));
+}
+.st-ll-ticks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  text-align: center;
+  gap: 2px;
+}
+.st-ll-sl-out {
+  font-weight: 700;
+}
+.st-ll-diff {
+  margin-top: var(--s-4);
+  border-top: 1px solid var(--line);
+  padding-top: var(--s-3);
+}
+.st-ll-diff-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+
+/* lens and plan */
+.st-ll-axes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.st-ll-axis {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+}
+.st-ll-axis strong {
+  font-size: 1.15rem;
+}
+.st-ll-editlist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--s-3);
+  display: grid;
+  gap: var(--s-2);
+}
+.st-ll-edititem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-2);
+  align-items: start;
+}
+.st-ll-editbtns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.st-ll-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+.st-ll-evrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(8rem, 12rem);
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+.st-ll-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.st-ll-table th,
+.st-ll-table td {
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  padding: var(--s-2);
+}
+.st-ll-table th {
+  background: var(--surface-2);
+}
+.st-ll-error {
+  color: var(--wrong);
+  font-weight: 600;
+  margin: var(--s-1) 0 0;
+}
+.st-ll-state {
+  text-align: center;
+  padding: var(--s-7) var(--s-4);
+}
+.st-ll-printroot {
+  display: none;
+}
+
+/* projector: bigger type, chrome out of the way */
+.st-ll-projector {
+  font-size: 1.3rem;
+}
+.st-ll-projector .st-ll-rail,
+.st-ll-projector .st-ll-actions,
+.st-ll-projector .st-ll-drawer {
+  display: none;
+}
+.st-ll-projector .st-ll-body {
+  grid-template-columns: minmax(0, 1fr);
+}
+.st-ll-projector .st-ll-btn {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 960px) {
+  .st-ll-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .st-ll-three {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .st-ll {
+    padding: var(--s-3) 1rem;
+  }
+  .st-ll-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .st-ll-rail {
+    position: static;
+  }
+  .st-ll-rail ol,
+  .st-ll-rail ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-ll-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-ll-sl-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-1);
+  }
+  .st-ll-diff-cols,
+  .st-ll-axes,
+  .st-ll-two {
+    grid-template-columns: 1fr;
+  }
+  .st-ll-evrow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .st-ll-evrow > :last-child {
+    grid-column: 1 / -1;
+  }
+  .st-ll-edititem {
+    grid-template-columns: 1fr;
+  }
+  .st-ll-editbtns {
+    flex-direction: row;
+  }
+  .st-ll-kv {
+    grid-template-columns: 1fr;
+  }
+  .st-ll-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .st-ll-btn {
+    transition: background var(--dur-1) var(--ease-out);
+  }
+}
+@media print {
+  body.st-ll-printing > *:not(#st-ll-printroot) {
+    display: none !important;
+  }
+  body.st-ll-printing #st-ll-printroot {
+    display: block;
+    padding: 1rem;
+    color: #000;
+    background: #fff;
+    font-family: var(--font);
+  }
+  #st-ll-printroot h1 {
+    font-size: 1.4rem;
+  }
+  #st-ll-printroot h2 {
+    font-size: 1.05rem;
+    margin-top: 1rem;
+  }
+  .st-ll-wall {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

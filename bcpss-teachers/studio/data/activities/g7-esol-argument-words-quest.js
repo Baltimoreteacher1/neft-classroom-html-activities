@@ -1,0 +1,110 @@
+// Vocab Quest: the academic words of argument, from seeing a word to using it in a rebuttal. Original content.
+export default {
+  id: "g7-esol-argument-words-quest",
+  engine: "vocab-quest",
+  title: "Quest: words for arguing from a text",
+  grade: "7",
+  band: "6-8",
+  subject: "esol",
+  lessonId: "g7-esol-argue-with-evidence-from-text",
+  standards: ["ELD-LA", "L.8.6", "W.7.1b"],
+  minutes: 25,
+  intro:
+    "Learn the words that strong arguments depend on. See them, use them in sentences, recall them from their meanings, and then apply them.",
+  collection: "g7-esol-argue-with-evidence-from-text",
+  stages: [
+    {
+      id: "see",
+      kind: "see",
+      title: "See the words",
+      intro: "Study each picture and choose the word it shows.",
+      entryIds: ["claim", "evidence", "reasoning", "source", "credible", "relevant"],
+      kinds: ["picture-word"],
+    },
+    {
+      id: "use",
+      kind: "use-in-context",
+      title: "Use the words",
+      intro: "Read each sentence and choose the word that fits.",
+      entryIds: ["claim", "evidence", "reasoning", "credible", "relevant", "however", "therefore"],
+      kinds: ["cloze"],
+      items: [
+        {
+          kind: "sentence-choice",
+          entryId: "relevant",
+          prompt: "Which sentence uses relevant correctly?",
+          choices: [
+            "The cost of the rack is relevant to the question of whether to build it.",
+            "The color of the school walls is relevant to the question of whether to build a bike rack.",
+            "Relevant means the same as long.",
+          ],
+          answer: 0,
+          hints: [
+            "Ask whether each fact helps answer the question.",
+            "One sentence gives a fact that connects to the decision and one gives a fact that does not.",
+            "A word's meaning is shown by how it fits the question, not by sounding like another word.",
+          ],
+          misconceptions: [
+            { pick: 1, tag: "true-but-unconnected", hint: "That fact may be true, but does it help answer the question about the rack?" },
+          ],
+          why: "The cost helps decide whether to build the rack, so it is connected to the question.",
+        },
+        {
+          kind: "sentence-choice",
+          entryId: "however",
+          prompt: "Which sentence uses however correctly to show a contrast?",
+          choices: [
+            "The rack costs money. However, a parent group will pay half.",
+            "The rack costs money. However, the rack costs money.",
+            "However the rack, the cost, and the parent group.",
+          ],
+          answer: 0,
+          hints: [
+            "A contrast sets two different ideas against each other.",
+            "The second idea should pull the other way from the first.",
+            "Check whether the second sentence adds a new, opposite point.",
+          ],
+          misconceptions: [
+            { pick: 1, tag: "repeat-not-contrast", hint: "Does the second sentence say something different, or the same thing again?" },
+          ],
+          why: "The parent group paying half pulls against the idea that the cost is too high.",
+        },
+      ],
+    },
+    {
+      id: "retrieve",
+      kind: "retrieve",
+      title: "Remember the words",
+      intro: "Read each meaning and type the word.",
+      entryIds: ["claim", "evidence", "reasoning", "source", "sufficient", "counterclaim", "rebut"],
+      kinds: ["type-word"],
+    },
+    {
+      id: "apply",
+      kind: "apply",
+      title: "Argue with the words",
+      intro: "Say a sentence with each word, then write it.",
+      entryIds: ["claim", "evidence", "counterclaim", "rebut", "therefore", "cite"],
+      kinds: ["say-write"],
+    },
+    {
+      id: "revisit",
+      kind: "revisit",
+      title: "Revisit the words",
+      intro: "Words that need more practice come back so you can make them secure.",
+    },
+  ],
+  reflection: {
+    prompt: "Which of these words will help you most in your next argument, and how?",
+    frames: {
+      ee: ["I will use ___.", "It helps me ___."],
+      dev: ["I will use ___ to ___.", "It helps me because ___."],
+      exp: ["I will use ___ when I ___ because it helps me ___."],
+      br: ["The word ___ will strengthen my argument by ___."],
+    },
+  },
+  review: { status: "authored", checks: {} },
+  version: "1.0.0",
+  updated: "2026-11-23",
+  source: "Original - The Language Page",
+};

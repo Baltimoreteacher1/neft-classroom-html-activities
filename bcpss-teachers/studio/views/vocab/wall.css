@@ -1,0 +1,85 @@
+/* Word wall: toolbar, grid tiles, one-at-a-time gallery, classroom mode, matching game. */
+.st-v-wall { display: grid; gap: 1rem; background: var(--bg); }
+.st-v-wall-tools { display: grid; gap: 0.75rem; padding: 1rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.st-v-tools-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: flex-end; }
+.st-v-ctl { display: grid; gap: 0.25rem; }
+.st-v-ctl-label { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+.st-v-seg { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; }
+.st-v-tools-actions { align-items: center; }
+.st-v-share, .st-v-keys { margin: 0; color: var(--ink-2); font-size: var(--fs-small); max-width: var(--measure); }
+
+.st-v-stage { min-height: 12rem; }
+.st-v-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+.st-v-tile { position: relative; display: grid; grid-template-rows: 1fr auto auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+.st-v-tile-main { display: grid; gap: 0.5rem; align-content: start; width: 100%; min-height: 14rem; padding: 0.75rem; border: 0; border-radius: var(--radius-lg); background: transparent; color: var(--ink); font: inherit; text-align: center; cursor: pointer; }
+.st-v-tile-main[aria-pressed="true"] { background: var(--teal-soft); }
+.st-v-tile-art { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; line-height: 0; }
+.st-v-tile-nopic { display: grid; place-items: center; min-height: 6rem; background: var(--surface-2); border-radius: var(--radius-md); color: var(--ink-2); }
+.st-v-tile-text { display: grid; gap: 0.25rem; min-height: 1rem; }
+.st-v-tile-word { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.15; margin: 0; color: var(--brand-ink); }
+.st-v-tile-def { margin: 0; font-size: 1.0625rem; line-height: 1.4; }
+.st-v-tile-es { margin: 0; font-weight: 700; color: var(--speaking-ink); }
+.st-v-tile-es-def { margin: 0; color: var(--ink-2); }
+.st-v-tile-foot { display: flex; justify-content: center; min-height: 0.25rem; padding: 0 0.5rem 0.5rem; }
+.st-v-tile .st-v-alt { margin: 0 0.75rem 0.75rem; }
+.st-v-reading { outline: 4px solid var(--teal); outline-offset: 2px; }
+
+.st-v-gallery { display: grid; gap: 1rem; }
+.st-v-gal-main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem; min-height: 22rem; }
+.st-v-gal-main:focus-visible { outline: 4px solid var(--focus); }
+.st-v-tile-art-big { border-radius: var(--radius-lg); }
+.st-v-tile-text-big { display: grid; gap: 0.75rem; align-content: center; }
+.st-v-tile-text-big .st-v-tile-word { font-size: clamp(2.25rem, 5vw, 4rem); }
+.st-v-tile-text-big .st-v-tile-def { font-size: clamp(1.25rem, 2.2vw, 1.75rem); }
+.st-v-tile-ctx { margin: 0; color: var(--ink-2); font-size: 1.125rem; }
+.st-v-gal-nav { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: center; }
+.st-v-gal-count { font-weight: 700; color: var(--ink-2); min-width: 4.5rem; text-align: center; }
+.st-v-reveal { min-width: 11rem; }
+.st-v-strip { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.25rem; }
+.st-v-strip-btn { flex: none; width: 5rem; height: 3.75rem; padding: 2px; border: 1px solid var(--line-control); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); cursor: pointer; display: grid; place-items: center; font-weight: 700; overflow: hidden; }
+.st-v-strip-btn svg { width: 100%; height: 100%; }
+.st-v-strip-btn[aria-current="true"] { border: 3px solid var(--brand); }
+
+/* classroom mode: fills the viewport (Fullscreen API when available, overlay otherwise) */
+html.st-v-lock { overflow: hidden; }
+.st-v-wall.st-v-classroom { position: fixed; inset: 0; z-index: 1000; overflow: auto; padding: 1.25rem 2rem; background: var(--bg); align-content: start; }
+.st-v-wall.st-v-classroom:fullscreen { background: var(--bg); overflow: auto; }
+.st-v-classroom .st-v-wall-tools { padding: 0.5rem 0.75rem; }
+.st-v-classroom .st-v-tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
+.st-v-classroom .st-v-tile-word { font-size: 2.25rem; }
+.st-v-classroom .st-v-tile-def { font-size: 1.5rem; }
+.st-v-classroom .st-v-tile-es { font-size: 1.5rem; }
+.st-v-classroom .st-v-gal-main { min-height: 60vh; }
+.st-v-classroom .st-v-tile-text-big .st-v-tile-word { font-size: clamp(3rem, 7vw, 6rem); }
+.st-v-classroom .st-v-tile-text-big .st-v-tile-def { font-size: clamp(1.75rem, 3vw, 2.75rem); }
+html[data-projector] .st-v-tile-word { font-size: 1.9rem; }
+html[data-projector] .st-v-tile-def { font-size: 1.35rem; }
+
+/* matching game */
+.st-v-game { display: grid; gap: 1rem; }
+.st-v-game-head { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; justify-content: space-between; }
+.st-v-game-head h2 { margin: 0; font-family: var(--font-display); }
+.st-v-game-board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.5rem; align-items: start; }
+.st-v-game-col { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+.st-v-game-pics { grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); }
+.st-v-gbtn { width: 100%; min-height: 3.25rem; padding: 0.6rem 0.9rem; font: inherit; font-weight: 600; text-align: left; border: 1px solid var(--line-control); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); cursor: pointer; }
+.st-v-gbtn[aria-pressed="true"] { background: var(--brand-soft); border: 3px solid var(--brand); }
+.st-v-gbtn[disabled] { cursor: default; }
+.st-v-gbtn:disabled:not(.st-v-gpic) { background: var(--right-soft); color: var(--right); border-color: var(--status-success-border); }
+.st-v-gbtn.st-v-gpic { padding: 0.4rem; display: grid; gap: 0.3rem; }
+.st-v-gbtn.st-v-gpic:disabled { background: var(--right-soft); color: var(--right); }
+.st-v-gbtn.st-v-gpic:not(:disabled) { cursor: pointer; }
+.st-v-gpic-art { line-height: 0; border-radius: var(--radius-sm); overflow: hidden; }
+.st-v-matched { font-weight: 700; font-size: 0.875rem; }
+.st-v-game-note { margin: 0; min-height: 1.5rem; font-weight: 600; }
+.st-v-game-note[data-kind="right"] { color: var(--right); }
+.st-v-game-note[data-kind="retry"] { color: var(--hint); }
+.st-v-game-done { background: var(--right-soft); border: 1px solid var(--status-success-border); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: grid; gap: 0.5rem; }
+.st-v-game-done h3 { margin: 0; color: var(--right); }
+.st-v-game-done p { margin: 0; }
+
+@media (max-width: 800px) {
+  .st-v-gal-main { grid-template-columns: 1fr; min-height: 0; }
+  .st-v-game-board { grid-template-columns: 1fr; }
+  .st-v-wall.st-v-classroom { padding: 0.75rem; }
+}

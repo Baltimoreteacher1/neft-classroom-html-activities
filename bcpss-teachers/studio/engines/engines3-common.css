@@ -1,0 +1,233 @@
+/* Shared look for escape-challenge, vocab-quest and argument-builder. Tokens come from /access-practice-lab/ds.css.
+   Everything is scoped to the three engine roots so it cannot leak into the rest of the studio. */
+.st-esc,
+.st-vq,
+.st-arg {
+  --e3-gap: calc(var(--s-4, 1rem) * 1);
+  font-family: var(--font, system-ui, sans-serif);
+  font-size: calc(1rem * var(--st-scale, var(--lab-scale, 1)));
+  line-height: var(--lh-body, 1.6);
+  color: var(--ink, #182230);
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: var(--s-4, 1rem);
+}
+:is(.st-esc, .st-vq, .st-arg) h1 {
+  font-family: var(--font-display, inherit);
+  font-size: 1.6em;
+  line-height: var(--lh-tight, 1.25);
+  margin: 0 0 var(--s-2, 0.5rem);
+}
+:is(.st-esc, .st-vq, .st-arg) h2 {
+  font-family: var(--font-display, inherit);
+  font-size: 1.3em;
+  line-height: var(--lh-tight, 1.25);
+  margin: 0 0 var(--s-3, 0.75rem);
+}
+:is(.st-esc, .st-vq, .st-arg) h3 {
+  font-size: 1.1em;
+  margin: 0 0 var(--s-2, 0.5rem);
+}
+:is(.st-esc, .st-vq, .st-arg) p {
+  margin: 0 0 var(--s-3, 0.75rem);
+  max-width: var(--measure-reading, 68ch);
+}
+:is(.st-esc, .st-vq, .st-arg) :focus-visible {
+  outline: var(--focus-ring, 3px solid var(--focus, #1e3a5f));
+  outline-offset: 2px;
+}
+:is(.st-esc, .st-vq, .st-arg) [tabindex="-1"]:focus {
+  outline: none;
+}
+:is(.st-esc, .st-vq, .st-arg) [tabindex="-1"]:focus-visible {
+  outline: var(--focus-ring, 3px solid var(--focus, #1e3a5f));
+}
+
+/* cards and notes */
+.st-e3-card,
+:is(.st-esc-room, .st-vq-card, .st-arg-card) {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e4e0d8);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-card, none);
+  padding: var(--s-5, 1.5rem);
+  margin-bottom: var(--s-4, 1rem);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-note,
+:is(.st-esc-note, .st-vq-note, .st-arg-note) {
+  color: var(--ink-2, #475467);
+  font-size: var(--fs-small, 0.9375rem);
+}
+
+/* buttons: 44px floor */
+:is(.st-esc, .st-vq, .st-arg) .st-btn {
+  min-height: var(--target-min, 2.75rem);
+  min-width: var(--target-min, 2.75rem);
+  padding: 0.5rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--line-control, #7c8799);
+  background: var(--surface, #fff);
+  color: var(--ink, #182230);
+  cursor: pointer;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn:hover:not(:disabled) {
+  background: var(--surface-3, #eae5dc);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn-primary {
+  background: var(--brand, #1e3a5f);
+  border-color: var(--brand, #1e3a5f);
+  color: var(--on-brand, #fff);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn-primary:hover:not(:disabled) {
+  background: var(--brand-deep, #152944);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn-quiet {
+  background: transparent;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-btn[aria-pressed="true"] {
+  background: var(--teal-soft, #e1f2ef);
+  border-color: var(--teal, #0f766e);
+  box-shadow: inset 0 0 0 1px var(--teal, #0f766e);
+}
+.st-e3-actions,
+:is(.st-esc-actions, .st-vq-actions, .st-arg-actions) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2, 0.5rem);
+  margin: var(--s-4, 1rem) 0;
+}
+
+/* inputs */
+:is(.st-esc, .st-vq, .st-arg) :is(input[type="text"], select, textarea) {
+  min-height: var(--target-min, 2.75rem);
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface, #fff);
+  color: inherit;
+  max-width: 100%;
+}
+:is(.st-esc, .st-vq, .st-arg) textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* feedback (kinds from engine-core feedbackBox) */
+:is(.st-esc, .st-vq, .st-arg) .st-feedback {
+  margin: var(--s-3, 0.75rem) 0;
+  padding: var(--s-3, 0.75rem) var(--s-4, 1rem);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--line, #e4e0d8);
+  border-inline-start-width: 6px;
+  background: var(--surface-2, #f2efe9);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-feedback[data-kind="right"] {
+  background: var(--right-soft, #ecfdf3);
+  border-color: var(--right, #065f46);
+  color: var(--right, #065f46);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-feedback[data-kind="retry"] {
+  background: var(--wrong-soft, #fef2f2);
+  border-color: var(--wrong, #991b1b);
+  color: var(--wrong, #991b1b);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-feedback[data-kind="hint"],
+:is(.st-esc, .st-vq, .st-arg) .st-feedback[data-kind="model"],
+:is(.st-esc, .st-vq, .st-arg) .st-feedback[data-kind="transfer"] {
+  background: var(--hint-soft, #fffbeb);
+  border-color: var(--hint, #92400e);
+  color: var(--hint, #92400e);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-feedback strong {
+  margin-inline-end: 0.25rem;
+}
+
+/* support panel */
+:is(.st-esc, .st-vq, .st-arg) .st-support {
+  background: var(--teal-soft, #e1f2ef);
+  border-radius: var(--radius-sm, 6px);
+  padding: var(--s-3, 0.75rem) var(--s-4, 1rem);
+  margin: var(--s-3, 0.75rem) 0;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-support[hidden] {
+  display: none;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-frames,
+:is(.st-esc, .st-vq, .st-arg) .st-wordbank {
+  list-style: none;
+  margin: 0.25rem 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-frames li {
+  background: var(--surface, #fff);
+  border: 1px dashed var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.35rem 0.6rem;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-chip {
+  min-height: var(--target-min, 2.75rem);
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-control, #7c8799);
+  background: var(--surface, #fff);
+  font: inherit;
+  cursor: pointer;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-reflect {
+  margin-top: var(--s-4, 1rem);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-visual {
+  margin: var(--s-3, 0.75rem) 0;
+  max-width: 34rem;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-visual svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+:is(.st-esc, .st-vq, .st-arg) .st-visual-alt {
+  border: 1px solid var(--line, #e4e0d8);
+  padding: var(--s-3, 0.75rem);
+  background: var(--surface-2, #f2efe9);
+}
+:is(.st-esc, .st-vq, .st-arg) .st-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.st-esc, .st-vq, .st-arg) * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 600px) {
+  :is(.st-esc, .st-vq, .st-arg) {
+    padding: var(--s-3, 0.75rem);
+  }
+  :is(.st-esc-room, .st-vq-card, .st-arg-card) {
+    padding: var(--s-4, 1rem);
+  }
+}
+@media print {
+  .st-esc-actions,
+  .st-vq-actions {
+    display: none;
+  }
+}

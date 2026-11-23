@@ -230,6 +230,16 @@
       "file": "tools/studio-print.test.mjs",
       "targets": "tmpdir",
       "reason": "Writes rendered worksheet PDFs inside mkdtempSync(join(tmpdir(), 'studio-print-')) and one pid-named scratch HTML file in tmpdir(); no repository file is written."
+    },
+    {
+      "file": "tools/studio-create.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Builds .docx files and LibreOffice conversion profiles only inside mkdtempSync(join(os.tmpdir(), 'studio-create-')); no repository data is changed."
+    },
+    {
+      "file": "tools/studio-shell.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes a throwaway manifest fixture tree only inside mkdtempSync(join(tmpdir(), 'studio-manifest-')) and removes it afterwards; no repository data is changed."
     }
   ]
 }

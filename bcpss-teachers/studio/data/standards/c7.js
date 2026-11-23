@@ -1,0 +1,112 @@
+// Standards cited by the c7 packs (ESOL and inclusive instruction, grades K-8). Texts are paraphrases, never copied.
+// Codes already registered elsewhere (SL.4.1, SL.4.4, RI.4.3, W.4.2c, SL.7.1, SL.7.4, RI.7.8, W.7.1, UDL.2.5, UDL.5.1,
+// UDL.6.2, UDL.7.1, MP.3, WIDA ELD-*) are not repeated here.
+const ALL = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
+
+export default [
+  {
+    code: "SL.K.1",
+    framework: "CCSS-ELA",
+    grades: ["K"],
+    subject: "ela",
+    text: "Take part in conversations with peers and adults in small and larger groups, following agreed rules such as taking turns.",
+  },
+  {
+    code: "SL.K.4",
+    framework: "CCSS-ELA",
+    grades: ["K"],
+    subject: "ela",
+    text: "Describe familiar people, places, things and events and, with prompting and support, give more detail.",
+  },
+  {
+    code: "SL.K.6",
+    framework: "CCSS-ELA",
+    grades: ["K"],
+    subject: "ela",
+    text: "Speak audibly and express thoughts, feelings and ideas clearly.",
+  },
+  {
+    code: "L.K.5a",
+    framework: "CCSS-ELA",
+    grades: ["K"],
+    subject: "ela",
+    text: "Sort common objects into categories, such as shapes or foods, to understand the concepts the categories represent.",
+  },
+  {
+    code: "RI.7.1",
+    framework: "CCSS-ELA",
+    grades: ["7"],
+    subject: "ela",
+    text: "Cite several pieces of textual evidence to support analysis of what a text says directly and what it implies.",
+  },
+  {
+    code: "W.7.1b",
+    framework: "CCSS-ELA",
+    grades: ["7"],
+    subject: "ela",
+    text: "Support claims with logical reasoning and relevant evidence from credible sources, showing that the evidence fits the claim.",
+  },
+  {
+    code: "3.OA.A.3",
+    framework: "CCSS-Math",
+    grades: ["3"],
+    subject: "math",
+    text: "Use multiplication and division within 100 to solve word problems about equal groups, arrays and measurement quantities, using drawings and equations with a symbol for the unknown.",
+  },
+  {
+    code: "3.OA.D.8",
+    framework: "CCSS-Math",
+    grades: ["3"],
+    subject: "math",
+    text: "Solve two-step word problems using the four operations, write equations with a letter for the unknown, and check that answers are reasonable.",
+  },
+  {
+    code: "3.NBT.A.2",
+    framework: "CCSS-Math",
+    grades: ["3"],
+    subject: "math",
+    text: "Fluently add and subtract within 1000 using strategies and algorithms based on place value and the relationship between addition and subtraction.",
+  },
+  {
+    code: "MP.1",
+    framework: "CCSS-Math",
+    grades: ALL,
+    subject: "math",
+    text: "Make sense of problems and keep trying: work out what is asked, plan a way in, and check whether the answer makes sense.",
+  },
+  {
+    code: "MP.4",
+    framework: "CCSS-Math",
+    grades: ALL,
+    subject: "math",
+    text: "Model with mathematics: use diagrams, equations or tables to show a situation and interpret the result in context.",
+  },
+  {
+    code: "RI.6.2",
+    framework: "CCSS-ELA",
+    grades: ["6"],
+    subject: "ela",
+    text: "Find the central idea of a text and how key details support it, and give a summary that leaves out personal opinion.",
+  },
+  {
+    code: "RST.6-8.2",
+    framework: "CCSS-ELA",
+    grades: ["6", "7", "8"],
+    subject: "science",
+    text: "Find the central ideas or conclusions of a science or technical text and give an accurate summary that leaves out personal opinion.",
+  },
+  {
+    code: "UDL.3.2",
+    framework: "UDL",
+    grades: ALL,
+    subject: "sped",
+    text: "UDL checkpoint 3.2, highlight patterns, critical features, big ideas and relationships so learners notice what matters most.",
+  },
+  {
+    code: "UDL.6.3",
+    framework: "UDL",
+    grades: ALL,
+    subject: "sped",
+    text: "UDL checkpoint 6.3, facilitate managing information and resources: give organizers and checklists that help learners collect, sort and keep track of what they learn.",
+  },
+];

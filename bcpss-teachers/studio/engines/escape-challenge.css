@@ -1,0 +1,326 @@
+/* Digital Escape Challenge. Shared basics: engines3-common.css. */
+.st-esc-head {
+  margin-bottom: var(--s-4, 1rem);
+}
+.st-esc-setting {
+  color: var(--ink-2, #475467);
+  font-style: italic;
+}
+
+/* room map: state is text plus border style, never colour alone */
+.st-esc-map {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--s-2, 0.5rem);
+  margin: 0 0 var(--s-4, 1rem);
+  padding: 0;
+}
+.st-esc-mapitem .st-esc-mapbtn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  min-height: var(--target-min, 2.75rem);
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
+  text-align: start;
+  background: var(--surface, #fff);
+  border: 2px solid var(--line, #e4e0d8);
+  border-radius: var(--radius-sm, 6px);
+  font: inherit;
+  color: inherit;
+}
+.st-esc-mapitem[data-state="solved"] .st-esc-mapbtn {
+  border-color: var(--right, #065f46);
+  cursor: pointer;
+}
+.st-esc-mapitem[data-state="open"] .st-esc-mapbtn {
+  border-color: var(--brand, #1e3a5f);
+  box-shadow: inset 0 -4px 0 var(--brand, #1e3a5f);
+}
+.st-esc-mapitem[data-state="locked"] .st-esc-mapbtn {
+  border-style: dashed;
+  color: var(--ink-3, #586377);
+}
+.st-esc-roomname {
+  font-weight: 600;
+}
+.st-esc-state {
+  font-size: var(--fs-small, 0.9375rem);
+  color: var(--ink-2, #475467);
+}
+
+.st-esc-main {
+  min-height: 12rem;
+}
+.st-esc-narrative {
+  font-size: var(--fs-prompt, 1.1875rem);
+}
+.st-esc-story {
+  font-family: var(--font-serif, Georgia, serif);
+  border-inline-start: 4px solid var(--accent, #b45309);
+  padding-inline-start: var(--s-4, 1rem);
+  color: var(--ink, #182230);
+}
+.st-esc-prompt {
+  font-weight: 600;
+  font-size: var(--fs-prompt, 1.1875rem);
+  max-width: var(--measure-reading, 68ch);
+}
+.st-esc-stem {
+  background: var(--surface-2, #f2efe9);
+  padding: var(--s-3, 0.75rem);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-note,
+.st-esc-msg {
+  color: var(--ink-2, #475467);
+  font-size: var(--fs-small, 0.9375rem);
+}
+.st-esc-msg:not(:empty) {
+  color: var(--hint, #92400e);
+  font-weight: 600;
+}
+
+/* puzzles */
+.st-esc-numeric {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2, 0.5rem);
+}
+.st-esc-input {
+  min-width: 9rem;
+  font-size: 1.2em;
+}
+.st-esc-numeric .st-esc-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+.st-esc-choices {
+  display: grid;
+  gap: var(--s-2, 0.5rem);
+}
+.st-esc-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3, 0.75rem);
+  min-height: var(--target-min, 2.75rem);
+  box-sizing: border-box;
+  padding: 0.6rem 0.9rem;
+  background: var(--surface, #fff);
+  border: 2px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+}
+.st-esc-choice input {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: 0.15rem;
+  flex: none;
+  accent-color: var(--teal, #0f766e);
+}
+.st-esc-choice:has(input:checked) {
+  background: var(--teal-soft, #e1f2ef);
+  border-color: var(--teal, #0f766e);
+}
+.st-esc-choice:has(input:focus-visible) {
+  outline: var(--focus-ring, 3px solid #1e3a5f);
+  outline-offset: 2px;
+}
+.st-esc-orderwrap {
+  max-width: 40rem;
+}
+.st-esc-end {
+  margin: 0.25rem 0;
+  font-weight: 600;
+  color: var(--ink-2, #475467);
+}
+.st-esc-order {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2, 0.5rem);
+}
+.st-esc-order-item {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto auto;
+  align-items: center;
+  gap: var(--s-2, 0.5rem);
+  padding: 0.4rem 0.6rem;
+  background: var(--surface, #fff);
+  border: 2px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-pos {
+  font-weight: 700;
+  text-align: center;
+  color: var(--brand, #1e3a5f);
+}
+.st-esc-move {
+  min-height: var(--target-min, 2.75rem);
+  min-width: var(--target-min, 2.75rem);
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface-2, #f2efe9);
+  color: var(--ink, #182230);
+  cursor: pointer;
+}
+.st-esc-move:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.st-esc-match {
+  display: grid;
+  gap: var(--s-3, 0.75rem);
+}
+.st-esc-matchrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-3, 0.75rem);
+  align-items: center;
+}
+.st-esc-matchlabel {
+  font-weight: 600;
+}
+.st-esc-select {
+  width: 100%;
+}
+.st-esc-sort {
+  display: grid;
+  gap: var(--s-3, 0.75rem);
+}
+.st-esc-card {
+  padding: var(--s-3, 0.75rem);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-cardtext {
+  margin: 0 0 var(--s-2, 0.5rem);
+  font-weight: 600;
+}
+.st-esc-cardbtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2, 0.5rem);
+}
+.st-esc-bin {
+  min-height: var(--target-min, 2.75rem);
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  border: 2px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+.st-esc-bin[aria-pressed="true"] {
+  background: var(--teal-soft, #e1f2ef);
+  border-color: var(--teal, #0f766e);
+  font-weight: 700;
+}
+
+/* worked example, related puzzle, results */
+.st-esc-model,
+.st-esc-transfer {
+  margin-top: var(--s-4, 1rem);
+  padding: var(--s-4, 1rem);
+  background: var(--hint-soft, #fffbeb);
+  border: 1px solid var(--hint, #92400e);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-model summary {
+  font-weight: 700;
+  cursor: pointer;
+  min-height: var(--target-min, 2.75rem);
+  display: flex;
+  align-items: center;
+}
+.st-esc-found {
+  margin-top: var(--s-4, 1rem);
+  padding: var(--s-4, 1rem);
+  background: var(--right-soft, #ecfdf3);
+  border: 1px solid var(--right, #065f46);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-piece {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.25em;
+  padding: 0.1rem 0.5rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line-control, #7c8799);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-note-card {
+  background: var(--surface-2, #f2efe9);
+  padding: var(--s-3, 0.75rem) var(--s-4, 1rem);
+  border-inline-start: 4px solid var(--accent, #b45309);
+}
+.st-esc-code {
+  width: min(24rem, 100%);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+}
+.st-esc-notebook {
+  margin-top: var(--s-4, 1rem);
+  padding: var(--s-4, 1rem);
+  background: var(--surface-2, #f2efe9);
+  border-radius: var(--radius-md, 10px);
+}
+.st-esc-nb-title {
+  font-size: 1.05em;
+}
+.st-esc-pieces {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.st-esc-debrief {
+  list-style: none;
+  margin: 0 0 var(--s-4, 1rem);
+  padding: 0;
+  display: grid;
+  gap: var(--s-2, 0.5rem);
+}
+.st-esc-debrief-row {
+  padding: var(--s-3, 0.75rem);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e4e0d8);
+  border-inline-start: 6px solid var(--hint, #92400e);
+  border-radius: var(--radius-sm, 6px);
+}
+.st-esc-debrief-row[data-secure="true"] {
+  border-inline-start-color: var(--right, #065f46);
+}
+.st-esc-badge {
+  display: inline-block;
+  margin-inline-end: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  font-size: var(--fs-small, 0.9375rem);
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--hint, #92400e);
+}
+.st-esc-debrief-row[data-secure="true"] .st-esc-badge {
+  color: var(--right, #065f46);
+}
+
+@media (max-width: 600px) {
+  .st-esc-matchrow {
+    grid-template-columns: 1fr;
+  }
+  .st-esc-order-item {
+    grid-template-columns: 1.5rem 1fr auto auto;
+  }
+  .st-esc-map {
+    grid-template-columns: 1fr 1fr;
+  }
+}

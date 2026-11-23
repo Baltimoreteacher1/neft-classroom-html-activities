@@ -1,0 +1,81 @@
+// Standards cited by the c6 content pack (grade 6 variables, grade 7 proportional relationships, grade 8 conservation of mass).
+// Texts are paraphrases, never copied from the CCSS or NGSS documents.
+export default [
+  {
+    code: "6.EE.C.9",
+    framework: "CCSS-Math",
+    grades: ["6"],
+    subject: "math",
+    text: "Use variables for two quantities that change together; write an equation that gives the dependent variable in terms of the independent variable, and connect the equation to tables and graphs.",
+  },
+  {
+    code: "7.RP.A.2",
+    framework: "CCSS-Math",
+    grades: ["7"],
+    subject: "math",
+    text: "Recognize and represent proportional relationships between quantities.",
+  },
+  {
+    code: "7.RP.A.2a",
+    framework: "CCSS-Math",
+    grades: ["7"],
+    subject: "math",
+    text: "Decide whether two quantities are in a proportional relationship by testing for equivalent ratios in a table or by graphing on a coordinate plane and checking for a straight line through the origin.",
+  },
+  {
+    code: "7.RP.A.2b",
+    framework: "CCSS-Math",
+    grades: ["7"],
+    subject: "math",
+    text: "Identify the constant of proportionality (the unit rate) in tables, graphs, equations, diagrams and verbal descriptions of proportional relationships.",
+  },
+  {
+    code: "7.RP.A.2c",
+    framework: "CCSS-Math",
+    grades: ["7"],
+    subject: "math",
+    text: "Represent proportional relationships by equations of the form y = kx, where k is the constant of proportionality.",
+  },
+  {
+    code: "7.RP.A.2d",
+    framework: "CCSS-Math",
+    grades: ["7"],
+    subject: "math",
+    text: "Explain what a point (x, y) on the graph of a proportional relationship means in the situation, with attention to the points (0, 0) and (1, r) where r is the unit rate.",
+  },
+  {
+    code: "MP.3",
+    framework: "CCSS-Math",
+    grades: ["6", "7", "8"],
+    subject: "math",
+    text: "Construct viable arguments and critique the reasoning of others.",
+  },
+  {
+    code: "MS-PS1-2",
+    framework: "NGSS",
+    grades: ["6", "7", "8"],
+    subject: "science",
+    text: "Analyze and interpret data on the properties of substances before and after they interact to decide whether a chemical reaction has occurred.",
+  },
+  {
+    code: "MS-PS1-5",
+    framework: "NGSS",
+    grades: ["6", "7", "8"],
+    subject: "science",
+    text: "Develop and use a model to describe how the total number of atoms does not change in a chemical reaction, so mass is conserved.",
+  },
+  {
+    code: "RST.6-8.1",
+    framework: "CCSS-ELA",
+    grades: ["6", "7", "8"],
+    subject: "science",
+    text: "Cite specific textual evidence to support the analysis of science and technical texts.",
+  },
+  {
+    code: "RST.6-8.7",
+    framework: "CCSS-ELA",
+    grades: ["6", "7", "8"],
+    subject: "science",
+    text: "Integrate quantitative or technical information expressed in words with a version expressed visually, such as a flowchart, diagram, model, graph or table.",
+  },
+];

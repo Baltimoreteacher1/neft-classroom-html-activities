@@ -1,0 +1,351 @@
+/* WIDA views. Tokens come from ds.css and studio.css; classes are prefixed st-wida-. */
+.st-wida-root [data-domain="Listening"] {
+  --wd: var(--listening-ink);
+  --wd-soft: var(--listening-soft);
+}
+.st-wida-root [data-domain="Speaking"] {
+  --wd: var(--speaking-ink);
+  --wd-soft: var(--speaking-soft);
+}
+.st-wida-root [data-domain="Reading"] {
+  --wd: var(--reading-ink);
+  --wd-soft: var(--reading-soft);
+}
+.st-wida-root [data-domain="Writing"] {
+  --wd: var(--writing-ink);
+  --wd-soft: var(--writing-soft);
+}
+
+.st-wida-framing {
+  max-width: 62ch;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-inline-start: 4px solid var(--accent);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+.st-wida-disclaimer {
+  margin: 1.5rem 0 0;
+  max-width: 62ch;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+/* filters */
+.st-wida-filters {
+  display: grid;
+  gap: 0.25rem;
+  margin: 1rem 0 0.5rem;
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.st-wida-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.st-wida-pill {
+  gap: 0.5rem;
+}
+.st-wida-count {
+  min-width: 1.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+}
+.st-wida-row2 {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+.st-wida-row2 select,
+.st-wida-row2 input,
+.st-wida-pathform select,
+.st-wida-evidence select,
+.st-wida-evidence textarea,
+.st-wida-frames select {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.st-wida-evidence textarea {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.875rem;
+}
+.st-wida-filters select:focus-visible,
+.st-wida-filters input:focus-visible,
+.st-wida-pathform select:focus-visible,
+.st-wida-evidence select:focus-visible,
+.st-wida-evidence textarea:focus-visible,
+.st-wida-frames select:focus-visible,
+.st-wida-preview :focus-visible,
+.st-wida-teacher summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.st-wida-status {
+  margin: 0.5rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+/* cards */
+.st-wida-results {
+  margin-top: 0.5rem;
+}
+.st-wida-card {
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid var(--wd, var(--line));
+}
+.st-wida-card-actions {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+.st-wida-domain-chip {
+  background: var(--wd-soft, var(--surface-2));
+  color: var(--wd, var(--ink));
+  border-color: transparent;
+}
+.st-wida-adapted {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+.st-wida-domain-guide {
+  display: grid;
+  gap: 0.5rem 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin: 0;
+}
+.st-wida-domain-guide dt {
+  font-weight: 700;
+  color: var(--wd);
+}
+.st-wida-domain-guide dd {
+  margin: 0 0 0.5rem;
+  color: var(--ink-2);
+}
+
+/* frames */
+.st-wida-frame-grid,
+.st-wida-domains,
+.st-wida-needs {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  margin: 0.75rem 0;
+}
+.st-wida-frame-card,
+.st-wida-domain {
+  border-top: 4px solid var(--wd, var(--line));
+}
+.st-wida-frame-card h3,
+.st-wida-domain h3 {
+  color: var(--wd);
+}
+.st-wida-frame-list {
+  margin: 0.5rem 0;
+  padding-inline-start: 1.1rem;
+}
+.st-wida-frame-list li {
+  margin: 0.25rem 0;
+}
+.st-wida-frame-extra {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.st-wida-connectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+.st-wida-support {
+  padding: 0.6rem 0.8rem;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+/* collection page */
+.st-wida-launch {
+  margin: 1rem 0;
+}
+.st-wida-preview {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.st-wida-tasks,
+.st-wida-steps {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+.st-wida-task h3 {
+  font-size: 1.05rem;
+}
+.st-wida-task h4 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.9375rem;
+}
+.st-wida-visual {
+  max-width: 28rem;
+  margin: 0.75rem 0;
+}
+.st-wida-visual svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.st-wida-teacher {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.st-wida-teacher summary {
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+.st-wida-guide {
+  display: grid;
+  gap: 0.5rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+.st-wida-guide-part h3 {
+  font-size: 1rem;
+}
+
+/* path */
+.st-wida-pathform {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: end;
+  margin: 1rem 0;
+}
+.st-wida-pathform .st-field {
+  min-width: 14rem;
+  margin: 0;
+}
+.st-wida-step {
+  border-inline-start: 6px solid var(--wd, var(--line-strong));
+}
+.st-wida-step[data-gap="true"] {
+  border-style: dashed;
+}
+.st-wida-stepn {
+  color: var(--wd, var(--ink-2));
+}
+.st-wida-gap {
+  padding: 0.5rem 0.7rem;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.st-wida-plan {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.st-wida-plan caption {
+  text-align: start;
+  font-weight: 700;
+  padding-bottom: 0.4rem;
+}
+.st-wida-plan th,
+.st-wida-plan td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+}
+
+/* evidence */
+.st-wida-total {
+  font-weight: 600;
+}
+.st-wida-signal {
+  margin: 0.25rem 0;
+  font-weight: 600;
+}
+.st-wida-domain[data-enough="false"] .st-wida-signal {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.st-wida-colsum {
+  margin-top: 1.25rem;
+}
+.st-wida-taskrows {
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+.st-wida-taskrows li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.st-wida-taskrows em {
+  font-style: normal;
+  color: var(--ink);
+}
+.st-wida-taskrows small {
+  color: var(--ink-3);
+}
+
+@media (max-width: 40rem) {
+  .st-wida-filters {
+    padding: 0.8rem;
+  }
+  .st-wida-pill {
+    flex: 1 1 auto;
+  }
+}
+@media print {
+  .st-wida-filters,
+  .st-wida-pathform,
+  .st-wida-card-actions,
+  .st-wida-evidence,
+  .st-wida-preview,
+  .st-wida-step .st-row {
+    display: none !important;
+  }
+  .st-wida-step {
+    break-inside: avoid;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st-wida-root * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

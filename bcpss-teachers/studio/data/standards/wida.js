@@ -1,0 +1,31 @@
+// WIDA ELD Standards Framework (2020 Edition) standards, plus the content-standard codes used by the gold WIDA practice
+// collections. Texts are paraphrases, never copied from WIDA, CCSS or NGSS documents.
+export default [
+  { code: "ELD-SI", framework: "WIDA-ELD", grades: ["K", "1", "2", "3", "4", "5", "6", "7", "8"], subject: "esol",
+    text: "Language for social and instructional purposes: students use English to communicate in everyday school life and to take part in classroom routines." },
+  { code: "ELD-LA", framework: "WIDA-ELD", grades: ["K", "1", "2", "3", "4", "5", "6", "7", "8"], subject: "ela",
+    text: "Language for language arts: students use English to read, discuss and write about literary and informational texts." },
+  { code: "ELD-MA", framework: "WIDA-ELD", grades: ["K", "1", "2", "3", "4", "5", "6", "7", "8"], subject: "math",
+    text: "Language for mathematics: students use English to describe, explain and justify mathematical ideas and reasoning." },
+  { code: "ELD-SC", framework: "WIDA-ELD", grades: ["K", "1", "2", "3", "4", "5", "6", "7", "8"], subject: "science",
+    text: "Language for science: students use English to describe phenomena, explain processes and support claims with evidence." },
+  { code: "ELD-SS", framework: "WIDA-ELD", grades: ["K", "1", "2", "3", "4", "5", "6", "7", "8"], subject: "social-studies",
+    text: "Language for social studies: students use English to describe people, places and events, and to argue from sources." },
+  // Content standards referenced by the gold WIDA practice collections (paraphrased).
+  { code: "2-PS1-1", framework: "NGSS", grades: ["2"], subject: "science",
+    text: "Plan and carry out an investigation to describe and sort different kinds of materials by their observable properties." },
+  { code: "RI.2.5", framework: "CCSS-ELA", grades: ["2"], subject: "ela",
+    text: "Know and use text features such as captions, bold print, headings and tables to find key facts in an informational text." },
+  { code: "5-LS1-1", framework: "NGSS", grades: ["5"], subject: "science",
+    text: "Support an argument that plants get the materials they need for growth chiefly from air and water." },
+  { code: "SL.5.4", framework: "CCSS-ELA", grades: ["5"], subject: "ela",
+    text: "Report on a topic or present an opinion, sequencing ideas logically and using appropriate facts and relevant details." },
+  { code: "MS-PS3-4", framework: "NGSS", grades: ["6", "7", "8"], subject: "science",
+    text: "Plan an investigation to find how the type of matter, the mass and the change in temperature relate to the thermal energy transferred." },
+  { code: "SL.7.2", framework: "CCSS-ELA", grades: ["7"], subject: "ela",
+    text: "Analyze the main ideas and supporting details presented in diverse media and formats and explain how they clarify a topic." },
+  { code: "6.RP.A.2", framework: "CCSS-Math", grades: ["6"], subject: "math",
+    text: "Understand the idea of a unit rate a/b associated with a ratio a:b and use rate language in the context of a ratio relationship." },
+  { code: "W.6.2", framework: "CCSS-ELA", grades: ["6"], subject: "ela",
+    text: "Write informative or explanatory texts that examine a topic and convey ideas through the selection, organization and analysis of relevant content." },
+];

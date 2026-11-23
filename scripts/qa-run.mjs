@@ -894,12 +894,18 @@ const COVERAGE = [
     /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|scripts\/generate-bcpss-packets\.mjs|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
     [
       "validate:bcpss",
+      "validate:bcpss-studio",
       "validate:static",
       "validate:js-syntax",
       "validate:save-resume",
       "typecheck",
       "check",
     ],
+  ],
+  // BCPSS Teacher Studio tooling: its validator, manifest builder and tests.
+  [
+    /^tools\/(validate-studio|build-studio-manifest|studio-(create|engine-fixes|engines-[234]|engines-4-fixtures|lens|lens-view|print-fixtures|print-qc|projects-view|shell|unit-view|visuals|vocab|vocab-fixtures|wida-view))\.m?js$|^tools\/studio-lens-fixtures\//,
+    ["validate:bcpss-studio", "test", "validate:js-syntax", "check"],
   ],
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.

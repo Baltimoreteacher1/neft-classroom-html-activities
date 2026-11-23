@@ -1,0 +1,198 @@
+// Language Detective: find the question and the key facts in a word problem, and ignore the extra details. Original passage.
+const S = (id, text, para) => ({ id, text, para });
+
+export default {
+  id: "g3-sped-garden-problem-detective",
+  engine: "language-detective",
+  title: "Detective: find the question and the key facts",
+  grade: "3",
+  band: "3-5",
+  subject: "sped",
+  lessonId: "g3-sped-solving-word-problems-with-visuals",
+  standards: ["3.OA.D.8", "MP.1", "UDL.6.2"],
+  vocabIds: ["word-problem", "question", "key-fact", "total"],
+  minutes: 12,
+  intro:
+    "A word problem has a question, key facts and some extra details. Read the story, tap the key facts and decide how to solve it. Take your time. You can listen to the story again.",
+  scene: {
+    kind: "passage",
+    title: "The Class Garden",
+    source: "Original - The Language Page",
+    sentences: [
+      S("s1", "Room 12 planted a garden on Monday.", 0),
+      S("s2", "The class planted 18 sunflower seeds.", 0),
+      S("s3", "They also planted 14 bean seeds.", 0),
+      S("s4", "The garden has a green fence and a small gate.", 0),
+      S("s5", "The sun was out and everyone wore a hat.", 0),
+      S("s6", "How many seeds did the class plant in all?", 1),
+    ],
+  },
+  questions: [
+    {
+      id: "q1",
+      type: "detail",
+      prompt: "What does the problem ask you to find?",
+      options: [
+        { id: "a", text: "How many seeds the class planted in all." },
+        { id: "b", text: "How many hats the class wore." },
+        { id: "c", text: "How tall the fence is." },
+      ],
+      answer: "a",
+      evidence: [{ id: "s6", why: "The last sentence is the question.", optional: false }],
+      misconceptions: [
+        { pick: "b", tag: "extra-detail-as-question", hint: "A hat is in the story, but is it what the last sentence asks about?" },
+        { pick: "c", tag: "extra-detail-as-question", hint: "The text does not give a height. Look for the sentence that ends with a question mark." },
+      ],
+      hints: [
+        "Look for the sentence that ends with a question mark.",
+        "The question is usually the last sentence of a word problem.",
+        "Read the question slowly. What word comes after 'How many'?",
+      ],
+      model: "I look for the sentence with a question mark. It is the last sentence: How many seeds did the class plant in all? So I need to find the total number of seeds.",
+      explain: "Right. The question asks for the total number of seeds.",
+      supports: {
+        ee: { frames: ["I need to find ___."], wordBank: ["seeds", "in all", "question"] },
+        dev: { frames: ["The question asks how many ___."] },
+        exp: { frames: ["The question asks me to find ___."] },
+        br: {},
+      },
+    },
+    {
+      id: "q2",
+      type: "evidence",
+      prompt: "Tap the two sentences that give the numbers you need.",
+      answer: ["s2", "s3"],
+      evidence: [
+        { id: "s2", why: "18 sunflower seeds is a key fact.", optional: false },
+        { id: "s3", why: "14 bean seeds is a key fact.", optional: false },
+      ],
+      misconceptions: [
+        { pick: "s1", tag: "no-number", hint: "That sentence has no number to use. Look for sentences with numbers." },
+        { pick: "s4", tag: "extra-detail", hint: "That sentence tells about the fence. Do you need it to count the seeds?" },
+      ],
+      hints: [
+        "Look for sentences that have a number and say what the number counts.",
+        "There are two sentences that tell how many seeds of each kind.",
+        "One is about sunflower seeds and one is about bean seeds.",
+      ],
+      model: "I look for numbers with a label. Sentence two says 18 sunflower seeds. Sentence three says 14 bean seeds. Those are my key facts.",
+      explain: "Right. 18 sunflower seeds and 14 bean seeds are the key facts.",
+      supports: {
+        ee: { frames: ["The number is ___ and it counts ___."], wordBank: ["18", "14", "sunflower", "bean"] },
+        dev: { frames: ["One key fact is ___. Another is ___."] },
+        exp: { frames: ["The key facts are ___ and ___ because they tell how many."] },
+        br: {},
+      },
+    },
+    {
+      id: "q3",
+      type: "detail",
+      prompt: "Which detail is extra? You do not need it to solve the problem.",
+      options: [
+        { id: "a", text: "The garden has a green fence and a small gate." },
+        { id: "b", text: "The class planted 18 sunflower seeds." },
+        { id: "c", text: "They also planted 14 bean seeds." },
+      ],
+      answer: "a",
+      evidence: [{ id: "s4", why: "The fence has no number about seeds.", optional: false }],
+      misconceptions: [
+        { pick: "b", tag: "key-fact-as-extra", hint: "That sentence has a number about seeds. Is it needed to answer how many in all?" },
+        { pick: "c", tag: "key-fact-as-extra", hint: "That sentence tells how many beans. Would the total change without it?" },
+      ],
+      hints: [
+        "Ask: if I cover this sentence, can I still find the total?",
+        "Extra details do not have numbers about the thing you are counting.",
+        "Look for the detail about something you are not counting.",
+      ],
+      model: "I cover each sentence one at a time. If I cover the fence sentence, I can still find the total number of seeds. So the fence sentence is extra.",
+      explain: "Right. The fence is not part of the seeds, so it is extra.",
+      supports: {
+        ee: { frames: ["The ___ is extra."], wordBank: ["fence", "hat", "seeds"] },
+        dev: { frames: ["The detail about the ___ is extra because ___."] },
+        exp: { frames: ["I do not need ___ because ___."] },
+        br: {},
+      },
+    },
+    {
+      id: "q4",
+      type: "inference",
+      prompt: "How can you find the total number of seeds?",
+      options: [
+        { id: "a", text: "Add the two numbers to put the seeds together." },
+        { id: "b", text: "Subtract the small number from the big number." },
+        { id: "c", text: "Count the fence posts." },
+      ],
+      answer: "a",
+      evidence: [
+        { id: "s6", why: "The question asks for all the seeds.", optional: false },
+        { id: "s2", why: "One group of seeds.", optional: false },
+        { id: "s3", why: "Another group of seeds.", optional: false },
+      ],
+      misconceptions: [
+        { pick: "b", tag: "wrong-operation", hint: "Subtracting finds how many more. Does the question ask how many more, or how many in all?" },
+        { pick: "c", tag: "extra-detail", hint: "Fence posts are not seeds. Which sentences tell about seeds?" },
+      ],
+      hints: [
+        "Look at the question words 'in all'. What do they tell you about the two groups?",
+        "When you want to know how many in all, are you taking away or putting together?",
+        "Two groups of seeds are put together to find the total.",
+      ],
+      model: "The question says 'in all', so I put the two groups of seeds together. I add 18 and 14.",
+      explain: "Right. In all means put the groups together, so I add.",
+      supports: {
+        ee: { frames: ["I will ___ the numbers."], wordBank: ["add", "put together", "in all"] },
+        dev: { frames: ["I will add because the question says ___."] },
+        exp: { frames: ["Because the question asks ___, I will ___."] },
+        br: {},
+      },
+    },
+  ],
+  claimPrompt: "What can you say about how to solve this problem? Choose the plan your case notes support.",
+  claim: {
+    options: [
+      { id: "c1", text: "Add 18 and 14, because the question asks how many seeds in all.", strong: true },
+      { id: "c2", text: "Subtract 14 from 18, because the fence is green.", strong: false, tag: "wrong-operation", hint: "Check your notes. Is the fence a key fact? What does the question ask for?" },
+      { id: "c3", text: "Multiply 18 by 14, because there are two kinds of seeds.", strong: false, tag: "wrong-operation", hint: "Your notes show two different groups being put together. Are they equal groups?" },
+    ],
+    evidenceIds: ["s2", "s3"],
+    evidenceMin: 2,
+    why: "Your notes show two groups of seeds, 18 and 14, and the question asks for all the seeds, so you put the groups together by adding.",
+    hints: [
+      "Look at your two notes about the seeds.",
+      "Choose the plan that matches the question 'in all'.",
+      "Which plan puts the two groups together?",
+    ],
+    explainPrompt: "Explain your plan. Say what you will do and why.",
+    revisionChecks: [
+      { id: "because", label: "I used because or so to say why.", test: { type: "contains-any", words: ["because", "so"] } },
+      { id: "numbers", label: "I used the numbers from my notes.", test: { type: "contains-evidence" } },
+      { id: "length", label: "My explanation has at least 8 words.", test: { type: "min-words", n: 8 } },
+      { id: "listen", label: "I read my plan aloud once.", self: true },
+    ],
+  },
+  explainFrames: {
+    ee: ["I will add 18 and 14.", "The question asks ___."],
+    dev: ["I will ___ because the question asks ___.", "The key facts are ___ and ___."],
+    exp: ["I will ___ the numbers because the question asks ___ and the key facts are ___."],
+    br: ["Because the question asks for ___, I will ___ the key facts ___ and ___."],
+  },
+  supports: {
+    ee: { frames: ["The key fact is ___."], wordBank: ["question", "key fact", "extra", "add"], directions: "Use the Listen button for any sentence. You can tap the words to hear them again." },
+    dev: { frames: ["I know because ___."] },
+    exp: {},
+    br: {},
+  },
+  reflection: {
+    prompt: "How did you tell the key facts from the extra details? What will you do next time?",
+    frames: {
+      ee: ["I looked for ___.", "Next time I will ___."],
+      dev: ["I found the key facts by ___.", "Next time I will ___."],
+      exp: ["I knew a detail was extra when ___, so next time I will ___."],
+      br: ["I separate key facts from extra details by ___; next time I will check ___."],
+    },
+  },
+  review: { status: "authored", checks: {} },
+  version: "1.0.0",
+  updated: "2026-11-23",
+  source: "Original - The Language Page",
+};

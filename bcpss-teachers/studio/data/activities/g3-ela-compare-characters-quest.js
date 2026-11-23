@@ -1,0 +1,255 @@
+// Vocab Quest: twelve story-analysis words for comparing characters. Words, pictures and definitions come from the collection.
+const item = (e) => e;
+
+export default {
+  id: "g3-ela-compare-characters-quest",
+  engine: "vocab-quest",
+  title: "Word Quest: Comparing Characters",
+  grade: "3",
+  band: "3-5",
+  subject: "ela",
+  lessonId: "g3-ela-compare-characters-actions",
+  standards: ["RL.3.3", "L.3.4"],
+  vocabIds: [
+    "character",
+    "trait",
+    "action",
+    "motivation",
+    "problem",
+    "solution",
+    "event",
+    "compare",
+    "contrast",
+    "evidence",
+    "infer",
+    "effect",
+  ],
+  minutes: 18,
+  intro:
+    "Learn twelve words that help you talk about characters. Match each word to a picture, use it in a sentence, remember it, and then use it yourself.",
+  collection: "g3-ela-compare-characters-actions",
+  frames: {
+    ee: ["{word} means ___ .", "I can say {word} about ___ ."],
+    dev: ["A good sentence with {word} is ___ ."],
+    exp: ["In the story, {word} shows ___ because ___ ."],
+    br: [],
+  },
+  stages: [
+    {
+      id: "see",
+      kind: "see",
+      title: "See the words",
+      intro: "Look at each picture and choose the word that matches it.",
+      entryIds: ["character", "trait", "action", "problem", "event", "effect"],
+      kinds: ["picture-word"],
+    },
+    {
+      id: "use",
+      kind: "use-in-context",
+      title: "Use the words in sentences",
+      intro:
+        "Choose the word that fits each sentence. Then try the harder choices about how words are used.",
+      entryIds: [
+        "trait",
+        "action",
+        "motivation",
+        "solution",
+        "compare",
+        "contrast",
+        "evidence",
+        "infer",
+      ],
+      kinds: ["cloze"],
+      items: [
+        item({
+          id: "use-infer",
+          kind: "sentence-choice",
+          entryId: "infer",
+          prompt: "Which sentence uses infer correctly?",
+          choices: [
+            "I infer the number of pages by reading the number printed on the last page.",
+            "Ana is rubbing her arms and wearing a coat, so I infer that she is cold.",
+            "I infer the answer by guessing without looking at the story.",
+          ],
+          answer: 1,
+          hints: [
+            "An inference is something the text does not say right out.",
+            "Look for the sentence that uses a clue and what you already know.",
+            "One sentence is about reading something printed, and one is about guessing with no clue.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "infer-means-read-it",
+              hint: "A number printed on the page is stated, so you only read it. An inference is figured out.",
+            },
+            {
+              pick: 2,
+              tag: "infer-means-guess",
+              hint: "An inference needs clues from the text. Guessing with no clue is not an inference.",
+            },
+          ],
+          why: "Ana's coat and rubbing arms are clues, and what you know about being cold lets you figure out the feeling.",
+        }),
+        item({
+          id: "use-contrast",
+          kind: "sentence-choice",
+          entryId: "contrast",
+          prompt: "Which sentence uses contrast correctly?",
+          choices: [
+            "To contrast the two dogs, I tell that both have brown fur.",
+            "I contrast my shoes by putting them in the closet.",
+            "To contrast the two dogs, I tell that one is big but the other is small.",
+          ],
+          answer: 2,
+          hints: [
+            "Contrast is about what is not the same.",
+            "Look for the sentence that joins two different details with a word like but.",
+            "One sentence tells what is alike, and one does not use the word for comparing at all.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "contrast-means-alike",
+              hint: "Both having brown fur is a way the dogs are alike. Contrast tells how they are different.",
+            },
+            {
+              pick: 1,
+              tag: "contrast-as-verb-for-actions",
+              hint: "Putting shoes away is not looking at two things to see how they differ.",
+            },
+          ],
+          why: "Big and small are two different details, and the word but joins them to show a difference.",
+        }),
+        item({
+          id: "use-motivation",
+          kind: "sentence-choice",
+          entryId: "motivation",
+          prompt: "Which sentence names a motivation?",
+          choices: [
+            "Theo's motivation is that he wants the class garden to grow.",
+            "Theo's motivation is that he knelt on the floor.",
+            "Theo's motivation is a strong wind on Monday morning.",
+          ],
+          answer: 0,
+          hints: [
+            "A motivation is the reason behind an action.",
+            "Ask why Theo would pick up the seeds. Which sentence answers that?",
+            "One sentence is something Theo does, and one is something that happens to him.",
+          ],
+          misconceptions: [
+            {
+              pick: 1,
+              tag: "motivation-is-action",
+              hint: "Kneeling is something Theo does. The motivation is the reason he does it.",
+            },
+            {
+              pick: 2,
+              tag: "motivation-is-event",
+              hint: "The wind is something that happens. It is not Theo's reason for acting.",
+            },
+          ],
+          why: "Wanting the garden to grow is the reason Theo picks up the seeds.",
+        }),
+        item({
+          id: "use-evidence",
+          kind: "sentence-choice",
+          entryId: "evidence",
+          prompt: "Which sentence gives evidence?",
+          choices: [
+            "My evidence is that I just think Theo is a nice boy.",
+            "My evidence is that Theo counted the seeds again to be sure, which shows he is careful.",
+            "My evidence is that gardens are green and plants are alive.",
+          ],
+          answer: 1,
+          hints: [
+            "Evidence comes from the story.",
+            "Look for a sentence that points to something a character does or says.",
+            "One sentence gives a feeling and one gives a fact that is not in the story.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "evidence-is-opinion",
+              hint: "Thinking someone is nice is an opinion. Evidence points to what is in the story.",
+            },
+            {
+              pick: 2,
+              tag: "evidence-not-from-text",
+              hint: "That might be true, but it is not from the story about Theo.",
+            },
+          ],
+          why: "Counting the seeds again is a detail from the story that proves the idea that Theo is careful.",
+        }),
+        item({
+          id: "use-effect",
+          kind: "sentence-choice",
+          entryId: "effect",
+          prompt: "Which sentence uses effect correctly?",
+          choices: [
+            "The effect of the rain was the clouds that came before it.",
+            "The effect of the rain was that the game moved inside.",
+            "The effect of the rain was that it rained.",
+          ],
+          answer: 1,
+          hints: [
+            "An effect comes after something else happens.",
+            "Find the sentence where one thing happens because of the rain.",
+            "One sentence has the order backward, and one just says the same thing twice.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "effect-before-cause",
+              hint: "The clouds came before the rain. An effect comes after.",
+            },
+            {
+              pick: 2,
+              tag: "effect-repeats-cause",
+              hint: "That says the same thing again. An effect is a new result.",
+            },
+          ],
+          why: "The game moved inside because of the rain, so moving inside is the result.",
+        }),
+      ],
+    },
+    {
+      id: "retrieve",
+      kind: "retrieve",
+      title: "Remember the words",
+      intro: "Read the meaning and type the word from memory.",
+      entryIds: ["character", "motivation", "solution", "evidence", "contrast", "infer"],
+      kinds: ["type-word"],
+      passMark: 0.67,
+    },
+    {
+      id: "apply",
+      kind: "apply",
+      title: "Use the words yourself",
+      intro: "Say a sentence out loud, then write it. Use the word so it shows what it means.",
+      entryIds: ["trait", "evidence", "infer", "contrast", "effect", "motivation"],
+      kinds: ["say-write"],
+      passMark: 0.67,
+    },
+    {
+      id: "revisit",
+      kind: "revisit",
+      title: "Come back to the tricky words",
+      intro: "Words you missed come back in a new form until you know them.",
+    },
+  ],
+  reflection: {
+    prompt:
+      "Which word will you use the next time you talk about a character, and what will you say?",
+    frames: {
+      ee: ["I will use ___ .", "I will say ___ ."],
+      dev: ["I will use ___ when I talk about ___ ."],
+      exp: ["I will use ___ to explain ___ because ___ ."],
+      br: ["I will use ___ to show how ___ , which helps me ___ ."],
+    },
+  },
+  review: { status: "authored", checks: {} },
+  version: "1.0.0",
+  updated: "2026-11-23",
+  source: "Original - The Language Page",
+};

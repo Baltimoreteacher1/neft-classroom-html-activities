@@ -1,0 +1,235 @@
+// vocab-quest: twelve words for chemical reactions and conservation of mass (MS-PS1-2, MS-PS1-5). Words come from the lesson's vocab collection.
+export default {
+  id: "g8-chem-vocab-quest",
+  engine: "vocab-quest",
+  title: "Word Quest: Reactions and Mass",
+  grade: "8",
+  band: "6-8",
+  subject: "science",
+  lessonId: "g8-science-chemical-reactions-conservation-of-mass",
+  standards: ["MS-PS1-2", "MS-PS1-5"],
+  curriculum: {
+    status: "standards-aligned",
+    note: "Aligned to NGSS MS-PS1-2 and MS-PS1-5; not mapped to a district unit sequence. This activity is original practice.",
+  },
+  vocabIds: [
+    "chemical-reaction",
+    "physical-change",
+    "reactant",
+    "product",
+    "atom",
+    "molecule",
+    "closed-system",
+    "precipitate",
+    "conservation-of-mass",
+    "evidence",
+    "claim",
+    "reasoning",
+  ],
+  minutes: 20,
+  intro:
+    "Meet twelve science words for explaining what happens in a reaction. See each word in a picture, use it in a sentence, remember it, then say and write your own sentence.",
+  collection: "g8-science-chemical-reactions-conservation-of-mass",
+  stages: [
+    {
+      id: "see",
+      kind: "see",
+      title: "See the words",
+      intro: "Match each picture to the word it shows.",
+      entryIds: [
+        "chemical-reaction",
+        "physical-change",
+        "reactant",
+        "product",
+        "atom",
+        "molecule",
+        "closed-system",
+      ],
+      kinds: ["picture-word"],
+      passMark: 0.67,
+    },
+    {
+      id: "use",
+      kind: "use-in-context",
+      title: "Use the words",
+      intro:
+        "Finish the sentence with the word that fits, then choose the sentence that uses a word correctly.",
+      entryIds: [
+        "reactant",
+        "product",
+        "chemical-reaction",
+        "physical-change",
+        "precipitate",
+        "conservation-of-mass",
+      ],
+      kinds: ["cloze"],
+      items: [
+        {
+          kind: "sentence-choice",
+          entryId: "reactant",
+          prompt: "A candle burns in air. Which sentence uses reactant correctly?",
+          choices: [
+            "The ash left after a log burns is a reactant.",
+            "Oxygen is a reactant when a candle burns, because it is used up by the reaction.",
+            "A reactant is anything that is heavy.",
+          ],
+          answer: 1,
+          hints: [
+            "Think about when in a reaction a reactant is present: at the start or at the end.",
+            "One choice describes something made by a reaction. A reactant is the opposite of that.",
+            "Look for the sentence that says the substance is used up.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "reactant-versus-product",
+              hint: "Ash is made by burning. Is something that is made at the end a reactant or a product?",
+            },
+            {
+              pick: 2,
+              tag: "weight-not-role",
+              hint: "A reactant is named by its role in the reaction, not by how heavy it is.",
+            },
+          ],
+          why: "Oxygen is present at the start of the burning and is used up, so it is a reactant.",
+        },
+        {
+          kind: "sentence-choice",
+          entryId: "conservation-of-mass",
+          prompt:
+            "A sealed jar reads 80.0 g before a reaction and 80.0 g after. Which sentence uses conservation of mass correctly?",
+          choices: [
+            "Conservation of mass means the jar got heavier because new substances formed.",
+            "Conservation of mass means the total mass stayed the same because the atoms were only rearranged.",
+            "Conservation of mass means the reaction used up some of the mass.",
+          ],
+          answer: 1,
+          hints: [
+            "Compare the two readings in the problem. What do they tell you about the total?",
+            "A new substance can form without the total mass changing. Ask what happens to the atoms.",
+            "Look for the sentence that explains the equal readings with something about atoms.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "new-substance-means-heavier",
+              hint: "The readings are equal. Does a new substance have to weigh more than the starting ones?",
+            },
+            {
+              pick: 2,
+              tag: "mass-used-up",
+              hint: "The jar is sealed and the readings are equal. Is any mass missing?",
+            },
+          ],
+          why: "Equal readings in a sealed jar show that the total mass is conserved, because atoms are rearranged and not destroyed.",
+        },
+        {
+          kind: "sentence-choice",
+          entryId: "closed-system",
+          prompt: "Which sentence uses closed system correctly?",
+          choices: [
+            "A closed system is any container that holds a liquid.",
+            "An open cup on a desk is a closed system because it is standing still.",
+            "A zip bag sealed shut is a closed system because no matter can enter or leave it.",
+          ],
+          answer: 2,
+          hints: [
+            "Think about what the word closed says about the boundary of the container.",
+            "Being still or holding a liquid does not decide whether matter can cross the boundary.",
+            "Look for the sentence that says what can and cannot happen at the boundary.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "contains-liquid",
+              hint: "A container can hold a liquid and still be open. What decides whether matter can leave?",
+            },
+            {
+              pick: 1,
+              tag: "still-means-closed",
+              hint: "An open cup lets gas escape even when it does not move. What makes a system closed?",
+            },
+          ],
+          why: "A system is closed when nothing can enter or leave, as in a sealed bag.",
+        },
+      ],
+      passMark: 0.67,
+    },
+    {
+      id: "retrieve",
+      kind: "retrieve",
+      title: "Remember the words",
+      intro: "Read each meaning and type the word from memory.",
+      entryIds: [
+        "atom",
+        "molecule",
+        "conservation-of-mass",
+        "closed-system",
+        "precipitate",
+        "evidence",
+      ],
+      kinds: ["type-word"],
+      passMark: 0.67,
+    },
+    {
+      id: "apply",
+      kind: "apply",
+      title: "Apply the words",
+      intro: "Say a sentence out loud, then write it. Your sentence must show what the word means.",
+      entryIds: ["claim", "reasoning", "evidence", "chemical-reaction", "conservation-of-mass"],
+      kinds: ["say-write"],
+      items: [
+        {
+          kind: "sentence-choice",
+          entryId: "evidence",
+          prompt: "Which sentence uses evidence correctly?",
+          choices: [
+            "My evidence is that I feel sure the mass stayed the same.",
+            "My evidence is the balance reading of 150.0 g before and 150.0 g after.",
+            "My evidence is that someone told me it was true.",
+          ],
+          answer: 1,
+          hints: [
+            "Evidence is something you could point to and show another person.",
+            "Feelings and being told are not things you can measure or observe.",
+            "Look for the sentence that gives a measurement.",
+          ],
+          misconceptions: [
+            {
+              pick: 0,
+              tag: "feeling-is-evidence",
+              hint: "How sure you feel cannot be shown to someone else. What could you measure instead?",
+            },
+            {
+              pick: 2,
+              tag: "authority-is-evidence",
+              hint: "Being told something does not show that it is true. What could you observe or measure?",
+            },
+          ],
+          why: "A balance reading is a measurement you can point to, so it is evidence.",
+        },
+      ],
+      passMark: 0.67,
+    },
+    {
+      id: "revisit",
+      kind: "revisit",
+      title: "Revisit the words",
+      intro: "Words you need more practice with come back in new forms.",
+    },
+  ],
+  reflection: {
+    prompt:
+      "Which word will you use this week when you explain a change you see, such as cooking or rusting?",
+    frames: {
+      ee: ["I will use ___.", "It means ___."],
+      dev: ["I will use ___ when I ___.", "It helps me say ___."],
+      exp: ["I will use ___ when I explain ___ because it shows ___."],
+      br: ["I will use ___ to ___, and I can tell it applies because ___."],
+    },
+  },
+  review: { status: "authored", checks: {} },
+  version: "1.0.0",
+  updated: "2026-11-23",
+  source: "Original - The Language Page",
+};
