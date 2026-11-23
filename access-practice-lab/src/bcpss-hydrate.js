@@ -91,6 +91,28 @@ function ensureStyles() {
     .bcpss-align-banner strong {
       color: var(--ocean-900, #075568);
     }
+    .bcpss-banner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .bcpss-fullscreen-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+      padding: 0.35rem 0.9rem;
+      border: 1.5px solid var(--ocean-900, #075568);
+      border-radius: 6px;
+      background: var(--ocean-900, #075568);
+      color: #ffffff;
+      font: 700 0.875rem var(--font, system-ui, sans-serif);
+      text-decoration: none;
+    }
+    .bcpss-fullscreen-link:hover {
+      background: var(--ink, #161614);
+      border-color: var(--ink, #161614);
+    }
     .bcpss-exit-btn {
       min-height: 2.75rem;
       padding: 0.35rem 0.85rem;
@@ -103,6 +125,42 @@ function ensureStyles() {
     }
     .bcpss-exit-btn:hover {
       background: var(--surface-2, #e5e3dd);
+    }
+    .bcpss-lab-more {
+      margin-top: 1.25rem;
+      border: 1.5px solid var(--ink, #161614);
+      border-radius: 8px;
+      background: var(--surface, #ffffff);
+    }
+    .bcpss-lab-more > summary {
+      min-height: 2.75rem;
+      padding: 0.7rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font: 700 0.95rem var(--font, system-ui, sans-serif);
+      color: var(--ocean-900, #075568);
+      cursor: pointer;
+      list-style: none;
+    }
+    .bcpss-lab-more > summary::-webkit-details-marker {
+      display: none;
+    }
+    .bcpss-lab-more > summary::after {
+      content: "Expand";
+      font-size: 0.82rem;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid var(--ocean-900, #075568);
+      border-radius: 999px;
+      background: #eaf5f3;
+    }
+    .bcpss-lab-more[open] > summary::after {
+      content: "Hide";
+    }
+    .bcpss-lab-more-body {
+      padding: 0.75rem 1rem 1rem;
+      border-top: 1px solid var(--surface-3, #d8d7d2);
     }
     .bcpss-practice-panel {
       border: 1.5px solid var(--ink, #161614);
@@ -262,6 +320,36 @@ function insertAtCursor(textarea, snippet) {
   textarea.setSelectionRange(nextPos, nextPos);
 }
 
+function unwrapSiblingLabContent(rootEl) {
+  const details = rootEl.querySelector(":scope > .bcpss-lab-more");
+  if (!details) return;
+  const body = details.querySelector(":scope > .bcpss-lab-more-body");
+  if (body) {
+    while (body.firstChild) {
+      rootEl.insertBefore(body.firstChild, details);
+    }
+  }
+  details.remove();
+}
+
+function wrapSiblingLabContent(rootEl, wrapEl) {
+  const siblings = Array.from(rootEl.children).filter(
+    (child) => child !== wrapEl && !child.classList.contains("bcpss-lab-more"),
+  );
+  if (!siblings.length) return;
+  const details = document.createElement("details");
+  details.className = "bcpss-lab-more";
+  const summary = document.createElement("summary");
+  summary.textContent = "Explore additional general practice below";
+  const body = document.createElement("div");
+  body.className = "bcpss-lab-more-body";
+  for (const node of siblings) {
+    body.appendChild(node);
+  }
+  details.append(summary, body);
+  rootEl.appendChild(details);
+}
+
 export async function maybeHydrateBcpssLab(rootEl) {
   if (!rootEl) return;
   const params = new URLSearchParams(window.location.search);
@@ -272,7 +360,8 @@ export async function maybeHydrateBcpssLab(rootEl) {
   const widaParam = params.get("wida") || "3_4";
   const wida = WIDA_LABELS[widaParam] ? widaParam : "3_4";
 
-  // Remove any stale hydration wrapper before re-injecting
+  // Remove any stale hydration wrapper and unwrap siblings before re-injecting
+  unwrapSiblingLabContent(rootEl);
   rootEl.querySelector(".bcpss-hydrate-wrap")?.remove();
 
   let detail;
@@ -321,6 +410,17 @@ export async function maybeHydrateBcpssLab(rootEl) {
   }
 
   const gradeText = String(u.grade) === "K" ? "Kindergarten" : `Grade ${u.grade}`;
+  const activeActivityId = selectedActivity?.id || activityId;
+  const activityViewParams = new URLSearchParams({
+    unit: String(u.id || bcpssUnit),
+    wida,
+    mode: "student",
+  });
+  if (activeActivityId) {
+    activityViewParams.set("activity", String(activeActivityId));
+  }
+  const fullScreenActivityUrl = `/bcpss-teachers/activity/?${activityViewParams.toString()}`;
+
   const wrap = document.createElement("section");
   wrap.className = "bcpss-hydrate-wrap";
   wrap.setAttribute("aria-label", "BCPSS Aligned Practice");
@@ -331,7 +431,10 @@ export async function maybeHydrateBcpssLab(rootEl) {
         <strong>Aligned to BCPSS ${esc(gradeText)} ${esc(u.curriculum_name || u.subject)}</strong>
         — Unit ${esc(u.unit_number)}: ${esc(u.unit_title)}
       </div>
-      <button type="button" class="bcpss-exit-btn" data-bcpss-exit>Exit BCPSS View</button>
+      <div class="bcpss-banner-actions">
+        <a class="bcpss-fullscreen-link" href="${esc(fullScreenActivityUrl)}">Open Full-Screen Activity View ↗</a>
+        <button type="button" class="bcpss-exit-btn" data-bcpss-exit>Exit BCPSS View</button>
+      </div>
     </div>
 
     <div class="bcpss-practice-panel">
@@ -400,6 +503,7 @@ export async function maybeHydrateBcpssLab(rootEl) {
   `;
 
   rootEl.prepend(wrap);
+  wrapSiblingLabContent(rootEl, wrap);
 
   const textarea = wrap.querySelector("#bcpssStudentResponse");
   const feedbackEl = wrap.querySelector("[data-bcpss-feedback]");
@@ -411,6 +515,7 @@ export async function maybeHydrateBcpssLab(rootEl) {
       url.searchParams.delete("activity");
       url.searchParams.delete("wida");
       history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+      unwrapSiblingLabContent(rootEl);
       wrap.remove();
       return;
     }

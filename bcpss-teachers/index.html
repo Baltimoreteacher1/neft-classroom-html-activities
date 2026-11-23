@@ -78,6 +78,41 @@
             </button>
           </div>
         </div>
+
+        <!-- Accessibility & Reading Comfort Bar -->
+        <div class="bh-comfort-bar" role="region" aria-label="Reading comfort and accessibility controls">
+          <span class="bh-comfort-label">Reading Comfort</span>
+          <div class="bh-comfort-controls" role="group" aria-label="Display accessibility options">
+            <button
+              type="button"
+              class="bh-comfort-btn"
+              id="toggleLargeTextBtn"
+              data-comfort="largeText"
+              aria-pressed="false"
+            >
+              <span aria-hidden="true">A+</span>
+              <span>Larger Text</span>
+            </button>
+            <button
+              type="button"
+              class="bh-comfort-btn"
+              id="toggleHighContrastBtn"
+              data-comfort="highContrast"
+              aria-pressed="false"
+            >
+              <span>High Contrast</span>
+            </button>
+            <button
+              type="button"
+              class="bh-comfort-btn"
+              id="toggleRoomySpacingBtn"
+              data-comfort="roomySpacing"
+              aria-pressed="false"
+            >
+              <span>Roomy Spacing</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -85,42 +120,73 @@
       <!-- Co-Teacher Pinned Note Banner (shown on /bcpss-teachers/plan/{id}) -->
       <section id="pinnedPlanBanner" class="bh-pinned-banner" aria-label="Shared Co-Teacher Plan" hidden></section>
 
-      <!-- Step 1 & 2 Control Bar -->
+      <!-- Step 1 & 2 Control Bar: 1-Click Grade Ribbon & Subject Pill Tabs -->
       <section class="bh-controls-card" aria-label="Step 1 and Step 2: Choose grade and content area">
-        <div class="bh-controls-grid">
-          <div class="bh-field">
-            <label for="gradeSelect">
-              <span class="bh-step-tag">Step 1</span> Grade Level
-            </label>
-            <select id="gradeSelect" name="grade">
-              <option value="K">Kindergarten (K)</option>
-              <option value="1">Grade 1</option>
-              <option value="2">Grade 2</option>
-              <option value="3">Grade 3</option>
-              <option value="4">Grade 4</option>
-              <option value="5">Grade 5</option>
-              <option value="6" selected>Grade 6</option>
-              <option value="7">Grade 7</option>
-              <option value="8">Grade 8</option>
-            </select>
+        <div class="bh-controls-stack">
+          <div class="bh-control-row">
+            <div class="bh-control-head">
+              <span class="bh-control-label" id="gradeRibbonLabel">
+                <span class="bh-step-tag">Step 1</span> Grade Level
+              </span>
+              <span id="curriculumBadge" class="bh-curriculum-badge" aria-live="polite">Reveal Math · Grade 6</span>
+            </div>
+            <div id="gradeRibbon" class="bh-grade-ribbon" role="group" aria-labelledby="gradeRibbonLabel">
+              <button type="button" class="bh-grade-pill" data-grade="K" aria-pressed="false" aria-label="Kindergarten">K</button>
+              <button type="button" class="bh-grade-pill" data-grade="1" aria-pressed="false" aria-label="Grade 1">1</button>
+              <button type="button" class="bh-grade-pill" data-grade="2" aria-pressed="false" aria-label="Grade 2">2</button>
+              <button type="button" class="bh-grade-pill" data-grade="3" aria-pressed="false" aria-label="Grade 3">3</button>
+              <button type="button" class="bh-grade-pill" data-grade="4" aria-pressed="false" aria-label="Grade 4">4</button>
+              <button type="button" class="bh-grade-pill" data-grade="5" aria-pressed="false" aria-label="Grade 5">5</button>
+              <button type="button" class="bh-grade-pill" data-grade="6" aria-pressed="true" aria-label="Grade 6">6</button>
+              <button type="button" class="bh-grade-pill" data-grade="7" aria-pressed="false" aria-label="Grade 7">7</button>
+              <button type="button" class="bh-grade-pill" data-grade="8" aria-pressed="false" aria-label="Grade 8">8</button>
+            </div>
           </div>
 
-          <div class="bh-field">
-            <label for="subjectSelect">
+          <div class="bh-control-row">
+            <span class="bh-control-label" id="subjectPillsLabel">
               <span class="bh-step-tag">Step 2</span> Content Area
-            </label>
-            <select id="subjectSelect" name="subject">
-              <option value="ELA">ELA (Wit &amp; Wisdom)</option>
-              <option value="Math" selected>Math (Reveal Math)</option>
-              <option value="Science">Science (IQWST)</option>
-              <option value="Social Studies">Social Studies (BCPSS Social Studies)</option>
-            </select>
+            </span>
+            <div id="subjectPills" class="bh-subject-pills" role="group" aria-labelledby="subjectPillsLabel">
+              <button type="button" class="bh-subject-pill" data-subject="ELA" aria-pressed="false">
+                <span class="bh-subject-pill-name">ELA</span>
+                <span class="bh-subject-pill-sub" data-subject-sub="ELA">Wit &amp; Wisdom</span>
+              </button>
+              <button type="button" class="bh-subject-pill" data-subject="Math" aria-pressed="true">
+                <span class="bh-subject-pill-name">Math</span>
+                <span class="bh-subject-pill-sub" data-subject-sub="Math">Reveal Math</span>
+              </button>
+              <button type="button" class="bh-subject-pill" data-subject="Science" aria-pressed="false">
+                <span class="bh-subject-pill-name">Science</span>
+                <span class="bh-subject-pill-sub" data-subject-sub="Science">IQWST</span>
+              </button>
+              <button type="button" class="bh-subject-pill" data-subject="Social Studies" aria-pressed="false">
+                <span class="bh-subject-pill-name">Social Studies</span>
+                <span class="bh-subject-pill-sub" data-subject-sub="Social Studies">BCPSS Social Studies</span>
+              </button>
+            </div>
           </div>
+        </div>
 
-          <div class="bh-curriculum-badge-wrap" aria-live="polite">
-            <span class="bh-curriculum-label">Active BCPSS Curriculum</span>
-            <span id="curriculumBadge" class="bh-curriculum-badge">Reveal Math · Grade 6</span>
-          </div>
+        <!-- Hidden synced selects for backward compatibility -->
+        <div class="visually-hidden" aria-hidden="true">
+          <select id="gradeSelect" name="grade" tabindex="-1">
+            <option value="K">Kindergarten (K)</option>
+            <option value="1">Grade 1</option>
+            <option value="2">Grade 2</option>
+            <option value="3">Grade 3</option>
+            <option value="4">Grade 4</option>
+            <option value="5">Grade 5</option>
+            <option value="6" selected>Grade 6</option>
+            <option value="7">Grade 7</option>
+            <option value="8">Grade 8</option>
+          </select>
+          <select id="subjectSelect" name="subject" tabindex="-1">
+            <option value="ELA">ELA (Wit &amp; Wisdom)</option>
+            <option value="Math" selected>Math (Reveal Math)</option>
+            <option value="Science">Science (IQWST)</option>
+            <option value="Social Studies">Social Studies (BCPSS Social Studies)</option>
+          </select>
         </div>
       </section>
 
@@ -130,6 +196,41 @@
           <h2 id="unitsHeading">Select a Unit</h2>
           <span id="unitsCount" class="bh-muted"></span>
         </div>
+
+        <!-- Unit Search & WIDA KLU Filter Strip -->
+        <div class="bh-unit-filter-bar" role="region" aria-label="Search and filter units">
+          <div class="bh-search-wrap">
+            <label for="unitSearchInput" class="visually-hidden">Search units by title, topic, or standard</label>
+            <svg class="bh-search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="search"
+              id="unitSearchInput"
+              class="bh-search-input"
+              placeholder="Search units by title, topic, or standard…"
+              autocomplete="off"
+            />
+            <button
+              type="button"
+              id="unitSearchClearBtn"
+              class="bh-search-clear"
+              aria-label="Clear unit search"
+              hidden
+            >
+              &times;
+            </button>
+          </div>
+          <div id="kluFilterBar" class="bh-klu-filter-bar" role="group" aria-label="Filter by WIDA Key Language Use">
+            <button type="button" class="bh-klu-filter-pill" data-klu-filter="All" aria-pressed="true">All</button>
+            <button type="button" class="bh-klu-filter-pill" data-klu-filter="Narrate" aria-pressed="false">Narrate</button>
+            <button type="button" class="bh-klu-filter-pill" data-klu-filter="Inform" aria-pressed="false">Inform</button>
+            <button type="button" class="bh-klu-filter-pill" data-klu-filter="Explain" aria-pressed="false">Explain</button>
+            <button type="button" class="bh-klu-filter-pill" data-klu-filter="Argue" aria-pressed="false">Argue</button>
+          </div>
+        </div>
+
         <div id="unitStrip" class="bh-unit-strip" role="region" aria-label="Available units">
           <div class="bh-loading" role="status">Loading BCPSS units…</div>
         </div>
@@ -151,7 +252,7 @@
           <div class="bh-workspace-intro">
             <p class="bh-eyebrow"><span class="bh-step-tag">Step 3</span> Unit Language Workspace</p>
             <div id="workspacePublisherMasthead" class="bh-publisher-masthead" aria-label="Publisher and instructional protocol" hidden></div>
-            <h2 id="workspaceTitle">Select a unit above to explore language bridges</h2>
+            <h2 id="workspaceTitle" tabindex="-1">Select a unit above to explore language bridges</h2>
             <p id="workspaceMeta" class="bh-workspace-meta"></p>
             <p id="workspaceSummary" class="bh-workspace-summary" hidden></p>
             <div id="workspaceEssentialQ" class="bh-essential-question" hidden></div>
@@ -350,6 +451,34 @@
       </form>
     </dialog>
 
+    <!-- Instant Activity Preview Drawer -->
+    <dialog
+      id="activityPreviewModal"
+      class="bh-dialog bh-preview-drawer no-print"
+      aria-labelledby="activityPreviewTitle"
+    >
+      <div class="bh-preview-drawer-inner">
+        <div class="bh-preview-drawer-head">
+          <div id="activityPreviewBadges" class="bh-activity-badges"></div>
+          <button
+            type="button"
+            class="bh-icon-btn"
+            id="closeActivityPreviewBtn"
+            aria-label="Close activity preview"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="bh-preview-drawer-scroll">
+          <h2 id="activityPreviewTitle" class="bh-preview-title">Activity Preview</h2>
+          <p id="activityPreviewSubtitle" class="bh-preview-subtitle"></p>
+          <div id="activityPreviewBody" class="bh-preview-body"></div>
+        </div>
+        <div id="activityPreviewFooter" class="bh-preview-drawer-footer"></div>
+      </div>
+    </dialog>
+
+    <div id="srAnnouncer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
     <div id="liveAnnouncer" class="visually-hidden" aria-live="polite"></div>
 
     <footer class="bh-footer no-print">

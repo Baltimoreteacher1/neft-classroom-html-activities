@@ -1030,6 +1030,52 @@ export function buildUnitsAndConnections(specs) {
   return { units, connections };
 }
 
+function getDisciplineVisualArtifact(subject, grade) {
+  if (subject === "Math") {
+    return {
+      artifactName: "tape diagram, number line, or equation model",
+      materials: [
+        "Worked Math Model (Tape Diagram / Equation Sheet)",
+        "Dry-Erase Boards or Annotation Highlighters",
+        "WIDA Desk Strip",
+      ],
+      actionVerb: "trace and annotate the mathematical model",
+    };
+  }
+  if (subject === "Science") {
+    const program = isElementaryScience(String(grade)) ? "SABES 5E" : "IQWST";
+    return {
+      artifactName: `${program} investigation data table or phenomenon diagram`,
+      materials: [
+        `${program} Investigation Data Table / Phenomenon Model`,
+        "CER (Claim–Evidence–Reasoning) Organizer",
+        "WIDA Desk Strip",
+      ],
+      actionVerb: `interpret the ${program} data and phenomenon model`,
+    };
+  }
+  if (subject === "Social Studies") {
+    return {
+      artifactName: "primary source excerpt, map, or timeline",
+      materials: [
+        "Primary Source Excerpt, Map, or Timeline",
+        "Source Corroboration Graphic Organizer",
+        "WIDA Desk Strip",
+      ],
+      actionVerb: "corroborate evidence from the primary source or map",
+    };
+  }
+  return {
+    artifactName: "Wit & Wisdom anchor text excerpt and evidence chart",
+    materials: [
+      "Wit & Wisdom Anchor Text Excerpt",
+      "Text Evidence & Syntax Annotation Chart",
+      "WIDA Desk Strip",
+    ],
+    actionVerb: "cite and unpack key lines from the anchor text",
+  };
+}
+
 export function buildActivitiesForSubject(units, connections) {
   const connByUnit = new Map(connections.map((c) => [c.unit_id, c]));
   const activities = [];
@@ -1040,62 +1086,290 @@ export function buildActivitiesForSubject(units, connections) {
       throw new Error(`Missing unit_connection for unit ${unit.id}`);
     }
     const bp = BLUEPRINT_BY_ID.get(conn.blueprint_id);
-    const vocabList = (conn.tier2_tier3_vocab || []).map((v) => v.term);
+    const klu = bp?.wida_klu || "Explain";
+    const moveName = bp?.move_name || klu;
+    const band = unit.publisher_meta?.grade_band || getGradeBand(String(unit.grade));
+    const protocol = unit.publisher_meta?.signature_protocol || "Language Dive";
+    const ev = getEvidencePhrase(unit.subject, band);
+    const isK3Ela = unit.subject === "ELA" && isEarlyPrimary(String(unit.grade));
+
+    const vocabEntries = Array.isArray(conn.tier2_tier3_vocab) ? conn.tier2_tier3_vocab : [];
+    const vocabList = vocabEntries.map((v) => v.term).filter(Boolean);
+    const t1 = vocabList[0] || "key idea";
+    const t2 = vocabList[1] || t1;
+    const t3 = vocabList[2] || t2;
     const keyTerms = vocabList.slice(0, 3).join(", ");
-    const cognateTerms = (conn.tier2_tier3_vocab || [])
-      .filter((v) => v.cognate_es)
+    const firstVocab = vocabEntries[0] || null;
+    const secondVocab = vocabEntries[1] || firstVocab;
+
+    const cognateEntries = vocabEntries.filter((v) => v.cognate_es);
+    const cognateTerms = cognateEntries
       .slice(0, 2)
       .map((v) => `${v.term} (${v.cognate_es})`)
       .join(" and ");
-    const isStem = unit.subject === "Math" || unit.subject === "Science";
-    const thirdType = isStem ? "Visual/Model Justification" : "Structured Partner Talk";
-    const thirdRoute = isStem
-      ? "/access-practice-lab/access-prep"
-      : "/access-practice-lab/speak";
+    const primaryCognate = cognateEntries[0] || null;
 
-    // Activity 1: Sentence Architect
+    const mentorUnpacking = conn.mentor_sentence_unpacking || {};
+    const mentorSentence =
+      mentorUnpacking.mentor_sentence ||
+      `In ${unit.unit_title}, ${ev} shows how ${t1} connects to ${t2} and ${t3}.`;
+    const connectorChunk =
+      (mentorUnpacking.chunks || []).find((ch) => ch.color_token === "connector")?.text ||
+      "because";
+
+    const pt = conn.partner_talk_protocol || {
+      protocol_name: `${protocol} — Structured A/B Rehearsal`,
+      role_a_title: "Idea Explainer (Partner A)",
+      role_a_prompt: `Point to ${ev} and share your explanation of "${unit.unit_title}" using "${t1}" and "${t2}".`,
+      role_b_title: "Evidence Questioner (Partner B)",
+      role_b_prompt: `Paraphrase Partner A's point about "${t1}" and ask for one more detail from ${ev}.`,
+      talk_moves: [
+        { label: "Build On", stem: "Building on your idea about ___, I also noticed ___." },
+        { label: "Clarify", stem: "Can you explain how ___ connects to ___?" },
+        { label: "Cite Evidence", stem: "In our model/text, ___ shows that ___." },
+        { label: "Paraphrase", stem: "So you are saying that ___." },
+      ],
+    };
+    const talkMove1 = pt.talk_moves?.[0] || { label: "Build On", stem: "I want to add ___." };
+    const talkMove2 = pt.talk_moves?.[2] || { label: "Cite Evidence", stem: "The evidence shows ___." };
+    const talkMoveLabels = (pt.talk_moves || []).map((m) => m.label).join(", ");
+
+    const et = conn.language_exit_ticket_json || {};
+    const etPrompt =
+      et.prompt ||
+      `Write 2–3 sentences about "${unit.unit_title}" using the ${moveName} frame and key terms (${keyTerms}).`;
+    const etFrame = et.target_frame || conn.unit_example_frame;
+    const etVocab = Array.isArray(et.required_vocab) && et.required_vocab.length
+      ? et.required_vocab.join(", ")
+      : keyTerms;
+    const etLookFors =
+      Array.isArray(et.look_fors) && et.look_fors.length
+        ? et.look_fors
+        : [
+            `Uses the target ${klu} connector accurately.`,
+            `Includes at least two unit terms (${etVocab}).`,
+            `Cites specific evidence from "${unit.unit_title}".`,
+          ];
+    const etRubric = et.quick_rubric || {
+      emerging: `Uses 1 unit term (${t1}) with a WIDA 1–2 starter or labeled visual.`,
+      developing: `Completes the target ${klu} frame with 2 unit terms (${t1}, ${t2}).`,
+      proficient: `Produces a cohesive ${klu} response integrating ${keyTerms} with concrete evidence.`,
+    };
+
+    const visualMeta = getDisciplineVisualArtifact(unit.subject, unit.grade);
+
+    // -----------------------------------------------------------------------
+    // Order 1 — Sentence Architect (Day 1 · Syntax & Frame Launch)
+    // -----------------------------------------------------------------------
+    const day1StudentPrompt =
+      band === "K–2"
+        ? `Say and write (or draw and label) 1 sentence about "${unit.unit_title}" using the frame "${conn.unit_example_frame}" and at least one word from: ${keyTerms}.`
+        : band === "3–5"
+          ? `Use the Sentence Architect frame ("${conn.unit_example_frame}") to draft 1–2 complete ${klu} sentences about "${unit.unit_title}" that include "${t1}" and "${t2}".`
+          : `Analyze the connector "${connectorChunk}" in the mentor sentence, then draft 2 academic ${klu} sentences about "${unit.unit_title}" using "${conn.unit_example_frame}" and at least two terms from: ${keyTerms}.`;
+
     activities.push({
       id: `act-${unit.id}-1`,
       unit_id: unit.id,
       activity_order: 1,
+      day_label: "Day 1 · Syntax & Frame Launch",
+      domain: "Writing",
+      grouping: "Whole Group → Partners",
+      duration_minutes: 10,
+      prep_time_minutes: 3,
       activity_type: "Sentence Architect",
       title: `Sentence Architect: ${unit.unit_title}`,
-      prep_time_minutes: 5,
-      teacher_instructions: `Display the Grade ${unit.grade} ${unit.subject} target frame ("${conn.unit_example_frame}") alongside a word bank of ${keyTerms}. Model assembling one clause aloud using the ${bp.wida_klu} move (${bp.move_name}), then have students build and revise two unit sentences in pairs.`,
-      student_prompt: `Use the Sentence Architect blocks to build a complete ${bp.wida_klu} sentence about "${unit.unit_title}" using the frame "${conn.unit_example_frame}" and at least two terms from: ${keyTerms}.`,
+      materials: [
+        "Projected Mentor Sentence",
+        "WIDA Desk Strip",
+        "Student Writing Notebook or Device",
+      ],
+      teacher_instructions: `1. Read aloud the "${unit.unit_title}" mentor sentence ("${mentorSentence}") and unpack how the ${klu} connector ("${connectorChunk}") links ideas. 2. Co-construct one class example on the board using the unit frame ("${conn.unit_example_frame}") and target vocabulary (${keyTerms}). 3. Have students draft ${band === "K–2" ? "1 sentence (or oral/dictated sentence)" : "1–2 sentences"} in partners using their WIDA tier desk strip, then share one sentence aloud.`,
+      worked_example: mentorSentence,
+      student_prompt: day1StudentPrompt,
+      differentiated_targets: {
+        level_1_2: `Orally rehearse and complete 1 sentence about "${unit.unit_title}" using the WIDA 1–2 desk strip starter and "${t1}" paired with a visual cue.`,
+        level_3_4: `Draft 1–2 complete ${klu} sentences using "${conn.unit_example_frame}", the connector "${connectorChunk}", and both "${t1}" and "${t2}".`,
+        level_5_6: `Compose 2 connected academic sentences about "${unit.unit_title}" weaving in ${keyTerms} and revising with a precise ${moveName} transition.`,
+      },
+      check_for_understanding: `Students accurately place the ${klu} connector ("${connectorChunk}") in their drafted sentence and use at least two unit terms (${t1}, ${t2}) in context.`,
       target_lab_route: "/access-practice-lab/sentences",
     });
 
-    // Activity 2: Cognate & Syntax Warm-Up
+    // -----------------------------------------------------------------------
+    // Order 2 — Cognate & Vocabulary Lab (Day 2 · Vocabulary & Cognates)
+    // -----------------------------------------------------------------------
+    const day2Materials = isK3Ela
+      ? [
+          "EN/ES Cognate & Picture Word Cards",
+          "Fundations Sound Cards & Letter Tiles",
+          "Unit Word Journal or Device",
+        ]
+      : [
+          "EN/ES Cognate & Tier 2/3 Word Cards",
+          "Visual Concept Anchor Chart",
+          "Student Word Journal or Device",
+        ];
+
+    const phonicsClause = isK3Ela
+      ? `Tap out Fundations letter-sound patterns, digraphs, and syllables in "${t1}" and "${t2}", then `
+      : "";
+    const cognateFocus = cognateTerms
+      ? `Spanish–English cognates (${cognateTerms})`
+      : `English and Spanish meaning bridges for ${keyTerms}`;
+
+    const day2WorkedExample = primaryCognate
+      ? `"${primaryCognate.term}" (Spanish cognate: "${primaryCognate.cognate_es}") means ${toInlineDef(primaryCognate.student_friendly_def, primaryCognate.term)}. In ${unit.unit_title}, knowing ${primaryCognate.term} helps us explain how ${t2} works in ${ev}.`
+      : `"${t1}" means ${toInlineDef(firstVocab?.student_friendly_def, t1)}, and "${t2}" means ${toInlineDef(secondVocab?.student_friendly_def, t2)}. In ${unit.unit_title}, we use both terms when examining ${ev}.`;
+
+    const day2StudentPrompt = isK3Ela
+      ? `Tap the sounds in ${keyTerms} with your partner, match each word to its picture or Spanish cognate${cognateTerms ? ` (${cognateTerms})` : ""}, and say one sentence about "${unit.unit_title}".`
+      : band === "K–2"
+        ? `Sort the picture word cards (${keyTerms}), share any Spanish cognates${cognateTerms ? ` like ${cognateTerms}` : ""}, and tell your partner what "${t1}" means in "${unit.unit_title}".`
+        : band === "3–5"
+          ? `Sort ${keyTerms} into Tier 2 connectors and Tier 3 content words, highlight Spanish–English cognates${cognateTerms ? ` (${cognateTerms})` : ""}, and write a quick definition sentence for "${t1}" in "${unit.unit_title}".`
+          : `Analyze roots and Spanish–English cognates for ${keyTerms}${cognateTerms ? ` (${cognateTerms})` : ""}, contrast everyday vs. academic meanings, and apply "${t1}" and "${t2}" in a context sentence for "${unit.unit_title}".`;
+
     activities.push({
       id: `act-${unit.id}-2`,
       unit_id: unit.id,
       activity_order: 2,
-      activity_type: "Cognate & Syntax Warm-Up",
-      title: `Cognate & Syntax Warm-Up: ${keyTerms}`,
-      prep_time_minutes: 4,
-      teacher_instructions: `Launch class with a 4-minute WordLab warm-up spotlighting ${cognateTerms || keyTerms} from "${unit.unit_title}". Have students sort Tier 2 connectors vs. Tier 3 content words, check Spanish–English cognates (EN/ES), and rehearse pronunciation before reading or problem-solving.`,
-      student_prompt: `Sort the key terms (${keyTerms}) for "${unit.unit_title}", match each word to its Spanish cognate or visual cue, and plug one term into the unit frame: "${conn.unit_example_frame}".`,
+      day_label: "Day 2 · Vocabulary & Cognates",
+      domain: "Vocabulary",
+      grouping: "Pairs / Small Group",
+      duration_minutes: 10,
+      prep_time_minutes: 3,
+      activity_type: "Cognate & Vocabulary Lab",
+      title: `Cognate & Vocabulary Lab: ${keyTerms}`,
+      materials: day2Materials,
+      teacher_instructions: `1. Display ${keyTerms} from "${unit.unit_title}" and spotlight ${cognateFocus} (EN/ES). 2. ${phonicsClause}guide pairs to sort Tier 2 academic words from Tier 3 discipline terms and match each word to its student-friendly definition. 3. Have each pair orally test one word inside "${conn.unit_example_frame}" before recording a quick example in their word journal.`,
+      worked_example: day2WorkedExample,
+      student_prompt: day2StudentPrompt,
+      differentiated_targets: {
+        level_1_2: `Match "${t1}" and "${t2}" to visuals and Spanish cognates (EN/ES), then echo-read each word aloud with a partner.`,
+        level_3_4: `Sort ${keyTerms} by Tier 2 vs. Tier 3, explain one Spanish–English cognate or meaning clue, and plug "${t1}" into the unit frame.`,
+        level_5_6: `Explain word relationships among ${keyTerms} (including EN/ES roots or morphology) and use all three terms accurately in an original context sentence.`,
+      },
+      check_for_understanding: isK3Ela
+        ? `Students accurately tap/decode "${t1}" and "${t2}", connect EN/ES cognates or visual meanings, and use at least one target word orally in context.`
+        : `Students accurately distinguish Tier 2 vs. Tier 3 meanings for ${keyTerms}, articulate an EN/ES cognate or meaning bridge, and use "${t1}" accurately in context.`,
       target_lab_route: "/access-practice-lab/wordlab",
     });
 
-    // Activity 3: Visual/Model Justification (Math/Science) OR Structured Partner Talk (ELA/Social Studies)
+    // -----------------------------------------------------------------------
+    // Order 3 — Structured Partner Talk (Day 3 · Structured Oral Discourse)
+    // -----------------------------------------------------------------------
+    const day3WorkedExample = `Partner A (${pt.role_a_title}): "${mentorSentence}" Partner B (${pt.role_b_title}): "So you are explaining that ${t1} shapes ${t2} in ${unit.unit_title}. Looking closely at ${ev}, I want to build on your point by adding how ${t3} confirms our thinking."`;
+
+    const day3StudentPrompt =
+      band === "K–2"
+        ? `Take turns with your partner! Partner A (${pt.role_a_title}): ${pt.role_a_prompt} Partner B (${pt.role_b_title}): ${pt.role_b_prompt} Use our talk moves (${talkMoveLabels}).`
+        : band === "3–5"
+          ? `Run ${pt.protocol_name} for "${unit.unit_title}". Role A (${pt.role_a_title}): ${pt.role_a_prompt} Role B (${pt.role_b_title}): ${pt.role_b_prompt} Weave in at least two talk moves (${talkMoveLabels}).`
+          : `Engage in ${pt.protocol_name} about "${unit.unit_title}". Partner A (${pt.role_a_title}): ${pt.role_a_prompt} Partner B (${pt.role_b_title}): ${pt.role_b_prompt} Press each other with academic talk moves (${talkMoveLabels}).`;
+
     activities.push({
       id: `act-${unit.id}-3`,
       unit_id: unit.id,
       activity_order: 3,
-      activity_type: thirdType,
-      title: isStem
-        ? `Visual/Model Justification: ${unit.unit_title}`
-        : `Structured Partner Talk: ${unit.unit_title}`,
-      prep_time_minutes: 6,
-      teacher_instructions: isStem
-        ? `Give pairs a diagram, table, or worked model from Grade ${unit.grade} ${unit.subject} ("${unit.unit_title}"). Require each student to point to evidence on the model while orally rehearsing "${conn.unit_example_frame}" with ${keyTerms}, then record their justification.`
-        : `Pair students in an A/B academic conversation about "${unit.unit_title}" using "${conn.unit_example_frame}". Partner A cites text or historical evidence using ${keyTerms}; Partner B paraphrases and extends using the ${bp.move_name} language move.`,
-      student_prompt: isStem
-        ? `Inspect the model for "${unit.unit_title}". Point to the key feature, explain your thinking using "${conn.unit_example_frame}", and include ${keyTerms} in your justification.`
-        : `Take turns with your partner discussing "${unit.unit_title}". Use the frame "${conn.unit_example_frame}" and weave in ${keyTerms}, then listen and build on your partner's idea.`,
-      target_lab_route: thirdRoute,
+      day_label: "Day 3 · Structured Oral Discourse",
+      domain: "Speaking & Listening",
+      grouping: "Partners (A/B)",
+      duration_minutes: 12,
+      prep_time_minutes: 2,
+      activity_type: "Structured Partner Talk",
+      title: `Structured Partner Talk: ${unit.unit_title}`,
+      materials: [
+        "A/B Partner Role Cards",
+        "Academic Talk Moves Desk Tent",
+        "Projected Unit Frame & Visual Anchor",
+      ],
+      teacher_instructions: `1. Assign Role A (${pt.role_a_title}) and Role B (${pt.role_b_title}) for ${pt.protocol_name}, and fishbowl one quick exchange using "${talkMove1.label}" and "${talkMove2.label}". 2. Run Round 1 (4 min): Partner A speaks using "${conn.unit_example_frame}" and ${keyTerms} while pointing to ${ev}; Partner B paraphrases and asks a clarifying question. 3. Switch A/B roles for Round 2 (4 min), then invite 2–3 students to report their partner's strongest idea to the whole group.`,
+      worked_example: day3WorkedExample,
+      student_prompt: day3StudentPrompt,
+      differentiated_targets: {
+        level_1_2: `Point to ${ev} and speak in Role A or B using a WIDA 1–2 sentence starter, "${t1}", and one posted talk move ("${talkMove1.label}").`,
+        level_3_4: `Complete both Role A and Role B turns using "${conn.unit_example_frame}", "${t1}" and "${t2}", and at least two talk moves (${talkMove1.label}, ${talkMove2.label}).`,
+        level_5_6: `Lead a multi-turn A/B exchange integrating ${keyTerms}, paraphrasing Partner B's reasoning, and extending with warranted evidence from ${ev}.`,
+      },
+      check_for_understanding: `Both partners complete Role A and Role B turns, use at least one posted talk move (${talkMoveLabels}), and reference ${ev} with "${t1}" or "${t2}".`,
+      target_lab_route: "/access-practice-lab/speak",
+    });
+
+    // -----------------------------------------------------------------------
+    // Order 4 — Visual / Model Justification (Day 4 · Model & Text Reasoning)
+    // -----------------------------------------------------------------------
+    const day4WorkedExample =
+      unit.subject === "Math"
+        ? `On ${ev} for ${unit.unit_title}, we labeled ${t1} first and matched each equal part to ${t2}. This model justifies our solution because every step stays consistent with ${t3}.`
+        : unit.subject === "Science"
+          ? `Our ${ev} for ${unit.unit_title} provides direct evidence of ${t1}. When we trace how ${t1} interacts with ${t2} on the diagram, the scientific reasoning clearly explains ${t3}.`
+          : unit.subject === "Social Studies"
+            ? `Corroborating ${ev} for ${unit.unit_title} highlights how ${t1} influenced decisions around ${t2}. Pointing to specific source details proves why ${t3} mattered to the community.`
+            : `In ${ev} for ${unit.unit_title}, the author's details about ${t1} reveal a clear connection to ${t2}. Annotating this line shows how ${t3} deepens the central meaning of the text.`;
+
+    const day4StudentPrompt =
+      band === "K–2"
+        ? `Look closely at the ${visualMeta.artifactName} for "${unit.unit_title}". Point to one important detail, label "${t1}", and explain your thinking to your group using "${conn.unit_example_frame}".`
+        : band === "3–5"
+          ? `With your small group, ${visualMeta.actionVerb} for "${unit.unit_title}". Label where you see "${t1}" and "${t2}", then write a 2-sentence justification using "${conn.unit_example_frame}".`
+          : `Collaborate in your small group to ${visualMeta.actionVerb} for "${unit.unit_title}". Annotate evidence of ${keyTerms} and construct a 2–3 sentence ${klu} justification citing specific features of ${ev}.`;
+
+    activities.push({
+      id: `act-${unit.id}-4`,
+      unit_id: unit.id,
+      activity_order: 4,
+      day_label: "Day 4 · Model & Text Reasoning",
+      domain: "Reading & Reasoning",
+      grouping: "Small Group",
+      duration_minutes: 12,
+      prep_time_minutes: 4,
+      activity_type: "Visual / Model Justification",
+      title: `Visual / Model Justification: ${unit.unit_title}`,
+      materials: visualMeta.materials,
+      teacher_instructions: `1. Distribute the ${visualMeta.artifactName} for Grade ${unit.grade} ${unit.subject} ("${unit.unit_title}") and model annotating "${t1}" directly on ${ev}. 2. Have small groups ${visualMeta.actionVerb} during ${protocol}, requiring students to physically point to evidence before speaking. 3. Ask each group to draft one shared justification using "${conn.unit_example_frame}" and ${keyTerms}, then compare two groups' models on the board.`,
+      worked_example: day4WorkedExample,
+      student_prompt: day4StudentPrompt,
+      differentiated_targets: {
+        level_1_2: `Circle or label "${t1}" on the ${visualMeta.artifactName} and orally state 1 observation using a WIDA 1–2 starter.`,
+        level_3_4: `Annotate "${t1}" and "${t2}" on ${ev} and write a 2-sentence ${klu} justification connecting the visual/text detail to "${unit.unit_title}".`,
+        level_5_6: `Evaluate and compare two features on the ${visualMeta.artifactName}, writing a concise justification that integrates ${keyTerms} and addresses a peer's question.`,
+      },
+      check_for_understanding: `Students point to or annotate concrete evidence on the ${visualMeta.artifactName} and explain how "${t1}" and "${t2}" support their reasoning rather than stating an unsupported answer.`,
+      target_lab_route: "/access-practice-lab/access-prep",
+    });
+
+    // -----------------------------------------------------------------------
+    // Order 5 — Quick Write & Language Exit Ticket (Day 5 · Independent Transfer)
+    // -----------------------------------------------------------------------
+    const day5WorkedExample = `${mentorSentence} Specifically, ${ev} confirms how ${t1} and ${t2} work together to deepen our understanding of ${t3} in ${unit.unit_title}.`;
+
+    activities.push({
+      id: `act-${unit.id}-5`,
+      unit_id: unit.id,
+      activity_order: 5,
+      day_label: "Day 5 · Independent Transfer",
+      domain: "Synthesis",
+      grouping: "Independent",
+      duration_minutes: 8,
+      prep_time_minutes: 2,
+      activity_type: "Quick Write & Language Exit Ticket",
+      title: `Quick Write & Language Exit Ticket: ${unit.unit_title}`,
+      materials: [
+        "Unit Language Exit Ticket Slip or Digital Form",
+        "WIDA Desk Strip (Optional Support)",
+        "Unit Vocabulary Anchor Chart",
+      ],
+      teacher_instructions: `1. Project the "${unit.unit_title}" Language Exit Ticket prompt, target frame ("${etFrame}"), and required terms (${etVocab}) so expectations are visible. 2. Give students 5 minutes of independent transfer time (allowing oral dictation or WIDA 1–2 desk strips as needed) while circulating to note common language misconceptions. 3. Collect slips and sort into Emerging, Developing, and Proficient groups using the unit look-fors to plan immediate reteach or extension.`,
+      worked_example: day5WorkedExample,
+      student_prompt: etPrompt,
+      differentiated_targets: {
+        level_1_2: etRubric.emerging,
+        level_3_4: etRubric.developing,
+        level_5_6: etRubric.proficient,
+      },
+      check_for_understanding: `Exit ticket look-fors: ${etLookFors.join(" ")}`,
+      target_lab_route: "/access-practice-lab/sentences",
     });
   }
 

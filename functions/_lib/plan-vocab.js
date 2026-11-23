@@ -5606,6 +5606,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/activity/",
+    title: "BCPSS Unit Activity",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/insights/",
     title: "District Trends — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",

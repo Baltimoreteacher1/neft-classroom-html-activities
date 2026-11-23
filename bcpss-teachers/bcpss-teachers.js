@@ -4,6 +4,9 @@ import { renderQrSvg } from "./qr-svg.js";
 
 const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
 const SUBJECTS = ["ELA", "Math", "Science", "Social Studies"];
+const KLU_FILTERS = ["All", "Narrate", "Inform", "Explain", "Argue"];
+const COMFORT_STORAGE_KEY = "bcpssTeachers:v1:comfort";
+const PUBLIC_SITE_ORIGIN = "https://thelanguagepage.com";
 const WIDA_TIERS = [
   { key: "1_2", label: "Levels 1–2", short: "Entering / Emerging" },
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
@@ -27,6 +30,8 @@ const state = {
   wida: "3_4",
   tab: "connections",
   units: [],
+  unitSearch: "",
+  kluFilter: "All",
   detail: null,
   planMode: false,
   pinnedPlan: null,
@@ -35,7 +40,15 @@ const state = {
   projectionMode: false,
   diveSelectedChunk: 0,
   diveRevealAll: false,
+  previewActivityIdx: -1,
+  comfort: {
+    largeText: false,
+    highContrast: false,
+    roomySpacing: false,
+  },
 };
+
+let lastPreviewTrigger = null;
 
 // Anonymous, FERPA-safe telemetry (zero PII; fire-and-forget)
 function trackTelemetry(unitId, widaTier, eventType) {
@@ -79,12 +92,72 @@ function safeParseJson(val, fallback) {
 }
 
 function announce(msg) {
-  const el = $("#liveAnnouncer");
+  const el = $("#srAnnouncer") || $("#liveAnnouncer");
   if (!el) return;
   el.textContent = "";
   requestAnimationFrame(() => {
     el.textContent = msg;
   });
+}
+
+function applyComfortPrefs() {
+  const { largeText, highContrast, roomySpacing } = state.comfort;
+  document.documentElement.classList.toggle("is-large-text", Boolean(largeText));
+  document.body.classList.toggle("is-large-text", Boolean(largeText));
+  document.body.classList.toggle("is-high-contrast", Boolean(highContrast));
+  document.body.classList.toggle("is-roomy-spacing", Boolean(roomySpacing));
+
+  const largeBtn = $("#toggleLargeTextBtn");
+  const contrastBtn = $("#toggleHighContrastBtn");
+  const roomyBtn = $("#toggleRoomySpacingBtn");
+  if (largeBtn) largeBtn.setAttribute("aria-pressed", largeText ? "true" : "false");
+  if (contrastBtn) contrastBtn.setAttribute("aria-pressed", highContrast ? "true" : "false");
+  if (roomyBtn) roomyBtn.setAttribute("aria-pressed", roomySpacing ? "true" : "false");
+}
+
+function loadComfortPrefs() {
+  try {
+    const raw = window.localStorage.getItem(COMFORT_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        state.comfort = {
+          largeText: Boolean(parsed.largeText),
+          highContrast: Boolean(parsed.highContrast),
+          roomySpacing: Boolean(parsed.roomySpacing),
+        };
+      }
+    }
+  } catch {
+    // Ignore storage access errors in restricted browsing modes
+  }
+  applyComfortPrefs();
+}
+
+function saveComfortPrefs() {
+  try {
+    window.localStorage.setItem(COMFORT_STORAGE_KEY, JSON.stringify(state.comfort));
+  } catch {
+    // Ignore storage write errors
+  }
+}
+
+function toggleComfortPref(key) {
+  if (!(key in state.comfort)) return;
+  state.comfort[key] = !state.comfort[key];
+  applyComfortPrefs();
+  saveComfortPrefs();
+  const labels = {
+    largeText: "Larger text",
+    highContrast: "High contrast",
+    roomySpacing: "Roomy spacing",
+  };
+  announce(`${labels[key]} ${state.comfort[key] ? "enabled" : "disabled"}.`);
+}
+
+function buildActivityUrl(unitId, activityId, wida, mode = "student", { absolute = false } = {}) {
+  const path = `/bcpss-teachers/activity/?unit=${encodeURIComponent(unitId)}&activity=${encodeURIComponent(activityId)}&wida=${encodeURIComponent(wida || "3_4")}&mode=${encodeURIComponent(mode)}`;
+  return absolute ? `${PUBLIC_SITE_ORIGIN}${path}` : path;
 }
 
 function curriculumFor(grade, subject) {
@@ -111,14 +184,6 @@ function kluClass(klu) {
 
 function widaLabel(tier) {
   return WIDA_TIERS.find((t) => t.key === tier)?.label || "Levels 3–4";
-}
-
-function resolveLabRoute(route) {
-  const raw = String(route || "/sentences").trim();
-  if (/^https?:\/\//i.test(raw)) return raw;
-  if (raw.startsWith("/access-practice-lab/")) return raw;
-  if (raw.startsWith("/")) return `/access-practice-lab${raw}`;
-  return `/access-practice-lab/${raw}`;
 }
 
 function extractScaffoldForTier(scaffoldsRaw, tierKey) {
@@ -392,6 +457,9 @@ function applyWidaTier(next) {
   renderConnectionsTab();
   renderStudioTab();
   renderActivitiesTab();
+  if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
+    renderActivityPreviewModal();
+  }
   renderFamilyTab();
   renderPrintKit();
   trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
@@ -412,16 +480,83 @@ function syncUrl() {
 }
 
 function updateSubjectLabels() {
+  const gradeSelect = $("#gradeSelect");
+  if (gradeSelect) gradeSelect.value = state.grade;
+
   const select = $("#subjectSelect");
-  if (!select) return;
-  for (const opt of select.options) {
-    const subj = opt.value;
-    opt.textContent = `${subj} (${curriculumFor(state.grade, subj)})`;
+  if (select) {
+    for (const opt of select.options) {
+      const subj = opt.value;
+      opt.textContent = `${subj} (${curriculumFor(state.grade, subj)})`;
+    }
+    select.value = state.subject;
   }
+
+  for (const btn of document.querySelectorAll("#gradeRibbon [data-grade]")) {
+    const isActive = btn.dataset.grade === String(state.grade);
+    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+  }
+
+  for (const btn of document.querySelectorAll("#subjectPills [data-subject]")) {
+    const subj = btn.dataset.subject;
+    const isActive = subj === state.subject;
+    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+    const subEl = btn.querySelector("[data-subject-sub]");
+    if (subEl) {
+      subEl.textContent = curriculumFor(state.grade, subj);
+    }
+  }
+
   const badge = $("#curriculumBadge");
   if (badge) {
     badge.textContent = `${curriculumFor(state.grade, state.subject)} · ${gradeLabel(state.grade)}`;
   }
+}
+
+function syncUnitFilterUi() {
+  const input = $("#unitSearchInput");
+  const clearBtn = $("#unitSearchClearBtn");
+  if (input && input.value !== state.unitSearch) {
+    input.value = state.unitSearch;
+  }
+  if (clearBtn) {
+    clearBtn.hidden = !state.unitSearch;
+  }
+  for (const btn of document.querySelectorAll("#kluFilterBar [data-klu-filter]")) {
+    btn.setAttribute("aria-pressed", btn.dataset.kluFilter === state.kluFilter ? "true" : "false");
+  }
+}
+
+function resetUnitFilters() {
+  state.unitSearch = "";
+  state.kluFilter = "All";
+  syncUnitFilterUi();
+}
+
+function getFilteredUnits() {
+  const query = state.unitSearch.trim().toLowerCase();
+  const klu = state.kluFilter;
+  return state.units.filter((u) => {
+    if (klu && klu !== "All") {
+      const unitKlu = String(u.primary_klu || "").toLowerCase();
+      if (!unitKlu.includes(klu.toLowerCase())) return false;
+    }
+    if (!query) return true;
+    const standards = parseStandardsList(u.core_standards).join(" ");
+    const haystack = [
+      `unit ${u.unit_number}`,
+      u.unit_title,
+      u.unit_summary,
+      u.essential_question,
+      u.primary_klu,
+      u.curriculum_name,
+      standards,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(query);
+  });
 }
 
 async function copyToClipboard(text, btn, doneLabel = "Copied!") {
@@ -493,7 +628,7 @@ async function loadUnits(preferredUnitId = "") {
   }
 }
 
-async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
+async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = false } = {}) {
   state.unitId = unitId;
   state.diveSelectedChunk = 0;
   state.diveRevealAll = false;
@@ -501,6 +636,9 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
   syncUrl();
   if (skipFetchIfLoaded && state.detail?.unit?.id === unitId) {
     renderWorkspace();
+    if (userInitiated) {
+      focusAndAnnounceWorkspace(state.detail.unit);
+    }
     return;
   }
   $("#panel-connections").innerHTML = `<div class="bh-loading" role="status">Loading unit language bridge…</div>`;
@@ -510,12 +648,29 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false } = {}) {
     const detail = await fetchJson(`/api/bcpss/units/${encodeURIComponent(unitId)}`);
     state.detail = detail;
     renderWorkspace();
+    if (userInitiated && detail?.unit) {
+      focusAndAnnounceWorkspace(detail.unit);
+    }
   } catch (err) {
     const errHtml = `<div class="bh-error" role="alert">Unable to load unit details: ${esc(err.message)}</div>`;
     $("#panel-connections").innerHTML = errHtml;
     $("#panel-studio").innerHTML = errHtml;
     $("#panel-activities").innerHTML = errHtml;
   }
+}
+
+function focusAndAnnounceWorkspace(u) {
+  if (!u) return;
+  const ws = $("#workspaceSection");
+  if (ws) {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    ws.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+  }
+  const titleEl = $("#workspaceTitle");
+  if (titleEl) {
+    titleEl.focus({ preventScroll: true });
+  }
+  announce(`Loaded ${gradeLabel(u.grade)} ${u.subject} Unit ${u.unit_number}: ${u.unit_title}`);
 }
 
 async function loadSharedPlan(planId) {
@@ -580,22 +735,43 @@ function renderPinnedPlanBanner() {
   `;
 }
 
-function renderUnitStrip() {
+function renderUnitStrip({ announceCount = false } = {}) {
   const strip = $("#unitStrip");
   const countEl = $("#unitsCount");
+  const total = state.units.length;
+  const filtered = getFilteredUnits();
+  const countText = total
+    ? `Showing ${filtered.length} of ${total} unit${total === 1 ? "" : "s"}`
+    : "0 units";
+
   if (countEl) {
-    countEl.textContent = state.units.length
-      ? `${state.units.length} unit${state.units.length === 1 ? "" : "s"} available`
-      : "0 units";
+    countEl.textContent = countText;
   }
-  if (!state.units.length) {
+  if (announceCount) {
+    announce(countText);
+  }
+
+  if (!total) {
     strip.innerHTML = `<div class="bh-empty">No units found for ${esc(gradeLabel(state.grade))} ${esc(state.subject)}.</div>`;
     return;
   }
-  strip.innerHTML = state.units
+  if (!filtered.length) {
+    strip.innerHTML = `
+      <div class="bh-empty bh-filter-empty">
+        <span>No units match the current search or WIDA KLU filter.</span>
+        <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-clear-unit-filters>
+          Clear filters
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  strip.innerHTML = filtered
     .map((u) => {
       const active = u.id === state.unitId;
-      const summary = String(u.unit_summary || "").trim();
+      const preview = String(u.essential_question || u.unit_summary || "").trim();
+      const actCount = Number(u.activity_count) > 0 ? Number(u.activity_count) : 5;
       return `
         <button
           type="button"
@@ -609,12 +785,12 @@ function renderUnitStrip() {
           </div>
           <div class="bh-unit-title">${esc(u.unit_title)}</div>
           ${
-            summary
-              ? `<p class="bh-unit-summary">${esc(summary)}</p>`
+            preview
+              ? `<p class="bh-unit-preview">${esc(preview)}</p>`
               : `<div class="bh-unit-curric">${esc(u.curriculum_name || curriculumFor(u.grade, u.subject))}</div>`
           }
-          <div class="bh-unit-footer" aria-label="Includes 3 activities and HTML, PDF, DOCX downloads">
-            <span class="bh-unit-footer-count">3 Activities</span>
+          <div class="bh-unit-footer" aria-label="Includes ${actCount} activities and HTML, PDF, DOCX downloads">
+            <span class="bh-unit-footer-count">${actCount} Activities</span>
             <span class="bh-unit-footer-sep" aria-hidden="true">·</span>
             <span class="fmt-pill fmt-pill-html">HTML</span>
             <span class="fmt-pill fmt-pill-pdf">PDF</span>
@@ -850,6 +1026,9 @@ function renderWorkspace() {
   renderConnectionsTab();
   renderStudioTab();
   renderActivitiesTab();
+  if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
+    renderActivityPreviewModal();
+  }
   renderFamilyTab();
   renderPrintKit();
 }
@@ -1220,6 +1399,341 @@ function renderConnectionsTab() {
   `;
 }
 
+function normalizeWorkedExample(raw) {
+  const parsed = safeParseJson(raw, raw);
+  if (!parsed) return "";
+  if (typeof parsed === "string") return parsed.trim();
+  if (Array.isArray(parsed)) {
+    return parsed
+      .map((item) => (typeof item === "string" ? item.trim() : ""))
+      .filter(Boolean)
+      .join("\n");
+  }
+  if (typeof parsed === "object") {
+    const parts = [
+      parsed.prompt ? `Prompt: ${parsed.prompt}` : "",
+      parsed.model_response || parsed.response || parsed.example || parsed.sample
+        ? `Model: ${parsed.model_response || parsed.response || parsed.example || parsed.sample}`
+        : "",
+      parsed.annotation || parsed.why_it_works || parsed.explanation
+        ? `Why it works: ${parsed.annotation || parsed.why_it_works || parsed.explanation}`
+        : "",
+    ].filter(Boolean);
+    return parts.join("\n");
+  }
+  return "";
+}
+
+function normalizeDifferentiatedTargets(raw) {
+  const parsed = safeParseJson(raw, null);
+  if (!parsed) return [];
+  if (Array.isArray(parsed)) {
+    return parsed
+      .map((item, idx) => {
+        if (typeof item === "string" && item.trim()) {
+          const tier = WIDA_TIERS[idx] || WIDA_TIERS[1];
+          return { key: tier.key, label: `WIDA ${tier.label}`, text: item.trim() };
+        }
+        if (item && typeof item === "object") {
+          const key = String(item.tier || item.key || WIDA_TIERS[idx]?.key || "3_4").replace(/^level_/, "");
+          const label = item.label || `WIDA ${widaLabel(key)}`;
+          const text = String(item.target || item.text || item.goal || "").trim();
+          return text ? { key, label, text } : null;
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (typeof parsed === "object") {
+    return WIDA_TIERS.map((tier) => {
+      const val =
+        parsed[`level_${tier.key}`] ||
+        parsed[tier.key] ||
+        parsed[`levels_${tier.key}`] ||
+        parsed[`L${tier.key}`];
+      const text =
+        typeof val === "string"
+          ? val.trim()
+          : val && typeof val === "object"
+            ? String(val.target || val.text || val.goal || "").trim()
+            : "";
+      return text ? { key: tier.key, label: `WIDA ${tier.label} (${tier.short})`, text } : null;
+    }).filter(Boolean);
+  }
+  return [];
+}
+
+function normalizeTeacherSteps(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return [];
+  const byLines = text
+    .split(/\n+/)
+    .map((line) => line.replace(/^\s*(?:step\s*)?\d+[.):-]\s*/i, "").trim())
+    .filter(Boolean);
+  if (byLines.length > 1) return byLines;
+  const byNumbered = text
+    .split(/(?=(?:^|\s)\d+[.)]\s+)/)
+    .map((part) => part.replace(/^\s*\d+[.)]\s+/, "").trim())
+    .filter(Boolean);
+  if (byNumbered.length > 1) return byNumbered;
+  return [text];
+}
+
+function normalizeActivity(act, idx) {
+  const dayLabel = String(act.day_label || `Day ${idx + 1}`).trim();
+  const activityType = String(act.activity_type || "Classroom Move").trim();
+  const domain = String(act.domain || "").trim();
+  const grouping = String(act.grouping || "").trim();
+  const durationMinutes =
+    act.duration_minutes != null && !Number.isNaN(Number(act.duration_minutes))
+      ? Number(act.duration_minutes)
+      : null;
+  const prepMinutes =
+    act.prep_time_minutes != null && !Number.isNaN(Number(act.prep_time_minutes))
+      ? Number(act.prep_time_minutes)
+      : 5;
+  const metaParts = [];
+  if (durationMinutes != null) metaParts.push(`${durationMinutes} min`);
+  if (grouping) metaParts.push(grouping);
+  const metaLabel = metaParts.length ? metaParts.join(" · ") : `${prepMinutes} min prep`;
+
+  const rawMaterials = safeParseJson(act.materials, act.materials);
+  const materials = Array.isArray(rawMaterials)
+    ? rawMaterials.map((m) => String(m || "").trim()).filter(Boolean).join(", ")
+    : String(rawMaterials || "").trim();
+
+  const workedExample = normalizeWorkedExample(act.worked_example);
+  const differentiatedTargets = normalizeDifferentiatedTargets(act.differentiated_targets);
+
+  const rawCfu = safeParseJson(act.check_for_understanding, act.check_for_understanding);
+  const checkForUnderstanding =
+    typeof rawCfu === "string"
+      ? rawCfu.trim()
+      : rawCfu && typeof rawCfu === "object"
+        ? String(rawCfu.prompt || rawCfu.question || rawCfu.criteria || "").trim()
+        : "";
+
+  return {
+    raw: act,
+    id: act.id,
+    title: String(act.title || `Day ${idx + 1} Activity`).trim(),
+    dayLabel,
+    activityType,
+    domain,
+    grouping,
+    durationMinutes,
+    prepMinutes,
+    metaLabel,
+    materials,
+    teacherInstructions: String(act.teacher_instructions || "").trim(),
+    teacherSteps: normalizeTeacherSteps(act.teacher_instructions),
+    studentPrompt: String(act.student_prompt || "").trim(),
+    workedExample,
+    differentiatedTargets,
+    checkForUnderstanding,
+  };
+}
+
+function formatActivityForSlides(unit, act, idx) {
+  const norm = normalizeActivity(act, idx);
+  const activeTarget = norm.differentiatedTargets.find((t) => t.key === state.wida);
+  const studentLink = buildActivityUrl(unit.id, act.id, state.wida, "student", { absolute: true });
+  return [
+    `BCPSS ${gradeLabel(unit.grade)} ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)} — Unit ${unit.unit_number}: ${unit.unit_title}`,
+    `${norm.dayLabel}: ${norm.title}`,
+    [norm.activityType, norm.domain, norm.metaLabel].filter(Boolean).join(" · "),
+    "",
+    `Student Prompt:\n${norm.studentPrompt}`,
+    ...(norm.workedExample ? ["", `Worked Example:\n${norm.workedExample}`] : []),
+    ...(norm.teacherInstructions ? ["", `Teacher Script:\n${norm.teacherInstructions}`] : []),
+    ...(norm.materials ? ["", `Materials: ${norm.materials}`] : []),
+    ...(activeTarget ? ["", `WIDA ${widaLabel(state.wida)} Target:\n${activeTarget.text}`] : []),
+    ...(norm.checkForUnderstanding ? ["", `Check for Understanding:\n${norm.checkForUnderstanding}`] : []),
+    "",
+    `Student Activity Link: ${studentLink}`,
+  ].join("\n");
+}
+
+function formatPlaylistForCopy(unit, conn, acts) {
+  const scaffold = extractScaffoldForTier(conn?.blueprint?.scaffolds_json, state.wida);
+  const count = acts.length || 5;
+  return [
+    `BCPSS ${count}-Day Pre-Teaching Playlist — ${gradeLabel(unit.grade)} ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)}`,
+    `Unit ${unit.unit_number}: ${unit.unit_title} · WIDA ${widaLabel(state.wida)}`,
+    "",
+    "Target Sentence Frames:",
+    ...(scaffold.frames.length ? scaffold.frames.map((f) => `• ${f}`) : [conn?.unit_example_frame || ""]),
+    "",
+    ...acts.flatMap((a, i) => {
+      const norm = normalizeActivity(a, i);
+      const activeTarget = norm.differentiatedTargets.find((t) => t.key === state.wida);
+      const studentLink = buildActivityUrl(unit.id, a.id, state.wida, "student", { absolute: true });
+      return [
+        `--- ${norm.dayLabel}: ${norm.title} (${[norm.activityType, norm.domain, norm.metaLabel].filter(Boolean).join(" · ")}) ---`,
+        `Student Prompt: ${norm.studentPrompt}`,
+        ...(norm.workedExample ? [`Worked Example: ${norm.workedExample}`] : []),
+        ...(norm.teacherInstructions ? [`Teacher Script: ${norm.teacherInstructions}`] : []),
+        ...(activeTarget ? [`WIDA ${widaLabel(state.wida)} Target: ${activeTarget.text}`] : []),
+        ...(norm.checkForUnderstanding ? [`Check for Understanding: ${norm.checkForUnderstanding}`] : []),
+        `Student Activity Link: ${studentLink}`,
+        "",
+      ];
+    }),
+  ].join("\n");
+}
+
+function renderWidaTargetsHtml(targets) {
+  if (!targets.length) return "";
+  return `
+    <div class="bh-wida-targets-list">
+      ${targets
+        .map(
+          (t) => `
+            <div class="bh-wida-target-item ${t.key === state.wida ? "is-active-tier" : ""}">
+              <span class="bh-wida-target-tag">${esc(t.label)}${t.key === state.wida ? " · Active" : ""}</span>
+              <p style="margin:0">${esc(t.text)}</p>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function openActivityPreview(idx, triggerEl) {
+  const modal = $("#activityPreviewModal");
+  const unit = state.detail?.unit;
+  const act = state.detail?.activities?.[idx];
+  if (!modal || !unit || !act) return;
+
+  lastPreviewTrigger = triggerEl || document.activeElement;
+  state.previewActivityIdx = idx;
+  renderActivityPreviewModal();
+
+  if (!modal.open) {
+    modal.showModal();
+  }
+  $("#closeActivityPreviewBtn")?.focus();
+  announce(`Opened quick preview for ${act.title}.`);
+}
+
+function renderActivityPreviewModal() {
+  const unit = state.detail?.unit;
+  const act = state.detail?.activities?.[state.previewActivityIdx];
+  if (!unit || !act) return;
+
+  const norm = normalizeActivity(act, state.previewActivityIdx);
+  const studentHref = buildActivityUrl(unit.id, act.id, state.wida, "student");
+  const teacherHref = buildActivityUrl(unit.id, act.id, state.wida, "teacher");
+
+  const badgesEl = $("#activityPreviewBadges");
+  if (badgesEl) {
+    badgesEl.innerHTML = `
+      <span class="bh-badge-day">${esc(norm.dayLabel)}</span>
+      <span class="bh-badge-type">${esc(norm.activityType)}</span>
+      ${norm.domain ? `<span class="bh-badge-domain">${esc(norm.domain)}</span>` : ""}
+      <span class="bh-badge-meta">${esc(norm.metaLabel)}</span>
+    `;
+  }
+
+  const titleEl = $("#activityPreviewTitle");
+  if (titleEl) titleEl.textContent = norm.title;
+
+  const subtitleEl = $("#activityPreviewSubtitle");
+  if (subtitleEl) {
+    subtitleEl.textContent = `${gradeLabel(unit.grade)} · ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)} · Unit ${unit.unit_number} · WIDA ${widaLabel(state.wida)}`;
+  }
+
+  const bodyEl = $("#activityPreviewBody");
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <section class="bh-preview-section">
+        <h3>Student Prompt</h3>
+        <div class="bh-student-prompt-box">${esc(norm.studentPrompt)}</div>
+      </section>
+
+      ${
+        norm.workedExample
+          ? `<section class="bh-preview-section">
+              <h3>Worked Example</h3>
+              <div class="bh-worked-example-box">${esc(norm.workedExample).replace(/\n/g, "<br />")}</div>
+            </section>`
+          : ""
+      }
+
+      ${
+        norm.teacherSteps.length
+          ? `<section class="bh-preview-section">
+              <h3>3-Step Teacher Script</h3>
+              ${
+                norm.teacherSteps.length > 1
+                  ? `<ol class="bh-script-steps">${norm.teacherSteps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
+                  : `<p style="margin:0">${esc(norm.teacherSteps[0])}</p>`
+              }
+              ${
+                norm.materials
+                  ? `<p style="margin:0.4rem 0 0;font-size:0.88rem;color:var(--ink-2)"><strong>Materials:</strong> ${esc(norm.materials)}</p>`
+                  : ""
+              }
+              ${
+                norm.checkForUnderstanding
+                  ? `<p style="margin:0.4rem 0 0;font-size:0.88rem;color:var(--ink-2)"><strong>Check for Understanding:</strong> ${esc(norm.checkForUnderstanding)}</p>`
+                  : ""
+              }
+            </section>`
+          : ""
+      }
+
+      ${
+        norm.differentiatedTargets.length
+          ? `<section class="bh-preview-section">
+              <h3>Differentiated WIDA Targets</h3>
+              ${renderWidaTargetsHtml(norm.differentiatedTargets)}
+            </section>`
+          : ""
+      }
+    `;
+  }
+
+  const footerEl = $("#activityPreviewFooter");
+  if (footerEl) {
+    footerEl.innerHTML = `
+      <a
+        class="bh-btn bh-btn-primary bh-btn-sm"
+        href="${esc(studentHref)}"
+        target="_blank"
+        rel="noopener"
+        data-preview-open-student
+      >
+        Open Student View ↗
+      </a>
+      <a
+        class="bh-btn bh-btn-secondary bh-btn-sm"
+        href="${esc(teacherHref)}"
+        target="_blank"
+        rel="noopener"
+        data-preview-open-teacher
+      >
+        Open Teacher View ↗
+      </a>
+      <button
+        type="button"
+        class="bh-btn bh-btn-secondary bh-btn-sm"
+        data-preview-copy-link
+      >
+        Copy Student Link
+      </button>
+      <button
+        type="button"
+        class="bh-btn bh-btn-ghost bh-btn-sm"
+        data-preview-copy-slides
+      >
+        Copy for Slides / LMS
+      </button>
+    `;
+  }
+}
+
 function renderActivitiesTab() {
   const panel = $("#panel-activities");
   const detail = state.detail;
@@ -1233,41 +1747,101 @@ function renderActivitiesTab() {
     return;
   }
 
+  const dayCount = activities.length || 5;
   const activitiesHtml = activities.length
     ? `
       <div class="bh-activities-toolbar">
-        <p><strong>${activities.length}-Step Pre-Teaching Sequence</strong> · Aligned to WIDA ${esc(widaLabel(state.wida))} frames</p>
+        <p><strong>${dayCount}-Day Pre-Teaching Sequence</strong> · Aligned to WIDA ${esc(widaLabel(state.wida))} frames</p>
         <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-copy-playlist>
-          Copy Full 3-Day Pre-Teaching Playlist
+          Copy Full 5-Day Pre-Teaching Playlist
         </button>
       </div>
       <div class="bh-activities-grid">
         ${activities
           .map((act, idx) => {
-            const labBase = resolveLabRoute(act.target_lab_route);
-            const studentUrl = `${labBase}?bcpssUnit=${encodeURIComponent(unit.id)}&activity=${encodeURIComponent(act.id)}&wida=${encodeURIComponent(state.wida)}`;
+            const norm = normalizeActivity(act, idx);
+            const studentUrl = buildActivityUrl(unit.id, act.id, state.wida, "student");
             return `
               <article class="bh-activity-card">
                 <div class="bh-activity-badges">
-                  <span class="bh-badge-type">${esc(act.activity_type || "Classroom Move")}</span>
-                  <span class="bh-badge-prep">${esc(act.prep_time_minutes ?? 5)} min prep</span>
+                  <span class="bh-badge-day">${esc(norm.dayLabel)}</span>
+                  <span class="bh-badge-type">${esc(norm.activityType)}</span>
+                  ${norm.domain ? `<span class="bh-badge-domain">${esc(norm.domain)}</span>` : ""}
+                  <span class="bh-badge-meta">${esc(norm.metaLabel)}</span>
                 </div>
-                <h3>${esc(act.title)}</h3>
-                <div class="bh-activity-block">
-                  <strong>Teacher Instructions</strong>
-                  <p style="margin:0">${esc(act.teacher_instructions)}</p>
-                </div>
+                <h3>${esc(norm.title)}</h3>
                 <div class="bh-activity-block">
                   <strong>Student Prompt</strong>
-                  <div class="bh-student-prompt-box">${esc(act.student_prompt)}</div>
+                  <div class="bh-student-prompt-box">${esc(norm.studentPrompt)}</div>
                 </div>
+                <details class="bh-activity-details">
+                  <summary>Teacher Script, Worked Example &amp; WIDA Targets</summary>
+                  <div class="bh-activity-details-body">
+                    ${
+                      norm.teacherSteps.length
+                        ? `<div class="bh-activity-block">
+                            <strong>Teacher Script</strong>
+                            ${
+                              norm.teacherSteps.length > 1
+                                ? `<ol class="bh-script-steps">${norm.teacherSteps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
+                                : `<p style="margin:0">${esc(norm.teacherSteps[0])}</p>`
+                            }
+                          </div>`
+                        : ""
+                    }
+                    ${
+                      norm.materials
+                        ? `<div class="bh-activity-block">
+                            <strong>Materials</strong>
+                            <p style="margin:0">${esc(norm.materials)}</p>
+                          </div>`
+                        : ""
+                    }
+                    ${
+                      norm.workedExample
+                        ? `<div class="bh-activity-block">
+                            <strong>Worked Example</strong>
+                            <div class="bh-worked-example-box">${esc(norm.workedExample).replace(/\n/g, "<br />")}</div>
+                          </div>`
+                        : ""
+                    }
+                    ${
+                      norm.differentiatedTargets.length
+                        ? `<div class="bh-activity-block">
+                            <strong>Differentiated WIDA Targets</strong>
+                            ${renderWidaTargetsHtml(norm.differentiatedTargets)}
+                          </div>`
+                        : ""
+                    }
+                    ${
+                      norm.checkForUnderstanding
+                        ? `<div class="bh-activity-block">
+                            <strong>Check for Understanding</strong>
+                            <p style="margin:0">${esc(norm.checkForUnderstanding)}</p>
+                          </div>`
+                        : ""
+                    }
+                  </div>
+                </details>
                 <div class="bh-activity-actions">
-                  <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-copy-activity="${idx}">
+                  <a
+                    class="bh-btn bh-btn-primary bh-btn-sm"
+                    href="${esc(studentUrl)}"
+                    target="_blank"
+                    rel="noopener"
+                    data-lab-launch
+                  >
+                    Open Student Activity ↗
+                  </a>
+                  <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-preview-activity="${idx}">
+                    Quick Preview
+                  </button>
+                  <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-copy-student-link="${idx}">
+                    Copy Student Link
+                  </button>
+                  <button type="button" class="bh-btn bh-btn-ghost bh-btn-sm" data-copy-activity="${idx}">
                     Copy for Slides / LMS
                   </button>
-                  <a class="bh-btn bh-btn-primary bh-btn-sm" href="${esc(studentUrl)}" data-lab-launch>
-                    Launch Student View →
-                  </a>
                 </div>
               </article>
             `;
@@ -1710,32 +2284,135 @@ function renderDeconstructResults(data) {
 
 // ── Event Binding ───────────────────────────────────────────────────────────
 
+function moveHorizontalFocus(container, selector, e, onSelect) {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  const items = Array.from(container.querySelectorAll(selector));
+  if (!items.length) return;
+  const current = e.target.closest(selector);
+  const idx = current ? items.indexOf(current) : -1;
+  if (idx < 0) return;
+  e.preventDefault();
+  let next = idx;
+  if (e.key === "ArrowRight") next = (idx + 1) % items.length;
+  if (e.key === "ArrowLeft") next = (idx - 1 + items.length) % items.length;
+  if (e.key === "Home") next = 0;
+  if (e.key === "End") next = items.length - 1;
+  const target = items[next];
+  if (target) {
+    target.focus();
+    if (typeof onSelect === "function") onSelect(target);
+  }
+}
+
+function selectGrade(nextGrade) {
+  if (!GRADES.includes(String(nextGrade))) return;
+  state.planMode = false;
+  state.pinnedPlan = null;
+  $("#pinnedPlanBanner").hidden = true;
+  state.grade = String(nextGrade);
+  resetUnitFilters();
+  updateSubjectLabels();
+  loadUnits();
+  announce(`Selected ${gradeLabel(state.grade)} ${state.subject}.`);
+}
+
+function selectSubject(nextSubject) {
+  if (!SUBJECTS.includes(nextSubject)) return;
+  state.planMode = false;
+  state.pinnedPlan = null;
+  $("#pinnedPlanBanner").hidden = true;
+  state.subject = nextSubject;
+  resetUnitFilters();
+  updateSubjectLabels();
+  loadUnits();
+  announce(`Selected ${gradeLabel(state.grade)} ${state.subject}.`);
+}
+
 function bindEvents() {
-  $("#gradeSelect").addEventListener("change", (e) => {
-    state.planMode = false;
-    state.pinnedPlan = null;
-    $("#pinnedPlanBanner").hidden = true;
-    state.grade = e.target.value;
-    updateSubjectLabels();
-    loadUnits();
+  // Reading Comfort & Accessibility Bar
+  $(".bh-comfort-controls")?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-comfort]");
+    if (!btn) return;
+    toggleComfortPref(btn.dataset.comfort);
   });
 
-  $("#subjectSelect").addEventListener("change", (e) => {
-    state.planMode = false;
-    state.pinnedPlan = null;
-    $("#pinnedPlanBanner").hidden = true;
-    state.subject = e.target.value;
-    updateSubjectLabels();
-    loadUnits();
+  // Step 1: 1-Click Grade Ribbon + Arrow key navigation
+  const gradeRibbon = $("#gradeRibbon");
+  gradeRibbon?.addEventListener("click", (e) => {
+    const pill = e.target.closest("[data-grade]");
+    if (!pill || pill.dataset.grade === state.grade) return;
+    selectGrade(pill.dataset.grade);
+  });
+  gradeRibbon?.addEventListener("keydown", (e) => {
+    moveHorizontalFocus(gradeRibbon, "[data-grade]", e);
   });
 
-  $("#unitStrip").addEventListener("click", (e) => {
+  // Step 2: 1-Click Subject Pill Tabs + Arrow key navigation
+  const subjectPills = $("#subjectPills");
+  subjectPills?.addEventListener("click", (e) => {
+    const pill = e.target.closest("[data-subject]");
+    if (!pill || pill.dataset.subject === state.subject) return;
+    selectSubject(pill.dataset.subject);
+  });
+  subjectPills?.addEventListener("keydown", (e) => {
+    moveHorizontalFocus(subjectPills, "[data-subject]", e);
+  });
+
+  // Hidden backward-compatible selects
+  $("#gradeSelect")?.addEventListener("change", (e) => {
+    selectGrade(e.target.value);
+  });
+  $("#subjectSelect")?.addEventListener("change", (e) => {
+    selectSubject(e.target.value);
+  });
+
+  // Unit Search & WIDA KLU Filter Strip
+  const unitSearchInput = $("#unitSearchInput");
+  const unitSearchClearBtn = $("#unitSearchClearBtn");
+  unitSearchInput?.addEventListener("input", () => {
+    state.unitSearch = unitSearchInput.value;
+    if (unitSearchClearBtn) unitSearchClearBtn.hidden = !state.unitSearch;
+    renderUnitStrip({ announceCount: true });
+  });
+  unitSearchClearBtn?.addEventListener("click", () => {
+    state.unitSearch = "";
+    syncUnitFilterUi();
+    renderUnitStrip({ announceCount: true });
+    unitSearchInput?.focus();
+  });
+
+  const kluFilterBar = $("#kluFilterBar");
+  kluFilterBar?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-klu-filter]");
+    if (!btn) return;
+    const nextKlu = btn.dataset.kluFilter;
+    if (!KLU_FILTERS.includes(nextKlu) || nextKlu === state.kluFilter) return;
+    state.kluFilter = nextKlu;
+    syncUnitFilterUi();
+    renderUnitStrip({ announceCount: true });
+  });
+  kluFilterBar?.addEventListener("keydown", (e) => {
+    moveHorizontalFocus(kluFilterBar, "[data-klu-filter]", e);
+  });
+
+  // Unit Cards click + Clear filters + ArrowLeft/ArrowRight navigation
+  const unitStrip = $("#unitStrip");
+  unitStrip.addEventListener("click", (e) => {
+    if (e.target.closest("[data-clear-unit-filters]")) {
+      resetUnitFilters();
+      renderUnitStrip({ announceCount: true });
+      $("#unitSearchInput")?.focus();
+      return;
+    }
     const card = e.target.closest("[data-unit-id]");
     if (!card) return;
     const id = card.dataset.unitId;
-    if (!id || id === state.unitId) return;
+    if (!id) return;
     state.planMode = false;
-    selectUnit(id);
+    selectUnit(id, { skipFetchIfLoaded: id === state.unitId, userInitiated: true });
+  });
+  unitStrip.addEventListener("keydown", (e) => {
+    moveHorizontalFocus(unitStrip, ".bh-unit-card", e);
   });
 
   // Tablist clicks + Arrow key navigation
@@ -1820,9 +2497,8 @@ function bindEvents() {
       $("#pinnedPlanBanner").hidden = true;
       state.grade = String(targetGrade);
       state.subject = targetSubject;
-      $("#gradeSelect").value = state.grade;
+      resetUnitFilters();
       updateSubjectLabels();
-      $("#subjectSelect").value = state.subject;
       await loadUnits(targetUnit);
       $("#workspaceSection").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     }
@@ -1839,7 +2515,12 @@ function bindEvents() {
     setProjectionMode(false);
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && state.projectionMode && !$("#shareDialog")?.open) {
+    if (
+      e.key === "Escape" &&
+      state.projectionMode &&
+      !$("#shareDialog")?.open &&
+      !$("#activityPreviewModal")?.open
+    ) {
       setProjectionMode(false);
     }
   });
@@ -1874,10 +2555,31 @@ function bindEvents() {
     }
   });
 
-  // Activities panel delegation (Copy for Slides / LMS, Full 3-Day Playlist, Exit Ticket, Launch Student View)
+  // Activities panel delegation (Quick Preview, Copy Student Link, Copy for Slides / LMS, Full 5-Day Playlist, Exit Ticket, Open Student Activity)
   $("#panel-activities").addEventListener("click", (e) => {
     if (e.target.closest("[data-lab-launch]")) {
       trackTelemetry(state.unitId, state.wida, "lab_launch");
+      return;
+    }
+
+    const previewBtn = e.target.closest("[data-preview-activity]");
+    if (previewBtn && state.detail?.unit) {
+      const idx = Number(previewBtn.dataset.previewActivity);
+      if (!Number.isNaN(idx)) {
+        openActivityPreview(idx, previewBtn);
+      }
+      return;
+    }
+
+    const copyLinkBtn = e.target.closest("[data-copy-student-link]");
+    if (copyLinkBtn && state.detail?.unit) {
+      const act = state.detail.activities?.[Number(copyLinkBtn.dataset.copyStudentLink)];
+      if (!act) return;
+      const studentUrl = buildActivityUrl(state.detail.unit.id, act.id, state.wida, "student", {
+        absolute: true,
+      });
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      copyToClipboard(studentUrl, copyLinkBtn, "Link Copied!");
       return;
     }
 
@@ -1885,24 +2587,10 @@ function bindEvents() {
     if (playlistBtn && state.detail?.unit) {
       const u = state.detail.unit;
       const conn = state.detail.connections?.[0] || {};
-      const scaffold = extractScaffoldForTier(conn.blueprint?.scaffolds_json, state.wida);
       const acts = Array.isArray(state.detail.activities) ? state.detail.activities : [];
-      const lines = [
-        `BCPSS 3-Day Pre-Teaching Playlist — ${gradeLabel(u.grade)} ${u.curriculum_name || curriculumFor(u.grade, u.subject)}`,
-        `Unit ${u.unit_number}: ${u.unit_title} · WIDA ${widaLabel(state.wida)}`,
-        "",
-        "Target Sentence Frames:",
-        ...(scaffold.frames.length ? scaffold.frames.map((f) => `• ${f}`) : [conn.unit_example_frame || ""]),
-        "",
-        ...acts.flatMap((a, i) => [
-          `--- Day ${i + 1}: ${a.title} (${a.activity_type || "Activity"} · ${a.prep_time_minutes ?? 5} min prep) ---`,
-          `Teacher Instructions: ${a.teacher_instructions}`,
-          `Student Prompt: ${a.student_prompt}`,
-          "",
-        ]),
-      ];
+      const text = formatPlaylistForCopy(u, conn, acts);
       trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(lines.join("\n"), playlistBtn, "Playlist Copied!");
+      copyToClipboard(text, playlistBtn, "Playlist Copied!");
       return;
     }
 
@@ -1940,20 +2628,56 @@ function bindEvents() {
     }
 
     const copyBtn = e.target.closest("[data-copy-activity]");
-    if (!copyBtn || !state.detail) return;
-    const act = state.detail.activities?.[Number(copyBtn.dataset.copyActivity)];
+    if (!copyBtn || !state.detail?.unit) return;
+    const idx = Number(copyBtn.dataset.copyActivity);
+    const act = state.detail.activities?.[idx];
     if (!act) return;
-    const u = state.detail.unit;
-    const text = [
-      `BCPSS ${gradeLabel(u.grade)} ${u.curriculum_name || curriculumFor(u.grade, u.subject)} — Unit ${u.unit_number}: ${u.unit_title}`,
-      `Activity: ${act.title} (${act.activity_type} · ${act.prep_time_minutes ?? 5} min prep)`,
-      "",
-      `Teacher Instructions:\n${act.teacher_instructions}`,
-      "",
-      `Student Prompt:\n${act.student_prompt}`,
-    ].join("\n");
+    const text = formatActivityForSlides(state.detail.unit, act, idx);
     trackTelemetry(state.unitId, state.wida, "activity_copy");
     copyToClipboard(text, copyBtn, "Copied!");
+  });
+
+  // Instant Activity Preview Drawer (<dialog id="activityPreviewModal">)
+  const previewModal = $("#activityPreviewModal");
+  $("#closeActivityPreviewBtn")?.addEventListener("click", () => {
+    previewModal?.close();
+  });
+  previewModal?.addEventListener("click", (e) => {
+    if (e.target === previewModal) {
+      previewModal.close();
+      return;
+    }
+    if (e.target.closest("[data-preview-open-student]") || e.target.closest("[data-preview-open-teacher]")) {
+      trackTelemetry(state.unitId, state.wida, "lab_launch");
+      return;
+    }
+    const copyLinkBtn = e.target.closest("[data-preview-copy-link]");
+    if (copyLinkBtn && state.detail?.unit) {
+      const act = state.detail.activities?.[state.previewActivityIdx];
+      if (!act) return;
+      const studentUrl = buildActivityUrl(state.detail.unit.id, act.id, state.wida, "student", {
+        absolute: true,
+      });
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      copyToClipboard(studentUrl, copyLinkBtn, "Link Copied!");
+      return;
+    }
+    const copySlidesBtn = e.target.closest("[data-preview-copy-slides]");
+    if (copySlidesBtn && state.detail?.unit) {
+      const idx = state.previewActivityIdx;
+      const act = state.detail.activities?.[idx];
+      if (!act) return;
+      const text = formatActivityForSlides(state.detail.unit, act, idx);
+      trackTelemetry(state.unitId, state.wida, "activity_copy");
+      copyToClipboard(text, copySlidesBtn, "Copied!");
+    }
+  });
+  previewModal?.addEventListener("close", () => {
+    state.previewActivityIdx = -1;
+    if (lastPreviewTrigger && document.contains(lastPreviewTrigger)) {
+      lastPreviewTrigger.focus();
+    }
+    lastPreviewTrigger = null;
   });
 
   // Family Bridge panel delegation (Language preview toggle + Copy Family Link + PDF Download)
@@ -2095,6 +2819,7 @@ function bindEvents() {
 // ── Boot ────────────────────────────────────────────────────────────────────
 
 async function init() {
+  loadComfortPrefs();
   bindEvents();
 
   // Check if URL is /bcpss-teachers/plan/{id}

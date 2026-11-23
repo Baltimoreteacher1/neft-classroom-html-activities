@@ -16,6 +16,7 @@ const FAMILY_CARDS = seed.FAMILY_CARDS || [];
 
 const SEED_UNIT_BY_ID = new Map(BCPSS_UNITS.map((u) => [u.id, u]));
 const SEED_CONN_BY_UNIT_ID = new Map(UNIT_CONNECTIONS.map((c) => [c.unit_id, c]));
+const SEED_ACT_BY_ID = new Map(UNIT_ACTIVITIES.map((a) => [a.id, a]));
 
 export const GRADES = seed.GRADES || [];
 export const SUBJECTS = seed.SUBJECTS || [];
@@ -142,15 +143,28 @@ function normalizeConnection(row) {
 }
 
 function normalizeActivity(row) {
+  const seedAct = SEED_ACT_BY_ID.get(row.id) || null;
+  const rawDuration = row.duration_minutes ?? seedAct?.duration_minutes ?? null;
   return {
     id: row.id,
     unit_id: row.unit_id,
     activity_order: Number(row.activity_order),
+    day_label: row.day_label ?? seedAct?.day_label ?? null,
+    domain: row.domain ?? seedAct?.domain ?? null,
+    grouping: row.grouping ?? seedAct?.grouping ?? null,
+    duration_minutes: rawDuration != null ? Number(rawDuration) : null,
     activity_type: row.activity_type,
     title: row.title,
     prep_time_minutes: Number(row.prep_time_minutes),
+    materials: maybeParseJson(row.materials ?? seedAct?.materials ?? null),
     teacher_instructions: row.teacher_instructions,
+    worked_example: row.worked_example ?? seedAct?.worked_example ?? null,
     student_prompt: row.student_prompt,
+    differentiated_targets: maybeParseJson(
+      row.differentiated_targets ?? seedAct?.differentiated_targets ?? null,
+    ),
+    check_for_understanding:
+      row.check_for_understanding ?? seedAct?.check_for_understanding ?? null,
     target_lab_route: row.target_lab_route,
   };
 }

@@ -313,14 +313,53 @@ function verifyLocal() {
     `Invalid common_language_misconception records: ${invalidMisconceptions} (expected 0)`,
   );
 
-  // 4. Activities === 486 (zero units with < 3 activities)
-  check(UNIT_ACTIVITIES.length === 486, `UNIT_ACTIVITIES count is ${UNIT_ACTIVITIES.length} (expected 486)`);
+  // 4. Activities === 810 (162 × 5: 180 ELA, 270 Math, 180 Science, 180 Social Studies)
+  check(UNIT_ACTIVITIES.length === 810, `UNIT_ACTIVITIES count is ${UNIT_ACTIVITIES.length} (expected 810)`);
+  const unitSubjectById = new Map(BCPSS_UNITS.map((u) => [u.id, u.subject]));
+  const actsBySubject = Object.fromEntries(SUBJECTS.map((s) => [s, 0]));
   const actsByUnit = new Map();
+  let invalidActivityFields = 0;
   for (const a of UNIT_ACTIVITIES) {
     actsByUnit.set(a.unit_id, (actsByUnit.get(a.unit_id) || 0) + 1);
+    const subj = unitSubjectById.get(a.unit_id);
+    if (subj) actsBySubject[subj] = (actsBySubject[subj] || 0) + 1;
+    const dt = a.differentiated_targets;
+    const validDiffTargets =
+      typeof dt?.level_1_2 === "string" &&
+      dt.level_1_2.trim().length > 0 &&
+      typeof dt?.level_3_4 === "string" &&
+      dt.level_3_4.trim().length > 0 &&
+      typeof dt?.level_5_6 === "string" &&
+      dt.level_5_6.trim().length > 0;
+    if (
+      typeof a.day_label !== "string" ||
+      !a.day_label.trim() ||
+      typeof a.domain !== "string" ||
+      !a.domain.trim() ||
+      typeof a.grouping !== "string" ||
+      !a.grouping.trim() ||
+      typeof a.worked_example !== "string" ||
+      !a.worked_example.trim() ||
+      !validDiffTargets ||
+      typeof a.check_for_understanding !== "string" ||
+      !a.check_for_understanding.trim()
+    ) {
+      invalidActivityFields++;
+    }
   }
-  const unitsUnder3Acts = BCPSS_UNITS.filter((u) => (actsByUnit.get(u.id) || 0) < 3).length;
-  check(unitsUnder3Acts === 0, `Units with < 3 activities: ${unitsUnder3Acts} (expected 0)`);
+  check(actsBySubject.ELA === 180, `ELA activities: ${actsBySubject.ELA} (expected 180)`);
+  check(actsBySubject.Math === 270, `Math activities: ${actsBySubject.Math} (expected 270)`);
+  check(actsBySubject.Science === 180, `Science activities: ${actsBySubject.Science} (expected 180)`);
+  check(
+    actsBySubject["Social Studies"] === 180,
+    `Social Studies activities: ${actsBySubject["Social Studies"]} (expected 180)`,
+  );
+  const unitsUnder5Acts = BCPSS_UNITS.filter((u) => (actsByUnit.get(u.id) || 0) < 5).length;
+  check(unitsUnder5Acts === 0, `Units with < 5 activities: ${unitsUnder5Acts} (expected 0)`);
+  check(
+    invalidActivityFields === 0,
+    `Activities missing day_label/domain/grouping/worked_example/differentiated_targets/check_for_understanding: ${invalidActivityFields} (expected 0)`,
+  );
 
   // 5. Family cards === 162 with Spanish & English (en, es)
   check(FAMILY_CARDS.length === 162, `FAMILY_CARDS count is ${FAMILY_CARDS.length} (expected 162)`);
@@ -388,7 +427,7 @@ async function verifyNeon() {
   check(bp.n >= 12, `Neon language_blueprints: ${bp.n} (expected >= 12)`);
   check(u.n === 162, `Neon bcpss_units: ${u.n} (expected 162)`);
   check(c.n === 162, `Neon unit_connections: ${c.n} (expected 162)`);
-  check(a.n === 486, `Neon unit_activities: ${a.n} (expected 486)`);
+  check(a.n === 810, `Neon unit_activities: ${a.n} (expected 810)`);
   check(f.n === 162, `Neon bcpss_family_cards: ${f.n} (expected 162)`);
 }
 

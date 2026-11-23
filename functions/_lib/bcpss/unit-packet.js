@@ -856,15 +856,28 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
 
   const activitiesHtml = activities.length
     ? activities
-        .slice(0, 3)
-        .map(
-          (act, idx) => `<article class="activity-card">
+        .map((act, idx) => {
+          const dayLabel = act.day_label || `Day ${act.activity_order || idx + 1}`;
+          const metaPills = [
+            act.domain ? `<span class="activity-meta-pill">${escapeHtml(act.domain)}</span>` : "",
+            act.grouping
+              ? `<span class="activity-meta-pill">${escapeHtml(act.grouping)}</span>`
+              : "",
+            act.duration_minutes != null
+              ? `<span class="activity-meta-pill">${escapeHtml(act.duration_minutes)} min</span>`
+              : "",
+            `<span class="prep-pill">Prep: ${escapeHtml(act.prep_time_minutes ?? 3)} min</span>`,
+          ]
+            .filter(Boolean)
+            .join("");
+
+          return `<article class="activity-card">
             <div class="activity-head">
               <div class="activity-day-wrap">
-                <span class="day-badge">Day ${escapeHtml(act.activity_order || idx + 1)}</span>
+                <span class="day-badge">${escapeHtml(dayLabel)}</span>
                 <span class="activity-type">${escapeHtml(act.activity_type || "Micro-Activity")}</span>
               </div>
-              <span class="prep-pill">Prep: ${escapeHtml(act.prep_time_minutes ?? 5)} min</span>
+              <div class="activity-meta-pills">${metaPills}</div>
             </div>
             <h3 class="activity-title">${escapeHtml(act.title || `Day ${idx + 1} Pre-Teaching Activity`)}</h3>
             <p class="activity-copy"><strong>Teacher Instructions:</strong> ${escapeHtml(act.teacher_instructions || "")}</p>
@@ -872,8 +885,21 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
               <span class="micro-label">Student Prompt</span>
               <p>${escapeHtml(act.student_prompt || "")}</p>
             </div>
-          </article>`,
-        )
+            ${
+              act.worked_example
+                ? `<div class="worked-example-box">
+                    <span class="micro-label">Worked Example</span>
+                    <p>${escapeHtml(act.worked_example)}</p>
+                  </div>`
+                : ""
+            }
+            ${
+              act.check_for_understanding
+                ? `<p class="cfu-line"><strong>Check for Understanding:</strong> ${escapeHtml(act.check_for_understanding)}</p>`
+                : ""
+            }
+          </article>`;
+        })
         .join("")
     : `<p class="muted">No pre-teaching micro-activities recorded.</p>`;
 
@@ -1426,6 +1452,23 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       letter-spacing: 0.03em;
     }
 
+    .activity-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4pt;
+    }
+
+    .activity-meta-pill {
+      font-size: 7.4pt;
+      font-weight: 700;
+      color: #075568;
+      background: #e8f1f2;
+      border: 0.6pt solid #94b8c2;
+      padding: 1.5pt 5.5pt;
+      border-radius: 999px;
+    }
+
     .prep-pill {
       font-size: 7.8pt;
       font-weight: 700;
@@ -1453,10 +1496,33 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       border-left: 2.5pt solid #0e7490;
       padding: 4.5pt 7.5pt;
       font-size: 8.5pt;
+      margin-bottom: 5pt;
     }
 
     .student-prompt-box p {
       margin: 0;
+    }
+
+    .worked-example-box {
+      background: #f4f9fa;
+      border-left: 2.5pt solid #075568;
+      padding: 4.5pt 7.5pt;
+      font-size: 8.4pt;
+      margin-bottom: 5pt;
+    }
+
+    .worked-example-box p {
+      margin: 0;
+      font-style: italic;
+      color: #0f172a;
+    }
+
+    .cfu-line {
+      font-size: 8.2pt;
+      color: #334155;
+      margin: 0;
+      padding-top: 3pt;
+      border-top: 0.6pt dashed #cbd5e1;
     }
 
     .exit-box {
@@ -2056,14 +2122,14 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
       </table>
     </section>
 
-    <!-- PAGE ${pageActivities}: 3-Day Pre-Teaching Micro-Activities & 3-Minute Exit Ticket -->
+    <!-- PAGE ${pageActivities}: 5-Day Pre-Teaching & Practice Sequence & 3-Minute Exit Ticket -->
     <section class="page-break">
       <div class="page-header">
         <span class="page-kicker">${escapeHtml(runningImprint)} · ${escapeHtml(unit.unit_title || "")}</span>
-        <span class="page-num">Page ${pageActivities} of ${totalPages} · Micro-Activities &amp; Exit Ticket</span>
+        <span class="page-num">Page ${pageActivities} of ${totalPages} · 5-Day Sequence &amp; Exit Ticket</span>
       </div>
 
-      <h2 class="section-title" style="margin-top: 0;">3-Day Pre-Teaching Micro-Activities</h2>
+      <h2 class="section-title" style="margin-top: 0;">5-Day Pre-Teaching &amp; Practice Sequence</h2>
       ${activitiesHtml}
 
       <div class="exit-box">
@@ -2700,21 +2766,31 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     ),
   );
 
-  // 5. 3-Day Pre-Teaching Micro-Activities
+  // 5. 5-Day Pre-Teaching & Practice Sequence
   parts.push(
-    wParagraph("3-Day Pre-Teaching Micro-Activities", {
+    wParagraph("5-Day Pre-Teaching & Practice Sequence", {
       style: "Heading1",
       pageBreakBefore: true,
     }),
   );
-  for (let i = 0; i < Math.min(activities.length, 3); i++) {
+  for (let i = 0; i < activities.length; i++) {
     const act = activities[i];
-    const dayNum = act.activity_order || i + 1;
+    const dayLabel = act.day_label || `Day ${act.activity_order || i + 1}`;
     parts.push(
-      wParagraph(
-        `Day ${dayNum}: ${act.activity_type || "Micro-Activity"} (${act.prep_time_minutes ?? 5} min prep) — ${act.title || ""}`,
-        { style: "Heading2" },
-      ),
+      wParagraph(`${dayLabel} — ${act.activity_type || "Micro-Activity"}: ${act.title || ""}`, {
+        style: "Heading2",
+      }),
+    );
+    const metaTokens = [
+      act.domain ? `Domain: ${act.domain}` : "",
+      act.grouping ? `Grouping: ${act.grouping}` : "",
+      act.duration_minutes != null ? `Duration: ${act.duration_minutes} min` : "",
+      `Prep: ${act.prep_time_minutes ?? 3} min`,
+    ].filter(Boolean);
+    parts.push(
+      wParagraph(wRun(metaTokens.join("  ·  "), { bold: true, color: "0E7490", size: 18 }), {
+        spaceAfter: 50,
+      }),
     );
     parts.push(
       wParagraph(
@@ -2728,9 +2804,31 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     parts.push(
       wParagraph(
         [wRun("Student Prompt: ", { bold: true, color: "0E7490" }), wRun(act.student_prompt || "")],
-        { borderLeft: "0E7490", shading: "F8FAFC", spaceAfter: 120 },
+        { borderLeft: "0E7490", shading: "F8FAFC", spaceAfter: 60 },
       ),
     );
+    if (act.worked_example) {
+      parts.push(
+        wParagraph(
+          [
+            wRun("Worked Example: ", { bold: true, color: "075568" }),
+            wRun(act.worked_example, { italic: true }),
+          ],
+          { borderLeft: "075568", shading: "F4F9FA", spaceAfter: 60 },
+        ),
+      );
+    }
+    if (act.check_for_understanding) {
+      parts.push(
+        wParagraph(
+          [
+            wRun("Check for Understanding: ", { bold: true, color: "075568" }),
+            wRun(act.check_for_understanding),
+          ],
+          { spaceAfter: 120 },
+        ),
+      );
+    }
   }
 
   // 6. 3-Minute Language Exit Ticket & Quick Rubric
