@@ -19,6 +19,8 @@ import {
 } from "../sitemap.js";
 import { BASE, announce, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
+import { loadLab } from "../lab/store.js";
+import { readinessPanelHTML } from "../lab/progress-ui.js";
 import { EDUCATIONAL_SYNONYMS } from "../resource-intelligence.js";
 import { arcadeHTML } from "./play-arcade.js";
 
@@ -323,6 +325,7 @@ export async function render(ctx) {
           <p class="xp-lead">${I.T(...lead)}</p>
         </header>
         ${jumpIn}
+        ${state.section === "progress" ? readinessPanelHTML(I, loadLab(), { band, idp: "xpLab" }) : ""}
         ${
           state.section === "play" && !filtering()
             ? html`${arcadeHTML(I, band, (d) => inBand(d, band))}

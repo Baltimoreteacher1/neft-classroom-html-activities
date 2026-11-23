@@ -99,7 +99,7 @@ export default {
     const choices = row.choices.map((c) => ({
       en: c.en,
       es: c.es,
-      label: I.T(c.en, c.es),
+      label: I.TARGET(c.en, c.es),
     }));
     const answer = choices[row.answer]?.label || "";
     const chosen = row.pick === null ? null : choices[row.pick];
@@ -146,7 +146,7 @@ export default {
               >
                 <span class="sst-move-marker">#0${idx + 1}</span>
                 <span class="sst-move-label">${c.label}</span>
-                ${env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
+                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
               </button>
             `;
           })}
@@ -169,7 +169,7 @@ export default {
         I,
         right: I.T("Tactical Node Secured! Sector territory captured.", "¡Nodo táctico asegurado! Territorio del sector capturado."),
         retry: I.T("Rebuttal Encountered: Discourse move insufficiently supported. Review evidence.", "Refutación encontrada: Movimiento de discurso insuficientemente respaldado. Revisa la evidencia."),
-        answer: I.T(`Targeted move: ${answer}`, `Movimiento certero: ${answer}`),
+        answer: html`${I.T("Targeted move:", "Movimiento certero:")} ${answer}`,
         explain: I.T(row.explain.en, row.explain.es),
         hint: row.rs.h ? I.T(row.hint.en, row.hint.es) : "",
       })}

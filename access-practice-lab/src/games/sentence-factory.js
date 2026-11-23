@@ -17,6 +17,9 @@ import {
   takeHint,
 } from "./engine.js";
 import { svg } from "./art.js";
+import { primaryTag, TAG_IDS } from "../lab/tags.js";
+import { benchClick, benchMount, benchPlan, benchRound, benchView, isBench } from "../lab/workbench-round.js";
+import { validateSpec } from "../lab/workbench.js";
 
 const SYNTAX_TAGS = {
   0: ["Subject & Verb Chassis", "Chasis de sujeto y verbo"],
@@ -61,14 +64,39 @@ function cogWheel(size = 40, spin = false) {
   );
 }
 
+/** An expansion bench station: the shared sentence workbench inside the factory frame. */
+function benchStation(s, row, env, p) {
+  const I = env.I;
+  const locked = settled(row.rs);
+  const full = row.wb.kind === "full";
+  return html`<section class="sf-station ${locked ? "is-settled" : ""} ${row.rs.status === "right" ? "is-approved" : ""}" data-mechanic="factory-line">
+    <div class="sf-header">
+      <div class="sf-station-badge">
+        <span class="sf-cogs" aria-hidden="true">${cogWheel(26, !locked)} ${cogWheel(20, !locked)}</span>
+        <span class="sf-station-name">${I.T("Station", "Estación")} ${s.i + 1} · ${I.T("Expansion Bench", "Banco de expansión")}</span>
+      </div>
+    </div>
+    ${pips(p.done, p.total, I.S(`${p.done} of ${p.total} sentences assembled`, `${p.done} de ${p.total} oraciones ensambladas`), I.S)}
+    <div class="sf-console"><div class="sf-console-screen">
+      <div class="sf-terminal-hdr"><span class="sf-led ${locked ? "is-green" : "is-amber"}" aria-hidden="true"></span><span class="sf-terminal-tag">${I.T("CONSTRUCTION BLUEPRINT", "PLANO DE CONSTRUCCIÓN")}</span></div>
+      <h2 class="sf-prompt">${full ? I.T("Build the sentence out, then join it to the second idea.", "Amplía la oración y luego únela a la segunda idea.") : I.T("Build the sentence out with details.", "Amplía la oración con detalles.")}</h2>
+    </div></div>
+    ${benchView(row, env)}
+    ${locked ? html`<div class="gs-actions sf-actions"><button type="button" class="btn btn-primary btn-big sf-act-btn is-advance" data-g-next>${icon("arrow-right")}<span>${s.i + 1 === s.rounds.length ? I.T("Ship Final Freight · Finish Factory", "Despachar carga · Terminar fábrica") : I.T("Advance Conveyor · Next Station", "Avanzar cinta · Siguiente estación")}</span></button></div>` : ""}
+  </section>`;
+}
+
 export default {
   id: "sentence-factory",
 
   init(env) {
     const source = env.content.rounds || env.content.bands?.[env.band]?.rounds || [];
     const rows = source.slice(0, env.count(source.length, Math.min(3, source.length)));
+    // Expansion benches close the line: one in a quick run, every authored one in a full run.
+    const shop = env.content.workshop || env.content.bands?.[env.band]?.workshop || [];
+    const benches = shop.slice(0, env.count(shop.length, Math.min(1, shop.length)));
     return {
-      rounds: rows.map((row) => {
+      rounds: [...rows.map((row) => {
         const order = shuffle(row.choices.map((_, i) => i), env.rng);
         return {
           id: row.id,
@@ -77,10 +105,12 @@ export default {
           explain: row.explain,
           choices: order.map((i) => row.choices[i]),
           answer: order.indexOf(row.answer),
+          tag: row.tag || null,
+          tags: [],
           pick: null,
           rs: newRound(),
         };
-      }),
+      }), ...benches.map((spec) => benchRound(spec.id, spec, env.band))],
       i: 0,
     };
   },
@@ -102,13 +132,14 @@ export default {
       </section>`;
     }
 
+    if (isBench(row)) return benchStation(s, row, env, this.progress(s));
     const p = this.progress(s);
     const locked = settled(row.rs);
     const isRight = row.rs.status === "right";
     const choices = row.choices.map((c) => ({
       en: c.en,
       es: c.es,
-      label: I.T(c.en, c.es),
+      label: I.TARGET(c.en, c.es),
     }));
     const answer = choices[row.answer]?.label || "";
     const chosen = row.pick === null ? null : choices[row.pick];
@@ -188,7 +219,7 @@ export default {
                   ${isPicked ? html`<span class="sf-dock-pill">${I.T("DOCKED", "ACOPLADO")}</span>` : ""}
                 </span>
                 <span class="sf-block-body">${c.label}</span>
-                ${env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
+                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
               </button>
             `;
           })}
@@ -211,7 +242,7 @@ export default {
         I,
         right: I.T("Sentence verified! Conveyor cleared for transit.", "¡Oración verificada! Cinta transportadora lista para el despacho."),
         retry: I.T("Mechanical mismatch detected. Inspect the clause alignment and recalibrate.", "Desajuste mecánico detectado. Revisa la alineación de las cláusulas y recalibra."),
-        answer: I.T(`Calibrated assembly: ${answer}`, `Ensamblaje calibrado: ${answer}`),
+        answer: html`${I.T("Calibrated assembly:", "Ensamblaje calibrado:")} ${answer}`,
         explain: I.T(row.explain.en, row.explain.es),
         hint: row.rs.h ? I.T(row.hint.en, row.hint.es) : "",
       })}
@@ -248,15 +279,28 @@ export default {
     const row = s.rounds[s.i];
     if (!row) return false;
 
+    if (isBench(row)) {
+      if (b.hasAttribute("data-g-next") && settled(row.rs)) {
+        s.i += 1;
+        return true;
+      }
+      return benchClick(b, row, env, { skill: env.def?.skill?.toLowerCase() || "writing" });
+    }
+
     if (b.dataset.gChoice !== undefined && !settled(row.rs)) {
       row.pick = Number(b.dataset.gChoice);
       return true;
     }
 
     if (b.hasAttribute("data-g-check") && row.pick !== null && !settled(row.rs)) {
-      judge(row.rs, row.pick === row.answer, env, {
+      // The built sentence goes through the syntax checker; an item's authored error type covers a wrong pick the
+      // checker cannot see. Only a tag ID is reported.
+      const ok = row.pick === row.answer;
+      (row.tags ||= []).push(primaryTag(row.choices[row.pick].en) || (ok ? null : row.tag || null));
+      judge(row.rs, ok, env, {
         id: row.id,
         skill: env.def?.skill?.toLowerCase() || "writing",
+        extra: { languageErrorTag: row.tags.find(Boolean) || null },
       });
       return true;
     }
@@ -274,9 +318,14 @@ export default {
     return false;
   },
 
+  mount(root, s) {
+    return isBench(s.rounds[s.i]) ? benchMount(root) : null;
+  },
+
   plan(s, { wrong } = {}) {
     const row = s.rounds[s.i];
     if (!row) return [];
+    if (isBench(row)) return benchPlan(row, { wrong });
     if (settled(row.rs)) return [{ click: "[data-g-next]" }];
     const choice = wrong ? (row.answer + 1) % row.choices.length : row.answer;
     return [{ click: `[data-g-choice="${choice}"]` }, { click: "[data-g-check]" }];
@@ -287,7 +336,11 @@ export default {
     for (const band of ["3-5", "6-8"]) {
       const rows = content.bands?.[band]?.rounds || [];
       if (rows.length < 2) errors.push(`${band}: needs at least two authored factory stations`);
+      const shop = content.bands?.[band]?.workshop || [];
+      if (shop.length < 2) errors.push(`${band}: needs at least two expansion benches`);
+      for (const spec of shop) errors.push(...validateSpec(spec, `${band}/${spec.id}`));
       rows.forEach((r) => {
+        if (r.tag && !TAG_IDS.includes(r.tag)) errors.push(`${band}/${r.id}: unknown error tag ${r.tag}`);
         if (!r.prompt?.en || !r.prompt?.es) errors.push(`${band}/${r.id}: prompt must be bilingual`);
         if (
           !Array.isArray(r.choices) ||

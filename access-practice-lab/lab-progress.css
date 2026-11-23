@@ -1,0 +1,122 @@
+/* Language Lab readiness bars, family snapshot and teacher pattern card (src/lab/progress-ui.js).
+   Bars are practice coverage, never a score. CSS only; no animation libraries. */
+.lp-panel,
+.lp-snapshot,
+.lp-patterns {
+  margin-block: 1rem;
+}
+.lp-note {
+  max-width: 60ch;
+}
+.lp-bars {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.lp-row {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 8rem) 1fr 3rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+.lp-label {
+  font-weight: 700;
+}
+.lp-bar {
+  --lp-fill: var(--brand, #123a5c);
+  height: 0.9rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 999px;
+  background: var(--surface-2, #e5e3dd);
+  overflow: hidden;
+}
+.lp-bar > i {
+  display: block;
+  height: 100%;
+  background: var(--lp-fill);
+  border-radius: inherit;
+  transition: width 0.4s ease;
+}
+.lp-row.d-listening .lp-bar {
+  --lp-fill: var(--ocean-900, #075568);
+}
+.lp-row.d-reading .lp-bar {
+  --lp-fill: var(--mi-800, #123a5c);
+}
+.lp-row.d-speaking .lp-bar {
+  --lp-fill: var(--rose-600, #a24f72);
+}
+.lp-row.d-writing .lp-bar {
+  --lp-fill: var(--copper-900, #884326);
+}
+.lp-pct {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.lp-empty {
+  margin: 0.75rem 0 0;
+}
+.lp-empty a {
+  margin-inline-start: 0.35rem;
+}
+
+/* Compact: the strip at the top of the 12-week Road, four bars side by side when there is room. */
+.lp-panel.is-compact {
+  padding-block: 0.75rem;
+}
+.lp-panel.is-compact h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+.lp-panel.is-compact .lp-note {
+  margin: 0.25rem 0 0;
+}
+.lp-panel.is-compact .lp-bars {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.5rem 1.25rem;
+}
+.lp-panel.is-compact .lp-row {
+  grid-template-columns: minmax(4.5rem, auto) 1fr 2.75rem;
+}
+.lp-panel.is-compact .lp-bar {
+  height: 0.7rem;
+}
+
+/* Family snapshot */
+.lp-snap-lines {
+  margin: 0.5rem 0 0.75rem;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+/* Teacher card */
+.lp-pattern-list {
+  margin: 0.5rem 0 0;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+.lp-pattern-list p {
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 34rem) {
+  .lp-row {
+    grid-template-columns: 1fr 3rem;
+  }
+  .lp-row .lp-label {
+    grid-column: 1 / -1;
+  }
+  .lp-row .lp-bar {
+    grid-column: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-bar > i {
+    transition: none;
+  }
+}

@@ -4,7 +4,10 @@
 // tapped), (2) chooses the reasoning that links that evidence to the claim, and (3) on Expanding mode or
 // in grades 6-8 writes one sentence, "The text says ___, which shows ___." Step 3 is never graded: simple
 // rule checks quote the learner's own words back as specific feedback. Steps 1 and 2 use the engine's
-// miss -> hint -> revise -> reveal loop. Proven evidence fills the case board. Passage text is English
+// miss -> hint -> revise -> reveal loop. Step 2 is a two-part lock: the learner picks the reasoning AND
+// marks the words in the text that support it (src/lab/evidence-highlight.js) before "Lock in my answer"
+// enables; the marks never change right/wrong, they only add the supporting words to the feedback.
+// Proven evidence fills the case board. Passage text is English
 // practice; key-word glosses follow the support mode; directions and feedback are bilingual.
 import {
   audioBtn,
@@ -22,6 +25,24 @@ import {
   shuffle,
   takeHint,
 } from "./engine.js";
+import {
+  acceptedIds,
+  chunkPassage,
+  clickHighlight,
+  closePopover,
+  evidenceNote,
+  evidenceOk,
+  evidenceProblems,
+  hasSelection,
+  highlightHTML,
+  idsOfSentence,
+  markedHTML,
+  mountHighlight,
+  newHighlight,
+  vocabFor,
+  vocabHTML,
+  vocabProblems,
+} from "../lab/evidence-highlight.js";
 import { renderBoard } from "./evidence-hunt-view.js";
 
 const KINDS = ["proof", "general", "irrelevant", "opposite"];
@@ -79,6 +100,12 @@ const near = (a, b) => {
   const [x, y] = [stem(a), stem(b)];
   return x === y || (x.length >= 5 && y.length >= 5 && x.slice(0, 5) === y.slice(0, 5));
 };
+// Phrase chunks, the accepted evidence (authored `evidence`, else the proof sentence) and the word help for a case.
+const chunksOf = (p) => chunkPassage(p.sentences.map((x) => x.en));
+const acceptedOf = (p, chunks) => acceptedIds(chunks, p.evidence, idsOfSentence(chunks, proofOf(p)));
+const vocabOf = (p, env) =>
+  env.sup.gloss === "off" ? [] : vocabFor(p.sentences.map((x) => x.en), p.vocab);
+const hlOf = (r) => r.hl || (r.hl = newHighlight());
 const stepsOf = (r) => 2 + (r.write ? 1 : 0);
 const stepsDone = (r) =>
   (settled(r.ers) ? 1 : 0) + (settled(r.rrs) ? 1 : 0) + (r.write && r.wn > 0 ? 1 : 0);
@@ -99,6 +126,8 @@ export default {
       ers: newRound(),
       rrs: newRound(),
       reason: null,
+      hl: newHighlight(),
+      evOk: null,
       write,
       text: "",
       wn: 0,
@@ -180,10 +209,32 @@ export default {
       return true;
     }
     if (b.hasAttribute("data-g-hint")) return takeHint(settled(r.ers) ? r.rrs : r.ers, env) >= 0;
+    const hl = clickHighlight(b, hlOf(r), {
+      chunks: chunksOf(p),
+      env,
+      locked: !settled(r.ers) || settled(r.rrs),
+    });
+    if (hl) {
+      r.hl = hl.st;
+      return hl.changed;
+    }
+    if (b.hasAttribute("data-g-lock")) return lockReason(r, p, env);
     if (b.dataset.gEv !== undefined) return pickEvidence(r, p, Number(b.dataset.gEv), env);
-    if (b.dataset.gReason !== undefined) return pickReason(r, p, Number(b.dataset.gReason), env);
+    if (b.dataset.gReason !== undefined) return pickReason(r, p, Number(b.dataset.gReason));
     if (b.hasAttribute("data-g-wcheck")) return checkWriting(r, p);
     return false;
+  },
+
+  mount(root, s, env, changed) {
+    const r = s.rounds[s.i];
+    return mountHighlight(root, {
+      onEscape: () => {
+        if (!r || !hlOf(r).pop) return false;
+        r.hl = closePopover(r.hl);
+        changed?.();
+        return true;
+      },
+    });
   },
 
   input(el, s) {
@@ -206,7 +257,16 @@ export default {
       const miss = wrong
         ? r.order.find((i) => i !== p.reason && !r.rrs.picks.includes(i))
         : undefined;
-      return [{ click: `[data-g-reason="${miss ?? p.reason}"]` }];
+      const target = miss ?? p.reason;
+      const chunks = chunksOf(p);
+      const accepted = acceptedOf(p, chunks);
+      const off = chunks.find((c) => !accepted.includes(c.id));
+      const steps = r.reason === target ? [] : [{ click: `[data-g-reason="${target}"]` }];
+      // A deliberate miss also marks words that do not support the answer, so the evidence feedback runs too.
+      if (wrong && off && !hasSelection(hlOf(r))) steps.push({ click: `[data-g-hl="${off.id}"]` });
+      else if (!wrong && !evidenceOk(hlOf(r), accepted)) steps.push({ click: `[data-g-hl="${accepted[0]}"]` });
+      else if (!hasSelection(hlOf(r))) steps.push({ click: `[data-g-hl="${accepted[0]}"]` });
+      return [...steps, { click: "[data-g-lock]" }];
     }
     if (r.write && !r.wn) {
       const proof = p.sentences[proofOf(p)].en.replace(/[.!?]$/, "");
@@ -271,6 +331,8 @@ function passageErrors(p, at, ids) {
     errs.push(`${at}: a hint leaks the answer`);
   if (p.explain && p.hints?.some((h) => h.en === p.explain.en))
     errs.push(`${at}: explanation repeats a hint`);
+  errs.push(...evidenceProblems(p.evidence, s[proofOf({ sentences: s })]?.en, at));
+  errs.push(...vocabProblems(p.vocab, s.map((x) => x.en), at));
   return errs;
 }
 
@@ -287,11 +349,25 @@ function pickEvidence(r, p, n, env) {
   return true;
 }
 
-function pickReason(r, p, i, env) {
-  if (!settled(r.ers) || settled(r.rrs) || !p.reasons[i] || r.rrs.picks.includes(i)) return false;
-  r.rrs.picks.push(i);
+/** Choosing a reason only selects it; "Lock in my answer" (data-g-lock) judges it once words are marked. */
+function pickReason(r, p, i) {
+  if (!settled(r.ers) || settled(r.rrs) || !p.reasons[i] || r.rrs.picks.includes(i) || r.reason === i)
+    return false;
   r.reason = i;
-  judge(r.rrs, i === p.reason, env, { id: `${r.id}:reasoning`, skill: "evidence-reasoning" });
+  return true;
+}
+
+function lockReason(r, p, env) {
+  if (!settled(r.ers) || settled(r.rrs) || r.reason === null || !hasSelection(hlOf(r))) return false;
+  const i = r.reason;
+  r.evOk = evidenceOk(r.hl, acceptedOf(p, chunksOf(p)));
+  r.rrs.picks.push(i);
+  judge(r.rrs, i === p.reason, env, {
+    id: `${r.id}:reasoning`,
+    skill: "evidence-reasoning",
+    extra: { markedOk: r.evOk },
+  });
+  if (r.rrs.status === "retry") r.reason = null;
   return true;
 }
 
@@ -362,11 +438,31 @@ function stripsHTML(r, p, env) {
       </button>
     </li>`;
   };
+  const vocab = vocabOf(p, env);
+  const help = vocabHTML(vocab, hlOf(r), { I, name: r.id });
+  if (done) {
+    // Step 2: the same text, now as phrase buttons. The proof sentence keeps its "found" look; the learner marks
+    // the words inside the text that support their reasoning.
+    const chunks = chunksOf(p);
+    return html`<div class="eh-text eh-marks">
+      ${settled(r.rrs) ? "" : html`<p class="eh-note">${I.T("Mark the words in the text that support your reasoning (up to 2 phrases).", "Marca las palabras del texto que apoyan tu razonamiento (hasta 2 frases).")}</p>`}
+      ${highlightHTML(chunks, {
+        st: hlOf(r),
+        I,
+        vocab,
+        locked: settled(r.rrs),
+        keyIds: settled(r.rrs) ? acceptedOf(p, chunks) : undefined,
+        tag: (c) => (c.sentence === proof ? "is-proof-s" : ""),
+      })}
+      ${help}
+    </div>`;
+  }
   return html`<div class="eh-text">
-    ${done ? "" : html`<p class="eh-note">${I.T("Tap the ONE sentence that best proves the claim.", "Toca la ÚNICA oración que mejor prueba la afirmación.")}</p>`}
+    <p class="eh-note">${I.T("Tap the ONE sentence that best proves the claim.", "Toca la ÚNICA oración que mejor prueba la afirmación.")}</p>
     <ol class="eh-strips">
       ${p.sentences.map(strip)}
     </ol>
+    ${help}
   </div>`;
 }
 
@@ -408,14 +504,16 @@ function stageHTML(s, r, p, env) {
     </button>`;
   };
   const lastR = p.reasons[r.rrs.picks.at(-1)];
+  const chunks = chunksOf(p);
+  const note = evidenceNote(chunks, acceptedOf(p, chunks), r.evOk, { I, phrases: p.evidence });
   const rFb = feedbackHTML(r.rrs, {
     I,
-    right: I.T(
+    right: html`${I.T(
       "Your reason links the evidence to the claim.",
       "Tu razón une la evidencia con la afirmación.",
-    ),
-    retry: lastR?.why ? say(I, lastR.why) : "",
-    answer: html`${I.T("Reasoning:", "Razonamiento:")} ${p.reasons[p.reason].en}`,
+    )} ${note}`,
+    retry: html`${lastR?.why ? say(I, lastR.why) : ""} ${note}`,
+    answer: html`${I.T("Reasoning:", "Razonamiento:")} ${p.reasons[p.reason].en} ${note}`,
     explain: I.T(
       "A strong reason uses the evidence to explain the claim. It does not change the topic.",
       "Una razón fuerte usa la evidencia para explicar la afirmación. No cambia de tema.",
@@ -434,6 +532,21 @@ function stageHTML(s, r, p, env) {
     >
       ${r.order.map(opt)}
     </div>
+    ${
+      done
+        ? ""
+        : html`${markedHTML(chunks, hlOf(r), { I })}
+            <div class="gs-actions">
+              <button
+                type="button"
+                class="btn btn-primary btn-big"
+                data-g-lock
+                ${r.reason !== null && hasSelection(hlOf(r)) ? "" : "disabled"}
+              >
+                ${icon("check")}${I.T("Lock in my answer", "Confirmar mi respuesta")}
+              </button>
+            </div>`
+    }
     ${
       done
         ? ""

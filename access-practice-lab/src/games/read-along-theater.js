@@ -1,6 +1,8 @@
 // Read-Along Theater. The learner directs a three-page play. Every line can be heard (tap it); each page has
 // one stage task that must be settled before the page turns: restore a missing word from context, pick the
 // line that answers a cause / evidence question, or give each actor a feeling card (drag or tap-to-place).
+// On a line page the learner answers by MARKING the words that answer the question (src/lab/evidence-highlight.js:
+// phrase buttons inside the script lines, one phrase at a time), so "Check my choice" only enables once words are marked.
 // Stars depend on understanding (first try, revised, shown), never on speed. A curtain call retells the play
 // in one framed sentence, then a playbill scoreboard closes the show.
 import {
@@ -19,6 +21,24 @@ import {
   takeHint,
 } from "./engine.js";
 import { C, mascot, svg } from "./art.js";
+import {
+  acceptedIds,
+  chunkPassage,
+  chunksHTML,
+  clearMarks,
+  clickHighlight,
+  closePopover,
+  evidenceNote,
+  evidenceOk,
+  evidenceProblems,
+  idsOfSentence,
+  mountHighlight,
+  newHighlight,
+  selectedIds,
+  vocabFor,
+  vocabHTML,
+  vocabProblems,
+} from "../lab/evidence-highlight.js";
 import { COLORS, stageArt } from "./read-along-theater-stage.js";
 
 const TYPES = ["word", "line", "mood"];
@@ -38,6 +58,14 @@ const SETS = ["park", "home", "night", "school"];
 const bandOf = (env) => (env.content.plays ? env.content : env.content.bands?.[env.band] || {});
 const playOf = (s, env) => bandOf(env).plays.find((p) => p.id === s.play);
 const T = (I, x) => I.T(x.en, x.es);
+// Line pages: phrase chunks of the lines (a chunk's `sentence` is its line index), the accepted evidence
+// (the task's `evidence`, else every phrase of the answer line) and the word help (off in Independent mode).
+const lineChunks = (pg) => chunkPassage(pg.lines.map((l) => l.en));
+const lineAccepted = (pg, chunks) =>
+  acceptedIds(chunks, pg.task.evidence, idsOfSentence(chunks, pg.task.answer));
+const lineVocab = (pg, env) =>
+  env.sup.gloss === "off" ? [] : vocabFor(pg.lines.map((l) => l.en), pg.task.vocab);
+const hlOf = (ps) => ps.hl || (ps.hl = newHighlight());
 const sel = (a, v) => `[${a}="${v}"]`;
 
 // ── scoring: understanding, never speed ─────────────────────────────────────────────────
@@ -106,7 +134,7 @@ export default {
           pick: null,
           rs: newRound(),
         };
-      return { kind: "line", pick: null, rs: newRound() };
+      return { kind: "line", pick: null, hl: newHighlight(), evOk: null, rs: newRound() };
     });
     const call = {
       order: play.retell.slots.map((sl) =>
@@ -160,6 +188,17 @@ export default {
     root.addEventListener("click", onSay);
     if (s.flip) root.querySelector(".rat-page-h")?.focus();
     const ps = s.pages[s.page];
+    const stopMarks =
+      ps?.kind === "line"
+        ? mountHighlight(root, {
+            onEscape: () => {
+              if (!hlOf(ps).pop) return false;
+              ps.hl = closePopover(ps.hl);
+              changed?.();
+              return true;
+            },
+          })
+        : null;
     const stop =
       ps?.kind === "mood"
         ? dnd(root, {
@@ -172,6 +211,7 @@ export default {
     return () => {
       root.removeEventListener("click", onSay);
       stop?.();
+      stopMarks?.();
     };
   },
 
@@ -202,10 +242,16 @@ export default {
     }
     const n = ps.kind === "word" ? task.options.length : play.pages[s.page].lines.length;
     const pick = wrong ? (task.answer + 1) % n : task.answer;
-    return [
-      { click: ps.kind === "word" ? sel("data-g-opt", pick) : sel("data-g-pickline", pick) },
-      { click: "[data-g-check]" },
-    ];
+    if (ps.kind === "line") {
+      const pg = play.pages[s.page];
+      const chunks = lineChunks(pg);
+      const target = wrong
+        ? idsOfSentence(chunks, pick)[0]
+        : lineAccepted(pg, chunks)[0];
+      const marked = selectedIds(hlOf(ps))[0] === target;
+      return [...(marked ? [] : [{ click: sel("data-g-hl", target) }]), { click: "[data-g-check]" }];
+    }
+    return [{ click: sel("data-g-opt", pick) }, { click: "[data-g-check]" }];
   },
 
   validate(content) {
@@ -257,6 +303,14 @@ export default {
           } else if (t.type === "line") {
             if (!Number.isInteger(t.answer) || !pg.lines[t.answer])
               errs.push(`${pa}: answer must name a line`);
+            else errs.push(...evidenceProblems(t.evidence, pg.lines[t.answer].en, pa));
+            errs.push(
+              ...vocabProblems(
+                t.vocab,
+                pg.lines.map((l) => l.en),
+                pa,
+              ),
+            );
           } else {
             const ids = (t.cards || []).map((c) => c.id);
             (t.cards || []).forEach((c) => {
@@ -324,22 +378,37 @@ function act(b, s, env) {
       return place(s, env, play, ps.hold, b.dataset.drop);
     return false;
   }
+  if (ps.kind === "line") {
+    const chunks = lineChunks(play.pages[s.page]);
+    const hl = clickHighlight(b, hlOf(ps), { chunks, env, locked: settled(ps.rs), max: 1 });
+    if (hl) {
+      ps.hl = hl.st;
+      // The marked phrase is the answer: its line is the line the learner chose.
+      const id = selectedIds(ps.hl)[0];
+      ps.pick = id ? (chunks.find((c) => c.id === id)?.sentence ?? null) : null;
+      return hl.changed;
+    }
+  }
   if (settled(ps.rs)) return false;
   if (b.dataset.gOpt !== undefined && ps.kind === "word") {
     ps.pick = Number(b.dataset.gOpt);
     return true;
   }
-  if (b.dataset.gPickline !== undefined && ps.kind === "line") {
-    ps.pick = Number(b.dataset.gPickline);
-    return true;
-  }
   if (b.hasAttribute("data-g-check") && ps.pick !== null) {
+    if (ps.kind === "line") {
+      const pg = play.pages[s.page];
+      ps.evOk = evidenceOk(hlOf(ps), lineAccepted(pg, lineChunks(pg)));
+    }
     judge(ps.rs, ps.pick === task.answer, env, {
       id: `${play.id}:p${s.page + 1}`,
       skill: `reading-${task.type === "word" ? "context" : "evidence"}`,
+      extra: ps.kind === "line" ? { markedOk: ps.evOk } : undefined,
     });
     s.fx = ps.rs.status === "right" ? "right" : "miss";
-    if (ps.rs.status === "retry") ps.pick = null;
+    if (ps.rs.status === "retry") {
+      ps.pick = null;
+      ps.hl = clearMarks(ps.hl);
+    }
     return true;
   }
   return false;
@@ -419,8 +488,8 @@ function coach(s, env, play) {
       "¡Se cayó una palabra del guion! Lee las palabras alrededor del espacio. Son tus pistas.",
     ],
     line: [
-      "Every line is a clue. Tap a line to hear it, then choose the one that answers the question.",
-      "Cada línea es una pista. Toca una línea para oírla y luego elige la que responde la pregunta.",
+      "Every line is a clue. Tap the speaker to hear a line, then mark the words that answer the question.",
+      "Cada línea es una pista. Toca el altavoz para oír una línea y luego marca las palabras que responden la pregunta.",
     ],
     mood: [
       "Actors need to know how to feel. Read what each one says and does, then hand out the feeling cards.",
@@ -501,21 +570,29 @@ function pageView(s, env, play) {
         >${word || html`<span class="visually-hidden">${I.S("blank", "espacio en blanco")}</span>`}</mark
       >${b}`;
   };
+  const isLine = ps.kind === "line";
+  const chunks = isLine ? lineChunks(pg) : [];
+  const accepted = isLine ? lineAccepted(pg, chunks) : [];
+  const vocab = isLine ? lineVocab(pg, env) : [];
+  const marks = isLine && {
+    st: hlOf(ps),
+    I,
+    vocab,
+    seen: new Set(),
+    locked: settled(ps.rs),
+    keyIds: settled(ps.rs) ? accepted : undefined,
+  };
+  // The supporting words appear once the line is right (when the phrase was off) or the answer is shown,
+  // never while the page is open for another try: on this page the phrase names the answer.
+  const note = isLine
+    ? evidenceNote(chunks, accepted, ps.rs.status === "retry" ? null : ps.evOk, { I, phrases: t.evidence })
+    : "";
   const lines = pg.lines.map((l, i) => {
     const key = `${s.page}:${i}`;
     if (ps.kind === "line") {
-      const st = settled(ps.rs);
-      const cls = `rat-pick${ps.pick === i ? " is-sel" : ""}${st && i === t.answer ? " is-right" : ""}`;
+      const mine = chunks.filter((c) => c.sentence === i);
       return html`<li class="rat-row">
-        ${audioBtn(l.en, I)}<button
-          type="button"
-          class="${cls}"
-          data-g-pickline="${i}"
-          aria-pressed="${ps.pick === i}"
-          ${st ? "disabled" : ""}
-        >
-          ${l.en}</button
-        >${glossHTML(l.es, env)}
+        ${audioBtn(l.en, I)}<span class="rat-hl">${chunksHTML(mine, marks)}</span>${glossHTML(l.es, env)}
       </li>`;
     }
     return html`<li class="rat-row${ps.kind === "word" && i === t.line ? " is-cue" : ""}">
@@ -529,7 +606,7 @@ function pageView(s, env, play) {
       ? moodFeedback(ps, t, env, play)
       : feedbackHTML(ps.rs, {
           I,
-          right: I.T("Your choice is supported by the script.", "Tu elección se apoya en el guion."),
+          right: html`${I.T("Your choice is supported by the script.", "Tu elección se apoya en el guion.")} ${note}`,
           retry: I.T(
             "Not this one yet. Use a clue from the lines and try again.",
             "Esta todavía no. Usa una pista de las líneas e inténtalo otra vez.",
@@ -540,7 +617,7 @@ function pageView(s, env, play) {
                   `The missing word is “${t.options[t.answer].en}”.`,
                   `La palabra que falta es “${t.options[t.answer].en}” (${t.options[t.answer].es}).`,
                 )
-              : I.T(`The line: “${pg.lines[t.answer].en}”`, `La línea: “${pg.lines[t.answer].en}”`),
+              : html`${I.T(`The line: “${pg.lines[t.answer].en}”`, `La línea: “${pg.lines[t.answer].en}”`)} ${note}`,
           explain: T(I, t.explain),
         });
   const hintRs = ps.kind === "mood" ? ps.rs[nextCast(ps, play)] || ps.rs[ps.last] : ps.rs;
@@ -562,10 +639,16 @@ function pageView(s, env, play) {
     <h2 class="rat-page-h" tabindex="-1">
       ${I.T(`Page ${s.page + 1} of 3`, `Página ${s.page + 1} de 3`)}
     </h2>
-    <p class="fine">${I.T("Tap a line to hear it.", "Toca una línea para oírla.")}</p>
-    <ol class="rat-lines">
+    <p class="fine">
+      ${isLine ? I.T("Tap the speaker to hear a line. Tap words to mark them.", "Toca el altavoz para oír una línea. Toca palabras para marcarlas.") : I.T("Tap a line to hear it.", "Toca una línea para oírla.")}
+    </p>
+    <ol
+      class="rat-lines"
+      ${isLine ? html`data-lab-ev role="group" aria-label="${I.S("Script lines: mark the words that answer the question", "Líneas del guion: marca las palabras que responden la pregunta")}"` : ""}
+    >
       ${lines}
     </ol>
+    ${isLine ? vocabHTML(vocab, hlOf(ps), { I, name: play.id }) : ""}
     <div class="rat-task">
       <p class="gs-prompt">${icon("bulb")}${T(I, t.prompt)}</p>
       ${body}

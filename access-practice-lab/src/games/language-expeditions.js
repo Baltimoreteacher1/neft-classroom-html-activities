@@ -12,9 +12,9 @@
 // a model. Each finished land earns a stamp; stamps are not a score. Any land can be opened from the journey bar.
 // Inside a land the learner steers the explorer to each stop and gathers collectibles (…-explore.js).
 import { keepInView } from "../keep-in-view.js";
-import { cancelDictation, toggleDictation } from "../dictation-ui.js";
-import { isRecording, start as startRec, stop as stopRec, takesFor } from "../recorder.js";
-import { playRecording, speak } from "../speech.js";
+import { initFlow, PHASE, planSteps, speakReport } from "../lab/speaking-flow.js";
+import { bindSpeaking, speakClick, speakInput } from "../lab/speaking-session.js";
+import { speak } from "../speech.js";
 import { html, judge, newRound, raw, settled, shuffle, takeHint } from "./engine.js";
 import {
   drive,
@@ -75,7 +75,7 @@ const recommended = (s) => s.lands.findIndex((L) => !L.stamp);
 function actState(a, env) {
   const base = { id: a.id, type: a.type, rs: newRound(), words: false };
   if (a.type === "speak")
-    return { ...base, said: false, text: "", self: [], model: false, done: false };
+    return { ...base, said: false, typed: false, sp: initFlow(), text: "", self: [], model: false, done: false };
   if (a.type === "write")
     return { ...base, text: "", wn: 0, fb: null, self: [], model: false, done: false };
   const n =
@@ -156,6 +156,23 @@ const customNoteHTML = (s, I) =>
       </p>`
     : "";
 
+// Handlers the shared speaking glue works through. The flow lives in the stop's state; a typed answer goes in the stop's
+// existing `text` field (shown only in the learner's own passport) and never into a round report.
+function speakHandlers(s, r, env, a) {
+  return {
+    env,
+    maxSeconds: 90,
+    get: () => (r.sp ||= initFlow()),
+    set(sp) {
+      r.sp = sp;
+      r.said = sp.phase === PHASE.DONE; // the stop's original gate: the learner has said it
+      r.typed = sp.typed;
+    },
+    text: { get: () => r.text, set: (t) => { r.text = t; } }, // the stop's own words field (the passport shows it); never reported
+    frames: () => a.frame || "",
+  };
+}
+
 function production(r, env, skill) {
   if (r.done) return;
   r.done = true;
@@ -168,7 +185,8 @@ function production(r, env, skill) {
     hints: r.rs.h,
     revised: (r.wn || 1) > 1,
     production: true,
-    selfCheck: r.self.length,
+    checksTicked: r.self.length,
+    ...(r.type === "speak" ? speakReport(r.sp) : {}),
   });
 }
 
@@ -330,6 +348,13 @@ export default {
     const a = actOf(env, s);
     const domain = bandOf(env).lands[s.land].domain;
     const open = !settled(r.rs);
+    if (r.type === "speak") {
+      const res = speakClick(b, recKey(s, r), speakHandlers(s, r, env, a));
+      if (res) {
+        if (res.done) focusSel = ".lexp-self legend";
+        return res.changed;
+      }
+    }
     if (b.hasAttribute("data-lexp-next")) {
       if (!complete(r) && !(r.type === "speak" && r.said) && !(r.type === "write" && r.wn))
         return false;
@@ -382,13 +407,6 @@ export default {
       focusSel = ".gs-feedback";
       return true;
     }
-    if (b.hasAttribute("data-lexp-said") && r.type === "speak" && !r.said) {
-      if (isRecording(recKey(s, r))) stopRec();
-      cancelDictation();
-      r.said = true;
-      focusSel = ".lexp-self legend";
-      return true;
-    }
     if (d.lexpSelf !== undefined && (r.said || r.wn)) {
       const i = Number(d.lexpSelf);
       r.self = r.self.includes(i) ? r.self.filter((x) => x !== i) : [...r.self, i].sort();
@@ -413,39 +431,14 @@ export default {
       focusSel = ".lexp-wfb";
       return true;
     }
-    if (b.hasAttribute("data-lexp-rec") && r.type === "speak") {
-      const key = recKey(s, r);
-      if (isRecording(key)) stopRec();
-      else
-        startRec(key, { maxSeconds: 90, onStop: () => notify?.() })
-          .then(() => notify?.())
-          .catch(() => notify?.());
-      return false;
-    }
-    if (b.hasAttribute("data-lexp-playback")) {
-      playRecording(takesFor(recKey(s, r)).map((t) => t.url));
-      return false;
-    }
-    if (d.dictate !== undefined && r.type === "speak") {
-      const fill = (t) => {
-        const box = document.querySelector("[data-lexp-text]");
-        if (box && t) box.value = t;
-        if (t) r.text = t;
-      };
-      toggleDictation(d.dictate, {
-        I: env.I,
-        onText: fill,
-        onDone: (t) => {
-          fill(t);
-          notify?.();
-        },
-      }).then(() => notify?.());
-      return false;
-    }
     return false;
   },
 
-  input(el, s) {
+  input(el, s, env) {
+    if (s.at === "land") {
+      const r = s.lands[s.land].acts[s.lands[s.land].i];
+      if (r?.type === "speak" && speakInput(el, speakHandlers(s, r, env, actOf(env, s)))) return false; // typed words: memory only
+    }
     if (s.at === "walk" && encInput(el, s)) return false; // encounters: kept in state, no re-render
     if (s.at !== "land" || !el.matches?.("[data-lexp-text]")) return false;
     const L = s.lands[s.land];
@@ -495,11 +488,14 @@ export default {
       if (s.at === "walk") keepInView(scene, { smooth: motionOK() });
       focusSel = "";
     }
-    if (s.at !== "walk") return feelStop;
+    // speaking stop: the shared plan / record / playback / self-check flow
+    const unbind = r?.type === "speak" ? bindSpeaking(root, recKey(s, r), speakHandlers(s, r, env, a), changed) : null;
+    const both = (stop) => (unbind || stop ? () => (unbind?.(), stop?.()) : null);
+    if (s.at !== "walk") return both(feelStop);
     const land = bandOf(env).lands[s.land];
     const L2 = s.lands[s.land];
     const where = whereOf(s, land, L2.i < L2.acts.length ? actOf(env, s) : null);
-    return drive(root, scene, s, env, b, live, where, encHooks(root, s, env, changed));
+    return both(drive(root, scene, s, env, b, live, where, encHooks(root, s, env, changed)));
   },
 
   plan(s, { wrong } = {}, env) {
@@ -524,7 +520,7 @@ export default {
     const a = actOf(env, s);
     if (r.type === "speak")
       return [
-        ...(r.said ? [] : [{ click: "[data-lexp-said]" }]),
+        ...(r.said ? [] : planSteps((r.sp ||= initFlow()), a.model.en)),
         ...(r.self.includes(0) ? [] : [{ click: '[data-lexp-self="0"]' }]),
         { click: "[data-lexp-next]" },
         ...WALK,

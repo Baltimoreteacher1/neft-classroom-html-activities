@@ -43,6 +43,12 @@ export function makeI18n(mode = DEFAULT_LANG, pageLang = "en") {
     if (spanish) return wrapEs ? raw(`<span lang="es">${esc(es)}</span>`) : es;
     return en;
   };
+  // Target English (the text being practiced or assessed, an answer choice, a clue to solve) is never replaced by
+  // Spanish. ES and EN+ES keep the English and add the Spanish as a gloss beside it; EN shows English alone.
+  const TARGET = (en, es) => {
+    if (!es || es === en || mode === "en") return en;
+    return raw(`<span class="bi-pair">${esc(en)}<span class="bi-es" lang="es">${esc(es)}</span></span>`);
+  };
   const entry = (key) => {
     const e = STRINGS[key];
     if (!e) throw new Error(`Missing string "${key}"`);
@@ -66,7 +72,7 @@ export function makeI18n(mode = DEFAULT_LANG, pageLang = "en") {
   const pick = (o) => (o && typeof o === "object" ? (spanish ? o.es || o.en : o.en) : o);
   /** Both sides of { en, es } as markup honoring the mode. */
   const TO = (o) => (o && typeof o === "object" ? T(o.en, o.es) : o);
-  return { mode, bilingual, spanish, pageLang, T, S, L, LS, pair, pick, TO };
+  return { mode, bilingual, spanish, pageLang, T, TARGET, S, L, LS, pair, pick, TO };
 }
 
 /** i18n for a render ctx: the mode from prefs, the document language from the current view. */

@@ -1,0 +1,297 @@
+/* ACCESS Practice Lab: the sentence workbench (expand a sentence, combine two clauses) used by Sentence Factory
+   and Connector Climb. Chips are real buttons: 44px targets, a visible focus ring from the design system, colour
+   never the only cue (each group also has its own underline style), no timers, CSS-only 150-200ms transitions that
+   stop under prefers-reduced-motion. No violet, purple or magenta. */
+
+.wb {
+  --wb-base: #17324d;
+  --wb-describe: #0f6a62;
+  --wb-who: #2e4a94;
+  --wb-what: #7a4108;
+  --wb-where: #17694a;
+  --wb-when: #8a3b12;
+  --wb-why: #1b5f86;
+  --wb-conn: #b0261c;
+  display: grid;
+  gap: 0.85rem;
+  margin: var(--s-3, 0.75rem) 0;
+}
+.wb-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wb-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.wb-step.is-done {
+  border-color: var(--right);
+  color: var(--right);
+}
+.wb-step.is-now {
+  border-color: var(--wb-base);
+  background: var(--wb-base);
+  color: #fff;
+}
+.wb-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid currentcolor;
+  font-size: 0.8125rem;
+}
+
+.wb-sentence-box {
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--wb-base);
+  border-radius: var(--radius-sm);
+  background: #fffdf6;
+}
+.wb-sentence-l {
+  margin: 0 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.wb-sentence {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.wb-w {
+  padding-bottom: 1px;
+  transition: background-color 0.15s ease;
+}
+.wb-w.is-glue {
+  margin-left: 0;
+}
+.wb-s-describe {
+  border-bottom: 3px solid var(--wb-describe);
+}
+.wb-s-who {
+  border-bottom: 3px dashed var(--wb-who);
+}
+.wb-s-what {
+  border-bottom: 3px dotted var(--wb-what);
+}
+.wb-s-where {
+  border-bottom: 3px double var(--wb-where);
+}
+.wb-s-when {
+  text-decoration: underline wavy var(--wb-when) 2px;
+  text-underline-offset: 4px;
+}
+.wb-s-why {
+  border-bottom: 4px dashed var(--wb-why);
+}
+.wb-s-conn {
+  border-bottom: 4px solid var(--wb-conn);
+  font-weight: 700;
+}
+.wb-s-punct {
+  color: var(--wb-conn);
+  font-weight: 800;
+}
+.wb-gap {
+  display: inline-block;
+  min-width: 2.5rem;
+  padding: 0 0.5rem;
+  text-align: center;
+  border: 2px dashed var(--wb-conn);
+  border-radius: 8px;
+  color: var(--wb-conn);
+  font-weight: 800;
+}
+
+.wb-dir {
+  margin: 0;
+  color: var(--ink-2);
+}
+.wb-group {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.wb-group-l {
+  margin: 0;
+}
+.wb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+.wb-chip-wrap {
+  display: inline-grid;
+  gap: 0.15rem;
+  justify-items: start;
+}
+.wb-chip {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 1.0625rem;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.wb-chip:hover:not(:disabled) {
+  border-color: var(--wb-base);
+  transform: translateY(-1px);
+}
+.wb-chip.is-on {
+  background: var(--brand-soft);
+  border-color: var(--wb-base);
+  box-shadow: inset 0 0 0 1px var(--wb-base);
+  font-weight: 700;
+}
+.wb-chip.is-on::before {
+  content: "\2713\00a0";
+}
+.wb-chip:disabled {
+  cursor: default;
+  color: var(--ink-3);
+  border-style: dashed;
+}
+.wb-c-describe {
+  border-left: 8px solid var(--wb-describe);
+}
+.wb-c-who {
+  border-left: 8px solid var(--wb-who);
+}
+.wb-c-what {
+  border-left: 8px solid var(--wb-what);
+}
+.wb-c-where {
+  border-left: 8px solid var(--wb-where);
+}
+.wb-c-when {
+  border-left: 8px solid var(--wb-when);
+}
+.wb-c-why {
+  border-left: 8px solid var(--wb-why);
+}
+.wb-conn {
+  border-left: 8px solid var(--wb-conn);
+}
+.wb-none {
+  border-left-width: 2px;
+  border-style: dashed;
+}
+.wb-pun-sym {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.wb-combine {
+  display: grid;
+  gap: 0.6rem;
+}
+.wb-rel-group {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.35rem 0;
+}
+.wb-rel-h {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--ink-2);
+}
+.wb-rel-cause .wb-conn,
+.wb-rel-result .wb-conn,
+.wb-rel-contrast .wb-conn,
+.wb-rel-sequence .wb-conn,
+.wb-rel-example .wb-conn,
+.wb-rel-addition .wb-conn {
+  border-left-width: 8px;
+}
+.wb-rel-cause {
+  border-left-color: var(--wb-where);
+}
+.wb-rel-result {
+  border-left-color: var(--wb-why);
+}
+.wb-rel-contrast {
+  border-left-color: var(--wb-conn);
+}
+.wb-rel-sequence {
+  border-left-color: var(--wb-what);
+}
+.wb-rel-example {
+  border-left-color: var(--wb-who);
+}
+.wb-rel-addition {
+  border-left-color: var(--wb-describe);
+}
+
+.wb-live {
+  min-height: 1.5rem;
+}
+.wb-note {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border-left: 6px solid var(--hint);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--hint);
+  animation: wb-in 0.2s ease-out;
+}
+.wb-nav {
+  margin-top: 0;
+}
+
+@keyframes wb-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb *,
+  .wb-note {
+    animation: none !important;
+    transition: none !important;
+  }
+  .wb-chip:hover:not(:disabled) {
+    transform: none;
+  }
+}
+@media (forced-colors: active) {
+  .wb-chip.is-on {
+    outline: 3px solid Highlight;
+  }
+}

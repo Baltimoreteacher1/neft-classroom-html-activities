@@ -1,0 +1,225 @@
+/* Speaking tasks (src/lab/speaking-ui.js): plan bar, frame chips, live level bar, typed fallback, self-playback and the
+   three-point self-check. Calm by default: nothing is timed or scored, transitions are 150-200ms, and every animation
+   is off under prefers-reduced-motion (the plan bar is simply hidden and "I'm ready" is shown at once). Targets are 44px. */
+.sp {
+  display: grid;
+  gap: 0.9rem;
+}
+.sp-plan,
+.sp-ready,
+.sp-fallback,
+.sp-review,
+.sp-check {
+  display: grid;
+  gap: 0.7rem;
+  margin-block: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.75rem;
+  background: var(--surface, #fff);
+  color: var(--text, #161614);
+}
+.sp-plan > *,
+.sp-ready > *,
+.sp-fallback > *,
+.sp-review > *,
+.sp-check > * {
+  margin: 0;
+}
+.sp-h {
+  font-size: 1.1rem;
+}
+.sp .btn,
+.sp-chip,
+.sp-yn {
+  min-height: 44px;
+  min-width: 44px;
+}
+.sp .btn:focus-visible,
+.sp-chip:focus-visible,
+.sp-yn:focus-visible,
+.sp-typed:focus-visible,
+.sp-h:focus-visible {
+  outline: 3px solid var(--focus, #0b57d0);
+  outline-offset: 2px;
+}
+.sp .btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* the calm planning bar: fills once over --sp-ms, starting --sp-delay in (a re-render keeps its place) */
+.sp-plan-bar {
+  height: 0.6rem;
+  overflow: hidden;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 999px;
+  background: var(--surface-2, #f1efe9);
+}
+.sp-plan-bar > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--brand, #123a5c);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: sp-fill var(--sp-ms, 10000ms) linear var(--sp-delay, 0ms) forwards;
+}
+@keyframes sp-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* the live input level: width is a transform, so no layout work per frame */
+.al-level {
+  height: 0.9rem;
+  overflow: hidden;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 999px;
+  background: var(--surface-2, #f1efe9);
+}
+.al-level > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--brand, #123a5c);
+  transform: scaleX(var(--lvl, 0));
+  transform-origin: left center;
+  transition: transform 120ms linear;
+}
+.sp-mic.is-live .al-level > span {
+  background: var(--danger, #b3261e);
+}
+
+/* frames and chips */
+.sp-frames-l {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+}
+.sp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.3rem 0.8rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  background: var(--surface-2, #f1efe9);
+  color: inherit;
+  font: inherit;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+button.sp-chip {
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+button.sp-chip:hover {
+  background: var(--brand-soft, #dbe7f2);
+}
+button.sp-chip:active {
+  transform: scale(0.98);
+}
+
+/* typed fallback and read-back */
+.sp-typed {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  font: inherit;
+  background: var(--surface, #fff);
+  color: inherit;
+}
+.sp-typed-view {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-inline-start: 4px solid var(--brand, #123a5c);
+  background: var(--surface-2, #f1efe9);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.sp-reason {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+  background: var(--surface-2, #f1efe9);
+}
+
+/* self-check */
+.sp-q {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+}
+.sp-q legend {
+  padding-inline: 0.3rem;
+}
+.sp-q-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sp-yn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.9rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  background: var(--surface, #fff);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+.sp-yn[aria-pressed="true"] {
+  background: var(--brand, #123a5c);
+  border-color: var(--brand, #123a5c);
+  color: var(--on-brand, #fff);
+}
+.sp-done {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-plan-bar {
+    display: none;
+  }
+  .sp-plan-bar > span {
+    animation: none;
+  }
+  .al-level > span,
+  button.sp-chip,
+  .sp-yn {
+    transition: none;
+  }
+  button.sp-chip:active {
+    transform: none;
+  }
+}
+:root[data-comfort-motion="calm"] .sp-plan-bar {
+  display: none;
+}
+:root[data-comfort-motion="calm"] .al-level > span,
+:root[data-comfort-motion="calm"] button.sp-chip,
+:root[data-comfort-motion="calm"] .sp-yn {
+  transition: none;
+}

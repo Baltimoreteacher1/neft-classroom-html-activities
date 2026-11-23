@@ -5583,7 +5583,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/access-teacher/maker/",
-    title: "Language Sheet & Card Maker — ACCESS Teacher Hub",
+    title: "Sheet & Card Maker — ACCESS Teacher Hub",
     category: "Tool",
     unit: null,
   },

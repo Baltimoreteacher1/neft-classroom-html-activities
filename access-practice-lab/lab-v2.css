@@ -1,0 +1,181 @@
+/* Language Lab v2: the shared game HUD (src/lab/hud.js) and the Listening replay affordances
+   (src/lab/listening.js). Calm by default: no timers, transitions 150ms and off under reduced motion. */
+.lh {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.25rem;
+  margin-block: 0.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.75rem;
+  background: var(--surface, #fff);
+  color: var(--text, #161614);
+}
+.lh-left,
+.lh-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+.lh-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.lh-band {
+  padding: 0.15rem 0.6rem;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.lh-domains {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lh-domain {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted-strong, #4a4a46);
+  background: transparent;
+}
+.lh-domain.is-on {
+  color: var(--on-brand, #fff);
+  background: var(--brand, #123a5c);
+  border-color: var(--brand, #123a5c);
+}
+.lh-tiers,
+.lh-lang {
+  display: inline-flex;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+.lh-tier,
+.lh-lang-btn,
+.lh-slow {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.3rem 0.75rem;
+  border: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+.lh-tier + .lh-tier,
+.lh-lang-btn + .lh-lang-btn {
+  border-inline-start: 1.5px solid var(--line-control, #161614);
+}
+.lh-tier[aria-pressed="true"],
+.lh-lang-btn[aria-pressed="true"],
+.lh-slow[aria-pressed="true"] {
+  color: var(--on-brand, #fff);
+  background: var(--brand, #123a5c);
+}
+.lh-slow {
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+}
+.lh-tier:focus-visible,
+.lh-lang-btn:focus-visible,
+.lh-slow:focus-visible,
+.lh-math:focus-visible,
+.lh-reset summary:focus-visible {
+  outline: 3px solid var(--focus, #0b57d0);
+  outline-offset: 2px;
+}
+.lh-mic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.lh-mic[data-mic="live"] {
+  border-color: var(--brand, #123a5c);
+  font-weight: 700;
+}
+.lh-mic[data-mic="fallback"] {
+  border-style: dashed;
+}
+.lh-math {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  font-weight: 700;
+  color: inherit;
+}
+.lh-reset summary {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border: 1.5px solid var(--line-control, #161614);
+  border-radius: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lh-reset[open] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Listening: replays left and the text being spoken. */
+[data-say][data-plays-left]::after {
+  content: " (" attr(data-plays-left) " / 2)";
+  font-size: 0.8em;
+  font-weight: 700;
+}
+[data-say].is-spent {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.lh-anchor-on {
+  outline: 3px solid var(--brand, #123a5c);
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--brand, #123a5c) 10%, transparent);
+  transition: background-color 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lh-tier,
+  .lh-lang-btn,
+  .lh-slow,
+  .lh-anchor-on {
+    transition: none;
+  }
+}
+@media (max-width: 560px) {
+  .lh {
+    padding: 0.5rem;
+  }
+  .lh-right {
+    width: 100%;
+  }
+}

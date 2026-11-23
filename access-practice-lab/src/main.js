@@ -18,6 +18,8 @@ import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
 import { playRecording, speak, speakSpanish, stop as stopSpeech } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
+import { DOMAINS as LAB_DOMAINS, contentAreaOfRoute, supportOfTier } from "./lab/meta.js";
+import { readLabQuery } from "./lab/query.js";
 import { setStudioI18n as setEvidenceUiI18n } from "./evidence-ui.js";
 import { LANG_MODES, i18nFor } from "./i18n.js";
 import { setItemsI18n } from "./items.js";
@@ -194,7 +196,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     .filter(Boolean)
     .map(decodeURIComponent);
   const q = new URLSearchParams(search);
-  const r = { view: "home", grades: q.get("grades") || "", ...(q.has("gradeFocus") ? { gradeFocus: q.get("gradeFocus") } : {}) };
+  const r = { view: "home", grades: q.get("grades") || q.get("band") || "", ...(q.has("gradeFocus") ? { gradeFocus: q.get("gradeFocus") } : {}) };
   const [a, b, c, d] = parts;
   if (!a) {
     const mathBridge = readMathLanguageBridge(search);
@@ -430,7 +432,18 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   // Restore/import/clear actions may replace preferences outside this module.
   app.prefs = getPrefs();
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
+  // ?lang= and ?support= make any link a complete starting point; they are remembered like ?grades= is, so a
+  // refresh (or a link without them) keeps the learner's choice. Game support is read again in views/games.js.
+  {
+    const ask = readLabQuery(location.search);
+    const patch = {};
+    if (ask.lang && ask.lang !== app.prefs.lang) Object.assign(patch, { lang: ask.lang, langChosen: true });
+    if (ask.tier && route.view !== "games") patch.tiers = Object.fromEntries(LAB_DOMAINS.map((d) => [d, supportOfTier(ask.tier)]));
+    if (Object.keys(patch).length) app.prefs = setPrefs(patch);
+  }
   app.route = route;
+  // The task's WIDA content area decides which tools belong on screen (the Math Workbench is for LoMA only).
+  document.documentElement.dataset.widaContentArea = contentAreaOfRoute(route);
   app.band = resolveBand(route);
   if (route.view === "early" && BAND_INFO[app.band] && normalizeBand(route.grades) !== app.band) {
     const url = new URL(location.href);

@@ -13,6 +13,7 @@ import { i18nFor } from "../i18n.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { speak, stop as stopSpeech } from "../speech.js";
 import { BASE, announce, html, icon, raw, storage } from "../util.js";
+import { recordEvent } from "../lab/store.js";
 import { artSrc, sceneHTML, stageHTML } from "./adventures-scenes.js";
 
 const load = () => A.loadProgress((k) => storage.get(k));
@@ -596,6 +597,9 @@ export function onClick(e, ctx) {
       const n = A.advance(entry, scenes);
       if (n === "done") {
         A.completeMission(w, m, band, entry);
+        // One mission event per domain the mission practices, for My Progress, the Road and the teacher view.
+        for (const domain of m.domains || [])
+          recordEvent({ kind: "mission", gameId: `world:${w.id}`, gradeBand: band, widaDomain: domain, scaffoldTier: entry.supported ? "guided" : "independent", ok: true });
         entry.playing = false;
         save(progress);
         ctx.navigate(urlOf(band, w.id, m.id, "done"));

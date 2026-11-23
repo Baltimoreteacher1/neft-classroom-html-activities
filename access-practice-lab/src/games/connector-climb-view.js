@@ -3,51 +3,9 @@
 import { glossHTML, html, raw } from "./engine.js";
 import { C, svg } from "./art.js";
 
-/** The six logical relationships, in the order the grouped (Starting) card rack shows them. */
-export const RELS = {
-  cause: {
-    name: ["Cause", "Causa"],
-    hint: [
-      "Does the second idea tell why the first idea happened?",
-      "¿La segunda idea dice por qué pasó la primera?",
-    ],
-  },
-  result: {
-    name: ["Result", "Resultado"],
-    hint: [
-      "Is the second idea an effect that comes from the first idea?",
-      "¿La segunda idea es un efecto que viene de la primera?",
-    ],
-  },
-  contrast: {
-    name: ["Contrast", "Contraste"],
-    hint: [
-      "Do the two ideas surprise you together? Look for a difference.",
-      "¿Las dos ideas juntas te sorprenden? Busca una diferencia.",
-    ],
-  },
-  sequence: {
-    name: ["Sequence", "Secuencia"],
-    hint: [
-      "Do the ideas tell steps in time order?",
-      "¿Las ideas cuentan pasos en orden de tiempo?",
-    ],
-  },
-  example: {
-    name: ["Example", "Ejemplo"],
-    hint: [
-      "Is the second idea one specific case that shows the first idea is true?",
-      "¿La segunda idea es un caso específico que muestra que la primera es verdad?",
-    ],
-  },
-  addition: {
-    name: ["Addition", "Adición"],
-    hint: [
-      "Does the second idea add one more fact of the same kind?",
-      "¿La segunda idea añade otro dato del mismo tipo?",
-    ],
-  },
-};
+// The relationship names/hints and punctuation rules are shared with the sentence workbench (one source).
+import { RELS, punctRule } from "../lab/workbench.js";
+export { RELS, punctRule };
 export const REL_ORDER = Object.keys(RELS);
 
 const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
@@ -81,34 +39,6 @@ export function relExplain(rel, c, es) {
       `${q} (${es}) añade otra idea del mismo tipo.`,
     ],
   }[rel];
-}
-
-/** The punctuation rule for each kind of connector. */
-export function punctRule(type, c) {
-  const q = `“${c}”`;
-  const Q = `“${cap(c)}”`;
-  return {
-    sub: [
-      `When ${q} comes in the middle, no comma or period goes before it.`,
-      `Cuando ${q} va en el medio, no lleva coma ni punto antes.`,
-    ],
-    coord: [
-      `Put a comma before ${q} when it joins two complete sentences, and no comma after it.`,
-      `Pon una coma antes de ${q} cuando une dos oraciones completas, y ninguna coma después.`,
-    ],
-    adverb: [
-      `Use a semicolon before ${q} and a comma after it.`,
-      `Usa punto y coma antes de ${q} y una coma después.`,
-    ],
-    starter: [
-      `Start a new sentence with ${Q} and put a comma after it.`,
-      `Empieza una oración nueva con ${Q} y pon una coma después.`,
-    ],
-    lead: [
-      `When a sentence starts with ${Q}, put a comma after the opening part.`,
-      `Cuando una oración empieza con ${Q}, pon una coma después de la parte inicial.`,
-    ],
-  }[type];
 }
 
 /** The two clauses with the connector gap (or the picked connector) in place. */

@@ -1,7 +1,9 @@
 // Fluency Echo screens: the track header, the four rehearsal steps (listen, scoop, echo, check) and the
 // support layer (English summary, Spanish gloss, key words) that follows the support mode.
-import { recorderHTML } from "../components.js";
-import { isRecording, takesFor } from "../recorder.js";
+import { initFlow, typedStore } from "../lab/speaking-flow.js";
+import { guardSnap } from "../lab/speaking-session.js";
+import { recordPartHTML, reviewPartHTML } from "../lab/speaking-ui.js";
+import { takesFor } from "../recorder.js";
 import { feedbackHTML, glossHTML, hintHTML, html, icon, pips, settled } from "./engine.js";
 import { parsePassage, phraseText, scoreMarks } from "./fluency-echo-text.js";
 
@@ -12,43 +14,64 @@ const STEP_NAMES = {
   echo: ["Echo", "Eco"],
   check: ["Check", "Revisar"],
 };
-export const SELF = [
-  {
-    id: "smooth",
+// The three self-check points are the lab's shared ones (Complete idea / Academic word / Clear voice); these are
+// the read-aloud wordings of them. The "next time" tips are the Fluency Echo coaching lines.
+const SELF_Q = {
+  idea: {
     q: [
-      "Smooth: I kept going without stopping to start over.",
-      "Fluida: seguí leyendo sin parar para empezar de nuevo.",
-    ],
-    tip: [
-      "Next time, read each phrase in your head first, then say it.",
-      "La próxima vez, lee cada frase en tu mente primero y luego dila.",
-    ],
-  },
-  {
-    id: "phrased",
-    q: [
-      "Phrased: I paused at the slashes, not in the middle of a word group.",
-      "Con fraseo: hice pausas en las barras, no en medio de un grupo de palabras.",
+      "I read in whole phrases and kept going without starting over.",
+      "Leí en frases completas y seguí sin empezar de nuevo.",
     ],
     tip: [
       "Next time, echo one phrase at a time with the model before you read it all.",
       "La próxima vez, repite una frase a la vez con el modelo antes de leerlo todo.",
     ],
   },
-  {
-    id: "expression",
+  word: {
     q: [
-      "Expression: my voice matched how the text should sound.",
-      "Expresión: mi voz sonó como debe sonar el texto.",
+      "I said the key words clearly.",
+      "Dije las palabras clave con claridad.",
+    ],
+    tip: [
+      "Next time, say each key word slowly once before you read.",
+      "La próxima vez, di cada palabra clave despacio una vez antes de leer.",
+    ],
+  },
+  voice: {
+    q: [
+      "My voice was clear and matched how the text should sound.",
+      "Mi voz fue clara y sonó como debe sonar el texto.",
     ],
     tip: [
       "Next time, say the mood word to yourself before you start reading.",
       "La próxima vez, di la palabra del ánimo para ti antes de empezar a leer.",
     ],
   },
-];
+};
 
 export const recKey = (s, row) => `game:fluency-echo:${s.sid}:${row.id}`;
+
+/** What the shared speaking markup needs for this track. Frames: none in the plan (the passage is the script); the
+ *  passage's own phrases are the tap-to-build chips in the typed fallback (hidden in Independent). */
+function speakOpts(s, row, env) {
+  const key = recKey(s, row);
+  const I = env.I;
+  return {
+    sp: (row.sp ||= initFlow()),
+    env,
+    key,
+    snap: guardSnap(key),
+    text: typedStore.get(key),
+    hasTake: typeof window !== "undefined" && takesFor(key).length > 0,
+    planFrames: [],
+    chipFrames: row.phrases.map(phraseText),
+    questions: SELF_Q,
+    planNote: I.T(
+      "Plan your reading. Look at the slashes, decide where you will pause, and think about how it should sound.",
+      "Planea tu lectura. Mira las barras, decide dónde harás pausas y piensa cómo debe sonar.",
+    ),
+  };
+}
 
 function stepTrack(row, I) {
   const now = STEPS.indexOf(row.step);
@@ -192,9 +215,6 @@ function scoopHTML(row, env) {
 
 function echoHTML(s, row, env) {
   const I = env.I;
-  const key = recKey(s, row);
-  const recording = isRecording(key);
-  const takes = takesFor(key);
   return html`<p class="cg-instruction">
       ${I.T("Echo one phrase at a time: play it, then say it the same way out loud.", "Haz eco de una frase a la vez: escúchala y luego dila en voz alta de la misma manera.")}
     </p>
@@ -223,22 +243,17 @@ function echoHTML(s, row, env) {
         ${I.T(row.mood.en, row.mood.es)}</span
       >
     </p>
-    ${recorderHTML(key, { recording, i18n: I })}
-    ${
-      recording
-        ? ""
-        : html`<div class="gs-actions">
-              ${takes.length ? html`<button type="button" class="btn btn-primary btn-big" data-fe-to-check>${icon("arrow-right")}${I.T("Check my reading", "Revisar mi lectura")}</button>` : ""}
-              ${takes.length ? "" : html`<button type="button" class="btn" data-fe-norec>${icon("speaking")}${I.T("I can't record right now", "No puedo grabar ahora")}</button>`}
-            </div>
-            ${takes.length ? "" : html`<p class="fine">${I.T("No microphone? Read the passage aloud to yourself or a partner, then check your reading.", "¿No tienes micrófono? Lee el texto en voz alta para ti o para un compañero y luego revisa tu lectura.")}</p>`}`
-    }`;
+    ${recordPartHTML(speakOpts(s, row, env))}`;
 }
 
 function checkHTML(s, row, env, last) {
   const I = env.I;
-  const take = takesFor(recKey(s, row)).at(-1);
-  const all = SELF.every((q) => row.self[q.id] !== undefined);
+  const o = {
+    ...speakOpts(s, row, env),
+    finishLabel: last
+      ? I.T("Finish the last track", "Terminar la última pista")
+      : I.T("Finish this track", "Terminar esta pista"),
+  };
   return html`<p class="cg-instruction">
       ${I.T("Compare, then check yourself. This is your own judgment: nothing here is scored.", "Compara y luego revísate. Es tu propia opinión: aquí nada recibe puntos.")}
     </p>
@@ -247,51 +262,14 @@ function checkHTML(s, row, env, last) {
         ${icon("play")}${I.T("Hear the model", "Escuchar el modelo")}
       </button>
       ${
-        take
-          ? html`<button type="button" class="btn" data-fe-hear="mine">
-                ${icon("record")}${I.T("Hear my reading", "Escuchar mi lectura")}
-              </button>
-              <button type="button" class="btn btn-primary" data-fe-hear="both">
+        o.hasTake
+          ? html`<button type="button" class="btn" data-fe-hear="both">
                 ${icon("replay")}${I.T("Model, then mine", "Modelo y luego yo")}
               </button>`
           : ""
       }
     </div>
-    ${take ? "" : html`<p class="fine">${I.T("No recording this time. Read the passage aloud once more, then check yourself.", "Esta vez no hay grabación. Lee el texto en voz alta una vez más y luego revísate.")}</p>`}
-    ${passageHTML(row, { slashes: true })}
-    <div class="fe-self">
-      ${SELF.map((q) => {
-        const v = row.self[q.id];
-        return html`<fieldset class="fe-q">
-          <legend>${I.T(q.q[0], q.q[1])}</legend>
-          <div class="fe-q-row">
-            <button
-              type="button"
-              class="fe-yn"
-              data-fe-self="${q.id}:yes"
-              aria-pressed="${v === true}"
-            >
-              ${icon("check")}${I.T("Yes", "Sí")}
-            </button>
-            <button
-              type="button"
-              class="fe-yn"
-              data-fe-self="${q.id}:no"
-              aria-pressed="${v === false}"
-            >
-              ${icon("growth")}${I.T("Not yet", "Todavía no")}
-            </button>
-          </div>
-          ${v === false ? html`<p class="gs-hint">${icon("sparkle")}${I.T(q.tip[0], q.tip[1])}</p>` : ""}
-        </fieldset>`;
-      })}
-    </div>
-    <div class="gs-actions">
-      <button type="button" class="btn btn-primary btn-big" data-fe-finish ${all ? "" : "disabled"}>
-        ${icon("star")}${last ? I.T("Finish the last track", "Terminar la última pista") : I.T("Finish this track", "Terminar esta pista")}
-      </button>
-    </div>
-    ${all ? "" : html`<p class="fine">${I.T("Answer all three to finish.", "Responde las tres para terminar.")}</p>`}`;
+    ${passageHTML(row, { slashes: true })} ${reviewPartHTML(o)}`;
 }
 
 export function stageHTML(s, env) {

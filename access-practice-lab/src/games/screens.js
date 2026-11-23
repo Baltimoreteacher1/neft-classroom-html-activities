@@ -8,6 +8,10 @@ import { summarizeRounds } from "./state.js";
 import { FSM_STATES, toFSMState } from "../game-core/GameFSM.js";
 import { SoundEngine } from "../game-core/SoundEngine.js";
 import { getWeakSpots, loadProgression, sessionAccuracy } from "../game-core/ProgressionStore.js";
+import { hudHTML } from "../lab/hud.js";
+
+const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
+const canRecord = () => typeof navigator !== "undefined" && Boolean(navigator.mediaDevices?.getUserMedia) && typeof MediaRecorder === "function";
 
 /** Content text is a string (English practice text) or { en, es } (chrome that follows the language mode). */
 export const tx = (I, x) => (x && typeof x === "object" && "en" in x ? I.T(x.en, x.es) : x ?? "");
@@ -94,10 +98,10 @@ export function frameHTML({ g, I, band, session, content, stage, progress, fsmSt
       <div class="gs-top-right">
         <span class="gs-progress-t" aria-hidden="true">${progress.done}/${progress.total}</span>
         <span class="gs-progress-label">${I.T(`${progress.done} of ${progress.total} challenges complete`, `${progress.done} de ${progress.total} retos completados`)}</span>
-        ${supportSwitch(I, session.support, { inline: true })}
       </div>
     </header>
     ${enterpriseHudHTML({ g, I, band, session, progress, fsmState: canonicalState, paused })}
+    ${hudHTML({ I, g, band, session, canSpeak: canSpeak(), canRecord: canRecord() })}
     <div class="gs-journey-track" role="progressbar" aria-label="${I.S("Game challenges complete", "Retos del juego completados")}" aria-valuemin="0" aria-valuemax="${progress.total}" aria-valuenow="${progress.done}">
       <span style="width:${progress.total ? (progress.done / progress.total) * 100 : 0}%"></span>
     </div>

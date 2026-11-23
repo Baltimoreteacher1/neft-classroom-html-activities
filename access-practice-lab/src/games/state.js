@@ -3,6 +3,7 @@
 // (every `accessPracticeLab:v1:*` key is exported), and it never stores a score, a level or a
 // proficiency claim: only what the learner did, under which supports.
 import { safeJson, storage } from "../util.js";
+import { cleanListening } from "../lab/listening.js";
 
 export const GAMES_KEY = "accessPracticeLab:v1:games";
 export const MAX_HISTORY = 200;
@@ -34,6 +35,7 @@ export function cleanGames(raw) {
       state: isObject(s.state) ? s.state : null,
       rounds: Array.isArray(s.rounds) ? s.rounds.filter(isObject).slice(-60) : [],
       supportsUsed: Array.isArray(s.supportsUsed) ? s.supportsUsed.filter((x) => typeof x === "string").slice(0, 12) : [],
+      lab: cleanListening(s.lab),
       transfer: isObject(s.transfer) ? { text: String(s.transfer.text || "").slice(0, 2000), checks: Array.isArray(s.transfer.checks) ? s.transfer.checks.filter(Number.isInteger).slice(0, 8) : [], saved: s.transfer.saved === true } : { text: "", checks: [], saved: false },
     };
   }

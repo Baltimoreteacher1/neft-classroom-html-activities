@@ -5,17 +5,23 @@
 //   3. Echo    - hear each phrase and say it back, then record the whole passage with the site recorder. Recording is
 //                optional ("I can't record right now"); takes stay in this tab as object URLs and are never uploaded.
 //   4. Check   - replay model vs. mine and self-check smooth / phrased / expression. Nothing about the voice is scored.
+// Echo and Check run the lab's shared Speaking flow (src/lab/speaking-flow.js): plan quietly, record with the AudioGuard
+// (live level bar), hear yourself, then answer the three self-check points. A blocked or missing microphone, and "I can't
+// record right now", open a typed / tap-to-build answer that completes the same step (flagged typed + norec in the report).
 // Support modes: A shows the English summary, Spanish and key words open, states how many pauses to find and autoplays
 // the model once; B keeps that help one tap away; C hides it, and replaying the model during the scoop counts as help.
-import { stop as stopRecording, takesFor } from "../recorder.js";
+import { initFlow, PHASE, planSteps, reduce, speakReport } from "../lab/speaking-flow.js";
+import { bindSpeaking, memoryText, speakClick, speakInput } from "../lab/speaking-session.js";
+import { takesFor } from "../recorder.js";
 import { playRecording, speak } from "../speech.js";
 import { judge, newRound, settled, takeHint } from "./engine.js";
 import { modelMarks, parsePassage, phraseText, scoreMarks } from "./fluency-echo-text.js";
-import { recKey, SELF, stageHTML } from "./fluency-echo-view.js";
+import { recKey, stageHTML } from "./fluency-echo-view.js";
 
 let playing = 0;
 let spokenKey = "";
 let focusSel = "";
+let notify = null;
 const two = (x) => Boolean(x?.en && x?.es);
 
 function highlight(k) {
@@ -36,6 +42,42 @@ function playModel(row, env, { slow = false, then } = {}) {
     highlight(-1);
     if (completed && then) then();
   });
+}
+
+// Handlers the shared speaking glue works through. The flow lives in the row (JSON); the guard never does.
+function handlers(s, row, env) {
+  const key = recKey(s, row);
+  return {
+    env,
+    maxSeconds: 120,
+    get: () => (row.sp ||= initFlow()),
+    set(sp) {
+      row.sp = sp;
+      if (sp.phase === PHASE.REVIEW || sp.phase === PHASE.SELF_CHECK) row.step = "check";
+      else if (row.step === "check") row.step = "echo";
+    },
+    text: memoryText(key),
+    frames: () => row.phrases.map(phraseText),
+  };
+}
+
+function finishRow(s, row, env) {
+  const sp = row.sp;
+  env.report({
+    id: `${row.id}:speak`,
+    skill: "speaking",
+    ok: true,
+    first: !sp.typed && sp.attempts <= 1,
+    hints: 0,
+    revised: sp.attempts > 1,
+    production: true,
+    kind: "echo",
+    ...speakReport(sp),
+  });
+  row.step = "done";
+  s.cheer = row.title;
+  s.i += 1;
+  focusSel = ".fe-cheer";
 }
 
 export default {
@@ -61,8 +103,7 @@ export default {
         explain: p.explain,
         step: "listen",
         marks: [],
-        self: {},
-        norec: false,
+        sp: initFlow(),
         rs: newRound(),
       })),
     };
@@ -76,6 +117,13 @@ export default {
     const b = el.closest("button");
     const row = s.rows[s.i];
     if (!b || !row) return false;
+    if (row.step === "echo" || row.step === "check") {
+      const r = speakClick(b, recKey(s, row), handlers(s, row, env));
+      if (r) {
+        if (r.done) finishRow(s, row, env);
+        return r.changed;
+      }
+    }
     if (b.dataset.fePlay) {
       if (row.step === "scoop" && env.sup.key === "C") env.use("model-replay");
       playModel(row, env, { slow: b.dataset.fePlay === "slow" });
@@ -83,10 +131,16 @@ export default {
     }
     if (b.dataset.feHear) {
       const take = takesFor(recKey(s, row)).at(-1);
-      const mine = () => take && playRecording(take.url);
-      if (b.dataset.feHear === "model") playModel(row, env);
-      else if (b.dataset.feHear === "mine") mine();
-      else playModel(row, env, { then: mine });
+      if (b.dataset.feHear === "both" && take) {
+        // Hearing "model, then mine" counts as the mandatory self-playback.
+        const mine = () => {
+          playRecording(take.url);
+          const h = handlers(s, row, env);
+          h.set(reduce(h.get(), { type: "PLAYED" }));
+          notify?.();
+        };
+        playModel(row, env, { then: mine });
+      } else playModel(row, env);
       return false;
     }
     if (b.hasAttribute("data-fe-ready") && row.step === "listen") {
@@ -108,7 +162,7 @@ export default {
       judge(row.rs, sc.ok, env, {
         id: row.id,
         skill: "speaking",
-        extra: { kind: "phrasing", pauses: sc.need },
+        extra: { kind: "phrasing", pauses: sc.need, languageErrorTag: null },
       });
       if (row.rs.status === "revealed")
         row.marks = [...new Set([...row.marks, ...modelMarks(words)])].sort((a, z) => a - z);
@@ -124,36 +178,17 @@ export default {
       focusSel = ".fe-title";
       return true;
     }
-    if (
-      (b.hasAttribute("data-fe-norec") || b.hasAttribute("data-fe-to-check")) &&
-      row.step === "echo"
-    ) {
-      row.norec = b.hasAttribute("data-fe-norec");
-      stopRecording();
-      row.step = "check";
-      focusSel = ".fe-title";
-      return true;
-    }
-    if (b.dataset.feSelf && row.step === "check") {
-      const [id, v] = b.dataset.feSelf.split(":");
-      if (SELF.some((q) => q.id === id)) row.self[id] = v === "yes";
-      return true;
-    }
-    if (
-      b.hasAttribute("data-fe-finish") &&
-      row.step === "check" &&
-      SELF.every((q) => row.self[q.id] !== undefined)
-    ) {
-      row.step = "done";
-      s.cheer = row.title;
-      s.i += 1;
-      focusSel = ".fe-cheer";
-      return true;
-    }
     return false;
   },
 
-  mount(root, s, env) {
+  input(el, s, env) {
+    const row = s.rows[s.i];
+    if (row) speakInput(el, handlers(s, row, env)); // keeps the typed words in memory; never re-render mid-word
+    return false;
+  },
+
+  mount(root, s, env, changed) {
+    notify = changed || null;
     const row = s.rows[s.i];
     if (row?.step === "listen" && env.sup.audio === "auto" && spokenKey !== `${s.sid}:${s.i}`) {
       spokenKey = `${s.sid}:${s.i}`;
@@ -165,6 +200,8 @@ export default {
       n?.focus({ preventScroll: false });
       focusSel = "";
     }
+    if (row && (row.step === "echo" || row.step === "check"))
+      return bindSpeaking(root, recKey(s, row), handlers(s, row, env), changed);
     return null;
   },
 
@@ -188,17 +225,10 @@ export default {
       }
       return [...out, { click: "[data-fe-check]" }];
     }
-    if (row.step === "echo")
-      return [
-        { click: takesFor(recKey(s, row)).length ? "[data-fe-to-check]" : "[data-fe-norec]" },
-      ];
-    if (row.step === "check")
-      return [
-        ...SELF.filter((q) => row.self[q.id] === undefined).map((q) => ({
-          click: `[data-fe-self="${q.id}:yes"]`,
-        })),
-        { click: "[data-fe-finish]" },
-      ];
+    if (row.step === "echo" || row.step === "check") {
+      const words = phraseText(row.phrases.slice(0, 2).join(" "));
+      return planSteps((row.sp ||= initFlow()), words);
+    }
     return [];
   },
 

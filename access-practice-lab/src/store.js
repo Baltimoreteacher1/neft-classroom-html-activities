@@ -9,6 +9,7 @@
 import { mergeLedgers } from "./lang/ledger.js";
 import { mergeStudio, validStudio } from "./lang/studio.js";
 import { mergeGames, validGames } from "./games/state.js";
+import { mergeLab } from "./lab/store.js";
 import { mergeJourney, validJourney } from "./journey/state.js";
 import { cleanProgress as cleanVocabularyProgress } from "./vocab-curriculum/model.js";
 import { safeJson, storage, todayISO } from "./util.js";
@@ -252,7 +253,7 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|tlp_lab_v2|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
@@ -316,6 +317,16 @@ export function importProgressData(data) {
               lessons: Object.fromEntries(Object.entries({ ...(incoming.lessons || {}), ...(local.lessons || {}) }).map(([id, state]) => [id, { ...state, ...(local.lessons?.[id] || {}) }])),
             };
       const merged = JSON.stringify(mergedData);
+      if (merged !== current) writes.push([key, merged]);
+      continue;
+    }
+    if (suffix === "tlp_lab_v2") {
+      // Language Lab v2 events: validate (after migration) before touching storage, then union with this device's.
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || !Array.isArray(incoming.events))
+        throw new Error("That backup has an invalid Language Lab record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      const merged = JSON.stringify(mergeLab(local, incoming));
       if (merged !== current) writes.push([key, merged]);
       continue;
     }

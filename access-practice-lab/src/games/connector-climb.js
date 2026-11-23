@@ -24,11 +24,13 @@ import {
   rackHTML,
   relExplain,
 } from "./connector-climb-view.js";
+import { primaryTag } from "../lab/tags.js";
+import { benchClick, benchMount, benchPlan, benchRound, benchView, isBench } from "../lab/workbench-round.js";
 
 const modeOf = (env) => env.sup?.key || env.support || "A";
 const bandOf = (env) => env.content?.bands?.[env.band] || env.content || {};
 const complete = (r) =>
-  r.kind === "order" ? settled(r.rs) : settled(r.rs) && (r.needP === false || settled(r.prs));
+  r.kind === "order" || isBench(r) ? settled(r.rs) : settled(r.rs) && (r.needP === false || settled(r.prs));
 const outcome = (r) =>
   !complete(r)
     ? "open"
@@ -85,6 +87,13 @@ function orderRound(row, conns, random) {
     rs: newRound(),
     guide: false,
   };
+}
+
+/** 6-8 later rounds: the clause-combining workbench, built from a join row (same two ideas, same relationship). */
+function benchFor(row, src, band) {
+  const conns = (src.connectors || []).filter((c) => c.id !== "first").map((c) => ({ id: c.id, type: c.punct, rel: c.rel, es: c.es }));
+  const rel = conns.find((c) => c.id === row.conn)?.rel;
+  return benchRound(row.id, { id: row.id, kind: "combine", a: row.a, b: row.b, rel, conn: row.conn, connectors: conns }, band);
 }
 
 /** Hints for whichever step is open. */
@@ -205,7 +214,12 @@ export default {
     let p = 0;
     for (let k = 0; k < total; k += 1) {
       if ((k + 1) % 3 === 0 && paras[p]) rounds.push(orderRound(paras[p++], conns, env.rng));
-      else if (joins[j]) rounds.push(joinRound(joins[j++], conns, env.rng));
+      else if (joins[j]) {
+        const row = joins[j++];
+        // The 6-8 band's last third of the climb is clause combining: choose the connector AND the punctuation.
+        if (env.band === "6-8" && k >= Math.floor((total * 2) / 3)) rounds.push(benchFor(row, src, env.band));
+        else rounds.push(joinRound(row, conns, env.rng));
+      }
     }
     return { rounds, i: 0 };
   },
@@ -243,7 +257,7 @@ export default {
           ${icon("road")}${I.T(`Hold ${s.i + 1} of ${s.rounds.length}`, `Agarre ${s.i + 1} de ${s.rounds.length}`)}
         </p>
         ${pips(p.done, p.total, I.S(`${p.done} of ${p.total} holds`, `${p.done} de ${p.total} agarres`), I.S)}
-        ${r.kind === "order" ? orderView(r, env) : joinView(r, env)}
+        ${r.kind === "order" ? orderView(r, env) : isBench(r) ? benchView(r, env) : joinView(r, env)}
         ${complete(r) ? html`<div class="gs-actions"><button type="button" class="btn btn-primary btn-big" data-g-next>${icon("arrow-right")}${s.i + 1 === s.rounds.length ? I.T("Reach the top", "Llegar a la cima") : I.T("Climb to the next hold", "Subir al siguiente agarre")}</button></div>` : ""}
       </div>
     </section>`;
@@ -265,6 +279,7 @@ export default {
       env.use("connector-guide");
       return true;
     }
+    if (isBench(r)) return benchClick(b, r, env, { skill });
     if (r.kind === "order") {
       if (settled(r.rs)) return false;
       if (d.gLine !== undefined) {
@@ -294,10 +309,12 @@ export default {
       if (b.hasAttribute("data-g-hint")) return takeHint(r.rs, env) >= 0;
       if (b.hasAttribute("data-g-check") && r.pick !== null) {
         if (!r.rs.picks.includes(r.pick)) r.rs.picks.push(r.pick);
+        // Two complete ideas joined with an incorrect connector: the learner's construction has CONNECTOR_MISSING.
+        if (r.pick !== r.ans) r.tag = "CONNECTOR_MISSING";
         judge(r.rs, r.pick === r.ans, env, {
           id: r.id,
           skill,
-          extra: { kind: "connector", rel: r.rel },
+          extra: { kind: "connector", rel: r.rel, languageErrorTag: r.tag || null },
         });
         if (settled(r.rs)) {
           r.pick = r.ans;
@@ -312,10 +329,12 @@ export default {
       if (b.hasAttribute("data-g-hint")) return takeHint(r.prs, env) >= 0;
       if (b.hasAttribute("data-g-check") && r.ppick !== null) {
         if (!r.prs.picks.includes(r.ppick)) r.prs.picks.push(r.ppick);
+        // A wrong punctuated version runs through the syntax checker (a comma splice names CONNECTOR_MISSING).
+        if (r.ppick !== r.pans) r.ptag ||= primaryTag(r.punct[r.ppick]);
         judge(r.prs, r.ppick === r.pans, env, {
           id: `${r.id}:punct`,
           skill,
-          extra: { kind: "punctuation" },
+          extra: { kind: "punctuation", languageErrorTag: r.ptag || null },
         });
         if (settled(r.prs)) r.ppick = r.pans;
         return true;
@@ -324,10 +343,15 @@ export default {
     return false;
   },
 
+  mount(root, s) {
+    return isBench(s.rounds[s.i]) ? benchMount(root) : null;
+  },
+
   plan(s, { wrong } = {}) {
     const r = s.rounds[s.i];
     if (!r) return [];
     if (complete(r)) return [{ click: "[data-g-next]" }];
+    if (isBench(r)) return benchPlan(r, { wrong });
     if (r.kind === "order") {
       if (r.placed.length) return [{ click: "[data-g-clear]" }];
       const seq = wrong ? [...r.key].reverse() : r.key;

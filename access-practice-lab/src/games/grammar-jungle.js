@@ -23,6 +23,7 @@ import {
   shuffle,
   takeHint,
 } from "./engine.js";
+import { TAG_IDS } from "../lab/tags.js";
 
 const BANDS = ["3-5", "6-8"];
 const EXPLORER = { "3-5": "🐒", "6-8": "🧗" };
@@ -49,7 +50,8 @@ function decide(r, ok, s, env) {
   judge(r.rs, ok, env, {
     id: r.id,
     skill: env.def?.skill?.toLowerCase() || "writing",
-    extra: { kind: r.kind },
+    // A vine whose rule maps to a language-error tag reports it when the learner missed it (a wrong word or a wrong tile).
+    extra: { kind: r.kind, languageErrorTag: r.tag && (r.tagMiss.length || r.tileMiss.length) ? r.tag : null },
   });
   if (!settled(r.rs)) return;
   r.step = "done";
@@ -194,6 +196,7 @@ export default {
           id: r.id,
           kind: r.kind,
           job: kinds[r.kind] || null,
+          tag: kinds[r.kind]?.tag || null,
           toks,
           bad: toks.indexOf(r.bad),
           fix: r.fix,
@@ -432,6 +435,8 @@ export default {
       const kinds = band.kinds || {};
       for (const [k, v] of Object.entries(kinds))
         if (!bi(v)) errors.push(`${name}: rule label ${k} must be bilingual`);
+      for (const [k, v] of Object.entries(kinds))
+        if (v.tag && !TAG_IDS.includes(v.tag)) errors.push(`${name}: rule ${k} has an unknown error tag ${v.tag}`);
       const used = new Set(rows.map((r) => r.kind));
       if (used.size < 5)
         errors.push(`${name}: vines should practice at least five different rules`);

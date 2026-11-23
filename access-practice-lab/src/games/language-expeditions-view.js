@@ -1,8 +1,10 @@
 // Language Expeditions views: the journey bar, the land map, the activity panels (one per activity type), the land
 // gate with its stamp and the end-of-journey summary. Pure functions of state; the module (language-expeditions.js)
 // owns the rules. Every control is a native button; the scene above the panel is decorative.
-import { canRecord, isRecording, takesFor } from "../recorder.js";
-import { dictationControlsHTML } from "../dictation-ui.js";
+import { initFlow } from "../lab/speaking-flow.js";
+import { guardSnap } from "../lab/speaking-session.js";
+import { speakingHTML } from "../lab/speaking-ui.js";
+import { takesFor } from "../recorder.js";
 import {
   audioBtn,
   feedbackHTML,
@@ -385,15 +387,22 @@ ${r.text}</textarea>`;
 export function speakHTML(s, r, a, env) {
   const I = env.I;
   const key = recKey(s, r);
-  const live = isRecording(key);
-  const takes = typeof window === "undefined" ? [] : takesFor(key);
-  const voice = typeof window !== "undefined" && canRecord();
+  const o = {
+    sp: (r.sp ||= initFlow()),
+    env,
+    key,
+    snap: guardSnap(key),
+    text: r.text,
+    hasTake: typeof window !== "undefined" && takesFor(key).length > 0,
+    frames: a.frame, // the stop's own frame, split into one chip per sentence (none in Independent)
+    planNote: I.T("Plan your answer quietly: your first idea, one important word, and how you want to sound.", "Planea tu respuesta en silencio: tu primera idea, una palabra importante y cómo quieres sonar."),
+  };
   return html`<figure class="lexp-figure">${pic(a.art)}</figure>
     <p class="lexp-prompt">
       <strong>${I.T("Your task:", "Tu tarea:")}</strong> ${say(I, a.prompt)}
     </p>
     ${audioBtn(a.prompt.en, I, I.S("Listen to the task", "Escuchar la tarea"))}
-    ${frameBox(a.frame, env)}${bankHTML(a, env)}
+    ${bankHTML(a, env)}
     ${
       r.said
         ? html`${selfHTML(r, a, env)}${modelHTML(r, a, env)}
@@ -405,20 +414,7 @@ export function speakHTML(s, r, a, env) {
                 ${icon("arrow-right")}${I.T("Walk on", "Seguir caminando")}
               </button>
             </div>`
-        : html`<div class="lexp-voice">
-              ${voice ? html`<button type="button" class="btn${live ? " is-live" : ""}" data-lexp-rec aria-pressed="${live}">${icon(live ? "stop" : "record")}${live ? I.T("Stop recording", "Detener la grabación") : I.T("Record myself", "Grabarme")}</button>` : ""}
-              ${takes.length && !live ? html`<button type="button" class="btn" data-lexp-playback>${icon("play")}${I.T("Play my recording", "Escuchar mi grabación")}</button>` : ""}
-              ${dictationControlsHTML(key, I)}
-            </div>
-            <p class="fine">
-              ${I.T("Recordings stay in this browser tab and are gone when you leave. Nothing is uploaded.", "Las grabaciones se quedan en esta pestaña del navegador y desaparecen al salir. No se sube nada.")}
-            </p>
-            ${textBox(s, r, I, I.T("My words (optional: type, or let the words appear as you speak)", "Mis palabras (opcional: escribe o deja que aparezcan mientras hablas)"))}
-            <div class="gs-actions">
-              <button type="button" class="btn btn-primary btn-big" data-lexp-said>
-                ${icon("check")}${I.T("I said it out loud", "Lo dije en voz alta")}
-              </button>
-            </div>`
+        : speakingHTML(o)
     }`;
 }
 

@@ -8,6 +8,17 @@
       content="Find anything on the site — a searchable index of every lesson, tool, game, practice set, and hub, grouped by who it is for."
     />
     <title>Find Anything — Site Directory | Neft Teacher</title>
+    <script>
+      // Site mode, set before first paint. thelanguagepage.com defaults to the
+      // Language Page partition; ?site=language|math|all overrides on any host.
+      // Any other host with no ?site= keeps the full directory. Nothing persists.
+      (() => {
+        const q = new URLSearchParams(location.search).get("site");
+        const lang = /^(www\.)?thelanguagepage\.com$/i.test(location.hostname);
+        const site = ["language", "math", "all"].includes(q) ? q : lang ? "language" : "";
+        if (site) document.documentElement.dataset.site = site;
+      })();
+    </script>
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
       /* Page-local, layered on shared.css tokens. */
@@ -119,7 +130,8 @@
         margin-bottom: 14px;
         border-bottom: 1px solid var(--line);
       }
-      .dir-section-head h2 {
+      .dir-section-head h2,
+      .dir-section-head h3 {
         margin: 0;
         font-size: clamp(1.15rem, 2.2vw, 1.45rem);
       }
@@ -215,6 +227,48 @@
         border-radius: 999px;
         cursor: pointer;
       }
+
+      /* Language Page partition. Math entries are never drawn in the primary
+         list in these modes (script renders them inside #partnerMath); this rule
+         is the guard that keeps any stray tagged row out of it. */
+      [data-site="language"] [data-partner="math"],
+      [data-site="math"] [data-partner="math"] {
+        display: none;
+      }
+      .dir-scope {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .dir-scope a {
+        font-weight: 750;
+        color: var(--teal-dark);
+      }
+      .dir-partner {
+        margin-top: 26px;
+        padding: 6px 20px 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+      .dir-partner > summary {
+        min-height: 44px;
+        padding: 10px 0;
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        font-weight: 800;
+        color: var(--teal-dark);
+        cursor: pointer;
+      }
+      .dir-partner > summary:focus-visible {
+        outline: 3px solid rgba(15, 118, 110, 0.35);
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+      .dir-partner .dir-section {
+        margin-top: 12px;
+        padding: 0;
+        border: 0;
+      }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
@@ -229,11 +283,16 @@
       <section class="hero compact-hero">
         <p class="eyebrow">Everything in One Place</p>
         <h1>Find Anything</h1>
-        <p class="hero-copy">
-          Every lesson, tool, game, practice set, and hub on the site — grouped
-          by who it is for. Start typing, or pick a lane.
+        <p class="hero-copy" id="dirHeroCopy">
+          Every lesson, tool, game, practice set, and hub on the site — grouped by who it is for.
+          Start typing, or pick a lane.
         </p>
       </section>
+
+      <p class="dir-scope" id="dirScope" hidden>
+        <span id="dirScopeText"></span>
+        <a href="?site=all">Show the full directory</a>
+      </p>
 
       <p id="dirLoading" role="status">Loading directory…</p>
 
@@ -248,8 +307,8 @@
           />
         </div>
         <p class="dir-hint">
-          Press <kbd>/</kbd> to search, <kbd>Enter</kbd> to open the first
-          result, <kbd>Esc</kbd> to clear.
+          Press <kbd>/</kbd> to search, <kbd>Enter</kbd> to open the first result, <kbd>Esc</kbd> to
+          clear.
         </p>
         <div class="dir-filters" role="group" aria-label="Who it is for">
           <span class="dir-filter-label">For</span>
@@ -271,6 +330,15 @@
         Nothing matches. Try fewer words, or clear the filters.
       </p>
 
+      <details class="dir-partner" id="partnerMath" hidden>
+        <summary>Partner Math Portal: EduWonderLab</summary>
+        <p class="dir-hint">
+          Grade 6 Math games and arcade from EduWonderLab ·
+          <span id="partnerCount"></span>
+        </p>
+        <div id="partnerResults"></div>
+      </details>
+
       <footer class="site-footer">
         <span>Neft Teacher · Find Anything</span>
         <span><a href="/">Back to Home</a></span>
@@ -288,15 +356,7 @@
 
       // Order the six surfaces of one lesson so the row reads the way the week
       // runs: teach it, apply it, small groups, catch up, get ready, send home.
-      const VARIANT_ORDER = [
-        "core",
-        "part2",
-        "group1",
-        "group2",
-        "catchup",
-        "readiness",
-        "family",
-      ];
+      const VARIANT_ORDER = ["core", "part2", "group1", "group2", "catchup", "readiness", "family"];
       const VARIANT_CHIP = {
         core: "Lesson",
         part2: "Apply",
@@ -307,15 +367,34 @@
         family: "Family",
       };
 
+      // Site partition (see the head script). In "language" and "math" modes the
+      // directory shows Language Page entries as the primary list and moves the
+      // EduWonderLab math arcade into one collapsed partner block. Other
+      // Neft Teacher entries stay out of that view; ?site=all restores them.
+      const SITE = document.documentElement.dataset.site || "";
+      const PARTITIONED = SITE === "language" || SITE === "math";
+      // Math partner set: every entry in the "arcade" (Games & Arcade) section.
+      const PARTNER_SECTIONS = new Set(["arcade"]);
+      // Language Page set: the whole "reading" (Reading & Language) section, plus
+      // ESOL, WIDA ACCESS, ACCESS Practice Lab and the other pages the lab host
+      // serves (functions/_lib/language-page.js), plus the math "-esol" readers.
+      const LANGUAGE_PATH =
+        /^\/(esol[^/]*|wida-access|access-[^/]+|language-adventures|language-studio|learning-studios)(\/|$)|\/[^/]*-esol(\/|$)/;
+      const isPartner = (e) => PARTNER_SECTIONS.has(e.section);
+      const isLanguage = (e) => e.section === "reading" || LANGUAGE_PATH.test(e.path);
+
       const state = {
         q: "",
         lane: "all",
         section: "all",
         unit: "all",
+        site: "",
         all: [],
+        catalogTotal: 0,
         sections: [],
         expanded: new Set(),
       };
+      let partnerAutoOpened = false;
 
       function esc(s) {
         return String(s).replace(
@@ -375,8 +454,7 @@
         for (const row of rows) {
           if (row.kind !== "lesson") continue;
           row.variants.sort(
-            (a, b) =>
-              VARIANT_ORDER.indexOf(a.variant) - VARIANT_ORDER.indexOf(b.variant),
+            (a, b) => VARIANT_ORDER.indexOf(a.variant) - VARIANT_ORDER.indexOf(b.variant),
           );
           // The core lesson names the row; fall back to whatever surface exists
           // (a Part 2 with no whole-group page still deserves a readable name).
@@ -396,11 +474,7 @@
       function rowHtml(row) {
         if (row.kind === "page") {
           const e = row.e;
-          const meta = [
-            e.category,
-            e.unit != null ? "Unit " + e.unit : "",
-            e.standard || "",
-          ]
+          const meta = [e.category, e.unit != null ? "Unit " + e.unit : "", e.standard || ""]
             .filter(Boolean)
             .join(" · ");
           return `<div class="dir-row">
@@ -431,26 +505,35 @@
 
       function render() {
         const root = document.getElementById("dirResults");
+        const partnerRoot = document.getElementById("partnerResults");
         root.innerHTML = "";
+        partnerRoot.innerHTML = "";
         firstHit = null;
+        let partnerFirst = null;
         let shown = 0;
+        let partnerShown = 0;
 
         for (const sec of state.sections) {
           const items = state.all.filter((e) => e.section === sec.id && matches(e));
           if (!items.length) continue;
           const rows = rowsFor(items);
           shown += items.length;
-          if (!firstHit) firstHit = rows[0].e.path;
+          const inPartner = PARTITIONED && PARTNER_SECTIONS.has(sec.id);
+          if (inPartner) {
+            partnerShown += items.length;
+            if (!partnerFirst) partnerFirst = rows[0].e.path;
+          } else if (!firstHit) firstHit = rows[0].e.path;
 
           const expanded = state.expanded.has(sec.id) || !!state.q;
           const visible = expanded ? rows : rows.slice(0, PAGE_SIZE);
           const hidden = rows.length - visible.length;
+          const h = inPartner ? "h3" : "h2";
 
           const node = document.createElement("section");
           node.className = "dir-section";
           node.innerHTML = `
             <div class="dir-section-head">
-              <h2>${esc(sec.label)}</h2>
+              <${h}>${esc(sec.label)}</${h}>
               <span class="lane-tag">${esc(LANE_LABEL[sec.lane] || sec.lane)}</span>
               <span class="count">${rows.length} ${rows.length === 1 ? "entry" : "entries"}</span>
               <span class="blurb">${esc(sec.blurb)}</span>
@@ -461,22 +544,48 @@
                 ? `<button class="dir-more" type="button" data-expand="${esc(sec.id)}">Show all ${rows.length} →</button>`
                 : ""
             }`;
-          root.appendChild(node);
+          if (PARTNER_SECTIONS.has(sec.id)) {
+            // Tag the math partner rows. In the full directory they sit in the
+            // primary list (data-partner); in a partitioned view they live in
+            // the partner block (data-partner-listed), which the guard rule in
+            // the stylesheet does not hide.
+            const mark = inPartner ? "data-partner-listed" : "data-partner";
+            node.setAttribute(mark, "math");
+            for (const r of node.querySelectorAll(".dir-row")) r.setAttribute(mark, "math");
+          }
+          (inPartner ? partnerRoot : root).appendChild(node);
         }
 
-        root.querySelectorAll("[data-expand]").forEach((b) =>
-          b.addEventListener("click", () => {
-            state.expanded.add(b.getAttribute("data-expand"));
-            render();
-          }),
-        );
+        for (const box of [root, partnerRoot])
+          box.querySelectorAll("[data-expand]").forEach((b) =>
+            b.addEventListener("click", () => {
+              state.expanded.add(b.getAttribute("data-expand"));
+              render();
+            }),
+          );
+
+        // Belt and braces for partitioned views: a math-tagged row must never be
+        // visible in the primary list, search and filters included.
+        if (PARTITIONED)
+          for (const n of root.querySelectorAll('[data-partner="math"]')) n.hidden = true;
+
+        const block = document.getElementById("partnerMath");
+        block.hidden = !(PARTITIONED && partnerShown > 0);
+        document.getElementById("partnerCount").textContent =
+          `${partnerShown} ${partnerShown === 1 ? "page" : "pages"}`;
+        // Open the block once per search so matches are not buried, without
+        // fighting a visitor who closes it again while typing.
+        if (state.q && partnerShown && !partnerAutoOpened) {
+          block.open = true;
+          partnerAutoOpened = true;
+        }
+        if (!state.q) partnerAutoOpened = false;
+        if (!firstHit) firstHit = partnerFirst;
 
         document.getElementById("dirEmpty").hidden = shown > 0;
         const total = state.all.length;
         document.getElementById("dirCount").textContent =
-          shown === total
-            ? `${total} pages`
-            : `${shown} of ${total} pages`;
+          shown === total ? `${total} pages` : `${shown} of ${total} pages`;
       }
 
       function chip(box, value, label, key) {
@@ -512,19 +621,22 @@
         for (const sec of state.sections) {
           if (state.lane !== "all" && sec.lane !== state.lane) continue;
           if (!state.all.some((e) => e.section === sec.id)) continue;
+          // The partner block is its own control, not a section chip.
+          if (PARTITIONED && PARTNER_SECTIONS.has(sec.id)) continue;
           chip(secBox, sec.id, sec.label, "section");
         }
 
         chip(unitBox, "all", "All", "unit");
-        const units = [
-          ...new Set(state.all.filter((e) => e.unit != null).map((e) => e.unit)),
-        ].sort((a, b) => a - b);
+        const units = [...new Set(state.all.filter((e) => e.unit != null).map((e) => e.unit))].sort(
+          (a, b) => a - b,
+        );
         for (const u of units) chip(unitBox, String(u), "Unit " + u, "unit");
       }
 
       /** Keep the URL in step so a filtered view can be bookmarked or shared. */
       function syncUrl() {
         const p = new URLSearchParams();
+        if (state.site) p.set("site", state.site);
         if (state.q) p.set("q", state.q);
         if (state.lane !== "all") p.set("lane", state.lane);
         if (state.section !== "all") p.set("section", state.section);
@@ -535,6 +647,7 @@
 
       function readUrl() {
         const p = new URLSearchParams(location.search);
+        state.site = p.get("site") || "";
         state.q = (p.get("q") || "").trim().toLowerCase();
         state.lane = p.get("lane") || "all";
         state.section = p.get("section") || "all";
@@ -568,12 +681,26 @@
         }
       });
 
+      /** Say what a partitioned view contains and how to get the rest back. */
+      function showScope() {
+        const other = state.catalogTotal - state.all.length;
+        document.getElementById("dirHeroCopy").textContent =
+          "ESOL, WIDA ACCESS, reading, and ACCESS Practice Lab pages from The Language Page. Start typing, or pick a lane.";
+        document.getElementById("dirScopeText").textContent =
+          `Showing ${state.all.length} Language Page and partner pages. ${other} other Neft Teacher pages are in the full directory.`;
+        document.getElementById("dirScope").hidden = false;
+        if (SITE === "math") document.getElementById("partnerMath").open = true;
+      }
+
       fetch("/data/catalog.json")
         .then((r) => r.json())
         .then((data) => {
-          state.all = data.entries || [];
+          const entries = data.entries || [];
+          state.catalogTotal = entries.length;
+          state.all = PARTITIONED ? entries.filter((e) => isPartner(e) || isLanguage(e)) : entries;
           state.sections = data.sections || [];
           readUrl();
+          if (PARTITIONED) showScope();
           buildFilters();
           render();
           document.getElementById("dirLoading").hidden = true;

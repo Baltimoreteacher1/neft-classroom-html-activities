@@ -2,6 +2,12 @@
 // (start -> play -> transfer -> done), autosave and resume, evidence history and achievements; every game
 // module (src/games/<module>.js) owns only its own mechanic. See src/games/engine.js for the contract.
 import { announce, BASE, html } from "../util.js";
+import { speak } from "../speech.js";
+import { gameMeta, tierOfSupport, DOMAINS } from "../lab/meta.js";
+import { supportFromQuery } from "../lab/query.js";
+import { decorateAudio, requestPlay, toggleSlow, cleanListening } from "../lab/listening.js";
+import { recordEvent } from "../lab/store.js";
+import { updateMicPill } from "../lab/hud.js";
 import { award } from "../engagement.js";
 import { i18nFor } from "../i18n.js";
 import { loadLedger, buildProfile, focusAreas } from "../lang/ledger.js";
@@ -47,7 +53,7 @@ const query = () => Object.fromEntries(new URLSearchParams(location.search));
 const qaOn = () => query().qa === "1";
 
 function makeSession(def, band, support, len, previous) {
-  return { id: `${def.id}-${Date.now().toString(36)}`, game: def.id, band, support, len, phase: "play", seed: ((Date.now() ^ (previous?.seed || 0)) & 0xffff) + 1, startedAt: new Date().toISOString(), updatedAt: new Date().toISOString(), state: null, rounds: [], supportsUsed: [], cur: [], transfer: { text: "", checks: [], saved: false } };
+  return { id: `${def.id}-${Date.now().toString(36)}`, game: def.id, band, support, len, phase: "play", seed: ((Date.now() ^ (previous?.seed || 0)) & 0xffff) + 1, startedAt: new Date().toISOString(), updatedAt: new Date().toISOString(), state: null, rounds: [], supportsUsed: [], cur: [], lab: cleanListening(), transfer: { text: "", checks: [], saved: false } };
 }
 
 function envFor(live) {
@@ -69,9 +75,34 @@ function envFor(live) {
       const i = session.rounds.findIndex((x) => x.id === r.id);
       if (i >= 0) session.rounds[i] = row; else session.rounds.push(row);
       session.cur = [];
+      logRound(live, r);
     },
   };
   return env;
+}
+
+// Telemetry for the lab's versioned store (`tlp_lab_v2`): one event per judged round and one per finished game.
+// No name, no learner text, no recording: the game, band, WIDA domain, content area, tier and an optional error tag.
+function labEvent(live, extra) {
+  const meta = gameMeta(live.def.id);
+  return {
+    gameId: live.def.id,
+    gradeBand: live.band,
+    widaContentArea: meta?.contentArea,
+    scaffoldTier: tierOfSupport(live.session.support),
+    timestamp: new Date().toISOString(),
+    ...extra,
+  };
+}
+function logRound(live, r) {
+  try {
+    recordEvent(labEvent(live, { kind: "round", widaDomain: DOMAINS.includes(r.skill) ? r.skill : undefined, languageErrorTag: r.languageErrorTag || null, ok: r.ok !== false }));
+  } catch {}
+}
+function logMission(live) {
+  try {
+    recordEvent(labEvent(live, { kind: "mission", ok: true }));
+  } catch {}
 }
 
 function persist(live) {
@@ -95,6 +126,7 @@ function finish(live, { skipped = false } = {}) {
   session.phase = "done";
   live.fsm?.transition(FSM_STATES.ROUND_SUMMARY);
   persist(live);
+  logMission(live);
   try {
     SoundEngine.playLevelUp();
     for (const a of live.awards) unlockWorldBadge(a);
@@ -160,7 +192,7 @@ export async function render(ctx) {
   const games = loadGames();
   const key = sessionKey(id, band);
   let session = games.sessions[key] || null;
-  const wanted = SUP[q.mode] ? q.mode : "";
+  const wanted = SUP[q.mode] ? q.mode : supportFromQuery(location.search);
   if (!LIVE || LIVE.def.id !== id || LIVE.band !== band) {
     LIVE?.fsm?.teardown();
     // Entering a game: a finished session shows its completion screen only right after finishing; a link opens the start screen.
@@ -244,6 +276,11 @@ export function mount(root, ctx) {
   if (LIVE) LIVE.cleanup = null;
   if (!LIVE || LIVE.session.phase !== "play" || !LIVE.session.state) { window.__ACCESS_GAMES__ = undefined; if (!LIVE) hubMount(root); return; }
   const stage = root.querySelector(".gs-stage");
+  if (stage && LIVE.def.skill === "Listening") decorateAudio(stage, cleanListening(LIVE.session.lab), tierOfSupport(LIVE.session.support));
+  stopMicWatch();
+  const onAudioState = (e) => updateMicPill(root, i18nFor(ctx), e.detail?.state);
+  document.addEventListener("lab:audio-state", onAudioState);
+  micWatch = () => document.removeEventListener("lab:audio-state", onAudioState);
   if (stage && LIVE.mod.mount && !LIVE.fsm?.paused) LIVE.cleanup = LIVE.mod.mount(stage, LIVE.session.state, LIVE.env, () => changed()) || null;
   if (qaOn()) {
     window.__ACCESS_GAMES__ = {
@@ -260,7 +297,11 @@ function hubMount(root) {
   window.__ACCESS_GAMES__ = undefined;
   return form;
 }
+let micWatch = null;
+const stopMicWatch = () => { micWatch?.(); micWatch = null; };
+
 export function unmount() {
+  stopMicWatch();
   LIVE?.cleanup?.();
   LIVE?.fsm?.teardown();
   if (LIVE) LIVE.cleanup = null;
@@ -299,7 +340,32 @@ export function onClick(e, ctx) {
   const live = LIVE;
   const s = live.session;
   const I = i18nFor(ctx);
-  if (t.closest("[data-say]") && s.phase === "play" && s.support === "C") live.env.use("audio");
+  const tier = tierOfSupport(s.support);
+  const say = t.closest("[data-say]");
+  if (say && s.phase === "play" && live.def.skill === "Listening") {
+    // Listening games: replays follow the scaffold tier (Independent 2, Guided / Hands-on unlimited, 0.85x toggle).
+    s.lab = cleanListening(s.lab);
+    const play = requestPlay(s.lab, say.dataset.say, tier, ctx.prefs.rate);
+    if (!play.ok) {
+      announce(I.S("That recording has been played twice. Use what you heard.", "Esa grabación ya se reprodujo dos veces. Usa lo que escuchaste."));
+      return true;
+    }
+    s.lab = play.state;
+    persist(live);
+    if (s.support === "C") live.env.use("audio");
+    const anchor = say.closest("[data-anchor]") || say;
+    anchor.classList.add("lh-anchor-on");
+    decorateAudio(document.querySelector(".gs-stage") || document, s.lab, tier);
+    Promise.resolve(speak(say.dataset.say, { rate: play.rate, voiceURI: ctx.prefs.readingVoice })).finally(() => anchor.classList.remove("lh-anchor-on"));
+    return true;
+  }
+  if (t.closest("[data-lab-slow]")) {
+    s.lab = toggleSlow(cleanListening(s.lab), tier);
+    persist(live);
+    ctx.rerender();
+    return true;
+  }
+  if (say && s.phase === "play" && s.support === "C") live.env.use("audio");
   const hudBtn = t.closest("[data-g-mute],[data-g-zen],[data-g-pause],[data-g-theme],[data-g-weak-replay]");
   if (hudBtn) {
     if (hudBtn.hasAttribute("data-g-mute")) {

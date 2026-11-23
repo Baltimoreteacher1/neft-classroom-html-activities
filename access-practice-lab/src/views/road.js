@@ -6,6 +6,8 @@ import { ACADEMIC_BANDS } from "../bands.js";
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows, loadRoad } from "../content.js";
 import { loadRecord } from "../store.js";
+import { loadLab } from "../lab/store.js";
+import { readinessPanelHTML } from "../lab/progress-ui.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, DOMAIN_META, bandLabel, formatDate, html, icon, todayISO } from "../util.js";
 import { activityHref } from "./room.js";
@@ -111,6 +113,7 @@ export async function render(ctx) {
           ${now ? html`<a class="btn btn-primary" href="${BASE}/road/${now.n}?grades=${band}">${T(`Go to this week (Week ${now.n})`, `Ir a esta semana (Semana ${now.n})`)} ${icon("arrow-right")}</a>` : ""}
         </div>
       </section>
+      ${readinessPanelHTML(I, loadLab(), { band, compact: true, idp: "rdLab" })}
       <h2 class="prog-heading">${T("The 12-week plan", "El plan de 12 semanas")}</h2>
       <ol class="rd-map">
         ${plan.weeks.map(stop)}

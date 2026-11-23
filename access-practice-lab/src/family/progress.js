@@ -4,6 +4,8 @@ import { journeyHTML } from "./journey.js";
 import { bandRows, loadEsGuide, loadRoad } from "../content.js";
 import { allRecords, getStudentName } from "../store.js";
 import { loadLedger } from "../lang/ledger.js";
+import { loadLab } from "../lab/store.js";
+import { familySnapshotHTML } from "../lab/progress-ui.js";
 import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
@@ -149,6 +151,7 @@ export async function render(ctx, I) {
       </section>
       ${justFinished ? html`<section class="panel fam-done" role="status" aria-labelledby="ppDone"><h2 id="ppDone">${icon("check")} ${I.L("session.done.heading")}</h2><p>${I.L("session.done.text")}</p></section>` : ""}
       <div class="fam-prog-grid">
+        ${familySnapshotHTML(I, loadLab(), { band, idp: "fsLab" })}
         <section class="panel" aria-labelledby="pp1"><h2 id="pp1">${I.L("prog.practiced.heading")}</h2>${practicedLines(I, summary.latest)}</section>
         <section class="panel" aria-labelledby="ppLanguageEvidence"><h2 id="ppLanguageEvidence">${I.L("prog.evidence.heading")}</h2>${languageEvidenceHTML(I, languageEvidence)}</section>
         ${growthEvidenceHTML(I, growthEvidence)}

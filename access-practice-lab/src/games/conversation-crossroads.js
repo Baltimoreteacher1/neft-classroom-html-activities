@@ -1,11 +1,22 @@
 // Conversation Crossroads: interpret a partner, try a response, then compose a new one.
 // Every learner decision and draft is serializable for the Studio's local save/resume.
+import { initFlow, PHASE, planSteps, speakReport } from "../lab/speaking-flow.js";
+import { bindSpeaking, guardSnap, memoryText, speakClick, speakInput } from "../lab/speaking-session.js";
+import { speakingHTML } from "../lab/speaking-ui.js";
+import { takesFor } from "../recorder.js";
 import { audioBtn, feedbackHTML, frameBox, hintHTML, html, icon, judge, mixChoices, newRound, pips, settled, takeHint } from "./engine.js";
 
 const say = (I, pair) => I.T(pair.en, pair.es);
 const caseOf = (env, id) => env.content.cases.find((c) => c.id === id);
 const active = (s) => s.rounds[s.i];
-const phaseOf = (r) => !settled(r.meaningRound) ? "meaning" : !settled(r.replyRound) ? "reply" : "compose";
+// Saves from before the spoken rehearsal have no `sp` and go straight to writing.
+const phaseOf = (r) => !settled(r.meaningRound) ? "meaning" : !settled(r.replyRound) ? "reply" : r.sp && r.sp.phase !== PHASE.DONE ? "speak" : "compose";
+const recKey = (r) => `game:conversation-crossroads:${r.id}`;
+const frameOf = (env) => env.band === "6-8"
+  ? "I hear your point that ___. The evidence suggests ___. Could we ___?"
+  : "I hear your idea about ___. Could we ___ because ___?";
+// Handlers the shared speaking glue works through. The flow lives in the round (JSON); typed words stay in memory only.
+const speakHandlers = (r, env) => ({ env, maxSeconds: 90, get: () => (r.sp ||= initFlow()), set(sp) { r.sp = sp; }, text: memoryText(recKey(r)), frames: () => frameOf(env) });
 const choiceSet = (c, r, phase) => phase === "meaning"
   ? { rows: c.meaning, order: r.meaningOrder, answer: r.meaningAnswer, rs: r.meaningRound, ask: c.ask, skill: "interpret-partner" }
   : { rows: c.replies, order: r.replyOrder, answer: r.replyAnswer, rs: r.replyRound, ask: c.replyAsk, skill: "respond-to-partner" };
@@ -40,13 +51,22 @@ function choicesHTML(c, r, phase, env) {
   </section>`;
 }
 
+function speakHTML(c, r, env) {
+  const I = env.I;
+  const key = recKey(r);
+  return html`<section class="cc-speak" aria-labelledby="cc-speak-h">
+    <p class="cc-step">${I.T("Move 3 · Say it aloud", "Paso 3 · Dilo en voz alta")}</p>
+    <h3 id="cc-speak-h">${I.T("Say your reply to your partner", "Di tu respuesta a tu compañero")}</h3>
+    <p>${I.T("Rehearse your reply out loud first. Next you will write it in your own words.", "Ensaya tu respuesta en voz alta primero. Después la escribirás con tus palabras.")}</p>
+    ${speakingHTML({ sp: r.sp, env, key, snap: guardSnap(key), text: memoryText(key).get(), hasTake: typeof window !== "undefined" && takesFor(key).length > 0, frames: frameOf(env) })}
+  </section>`;
+}
+
 function composeHTML(c, r, s, env) {
   const I = env.I;
   const lastPick = r.replyRound.picks.at(-1);
   const lastReply = lastPick === undefined ? null : c.replies[r.replyOrder[lastPick]];
-  const frame = env.band === "6-8"
-    ? "I hear your point that ___. The evidence suggests ___. Could we ___?"
-    : "I hear your idea about ___. Could we ___ because ___?";
+  const frame = frameOf(env);
   const checks = env.band === "6-8"
     ? [["I name a specific part of my partner's idea.", "Nombro una parte concreta de la idea de mi compañero."], ["I explain a reason or ask a question that tests the evidence.", "Explico una razón o hago una pregunta que examina la evidencia."]]
     : [["I respond to what my partner said.", "Respondo a lo que dijo mi compañero."], ["I give a reason or ask a useful question.", "Doy una razón o hago una pregunta útil."]];
@@ -56,7 +76,7 @@ function composeHTML(c, r, s, env) {
       ? I.T("Read your reply and check both moves before comparing it with the model.", "Lee tu respuesta y marca los dos pasos antes de compararla con el modelo.")
       : "";
   return html`<section class="cc-compose" aria-labelledby="cc-compose-heading">
-    <p class="cc-step">${I.T("Move 3 · Make it yours", "Paso 3 · Hazlo tuyo")}</p>
+    <p class="cc-step">${I.T(r.sp ? "Move 4 · Make it yours" : "Move 3 · Make it yours", r.sp ? "Paso 4 · Hazlo tuyo" : "Paso 3 · Hazlo tuyo")}</p>
     <h3 id="cc-compose-heading" tabindex="-1" data-cc-focus>${I.T("Write a reply in your own words", "Escribe una respuesta con tus palabras")}</h3>
     <p>${I.T("Use a detail from your partner's idea. Ask a useful question or give a reason. You can rehearse it aloud first.", "Usa un detalle de la idea de tu compañero. Haz una pregunta útil o da una razón. Puedes ensayarla en voz alta primero.")}</p>
     ${lastReply ? html`<div class="cc-reaction"><strong>${I.T("Your partner replied to your choice", "Tu compañero respondió a tu elección")}</strong><p>“${say(I, lastReply.reaction)}”</p></div>` : ""}
@@ -83,11 +103,11 @@ export default {
     return { i: 0, rounds: chosen.map((c) => {
       const meaning = mixChoices(c.meaning, 0, env.rng);
       const reply = mixChoices(c.replies, 0, env.rng);
-      return { id: c.id, meaningOrder: meaning.choices.map((x) => c.meaning.indexOf(x)), meaningAnswer: meaning.answer, replyOrder: reply.choices.map((x) => c.replies.indexOf(x)), replyAnswer: reply.answer, meaningRound: newRound(), replyRound: newRound(), draft: "", checks: [], submitted: false, composeFeedback: "", frame: false };
+      return { id: c.id, meaningOrder: meaning.choices.map((x) => c.meaning.indexOf(x)), meaningAnswer: meaning.answer, replyOrder: reply.choices.map((x) => c.replies.indexOf(x)), replyAnswer: reply.answer, meaningRound: newRound(), replyRound: newRound(), sp: initFlow(), draft: "", checks: [], submitted: false, composeFeedback: "", frame: false };
     }) };
   },
   done: (s) => s.i >= s.rounds.length,
-  progress(s) { return { done: s.rounds.reduce((n, r) => n + Number(settled(r.meaningRound)) + Number(settled(r.replyRound)) + Number(r.submitted), 0), total: s.rounds.length * 3 }; },
+  progress(s) { return { done: s.rounds.reduce((n, r) => n + Number(settled(r.meaningRound)) + Number(settled(r.replyRound)) + Number(settled(r.replyRound) && (!r.sp || r.sp.phase === PHASE.DONE)) + Number(r.submitted), 0), total: s.rounds.length * 4 }; },
   view(s, env) {
     const I = env.I;
     const r = active(s);
@@ -106,13 +126,20 @@ export default {
         <div class="cc-bubble"><p lang="en">“${c.partner.en}”</p>${env.sup.gloss !== "off" ? html`<details class="cc-translation" ${env.sup.gloss === "show" ? "open" : ""}><summary>${I.T("Spanish support", "Apoyo en español")}</summary><p lang="es">${c.partner.es}</p></details>` : ""}</div>
         ${audioBtn(c.partner.en, I, I.S("Listen to the partner", "Escuchar al compañero"))}
       </article>
-      ${phase === "compose" ? composeHTML(c, r, s, env) : choicesHTML(c, r, phase, env)}
+      ${phase === "compose" ? composeHTML(c, r, s, env) : phase === "speak" ? speakHTML(c, r, env) : choicesHTML(c, r, phase, env)}
     </section>`;
   },
   click(el, s, env) {
     const b = el.closest?.("button");
     const r = active(s);
     if (!b || !r) return false;
+    if (phaseOf(r) === "speak") {
+      const res = speakClick(b, recKey(r), speakHandlers(r, env));
+      if (!res) return false;
+      if (res.done)
+        env.report({ id: `${r.id}:speak-reply`, skill: "speaking", ok: true, first: !r.sp.typed && r.sp.attempts <= 1, hints: 0, revised: r.sp.attempts > 1, production: true, ...speakReport(r.sp) });
+      return res.changed;
+    }
     if (b.hasAttribute("data-g-next")) { if (!r.submitted) return false; s.i += 1; return true; }
     if (b.hasAttribute("data-g-frame")) { r.frame = true; env.use("frame"); return true; }
     if (b.hasAttribute("data-g-revise")) { r.submitted = false; return true; }
@@ -137,15 +164,20 @@ export default {
     const shown = Number(b.dataset.gChoice);
     if (!Number.isInteger(shown) || shown < 0 || shown >= set.rows.length || set.rs.picks.includes(shown)) return false;
     set.rs.picks.push(shown);
-    judge(set.rs, shown === set.answer, env, { id: `${r.id}:${set.skill}`, skill: set.skill });
+    judge(set.rs, shown === set.answer, env, { id: `${r.id}:${set.skill}`, skill: set.skill, extra: { languageErrorTag: null } });
     return true;
   },
-  input(el, s) {
+  input(el, s, env) {
     const r = active(s);
+    if (r && el.matches?.("[data-sp-typed]")) { speakInput(el, speakHandlers(r, env)); return false; } // typed words stay in memory; no re-render mid-word
     if (!r || !el.matches?.("[data-cc-draft]")) return false;
     r.draft = String(el.value || "").slice(0, 400);
     r.composeFeedback = "";
     return "save"; // persist without re-rendering the textarea or dropping the cursor
+  },
+  mount(root, s, env, changed) {
+    const r = active(s);
+    return r && phaseOf(r) === "speak" ? bindSpeaking(root, recKey(r), speakHandlers(r, env), changed) : null;
   },
   plan(s, { wrong } = {}, env) {
     const r = active(s);
@@ -153,6 +185,7 @@ export default {
     if (r.submitted) return [{ click: "[data-g-next]" }];
     const c = caseOf(env, r.id);
     const phase = phaseOf(r);
+    if (phase === "speak") return planSteps(r.sp, c.replies[0].en);
     if (phase === "compose") {
       const actions = [];
       if (wordCount(r.draft) < minWords(env)) actions.push({ fill: ["[data-cc-draft]", c.replies[0].en] });

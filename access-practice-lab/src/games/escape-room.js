@@ -143,7 +143,7 @@ export default {
     const choices = row.choices.map((c) => ({
       en: c.en,
       es: c.es,
-      label: I.T(c.en, c.es),
+      label: I.TARGET(c.en, c.es),
     }));
     const answer = choices[row.answer]?.label || "";
     const chosen = row.pick === null ? null : choices[row.pick];

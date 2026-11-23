@@ -8,6 +8,7 @@ import { loadStudio } from "../lang/studio.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
 import { BASE, DOMAIN_META, html, icon, safeJson, storage } from "../util.js";
+import { recordEvent } from "../lab/store.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { activityHref } from "./room.js";
 import * as scienceLab from "./science-lab.js";
@@ -530,6 +531,8 @@ async function onWorldClick(e, ctx) {
     const progress = loadMissionProgress();
     progress[`${ctx.band}:${key}`] = { completed: true, timestamp: Date.now() };
     saveMissionProgress(progress);
+    // Feed the lab's versioned store: Language World ids are the domain worlds (signal-station = Listening, ...).
+    recordEvent({ kind: "mission", gameId: `world:${key.split(":")[0]}`, gradeBand: ctx.band, scaffoldTier: "independent", ok: true });
     missionSession.transferDone = true;
     try {
       SoundEngine.unlock();

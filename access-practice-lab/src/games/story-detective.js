@@ -5,7 +5,10 @@
 // clue, through the engine's miss -> hint -> revise -> reveal loop, and (3) closes the case for a
 // sticker earned by reasoning quality (first try, hints, fake clues), never speed. Story text is
 // English practice with Spanish glosses that follow the support mode; directions and feedback are
-// bilingual and live with the cases in content/games/story-detective.json (`copy`).
+// bilingual and live with the cases in content/games/story-detective.json (`copy`). While solving, the case
+// file itself becomes the highlighter (src/lab/evidence-highlight.js): the learner marks the words that prove
+// the theory before "Close the case" enables. The marks never change right/wrong; they add the supporting
+// words (the case's `evidence`, else its strongest clue sentence) to the feedback.
 import {
   audioBtn,
   feedbackHTML,
@@ -22,6 +25,24 @@ import {
   takeHint,
 } from "./engine.js";
 import { C, mascot, stroke, svg } from "./art.js";
+import {
+  acceptedIds,
+  chunkPassage,
+  chunksHTML,
+  clickHighlight,
+  closePopover,
+  evidenceNote,
+  evidenceOk,
+  evidenceProblems,
+  hasSelection,
+  idsOfSentence,
+  markedHTML,
+  mountHighlight,
+  newHighlight,
+  vocabFor,
+  vocabHTML,
+  vocabProblems,
+} from "../lab/evidence-highlight.js";
 
 const TWISTS = ["feeling", "event", "unsupported"];
 const GUIDE = "intro pin bounce solve usolve retry closed learner".split(" ");
@@ -46,7 +67,22 @@ const fill = (s, v, lang) =>
 const say = (I, o, v = {}) => I.T(fill(o.en, v, "en"), fill(o.es, v, "es"));
 const bi = (o) => Boolean(o?.en?.trim?.() && o.es?.trim?.() && o.es !== o.en);
 const step = (c) => (c.stage === "pin" ? 0 : 1) + (settled(c.rs) ? 1 : 0);
-const picks = () => ({ last: null, theory: null, link: null, miss: null, badge: null });
+const picks = () => ({
+  last: null,
+  theory: null,
+  link: null,
+  miss: null,
+  badge: null,
+  hl: newHighlight(),
+  evOk: null,
+});
+// Phrase chunks of the case file, the accepted evidence and the word help (off in Independent mode).
+const chunksOf = (k) => chunkPassage(k.sentences.map((x) => x.en));
+const acceptedOf = (k, chunks) =>
+  acceptedIds(chunks, k.evidence, idsOfSentence(chunks, k.strongest));
+const vocabOf = (k, env) =>
+  env.sup.gloss === "off" ? [] : vocabFor(k.sentences.map((x) => x.en), k.vocab);
+const hlOf = (c) => c.hl || (c.hl = newHighlight());
 const fresh = (id, order) => ({ id, order, pins: [], bounced: [], fakes: 0, stage: "pin", ...picks() });
 
 export default {
@@ -120,14 +156,40 @@ export default {
     }
     if (c.stage === "pin" && b.dataset.gClue !== undefined)
       return pin(c, k, Number(b.dataset.gClue), env);
+    const hl = clickHighlight(b, hlOf(c), {
+      chunks: chunksOf(k),
+      env,
+      locked: c.stage !== "solve" || settled(c.rs),
+    });
+    if (hl) {
+      c.hl = hl.st;
+      return hl.changed;
+    }
     if (c.stage !== "solve" || settled(c.rs)) return false;
     if (b.dataset.gTheory !== undefined) c.theory = Number(b.dataset.gTheory);
     else if (b.dataset.gLink !== undefined) c.link = Number(b.dataset.gLink);
-    else if (b.hasAttribute("data-g-check") && c.theory !== null && c.link !== null)
+    else if (
+      b.hasAttribute("data-g-check") &&
+      c.theory !== null &&
+      c.link !== null &&
+      hasSelection(hlOf(c))
+    )
       check(s, c, k, env);
     else return false;
     c.last = null;
     return true;
+  },
+
+  mount(root, s, env, changed) {
+    const c = s.cases[s.i];
+    return mountHighlight(root, {
+      onEscape: () => {
+        if (!c || !hlOf(c).pop) return false;
+        c.hl = closePopover(c.hl);
+        changed?.();
+        return true;
+      },
+    });
   },
 
   plan(s, { wrong } = {}, env) {
@@ -144,6 +206,13 @@ export default {
     const steps = [];
     if (c.theory !== theory) steps.push({ click: `[data-g-theory="${theory}"]` });
     if (c.link !== k.strongest) steps.push({ click: `[data-g-link="${k.strongest}"]` });
+    const chunks = chunksOf(k);
+    const accepted = acceptedOf(k, chunks);
+    const off = chunks.find((x) => !accepted.includes(x.id));
+    // A deliberate miss also marks words that do not support the theory, so the evidence feedback runs too.
+    if (wrong && off && !hasSelection(hlOf(c))) steps.push({ click: `[data-g-hl="${off.id}"]` });
+    else if (!wrong && !evidenceOk(hlOf(c), accepted))
+      steps.push({ click: `[data-g-hl="${accepted[0]}"]` });
     return [...steps, { click: "[data-g-check]" }];
   },
 
@@ -198,6 +267,8 @@ function caseErrors(k, at, ids) {
   if (ans && k.hints?.some(leaks)) errs.push(`${at}: a hint leaks the answer`);
   if (k.explain && k.hints?.some((h) => h.en === k.explain.en))
     errs.push(`${at}: explanation repeats a hint`);
+  errs.push(...evidenceProblems(k.evidence, s[k.strongest]?.en, at));
+  errs.push(...vocabProblems(k.vocab, s.map((x) => x.en), at));
   return errs;
 }
 
@@ -227,7 +298,8 @@ function check(s, c, k, env) {
   const tOk = c.theory === k.answer;
   const lOk = c.link === k.strongest;
   c.miss = tOk && lOk ? null : !tOk && !lOk ? "both" : tOk ? "link" : "theory";
-  const extra = { twist: k.twist, theoryOk: tOk, evidenceOk: lOk, fakeClues: c.fakes };
+  c.evOk = evidenceOk(hlOf(c), acceptedOf(k, chunksOf(k)));
+  const extra = { twist: k.twist, theoryOk: tOk, evidenceOk: lOk, markedOk: c.evOk, fakeClues: c.fakes };
   judge(c.rs, tOk && lOk, env, { id: c.id, skill: "inference-evidence", extra });
   if (!settled(c.rs)) return;
   const first = c.rs.status === "right" && c.rs.tries === 1;
@@ -302,6 +374,18 @@ function guideHTML(c, k, env) {
 
 function storyHTML(c, k, env) {
   const I = env.I;
+  const solving = c.stage === "solve";
+  const chunks = chunksOf(k);
+  const vocab = vocabOf(k, env);
+  const seen = new Set();
+  const marks = {
+    st: hlOf(c),
+    I,
+    vocab,
+    seen,
+    locked: settled(c.rs),
+    keyIds: settled(c.rs) ? acceptedOf(k, chunks) : undefined,
+  };
   const line = (x, n) => {
     const pinned = c.pins.includes(n);
     const bounced = c.bounced.includes(n);
@@ -312,7 +396,12 @@ function storyHTML(c, k, env) {
       : bounced
         ? html`<span class="sd-tag">${icon("x")}${I.T("Not a clue", "No es pista")}</span>`
         : "";
-    const body = html`<span class="sd-line-t">${x.en}</span>${tag}`;
+    const body = solving
+      ? html`<span class="sd-line-t">${chunksHTML(
+          chunks.filter((ch) => ch.sentence === n),
+          marks,
+        )}</span>${tag}`
+      : html`<span class="sd-line-t">${x.en}</span>${tag}`;
     const el =
       c.stage === "pin"
         ? html`<button
@@ -327,18 +416,25 @@ function storyHTML(c, k, env) {
         : html`<p class="${cls} is-static">${body}</p>`;
     return html`<li>${el}${glossHTML(x.es, env)}</li>`;
   };
-  const note =
-    c.stage === "pin"
-      ? html`<p class="sd-note">
-          ${I.T("Tap a sentence to test it as a clue.", "Toca una oración para probarla como pista.")}
+  const note = solving
+    ? settled(c.rs)
+      ? ""
+      : html`<p class="sd-note">
+          ${I.T("Mark the words in the case file that prove your theory (up to 2 phrases).", "Marca las palabras del expediente que prueban tu teoría (hasta 2 frases).")}
         </p>`
-      : "";
+    : html`<p class="sd-note">
+        ${I.T("Tap a sentence to test it as a clue.", "Toca una oración para probarla como pista.")}
+      </p>`;
   return html`<div class="sd-story">
     <h3 class="sd-h">${icon("reading")}${I.T("Case file", "Expediente")}</h3>
     ${note}
-    <ol class="sd-lines">
+    <ol
+      class="sd-lines"
+      ${solving ? html`data-lab-ev role="group" aria-label="${I.S("Case file: mark the words that prove your theory", "Expediente: marca las palabras que prueban tu teoría")}"` : ""}
+    >
       ${k.sentences.map(line)}
     </ol>
+    ${vocabHTML(vocab, hlOf(c), { I, name: c.id })}
   </div>`;
 }
 
@@ -400,14 +496,17 @@ function solveHTML(s, c, k, env) {
   const step2 = say(I, cp.step[u ? "ulink" : "link"]);
   const answer = html`${I.T("Solution:", "Solución:")} ${k.theories[k.answer].en} ·
   ${I.T("Proof:", "Prueba:")} “${k.sentences[k.strongest].en}”`;
+  const chunks = chunksOf(k);
+  const note = evidenceNote(chunks, acceptedOf(k, chunks), c.evOk, { I, phrases: k.evidence });
   const fb = {
     I,
-    right: I.T("Your theory and your evidence match.", "Tu teoría y tu evidencia coinciden."),
+    right: html`${I.T("Your theory and your evidence match.", "Tu teoría y tu evidencia coinciden.")} ${note}`,
+    // No supporting phrase while the case is open: it would name the strongest clue.
     retry: c.miss ? say(I, cp.retry[(u ? "u" : "") + c.miss]) : "",
-    answer,
+    answer: html`${answer} ${note}`,
     explain: say(I, k.explain),
   };
-  const ready = c.theory !== null && c.link !== null;
+  const ready = c.theory !== null && c.link !== null && hasSelection(hlOf(c));
   const action = done
     ? closedHTML(s, c, env)
     : html`<div class="gs-actions">
@@ -433,6 +532,11 @@ function solveHTML(s, c, k, env) {
     >
       ${links}
     </div>
+    <h3 class="sd-step">
+      <span class="sd-step-n" aria-hidden="true">3</span
+      >${I.T(u ? "Mark the words in the case file that show the theory has no support." : "Mark the words in the case file that prove it.", u ? "Marca las palabras del expediente que muestran que la teoría no tiene apoyo." : "Marca las palabras del expediente que lo prueban.")}
+    </h3>
+    ${done ? "" : markedHTML(chunks, hlOf(c), { I })}
     ${frameBox(u ? FRAME.unsupported : FRAME.claim, env, { label: I.T("Say your claim", "Di tu afirmación") })}
     ${hintHTML(
       c.rs,
