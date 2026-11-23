@@ -1,0 +1,283 @@
+/* Vocabulary Academy — the Spelling Studio (unit/spell.js). Slots, tiles and the right / elsewhere / not-in-word marks.
+   Every mark is a glyph AND a border style (solid, dashed, dotted), so colour is never the only signal. Tokens only,
+   44px targets, nothing timed, reduced motion turns movement off. No purple. */
+.vag[data-game="word-spelling"] {
+  --vag-accent: #0b6b63;
+  --vag-glyph: "✏";
+}
+.va-sp {
+  display: grid;
+  gap: var(--va-gap);
+}
+.va-sp-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.va-sp-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  border: 2px solid var(--va-line);
+  border-radius: 999px;
+  background: var(--va-card);
+  color: var(--va-ink-2);
+  font-size: 0.95rem;
+}
+.va-sp-steps li[data-state="now"] {
+  border-color: var(--vag-accent);
+  color: var(--va-ink);
+  font-weight: 700;
+  background: var(--va-brand-soft);
+}
+.va-sp-steps li[data-state="past"] {
+  border-style: solid;
+  color: var(--va-ink);
+}
+.va-sp-stepn {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.7rem;
+  block-size: 1.7rem;
+  border-radius: 50%;
+  background: var(--vag-accent);
+  color: #fff;
+  font-weight: 700;
+}
+.va-sp-steps li[data-state="next"] .va-sp-stepn {
+  background: var(--va-ink-2);
+}
+.va-sp-hear,
+.va-sp-helps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+}
+.va-sp-peeked {
+  margin: 0.4rem 0;
+  padding: 0.6rem 0.9rem;
+  border: 2px dashed var(--va-warn);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-warn-soft);
+  font-size: 1.25rem;
+}
+.va-sp-meaning {
+  margin: 0.4rem 0;
+  padding: 0.6rem 0.9rem;
+  border-inline-start: 4px solid var(--vag-accent);
+  background: var(--va-brand-soft);
+  border-radius: var(--va-radius-sm);
+}
+.va-sp-slots,
+.va-sp-tried {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.6rem 0;
+}
+.va-sp-slot {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 3rem;
+  min-block-size: 3.4rem;
+  padding: 0.1rem 0.5rem;
+  border: 3px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+  font: inherit;
+  font-family: var(--va-head-font);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+span.va-sp-slot {
+  cursor: default;
+}
+.va-sp-slot[data-filled="false"] {
+  border-style: dashed;
+  border-color: var(--va-line);
+  background: var(--va-paper);
+  cursor: default;
+}
+.va-sp-slot[aria-disabled="true"] {
+  cursor: default;
+}
+.va-sp-slot[data-m="ok"],
+.va-sp-slot[data-m="hint"] {
+  border-style: solid;
+  border-color: var(--va-ok);
+  background: var(--va-ok-soft);
+}
+.va-sp-slot[data-m="move"] {
+  border-style: dashed;
+  border-color: var(--va-warn);
+  background: var(--va-warn-soft);
+}
+.va-sp-slot[data-m="no"] {
+  border-style: dotted;
+  border-color: var(--va-miss);
+  background: var(--va-miss-soft);
+}
+.va-sp-slot:focus-visible,
+.va-sp-tile:focus-visible,
+.va-sp-input:focus-visible {
+  outline: 3px solid var(--va-focus);
+  outline-offset: 2px;
+}
+.va-sp-letter {
+  line-height: 1;
+}
+.va-sp-mark {
+  display: inline-block;
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.va-sp-slot .va-sp-mark {
+  position: absolute;
+  inset-block-end: 0.15rem;
+  inset-inline-end: 0.3rem;
+}
+.va-sp-mark[data-m="ok"],
+.va-sp-mark[data-m="hint"] {
+  color: var(--va-ok);
+}
+.va-sp-mark[data-m="move"] {
+  color: var(--va-warn);
+}
+.va-sp-mark[data-m="no"] {
+  color: var(--va-miss);
+}
+.va-sp-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+  padding: 0.7rem;
+  border-radius: var(--va-radius);
+  background: var(--va-brand-soft);
+  min-block-size: 4rem;
+}
+.va-sp-tile {
+  min-inline-size: 3rem;
+  min-block-size: 3rem;
+  padding: 0.3rem 0.8rem;
+  border: 2px solid var(--vag-accent);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+  font: inherit;
+  font-family: var(--va-head-font);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--vag-accent);
+}
+.va-sp-tile:hover {
+  background: var(--va-paper);
+}
+.va-sp-tile:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.va-sp-typed {
+  display: grid;
+  gap: 0.4rem;
+}
+.va-sp-label {
+  font-weight: 700;
+}
+.va-sp-input {
+  inline-size: min(100%, 22rem);
+  min-block-size: 3.25rem;
+  padding: 0.4rem 0.8rem;
+  border: 3px solid var(--va-ink-2);
+  border-radius: var(--va-radius-sm);
+  background: var(--va-card);
+  color: var(--va-ink);
+  font-family: var(--va-head-font);
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+}
+.va-sp-input[readonly] {
+  background: var(--va-ok-soft);
+  border-color: var(--va-ok);
+}
+.va-sp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  list-style: none;
+  margin: 0.2rem 0 0.6rem;
+  padding: 0;
+  font-size: 0.95rem;
+  color: var(--va-ink-2);
+}
+.va-sp-legend .va-sp-mark {
+  inline-size: 1.4rem;
+  block-size: 1.4rem;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-inline-end: 0.25rem;
+}
+.va-sp-legend .va-sp-mark[data-m="move"] {
+  border-style: dashed;
+}
+.va-sp-legend .va-sp-mark[data-m="no"] {
+  border-style: dotted;
+}
+.va-spell-done {
+  margin: 0.6rem 0;
+  font-weight: 600;
+}
+[data-va-band="early"] .va-sp-slot {
+  min-inline-size: 3.6rem;
+  min-block-size: 4rem;
+  font-size: 1.9rem;
+}
+[data-va-band="early"] .va-sp-tile {
+  min-inline-size: 3.6rem;
+  min-block-size: 3.6rem;
+  font-size: 1.8rem;
+}
+@media (max-width: 480px) {
+  .va-sp-slot {
+    min-inline-size: 2.6rem;
+    padding-inline: 0.3rem;
+    font-size: 1.3rem;
+  }
+  .va-sp-slots,
+  .va-sp-tried {
+    gap: 0.3rem;
+  }
+  .va-sp-steps .va-sp-stept {
+    display: none;
+  }
+  .va-sp-steps li[data-state="now"] .va-sp-stept {
+    display: inline;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .va-sp-tile:active {
+    transform: none;
+  }
+}
+@media (forced-colors: active) {
+  .va-sp-slot,
+  .va-sp-tile,
+  .va-sp-input {
+    border-color: ButtonText;
+  }
+}

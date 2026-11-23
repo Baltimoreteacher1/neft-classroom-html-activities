@@ -25,6 +25,26 @@ export const EXTRAS = [
     doneLabel: ["Opened", "Abierta"],
     load: () => import("./vault.js"),
   },
+  {
+    id: "spell",
+    icon: "✏️",
+    title: ["Spelling Studio", "Estudio de ortografía"],
+    short: ["Spelling", "Ortografía"],
+    blurb: [
+      "Hear each unit word and build its spelling with tiles, then from memory.",
+      "Escucha cada palabra de la unidad y construye su ortografía con fichas y luego de memoria.",
+    ],
+    lead: [
+      "Listen to each word, then build it with tiles, then with a few extra letters, then type it from memory. Retry is always free.",
+      "Escucha cada palabra, luego constrúyela con fichas, después con letras de más y al final escríbela de memoria. Intentar otra vez siempre es gratis.",
+    ],
+    assign: [
+      "Spelling Studio (hear the unit's words and spell them with tiles and from memory)",
+      "Estudio de ortografía (escuchar las palabras de la unidad y deletrearlas con fichas y de memoria)",
+    ],
+    doneLabel: ["Spelled", "Deletreada"],
+    load: () => import("./spell.js"),
+  },
 ];
 export const EXTRA_IDS = EXTRAS.map((e) => e.id);
 export const extraOf = (id) => EXTRAS.find((e) => e.id === id) || null;
