@@ -201,9 +201,14 @@ test("the critical cache contains only first-route assets and the background set
     requiredExternalModules.every((url) => core.includes(url)),
     "shared modules needed during startup remain available offline",
   );
+  // A required external the shell already preloads (shared/ modules on the entry chain) is one cache entry, not two.
   assert.deepEqual(
     [...core].sort(),
-    [...criticalSheets, ...criticalModules, ...requiredExternalModules].sort(),
+    [
+      ...criticalSheets,
+      ...criticalModules,
+      ...requiredExternalModules.filter((url) => !criticalModules.includes(url)),
+    ].sort(),
   );
   assert.ok(
     core.length < sheets.length + Object.keys(map).length / 2,
