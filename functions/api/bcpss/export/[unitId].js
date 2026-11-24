@@ -1,3 +1,4 @@
+import { applyCustom, decodeCustom } from "../../../../shared/bcpss/writing-custom.js";
 import { getUnitDetail } from "../../../_lib/bcpss/db.js";
 import { DOCX_MIME } from "../../../_lib/bcpss/docx-kit.js";
 import { renderStudioDocx } from "../../../_lib/bcpss/studio-docx.js";
@@ -91,6 +92,12 @@ export const onRequest = handler({
     const { backend, detail } = await getUnitDetail(env, unitId);
     if (!detail?.unit) {
       return notFound(`Unit "${unitId}" not found.`);
+    }
+
+    // A teacher's Writing Lab customization (?c=, shared/bcpss/writing-custom.js) prints exactly as it reads on screen.
+    if (WRITING_PARTS.has(part) && detail.writing) {
+      const custom = decodeCustom(url.searchParams.get("c"));
+      if (custom) detail.writing = applyCustom(detail.writing, custom);
     }
 
     // The legacy packet renderers only serve the packet of a unit with no authored Studio content yet.

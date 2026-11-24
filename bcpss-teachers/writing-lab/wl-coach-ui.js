@@ -32,7 +32,9 @@ export const outlineNotes = () => {
       .filter(Boolean),
   ];
 };
-export const vocabTerms = () => (wl.studio?.vocab || []).map((v) => v.term).filter(Boolean);
+/** Unit words plus any words a teacher added in "Customize for my class". */
+export const vocabTerms = () =>
+  [...new Set([...(wl.studio?.vocab || []).map((v) => v.term), ...(wl.w.extra_words || [])])].filter(Boolean);
 export const analyze = (text) =>
   analyzeParagraph(text, {
     level: wl.level,

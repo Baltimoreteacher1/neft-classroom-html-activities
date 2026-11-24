@@ -12,7 +12,8 @@ export const SCHEMA_VERSION = 2;
 export const MAX_WEAK_SPOTS_PER_GAME = 25;
 
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Integrated"];
-const THEMES = ["default", "dark", "projector"];
+// Light only (Joel, 2026-11-24): no dark theme on The Language Page. A saved "dark" falls back to "default".
+const THEMES = ["default", "projector"];
 
 const isObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 

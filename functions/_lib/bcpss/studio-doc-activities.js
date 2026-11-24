@@ -1,31 +1,11 @@
 // Language Studio print: the printable version of each activity kind (student page, or answer-filled with answerKey:true).
 // printable(activity, ctx) -> { blocks, extra: [Block[]] }  `extra` are follow-on pages (e.g. the partner-puzzle record sheet).
 
+import { connectorMeaning as sharedMeaning } from "../../../shared/bcpss/connector-meanings.js";
 import { B, b, frameRuns, HIGHLIGHT_ORDER, hl, i, shuffled, t } from "./studio-doc.js";
 
-// TWR connector meanings for the workbook mini key. Twin of MEANINGS in
-// bcpss-teachers/language-studio/studio-kinds/sentence_combine.js (the player cannot import server modules); keep both in step.
-const CONNECTOR_MEANINGS = [
-  ["because|since", "gives a reason (why?)"],
-  ["so that", "tells the purpose (what for?)"],
-  [
-    "so|as a result( of)?|therefore|consequently|(which )?(leads|led) to|leading to|which led|(which )?causes",
-    "tells a result (what happened?)",
-  ],
-  ["but|yet|however|even so", "changes direction (a different idea)"],
-  ["although|even though|though", "shows a surprise (true anyway)"],
-  ["whereas|in contrast|unlike", "shows a contrast (two different things)"],
-  ["while", "shows a contrast, or two things at the same time"],
-  ["when|after|before|(and )?then|later|eventually|meanwhile", "tells time (when?)"],
-  ["and|also|both", "adds another idea"],
-  [
-    "which|that|that has|which (means|shows|shows that|helps|makes|proves that)",
-    "adds information about a thing",
-  ],
-  ["according to|as shown by|for example", "names the evidence (how do you know?)"],
-].map(([k, v]) => [new RegExp(`^(${k})$`), v]);
-export const connectorMeaning = (c) =>
-  CONNECTOR_MEANINGS.find(([re]) => re.test(String(c).trim().toLowerCase()))?.[1] || "";
+// TWR connector meanings: one shared table with the player (shared/bcpss/connector-meanings.js).
+export const connectorMeaning = (c) => sharedMeaning(c, "print");
 
 const CAT_TONES = ["Reading", "Speaking", "Vocabulary"];
 

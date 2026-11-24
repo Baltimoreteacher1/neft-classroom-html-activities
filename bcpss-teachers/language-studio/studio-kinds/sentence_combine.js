@@ -3,30 +3,10 @@
 // "Show me" after two tries (fewer stars), then a side-by-side compare with one model and a self-check.
 // Levels: Starter = "Start me off" + hear both; Core = hear both; Stretch = try a second connector and compare.
 import { createKit, h, icon } from "./_kit.js";
+import { connectorMeaning } from "/shared/bcpss/connector-meanings.js";
 import { checklist, insertAtCaret } from "../studio-ui.js";
 
-// TWR connector meanings (kid language). Unknown connectors get no hint rather than a wrong one.
-const MEANINGS = [
-  ["because|since", "gives a reason. It answers why?"],
-  ["so that", "tells the purpose. It answers what for?"],
-  [
-    "so|as a result( of)?|therefore|consequently|(which )?(leads|led) to|leading to|which led|(which )?causes",
-    "tells a result. It answers what happened because of it?",
-  ],
-  ["but|yet|however|even so", "changes direction. The next idea is different."],
-  ["although|even though|though", "shows a surprise. One idea is true even with the other."],
-  ["whereas|in contrast|unlike", "shows a contrast. It puts two different things side by side."],
-  ["while", "shows a contrast, or two things at the same time."],
-  ["when|after|before|(and )?then|later|eventually|meanwhile", "tells time. It answers when?"],
-  ["and|also|both", "adds another idea."],
-  [
-    "which|that|that has|which (means|shows|shows that|helps|makes|proves that)",
-    "adds information about the thing you just named.",
-  ],
-  ["according to|as shown by|for example", "names the evidence. It answers how do you know?"],
-].map(([k, v]) => [new RegExp(`^(${k})$`), v]);
-const meaningOf = (c) =>
-  MEANINGS.find(([re]) => re.test(String(c).trim().toLowerCase()))?.[1] || "";
+const meaningOf = (c) => connectorMeaning(c, "screen");
 const STRETCH_TRY = ["because", "but", "so", "although", "which", "when"];
 const STOP =
   /^(the|a|an|is|are|was|were|it|its|i|we|you|he|she|they|this|that|these|those|of|to|in|on|at|and|or|but|so|for|with|my|our|their|his|her|be|has|have|had|can|do|does|did|am|not|no)$/;

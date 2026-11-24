@@ -1,6 +1,6 @@
 /**
  * Integrates Role Switcher (Teacher | Student | Family View),
- * Global Home Language (L1) Selector, Theme Toggle (Light/Dark/Auto),
+ * Global Home Language (L1) Selector (the site is light only — no theme toggle),
  * and Hidden Diagnostics Overlay (?debug=1 or Ctrl+Shift+D).
  */
 
@@ -11,8 +11,9 @@ import { getLogEvents, isDebugEnabled, subscribeLogs } from "./services/logger.j
 import { resolveRole } from "./role.js";
 import { STORAGE_KEYS, readStorage, updateStorage } from "./services/storageService.js";
 
-function resolveEffectiveTheme(prefTheme) {
-  return prefTheme === "dark" ? "dark" : "light";
+// The Language Page is light only (Joel, 2026-11-24): any saved theme preference resolves to light.
+function resolveEffectiveTheme() {
+  return "light";
 }
 
 export function applyPlatformAttributes() {
@@ -78,7 +79,6 @@ export function mountPlatformControls(ctx) {
   applyPlatformAttributes();
   const prefs = readStorage(STORAGE_KEYS.PREFS);
   const role = resolveRole(prefs.role, readAudience());
-  const theme = prefs.theme === "dark" ? "dark" : "light";
   const l1 = prefs.l1 || "es";
 
   let bar = document.getElementById("tlpControlBar");
@@ -124,9 +124,6 @@ export function mountPlatformControls(ctx) {
           )}
         </select>
       </label>
-      <button type="button" class="tlp-icon-btn" id="tlpThemeToggle" aria-label="Toggle color theme">
-        ${theme === "dark" ? "Dark" : "Light"}
-      </button>
     </div>
   `);
 
@@ -182,12 +179,6 @@ export function mountPlatformControls(ctx) {
     ctx.rerender();
   });
 
-  bar.querySelector("#tlpThemeToggle")?.addEventListener("click", () => {
-    const next = theme === "dark" ? "light" : "dark";
-    updateStorage(STORAGE_KEYS.PREFS, { theme: next });
-    applyPlatformAttributes();
-    ctx.rerender();
-  });
 
   if (!debugBound) {
     debugBound = true;

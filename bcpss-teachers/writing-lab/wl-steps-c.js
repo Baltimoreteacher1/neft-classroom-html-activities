@@ -38,6 +38,7 @@ const STARTER_LABEL = {
   statement: "Make a strong statement",
   exclamation: "Show excitement",
   command: "Give a command",
+  teacher: "From your teacher",
 };
 const MIN_DETAILS = { l1_2: 2, l3_4: 3, l5_6: 3 };
 
@@ -266,8 +267,25 @@ export function stepDraft(root) {
       h(
         "div",
         { class: "wl-draft__main" },
+        h(
+          "details",
+          { class: "wl-starters wl-starters--draft" },
+          h("summary", null, `Sentence starters (${starterChips().length}) · tap one to add it`),
+          wordBank(starterChips(), "Sentence starters"),
+        ),
         wordBank(wl.w.transitions, "Transitions"),
-        vocab.length ? wordBank(vocab, "Unit words") : null,
+        vocab.length
+          ? wordBank(
+              [
+                ...(wl.studio?.vocab || []).map((v) => ({
+                  text: v.term,
+                  es: v.es && v.es !== v.term ? v.es : "",
+                })),
+                ...(wl.w.extra_words || []),
+              ],
+              "Unit words",
+            )
+          : null,
         field,
         coach.el,
         h(
@@ -299,6 +317,15 @@ export function stepDraft(root) {
   );
   coach.update(get("draft").text || "");
   markDone("draft");
+}
+
+
+// Sentence starters students can drop into the draft: the level's frames (blanks stay in [brackets] to replace)
+// and the topic-sentence starters (a teacher's custom starters included).
+function starterChips() {
+  const frames = [byLevel(wl.w.spo.topic), byLevel(wl.w.spo.conclusion)].filter(Boolean);
+  const starters = (wl.w.spo.starters || []).map((x) => x.text);
+  return [...new Set([...frames, ...starters])];
 }
 
 // ---------- 9. Revise & publish ----------

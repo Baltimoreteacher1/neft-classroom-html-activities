@@ -150,16 +150,44 @@ export function insertWord(word) {
 }
 /** Word bank chips that insert into the active writing box. */
 export function wordBank(words, label = "Word bank") {
+  // Each word is a string or { text, es } — `es` shows a small home-language gloss; the English word is inserted.
   return h(
     "div",
     { class: "wl-bank", role: "group", "aria-label": label },
     h("span", { class: "wl-bank__label" }, label),
-    ...words.map((wd) =>
-      h(
+    ...words.map((wd) => {
+      const text = typeof wd === "string" ? wd : wd.text;
+      const es = typeof wd === "string" ? "" : wd.es;
+      return h(
         "button",
-        { type: "button", class: "st-chip wl-bank__chip", onclick: () => insertWord(wd) },
-        wd,
-      ),
+        {
+          type: "button",
+          class: `st-chip wl-bank__chip${es ? " wl-bank__chip--es" : ""}`,
+          "aria-label": es ? `${text} (en español: ${es})` : null,
+          onclick: () => insertWord(text),
+        },
+        h("span", null, text),
+        es ? h("span", { class: "wl-bank__es", lang: "es", "aria-hidden": "true" }, es) : null,
+      );
+    }),
+  );
+}
+
+/** "Word help": the unit's words with icon, kid definition and Spanish term (home-language support on every step). */
+export function wordHelp() {
+  const vocab = wl.studio?.vocab || [];
+  if (!vocab.length) return null;
+  return h(
+    "details",
+    { class: "wl-help" },
+    h("summary", null, "Word help", h("span", { "aria-hidden": "true" }, "·"), h("span", { lang: "es" }, "Ayuda con palabras")),
+    h(
+      "dl",
+      { class: "wl-help__list" },
+      ...vocab.flatMap((v) => [
+        h("dt", null, v.icon ? h("span", { "aria-hidden": "true" }, `${v.icon} `) : null, v.term, v.es ? h("span", { class: "wl-help__es", lang: "es" }, ` · ${v.es}`) : null),
+        h("dd", null, v.def),
+      ]),
     ),
   );
 }

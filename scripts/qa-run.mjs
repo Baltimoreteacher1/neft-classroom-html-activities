@@ -500,6 +500,10 @@ const COVERAGE = [
     ],
   ],
 
+  // LEARNING STUDIOS landing page (a static page on The Language Page host). The scoped `test` run reaches the tests
+  // that read it (language-page-host, studios-proxy, access-sitemap, studio-app-listing).
+  [/^learning-studios\/index\.html$/, ["test", "validate:static", "validate:js-syntax", "check"]],
+
   // ACCESS PRACTICE LAB — one content contract (access-practice-lab/CONTENT.md)
   // read by the app, the teacher hub, printables and inventory. The gate pins
   // answer-revealing visuals, on-screen listening scripts and "look at the

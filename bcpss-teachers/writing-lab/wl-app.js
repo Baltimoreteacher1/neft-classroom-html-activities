@@ -3,7 +3,8 @@
 import { LEVELS, gradeBand, reducedMotion, stopSpeaking } from "../language-studio/studio-core.js";
 import { MOVES } from "./wl-coach.js";
 import { analyze } from "./wl-coach-ui.js";
-import { LEVEL_INFO, announce, byLevel, flush, get, h, isDone, loadState, wl } from "./wl-core.js";
+import { LEVEL_INFO, announce, byLevel, flush, get, h, isDone, loadState, wl, wordHelp } from "./wl-core.js";
+import { customParam, customizeView, initCustom } from "./wl-custom.js";
 import { stepBBS, stepExpand, stepNotes } from "./wl-steps-a.js";
 import { stepAppositives, stepFragments, stepSubordinate } from "./wl-steps-b.js";
 import { workDownloads } from "./wl-export.js";
@@ -136,7 +137,7 @@ function renderLevels() {
 }
 
 const exportHref = (part, format) =>
-  `/api/bcpss/export/${encodeURIComponent(wl.unitId)}?format=${format}&part=${part}&wida=${wl.level.slice(1)}`;
+  `/api/bcpss/export/${encodeURIComponent(wl.unitId)}?format=${format}&part=${part}&wida=${wl.level.slice(1)}${customParam() ? `&c=${customParam()}` : ""}`;
 function printables() {
   const row = (label, sub, part) =>
     h(
@@ -282,6 +283,9 @@ function overview() {
       ),
       h("h1", null, w.title),
       h("p", { class: "wl-hero__unit" }, wl.unit.unit_title),
+      w.teacher_note
+        ? h("p", { class: "wl-note" }, h("span", { class: "wl-note__k" }, "From your teacher"), w.teacher_note)
+        : null,
       h(
         "div",
         { class: "wl-prompt" },
@@ -342,8 +346,18 @@ function overview() {
     h(
       "details",
       { class: "wl-card wl-teacher" },
-      h("summary", null, "Teacher tip"),
+      h("summary", null, "For teachers: tip and customizing"),
       h("p", null, w.tip),
+      h(
+        "p",
+        { class: "wl-teacher__row" },
+        h(
+          "button",
+          { type: "button", class: "st-btn st-btn--sm", onclick: () => go("customize") },
+          w.customized ? "Edit my customized version" : "Customize for my class",
+        ),
+        w.customized ? h("span", { class: "wl-tag" }, "Customized") : null,
+      ),
     ),
   );
 }
@@ -355,6 +369,8 @@ function stepView(step) {
   const nxt = list[i + 1];
   const body = h("div", { class: "wl-step__body" });
   step.run(body);
+  const help = wordHelp();
+  if (help) body.prepend(help);
   return h(
     "div",
     { class: "wl-stepwrap" },
@@ -439,6 +455,12 @@ function stepView(step) {
 
 function render() {
   const key = params().get("step");
+  if (key === "customize") {
+    main.replaceChildren(customizeView(() => go(null)));
+    document.title = `Customize · ${wl.w.title} · Writing Lab`;
+    document.getElementById("wlStepTitle")?.focus({ preventScroll: true });
+    return;
+  }
   const step = steps().find((s) => s.key === key);
   main.replaceChildren(step ? stepView(step) : overview());
   document.title = `${step ? `${step.title} · ` : ""}${wl.w.title} · Writing Lab`;
@@ -480,6 +502,7 @@ async function boot() {
   wl.unit = detail.unit;
   wl.studio = detail.studio || null;
   wl.w = detail.writing;
+  initCustom(params());
   wl.state = loadState();
   const lv = params().get("level");
   wl.level = LEVELS.includes(lv) ? lv : LEVELS.includes(wl.state.level) ? wl.state.level : "l3_4";

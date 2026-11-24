@@ -47,11 +47,7 @@ export function enterpriseHudHTML({ g, I, band, session, progress, fsmState, pau
   const acc = sessionAccuracy(session?.rounds || [], prog);
   const weakCount = getWeakSpots(g.id, band).length;
   const themeLabel =
-    prog.theme === "projector"
-      ? I.T("Projector", "Proyector")
-      : prog.theme === "dark"
-        ? I.T("Dark", "Oscuro")
-        : I.T("Light", "Claro");
+    prog.theme === "projector" ? I.T("Projector", "Proyector") : I.T("Light", "Claro");
   return html`<div class="gs-hud" role="region" aria-label="${I.S("Game Practice HUD", "Panel de práctica del juego")}">
     <div class="gs-hud-metrics">
       <span class="gs-hud-pill" title="${I.S("Practice XP (not a score)", "XP de práctica (no es calificación)")}">

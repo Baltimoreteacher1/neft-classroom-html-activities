@@ -18,6 +18,8 @@ import {
   t,
 } from "./studio-doc.js";
 
+// Topic-sentence starter labels on paper (a teacher's custom starters come from shared/bcpss/writing-custom.js).
+const STARTER_PRINT = { teacher: "From your teacher" };
 export const LEVEL_NAME = { l1_2: "Starter", l3_4: "Core", l5_6: "Stretch" };
 export const GENRE = { explain: "Explain", argue: "Argue", inform: "Inform", narrate: "Narrate" };
 const SYMBOLS = [
@@ -330,16 +332,28 @@ function planPage(w, ctx) {
         minutes: 12,
         grouping: "Solo",
       }),
-      B.callout("Writing", [B.para([b(w.prompt[ctx.level])], { size: "lg" })], {
-        label: "Your task",
-        icon: "pencil",
-      }),
-      ...(ctx.level !== "l5_6"
+      B.callout(
+        "Writing",
+        [
+          B.para([b(w.prompt[ctx.level])], { size: "lg" }),
+          ...(w.teacher_note
+            ? [B.para([b("From your teacher: "), t(w.teacher_note)], { size: "sm" })]
+            : []),
+        ],
+        {
+          label: "Your task",
+          icon: "pencil",
+        },
+      ),
+      // Starters print at Stretch; a teacher's own starters (customized) print at every level.
+      ...(ctx.level !== "l5_6" && !p.starters.some((x) => x.type === "teacher")
         ? []
         : [
             B.callout(
               "neutral",
-              p.starters.map((s) => B.para([b(`${s.type}: `), t(s.text)], { size: "sm" })),
+              p.starters.map((s) =>
+                B.para([b(`${STARTER_PRINT[s.type] || s.type}: `), t(s.text)], { size: "sm" }),
+              ),
               { label: "Topic-sentence starters", icon: "bulb" },
             ),
           ]),
@@ -386,7 +400,7 @@ function planPage(w, ctx) {
 
 function draftPage(detail, ctx) {
   const w = detail.writing;
-  const words = (detail.studio?.vocab || []).map((v) => v.term);
+  const words = [...(detail.studio?.vocab || []).map((v) => v.term), ...(w.extra_words || [])];
   return section(
     [
       B.band({
