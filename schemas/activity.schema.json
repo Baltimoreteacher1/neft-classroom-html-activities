@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduwonderlab.com/schemas/bcpss/activity.schema.json",
+  "title": "BCPSS lesson activity",
+  "type": "object",
+  "required": ["kind", "domain", "title", "mission", "grouping", "minutes", "tip", "support", "payload"],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "enum": [
+        "word_sort", "match", "cloze", "unscramble", "dictogloss", "info_gap", "error_analysis",
+        "sentence_combine", "quiz", "talk_cards", "write_scaffold", "sequence", "clue_game", "read_annotate",
+        "flash_retrieval", "listen_and_show", "sentence_xray", "speak_and_record", "exit_check",
+        "point_and_say", "tpr_cards", "home_language_bridge", "cognate_detective", "morph_lab", "paragraph_builder"
+      ]
+    },
+    "domain": { "enum": ["Listening", "Speaking", "Reading", "Writing", "Vocabulary", "Game"] },
+    "title": { "type": "string", "minLength": 4, "maxLength": 60 },
+    "mission": { "type": "string", "minLength": 15, "maxLength": 220 },
+    "grouping": { "enum": ["Solo", "Partners", "Small Group", "Whole Class"] },
+    "minutes": { "type": "integer", "minimum": 1, "maximum": 15 },
+    "tip": { "type": "string", "minLength": 10, "maxLength": 220 },
+    "materials": { "type": "array", "maxItems": 4, "items": { "type": "string" } },
+    "klu": { "enum": ["Narrate", "Inform", "Explain", "Argue"] },
+    "support": {
+      "type": "object",
+      "required": ["l1_2", "l3_4", "l5_6"],
+      "additionalProperties": false,
+      "properties": {
+        "l1_2": { "type": "string", "minLength": 8 },
+        "l3_4": { "type": "string", "minLength": 8 },
+        "l5_6": { "type": "string", "minLength": 8 }
+      }
+    },
+    "payload": { "type": "object" }
+  }
+}

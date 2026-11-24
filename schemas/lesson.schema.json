@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eduwonderlab.com/schemas/bcpss/lesson.schema.json",
+  "title": "BCPSS lesson companion",
+  "type": "object",
+  "required": [
+    "id", "unit_id", "version", "sequence", "source", "title", "core_lesson_ref", "content_objective",
+    "language_objective", "standards", "wida", "vocab", "mentor_sentence", "arc", "newcomer_path",
+    "exit_check", "teacher_card", "review"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^g(k|[1-8])-(ela|math|sci|ss)-u[0-9]+-l[0-9]{2}$" },
+    "unit_id": { "type": "string", "pattern": "^g(k|[1-8])-(ela|math|sci|ss)-u[0-9]+$" },
+    "version": { "const": 1 },
+    "sequence": { "type": "integer", "minimum": 1, "maximum": 40 },
+    "source": { "enum": ["draft_standards_based", "teacher_lesson_map", "authored"] },
+    "title": { "type": "string", "minLength": 6, "maxLength": 70 },
+    "core_lesson_ref": {
+      "type": "object",
+      "required": ["label", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string", "minLength": 3 },
+        "source": { "enum": ["language_pathway", "teacher_lesson_map"] }
+      }
+    },
+    "content_objective": { "type": "string", "minLength": 20 },
+    "language_objective": {
+      "type": "object",
+      "required": ["klu", "function", "forms", "by_level"],
+      "additionalProperties": false,
+      "properties": {
+        "klu": { "enum": ["Narrate", "Inform", "Explain", "Argue"] },
+        "function": { "type": "string", "minLength": 8 },
+        "forms": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "string" } },
+        "by_level": {
+          "type": "object",
+          "required": ["l1_2", "l3_4", "l5_6"],
+          "additionalProperties": false,
+          "properties": {
+            "l1_2": { "type": "string", "minLength": 12 },
+            "l3_4": { "type": "string", "minLength": 12 },
+            "l5_6": { "type": "string", "minLength": 12 }
+          }
+        }
+      }
+    },
+    "standards": { "type": "array", "items": { "type": "string" } },
+    "wida": {
+      "type": "object",
+      "required": ["framework", "language_expectation", "pld_targets"],
+      "additionalProperties": false,
+      "properties": {
+        "framework": { "const": "2020" },
+        "language_expectation": { "type": "string", "minLength": 6 },
+        "pld_targets": { "type": "array", "minItems": 1, "items": { "enum": ["discourse", "sentence", "word"] } }
+      }
+    },
+    "language_demand_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "vocab": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["term", "tier", "new_or_review"],
+        "additionalProperties": false,
+        "properties": {
+          "term": { "type": "string" },
+          "tier": { "enum": [2, 3] },
+          "new_or_review": { "enum": ["new", "review"] }
+        }
+      }
+    },
+    "mentor_sentence": {
+      "type": "object",
+      "required": ["text", "chunks"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "minLength": 20 },
+        "chunks": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": ["text", "role"],
+            "additionalProperties": false,
+            "properties": {
+              "text": { "type": "string" },
+              "role": { "type": "string" },
+              "tone": { "enum": ["concept", "connector", "evidence", "precision"] },
+              "ask": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "arc": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["step", "minutes", "activity"],
+        "additionalProperties": false,
+        "properties": {
+          "step": { "enum": ["warm_up", "input", "notice", "interact", "produce", "check"] },
+          "minutes": { "type": "integer", "minimum": 2, "maximum": 8 },
+          "activity": { "$ref": "activity.schema.json" }
+        }
+      }
+    },
+    "newcomer_path": { "type": "array", "minItems": 3, "maxItems": 4, "items": { "$ref": "activity.schema.json" } },
+    "extension": { "anyOf": [{ "$ref": "activity.schema.json" }, { "type": "null" }] },
+    "exit_check": { "$ref": "activity.schema.json" },
+    "teacher_card": {
+      "type": "object",
+      "required": ["minutes", "materials", "listen_for", "watchouts", "differentiation"],
+      "additionalProperties": false,
+      "properties": {
+        "minutes": { "type": "integer", "minimum": 15, "maximum": 35 },
+        "materials": { "type": "array", "maxItems": 5, "items": { "type": "string" } },
+        "listen_for": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "type": "string" } },
+        "watchouts": { "type": "array", "maxItems": 3, "items": { "type": "string" } },
+        "differentiation": {
+          "type": "object",
+          "required": ["l1_2", "l3_4", "l5_6", "newcomer"],
+          "additionalProperties": false,
+          "properties": {
+            "l1_2": { "type": "string" },
+            "l3_4": { "type": "string" },
+            "l5_6": { "type": "string" },
+            "newcomer": { "type": "string" }
+          }
+        }
+      }
+    },
+    "media": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "images": { "type": "array", "items": { "type": "string" } },
+        "audio": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["pedagogy", "language_qa", "translation"],
+      "additionalProperties": false,
+      "properties": {
+        "pedagogy": { "enum": ["pending", "approved"] },
+        "language_qa": { "enum": ["pending", "approved"] },
+        "translation": { "type": "object" }
+      }
+    }
+  }
+}
