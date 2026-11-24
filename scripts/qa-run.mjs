@@ -255,6 +255,12 @@ const COVERAGE = [
     ["audit:links", "audit", "validate:js-syntax", "check"],
   ],
   [/^docs\/bcpss-premium-audit-\d{4}-\d{2}-\d{2}\.md$/, ["check"]],
+  // The Language Page award-panel audit and its companion build prompt: prose read by people and agents, never
+  // served (copyStandaloneHtml strips .md) and read by no gate.
+  [
+    /^docs\/language-page\/(award-panel-audit-\d{4}-\d{2}-\d{2}|award-program-prompt)\.md$/,
+    ["check"],
+  ],
   [
     /^tools\/(validate-reading-path|validate-decodables|access-reading-path(?:-e2e|\.test))\.mjs$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
