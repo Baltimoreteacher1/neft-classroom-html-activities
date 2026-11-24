@@ -139,6 +139,46 @@ function renderExprInspector(model) {
       </div>`;
 }
 
+/**
+ * The kinds `assets/homework/hands-on.mjs` can turn into an activity from the lesson's own numbers.
+ * A kind missing here (or data the runtime rejects) simply keeps the static picture: the panel is
+ * mounted by the page script and removes itself when the authored data cannot support an honest
+ * activity, so this list is the fast check, not the only one.
+ */
+const HANDS_ON_KINDS = new Set([
+  "tape",
+  "ratiotable",
+  "numberline",
+  "doubleline",
+  "barplot",
+  "area",
+  "grid",
+  "kcf",
+  "balance",
+  "order",
+  "coord",
+]);
+
+/**
+ * The slot the hands-on runtime fills. Data, not markup: the same authored `v3.model.data` the SVG
+ * above was drawn from, so the activity and the picture can never describe different numbers. The
+ * JSON sits in a data block (like the page's vocabulary) so quotes in a label need no attribute
+ * escaping, and `</script` is escaped so a label can never close the block early.
+ */
+function renderHandsOnSlot(v3, lessonId) {
+  const model = v3?.model;
+  if (!model?.kind || !HANDS_ON_KINDS.has(model.kind)) return "";
+  // The lesson's own guess/reveal ride along, so the panel can ask for a guess before it lets the
+  // family act, and answer it in the lesson's words. Omitted when the lesson authored none.
+  const payload = JSON.stringify({
+    kind: model.kind,
+    data: model.data,
+    ...(v3.hook?.guess?.en ? { guess: v3.hook.guess } : {}),
+    ...(v3.hook?.reveal?.en ? { reveal: v3.hook.reveal } : {}),
+  }).replace(/</g, "\\u003c");
+  return `<div class="hw-hands-on" data-hands-on-for="${esc(lessonId)}"><script type="application/json">${payload}</script></div>`;
+}
+
 function renderModelStage(v3, lessonId) {
   if (v3.kind === "mindset") return "";
   const figure = renderModelFigure(v3.model, lessonId);
@@ -147,6 +187,7 @@ function renderModelStage(v3, lessonId) {
       <h3 class="hw-colearn-title" id="hw_model_title">${bi("The picture for tonight", "El dibujo de hoy")}</h3>
       <p class="hw-colearn-lead">${bi("In class we used", "En clase usamos")} <strong>${pair(v3.classModel.name)}</strong>.</p>
       <figure class="hw-colearn-svg-stage">${figure}</figure>
+      ${renderHandsOnSlot(v3, lessonId)}
       ${renderExprInspector(v3.model)}
       <div class="hw-colearn-actions">
         <button type="button" class="fm-btn hw-try-model-btn" data-act="switchHomeworkTab" data-args='["explore"]'>${bi("Try the interactive model →", "Probar el modelo interactivo →")}</button>

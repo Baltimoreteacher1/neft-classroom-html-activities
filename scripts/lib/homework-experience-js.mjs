@@ -409,6 +409,35 @@ function hwHoldDocumentLanguage() {
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 }
 
+/* Hands-on model panels (assets/homework/hands-on.mjs) are the heaviest thing on the page and
+   most of a visit never scrolls to them, so they load the first time a panel comes near the
+   viewport. A page without a panel makes no request at all. */
+(function () {
+  function load() {
+    var hosts = document.querySelectorAll('[data-hands-on-for]');
+    if (!hosts.length) return;
+    var go = function () {
+      if (go.done) return;
+      go.done = true;
+      import('/assets/homework/hands-on.mjs').then(function (m) {
+        hosts.forEach(function (h) { m.mountHandsOn(h); });
+      }).catch(function () {});
+    };
+    /* The panel lives inside a stop that is hidden until the family opens it, so visibility alone
+       can miss it: the first tap anywhere also brings it in. Either way it loads once, on use. */
+    document.addEventListener('click', go, { once: true, capture: true });
+    if (typeof IntersectionObserver !== 'function') return go();
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) { io.disconnect(); go(); return; }
+      }
+    }, { rootMargin: '300px 0px' });
+    hosts.forEach(function (h) { io.observe(h); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+  else load();
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
   hwHoldDocumentLanguage();
   hwRestoreSolved();

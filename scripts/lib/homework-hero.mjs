@@ -132,7 +132,12 @@ export function renderTopBar({ readAloud, full = true, initialLang = "en" } = {}
   return `<nav class="fm-topbar hw-topbar" id="hw_topbar" aria-label="Page options" data-aria-en="Page options" data-aria-es="Opciones de la página">${brand}<div class="fm-topbar__tools">${tools}</div></nav>`;
 }
 
-/** The lesson's own hook as a design-system hook card. The story text is the lesson's, never invented. */
+/**
+ * The lesson's own hook as a design-system hook card. The story text is the lesson's, never invented.
+ * The predict-then-reveal step (`hook.guess` / `hook.reveal`) is not here: it lives with the
+ * manipulative that confirms the guess (assets/homework/hands-on.mjs), which loads on demand, so the
+ * first screen stays inside its weight budget.
+ */
 export function renderHookCard(hook) {
   const v = HOOK_VARIANTS[hook?.style];
   if (!v) throw new Error(`hero: unknown v3.hook.style "${hook?.style}"`);
