@@ -2,6 +2,8 @@
 import { renderHome } from "./studio-home.js";
 import { lessonKeep, lessonRoute, renderLessonPage } from "./studio-lessons.js";
 import { objectiveFor, recapFor } from "./studio-objective.js";
+import { howToBlock, readAloud, winExtras } from "./studio-enhance.js";
+import { lessonChips } from "./studio-lesson-links.js";
 import { initReadable } from "./studio-readable.js";
 import {
   LEVELS,
@@ -237,6 +239,7 @@ function celebrate(index, result, winHost) {
         h("p", { class: "st-win__recap-label" }, "What you can say now"),
         h("p", null, recap),
       ),
+      winExtras(app, { index, activity: acts[index - 1], stars }),
       actions,
     ),
   );
@@ -351,7 +354,10 @@ async function showActivity(index) {
       h("b", { class: "st-run__goal-fn" }, goal.fn),
       h("span", { class: "st-run__goal-can" }, goal.can),
     ),
+    lessonChips(app, activity),
     h("p", { class: "st-run__mission" }, activity.mission),
+    readAloud(`${goal.fn}. ${goal.can}. ${activity.mission}`),
+    howToBlock(activity.kind),
     support
       ? h(
           "p",

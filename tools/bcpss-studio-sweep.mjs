@@ -10,7 +10,8 @@
 //   - no visible control smaller than 44 x 44 CSS px (WCAG 2.2 target size, taken literally)
 //   - no visible text under 14px
 //   - a language goal ("Language goal" function + "I can" line) is present
-//   - a student-controlled hint ladder (kit.hints / hintLadder) is on the screen
+//   - a student-controlled hint ladder (kit.hints / hintLadder) and the How to play steps are on the screen
+//   - the "Part of lesson" chips are exactly the lessons the activity is linked to in the API data
 //   - no empty or duplicate prompts (checked on the authored payload, once per unit and band-independent)
 // A sweep that covered fewer screens than it planned, or fewer than data/sweep-floors.json pins, fails.
 //
@@ -108,7 +109,7 @@ function promptIssues(unitId, activities) {
 }
 
 // ---- in-page inspection (runs in the browser) ----
-function inspect({ minTarget, minText }) {
+function inspect({ minTarget, minText, lessons }) {
   const out = [];
   const de = document.documentElement;
   if (de.scrollWidth > de.clientWidth + 1)
@@ -158,6 +159,14 @@ function inspect({ minTarget, minText }) {
     out.push("goal: no language goal on the screen");
   if (!goal(".st-run__mission")) out.push("prompt: the mission line is empty");
   if (!document.querySelector(".sg-hints__btn")) out.push("hints: no hint ladder on the screen");
+  if (!document.querySelector(".st-howto")) out.push("clarity: no How to play steps on the screen");
+  const chips = [...document.querySelectorAll(".st-run__lessons a")].map((a) =>
+    new URL(a.href).searchParams.get("lesson"),
+  );
+  if (chips.join() !== lessons.join())
+    out.push(
+      `lessons: chips [${chips.join(", ")}] differ from the linked lessons [${lessons.join(", ")}]`,
+    );
   return out;
 }
 
@@ -237,7 +246,11 @@ async function tryScreen(st, origin, unitId, level, a, n, load) {
       stage: `stage: ${a.kind} did not render for "${a.title}" (${err.message.split("\n")[0].slice(0, 90)})`,
     };
   }
-  const found = await st.page.evaluate(inspect, { minTarget: MIN_TARGET, minText: MIN_TEXT });
+  const found = await st.page.evaluate(inspect, {
+    minTarget: MIN_TARGET,
+    minText: MIN_TEXT,
+    lessons: (a.lessons || []).map((l) => l.id),
+  });
   return { found: [...found, ...st.errors] };
 }
 

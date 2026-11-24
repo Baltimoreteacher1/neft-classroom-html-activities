@@ -1,3 +1,4 @@
+import { lessonLinkFields, loadLessonLinks } from "../../../../_lib/bcpss/lesson-links.js";
 import { loadLessons, summarize } from "../../../../_lib/bcpss/lessons.js";
 import { badRequest, handler, json, notFound } from "../../../../_lib/http.js";
 
@@ -8,6 +9,7 @@ export const onRequest = handler({
     if (!/^[a-zA-Z0-9_-]{2,80}$/.test(unitId)) return badRequest("Invalid unitId parameter.");
     const set = await loadLessons(unitId);
     if (!set) return notFound(`No lessons for unit "${unitId}".`);
+    const links = await loadLessonLinks(unitId);
     return json(
       {
         unit_id: unitId,
@@ -15,7 +17,7 @@ export const onRequest = handler({
         source: set.source,
         draft_notice:
           set.source === "draft_standards_based" ? "Draft: align to your pacing guide" : null,
-        lessons: set.lessons.map(summarize),
+        lessons: set.lessons.map((l) => ({ ...summarize(l), ...lessonLinkFields(links, l.id) })),
       },
       200,
       { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },

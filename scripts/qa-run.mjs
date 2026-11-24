@@ -233,6 +233,7 @@ const EXCLUSIVE = new Set([
   "validate:injection",
   // A Chromium sweep of every Language Studio screen; it is the heaviest browser check in the BCPSS rule.
   "validate:bcpss-studio-sweep",
+  "validate:bcpss-studio-links-e2e",
 ]);
 
 /* --------------------------------------------------------------------------
@@ -901,11 +902,13 @@ const COVERAGE = [
   // Language Studio player: the content gates plus the full render sweep (162 units x 3 bands x every activity x
   // 3 viewports). Ahead of the generic BCPSS rule so the sweep runs for player changes, not for every BCPSS edit.
   [
-    /^(bcpss-teachers\/language-studio\/|tools\/(bcpss-studio-sweep\.mjs|lib\/bcpss-studio-serve\.mjs)$)/,
+    /^(bcpss-teachers\/language-studio\/|db\/seeds\/bcpss\/v2\/(lesson-links\/|index\.mjs$)|functions\/_lib\/bcpss\/lesson-links\.js$|functions\/api\/bcpss\/(units\/\[unitId\]\/lessons|lessons\/\[lessonId\])\.js$|tools\/(bcpss-studio-sweep|bcpss-studio-links-e2e|build-bcpss-activity-lessons|validate-bcpss-activity-lessons|bcpss-activity-lessons\.test)\.mjs$|tools\/lib\/(bcpss-studio-serve|bcpss-activity-lessons)\.mjs$)/,
     [
+      "test",
       "validate:bcpss",
       "validate:bcpss-studio",
       "validate:bcpss-studio-sweep",
+      "validate:bcpss-studio-links-e2e",
       "validate:static",
       "validate:js-syntax",
       "validate:save-resume",

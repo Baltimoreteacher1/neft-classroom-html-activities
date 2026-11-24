@@ -8,6 +8,7 @@ import { neon } from "@neondatabase/serverless";
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
+import { loadLessonLinks, withLessonLinks } from "./lesson-links.js";
 import {
   applyStudio,
   loadFamily,
@@ -619,6 +620,7 @@ export async function getUnitDetail(env, unitId) {
   const result = await getUnitDetailBase(env, unitId);
   if (result.detail) {
     applyStudio(result.detail, await loadStudio(unitId));
+    result.detail.studio = withLessonLinks(result.detail.studio, await loadLessonLinks(unitId));
     result.detail.family = await loadFamily(unitId);
     result.detail.writing = await loadWriting(unitId);
     const esol_pack = buildEsolPack({

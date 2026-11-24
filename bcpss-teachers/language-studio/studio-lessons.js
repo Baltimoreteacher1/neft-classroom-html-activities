@@ -3,6 +3,7 @@
 import { LEVEL_INFO, h } from "./studio-core.js";
 import { icon } from "./studio-icons.js";
 import { renderTeacherCard } from "./studio-lesson-card.js";
+import { practiceSection, revealSection } from "./studio-lesson-links.js";
 import {
   DRAFT_SOURCE,
   DRAFT_TEXT,
@@ -318,6 +319,8 @@ export function renderLessonPage(root, app) {
     page.append(
       ...[
         pageHead(app, route, lesson),
+        practiceSection(app, lesson),
+        student ? null : revealSection(lesson),
         student ? null : renderTeacherCard(lesson, app.level),
         stepper.el,
       ].filter(Boolean),

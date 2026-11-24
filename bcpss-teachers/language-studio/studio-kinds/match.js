@@ -178,7 +178,12 @@ export default function mount(root, ctx) {
   root.append(
     h("div", { class: "sg-topbar" }, meter.el),
     hints,
-    h("div", { class: "sg-match" }, leftCol, rightCol),
+    h(
+      "div",
+      { class: `sg-match${pairs.some((p) => p.l.length > 8) ? " sg-match--long" : ""}` },
+      leftCol,
+      rightCol,
+    ),
   );
   paint();
   kit.dock(fb.el);
