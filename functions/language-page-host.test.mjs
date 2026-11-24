@@ -214,6 +214,14 @@ await t("the middleware redirects a non-lab path on the lab host before any gate
   assert.equal(res.headers.get("cache-control"), "no-store");
 });
 
+await t("the lab root redirect is cacheable so a return visit skips the hop", async () => {
+  const { fell, res } = await answer("https://thelanguagepage.com/");
+  assert.equal(fell, false);
+  assert.equal(res.status, 302);
+  assert.equal(res.headers.get("location"), "https://thelanguagepage.com/access-practice-lab/");
+  assert.equal(res.headers.get("cache-control"), "public, max-age=3600");
+});
+
 await t("lab pages on the lab host fall through to the site", async () => {
   const { fell, res } = await answer("https://thelanguagepage.com/access-practice-lab/path");
   assert.equal(fell, true);

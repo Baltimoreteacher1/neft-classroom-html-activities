@@ -183,7 +183,7 @@ async function handle(context) {
   if (lab?.kind === "redirect") {
     return new Response(null, {
       status: lab.status,
-      headers: { Location: lab.location, "Cache-Control": "no-store" },
+      headers: { Location: lab.location, "Cache-Control": lab.cacheControl ?? "no-store" },
     });
   }
   if (lab?.kind === "robots" || lab?.kind === "sitemap") {

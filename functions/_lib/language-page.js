@@ -175,7 +175,7 @@ const servesOnLabHost = (pathname) => {
 /**
  * What the lab host should do with a request before the normal gate runs.
  * Returns null for a host that is not the lab host, otherwise one of:
- *   { kind: "redirect", status, location }   www -> apex, "/" -> the lab, everything else -> eduwonderlab.com
+ *   { kind: "redirect", status, location, cacheControl? }   www -> apex, "/" -> the lab, everything else -> eduwonderlab.com
  *   { kind: "robots" } | { kind: "sitemap" } generated per host (the static files name eduwonderlab.com)
  *   { kind: "serve" }                        fall through to the lab
  */
@@ -190,7 +190,13 @@ export function languagePageRoute(url) {
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
   if (url.pathname === "/")
-    return { kind: "redirect", status: 302, location: `${url.origin}${LAB_BASE}/` };
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/`,
+      // The target never changes, so browsers may cache this hop: a return visit skips a round trip.
+      cacheControl: "public, max-age=3600",
+    };
   if (url.pathname === "/access-prep" || url.pathname === "/access-prep/")
     return {
       kind: "redirect",
