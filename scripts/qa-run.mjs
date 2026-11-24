@@ -246,6 +246,13 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The two link audits and the audit note they were written against. Each audit script is run by its own npm
+  // script, so a change to one is covered by that check; without a rule here an edit escalated to the full gate.
+  [
+    /^(scripts\/audit-curriculum|tools\/audit-internal-links)\.mjs$/,
+    ["audit:links", "audit", "validate:js-syntax", "check"],
+  ],
+  [/^docs\/bcpss-premium-audit-\d{4}-\d{2}-\d{2}\.md$/, ["check"]],
   [
     /^tools\/(validate-reading-path|validate-decodables|access-reading-path(?:-e2e|\.test))\.mjs$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
