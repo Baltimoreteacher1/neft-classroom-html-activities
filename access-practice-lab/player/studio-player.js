@@ -3330,13 +3330,13 @@ function mountGame(stage, ctx, { onFinish }) {
 
 const PRESETS = {
   classic: {
-    "--sp-bg": "#faf9f6",
+    "--sp-bg": "#f8f4ea",
     "--sp-surface": "#ffffff",
-    "--sp-surface-2": "#f2efe9",
-    "--sp-ink": "#182230",
-    "--sp-ink-2": "#475467",
+    "--sp-surface-2": "#f0e9da",
+    "--sp-ink": "#101c2c",
+    "--sp-ink-2": "#3f4c5e",
     "--sp-line": "#c9c4b4",
-    "--sp-accent": "#1e3a5f",
+    "--sp-accent": "#14294a",
     "--sp-right": "#14683a",
     "--sp-right-soft": "#e3f3e8",
     "--sp-wrong": "#9a2b2b",

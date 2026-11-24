@@ -11,9 +11,9 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "cde2840cb454";
+const BUILD_HASH = "cb21d79ba827";
 const PRECACHE_CORE = [
-  "/access-practice-lab/ds.css?v=355e4699cf30",
+  "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
   "/access-practice-lab/home-start.css?v=7c009d51e3dd",
   "/access-practice-lab/progress.css?v=99d710a36de1",
@@ -89,7 +89,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/rubrics.js?v=5656db97483b",
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/shell.js?v=5dbccd6d47f1",
-  "/access-practice-lab/src/comfort.js?v=842f96cedb52",
+  "/access-practice-lab/src/comfort.js?v=78469d68e29a",
   "/access-practice-lab/src/nav.js?v=aae00494acfb",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
   "/access-practice-lab/src/register.js?v=451078201644",
@@ -256,7 +256,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/book-collab.css?v=ed2f261eb9eb",
   "/access-practice-lab/wayfinding.css?v=ade1e023ae16",
   "/access-practice-lab/arcade.css?v=b911b396b309",
-  "/access-practice-lab/arcade-od.css?v=980fb9bb387b",
+  "/access-practice-lab/arcade-od.css?v=39ca38bfeb1b",
   "/access-practice-lab/play-arcade.css?v=5943ef9f85d1",
   "/access-practice-lab/registers.css?v=9e3328108cb4",
   "/access-practice-lab/premium.css?v=386bed1bc6e4",
@@ -1014,7 +1014,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/studio/player/hear.js?v=28e72d3eaf4b",
   "/access-practice-lab/src/studio/player/icons.js?v=43e62ef84a3c",
   "/access-practice-lab/src/studio/player/index.js?v=1a02c3a4a910",
-  "/access-practice-lab/src/studio/player/look.js?v=f031697bdd20",
+  "/access-practice-lab/src/studio/player/look.js?v=d37ca6ea95e3",
   "/access-practice-lab/src/studio/player/marks.js?v=516bc46c5055",
   "/access-practice-lab/src/studio/player/question.js?v=297ab0217283",
   "/access-practice-lab/src/studio/player/session.js?v=9ab656e80de2",

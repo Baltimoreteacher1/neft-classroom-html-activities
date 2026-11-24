@@ -44,7 +44,7 @@ export function applyComfort(next = state) {
   root.dataset.comfortMotion = next.calm ? "calm" : "full";
   root.dataset.comfortRuler = next.ruler ? "on" : "off";
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", { paper: "#5a4631", calm: "#2f5566", contrast: "#000000" }[next.theme] || "#1d2b58");
+  if (meta) meta.setAttribute("content", { paper: "#5a4631", calm: "#2f5566", contrast: "#000000" }[next.theme] || "#14294a");
   syncRuler(next.ruler);
 }
 
