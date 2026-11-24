@@ -400,3 +400,48 @@
     order: 3;
   }
 }
+
+/* ---------- phones (<= 600px): match and word_sort ----------
+   Same markup and the same tap, keyboard and drag paths as wider screens; only the reading layout changes.
+   match: the words become a two-up grid above one full-width column of meanings (a 360px screen cannot hold two
+   readable columns of sentences side by side). word_sort: tighter pool and buckets so more of both fit on screen. */
+@media (max-width: 600px) {
+  .sg-match {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .sg-match > .sg-col:first-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .sg-match > .sg-col:first-child > .sg-collabel {
+    grid-column: 1 / -1;
+  }
+  :root[data-readable="on"] .sg-match > .sg-col:first-child {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sg-match .sg-col:last-child {
+    gap: 8px;
+  }
+  .sg-row {
+    gap: 2px;
+  }
+  .sg-row > .sg-card {
+    min-width: 0;
+  }
+  .sg-def {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+  .sg-pool {
+    gap: 8px;
+    padding: 10px;
+    min-height: 0;
+  }
+  .sg-buckets {
+    gap: 10px;
+  }
+  .sg-bucket__btn {
+    padding-block: 10px;
+  }
+}

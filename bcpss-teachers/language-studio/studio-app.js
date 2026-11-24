@@ -2,6 +2,7 @@
 import { renderHome } from "./studio-home.js";
 import { lessonKeep, lessonRoute, renderLessonPage } from "./studio-lessons.js";
 import { objectiveFor, recapFor } from "./studio-objective.js";
+import { initReadable } from "./studio-readable.js";
 import {
   LEVELS,
   LEVEL_INFO,
@@ -51,6 +52,7 @@ const KINDS = new Set([
   "paragraph_builder",
   "mission_escape",
 ]);
+initReadable(document.getElementById("stReadable"));
 const main = document.getElementById("stMain");
 const levelHost = document.getElementById("stLevel");
 const fx = document.getElementById("stFx");

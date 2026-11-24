@@ -205,6 +205,7 @@ svg {
   align-items: center;
   gap: 6px;
   min-height: 44px;
+  min-width: 44px;
   padding: 0 10px 0 6px;
   border-radius: 999px;
   color: var(--st-accent);
@@ -290,3 +291,79 @@ svg {
   }
 }
 
+
+/* The shared Save / Resume launcher is compact on pointer devices (30px tall, 10.9px label); inside the studio it
+   takes the same sizes the shared sheet already gives coarse pointers, so the control meets 44px at every viewport. */
+#nsr-root #nsr-launcher {
+  min-height: 44px;
+  padding: 9px 15px;
+  font-size: 0.9rem;
+}
+#nsr-root .nsr-launcher-ico {
+  font-size: 0.9rem;
+}
+
+/* ---------- easy-read toggle (studio-readable.js sets <html data-readable="on">) ---------- */
+.st-readable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--st-line);
+  border-radius: 999px;
+  background: var(--st-surface-2);
+  color: var(--st-muted);
+  font: 600 0.92rem var(--st-font);
+  cursor: pointer;
+}
+.st-readable__aa {
+  font-weight: 800;
+}
+.st-readable__label {
+  display: none;
+}
+@media (min-width: 640px) {
+  .st-readable__label {
+    display: inline;
+  }
+}
+@media (max-width: 420px) {
+  .st-top__inner {
+    gap: 8px;
+  }
+  .st-level button {
+    padding: 0 11px;
+  }
+}
+.st-readable:hover {
+  color: var(--st-ink);
+}
+.st-readable[aria-pressed="true"] {
+  background: var(--st-accent);
+  border-color: transparent;
+  color: var(--st-on-accent);
+}
+.st-readable:focus-visible {
+  outline: 3px solid var(--st-focus);
+  outline-offset: 2px;
+}
+
+/* Easy-read type: a readable system font stack (no web font), +0.01em letter-spacing, +0.08em word-spacing and
+   1.7 line-height. The tokens swap the family everywhere a sheet uses them; spacing inherits from the body. */
+:root[data-readable="on"] {
+  --st-font: Verdana, "Trebuchet MS", Tahoma, "Segoe UI", system-ui, sans-serif;
+  --st-display: Verdana, "Trebuchet MS", Tahoma, "Segoe UI", system-ui, sans-serif;
+  --st-serif: Verdana, "Trebuchet MS", Tahoma, "Segoe UI", system-ui, sans-serif;
+}
+:root[data-readable="on"] body {
+  letter-spacing: 0.01em;
+  word-spacing: 0.08em;
+  line-height: 1.7;
+}
+:root[data-readable="on"] :where(p, li, summary, label, h1, h2, h3, .st-feedback, .sg-card__text, .st-chip) {
+  line-height: 1.7;
+}

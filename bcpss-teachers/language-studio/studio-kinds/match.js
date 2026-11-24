@@ -85,28 +85,24 @@ export default function mount(root, ctx) {
     meter.set(matched.size);
   };
 
+  // Names the picked word, so the prompt still makes sense on a phone where the word list has scrolled away.
+  const prompt = (side, i) =>
+    side === "l"
+      ? `Now tap the meaning that fits “${pairs[i].l}”.`
+      : "Now tap the word that fits this meaning.";
+
   function pick(side, i) {
     if (finished || matched.has(i)) return;
     if (sel && sel.side === side) {
       sel = sel.i === i ? null : { side, i };
       paint();
-      fb.set(
-        sel
-          ? side === "l"
-            ? "Now tap the meaning that fits this word."
-            : "Now tap the word that fits this meaning."
-          : "",
-      );
+      fb.set(sel ? prompt(side, sel.i) : "");
       return;
     }
     if (!sel) {
       sel = { side, i };
       paint();
-      fb.set(
-        side === "l"
-          ? "Now tap the meaning that fits this word."
-          : "Now tap the word that fits this meaning.",
-      );
+      fb.set(prompt(side, i));
       return;
     }
     const l = side === "l" ? i : sel.i;
