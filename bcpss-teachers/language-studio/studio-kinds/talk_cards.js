@@ -2,6 +2,7 @@
 import { announce, h, reducedMotion } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { speakButton } from "../studio-ui.js";
+import { hintLadder } from "./_kit.js";
 
 export default function mount(root, ctx) {
   const p = ctx.payload;
@@ -92,8 +93,26 @@ export default function mount(root, ctx) {
     );
   };
 
+  // About the card on the table now; talk has no single right answer, so these only help a partner start and keep going.
+  const hints = hintLadder(ctx, () => {
+    const c = pos >= 0 ? p.cards[order[pos]] : null;
+    const move = p.moves[0];
+    return c
+      ? [
+          `Read the card out loud together: “${c.prompt}” What is it really asking?`,
+          `${p.roles.a} starts. Finish the starter in your own words: “${c.starter}”`,
+          `${p.roles.b} asks: “${c.follow_up}” Then try a talk move: ${move.label}, “${move.stem}”`,
+        ]
+      : [
+          "Tap “Draw a card” to start. Then ask for a hint about your card.",
+          `Each card has a starter. ${p.roles.a} finishes it in their own words.`,
+          `Talk moves help you keep going: ${p.moves.map((m) => m.label).join(", ")}.`,
+        ];
+  });
+
   let drawn = 0;
   const draw = () => {
+    hints.reset();
     pos += 1;
     if (pos >= total) {
       round += 1;
@@ -160,6 +179,7 @@ export default function mount(root, ctx) {
       turn,
       card,
       h("div", { class: "tc-actions" }, drawBtn, swapBtn, shuffleBtn),
+      hints,
       counter,
       doneBtn,
       moves,

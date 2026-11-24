@@ -5,7 +5,8 @@ import { createKit, h, withFocus } from "./_kit.js";
 const LETTERS = ["A", "B", "C", "D"];
 
 /**
- * opts: { kind, items: [{ options, answer, why }], prompt(item) -> Node, after(item) -> Node|null, word: "question"|"sentence" }
+ * opts: { kind, items: [{ options, answer, why }], prompt(item) -> Node, after(item) -> Node|null, word: "question"|"sentence",
+ *   hintSteps(item) -> [three strings built from that item, never its answer] }
  */
 export function mountChoice(root, ctx, opts) {
   const kit = createKit(root, ctx, opts.kind);
@@ -20,6 +21,8 @@ export function mountChoice(root, ctx, opts) {
   let solved = false;
   let wrongHere = 0;
 
+  // Item-specific and answer-safe: built from the item on screen, restarted for every question.
+  const hints = kit.hints(() => opts.hintSteps(items[queue[pos]]));
   const dots = kit.dots(items.length, "Progress");
   const banner = h("p", { class: "sg-round", hidden: true });
   const stage = h("div", { class: "sg-q" });
@@ -33,6 +36,7 @@ export function mountChoice(root, ctx, opts) {
     chosenWrong = new Set();
     solved = false;
     wrongHere = 0;
+    hints.reset();
     queue.forEach((_, k) =>
       dots.set(
         k,
@@ -174,15 +178,32 @@ export function mountChoice(root, ctx, opts) {
     });
   }
 
-  const frame = ctx.studio?.frames?.[ctx.level]?.[0] || "The answer is ___ because ___.";
-  const hints = kit.hints(() => [
-    "Read the question again. What is it asking you to do?",
-    `Try a frame: “${frame}”`,
-    "Say each choice inside a sentence. Only one choice will be true for this text.",
-  ]);
   root.append(h("div", { class: "sg-topbar" }, dots.el), banner, hints, stage);
   start();
   return () => kit.destroy();
+}
+
+const norm = (s) =>
+  String(s)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+// Five-letter stems, so "counted" in a frame matches the answer "Count".
+const stems = (s) =>
+  norm(s)
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => (w.length > 4 ? w.slice(0, 5) : w));
+
+/** The unit's sentence frame, unless it contains the correct answer of any question here (it is unit-wide, not item-wide). */
+function safeFrame(ctx) {
+  const frame = ctx.studio?.frames?.[ctx.level]?.[0] || "The answer is ___ because ___.";
+  const inFrame = stems(frame);
+  const spoils = ctx.payload.items.some((it) => {
+    const answer = stems(it.options[it.answer]);
+    return answer.length > 0 && answer.every((w) => inFrame.includes(w));
+  });
+  return spoils ? null : frame;
 }
 
 export default function mount(root, ctx) {
@@ -191,5 +212,13 @@ export default function mount(root, ctx) {
     items: ctx.payload.items,
     noun: "question",
     prompt: (it) => h("h3", { class: "sg-q__text", text: it.q }),
+    hintSteps: (it) => {
+      const frame = safeFrame(ctx);
+      return [
+        `Read the question again: “${it.q}” What is it asking you to do?`,
+        `There are ${it.options.length} choices. Say the question and one choice together as a sentence. Does it make sense?${frame ? ` Try a frame: “${frame}”` : ""}`,
+        "Cross out each choice that does not fit. If two are left, read the question once more for a clue word.",
+      ];
+    },
   });
 }

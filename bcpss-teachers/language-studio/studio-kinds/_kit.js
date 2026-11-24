@@ -49,6 +49,45 @@ export function withFocus(root, fn) {
   if (key) root.querySelector(`[data-key="${CSS.escape(key)}"]`)?.focus({ preventScroll: true });
 }
 
+/**
+ * Three-step hint ladder: a nudge, then a way to think it through, then a worked example.
+ * Student-controlled, announced, and never the answer itself. `steps` is a function returning the list, so a kind can
+ * build hints from the item the student is on right now. `el.reset()` starts the ladder over for the next item.
+ * createKit's kit.hints() calls this; kinds that do not use a kit (the open-ended ones) import it directly.
+ */
+export function hintLadder(ctx, steps) {
+  const list = h("ol", { class: "sg-hints__list" });
+  const btn = h("button", {
+    type: "button",
+    class: "st-btn st-btn--ghost st-btn--sm sg-hints__btn",
+    "data-key": "hint",
+  });
+  let shown = 0;
+  const paint = () => {
+    btn.textContent =
+      shown === 0 ? "Need a hint?" : shown >= steps().length ? "That is every hint" : "One more hint";
+    btn.disabled = shown > 0 && shown >= steps().length;
+    btn.setAttribute("aria-expanded", String(shown > 0));
+  };
+  btn.addEventListener("click", () => {
+    const all = steps();
+    if (shown >= all.length) return;
+    const text = all[shown];
+    shown++;
+    list.append(h("li", { class: "sg-hints__item" }, h("b", { text: `Hint ${shown}. ` }), text));
+    ctx.announce(`Hint ${shown} of ${all.length}. ${text}`);
+    paint();
+  });
+  paint();
+  const el = h("div", { class: "sg-hints" }, btn, list);
+  el.reset = () => {
+    shown = 0;
+    list.replaceChildren();
+    paint();
+  };
+  return el;
+}
+
 /** Per-mount helpers: timers, feedback line, meter, progress dots, speak button, finish. */
 export function createKit(root, ctx, kind) {
   const timers = new Set();
@@ -125,40 +164,9 @@ export function createKit(root, ctx, kind) {
       api.set("");
       return api;
     },
-    /**
-     * Three-step hint ladder: a nudge, then a way to think it through, then a worked example.
-     * Student-controlled, announced, and never the answer itself. `steps` may be a function so a kind
-     * can build hints from the item the student is on right now.
-     */
+    /** Three-step hint ladder; see hintLadder. */
     hints(steps) {
-      const list = h("ol", { class: "sg-hints__list" });
-      const btn = h("button", {
-        type: "button",
-        class: "st-btn st-btn--ghost st-btn--sm sg-hints__btn",
-        "data-key": "hint",
-      });
-      let shown = 0;
-      const paint = () => {
-        btn.textContent =
-          shown === 0
-            ? "Need a hint?"
-            : shown >= steps().length
-              ? "That is every hint"
-              : "One more hint";
-        btn.disabled = shown > 0 && shown >= steps().length;
-        btn.setAttribute("aria-expanded", String(shown > 0));
-      };
-      btn.addEventListener("click", () => {
-        const all = steps();
-        if (shown >= all.length) return;
-        const text = all[shown];
-        shown++;
-        list.append(h("li", { class: "sg-hints__item" }, h("b", { text: `Hint ${shown}. ` }), text));
-        ctx.announce(`Hint ${shown} of ${all.length}. ${text}`);
-        paint();
-      });
-      paint();
-      return h("div", { class: "sg-hints" }, btn, list);
+      return hintLadder(ctx, steps);
     },
     /** "n of total" meter with a bar. */
     meter(total, label) {

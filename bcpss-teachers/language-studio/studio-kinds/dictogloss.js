@@ -2,6 +2,7 @@
 import { h, tts, ttsAvailable, wordCount, announce } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { checklist, stepCard } from "../studio-ui.js";
+import { hintLadder } from "./_kit.js";
 
 const pause = (ms) => new Promise((r) => window.setTimeout(r, ms));
 
@@ -257,9 +258,15 @@ export default function mount(root, ctx) {
     });
   });
 
+  // Never the story: how to listen, what to look for, and the frame the rebuild already shows.
+  const hints = hintLadder(ctx, () => [
+    "Listen for numbers, names and action words. You do not need every word.",
+    `Look at the ${p.key_words.length} key words in step 2. Tap each one you hear, then add numbers to your notes.`,
+    `Start your retelling with the frame: “${p.frame}” Add one idea at a time, then read it back.`,
+  ]);
   cards.push(stepListen, stepJot, stepRebuild, stepCheck);
   for (const c of cards) c.querySelector("h2").tabIndex = -1;
-  root.append(h("div", { class: "ow-steps" }, ...cards));
+  root.append(h("div", { class: "ow-steps" }, hints, ...cards));
   goTo(0, { focus: false });
   return () => {
     alive = false;

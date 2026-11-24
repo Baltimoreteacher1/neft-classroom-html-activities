@@ -37,6 +37,14 @@ export default function mount(root, ctx) {
   });
   const stage = h("div", { class: "sg-mystery" });
   const fb = kit.feedback("Read the clue, then pick your guess from the word bank.");
+  // Free help that never costs points and never says the word: how to read the clues, not what they point to.
+  const hints = kit.hints(() => [
+    `Read ${shown === 1 ? "the clue" : `all ${shown} clues`} again, out loud. What one idea ${shown === 1 ? "does it" : "do they"} point to?`,
+    wrong.size
+      ? `You have crossed out ${[...wrong].map((w) => `“${w}”`).join(", ")}. Which of the other ${bank.length - wrong.size} words fits every open clue?`
+      : `Look at the ${bank.length} words in the bank. Which ones does the first clue rule out?`,
+    `Say it like this: “The clue says ‘${cards[idx].clues[0]}’, so it must be ___ because ___.” Then tap your guess.`,
+  ]);
 
   more.addEventListener("click", () => {
     if (solved || shown >= 3) return;
@@ -56,6 +64,7 @@ export default function mount(root, ctx) {
     shown = 1;
     wrong = new Set();
     solved = false;
+    hints.reset();
     render();
     clueList.querySelector("li")?.focus();
     fb.set("");
@@ -155,6 +164,7 @@ export default function mount(root, ctx) {
   );
   root.append(
     h("div", { class: "sg-topbar" }, dots.el, score),
+    hints,
     stage,
     bankEl,
     h("div", { class: "sg-actions sg-actions--end" }, next),

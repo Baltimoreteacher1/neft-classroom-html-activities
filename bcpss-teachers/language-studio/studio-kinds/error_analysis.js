@@ -7,6 +7,11 @@ export default function mount(root, ctx) {
     kind: "error_analysis",
     items: ctx.payload.items,
     noun: "sentence",
+    hintSteps: (it) => [
+      `Read what the student wrote out loud: “${it.wrong}” Does any part sound wrong?`,
+      `There are ${it.options.length} choices. The best fix changes only the mistake and keeps the student's idea.`,
+      "Say each choice out loud in place of the student's sentence. Cross out any that is still wrong or says something new.",
+    ],
     prompt: (it) =>
       h(
         "div",

@@ -2,6 +2,7 @@
 import { announce, h, norm, starsFor } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { speakButton } from "../studio-ui.js";
+import { hintLadder } from "./_kit.js";
 
 const same = (a, b) =>
   norm(String(a).replace(/\bby\b/gi, "x")) === norm(String(b).replace(/\bby\b/gi, "x"));
@@ -163,6 +164,23 @@ export default function mount(root, ctx) {
     }
   });
 
+  // Built from your own "Find out" list and the ask/tell frames; it never shows what your partner's card says.
+  const openNeed = () => {
+    for (const [idx, side] of sides.entries())
+      for (const need of side.needs)
+        if (!cards[idx].inputs[need]?.value.trim()) return { need, who: side.title };
+    return null;
+  };
+  const hints = hintLadder(ctx, () => {
+    const open = openNeed();
+    const what = open ? `“${open.need}”` : "the facts you still need";
+    return [
+      `Choose one fact you still need: ${what}.${open ? ` It is on ${open.who}'s “Find out” list.` : ""}`,
+      `Ask your partner with an Ask frame: “${p.ask_frames[0]}” Put ${what} in the blank.`,
+      `Your partner answers with a Tell frame: “${p.tell_frames[0]}” Listen for the exact number and the unit, then type it.`,
+    ];
+  });
+
   root.append(
     h(
       "div",
@@ -174,6 +192,7 @@ export default function mount(root, ctx) {
         h("p", null, p.goal),
         speakButton(p.goal, "Read the goal aloud"),
       ),
+      hints,
       h(
         "div",
         { class: "ig-pair" },

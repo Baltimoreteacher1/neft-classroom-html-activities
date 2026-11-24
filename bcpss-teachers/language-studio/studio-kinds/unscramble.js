@@ -66,6 +66,21 @@ export default function mount(root, ctx) {
       : "Tap the chunks in order to build the sentence. You can also drag them.",
   );
   const stage = h("div", { class: "ss-stage" });
+  const JOINERS = new Set(["because", "so", "and", "but", "since", "when", "if", "after", "before", "while", "although", "then"]);
+  // Built from this sentence's own chunks; it says how to find the order, never what the order is.
+  const hints = kit.hints(() => {
+    const chunks = parts();
+    const joiner = chunks
+      .map((c) => String(c).trim().split(/\s+/)[0].toLowerCase())
+      .find((w) => JOINERS.has(w));
+    return [
+      `Read all ${chunks.length} chunks out loud, in any order. Which ideas belong together?`,
+      joiner
+        ? `The chunk that starts with “${joiner}” joins onto the idea before it, so it cannot come first.`
+        : "A sentence starts with a capital letter. Look for the chunk that could begin it.",
+      "Build it in the strip, then read it aloud. If it sounds wrong, tap a chunk to take it out and try another spot.",
+    ];
+  });
 
   let cur = 0;
   let results = []; // per item: "first" | "retry" | "shown"
@@ -92,6 +107,7 @@ export default function mount(root, ctx) {
       pool = anchored ? mixed.filter((p) => p !== 0) : mixed;
       tries = 0;
       solved = false;
+      hints.reset();
     }
     history = [];
     check = -1;
@@ -485,7 +501,7 @@ export default function mount(root, ctx) {
     ctx.done({ stars, detail: `${first} of ${items.length} sentences on the first try` });
   }
 
-  root.append(h("div", { class: "sg-topbar" }, dots.el), stage);
+  root.append(h("div", { class: "sg-topbar" }, dots.el), hints, stage);
   kit.dock(fb.el);
 
   const saved = ctx.loadState?.();

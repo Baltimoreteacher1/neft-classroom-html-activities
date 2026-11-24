@@ -1,6 +1,7 @@
 // read_annotate: tappable words, a palette of marks, check against target phrases (no spoilers), then questions.
 import { announce, h, starsFor } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
+import { hintLadder } from "./_kit.js";
 
 const clean = (w) => w.toLowerCase().replace(/^[^a-z0-9']+|[^a-z0-9']+$/g, "");
 const MAX_MARKS = 4;
@@ -184,7 +185,24 @@ export default function mount(root, ctx) {
   // questions
   let qi = 0;
   let mistakes = 0;
+  // Marking help comes from the mark's own label and instruction (never the target phrases); once the questions
+  // start, the ladder restarts for each question and points back at the passage.
+  const hints = hintLadder(ctx, () => {
+    if (!qHost.hidden)
+      return [
+        `Read the question again: “${p.questions[qi].q}” What is it asking for?`,
+        "Go back to the passage. Which words you marked help answer it?",
+        "Check each choice against the passage. Cross out any choice the passage does not say.",
+      ];
+    const m = marks[active];
+    return [
+      `Pick the “${m.label}” color. It means: ${m.instruction}`,
+      `Read one sentence at a time. After each one, ask: is there something here to mark as “${m.label}”?`,
+      "Mark only what you are sure of. Then tap “Check my marks”: it counts what you found and what does not belong, and never shows the words.",
+    ];
+  });
   function startQuestions() {
+    hints.reset();
     const q = p.questions[qi];
     const fb = h("p", { class: "st-feedback", hidden: true, role: "status" });
     const next = h(
@@ -254,6 +272,7 @@ export default function mount(root, ctx) {
       "div",
       { class: "ra" },
       h("div", { class: "ra-palette", role: "group", "aria-label": "Mark colors" }, palette),
+      hints,
       h("div", { class: "ra-page st-card" }, text),
       h("div", { class: "ow-bar" }, clearBtn, checkBtn),
       result,

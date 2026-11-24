@@ -258,6 +258,12 @@ export default function mount(root, ctx) {
       fb.set(st.tries >= 2 ? `${miss.fix} You can also tap "Show me".` : miss.fix, "no");
       show.hidden = st.tries < 2;
     });
+    const mean = meaningOf(conn);
+    const hints = kit.hints(() => [
+      "Read both short sentences. What idea do they share?",
+      `Join them with “${conn}”${mean ? `: “${conn}” ${mean}` : ""}. Say your sentence out loud before you write it.`,
+      `Start with the first idea (“${strip(it.sentences[0])}”), add “${conn}”, then the second idea in your own words.`,
+    ]);
     stage.replaceChildren(
       h(
         "div",
@@ -269,6 +275,7 @@ export default function mount(root, ctx) {
           tools,
         ),
         kernels(it),
+        hints,
         connBox(conn, area),
         h("label", {
           class: "ss-eyebrow ss-label",

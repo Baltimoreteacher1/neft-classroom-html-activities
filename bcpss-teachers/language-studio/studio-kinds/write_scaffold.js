@@ -2,6 +2,7 @@
 import { announce, copyText, h, tts, wordCount } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { checklist, insertAtCaret } from "../studio-ui.js";
+import { hintLadder } from "./_kit.js";
 
 const MODEL_UNLOCK = 15;
 
@@ -68,6 +69,24 @@ export default function mount(root, ctx) {
   const list = checklist(p.checklist, {
     saved: saved.checks || [],
     onChange: (s) => ctx.saveState({ parts, checks: s }),
+  });
+
+  // Built from the task structure and word bank; the model sentence stays locked until the student has written.
+  const hints = hintLadder(ctx, () => {
+    const at = Math.max(
+      0,
+      parts.findIndex((t) => !t.trim()),
+    );
+    const s = p.structure[at];
+    const used = joined().toLowerCase();
+    const unused = p.word_bank.filter((w) => !used.includes(w.toLowerCase())).slice(0, 2);
+    return [
+      `Your writing has ${p.structure.length} parts: ${p.structure.map((x) => x.part).join(", ")}. Read the task again before you start.`,
+      `Next up: ${s.part}. Finish the frame in your own words: “${s.frame}”`,
+      unused.length
+        ? `Try using ${unused.map((w) => `“${w}”`).join(" and ")} from the word bank in your ${s.part}.`
+        : "Read what you wrote out loud. Does each part say what its frame asks? Use the checklist to find what is missing.",
+    ];
   });
 
   function refresh() {
@@ -164,6 +183,7 @@ export default function mount(root, ctx) {
         h("span", { class: "sh-eyebrow" }, "Your task"),
         h("p", null, p.prompt),
       ),
+      hints,
       h(
         "div",
         { class: "ws-grid" },
