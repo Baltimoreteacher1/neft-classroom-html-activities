@@ -46,6 +46,11 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
+  // The arcade's relative ./src and ./assets paths only resolve from a trailing-slash URL.
+  if (url.pathname === "/access-practice-lab/arcade") {
+    return Response.redirect(new URL(`/access-practice-lab/arcade/${url.search}`, url.origin), 308);
+  }
+
   // Static assets (have a file extension), the generated printable packets (under /printables/, real
   // .html/.docx files) and the video hub (/videos/, generated from data/studio-videos.json) bypass the SPA shell.
   if (
@@ -55,7 +60,9 @@ export async function onRequest(context) {
     url.pathname.startsWith("/access-practice-lab/videos/") ||
     // The Family Tour is its own static page (family-tour/index.html), not an app route.
     url.pathname === "/access-practice-lab/family-tour" ||
-    url.pathname === "/access-practice-lab/family-tour/"
+    url.pathname === "/access-practice-lab/family-tour/" ||
+    // The Activity Arcade is its own static page (arcade/index.html, hash-routed), not an app route.
+    url.pathname === "/access-practice-lab/arcade/"
   ) {
     const asset = await env.ASSETS.fetch(request);
     return withImmutableCaching(url, asset);

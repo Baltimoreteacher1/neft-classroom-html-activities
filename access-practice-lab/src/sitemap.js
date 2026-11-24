@@ -849,6 +849,20 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "activity-arcade",
+    section: "play",
+    skill: "Mixed",
+    kind: "game",
+    for: STF,
+    href: "/access-practice-lab/arcade/",
+    icon: "worlds",
+    title: P("Activity Arcade", "Arcade de actividades"),
+    text: P(
+      "Five calm practice games: Grammar Jungle, Vocabulary Quest, Story Detective, Sound & Word Studio and Echo Canyon.",
+      "Cinco juegos de práctica tranquilos: Selva Gramatical, Búsqueda de Vocabulario, Detective de Cuentos, Estudio de Sonidos y Palabras y Cañón del Eco.",
+    ),
+  },
+  {
     id: "simulations",
     section: "play",
     skill: "Mixed",

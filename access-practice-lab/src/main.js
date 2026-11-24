@@ -310,7 +310,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
 }
 
 // Pages under the lab that are real files, not app routes: a click on a link to one is a normal navigation.
-const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`) || pathname.startsWith(`${BASE}/family-tour`);
+const isStaticPage = (pathname) => pathname.startsWith(`${BASE}/printables/`) || pathname.startsWith(`${BASE}/videos/`) || pathname.startsWith(`${BASE}/family-tour`) || pathname.startsWith(`${BASE}/arcade`);
 
 const app = {
   route: null,

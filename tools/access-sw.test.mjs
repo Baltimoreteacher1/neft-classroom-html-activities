@@ -80,6 +80,8 @@ test("routing: what the worker serves, and what it never touches", () => {
   assert.equal(kind(sw, nav(`${S}/printables/packet.html`)), "network");
   assert.equal(kind(sw, nav(`${S}/family-tour/?grades=3-5`)), "network");
   assert.equal(kind(sw, nav(`${S}/family-tour`)), "network");
+  assert.equal(kind(sw, nav(`${S}/arcade/`)), "network");
+  assert.equal(kind(sw, nav(`${S}/arcade`)), "network");
   assert.equal(kind(sw, nav(`${S}/videos/`)), "network");
   assert.equal(kind(sw, nav(`${S}/videos`)), "network");
   assert.equal(kind(sw, nav("/lessons/1-1/")), "network");

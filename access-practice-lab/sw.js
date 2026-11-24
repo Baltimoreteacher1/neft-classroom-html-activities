@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "641ae959b445";
+const BUILD_HASH = "1665656e0dd0";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=355e4699cf30",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=806a13eca36c",
   "/access-practice-lab/acc.css?v=5f19a73c976b",
   "/access-practice-lab/studios.css?v=3f3a7021a4a0",
-  "/access-practice-lab/src/main.js?v=0ce9c7f7e960",
+  "/access-practice-lab/src/main.js?v=4be853cf652c",
   "/access-practice-lab/src/brand.js?v=e8549c15c6b4",
   "/access-practice-lab/src/keep-in-view.js?v=88f120416985",
   "/access-practice-lab/src/components.js?v=d7e0108d194e",
@@ -51,7 +51,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/early/gate.js?v=1d5f6e05874a",
   "/access-practice-lab/src/wayfinding.js?v=3c802bab28a5",
   "/access-practice-lab/src/grade-bands.js?v=f68093c034d6",
-  "/access-practice-lab/src/sitemap.js?v=e90579671b7d",
+  "/access-practice-lab/src/sitemap.js?v=9725c4e628f7",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
   "/access-practice-lab/src/content.js?v=8d120786e17b",
@@ -2249,6 +2249,8 @@ function route(request, url, origin) {
       !path.startsWith(`${SCOPE}printables/`) &&
       !path.startsWith(`${SCOPE}family-tour/`) &&
       path !== `${SCOPE}family-tour` &&
+      !path.startsWith(`${SCOPE}arcade/`) &&
+      path !== `${SCOPE}arcade` &&
       !path.startsWith(`${SCOPE}videos/`) &&
       path !== `${SCOPE}videos` &&
       !/\.[a-z0-9]+$/i.test(path)
