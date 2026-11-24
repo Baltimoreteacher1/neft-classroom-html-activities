@@ -231,6 +231,8 @@ const EXCLUSIVE = new Set([
   // ("1 unbalanced") while passing on its own; on 2026-10-22 it failed four ship attempts in a row. ALONE it runs
   // after everything else has finished, so it can only ever see the real tree.
   "validate:injection",
+  // A Chromium sweep of every Language Studio screen; it is the heaviest browser check in the BCPSS rule.
+  "validate:bcpss-studio-sweep",
 ]);
 
 /* --------------------------------------------------------------------------
@@ -895,6 +897,21 @@ const COVERAGE = [
   [
     /^(tools\/validate-small-group-investigations\.mjs|data\/small-group-investigations\/[^/]+\.json)$/,
     ["test", "validate:small-group-investigations", "validate:js-syntax"],
+  ],
+  // Language Studio player: the content gates plus the full render sweep (162 units x 3 bands x every activity x
+  // 3 viewports). Ahead of the generic BCPSS rule so the sweep runs for player changes, not for every BCPSS edit.
+  [
+    /^(bcpss-teachers\/language-studio\/|tools\/(bcpss-studio-sweep\.mjs|lib\/bcpss-studio-serve\.mjs)$)/,
+    [
+      "validate:bcpss",
+      "validate:bcpss-studio",
+      "validate:bcpss-studio-sweep",
+      "validate:static",
+      "validate:js-syntax",
+      "validate:save-resume",
+      "typecheck",
+      "check",
+    ],
   ],
   // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
   // modular K–8 seed data, and Cloudflare Pages Functions.
