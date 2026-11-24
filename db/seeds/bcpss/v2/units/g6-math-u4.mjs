@@ -49,7 +49,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Gull and Diver", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, then rebuild it with your partner using as many of the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “gull” and “diver”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and draw a number line while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that uses 'in contrast'." },
@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
-      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all ten click!",
+      mission: "Match 10 words, from “integer” to “quadrant”, to their meanings.",
       tip: "Students can replay with the cue cards face-down to build recall.",
       materials: [],
       support: { l1_2: "Match the words you know first, then try the rest.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -84,7 +84,7 @@ export default {
     },
     {
       kind: "word_sort", domain: "Vocabulary", title: "Number, Distance, or Grid?", minutes: 8, grouping: "Partners",
-      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      mission: "Sort 12 words into “Kinds of numbers”, “Distance words” and “Grid words”, then defend one choice to your partner.",
       tip: "Listen for 'because' when partners defend a sort.",
       materials: [],
       support: { l1_2: "Sort the words you know first and leave the rest for later.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
@@ -99,7 +99,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 9 words, starting with “I never have a fraction part”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -220,7 +220,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “The absolute value of −6 is −6”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the numbers and signs first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

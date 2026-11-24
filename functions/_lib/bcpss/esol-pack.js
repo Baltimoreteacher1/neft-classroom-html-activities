@@ -5,8 +5,6 @@
 
 import {
   COGNATE_RULES,
-  DOCTOR_MATH_PATTERN,
-  DOCTOR_PATTERNS,
   DOUBLE_DUTY_DEFAULTS,
   DOUBLE_DUTY_WORDS,
   FALSE_FRIENDS,
@@ -18,6 +16,7 @@ import {
   SUBJECT_ROUTINES,
   TIER_PERFORMANCE,
 } from "./esol-content.js";
+import { buildDoctor } from "./esol-doctor.js";
 
 export const ESOL_PACK_VERSION = 1;
 const TIERS = ["1_2", "3_4", "5_6"];
@@ -176,11 +175,9 @@ function buildDoubleDuty(unit, vocab) {
 
 function buildDictogloss(unit, vocab, grade) {
   const early = ["K", "1", "2"].includes(String(grade));
-  const title = stripEnd(unit.unit_title);
   const sentences = [];
   if (early) {
-    sentences.push(`We are learning about ${title}.`);
-    for (const v of vocab.slice(0, 3))
+    for (const v of vocab.slice(0, 4))
       sentences.push(`The word “${v.term}” means ${lcFirst(v.def)}.`);
   } else {
     const summary = stripEnd(unit.unit_summary).replace(/^Students\s+/, "We ");
@@ -215,7 +212,7 @@ function buildDictogloss(unit, vocab, grade) {
 
 // ── Info-gap jigsaw ───────────────────────────────────────────────────────────
 
-function buildInfoGap(vocab, frame, title) {
+function buildInfoGap(vocab, frame) {
   const card = (items) => items.map((v) => ({ term: v.term, def: v.def, cognate: v.cognate }));
   const a = vocab.filter((_, i) => i % 2 === 0);
   const b = vocab.filter((_, i) => i % 2 === 1);
@@ -228,7 +225,7 @@ function buildInfoGap(vocab, frame, title) {
       "Can you say it another way?",
       "Can you give an example from our unit?",
     ],
-    task: `Together, write one sentence about ${stripEnd(title)} that uses every term from both cards. Use: ${frame}`,
+    task: `Together, write one sentence that uses every term from both cards. Use: ${frame}`,
     rules: [
       "Do not show your card. Say it, draw it or act it.",
       "Ask at least two questions each.",
@@ -237,35 +234,13 @@ function buildInfoGap(vocab, frame, title) {
   };
 }
 
-// ── Language Doctor ───────────────────────────────────────────────────────────
-
-function buildDoctor(unit, vocab) {
-  const pool = [...DOCTOR_PATTERNS];
-  const ordered = seededOrder(pool, unit.id).slice(0, unit.subject === "Math" ? 3 : 4);
-  const patterns = unit.subject === "Math" ? [...ordered, DOCTOR_MATH_PATTERN] : ordered;
-  const ctx = { t: stripEnd(unit.unit_title), w: vocab[0]?.term || "word" };
-  return patterns.map((p, i) => {
-    const made = p.make(ctx);
-    const options = seededOrder([made.right, ...made.decoys], `${unit.id}:${p.id}`);
-    return {
-      id: p.id,
-      rule: p.rule,
-      why: p.why,
-      wrong: made.wrong,
-      options,
-      answer_index: options.indexOf(made.right),
-      order: i,
-    };
-  });
-}
-
 // ── Sentence Ladder ───────────────────────────────────────────────────────────
 
 function buildLadder(klu, unit, vocab, scaffolds) {
   const rungs = LADDER_BY_KLU[klu] || LADDER_BY_KLU.Explain;
   const gate = { "1_2": 2, "3_4": 3, "5_6": 4 };
   return {
-    kernel: `We are learning about ${stripEnd(unit.unit_title)}.`,
+    kernel: `We are using the word “${vocab[0]?.term || "explore"}” today.`,
     unit_terms: vocab.map((v) => v.term),
     tiers: Object.fromEntries(
       TIERS.map((t) => [
@@ -283,19 +258,19 @@ function buildLadder(klu, unit, vocab, scaffolds) {
 // ── Talk Line ─────────────────────────────────────────────────────────────────
 
 const SUBJECT_CLAIM = {
-  Math: (t) => `Explaining your steps is as important as getting the answer in “${t}.”`,
-  Science: (t) => `You need evidence before you can explain “${t}.”`,
-  "Social Studies": (t) => `It is important to hear more than one perspective on “${t}.”`,
-  ELA: (t) => `The author’s exact words matter more than the pictures in “${t}.”`,
+  Math: () => "Explaining your steps is as important as getting the answer.",
+  Science: () => "You need evidence before you can explain a phenomenon.",
+  "Social Studies": () =>
+    "It is important to hear more than one perspective on a historical event.",
+  ELA: () => "The author’s exact words matter more than the pictures.",
 };
 
 function buildTalkLine(unit, vocab) {
-  const t = stripEnd(unit.unit_title);
   return {
     statements: [
-      `The most important word in “${t}” is “${vocab[0]?.term || "evidence"}.”`,
-      (SUBJECT_CLAIM[unit.subject] || SUBJECT_CLAIM.ELA)(t),
-      `A word from my home language can help me understand “${t}.”`,
+      `The most important word in this unit is “${vocab[0]?.term || "evidence"}.”`,
+      (SUBJECT_CLAIM[unit.subject] || SUBJECT_CLAIM.ELA)(),
+      "A word from my home language can help me understand this unit.",
     ],
     corners: ["Strongly agree", "Agree", "Disagree", "Strongly disagree"],
     stems: {
@@ -400,13 +375,13 @@ function buildObjectives(unit, klu, vocab, scaffolds, conn) {
       .map((v) => `“${v.term}”`)
       .join(", ");
     language[t] =
-      `Students will ${verb} ${title} ${TIER_PERFORMANCE[t].mode}, using the frame “${frame}” and the unit term${TIER_TERM_COUNT[t] > 1 ? "s" : ""} ${terms}.`;
+      `Students will ${verb} this unit ${TIER_PERFORMANCE[t].mode}, using the frame “${frame}” and the unit term${TIER_TERM_COUNT[t] > 1 ? "s" : ""} ${terms}.`;
     look_fors[t] = TIER_PERFORMANCE[t].look;
   }
   return {
     content: unit.essential_question
-      ? `Students will build understanding of ${title} by answering: ${unit.essential_question}`
-      : `Students will build understanding of ${title}.`,
+      ? `Students will build understanding of “${title}” by answering: ${unit.essential_question}`
+      : `Students will build understanding of “${title}.”`,
     language,
     look_fors,
     standards: unit.core_standards || [],
@@ -470,7 +445,7 @@ const WEEK = (hasRoutine) => [
   },
 ];
 
-export function buildEsolPack({ unit, connection, catalog } = {}) {
+export function buildEsolPack({ unit, connection, catalog, studio } = {}) {
   if (!unit || !connection) return null;
   const klu = connection.wida_klu || "Explain";
   const vocab = normalizeVocab(connection.tier2_tier3_vocab);
@@ -499,8 +474,8 @@ export function buildEsolPack({ unit, connection, catalog } = {}) {
     cognates: buildCognates(vocab),
     double_duty: buildDoubleDuty(unit, vocab),
     dictogloss: buildDictogloss(unit, vocab, unit.grade),
-    info_gap: buildInfoGap(vocab, frame, title),
-    doctor: buildDoctor(unit, vocab),
+    info_gap: buildInfoGap(vocab, frame),
+    doctor: buildDoctor(unit, vocab, studio),
     ladder: buildLadder(klu, unit, vocab, scaffolds),
     talk_line: buildTalkLine(unit, vocab),
     routines,
@@ -520,7 +495,7 @@ export function buildEsolPack({ unit, connection, catalog } = {}) {
         },
         {
           day: "Day 2 · Tell It Your Way",
-          text: `Explain ${title} to a family member in any language you like. Ask them one question about it.`,
+          text: `Explain the word “${vars.t1}” and one idea from class to a family member in any language you like. Ask them one question about it.`,
         },
         {
           day: "Day 3 · Show It",
@@ -534,7 +509,7 @@ export function buildEsolPack({ unit, connection, catalog } = {}) {
         },
         {
           day: "Día 2 · Cuéntalo a tu manera",
-          text: `Explica “${title}” a un familiar en el idioma que prefieras. Hazle una pregunta sobre el tema.`,
+          text: `Explica la palabra “${vars.t1}” y una idea de la clase a un familiar en el idioma que prefieras. Hazle una pregunta sobre el tema.`,
         },
         {
           day: "Día 3 · Muéstralo",

@@ -48,7 +48,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Garden Plans", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice. Then rebuild it with your partner.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “garden” and “tiles”.",
       tip: "Read at a natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and draw the garden while you listen.", l3_4: "Write the key words you hear, then rebuild 4 or 5 sentences.", l5_6: "Rebuild the whole story and add one sentence that compares area and perimeter." },
@@ -97,7 +97,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am the space inside a shape”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue pictures to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for each card." },
@@ -173,7 +173,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “measures” and “square”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the contrast word, then build around it.", l5_6: "After building, add a new fact of your own." },
@@ -200,7 +200,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “whereas”, “but” and “and” to join 4 pairs of short sentences, starting with “Area is measured in square units”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start." },

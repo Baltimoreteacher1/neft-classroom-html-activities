@@ -81,7 +81,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Money Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A store adds me to what it paid”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -115,7 +115,7 @@ export default {
     },
     {
       kind: "talk_cards", domain: "Speaking", title: "Defend Your Deal", minutes: 12, grouping: "Partners",
-      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      mission: "Take turns drawing a card, starting with the question “A $60 backpack has a 15% discount.…”, and push each other’s thinking.",
       tip: "Listen for a math reason after every 'because'.",
       materials: ["Partner role cards"],
       support: { l1_2: "Point to the numbers and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' to compare two methods." },
@@ -171,7 +171,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “because” and “multiplied”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
@@ -198,7 +198,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “so”, “and then” and “while” to join 4 pairs of short sentences, starting with “The discount is 20%”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -213,7 +213,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Reasoning", minutes: 10, grouping: "Partners",
-      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 4 sentences, starting with “A 20% discount on $50 means the sale price is $10”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the dollar signs and percent signs first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

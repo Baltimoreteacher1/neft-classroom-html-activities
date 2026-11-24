@@ -63,7 +63,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Colony Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning. Wrong matches bounce back, so keep trying until all eight click!",
+      mission: "Match 8 words, from “colony” to “effect”, to their meanings.",
       tip: "Replay with the cue pictures face-down so students build recall instead of recognition.",
       materials: [],
       support: { l1_2: "Match the words you know first, then use the cue pictures.", l3_4: "Match all the pairs, then say each word in a sentence.", l5_6: "Match all the pairs, then write one sentence with a cause and an effect." },
@@ -104,7 +104,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery History Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 7 words, starting with “I am a very big farm”.",
       tip: "Fewer clues means more points; there is no clock, so let students think aloud and defend each guess.",
       materials: [],
       support: { l1_2: "Use the picture cues and the word bank to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },

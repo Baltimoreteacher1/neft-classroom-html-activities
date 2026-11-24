@@ -104,7 +104,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Lab Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am a starting ingredient”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue picture to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },
@@ -146,7 +146,7 @@ export default {
     },
     {
       kind: "info_gap", domain: "Speaking", title: "Soap Lab Swap", minutes: 12, grouping: "Partners",
-      mission: "You and your partner each hold half of the soap lab notes. Ask and answer to fill in the missing data, then decide if a reaction happened!",
+      mission: "Ask your partner questions to find “Soap after the reaction” and “Fat before the reaction” — no peeking!",
       tip: "Partners may not show their cards; they ask and answer aloud, then finish with a claim and a reason.",
       materials: ["Lab note cards A and B"],
       support: { l1_2: "Use the ask frames word for word and point to the card.", l3_4: "Ask in your own words, then repeat the data back to check it.", l5_6: "After sharing, write a claim with evidence from both cards." },

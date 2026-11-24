@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Place Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning. Wrong matches bounce back, so keep trying until all nine click!",
+      mission: "Match 9 words, from “urban” to “compare”, to their meanings.",
       tip: "Replay with the cue pictures hidden so students recall the meanings themselves.",
       materials: [],
       support: { l1_2: "Match the words with pictures first.", l3_4: "Match all nine, then say two words in sentences.", l5_6: "Match all nine, then write one sentence with both." },
@@ -222,7 +222,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Place Quiz Show", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Then say why it is right!",
+      mission: "Answer 6 questions, starting with “Which place is urban” — pick the best answer and say why.",
       tip: "Read each question aloud; students answer with a card and explain, with no clock.",
       materials: [],
       support: { l1_2: "Look at the picture cue, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },

@@ -100,7 +100,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Guess the Myth Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “Storytellers told me around the fire”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cues to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },

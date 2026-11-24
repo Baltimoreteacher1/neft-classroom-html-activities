@@ -171,7 +171,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Money Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “consumer” and “haircut”.",
       tip: "Ask which piece starts with a capital letter and which word names the worker or buyer.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, change one word to make a new true sentence." },
@@ -187,7 +187,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Piggy Bank Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Ana gets five dollars…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue next to each gap.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -211,7 +211,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Compare It", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “whereas”, “but” and “because” to join 4 pairs of short sentences, starting with “A baker makes bread”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

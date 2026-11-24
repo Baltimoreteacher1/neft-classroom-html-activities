@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Take Away Words", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 10 words, from “subtract” to “part”, to their picture clues.",
       tip: "Have children say each word and act it out with cubes before they tap.",
       materials: ["Cubes"],
       support: { l1_2: "Match take away, minus, and left first.", l3_4: "Match all ten, then say a sentence for two.", l5_6: "Match all ten and add your own example to each." },
@@ -176,7 +176,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Reason", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “because” and “equals”.",
       tip: "Ask which piece starts with a capital letter and which piece ends the sentence.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, make a new sentence with different numbers." },
@@ -206,7 +206,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Take Away Quiz Show", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 7 questions, starting with “What is 9 minus 4” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, and may use cubes; no clock.",
       materials: ["Cubes"],
       support: { l1_2: "Build it with cubes, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },
@@ -224,7 +224,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “then”, “because” and “and” to join 4 pairs of short sentences, starting with “I have 7 cubes”.",
       tip: "Say both sentences, then say the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

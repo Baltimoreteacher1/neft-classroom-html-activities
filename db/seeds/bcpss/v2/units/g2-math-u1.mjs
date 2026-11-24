@@ -44,7 +44,7 @@ export default {
     { term: "compare", tier: 2, pos: "verb", icon: "⚖️", def: "to look at two numbers and tell how they are alike or different", example: "I compare 456 and 465 by looking at the tens.", nonexample: "Counting only one number is not comparing.", es: "comparar", es_note: "Cognate: sounds and means almost the same.", family: ["compares", "compared", "comparing"], cue: "Two number cards on a balance scale." },
     { term: "greater than", tier: 3, pos: "adjective phrase", icon: "🐊", def: "bigger in amount than another number", example: "745 is greater than 738.", nonexample: "738 is not greater than 745.", es: "mayor que", es_note: "Mayor que is the > sign. Math class uses mayor, not 'más grande'.", family: ["greater"], cue: "A hungry alligator mouth opening toward the bigger number." },
     { term: "less than", tier: 3, pos: "adjective phrase", icon: "🐜", def: "smaller in amount than another number", example: "412 is less than 421.", nonexample: "421 is not less than 412.", es: "menor que", es_note: "Menor que is the < sign.", family: ["fewer"], cue: "A tiny ant next to a big elephant, with a small number under the ant." },
-    { term: "equal to", tier: 3, pos: "adjective phrase", icon: "🟰", def: "having the same amount as another number", example: "300 + 40 + 5 is equal to 345.", nonexample: "345 is not equal to 354.", es: "igual a", es_note: "Cognate-like: igual and equal share a root.", family: ["equal", "equals"], cue: "A balanced scale with 345 on both sides." },
+    { term: "equal to", tier: 3, pos: "adjective phrase", icon: "🟰", def: "having the same amount as another number", example: "300 + 40 + 5 is equal to 345.", nonexample: "345 is not equal to 354.", es: "igual a", es_note: "Cognates: 'igual' and 'equal' share a Latin root.", family: ["equal", "equals"], cue: "A balanced scale with 345 on both sides." },
   ],
   activities: [
     {
@@ -215,7 +215,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Place Value Showdown", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “Which number has 6 hundreds, 0 tens, and 2 ones” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card and tell one reason, no clock.",
       materials: [],
       support: { l1_2: "Use the blocks or a place-value chart.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },
@@ -232,7 +232,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join the Numbers", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “but”, “because” and “whereas” to join 4 pairs of short sentences, starting with “Both numbers have 4 hundreds”.",
       tip: "Say both sentences, then the joined one; more than one correct answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new pair with the same joining word." },

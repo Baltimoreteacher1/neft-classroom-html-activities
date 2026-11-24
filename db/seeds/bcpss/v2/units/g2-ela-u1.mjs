@@ -63,7 +63,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Season Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning or picture.",
+      mission: "Match 8 words, from “season” to “harvest”, to their meanings.",
       tip: "Have children say each word aloud and act it out before tapping a match.",
       materials: [],
       support: { l1_2: "Match the picture words first.", l3_4: "Match all pairs, then say two in a sentence.", l5_6: "Match all pairs and write one new example." },
@@ -173,7 +173,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Season Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “because” and “flowers”.",
       tip: "Ask which piece starts with a capital letter and which piece shows the cause.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "Build it, then write one more cause and effect." },
@@ -189,7 +189,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Spring Wakes Up", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Spring comes after winter…” by choosing the right word for each of the 5 gaps.",
       tip: "Two bank words are extras; children decide which words do not fit and say why.",
       materials: [],
       support: { l1_2: "Read the sentence and look for a clue.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -228,7 +228,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Reason", minutes: 10, grouping: "Partners",
-      mission: "Find the best way to fix each sentence.",
+      mission: "Find the mistake in each of 4 sentences, starting with “The tree loses its leaves. It is cold”, and pick the best fix.",
       tip: "Have partners say why each wrong choice does not connect the cause to the effect.",
       materials: [],
       support: { l1_2: "Look for the word because in the best choice.", l3_4: "Pick the fix and say what was missing.", l5_6: "Pick the fix, then explain why the others do not work." },
@@ -243,7 +243,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Cause Linkers", minutes: 10, grouping: "Partners",
-      mission: "Join two sentences with the linking word.",
+      mission: "Use “so”, “because” and “As a result” to join 4 pairs of short sentences, starting with “The days get short”.",
       tip: "Say both short sentences, then the joined one; more than one correct answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same linker." },

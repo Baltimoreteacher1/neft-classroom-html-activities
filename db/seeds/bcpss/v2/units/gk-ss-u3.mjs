@@ -35,7 +35,7 @@ export default {
   },
   connectors: ["but", "and", "both", "then", "now", "also"],
   vocab: [
-    { term: "past", tier: 2, pos: "noun", icon: "⏪", def: "the time that already happened", example: "Yesterday is in the past.", nonexample: "What is happening right now is not the past.", es: "pasado", es_note: "Past = pasado. Cognate-like.", family: ["long ago"], cue: "An old black-and-white photo of a streetcar." },
+    { term: "past", tier: 2, pos: "noun", icon: "⏪", def: "the time that already happened", example: "Yesterday is in the past.", nonexample: "What is happening right now is not the past.", es: "pasado", es_note: "Past = pasado. True cognates.", family: ["long ago"], cue: "An old black-and-white photo of a streetcar." },
     { term: "present", tier: 2, pos: "noun", icon: "📅", def: "the time that is happening now", example: "Today is the present.", nonexample: "Last year is not the present.", es: "presente", es_note: "Present = presente. A birthday present is 'un regalo'.", family: ["now", "today"], cue: "A child at a desk with today's date on the board." },
     { term: "tradition", tier: 3, pos: "noun", icon: "🎉", def: "something a family or group does again and again, year after year", example: "Eating pie on Thanksgiving is our family tradition.", nonexample: "Eating a snack once is not a tradition.", es: "tradición", es_note: "Cognate: tradición.", family: ["traditions"], cue: "A family around a table with a big cake and candles." },
     { term: "timeline", tier: 3, pos: "noun", icon: "📏", def: "a line that shows what happened first, next, and last", example: "My birthday timeline shows when I learned to walk.", nonexample: "A pile of photos with no order is not a timeline.", es: "línea de tiempo", es_note: "Timeline = línea de tiempo.", family: ["timelines"], cue: "A line with a baby picture, a toddler, and a kindergartener." },
@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Time Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “past” to “different”, to their picture clues.",
       tip: "Have children say each word and show it with a gesture before they tap the match.",
       materials: [],
       support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
@@ -169,7 +169,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Then-Now Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “celebrate” and “families”.",
       tip: "Ask which piece starts with a capital letter and how children know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add but and a new idea." },
@@ -185,7 +185,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Past and Present Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Yesterday is the…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -209,7 +209,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Compare With But", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “but” and “and” to join 4 pairs of short sentences, starting with “Long ago, people used candles”.",
       tip: "Say both sentences, then the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Force and Feeling Match", minutes: 8, grouping: "Solo",
-      mission: "Tap a word. Tap the picture clue that goes with it.",
+      mission: "Match 9 words, from “wind” to “turning point”, to their picture clues.",
       tip: "Have children act out push, pull, calm, and powerful before they tap the match.",
       materials: [],
       support: { l1_2: "Match the first four words, then act them out.", l3_4: "Match all nine and say a sentence for two of them.", l5_6: "Match all nine and tell a partner about a gust you remember." },
@@ -210,7 +210,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Order and Feeling Joiners", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “then”, “because” and “but” to join 4 pairs of short sentences, starting with “The wind blew”.",
       tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

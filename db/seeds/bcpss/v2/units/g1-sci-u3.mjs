@@ -36,12 +36,12 @@ export default {
   connectors: ["so", "then", "first", "next", "because", "again"],
   vocab: [
     { term: "sun", tier: 2, pos: "noun", icon: "☀️", def: "the star that gives us light and heat in the day", example: "The sun is up in the morning.", nonexample: "The moon is not the sun.", es: "sol", es_note: "Sun = sol. The sunny day is 'un día soleado'.", family: ["sunny", "sunlight"], cue: "A big yellow circle with rays over a house." },
-    { term: "moon", tier: 2, pos: "noun", icon: "🌙", def: "the big round rock we see in the night sky", example: "The moon looks bright tonight.", nonexample: "A star is not the moon.", es: "luna", es_note: "Moon = luna. Cognate-like: lunar.", family: ["moonlight"], cue: "A crescent moon over a rowhouse roof." },
-    { term: "star", tier: 2, pos: "noun", icon: "⭐", def: "a ball of hot gas far away that shines", example: "I see a star in the dark sky.", nonexample: "An airplane light is not a star.", es: "estrella", es_note: "Star = estrella. Cognate-like: estelar.", family: ["stars", "starry"], cue: "A dark sky with tiny bright dots." },
+    { term: "moon", tier: 2, pos: "noun", icon: "🌙", def: "the big round rock we see in the night sky", example: "The moon looks bright tonight.", nonexample: "A star is not the moon.", es: "luna", es_note: "Moon = luna. Related word: lunar (about the moon).", family: ["moonlight"], cue: "A crescent moon over a rowhouse roof." },
+    { term: "star", tier: 2, pos: "noun", icon: "⭐", def: "a ball of hot gas far away that shines", example: "I see a star in the dark sky.", nonexample: "An airplane light is not a star.", es: "estrella", es_note: "Star = estrella. Related word: estelar (about the stars).", family: ["stars", "starry"], cue: "A dark sky with tiny bright dots." },
     { term: "sunrise", tier: 2, pos: "noun", icon: "🌅", def: "the time in the morning when the sun comes up", example: "We watch the sunrise from the bus.", nonexample: "Night is not a sunrise.", es: "amanecer", es_note: "Sunrise = amanecer or salida del sol.", family: ["rise", "rises"], cue: "A sun half-way above the horizon with orange sky." },
     { term: "sunset", tier: 2, pos: "noun", icon: "🌇", def: "the time in the evening when the sun goes down", example: "The sunset over the Harbor is orange.", nonexample: "Noon is not a sunset.", es: "atardecer", es_note: "Sunset = atardecer or puesta del sol.", family: ["set", "sets"], cue: "A sun sinking behind a skyline with red sky." },
     { term: "daylight", tier: 3, pos: "noun", icon: "🕒", def: "the hours when the sun is up", example: "Summer has a lot of daylight.", nonexample: "Midnight has no daylight.", es: "luz del día", es_note: "Daylight = luz del día. The hours of light are 'las horas de luz'.", family: ["day"], cue: "A clock with the daytime hours shaded yellow." },
-    { term: "pattern", tier: 3, pos: "noun", icon: "🔁", def: "something that happens again and again in the same way", example: "The sunrise is a pattern we can count on.", nonexample: "A random sound is not a pattern.", es: "patrón", es_note: "Pattern = patrón. Cognate-like: patrón.", family: ["patterns"], cue: "A row of sun, moon, sun, moon." },
+    { term: "pattern", tier: 3, pos: "noun", icon: "🔁", def: "something that happens again and again in the same way", example: "The sunrise is a pattern we can count on.", nonexample: "A random sound is not a pattern.", es: "patrón", es_note: "Pattern = patrón. True cognates; 'patrón' can also mean a boss.", family: ["patterns"], cue: "A row of sun, moon, sun, moon." },
     { term: "predict", tier: 3, pos: "verb", icon: "🔮", def: "to say what will happen next using a pattern", example: "I predict the sun will rise tomorrow.", nonexample: "Guessing with no pattern is not predicting.", es: "predecir", es_note: "Cognate: predecir. Sounds and means almost the same.", family: ["predicts", "predicted", "prediction"], cue: "A calendar with a question mark on tomorrow." },
     { term: "season", tier: 3, pos: "noun", icon: "🍂", def: "one of the four parts of the year", example: "Summer is my favorite season.", nonexample: "Monday is not a season.", es: "estación", es_note: "Season = estación. 'Estación' can also mean station.", family: ["seasons", "seasonal"], cue: "Four trees: spring, summer, fall, winter." },
     { term: "phase", tier: 3, pos: "noun", icon: "🌓", def: "the shape the moon seems to have", example: "A full moon is one phase of the moon.", nonexample: "A cloud is not a phase.", es: "fase", es_note: "Cognate: fase. Same meaning for the moon.", family: ["phases"], cue: "Four moons: thin curve, half, full, thin curve." },
@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Sky Word Match-Up", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning.",
+      mission: "Match 10 words, from “sun” to “phase”, to their meanings.",
       tip: "Have children draw or point to each word before tapping.",
       materials: [],
       support: { l1_2: "Match the picture words first: sun, moon, star.", l3_4: "Match all ten words and say a sentence for two.", l5_6: "Match all ten, then use two words in one sentence." },
@@ -139,7 +139,7 @@ export default {
     },
     {
       kind: "info_gap", domain: "Speaking", title: "Season Sky Partners", minutes: 10, grouping: "Partners",
-      mission: "Ask your partner questions to find the missing facts.",
+      mission: "Ask your partner questions to find “Winter sunrise” and “Summer sunrise” — no peeking!",
       tip: "Partners keep their cards hidden and ask and answer aloud, then compare summer and winter.",
       materials: ["Season cards A and B"],
       support: { l1_2: "Use the ask frame word for word and point to the picture.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up, like 'Is that early or late?'" },
@@ -172,7 +172,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Sky Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “daylight” and “different”.",
       tip: "Ask which piece starts the sentence and which piece tells when.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, say what you predict next." },
@@ -206,7 +206,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Moon Shape Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “The moon looks like new…” by choosing the right word for each of the 5 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the moon picture in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence about the moon." },
@@ -218,7 +218,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Sky Pattern Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “What comes up in the morning” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or a thumb, with no clock.",
       materials: [],
       support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each other answer does not fit." },
@@ -235,7 +235,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join the Sky Facts", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “so”, “but” and “because” to join 4 pairs of short sentences, starting with “The sun sets”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

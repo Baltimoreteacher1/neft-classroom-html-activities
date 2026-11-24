@@ -104,7 +104,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Home-Front Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “Families had only days to pack one suitcase each”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue picture to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },
@@ -241,7 +241,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Comparison", minutes: 12, grouping: "Partners",
-      mission: "Each comparison has a flaw hiding in it. Find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 5 sentences, starting with “Code Talkers sent messages in Navajo”, and pick the best fix.",
       tip: "Press for the reason a fix works, not only which choice is right.",
       materials: [],
       support: { l1_2: "Read each choice aloud and look for the one that names both groups.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same flaw, then fix it." },

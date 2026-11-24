@@ -171,7 +171,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Direction Builder", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “maryland” and “pennsylvania”.",
       tip: "Ask which piece starts with a capital letter and which direction word the sentence uses.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece with the direction word.", l5_6: "After building, add one more place and direction." },
@@ -187,7 +187,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Map Tool Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “map is drawing of place…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue next to each gap.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -211,7 +211,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “and”, “but” and “because” to join 4 pairs of short sentences, starting with “North is up on the map”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

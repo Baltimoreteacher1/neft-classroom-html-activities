@@ -49,7 +49,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "The Snakehead Surprise", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, jot key words, then rebuild it with your partner as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “snakehead” and “native”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame, and draw the pond while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one claim about what could happen next." },
@@ -98,7 +98,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Ecosystem Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A marsh, a pond, and a forest are each one”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },

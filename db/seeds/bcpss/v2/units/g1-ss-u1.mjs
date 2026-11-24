@@ -63,7 +63,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Helper Match-Up", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning.",
+      mission: "Match 8 words, from “leader” to “problem”, to their meanings.",
       tip: "Have children say each word and act it out before they tap.",
       materials: [],
       support: { l1_2: "Match the words with pictures first.", l3_4: "Match all pairs, then say a sentence for two.", l5_6: "Match all pairs and add a new example for each." },
@@ -172,7 +172,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Reason", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “because” and “firefighter”.",
       tip: "Ask which piece starts with a capital letter and where the word because goes.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that has because.", l5_6: "After building, add one more reason of your own." },
@@ -200,7 +200,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Reason", minutes: 10, grouping: "Partners",
-      mission: "Find the best way to fix each sentence.",
+      mission: "Find the mistake in each of 4 sentences, starting with “A nurse is important”, and pick the best fix.",
       tip: "Ask partners to say why the fix is better; listen for because and the helper's job.",
       materials: [],
       support: { l1_2: "Look for the sentence with a reason.", l3_4: "Pick the fix and say it aloud.", l5_6: "Pick the fix and explain what was missing." },
@@ -215,7 +215,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “because”, “so” and “and” to join 4 pairs of short sentences, starting with “The firefighter is a helper”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

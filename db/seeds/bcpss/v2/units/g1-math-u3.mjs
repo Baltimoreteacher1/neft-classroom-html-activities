@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Tens and Ones Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “tens” to “jump”, to their picture clues.",
       tip: "Have children say each word and show it with sticks before they tap.",
       materials: ["Ten-sticks and cubes"],
       support: { l1_2: "Match tens, ones, and add first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
@@ -82,7 +82,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Number Hunt", minutes: 10, grouping: "Small Group",
-      mission: "Open one clue at a time. Guess the mystery number!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I have 4 tens and 0 ones”.",
       tip: "Fewer clues used earns more points; there is no clock, so let children build the number with sticks.",
       materials: ["Ten-sticks and cubes"],
       support: { l1_2: "Build each clue with sticks and cubes.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
@@ -192,7 +192,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Kai's Sticker Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Kai has stickers…” by choosing the right word for each of the 4 gaps.",
       tip: "Three bank words are extras; children decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Read the sentence with a partner and look for clues.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more step." },
@@ -221,7 +221,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join Your Steps", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “then”, “so” and “because” to join 4 pairs of short sentences, starting with “I add the ones”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

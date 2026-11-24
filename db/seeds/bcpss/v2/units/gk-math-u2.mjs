@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Compare Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “compare” to “most”, to their picture clues.",
       tip: "Have children say each word and show it with their hands before they tap.",
       materials: [],
       support: { l1_2: "Match more, fewer, and same first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
@@ -82,7 +82,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Between Two Numbers", minutes: 10, grouping: "Small Group",
-      mission: "Open one clue at a time. Guess the mystery number!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A week has this many days”.",
       tip: "Fewer clues used means more points; there is no clock, so let children use fingers or counters.",
       materials: ["Counters"],
       support: { l1_2: "Use your fingers to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
@@ -158,7 +158,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Compare Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences, starting with one that ends “than blue”.",
       tip: "Ask which piece starts with a capital letter and which piece ends the sentence.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, make a new sentence with different numbers." },
@@ -188,7 +188,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Cookie Plate Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Ana has cookies…” by choosing the right word for each of the 4 gaps.",
       tip: "Three bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Read the sentence with a partner and look for clues.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -200,7 +200,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Compare Quiz Show", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 7 questions, starting with “Red has 5 cubes. Blue has 3 cubes. Which has more” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, no clock.",
       materials: [],
       support: { l1_2: "Look at the numbers, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },
@@ -218,7 +218,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “but”, “because” and “so” to join 4 pairs of short sentences, starting with “Pip has 7 shells”.",
       tip: "Say both sentences, then say the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

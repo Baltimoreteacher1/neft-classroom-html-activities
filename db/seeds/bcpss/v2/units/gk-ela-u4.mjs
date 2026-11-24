@@ -186,7 +186,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Map Talk Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “is very big area of…” by choosing the right word for each of the 5 gaps.",
       tip: "Three bank words are extras; children decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue for each gap.", l3_4: "Fill the gaps, then read the whole page aloud.", l5_6: "Fill the gaps, then add one sentence of your own." },
@@ -230,7 +230,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Continent Quiz Show", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “How many continents are there” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, with no clock.",
       materials: ["World map"],
       support: { l1_2: "Look at the map, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },

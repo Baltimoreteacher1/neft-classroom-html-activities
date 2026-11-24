@@ -174,7 +174,7 @@ export default {
     },
     {
       kind: "info_gap", domain: "Speaking", title: "Landform Detectives", minutes: 10, grouping: "Partners",
-      mission: "Ask your partner questions to find the missing facts.",
+      mission: "Ask your partner questions to find “Volcano eruption changes land” and “Earthquake changes land” — no peeking!",
       tip: "Partners keep cards hidden, ask aloud, and say each answer back to check it.",
       materials: ["Detective cards A and B"],
       support: { l1_2: "Use the ask frame word for word and point.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up, like 'Is that fast or slow?'" },
@@ -215,7 +215,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Earth Changes Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think about each question. Pick the best answer and say why!",
+      mission: "Answer 6 questions, starting with “Which one is a landform” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card and no clock, then explain their choice to a partner.",
       materials: [],
       support: { l1_2: "Look at the picture clue, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong choice does not fit." },

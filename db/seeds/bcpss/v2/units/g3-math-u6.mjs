@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Shape and Measure Match", minutes: 8, grouping: "Solo",
-      mission: "Match each math word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      mission: "Match 8 words, from “quadrilateral” to “liquid volume”, to their meanings.",
       tip: "Students can replay with the picture cues face-down to build recall.",
       materials: [],
       support: { l1_2: "Match the words you know first, then use the picture cues.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -82,7 +82,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Vocabulary", title: "Mystery Shape Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I have four straight sides”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue of your own for each card." },
@@ -201,7 +201,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link Your Definition", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “because”, “but” and “since” to join 4 pairs of short sentences, starting with “A rhombus is a quadrilateral”.",
       tip: "Compare combinations; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the shape.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -216,7 +216,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Description", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “A triangle is a quadrilateral because it has sides”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Count the sides or check the unit first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

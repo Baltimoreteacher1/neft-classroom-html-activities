@@ -49,7 +49,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Journey of a Raindrop", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, jot key words, then rebuild it with your partner as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “runoff” and “stream”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame, and draw the raindrop's trip while you listen.", l3_4: "Write the key words you hear, then rebuild five or six sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the cycle starts again." },
@@ -99,7 +99,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Landform Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “Frost can do this to a rock”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -175,7 +175,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Landform Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong science sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “sediment” and “centimeter”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the signal word, then build around it.", l5_6: "After building, add a new reason of your own." },
@@ -202,7 +202,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link the Rates", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “so”, “because” and “which means” to join 4 pairs of short sentences, starting with “The slope doubled”.",
       tip: "Compare combinations because more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the objects.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -217,7 +217,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Water Claim", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Erosion breaks rock into small pieces”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the key science word first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

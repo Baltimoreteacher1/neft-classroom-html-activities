@@ -37,7 +37,7 @@ export default {
   vocab: [
     { term: "character", tier: 3, pos: "noun", icon: "🐷", def: "a person or animal in a story", example: "The pig is a character in the story.", nonexample: "The barn is a place, not a character.", es: "personaje", es_note: "False friend: Spanish 'carácter' means personality. A story character is 'personaje'.", family: ["characters"], cue: "A pig, a hen, and a farmer standing on a storybook page." },
     { term: "setting", tier: 3, pos: "noun", icon: "🏞️", def: "where and when a story happens", example: "The setting is a farm in the morning.", nonexample: "The hen is a character, not the setting.", es: "escenario", es_note: "Also 'ambiente' or 'lugar'. Setting = where the story happens.", family: ["settings"], cue: "A farm scene with a red barn and a rising sun." },
-    { term: "event", tier: 3, pos: "noun", icon: "⭐", def: "something that happens in a story", example: "The pig falling in mud is an event.", nonexample: "A red barn is a thing, not an event.", es: "suceso", es_note: "Also 'evento'. Cognate-like with 'evento'.", family: ["events"], cue: "A pig splashing in a mud puddle." },
+    { term: "event", tier: 3, pos: "noun", icon: "⭐", def: "something that happens in a story", example: "The pig falling in mud is an event.", nonexample: "A red barn is a thing, not an event.", es: "suceso", es_note: "Also 'evento.' 'Event' and 'evento' are true cognates.", family: ["events"], cue: "A pig splashing in a mud puddle." },
     { term: "sequence", tier: 3, pos: "noun", icon: "1️⃣", def: "the order things happen, one after another", example: "The sequence is first, next, last.", nonexample: "A pile of random pictures has no sequence.", es: "secuencia", es_note: "Cognate: sounds and means almost the same.", family: ["sequences"], cue: "Three cards numbered 1, 2, 3 showing a seed growing." },
     { term: "problem", tier: 2, pos: "noun", icon: "❗", def: "something hard that needs to be fixed", example: "The hen has a problem: her eggs are gone.", nonexample: "A sunny day is not a problem.", es: "problema", es_note: "Cognate: sounds and means almost the same.", family: ["problems"], cue: "A hen looking worried at an empty nest." },
     { term: "solve", tier: 2, pos: "verb", icon: "💡", def: "to find a way to fix a problem", example: "The farmer helps solve the problem.", nonexample: "Running away does not solve a problem.", es: "resolver", es_note: "Solve = resolver. The noun is 'solución' (solution).", family: ["solves", "solved", "solution"], cue: "A lightbulb over a farmer fixing a fence." },
@@ -205,7 +205,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Barn Story Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Farmer June has big red…” by choosing the right word for each of the 5 gaps.",
       tip: "Two or three bank words are extras; children must reject them.",
       materials: [],
       support: { l1_2: "Look at the picture clue for each gap.", l3_4: "Fill the gaps, then read the whole story aloud.", l5_6: "Fill the gaps, then add one more sentence." },
@@ -232,7 +232,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Story Parts Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “Who is a character” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, with no clock.",
       materials: [],
       support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },

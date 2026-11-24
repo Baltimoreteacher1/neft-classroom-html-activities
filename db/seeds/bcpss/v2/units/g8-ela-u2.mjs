@@ -105,7 +105,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery War Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A soldier expects glory but finds mud and fear”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue picture to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },

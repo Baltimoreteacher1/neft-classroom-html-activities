@@ -64,7 +64,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Food Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning or picture.",
+      mission: "Match 8 words, from “nourish” to “evidence”, to their meanings.",
       tip: "Have children say each word and show a quick gesture before they tap a match.",
       materials: [],
       support: { l1_2: "Match the picture words first.", l3_4: "Match all pairs, then use two in sentences.", l5_6: "Match all pairs and write a new example for each." },
@@ -174,7 +174,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Opinion Builder", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “because” and “according”.",
       tip: "Ask which piece starts with a capital letter and which piece gives the reason.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "Build it, then write your own opinion with because." },
@@ -190,7 +190,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Body Fuel Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Your body is like car…” by choosing the right word for each of the 5 gaps.",
       tip: "Two bank words are extras; children decide which words do not fit and say why.",
       materials: [],
       support: { l1_2: "Read the sentence and look for a clue.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -229,7 +229,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Proof", minutes: 10, grouping: "Partners",
-      mission: "Find the best way to fix each sentence.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Candy is a healthy choice”, and pick the best fix.",
       tip: "Have partners say what was wrong, such as a reason that does not match the claim or a missing source.",
       materials: [],
       support: { l1_2: "Read each choice aloud and listen for the best one.", l3_4: "Pick the fix and say what was wrong.", l5_6: "Pick the fix, then explain why the others do not work." },
@@ -244,7 +244,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Claim and Proof", minutes: 10, grouping: "Partners",
-      mission: "Join two sentences with the linking word.",
+      mission: "Use “because”, “so” and “According to” to join 4 pairs of short sentences, starting with “Beans are a good choice”.",
       tip: "Say both short sentences, then the joined one; more than one correct answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same linker." },

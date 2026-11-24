@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Add It Up Words", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “add” to “ten frame”, to their picture clues.",
       tip: "Have children say each word and act it out with cubes before they tap.",
       materials: ["Cubes"],
       support: { l1_2: "Match add, plus, and total first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
@@ -189,7 +189,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Apple Add Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Eli has red apples…” by choosing the right word for each of the 4 gaps.",
       tip: "Three bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Read the sentence with a partner and look for clues.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -201,7 +201,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Add It Up Quiz Show", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 7 questions, starting with “What is 3 + 2” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, and may use cubes; no clock.",
       materials: ["Cubes"],
       support: { l1_2: "Build it with cubes, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },
@@ -219,7 +219,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “then”, “and” and “because” to join 4 pairs of short sentences, starting with “I have 3 cubes”.",
       tip: "Say both sentences, then say the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

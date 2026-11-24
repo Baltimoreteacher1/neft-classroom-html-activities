@@ -91,6 +91,7 @@
     "diagnose:student-access": "node scripts/diagnose-student-access.mjs",
     "diagnose:production-access": "node scripts/diagnose-production-access.mjs",
     "report:usage": "node scripts/usage-report.mjs",
+    "audit:content": "node scripts/audit-bcpss-content.mjs",
     "audit:deps": "node tools/audit-allowlist.mjs",
     "audit:dead-code": "node scripts/audit-dead-code.mjs",
     "audit:duplicates": "node scripts/audit-duplicate-assets.mjs",
@@ -498,7 +499,7 @@
     "test:speaking-enterprise": "node --test tools/speaking-enterprise.test.mjs",
     "e2e:access-integration": "node tools/access-integration-e2e.mjs",
     "test:lesson-pack": "node --test tools/lesson-pack.test.mjs",
-    "validate:bcpss": "node db/verify_bcpss.mjs --local && node functions/language-page-host.test.mjs && node functions/api-contract.test.mjs && node tools/build-bcpss-studio-index.mjs --check && node tools/validate-bcpss-studio.mjs"
+    "validate:bcpss": "node db/verify_bcpss.mjs --local && node functions/language-page-host.test.mjs && node functions/api-contract.test.mjs && node tools/build-bcpss-studio-index.mjs --check && node tools/validate-bcpss-studio.mjs && node scripts/audit-bcpss-content.mjs --check"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",

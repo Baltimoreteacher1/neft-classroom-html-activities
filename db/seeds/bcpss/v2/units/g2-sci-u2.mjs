@@ -177,7 +177,7 @@ export default {
     },
     {
       kind: "info_gap", domain: "Speaking", title: "Garden Detectives", minutes: 10, grouping: "Partners",
-      mission: "Ask your partner questions to find the missing facts.",
+      mission: "Ask your partner questions to find “Acorn travels by” and “Dandelion seed travels by” — no peeking!",
       tip: "Partners keep cards hidden, ask aloud, and say each answer back to check it.",
       materials: ["Detective cards A and B"],
       support: { l1_2: "Use the ask frame word for word and point.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up, like 'Does it land near the plant?'" },

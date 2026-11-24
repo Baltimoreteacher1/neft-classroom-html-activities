@@ -104,7 +104,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Prove the Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “It arrives with no warning”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write a fourth clue for each card that uses a different sentence pattern." },

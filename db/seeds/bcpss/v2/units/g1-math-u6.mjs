@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Shape Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 10 words, from “side” to “fourth”, to their picture clues.",
       tip: "Have children say each word and hold up a real object before they tap.",
       materials: ["Shape blocks"],
       support: { l1_2: "Match triangle, circle, and half first.", l3_4: "Match all ten, then say a sentence for two.", l5_6: "Match all ten and add your own example to each." },
@@ -190,7 +190,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Shape and Share Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “has sides and corners…” by choosing the right word for each of the 4 gaps.",
       tip: "Three bank words are extras; children decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Read the sentence with a partner and look for clues.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -202,7 +202,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Shape and Share Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 7 questions, starting with “Which shape has 3 corners” — pick the best answer and say why.",
       tip: "Read each question aloud and show a shape block; children answer with a card, no clock.",
       materials: ["Shape blocks"],
       support: { l1_2: "Hold the shape block, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why the other answers do not fit." },
@@ -220,7 +220,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join Your Shape Facts", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “but”, “because” and “so” to join 3 pairs of short sentences, starting with “A triangle has 3 sides”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one shape.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

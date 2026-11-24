@@ -171,7 +171,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Timeline Builder", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “celebrate” and “fireworks”.",
       tip: "Ask which piece starts with a capital letter and which piece is the time word.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the time word.", l5_6: "After building, add one more event with Then." },
@@ -187,7 +187,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Symbol Story Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “stands for an idea or…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue next to each gap.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -211,7 +211,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Story", minutes: 10, grouping: "Partners",
-      mission: "Find the best way to fix each sentence.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Key see the flag at dawn”, and pick the best fix.",
       tip: "Ask partners to say why the fix is better; listen for past-tense verbs and correct order.",
       materials: [],
       support: { l1_2: "Look for the sentence that sounds right.", l3_4: "Pick the fix and say it aloud.", l5_6: "Pick the fix and explain what was wrong." },

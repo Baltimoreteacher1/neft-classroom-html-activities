@@ -50,7 +50,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Life in the Grass Bed", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, then rebuild it with your partner using the key words.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “grasses” and “sunlight”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame while you draw the grass bed.", l3_4: "Write the key words you hear, then rebuild four sentences.", l5_6: "Rebuild the whole text and add one sentence about where the energy goes." },
@@ -220,7 +220,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “so”, “then” and “as a result” to join 4 pairs of short sentences, starting with “Eelgrass makes its own food”.",
       tip: "Compare combos: more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the words.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -235,7 +235,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Food Web", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Energy flows from the osprey to the sun”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at who eats whom first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

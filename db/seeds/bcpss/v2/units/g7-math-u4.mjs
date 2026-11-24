@@ -97,7 +97,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Algebra Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am usually a letter like x”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -189,7 +189,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Writing", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “distributing” and “subtracted”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the order word, then build around it.", l5_6: "After building, add a next step of your own." },
@@ -231,7 +231,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Spot the Slip", minutes: 10, grouping: "Partners",
-      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 4 sentences, starting with “First I added 6 to both sides…”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the operation words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

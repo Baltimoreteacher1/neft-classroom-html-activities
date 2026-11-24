@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Data Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “data” to “how many more”, to their picture clues.",
       tip: "Have children say each word and show it on a sample graph before they tap.",
       materials: ["Sample bar graph"],
       support: { l1_2: "Match data, vote, and most first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
@@ -191,7 +191,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Pet Graph Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “The class takes…” by choosing the right word for each of the 4 gaps.",
       tip: "Three bank words are extras; children decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Read the sentence with a partner and look for clues.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more fact." },
@@ -220,7 +220,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join Your Proof", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “because”, “but” and “and” to join 4 pairs of short sentences, starting with “Pizza is the favorite”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one number.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

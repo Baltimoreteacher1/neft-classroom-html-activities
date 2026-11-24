@@ -48,7 +48,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Harbor Lights", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, jot key words, then rebuild it with your partner as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “smooth” and “reflects”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame, and draw the harbor while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the picture breaks." },
@@ -97,7 +97,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Light Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A mirror does this to light”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -173,7 +173,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Light Path Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong science sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “reflects” and “scatters”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the signal word, then build around it.", l5_6: "After building, add a new reason of your own." },
@@ -200,7 +200,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link the Light", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “so”, “because” and “since” to join 4 pairs of short sentences, starting with “The window is transparent”.",
       tip: "Compare combinations because more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the objects.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },

@@ -103,7 +103,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Guess the Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “A nation with this makes its own rules”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud before guessing.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue picture to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },
@@ -223,7 +223,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Comparison", minutes: 12, grouping: "Partners",
-      mission: "Each comparison has a flaw hiding in it. Find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 5 sentences, starting with “The Haudenosaunee lived in longhouses, whereas the Cherokee lived in longhouses”, and pick the best fix.",
       tip: "Press for the reason a fix works, not only which choice is right.",
       materials: [],
       support: { l1_2: "Read each choice aloud and look for the one that sounds true.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same flaw, then fix it." },

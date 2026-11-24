@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Force Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each science word to its meaning. Wrong matches bounce back, so keep trying until all nine click!",
+      mission: "Match 9 words, from “force” to “predict”, to their meanings.",
       tip: "Replay with the cue pictures face-down so students build recall, not just recognition.",
       materials: [],
       support: { l1_2: "Match the words you know first, then use the cue pictures.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -83,7 +83,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Force Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “Rub your hands together fast and feel me”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word list and the cue pictures to guess.", l3_4: "Try to guess before you flip the third clue.", l5_6: "Write your own fourth clue for two of the cards." },

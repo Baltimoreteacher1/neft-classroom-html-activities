@@ -42,7 +42,7 @@ export default {
     { term: "human resource", tier: 3, pos: "noun", icon: "👷", def: "a worker whose skills and effort help make goods or services", example: "A baker is a human resource who makes bread for the city.", nonexample: "An oven is not a human resource, because it is not a person.", es: "recurso humano", es_note: "Cognate. 'Recursos humanos' also names a company department.", family: ["worker", "workers"], cue: "A baker, a nurse, and a bus driver smiling." },
     { term: "capital resource", tier: 3, pos: "noun", icon: "🔨", def: "a tool, machine, or building that people use to make goods or services", example: "A crab pot is a capital resource for Maryland watermen.", nonexample: "A tree in the woods is not a capital resource, because nature made it.", es: "recurso de capital", es_note: "Also 'bien de capital'. 'Capital' here means tools, not a city.", family: ["tools", "machine"], cue: "A boat, a hammer, and an oven in a row." },
     { term: "trade", tier: 2, pos: "verb", icon: "🔄", def: "to give something to get something else in return", example: "A farmer will trade corn for fresh bread.", nonexample: "Keeping everything for yourself is not trading.", es: "comercio", es_note: "'Comercio' also means business. For swapping, children can say 'intercambio'.", family: ["trades", "traded"], cue: "Two people swapping a basket of corn and a loaf of bread." },
-    { term: "need", tier: 2, pos: "noun", icon: "🍎", def: "something you must have to live", example: "Food and water are a need for every person.", nonexample: "A new video game is not a need, because you can live without it.", es: "necesidad", es_note: "Cognate-like: 'necesidad' sounds like 'necessity'.", family: ["needs", "needed"], cue: "A child with food, water, and a house." },
+    { term: "need", tier: 2, pos: "noun", icon: "🍎", def: "something you must have to live", example: "Food and water are a need for every person.", nonexample: "A new video game is not a need, because you can live without it.", es: "necesidad", es_note: "'Necesidad' (a need) is a cognate of 'necessity'. The verb 'to need' is 'necesitar'.", family: ["needs", "needed"], cue: "A child with food, water, and a house." },
     { term: "want", tier: 2, pos: "noun", icon: "🧸", def: "something you would like to have but can live without", example: "A new toy is a want, not a need.", nonexample: "Water to drink is not a want, because you must have it.", es: "deseo", es_note: "Say 'deseo' or 'algo que queremos'. The verb 'want' is 'querer'.", family: ["wants", "wanted"], cue: "A child looking at a toy in a shop window." },
     { term: "choice", tier: 2, pos: "noun", icon: "🤔", def: "picking one thing instead of another", example: "A smart choice can help a whole town.", nonexample: "When only one thing is possible, there is no choice.", es: "elección", es_note: "Watch out: 'elección' can also mean an election. Say 'opción' for a choice between things.", family: ["choose", "chose", "choices"], cue: "A child at a fork in the road with two signs." },
   ],
@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Smart Choice Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning. Wrong matches bounce back, so keep trying until all nine click!",
+      mission: "Match 9 words, from “scarcity” to “choice”, to their meanings.",
       tip: "Replay with meanings only and ask students to say the word before tapping.",
       materials: [],
       support: { l1_2: "Match the words with pictures first.", l3_4: "Match all nine, then use two words in sentences.", l5_6: "Match all nine, then write one sentence with because." },
@@ -222,7 +222,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Choose Wisely Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Then say why it is right!",
+      mission: "Answer 6 questions, starting with “What is scarcity” — pick the best answer and say why.",
       tip: "Read each question aloud; students answer with a card and explain, with no clock.",
       materials: [],
       support: { l1_2: "Look at the picture cue, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },

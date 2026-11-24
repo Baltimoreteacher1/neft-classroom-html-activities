@@ -49,7 +49,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Square the Corner", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, jot key words, then rebuild it with your partner.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “6 feet” and “diagonal”.",
       tip: "Read at natural speed twice; students write key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame while you listen.", l3_4: "Jot the key words, then rebuild five sentences.", l5_6: "Rebuild the whole text and add what would happen with a 12-foot diagonal." },
@@ -98,7 +98,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 9 words, starting with “I am the longest side of a right triangle”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word list and guess after the first clue.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -217,7 +217,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “In a right triangle with legs 6…”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Check the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

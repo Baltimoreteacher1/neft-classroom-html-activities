@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Ancient Government Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning. Wrong matches bounce back, so keep trying until all eight click!",
+      mission: "Match 8 words, from “democracy” to “reform”, to their meanings.",
       tip: "Replay with the meanings covered so students recall the word before they see its match.",
       materials: [],
       support: { l1_2: "Match the words you already know first, then use the cue pictures.", l3_4: "Match all pairs, then say each word in a sentence out loud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -104,7 +104,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Government Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “In Athens, people raised their hands to vote on laws”.",
       tip: "Fewer clues means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word bank and the cue picture to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for two of the cards." },
@@ -224,7 +224,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Argument", minutes: 12, grouping: "Partners",
-      mission: "Each argument has a flaw hiding in it. Find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 5 sentences, starting with “Athens was a republic because citizens voted directly on laws”, and pick the best fix.",
       tip: "Press for the reason a fix works, not only which choice is right.",
       materials: [],
       support: { l1_2: "Read each choice aloud and look for the one that gives a reason.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same flaw, then fix it." },

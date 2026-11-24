@@ -98,7 +98,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Guess the Heart Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I mean exactly what the words say”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cues to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -200,7 +200,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Whereas Workshop", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “whereas”, “both” and “in contrast” to join 4 pairs of short sentences, starting with “A literal heart pumps blood”.",
       tip: "More than one correct answer is possible, so compare partner versions.",
       materials: [],
       support: { l1_2: "Copy the model, then change one word.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to start the sentence." },

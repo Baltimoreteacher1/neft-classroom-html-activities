@@ -60,7 +60,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Citizen Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “rule” to “share”, to their picture clues.",
       tip: "Have children say each word and show it with a gesture before they tap the match.",
       materials: [],
       support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
@@ -169,7 +169,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Rule Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “citizens” and “everyone”.",
       tip: "Ask which piece starts with a capital letter and how children know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add because and a reason." },
@@ -185,7 +185,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "School Day Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “rule helps us stay…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -209,7 +209,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Rule and Reason", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “because” to join 4 pairs of short sentences, starting with “We walk in the hall”.",
       tip: "Say both sentences, then the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

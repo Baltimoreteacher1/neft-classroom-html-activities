@@ -48,7 +48,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Shadow Stick Walk", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, then rebuild it with your partner using the key words.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “stick” and “shadow”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame while you draw the stick and its shadow.", l3_4: "Write the key words you hear, then rebuild four sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the shadow changes." },
@@ -229,7 +229,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Comparison", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Gravity pulls objects up into the sky”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the science words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

@@ -230,7 +230,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Story Word Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think about each question. Pick the best answer and say why.",
+      mission: "Answer 6 questions, starting with “Which word means a person who moves to a new country to live” — pick the best answer and say why.",
       tip: "Students answer with cards or thumbs; there is no clock, so let them think.",
       materials: [],
       support: { l1_2: "Look at the picture clue, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then explain why one wrong choice does not fit." },

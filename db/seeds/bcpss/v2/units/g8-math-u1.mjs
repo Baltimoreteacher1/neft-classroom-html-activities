@@ -48,7 +48,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Zeros Be Gone", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, jot key words, then rebuild it with your partner.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “decimal point” and “seven places”.",
       tip: "Read at natural speed twice; students write key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame while you listen.", l3_4: "Jot the key words, then rebuild four sentences.", l5_6: "Rebuild the whole text and add why the exponent is 7." },
@@ -96,7 +96,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “In 5³, I am the small raised 3”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word list and guess after the first clue.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -172,7 +172,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “number” and “irrational”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
@@ -199,7 +199,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “because”, “since” and “whereas” to join 4 pairs of short sentences, starting with “0.75 is a rational number”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -214,7 +214,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “The exponent in 2³ means 2 × 3, which is 6”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Check the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

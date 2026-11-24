@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Motion Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its picture clue.",
+      mission: "Match 9 words, from “push” to “stop”, to their picture clues.",
       tip: "Have children act out each word with their hands before they tap the match.",
       materials: [],
       support: { l1_2: "Match push, pull, and stop first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
@@ -170,7 +170,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Motion Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “rolling” and “closer”.",
       tip: "Ask which piece starts with a capital letter and how children know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add the word so and one more idea." },
@@ -186,7 +186,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Park Day Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Ana has wagon…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -198,7 +198,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Reading", title: "Fix the Sentence", minutes: 8, grouping: "Partners",
-      mission: "Find the mistake. Pick the best fix!",
+      mission: "Find the mistake in each of 4 sentences, starting with “A gentle push makes the ball go very fast”, and pick the best fix.",
       tip: "Read each wrong sentence aloud and ask children to act it out to find what does not fit.",
       materials: [],
       support: { l1_2: "Act out each choice with your hands.", l3_4: "Pick the fix and say why the wrong one does not work.", l5_6: "Pick the fix, then write your own correct sentence." },
@@ -213,7 +213,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Push, Then Move", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “so”, “and” and “because” to join 4 pairs of short sentences, starting with “I give a strong push”.",
       tip: "Say both sentences, then the joined one. More than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

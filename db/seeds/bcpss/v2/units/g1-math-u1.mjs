@@ -216,7 +216,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join with Because", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “because”, “so” and “then” to join 4 pairs of short sentences, starting with “I used doubles”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: sup("Copy the model and change one number.", "Join the sentences and read them aloud.", "Join them, then write a new one with the same joining word."),

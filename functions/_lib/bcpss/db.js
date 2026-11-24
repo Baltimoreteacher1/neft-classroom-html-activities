@@ -177,12 +177,13 @@ function normalizeActivity(row) {
 
 function normalizeFamilyCard(row) {
   if (!row) return null;
+  // translations_json is the source of truth (en/es today). The legacy per-language columns were
+  // never populated, so they are derived from it; ar/fr_ht have no reviewed text and are not emitted.
+  const translations = maybeParseJson(row.translations_json ?? null) || {};
   return {
     unit_id: row.unit_id,
-    en_summary: row.en_summary ?? null,
-    es_summary: row.es_summary ?? null,
-    ar_summary: row.ar_summary ?? null,
-    fr_ht_summary: row.fr_ht_summary ?? null,
+    en_summary: row.en_summary ?? translations.en?.summary ?? null,
+    es_summary: row.es_summary ?? translations.es?.summary ?? null,
     dinner_table_prompts: maybeParseJson(row.dinner_table_prompts ?? null),
     home_vocab_bridge: maybeParseJson(row.home_vocab_bridge ?? null),
     ...row,
@@ -202,8 +203,6 @@ function buildDerivedFamilyCard(unit, firstConn) {
     unit_id: unit.id,
     en_summary: `In Grade ${unit.grade} ${unit.subject} (Unit ${unit.unit_number}: ${unit.unit_title}), students practice the "${klu}" academic language move while learning ${unit.unit_summary}`,
     es_summary: `En Grado ${unit.grade} de ${unit.subject} (Unidad ${unit.unit_number}: ${unit.unit_title}), los estudiantes practican el lenguaje académico (${klu}) mientras exploran los conceptos clave de la unidad.`,
-    ar_summary: `في الصف ${unit.grade} لمادة ${unit.subject} (الوحدة ${unit.unit_number}: ${unit.unit_title})، يتدرب الطلاب على مهارات اللغة الأكاديمية (${klu}) مع مفاهيم الوحدة الأساسية.`,
-    fr_ht_summary: `Nan Klas ${unit.grade} ${unit.subject} (Inite ${unit.unit_number}: ${unit.unit_title}), elèv yo pratike langaj akademik (${klu}) pandan y ap aprann konsèp prensipal inite a.`,
     dinner_table_prompts: {
       en: `Ask at home: "Can you teach me one example from ${unit.unit_title}?" Helpful starter: ${frame}`,
       es: `Pregunta en casa: "¿Puedes enseñarme un ejemplo de ${unit.unit_title} en español o en inglés?"`,
@@ -619,6 +618,7 @@ export async function getUnitDetail(env, unitId) {
       unit: result.detail.unit,
       connection: result.detail.connections?.[0],
       catalog: ESOL_CATALOG,
+      studio: result.detail.studio,
     });
     result.detail = { ...result.detail, esol_pack, reading: READING_BY_UNIT.get(unitId) || null };
   }

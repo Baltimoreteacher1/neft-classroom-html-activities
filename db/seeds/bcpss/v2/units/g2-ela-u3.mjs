@@ -42,7 +42,7 @@ export default {
     { term: "respond", tier: 2, pos: "verb", icon: "💬", def: "to answer or act because of something", example: "People respond to unfair rules in different ways.", nonexample: "Ignoring the problem is not a response.", es: "responder", es_note: "Cognate: responder. Sounds and means almost the same.", family: ["responds", "responded", "response"], cue: "A speech bubble with an arrow back to the first speaker." },
     { term: "peaceful", tier: 2, pos: "adjective", icon: "🕊️", def: "calm and without hurting anyone", example: "Dr. King asked people to use peaceful protest.", nonexample: "A fight is not peaceful.", es: "pacífico", es_note: "Cognate: pacífico. Sounds and means almost the same.", family: ["peace", "peacefully"], cue: "A white dove over a line of people walking together." },
     { term: "protest", tier: 3, pos: "noun", icon: "🪧", def: "a way to show that you think something is unfair", example: "People held signs at the protest.", nonexample: "A birthday party is not a protest.", es: "protesta", es_note: "Cognate: protesta. The verb is protestar.", family: ["protests", "protested", "protester"], cue: "People marching with hand-made signs." },
-    { term: "equal", tier: 2, pos: "adjective", icon: "🟰", def: "the same in worth, rights, or amount", example: "All children should have equal chances to learn.", nonexample: "A rule that helps only some children is not equal.", es: "igual", es_note: "Equal = igual (adjective). Cognate-like with 'equitativo'.", family: ["equally", "equality"], cue: "A balanced scale with a child on each side." },
+    { term: "equal", tier: 2, pos: "adjective", icon: "🟰", def: "the same in worth, rights, or amount", example: "All children should have equal chances to learn.", nonexample: "A rule that helps only some children is not equal.", es: "igual", es_note: "Equal = igual (adjective). Related word: 'equitativo' means fair.", family: ["equally", "equality"], cue: "A balanced scale with a child on each side." },
     { term: "rights", tier: 3, pos: "noun", icon: "✊", def: "things every person is free to do and have", example: "Every child has the right to go to school.", nonexample: "A toy you want is not one of your rights.", es: "derechos", es_note: "Rights = derechos. Right can also mean correct (correcto) or the right hand (derecha).", family: ["right"], cue: "A group of children holding a banner that says school for all." },
     { term: "segregation", tier: 3, pos: "noun", icon: "🚧", def: "an unfair rule that keeps people apart because of their skin color", example: "Segregation kept Black and white children in different schools.", nonexample: "Sitting by your friends is not segregation.", es: "segregación", es_note: "Cognate: segregación. Sounds and means almost the same.", family: ["segregated", "desegregate"], cue: "A fence between two playgrounds, one with swings and one with none." },
     { term: "boycott", tier: 3, pos: "noun", icon: "🚌", def: "a group choice to stop buying or using something to make a change", example: "In Montgomery, families joined a bus boycott.", nonexample: "Forgetting your lunch is not a boycott.", es: "boicot", es_note: "Cognate: boicot. The verb is boicotear.", family: ["boycotts", "boycotted"], cue: "An empty bus with people walking beside it." },
@@ -64,7 +64,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Brave Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning or picture.",
+      mission: "Match 8 words, from “injustice” to “turning point”, to their meanings.",
       tip: "Have children say each word and show a quick gesture before they tap a match.",
       materials: [],
       support: { l1_2: "Match the picture words first.", l3_4: "Match all pairs, then use two in sentences.", l5_6: "Match all pairs and write a new example for each." },
@@ -173,7 +173,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Past Tense Builder", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “walked” and “families”.",
       tip: "Ask which piece starts with a capital letter and which word shows the action already happened.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "Build it, then write one more sentence with a time word." },
@@ -189,7 +189,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Brave Steps Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Sylvia Mendez faced an when…” by choosing the right word for each of the 5 gaps.",
       tip: "Two bank words are extras; children decide which words do not fit and say why.",
       materials: [],
       support: { l1_2: "Read the sentence and look for a clue.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
@@ -228,7 +228,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Story", minutes: 10, grouping: "Partners",
-      mission: "Find the best way to fix each sentence.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Ruby walk into her school in 1960”, and pick the best fix.",
       tip: "Have partners say what was wrong, such as the verb tense, the order words, or a missing result.",
       materials: [],
       support: { l1_2: "Read each choice aloud and listen for the best one.", l3_4: "Pick the fix and say what was wrong.", l5_6: "Pick the fix, then explain why the others do not work." },
@@ -243,7 +243,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Turning Point Joiner", minutes: 10, grouping: "Partners",
-      mission: "Join two sentences with the linking word.",
+      mission: "Use “when”, “so” and “After” to join 4 pairs of short sentences, starting with “Ruby was six”.",
       tip: "Say both short sentences, then the joined one; more than one correct answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same linker." },

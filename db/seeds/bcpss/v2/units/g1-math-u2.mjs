@@ -162,7 +162,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Number Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “greater” and “hundred”.",
       tip: "Ask which piece starts the sentence and which piece has the end mark.",
       materials: [],
       support: sup("Find the piece that starts the sentence.", "Read it aloud to check that it makes sense.", "Build it, then change the numbers to make a new one."),
@@ -178,7 +178,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Sticker Book Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Ava has stickers…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; ask children why they do not fit.",
       materials: [],
       support: sup("Look at the rods and cubes to help you.", "Fill the gaps, then read the story aloud.", "Fill the gaps, then write one more sentence."),
@@ -217,7 +217,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join with Whereas", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “whereas”, “because” and “but” to join 4 pairs of short sentences, starting with “47 has 4 tens”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: sup("Copy the model and change one number.", "Join the sentences and read them aloud.", "Join them, then write a new one with the same joining word."),

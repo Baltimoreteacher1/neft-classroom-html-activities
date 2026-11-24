@@ -49,7 +49,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Rowhouse Window", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice. Then rebuild it with your partner, as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “protractor” and “right angle”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame. Draw the window while you listen.", l3_4: "Write the key words you hear, then rebuild five or six sentences.", l5_6: "Rebuild the whole text and add one sentence that tells why it is a quadrilateral." },
@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
-      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all ten click!",
+      mission: "Match 10 words, from “angle” to “quadrilateral”, to their meanings.",
       tip: "Students can replay with the cue cards face-down to build recall.",
       materials: [],
       support: { l1_2: "Match the words you know first, then try the rest.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
@@ -84,7 +84,7 @@ export default {
     },
     {
       kind: "word_sort", domain: "Vocabulary", title: "Measure, Angle, or Shape?", minutes: 8, grouping: "Partners",
-      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      mission: "Sort 13 words into “Measuring angles”, “Kinds of angles” and “Lines and shapes”, then defend one choice to your partner.",
       tip: "Listen for 'because' when partners defend a sort.",
       materials: [],
       support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
@@ -99,7 +99,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Shape Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am shaped like a half circle”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -204,7 +204,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “that”, “whereas” and “which” to join 4 pairs of short sentences, starting with “A rectangle is a quadrilateral”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the shape.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -219,7 +219,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “A 120-degree angle is acute”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the angle numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

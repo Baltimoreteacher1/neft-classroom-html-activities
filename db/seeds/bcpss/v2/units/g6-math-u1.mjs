@@ -47,7 +47,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Wrap It Up", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, then rebuild it with your partner — as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “net” and “decomposes”.",
       tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and the first frame; draw the box while you listen.", l3_4: "Write the key words you hear, then rebuild 4–5 sentences.", l5_6: "Rebuild the whole text and add one sentence about why her strategy works." },
@@ -80,7 +80,7 @@ export default {
     },
     {
       kind: "word_sort", domain: "Vocabulary", title: "Flat, Solid, or Measure?", minutes: 8, grouping: "Partners",
-      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      mission: "Sort 12 words into “Flat shapes (2D)”, “Solid shapes (3D)” and “Ways to measure”, then defend one choice to your partner.",
       tip: "Listen for 'because' when partners defend a sort.",
       materials: [],
       support: { l1_2: "Sort the pictures and words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then make a fourth category of your own." },
@@ -95,7 +95,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am flat, but I can fold up”.",
       tip: "Fewer clues used = more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -114,7 +114,7 @@ export default {
     },
     {
       kind: "talk_cards", domain: "Speaking", title: "Prove It to Your Partner", minutes: 12, grouping: "Partners",
-      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      mission: "Take turns drawing a card, starting with the question “How do you find the area of an L-shaped polygon”, and push each other’s thinking.",
       tip: "Listen for a reason after every 'because'.",
       materials: ["Partner role cards"],
       support: { l1_2: "Point to the shape and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' to compare two strategies." },
@@ -170,7 +170,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “because” and “decomposed”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
@@ -197,7 +197,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “because”, “so” and “since” to join 4 pairs of short sentences, starting with “I decomposed the shape”.",
       tip: "Compare combos: more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to start the sentence." },
@@ -212,7 +212,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “The surface area of the box is 62 cubic centimeters”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the units first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

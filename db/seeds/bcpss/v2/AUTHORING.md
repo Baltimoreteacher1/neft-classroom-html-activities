@@ -19,7 +19,7 @@ Version 2 must read like a real publisher wrote it by hand: specific, accurate, 
 - **Language-first.** Each activity trains a _language skill_ inside the content: define, compare, explain a cause, justify with because, sequence with signal words,
   describe with precise adjectives, ask questions, retell, argue with evidence. Use the unit's WIDA move (Argue / Explain / Inform / Narrate).
 - **Student-facing and exciting.** Titles are catchy (3–5 words) — "Box Detectives", "Habitat Hunt". The `mission` is ONE sentence speaking to the student
-  ("Flip the clues one at a time. Guess the word with as few clues as you can!"). Teacher text is **one short `tip`** only. No teacher scripts, no steps.
+  ("Flip one clue at a time to guess all 6 words, starting with “I am flat, but I can fold up.”"). Every mission is written from that activity’s own content; never reuse a mission string from another unit (`npm run audit:content -- --check` fails at more than 3 units). Teacher text is **one short `tip`** only. No teacher scripts, no steps.
 - **Games are real games.** Scaffolds never give the answer away. NO timers, no countdowns, no "beat the clock". Wrong answers must teach (use `why`).
 - **Plain language.** No jargon: never "warrant", "substantiate", "syntax", "tier 2", "look-fors", "academic term". Say "reason", "proof", "word", "sentence".
 - **Never call the learners "ESOL".** Say "multilingual learners" or nothing.

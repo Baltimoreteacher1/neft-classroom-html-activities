@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Trait and Word Match", minutes: 8, grouping: "Solo",
-      mission: "Tap a word. Tap the picture clue that goes with it.",
+      mission: "Match 9 words, from “culture” to “compare”, to their picture clues.",
       tip: "Have children say each word and act it out with a face or pose before they tap the match.",
       materials: [],
       support: { l1_2: "Match kind, brave, alike, and different first.", l3_4: "Match all nine and say a sentence for two of them.", l5_6: "Match all nine and tell a partner about a person you admire." },
@@ -198,7 +198,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Admirable or Not Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “Which character is admirable” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or thumbs, no clock.",
       materials: [],
       support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },
@@ -215,7 +215,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Both and But Joiners", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “but”, “and” and “also” to join 4 pairs of short sentences, starting with “The French girl has a fairy”.",
       tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

@@ -99,7 +99,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Earth Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “Frost does this to a rock”.",
       tip: "Fewer clues used means more points; there is no clock, so let students think aloud.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -205,7 +205,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “so”, “because” and “as shown by” to join 4 pairs of short sentences, starting with “Rain falls on bare soil”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change one word.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to start the sentence." },
@@ -220,7 +220,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Claim", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “Calvert Cliffs was under the sea. I just know”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look for the word because first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

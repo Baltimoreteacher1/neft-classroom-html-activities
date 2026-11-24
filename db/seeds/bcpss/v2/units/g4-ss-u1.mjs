@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Land and People Match", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning. Wrong matches bounce back, so keep trying until all eight click!",
+      mission: "Match 8 words, from “region” to “contrast”, to their meanings.",
       tip: "Replay with the cue pictures face-down so students build recall instead of recognition.",
       materials: [],
       support: { l1_2: "Match the words you know first, then use the cue pictures.", l3_4: "Match all the pairs, then say each word in a sentence.", l5_6: "Match all the pairs, then write one sentence with two of the words." },

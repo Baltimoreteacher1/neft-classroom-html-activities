@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Fraction Word Match", minutes: 8, grouping: "Solo",
-      mission: "Match each math word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      mission: "Match 8 words, from “fraction” to “greater than”, to their meanings.",
       tip: "Students can replay with the picture cues face-down to build recall.",
       materials: [],
       support: { l1_2: "Match the words you know first, then use the picture cues.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -97,7 +97,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Fraction Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I sit on top of a fraction”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue of your own for each card." },
@@ -202,7 +202,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link Your Claim", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “because”, “so” and “since” to join 4 pairs of short sentences, starting with “1/3 is greater than 1/4”.",
       tip: "Compare combinations; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the fractions.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },

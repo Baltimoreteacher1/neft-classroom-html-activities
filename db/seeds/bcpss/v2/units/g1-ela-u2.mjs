@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Feature Match-Up", minutes: 8, grouping: "Solo",
-      mission: "Tap a word. Tap the picture clue that goes with it.",
+      mission: "Match 8 words, from “feature” to “quill”, to their picture clues.",
       tip: "Have children say each word and point to a picture of the animal part before they tap.",
       materials: [],
       support: { l1_2: "Match the animal parts first: shell, beak, claw, quill.", l3_4: "Match all eight and say a sentence for two of them.", l5_6: "Match all eight and name an animal for each part." },

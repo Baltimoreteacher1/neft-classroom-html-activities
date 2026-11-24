@@ -95,7 +95,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Number Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I am the partner that makes a sum of zero”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -114,7 +114,7 @@ export default {
     },
     {
       kind: "talk_cards", domain: "Speaking", title: "Cause and Effect Talk", minutes: 12, grouping: "Partners",
-      mission: "Take turns drawing a card. Explain the cause and the effect, then your partner pushes your thinking with a move.",
+      mission: "Take turns drawing a card, starting with the question “Why does 5 − (−3) equal 8”, and push each other’s thinking.",
       tip: "Listen for a cause word like because or leads to in every answer.",
       materials: ["Partner role cards"],
       support: { l1_2: "Point to the number line and use the first frame.", l3_4: "Say a reason with 'because' every turn.", l5_6: "Add 'as a result' to describe the effect." },
@@ -171,7 +171,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “negative” and “because”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the cause word, then build around it.", l5_6: "After building, add a new effect of your own." },
@@ -213,7 +213,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Cause", minutes: 10, grouping: "Partners",
-      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      mission: "Find the mistake in each of 4 sentences, starting with “5 − (−3) = 2 because I subtracted 3”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the signs first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

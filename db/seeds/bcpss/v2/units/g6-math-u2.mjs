@@ -35,7 +35,7 @@ export default {
   },
   connectors: ["because", "so", "since", "if … then", "while", "although"],
   vocab: [
-    { term: "ratio", tier: 3, pos: "noun", def: "a comparison of two amounts that tells how many of one there are for every so many of another", example: "The ratio of red beads to blue beads is 3 to 5.", nonexample: "A single number, like 8 beads, is not a ratio because nothing is compared.", es: "razón", es_note: "Cognate-like, but 'razón' also means 'reason'. Here it means a comparison.", family: ["ratios", "ratio table"], cue: "Three red beads and five blue beads on a string." },
+    { term: "ratio", tier: 3, pos: "noun", def: "a comparison of two amounts that tells how many of one there are for every so many of another", example: "The ratio of red beads to blue beads is 3 to 5.", nonexample: "A single number, like 8 beads, is not a ratio because nothing is compared.", es: "razón", es_note: "Ratio = razón (true cognate in math). 'Razón' also means 'reason,' so use 'razón' for a comparison and 'motivo' for a reason.", family: ["ratios", "ratio table"], cue: "Three red beads and five blue beads on a string." },
     { term: "equivalent ratio", tier: 3, pos: "noun", def: "another pair of numbers that compares the same way after you multiply or divide both numbers by the same amount", example: "6 to 10 is an equivalent ratio of 3 to 5 because both numbers were doubled.", nonexample: "4 to 8 is not an equivalent ratio of 3 to 5, because only one number changed by the same amount.", es: "razón equivalente", es_note: "Cognate: 'equivalente' sounds and means almost the same.", family: ["equivalent", "equal"], cue: "Two bead bracelets, one small and one double-size, with the same color pattern." },
     { term: "rate", tier: 3, pos: "noun", def: "a comparison of two amounts that have different units, like miles and hours", example: "A rate of 60 miles in 2 hours compares distance to time.", nonexample: "3 red beads to 5 blue beads compares the same kind of thing, so it is not a rate.", es: "tasa", es_note: "Not a cognate. 'Rate' in English also means 'to score' in other settings.", family: ["rates", "per"], cue: "A bus on North Avenue with a distance sign and a clock." },
     { term: "unit rate", tier: 3, pos: "noun", def: "the amount for exactly 1 of something, like the cost of one bottle", example: "The unit rate is 2 dollars per bottle.", nonexample: "12 dollars for 6 bottles is a rate, but it is not a unit rate yet.", es: "tasa unitaria", es_note: "Pair: 'tasa' (rate) and 'unitaria' (cognate of 'unit').", family: ["unit", "per"], cue: "One bottle of water with a price tag." },
@@ -47,7 +47,7 @@ export default {
   activities: [
     {
       kind: "dictogloss", domain: "Listening", title: "Mural Paint Mix", minutes: 12, grouping: "Partners",
-      mission: "Listen to the story twice, then rebuild it with your partner as close to the real words as you can.",
+      mission: "Listen to the story twice, then rebuild it with your partner using words like “blue” and “yellow”.",
       tip: "Read at natural speed twice; students jot numbers and color words only, then rebuild in pairs.",
       materials: [],
       support: { l1_2: "Use the key words and draw cans of paint while you listen.", l3_4: "Write the key words and numbers you hear, then rebuild 4 sentences.", l5_6: "Rebuild the whole text and add one sentence about why both numbers doubled." },
@@ -95,7 +95,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Ratio Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 8 words, starting with “I compare two amounts”.",
       tip: "Fewer clues used earns more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -114,7 +114,7 @@ export default {
     },
     {
       kind: "talk_cards", domain: "Speaking", title: "Scale It Up", minutes: 12, grouping: "Partners",
-      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      mission: "Take turns drawing a card, starting with the question “A bracelet has 3 red beads for…”, and push each other’s thinking.",
       tip: "Listen for a reason after every 'because' and for numbers said in order.",
       materials: ["Partner role cards"],
       support: { l1_2: "Point to the numbers and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' or 'since' to explain a second way." },
@@ -197,7 +197,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link the Ratios", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “because”, “while” and “so” to join 4 pairs of short sentences, starting with “4 to 6 and 2 to 3 are equivalent ratios”.",
       tip: "Compare combinations: more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the front of the sentence." },
@@ -212,7 +212,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Spot the Ratio Slip", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “The ratio of 3 dogs to 5…”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the order of the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

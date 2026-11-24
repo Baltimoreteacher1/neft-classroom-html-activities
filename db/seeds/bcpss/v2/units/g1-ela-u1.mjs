@@ -61,7 +61,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Word Pals", minutes: 8, grouping: "Solo",
-      mission: "Tap a word. Tap the picture clue that goes with it.",
+      mission: "Match 8 words, from “library” to “lesson”, to their picture clues.",
       tip: "Have children say each word aloud, then act it out before they tap the match.",
       materials: [],
       support: { l1_2: "Match the first four words, then say each one aloud.", l3_4: "Match all eight and say a sentence for two of them.", l5_6: "Match all eight and tell a partner how two words go together." },
@@ -209,7 +209,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join the Fix", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “so”, “because” and “then” to join 4 pairs of short sentences, starting with “Leo had no books”.",
       tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },

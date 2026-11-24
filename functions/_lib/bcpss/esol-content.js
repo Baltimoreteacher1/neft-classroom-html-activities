@@ -98,10 +98,10 @@ export const LADDER_BY_KLU = {
 
 /** Verb phrase for the language objective, per KLU. */
 export const OBJECTIVE_VERB = {
-  Argue: "state a claim and support it with evidence about",
+  Argue: "state a claim and support it with evidence from",
   Explain: "explain how or why something happens in",
-  Inform: "describe and give examples of key ideas in",
-  Narrate: "sequence and retell events and problems in",
+  Inform: "describe and give examples of key ideas from",
+  Narrate: "sequence and retell events and problems from",
 };
 
 export const KLU_NOUN = {
@@ -462,92 +462,7 @@ export const DOUBLE_DUTY_DEFAULTS = {
   "Social Studies": ["state", "key", "power"],
 };
 
-/** Spanish-speaker transfer error patterns for “Language Doctor”. t = unit title, w = a unit term. */
-export const DOCTOR_PATTERNS = [
-  {
-    id: "dropped-subject",
-    rule: "Every English sentence needs a subject. Use “It” (or “There”) when there is no other subject.",
-    why: "Spanish can drop the subject (“Es importante…”). English cannot.",
-    make: ({ t }) => ({
-      wrong: `Is important to understand ${t}.`,
-      right: `It is important to understand ${t}.`,
-      decoys: [`Important is to understand ${t}.`, `He is important to understand ${t}.`],
-    }),
-  },
-  {
-    id: "do-support",
-    rule: "English questions with a verb need do / does / did before the subject.",
-    why: "Spanish questions only change word order or tone. English adds a helper verb.",
-    make: ({ t }) => ({
-      wrong: `Why you think ${t} matters?`,
-      right: `Why do you think ${t} matters?`,
-      decoys: [`Why you do think ${t} matters?`, `Why think you ${t} matters?`],
-    }),
-  },
-  {
-    id: "talk-about",
-    rule: "Use “talk about” (not “talk” alone) before a topic.",
-    why: "Spanish “hablar” often needs no preposition before the topic. English needs “about.”",
-    make: ({ t }) => ({
-      wrong: `We will talk ${t} in class today.`,
-      right: `We will talk about ${t} in class today.`,
-      decoys: [`We will talk for ${t} in class today.`, `We will talk to ${t} in class today.`],
-    }),
-  },
-  {
-    id: "because-fragment",
-    rule: "“Because” starts a reason that must stay attached to the main idea. Do not put a period before it.",
-    why: "Spanish “porque” clauses are often written separately in speech; in English that makes a fragment.",
-    make: ({ w }) => ({
-      wrong: `I like this unit. Because we learn the word “${w}”.`,
-      right: `I like this unit because we learn the word “${w}”.`,
-      decoys: [
-        `I like this unit because, we learn the word “${w}”.`,
-        `I like this unit but because we learn the word “${w}”.`,
-      ],
-    }),
-  },
-  {
-    id: "third-person-s",
-    rule: "With he, she, it or one person, negative verbs use “doesn’t,” not “don’t.”",
-    why: "Spanish verbs change endings for each person; English changes only a few, so “doesn’t” is easy to miss.",
-    make: ({ w }) => ({
-      wrong: `My partner don’t understand “${w}” yet.`,
-      right: `My partner doesn’t understand “${w}” yet.`,
-      decoys: [`My partner not understand “${w}” yet.`, `My partner aren’t understand “${w}” yet.`],
-    }),
-  },
-  {
-    id: "adjective-order",
-    rule: "In English, describing words come before the noun.",
-    why: "In Spanish, most adjectives follow the noun (“problema difícil”). English puts them first.",
-    make: ({ w }) => ({
-      wrong: `The word “${w}” is a problem difficult for me.`,
-      right: `The word “${w}” is a difficult problem for me.`,
-      decoys: [
-        `The word “${w}” is a problem for difficult me.`,
-        `The word “${w}” is difficult a problem for me.`,
-      ],
-    }),
-  },
-];
-
-/** Math-only pattern: number punctuation differs between Spanish-speaking countries and U.S. English. */
-export const DOCTOR_MATH_PATTERN = {
-  id: "number-punctuation",
-  rule: "U.S. English writes decimals with a point (3.5) and groups thousands with a comma (1,000).",
-  why: "Many Spanish-speaking countries write 3,5 for decimals and 1.000 for thousands, the opposite of U.S. English.",
-  make: () => ({
-    wrong: "The ribbon is 3,5 meters long and costs 1.000 pesos.",
-    right: "The ribbon is 3.5 meters long and costs 1,000 pesos.",
-    decoys: [
-      "The ribbon is 3,5 meters long and costs 1,000 pesos.",
-      "The ribbon is 3.5 meters long and costs 1.000 pesos.",
-    ],
-  }),
-};
-
-/** Subject-specific language routines. s = steps; tokens {t1} {t2} {frame} {title} are filled per unit. */
+/** Subject-specific language routines. s = steps; tokens {t1} {t2} {frame} are filled per unit. */
 export const SUBJECT_ROUTINES = {
   Math: [
     {
@@ -568,7 +483,7 @@ export const SUBJECT_ROUTINES = {
       source: "Math Language Routine 1 (Stanford SCALE), adapted",
       klus: ["Explain", "Argue"],
       steps: [
-        "Write first draft explaining a step or answer for {title}. Use “{t1}” at least once.",
+        "Write a first draft that explains one step or answer from today’s lesson. Use “{t1}” at least once.",
         "Round 1 — Meet a new partner; read your draft aloud while they ask “What do you mean by…?” once.",
         "Round 2 — Switch partners; repeat. The listener presses for one more detail or one precise word.",
         "Revise — Rewrite using feedback; circle every new word from the unit. Compare drafts to see growth.",
@@ -580,7 +495,7 @@ export const SUBJECT_ROUTINES = {
       source: "Math Language Routine 7 (Stanford SCALE), adapted",
       klus: ["Explain", "Argue", "Inform"],
       steps: [
-        "Show two different solution paths for the same problem in {title} (area model vs. equation, table vs. graph).",
+        "Show two different solution paths for the same problem from today’s lesson (area model vs. equation, table vs. graph).",
         "Silent notice — Students write one thing that is the same and one that is different.",
         "Partner talk — “{frame}” Point at the model while you speak.",
         "Whole class — Chart the connection words that show how both representations carry the same idea.",
@@ -592,7 +507,7 @@ export const SUBJECT_ROUTINES = {
       source: "Math Language Routine 5 (Stanford SCALE), adapted",
       klus: ["Inform", "Narrate", "Explain"],
       steps: [
-        "Show a problem situation from {title} with no question.",
+        "Show a problem situation from today’s lesson with no question.",
         "Students write 2–3 math questions they could ask, in pairs, using “{t1}” or “{t2}.”",
         "Share and sort — Which questions can we answer with the information shown? Which need more?",
         "Reveal the real question; compare it to student questions and note the question words used.",
@@ -606,7 +521,7 @@ export const SUBJECT_ROUTINES = {
       source: "Phenomena routine, adapted for WIDA tiers",
       klus: ["Explain", "Inform", "Argue"],
       steps: [
-        "Show a phenomenon, photo or short demo connected to {title}. Silence for 30 seconds: students only look.",
+        "Show a phenomenon, photo or short demo that connects to today’s lesson. Silence for 30 seconds: students only look.",
         "Observe — “I observe ___.” Students say only what they can see or measure (no explaining yet).",
         "Wonder — “I wonder why/how ___?” Collect questions on the board using “{t1}.”",
         "Infer — “Because ___, I infer ___.” Use the unit frame: “{frame}”",
@@ -618,7 +533,7 @@ export const SUBJECT_ROUTINES = {
       source: "CER framework (McNeill & Krajcik), oral first",
       klus: ["Argue", "Explain"],
       steps: [
-        "Post a testable claim about {title} on chart paper in each corner of the room.",
+        "Post a testable claim about the phenomenon you are studying on chart paper in each corner of the room.",
         "Groups rotate; at each stop one student states the claim, another gives evidence, a third explains reasoning with “{t1}.”",
         "Everyone adds one sticky-note sentence stem completion at each stop (“This evidence supports the claim because…”).",
         "Final round — each student writes their own CER using “{frame}”",
@@ -630,7 +545,7 @@ export const SUBJECT_ROUTINES = {
       source: "Modeling routine for emergent bilinguals, adapted",
       klus: ["Explain", "Narrate", "Inform"],
       steps: [
-        "Students draw a quick model of {title} and label with “{t1}” and “{t2}.”",
+        "Students draw a quick model of the idea they are studying and label with “{t1}” and “{t2}.”",
         "Say It — partner narrates the model using arrows and connectors (“first… then… so…”).",
         "Fix It — the listener adds one missing label or arrow, explaining why it is needed.",
         "Revise the model and record one sentence with the frame “{frame}”",
@@ -644,7 +559,7 @@ export const SUBJECT_ROUTINES = {
       source: "Role-based oral rehearsal (SIOP-aligned), adapted",
       klus: ["Argue", "Narrate", "Inform"],
       steps: [
-        "Assign each pair a person or group from {title} (a ruler, a worker, a family, a neighbor).",
+        "Assign each pair a person or group from the unit (a ruler, a worker, a family, a neighbor).",
         "Prepare 3 sentences from that perspective using “{t1}” and the frame “{frame}”",
         "Hot seat — the speaker answers three questions from classmates in role; listeners use “Why do you think…?”",
         "Debrief — Which words sounded like an historian? Which sounded like a character?",
@@ -656,7 +571,7 @@ export const SUBJECT_ROUTINES = {
       source: "Sequencing routine with transition words",
       klus: ["Narrate", "Inform", "Explain"],
       steps: [
-        "Give each group 5 event cards about {title}; students order them.",
+        "Give each group 5 event cards from the unit; students order them.",
         "Relay — one member walks to the timeline, places a card, and says the event with a time-order connector (first, next, then, after that, finally).",
         "Next member must add a cause or effect with “because” or “as a result” using “{t1}.”",
         "Silent check — groups read the timeline aloud once to confirm the connectors match the order.",
@@ -668,7 +583,7 @@ export const SUBJECT_ROUTINES = {
       source: "Document analysis routine, scaffolded for ELs",
       klus: ["Argue", "Explain", "Inform"],
       steps: [
-        "Show a short primary source, image or map linked to {title}.",
+        "Show a short primary source, image or map linked to the unit.",
         "Sourcing — Who made this? When? For whom? Students point and say with sentence starters.",
         "Close read — Underline words about “{t1}.” Discuss which words are strong or surprising.",
         "Claim — Use “{frame}” and cite one detail from the source.",
@@ -682,7 +597,7 @@ export const SUBJECT_ROUTINES = {
       source: "Language Dive protocol (Great Minds / Wit & Wisdom), adapted",
       klus: ["Narrate", "Explain", "Inform", "Argue"],
       steps: [
-        "Choose one rich sentence from the anchor text for {title}. Chunk it into 3–4 meaningful parts.",
+        "Choose one rich sentence from the anchor text. Chunk it into 3–4 meaningful parts.",
         "Unpack — ask “Who/what is this chunk about? What does ‘{t1}’ do here?” Translate chunks into plain English.",
         "Imitate — students write a new sentence copying the grammar pattern but changing the content.",
         "Share — read aloud. Compare to the unit frame: “{frame}”",
@@ -725,25 +640,28 @@ export const PASSPORT_ICAN = {
   },
   "3_4": {
     Listening: "I can listen to a partner and tell the main idea using “{t1}” and “{t2}.”",
-    Speaking: "I can talk about {title} for 30 seconds with a frame and a connector.",
+    Speaking: "I can talk for 30 seconds with a frame, the word “{t1},” and a connector.",
     Reading: "I can find a sentence that has “{t1}” and explain what it means.",
-    Writing: "I can write 2–3 connected sentences about {title} with a connector.",
+    Writing: "I can write 2–3 connected sentences with “{t1}” and a connector.",
   },
   "5_6": {
     Listening: "I can listen to a discussion and identify the {noun} and the evidence behind it.",
-    Speaking: "I can explain {title} in my own words, using precise terms and varied connectors.",
+    Speaking: "I can explain my {noun} in my own words, using precise terms and varied connectors.",
     Reading: "I can analyze how a sentence is built and why the author chose words like “{t1}.”",
     Writing:
-      "I can write a cohesive paragraph about {title} that uses at least three unit terms and a counterpoint.",
+      "I can write a cohesive paragraph that uses at least three unit terms and a counterpoint.",
   },
 };
 
 /** Entry points that let newcomers (WIDA 1–2, SLIFE) show understanding before they have full sentences. */
 export const NEWCOMER_MENU = [
   ["Point", "Point to the picture, object or text that matches “{t1}.”"],
-  ["Sort", "Put cards for {title} into two groups, and name one group with a word."],
+  [
+    "Sort",
+    "Sort picture cards for “{t1}” and “{t2}” into two groups, and name one group with a word.",
+  ],
   ["Draw & label", "Draw “{t1}” and label it in English and your home language."],
   ["Act it out", "Show “{t1}” with your body or an object while a partner guesses."],
-  ["Order", "Put 3 pictures or steps from {title} in order and use first / next / last."],
+  ["Order", "Put 3 pictures or steps that show “{t1}” in order and use first / next / last."],
   ["Match", "Match “{t1}” and “{t2}” to a definition card or cognate card."],
 ];

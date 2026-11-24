@@ -62,7 +62,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Grid and Shape Match", minutes: 8, grouping: "Solo",
-      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all ten click!",
+      mission: "Match 10 words, from “ordered pair” to “hierarchy”, to their meanings.",
       tip: "Students can replay with the cue cards face-down to build recall.",
       materials: [],
       support: { l1_2: "Match the words you know from the picture cues first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
@@ -99,7 +99,7 @@ export default {
     },
     {
       kind: "clue_game", domain: "Game", title: "Mystery Grid Word", minutes: 10, grouping: "Small Group",
-      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      mission: "Flip one clue at a time to guess all 9 words, starting with “I have two numbers inside parentheses”.",
       tip: "Fewer clues used means more points; there is no clock.",
       materials: [],
       support: { l1_2: "Use the picture cue to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
@@ -176,7 +176,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
-      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      mission: "Drag the pieces into order to build 4 sentences that use “parallelogram” and “rectangle”.",
       tip: "Ask partners which piece comes first and how they know.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the word that starts the feature, then build around it.", l5_6: "After building, add a non-example of your own." },
@@ -203,7 +203,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
-      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      mission: "Use “and”, “that” and “so” to join 4 pairs of short sentences, starting with “A square has four equal sides”.",
       tip: "Compare combos; more than one correct answer is possible.",
       materials: [],
       support: { l1_2: "Copy the model, then change the shapes.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
@@ -218,7 +218,7 @@ export default {
     },
     {
       kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
-      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      mission: "Find the mistake in each of 4 sentences, starting with “A square is not a rectangle because it has equal sides”, and pick the best fix.",
       tip: "Press for the reason a fix works, not just which one is right.",
       materials: [],
       support: { l1_2: "Look at the numbers in the ordered pair first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },

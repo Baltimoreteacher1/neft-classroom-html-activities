@@ -63,7 +63,7 @@ export default {
     },
     {
       kind: "match", domain: "Vocabulary", title: "Light Word Match-Up", minutes: 8, grouping: "Solo",
-      mission: "Match each word to its meaning.",
+      mission: "Match 9 words, from “vibrate” to “cause”, to their meanings.",
       tip: "Have children act out each word, such as shaking a hand for vibrate, before they tap.",
       materials: [],
       support: { l1_2: "Match the first four words and look at the emoji.", l3_4: "Match all nine words and say a sentence for two.", l5_6: "Match all nine, then use two words in one sentence." },
@@ -173,7 +173,7 @@ export default {
     },
     {
       kind: "unscramble", domain: "Game", title: "Build a Cause Sentence", minutes: 8, grouping: "Partners",
-      mission: "Put the pieces in order to build a sentence.",
+      mission: "Drag the pieces into order to build 5 sentences that use “vibrates” and “through”.",
       tip: "Ask which piece starts the sentence and which word links the cause to the effect.",
       materials: [],
       support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, say why the effect happens." },
@@ -189,7 +189,7 @@ export default {
     },
     {
       kind: "cloze", domain: "Reading", title: "Backyard Shadow Gaps", minutes: 8, grouping: "Solo",
-      mission: "Pick the right word for each gap.",
+      mission: "Finish the story that begins “Leo plays in the sun…” by choosing the right word for each of the 4 gaps.",
       tip: "Two bank words are extras; children must decide which ones do not fit.",
       materials: [],
       support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more cause and effect sentence." },
@@ -201,7 +201,7 @@ export default {
     },
     {
       kind: "quiz", domain: "Vocabulary", title: "Cause and Effect Quiz", minutes: 8, grouping: "Whole Class",
-      mission: "Think. Pick the best answer. Say why!",
+      mission: "Answer 6 questions, starting with “A guitar string makes sound. What does it do” — pick the best answer and say why.",
       tip: "Read each question aloud; children answer with a card or a thumb, with no clock.",
       materials: [],
       support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each other answer does not fit." },
@@ -218,7 +218,7 @@ export default {
     },
     {
       kind: "sentence_combine", domain: "Writing", title: "Join the Cause", minutes: 10, grouping: "Partners",
-      mission: "Join two short sentences with the joining word.",
+      mission: "Use “so”, “because” and “and” to join 4 pairs of short sentences, starting with “The drum vibrates”.",
       tip: "Say both sentences, then the joined one; more than one answer can work.",
       materials: [],
       support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
