@@ -12,6 +12,23 @@
  * rules of which 12 are dynamic, so the cutoff is not explained by the docs —
  * but it is exact and reproducible, and it had silently killed 231 short links.
  *
+ * Cause (wrangler's parseRedirects, which Pages' build also runs): static rules
+ * only count as static until the FIRST splat/placeholder rule. From that line on,
+ * every rule counts against the 100-dynamic cap, and the parser stops at the
+ * 101st with "Maximum number of dynamic rules supported is 100. Skipping
+ * remaining N lines". Pages' build log prints that line. The first splat rule
+ * sits at the top of this file, so the cap lands near rule 100.
+ * Moving all exact-path rules above the first splat rule would apply every rule
+ * natively, but native redirects and 200 rewrites override files that exist at
+ * the same path, whereas the 404 fallback below never can. That would change
+ * routing on the live site, so the fallback stays until it is verified on a deploy.
+ *
+ * The 200 rewrites below the cutoff (/math/fluency-lab/*, /access-practice-lab/*)
+ * are skipped by Pages too, and are not covered by the fallback. Checked live on
+ * 2026-11-24: an unknown /math/fluency-lab/ deep path answers 404 (the app keeps its
+ * state in the query string and hash, so nothing links to one); an unknown
+ * /access-practice-lab/ deep path answers 200 by some other route.
+ *
  * functions/_middleware.js consumes the map as a 404 FALLBACK, so a rule can
  * only ever change a response that is already a 404. Nothing that resolves
  * today can be shadowed by it, and the first 100 rules keep working exactly as
