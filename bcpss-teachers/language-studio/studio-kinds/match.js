@@ -167,8 +167,21 @@ export default function mount(root, ctx) {
     colLabel(rightLabel),
     ...order.map((i) => defBtn(i)),
   );
+  const hints = kit.hints(() => {
+    const i = sel?.i ?? [...nodes.l.keys()].find((k) => !matched.has(k)) ?? 0;
+    const term = pairs[i].l;
+    const v = kit.vocabFor(term);
+    return [
+      `Say “${term}” out loud. What does it make you think of?`,
+      v?.cue ? `Picture it: ${v.cue}` : "Look for the meaning that uses words from this unit.",
+      v?.nonexample
+        ? `Careful: ${v.nonexample}`
+        : "Cross out the two meanings that do not fit the word at all.",
+    ];
+  });
   root.append(
     h("div", { class: "sg-topbar" }, meter.el),
+    hints,
     h("div", { class: "sg-match" }, leftCol, rightCol),
   );
   paint();

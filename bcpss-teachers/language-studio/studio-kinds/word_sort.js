@@ -136,8 +136,21 @@ export default function mount(root, ctx) {
     });
   }
 
+  const hints = kit.hints(() => {
+    const i = sel ?? order.find((k) => !placed.has(k)) ?? 0;
+    const text = raw[i].text;
+    const v = kit.vocabFor(text);
+    return [
+      `Say “${text}” out loud. What does it mean here?`,
+      v?.def ? `It means: ${v.def}.` : "Read the three group names again.",
+      v?.nonexample
+        ? `Careful: ${v.nonexample}`
+        : `Say a sentence with “${text}”. Which group would that sentence live in?`,
+    ];
+  });
   root.append(
     h("div", { class: "sg-topbar" }, meter.el),
+    hints,
     pool,
     h(
       "div",

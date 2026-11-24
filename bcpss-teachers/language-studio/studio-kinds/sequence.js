@@ -232,7 +232,20 @@ export default function mount(root, ctx) {
     });
   }
 
-  root.append(h("div", { class: "sg-topbar" }, heading), bankEl, list, actions);
+  const hints = kit.hints(() =>
+    phase === 1
+      ? [
+          "What has to happen first? Find the step that starts everything.",
+          "Look for time words: first, next, then, last.",
+          "Read your order out loud. Does every step make sense after the one before it?",
+        ]
+      : [
+          "Signal words tell the reader where the step goes in time.",
+          "Tap a signal word, then tap the gap in front of the step it belongs to.",
+          "Read the whole sequence out loud with the signal words in place.",
+        ],
+  );
+  root.append(h("div", { class: "sg-topbar" }, heading), hints, bankEl, list, actions);
   render();
   kit.dock(fb.el);
   return () => kit.destroy();

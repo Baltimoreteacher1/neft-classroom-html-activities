@@ -1,6 +1,7 @@
 // Language Studio Player — shell: routing, state, level switch, activity runner, celebration, ctx construction.
 import { renderHome } from "./studio-home.js";
 import { lessonKeep, lessonRoute, renderLessonPage } from "./studio-lessons.js";
+import { objectiveFor, recapFor } from "./studio-objective.js";
 import {
   LEVELS,
   LEVEL_INFO,
@@ -189,6 +190,7 @@ function celebrate(index, result, winHost) {
     { tabindex: "-1" },
     stars === 3 ? "Awesome!" : stars === 2 ? "Nice work!" : "Done!",
   );
+  const recap = recapFor(acts[index - 1].kind, app.level);
   const actions = h(
     "div",
     { class: "st-win__actions" },
@@ -227,6 +229,12 @@ function celebrate(index, result, winHost) {
       ),
       heading,
       h("p", { class: "st-win__detail" }, result?.detail || STAR_WORDS[stars]),
+      h(
+        "div",
+        { class: "st-win__recap" },
+        h("p", { class: "st-win__recap-label" }, "What you can say now"),
+        h("p", null, recap),
+      ),
       actions,
     ),
   );
@@ -234,6 +242,31 @@ function celebrate(index, result, winHost) {
   confetti();
   winHost.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
   heading.focus({ preventScroll: true });
+}
+
+/** Starter-band word help: every unit word with its picture cue, Spanish word and kid definition. */
+function wordHelp() {
+  const vocab = app.studio?.vocab || [];
+  if (app.level !== "l1_2" || !vocab.length) return null;
+  return h(
+    "details",
+    { class: "st-wordhelp" },
+    h("summary", null, "Word help: pictures and Spanish"),
+    h(
+      "ul",
+      { class: "st-wordhelp__list" },
+      ...vocab.map((v) =>
+        h(
+          "li",
+          { class: "st-wordhelp__item" },
+          v.icon ? h("span", { class: "st-wordhelp__icon", "aria-hidden": "true" }, v.icon) : null,
+          h("b", null, v.term),
+          v.es ? h("span", { class: "st-wordhelp__es" }, ` ${v.es}`) : null,
+          h("span", { class: "st-wordhelp__def" }, v.def),
+        ),
+      ),
+    ),
+  );
 }
 
 function placeholder(root, activity, err) {
@@ -270,6 +303,7 @@ async function showActivity(index) {
   const domain = activity.domain;
   const earned = app.progress.stars[index] || 0;
   const support = activity.support?.[app.level];
+  const goal = objectiveFor(activity.kind, app.level);
   const winHost = h("div", { "aria-live": "polite" });
   const stage = h("section", { class: "st-stage", "aria-label": activity.title });
   const head = h(
@@ -292,7 +326,29 @@ async function showActivity(index) {
         `Activity ${position} of ${total}${earned ? ` · ${earned} ★` : ""}`,
       ),
     ),
+    h(
+      "div",
+      {
+        class: "st-ribbon",
+        role: "progressbar",
+        "aria-label": `Activity ${position} of ${total} in this studio`,
+        "aria-valuemin": "1",
+        "aria-valuemax": String(total),
+        "aria-valuenow": String(position),
+      },
+      h("span", {
+        class: "st-ribbon__bar",
+        style: `--st-p:${String(total ? position / total : 0)}`,
+      }),
+    ),
     h("h1", { id: "stRunTitle" }, activity.title),
+    h(
+      "p",
+      { class: "st-run__goal" },
+      h("span", { class: "st-run__goal-tag" }, "Language goal"),
+      h("b", { class: "st-run__goal-fn" }, goal.fn),
+      h("span", { class: "st-run__goal-can" }, goal.can),
+    ),
     h("p", { class: "st-run__mission" }, activity.mission),
     support
       ? h(
@@ -302,6 +358,7 @@ async function showActivity(index) {
           h("span", null, support),
         )
       : null,
+    wordHelp(),
     activity.tip && !app.family
       ? h(
           "details",

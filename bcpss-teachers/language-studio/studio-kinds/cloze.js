@@ -177,8 +177,24 @@ export default function mount(root, ctx) {
     });
   }
 
+  const hints = kit.hints(() => {
+    const i = Math.max(0, answers.findIndex((_, k) => !locked[k]));
+    const v = kit.vocabFor(answers[i]);
+    const kindOfWord = {
+      noun: "a word that names a thing or an idea",
+      verb: "a word that names an action",
+      adjective: "a word that describes something",
+      adverb: "a word that tells how, when or where",
+    }[v?.pos] || "a word from this unit";
+    return [
+      `Read the whole sentence around gap ${i + 1}, not just the gap.`,
+      `Gap ${i + 1} needs ${kindOfWord}.`,
+      "Say the sentence out loud with each bank word. Only one keeps the meaning.",
+    ];
+  });
   root.append(
     h("div", { class: "sg-topbar" }, meter.el),
+    hints,
     h("div", { class: "st-card sg-storycard" }, story),
     bankEl,
     actions,

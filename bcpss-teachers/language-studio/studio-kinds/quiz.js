@@ -174,7 +174,13 @@ export function mountChoice(root, ctx, opts) {
     });
   }
 
-  root.append(h("div", { class: "sg-topbar" }, dots.el), banner, stage);
+  const frame = ctx.studio?.frames?.[ctx.level]?.[0] || "The answer is ___ because ___.";
+  const hints = kit.hints(() => [
+    "Read the question again. What is it asking you to do?",
+    `Try a frame: “${frame}”`,
+    "Say each choice inside a sentence. Only one choice will be true for this text.",
+  ]);
+  root.append(h("div", { class: "sg-topbar" }, dots.el), banner, hints, stage);
   start();
   return () => kit.destroy();
 }
