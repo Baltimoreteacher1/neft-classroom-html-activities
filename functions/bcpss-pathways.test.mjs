@@ -187,6 +187,20 @@ await t("the family-guide API validates ids and returns 404 for unknown units", 
   assert.equal((await get(familyGuideApi, "/x", { unitId: "" })).status, 400);
 });
 
+await t("the family route serves the shell for the folder and unit ids, and lets its own CSS and JS fall through", async () => {
+  const { onRequestGet } = await import("./family/bcpss/[[unitId]].js");
+  const env = { ASSETS: { fetch: async () => new Response("shell", { status: 200 }) } };
+  const next = async () => new Response("asset", { status: 200 });
+  for (const path of ["/family/bcpss", "/family/bcpss/", "/family/bcpss/g6-math-u1", "/family/bcpss/g6-math-u1/"]) {
+    const res = await onRequestGet({ request: new Request(`https://x${path}`), env, next });
+    assert.equal(await res.text(), "shell", `${path} should serve the shell`);
+  }
+  for (const path of ["/family/bcpss/family-bcpss.css", "/family/bcpss/family-bcpss.js", "/family/bcpss/index.html", "/family/bcpss/a/b.js"]) {
+    const res = await onRequestGet({ request: new Request(`https://x${path}`), env, next });
+    assert.equal(await res.text(), "asset", `${path} should fall through to the static file`);
+  }
+});
+
 await t("the hub no longer preselects Grade 6 Math", () => {
   const hub = readFileSync(new URL("../bcpss-teachers/bcpss-teachers.js", import.meta.url), "utf8");
   const html = readFileSync(new URL("../bcpss-teachers/index.html", import.meta.url), "utf8");
