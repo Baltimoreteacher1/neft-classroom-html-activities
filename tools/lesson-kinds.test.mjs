@@ -35,11 +35,16 @@ const NEW_KINDS = [
   "point_and_say",
   "tpr_cards",
   "home_language_bridge",
+  "cognate_detective",
+  "morph_lab",
+  "paragraph_builder",
+  "mission_escape",
 ];
 const set = await loadLessons("g6-math-u2");
-assert.ok(set?.lessons?.length, "g6-math-u2 lessons load");
+const draftSet = await loadLessons("g6-math-u1");
+assert.ok(set?.lessons?.length && draftSet?.lessons?.length, "lessons load");
 const real = Object.fromEntries(NEW_KINDS.map((k) => [k, []]));
-for (const lesson of set.lessons) {
+for (const lesson of [...set.lessons, ...draftSet.lessons]) {
   const acts = [
     ...lesson.arc.map((s) => s.activity),
     ...(lesson.newcomer_path || []),
@@ -453,4 +458,117 @@ test("home_language_bridge: Spanish side is marked lang=es and spoken with a Spa
   assert.ok($('[lang="es"]'));
   press(key("es"));
   assert.equal(spoken[0].lang, "es-US");
+});
+
+test("cognate_detective: sorts English/Spanish pairs, plays both voices, shows why after right pick, finishes", async () => {
+  const entry = real.cognate_detective[0];
+  const { items } = entry.activity.payload;
+  const spoken = installSpeech();
+  await mountKind("cognate_detective", entry);
+  assert.ok($('[lang="es"]'), "Spanish word carries lang=es");
+  press(key("en"));
+  press(key("es"));
+  assert.equal(spoken[0].lang, "en-US");
+  assert.equal(spoken[1].lang, "es-US");
+  const idxOf = (status) => ["true", "false_friend", "none"].indexOf(status);
+  for (let i = 0; i < items.length; i++) {
+    const right = idxOf(items[i].status);
+    const wrong = (right + 1) % 3;
+    press(key(`o${wrong}`));
+    assert.equal($(".sl-why"), null, "wrong pick does not reveal why");
+    press(key(`o${right}`));
+    assert.match($(".sl-why").textContent, /Why:/);
+    press(key("next"));
+  }
+  assert.equal(done.length, 1);
+});
+
+test("morph_lab: builds words from parts by keyboard, rejects wrong order, finishes", async () => {
+  const entry = real.morph_lab[0];
+  const { items } = entry.activity.payload;
+  installSpeech();
+  await mountKind("morph_lab", entry);
+  for (let w = 0; w < items.length; w++) {
+    const { parts } = items[w];
+    const n = parts.length;
+    if (w === 0) {
+      // Place in reverse order first
+      for (let i = 0; i < n; i++) {
+        press(key(`p${i}`));
+        press(key(`slot${n - 1 - i}`));
+      }
+      press(key("check"));
+      assert.match($(".sg-feedback").textContent, /Not yet/);
+      for (let pos = 0; pos < n; pos++) press(key(`slot${pos}`));
+      press(key(`slot${n - 1}`));
+    }
+    for (let i = 0; i < n; i++) {
+      press(key(`p${i}`));
+      press(key(`slot${i}`));
+    }
+    press(key("check"));
+    assert.match($(".sg-feedback").textContent, /You built/);
+    press(key("next"));
+  }
+  assert.equal(done.length, 1);
+});
+
+test("paragraph_builder: inserts connectors and frame starters, joins slots, toggles model, finishes", async () => {
+  const entry = real.paragraph_builder[0];
+  const { slots, connectors } = entry.activity.payload;
+  installSpeech();
+  await mountKind("paragraph_builder", entry);
+  assert.equal(key("finish").disabled, true, "finish waits for at least one slot");
+  for (let i = 0; i < slots.length; i++) {
+    const useBtn = key(`use${i}`);
+    if (useBtn) press(useBtn);
+    const area = key(`slot${i}`);
+    area.focus();
+    area.value += ` idea ${i + 1}`;
+    area.dispatchEvent(new window.Event("input", { bubbles: true }));
+  }
+  press(key("conn0"));
+  assert.ok(
+    $("#slParaPreview").textContent.includes(connectors[0]),
+    "connector inserted into active slot",
+  );
+  press(key("model"));
+  assert.equal($("#slParaModel").closest("[hidden]"), null, "model shown");
+  $$("input[type=checkbox]")[0].click();
+  assert.equal(key("finish").disabled, false);
+  press(key("finish"));
+  assert.equal(done.length, 1);
+  assert.equal(network, 0);
+});
+
+test("mission_escape: solves 5-7 unit locks, unlocks printable certificate, keeps student name on device, finishes", async () => {
+  const entry = real.mission_escape[0];
+  const { locks, certificate } = entry.activity.payload;
+  assert.ok(locks.length >= 5 && locks.length <= 7, "5-7 locks");
+  installSpeech();
+  let printed = 0;
+  window.print = () => {
+    printed++;
+    window.dispatchEvent(new window.Event("afterprint"));
+  };
+  await mountKind("mission_escape", entry);
+  for (let i = 0; i < locks.length; i++) {
+    const lk = locks[i];
+    const wrong = (lk.answer + 1) % 3;
+    press(key(`o${wrong}`));
+    assert.equal($(".sl-why"), null);
+    press(key(`o${lk.answer}`));
+    assert.match($(".sl-why").textContent, /Code unlocked:/);
+    press(key("next"));
+  }
+  assert.match(root.textContent, new RegExp(certificate.title));
+  const input = key("cert-name");
+  input.value = "Maya";
+  input.dispatchEvent(new window.Event("input", { bubbles: true }));
+  assert.equal($("#slCertStudent").textContent, "Maya");
+  press(key("print"));
+  assert.equal(printed, 1, "printable certificate opens print dialog");
+  press(key("finish"));
+  assert.equal(done.length, 1);
+  assert.equal(network, 0);
 });

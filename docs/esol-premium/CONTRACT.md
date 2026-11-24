@@ -78,6 +78,10 @@ from its payload alone in four ways: digital play, print twin, projector mode (l
 
 // paragraph_builder — KLU organizer that becomes a paragraph
 { "klu": "Explain", "slots": [ { "label": "Claim", "frame": "…" } ], "connectors": [ "because", "so" ], "checklist": [ "…" ], "model": "…" }
+
+// mission_escape — unit finale: 5-7 locks drawn from lesson content + a printable certificate
+{ "locks": [ { "title": "Lock 1: Ratio Order", "q": "…", "options": [ "…", "…", "…" ], "answer": 0, "why": "…", "code": "A1" } ],
+  "certificate": { "title": "Unit Language Explorer Certificate", "badge": "Language Explorer", "can_do": [ "I can …" ] } } // 5-7 locks
 ```
 
 ## Print twin

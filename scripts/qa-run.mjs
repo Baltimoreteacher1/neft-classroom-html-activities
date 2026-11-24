@@ -892,7 +892,7 @@ const COVERAGE = [
   // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
   // modular K–8 seed data, and Cloudflare Pages Functions.
   [
-    /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|scripts\/(generate-bcpss-packets|audit-bcpss-content)\.mjs|tools\/(validate-bcpss-studio|validate-bcpss-writing|build-bcpss-studio-index|bcpss-studio-context|validate-bcpss-lessons|validate-bcpss-terms|build-bcpss-terms|lesson-kinds\.test|lesson-ui\.test|bcpss-writing-context)\.mjs|schemas\/|config\/ip-denylist\.txt|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
+    /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|docs\/(esol-premium|reports\/esol-premium-phases-0-3\.md)|scripts\/(generate-bcpss-packets|audit-bcpss-content)\.mjs|tools\/(validate-bcpss-studio|validate-bcpss-writing|build-bcpss-studio-index|bcpss-studio-context|validate-bcpss-lessons|validate-bcpss-terms|build-bcpss-terms|lesson-kinds\.test|lesson-ui\.test|bcpss-writing-context|bcpss-grammar-gate|bcpss-kinds-visual|package-bcpss-marketplace)\.mjs|schemas\/|config\/ip-denylist\.txt|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
     [
       "validate:bcpss",
       "validate:bcpss-studio",

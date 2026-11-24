@@ -360,6 +360,63 @@ const PRINT = {
       ],
     };
   },
+
+  mission_escape(a) {
+    const p = a.payload;
+    const cert = p.certificate;
+    const lockBlocks = mcBlocks(
+      p.locks.map((lk) => ({
+        q: `${lk.title}: ${lk.q}`,
+        options: lk.options.map((o) => (typeof o === "string" ? o : o.label)),
+      })),
+      "Game",
+    );
+    const certBlock = [
+      B.hero({
+        compact: true,
+        tone: "Game",
+        kicker: `Printable certificate · ${cert.badge}`,
+        title: cert.title,
+        subtitle: "Awarded for unlocking every unit language lock.",
+      }),
+      B.callout(
+        "Game",
+        [
+          B.para([b("Presented to:  "), t("________________________________________")], {
+            size: "lg",
+          }),
+          B.para([b("Badge earned:  "), t(cert.badge)]),
+          B.heading("What I can do now", 3),
+          B.checklist(cert.can_do, { style: "box", tone: "Game" }),
+          B.para([
+            b("Date:  "),
+            t("____________________      "),
+            b("Teacher:  "),
+            t("__________________________"),
+          ]),
+        ],
+        { label: "Certificate of Achievement", icon: "star" },
+      ),
+    ];
+    return {
+      blocks: [
+        B.callout(
+          "Game",
+          [
+            B.para([
+              b("Unit Finale: "),
+              t(
+                `Solve all ${p.locks.length} locks from the unit lessons to earn your ${cert.badge} certificate.`,
+              ),
+            ]),
+          ],
+          { label: "Escape Mission", icon: "game" },
+        ),
+        ...lockBlocks,
+      ],
+      extra: [certBlock],
+    };
+  },
 };
 
 const KEYS = {
@@ -486,6 +543,38 @@ const KEYS = {
   paragraph_builder: (p) => [
     B.para([b(`Model ${p.klu} paragraph: `), t(p.model)]),
     B.checklist(p.checklist, { tone: "Writing" }),
+  ],
+  mission_escape: (p) => [
+    B.table(
+      p.locks.map((lk, k) => [
+        num(k),
+        { t: lk.title, bold: true },
+        {
+          runs: [
+            b(`${letter(lk.answer)}. `),
+            t(
+              typeof lk.options[lk.answer] === "string"
+                ? lk.options[lk.answer]
+                : lk.options[lk.answer].label,
+            ),
+          ],
+        },
+        { runs: [i(lk.why)] },
+      ]),
+      {
+        headers: ["#", "Lock", "Answer", "Why"],
+        widths: [5, 23, 30, 42],
+        compact: true,
+        tone: "Game",
+      },
+    ),
+    B.para(
+      [
+        b("Vault code: "),
+        t(p.locks.map((lk, k) => lk.code || `${letter(lk.answer)}${k + 1}`).join(" - ")),
+      ],
+      { size: "sm" },
+    ),
   ],
 };
 

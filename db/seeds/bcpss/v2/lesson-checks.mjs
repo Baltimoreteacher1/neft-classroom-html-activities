@@ -48,13 +48,64 @@ const PAYLOAD = {
     if (!isArr(p.items, 2, 4) || !p.items.every((x) => isStr(x.term) && isStr(x.es) && isStr(x.note, 6))) add(`${c}: 2-4 items {term, es, note}`);
   },
   cognate_detective: (p, add, c) => {
-    if (!isArr(p.items, 4, 8) || !p.items.every((x) => ["true", "false_friend", "none"].includes(x.status))) add(`${c}: 4-8 items with status true|false_friend|none`);
+    if (
+      !isArr(p.items, 4, 8) ||
+      !p.items.every(
+        (x) =>
+          isStr(x.term) &&
+          isStr(x.es) &&
+          ["true", "false_friend", "none"].includes(x.status) &&
+          isStr(x.why, 10),
+      )
+    )
+      add(`${c}: 4-8 items {term, es, status: true|false_friend|none, why}`);
   },
   morph_lab: (p, add, c) => {
-    if (!isArr(p.items, 3, 5) || !p.items.every((x) => isArr(x.parts, 2, 4) && x.parts.join("") === x.word)) add(`${c}: parts must join to word`);
+    if (
+      !isArr(p.items, 3, 5) ||
+      !p.items.every(
+        (x) =>
+          isStr(x.word) &&
+          isArr(x.parts, 2, 4) &&
+          x.parts.every((pt) => isStr(pt)) &&
+          x.parts.join("") === x.word &&
+          isStr(x.meaning, 6),
+      )
+    )
+      add(`${c}: 3-5 items {word, parts(2-4 joining to word), meaning}`);
   },
   paragraph_builder: (p, add, c) => {
-    if (!(isArr(p.slots, 3, 6) && isArr(p.connectors, 2) && isStr(p.model, 20))) add(`${c}: slots, connectors, model`);
+    const KLUS = ["Narrate", "Inform", "Explain", "Argue"];
+    if (
+      !(
+        KLUS.includes(p.klu) &&
+        isArr(p.slots, 2, 6) &&
+        p.slots.every((s) => isStr(s.label) && isStr(s.frame, 6)) &&
+        isArr(p.connectors, 2) &&
+        p.connectors.every((cn) => isStr(cn)) &&
+        isArr(p.checklist, 2, 6) &&
+        p.checklist.every((ck) => isStr(ck, 6)) &&
+        isStr(p.model, 20)
+      )
+    )
+      add(`${c}: klu, slots(2-6 {label, frame}), connectors(2+), checklist(2-6), model`);
+  },
+  mission_escape: (p, add, c) => {
+    if (!isArr(p.locks, 5, 7)) return add(`${c}: 5-7 locks required`);
+    if (
+      !(
+        p.certificate &&
+        isStr(p.certificate.title, 6) &&
+        isStr(p.certificate.badge, 4) &&
+        isArr(p.certificate.can_do, 1, 4)
+      )
+    )
+      add(`${c}: certificate {title, badge, can_do(1-4)} required`);
+    p.locks.forEach((lk, i) => {
+      if (!isStr(lk.title, 4)) add(`${c} lock ${i + 1}: title required`);
+      if (!isStr(lk.q, 10)) add(`${c} lock ${i + 1}: q required`);
+      mcq([lk], add, `${c} lock ${i + 1}`, 1, 1);
+    });
   },
 };
 const OLD_KEYS = {

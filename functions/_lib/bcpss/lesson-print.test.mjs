@@ -191,6 +191,20 @@ const FIXTURES = {
     checklist: ["I used because.", "I wrote a claim."],
     model: "A ratio compares two amounts because it shows how many of each.",
   },
+  mission_escape: {
+    locks: [
+      { title: "Lock 1: Ratio", q: "Which word compares two amounts?", options: ["ratio", "sum", "difference"], answer: 0, why: "A ratio compares two amounts.", code: "A1" },
+      { title: "Lock 2: Rate", q: "Which word compares two different units?", options: ["unit", "rate", "product"], answer: 1, why: "A rate compares different units.", code: "B2" },
+      { title: "Lock 3: Unit Rate", q: "What is the amount for 1 called?", options: ["ratio table", "percent", "unit rate"], answer: 2, why: "A unit rate is the amount for 1.", code: "C3" },
+      { title: "Lock 4: Percent", q: "What does percent mean?", options: ["out of 100", "out of 10", "out of 2"], answer: 0, why: "Percent means out of 100.", code: "A4" },
+      { title: "Lock 5: Equivalent", q: "Which ratio is equivalent to 2 to 3?", options: ["3 to 2", "4 to 6", "2 to 6"], answer: 1, why: "Multiplying both numbers by 2 gives 4 to 6.", code: "B5" },
+    ],
+    certificate: {
+      title: "Grade 6 Math Language Explorer Certificate",
+      badge: "Math Explain Explorer",
+      can_do: ["I can explain what a ratio and a unit rate mean."],
+    },
+  },
   match: { left_label: "Word", right_label: "Meaning", pairs: [{ l: "ratio", r: "compares two amounts" }, { l: "rate", r: "compares different units" }] },
   clue_game: { cards: [{ term: "ratio", clues: ["It compares.", "It has two numbers."] }, { term: "rate", clues: ["It has units.", "It says per."] }] },
   cloze: { text: "A {1} compares two {2}.", answers: ["ratio", "amounts"], bank: ["ratio", "amounts", "unit"] },

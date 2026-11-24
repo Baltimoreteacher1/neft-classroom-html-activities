@@ -15,12 +15,12 @@
 - Term bank: `tools/build-bcpss-terms.mjs` -> `db/seeds/bcpss/v2/terms.mjs` (974 terms, es gloss `machine`).
 - Gates: `npm run validate:bcpss` (runs audit:content --check, validate-bcpss-lessons, validate-bcpss-terms, lesson-print/kinds/ui tests); `audit:content` is in the full sweep.
 
-**Next steps (all buildable without Joel):**
+**Completed in Phase 4 (2026-11-24):**
 
-1. Player + print twin + validator rules for `cognate_detective`, `morph_lab`, `paragraph_builder` (payloads in CONTRACT.md; add to `lesson-checks.mjs` PAYLOAD and the generator where they fit).
-2. `mission_escape` unit finale (5–7 locks from lesson content, printable certificate).
-3. LanguageTool grammar gate (self-hosted container) + Playwright visual baselines for each kind.
-4. Optional: marketplace packaging behind `npm run package:marketplace`.
+1. Player + print twin + validator rules for `cognate_detective`, `morph_lab`, `paragraph_builder` (payloads in CONTRACT.md; added to `lesson-checks.mjs` PAYLOAD and wired into `lesson-generator.js`).
+2. `mission_escape` unit finale (5–7 locks from lesson content, printable certificate, print twin + key).
+3. LanguageTool + deterministic grammar gate (`tools/bcpss-grammar-gate.mjs`) + Playwright visual baselines for all 12 kinds (`tools/bcpss-kinds-visual.mjs`, `docs/esol-premium/visual-baseline/`).
+4. Marketplace packaging behind `npm run package:marketplace` (`tools/package-bcpss-marketplace.mjs`).
 
 **Needs Joel:** image + TTS provider keys (illustrations, neural audio); BCPSS pacing CSVs (`data/lesson-maps/<unitId>.csv`) to align lesson numbers; human review of Spanish and pilot lessons.
 

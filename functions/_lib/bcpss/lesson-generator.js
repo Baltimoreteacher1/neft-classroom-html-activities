@@ -145,6 +145,12 @@ const PROMPTS = {
 const FIXED_MIN = { warm_up: 4, input: 5, notice: 5, interact: 6, produce: 5, check: 3 };
 
 const word = (v) => v.term;
+const capSentence = (s, max = 215) => {
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max - 2).replace(/[\s,;:(]+$/, "");
+  const openQ = (cut.match(/“/g) || []).length > (cut.match(/”/g) || []).length;
+  return `${cut}${openQ ? "”" : ""}….`;
+};
 const snip = (t, n = 5) =>
   String(t)
     .replace(/[.!?]+$/, "")
@@ -219,45 +225,80 @@ function buildLesson({ unit, studio, klu, seq, kind, focus, review }) {
       .join(" "),
   )}, then drag the chunks back into order.`;
 
+  const morphItems = kind === "notice" ? B.morphItemsFor(studio, focus, seq) : [];
   const base =
+    (morphItems.length >= 3 ? B.morphLab(morphItems, "Word Part Lab") : null) ||
     (kind === "talk_cards" ? B.sliceTalk(studio, seq) : null) ||
     (sess.interact === "talk_cards" ? B.sliceTalk(studio, seq) : null) ||
     B.sliceItems(studio, sess.interact, seq, 2) ||
     B.activityOf(studio, sess.interact) ||
     B.sliceTalk(studio, seq);
   const interact = { ...base, minutes: 6 };
-  if (interact.kind === "talk_cards")
-    interact.mission =
-      `Take turns with the card that asks ${q(interact.payload.cards[0].prompt)}, and push each other's thinking.`.slice(
-        0,
-        215,
-      );
+  if (interact.kind === "morph_lab")
+    interact.mission = capSentence(
+      `Build ${morphItems.length} words from their parts, starting with ${q(morphItems[0].word)} (${morphItems[0].parts.join(" + ")}), and explain what each word means (goal: ${goal}).`,
+    );
+  else if (interact.kind === "talk_cards")
+    interact.mission = capSentence(
+      `Take turns with the card that asks ${q(interact.payload.cards[0].prompt)}, and push each other's thinking.`,
+    );
   else if (interact.kind === "info_gap")
     interact.mission = `Ask your partner questions to find ${q(interact.payload.a.needs[0])}, and answer theirs — no peeking!`;
 
   const model = kind === "show" || kind === "proof" ? studio.exit_ticket.model : focus[0].example;
-  const produce = B.speakAndRecord(
-    {
-      prompt: PROMPTS[kind](t1),
-      frame,
-      model,
-      checklist: [
-        `I used the word ${q(t1)}.`,
-        `I used a joining word such as ${q(connector)}.`,
-        "I spoke so my partner could understand me.",
-      ],
-    },
-    "Say It, Hear It",
-  );
-  produce.mission = `Answer out loud, record yourself, and listen back to check ${q(t1)} and ${q(connector)} (goal: ${goal}).`;
+  const conn2 =
+    (plain.length > 1 ? plain : studio.connectors)[
+      (seq + 1) % (plain.length > 1 ? plain.length : studio.connectors.length)
+    ] || "so";
+  const connPair =
+    conn2 === connector
+      ? [connector, connector === "because" ? "so" : "because"]
+      : [connector, conn2];
+  const produce =
+    kind === "show"
+      ? B.paragraphBuilder(
+          {
+            klu,
+            slots: [
+              { label: "Claim or topic", frame: studio.exit_ticket?.frame || frame },
+              { label: "Reason or detail", frame: `I know this ${connector} ___.` },
+              { label: "Wrap-up", frame: `In summary, ${t1} and ${t2} show that ___.` },
+            ],
+            connectors: connPair,
+            checklist: [
+              `I used the words ${q(t1)} and ${q(t2)}.`,
+              `I joined ideas with ${q(connPair[0])} or ${q(connPair[1])}.`,
+              "My paragraph answers the big question clearly.",
+            ],
+            model,
+          },
+          "Build Your Paragraph",
+        )
+      : B.speakAndRecord(
+          {
+            prompt: PROMPTS[kind](t1),
+            frame,
+            model,
+            checklist: [
+              `I used the word ${q(t1)}.`,
+              `I used a joining word such as ${q(connector)}.`,
+              "I spoke so my partner could understand me.",
+            ],
+          },
+          "Say It, Hear It",
+        );
+  produce.mission =
+    produce.kind === "paragraph_builder"
+      ? capSentence(
+          `Fill each part of the ${klu} organizer using ${q(t1)}, ${q(t2)} and ${q(connPair[0])}, then check your paragraph (goal: ${goal}).`,
+        )
+      : `Answer out loud, record yourself, and listen back to check ${q(t1)} and ${q(connector)} (goal: ${goal}).`;
 
   const canDo = `I can ${sess.fn} using ${q(t1)} and ${q(t2)}.`;
   const check = B.exitCheck(B.exitItems(focus, studio, seq), canDo, "Show What You Know");
-  check.mission =
-    `Answer the questions that start ${q(`${snip(check.payload.items[0].q, 10)}…`)}, then rate how well you can ${sess.fn} (goal: ${goal}).`.slice(
-      0,
-      215,
-    );
+  check.mission = capSentence(
+    `Answer the questions that start ${q(`${snip(check.payload.items[0].q, 8)}…`)}, then rate how well you can ${sess.fn} (goal: ${goal}).`,
+  );
 
   const arc = [
     { step: "warm_up", minutes: FIXED_MIN.warm_up, activity: warm },
@@ -290,19 +331,62 @@ function buildLesson({ unit, studio, klu, seq, kind, focus, review }) {
     "Act It Out",
   );
   tpr.mission = `Listen to the commands, starting with ${q(tpr.payload.items[0].command.replace(/[.!?]+$/, ""))}, and show each one (goal: ${goal}).`;
-  const esTerms = [...focus, ...studio.vocab]
+  const esAll = [...focus, ...review, ...studio.vocab]
     .filter((v) => v.es)
-    .filter((v, i, a) => a.findIndex((x) => x.term === v.term) === i)
-    .slice(0, 3);
+    .filter((v, i, a) => a.findIndex((x) => x.term === v.term) === i);
+  const esTerms = esAll.slice(0, 3);
   const bridge = B.homeLanguageBridge(
     esTerms.map((v) => ({ term: v.term, es: v.es, note: v.es_note || `${v.term} = ${v.es}.` })),
     "Home Language Bridge",
   );
   bridge.mission = `Say ${q(esTerms[0].term)} and ${q(esTerms[0].es)}, then use ${q(esTerms[0].term)} the way this sentence does: ${q(`${snip(esTerms[0].example, 9)}…`)}`;
-  const newcomer = [pas, tpr, bridge];
+  const cogItems = esAll.slice(0, 4).map((v) => ({
+    term: v.term,
+    es: v.es,
+    status: B.cognateStatusOf(v),
+    why: v.es_note || `${q(v.term)} in English is ${q(v.es)} in Spanish.`,
+  }));
+  const cog =
+    seq % 2 === 0 && cogItems.length >= 4
+      ? B.cognateDetective(cogItems, "Cognate Detective")
+      : null;
+  if (cog)
+    cog.mission = capSentence(
+      `Sort ${cogItems.length} English and Spanish word pairs, starting with ${q(cogItems[0].term)} / ${q(cogItems[0].es)}, into true cognate, false friend, or no look-alike (goal: ${goal}).`,
+    );
+  const newcomer = cog ? [pas, tpr, bridge, cog] : [pas, tpr, bridge];
 
   const wk = studio.watchouts[seq % studio.watchouts.length];
   const produceSupport = produce.support;
+  const finaleLocks = kind === "show" ? B.escapeLocksFor(studio, seq) : [];
+  const finaleCanDo = [studio.can_do?.content, studio.can_do?.language, canDo]
+    .filter((s) => s && !titleRe.test(s))
+    .slice(0, 3);
+  const gradeLabel = String(unit.grade) === "K" ? "Kindergarten" : `Grade ${unit.grade}`;
+  const extension =
+    kind === "show" && finaleLocks.length >= 5
+      ? B.missionEscape(
+          {
+            locks: finaleLocks,
+            certificate: {
+              title: `${gradeLabel} ${unit.subject} Language Explorer Certificate`,
+              badge: `${unit.subject} ${klu} Explorer`,
+              can_do: finaleCanDo.length ? finaleCanDo : [canDo],
+            },
+          },
+          "Unit Finale: Mission Escape",
+        )
+      : B.activityOf(studio, "write_scaffold")
+        ? {
+            ...B.activityOf(studio, "write_scaffold"),
+            minutes: 8,
+            mission: `Write a short answer that uses ${q(t1)} and ${q(connector)}, following the structure (goal: ${goal}).`,
+          }
+        : null;
+  if (extension?.kind === "mission_escape")
+    extension.mission = capSentence(
+      `Solve all ${finaleLocks.length} unit locks, starting with ${q(finaleLocks[0].title)}, to unlock your ${unit.subject} ${klu} Explorer certificate (goal: ${goal}).`,
+    );
   return {
     id,
     unit_id: unit.id,
@@ -335,13 +419,7 @@ function buildLesson({ unit, studio, klu, seq, kind, focus, review }) {
     mentor_sentence: mentor,
     arc,
     newcomer_path: newcomer,
-    extension: B.activityOf(studio, "write_scaffold")
-      ? {
-          ...B.activityOf(studio, "write_scaffold"),
-          minutes: 8,
-          mission: `Write a short answer that uses ${q(t1)} and ${q(connector)}, following the structure (goal: ${goal}).`,
-        }
-      : null,
+    extension,
     exit_check: check,
     teacher_card: {
       minutes: Object.values(FIXED_MIN).reduce((n, m) => n + m, 0),

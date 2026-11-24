@@ -45,6 +45,10 @@ const KINDS = new Set([
   "point_and_say",
   "tpr_cards",
   "home_language_bridge",
+  "cognate_detective",
+  "morph_lab",
+  "paragraph_builder",
+  "mission_escape",
 ]);
 const main = document.getElementById("stMain");
 const levelHost = document.getElementById("stLevel");

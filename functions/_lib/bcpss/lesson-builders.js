@@ -228,6 +228,255 @@ export function homeLanguageBridge(items, title) {
   };
 }
 
+const FALSE_FRIEND_RE = /false friend|careful|do not confuse|not the same|means .* not/i;
+const COGNATE_RE = /cognate|true cognates|same root|share a (latin )?root/i;
+
+export function cognateStatusOf(v) {
+  const note = String(v.es_note || "");
+  if (FALSE_FRIEND_RE.test(note)) return "false_friend";
+  if (COGNATE_RE.test(note) && !/\bnot a cognate\b|\bno exact cognate\b/i.test(note)) return "true";
+  return "none";
+}
+
+export function cognateDetective(items, title) {
+  return {
+    kind: "cognate_detective",
+    domain: "Vocabulary",
+    title,
+    mission:
+      "Say each English and Spanish word pair, then sort them into true cognate, false friend, or no look-alike.",
+    grouping: "Partners",
+    minutes: 4,
+    tip: "Say each pair aloud first, and let students decide before you show the answer.",
+    support: SUPPORT(
+      "Say both words and listen for the same sounds.",
+      "Sort the pairs and read the reason for each answer.",
+      "Sort the pairs, then use two of the English words in a sentence.",
+    ),
+    payload: { items },
+  };
+}
+
+const MORPH_PREFIXES = [
+  "non",
+  "un",
+  "re",
+  "dis",
+  "pre",
+  "sub",
+  "inter",
+  "trans",
+  "super",
+  "anti",
+  "de",
+  "in",
+  "im",
+  "bi",
+  "tri",
+  "multi",
+  "over",
+  "under",
+  "mis",
+  "out",
+  "up",
+  "down",
+  "fore",
+  "mid",
+  "auto",
+  "bio",
+  "geo",
+  "micro",
+  "tele",
+  "photo",
+  "hydro",
+  "therm",
+  "equi",
+  "per",
+  "dia",
+  "con",
+  "com",
+  "ex",
+  "pro",
+];
+const MORPH_SUFFIXES = [
+  "ation",
+  "ition",
+  "tion",
+  "sion",
+  "ment",
+  "ness",
+  "less",
+  "ful",
+  "able",
+  "ible",
+  "tive",
+  "sive",
+  "ive",
+  "ous",
+  "ious",
+  "eous",
+  "ical",
+  "ial",
+  "al",
+  "ic",
+  "er",
+  "or",
+  "ist",
+  "ism",
+  "ity",
+  "ty",
+  "ly",
+  "age",
+  "ent",
+  "ant",
+  "ure",
+  "ed",
+  "ing",
+  "es",
+  "s",
+];
+
+export function splitMorphWord(word, baseTerm = "", family = []) {
+  if (/[ -]/.test(word)) return null;
+  const lower = word.toLowerCase();
+  const stems = new Set(
+    [baseTerm, ...family].filter((w) => !/[ -]/.test(w)).map((w) => w.toLowerCase()),
+  );
+  for (const stem of stems) {
+    if (stem === lower || stem.length < 3) continue;
+    const idx = lower.indexOf(stem);
+    if (idx >= 0) {
+      const pre = word.slice(0, idx);
+      const mid = word.slice(idx, idx + stem.length);
+      const suf = word.slice(idx + stem.length);
+      if (
+        (pre.length === 0 || MORPH_PREFIXES.includes(pre.toLowerCase())) &&
+        (suf.length === 0 || MORPH_SUFFIXES.includes(suf.toLowerCase()))
+      ) {
+        const parts = [pre, mid, suf].filter(Boolean);
+        if (parts.length >= 2 && parts.length <= 4 && parts.join("") === word) return parts;
+      }
+    }
+  }
+  let rem = word;
+  let pre = "";
+  for (const p of MORPH_PREFIXES) {
+    if (rem.toLowerCase().startsWith(p) && rem.length - p.length >= 3) {
+      pre = rem.slice(0, p.length);
+      rem = rem.slice(p.length);
+      break;
+    }
+  }
+  let suf = "";
+  for (const s of MORPH_SUFFIXES) {
+    if (rem.toLowerCase().endsWith(s) && rem.length - s.length >= 3) {
+      suf = rem.slice(rem.length - s.length);
+      rem = rem.slice(0, rem.length - s.length);
+      break;
+    }
+  }
+  const parts = [pre, rem, suf].filter(Boolean);
+  return parts.length >= 2 && parts.length <= 4 && parts.join("") === word ? parts : null;
+}
+
+export function morphItemsFor(studio, focus, seq) {
+  const ordered = [...focus, ...rotate(studio.vocab, seq)];
+  const items = [];
+  for (const v of ordered) {
+    for (const w of [v.term, ...(v.family || [])]) {
+      const parts = splitMorphWord(w, v.term, v.family || []);
+      if (parts && !items.some((x) => x.word.toLowerCase() === w.toLowerCase())) {
+        items.push({ word: w, parts, meaning: stripEnd(lc1(v.def)) });
+      }
+      if (items.length >= 4) return items;
+    }
+  }
+  return items;
+}
+
+export function morphLab(items, title) {
+  return {
+    kind: "morph_lab",
+    domain: "Vocabulary",
+    title,
+    mission: `Build ${items.length} words from their parts, starting with ${q(items[0].word)}, and read what each word means.`,
+    grouping: "Partners",
+    minutes: 6,
+    tip: "Ask students which part carries the core meaning and which part changes the ending or adds a prefix.",
+    support: SUPPORT(
+      "Say each word part out loud before you place it in order.",
+      "Build each word, then tell a partner what the parts mean together.",
+      "Build each word, then write one more word that shares the same prefix or ending.",
+    ),
+    payload: { items },
+  };
+}
+
+export function paragraphBuilder({ klu, slots, connectors, checklist, model }, title) {
+  return {
+    kind: "paragraph_builder",
+    domain: "Writing",
+    title,
+    mission: `Fill each part of the ${klu} organizer, join your ideas with ${q(connectors[0])} and ${q(connectors[1])}, and check your paragraph.`,
+    grouping: "Solo",
+    minutes: 5,
+    klu,
+    tip: "Have students read their joined paragraph aloud to a partner before checking the boxes.",
+    support: SUPPORT(
+      "Use the frame starter in each box and finish it with words from today's lesson.",
+      "Fill all parts and connect two ideas with a joining word.",
+      "Write complete sentences in each box and add a specific example or reason.",
+    ),
+    payload: { klu, slots, connectors, checklist, model },
+  };
+}
+
+export function escapeLocksFor(studio, seq) {
+  const letters = ["A", "B", "C"];
+  const vocab = rotate(studio.vocab, seq);
+  const locks = [];
+  for (let i = 0; i < Math.min(6, vocab.length); i++) {
+    const v = vocab[i];
+    const wrong = pick(
+      studio.vocab.filter((o) => o.term !== v.term),
+      `esc:${seq}:${i}:${v.term}`,
+      2,
+    ).map((o) => o.term);
+    const options = pick([v.term, ...wrong], `escpos:${seq}:${i}`, 3);
+    const answer = options.indexOf(v.term);
+    const gap = i % 2 === 1 ? blank(v.example, v.term) : null;
+    locks.push({
+      title: `Lock ${i + 1}: ${v.term}`,
+      q: gap
+        ? `Which word unlocks the sentence? ${gap}`
+        : `Which word means: ${stripEnd(lc1(v.def))}?`,
+      options,
+      answer,
+      why: `${q(v.term)} means ${stripEnd(lc1(v.def))}.`,
+      code: `${letters[answer]}${i + 1}`,
+    });
+  }
+  return locks;
+}
+
+export function missionEscape({ locks, certificate }, title) {
+  return {
+    kind: "mission_escape",
+    domain: "Game",
+    title,
+    mission: `Solve all ${locks.length} unit locks, starting with ${q(locks[0].title)}, to unlock your ${certificate.badge} certificate.`,
+    grouping: "Partners",
+    minutes: 8,
+    tip: "Partners solve each lock together and read the reason aloud before moving to the next lock; print the certificate at the end.",
+    support: SUPPORT(
+      "Listen to each lock clue with the audio button and use the Hint button if you need to narrow the choices.",
+      "Read each lock clue, explain why your choice fits, and record the vault code.",
+      "Unlock all locks on the first try, then explain how each word helps answer the unit's big question.",
+    ),
+    payload: { locks, certificate },
+  };
+}
+
 // ── Payload slicing from authored unit activities ────────────────────────────
 export const activityOf = (studio, kind) => studio.activities.find((a) => a.kind === kind) || null;
 
