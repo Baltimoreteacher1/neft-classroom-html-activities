@@ -1,0 +1,495 @@
+/* Language Studio Player — lessons: unit timeline, lesson page, teacher card, arc stepper, student view, projector.
+   Uses the studio tokens only. No fixed pixel widths: every box shrinks with the viewport. */
+
+/* ---------- chips (text always carries the meaning; shapes and borders back it up) ---------- */
+.sl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.sl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--st-line-strong);
+  border-radius: 999px;
+  background: var(--st-surface-2);
+  color: var(--st-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.sl-klu {
+  background: var(--st-accent-soft);
+  color: var(--st-accent);
+  border-color: transparent;
+}
+.sl-draft {
+  background: var(--st-hint-soft);
+  color: var(--st-hint-ink);
+  border: 1.5px dashed var(--st-hint-line);
+}
+.sl-demand[data-level="low"] {
+  background: var(--st-ok-soft);
+  color: var(--st-ok-ink);
+  border-color: var(--st-ok-line);
+}
+.sl-demand[data-level="medium"] {
+  background: var(--st-hint-soft);
+  color: var(--st-hint-ink);
+  border-color: var(--st-hint-line);
+}
+.sl-demand[data-level="high"] {
+  background: var(--st-accent-soft);
+  color: var(--st-accent);
+  border-color: var(--st-accent);
+}
+.sl-bars {
+  width: 1.2em;
+  height: 1em;
+  flex: none;
+}
+.sl-bars .is-on {
+  fill: currentColor;
+}
+.sl-bars .is-off {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+/* ---------- timeline on the unit page ---------- */
+.sl-tl-host {
+  display: grid;
+  gap: 16px;
+}
+.sl-tl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  position: relative;
+}
+.sl-tl__item {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: clamp(14px, 2.4vw, 20px);
+  border: 1px solid var(--st-line);
+  border-radius: var(--st-radius);
+  background: var(--st-surface);
+  box-shadow: var(--st-shadow);
+}
+.sl-tl__num {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--st-accent);
+  color: var(--st-on-accent);
+  font: 700 1.1rem / 1 var(--st-display);
+}
+.sl-tl__body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.sl-tl__body h3 {
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+.sl-tl__link {
+  display: inline-block;
+  min-height: 44px;
+  padding-block: 10px;
+  color: var(--st-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.sl-tl__goal,
+.sl-tl__vocab {
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.sl-fail__actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- lesson page ---------- */
+.sl {
+  display: grid;
+  gap: clamp(24px, 4vw, 44px);
+  min-width: 0;
+}
+.sl-head {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.sl-head h1 {
+  font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem);
+  overflow-wrap: anywhere;
+}
+.sl-back {
+  justify-self: start;
+  margin-left: -12px;
+}
+.sl-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.sl-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sl-ican {
+  margin: 0;
+  font-size: 1.15rem;
+  max-width: 60ch;
+}
+
+/* ---------- teacher card ---------- */
+.sl-teacher {
+  display: grid;
+  gap: 16px;
+}
+.sl-sechead {
+  display: grid;
+  gap: 4px;
+}
+.sl-sechead h2 {
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+}
+.sl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 14px;
+}
+.sl-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+  box-shadow: none;
+}
+.sl-card h3 {
+  font-size: 1.05rem;
+}
+.sl-list {
+  margin: 0;
+  padding-left: 1.25em;
+  display: grid;
+  gap: 6px;
+}
+.sl-obj {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.sl-levels {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 0;
+}
+.sl-levels dt {
+  font-weight: 700;
+}
+.sl-levels dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.sl-levels .is-current {
+  background: var(--st-accent-soft);
+  border-radius: 6px;
+  padding-inline: 6px;
+  box-shadow: inset 4px 0 0 var(--st-accent);
+}
+.sl-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.sl-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+}
+.sl-check {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 10px;
+  accent-color: var(--st-accent);
+}
+.sl-checklist label {
+  flex: 1;
+  min-width: 0;
+  padding-block: 10px;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- arc stepper ---------- */
+.sl-stepper {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.sl-steps ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sl-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 16px 6px 8px;
+  border: 1.5px solid var(--st-control);
+  border-radius: 999px;
+  background: var(--st-surface);
+  color: var(--st-ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.sl-step:hover {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+}
+.sl-step__num {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--st-surface-2);
+  font-weight: 700;
+}
+.sl-step[aria-current="step"] {
+  background: var(--st-accent);
+  border-color: var(--st-accent);
+  color: var(--st-on-accent);
+}
+.sl-step[aria-current="step"] .sl-step__num {
+  background: var(--st-on-accent);
+  color: var(--st-accent);
+}
+.sl-step.is-done::after {
+  content: "✓" / "";
+  font-weight: 700;
+}
+
+.sl-panel-host {
+  min-width: 0;
+}
+.sl-panel {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: clamp(16px, 3vw, 28px);
+  padding-left: clamp(20px, 3.4vw, 34px);
+  border: 1px solid var(--st-line);
+  border-left: 8px solid var(--st-d, var(--st-accent));
+  border-radius: var(--st-radius);
+  background: var(--st-surface);
+  box-shadow: var(--st-shadow);
+}
+.sl-panel__head {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.sl-panel__head h3 {
+  font-size: clamp(1.35rem, 1.1rem + 1.2vw, 1.9rem);
+  outline-offset: 4px;
+}
+.sl-panel__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.sl-mission {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.sl-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+.sl-share {
+  flex: 1 1 16rem;
+  min-width: 0;
+  border: 1px solid var(--st-line-strong);
+  border-radius: var(--st-radius-sm);
+  background: var(--st-surface-2);
+}
+.sl-share summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.sl-share__body {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 4px 14px 14px;
+}
+.sl-url {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  inline-size: 100%;
+  border: 1.5px solid var(--st-control);
+  border-radius: var(--st-radius-sm);
+  background: var(--st-surface);
+  font-size: 0.9rem;
+}
+.sl-qr svg {
+  display: block;
+  width: min(100%, 10.5rem);
+  height: auto;
+  border: 1px solid var(--st-line-strong);
+}
+.sl-stage {
+  min-width: 0;
+}
+.sl-gloss {
+  padding: 12px 16px;
+  border-radius: var(--st-radius-sm);
+  background: var(--st-vocab-soft);
+  color: var(--st-ink);
+}
+.sl-gloss h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.sl-gloss ul {
+  margin: 0;
+  padding-left: 1.25em;
+}
+.sl-gloss p {
+  margin: 0;
+}
+.sl-pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sl-exit-projector {
+  display: none;
+}
+
+/* ---------- student view: one step at a time, big targets ---------- */
+html[data-sl-view="student"] .st-top__back {
+  display: none;
+}
+.sl[data-view="student"] {
+  font-size: 1.08rem;
+}
+.sl[data-view="student"] .st-btn {
+  min-height: 56px;
+}
+.sl[data-view="student"] .sl-step {
+  min-height: 3.25rem;
+  min-width: 3.25rem;
+}
+
+/* ---------- projector: large type, one step, teacher chrome hidden ---------- */
+html:has(.sl-projector) {
+  font-size: clamp(112.5%, 80% + 0.9vw, 150%);
+}
+.sl-projector {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: auto;
+  display: block;
+  padding: clamp(14px, 3vw, 40px);
+  background: var(--st-bg);
+}
+.sl-projector .sl-head,
+.sl-projector .sl-teacher,
+.sl-projector .sl-steps,
+.sl-projector .sl-sechead,
+.sl-projector .sl-tools,
+.sl-projector .st-tip,
+.sl-projector .st-run__support {
+  display: none;
+}
+.sl-projector .sl-exit-projector {
+  display: inline-flex;
+  justify-self: start;
+}
+.sl-projector .st-btn {
+  min-height: 56px;
+}
+.sl-projector .sl-panel {
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .sl-step:not([aria-current="step"]) .sl-step__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .sl-step:not([aria-current="step"]) {
+    padding-right: 8px;
+  }
+  .sl-tl__item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sl-pager .st-btn {
+    flex: 1 1 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sl *,
+  .sl-tl__item {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media print {
+  .sl-tools,
+  .sl-pager,
+  .sl-steps {
+    display: none !important;
+  }
+}

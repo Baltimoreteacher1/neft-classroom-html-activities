@@ -26,7 +26,7 @@ const FOOTERS = { portrait: "footerP", landscape: "footerL", bleed: "footerNone"
 
 const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
 
-function stylesXml() {
+export function stylesXml() {
   const head = (id, name, size, before, after) =>
     `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${name}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="9"/><w:qFormat/><w:pPr><w:keepNext/><w:keepLines/><w:spacing w:before="${before}" w:after="${after}"/><w:outlineLvl w:val="${id.slice(-1) - 1}"/></w:pPr><w:rPr><w:rFonts w:ascii="${FONT.head}" w:hAnsi="${FONT.head}"/><w:color w:val="${INK}"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr></w:style>`;
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

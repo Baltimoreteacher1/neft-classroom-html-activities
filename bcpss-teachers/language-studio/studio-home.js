@@ -9,6 +9,7 @@ import {
   wordCount,
 } from "./studio-core.js";
 import { icon } from "./studio-icons.js";
+import { lessonsSection } from "./studio-lessons.js";
 import { mentorSection, wordWall } from "./studio-words.js";
 
 const DOMAINS = ["Listening", "Speaking", "Reading", "Writing", "Vocabulary", "Game"];
@@ -411,6 +412,7 @@ export function renderHome(root, app) {
       "div",
       { class: "sh st-view" },
       hero(app, nextIdx),
+      app.family ? null : lessonsSection(app),
       wordWall(app.studio, app.band),
       mentorSection(app.studio, app.level, levelName),
       gallery(app, nextIdx),

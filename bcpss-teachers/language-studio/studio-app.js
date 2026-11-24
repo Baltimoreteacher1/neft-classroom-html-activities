@@ -1,5 +1,6 @@
 // Language Studio Player — shell: routing, state, level switch, activity runner, celebration, ctx construction.
 import { renderHome } from "./studio-home.js";
+import { lessonKeep, lessonRoute, renderLessonPage } from "./studio-lessons.js";
 import {
   LEVELS,
   LEVEL_INFO,
@@ -36,6 +37,14 @@ const KINDS = new Set([
   "sequence",
   "clue_game",
   "read_annotate",
+  "flash_retrieval",
+  "listen_and_show",
+  "sentence_xray",
+  "speak_and_record",
+  "exit_check",
+  "point_and_say",
+  "tpr_cards",
+  "home_language_bridge",
 ]);
 const main = document.getElementById("stMain");
 const levelHost = document.getElementById("stLevel");
@@ -60,10 +69,11 @@ function currentIndex() {
   const n = Number.parseInt(new URLSearchParams(location.search).get("a") || "", 10);
   return Number.isInteger(n) && n >= 1 && n <= (app.studio?.activities.length || 0) && app.allowed(n) ? n : null;
 }
-function urlFor(index) {
+function urlFor(index, keep = null) {
   const p = new URLSearchParams();
   p.set("unit", app.unitId);
   if (index) p.set("a", String(index));
+  else for (const [k, v] of Object.entries(keep || {})) p.set(k, v);
   p.set("level", app.level);
   if (app.family) p.set("mode", "family");
   return `${location.pathname}?${p}`;
@@ -75,13 +85,13 @@ export function go(index, { replace = false } = {}) {
   route();
   if (!replace) window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" });
 }
-Object.assign(app, { go });
+Object.assign(app, { go, route: () => route(), hasKind: (kind) => KINDS.has(kind) });
 
 function setLevel(level) {
   if (!LEVELS.includes(level) || level === app.level) return;
   app.level = level;
   app.progress = saveProgress(app.unitId, { level });
-  history.replaceState(null, "", urlFor(currentIndex()));
+  history.replaceState(null, "", urlFor(currentIndex(), lessonKeep()));
   renderLevelSwitch();
   announce(`${LEVEL_INFO[level].name} level selected.`);
   route();
@@ -337,6 +347,8 @@ function route() {
   if (index) {
     showActivity(index);
     document.title = `${app.studio.activities[index - 1].title} — ${app.unit.unit_title} · Language Studio`;
+  } else if (lessonRoute() && !app.family) {
+    cleanup = renderLessonPage(main, app);
   } else {
     renderHome(main, app);
     document.title = `${app.unit.unit_title} — Language Studio`;

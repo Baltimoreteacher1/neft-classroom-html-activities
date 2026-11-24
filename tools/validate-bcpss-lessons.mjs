@@ -10,6 +10,8 @@ import { loadLessons } from "../functions/_lib/bcpss/lessons.js";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const fileArg = process.argv.find((a) => a.startsWith("--file="))?.slice(7);
+const partial = process.argv.includes("--partial");
 const readJson = (f) => JSON.parse(readFileSync(path.join(root, f), "utf8"));
 const ajv = new Ajv({ allErrors: true, strict: false });
 ajv.addSchema(readJson("schemas/activity.schema.json"));
@@ -33,12 +35,13 @@ let lessons = 0;
 let activities = 0;
 for (const unit of BCPSS_UNITS) {
   if (only.length && !only.includes(unit.id)) continue;
-  const set = await loadLessons(unit.id);
+  if (fileArg && !only.length) continue;
+  const set = fileArg ? (await import(path.resolve(fileArg))).default : await loadLessons(unit.id);
   if (!set) {
     add(`${unit.id}: no lessons`);
     continue;
   }
-  checkCoverage(unit, set.lessons, add);
+  if (!partial) checkCoverage(unit, set.lessons, add);
   for (const l of set.lessons) {
     lessons += 1;
     if (!validate(l))

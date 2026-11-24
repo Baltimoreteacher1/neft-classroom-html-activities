@@ -5,7 +5,7 @@ export const MIN_LESSONS = { ELA: 12, Math: 8, Science: 10, "Social Studies": 10
 const isStr = (v, min = 1) => typeof v === "string" && v.trim().length >= min;
 const isArr = (v, min, max = Infinity) => Array.isArray(v) && v.length >= min && v.length <= max;
 const TONES = ["concept", "connector", "evidence", "precision"];
-const LEAK = /\[slot\]|\{\w+\}|\bundefined\b|\bnull\b|\bNaN\b|\s{2,}(?=\S)/;
+const LEAK = /\[slot\]|\{[A-Za-z_]\w*\}|\bundefined\b|\bnull\b|\bNaN\b|\s{2,}(?=\S)/;
 
 function mcq(items, add, ctx, min, max) {
   if (!isArr(items, min, max)) return add(`${ctx}: ${min}-${max} items required`);
@@ -60,7 +60,7 @@ const PAYLOAD = {
 const OLD_KEYS = {
   word_sort: ["categories", "items"], match: ["pairs"], cloze: ["text", "answers", "bank"], unscramble: ["items"],
   dictogloss: ["text", "key_words"], info_gap: ["a", "b"], error_analysis: ["items"], sentence_combine: ["items"], quiz: ["items"],
-  talk_cards: ["cards", "moves"], write_scaffold: ["prompt", "model"], sequence: ["items"], clue_game: ["cards"], read_annotate: ["text", "questions"],
+  talk_cards: ["cards", "moves"], write_scaffold: ["prompt", "model"], sequence: ["steps"], clue_game: ["cards"], read_annotate: ["text", "questions"],
 };
 
 export function checkActivity(a, add, ctx) {

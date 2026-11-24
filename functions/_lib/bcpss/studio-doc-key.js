@@ -28,7 +28,7 @@ function clozeFilled(text, answers) {
     });
 }
 
-const KEY = {
+export const KEY = {
   match: (p) => [
     B.table(
       p.pairs.map((x, k) => [num(k), { t: x.l, bold: true }, x.r]),

@@ -3,42 +3,137 @@
   "$id": "https://eduwonderlab.com/schemas/bcpss/term.schema.json",
   "title": "BCPSS shared vocabulary term",
   "type": "object",
-  "required": ["id", "term", "pos", "tier", "grade_bands", "defs", "units", "glosses", "cognate"],
+  "required": [
+    "id",
+    "term",
+    "pos",
+    "tier",
+    "grade_bands",
+    "defs",
+    "units",
+    "glosses",
+    "cognate"
+  ],
   "additionalProperties": false,
   "properties": {
-    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
-    "term": { "type": "string", "minLength": 2 },
-    "pos": { "type": "string" },
-    "tier": { "enum": [2, 3] },
-    "grade_bands": { "type": "array", "minItems": 1, "items": { "enum": ["K-2", "3-5", "6-8"] } },
-    "defs": { "type": "object", "propertyNames": { "enum": ["K-2", "3-5", "6-8"] }, "additionalProperties": { "type": "string", "minLength": 8 } },
-    "units": { "type": "array", "minItems": 1, "items": { "type": "string" } },
-    "family": { "type": "array", "items": { "type": "string" } },
-    "icon": { "type": "string" },
-    "image_id": { "type": ["string", "null"] },
-    "audio_id": { "type": ["string", "null"] },
-    "glosses": {
-      "type": "object",
-      "required": ["es", "ar", "fr", "ht"],
-      "additionalProperties": false,
-      "properties": {
-        "es": { "$ref": "#/$defs/gloss" },
-        "ar": { "$ref": "#/$defs/gloss" },
-        "fr": { "$ref": "#/$defs/gloss" },
-        "ht": { "$ref": "#/$defs/gloss" }
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "term": {
+      "type": "string",
+      "minLength": 2
+    },
+    "pos": {
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        2,
+        3
+      ]
+    },
+    "grade_bands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "K-2",
+          "3-5",
+          "6-8"
+        ]
       }
     },
-    "cognate": { "enum": ["true", "false_friend", "none"] },
-    "notes": { "type": ["string", "null"] }
+    "defs": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "K-2",
+          "3-5",
+          "6-8"
+        ]
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 8
+      }
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "family": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "icon": {
+      "type": "string"
+    },
+    "image_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "audio_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "glosses": {
+      "type": "object",
+      "required": [
+        "es"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "es": {
+          "$ref": "#/$defs/gloss"
+        }
+      }
+    },
+    "cognate": {
+      "enum": [
+        "true",
+        "false_friend",
+        "none"
+      ]
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
   },
   "$defs": {
     "gloss": {
       "type": "object",
-      "required": ["text", "review_status"],
+      "required": [
+        "text",
+        "review_status"
+      ],
       "additionalProperties": false,
       "properties": {
-        "text": { "type": ["string", "null"] },
-        "review_status": { "enum": ["machine", "human", "pending"] }
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "review_status": {
+          "enum": [
+            "machine",
+            "human",
+            "pending"
+          ]
+        }
       }
     }
   }
