@@ -9,7 +9,8 @@
  * the engine can read the problem without guessing.
  *
  *   openStudio("understand" | "play", { chapter })
- *   decoratePractice()   pictures under the Your Turn problems (idempotent)
+ *   decoratePractice()   pictures under the Your Turn problems, plus the Language Bridge
+ *                        (language-bridge.mjs: Read it 3 ways, Word Bridge) (idempotent)
  *
  * Nothing leaves the device.
  */
@@ -176,9 +177,17 @@ export function closeStudio() {
 
 /* ── Practice: a picture under each problem the engine can read ────── */
 export async function decoratePractice() {
+  ensureCss();
+  /* Language Bridge: "Read it 3 ways" on word problems and the Word Bridge card on Discover. A failure
+     here must never cost the family the pictures below. */
+  import("./language-bridge.mjs")
+    .then((m) => {
+      m.decorateThreeReads();
+      m.mountWordBridge();
+    })
+    .catch(() => {});
   const pictureFor = await loadPicture();
   if (!pictureFor) return 0;
-  ensureCss();
   let added = 0;
   for (const sec of document.querySelectorAll(".problem-section")) {
     if (sec.hasAttribute("data-fs-pic")) continue;

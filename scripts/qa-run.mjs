@@ -1303,6 +1303,19 @@ const COVERAGE = [
     /^(assets\/family-studio\/picture-kit\.mjs|tools\/family-studio-picture\.test\.mjs)$/,
     ["test", "validate:family-body-tokens", "validate:family-visual", "check"],
   ],
+  // Family Studio loader + Language Bridge (Read it 3 ways, Word Bridge) on the family practice pages.
+  [
+    /^(assets\/family-studio\/(index|language-bridge|language-logic)\.mjs|assets\/family-studio\/studio\.css|tools\/family-language-bridge\.test\.mjs|docs\/family-homework-v3\/language-bridge\.md)$/,
+    [
+      "test",
+      "validate:js-syntax",
+      "validate:family-body-tokens",
+      "validate:family-performance",
+      "validate:family-a11y",
+      "validate:family-experience-browser",
+      "check",
+    ],
+  ],
   // Curriculum discovery routes and their shared source palette
   [
     /^(curriculum\/(?:index\.html|units\/index\.html)|assets\/curriculum-system\.css|tools\/validate-no-purple(?:\.test)?\.mjs)$/,
