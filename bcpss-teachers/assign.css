@@ -1,0 +1,202 @@
+/* Assign dialog + unit-shelf assign controls (assign-dialog.js, studio-tab.js). Light only, 44px targets. */
+.asg {
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+  overflow: auto;
+}
+.asg::backdrop {
+  background: rgb(15 23 42 / 55%);
+}
+.asg h2 {
+  margin: 0 0 0.5rem;
+  font: 700 1.3rem/1.3 var(--font-display);
+}
+.asg h3 {
+  margin: 0 0 0.6rem;
+  font: 700 1rem/1.3 var(--font-display);
+}
+.asg-items {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+.asg-sec {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.asg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.asg-field {
+  display: grid;
+  gap: 0.25rem;
+  font: 600 0.82rem var(--font);
+}
+.asg-field select,
+.asg-field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--border-strong, #94a3b8);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font: 500 0.95rem var(--font);
+}
+.asg-links {
+  width: 100%;
+  margin-bottom: 0.6rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  background: var(--surface-2, #f8fafc);
+  color: var(--ink);
+  font:
+    500 0.82rem/1.4 ui-monospace,
+    monospace;
+  resize: vertical;
+}
+.asg-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.asg-go,
+.asg-alt,
+.asg-close {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: 2px solid var(--brand-primary);
+  border-radius: var(--radius);
+  font: 700 0.95rem var(--font-display);
+  text-decoration: none;
+  cursor: pointer;
+}
+.asg-go {
+  background: var(--brand-primary);
+  color: #fff;
+}
+.asg-go:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.asg-alt,
+.asg-close {
+  background: #fff;
+  color: var(--brand-primary);
+}
+.asg-close {
+  margin-top: 1rem;
+}
+.asg-note {
+  margin: 0.6rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.asg-status {
+  min-height: 1.4rem;
+  margin: 0.8rem 0 0;
+  font: 600 0.92rem var(--font);
+}
+.asg-status[data-tone="ok"] {
+  color: #166534;
+}
+.asg-status[data-tone="bad"] {
+  color: #b91c1c;
+}
+.asg :is(button, a, select, input, textarea):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Unit shelf: select rows, assign buttons, toolbar */
+.stt-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.stt-bar .stt-h {
+  margin: 0 auto 0 0 !important;
+}
+.stt-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font: 600 0.9rem var(--font);
+}
+.stt-pick input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.stt-assign {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--brand-primary);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--brand-primary);
+  font: 700 0.95rem var(--font-display);
+  cursor: pointer;
+}
+.stt-assign--solid {
+  background: var(--brand-primary);
+  color: #fff;
+}
+.stt-assign:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.stt-assign:focus-visible,
+.stt-pick input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.stt-hero .stt-assign {
+  border-color: #fff;
+  background: transparent;
+  color: #fff;
+}
+.stt-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.stt-row--pick {
+  grid-template-columns: auto auto 1fr auto;
+}
+.stt-actions {
+  flex-wrap: wrap;
+}
+.stt-res > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+@media (max-width: 640px) {
+  .stt-row--pick {
+    grid-template-columns: auto 1fr;
+  }
+  .stt-row--pick .stt-actions {
+    grid-column: 1 / -1;
+  }
+}

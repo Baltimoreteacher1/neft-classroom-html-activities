@@ -34,6 +34,18 @@ export function cleanLink(value) {
   };
 }
 
+/** Where the Language Page keeps the joined learner's link. Outside the lab's own key namespace on purpose (it holds the student key). */
+export const LINK_KEY = "accessPracticeLabClass:v1:link";
+
+/** The joined learner's stored link, or null. Never throws: storage can be blocked or hold junk. */
+export function readStoredLink(read = (k) => globalThis.localStorage?.getItem(k)) {
+  try {
+    return cleanLink(JSON.parse(read(LINK_KEY) || "null"));
+  } catch {
+    return null;
+  }
+}
+
 export const studentHeaders = (link) => ({
   "content-type": "application/json",
   "x-class-student": `${link.studentId}.${link.studentKey}`,

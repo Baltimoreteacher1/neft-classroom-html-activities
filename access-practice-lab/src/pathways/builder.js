@@ -5,14 +5,12 @@
 // activity bank, the studio task lists and the sitemap, each labelled when it is not linked to the objective.
 // saveToClass adds the ONE assignment through the existing class settings API; nothing else is written anywhere.
 import { suggest } from "../support-engine/engine.js";
-import { createTeacherClient } from "../../../shared/class-platform/client.js";
-import { LIMITS } from "../../../shared/class-platform/contract.js";
+import { MAX_ASSIGNMENTS, TEACHER_CLASSES_KEY, saveToClass, teacherClasses } from "../../../shared/class-platform/teacher-classes.js";
 import { DEST_BY_ID, DESTINATIONS } from "../sitemap.js";
 import { DOMAINS, SUPPORTS, isLinked, objectiveById, resolveKey } from "./graph.js";
 import { MAX_STAGES, defFromBuiltIn } from "./pathways.js";
 
-export const TEACHER_CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
-export const MAX_ASSIGNMENTS = LIMITS.maxAssignments;
+export { MAX_ASSIGNMENTS, TEACHER_CLASSES_KEY, saveToClass, teacherClasses };
 
 export const blankDraft = (objectiveId) => ({ objective: objectiveById(objectiveId)?.id || "explain-with-evidence", title: "", stages: [{ key: "t", optional: false }], supports: Object.keys(SUPPORTS), rejected: [], followUp: "" });
 export const draftFromBuiltIn = (id, band) => defFromBuiltIn(id, band);
@@ -119,29 +117,4 @@ export function searchResources(query, objectiveId, band, data, limit = 24) {
     for (const d of DESTINATIONS) if (["practice", "play"].includes(d.section) && DEST_BY_ID[d.id]) push(`d${d.id}`, d.text?.[0] || "");
   }
   return out.sort((a, b) => Number(b.linked) - Number(a.linked)).slice(0, limit);
-}
-
-/** Classes this teacher opened on this device (the same list the class panel keeps). */
-export function teacherClasses(read = (k) => globalThis.localStorage?.getItem(k)) {
-  try {
-    const list = JSON.parse(read(TEACHER_CLASSES_KEY) || "[]");
-    return Array.isArray(list) ? list.filter((c) => c && typeof c.code === "string" && c.passcode) : [];
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Add the pathway to a class's assignments through the existing settings API (read the list, append, save).
- * @returns {Promise<{ok:true, already?:boolean} | {ok:false, reason:string}>}
- */
-export async function saveToClass(cls, assignment, fetchImpl, makeClient = createTeacherClient) {
-  const api = makeClient({ fetchImpl, code: cls.code, passcode: cls.passcode });
-  const roster = await api.roster();
-  if (!roster.ok) return { ok: false, reason: roster.httpStatus === 401 ? "passcode" : roster.error || "offline" };
-  const list = roster.settings?.assignments || [];
-  if (list.some((a) => a.id === assignment.id)) return { ok: true, already: true };
-  if (list.length >= MAX_ASSIGNMENTS) return { ok: false, reason: "full" };
-  const res = await api.settings({ assignments: [...list, assignment] });
-  return res.ok ? { ok: true } : { ok: false, reason: res.error || "offline" };
 }

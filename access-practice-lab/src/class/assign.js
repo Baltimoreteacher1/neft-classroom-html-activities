@@ -1,6 +1,7 @@
 // The class assignment builder's data: which lab activities a teacher can assign for a grade band, and the one link
 // shape an assignment uses. K, 1 and 2-3 (audio-first) are first-class here: each row carries its band, so the
 // builder, the saved assignment and the student's "Assigned practice" list all name the same grade band.
+import { bcpssUnitOf, unitLabel } from "../../../shared/class-platform/bcpss-assignments.js";
 import { BAND_INFO, bandLabel, bandLabelEs, codeBand } from "../bands.js";
 import { unitAssignmentRows } from "../lang/units.js";
 import { BASE } from "../util.js";
@@ -60,6 +61,8 @@ export const assignmentBand = (path) => codeBand(/[?&]grades=([\w-]+)/.exec(Stri
 
 /** "Grades 2–3" for a saved assignment's grade band, in the reader's language. */
 export const assignmentBandText = (S, path) => {
+  const unit = bcpssUnitOf(path);
+  if (unit) return `BCPSS ${unitLabel(unit)}`;
   const band = assignmentBand(path);
   return S(bandLabel(band), bandLabelEs(band));
 };

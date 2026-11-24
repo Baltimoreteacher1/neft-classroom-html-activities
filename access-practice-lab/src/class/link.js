@@ -9,6 +9,7 @@ import {
   classInfo,
   cleanLink,
   createSync as createClassSync,
+  LINK_KEY,
   studentApi,
 } from "../../../shared/class-platform/client.js";
 import { KEY_USES } from "../../../shared/class-platform/contract.js";
@@ -17,7 +18,7 @@ import { allRecords, isActivityComplete, practiceDays, PREFIX, importProgressDat
 import { safeJson, storage } from "../util.js";
 import { applyClassSupport, clearClassSupport } from "./support.js";
 
-export const LINK_KEY = "accessPracticeLabClass:v1:link";
+export { LINK_KEY };
 export const api = studentApi("language");
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
