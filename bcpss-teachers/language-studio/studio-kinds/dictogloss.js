@@ -32,9 +32,32 @@ export default function mount(root, ctx) {
     { class: "ow-wave", "aria-hidden": "true" },
     Array.from({ length: 9 }, (_, i) => h("i", { style: `--i:${i}` })),
   );
+  // One step at a time: Next / Back move between the four parts. Next from Listen unlocks after the first listen.
+  const cards = [];
+  const goTo = (i, { focus = true } = {}) => {
+    cards.forEach((c, k) => {
+      c.hidden = k !== i;
+    });
+    if (!focus) return;
+    const head = cards[i].querySelector("h2");
+    head.focus({ preventScroll: true });
+    cards[i].scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+  const navBtn = (label, onclick, { primary = false, forward = false } = {}) => {
+    const b = h(
+      "button",
+      { type: "button", class: `st-btn${primary ? " st-btn--primary st-btn--lg" : ""}` },
+      label,
+      forward ? icon("arrow", 20) : null,
+    );
+    b.addEventListener("click", onclick);
+    return b;
+  };
+  const backBtn = (to) => navBtn("Back", () => goTo(to));
+  const nextListen = navBtn("Next: Jot key words", () => goTo(1), { primary: true, forward: true });
+  nextListen.disabled = !st.heard;
   const unlock = () => {
-    stepJot.hidden = false;
-    stepRebuild.hidden = false;
+    nextListen.disabled = false;
   };
   const play = async () => {
     listenBtn.disabled = true;
@@ -93,6 +116,7 @@ export default function mount(root, ctx) {
     h("div", { class: "ow-listen" }, listenBtn, wave),
     status,
     fallback,
+    h("div", { class: "ow-bar" }, nextListen),
   ]);
 
   // 2. Jot
@@ -128,8 +152,14 @@ export default function mount(root, ctx) {
       h("p", { class: "ow-lead" }, "Tap the words you heard."),
       h("div", { class: "ow-chips" }, chipBtns),
       notes,
+      h(
+        "div",
+        { class: "ow-bar" },
+        backBtn(0),
+        navBtn("Next: Rebuild the story", () => goTo(2), { primary: true, forward: true }),
+      ),
     ],
-    { locked: !st.heard },
+    { locked: true },
   );
 
   // 3. Rebuild
@@ -144,7 +174,7 @@ export default function mount(root, ctx) {
     "button",
     { type: "button", class: "st-btn", disabled: true },
     icon("eye", 18),
-    "Check my ideas",
+    "Next: Check my ideas",
   );
   const refreshCount = () => {
     const n = wordCount(rebuild.value);
@@ -167,9 +197,9 @@ export default function mount(root, ctx) {
       ),
       h("p", { class: "ow-frame" }, h("span", null, "Frame"), p.frame),
       rebuild,
-      h("div", { class: "ow-bar" }, count, revealBtn),
+      h("div", { class: "ow-bar" }, backBtn(1), count, revealBtn),
     ],
-    { locked: !st.heard },
+    { locked: true },
   );
   refreshCount();
 
@@ -212,16 +242,12 @@ export default function mount(root, ctx) {
         "Did your retelling include each idea? Tick the ones you wrote.",
       ),
       list.el,
-      h("div", { class: "ow-bar" }, textBtn, finish),
+      h("div", { class: "ow-bar" }, backBtn(2), textBtn, finish),
       textBox,
     ],
     { locked: true },
   );
-  revealBtn.addEventListener("click", () => {
-    stepCheck.hidden = false;
-    stepCheck.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-  if (st.rebuild && wordCount(st.rebuild) >= 8) stepCheck.hidden = false;
+  revealBtn.addEventListener("click", () => goTo(3));
   finish.addEventListener("click", () => {
     const ticked = list.state().filter(Boolean).length;
     const ratio = ticked / p.checks.length;
@@ -231,7 +257,10 @@ export default function mount(root, ctx) {
     });
   });
 
-  root.append(h("div", { class: "ow-steps" }, stepListen, stepJot, stepRebuild, stepCheck));
+  cards.push(stepListen, stepJot, stepRebuild, stepCheck);
+  for (const c of cards) c.querySelector("h2").tabIndex = -1;
+  root.append(h("div", { class: "ow-steps" }, ...cards));
+  goTo(0, { focus: false });
   return () => {
     alive = false;
   };

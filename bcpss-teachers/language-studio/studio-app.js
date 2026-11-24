@@ -86,7 +86,7 @@ function urlFor(index, keep = null) {
 export function go(index, { replace = false } = {}) {
   const url = urlFor(index);
   if (replace) history.replaceState(null, "", url);
-  else history.pushState(null, "", url);
+  else history.pushState({ studio: true }, "", url); // marks entries this page added; Back pops these first
   route();
   if (!replace) window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" });
 }
@@ -475,13 +475,31 @@ async function boot() {
     );
   app.family = params.get("mode") === "family";
   app.allowed = (i) => !app.family || FAMILY_KINDS.has(detail.studio.activities[i - 1]?.kind);
+  const back = document.getElementById("stBack");
   if (app.family) {
     document.documentElement.dataset.mode = "family";
-    const back = document.getElementById("stBack");
     back.href = `/family/bcpss/?unit=${encodeURIComponent(app.unitId)}`;
     back.setAttribute("aria-label", "Back to family guide");
     back.querySelector("span").textContent = "Back to family guide";
+  } else {
+    // Fallback only (no previous page): the teacher page reopened on this unit, not the empty grade picker.
+    back.href = `/bcpss-teachers/?unit=${encodeURIComponent(app.unitId)}&tab=studio`;
   }
+  // Back = the page the student came from. Inside the studio that pops the activity/home entries; from another
+  // page it goes back there. The teacher index is the exception: it forgets the unit, so use the unit link instead.
+  const cameFrom = (() => {
+    try {
+      const ref = new URL(document.referrer);
+      return ref.origin === location.origin && !/^\/bcpss-teachers\/?$/.test(ref.pathname) ? ref : null;
+    } catch {
+      return null;
+    }
+  })();
+  back.addEventListener("click", (e) => {
+    if (!history.state?.studio && !(cameFrom && history.length > 1)) return;
+    e.preventDefault();
+    history.back();
+  });
   Object.assign(app, {
     detail,
     unit: detail.unit,
