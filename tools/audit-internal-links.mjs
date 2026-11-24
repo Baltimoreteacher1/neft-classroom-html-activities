@@ -85,7 +85,9 @@ function existsTarget(fsPath) {
   return false;
 }
 
-const LINK_RE = /(?:href|src)\s*=\s*["']([^"'#]+)["']/gi;
+// The lookbehind keeps `data-only-src="wordlab"` from reading as `src="wordlab"`:
+// a hyphenated data attribute is not a link, and flagging it failed the whole gate.
+const LINK_RE = /(?<![-\w])(?:href|src)\s*=\s*["']([^"'#]+)["']/gi;
 const problems = [];
 let linkCount = 0;
 
