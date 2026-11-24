@@ -143,14 +143,22 @@
       achievements: {},
       xp: 0,
       plays: 0,
+      powerups: { hint: 0, shield: 0, boost: 0 },
+      comboBest: 0,
       updated: 0,
     };
   }
   function load(id) {
     try {
       const raw = JSON.parse(localStorage.getItem(STORE_PREFIX + id) || "null");
-      if (raw && raw.v === 1 && typeof raw.missions === "object")
-        return Object.assign(emptyProgress(), raw);
+      if (raw && raw.v === 1 && typeof raw.missions === "object") {
+        const state = Object.assign(emptyProgress(), raw);
+        // Saves written before power-ups existed get an empty inventory.
+        state.powerups = Object.assign({ hint: 0, shield: 0, boost: 0 }, raw.powerups || {});
+        state.comboBest = Math.max(0, Number(raw.comboBest) || 0);
+        state.xp = Math.max(0, Number(raw.xp) || 0);
+        return state;
+      }
     } catch (_e) {}
     return emptyProgress();
   }
@@ -200,6 +208,65 @@
   function restoredFraction(def, state) {
     const list = allMissions(def);
     return list.filter((m) => state.missions[m.id]?.done).length / list.length;
+  }
+
+  /* ── Arcade progression: ranks, combo streak, earned power-ups ─────────── */
+  const RANKS = [
+    { xp: 0, name: { en: "Cadet", es: "Cadete" } },
+    { xp: 150, name: { en: "Navigator", es: "Navegante" } },
+    { xp: 400, name: { en: "Pathfinder", es: "Explorador" } },
+    { xp: 800, name: { en: "Sky Captain", es: "Capitán del cielo" } },
+    { xp: 1500, name: { en: "Arcade Legend", es: "Leyenda arcade" } },
+  ];
+  function rankInfo(xp) {
+    const total = Math.max(0, Math.floor(Number(xp) || 0));
+    let i = 0;
+    while (i + 1 < RANKS.length && total >= RANKS[i + 1].xp) i++;
+    const start = RANKS[i].xp;
+    const next = RANKS[i + 1] ? RANKS[i + 1].xp : null;
+    return {
+      level: i + 1,
+      name: RANKS[i].name,
+      xp: total,
+      into: total - start,
+      span: next ? next - start : 1,
+      pct: next ? Math.max(0.02, Math.min(1, (total - start) / (next - start))) : 1,
+    };
+  }
+  /** Streak + equipped effects live for the page session; the record is saved. */
+  const SESSION = { combo: 0, shield: false, boost: false };
+  const POWER_DEFS = {
+    hint: {
+      icon: "💡",
+      key: "q",
+      name: { en: "Insight", es: "Idea" },
+      on: { en: "Insight: the next hint is free.", es: "Idea: la próxima pista es gratis." },
+    },
+    shield: {
+      icon: "🛡️",
+      key: "w",
+      name: { en: "Shield", es: "Escudo" },
+      on: {
+        en: "Shield up: your next miss will not break the combo.",
+        es: "Escudo activo: tu próximo error no romperá la racha.",
+      },
+    },
+    boost: {
+      icon: "⚡",
+      key: "v",
+      name: { en: "Boost", es: "Impulso" },
+      on: {
+        en: "Boost armed: double XP when you finish this mission.",
+        es: "Impulso activo: doble XP al terminar esta misión.",
+      },
+    },
+  };
+  /** Earned tokens go to whichever power-up the student has fewest of. */
+  function dropPower(state) {
+    const order = ["hint", "shield", "boost"];
+    const kind = order.slice().sort((a, b) => (state.powerups[a] || 0) - (state.powerups[b] || 0))[0];
+    state.powerups[kind] = Math.min(9, (state.powerups[kind] || 0) + 1);
+    return kind;
   }
 
   /* ── Seeded randomness (twins and replays get fresh, reproducible numbers) ─ */
@@ -334,6 +401,20 @@
         );
       },
       hum: () => tone(110, 0.6, { type: "sawtooth", vol: 0.04, slide: 220 }),
+      combo: (n = 1) => {
+        const base = 523.25 * 2 ** (Math.min(6, Math.max(1, n)) / 12);
+        [0, 4, 7].forEach((d, i) =>
+          tone(base * 2 ** (d / 12), 0.16, { delay: i * 0.045, type: "triangle", vol: 0.09 }),
+        );
+      },
+      power: () => {
+        tone(760, 0.1, { type: "square", vol: 0.06, slide: 1240 });
+        tone(1520, 0.14, { delay: 0.08, type: "sine", vol: 0.05 });
+      },
+      levelUp: () =>
+        [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((f, i) =>
+          tone(f, 0.34, { delay: i * 0.075, type: "triangle", vol: 0.1 }),
+        ),
     };
     const MODES = {
       major: [0, 2, 4, 7, 9, 12, 14, 16],
@@ -978,25 +1059,37 @@
     bar.fillRect(0, 0, W, 52);
     bar.lineStyle(2, kit.accent, 0.5);
     bar.lineBetween(0, 52, W, 52);
-    kit.text(16, 26, t(def.title), 19, css(kit.accent), { ox: 0, depth: 41, weight: "800" });
+    kit.text(16, 24, t(def.title), 19, css(kit.accent), { ox: 0, depth: 41, weight: "800" });
     const sub = kit.text(
       16 + 8 + scene.children.list[scene.children.list.length - 1].width,
-      27,
+      25,
       titleText || "",
       15,
       "#cfe3ee",
       { ox: 0, depth: 41 },
     );
     const total = allMissions(def).reduce((s, m) => s + (state.missions[m.id]?.stars || 0), 0);
+    const info = rankInfo(state.xp || 0);
     const meter = kit.text(
       W - 16,
-      26,
-      "★ " + total + " / " + allMissions(def).length * 3,
-      17,
+      18,
+      "★ " + total + "/" + allMissions(def).length * 3,
+      16,
       "#ffd76a",
       { ox: 1, depth: 41, weight: "800" },
     );
-    return { bar, sub, meter };
+    const rank = kit.text(W - 16, 37, "LV " + info.level + " · " + t(info.name), 12, "#cfe3ee", {
+      ox: 1,
+      depth: 41,
+      weight: "800",
+    });
+    // Thin rank-progress line along the bottom edge of the HUD.
+    const xpLine = scene.add.graphics().setDepth(41);
+    xpLine.fillStyle(0xffffff, 0.1);
+    xpLine.fillRect(0, 48, W, 4);
+    xpLine.fillStyle(kit.accent, 0.95);
+    xpLine.fillRect(0, 48, Math.max(2, Math.round(W * info.pct)), 4);
+    return { bar, sub, meter, rank, xpLine };
   }
 
   /* ── Map scene ────────────────────────────────────────────────────────── */
@@ -1340,6 +1433,8 @@
           mission: m,
         });
         this.hud = hudBar(this, kit, def, this.state, "· " + t(def.chapters[this.chapterIdx].name));
+        this.buildComboBadge();
+        this.buildPowerDock();
         Audio.startMusic(def.music);
 
         // Mission banner.
@@ -1433,6 +1528,22 @@
           if (this.finished) return this.endActions || [];
           return [
             ...own,
+            ...Object.entries(POWER_DEFS).map(([kind, p]) => ({
+              key: p.key,
+              label: {
+                en:
+                  p.name.en +
+                  " (" +
+                  ((this.state.powerups && this.state.powerups[kind]) || 0) +
+                  ")",
+                es:
+                  p.name.es +
+                  " (" +
+                  ((this.state.powerups && this.state.powerups[kind]) || 0) +
+                  ")",
+              },
+              run: () => this.usePower(kind),
+            })),
             {
               key: "Enter",
               label: this.controller.checkLabel || UI.check,
@@ -1453,6 +1564,154 @@
         this.publishState();
         api.say(t(m.name) + ". " + this.brief.text);
         this.events.once("shutdown", () => this.controller.destroy?.());
+      }
+
+      /* ── Combo streak badge ───────────────────────────────────────────── */
+      buildComboBadge() {
+        const kit = this.kit;
+        kit.panel(W - 266, 8, 116, 36, {
+          depth: 42,
+          alpha: 0.92,
+          line: 0xffd76a,
+          lineAlpha: 0.6,
+          lineWidth: 2,
+          r: 18,
+        });
+        this.comboLabel = kit.text(W - 208, 26, "", 14, "#ffd76a", {
+          depth: 43,
+          weight: "900",
+        });
+        this.refreshCombo();
+      }
+      refreshCombo() {
+        if (!this.comboLabel) return;
+        const n = SESSION.combo;
+        const mult = Math.min(5, Math.max(1, n));
+        this.comboLabel.setText(
+          n >= 5 ? "⚡ OVERDRIVE" : n >= 2 ? "🔥 ×" + mult + " COMBO" : "🔥 COMBO",
+        );
+        this.comboLabel.setColor(n >= 5 ? "#ffe9a8" : n >= 2 ? "#ffd76a" : "#9fb6c4");
+        if (n >= 2 && !reducedMotion()) this.kit.pop(this.comboLabel, 1.16);
+      }
+
+      /* ── Earned power-ups (never sold, never timed) ───────────────────── */
+      buildPowerDock() {
+        const kit = this.kit;
+        const spots = { hint: 380, shield: 455, boost: 530 };
+        this.powerBtns = {};
+        Object.keys(POWER_DEFS).forEach((kind) => {
+          const b = kit.button(spots[kind], H - 34, 70, 44, "", () => this.usePower(kind), {
+            depth: 37,
+            size: 15,
+            fill: 0x2f4b5c,
+            color: "#eaf6ff",
+          });
+          b.setName("power-" + kind);
+          this.powerBtns[kind] = b;
+        });
+        this.refreshPowers();
+      }
+      refreshPowers() {
+        if (!this.powerBtns) return;
+        Object.keys(POWER_DEFS).forEach((kind) => {
+          const b = this.powerBtns[kind];
+          const p = POWER_DEFS[kind];
+          const n = (this.state.powerups && this.state.powerups[kind]) || 0;
+          const armed = (kind === "shield" && SESSION.shield) || (kind === "boost" && SESSION.boost);
+          b.setLabel(p.icon + (armed ? " ON" : " " + n));
+          b.setAlpha(armed || n > 0 ? 1 : 0.5);
+        });
+      }
+      usePower(kind) {
+        if (this.finished || this.busy || window.GameStudio?.paused) return;
+        const p = POWER_DEFS[kind];
+        if (kind === "shield" && SESSION.shield) {
+          this.showFeedback("🛡️ " + t(POWER_DEFS.shield.on), "hint");
+          return;
+        }
+        if (kind === "boost" && SESSION.boost) {
+          this.showFeedback("⚡ " + t(POWER_DEFS.boost.on), "hint");
+          return;
+        }
+        const have = (this.state.powerups && this.state.powerups[kind]) || 0;
+        if (have <= 0) {
+          this.showFeedback(
+            lang() === "es"
+              ? "No te queda " + t(p.name) + ". Gana uno con 3 respuestas correctas seguidas."
+              : "No " + t(p.name) + " left. Earn one by getting 3 missions right in a row.",
+            "hint",
+          );
+          return;
+        }
+        this.state.powerups[kind] = have - 1;
+        if (kind === "shield") SESSION.shield = true;
+        if (kind === "boost") SESSION.boost = true;
+        if (kind === "hint") this.freeHint();
+        else this.showFeedback(p.icon + " " + t(p.on), "hint");
+        save(def, this.state);
+        this.refreshPowers();
+        Audio.sfx.power();
+        this.kit.burst(W / 2, H - 64, 0xffd76a, 18, { speed: 240 });
+        document.dispatchEvent(
+          new CustomEvent("ewl:power", { detail: { id: def.id, kind, left: this.state.powerups[kind] } }),
+        );
+      }
+      /** Insight token: one more hint, without spending star eligibility. */
+      freeHint() {
+        const hints = this.controller.hints || [];
+        const h = hints[Math.min(this.hintsUsed, Math.max(0, hints.length - 1))];
+        Audio.sfx.select();
+        this.showFeedback(
+          h
+            ? "💡 " + t(h) + "  (💡 " + t({ en: "Insight — stars safe", es: "Idea — estrellas a salvo" }) + ")"
+            : "💡 " + t({
+                en: "Try your idea, then read what the world shows you — a miss never costs a star by itself.",
+                es: "Prueba tu idea y mira lo que el mundo te muestra — un error no cuesta una estrella por sí solo.",
+              }),
+          "hint",
+        );
+      }
+      /** Celebration banner when the XP bar crosses a rank threshold. */
+      rankUp(info) {
+        if (!this.scene.isActive() || !info) return;
+        Audio.sfx.levelUp();
+        this.kit.flash(0xffd76a, 150);
+        [0.3, 0.5, 0.7].forEach((px) =>
+          this.kit.burst(W * px, H * 0.38, 0xffd76a, 22, { speed: 340 }),
+        );
+        const panel = this.kit.panel(W / 2 - 200, 64, 400, 92, {
+          depth: 80,
+          alpha: 0.97,
+          line: 0xffd76a,
+          lineWidth: 3,
+          r: 20,
+        });
+        const head = this.kit.text(W / 2, 94, "⬆ " + t({ en: "RANK UP", es: "NUEVO RANGO" }), 22, "#ffd76a", {
+          depth: 81,
+          weight: "900",
+        });
+        const sub = this.kit.text(
+          W / 2,
+          126,
+          "LV " + info.level + " · " + t(info.name),
+          17,
+          "#ffffff",
+          { depth: 81, weight: "800" },
+        );
+        const items = [panel, head, sub];
+        if (!reducedMotion()) {
+          items.forEach((o) => {
+            o.alpha = 0;
+            this.tweens.add({ targets: o, alpha: 1, duration: 240, ease: "Cubic.easeOut" });
+          });
+        }
+        this.time.delayedCall(2600, () => {
+          if (!this.scene.isActive()) return;
+          items.forEach((o) => {
+            if (reducedMotion()) return o.destroy();
+            this.tweens.add({ targets: o, alpha: 0, duration: 300, onComplete: () => o.destroy() });
+          });
+        });
       }
       canDemo() {
         return (
@@ -1511,6 +1770,11 @@
         this.misses++;
         Audio.sfx.miss();
         this.kit.shake(0.003, 140);
+        const shielded = SESSION.shield;
+        if (shielded) SESSION.shield = false;
+        else SESSION.combo = 0;
+        this.refreshCombo();
+        this.refreshPowers();
         recordEvidence(def, this.state, this.mission, {
           ok: false,
           misconception: res.misconception,
@@ -1527,7 +1791,16 @@
                 ? " Puedes pedir «Muéstrame»."
                 : " You can ask “Show me”."
               : "";
-        const missMsg = t(res.feedback || UI.notYet) + extra;
+        const missMsg =
+          (shielded
+            ? "🛡️ " +
+              t({
+                en: "Shield absorbed it — combo " + Math.min(5, Math.max(1, SESSION.combo)) + " is safe. ",
+                es: "El escudo lo absorbió — la racha de " + Math.min(5, Math.max(1, SESSION.combo)) + " sigue viva. ",
+              })
+            : "") +
+          t(res.feedback || UI.notYet) +
+          extra;
         this.showFeedback(missMsg, "bad");
         window.GameStudio?.emit?.("feedback", {
           correct: false,
@@ -1594,13 +1867,41 @@
             firstTry,
             independent: firstTry && (m.mastery || this.revision || m.tier >= 2),
           });
-        state.xp += stars * 10;
+        // Combo streak: consecutive cleared missions multiply XP (max ×5).
+        SESSION.combo += 1;
+        const combo = SESSION.combo;
+        const mult = Math.min(5, Math.max(1, combo));
+        const boosted = SESSION.boost;
+        SESSION.boost = false;
+        const rankBefore = rankInfo(state.xp);
+        const gained = stars * 10 * mult * (boosted ? 2 : 1);
+        state.xp += gained;
+        state.comboBest = Math.max(state.comboBest || 0, combo);
+        const rankAfter = rankInfo(state.xp);
+        const rankedUp = rankAfter.level > rankBefore.level;
+        this.refreshCombo();
+        this.refreshPowers();
+        this.kit.floatText(
+          W / 2,
+          H / 2 - 44,
+          "+" + gained + " XP" + (mult > 1 ? "  ×" + mult : "") + (boosted ? " ⚡" : ""),
+          boosted ? "#9bf0dc" : "#ffd76a",
+          24,
+        );
+        if (mult >= 2 || boosted) Audio.sfx.combo(mult + (boosted ? 1 : 0));
         state.plays++;
         const chapter = def.chapters[this.chapterIdx];
         const wasChapterDone = chapter.missions.every(
           (x) => (x.id === m.id ? !!prev.done : !!state.missions[x.id]?.done),
         );
         const chapterNow = chapterDone(chapter, state);
+        // Earned power-ups: a 3-mission streak grants one token, a restored
+        // chapter restocks the whole belt. Nothing is ever purchased.
+        const dropped = combo >= 3 ? dropPower(state) : null;
+        if (chapterNow && !wasChapterDone)
+          Object.keys(state.powerups).forEach((k) => {
+            state.powerups[k] = Math.min(9, (state.powerups[k] || 0) + 1);
+          });
         // Achievements.
         grant(def, state, "first");
         const threeStar = Object.values(state.missions).filter((x) => x.stars === 3).length;
@@ -1636,6 +1937,7 @@
 
         // Celebration: world restoration + mission card.
         Audio.sfx.success();
+        if (rankedUp) this.time.delayedCall(reducedMotion() ? 900 : 1500, () => this.rankUp(rankAfter));
         this.kit.flash(0xffffff, 120);
         this.kit.burst(W / 2, H / 2, this.kit.accent, 34, { speed: 320 });
         if (def.onRestore)
@@ -1646,10 +1948,18 @@
           });
         const explain = res.explain || this.controller.explain?.();
         this.time.delayedCall(reducedMotion() ? 50 : 650, () =>
-          this.missionCard(stars, explain, res.demoed, chapterNow && !wasChapterDone),
+          this.missionCard(stars, explain, res.demoed, chapterNow && !wasChapterDone, {
+            gained,
+            combo,
+            mult,
+            boosted,
+            dropped,
+            rankedUp,
+            rank: rankAfter,
+          }),
         );
       }
-      missionCard(stars, explain, demoed, chapterRestored) {
+      missionCard(stars, explain, demoed, chapterRestored, bonus = {}) {
         const kit = this.kit;
         const shade = this.add.rectangle(W / 2, H / 2, W, H, 0x02070c, 0.55).setDepth(70);
         const cw = 560;
@@ -1702,6 +2012,32 @@
           lines.push("🏛️ " + t(UI.restored, { place: t(def.chapters[this.chapterIdx].landmark) }));
         if (explain) lines.push(t(explain));
         if (demoed) lines.push(t(UI.revision));
+        if (bonus.gained)
+          lines.push(
+            "🔥 " +
+              t({ en: "Combo", es: "Racha" }) +
+              " ×" +
+              bonus.mult +
+              "  ·  +" +
+              bonus.gained +
+              " XP" +
+              (bonus.boosted ? " (⚡ ×2)" : "") +
+              "  ·  " +
+              t({ en: "LV", es: "NIV" }) +
+              " " +
+              rankInfo(this.state.xp).level,
+          );
+        if (bonus.dropped) {
+          const p = POWER_DEFS[bonus.dropped];
+          lines.push(
+            "🎁 " +
+              t({ en: "Token earned", es: "Ficha ganada" }) +
+              ": " +
+              p.icon +
+              " " +
+              t(p.name),
+          );
+        }
         const body = kit.text(W / 2, y + 128, lines.join("\n\n"), 15, "#d8eaf3", {
           depth: 72,
           wrap: cw - 60,

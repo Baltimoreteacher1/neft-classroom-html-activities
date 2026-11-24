@@ -339,6 +339,164 @@
           transform: none;
         }
       }
+      /* Pilot record — live rank, streak and token inventory */
+      .pilot-card {
+        display: grid;
+        grid-template-columns: minmax(min(100%, 320px), 1.2fr) minmax(min(100%, 300px), 1fr) auto;
+        gap: 20px;
+        align-items: center;
+        margin: 26px 0 6px;
+        padding: 22px 24px;
+        border-radius: 20px;
+        border: 1px solid rgba(20, 34, 58, 0.12);
+        background:
+          radial-gradient(520px 220px at 100% 0%, rgba(212, 149, 42, 0.14), transparent 62%),
+          radial-gradient(420px 200px at 0% 100%, rgba(32, 95, 166, 0.12), transparent 60%),
+          #fff;
+        box-shadow: 0 14px 34px rgba(20, 34, 58, 0.09);
+      }
+      @media (max-width: 860px) {
+        .pilot-card {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pilot-main {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        min-width: 0;
+      }
+      .pilot-avatar {
+        flex: 0 0 auto;
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        font-size: 1.9rem;
+        border-radius: 18px;
+        background: linear-gradient(145deg, #15487f, #1f7a6b);
+        box-shadow: 0 8px 18px rgba(21, 72, 127, 0.28);
+      }
+      .pilot-kicker {
+        margin: 0;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--amber);
+      }
+      .pilot-id h2 {
+        margin: 2px 0 8px;
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+        font-weight: 900;
+        color: var(--navy);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .pilot-lv {
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: #8a5a11;
+        background: #fff2d2;
+        border: 1px solid #f0cf8b;
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+      .pilot-xp {
+        height: 12px;
+        border-radius: 999px;
+        background: #e6ecf4;
+        overflow: hidden;
+        border: 1px solid rgba(20, 34, 58, 0.08);
+      }
+      .pilot-xp span {
+        display: block;
+        height: 100%;
+        width: 2%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #1f7a6b, #2f9e8b 45%, #e0a53a);
+        box-shadow: 0 0 10px rgba(47, 158, 139, 0.5);
+        transition: width 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+      .pilot-xp-text {
+        margin: 6px 0 0;
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .pilot-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin: 0;
+      }
+      .pilot-stats > div {
+        background: #f5f8fc;
+        border: 1px solid rgba(20, 34, 58, 0.08);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+      }
+      .pilot-stats dt {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .pilot-stats dd {
+        margin: 2px 0 0;
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .pilot-cta {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .pilot-cta .btn {
+        text-align: center;
+        white-space: nowrap;
+      }
+      .pilot-cta p {
+        margin: 0;
+        font-size: 0.76rem;
+        color: var(--muted);
+        text-align: center;
+      }
+      .card {
+        position: relative;
+      }
+      .card-progress {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        font: 800 0.74rem/1 "Nunito", system-ui, sans-serif;
+        color: #7a4f06;
+        background: #fff4d6;
+        border: 1px solid #efce87;
+        border-radius: 999px;
+        padding: 5px 9px;
+        box-shadow: 0 2px 8px rgba(20, 34, 58, 0.12);
+      }
+      .card-progress.resume {
+        color: #fff;
+        background: linear-gradient(135deg, #1f7a6b, #2f9e8b);
+        border-color: #1f7a6b;
+      }
+      .citadel-sector-pill .tick {
+        margin-left: auto;
+        font-weight: 900;
+        color: #7dd3fc;
+      }
       /* The Grand Citadel Restoration Meta-Hub */
       .citadel-card {
         background: linear-gradient(135deg, #0f172a 0%, #17324D 50%, #0c2a2e 100%);
@@ -540,6 +698,31 @@
         </div>
       </section>
 
+      <!-- Live pilot record, fed by the shared expedition engine's saves -->
+      <section class="pilot-card" id="pilot-profile" aria-labelledby="pilot-title">
+        <div class="pilot-main">
+          <div class="pilot-avatar" aria-hidden="true">🎮</div>
+          <div class="pilot-id">
+            <p class="pilot-kicker">Your arcade record</p>
+            <h2 id="pilot-title"><span id="pilot-rank">Cadet</span> <span class="pilot-lv" id="pilot-level">LV 1</span></h2>
+            <div class="pilot-xp" id="pilot-xpbar" role="progressbar" aria-label="Rank progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span id="pilot-xpfill"></span>
+            </div>
+            <p class="pilot-xp-text" id="pilot-xptext">0 XP · play a world to start earning XP</p>
+          </div>
+        </div>
+        <dl class="pilot-stats">
+          <div><dt>Stars</dt><dd id="pilot-stars">0</dd></div>
+          <div><dt>Best combo</dt><dd id="pilot-combo">0×</dd></div>
+          <div><dt>Tokens</dt><dd id="pilot-tokens">0</dd></div>
+          <div><dt>Worlds</dt><dd id="pilot-worlds">0</dd></div>
+        </dl>
+        <div class="pilot-cta">
+          <a class="btn btn-solid" id="pilot-continue" href="/math/games/practice-arcade/map.html">▶ Start a world</a>
+          <p>Combos, ranks and tokens save on this device.</p>
+        </div>
+      </section>
+
       <!-- The Grand Citadel Restoration Meta-Hub -->
       <section class="citadel-card" aria-labelledby="citadel-heading">
         <div class="citadel-header">
@@ -551,26 +734,26 @@
           </div>
           <div style="text-align:right;">
             <span id="citadel-badge" style="display:inline-block; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; font-weight:800; font-size:0.9rem; padding:6px 14px; border-radius:999px;">
-              ⚡ Status: 40% Restored
+              ⚡ Status: 0% Restored
             </span>
           </div>
         </div>
 
-        <div class="citadel-meter-wrap" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Citadel Restoration Progress">
-          <div class="citadel-meter-bar" id="citadel-bar" style="width: 40%;"></div>
+        <div class="citadel-meter-wrap" id="citadel-meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Citadel Restoration Progress">
+          <div class="citadel-meter-bar" id="citadel-bar" style="width: 0%;"></div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#94a3b8; font-weight:700;">
           <span>Dormant Outpost</span>
-          <span id="citadel-stat-line">4 / 10 Sectors Powered</span>
+          <span id="citadel-stat-line">0 / 10 Sectors Powered · 0 stars earned</span>
           <span>Full Grand Citadel Restoration</span>
         </div>
 
         <!-- 10 Unit Sectors -->
         <div class="citadel-sectors-grid" id="citadel-sectors">
-          <div class="citadel-sector-pill restored" data-unit="1"><span>🔥 U1 Core</span> <span style="margin-left:auto;">✓</span></div>
-          <div class="citadel-sector-pill restored" data-unit="2"><span>🌊 U2 Aquifer</span> <span style="margin-left:auto;">✓</span></div>
-          <div class="citadel-sector-pill restored" data-unit="3"><span>🌴 U3 Oasis</span> <span style="margin-left:auto;">✓</span></div>
-          <div class="citadel-sector-pill restored" data-unit="4"><span>⚡ U4 Grid</span> <span style="margin-left:auto;">✓</span></div>
+          <div class="citadel-sector-pill" data-unit="1"><span>🔥 U1 Core</span></div>
+          <div class="citadel-sector-pill" data-unit="2"><span>🌊 U2 Aquifer</span></div>
+          <div class="citadel-sector-pill" data-unit="3"><span>🌴 U3 Oasis</span></div>
+          <div class="citadel-sector-pill" data-unit="4"><span>⚡ U4 Grid</span></div>
           <div class="citadel-sector-pill" data-unit="5"><span>🏛️ U5 Terraces</span></div>
           <div class="citadel-sector-pill" data-unit="6"><span>🚂 U6 Switchyard</span></div>
           <div class="citadel-sector-pill" data-unit="7"><span>🔭 U7 Observatory</span></div>
@@ -1166,5 +1349,162 @@
   <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+    <script>
+      /* Live pilot record + Citadel restoration.
+       * Reads the saves the shared expedition engine already writes on this
+       * device — no network, no accounts, no new tracking. */
+      (function () {
+        "use strict";
+        var STORE_PREFIX = "ewl-expedition-v1:";
+        var INDEX_KEY = "ewl-expedition-index-v1";
+        var RANKS = [
+          { xp: 0, name: "Cadet" },
+          { xp: 150, name: "Navigator" },
+          { xp: 400, name: "Pathfinder" },
+          { xp: 800, name: "Sky Captain" },
+          { xp: 1500, name: "Arcade Legend" },
+        ];
+        // Which expedition world lights each Citadel sector.
+        var UNIT_WORLDS = {
+          1: [],
+          2: ["u8-data-dash", "u1-decimal-dash"],
+          3: ["u3-ratio-rush"],
+          4: ["u4-percent-power"],
+          5: ["u5-area-attack", "u10-volume-blast"],
+          6: ["u1-factor-frenzy", "u2-fraction-frenzy", "u6-expression-express"],
+          7: ["u9-coordinate-quest"],
+          8: ["u7-equation-quest"],
+          9: [],
+          10: [],
+        };
+        function read(key, fallback) {
+          try {
+            var raw = JSON.parse(localStorage.getItem(key) || "null");
+            return raw == null ? fallback : raw;
+          } catch (_e) {
+            return fallback;
+          }
+        }
+        function rankInfo(xp) {
+          var total = Math.max(0, Math.floor(Number(xp) || 0));
+          var i = 0;
+          while (i + 1 < RANKS.length && total >= RANKS[i + 1].xp) i++;
+          var next = RANKS[i + 1] ? RANKS[i + 1].xp : null;
+          return {
+            level: i + 1,
+            name: RANKS[i].name,
+            xp: total,
+            next: next,
+            pct: next ? Math.max(2, Math.min(100, Math.round(((total - RANKS[i].xp) / (next - RANKS[i].xp)) * 100))) : 100,
+          };
+        }
+        function setText(id, value) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = value;
+        }
+        function paint() {
+          var index = read(INDEX_KEY, {});
+          var ids = Object.keys(index || {});
+          var xp = 0, stars = 0, maxStars = 0, combo = 0, tokens = 0, worlds = 0, latest = null;
+          ids.forEach(function (id) {
+            var row = index[id] || {};
+            var st = read(STORE_PREFIX + id, null) || {};
+            xp += Number(st.xp) || 0;
+            combo = Math.max(combo, Number(st.comboBest) || 0);
+            var p = st.powerups || {};
+            tokens += (Number(p.hint) || 0) + (Number(p.shield) || 0) + (Number(p.boost) || 0);
+            stars += Number(row.stars) || 0;
+            maxStars += Number(row.maxStars) || 0;
+            if ((Number(row.chapters) || 0) > 0 && Number(row.chaptersRestored) >= Number(row.chapters)) worlds++;
+            if (!latest || (Number(row.updated) || 0) > (Number(latest.updated) || 0)) latest = { id: id, row: row };
+          });
+          var info = rankInfo(xp);
+          setText("pilot-rank", info.name);
+          setText("pilot-level", "LV " + info.level);
+          setText("pilot-stars", stars + (maxStars ? " / " + maxStars : ""));
+          setText("pilot-combo", combo + "×");
+          setText("pilot-tokens", String(tokens));
+          setText("pilot-worlds", String(worlds));
+          setText(
+            "pilot-xptext",
+            info.next
+              ? info.xp + " XP · " + (info.next - info.xp) + " XP to " + RANKS[info.level].name
+              : info.xp + " XP · top rank reached",
+          );
+          var bar = document.getElementById("pilot-xpbar");
+          var fill = document.getElementById("pilot-xpfill");
+          if (bar) bar.setAttribute("aria-valuenow", String(info.pct));
+          if (bar) bar.setAttribute("aria-valuetext", info.xp + " XP, level " + info.level + " " + info.name);
+          if (fill) fill.style.width = info.pct + "%";
+          var go = document.getElementById("pilot-continue");
+          if (go) {
+            if (latest && latest.id) {
+              var title = (latest.row.title && (latest.row.title.en || latest.row.title)) || "your world";
+              go.href = "/math/games/" + latest.id + "/?expedition=1";
+              go.textContent = "▶ Continue " + title;
+            } else {
+              go.href = "/math/games/practice-arcade/map.html";
+              go.textContent = "▶ Start a world";
+            }
+          }
+          // Citadel sectors light up from real chapter progress.
+          var restored = 0;
+          var pills = document.querySelectorAll(".citadel-sector-pill");
+          Array.prototype.forEach.call(pills, function (pill) {
+            var worldsForUnit = UNIT_WORLDS[pill.getAttribute("data-unit")] || [];
+            var live = worldsForUnit.some(function (id) {
+              return index[id] && Number(index[id].chaptersRestored) > 0;
+            });
+            pill.classList.toggle("restored", !!live);
+            var tick = pill.querySelector(".tick");
+            if (live) {
+              if (!tick) {
+                tick = document.createElement("span");
+                tick.className = "tick";
+                tick.textContent = "✓";
+                tick.setAttribute("aria-hidden", "true");
+                pill.appendChild(tick);
+              }
+              restored++;
+            } else if (tick) {
+              tick.remove();
+            }
+            pill.title = live ? "Restored" : "Not restored yet";
+          });
+          var pct = maxStars ? Math.round((stars / maxStars) * 100) : 0;
+          var meter = document.getElementById("citadel-meter");
+          var barEl = document.getElementById("citadel-bar");
+          if (meter) meter.setAttribute("aria-valuenow", String(pct));
+          if (barEl) barEl.style.width = pct + "%";
+          var badge = document.getElementById("citadel-badge");
+          if (badge) badge.textContent = "⚡ Status: " + pct + "% Restored";
+          setText("citadel-stat-line", restored + " / 10 Sectors Powered · " + stars + " stars earned");
+          // Per-card progress badges on each world card.
+          Array.prototype.forEach.call(document.querySelectorAll("a.card[href*='/math/games/']"), function (card) {
+            var m = card.getAttribute("href").match(/\/math\/games\/(u[0-9]+-[a-z0-9-]+)\//);
+            if (!m) return;
+            var id = m[1];
+            var row = index[id];
+            var old = card.querySelector(".card-progress");
+            if (old) old.remove();
+            if (!row) return;
+            var chip = document.createElement("span");
+            chip.className = "card-progress";
+            if (latest && latest.id === id) {
+              chip.classList.add("resume");
+              chip.textContent = "▶ Continue";
+            } else {
+              chip.textContent = "★ " + (Number(row.stars) || 0) + "/" + (Number(row.maxStars) || 0);
+            }
+            card.appendChild(chip);
+          });
+        }
+        paint();
+        window.addEventListener("storage", paint);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) paint();
+        });
+      })();
+    </script>
 </body>
 </html>
