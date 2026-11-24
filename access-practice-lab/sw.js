@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "cb21d79ba827";
+const BUILD_HASH = "03b5c31ee570";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -379,7 +379,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/checkin.js?v=4bdf0895e93f",
   "/access-practice-lab/src/class/ai-feedback.js?v=27693ecac934",
   "/access-practice-lab/src/class/assign-status-ui.js?v=ab821c265ffe",
-  "/access-practice-lab/src/class/assign.js?v=1ffc80b71a76",
+  "/access-practice-lab/src/class/assign.js?v=04c0dbcec4f5",
   "/access-practice-lab/src/class/book-collab-panel.js?v=c826b3077354",
   "/access-practice-lab/src/class/dom.js?v=58c6cbed1ce6",
   "/access-practice-lab/src/class/family-reports.js?v=b37a1666dca7",
@@ -388,7 +388,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/class/join-cards.js?v=6a6f241e00e0",
   "/access-practice-lab/src/class/join-prompt.js?v=fd2c7e4b31c0",
   "/access-practice-lab/src/class/library-sync.js?v=0fd83f4983fc",
-  "/access-practice-lab/src/class/link.js?v=18c598a249ec",
+  "/access-practice-lab/src/class/link.js?v=e949d518e731",
   "/access-practice-lab/src/class/qr-scan.js?v=727b199a62ce",
   "/access-practice-lab/src/class/quiz-key.js?v=13bb7f30d02c",
   "/access-practice-lab/src/class/review-queue.js?v=2b87911285b2",
@@ -857,7 +857,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/paper-passport.js?v=4e74d1041708",
   "/access-practice-lab/src/pathways/banner.js?v=88b2471309ea",
   "/access-practice-lab/src/pathways/build-controller.js?v=bfe0ab3e79b0",
-  "/access-practice-lab/src/pathways/builder.js?v=02e8a7fc0a7f",
+  "/access-practice-lab/src/pathways/builder.js?v=2242560f5b66",
   "/access-practice-lab/src/pathways/family-card.js?v=53b3b248aea0",
   "/access-practice-lab/src/pathways/graph.js?v=5eaf33d425dd",
   "/access-practice-lab/src/pathways/objectives-argue.js?v=283331486898",

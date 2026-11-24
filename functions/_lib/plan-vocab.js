@@ -5619,7 +5619,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/bcpss-teachers/language-studio/",
-    title: "Language Studio",
+    title: "Language Studio — The Language Page",
     category: "Tool",
     unit: null,
   },
@@ -5637,7 +5637,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/bcpss-teachers/writing-lab/",
-    title: "Writing Lab",
+    title: "Writing Lab — The Language Page",
     category: "Tool",
     unit: null,
   },
