@@ -1,0 +1,291 @@
+/* Forecast Engine — controls: forms, segmented choices, explanations, dialogs, toast.
+ * Loaded BEFORE styles.css so the responsive rules there can override these. */
+/* Form controls */
+.field,
+.ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ctl-name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  padding: 0;
+}
+.ctl-help {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.ctl-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.ctl-top output,
+.ctl-inline output {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--teal-ink);
+  font-size: 1.05rem;
+}
+.ctl.dim {
+  opacity: 0.55;
+}
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+input:not([type]),
+select,
+textarea {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  width: 100%;
+}
+textarea {
+  min-height: 120px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.9rem;
+}
+input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--teal-ink);
+  cursor: pointer;
+}
+.ctl-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ctl-inline output {
+  white-space: nowrap;
+  min-width: 5.2em;
+}
+.ctl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 20px 28px;
+  align-items: start;
+}
+.ctl-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ctl-group + .ctl-group {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.ctl-group h3 {
+  margin-bottom: 12px;
+}
+.ctl-group .ctl + .ctl,
+.ctl-group .field + .ctl {
+  margin-top: 16px;
+}
+.seg-row {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.seg-opt {
+  position: relative;
+}
+.seg-opt input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.seg-opt span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  margin-left: -1px;
+  background: var(--surface);
+  font-weight: 600;
+  pointer-events: none;
+}
+.seg-opt:first-child span {
+  border-radius: 10px 0 0 10px;
+  margin-left: 0;
+}
+.seg-opt:last-child span {
+  border-radius: 0 10px 10px 0;
+}
+.seg-opt input:checked + span {
+  background: var(--ink);
+  color: var(--on-ink);
+  border-color: var(--ink);
+  position: relative;
+}
+.seg-opt input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  z-index: 1;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--teal-ink);
+}
+.plainset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.two,
+.three {
+  display: grid;
+  gap: 12px;
+}
+.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+.inline-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.inline-form .field {
+  flex: 1 1 160px;
+}
+.inline-form.tight {
+  margin: 0;
+}
+
+/* Explanations */
+.how {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+.how summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--teal-ink);
+}
+.how-body {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 14px 18px 6px;
+  max-width: 78ch;
+}
+
+/* Dialogs, toast, tooltip */
+.dlg {
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: min(560px, 92vw);
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+}
+.dlg::backdrop {
+  background: rgb(8 20 30 / 0.55);
+}
+.dlg h2 {
+  margin-bottom: 8px;
+}
+.dlg-body {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.dlg-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.dlg-error {
+  color: var(--bad);
+  font-weight: 700;
+  min-height: 1.4em;
+}
+.glossary dt {
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 12px;
+}
+.glossary dd {
+  margin: 2px 0 0;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--ink);
+  color: var(--on-ink);
+  padding: 10px 16px;
+  border-radius: 12px;
+  z-index: 60;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.toast .btn {
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.tip {
+  position: fixed;
+  z-index: 70;
+  max-width: 280px;
+  background: var(--ink);
+  color: var(--on-ink);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.tip.show {
+  opacity: 1;
+}
+
