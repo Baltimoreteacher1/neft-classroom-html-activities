@@ -2,8 +2,8 @@
 // Re-runnable content audit for the BCPSS Teacher Studio (read-only).
 // Builds every unit through the same path as GET /api/bcpss/units/:id (seed fallback, no DB)
 // and writes docs/audit/inventory.json. Measures gaps G1-G9 from docs/ESOL_PREMIUM_BUILD.md.
-//   node scripts/audit-bcpss-content.mjs            # write inventory + print summary
-//   node scripts/audit-bcpss-content.mjs --check    # exit 1 when leak/dup counts are above zero
+//   node scripts/audit-bcpss-content.mjs            # write docs/audit/inventory.json + print summary
+//   node scripts/audit-bcpss-content.mjs --check    # gate: no write, exit 1 when leak/dup counts are above zero
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -168,10 +168,12 @@ const summary = {
   top_repeated_missions: dupMissions.slice(0, 15),
 };
 
-mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, `${JSON.stringify({ summary, units }, null, 2)}\n`);
+if (!CHECK) {
+  mkdirSync(dirname(OUT), { recursive: true });
+  writeFileSync(OUT, `${JSON.stringify({ summary, units }, null, 2)}\n`);
+}
 console.log(JSON.stringify(summary, null, 2));
-console.log(`wrote ${OUT}`);
+if (!CHECK) console.log(`wrote ${OUT}`);
 
 const failing =
   leaks.cards_for +

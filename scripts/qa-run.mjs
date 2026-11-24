@@ -98,6 +98,7 @@ const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS || 15 * 60 * 1000);
 
 const GATE = [
   "build",
+  "audit:content",
   // `check` (biome check), NOT `lint` (biome lint). Both are read-only, but
   // `lint` ignores formatting, and `biome check` -- the thing the PR-only
   // Pre-Deploy Gate actually runs -- does not. Because every deploy here goes
@@ -891,7 +892,7 @@ const COVERAGE = [
   // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
   // modular K–8 seed data, and Cloudflare Pages Functions.
   [
-    /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|scripts\/generate-bcpss-packets\.mjs|tools\/(validate-bcpss-studio|build-bcpss-studio-index|bcpss-studio-context)\.mjs|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
+    /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|scripts\/(generate-bcpss-packets|audit-bcpss-content)\.mjs|tools\/(validate-bcpss-studio|build-bcpss-studio-index|bcpss-studio-context)\.mjs|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
     [
       "validate:bcpss",
       "validate:bcpss-studio",
