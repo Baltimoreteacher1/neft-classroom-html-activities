@@ -22,6 +22,27 @@ const RESOURCES = [
   { part: "packet", title: "Unit Overview", note: "Planning page for teachers" },
 ];
 
+const WRITING_RESOURCES = [
+  { part: "writing", title: "Writing Lab Packet", note: "TWR writing path on paper, by level" },
+  { part: "writing-key", title: "Writing Lab Teacher Guide", note: "Models, answers, rubric" },
+];
+
+// Writing Lab: the unit's Writing Revolution path, student-facing at /bcpss-teachers/writing-lab/.
+function writingLabCard(detail, wida) {
+  const w = detail.writing;
+  if (!w) return "";
+  const href = `/bcpss-teachers/writing-lab/?unit=${encodeURIComponent(detail.unit.id)}&level=l${wida}`;
+  return `
+      <section class="stt-hero stt-hero--writing" aria-labelledby="sttWlH">
+        <div>
+          <h3 id="sttWlH">Writing Lab · ${esc(w.title)}</h3>
+          <p>${esc(w.prompt[`l${wida}`] || w.prompt.l3_4)}</p>
+          <p class="stt-chips"><span>Notes</span><span>Because · But · So</span><span>Expansion</span><span>Appositives</span><span>Clue words</span><span>Outline</span><span>Draft &amp; revise</span></p>
+        </div>
+        <a class="stt-launch" href="${href}">Open Writing Lab</a>
+      </section>`;
+}
+
 const studioUrl = (unitId, wida, index) => {
   const params = new URLSearchParams({ unit: unitId, level: `l${wida}` });
   if (index) params.set("a", String(index));
@@ -80,14 +101,14 @@ export function renderStudioTab(panel, { detail, wida }) {
           <p class="stt-chips">${counts.map((c) => `<span>${esc(c.d)} · ${c.n}</span>`).join("")}</p>
         </div>
         <a class="stt-launch" href="${studioUrl(unit.id, wida)}">Open Language Studio</a>
-      </section>
+      </section>${writingLabCard(detail, wida)}
       <section aria-labelledby="sttListH">
         <h3 id="sttListH" class="stt-h">All activities</h3>
         <ol class="stt-list">${rows}</ol>
       </section>
       <section aria-labelledby="sttResH">
         <h3 id="sttResH" class="stt-h">Printables and resources</h3>
-        <ul class="stt-res-grid">${RESOURCES.map((r) => resourceCard(r, unit.id, wida)).join("")}</ul>
+        <ul class="stt-res-grid">${(detail.writing ? [...RESOURCES, ...WRITING_RESOURCES] : RESOURCES).map((r) => resourceCard(r, unit.id, wida)).join("")}</ul>
       </section>
     </div>`;
 }

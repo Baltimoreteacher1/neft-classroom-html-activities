@@ -16,9 +16,11 @@ import { badRequest, handler, json, notFound } from "../../../_lib/http.js";
 const VALID_FORMATS = new Set(["html", "pdf", "docx"]);
 const VALID_WIDA = new Set(["1_2", "3_4", "5_6"]);
 
-// Parts: packet (teacher overview, default), book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family.
+// Parts: packet (teacher overview, default), book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family,
+// writing (Writing Lab student packet), writing-key (Writing Lab teacher guide).
 const PARTS_HELP =
-  "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family";
+  "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family, writing, writing-key";
+const WRITING_PARTS = new Set(["writing", "writing-key"]);
 
 const AUTO_PRINT_SCRIPT = `<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},150);});</script>`;
 
@@ -67,11 +69,15 @@ export const onRequest = handler({
     // The legacy packet renderers only serve the packet of a unit with no authored Studio content yet.
     const legacyPacket = part === "packet" && !detail.studio;
 
+    const source =
+      part === "family"
+        ? { ok: detail.family, label: "family guide" }
+        : WRITING_PARTS.has(part)
+          ? { ok: detail.writing, label: "Writing Lab" }
+          : { ok: detail.studio, label: "Studio content" };
     const missing =
-      !legacyPacket && (part === "family" ? !detail.family : !detail.studio)
-        ? notFound(
-            `Unit "${unitId}" has no authored ${part === "family" ? "family guide" : "Studio content"} yet.`,
-          )
+      !legacyPacket && !source.ok
+        ? notFound(`Unit "${unitId}" has no authored ${source.label} yet.`)
         : null;
 
     if (format === "docx") {

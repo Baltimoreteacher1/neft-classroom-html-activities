@@ -480,3 +480,50 @@
 :root[data-mode="family"] .sh-hero {
   background: var(--st-surface);
 }
+
+/* Writing Lab card (studio home) */
+.sh-wl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.4rem;
+  border-left: 6px solid var(--st-writing);
+  background: linear-gradient(135deg, var(--st-writing-soft), var(--st-surface) 60%);
+}
+.sh-wl__text {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+.sh-wl__text h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--st-display);
+  font-size: 1.25rem;
+}
+.sh-wl__text p {
+  margin: 0 0 0.7rem;
+  color: var(--st-muted);
+}
+.sh-wl__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  counter-reset: wl;
+}
+.sh-wl__steps li {
+  counter-increment: wl;
+  font-size: 0.82rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: var(--st-surface);
+  border: 1px solid var(--st-line);
+}
+.sh-wl__steps li::before {
+  content: counter(wl) " ";
+  font-weight: 700;
+  color: var(--st-writing-ink);
+}

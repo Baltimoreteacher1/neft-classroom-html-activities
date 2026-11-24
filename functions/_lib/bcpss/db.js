@@ -8,7 +8,13 @@ import { neon } from "@neondatabase/serverless";
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
-import { applyStudio, loadFamily, loadStudio, studioEssentialQuestions } from "./studio.js";
+import {
+  applyStudio,
+  loadFamily,
+  loadStudio,
+  loadWriting,
+  studioEssentialQuestions,
+} from "./studio.js";
 
 const BCPSS_UNITS = seed.BCPSS_UNITS || [];
 const LANGUAGE_BLUEPRINTS = seed.LANGUAGE_BLUEPRINTS || [];
@@ -614,6 +620,7 @@ export async function getUnitDetail(env, unitId) {
   if (result.detail) {
     applyStudio(result.detail, await loadStudio(unitId));
     result.detail.family = await loadFamily(unitId);
+    result.detail.writing = await loadWriting(unitId);
     const esol_pack = buildEsolPack({
       unit: result.detail.unit,
       connection: result.detail.connections?.[0],

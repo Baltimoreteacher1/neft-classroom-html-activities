@@ -1590,6 +1590,8 @@
         "/access-family-tour/",
         "/language-adventures/",
         "/language-studio/",
+        "/bcpss-teachers/language-studio/",
+        "/bcpss-teachers/writing-lab/",
       ].some(function (p) {
         return location.pathname.indexOf(p) === 0;
       });

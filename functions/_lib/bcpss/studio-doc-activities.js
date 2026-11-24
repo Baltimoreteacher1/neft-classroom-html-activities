@@ -3,6 +3,30 @@
 
 import { B, b, frameRuns, HIGHLIGHT_ORDER, hl, i, shuffled, t } from "./studio-doc.js";
 
+// TWR connector meanings for the workbook mini key. Twin of MEANINGS in
+// bcpss-teachers/language-studio/studio-kinds/sentence_combine.js (the player cannot import server modules); keep both in step.
+const CONNECTOR_MEANINGS = [
+  ["because|since", "gives a reason (why?)"],
+  ["so that", "tells the purpose (what for?)"],
+  [
+    "so|as a result( of)?|therefore|consequently|(which )?(leads|led) to|leading to|which led|(which )?causes",
+    "tells a result (what happened?)",
+  ],
+  ["but|yet|however|even so", "changes direction (a different idea)"],
+  ["although|even though|though", "shows a surprise (true anyway)"],
+  ["whereas|in contrast|unlike", "shows a contrast (two different things)"],
+  ["while", "shows a contrast, or two things at the same time"],
+  ["when|after|before|(and )?then|later|eventually|meanwhile", "tells time (when?)"],
+  ["and|also|both", "adds another idea"],
+  [
+    "which|that|that has|which (means|shows|shows that|helps|makes|proves that)",
+    "adds information about a thing",
+  ],
+  ["according to|as shown by|for example", "names the evidence (how do you know?)"],
+].map(([k, v]) => [new RegExp(`^(${k})$`), v]);
+export const connectorMeaning = (c) =>
+  CONNECTOR_MEANINGS.find(([re]) => re.test(String(c).trim().toLowerCase()))?.[1] || "";
+
 const CAT_TONES = ["Reading", "Speaking", "Vocabulary"];
 
 // Splits text into runs, highlighting exact-substring targets (answer key for read_annotate).
@@ -168,17 +192,39 @@ const PRINTERS = {
   },
 
   unscramble(a, ctx) {
-    const blocks = [];
+    // Workbook page: lettered cut-apart chunk strip, an order row (Starter: first letter given; Core: empty boxes),
+    // then a write-on sentence strip with capital / end-mark cues. The key fills the order and the sentence.
+    const level = ctx.level || "l3_4";
+    const blocks = [
+      B.para(
+        [b("How to build: "), t("Cut apart the chunks. Put them in order. Write the sentence.")],
+        { size: "sm" },
+      ),
+    ];
     a.payload.items.forEach((it, k) => {
-      const order = ctx.answerKey
-        ? it.parts
-        : shuffled(it.parts, `${a.title}:${k}`).map((m) => m.v);
+      const mixed = shuffled(it.parts, `${a.title}:${k}`);
+      const letterOf = (idx) => String.fromCharCode(65 + mixed.findIndex((m) => m.idx === idx));
+      const order = it.parts.map((_, idx) => letterOf(idx));
       const sentence = it.parts.join(" ");
       blocks.push(
-        B.chips(order, { label: `${k + 1}. Cut out and put in order`, cut: true, tone: "Game" }),
+        B.chips(
+          mixed.map((m, n) => `(${String.fromCharCode(65 + n)}) ${m.v}`),
+          { label: `Sentence ${k + 1} · cut apart`, cut: true, tone: "Game" },
+        ),
       );
+      if (ctx.answerKey || level !== "l5_6")
+        blocks.push(
+          B.boxRow(it.parts.length, {
+            label: level === "l1_2" && !ctx.answerKey ? "Order (first one done)" : "Order",
+            values: ctx.answerKey ? order : level === "l1_2" ? [order[0]] : [],
+            size: "sm",
+          }),
+        );
       blocks.push(
-        B.lines(sentence.length > 70 ? 2 : 1, { fill: ctx.answerKey ? [sentence] : undefined }),
+        B.lines(sentence.length > 70 ? 2 : 1, {
+          label: "Aa  Capital letter first … end mark last  . ? !",
+          fill: ctx.answerKey ? [sentence] : undefined,
+        }),
       );
     });
     return { blocks };
@@ -358,19 +404,50 @@ const PRINTERS = {
   },
 
   sentence_combine(a, ctx) {
+    // Workbook page: a connector-meaning mini key, then per item the kernel sentence cards, the connector chip with
+    // its meaning, and write-on lines. The key pre-writes the model.
+    const items = a.payload.items;
+    const seen = [...new Set(items.map((it) => it.connector.toLowerCase()))].filter(
+      connectorMeaning,
+    );
     const blocks = [];
-    a.payload.items.forEach((it, k) => {
+    if (seen.length)
       blocks.push(
-        B.callout("Writing", [
-          B.columns(
-            [
-              [...it.sentences.map((s) => B.para([b(`${k + 1}. `), t(s)]))],
-              [B.chips([{ text: it.connector, tone: "Game", sol: true }], { label: "Connector" })],
-            ],
-            { widths: [72, 24] },
-          ),
-          B.lines(2, { fill: ctx.answerKey ? [it.model] : undefined }),
-        ]),
+        B.table(
+          seen.map((c) => [{ t: c, bold: true }, connectorMeaning(c)]),
+          {
+            headers: ["Connector", "What it tells the reader"],
+            widths: [24, 76],
+            compact: true,
+            tone: "Game",
+          },
+        ),
+      );
+    items.forEach((it, k) => {
+      const mean = connectorMeaning(it.connector);
+      blocks.push(
+        B.callout(
+          "Writing",
+          [
+            B.columns(
+              [
+                it.sentences.map((s, n) => B.para([b(`${n + 1}  `), t(s)])),
+                [
+                  B.chips([{ text: it.connector, tone: "Game", sol: true }], {
+                    label: "Join with",
+                  }),
+                  ...(mean ? [B.para([i(mean)], { size: "sm" })] : []),
+                ],
+              ],
+              { widths: [66, 30] },
+            ),
+            B.lines(2, {
+              label: "Write one sentence. Capital letter first, end mark last.",
+              fill: ctx.answerKey ? [it.model] : undefined,
+            }),
+          ],
+          { label: `Sentence ${k + 1}` },
+        ),
       );
     });
     return { blocks };

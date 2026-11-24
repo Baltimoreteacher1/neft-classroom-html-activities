@@ -1,7 +1,11 @@
 // BCPSS Language Studio v2 — runtime loader and projection onto the unit detail shape.
 // Authored content lives in db/seeds/bcpss/v2/units/<unitId>.mjs and is loaded lazily, one unit at a time.
 
-import { FAMILY_LOADERS, STUDIO_LOADERS } from "../../../db/seeds/bcpss/v2/index.mjs";
+import {
+  FAMILY_LOADERS,
+  STUDIO_LOADERS,
+  WRITING_LOADERS,
+} from "../../../db/seeds/bcpss/v2/index.mjs";
 
 export async function loadStudio(unitId) {
   const load = STUDIO_LOADERS[unitId];
@@ -12,6 +16,13 @@ export async function loadStudio(unitId) {
 
 export async function loadFamily(unitId) {
   const load = FAMILY_LOADERS[unitId];
+  if (!load) return null;
+  return (await load()).default || null;
+}
+
+// Writing Lab (TWR sentence-to-paragraph path): db/seeds/bcpss/v2/writing/<unitId>.mjs
+export async function loadWriting(unitId) {
+  const load = WRITING_LOADERS[unitId];
   if (!load) return null;
   return (await load()).default || null;
 }

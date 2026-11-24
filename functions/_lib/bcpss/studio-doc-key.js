@@ -1,8 +1,8 @@
 // Language Studio print: teacher ANSWER KEY (part "key"). Every answer, model response and the one-line tip per activity,
 // then the exit-ticket model and 3-level rubric. Compact cards that flow over 2-4 pages.
 
-import { B, b, HIGHLIGHT_ORDER, i, newDoc, section, t } from "./studio-doc.js";
-import { markRuns } from "./studio-doc-activities.js";
+import { B, b, HIGHLIGHT_ORDER, i, newDoc, section, shuffled, t } from "./studio-doc.js";
+import { connectorMeaning, markRuns } from "./studio-doc-activities.js";
 import { EXIT_RUBRIC_LABELS } from "./studio-doc-book.js";
 
 const letter = (n) => String.fromCharCode(65 + n);
@@ -76,10 +76,19 @@ const KEY = {
       { size: "sm" },
     ),
   ],
-  unscramble: (p) => [
+  unscramble: (p, a) => [
     B.table(
-      p.items.map((it, k) => [num(k), it.parts.join(" ")]),
-      { headers: ["#", "Correct sentence"], widths: [5, 95], compact: true, tone: "Game" },
+      p.items.map((it, k) => {
+        const mixed = shuffled(it.parts, `${a.title}:${k}`);
+        const order = it.parts.map((_, idx) => letter(mixed.findIndex((m) => m.idx === idx)));
+        return [num(k), { t: order.join(" "), bold: true }, it.parts.join(" ")];
+      }),
+      {
+        headers: ["#", "Order", "Correct sentence"],
+        widths: [5, 17, 78],
+        compact: true,
+        tone: "Game",
+      },
     ),
   ],
   sequence: (p) => [
@@ -131,13 +140,26 @@ const KEY = {
   ],
   sentence_combine: (p) => [
     B.table(
-      p.items.map((it, k) => [num(k), { t: it.connector, bold: true }, it.model]),
+      p.items.map((it, k) => [
+        num(k),
+        { t: it.connector, bold: true },
+        connectorMeaning(it.connector),
+        it.model,
+      ]),
       {
-        headers: ["#", "Connector", "Model sentence"],
-        widths: [5, 15, 80],
+        headers: ["#", "Connector", "Meaning", "Model sentence"],
+        widths: [5, 13, 24, 58],
         compact: true,
         tone: "Writing",
       },
+    ),
+    B.para(
+      [
+        i(
+          "Accept any one sentence that uses the connector, keeps every idea, and has a capital letter and end mark.",
+        ),
+      ],
+      { size: "sm" },
     ),
   ],
   write_scaffold: (p) => [B.para([t(p.model)], { size: "sm" })],

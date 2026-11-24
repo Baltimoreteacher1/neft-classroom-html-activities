@@ -337,8 +337,34 @@ function exitTicket(app) {
   );
 }
 
+// Writing Lab: the unit's Writing Revolution path (sentence strategies -> outline -> paragraph). /bcpss-teachers/writing-lab/
+function writingLab(app) {
+  const w = app.detail?.writing;
+  if (!w) return null;
+  const href = `/bcpss-teachers/writing-lab/?unit=${encodeURIComponent(app.unitId)}&level=${app.level}`;
+  const steps = ["Notes", "Because · But · So", "Stretch a sentence", "Appositives", "Clue words", "Outline", "Draft & revise"];
+  return h(
+    "section",
+    { class: "sh-section", id: "writing-lab", "aria-labelledby": "shWlH" },
+    h("div", { class: "sh-sechead" }, h("p", { class: "sh-eyebrow" }, "Write about it"), h("h2", { id: "shWlH" }, "Writing Lab")),
+    h(
+      "div",
+      { class: "sh-wl st-card" },
+      h("div", { class: "sh-wl__text" }, h("h3", null, w.title), h("p", null, w.prompt[app.level] || w.prompt.l3_4), h("ol", { class: "sh-wl__steps" }, ...steps.map((x) => h("li", null, x)))),
+      h("a", { class: "st-btn st-btn--primary st-btn--lg", href }, "Open the Writing Lab →"),
+    ),
+  );
+}
+
 function resources(app) {
-  const rows = RESOURCES.map(([ic, name, desc, part]) =>
+  const list = app.detail?.writing
+    ? [
+        ...RESOURCES,
+        ["Writing", "Writing Lab packet", "The whole writing path on paper, at your level", "writing"],
+        ["check", "Writing Lab teacher guide", "Models for every level, answers, rubric", "writing-key"],
+      ]
+    : RESOURCES;
+  const rows = list.map(([ic, name, desc, part]) =>
     h(
       "li",
       { class: "sh-res" },
@@ -352,7 +378,7 @@ function resources(app) {
             "a",
             {
               class: "st-btn st-btn--sm",
-              href: exportUrl(app.unitId, f, part),
+              href: `${exportUrl(app.unitId, f, part)}${part.startsWith("writing") ? `&wida=${app.level.slice(1)}` : ""}`,
               target: "_blank",
               rel: "noopener",
               "aria-label": `${name}, ${label}`,
@@ -388,6 +414,7 @@ export function renderHome(root, app) {
       wordWall(app.studio, app.band),
       mentorSection(app.studio, app.level, levelName),
       gallery(app, nextIdx),
+      app.family ? null : writingLab(app),
       app.family ? null : exitTicket(app),
       app.family ? null : resources(app),
     ),
